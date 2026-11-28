@@ -9,19 +9,19 @@
 	 * @component
 	 */
 
-	import type { Point, SequencePlottable, Viewport } from '$lib/grapheur/types';
-	import { isCobwebEnabled, LINE_STYLE_DASHARRAY } from '$lib/grapheur/types';
-	import type { CoordinateTransformer } from '$lib/grapheur/viewport';
+	import type { Point, SequencePlottable, Viewport } from '#lib/grapheur/types.ts';
+	import { isCobwebEnabled, LINE_STYLE_DASHARRAY } from '#lib/grapheur/types.ts';
+	import type { CoordinateTransformer } from '#lib/grapheur/viewport.ts';
 	import {
 		computeCobwebPath,
 		computeSequenceTerms,
 		createRecurrenceFunctionEvaluator,
 		filterVisibleTerms,
 		toComputeSpec
-	} from '$lib/grapheur/sequence';
-	import { sampleFunction } from '$lib/geometry-core/viewport';
-	import { curveToPolylinePath, curveToSVGPath } from '$lib/grapheur/bezier';
-	import { curveColorValue } from '$lib/grapheur/colors';
+	} from '#lib/grapheur/sequence.ts';
+	import { sampleFunction } from '#lib/geometry-core/viewport/index.ts';
+	import { curveToPolylinePath, curveToSVGPath } from '#lib/grapheur/bezier.ts';
+	import { curveColorValue } from '#lib/grapheur/colors.ts';
 
 	// Props
 	let {

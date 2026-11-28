@@ -10,7 +10,7 @@
  * USAGE:
  * ```svelte
  * <script>
- *   import { sanitizeHtml } from '$lib/utils/sanitize';
+ *   import { sanitizeHtml } from '#lib/utils/sanitize.ts';
  *   let untrustedContent = '<script>alert("xss")</script><p>Safe text</p>';
  * </script>
  *
@@ -147,61 +147,4 @@ export function sanitizePlainText(dirty: string): string {
 		ALLOWED_ATTR: [],
 		KEEP_CONTENT: true // Keep text content
 	});
-}
-
-/** Schémas d'URL autorisés dans un lien ; un lien relatif (sans schéma) passe aussi */
-const SAFE_URL_SCHEMES: ReadonlySet<string> = new Set(['http', 'https', 'mailto']);
-
-/**
- * Un lien sûr, ou '#' : schémas autorisés (`SAFE_URL_SCHEMES`) ou lien relatif.
- *
- * @param url - URL string to sanitize
- * @returns The URL unchanged if safe, '#' otherwise
- */
-export function sanitizeUrl(url: string | undefined): string {
-	if (!url || typeof url !== 'string') {
-		return '#';
-	}
-
-	// Ce que le NAVIGATEUR lira : il retire espaces et caractères de contrôle en
-	// tête, et tabulations / retours à la ligne partout (`java\nscript:` devient
-	// `javascript:`). On décide sur cette forme-là, pas sur la chaîne écrite.
-	// eslint-disable-next-line no-control-regex
-	const normalized = url.replace(/^[\u0000-\u0020]+/, '').replace(/[\t\n\r]/g, '');
-
-	// Un schéma explicite (`xxx:`) doit être dans la liste BLANCHE. Une liste
-	// noire (`javascript:`, `data:`…) laisse passer ce qu'on n'a pas prévu.
-	const scheme = /^([a-z][a-z0-9+.-]*):/i.exec(normalized)?.[1].toLowerCase();
-	if (scheme !== undefined && !SAFE_URL_SCHEMES.has(scheme)) {
-		return '#';
-	}
-
-	return url;
-}
-
-/**
- * Check if string contains potentially dangerous HTML
- * Use for validation before sanitization
- *
- * @param input - String to check
- * @returns true if input contains script/dangerous tags
- */
-export function containsDangerousHtml(input: string): boolean {
-	if (!input || typeof input !== 'string') {
-		return false;
-	}
-
-	// Check for dangerous patterns
-	const dangerousPatterns = [
-		/<script/i,
-		/<iframe/i,
-		/<object/i,
-		/<embed/i,
-		/<link/i,
-		/javascript:/i,
-		/on\w+\s*=/i, // Event handlers (onclick, onload, etc.)
-		/<meta/i
-	];
-
-	return dangerousPatterns.some((pattern) => pattern.test(input));
 }

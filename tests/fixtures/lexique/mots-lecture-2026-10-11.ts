@@ -10,7 +10,7 @@
  * REFERENCE_DICTIONARY puis ces 4 entrées.
  */
 
-import type { MathTerm } from '$lib/dictionary/model';
+import type { MathTerm } from '#lib/dictionary/model.ts';
 
 export const READING_WORDS_2026_10_11: MathTerm[] = [
 	{

@@ -9,14 +9,14 @@ describe('correction serveur — registre des positions inscrit', () => {
 	it('par la correction des envois (grading-budget)', async () => {
 		vi.resetModules();
 		await import('../grading-budget');
-		const { hasConstructionPositions } = await import('$lib/questions/construction/positions');
+		const { hasConstructionPositions } = await import('#lib/questions/construction/positions.ts');
 		expect(hasConstructionPositions()).toBe(true);
 	});
 
 	it('par la copie corrigée (corrected-detail)', async () => {
 		vi.resetModules();
 		await import('../corrected-detail');
-		const { hasConstructionPositions } = await import('$lib/questions/construction/positions');
+		const { hasConstructionPositions } = await import('#lib/questions/construction/positions.ts');
 		expect(hasConstructionPositions()).toBe(true);
 	});
 });
@@ -24,8 +24,8 @@ describe('correction serveur — registre des positions inscrit', () => {
 describe('tests du modèle (testSpecs) — éditeur et publication', () => {
 	it('le lanceur des testSpecs inscrit le registre', async () => {
 		vi.resetModules();
-		await import('$lib/questions/test-spec-runner');
-		const { hasConstructionPositions } = await import('$lib/questions/construction/positions');
+		await import('#lib/questions/test-spec-runner.ts');
+		const { hasConstructionPositions } = await import('#lib/questions/construction/positions.ts');
 		expect(hasConstructionPositions()).toBe(true);
 	});
 });

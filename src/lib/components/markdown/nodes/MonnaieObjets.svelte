@@ -18,8 +18,8 @@
 <svelte:options namespace="svg" />
 
 <script lang="ts">
-	import { MONNAIE_LABEL, type MonnaieItem } from '$lib/ubumark/utils/monnaie-scene';
-	import { coinFamily, denominationLabel } from '$lib/ubumark/utils/monnaie-valeurs';
+	import { MONNAIE_LABEL, type MonnaieItem } from '#lib/ubumark/utils/monnaie-scene.ts';
+	import { coinFamily, denominationLabel } from '#lib/ubumark/utils/monnaie-valeurs.ts';
 
 	interface Props {
 		items: MonnaieItem[];

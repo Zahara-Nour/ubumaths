@@ -6,17 +6,17 @@
 	règles de cohérence. Un refus montre ses messages et ne change rien.
 -->
 <script lang="ts">
-	import { Button } from '$lib/components/ui/button';
-	import { Input } from '$lib/components/ui/input';
-	import { Textarea } from '$lib/components/ui/textarea';
-	import { Badge } from '$lib/components/ui/badge';
-	import MySelect from '$lib/components/MySelect.svelte';
-	import MyCheckbox from '$lib/components/MyCheckbox.svelte';
-	import InlineMarkdown from '$lib/components/markdown/InlineMarkdown.svelte';
-	import { toaster } from '$lib/stores/toaster.svelte';
-	import { GRADE_CODES, GRADES, type GradeCode } from '$lib/types/grades';
-	import { markDictionaryEdited } from '$lib/dictionary/fetch-dictionary';
-	import { refreshLexiconRuntime } from '$lib/lexicon/runtime-store.svelte';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import { Input } from '#lib/components/ui/input/index.ts';
+	import { Textarea } from '#lib/components/ui/textarea/index.ts';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
+	import MySelect from '#lib/components/MySelect.svelte';
+	import MyCheckbox from '#lib/components/MyCheckbox.svelte';
+	import InlineMarkdown from '#lib/components/markdown/InlineMarkdown.svelte';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
+	import { GRADE_CODES, GRADES, type GradeCode } from '#lib/types/grades.ts';
+	import { markDictionaryEdited } from '#lib/dictionary/fetch-dictionary.ts';
+	import { refreshLexiconRuntime } from '#lib/dictionary/runtime-store.svelte.ts';
 	import {
 		draftToInput,
 		newItemKey,
@@ -27,7 +27,7 @@
 		type DictionaryVersion,
 		type DraftField,
 		type EntryDraft
-	} from '$lib/dictionary/admin-draft';
+	} from '#lib/dictionary/admin-draft.ts';
 	import { Plus, Trash2, Eye, EyeOff, History, Save } from '@lucide/svelte';
 
 	interface Props {

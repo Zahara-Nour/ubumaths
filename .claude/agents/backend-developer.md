@@ -22,12 +22,12 @@ Pas pour : schéma, migrations, policies RLS (`supabase-expert`) ; feature de bo
 2. **Autorisation vérifiée côté serveur** par les helpers d'auth ; la RLS est la dernière ligne, pas la seule.
 3. **RLS silencieuse** : `.select()` après toute écriture et vérification des lignes rendues ; `error` jamais ignoré ([rls-echecs-silencieux.md](../../docs/pratiques/rls-echecs-silencieux.md)).
 4. **Modèle mono-professeur** : l'école borne le social ; inscriptions = table `class_members` (pas le tableau `class_ids`).
-5. **Types** : `Tables<…>` de `$lib/types/database`, alias dans `database-helpers.ts`, jamais d'`any` (règles 4 et 6).
+5. **Types** : `Tables<…>` de `#lib/types/database.ts`, alias dans `database-helpers.ts`, jamais d'`any` (règles 4 et 6).
 
 ## Pièges serveur
 
 - `fail()` répond HTTP 200 ; `HttpError` n'étend pas `Error` (ne pas l'attraper comme une `Error`).
-- Une RPC nouvelle n'existe dans `database.ts` qu'après `db:migrate` + `db:types` (générés depuis la prod) : migration et code appelant = deux PR.
+- `database.ts` est généré depuis les migrations du dépôt : après une migration, `pnpm db:types` (pile de test locale), et le code appelant part dans la **même PR**. La CI refuse un `database.ts` qui n'est pas celui des migrations.
 - Client service-role : seulement depuis un chemin de `ALLOWED_SERVICE_ROLE_PATHS`.
 
 ## Vérifier

@@ -9,7 +9,7 @@
 import { describe, expect, it } from 'vitest';
 import { documentFromTeacherCopy } from '../teacher-adapter';
 import { renderMarkdownPreview } from '../render-exercise';
-import type { InstanceData, WorksheetConfig, WorksheetRow } from '$lib/types/worksheets';
+import type { InstanceData, WorksheetConfig, WorksheetRow } from '#lib/types/worksheets.ts';
 
 const WORKSHEET = {
 	id: 'w',

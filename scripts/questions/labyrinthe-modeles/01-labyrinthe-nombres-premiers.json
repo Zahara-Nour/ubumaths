@@ -1,0 +1,97 @@
+{
+	"id": "00f35c55-d3a1-47e1-aada-08908b4e9615",
+	"title": "Le labyrinthe des nombres premiers",
+	"description": "Tracer le chemin de l’entrée à une sortie en ne passant que par des nombres premiers (grilles 5 × 4 et 6 × 5)",
+	"grades": ["3"],
+	"level": 5,
+	"delay": 150,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Va de l’entrée à une sortie en ne passant que par des nombres premiers. Touche les cases une à une.\n\n```labyrinthe\ngrille: 5 x 4\nrègle: premier\nparcourir: oui\n```",
+			"variables": [],
+			"conditions": [],
+			"correction": {
+				"steps": [
+					"**Ce qu’on cherche.** Un nombre premier a exactement deux diviseurs : $1$ et lui-même. On garde une case seulement si son nombre n’a aucun autre diviseur.",
+					"**Les pièges.** Un nombre pair (sauf $2$) ou qui finit par $5$ (sauf $5$) n’est pas premier. Mais un nombre impair qui ne finit pas par $5$ peut l’être… ou pas : $51 = 3 \\times 17$ et $91 = 7 \\times 13$. On essaie les divisions par $3$, $7$, $11$, $13$.",
+					"**Le chemin.** De l’entrée, on avance de case en case (haut, bas, gauche, droite) en ne gardant que les nombres premiers : un seul chemin mène à une sortie, celui teinté sur la grille."
+				]
+			},
+			"hint": "Un nombre premier a exactement deux diviseurs : $1$ et lui-même. Un nombre impair qui ne finit pas par $5$ peut quand même se diviser par $3$ ou par $7$."
+		},
+		{
+			"statement": "Va de l’entrée à une sortie en ne passant que par des nombres premiers. Touche les cases une à une.\n\n```labyrinthe\ngrille: 6 x 5\nrègle: premier\nparcourir: oui\n```",
+			"variables": [],
+			"conditions": [],
+			"correction": {
+				"steps": [
+					"**Ce qu’on cherche.** Un nombre premier a exactement deux diviseurs : $1$ et lui-même. On garde une case seulement si son nombre n’a aucun autre diviseur.",
+					"**Les pièges.** Un nombre pair (sauf $2$) ou qui finit par $5$ (sauf $5$) n’est pas premier. Mais un nombre impair qui ne finit pas par $5$ peut l’être… ou pas : $51 = 3 \\times 17$ et $91 = 7 \\times 13$. On essaie les divisions par $3$, $7$, $11$, $13$.",
+					"**Le chemin.** De l’entrée, on avance de case en case (haut, bas, gauche, droite) en ne gardant que les nombres premiers : un seul chemin mène à une sortie, celui teinté sur la grille."
+				]
+			},
+			"hint": "Un nombre premier a exactement deux diviseurs : $1$ et lui-même. Un nombre impair qui ne finit pas par $5$ peut quand même se diviser par $3$ ou par $7$."
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Grille 5 × 4 : le bon chemin",
+			"variationIndex": 0,
+			"variables": {},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["2,1 2,2 3,2 4,2 4,3 4,4 3,4 2,4 1,4 1,5"]
+		},
+		{
+			"description": "Grille 5 × 4 : arrêté avant la sortie",
+			"variationIndex": 0,
+			"variables": {},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["2,1 2,2 3,2 4,2 4,3 4,4 3,4 2,4 1,4"]
+		},
+		{
+			"description": "Grille 5 × 4 : ne part pas de l’entrée",
+			"variationIndex": 0,
+			"variables": {},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["2,2 3,2 4,2 4,3 4,4 3,4 2,4 1,4 1,5"]
+		},
+		{
+			"description": "Grille 6 × 5 : le bon chemin",
+			"variationIndex": 1,
+			"variables": {},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["2,1 1,1 1,2 1,3 1,4 1,5 2,5 3,5 3,4 4,4 5,4 5,5 5,6"]
+		},
+		{
+			"description": "Grille 6 × 5 : arrêté avant la sortie",
+			"variationIndex": 1,
+			"variables": {},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["2,1 1,1 1,2 1,3 1,4 1,5 2,5 3,5 3,4 4,4 5,4 5,5"]
+		},
+		{
+			"description": "Grille 6 × 5 : ne part pas de l’entrée",
+			"variationIndex": 1,
+			"variables": {},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["1,1 1,2 1,3 1,4 1,5 2,5 3,5 3,4 4,4 5,4 5,5 5,6"]
+		}
+	],
+	"rangement": {
+		"noeud": "Arithmétique > Nombres premiers > primalité",
+		"point": null
+	}
+}

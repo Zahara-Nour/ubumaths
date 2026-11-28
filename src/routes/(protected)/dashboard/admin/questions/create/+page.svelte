@@ -20,14 +20,14 @@
 -->
 
 <script lang="ts">
-	import BackLink from '$lib/components/navigation/BackLink.svelte';
+	import BackLink from '#lib/components/navigation/BackLink.svelte';
 	import { goto } from '$app/navigation';
-	import { toaster } from '$lib/stores/toaster.svelte';
-	import type { QuestionTemplate } from '$lib/questions/types';
-	import * as Card from '$lib/components/ui/card';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
+	import type { QuestionTemplate } from '#lib/questions/types.ts';
+	import * as Card from '#lib/components/ui/card/index.ts';
 	import { Loader2 } from '@lucide/svelte';
 	import type { PageData } from './$types';
-	import { questionTemplatesCache } from '$lib/stores/questionTemplates.svelte';
+	import { questionTemplatesCache } from '#lib/stores/questionTemplates.svelte.ts';
 	import { onMount } from 'svelte';
 
 	let { data }: { data: PageData } = $props();
@@ -40,7 +40,7 @@
 
 	// Dynamically import QuestionTemplateForm to reduce initial bundle size
 	onMount(async () => {
-		const module = await import('$lib/components/QuestionTemplateForm.svelte');
+		const module = await import('#lib/components/QuestionTemplateForm.svelte');
 		QuestionTemplateForm = module.default;
 		isLoading = false;
 	});

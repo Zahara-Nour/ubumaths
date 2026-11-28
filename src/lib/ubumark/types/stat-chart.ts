@@ -16,9 +16,9 @@
 
 import type { BaseNode } from './ast';
 import type { CourbeColor, CourbeSize } from './courbe';
-import type { NamedColor } from '$lib/theme/named-colors';
-import type { LawIndicator } from '$lib/statistics/format';
-import type { VariableChange } from '$lib/statistics/variable-change';
+import type { NamedColor } from '#lib/theme/named-colors.ts';
+import type { LawIndicator } from '#lib/statistics/format.ts';
+import type { VariableChange } from '#lib/statistics/variable-change.ts';
 
 // ============================================================================
 // VALEURS
@@ -447,6 +447,13 @@ export interface StatChartSpec {
 	 * (`axis` reste null : l'axe a 10 graduations sans nombres)
 	 */
 	chooseScale?: boolean;
+	/**
+	 * Barres : `solution: oui` (avec `placer:`, sans `case:`) : les rangs des barres
+	 * à construire, dessinées en vert à l'écran comme au PDF ; `toPlace` est alors
+	 * null (rien à faire), l'axe à choisir remplacé par le juste (corrigé imprimé
+	 * d'une série d'automatismes, V109). Absent ailleurs.
+	 */
+	solvedBars?: number[];
 }
 
 /** Axe vertical d'un diagramme en barres, de 0 à `max`, gradué de `step` en `step` */

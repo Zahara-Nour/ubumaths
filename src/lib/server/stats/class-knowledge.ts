@@ -1,29 +1,32 @@
 /**
  * Agrégations par point du programme (knowledge / FSRS) au niveau classe.
  *
- * 5 fonctions exposées :
+ * 3 fonctions exposées :
  *   - getClassCurriculumPointGrid          → Widget A (grille élève × point du programme)
  *   - getClassTopCurriculumPointsToRemediate → Widget E (top à remédier)
  *   - getStudentRetentionCurve      → Widget B (8 semaines, stability moyenne par branche)
- *   - getClassActivityHeatmap       → Widget C (30 jours × élèves, reviews/jour)
- *   - getStudentGradeHistogram      → Widget D (7 jours, distribution {1,2,3,4})
+ * (Widget C, activité élève × jour, remplacé par la grille de régularité :
+ *  `class-regularity.ts`, chantier `regularite`.)
+ * (Widget D, histogramme des notes 1-4, retiré : deux boutons « Pas réussi /
+ * Réussi » depuis le chantier `formes-de-serie`.)
  *
  * Performance : approche batchée (1-3 queries par fonction, pas N×queries).
  * Cf. `docs/systeme/analytique-prof.md` §3.
  */
 
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { Database } from '$lib/types/database';
-import { fetchInChunks } from '$lib/server/utils/chunked-in';
-import { keepLinksOfGrade } from '$lib/server/curriculum-grade';
-import { PROGRAMME_POINT_COLS, loadNodesWithAncestors } from '$lib/server/programme-tree';
-import { placeOfNode, type ProgrammePointRow } from '$lib/utils/programme-tree';
+import type { Database } from '#lib/types/database.ts';
+import { fetchInChunks } from '#lib/server/utils/chunked-in.ts';
+import { readAllRows } from '#lib/server/read-all-rows.ts';
+import { keepLinksOfGrade } from '#lib/server/curriculum-grade.ts';
+import { PROGRAMME_POINT_COLS, loadNodesWithAncestors } from '#lib/server/programme-tree.ts';
+import { placeOfNode, type ProgrammePointRow } from '#lib/utils/programme-tree.ts';
 import {
 	templateToBadge,
 	BADGE_PRIORITY,
 	type CurriculumPointBadge
-} from '$lib/server/srs/curriculum-point-badge';
-import { createServerLogger } from '$lib/utils/logger';
+} from '#lib/server/srs/curriculum-point-badge.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('server/stats/class-knowledge');
 
@@ -46,6 +49,13 @@ export interface ClassCurriculumPoint {
 	name: string;
 	/** `null` si le point n'a pas pu être placé dans l'arbre (nœud illisible). */
 	notion_name: string | null;
+}
+
+/** Point rangé dans l'arbre : sa notion et sa branche (`null` si nœud illisible). */
+export interface PlacedCurriculumPoint extends ClassCurriculumPoint {
+	/** Identifiant de la notion (`null` si nœud illisible) : deux notions peuvent porter le même nom. */
+	notion_id: string | null;
+	branch_name: string | null;
 }
 
 export interface ClassCurriculumPointGrid {
@@ -71,33 +81,12 @@ export interface RetentionPoint {
 	review_count: number;
 }
 
-export interface HeatmapCell {
-	student_id: string;
-	day: string;
-	review_count: number;
-	/** `null` : aucune question notée ce jour-là (cartes de cours seulement). */
-	success_pct: number | null;
-}
-
-export interface HeatmapStudent {
-	id: string;
-	display_name: string;
-	days_since_last_review: number | null;
-	is_alert: boolean;
-}
-
-export interface GradeHistogramBucket {
-	grade: 1 | 2 | 3 | 4;
-	count: number;
-	avg_stability_after: number;
-}
-
 // ===========================================================================
 // Points du programme : filtre et rangement dans l'arbre
 // ===========================================================================
 
 /** Point d'un niveau, non archivé : le seul qui a sa place dans l'analytique. */
-function isLivePoint(p: ProgrammePointRow): boolean {
+export function isLivePoint(p: ProgrammePointRow): boolean {
 	return p.grade !== null && p.archived_at === null;
 }
 
@@ -106,10 +95,10 @@ function isLivePoint(p: ProgrammePointRow): boolean {
  * Un point qu'on ne sait pas placer (nœud illisible) garde sa colonne, en
  * dernier et sans étiquette, plutôt que de disparaître en silence.
  */
-async function placeInTree(
+export async function placeInTree(
 	supabase: SB,
 	points: ProgrammePointRow[]
-): Promise<ClassCurriculumPoint[]> {
+): Promise<PlacedCurriculumPoint[]> {
 	const nodeIds = points.map((p) => p.node_id);
 	const nodes = await loadNodesWithAncestors(supabase, nodeIds);
 	const nodeById = new Map(nodes.map((n) => [n.id, n]));
@@ -134,7 +123,9 @@ async function placeInTree(
 	return placed.map(({ point, place }) => ({
 		id: point.id,
 		name: point.name,
-		notion_name: place?.notion.name ?? null
+		notion_id: place?.notion.id ?? null,
+		notion_name: place?.notion.name ?? null,
+		branch_name: place?.branch.name ?? null
 	}));
 }
 
@@ -199,20 +190,28 @@ export async function getClassCurriculumPointGrid(
 	}
 	const classGrade = classRow?.grade ?? null;
 
-	const { data: attemptsRaw, error: attErr } = await supabase
-		.from('skill_attempts')
-		.select('student_id, template_id')
-		// `studentIds` est borné par la taille d'une classe (quelques dizaines) :
-		// pas de découpage nécessaire, contrairement aux listes de templates.
-		.in('student_id', studentIds)
-		.not('template_id', 'is', null);
-
-	if (attErr) {
+	// Lus page par page : une classe active dépasse vite le plafond de 1000
+	// lignes de PostgREST, qui tronque en silence (V123). `studentIds` est
+	// borné par la taille d'une classe : pas de découpage du `.in()`.
+	let attemptsRaw: { student_id: string; template_id: string | null }[];
+	try {
+		attemptsRaw = await readAllRows(
+			(from, to) =>
+				supabase
+					.from('skill_attempts')
+					.select('student_id, template_id')
+					.in('student_id', studentIds)
+					.not('template_id', 'is', null)
+					.order('id')
+					.range(from, to),
+			'des essais de la classe'
+		);
+	} catch (attErr) {
 		logger.error('[class-knowledge] skill_attempts lookup failed:', attErr);
 		return { students, points: [], cells: {}, columnStats: {} };
 	}
 
-	const templateIds = [...new Set((attemptsRaw ?? []).map((a) => a.template_id as string))];
+	const templateIds = [...new Set(attemptsRaw.map((a) => a.template_id as string))];
 
 	let points: ClassCurriculumPoint[] = [];
 	const templateToPointIds = new Map<string, string[]>();
@@ -278,7 +277,12 @@ export async function getClassCurriculumPointGrid(
 	}
 
 	if (pointById.size > 0) {
-		points = await placeInTree(supabase, [...pointById.values()]);
+		// La grille ne montre pas la branche : sa forme reste celle d'avant.
+		points = (await placeInTree(supabase, [...pointById.values()])).map((p) => ({
+			id: p.id,
+			name: p.name,
+			notion_name: p.notion_name
+		}));
 	}
 
 	// Deux `.in()` dans la même requête : seul `templateIds` est découpé.
@@ -309,7 +313,7 @@ export async function getClassCurriculumPointGrid(
 	}
 
 	const studentTemplateIds = new Map<string, Set<string>>();
-	for (const a of attemptsRaw ?? []) {
+	for (const a of attemptsRaw) {
 		const set = studentTemplateIds.get(a.student_id) ?? new Set();
 		set.add(a.template_id as string);
 		studentTemplateIds.set(a.student_id, set);
@@ -503,224 +507,6 @@ export async function getStudentRetentionCurve(
 }
 
 // ===========================================================================
-// Widget C — Heatmap activité classe
-// ===========================================================================
-
-export interface ClassActivityHeatmap {
-	days: string[];
-	students: HeatmapStudent[];
-	cells: HeatmapCell[];
-}
-
-/**
- * Tentative sur une carte de cours : auto-évaluation en entraînement libre
- * (`student_self`) ou révision de la carte dans un paquet (modèle `course_card`).
- */
-function isCourseCardAttempt(a: {
-	source?: string;
-	question_templates: { type: string } | null;
-}): boolean {
-	return a.source === 'student_self' || a.question_templates?.type === 'course_card';
-}
-
-export async function getClassActivityHeatmap(
-	supabase: SB,
-	classId: string,
-	days = 30,
-	alertThresholdDays = 5
-): Promise<ClassActivityHeatmap> {
-	const { data: members, error: membersErr } = await supabase
-		.from('class_members')
-		.select('student_id, profiles!class_members_student_id_fkey(id, firstname, lastname)')
-		.eq('class_id', classId)
-		.eq('status', 'active');
-
-	if (membersErr) {
-		logger.error('[class-knowledge] heatmap class_members lookup failed:', membersErr);
-		return { days: [], students: [], cells: [] };
-	}
-
-	type MemberRow = {
-		student_id: string;
-		profiles: { id: string; firstname: string | null; lastname: string | null } | null;
-	};
-	const memberRows = (members ?? []) as unknown as MemberRow[];
-
-	const studentIds = memberRows.map((m) => m.student_id);
-	if (studentIds.length === 0) return { days: [], students: [], cells: [] };
-
-	const cutoff = new Date(Date.now() - days * 24 * 3600 * 1000).toISOString();
-
-	const { data: attempts, error: attemptsError } = await supabase
-		.from('skill_attempts')
-		.select('student_id, created_at, success, source, question_templates(type)')
-		.in('student_id', studentIds)
-		.gte('created_at', cutoff);
-
-	// Une carte de chaleur vide dit « personne n'a rien fait cette semaine ».
-	// C'est un jugement, pas une absence de donnée.
-	if (attemptsError) {
-		logger.error('[getClassActivityHeatmap] Tentatives illisibles :', attemptsError);
-		throw new Error(attemptsError.message);
-	}
-
-	type AttRow = {
-		student_id: string;
-		created_at: string;
-		success: boolean | null;
-		source: string;
-		question_templates: { type: string } | null;
-	};
-	const rows = (attempts ?? []) as AttRow[];
-
-	const dayKeys: string[] = [];
-	for (let i = 0; i < days; i += 1) {
-		dayKeys.push(toDayKey(new Date(Date.now() - (days - 1 - i) * 24 * 3600 * 1000)));
-	}
-
-	// Décision B1 (2026-09-28) : une carte de cours compte comme activité, pas
-	// dans le taux de réussite (auto-évaluation).
-	const cellMap = new Map<string, { count: number; gradedCount: number; successCount: number }>();
-	const lastReviewByStudent = new Map<string, string>();
-	for (const r of rows) {
-		const dayKey = toDayKey(new Date(r.created_at));
-		const key = `${r.student_id}:${dayKey}`;
-		const cell = cellMap.get(key) ?? { count: 0, gradedCount: 0, successCount: 0 };
-		cell.count += 1;
-		if (!isCourseCardAttempt(r)) {
-			cell.gradedCount += 1;
-			if (r.success) cell.successCount += 1;
-		}
-		cellMap.set(key, cell);
-
-		const last = lastReviewByStudent.get(r.student_id);
-		if (!last || r.created_at > last) lastReviewByStudent.set(r.student_id, r.created_at);
-	}
-
-	const nowMs = Date.now();
-	const studentsOut: HeatmapStudent[] = memberRows
-		.filter((m) => m.profiles)
-		.map((m) => {
-			const last = lastReviewByStudent.get(m.student_id);
-			const daysSince = last
-				? Math.floor((nowMs - new Date(last).getTime()) / (24 * 3600 * 1000))
-				: null;
-			return {
-				id: m.student_id,
-				display_name: formatName(m.profiles!.firstname, m.profiles!.lastname),
-				days_since_last_review: daysSince,
-				is_alert: daysSince === null || daysSince > alertThresholdDays
-			};
-		})
-		.sort((a, b) => a.display_name.localeCompare(b.display_name, 'fr'));
-
-	const cells: HeatmapCell[] = [];
-	for (const s of studentsOut) {
-		for (const day of dayKeys) {
-			const cell = cellMap.get(`${s.id}:${day}`) ?? { count: 0, gradedCount: 0, successCount: 0 };
-			cells.push({
-				student_id: s.id,
-				day,
-				review_count: cell.count,
-				success_pct:
-					cell.gradedCount > 0
-						? Math.round((cell.successCount / cell.gradedCount) * 100)
-						: cell.count > 0
-							? null
-							: 0
-			});
-		}
-	}
-
-	return { days: dayKeys, students: studentsOut, cells };
-}
-
-// ===========================================================================
-// Widget D — Histogramme grades par élève
-// ===========================================================================
-
-export async function getStudentGradeHistogram(
-	supabase: SB,
-	studentId: string,
-	days = 7
-): Promise<GradeHistogramBucket[]> {
-	const cutoff = new Date(Date.now() - days * 24 * 3600 * 1000).toISOString();
-
-	const { data: rows, error: rowsError } = await supabase
-		.from('skill_attempts')
-		.select('grade, created_at, template_id, question_templates(type)')
-		.eq('student_id', studentId)
-		.gte('created_at', cutoff)
-		.not('grade', 'is', null);
-
-	if (rowsError) {
-		logger.error('[getStudentGradeHistogram] Tentatives illisibles :', rowsError);
-		throw new Error(rowsError.message);
-	}
-
-	type AttRow = {
-		grade: number | null;
-		created_at: string;
-		template_id: string | null;
-		question_templates: { type: string } | null;
-	};
-	// Décision A1 (2026-09-28) : les notes d'une carte de cours (auto-évaluation)
-	// ne mesurent pas un point du programme.
-	const attempts = ((rows ?? []) as AttRow[]).filter((a) => !isCourseCardAttempt(a));
-
-	const buckets: Record<1 | 2 | 3 | 4, { count: number; stabSum: number; stabCount: number }> = {
-		1: { count: 0, stabSum: 0, stabCount: 0 },
-		2: { count: 0, stabSum: 0, stabCount: 0 },
-		3: { count: 0, stabSum: 0, stabCount: 0 },
-		4: { count: 0, stabSum: 0, stabCount: 0 }
-	};
-
-	for (const a of attempts) {
-		const g = a.grade;
-		if (g === 1 || g === 2 || g === 3 || g === 4) buckets[g].count += 1;
-	}
-
-	const templateIds = [...new Set(attempts.map((a) => a.template_id).filter(Boolean))] as string[];
-	if (templateIds.length > 0) {
-		const { data: stats, error: statsError } = await fetchInChunks(templateIds, (batch) =>
-			supabase
-				.from('srs_card_stats')
-				.select('card_reference_id, stability')
-				.eq('user_id', studentId)
-				.eq('card_reference_type', 'template')
-				.in('card_reference_id', batch)
-		);
-
-		if (statsError) {
-			logger.error('[getStudentGradeHistogram] Stabilité illisible :', statsError);
-			throw new Error(statsError.message);
-		}
-
-		type StatRow = { card_reference_id: string; stability: number | null };
-		const stabByTpl = new Map<string, number>();
-		for (const s of (stats ?? []) as StatRow[]) {
-			if (s.stability != null) stabByTpl.set(s.card_reference_id, s.stability);
-		}
-		for (const a of attempts) {
-			const g = a.grade;
-			if ((g === 1 || g === 2 || g === 3 || g === 4) && a.template_id) {
-				const stab = stabByTpl.get(a.template_id);
-				if (stab != null) {
-					buckets[g].stabSum += stab;
-					buckets[g].stabCount += 1;
-				}
-			}
-		}
-	}
-
-	return ([1, 2, 3, 4] as const).map((g) => ({
-		grade: g,
-		count: buckets[g].count,
-		avg_stability_after: buckets[g].stabCount > 0 ? buckets[g].stabSum / buckets[g].stabCount : 0
-	}));
-}
-
-// ===========================================================================
 // Helpers internes
 // ===========================================================================
 
@@ -728,13 +514,6 @@ function formatName(first: string | null, last: string | null): string {
 	const f = (first ?? '').trim();
 	const l = (last ?? '').trim();
 	return [f, l].filter(Boolean).join(' ') || 'Élève sans nom';
-}
-
-function toDayKey(d: Date): string {
-	const y = d.getUTCFullYear();
-	const m = String(d.getUTCMonth() + 1).padStart(2, '0');
-	const day = String(d.getUTCDate()).padStart(2, '0');
-	return `${y}-${m}-${day}`;
 }
 
 function startOfWeekUTC(d: Date): Date {

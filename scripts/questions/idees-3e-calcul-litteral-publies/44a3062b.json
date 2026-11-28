@@ -1,0 +1,296 @@
+{
+	"id": "44a3062b-4e55-44e8-b40d-ac7218b58cb7",
+	"title": "Calculer une quatrième proportionnelle",
+	"description": "En utilisant le coefficient de proportionnalité qui est fractionnaire",
+	"grades": ["4"],
+	"level": 3,
+	"delay": 20,
+	"status": "published",
+	"shared": {
+		"variables": [
+			{
+				"name": "a",
+				"expression": "2..9"
+			},
+			{
+				"name": "b",
+				"expression": "2..9!cd(a)"
+			},
+			{
+				"name": "c",
+				"expression": "2..9!cd(b),a"
+			}
+		],
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a*c/b}}"
+				}
+			],
+			"statement": "Ce tableau est un tableau de proportionnalité. Détermine le nombre manquant.\n\n$\\begin{array}{c|c}                       {{a}}  &  {{b}}  \\\\                        ?  &  {{c}}                       \\end{array}$",
+			"correction": {
+				"steps": [
+					"${{solution:0}}$, car ${{b}} \\textcolor{{{color:primary.0}}}{\\times \\frac{{{c}}}{{{b}}}} = {{c}}$ et ${{a}} \\textcolor{{{color:primary.0}}}{\\times \\frac{{{c}}}{{{b}}}} = {{solution:0}}$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a*c/b}}"
+				}
+			],
+			"statement": "Ce tableau est un tableau de proportionnalité. Détermine le nombre manquant.\n\n$\\begin{array}{c|c}                       {{b}}  &  {{a}}  \\\\                       {{c}}  &  ?                        \\end{array}$",
+			"correction": {
+				"steps": [
+					"${{solution:0}}$, car ${{b}} \\textcolor{{{color:primary.0}}}{\\times \\frac{{{c}}}{{{b}}}} = {{c}}$ et ${{a}} \\textcolor{{{color:primary.0}}}{\\times \\frac{{{c}}}{{{b}}}} = {{solution:0}}$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{a}}"
+				}
+			],
+			"statement": "Ce tableau est un tableau de proportionnalité. Détermine le nombre manquant.\n\n$\\begin{array}{c|c}                       {{b}}  &   ? \\\\                       {{c}}  &  {{eval:a*c/b}}                       \\end{array}$",
+			"correction": {
+				"steps": [
+					"{{solution}}, car ${{b}} \\textcolor{{{color:primary.0}}}{\\times \\frac{{{c}}}{{{b}}}} = {{c}}$ et ${{solution:0}} \\textcolor{{{color:primary.0}}}{\\times \\frac{{{c}}}{{{b}}}} = {{eval:a*c/b}}$"
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{a}}"
+				}
+			],
+			"statement": "Ce tableau est un tableau de proportionnalité. Détermine le nombre manquant.\n\n$\\begin{array}{c|c}                        ?  &   {{b}} \\\\                        {{eval:a*c/b}}  &   {{c}}                       \\end{array}$",
+			"correction": {
+				"steps": [
+					"{{solution}}, car ${{b}} \\textcolor{{{color:primary.0}}}{\\times \\frac{{{c}}}{{{b}}}} = {{c}}$ et ${{solution:0}} \\textcolor{{{color:primary.0}}}{\\times \\frac{{{c}}}{{{b}}}} = {{eval:a*c/b}}$"
+				]
+			}
+		},
+		{
+			"statement": "Trouve $x$.\n\n$${{if:w==0|\\dfrac{x}{ {{a}} }=\\dfrac{ {{c}} }{ {{b}} }|\\dfrac{ {{a}} }{x}=\\dfrac{ {{b}} }{ {{c}} }}}$$\n\n$x=?$",
+			"variables": [
+				{
+					"name": "w",
+					"expression": "0..1"
+				}
+			],
+			"conditions": ["mod(100*a*c, b) == 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a*c/b}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:a*b/c}}",
+							"message": "Produit en croix mal posé : on multiplie les deux nombres placés en diagonale, puis on divise par le troisième.",
+							"label": "Produit en croix inversé"
+						},
+						{
+							"answer": "{{eval:a*b*c}}",
+							"message": "Tu as multiplié les trois nombres : le produit en croix se termine par une division.",
+							"label": "a × b × c"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"Deux quotients égaux ont des produits en croix égaux : $\\dfrac{A}{B} = \\dfrac{C}{D} \\iff A \\times D = B \\times C$.",
+					"{{if:w==0|$$x \\times {{b}} = {{a}} \\times {{c}} \\quad \\lrArr \\quad x = \\dfrac{\\textcolor{{{color:primary.0}}}{{{a}} \\times {{c}}}}{ {{b}} } = {{solution:0}}$$|$${{a}} \\times {{c}} = x \\times {{b}} \\quad \\lrArr \\quad x = \\dfrac{\\textcolor{{{color:primary.0}}}{{{a}} \\times {{c}}}}{ {{b}} } = {{solution:0}}$$}}"
+				]
+			},
+			"hint": "Utilise l'égalité des produits en croix, puis isole $x$."
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["\\frac{27}{2}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "9",
+				"b": "2",
+				"c": "3"
+			},
+			"description": "v0 fraction",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["13{,}5"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "9",
+				"b": "2",
+				"c": "3"
+			},
+			"description": "v0 décimal exact",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["3{,}11"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "7",
+				"b": "9",
+				"c": "4"
+			},
+			"description": "v0 arrondi",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["\\frac{28}{9}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "7",
+				"b": "9",
+				"c": "4"
+			},
+			"description": "v1 fraction",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["7"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "7",
+				"b": "9",
+				"c": "4"
+			},
+			"description": "v2",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["9"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "9",
+				"b": "2",
+				"c": "3"
+			},
+			"description": "v3",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "9",
+				"b": "2",
+				"c": "3"
+			},
+			"description": "v3 erreur",
+			"variationIndex": 3
+		},
+		{
+			"description": "F10 : x/4 = 3/5 → 2,4",
+			"variationIndex": 4,
+			"variables": {
+				"w": "0",
+				"a": "4",
+				"b": "5",
+				"c": "3"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["2{,}4"]
+		},
+		{
+			"description": "F10 : 12/5",
+			"variationIndex": 4,
+			"variables": {
+				"w": "0",
+				"a": "4",
+				"b": "5",
+				"c": "3"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["\\frac{12}{5}"]
+		},
+		{
+			"description": "F10 : produit en croix inversé",
+			"variationIndex": 4,
+			"variables": {
+				"w": "0",
+				"a": "4",
+				"b": "5",
+				"c": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Produit en croix mal posé : on multiplie les deux nombres placés en diagonale, puis on divise par le troisième."
+			},
+			"answers": ["\\frac{20}{3}"]
+		},
+		{
+			"description": "F10 : a × b × c",
+			"variationIndex": 4,
+			"variables": {
+				"w": "0",
+				"a": "4",
+				"b": "5",
+				"c": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as multiplié les trois nombres : le produit en croix se termine par une division."
+			},
+			"answers": ["60"]
+		},
+		{
+			"description": "F10 : 3/x = 2/7 → 10,5",
+			"variationIndex": 4,
+			"variables": {
+				"w": "1",
+				"a": "3",
+				"b": "2",
+				"c": "7"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["10{,}5"]
+		},
+		{
+			"description": "F10 : 3/x = 2/7, produit en croix inversé",
+			"variationIndex": 4,
+			"variables": {
+				"w": "1",
+				"a": "3",
+				"b": "2",
+				"c": "7"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Produit en croix mal posé : on multiplie les deux nombres placés en diagonale, puis on divise par le troisième."
+			},
+			"answers": ["\\frac{6}{7}"]
+		}
+	]
+}

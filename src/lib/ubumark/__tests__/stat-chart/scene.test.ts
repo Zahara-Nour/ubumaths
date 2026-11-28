@@ -16,14 +16,14 @@ import {
 	type BarScene,
 	type PieScene
 } from '../../utils/stat-chart-scene';
-import * as statistics from '$lib/statistics/describe';
+import * as statistics from '#lib/statistics/describe.ts';
 import type { StatChartKind } from '../../types/stat-chart';
 import { COURBE_PIXEL_WIDTH } from '../../utils/courbe-scene';
 import { WIDTH_CM } from '../../generators/courbe-typst';
-import type { ContentLocale } from '$lib/types/locale';
+import type { ContentLocale } from '#lib/types/locale.ts';
 
-vi.mock('$lib/statistics/describe', async (importOriginal) => {
-	const original = await importOriginal<typeof import('$lib/statistics/describe')>();
+vi.mock('#lib/statistics/describe.ts', async (importOriginal) => {
+	const original = await importOriginal<typeof import('#lib/statistics/describe.ts')>();
 	return { ...original, categoryFrequencies: vi.fn(original.categoryFrequencies) };
 });
 

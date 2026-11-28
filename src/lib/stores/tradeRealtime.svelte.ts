@@ -1,10 +1,10 @@
-import { browser } from '$app/environment';
+import { browser } from '$app/env';
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { Database } from '$lib/types/database';
-import type { MarketplaceTrade } from '$lib/types/marketplace';
-import type { VipCardInstance } from '$lib/types/vip-card';
+import type { Database } from '#lib/types/database.ts';
+import type { MarketplaceTrade } from '#lib/types/marketplace.ts';
+import type { VipCardInstance } from '#lib/types/vip-card.ts';
 import { supabaseRealtimeManager } from './supabaseRealtime.svelte';
-import { createLogger } from '$lib/utils/logger';
+import { createLogger } from '#lib/utils/logger.ts';
 import { z } from 'zod';
 
 const logger = createLogger('tradeRealtime.svelte.ts');
@@ -165,7 +165,7 @@ function parseCurrentOffer(raw: unknown): ParsedOffers {
  *
  * @example
  * ```ts
- * import { tradeRealtimeStore } from '$lib/stores/tradeRealtime.svelte';
+ * import { tradeRealtimeStore } from '#lib/stores/tradeRealtime.svelte.ts';
  *
  * // Initialize with trade ID and user ID
  * await tradeRealtimeStore.init(tradeId, userId, supabase);

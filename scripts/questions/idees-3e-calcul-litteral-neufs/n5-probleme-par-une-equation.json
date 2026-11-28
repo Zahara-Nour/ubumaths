@@ -1,0 +1,534 @@
+{
+	"id": "bf8a9d2d-5d7a-442e-8180-9b55dbc2b53f",
+	"rangement": {
+		"noeud": "Algèbre > Équations : premier degré > ax + b = cx + d",
+		"point": "4-071"
+	},
+	"title": "Résoudre un problème par une équation",
+	"description": "Mettre en équation et résoudre jusqu'au nombre : âges (dans combien d'années le double ?), trois entiers consécutifs, paniers à 2 et 3 points, deux-roues et voitures, triangle isocèle, aire d'un rectangle (pièges : réponse à une autre question, écart d'âge, une longueur oubliée dans le périmètre)",
+	"grades": ["4", "3"],
+	"level": 2,
+	"delay": 180,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Un père a ${{p}}$ ans et son fils ${{f}}$ ans. Dans combien d'années le père aura-t-il exactement le double de l'âge de son fils ?\n\nDans $?$ ans.",
+			"variables": [
+				{
+					"name": "f",
+					"expression": "4..14"
+				},
+				{
+					"name": "k",
+					"expression": "1..15"
+				},
+				{
+					"name": "p",
+					"expression": "eval:2*f+k"
+				}
+			],
+			"conditions": ["p-f>=20", "p-f<=40", "p<=50"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{k}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:p-f}}",
+							"message": "Tu as calculé l'écart d'âge : il ne change pas avec les années. Écris l'âge de chacun dans $x$ ans.",
+							"label": "Écart d'âge"
+						},
+						{
+							"answer": "{{eval:p/2-f}}",
+							"message": "Dans $x$ ans, le père aussi aura vieilli : son âge sera ${{p}}+x$, pas ${{p}}$.",
+							"label": "Le père ne vieillit pas"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Mise en équation.** On appelle $x$ le nombre d'années. Dans $x$ ans, le père aura ${{p}}+x$ ans et le fils ${{f}}+x$ ans. Le père aura le double de l'âge du fils :",
+					"$$\\begin{align}{{p}}+x&=2({{f}}+x)\\\\{{p}}+x&={{eval:2*f}}+2x\\\\{{p}}-{{eval:2*f}}&=2x-x\\\\\\textcolor{{{color:primary.0}}}{{{k}}}&=x\\end{align}$$",
+					"Vérification : dans ${{k}}$ ans, le père aura ${{eval:p+k}}$ ans et le fils ${{eval:f+k}}$ ans ; $2\\times{{eval:f+k}}={{eval:p+k}}$."
+				]
+			},
+			"hint": "Appelle $x$ le nombre d'années cherché, puis écris l'âge du père et celui du fils dans $x$ ans."
+		},
+		{
+			"statement": "La somme de trois nombres entiers consécutifs est ${{S}}$. Quel est le plus petit de ces trois nombres ?\n\nLe plus petit est $?$.",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "8..80"
+				},
+				{
+					"name": "S",
+					"expression": "eval:3*n+3"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{n}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:n+1}}",
+							"message": "${{eval:n+1}}$ est le nombre du milieu : on demande le plus petit des trois.",
+							"label": "Le nombre du milieu"
+						},
+						{
+							"answer": "{{eval:n+2}}",
+							"message": "${{eval:n+2}}$ est le plus grand des trois : on demande le plus petit.",
+							"label": "Le plus grand"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Mise en équation.** On appelle $x$ le plus petit nombre. Les deux suivants sont $x+1$ et $x+2$, et leur somme vaut ${{S}}$ :",
+					"$$\\begin{align}x+(x+1)+(x+2)&={{S}}\\\\3x+3&={{S}}\\\\3x&={{eval:S-3}}\\\\x&=\\textcolor{{{color:primary.0}}}{{{n}}}\\end{align}$$",
+					"Vérification : ${{n}}+{{eval:n+1}}+{{eval:n+2}}={{S}}$."
+				]
+			},
+			"hint": "Appelle $x$ le plus petit des trois nombres et écris les deux autres avec $x$."
+		},
+		{
+			"statement": "Pendant un match de basket, Lina a réussi ${{T}}$ paniers, tous à $2$ points ou à $3$ points. Elle a marqué ${{P}}$ points en tout. Combien de paniers à $2$ points a-t-elle réussis ?\n\n$?$ paniers à $2$ points.",
+			"variables": [
+				{
+					"name": "T",
+					"expression": "8..20"
+				},
+				{
+					"name": "d",
+					"expression": "2..{{eval:T-2}}"
+				},
+				{
+					"name": "t",
+					"expression": "eval:T-d"
+				},
+				{
+					"name": "P",
+					"expression": "eval:2*d+3*t"
+				}
+			],
+			"conditions": ["d!=t"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{d}}",
+					"expectedErrors": [
+						{
+							"answer": "{{t}}",
+							"message": "Tu as trouvé le nombre de paniers à $3$ points : on demande ceux à $2$ points.",
+							"label": "Paniers à 3 points"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Mise en équation.** On appelle $x$ le nombre de paniers à $2$ points. Il y a alors ${{T}}-x$ paniers à $3$ points, et le total des points vaut ${{P}}$ :",
+					"$$\\begin{align}2x+3({{T}}-x)&={{P}}\\\\2x+{{eval:3*T}}-3x&={{P}}\\\\{{eval:3*T}}-{{P}}&=x\\\\\\textcolor{{{color:primary.0}}}{{{d}}}&=x\\end{align}$$",
+					"Vérification : ${{d}}$ paniers à $2$ points et ${{t}}$ à $3$ points, soit $2\\times{{d}}+3\\times{{t}}={{P}}$ points."
+				]
+			},
+			"hint": "Appelle $x$ le nombre de paniers à $2$ points : combien y a-t-il alors de paniers à $3$ points ?"
+		},
+		{
+			"statement": "Dans un parking, il y a ${{V}}$ véhicules : des deux-roues et des voitures (quatre roues). On compte ${{R}}$ roues en tout. Combien y a-t-il de deux-roues ?\n\n$?$ deux-roues.",
+			"variables": [
+				{
+					"name": "V",
+					"expression": "12..40"
+				},
+				{
+					"name": "d",
+					"expression": "3..{{eval:V-3}}"
+				},
+				{
+					"name": "q",
+					"expression": "eval:V-d"
+				},
+				{
+					"name": "R",
+					"expression": "eval:2*d+4*q"
+				}
+			],
+			"conditions": ["d!=q", "d*2!=q"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{d}}",
+					"expectedErrors": [
+						{
+							"answer": "{{q}}",
+							"message": "Tu as trouvé le nombre de voitures : on demande le nombre de deux-roues.",
+							"label": "Les voitures"
+						},
+						{
+							"answer": "{{eval:2*d}}",
+							"message": "Tu as trouvé $2x$ : divise encore par $2$ pour trouver $x$.",
+							"label": "Division par 2 oubliée"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Mise en équation.** On appelle $x$ le nombre de deux-roues. Il y a alors ${{V}}-x$ voitures, et le nombre de roues vaut ${{R}}$ :",
+					"$$\\begin{align}2x+4({{V}}-x)&={{R}}\\\\2x+{{eval:4*V}}-4x&={{R}}\\\\{{eval:4*V}}-{{R}}&=2x\\\\{{eval:2*d}}&=2x\\\\\\textcolor{{{color:primary.0}}}{{{d}}}&=x\\end{align}$$",
+					"Vérification : ${{d}}$ deux-roues et ${{q}}$ voitures, soit $2\\times{{d}}+4\\times{{q}}={{R}}$ roues."
+				]
+			},
+			"hint": "Appelle $x$ le nombre de deux-roues : combien y a-t-il alors de voitures, et combien de roues en tout ?"
+		},
+		{
+			"statement": "Un triangle isocèle a un périmètre de ${{P}}~\\unit{cm}$. Sa base mesure ${{d}}~\\unit{cm}$ de plus que chacun des deux côtés égaux. Quelle est la longueur d'un des côtés égaux ?\n\n$?~\\unit{cm}$",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "4..20"
+				},
+				{
+					"name": "d",
+					"expression": "1..9"
+				},
+				{
+					"name": "P",
+					"expression": "eval:3*c+d"
+				}
+			],
+			"conditions": ["d<c"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{c}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:c+d}}",
+							"message": "Tu as trouvé la longueur de la base : on demande celle d'un des côtés égaux.",
+							"label": "La base"
+						},
+						{
+							"answer": "{{eval:(P-d)/2}}",
+							"message": "Le triangle a deux côtés égaux et une base : le périmètre compte trois longueurs.",
+							"label": "Un côté égal oublié"
+						},
+						{
+							"answer": "{{eval:(P+d)/3}}",
+							"message": "La base est plus longue que les côtés égaux : elle mesure $x+{{d}}$, pas $x-{{d}}$.",
+							"label": "Base plus courte"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Mise en équation.** On appelle $x$ la longueur d'un côté égal, en cm. La base mesure $x+{{d}}$, et le périmètre vaut ${{P}}$ :",
+					"$$\\begin{align}x+x+(x+{{d}})&={{P}}\\\\3x+{{d}}&={{P}}\\\\3x&={{eval:P-d}}\\\\x&=\\textcolor{{{color:primary.0}}}{{{c}}}\\end{align}$$",
+					"Vérification : ${{c}}+{{c}}+{{eval:c+d}}={{P}}$."
+				]
+			},
+			"hint": "Appelle $x$ la longueur d'un côté égal : combien mesure alors la base ? Écris le périmètre avec $x$."
+		},
+		{
+			"statement": "Un rectangle a un périmètre de ${{P}}~\\unit{cm}$. Sa longueur mesure ${{d}}~\\unit{cm}$ de plus que sa largeur. Calcule son aire.\n\n$?~\\unit{cm^2}$",
+			"variables": [
+				{
+					"name": "l",
+					"expression": "2..15"
+				},
+				{
+					"name": "d",
+					"expression": "1..9"
+				},
+				{
+					"name": "P",
+					"expression": "eval:4*l+2*d"
+				},
+				{
+					"name": "L",
+					"expression": "eval:l+d"
+				}
+			],
+			"conditions": ["l*L<=300"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:l*L}}",
+					"expectedErrors": [
+						{
+							"answer": "{{l}}",
+							"message": "Tu as trouvé la largeur : il reste à calculer l'aire, longueur fois largeur.",
+							"label": "La largeur au lieu de l'aire"
+						},
+						{
+							"answer": "{{eval:((P-d)/2)*((P-d)/2+d)}}",
+							"message": "Le périmètre compte deux largeurs et deux longueurs : $2x+2(x+{{d}})$.",
+							"label": "Périmètre compté à moitié"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Mise en équation.** On appelle $x$ la largeur, en cm. La longueur mesure $x+{{d}}$ ; les côtés opposés sont égaux, donc le périmètre vaut :",
+					"$$\\begin{align}2x+2(x+{{d}})&={{P}}\\\\4x+{{eval:2*d}}&={{P}}\\\\4x&={{eval:P-2*d}}\\\\x&={{l}}\\end{align}$$",
+					"La largeur mesure ${{l}}~\\unit{cm}$, la longueur ${{L}}~\\unit{cm}$. Aire : ${{l}}\\times{{L}}=\\textcolor{{{color:primary.0}}}{{{eval:l*L}}}~\\unit{cm^2}$."
+				]
+			},
+			"hint": "Appelle $x$ la largeur : combien mesure la longueur ? Écris le périmètre avec $x$, trouve $x$, puis calcule l'aire."
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "v0 : père 32, fils 12 → 8 ans",
+			"variationIndex": 0,
+			"variables": {
+				"f": "12",
+				"k": "8",
+				"p": "32"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["8"]
+		},
+		{
+			"description": "v0 : écart d'âge",
+			"variationIndex": 0,
+			"variables": {
+				"f": "12",
+				"k": "8",
+				"p": "32"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as calculé l'écart d'âge : il ne change pas avec les années. Écris l'âge de chacun dans $x$ ans."
+			},
+			"answers": ["20"]
+		},
+		{
+			"description": "v0 : le père ne vieillit pas",
+			"variationIndex": 0,
+			"variables": {
+				"f": "12",
+				"k": "8",
+				"p": "32"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Dans $x$ ans, le père aussi aura vieilli : son âge sera $32 + x$, pas $32$."
+			},
+			"answers": ["4"]
+		},
+		{
+			"description": "v1 : somme 72 → 23",
+			"variationIndex": 1,
+			"variables": {
+				"n": "23",
+				"S": "72"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["23"]
+		},
+		{
+			"description": "v1 : le milieu",
+			"variationIndex": 1,
+			"variables": {
+				"n": "23",
+				"S": "72"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "$24$ est le nombre du milieu : on demande le plus petit des trois."
+			},
+			"answers": ["24"]
+		},
+		{
+			"description": "v1 : le plus grand",
+			"variationIndex": 1,
+			"variables": {
+				"n": "23",
+				"S": "72"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "$25$ est le plus grand des trois : on demande le plus petit."
+			},
+			"answers": ["25"]
+		},
+		{
+			"description": "v2 : 15 paniers, 36 points → 9",
+			"variationIndex": 2,
+			"variables": {
+				"T": "15",
+				"d": "9",
+				"t": "6",
+				"P": "36"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["9"]
+		},
+		{
+			"description": "v2 : paniers à 3 points",
+			"variationIndex": 2,
+			"variables": {
+				"T": "15",
+				"d": "9",
+				"t": "6",
+				"P": "36"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as trouvé le nombre de paniers à $3$ points : on demande ceux à $2$ points."
+			},
+			"answers": ["6"]
+		},
+		{
+			"description": "v3 : 25 véhicules, 84 roues → 8",
+			"variationIndex": 3,
+			"variables": {
+				"V": "25",
+				"d": "8",
+				"q": "17",
+				"R": "84"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["8"]
+		},
+		{
+			"description": "v3 : les voitures",
+			"variationIndex": 3,
+			"variables": {
+				"V": "25",
+				"d": "8",
+				"q": "17",
+				"R": "84"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as trouvé le nombre de voitures : on demande le nombre de deux-roues."
+			},
+			"answers": ["17"]
+		},
+		{
+			"description": "v3 : division par 2 oubliée",
+			"variationIndex": 3,
+			"variables": {
+				"V": "25",
+				"d": "8",
+				"q": "17",
+				"R": "84"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as trouvé $2 x$ : divise encore par $2$ pour trouver $x$."
+			},
+			"answers": ["16"]
+		},
+		{
+			"description": "v4 : périmètre 37, base + 4 → 11",
+			"variationIndex": 4,
+			"variables": {
+				"c": "11",
+				"d": "4",
+				"P": "37"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["11"]
+		},
+		{
+			"description": "v4 : la base",
+			"variationIndex": 4,
+			"variables": {
+				"c": "11",
+				"d": "4",
+				"P": "37"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as trouvé la longueur de la base : on demande celle d'un des côtés égaux."
+			},
+			"answers": ["15"]
+		},
+		{
+			"description": "v4 : un côté oublié",
+			"variationIndex": 4,
+			"variables": {
+				"c": "11",
+				"d": "4",
+				"P": "37"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Le triangle a deux côtés égaux et une base : le périmètre compte trois longueurs."
+			},
+			"answers": ["16{,}5"]
+		},
+		{
+			"description": "v4 : base plus courte",
+			"variationIndex": 4,
+			"variables": {
+				"c": "11",
+				"d": "4",
+				"P": "37"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "La base est plus longue que les côtés égaux : elle mesure $x + 4$, pas $x - 4$."
+			},
+			"answers": ["\\frac{41}{3}"]
+		},
+		{
+			"description": "v5 : périmètre 34, longueur = largeur + 3 → 70",
+			"variationIndex": 5,
+			"variables": {
+				"l": "7",
+				"d": "3",
+				"P": "34",
+				"L": "10"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["70"]
+		},
+		{
+			"description": "v5 : la largeur",
+			"variationIndex": 5,
+			"variables": {
+				"l": "7",
+				"d": "3",
+				"P": "34",
+				"L": "10"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as trouvé la largeur : il reste à calculer l'aire, longueur fois largeur."
+			},
+			"answers": ["7"]
+		},
+		{
+			"description": "v5 : périmètre à moitié",
+			"variationIndex": 5,
+			"variables": {
+				"l": "7",
+				"d": "3",
+				"P": "34",
+				"L": "10"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Le périmètre compte deux largeurs et deux longueurs : $2 x + 2 \\left( x + 3 \\right)$."
+			},
+			"answers": ["\\frac{1147}{4}"]
+		}
+	]
+}

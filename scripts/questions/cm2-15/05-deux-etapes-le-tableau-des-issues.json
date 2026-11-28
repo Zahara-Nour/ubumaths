@@ -1,0 +1,243 @@
+{
+	"id": "bf378626-386a-4343-b49a-f1995505677e",
+	"title": "Deux étapes : le tableau des issues",
+	"description": "Expérience en deux étapes, issues données dans un tableau à double entrée : deux lancers de pièce (4 issues), roue de 4 secteurs tournée deux fois (16 issues, sommes), une pièce puis un dé (12 issues) ; nombre d'issues puis « a chances sur b »",
+	"grades": ["CM2"],
+	"level": 4,
+	"delay": 120,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"spacesFromFourDigits": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "On lance deux fois une pièce de monnaie bien équilibrée. Le tableau donne toutes les issues (P pour pile, F pour face ; la première lettre est celle du premier lancer).\n\n| 1er lancer ↓, 2e lancer → | Pile | Face |\n| --- | --- | --- |\n| Pile | PP | PF |\n| Face | FP | FF |\n\nCombien y a-t-il d'issues ?\n\n$?$ issues\n\nComplète : on a $?$ chances sur $?$ d'obtenir {{if:k==0|deux fois pile|{{if:k==1|un pile et un face|au moins un face}}}}.",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "0..2"
+				},
+				{
+					"name": "a",
+					"expression": "eval:(1)*((k-1)*(k-2))/(2)+(2)*((k-0)*(k-2))/(-1)+(3)*((k-0)*(k-1))/(2)"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "4"
+				},
+				{
+					"expectedAnswer": "{{a}}"
+				},
+				{
+					"expectedAnswer": "4"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le tableau a $2 \\times 2 = \\textcolor{{{color:primary.0}}}{4}$ cases : $4$ issues, qui ont autant de chances.",
+					"{{if:k==0|Deux fois pile : PP, une seule case.|{{if:k==1|Un pile et un face : PF et FP, deux cases.|Au moins un face : PF, FP et FF, trois cases.}}}}",
+					"On a $\\textcolor{{{color:primary.0}}}{{{a}}}$ chance{{if:a>1|s}} sur $\\textcolor{{{color:primary.0}}}{4}$."
+				]
+			}
+		},
+		{
+			"statement": "Une roue a $4$ secteurs égaux, numérotés de $1$ à $4$. On la fait tourner deux fois et on ajoute les deux nombres. Le tableau donne la somme pour chaque issue.\n\n| 1er tour ↓, 2e tour → | $1$ | $2$ | $3$ | $4$ |\n| --- | --- | --- | --- | --- |\n| $1$ | $2$ | $3$ | $4$ | $5$ |\n| $2$ | $3$ | $4$ | $5$ | $6$ |\n| $3$ | $4$ | $5$ | $6$ | $7$ |\n| $4$ | $5$ | $6$ | $7$ | $8$ |\n\nCombien y a-t-il d'issues ?\n\n$?$ issues\n\nComplète : on a $?$ chances sur $?$ d'obtenir une somme égale à ${{S}}$.",
+			"variables": [
+				{
+					"name": "S",
+					"expression": "2..8"
+				},
+				{
+					"name": "a",
+					"expression": "eval:4-abs(S-5)"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "16"
+				},
+				{
+					"expectedAnswer": "{{a}}"
+				},
+				{
+					"expectedAnswer": "16"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le tableau a $4 \\times 4 = \\textcolor{{{color:primary.0}}}{16}$ cases : $16$ issues, qui ont autant de chances.",
+					"On compte les cases où est écrit ${{S}}$ : ${{a}}$.",
+					"On a $\\textcolor{{{color:primary.0}}}{{{a}}}$ chance{{if:a>1|s}} sur $\\textcolor{{{color:primary.0}}}{16}$."
+				]
+			}
+		},
+		{
+			"statement": "On lance une pièce de monnaie, puis un dé à $6$ faces, tous deux bien équilibrés. Le tableau donne toutes les issues.\n\n| Dé ↓, pièce → | Pile | Face |\n| --- | --- | --- |\n| $1$ | P1 | F1 |\n| $2$ | P2 | F2 |\n| $3$ | P3 | F3 |\n| $4$ | P4 | F4 |\n| $5$ | P5 | F5 |\n| $6$ | P6 | F6 |\n\nCombien y a-t-il d'issues ?\n\n$?$ issues\n\nComplète : on a $?$ chances sur $?$ d'obtenir {{if:k==0|face et un nombre pair|{{if:k==1|pile et un nombre plus grand que $4$|un $6$}}}}.",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "0..2"
+				},
+				{
+					"name": "a",
+					"expression": "eval:(3)*((k-1)*(k-2))/(2)+(2)*((k-0)*(k-2))/(-1)+(2)*((k-0)*(k-1))/(2)"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "12"
+				},
+				{
+					"expectedAnswer": "{{a}}"
+				},
+				{
+					"expectedAnswer": "12"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le tableau a $6 \\times 2 = \\textcolor{{{color:primary.0}}}{12}$ cases : $12$ issues, qui ont autant de chances.",
+					"{{if:k==0|Face et un nombre pair : F2, F4, F6.|{{if:k==1|Pile et plus grand que $4$ : P5, P6.|Un $6$, avec pile ou avec face : P6, F6.}}}}",
+					"On a $\\textcolor{{{color:primary.0}}}{{{a}}}$ chances sur $\\textcolor{{{color:primary.0}}}{12}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Deux pièces, deux fois pile : 4 ; 1 sur 4",
+			"variationIndex": 0,
+			"variables": {
+				"k": "0",
+				"a": "1"
+			},
+			"answers": ["4", "1", "4"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Un pile et un face : 2 sur 4",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1",
+				"a": "2"
+			},
+			"answers": ["4", "2", "4"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : PF et FP confondus (3 issues, 1 sur 3)",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1",
+				"a": "2"
+			},
+			"answers": ["3", "1", "3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Au moins un face : 3 sur 4",
+			"variationIndex": 0,
+			"variables": {
+				"k": "2",
+				"a": "3"
+			},
+			"answers": ["4", "3", "4"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Somme 5 : 16 ; 4 sur 16",
+			"variationIndex": 1,
+			"variables": {
+				"S": "5",
+				"a": "4"
+			},
+			"answers": ["16", "4", "16"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 8 issues (4 + 4)",
+			"variationIndex": 1,
+			"variables": {
+				"S": "5",
+				"a": "4"
+			},
+			"answers": ["8", "4", "8"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : les 7 sommes pour issues (1 sur 7)",
+			"variationIndex": 1,
+			"variables": {
+				"S": "5",
+				"a": "4"
+			},
+			"answers": ["7", "1", "7"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Somme 2 : 1 sur 16",
+			"variationIndex": 1,
+			"variables": {
+				"S": "2",
+				"a": "1"
+			},
+			"answers": ["16", "1", "16"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Face et pair : 12 ; 3 sur 12",
+			"variationIndex": 2,
+			"variables": {
+				"k": "0",
+				"a": "3"
+			},
+			"answers": ["12", "3", "12"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Un 6 : 2 sur 12",
+			"variationIndex": 2,
+			"variables": {
+				"k": "2",
+				"a": "2"
+			},
+			"answers": ["12", "2", "12"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : un 6, 1 sur 6 (le dé seul)",
+			"variationIndex": 2,
+			"variables": {
+				"k": "2",
+				"a": "2"
+			},
+			"answers": ["12", "1", "6"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

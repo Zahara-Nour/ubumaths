@@ -17,7 +17,12 @@ import {
 	steps,
 	stepsAs,
 	typeInCard,
-	type Answer
+	type Answer,
+	allowClipboard,
+	showCards,
+	leavePanelAlone,
+	gotoRedirected,
+	waitVirtualKeyboard
 } from './helpers/atelier';
 import { openView, readCell, typeCell } from './helpers/grille';
 
@@ -55,16 +60,25 @@ async function calcMath(page: Page, keys: string): Promise<Locator> {
 
 /**
  * Tape au vrai clavier dans le champ mathématique vide. Juste après un
- * rechargement ou un changement de réglage, MathLive perd la première frappe :
- * on recommence tant que le champ reste vide.
+ * rechargement ou un changement de réglage, MathLive perd les premières
+ * frappes (sous charge, plusieurs : « résoudre x^2=4 » devenait « ex2=4 ») :
+ * le premier caractère seul, recommencé sur un champ vide tant qu'il n'est pas
+ * arrivé, puis le reste.
  */
 async function typeMath(page: Page, keys: string): Promise<void> {
 	const field = mathConsole(page);
 	await expect(async () => {
+		// Vidé sans touche : sous Safari, Retour arrière hors du champ (frappe
+		// perdue) revient à la page précédente
+		await field.evaluate((element) => {
+			(element as HTMLElement & { value: string }).value = '';
+		});
 		await field.click();
-		await page.keyboard.type(keys);
+		await waitVirtualKeyboard(page, field);
+		await page.keyboard.type(keys.slice(0, 1));
 		expect(await mathValue(field)).not.toBe('');
 	}).toPass();
+	await page.keyboard.type(keys.slice(1));
 }
 
 /** Ajoute puis efface un chiffre au bout du champ d'une carte, puis Entrée */
@@ -179,7 +193,8 @@ test('#1292, #1313, #1318 — « Résumé / Détaillé » : ligne par ligne, ret
 	// Le résumé retire les explications, pas les étapes ni la réponse
 	expect(summary.length).toBeLessThan(detailed.length);
 	expect(stepNumbers(summary)).toEqual(stepNumbers(detailed));
-	expect(stepNumbers(summary)).toHaveLength(3);
+	// #2360 : une 4e étape conclut sur l'ensemble S
+	expect(stepNumbers(summary)).toHaveLength(4);
 	expect(isSubsequence(summary, detailed)).toBe(true);
 	expect(alignedBlocks(summary)).toEqual(alignedBlocks(detailed));
 	// La réponse affichée de la ligne n'a pas changé
@@ -200,6 +215,7 @@ test('#1292, #1313, #1318 — « Résumé / Détaillé » : ligne par ligne, ret
 
 	// #1292 : le choix est retenu après rechargement
 	await page.reload();
+	await showCards(page, { afterLoad: true });
 	const afterReload = await calc(page, '.résoudre 5x-1\\geq 4');
 	await steps(afterReload);
 	expect(await pressedChoice(afterReload)).toContain('Résumé');
@@ -224,7 +240,7 @@ test('#1340 — /cas mène à l’atelier ; .aide, .valeurs, .exporter', async (
 	await expect(notice).toHaveText('Rien à exporter pour l’instant.');
 
 	for (const address of ['/cas', '/cas?x=1']) {
-		await page.goto(address);
+		await gotoRedirected(page, address);
 		await expect(page).toHaveURL(/\/atelier/);
 	}
 	await openAtelier(page);
@@ -251,6 +267,7 @@ test('#1356 — l’historique revient au rechargement ; ↑ ; le lien n’empor
 	await calc(page, '2+3');
 	const before = (await cards(page)).map((each) => each.name);
 	await page.reload();
+	await showCards(page, { afterLoad: true });
 
 	const lines = historyLines(page);
 	await expect(lines).toHaveCount(4);
@@ -272,12 +289,13 @@ test('#1356 — l’historique revient au rechargement ; ↑ ; le lien n’empor
 
 	// Le lien de partage : les cartes, pas la console. La page du lien partage le stockage de
 	// celle-ci (même contexte) : f visible et aucune ligne prouvent que le lien a été lu
-	await page.context().grantPermissions(['clipboard-read', 'clipboard-write']);
+	await allowClipboard(page);
 	await page.getByRole('button', { name: 'Partager', exact: true }).click();
 	await expect(page.getByLabel('Lien de partage')).toHaveValue(/\?a=/);
 	const link = await page.getByLabel('Lien de partage').inputValue();
 	const other = await page.context().newPage();
 	await other.goto(link);
+	await showCards(other, { afterLoad: true });
 	await expect(cardLocator(other, 'f')).toBeVisible();
 	await expect(other.locator('ol.historique > li')).toHaveCount(0);
 	await other.close();
@@ -291,74 +309,80 @@ test('#1356 — l’historique revient au rechargement ; ↑ ; le lien n’empor
 	const kept = await lines.count();
 	expect(kept).toBeGreaterThanOrEqual(5);
 	await page.reload();
+	await showCards(page, { afterLoad: true });
 	await expect(lines).toHaveCount(kept);
 	await expect(page.locator('article.objet')).toHaveCount(0);
 });
 
-test('#1385, #1388, #1423 — « Écriture mathématique » : choix retenu, saisies au clavier', async ({
-	page
-}) => {
-	const dialog = await openSettings(page);
-	await expect(dialog.getByRole('radio', { name: 'Texte' })).toBeChecked();
-	await page.keyboard.press('Escape');
-	await chooseSetting(page, 'Écriture mathématique');
-	const field = mathConsole(page);
-	await expect(field).toBeVisible();
-	await expect(page.locator('input[aria-label="Calcul, définition ou commande"]')).toHaveCount(0);
-	// #1388 : la consigne du champ vide
-	expect(await field.getAttribute('placeholder')).toMatch(/f\(x\)/);
+test(
+	'#1385, #1388, #1423 — « Écriture mathématique » : choix retenu, saisies au clavier',
+	{ tag: '@clavier-mathlive' },
+	async ({ page }) => {
+		const dialog = await openSettings(page);
+		await expect(dialog.getByRole('radio', { name: 'Texte' })).toBeChecked();
+		await page.keyboard.press('Escape');
+		await chooseSetting(page, 'Écriture mathématique');
+		const field = mathConsole(page);
+		await expect(field).toBeVisible();
+		await expect(page.locator('input[aria-label="Calcul, définition ou commande"]')).toHaveCount(0);
+		// #1388 : la consigne du champ vide
+		expect(await field.getAttribute('placeholder')).toMatch(/f\(x\)/);
 
-	await page.reload();
-	await expect(mathConsole(page)).toBeVisible();
+		await page.reload();
+		await showCards(page, { afterLoad: true });
+		await expect(mathConsole(page)).toBeVisible();
 
-	// #1388 : la ligne de l'historique écrite en maths, sans point
-	const solve = await calcMath(page, 'résoudre x^2=4');
-	const written = solve.locator('.saisie');
-	await expect(written).toContainText('résoudre');
-	await expect(written).not.toContainText('.résoudre');
-	await expect(solve.locator('.reponse')).toContainText('2');
+		// #1388 : la ligne de l'historique écrite en maths, sans point
+		const solve = await calcMath(page, 'résoudre x^2=4');
+		const written = solve.locator('.saisie');
+		await expect(written).toContainText('résoudre');
+		await expect(written).not.toContainText('.résoudre');
+		await expect(solve.locator('.reponse')).toContainText('2');
 
-	for (const [keys, expected] of [
-		['dériver x^3', '3 x^2'],
-		['1/4+1/3', '\\frac{7}{12}'],
-		['5 km + 300 m', '5{,}3']
-	] as const) {
-		const line = await calcMath(page, keys);
-		await expect(line, keys).not.toHaveClass(/refus/);
-		const shown = (await line.locator('.reponse .math').getAttribute('data-latex')) ?? '';
-		expect(normalizeLatex(shown), keys).toContain(normalizeLatex(expected));
+		for (const [keys, expected] of [
+			['dériver x^3', '3 x^2'],
+			['1/4+1/3', '\\frac{7}{12}'],
+			['5 km + 300 m', '5{,}3']
+		] as const) {
+			const line = await calcMath(page, keys);
+			await expect(line, keys).not.toHaveClass(/refus/);
+			const shown = (await line.locator('.reponse .math').getAttribute('data-latex')) ?? '';
+			expect(normalizeLatex(shown), keys).toContain(normalizeLatex(expected));
+		}
+		// 5 km + 300 m : la grandeur dite en texte
+		await expect(historyLines(page).last().locator('.reponse')).toContainText('5,3 km');
+
+		// #1423 : `3*4` → la croix ×, puis 12
+		await field.click();
+		await waitVirtualKeyboard(page, field);
+		await page.keyboard.type('3*4');
+		expect(await mathValue(field)).toContain('\\times');
+		expect(await mathValue(field)).not.toContain('\\cdot');
+		await page.keyboard.press('Enter');
+		await expect(historyLines(page).last().locator('.reponse')).toContainText('12');
+
+		// ↑ rappelle la saisie précédente
+		await field.click();
+		await page.keyboard.press('ArrowUp');
+		expect(await mathValue(field)).toContain('\\times');
+
+		// Rechargée, la ligne revient écrite de même
+		await page.reload();
+		await showCards(page, { afterLoad: true });
+		await expect(historyLines(page).first().locator('.saisie')).toContainText('résoudre');
+		await expect(historyLines(page).first().locator('.saisie')).not.toContainText('.résoudre');
+
+		// #1385 : passer au Graphe et revenir, la ligne commencée reste
+		await typeMath(page, '2+');
+		await openView(page, 'Graphe');
+		await openView(page, 'Données');
+		await openView(page, 'Graphe');
+		if ((await consoleButton(page).getAttribute('aria-expanded')) === 'false') {
+			await consoleButton(page).click();
+		}
+		expect(await mathValue(mathConsole(page))).toContain('2+');
 	}
-	// 5 km + 300 m : la grandeur dite en texte
-	await expect(historyLines(page).last().locator('.reponse')).toContainText('5,3 km');
-
-	// #1423 : `3*4` → la croix ×, puis 12
-	await field.click();
-	await page.keyboard.type('3*4');
-	expect(await mathValue(field)).toContain('\\times');
-	expect(await mathValue(field)).not.toContain('\\cdot');
-	await page.keyboard.press('Enter');
-	await expect(historyLines(page).last().locator('.reponse')).toContainText('12');
-
-	// ↑ rappelle la saisie précédente
-	await field.click();
-	await page.keyboard.press('ArrowUp');
-	expect(await mathValue(field)).toContain('\\times');
-
-	// Rechargée, la ligne revient écrite de même
-	await page.reload();
-	await expect(historyLines(page).first().locator('.saisie')).toContainText('résoudre');
-	await expect(historyLines(page).first().locator('.saisie')).not.toContainText('.résoudre');
-
-	// #1385 : passer au Graphe et revenir, la ligne commencée reste
-	await typeMath(page, '2+');
-	await openView(page, 'Graphe');
-	await openView(page, 'Données');
-	await openView(page, 'Graphe');
-	if ((await consoleButton(page).getAttribute('aria-expanded')) === 'false') {
-		await consoleButton(page).click();
-	}
-	expect(await mathValue(mathConsole(page))).toContain('2+');
-});
+);
 
 test('#1385 — « Simuler avec probabilités M » : simuler L M 100, lettres séparées', async ({
 	page
@@ -368,8 +392,10 @@ test('#1385 — « Simuler avec probabilités M » : simuler L M 100, lettres s�
 	await chooseSetting(page, 'Écriture mathématique');
 	await cardAction(page, 'L', 'Avec une autre liste');
 	await page.getByRole('menuitem', { name: /Simuler avec probabilités M/ }).click();
-	const value = await mathValue(mathConsole(page));
-	expect(value.replace(/\s+/g, '')).toBe('\\text{simuler}\\,L\\,M\\,100');
+	// La console se remplit après la fermeture du menu : lue jusqu'à ce qu'elle le soit
+	await expect
+		.poll(async () => (await mathValue(mathConsole(page))).replace(/\s+/g, ''))
+		.toBe('\\text{simuler}\\,L\\,M\\,100');
 });
 
 /** Le bouton ☰ et le bouton du clavier virtuel d'un champ MathLive sont-ils affichés ? */
@@ -383,33 +409,35 @@ async function mathFieldButtons(field: Locator): Promise<{ menu: boolean; keyboa
 	});
 }
 
-test('#1425 — pas de menu ☰ ni de menu au clic droit dans les champs mathématiques', async ({
-	page
-}) => {
-	const menu = page.locator('.ui-menu-container');
-	await chooseSetting(page, 'Écriture mathématique');
-	await calcMath(page, 'f(x)=x^2');
-	for (const field of [mathConsole(page), cardLocator(page, 'f').locator('math-field')]) {
-		expect(await mathFieldButtons(field)).toEqual({ menu: false, keyboard: true });
-		await field.click({ button: 'right' });
-		// Une absence ne s'attend pas : un court délai, le témoin ci-dessous s'ouvre en moins
-		await page.waitForTimeout(500);
-		await expect(menu).toHaveCount(0);
-		await page.keyboard.press('Escape');
+test(
+	'#1425 — pas de menu ☰ ni de menu au clic droit dans les champs mathématiques',
+	{ tag: ['@clavier-mathlive', '@bureau'] },
+	async ({ page }) => {
+		const menu = page.locator('.ui-menu-container');
+		await chooseSetting(page, 'Écriture mathématique');
+		await calcMath(page, 'f(x)=x^2');
+		for (const field of [mathConsole(page), cardLocator(page, 'f').locator('math-field')]) {
+			expect(await mathFieldButtons(field)).toEqual({ menu: false, keyboard: true });
+			await field.click({ button: 'right' });
+			// Une absence ne s'attend pas : un court délai, le témoin ci-dessous s'ouvre en moins
+			await page.waitForTimeout(500);
+			await expect(menu).toHaveCount(0);
+			await page.keyboard.press('Escape');
+		}
+		// Témoin, en dernier (son menu ne se referme pas à Échap ici) : un champ
+		// MathLive ordinaire a son ☰ et son menu au clic droit
+		await page.evaluate(() => {
+			const plain = document.createElement('math-field');
+			plain.id = 'temoin';
+			plain.style.cssText = 'position:fixed;top:300px;left:600px;width:200px;z-index:9999';
+			document.body.append(plain);
+		});
+		const plain = page.locator('#temoin');
+		await expect.poll(async () => (await mathFieldButtons(plain)).menu).toBe(true);
+		await plain.click({ button: 'right' });
+		await expect(menu.first()).toBeVisible();
 	}
-	// Témoin, en dernier (son menu ne se referme pas à Échap ici) : un champ
-	// MathLive ordinaire a son ☰ et son menu au clic droit
-	await page.evaluate(() => {
-		const plain = document.createElement('math-field');
-		plain.id = 'temoin';
-		plain.style.cssText = 'position:fixed;top:300px;left:600px;width:200px;z-index:9999';
-		document.body.append(plain);
-	});
-	const plain = page.locator('#temoin');
-	await expect.poll(async () => (await mathFieldButtons(plain)).menu).toBe(true);
-	await plain.click({ button: 'right' });
-	await expect(menu.first()).toBeVisible();
-});
+);
 
 test('#1442 — fonctions de la grille tapées dans Calcul ; π dans la grille', async ({ page }) => {
 	await calc(page, 'L = 12 ; 15 ; 9');
@@ -441,6 +469,7 @@ async function expectNotCovered(button: Locator): Promise<void> {
 test('#1442 — téléphone (390 px) : « Mes objets » hors de la barre d’icônes, défile à 8 objets', async ({
 	page
 }) => {
+	leavePanelAlone(page);
 	await page.setViewportSize({ width: 390, height: 844 });
 	await page.reload();
 	const panel = page.locator('aside.panneau');
@@ -474,9 +503,23 @@ test('#1442 — téléphone (390 px) : « Mes objets » hors de la barre d’ic�
 	// Reste à la main : la vue Graphe utilisable à 390 px
 });
 
+// E7 (2026-11-23) : à 393 px, le dernier bouton (plein écran) était coupé au bord
+test('E7 — téléphone : la barre d’icônes tient en entier dans l’écran', async ({ page }) => {
+	for (const width of [375, 393]) {
+		await page.setViewportSize({ width, height: 800 });
+		const buttons = page.getByRole('toolbar', { name: 'Outils de l’atelier' }).getByRole('button');
+		await expect(buttons.last()).toBeVisible();
+		for (const button of await buttons.all()) {
+			const box = await button.boundingBox();
+			expect(box, (await button.getAttribute('aria-label')) ?? undefined).not.toBeNull();
+			expect(box!.x + box!.width, `${width} px`).toBeLessThanOrEqual(width);
+		}
+	}
+});
+
 test('#1692 — tableur V4 retiré : /spreadsheet mène à l’atelier', async ({ page }) => {
 	for (const address of ['/spreadsheet', '/spreadsheet/00000000-0000-0000-0000-000000000000']) {
-		await page.goto(address);
+		await gotoRedirected(page, address);
 		await expect(page).toHaveURL(/\/atelier/);
 	}
 	await openView(page, 'Données');
@@ -509,8 +552,9 @@ test('#1807 — « Simplifier pour x ≠ … » et « Sans simplifier »', async
 	expectLatex(developed, '-x + \\dfrac{x}{x}');
 	expect(await simplifyFor(developed, 'x ≠ 0')).toContain(normalizeLatex('-x + 1'));
 
+	// #1819 : ln(x²) → 2 ln x a son bouton, pour x > 0
 	const log = await calc(page, '.simplifier ln(x^2)');
-	expect(await log.line.getByRole('button', { name: /Simplifier pour/ }).count()).toBe(0);
+	await expect(log.line.getByRole('button', { name: 'Simplifier pour x > 0' })).toBeVisible();
 });
 
 test('#1811 — réglage « Simplifications qui changent le domaine »', async ({ page }) => {
@@ -535,6 +579,7 @@ test('#1811 — réglage « Simplifications qui changent le domaine »', async (
 	).toBe(normalizeLatex(kept.latex ?? ''));
 
 	await page.reload();
+	await showCards(page, { afterLoad: true });
 	const again = await openSettings(page);
 	await expect(
 		again.getByRole('radio', { name: 'Simplifier en disant la condition' })
@@ -543,72 +588,115 @@ test('#1811 — réglage « Simplifications qui changent le domaine »', async (
 	expectLatex(await calc(page, '.simplifier ln(x)-ln(x) dans ]0;+∞[ ∩ ]-∞;5]'), '0');
 });
 
-test('console de l’Atelier — ouverte, fermée, raccourcis, poignée, lignes, menu', async ({
-	page
-}) => {
-	// Plus d'onglet Calcul ; /atelier ouvre la console
-	await expect(
-		page
-			.getByRole('navigation', { name: "Vues de l'atelier" })
-			.getByRole('button', { name: 'Calcul' })
-	).toHaveCount(0);
-	await expect(consoleButton(page)).toHaveAttribute('aria-expanded', 'true');
+test(
+	'console de l’Atelier — ouverte, fermée, raccourcis, poignée, lignes, menu',
+	{ tag: '@bureau' },
+	async ({ page }) => {
+		// Plus d'onglet Calcul ; /atelier ouvre la console
+		await expect(
+			page
+				.getByRole('navigation', { name: "Vues de l'atelier" })
+				.getByRole('button', { name: 'Calcul' })
+		).toHaveCount(0);
+		await expect(consoleButton(page)).toHaveAttribute('aria-expanded', 'true');
 
-	// Lignes : « > », « --> », « a est correctement défini »
-	const defined = await calc(page, 'a = 2');
-	await expect(defined.line.locator('.invite')).toHaveText('>');
-	await expect(defined.line.locator('.fleche')).toHaveText('-->');
-	expect(defined.text).toContain('a est correctement défini.');
-	await expect(defined.line.locator('.nom-defini')).toHaveText('a');
+		// Lignes : « > », « --> », « a est correctement défini »
+		const defined = await calc(page, 'a = 2');
+		await expect(defined.line.locator('.invite')).toHaveText('>');
+		await expect(defined.line.locator('.fleche')).toHaveText('-->');
+		// « --> » orange (`--accent-console`, #a65800 en clair)
+		await expect(defined.line.locator('.fleche')).toHaveCSS('color', 'rgb(166, 88, 0)');
+		// Les boutons de la ligne paraissent au survol seulement
+		const tools = defined.line.locator('.outils-ligne');
+		await page.mouse.move(2, 2);
+		await expect(tools).toHaveCSS('opacity', '0');
+		await defined.line.hover();
+		await expect(tools).toHaveCSS('opacity', '1');
+		expect(defined.text).toContain('a est correctement défini.');
+		await expect(defined.line.locator('.nom-defini')).toHaveText('a');
 
-	// Ctrl+Entrée ferme, même depuis le champ ; Échap aussi, focus au bouton
-	const field = page.getByLabel('Calcul, définition ou commande');
-	await field.focus();
-	await page.keyboard.press('Control+Enter');
-	await expect(consoleButton(page)).toHaveAttribute('aria-expanded', 'false');
-	await page.keyboard.press('Control+Enter');
-	await expect(consoleButton(page)).toHaveAttribute('aria-expanded', 'true');
-	await field.focus();
-	await page.keyboard.press('Escape');
-	await expect(consoleButton(page)).toHaveAttribute('aria-expanded', 'false');
-	await expect(consoleButton(page)).toBeFocused();
+		// Ctrl+Entrée ferme, même depuis le champ ; Échap aussi, focus au bouton
+		const field = page.getByLabel('Calcul, définition ou commande');
+		await field.focus();
+		await page.keyboard.press('Control+Enter');
+		await expect(consoleButton(page)).toHaveAttribute('aria-expanded', 'false');
+		await page.keyboard.press('Control+Enter');
+		await expect(consoleButton(page)).toHaveAttribute('aria-expanded', 'true');
+		await field.focus();
+		await page.keyboard.press('Escape');
+		await expect(consoleButton(page)).toHaveAttribute('aria-expanded', 'false');
+		await expect(consoleButton(page)).toBeFocused();
 
-	// La touche sous Échap hors d'un champ ouvre / ferme ; dans un champ, elle tape
-	// (le focus est sur le bouton Console, hors d'un champ)
-	await page.keyboard.press('Backquote');
-	await expect(consoleButton(page)).toHaveAttribute('aria-expanded', 'true');
-	await field.focus();
-	await field.fill('');
-	await page.keyboard.press('Backquote');
-	await expect(consoleButton(page)).toHaveAttribute('aria-expanded', 'true');
-	await expect(field).not.toHaveValue('');
-	await field.fill('');
+		// La touche sous Échap hors d'un champ ouvre / ferme ; dans un champ, elle tape
+		// (le focus est sur le bouton Console, hors d'un champ)
+		await page.keyboard.press('Backquote');
+		await expect(consoleButton(page)).toHaveAttribute('aria-expanded', 'true');
+		// Mac AZERTY (clavier Apple ISO) : la touche sous Échap rend `IntlBackslash`,
+		// touche que Playwright ne sait pas taper : l'événement de cette touche (« @ »).
+		// Seulement si le navigateur se dit Mac (« Desktop Chrome » de Playwright se dit Windows)
+		if (await page.evaluate(() => navigator.userAgent.includes('Macintosh'))) {
+			const underEscape = () =>
+				page.evaluate(() =>
+					document.activeElement?.dispatchEvent(
+						new KeyboardEvent('keydown', {
+							key: '@',
+							code: 'IntlBackslash',
+							bubbles: true,
+							cancelable: true
+						})
+					)
+				);
+			await consoleButton(page).focus();
+			await underEscape();
+			await expect(consoleButton(page)).toHaveAttribute('aria-expanded', 'false');
+			await underEscape();
+			await expect(consoleButton(page)).toHaveAttribute('aria-expanded', 'true');
+		}
+		await field.focus();
+		await field.fill('');
+		await page.keyboard.press('Backquote');
+		await expect(consoleButton(page)).toHaveAttribute('aria-expanded', 'true');
+		await expect(field).not.toHaveValue('');
+		await field.fill('');
 
-	// Poignée : les flèches changent la hauteur
-	const handle = page.getByRole('separator', { name: 'Hauteur de la console' });
-	const height = Number(await handle.getAttribute('aria-valuenow'));
-	await handle.focus();
-	await handle.press('ArrowDown');
-	expect(Number(await handle.getAttribute('aria-valuenow'))).not.toBe(height);
+		// Poignée : les flèches changent la hauteur
+		const handle = page.getByRole('separator', { name: 'Hauteur de la console' });
+		const height = Number(await handle.getAttribute('aria-valuenow'));
+		await handle.focus();
+		await handle.press('ArrowDown');
+		expect(Number(await handle.getAttribute('aria-valuenow'))).not.toBe(height);
+		// Glissée au pointeur, elle change aussi la hauteur
+		const dragged = Number(await handle.getAttribute('aria-valuenow'));
+		const grip = await handle.boundingBox();
+		if (grip === null) throw new Error('poignée sans boîte');
+		await page.mouse.move(grip.x + grip.width / 2, grip.y + grip.height / 2);
+		await page.mouse.down();
+		await page.mouse.move(grip.x + grip.width / 2, grip.y + grip.height / 2 - 80, { steps: 6 });
+		await page.mouse.up();
+		await expect
+			.poll(async () => Number(await handle.getAttribute('aria-valuenow')))
+			.not.toBe(dragged);
 
-	// Action de carte console fermée : un nombre sur le bouton
-	await calc(page, 'f(x) = x^2');
-	await page.keyboard.press('Control+Enter');
-	await expect(consoleButton(page)).toHaveAttribute('aria-expanded', 'false');
-	await cardAction(page, 'f', 'Variations');
-	await expect(consoleButton(page)).toHaveAccessibleDescription('1 nouveau résultat');
+		// Action de carte console fermée : un nombre sur le bouton
+		await calc(page, 'f(x) = x^2');
+		await page.keyboard.press('Control+Enter');
+		await expect(consoleButton(page)).toHaveAttribute('aria-expanded', 'false');
+		await cardAction(page, 'f', 'Variations');
+		await expect(consoleButton(page)).toHaveAccessibleDescription('1 nouveau résultat');
 
-	// Menu ⋮ : copier / télécharger l'historique ubumark
-	await consoleButton(page).click();
-	await page.getByRole('button', { name: 'Menu de la console' }).click();
-	await expect(
-		page.getByRole('menuitem', { name: 'Copier l’historique pour une fiche' })
-	).toBeVisible();
-	const download = page.waitForEvent('download');
-	await page.getByRole('menuitem', { name: 'Télécharger l’historique (ubumark)' }).click();
-	expect((await download).suggestedFilename()).toBeTruthy();
+		// Menu ⋮ : copier / télécharger l'historique ubumark
+		await consoleButton(page).click();
+		await page.getByRole('button', { name: 'Menu de la console' }).click();
+		await expect(
+			page.getByRole('menuitem', { name: 'Copier l’historique pour une fiche' })
+		).toBeVisible();
+		const download = page.waitForEvent('download');
+		await page.getByRole('menuitem', { name: 'Télécharger l’historique (ubumark)' }).click();
+		expect((await download).suggestedFilename()).toBeTruthy();
 
-	// /grapheur : console fermée
-	await page.goto('/grapheur');
-	await expect(consoleButton(page)).toHaveAttribute('aria-expanded', 'false');
-});
+		// /grapheur : console fermée
+		await page.goto('/grapheur');
+		await showCards(page, { afterLoad: true });
+		await expect(consoleButton(page)).toHaveAttribute('aria-expanded', 'false');
+	}
+);

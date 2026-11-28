@@ -9,7 +9,7 @@
  * Sans carte, le calcul est EXACTEMENT l'ancien : arrondi au dixième sur 10.
  */
 
-import { isCourseCard } from '$lib/questions/types';
+import { isCourseCard } from '#lib/questions/types.ts';
 
 export interface TestScore {
 	/** Bonnes réponses parmi les questions notées */

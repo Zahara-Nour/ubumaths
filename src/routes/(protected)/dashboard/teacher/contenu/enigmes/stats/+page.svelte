@@ -5,13 +5,13 @@
 -->
 
 <script lang="ts">
-	import BackLink from '$lib/components/navigation/BackLink.svelte';
-	import { lore } from '$lib/config/lore';
+	import BackLink from '#lib/components/navigation/BackLink.svelte';
+	import { lore } from '#lib/config/lore.ts';
 	import type { PageData } from './$types';
-	import { asRiddleDifficulty, getDifficultyLabel, getDifficultyColor } from '$lib/types/riddle';
-	import { Badge } from '$lib/components/ui/badge';
-	import * as Card from '$lib/components/ui/card';
-	import UserAvatar from '$lib/components/UserAvatar.svelte';
+	import { asRiddleDifficulty, getDifficultyLabel, getDifficultyColor } from '#lib/types/riddle.ts';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import UserAvatar from '#lib/components/UserAvatar.svelte';
 	import { BarChart3, Trophy, Users, Target, TrendingUp, FileCheck } from '@lucide/svelte';
 
 	let { data }: { data: PageData } = $props();

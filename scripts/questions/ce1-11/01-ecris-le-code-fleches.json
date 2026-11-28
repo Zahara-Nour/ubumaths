@@ -1,0 +1,239 @@
+{
+	"id": "856f400e-cb97-4bc9-8934-03081d9abb72",
+	"title": "Écrire le code du robot avec des flèches",
+	"description": "Composer avec des flèches le code qui mène le robot à la case verte : sans obstacle, puis en contournant des cases grises (au plus 15 instructions, 4 virages)",
+	"grades": ["CE1"],
+	"level": 4,
+	"delay": 120,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Écris le code qui mène le robot à la case verte. Chaque flèche le fait avancer d'une case dans son sens.\n\n```robot\nquadrillage: 8 x 5\ndépart: {{xd}}, {{yd}}\narrivée: {{xa}}, {{ya}}\nproduire: oui\n```",
+			"variables": [
+				{
+					"name": "xd",
+					"expression": "1..8"
+				},
+				{
+					"name": "yd",
+					"expression": "1..5"
+				},
+				{
+					"name": "xa",
+					"expression": "1..8"
+				},
+				{
+					"name": "ya",
+					"expression": "1..5"
+				}
+			],
+			"conditions": ["abs(xa-xd)+abs(ya-yd) >= 5", "xa != xd", "ya != yd"],
+			"correction": {
+				"steps": [
+					"On compte les cases à parcourir vers la droite ou la gauche, et vers le haut ou le bas.",
+					"On suit le code case par case depuis le robot : il est juste s'il finit sur la case verte, sans sortir du quadrillage ni entrer dans une case grise. Un autre chemin que celui du corrigé est juste aussi."
+				]
+			}
+		},
+		{
+			"statement": "Écris le code qui mène le robot à la case verte. Chaque flèche le fait avancer d'une case dans son sens. Il ne peut pas entrer dans une case grise.\n\n```robot\nquadrillage: 8 x 5\ndépart: {{if:k==1|1, 3|{{if:k==2|3, 1|{{if:k==3|1, 1|{{if:k==4|2, 2|{{if:k==5|3, 2|{{if:k==6|2, 3|{{if:k==7|1, 1|{{if:k==8|1, 1|{{if:k==9|2, 5|{{if:k==10|1, 5|{{if:k==11|1, 5|1, 5}}}}}}}}}}}}}}}}}}}}}}\narrivée: {{if:k==1|6, 4|{{if:k==2|5, 2|{{if:k==3|8, 2|{{if:k==4|7, 4|{{if:k==5|5, 5|{{if:k==6|5, 5|{{if:k==7|6, 5|{{if:k==8|5, 4|{{if:k==9|7, 1|{{if:k==10|8, 3|{{if:k==11|8, 5|7, 5}}}}}}}}}}}}}}}}}}}}}}\ninterdites: {{if:k==1|4, 1 ; 4, 2 ; 4, 3 ; 4, 4|{{if:k==2|4, 1 ; 4, 2 ; 4, 3 ; 4, 4|{{if:k==3|4, 1 ; 4, 2 ; 4, 3 ; 4, 4|{{if:k==4|4, 1 ; 4, 2 ; 4, 3 ; 4, 4|{{if:k==5|4, 2 ; 4, 3 ; 4, 4 ; 4, 5 ; 5, 2 ; 6, 2|{{if:k==6|4, 2 ; 4, 3 ; 4, 4 ; 4, 5 ; 5, 2 ; 6, 2|{{if:k==7|4, 2 ; 4, 3 ; 4, 4 ; 4, 5 ; 5, 2 ; 6, 2|{{if:k==8|4, 2 ; 4, 3 ; 4, 4 ; 4, 5 ; 5, 2 ; 6, 2|{{if:k==9|3, 1 ; 3, 2 ; 3, 3 ; 3, 4 ; 6, 2 ; 6, 3 ; 6, 4 ; 6, 5|{{if:k==10|3, 1 ; 3, 2 ; 3, 3 ; 3, 4 ; 6, 2 ; 6, 3 ; 6, 4 ; 6, 5|{{if:k==11|3, 1 ; 3, 2 ; 3, 3 ; 3, 4 ; 6, 2 ; 6, 3 ; 6, 4 ; 6, 5|3, 1 ; 3, 2 ; 3, 3 ; 3, 4 ; 6, 2 ; 6, 3 ; 6, 4 ; 6, 5}}}}}}}}}}}}}}}}}}}}}}\nproduire: oui\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..12"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le chemin tout droit est barré par le gris : il faut le contourner.",
+					"On suit le code case par case depuis le robot : il est juste s'il finit sur la case verte, sans sortir du quadrillage ni entrer dans une case grise. Un autre chemin que celui du corrigé est juste aussi."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Juste : à droite puis en haut",
+			"variationIndex": 0,
+			"variables": {
+				"xd": "2",
+				"yd": "1",
+				"xa": "6",
+				"ya": "4"
+			},
+			"answers": ["→ → → → ↑ ↑ ↑"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Juste : en haut puis à droite",
+			"variationIndex": 0,
+			"variables": {
+				"xd": "2",
+				"yd": "1",
+				"xa": "6",
+				"ya": "4"
+			},
+			"answers": ["↑ ↑ ↑ → → → →"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Juste : un détour",
+			"variationIndex": 0,
+			"variables": {
+				"xd": "2",
+				"yd": "1",
+				"xa": "6",
+				"ya": "4"
+			},
+			"answers": ["↑ → → → → → ↑ ↑ ←"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : une flèche de trop",
+			"variationIndex": 0,
+			"variables": {
+				"xd": "2",
+				"yd": "1",
+				"xa": "6",
+				"ya": "4"
+			},
+			"answers": ["→ → → → ↑ ↑ ↑ ↑"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : une flèche de moins",
+			"variationIndex": 0,
+			"variables": {
+				"xd": "2",
+				"yd": "1",
+				"xa": "6",
+				"ya": "4"
+			},
+			"answers": ["→ → → → ↑ ↑"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : le robot sort par le bas",
+			"variationIndex": 0,
+			"variables": {
+				"xd": "2",
+				"yd": "1",
+				"xa": "6",
+				"ya": "4"
+			},
+			"answers": ["↓"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Mur : le plus court (k = 1)",
+			"variationIndex": 1,
+			"variables": {
+				"k": "1"
+			},
+			"answers": ["↑ ↑ → → → → → ↓"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : tout droit à travers le gris (k = 1)",
+			"variationIndex": 1,
+			"variables": {
+				"k": "1"
+			},
+			"answers": ["→ → → → → ↑"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : une flèche de moins (k = 1)",
+			"variationIndex": 1,
+			"variables": {
+				"k": "1"
+			},
+			"answers": ["↑ ↑ → → → → →"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Mur : le plus court (k = 5)",
+			"variationIndex": 1,
+			"variables": {
+				"k": "5"
+			},
+			"answers": ["↓ → → → → ↑ ↑ ↑ ↑ ← ←"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : tout droit à travers le gris (k = 5)",
+			"variationIndex": 1,
+			"variables": {
+				"k": "5"
+			},
+			"answers": ["→ → ↑ ↑ ↑"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : une flèche de moins (k = 5)",
+			"variationIndex": 1,
+			"variables": {
+				"k": "5"
+			},
+			"answers": ["↓ → → → → ↑ ↑ ↑ ↑ ←"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Mur : le plus court (k = 9)",
+			"variationIndex": 1,
+			"variables": {
+				"k": "9"
+			},
+			"answers": ["→ → ↓ ↓ ↓ ↓ → → →"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : tout droit à travers le gris (k = 9)",
+			"variationIndex": 1,
+			"variables": {
+				"k": "9"
+			},
+			"answers": ["→ → → → → ↓ ↓ ↓ ↓"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : une flèche de moins (k = 9)",
+			"variationIndex": 1,
+			"variables": {
+				"k": "9"
+			},
+			"answers": ["→ → ↓ ↓ ↓ ↓ → →"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

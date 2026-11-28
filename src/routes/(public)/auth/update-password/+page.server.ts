@@ -24,18 +24,18 @@
  */
 import { redirect, fail } from '@sveltejs/kit';
 import type { Actions, PageServerLoad } from './$types';
-import { createServerLogger } from '$lib/utils/logger';
-import { updatePasswordSchema } from '$lib/server/validation/auth';
-import { validateFormData } from '$lib/server/validation/common';
-import { authErrorToFrench } from '$lib/server/auth/auth-error-fr';
+import { createServerLogger } from '#lib/utils/logger.ts';
+import { updatePasswordSchema } from '#lib/server/validation/auth.ts';
+import { validateFormData } from '#lib/server/validation/common.ts';
+import { authErrorToFrench } from '#lib/server/auth/auth-error-fr.ts';
 import {
 	MUST_CHANGE_PASSWORD,
 	isFreshEmailLinkSession,
 	mustChangePassword,
 	verifyCurrentPassword
-} from '$lib/server/child-password';
-import { createServiceRoleClient } from '$lib/server/serviceRoleClient';
-import { checkPasswordChangeRateLimitByUser } from '$lib/server/rateLimiter';
+} from '#lib/server/child-password.ts';
+import { createServiceRoleClient } from '#lib/server/serviceRoleClient.ts';
+import { checkPasswordChangeRateLimitByUser } from '#lib/server/rateLimiter.ts';
 
 const logger = createServerLogger('auth/update-password/+page.server.ts');
 

@@ -12,8 +12,8 @@
  */
 
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { WorksheetAssignmentRow, CorrectionReleaseMode } from '$lib/types/worksheets';
-import { createServerLogger } from '$lib/utils/logger';
+import type { WorksheetAssignmentRow, CorrectionReleaseMode } from '#lib/types/worksheets.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('server/worksheets/correction-release');
 

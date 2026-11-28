@@ -16,8 +16,8 @@
  * - Tracks Difficulty, Stability, Retrievability (DSR model)
  */
 
-import type { QuestionInstance } from '$lib/questions/types';
-import type { TemplateMarkdown } from '$lib/ubumark';
+import type { QuestionInstance } from '#lib/questions/types.ts';
+import type { TemplateMarkdown } from '#lib/ubumark/index.ts';
 
 // ============================================================================
 // DECK TYPES
@@ -482,6 +482,8 @@ export type DueReviewCard =
 			cardType: 'template';
 			templateId: string;
 			instance: QuestionInstance;
+			/** Notion du modèle (`classification_node_id`) : réactions du Palotin en séance */
+			notionId: string | null;
 			stats: DueReviewCardStats;
 	  }
 	| {
@@ -499,6 +501,8 @@ export type DueReviewCard =
 export interface ChapterDueCard {
 	templateId: string;
 	instance: QuestionInstance;
+	/** Notion du modèle (`classification_node_id`) : réactions du Palotin en séance */
+	notionId: string | null;
 	/** Jamais vue : première révision */
 	isNew: boolean;
 }

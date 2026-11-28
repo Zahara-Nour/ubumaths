@@ -1,0 +1,271 @@
+[
+	{
+		"id": "1dd68bdd-2c62-4dd5-8908-b82b6a013a7d",
+		"type": "fill_in_blanks",
+		"options": {
+			"constraints": {
+				"zeros": "off",
+				"spacesFromFourDigits": true
+			}
+		},
+		"precision": null,
+		"grades": ["CM1"],
+		"delay": 90,
+		"level": 1,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:k*w}}"
+					}
+				],
+				"statement": "{{if:c==1|${{n}}$ manuels identiques pèsent ${{w}}~\\unit{kg}$.\n\nCombien pèsent ${{K}}$ de ces manuels ?\n\nIls pèsent $?~\\text{kg}$.|{{if:c==2|Pour ${{n}}$ personnes, une recette demande ${{w}}$ œufs.\n\nCombien d'œufs faut-il pour ${{K}}$ personnes ?\n\nIl faut $?$ œufs.|Une imprimante imprime ${{w}}$ pages en ${{n}}$ minutes, toujours à la même vitesse.\n\nCombien de pages imprime-t-elle en ${{K}}$ minutes ?\n\nElle imprime $?$ pages.}}}}",
+				"variables": [
+					{
+						"name": "c",
+						"expression": "1..3"
+					},
+					{
+						"name": "n",
+						"expression": "2..6"
+					},
+					{
+						"name": "w",
+						"expression": "2..9"
+					},
+					{
+						"name": "k",
+						"expression": "2|3|4|5|10"
+					},
+					{
+						"name": "K",
+						"expression": "eval:k*n"
+					}
+				],
+				"correction": {
+					"steps": [
+						"${{K}}$ {{if:c==1|manuels|{{if:c==2|personnes|minutes}}}}, c'est ${{k}}$ fois ${{n}}$ {{if:c==1|manuels|{{if:c==2|personnes|minutes}}}} : ${{n}} \\times {{k}} = {{K}}$.",
+						"C'est ${{k}}$ fois plus, donc ${{k}}$ fois plus de {{if:c==1|kg|{{if:c==2|œufs|pages}}}} : $$\\textcolor{{{color:primary.0}}}{{{k}} \\times {{w}} = {{eval:k*w}}}$$"
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:k*P/10;d}}"
+					}
+				],
+				"statement": "À la boulangerie, ${{n}}$ croissants coûtent ${{eval:floor((P)/10)}}.{{eval:mod(P,10)}}0~\\unit{€}$.\n\nCombien coûtent ${{K}}$ croissants ?\n\nIls coûtent $?~\\text{€}$.",
+				"variables": [
+					{
+						"name": "n",
+						"expression": "2..4"
+					},
+					{
+						"name": "u",
+						"expression": "11..19"
+					},
+					{
+						"name": "P",
+						"expression": "eval:n*u"
+					},
+					{
+						"name": "k",
+						"expression": "2|3|4|5"
+					},
+					{
+						"name": "K",
+						"expression": "eval:k*n"
+					}
+				],
+				"correction": {
+					"steps": [
+						"${{K}}$ croissants, c'est ${{k}}$ fois ${{n}}$ croissants : ${{n}} \\times {{k}} = {{K}}$.",
+						"Ils coûtent ${{k}}$ fois plus : $$\\textcolor{{{color:primary.0}}}{{{k}} \\times {{eval:floor((P)/10)}}.{{eval:mod(P,10)}}0 = {{eval:floor((k*P)/10)}}.{{eval:mod(k*P,10)}}0}$$",
+						"Ils coûtent ${{eval:floor((k*P)/10)}}.{{eval:mod(k*P,10)}}0~\\unit{€}$."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{w}}"
+					}
+				],
+				"statement": "${{K}}$ stylos identiques coûtent ${{W}}~\\unit{€}$.\n\nCombien coûtent ${{n}}$ de ces stylos ?\n\nIls coûtent $?~\\text{€}$.",
+				"variables": [
+					{
+						"name": "n",
+						"expression": "2..5"
+					},
+					{
+						"name": "w",
+						"expression": "2..9"
+					},
+					{
+						"name": "k",
+						"expression": "2|3|4|5"
+					},
+					{
+						"name": "K",
+						"expression": "eval:k*n"
+					},
+					{
+						"name": "W",
+						"expression": "eval:k*w"
+					}
+				],
+				"correction": {
+					"steps": [
+						"${{n}}$ stylos, c'est ${{k}}$ fois moins que ${{K}}$ stylos : ${{K}} \\div {{k}} = {{n}}$.",
+						"Ils coûtent ${{k}}$ fois moins : $$\\textcolor{{{color:primary.0}}}{{{W}} \\div {{k}} = {{w}}}$$"
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "published",
+		"title": "Résoudre un problème de proportionnalité",
+		"description": "Une seule étape : k fois plus (masses, œufs, pages ; prix décimal) ou k fois moins, avec k de 2 à 5 ou 10 ; sans tableau ni retour à l'unité",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["16"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"K": "12",
+					"c": "1",
+					"k": "4",
+					"n": "3",
+					"w": "4"
+				},
+				"description": "3 manuels 4 kg → 12 manuels : 16",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["13"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"K": "12",
+					"c": "1",
+					"k": "4",
+					"n": "3",
+					"w": "4"
+				},
+				"description": "Erreur : additif, 4 + 9 = 13",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["48"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"K": "12",
+					"c": "1",
+					"k": "4",
+					"n": "3",
+					"w": "4"
+				},
+				"description": "Erreur : 4 × 12 = 48 (multiplié par le nombre de manuels)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["30"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"K": "20",
+					"c": "2",
+					"k": "10",
+					"n": "2",
+					"w": "3"
+				},
+				"description": "Œufs : 2 personnes 3 œufs → 20 personnes : 30",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["10,80"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"K": "9",
+					"P": "36",
+					"k": "3",
+					"n": "3",
+					"u": "12"
+				},
+				"description": "3 croissants 3,60 € → 9 croissants : 10,80",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["10,8"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"K": "9",
+					"P": "36",
+					"k": "3",
+					"n": "3",
+					"u": "12"
+				},
+				"description": "10,8 accepté",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["32,40"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"K": "9",
+					"P": "36",
+					"k": "3",
+					"n": "3",
+					"u": "12"
+				},
+				"description": "Erreur : 3,60 × 9 = 32,40",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["5"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"K": "12",
+					"W": "15",
+					"k": "3",
+					"n": "4",
+					"w": "5"
+				},
+				"description": "12 stylos 15 € → 4 stylos : 5",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["7"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"K": "12",
+					"W": "15",
+					"k": "3",
+					"n": "4",
+					"w": "5"
+				},
+				"description": "Erreur : 15 − 8 = 7 (additif)",
+				"variationIndex": 2
+			}
+		],
+		"classification_node_id": "4c009853-c441-4457-9496-e7c20b5b45b7"
+	}
+]

@@ -1,0 +1,42 @@
+{
+	"migration": "supabase/migrations/20261125183322_questions_idees_tle_continuite_combinatoire_rangement_tags.sql",
+	"ranges": [
+		{
+			"id": "a94acfec-cfbf-4fd3-b203-6eaefc078279",
+			"title": "Fonction définie par morceaux : continuité en a",
+			"fichier": "n1-continuite-fonction-par-morceaux.json",
+			"branche": "Fonctions",
+			"notion": "Continuité",
+			"sousNotion": "continuité en un point",
+			"point": "TSPE-425"
+		},
+		{
+			"id": "bb7dc033-259d-4568-8dbe-bb762ea83f99",
+			"title": "Théorème des valeurs intermédiaires sur une équation donnée",
+			"fichier": "n2-tvi-equation-donnee.json",
+			"branche": "Fonctions",
+			"notion": "Continuité",
+			"sousNotion": "valeurs intermédiaires",
+			"point": "TSPE-430"
+		},
+		{
+			"id": "3603141b-ee2d-4786-9597-575e1a1a4a9d",
+			"title": "Limite de f(uₙ) quand uₙ converge et f est continue",
+			"fichier": "n4-limite-f-de-un.json",
+			"branche": "Suites",
+			"notion": "Suites récurrentes",
+			"sousNotion": "point fixe",
+			"point": "TSPE-427"
+		},
+		{
+			"id": "c3f70ab6-930a-4641-98e6-5eadb0a7d209",
+			"title": "Probabilité par dénombrement",
+			"fichier": "n5-probabilite-par-denombrement.json",
+			"branche": "Dénombrement",
+			"notion": "Problèmes de dénombrement",
+			"sousNotion": null,
+			"point": "TSPE-319"
+		}
+	],
+	"niveaux": []
+}

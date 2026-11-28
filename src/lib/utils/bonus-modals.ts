@@ -4,8 +4,8 @@
  * Helper functions for opening bonus-related modals
  */
 
-import { modalStack } from '$lib/stores/modalStack.svelte';
-import BonusReasonModal from '$lib/components/teacher/BonusReasonModal.svelte';
+import { modalStack } from '#lib/stores/modalStack.svelte.ts';
+import BonusReasonModal from '#lib/components/teacher/BonusReasonModal.svelte';
 
 /**
  * Options for opening a bonus reason modal

@@ -1,0 +1,204 @@
+{
+	"id": "dfeed66c-f7fb-4a28-b8d8-80d5bf61a3e7",
+	"title": "Simuler N échantillons et lire l'histogramme des fréquences",
+	"description": "Liste de 500 fréquences de Bernoulli (taille 100) et son histogramme : effectif d'une classe, effectif sous un seuil, paramètre le plus plausible, contenu de la liste",
+	"grades": ["1_TECHNO"],
+	"level": 3,
+	"delay": 90,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "On a simulé $500$ échantillons de taille $100$ d'une loi de Bernoulli de paramètre $0{,}{{pt}}$ avec le programme suivant.\n\n```python\nfrom random import random\n\ndef frequence(n, p):\n    c = 0\n    for k in range(n):\n        if random() < p:\n            c = c + 1\n    return c / n\n\nfreqs = [frequence(100, 0.{{pt}}) for j in range(500)]\n```\n\nVoici l'histogramme des $500$ fréquences de la liste `freqs`.\n\n```histogramme\naxes: Fréquence des 1 ; Nombre d'échantillons\n[0,{{eval:10*pt-15}} ; 0,{{eval:10*pt-10}}[ = 6\n[0,{{eval:10*pt-10}} ; 0,{{eval:10*pt-5}}[ = 62\n[0,{{eval:10*pt-5}} ; 0,{{eval:10*pt}}[ = {{eval:166+d}}\n[0,{{eval:10*pt}} ; 0,{{eval:10*pt+5}}[ = {{eval:186-d}}\n[0,{{eval:10*pt+5}} ; 0,{{eval:10*pt+10}}[ = 70\n[0,{{eval:10*pt+10}} ; 0,{{eval:10*pt+15}}[ = 10\ndescription: Histogramme des fréquences des 1 dans 500 échantillons, six classes d'amplitude 0,05.\n```\n\nCombien d'échantillons ont une fréquence des $1$ dans $[0{,}{{eval:10*pt-5}}\\,;0{,}{{eval:10*pt}}[$ ?\n\n$?$",
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:166+d}}"
+				}
+			],
+			"variables": [
+				{
+					"name": "pt",
+					"expression": "3|4|6"
+				},
+				{
+					"name": "d",
+					"expression": "-6..6"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On lit la hauteur de la barre de la classe $[0{,}{{eval:10*pt-5}}\\,;0{,}{{eval:10*pt}}[$.",
+					"$\\textcolor{{{color:primary.0}}}{{{eval:166+d}}}$ échantillons ont une fréquence des $1$ dans cette classe."
+				]
+			}
+		},
+		{
+			"statement": "On a simulé $500$ échantillons de taille $100$ d'une loi de Bernoulli de paramètre $0{,}{{pt}}$ avec le programme suivant.\n\n```python\nfrom random import random\n\ndef frequence(n, p):\n    c = 0\n    for k in range(n):\n        if random() < p:\n            c = c + 1\n    return c / n\n\nfreqs = [frequence(100, 0.{{pt}}) for j in range(500)]\n```\n\nVoici l'histogramme des $500$ fréquences de la liste `freqs`.\n\n```histogramme\naxes: Fréquence des 1 ; Nombre d'échantillons\n[0,{{eval:10*pt-15}} ; 0,{{eval:10*pt-10}}[ = 6\n[0,{{eval:10*pt-10}} ; 0,{{eval:10*pt-5}}[ = 62\n[0,{{eval:10*pt-5}} ; 0,{{eval:10*pt}}[ = {{eval:166+d}}\n[0,{{eval:10*pt}} ; 0,{{eval:10*pt+5}}[ = {{eval:186-d}}\n[0,{{eval:10*pt+5}} ; 0,{{eval:10*pt+10}}[ = 70\n[0,{{eval:10*pt+10}} ; 0,{{eval:10*pt+15}}[ = 10\ndescription: Histogramme des fréquences des 1 dans 500 échantillons, six classes d'amplitude 0,05.\n```\n\nCombien d'échantillons ont une fréquence des $1$ inférieure à $0{,}{{eval:10*pt-5}}$ ?\n\n$?$",
+			"blanks": [
+				{
+					"expectedAnswer": "68"
+				}
+			],
+			"variables": [
+				{
+					"name": "pt",
+					"expression": "3|4|6"
+				},
+				{
+					"name": "d",
+					"expression": "-6..6"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Deux classes sont sous $0{,}{{eval:10*pt-5}}$ : $[0{,}{{eval:10*pt-15}}\\,;0{,}{{eval:10*pt-10}}[$ ($6$ échantillons) et $[0{,}{{eval:10*pt-10}}\\,;0{,}{{eval:10*pt-5}}[$ ($62$).",
+					"En tout : $6+62=\\textcolor{{{color:primary.0}}}{68}$ échantillons."
+				]
+			}
+		},
+		{
+			"statement": "On a simulé $500$ échantillons de taille $100$ d'une loi de Bernoulli dont on ne connaît pas le paramètre $p$. Voici l'histogramme des $500$ fréquences des $1$ observées.\n\n```histogramme\naxes: Fréquence des 1 ; Nombre d'échantillons\n[0,{{eval:10*pt-15}} ; 0,{{eval:10*pt-10}}[ = 6\n[0,{{eval:10*pt-10}} ; 0,{{eval:10*pt-5}}[ = 62\n[0,{{eval:10*pt-5}} ; 0,{{eval:10*pt}}[ = {{eval:166+d}}\n[0,{{eval:10*pt}} ; 0,{{eval:10*pt+5}}[ = {{eval:186-d}}\n[0,{{eval:10*pt+5}} ; 0,{{eval:10*pt+10}}[ = 70\n[0,{{eval:10*pt+10}} ; 0,{{eval:10*pt+15}}[ = 10\ndescription: Histogramme des fréquences des 1 dans 500 échantillons, six classes d'amplitude 0,05.\n```\n\nQuelle valeur de $p$ est la plus plausible ?\n\n```choix\n- $0{,}{{pt}}$\n- $0{,}{{eval:pt-1}}$\n- $0{,}{{eval:pt+1}}$\n- $0{,}{{eval:pt+2}}$\n```",
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"variables": [
+				{
+					"name": "pt",
+					"expression": "3|4|6"
+				},
+				{
+					"name": "d",
+					"expression": "-6..6"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Les fréquences observées fluctuent autour de $p$ : les barres les plus hautes encadrent la valeur de $p$.",
+					"Elles sont de part et d'autre de $0{,}{{eval:10*pt}}$ : $p=0{,}{{pt}}$ est la valeur la plus plausible."
+				]
+			}
+		},
+		{
+			"statement": "On considère le programme Python suivant.\n\n```python\nfrom random import random\n\ndef frequence(n, p):\n    c = 0\n    for k in range(n):\n        if random() < p:\n            c = c + 1\n    return c / n\n\nfreqs = [frequence(100, 0.{{pt}}) for j in range(500)]\n```\n\nQue contient la liste `freqs` ?\n\n```choix\n- les fréquences des $1$ dans $500$ échantillons de taille $100$\n- les fréquences des $1$ dans $100$ échantillons de taille $500$\n- $500$ nombres égaux à $0$ ou à $1$\n- les nombres de $1$ dans $500$ échantillons de taille $100$\n```",
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"variables": [
+				{
+					"name": "pt",
+					"expression": "2..8"
+				}
+			],
+			"correction": {
+				"steps": [
+					"`frequence(100, 0.{{pt}})` simule un échantillon de taille $100$ et renvoie `c / n`, la **fréquence** des $1$.",
+					"`for j in range(500)` répète cet appel $500$ fois : `freqs` contient les fréquences des $1$ dans $500$ échantillons de taille $100$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Classe centrale gauche : 166",
+			"variationIndex": 0,
+			"variables": {
+				"pt": "3",
+				"d": "0"
+			},
+			"answers": ["166"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : classe voisine",
+			"variationIndex": 0,
+			"variables": {
+				"pt": "3",
+				"d": "0"
+			},
+			"answers": ["186"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Sous le seuil : 68",
+			"variationIndex": 1,
+			"variables": {
+				"pt": "3",
+				"d": "0"
+			},
+			"answers": ["68"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : une seule classe",
+			"variationIndex": 1,
+			"variables": {
+				"pt": "3",
+				"d": "0"
+			},
+			"answers": ["62"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "p plausible",
+			"variationIndex": 2,
+			"variables": {
+				"pt": "4",
+				"d": "2"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : p trop grand",
+			"variationIndex": 2,
+			"variables": {
+				"pt": "4",
+				"d": "2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Contenu de freqs",
+			"variationIndex": 3,
+			"variables": {
+				"pt": "3"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : tailles inversées",
+			"variationIndex": 3,
+			"variables": {
+				"pt": "3"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

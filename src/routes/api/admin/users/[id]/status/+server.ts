@@ -13,15 +13,15 @@
  * @module api/admin/users/[id]/status
  */
 
-import { error, json } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { z } from 'zod';
-import { updateUserStatusSchema } from '$lib/server/validation/admin';
-import { requireRoles } from '$lib/server/middleware/auth';
-import { createSystemNotification } from '$lib/server/notifications';
-import type { Database } from '$lib/types/database';
-import type { TablesUpdate } from '$lib/types/database';
-import { createServerLogger } from '$lib/utils/logger';
+import { updateUserStatusSchema } from '#lib/server/validation/admin.ts';
+import { requireRoles } from '#lib/server/middleware/auth.ts';
+import { createSystemNotification } from '#lib/server/notifications.ts';
+import type { Database } from '#lib/types/database.ts';
+import type { TablesUpdate } from '#lib/types/database.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/admin/users/[id]/status/+server');
 
@@ -219,7 +219,7 @@ export const PATCH: RequestHandler = async ({ request, locals, params }) => {
 
 		const extendedProfile: ExtendedProfile = updatedProfile;
 
-		return json({
+		return Response.json({
 			success: true,
 			profile: extendedProfile
 		});

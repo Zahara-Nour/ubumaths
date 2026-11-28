@@ -7,8 +7,8 @@
 
 import { redirect, error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
-import type { TournamentWithDetails, TournamentStanding } from '$lib/types/minesweeper';
-import { createServerLogger } from '$lib/utils/logger';
+import type { TournamentWithDetails, TournamentStanding } from '#lib/types/minesweeper.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger(
 	'(protected)/dashboard/teacher/minesweeper/tournaments/[id]/+page.server'

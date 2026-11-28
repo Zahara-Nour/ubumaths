@@ -208,7 +208,7 @@ Bouton **PDF** dans la toolbar → modal d'options → téléchargement.
 
 ### V2 — Mode présentation via UbuSlides (2026-06)
 
-Route `/python-notebook/[id]/present` → plein écran cellule-par-cellule via `Deck` du module `$lib/slides`. Bouton **Présentation** dans la toolbar.
+Route `/python-notebook/[id]/present` → plein écran cellule-par-cellule via `Deck` du module `#lib/slides/index.ts`. Bouton **Présentation** dans la toolbar.
 
 | Type cellule | Slide                                                                                   |
 | ------------ | --------------------------------------------------------------------------------------- |
@@ -280,7 +280,7 @@ Notebooks marqués `is_template = true` — réutilisables via clonage.
 
 ### V2 — MarkdownEditor upgrade (2026-06)
 
-Édition des cellules markdown via `$lib/components/markdown/MarkdownEditor`.
+Édition des cellules markdown via `#lib/components/markdown/MarkdownEditor`.
 
 - **Toolbar markdown** (bold, italic, headings, lists, tables, math)
 - **Live preview** dans un split-view (raw à gauche, rendu à droite)
@@ -553,6 +553,25 @@ Une diff vide garantit qu'éditer-puis-sauvegarder-sans-changement ne mute pas l
 - [ ] **Custom comparator V2** — étendre `custom` à `unit_test`, server-side validation pour tests vraiment cachés. Niche : profs Python avancés avec besoin custom (logique non-equality)
 
 ---
+
+### Usage hors des exercices — case « programme Python » des modèles de questions (outil 49, 2026-11-28)
+
+Le même pipeline de validation sert une case de modèle de question (bloc ```python-a-ecrire,
+[ubumark.md](../ubumark.md), [questions.md](../questions.md) § Affichage et saisie) :
+`judgePythonCase` (`src/lib/questions/python/judge-python-case.ts`) appelle `validateExercise` d'un
+`PlaygroundExecutor` partagé par la page (`components/question-inputs/python-case-runtime.svelte.ts`,
+chargé à la demande), **un appel par essai** : comportement `reference_solution` (solution de
+l'auteur en `reference_code`), `generator` réduit au tuple des arguments de l'essai
+(`seuil(2)` → `code: '(2,)'`, `count: 1`, `seed: 0`) ; exigences (`defines_function` de la fonction
+demandée, `uses_loop` pour `boucle`, `no_print` pour `sans print`) et syntaxe au premier appel
+seulement ; arrêt au premier essai raté. Aucun changement du worker ni de ses comparaisons. Le
+message cite l'essai tel que l'auteur l'a écrit (`seuil(2) : ta fonction rend 0, on attendait 1.`) ;
+erreurs de syntaxe courantes traduites. Boucle sans fin : le délai du fil principal
+(`timeout_ms` 5 s + 5 s de marge) rend la main mais le worker reste bloqué dans la boucle — le
+runtime le détruit et en crée un autre (`onStuck`). Pas d'autocomplétion dans l'éditeur de la case.
+Jamais côté serveur : la case n'entre dans aucun contrôle noté. Test avec le vrai Pyodide :
+`src/lib/questions/python/__tests__/judge-python-case-real.svelte.test.ts` (motif `*-real`, hors CI
+ordinaire).
 
 ## 5. Examples Library
 

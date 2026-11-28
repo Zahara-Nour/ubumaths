@@ -37,8 +37,7 @@ import type {
 	HintReferenceNode,
 	LineBreakNode,
 	InternalLinkNode,
-	InternalLinkReferenceType,
-	LexiconMark
+	InternalLinkReferenceType
 } from '../types';
 import {
 	extractMathOutside,
@@ -66,10 +65,9 @@ import { dedentIndentedFences } from './indented-fences';
 import { blockLineRanges, isSpecialBlockEnd } from './block-ranges';
 import {
 	INLINE_CODE_REGEX,
-	INLINE_DETAIL_REGEX,
-	LEXICON_MARK_REGEX,
+	SPAN_MARK_REGEX,
 	maskSpans,
-	parseDetailKind
+	parseSpanClasses
 } from '../utils/detail-kinds';
 import {
 	findVariationBlocks,
@@ -93,6 +91,12 @@ import {
 } from './number-line-parser';
 import { findQrBlocks, parseQr, parseQrContent, isQrBlockStart } from './qr-parser';
 import {
+	findEngrenagesBlocks,
+	parseEngrenages,
+	parseEngrenagesContent,
+	isEngrenagesBlockStart
+} from './engrenages-parser';
+import {
 	findScratchBlocks,
 	parseScratch,
 	parseScratchContent,
@@ -104,6 +108,37 @@ import {
 	parseHorlogeContent,
 	isHorlogeBlockStart
 } from './horloge-parser';
+import {
+	findTortueBlocks,
+	parseTortue,
+	parseTortueContent,
+	isTortueBlockStart
+} from './tortue-parser';
+import {
+	findCalculBlocks,
+	parseCalcul,
+	parseCalculContent,
+	isCalculBlockStart
+} from './calcul-parser';
+import {
+	findPythonAEcrireBlocks,
+	parsePythonAEcrire,
+	parsePythonAEcrireContent,
+	isPythonAEcrireBlockStart
+} from './python-a-ecrire-parser';
+import { findRobotBlocks, parseRobot, parseRobotContent, isRobotBlockStart } from './robot-parser';
+import {
+	findLabyrintheBlocks,
+	parseLabyrinthe,
+	parseLabyrintheContent,
+	isLabyrintheBlockStart
+} from './labyrinthe-parser';
+import {
+	findYohakuBlocks,
+	parseYohaku,
+	parseYohakuContent,
+	isYohakuBlockStart
+} from './yohaku-parser';
 import {
 	findPartageBlocks,
 	parsePartage,
@@ -134,8 +169,21 @@ import {
 	parseMonnaieContent,
 	isMonnaieBlockStart
 } from './monnaie-parser';
+import {
+	findSchemaBarresBlocks,
+	parseSchemaBarres,
+	parseSchemaBarresContent,
+	isSchemaBarresBlockStart
+} from './schema-barres-parser';
 import { findChoiceBlocks, parseChoiceBlock } from './choix-parser';
-import { findRangerBlocks, parseRangerBlock } from './ranger-parser';
+import {
+	findRangerBlocks,
+	isRangerBlockStart,
+	parseRangerBlock,
+	parseRangerContent
+} from './ranger-parser';
+import { findAssocierBlocks, parseAssocierBlock, parseAssocierContent } from './associer-parser';
+import { findTrousBlocks, parseTrousBlock, parseTrousContent } from './trous-parser';
 import {
 	findCourbeBlocks,
 	isCourbeBlockStart,
@@ -515,15 +563,27 @@ function parseBlocks(
 	const qrBlocks = findQrBlocks(lines);
 	const scratchBlocks = findScratchBlocks(lines);
 	const horlogeBlocks = findHorlogeBlocks(lines);
+	const tortueBlocks = findTortueBlocks(lines);
+	const calculBlocks = findCalculBlocks(lines);
+	const robotBlocks = findRobotBlocks(lines);
+	const labyrintheBlocks = findLabyrintheBlocks(lines);
+	const yohakuBlocks = findYohakuBlocks(lines);
+	const pythonAEcrireBlocks = findPythonAEcrireBlocks(lines);
+	const engrenagesBlocks = findEngrenagesBlocks(lines);
 	const partageBlocks = findPartageBlocks(lines);
 	const espaceBlocks = findEspaceBlocks(lines);
 	const operationBlocks = findOperationBlocks(lines);
 	const collectionBlocks = findCollectionBlocks(lines);
 	const monnaieBlocks = findMonnaieBlocks(lines);
+	const schemaBarresBlocks = findSchemaBarresBlocks(lines);
 	// Bloc ```choix (case « choix ») : ses choix restent du markdown, rendus un à un
 	const choiceBlocks = findChoiceBlocks(lines);
 	// Bloc ```ranger (étiquettes à ranger) : ses étiquettes restent du markdown
 	const rangerBlocks = findRangerBlocks(lines);
+	// Bloc ```associer (associer deux colonnes) : éléments et étiquettes restent du markdown
+	const associerBlocks = findAssocierBlocks(lines);
+	// Bloc ```trous (texte à trous à étiquettes) : le texte et les étiquettes restent du markdown
+	const trousBlocks = findTrousBlocks(lines);
 	type SpecialParse = (
 		source: string[],
 		start: number,
@@ -541,13 +601,27 @@ function parseBlocks(
 		{ ranges: qrBlocks, parse: parseQr, language: 'qr' },
 		{ ranges: scratchBlocks, parse: parseScratch, language: 'scratch' },
 		{ ranges: horlogeBlocks, parse: parseHorloge, language: 'horloge' },
+		{ ranges: tortueBlocks, parse: parseTortue, language: 'tortue' },
+		{ ranges: calculBlocks, parse: parseCalcul, language: 'calcul' },
+		{ ranges: robotBlocks, parse: parseRobot, language: 'robot' },
+		{ ranges: labyrintheBlocks, parse: parseLabyrinthe, language: 'labyrinthe' },
+		{ ranges: yohakuBlocks, parse: parseYohaku, language: 'yohaku' },
+		{
+			ranges: pythonAEcrireBlocks,
+			parse: parsePythonAEcrire,
+			language: 'python-a-ecrire'
+		},
+		{ ranges: engrenagesBlocks, parse: parseEngrenages, language: 'engrenages' },
 		{ ranges: partageBlocks, parse: parsePartage, language: 'partage' },
 		{ ranges: espaceBlocks, parse: parseEspace, language: 'cubes' },
 		{ ranges: operationBlocks, parse: parseOperation, language: 'operation' },
 		{ ranges: collectionBlocks, parse: parseCollection, language: 'collection' },
 		{ ranges: monnaieBlocks, parse: parseMonnaie, language: 'monnaie' },
+		{ ranges: schemaBarresBlocks, parse: parseSchemaBarres, language: 'schema-barres' },
 		{ ranges: choiceBlocks, parse: parseChoiceBlock, language: 'choix' },
-		{ ranges: rangerBlocks, parse: parseRangerBlock, language: 'ranger' }
+		{ ranges: rangerBlocks, parse: parseRangerBlock, language: 'ranger' },
+		{ ranges: associerBlocks, parse: parseAssocierBlock, language: 'associer' },
+		{ ranges: trousBlocks, parse: parseTrousBlock, language: 'trous' }
 	];
 	const specialBlockAt = (index: number) => {
 		for (const { ranges, parse, language } of SPECIALS) {
@@ -612,13 +686,23 @@ function parseBlocks(
 			...qrBlocks,
 			...scratchBlocks,
 			...horlogeBlocks,
+			...tortueBlocks,
+			...calculBlocks,
+			...robotBlocks,
+			...labyrintheBlocks,
+			...yohakuBlocks,
+			...pythonAEcrireBlocks,
+			...engrenagesBlocks,
 			...partageBlocks,
 			...espaceBlocks,
 			...operationBlocks,
 			...collectionBlocks,
 			...monnaieBlocks,
+			...schemaBarresBlocks,
 			...choiceBlocks,
 			...rangerBlocks,
+			...associerBlocks,
+			...trousBlocks,
 			...courbeBlocks,
 			...figureBlocks,
 			...statChartBlocks
@@ -633,13 +717,23 @@ function parseBlocks(
 			...findQrBlocks(originalLines),
 			...findScratchBlocks(originalLines),
 			...findHorlogeBlocks(originalLines),
+			...findTortueBlocks(originalLines),
+			...findCalculBlocks(originalLines),
+			...findRobotBlocks(originalLines),
+			...findLabyrintheBlocks(originalLines),
+			...findYohakuBlocks(originalLines),
+			...findPythonAEcrireBlocks(originalLines),
+			...findEngrenagesBlocks(originalLines),
 			...findPartageBlocks(originalLines),
 			...findEspaceBlocks(originalLines),
 			...findOperationBlocks(originalLines),
 			...findCollectionBlocks(originalLines),
 			...findMonnaieBlocks(originalLines),
+			...findSchemaBarresBlocks(originalLines),
 			...findChoiceBlocks(originalLines),
 			...findRangerBlocks(originalLines),
+			...findAssocierBlocks(originalLines),
+			...findTrousBlocks(originalLines),
 			...originalCourbeBlocks,
 			...originalFigureBlocks,
 			...originalStatChartBlocks
@@ -1030,6 +1124,7 @@ function parseInlineContent(
 			if (hasPlaceholders) {
 				// Split this text node by placeholders
 				const segments = splitTextWithPlaceholders(node.content, placeholders);
+				let unknownPlaced = false;
 
 				for (const segment of segments) {
 					if (typeof segment === 'string') {
@@ -1043,8 +1138,14 @@ function parseInlineContent(
 								...(node.code && { code: true }),
 								...(node.strikethrough && { strikethrough: true }),
 								...(node.highlight && { highlight: true }),
-								...(node.detail && { detail: node.detail })
+								...(node.detail && { detail: node.detail }),
+								...(node.lexicon && { lexicon: node.lexicon }),
+								...(node.color && { color: node.color }),
+								// Le message au prof ne se répète pas sur chaque morceau
+								...(node.unknownClasses &&
+									!unknownPlaced && { unknownClasses: node.unknownClasses })
 							});
+							if (node.unknownClasses) unknownPlaced = true;
 						}
 					} else {
 						// Math placeholder → inline math node
@@ -1056,8 +1157,9 @@ function parseInlineContent(
 							...(exprInfo.expressionName && {
 								expressionName: exprInfo.expressionName
 							}),
-							// Une formule dans un détail en ligne en hérite le type
-							...(node.detail && { detail: node.detail })
+							// Une formule dans un détail en ligne en hérite le type, et la couleur
+							...(node.detail && { detail: node.detail }),
+							...(node.color && { color: node.color })
 						});
 					}
 				}
@@ -1520,43 +1622,45 @@ function parseTextFormattingSegment(text: string): InlineNode[] {
  * @returns Array of inline nodes (text, blank, hint-reference, internal-link, link, hashtag, mention)
  */
 function parseTextFormatting(text: string): InlineNode[] {
-	// Étape 0 : détails en ligne `[texte]{.rappel}` (ADR 0017). Leur texte suit
-	// le même pipeline, puis chaque nœud texte est marqué du type de détail.
-	// Type inconnu : laissé littéral.
+	// Étape 0 : marquages en ligne `[texte]{.classe …}` — détail de correction
+	// (ADR 0017), mot du dictionnaire, couleur (ADR 0042). Deux passes du même
+	// motif : la première lit le marquage extérieur, la seconde celui qu'il
+	// contient (`[le [grand]{.rouge} cône]{.bleu}`). Le texte suit ensuite le
+	// pipeline ordinaire, puis chaque nœud reçoit les marques.
+	return parseWithSpanMarks(text, SPAN_MARK_REGEX, OUTER_BOUNDS, parseInnerSpanMarks, spanMarkOf);
+}
+
+/** Seconde passe de {@link parseTextFormatting} : le marquage intérieur. */
+function parseInnerSpanMarks(text: string): InlineNode[] {
 	return parseWithSpanMarks(
 		text,
-		INLINE_DETAIL_REGEX,
-		DETAIL_BOUNDS,
-		parseTextFormattingPipeline,
-		(match) => {
-			const kind = parseDetailKind(match[2]);
-			return kind ? (node) => ({ ...node, detail: kind }) : null;
-		}
+		SPAN_MARK_REGEX,
+		INNER_BOUNDS,
+		parseTextFormattingCore,
+		spanMarkOf
 	);
 }
 
 /**
- * Pipeline de {@link parseTextFormatting}, hors détails en ligne : d'abord les
- * mots du lexique marqués à la main (`[mot]{.def}`, `{.def=…}`, `{.nodef}`),
- * dont le texte suit le pipeline ordinaire puis reçoit la marque.
+ * Marque d'un marquage `{.…}`. Une marque déjà posée par un marquage
+ * intérieur l'emporte (la couleur la plus proche gagne). Classe inconnue : le
+ * texte est gardé sans crochets ni marque, et le premier nœud du passage
+ * retient les classes inconnues pour le message au prof (Q1 du 2026-11-20).
  */
-function parseTextFormattingPipeline(text: string): InlineNode[] {
-	return parseWithSpanMarks(
-		text,
-		LEXICON_MARK_REGEX,
-		LEXICON_BOUNDS,
-		parseTextFormattingCore,
-		(match) => {
-			const target = match[3]?.trim();
-			const lexicon: LexiconMark =
-				match[2] === 'nodef'
-					? { mode: 'block' }
-					: target
-						? { mode: 'force', target }
-						: { mode: 'force' };
-			return (node) => ({ ...node, lexicon });
+function spanMarkOf(match: RegExpExecArray): (node: TextNode) => TextNode {
+	const { detail, lexicon, color, unknown } = parseSpanClasses(match[2]);
+	let unknownPending = unknown.length > 0;
+	return (node) => {
+		const marked: TextNode = { ...node };
+		if (detail && !marked.detail) marked.detail = detail;
+		if (lexicon && !marked.lexicon) marked.lexicon = lexicon;
+		if (color && !marked.color) marked.color = color;
+		if (unknownPending) {
+			marked.unknownClasses = [...(marked.unknownClasses ?? []), ...unknown];
+			unknownPending = false;
 		}
-	);
+		return marked;
+	};
 }
 
 /**
@@ -1564,8 +1668,8 @@ function parseTextFormattingPipeline(text: string): InlineNode[] {
  * peut contenir un mot marqué, les deux passes s'imbriquent. Dans une plage,
  * le premier code ferme, les suivants ouvrent (un par marquage).
  */
-const DETAIL_BOUNDS = 0xe000;
-const LEXICON_BOUNDS = 0xe800;
+const OUTER_BOUNDS = 0xe000;
+const INNER_BOUNDS = 0xe800;
 const BOUNDS_SIZE = 0x800;
 
 /**
@@ -1780,6 +1884,12 @@ const SPECIAL_BLOCK_KINDS = [
 		language: 'qr'
 	},
 	{
+		is: isEngrenagesBlockStart,
+		find: findEngrenagesBlocks,
+		parse: parseEngrenages,
+		language: 'engrenages'
+	},
+	{
 		is: isScratchBlockStart,
 		find: findScratchBlocks,
 		parse: parseScratch,
@@ -1790,6 +1900,42 @@ const SPECIAL_BLOCK_KINDS = [
 		find: findHorlogeBlocks,
 		parse: parseHorloge,
 		language: 'horloge'
+	},
+	{
+		is: isTortueBlockStart,
+		find: findTortueBlocks,
+		parse: parseTortue,
+		language: 'tortue'
+	},
+	{
+		is: isCalculBlockStart,
+		find: findCalculBlocks,
+		parse: parseCalcul,
+		language: 'calcul'
+	},
+	{
+		is: isRobotBlockStart,
+		find: findRobotBlocks,
+		parse: parseRobot,
+		language: 'robot'
+	},
+	{
+		is: isLabyrintheBlockStart,
+		find: findLabyrintheBlocks,
+		parse: parseLabyrinthe,
+		language: 'labyrinthe'
+	},
+	{
+		is: isYohakuBlockStart,
+		find: findYohakuBlocks,
+		parse: parseYohaku,
+		language: 'yohaku'
+	},
+	{
+		is: isPythonAEcrireBlockStart,
+		find: findPythonAEcrireBlocks,
+		parse: parsePythonAEcrire,
+		language: 'python-a-ecrire'
 	},
 	{
 		is: isPartageBlockStart,
@@ -1820,6 +1966,19 @@ const SPECIAL_BLOCK_KINDS = [
 		find: findMonnaieBlocks,
 		parse: parseMonnaie,
 		language: 'monnaie'
+	},
+	{
+		is: isSchemaBarresBlockStart,
+		find: findSchemaBarresBlocks,
+		parse: parseSchemaBarres,
+		language: 'schema-barres'
+	},
+	// Écart L89 : des étiquettes à ranger dans un item de liste sortaient en code brut
+	{
+		is: isRangerBlockStart,
+		find: findRangerBlocks,
+		parse: parseRangerBlock,
+		language: 'ranger'
 	}
 ] as const;
 
@@ -2044,9 +2203,36 @@ function parseContentWithCodeBlocks(
 		} else if (language === 'qr') {
 			// QR code dans un item de liste : toujours un nœud, même en erreur (Q48)
 			blocks.push(parseQrContent(restoreMathPlaceholders(code, placeholders)));
+		} else if (language === 'engrenages') {
+			// Engrenages dans un item de liste : toujours un nœud, même en erreur (Q48)
+			blocks.push(parseEngrenagesContent(restoreMathPlaceholders(code, placeholders)));
 		} else if (language === 'horloge') {
 			// Horloge dans un item de liste : toujours un nœud, même en erreur (Q48)
 			blocks.push(parseHorlogeContent(restoreMathPlaceholders(code, placeholders)));
+		} else if (language === 'tortue') {
+			// Programme tortue dans un item de liste : toujours un nœud, même en erreur (Q48) ;
+			// sans case (bloc en retrait), l'élève n'y répond pas
+			blocks.push(parseTortueContent(restoreMathPlaceholders(code, placeholders)));
+		} else if (language === 'calcul') {
+			// Programme de calcul dans un item de liste : toujours un nœud, même en erreur (Q48) ;
+			// sans case (bloc en retrait), l'élève n'y répond pas
+			blocks.push(parseCalculContent(restoreMathPlaceholders(code, placeholders)));
+		} else if (language === 'robot') {
+			// Robot dans un item de liste : toujours un nœud, même en erreur (Q48) ; sans case
+			// (bloc en retrait), l'élève n'y répond pas
+			blocks.push(parseRobotContent(restoreMathPlaceholders(code, placeholders)));
+		} else if (language === 'labyrinthe') {
+			// Labyrinthe dans un item de liste : toujours un nœud, même en erreur (Q48) ; sans
+			// case (bloc en retrait), l'élève n'y répond pas
+			blocks.push(parseLabyrintheContent(restoreMathPlaceholders(code, placeholders)));
+		} else if (language === 'python-a-ecrire') {
+			// Programme Python dans un item de liste : toujours un nœud, même en erreur (Q48) ; sans
+			// case (bloc en retrait), l'élève n'y répond pas
+			blocks.push(parsePythonAEcrireContent(restoreMathPlaceholders(code, placeholders)));
+		} else if (language === 'yohaku') {
+			// Grille yohaku dans un item de liste : toujours un nœud, même en erreur (Q48) ; sans
+			// case (bloc en retrait), l'élève n'y répond pas
+			blocks.push(parseYohakuContent(restoreMathPlaceholders(code, placeholders)));
 		} else if (language === 'partage') {
 			// Partage dans un item de liste : toujours un nœud, même en erreur (Q48)
 			blocks.push(parsePartageContent(restoreMathPlaceholders(code, placeholders)));
@@ -2062,6 +2248,20 @@ function parseContentWithCodeBlocks(
 		} else if (language === 'monnaie') {
 			// Monnaie dans un item de liste : toujours un nœud, même en erreur (Q48)
 			blocks.push(parseMonnaieContent(restoreMathPlaceholders(code, placeholders)));
+		} else if (language === 'schema-barres') {
+			// Schéma en barres dans un item de liste : toujours un nœud, même en erreur (Q48)
+			blocks.push(parseSchemaBarresContent(restoreMathPlaceholders(code, placeholders)));
+		} else if (language === 'associer') {
+			// Éléments à associer dans un item de liste (énoncé d'une série d'automatismes,
+			// bloc sans case) : deux colonnes à relier, jamais du code
+			blocks.push(parseAssocierContent(restoreMathPlaceholders(code, placeholders)));
+		} else if (language === 'ranger') {
+			// Étiquettes à ranger dans un item de liste (écart L89) : le bloc, jamais du code
+			blocks.push(parseRangerContent(restoreMathPlaceholders(code, placeholders)));
+		} else if (language === 'trous') {
+			// Texte à trous dans un item de liste (énoncé d'une série d'automatismes, bloc
+			// sans case) : le texte et sa réserve, jamais du code
+			blocks.push(parseTrousContent(restoreMathPlaceholders(code, placeholders)));
 		} else if (language === 'courbe') {
 			// Courbe dans un item de liste : toujours un nœud, même en erreur (Q48)
 			blocks.push(parseCourbeContent(restoreMathPlaceholders(code, placeholders)));

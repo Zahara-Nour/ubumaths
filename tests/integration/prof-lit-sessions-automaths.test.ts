@@ -24,7 +24,7 @@ import {
 import { createAuthenticatedClient } from '../helpers/database/supabase-client';
 import { TestData } from '../helpers/database/test-data-factory';
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { Database } from '$lib/types/database';
+import type { Database } from '#lib/types/database.ts';
 
 describe('sessions automaths : lecture par le prof', () => {
 	let service: SupabaseClient<Database>;

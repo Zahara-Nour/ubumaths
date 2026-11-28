@@ -1,12 +1,12 @@
 /**
  * Bloc ```figure-a-completer au PDF : la figure de départ seule (décision de
- * David du 2026-10-25, `docs/wip/geometrie-validation-progress.md` § 4) — le
+ * David du 2026-10-25, `docs/archive/wip/geometrie-validation-progress.md` § 4) — le
  * même dessin que le bloc ```figure sans les lignes `outils:` / `verifier:`.
  */
 import { describe, it, expect } from 'vitest';
-import { parseMarkdown, resolvedMarkdown } from '$lib/ubumark';
-import { generateFigureTypst } from '$lib/ubumark/generators/figure-typst';
-import type { FigureNode } from '$lib/ubumark/types/figure';
+import { parseMarkdown, resolvedMarkdown } from '#lib/ubumark/index.ts';
+import { generateFigureTypst } from '#lib/ubumark/generators/figure-typst.ts';
+import type { FigureNode } from '#lib/ubumark/types/figure.ts';
 
 const SCRIPT = ['---', 'A = point(1, 2)', 'B = point(7, 2)', 'C = point(4, 5)', '```'];
 

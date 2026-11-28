@@ -36,10 +36,10 @@ import type {
 	WorksheetConfig,
 	InstanceData,
 	WorksheetTemplateRow
-} from '$lib/types/worksheets';
+} from '#lib/types/worksheets.ts';
 import type { GeneratorConfig, GeneratorContext, GenerateResult } from '../types';
 import { BaseTypstGenerator } from './base-generator';
-import { escapeTypst } from '$lib/ubumark';
+import { escapeTypst, escapeTypstBrackets } from '#lib/ubumark/index.ts';
 import { renderTemplate } from '../templates';
 import {
 	printedStyleId,
@@ -49,18 +49,27 @@ import {
 	type TemplateForm
 } from '../templates/styles';
 import { documentLabels, labelPlaceholders, type DocumentLabels } from '../labels';
-import { DATE_LOCALES, TYPST_LANGS, type ContentLocale } from '$lib/types/locale';
-import { localizedText, worksheetLocale } from '$lib/types/worksheets';
+import { DATE_LOCALES, TYPST_LANGS, type ContentLocale } from '#lib/types/locale.ts';
+import { GRADES, isGradeCode } from '#lib/types/grades.ts';
+import { localizedText, worksheetLocale } from '#lib/types/worksheets.ts';
 import { withTextSize, type TextSize } from '../text-size';
-import { documentFromTeacherCopy } from '$lib/worksheets/document/teacher-adapter';
+import { withEasyReading } from '../easy-reading';
+import { documentFromTeacherCopy } from '#lib/worksheets/document/teacher-adapter.ts';
 import {
 	renderDocumentPreamble,
 	renderExercises,
 	type ExerciseLayout
-} from '$lib/worksheets/document/render-exercise';
-import { MATH_LIMITS_SETUP } from '$lib/worksheets/document/math-limits';
-import { TITLE_ONLY_HEADER, worksheetHeader } from '$lib/worksheets/worksheet-header';
-import type { DocumentForm, WorksheetDocument } from '$lib/worksheets/document/types';
+} from '#lib/worksheets/document/render-exercise.ts';
+import { MATH_LIMITS_SETUP } from '#lib/worksheets/document/math-limits.ts';
+import { TITLE_ONLY_HEADER, worksheetHeader } from '#lib/worksheets/worksheet-header.ts';
+import type { DocumentForm, WorksheetDocument } from '#lib/worksheets/document/types.ts';
+import { SITE_GIDOUILLE_TYPST, SITE_NAME, SITE_QR_TYPST } from '../templates/site-mark';
+import { levelBadge } from '../worksheet-palette';
+import {
+	isWorksheetCategory,
+	printedTitle,
+	type PrintedTitle
+} from '#lib/worksheets/worksheet-title.ts';
 
 // ============================================================================
 // TYPES
@@ -124,6 +133,12 @@ export interface WorksheetGeneratorOptions {
 	 * passe sur une colonne au-delà de la taille normale. Normale par défaut.
 	 */
 	textSize?: TextSize;
+	/**
+	 * Lecture facilitée (accessibilité, `easy-reading.ts`) : tout le document en
+	 * Luciole, formules en Luciole Math ; les corrections quittent alors les
+	 * polices du Corrigé. Faux par défaut.
+	 */
+	easyReading?: boolean;
 }
 
 /**
@@ -147,6 +162,8 @@ export interface GenerateTypstParams {
 	inlineCorrections?: boolean;
 	/** Voir `WorksheetGeneratorOptions.textSize` */
 	textSize?: TextSize;
+	/** Voir `WorksheetGeneratorOptions.easyReading` */
+	easyReading?: boolean;
 }
 
 // ============================================================================
@@ -236,6 +253,51 @@ export class WorksheetGenerator extends BaseTypstGenerator<WorksheetGeneratorInp
 		return localizedText(worksheet.title, worksheet.translations, 'title', this.locale) ?? '';
 	}
 
+	/**
+	 * Ce que le PDF imprime en titre (ADR 0041) : notions et catégorie, ou le
+	 * titre libre. Une fiche sans la case (construite hors de la base) garde son
+	 * titre tel quel.
+	 */
+	private printedTitle(worksheet: WorksheetRow): PrintedTitle {
+		const notions = [...(worksheet.classifications ?? [])]
+			.sort((a, b) => a.position - b.position || a.name.localeCompare(b.name, 'fr'))
+			.map((notion) => ({
+				name: notion.name,
+				branch: notion.branch,
+				nameEn: notion.name_en,
+				branchEn: notion.branch_en
+			}));
+		return printedTitle({
+			type: worksheet.type,
+			category: isWorksheetCategory(worksheet.category) ? worksheet.category : null,
+			customTitle: worksheet.custom_title ?? true,
+			title: this.title(worksheet),
+			notions,
+			locale: this.locale
+		});
+	}
+
+	/**
+	 * Les niveaux de la fiche, du plus petit au plus grand : noms complets et
+	 * courts séparés par « · » (gabarits des profs qui les impriment encore),
+	 * badges (forme courte, ADR 0041) en tête de la page 1 et au bas de page.
+	 * Fiche en anglais : les mêmes, noms français des niveaux — ceux que
+	 * connaissent les élèves (David, 2026-11-25). Une vue sans niveaux : aucun.
+	 */
+	private levels(worksheet: WorksheetRow): { full: string; short: string; badges: string } {
+		const grades: unknown[] = Array.isArray(worksheet.grades) ? worksheet.grades : [];
+		const known = grades.filter(isGradeCode);
+		if (known.length === 0) return { full: '', short: '', badges: '' };
+		const sorted = [...new Set(known)].sort((a, b) => GRADES[a].schoolYear - GRADES[b].schoolYear);
+		return {
+			full: sorted.map((grade) => GRADES[grade].displayName).join(' · '),
+			short: sorted.map((grade) => GRADES[grade].shortName).join(' · '),
+			badges: sorted
+				.map((grade) => `#${levelBadge(escapeTypst(GRADES[grade].shortName))}`)
+				.join('#h(0.3em)')
+		};
+	}
+
 	/** Date de rendu (`AAAA-MM-JJ`) telle qu'imprimée, dans la langue du document */
 	private formattedDueDate(isoDate: string): string {
 		return new Date(`${isoDate}T00:00:00Z`).toLocaleDateString(DATE_LOCALES[this.locale], {
@@ -287,7 +349,8 @@ export class WorksheetGenerator extends BaseTypstGenerator<WorksheetGeneratorInp
 		);
 		const resolved = resolveTemplate(styleId, this.form, custom);
 		// Corrigé : Shantell Sans et Chiphre Math sur chaque correction seulement,
-		// posées par le rendu des exercices (`render-exercise.ts`)
+		// posées par le rendu des exercices (`render-exercise.ts`) ; en lecture
+		// facilitée, tout le document en Luciole (règles posées sur le gabarit)
 		const typstContent = this.generateFromTemplate(input, resolved);
 
 		return {
@@ -306,7 +369,11 @@ export class WorksheetGenerator extends BaseTypstGenerator<WorksheetGeneratorInp
 		const { worksheet } = input;
 		// À la taille du texte voulue, avant d'y placer les exercices (qui n'ont
 		// aucune taille fixe : ils suivent celle du texte)
-		const templateContent = withTextSize(resolved.content, this.options.textSize ?? 'normal');
+		const sized = withTextSize(resolved.content, this.options.textSize ?? 'normal');
+		// Lecture facilitée : règles posées sur le GABARIT, avant d'y placer les
+		// exercices — un `#set` d'exercice (opération posée, tableau de variations,
+		// trous) ne peut pas les attirer dans son bloc
+		const templateContent = this.options.easyReading ? withEasyReading(sized) : sized;
 		const mode = this.pdfMode;
 		const ending = mode === 'worksheet' ? this.options.withCorrections : undefined;
 
@@ -350,6 +417,20 @@ export class WorksheetGenerator extends BaseTypstGenerator<WorksheetGeneratorInp
 		const showDuration = header.duration && duration !== '';
 		const showTotal = header.points && totalPoints !== '';
 
+		const levels = this.levels(worksheet);
+		const printed = this.printedTitle(worksheet);
+		// Un gabarit sans ligne sous le titre (style d'un prof, écrit avant
+		// l'ADR 0041) reçoit le titre complet : notions · catégorie. Un gabarit sans
+		// ligne des notions (écrit avant le 2026-11-20) : les notions en grand, comme
+		// avant, plutôt que la branche qui les cacherait
+		const hasSubLine = templateContent.includes('{{title_sub}}');
+		const hasNotionsLine = templateContent.includes('{{title_notions}}');
+		const mainTitle = !hasSubLine
+			? printed.flat
+			: printed.notions !== '' && !hasNotionsLine
+				? printed.notions
+				: printed.main;
+
 		// Prepare template data
 		const templateData: Record<string, string> = {
 			// Chrome vocabulary: one template body serves both languages, so a label
@@ -359,6 +440,20 @@ export class WorksheetGenerator extends BaseTypstGenerator<WorksheetGeneratorInp
 			lang: TYPST_LANGS[this.locale],
 			// Le titre s'imprime toujours ; le reste selon le type
 			show_title: 'true',
+			// Le niveau de la fiche : badges à gauche du titre (page 1) et au début
+			// du bas de page (ADR 0041) ; noms en texte pour les gabarits des profs
+			show_level: flag(levels.full !== ''),
+			level: escapeTypst(levels.full),
+			level_short: escapeTypst(levels.short),
+			level_badges: levels.badges,
+			// Sous un titre qui est la branche commune : les notions (ADR 0041, 2026-11-20)
+			show_title_notions: flag(printed.notions !== ''),
+			title_notions: escapeTypstBrackets(printed.notions),
+			// Sous le titre, en petit : la catégorie d'un titre composé ; rien sous un titre libre
+			show_title_sub: flag(printed.sub !== ''),
+			title_sub: escapeTypstBrackets(printed.sub),
+			// Au bas de chaque page : notions et catégorie, ou le titre libre
+			footer_title: escapeTypstBrackets(printed.footer),
 			show_student_name: flag(header.studentName),
 			show_class: flag(header.className),
 			show_date: flag(header.dateLine),
@@ -373,10 +468,16 @@ export class WorksheetGenerator extends BaseTypstGenerator<WorksheetGeneratorInp
 			show_duration: flag(showDuration),
 			// La ligne d'informations (durée, calculatrice, total) : seulement si elle a du contenu
 			show_header_notes: flag(showDuration || calculator !== '' || showTotal),
-			title: escapeTypst(
+			// Chiphre : QR du site en tête de la page 1, nom du site en bas des suivantes
+			site_qr: SITE_QR_TYPST,
+			site_name: SITE_NAME,
+			site_gidouille: SITE_GIDOUILLE_TYPST,
+			// Crochets échappés : le titre est posé dans des cellules `[…]` de grille,
+			// un `]` venu de la base fermerait la cellule (audit de sécurité, ADR 0041)
+			title: escapeTypstBrackets(
 				mode === 'worksheet' && this.options.inlineCorrections
-					? `${this.title(worksheet)} — ${this.labels.correction}`
-					: this.title(worksheet)
+					? `${mainTitle} — ${this.labels.correction}`
+					: mainTitle
 			),
 			// Lignes à remplir par l'élève, sauf ce que le PDF connaît déjà
 			date: fillLine('3cm'),
@@ -457,7 +558,8 @@ export class WorksheetGenerator extends BaseTypstGenerator<WorksheetGeneratorInp
 			: copyDoc;
 		return renderExercises(doc, mode, layout, {
 			inlineCorrections: mode === 'worksheet' && this.options.inlineCorrections,
-			correctionFonts: this.options.correctionFonts
+			// Lecture facilitée : les corrections suivent la police du document
+			correctionFonts: this.options.easyReading ? false : this.options.correctionFonts
 		});
 	}
 }
@@ -498,7 +600,8 @@ export function generateWorksheetTypst(params: GenerateTypstParams): string {
 			individualCopyNotice: params.individualCopyNotice,
 			withCorrections: params.withCorrections,
 			inlineCorrections: params.inlineCorrections,
-			textSize: params.textSize
+			textSize: params.textSize,
+			easyReading: params.easyReading
 		}
 	);
 

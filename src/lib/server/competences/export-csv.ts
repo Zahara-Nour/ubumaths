@@ -13,8 +13,8 @@
  * tested in isolation. The endpoint maps the class grid to `ExportStudentRow[]`.
  */
 
-import type { MathCompetenceLevel } from '$lib/types/skills';
-import { formatNiveau, type NiveauFormat } from '$lib/competences/niveau-format';
+import type { MathCompetenceLevel } from '#lib/types/skills.ts';
+import { formatNiveau, type NiveauFormat } from '#lib/competences/niveau-format.ts';
 import { formatSocleCell } from './socle-mapping';
 
 export type Disposition = 'large' | 'longue';

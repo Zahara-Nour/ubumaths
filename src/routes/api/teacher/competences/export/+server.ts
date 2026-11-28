@@ -21,10 +21,10 @@
 import { error } from '@sveltejs/kit';
 import { z } from 'zod';
 import type { RequestHandler } from './$types';
-import { requireTeacherOfClass } from '$lib/server/stats/teacher-class-auth';
-import { loadClassCompetenceExport } from '$lib/server/competences/load-export-data';
-import { buildCompetencesCsv } from '$lib/server/competences/export-csv';
-import { createServerLogger } from '$lib/utils/logger';
+import { requireTeacherOfClass } from '#lib/server/stats/teacher-class-auth.ts';
+import { loadClassCompetenceExport } from '#lib/server/competences/load-export-data.ts';
+import { buildCompetencesCsv } from '#lib/server/competences/export-csv.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/teacher/competences/export');
 

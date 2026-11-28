@@ -159,10 +159,10 @@ Affichage 5-en-1 : stdout, stderr (+ message pédagogique français basé sur 13
 « Ouvrir dans l'atelier » (phase 0 [python-vers-atelier-phase0.md](../../archive/wip/python-vers-atelier-phase0.md)),
 rendu sous `PythonOutput` dans les deux mises en page du playground, avec `lists={pythonStore.atelierLists}`.
 Rien n'apparaît tant que la dernière exécution réussie n'a affecté aucune liste. Le menu montre une
-entrée par liste (`offerOf`, `$lib/atelier/from-python`) : « lancers (12 valeurs) », « lancers : ses
+entrée par liste (`offerOf`, `#lib/atelier/from-python.ts`) : « lancers (12 valeurs) », « lancers : ses
 effectifs (1000 valeurs, 6 différentes) », ou la liste refusée, atteignable au clavier, avec sa raison
 (`aria-disabled`, motif de `FunctionCard`). Le clic dépose les listes (`postToAtelier`,
-`$lib/atelier/python-mailbox`) et ouvre `/atelier?depuis-python=<clé>` dans un **nouvel onglet** ;
+`#lib/atelier/python-mailbox.ts`) et ouvre `/atelier?depuis-python=<clé>` dans un **nouvel onglet** ;
 stockage plein ou bloqué → toast, rien d'ouvert. Le playground ne bouge pas.
 
 ```typescript
@@ -297,7 +297,7 @@ export function loadThemeExtension(name: EditorTheme): Promise<Extension | null>
 - **Svelte 5 runes uniquement** : `$state`, `$derived`, `$props`, `$bindable`, `$effect`. Aucun `let count = 0` réactif, aucun `$:`.
 - **Lowercase event handlers** : `onExecute`, `onSave`, etc. (pas de `on:execute`).
 - **Pas de `<select>` natif** : `MySelect` partout (voir `PythonSettings`, `ExerciseStrategyEditor`).
-- **Pas d'`any`** : tous les types proviennent de `$lib/types/database`, `$lib/shared/python`, `$lib/types/python-exercises`.
+- **Pas d'`any`** : tous les types proviennent de `#lib/types/database.ts`, `#lib/shared/python/index.ts`, `#lib/types/python-exercises.ts`.
 - **Theme switching** : tous les composants éditeur observent `theme.svelte` (store global) et réinitialisent CodeMirror via `MutationObserver` sur `document.documentElement` (classe `dark`).
 - **Messages en français** côté UI ; props et code en anglais.
 

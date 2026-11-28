@@ -20,10 +20,10 @@
 // ============================================================================
 
 // Re-export base types from mathAST/units
-export type { Unit, Dimension, BaseUnitDef } from '$lib/mathAST/units/types';
+export type { Unit, Dimension, BaseUnitDef } from '#lib/mathAST/units/types.ts';
 
 // Import Unit type for use in this module's type definitions
-import type { Unit } from '$lib/mathAST/units/types';
+import type { Unit } from '#lib/mathAST/units/types.ts';
 
 // ============================================================================
 // MUTABLE UNIT (for internal operations that need mutability)
@@ -399,7 +399,7 @@ export type ConversionResult =
 // ============================================================================
 
 // Import Dimension type for DimensionMap
-import type { Dimension } from '$lib/mathAST/units/types';
+import type { Dimension } from '#lib/mathAST/units/types.ts';
 
 /**
  * Dimensional signature of a unit

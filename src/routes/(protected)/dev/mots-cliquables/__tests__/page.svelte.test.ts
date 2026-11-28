@@ -9,7 +9,7 @@ import { render } from 'vitest-browser-svelte';
 import Page from '../+page.svelte';
 
 // Le dictionnaire arrive de /api/dictionnaire (ADR 0022) : ici, le jeu de référence figé
-vi.mock('$lib/dictionary/fetch-dictionary', async () => {
+vi.mock('#lib/dictionary/fetch-dictionary.ts', async () => {
 	const { REFERENCE_DICTIONARY: entries } =
 		await import('../../../../../../tests/fixtures/lexique/dictionnaire-reference');
 	return { fetchDictionary: async () => entries };
@@ -51,7 +51,7 @@ describe('page de test des mots cliquables', () => {
 		expect(document.body.textContent).not.toContain('(puissance)');
 		await userEvent.keyboard('{Escape}');
 
-		await page.getByRole('button', { name: 'Niveau de lecture' }).click();
+		await page.getByRole('combobox', { name: 'Niveau de lecture' }).click();
 		await page.getByRole('option', { name: '5ème' }).click();
 		await carre.click();
 		await expect.element(page.getByText('(puissance)').last()).toBeInTheDocument();

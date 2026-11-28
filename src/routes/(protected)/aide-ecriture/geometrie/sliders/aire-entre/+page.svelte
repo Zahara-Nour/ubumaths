@@ -1,5 +1,5 @@
 <script lang="ts">
-	import BackLink from '$lib/components/navigation/BackLink.svelte';
+	import BackLink from '#lib/components/navigation/BackLink.svelte';
 	import DslDemo from '../../DslDemo.svelte';
 
 	// Cas pédagogique classique de Terminale spé maths : aire entre y = sin(x)

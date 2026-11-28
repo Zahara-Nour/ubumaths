@@ -8,8 +8,8 @@ import { describe, it, expect, vi, afterEach } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import type { MathfieldElement } from 'mathlive';
 import AtelierContainer from '../AtelierContainer.svelte';
-import { Atelier } from '$lib/atelier/atelier.svelte';
-import { INPUT_MODE_KEY } from '$lib/atelier/input-mode';
+import { Atelier } from '#lib/atelier/atelier.svelte.ts';
+import { INPUT_MODE_KEY } from '#lib/atelier/input-mode.ts';
 
 afterEach(() => localStorage.removeItem(INPUT_MODE_KEY));
 

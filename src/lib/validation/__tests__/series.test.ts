@@ -6,6 +6,7 @@
 import { describe, it, expect } from 'vitest';
 import {
 	SERIES_LINK_PARAM,
+	SERIES_SEED_PARAM,
 	buildSeriesLink,
 	decodeSeriesParamJson,
 	encodeSeriesParam,
@@ -160,7 +161,53 @@ describe('buildSeriesLink (Q44)', () => {
 		expect(url.searchParams.get('time')).toBe('420');
 	});
 
+	it('mêmes nombres pour tous : le lien porte la graine de la série', () => {
+		const url = new URL(
+			buildSeriesLink('https://chiph.re', [ITEM], { mode: 'display', seed: 123456 })
+		);
+
+		expect(url.searchParams.get(SERIES_SEED_PARAM)).toBe('123456');
+	});
+
+	it('sans « mêmes nombres » : aucun paramètre de graine', () => {
+		const url = new URL(buildSeriesLink('https://chiph.re', [ITEM], { mode: 'display' }));
+
+		expect(url.searchParams.has(SERIES_SEED_PARAM)).toBe(false);
+	});
+
 	it('encodeSeriesParam est l’inverse du décodage', () => {
 		expect(decodeSeriesParamJson(encodeSeriesParam([ITEM]))).toEqual({ ok: true, value: [ITEM] });
+	});
+});
+
+describe('idée 2 : variations choisies sur une ligne', () => {
+	it('accepte une liste de numéros distincts, et une ligne sans choix', () => {
+		expect(seriesItemSchema.safeParse({ ...ITEM, variations: [0, 2] }).success).toBe(true);
+		expect(seriesItemSchema.safeParse(ITEM).success).toBe(true);
+	});
+
+	it('garde le choix à la relecture (série enregistrée, lien)', () => {
+		const parsed = seriesItemSchema.parse({ ...ITEM, variations: [2, 0] });
+		expect(parsed.variations).toEqual([0, 2]);
+	});
+
+	it('refuse une liste vide, un doublon, un numéro négatif ou non entier, une liste trop longue', () => {
+		for (const variations of [[], [1, 1], [-1], [1.5], Array.from({ length: 201 }, (_, i) => i)]) {
+			expect(seriesItemSchema.safeParse({ ...ITEM, variations }).success).toBe(false);
+		}
+	});
+});
+
+describe('idée 4 : variations « en QCM » sur une ligne', () => {
+	it('accepte une liste de numéros distincts, rangés, et une ligne sans QCM', () => {
+		const parsed = seriesItemSchema.parse({ ...ITEM, choiceVariations: [2, 0] });
+		expect(parsed.choiceVariations).toEqual([0, 2]);
+		expect(seriesItemSchema.parse(ITEM).choiceVariations).toBeUndefined();
+	});
+
+	it('refuse une liste vide, un doublon, un numéro négatif ou non entier', () => {
+		for (const choiceVariations of [[], [1, 1], [-1], [1.5]]) {
+			expect(seriesItemSchema.safeParse({ ...ITEM, choiceVariations }).success).toBe(false);
+		}
 	});
 });

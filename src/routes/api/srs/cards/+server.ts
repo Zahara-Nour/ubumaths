@@ -9,17 +9,16 @@
  * - POST /api/srs/cards - Add card to deck
  */
 
-import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import {
 	createCardSchema,
 	listCardsQuerySchema,
 	cardListResponseSchema,
 	createCardResponseSchema
-} from '$lib/server/validation/srs';
-import { validateJsonResponse } from '$lib/server/validation/response-utils';
-import { requireAuth } from '$lib/server/middleware/auth';
-import { createServerLogger } from '$lib/utils/logger';
+} from '#lib/server/validation/srs.ts';
+import { validateJsonResponse } from '#lib/server/validation/response-utils.ts';
+import { requireAuth } from '#lib/server/middleware/auth.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/srs/cards/+server');
 
@@ -44,7 +43,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 	const validation = listCardsQuerySchema.safeParse(queryRaw);
 
 	if (!validation.success) {
-		return json({ error: validation.error.issues[0].message }, { status: 400 });
+		return Response.json({ error: validation.error.issues[0].message }, { status: 400 });
 	}
 
 	const { deck_id: deckId } = validation.data;
@@ -59,7 +58,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 			.single();
 
 		if (deckError || !deck) {
-			return json({ error: 'Deck introuvable ou accès refusé' }, { status: 404 });
+			return Response.json({ error: 'Deck introuvable ou accès refusé' }, { status: 404 });
 		}
 
 		// Get cards (RLS ensures user owns deck)
@@ -71,7 +70,10 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 
 		if (cardsError) {
 			logger.error('Error fetching cards:', cardsError);
-			return json({ error: 'Impossible de charger les cartes de révision' }, { status: 500 });
+			return Response.json(
+				{ error: 'Impossible de charger les cartes de révision' },
+				{ status: 500 }
+			);
 		}
 
 		// Validate response
@@ -81,10 +83,10 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 			'GET /api/srs/cards'
 		);
 
-		return json(validated);
+		return Response.json(validated);
 	} catch (error) {
 		logger.error('Unexpected error in GET /api/srs/cards:', error);
-		return json({ error: 'Une erreur inattendue s’est produite' }, { status: 500 });
+		return Response.json({ error: 'Une erreur inattendue s’est produite' }, { status: 500 });
 	}
 };
 
@@ -120,7 +122,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		const validation = createCardSchema.safeParse(bodyRaw);
 
 		if (!validation.success) {
-			return json({ error: validation.error.issues[0].message }, { status: 400 });
+			return Response.json({ error: validation.error.issues[0].message }, { status: 400 });
 		}
 
 		const body = validation.data;
@@ -134,11 +136,11 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			.single();
 
 		if (deckError || !deck) {
-			return json({ error: 'Deck introuvable ou accès refusé' }, { status: 404 });
+			return Response.json({ error: 'Deck introuvable ou accès refusé' }, { status: 404 });
 		}
 
 		if (deck.is_assigned) {
-			return json(
+			return Response.json(
 				{ error: 'Impossible d’ajouter des cartes à un deck assigné : il est en lecture seule.' },
 				{ status: 403 }
 			);
@@ -147,7 +149,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		// Le paquet Programme est rempli par le serveur seul : la base refuse
 		// l'insertion (migration 20261003100000) — on répond 403, pas 500.
 		if (deck.is_auto_managed) {
-			return json(
+			return Response.json(
 				{
 					error: 'Impossible d’ajouter des cartes au deck Programme : il est géré automatiquement.'
 				},
@@ -165,11 +167,11 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 				.single();
 
 			if (templateError || !template) {
-				return json({ error: 'Modèle de question introuvable' }, { status: 404 });
+				return Response.json({ error: 'Modèle de question introuvable' }, { status: 404 });
 			}
 
 			if (template.status !== 'published') {
-				return json(
+				return Response.json(
 					{ error: 'Le modèle doit être publié pour servir en révision' },
 					{ status: 400 }
 				);
@@ -190,7 +192,10 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 			if (createError) {
 				logger.error('Error creating template card:', createError);
-				return json({ error: 'Impossible de créer la carte de révision' }, { status: 500 });
+				return Response.json(
+					{ error: 'Impossible de créer la carte de révision' },
+					{ status: 500 }
+				);
 			}
 
 			// Validate response
@@ -200,7 +205,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 				'POST /api/srs/cards (template)'
 			);
 
-			return json(validated, { status: 201 });
+			return Response.json(validated, { status: 201 });
 		} else {
 			// Custom card - Zod has already validated frontContent and backContent exist and are non-empty
 			// Create custom card
@@ -218,7 +223,10 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 			if (createError) {
 				logger.error('Error creating custom card:', createError);
-				return json({ error: 'Impossible de créer la carte de révision' }, { status: 500 });
+				return Response.json(
+					{ error: 'Impossible de créer la carte de révision' },
+					{ status: 500 }
+				);
 			}
 
 			// Validate response
@@ -228,10 +236,10 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 				'POST /api/srs/cards (custom)'
 			);
 
-			return json(validated, { status: 201 });
+			return Response.json(validated, { status: 201 });
 		}
 	} catch (error) {
 		logger.error('Unexpected error in POST /api/srs/cards:', error);
-		return json({ error: 'Une erreur inattendue s’est produite' }, { status: 500 });
+		return Response.json({ error: 'Une erreur inattendue s’est produite' }, { status: 500 });
 	}
 };

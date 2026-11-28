@@ -7,7 +7,7 @@ import { describe, it, expect } from 'vitest';
 import { computeVariations } from '../compute';
 import { parseLatex } from '../../parser';
 import { toLatex } from '../../latex-generator';
-import { closedEndpoint, interval } from '$lib/math/intervals/factory';
+import { closedEndpoint, interval } from '#lib/math/intervals/factory.ts';
 import { intervalSet } from '../../domain/factory';
 
 describe('valeurs du tableau de variations', () => {

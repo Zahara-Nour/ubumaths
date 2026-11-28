@@ -13,8 +13,8 @@
 import { existsSync, readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { buddyMessageEngine } from '../buddy-message-engine';
-import type { PalotinType } from '$lib/config/buddy-messages';
-import type { BuddyExpression } from '$lib/types/buddy';
+import type { PalotinType } from '#lib/config/buddy-messages.ts';
+import type { BuddyExpression } from '#lib/types/buddy.ts';
 
 // Constantes
 /** Toutes les expressions : le `satisfies` casse si une expression est ajoutée au type sans ici. */
@@ -34,12 +34,8 @@ describe('expression selon le contexte', () => {
 		expect(buddyMessageEngine.getExpression('incorrect')).toBe('determined');
 	});
 
-	it('Constance perdue : déterminé aussi (les répliques disent « on repart »)', () => {
-		expect(buddyMessageEngine.getExpression('streak_lost')).toBe('determined');
-	});
-
-	it('retour après une longue absence : triste', () => {
-		expect(buddyMessageEngine.getExpression('long_absence')).toBe('sad');
+	it('retour après une pause : joyeux, jamais triste (R2, 2026-11-12)', () => {
+		expect(buddyMessageEngine.getExpression('return_after_pause')).toBe('happy');
 	});
 });
 

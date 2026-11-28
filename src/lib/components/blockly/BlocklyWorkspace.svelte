@@ -7,7 +7,7 @@
   @example
   ```svelte
   <script lang="ts">
-    import BlocklyWorkspace from '$lib/components/blockly/BlocklyWorkspace.svelte';
+    import BlocklyWorkspace from '#lib/components/blockly/BlocklyWorkspace.svelte';
     import type * as Blockly from 'blockly';
 
     let workspace = $state<Blockly.WorkspaceSvg | null>(null);
@@ -26,6 +26,7 @@
 <script lang="ts">
 	import * as Blockly from 'blockly';
 	import 'blockly/blocks';
+	import * as BlocklyFr from 'blockly/msg/fr';
 	import { onMount, onDestroy } from 'svelte';
 	import {
 		STANDARD_TOOLBOX,
@@ -33,7 +34,9 @@
 		ERROR_MESSAGES,
 		CHIPHRE_THEME,
 		type ToolboxDefinition
-	} from '$lib/shared/blockly';
+	} from '#lib/shared/blockly/index.ts';
+	import { definirBlocsTortue } from '#lib/shared/blockly/tortue/index.ts';
+	import { definirBlocsCalcul, francaiserBlocsCalcul } from '#lib/shared/blockly/calcul/blocs.ts';
 
 	// =============================================================================
 	// Types
@@ -117,6 +120,23 @@
 				// Use custom theme with black category text, or provided theme
 				theme: theme ?? CHIPHRE_THEME
 			};
+
+			// Blocs en français (« afficher », « répéter »…), avant de créer l'espace de travail
+			// (on ne garde que les messages : l'espace de noms du module porte aussi `default`)
+			Blockly.setLocale(
+				Object.fromEntries(
+					Object.entries(BlocklyFr).filter(
+						(entree): entree is [string, string] => typeof entree[1] === 'string'
+					)
+				)
+			);
+			// Textes des blocs génériques des programmes de calcul (« mettre x à », « reste de… ») :
+			// réglage global de Blockly, donc aussi pour la tortue (qui n'a pas ces blocs)
+			francaiserBlocsCalcul();
+
+			// Blocs tortue et de calcul (définis une seule fois), avant l'injection
+			definirBlocsTortue();
+			definirBlocsCalcul();
 
 			// Inject Blockly into the container
 			workspace = Blockly.inject(containerRef, options);

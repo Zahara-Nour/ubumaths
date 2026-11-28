@@ -1,0 +1,24 @@
+[
+	{
+		"id": "856f400e-cb97-4bc9-8934-03081d9abb72",
+		"noeudAvant": null,
+		"noeudApres": "Géométrie > Repérage et déplacements > coder un déplacement",
+		"gradesAvant": ["CE1"],
+		"gradesApres": ["CE1"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["CE1§CE1-080"]
+	},
+	{
+		"id": "c8da0674-7e4b-44d5-a062-573c5b54ce32",
+		"noeudAvant": null,
+		"noeudApres": "Géométrie > Repérage et déplacements > coder un déplacement",
+		"gradesAvant": ["CE1"],
+		"gradesApres": ["CE1"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["CE1§CE1-080"]
+	}
+]

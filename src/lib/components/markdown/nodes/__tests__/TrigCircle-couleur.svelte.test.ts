@@ -11,7 +11,7 @@ import { describe, it, expect, afterEach } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import TrigCircle from '../TrigCircle.svelte';
 import MarkdownRenderer from '../../MarkdownRenderer.svelte';
-import { parseTrigCircleContent } from '$lib/ubumark/parser/trig-circle-parser';
+import { parseTrigCircleContent } from '#lib/ubumark/parser/trig-circle-parser.ts';
 
 const HOSTILE = 'red; background-image: url(https://exemple.invalid/traceur.png)';
 

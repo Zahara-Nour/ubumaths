@@ -9,7 +9,7 @@ import type {
 	Achievement,
 	StudentAchievement,
 	UnlockedAchievementResponse
-} from '$lib/types/achievements';
+} from '#lib/types/achievements.ts';
 
 describe('Minesweeper Adapter', () => {
 	describe('ID prefix handling', () => {

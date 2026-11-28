@@ -13,8 +13,8 @@
 	@see src/lib/exercises/types.ts - ImageNode
 -->
 <script lang="ts">
-	import { Label } from '$lib/components/ui/label';
-	import { Input } from '$lib/components/ui/input';
+	import { Label } from '#lib/components/ui/label/index.ts';
+	import { Input } from '#lib/components/ui/input/index.ts';
 
 	// Props
 	interface Props {

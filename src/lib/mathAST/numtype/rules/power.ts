@@ -17,7 +17,7 @@
 import type { MathType, SignInfo } from '../types';
 import { join, isSubtype } from '../algebra';
 import { COMPLEX_TYPE, UNKNOWN_TYPE } from '../types';
-import { powerBounds } from '$lib/math/intervals';
+import { powerBounds } from '#lib/math/intervals/index.ts';
 import { applyFunctionToBounds } from './function-bounds';
 
 // =============================================================================

@@ -15,7 +15,7 @@
 
 import { vi, beforeEach } from 'vitest';
 // Messages Zod en français, comme en production (src/hooks.server.ts)
-import '$lib/zod-locale';
+import '#lib/zod-locale.ts';
 
 /**
  * Clear all mocks before each test

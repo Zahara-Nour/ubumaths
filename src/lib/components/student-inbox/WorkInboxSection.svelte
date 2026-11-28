@@ -16,11 +16,11 @@
 -->
 
 <script lang="ts">
-	import * as Collapsible from '$lib/components/ui/collapsible';
+	import * as Collapsible from '#lib/components/ui/collapsible/index.ts';
 	import WorkItemCard from './WorkItemCard.svelte';
 	import { ChevronDown, AlertTriangle } from '@lucide/svelte';
-	import { cn } from '$lib/utils';
-	import type { WorkItem } from '$lib/types/student-inbox';
+	import { cn } from '#lib/utils.ts';
+	import type { WorkItem } from '#lib/types/student-inbox.ts';
 
 	type SectionVariant = 'default' | 'destructive' | 'muted';
 

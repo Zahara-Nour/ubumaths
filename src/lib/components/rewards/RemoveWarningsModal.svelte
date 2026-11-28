@@ -20,15 +20,15 @@
 -->
 
 <script lang="ts">
-	import { lore } from '$lib/config/lore';
-	import { Button } from '$lib/components/ui/button';
-	import { modalStack } from '$lib/stores/modalStack.svelte';
-	import { toaster } from '$lib/stores/toaster.svelte';
-	import { Badge } from '$lib/components/ui/badge';
-	import { cn } from '$lib/utils';
-	import { teacherCache } from '$lib/stores/teacherDashboardCache.svelte';
+	import { lore } from '#lib/config/lore.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import { modalStack } from '#lib/stores/modalStack.svelte.ts';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
+	import { cn } from '#lib/utils.ts';
+	import { teacherCache } from '#lib/stores/teacherDashboardCache.svelte.ts';
 	import { X } from '@lucide/svelte';
-	import { WARNING_TYPE_LABELS } from '$lib/types/warnings';
+	import { WARNING_TYPE_LABELS } from '#lib/types/warnings.ts';
 
 	interface Props {
 		studentId: string;

@@ -7,10 +7,10 @@
 	la fenêtre ou changer d'élève efface le mot de passe affiché.
 -->
 <script lang="ts">
-	import { Button } from '$lib/components/ui/button';
-	import { Label } from '$lib/components/ui/label';
-	import * as Dialog from '$lib/components/ui/dialog';
-	import { toaster } from '$lib/stores/toaster.svelte';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import { Label } from '#lib/components/ui/label/index.ts';
+	import * as Dialog from '#lib/components/ui/dialog/index.ts';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
 	import { Copy, KeyRound, Loader2 } from '@lucide/svelte';
 
 	let { studentId, studentName }: { studentId: string; studentName: string } = $props();

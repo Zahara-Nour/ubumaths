@@ -13,10 +13,10 @@
 	import type { Snippet } from 'svelte';
 	import Slide from './Slide.svelte';
 	import type { SlideProps } from './types.js';
-	import PageRenderer from '$lib/whiteboard/components/PageRenderer.svelte';
+	import PageRenderer from '#lib/whiteboard/components/PageRenderer.svelte';
 	import SlideAnnotationLayer from '../components/SlideAnnotationLayer.svelte';
 	import { slideAnnotationStore } from '../stores/slideAnnotationStore.svelte.js';
-	import type { Page, AnnotationElement } from '$lib/whiteboard/types/document';
+	import type { Page, AnnotationElement } from '#lib/whiteboard/types/document.ts';
 
 	// ==========================================================================
 	// Props

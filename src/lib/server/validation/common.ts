@@ -76,9 +76,9 @@ export {
 	gradeFlexibleSchema,
 	gradeArraySchema,
 	gradeArrayFlexibleSchema
-} from '$lib/server/validation/grades';
+} from '#lib/server/validation/grades.ts';
 
-export { formatGradeForDisplay } from '$lib/utils/grades';
+export { formatGradeForDisplay } from '#lib/utils/grades.ts';
 
 // ============================================================================
 // VALIDATION HELPER FUNCTION

@@ -7,13 +7,11 @@
  * LOCAL test database once, before the suite runs, so each test can create its
  * own teacher (cleaned between tests by the per-suite cleanup helpers).
  *
- * Local test DB only (port 54322) — never production. Runs once per
- * `pnpm test:integration` invocation.
+ * Pile de TEST seulement (port 55322 en local, pile jetable en CI) — jamais la base de dev,
+ * jamais la prod. Runs once per `pnpm test:integration` invocation.
  */
 import { Client } from 'pg';
-import { spawnSync } from 'node:child_process';
-import { existsSync, readFileSync } from 'node:fs';
-import { join } from 'node:path';
+import { PORT_DB, TABLE_EMPREINTES } from '../../scripts/pile-de-test/regles';
 import { purgeTemplatesOf } from '../helpers/database/purge-modeles';
 
 function makeClient(): Client {
@@ -27,26 +25,51 @@ function makeClient(): Client {
 }
 
 /**
- * La base contenait-elle la base locale remplie (`pnpm db:seed-riche`) ? Ses
- * classes portent les codes `LOCAL…`. La suite la détruit (prof supprimé,
- * toutes les classes purgées) : on la recrée en sortie.
+ * En local, la suite ne tourne QUE sur la pile de test (`pnpm test:integration`,
+ * scripts/pile-de-test/). Lancée à la main sur la base de dev (`vitest --config …` sans le
+ * lanceur), elle supprimerait le prof de dev et les classes du seed-riche : on refuse avant de
+ * supprimer quoi que ce soit. La CI n'a qu'une pile, jetable : rien à vérifier. On la reconnaît à
+ * `GITHUB_ACTIONS`, pas à `CI`, qu'un outil peut exporter sur le poste.
  */
-let seedRicheARefaire = false;
+async function refuserHorsPileDeTest(client: Client): Promise<void> {
+	if (process.env.GITHUB_ACTIONS) return;
+	const { rows } = await client.query<{ present: boolean }>(
+		`select to_regclass('${TABLE_EMPREINTES}') is not null as present`
+	);
+	if (client.port !== PORT_DB || !rows[0]?.present) {
+		throw new Error(
+			`Tests d'intégration refusés : la base visée (port ${client.port}) n'est pas la pile de test. ` +
+				'Lance `pnpm test:integration [fichier]`, qui la démarre et la met à jour.'
+		);
+	}
+}
 
 export async function setup(): Promise<void> {
 	const client = makeClient();
 	await client.connect();
 	try {
-		const { rows } = await client.query(
-			`select exists (select 1 from public.classes where join_code like 'LOCAL%') as present`
-		);
-		seedRicheARefaire = !process.env.CI && rows[0]?.present === true;
+		await refuserHorsPileDeTest(client);
 
 		// ADR 0029 : un modèle relié par un chapitre bloque la cascade (lignes de
 		// lien en RESTRICT) — les classes, elles, ne sont pas purgées ici. Les
 		// lignes de lien vers les modèles d'un professeur, puis ses modèles, sont
 		// donc supprimées AVANT les comptes (incident du 2026-10-14).
 		await purgeTemplatesOf(client, `select id from public.profiles where role = 'teacher'`);
+
+		// Les liens de partage gardent leur auteur (`created_by`, clé sans
+		// `ON DELETE`) et ne suivent pas la cascade : une classe n'appartient à
+		// aucun compte. Un lien créé par le prof de dev bloquait la suppression
+		// des profs (23503, liens du cahier de texte du 2026-11-20).
+		for (const table of [
+			'class_journal_share_tokens',
+			'class_course_share_tokens',
+			'exercise_share_tokens'
+		]) {
+			await client.query(
+				`DELETE FROM public.${table}
+				 WHERE created_by IN (select id from public.profiles where role = 'teacher')`
+			);
+		}
 
 		// Deleting from auth.users cascades to profiles → classes → class_members,
 		// clearing the seeded demo teachers (and any leftover teacher from a prior run).
@@ -57,43 +80,5 @@ export async function setup(): Promise<void> {
 		);
 	} finally {
 		await client.end();
-	}
-}
-
-/**
- * Restaure le compte prof de développement à la fin de la suite.
- *
- * Le `setup` ci-dessus supprime tous les comptes `teacher`, y compris celui du
- * seed de développement — et David se retrouvait déconnecté après chaque suite,
- * sans comprendre pourquoi ses identifiants ne marchaient plus. Ça lui a coûté
- * quatre interruptions le 2026-08-31, dont une avec un blocage anti-force-brute
- * de quinze minutes.
- *
- * On rejoue donc le seed de développement en sortie. Il est idempotent, et cette
- * fonction ne tourne qu'en local — la CI n'exécute pas les tests d'intégration.
- */
-export async function teardown(): Promise<void> {
-	const seed = join(process.cwd(), 'supabase/seed/dev_accounts.sql');
-	if (!existsSync(seed)) return;
-
-	const client = makeClient();
-	await client.connect();
-	try {
-		await client.query(readFileSync(seed, 'utf8'));
-	} catch {
-		// Purement confortable : jamais au prix d'un échec de suite.
-	} finally {
-		await client.end();
-	}
-
-	// La base locale remplie avait été détruite par la suite : on la recrée (~10 s).
-	// Script appelé DIRECTEMENT : `pnpm db:seed-riche` reprendrait le verrou
-	// Supabase, que la suite tient déjà, et sortirait en exit 2.
-	if (seedRicheARefaire) {
-		console.log('\n↻ Base locale remplie détruite par la suite : pnpm db:seed-riche…');
-		const r = spawnSync('npx', ['tsx', 'scripts/db-seed-riche/index.ts'], { stdio: 'inherit' });
-		if (r.status !== 0) {
-			console.log('⚠️  Seed non refait : relancer `pnpm db:seed-riche` à la main.');
-		}
 	}
 }

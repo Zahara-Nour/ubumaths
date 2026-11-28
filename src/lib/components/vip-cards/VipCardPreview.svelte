@@ -1,10 +1,10 @@
 <script lang="ts">
-	import { Switch } from '$lib/components/ui/switch';
+	import { Switch } from '#lib/components/ui/switch/index.ts';
 	import { Check, ImageIcon, Pencil, Trash2 } from '@lucide/svelte';
-	import type { VipCardTemplate } from '$lib/stores/vipCardTemplates.svelte';
-	import type { VipCardAction } from '$lib/types/vip-card';
+	import type { VipCardTemplate } from '#lib/stores/vipCardTemplates.svelte.ts';
+	import type { VipCardAction } from '#lib/types/vip-card.ts';
 	import { categoryIcon } from './utils';
-	import MySelect from '$lib/components/MySelect.svelte';
+	import MySelect from '#lib/components/MySelect.svelte';
 	import type { Snippet } from 'svelte';
 	type ActionType = VipCardAction['type'];
 

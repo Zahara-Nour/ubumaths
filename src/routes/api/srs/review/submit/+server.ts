@@ -3,31 +3,34 @@
  *
  * Refonte 2026-06-10 (Phase 2, lot L5) :
  * - À chaque review d'une carte template-based, insère 1 row dans `skill_attempts`
- *   avec `source='srs'` et le `grade` brut conservé.
+ *   (`student_self`, lieu `review`, `grade` conservé — `recordSrsReviewAttempt`).
  * - Le trigger PG recalcule `student_point_state` pour chaque point tagué.
  * - Si la carte est dans un deck autre que Programme, on l'ajoute aussi au Programme
  *   pour cohérence (idempotent) — sauf question de cours ou brouillon (Q113,
  *   `entersProgrammeDeck`).
  * - Pour les cartes custom (front/back libre), aucun skill_attempts n'est créé.
+ * - Coup de pouce ouvert (`withHelp`, idée 5 du chantier `idees-format`) :
+ *   « Réussi » devient « Difficile » pour FSRS (`helpedGrade`), trace « avec indice ».
  *
  * Spec : docs/archive/wip/srs-fsrs-spec-tdd.md §2
  */
 
-import { error, json } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import type { CardStats } from '$lib/srs/types';
-import { FSRS } from '$lib/srs/fsrs';
-import { submitReviewSchema } from '$lib/server/validation/srs';
-import { requireAuth } from '$lib/server/middleware/auth';
-import { requireConsent } from '$lib/server/middleware/consent';
-import { ensureProgrammeDeckCard } from '$lib/server/srs/programme-deck';
-import { entersProgrammeDeck } from '$lib/server/srs/programme-deck-rule';
-import { applyFsrsReview } from '$lib/server/srs/fsrs-actions';
-import { recordSrsReviewAttempt } from '$lib/server/srs/srs-attempt';
-import { rewardFinishedReviewSession } from '$lib/server/srs/review-session-reward';
-import { recordReviewSessionCard } from '$lib/server/srs/review-session-stats';
-import type { BuddyXpFromExerciseResult } from '$lib/server/buddy-xp-service';
-import { createServerLogger } from '$lib/utils/logger';
+import type { CardStats } from '#lib/srs/types.ts';
+import { FSRS } from '#lib/srs/fsrs.ts';
+import { submitReviewSchema } from '#lib/server/validation/srs.ts';
+import { requireAuth } from '#lib/server/middleware/auth.ts';
+import { requireConsent } from '#lib/server/middleware/consent.ts';
+import { ensureProgrammeDeckCard } from '#lib/server/srs/programme-deck.ts';
+import { entersProgrammeDeck } from '#lib/server/srs/programme-deck-rule.ts';
+import { applyFsrsReview } from '#lib/server/srs/fsrs-actions.ts';
+import { recordSrsReviewAttempt } from '#lib/server/srs/srs-attempt.ts';
+import { helpedGrade } from '#lib/server/srs/answer-grade.ts';
+import { rewardFinishedReviewSession } from '#lib/server/srs/review-session-reward.ts';
+import { recordReviewSessionCard } from '#lib/server/srs/review-session-stats.ts';
+import type { BuddyXpFromExerciseResult } from '#lib/server/buddy-xp-service.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/srs/review/submit/+server');
 
@@ -40,7 +43,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		const bodyRaw = await request.json();
 		const validation = submitReviewSchema.safeParse(bodyRaw);
 		if (!validation.success) {
-			return json({ error: validation.error.issues[0].message }, { status: 400 });
+			return Response.json({ error: validation.error.issues[0].message }, { status: 400 });
 		}
 
 		const body = validation.data;
@@ -56,11 +59,14 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			.single();
 
 		if (cardError || !card) {
-			return json({ error: 'Carte de révision introuvable' }, { status: 404 });
+			return Response.json({ error: 'Carte de révision introuvable' }, { status: 404 });
 		}
 
 		if (card.deck_id !== body.deckId) {
-			return json({ error: 'Cette carte n’appartient pas au deck indiqué' }, { status: 400 });
+			return Response.json(
+				{ error: 'Cette carte n’appartient pas au deck indiqué' },
+				{ status: 400 }
+			);
 		}
 
 		const { data: deck, error: deckError } = await supabase
@@ -71,7 +77,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			.single();
 
 		if (deckError || !deck) {
-			return json({ error: 'Deck introuvable ou accès refusé' }, { status: 404 });
+			return Response.json({ error: 'Deck introuvable ou accès refusé' }, { status: 404 });
 		}
 
 		// Référence carte : template ou custom
@@ -79,8 +85,13 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		const cardReferenceId = card.card_type === 'template' ? card.template_id : card.id;
 
 		if (!cardReferenceId) {
-			return json({ error: 'Référence de carte invalide' }, { status: 400 });
+			return Response.json({ error: 'Référence de carte invalide' }, { status: 400 });
 		}
+
+		// Coup de pouce ouvert : demi-réussite (« Difficile »), jamais une note plus haute.
+		// Carte personnelle : pas d'indice ni de trace, `withHelp` ignoré.
+		const withHelp = cardReferenceType === 'template' && body.withHelp;
+		const grade = helpedGrade(body.grade, withHelp);
 
 		// FSRS toujours instancié avec la config par défaut (PO 2026-06-10 :
 		// la config FSRS n'est plus customisable, même via deck.config).
@@ -95,23 +106,24 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 				user.id,
 				cardReferenceType,
 				cardReferenceId,
-				body.grade,
+				grade,
 				body.timeSpent
 			);
 		} catch (upsertError) {
 			logger.error('[srs/review/submit] UPSERT stats failed:', upsertError);
-			return json({ error: 'Impossible d’enregistrer la révision' }, { status: 500 });
+			return Response.json({ error: 'Impossible d’enregistrer la révision' }, { status: 500 });
 		}
 
 		// ----- NOUVEAU : INSERT skill_attempts pour cartes template-based -----
-		// Source='srs', grade conservé, success dérivé (grade >= 2 = Hard ou mieux).
+		// Déclaré (`student_self`), lieu `review`, grade conservé, success = grade >= 2.
 		// Trace partagée avec le paquet du chapitre (`recordSrsReviewAttempt`).
 		if (cardReferenceType === 'template' && card.template_id) {
 			const recorded = await recordSrsReviewAttempt(
 				supabase,
 				user.id,
 				card.template_id,
-				body.grade
+				grade,
+				withHelp
 			);
 
 			// Non bloquant : la review FSRS reste enregistrée.
@@ -162,6 +174,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			throw error(500, 'Impossible de vérifier l’état actuel');
 		}
 
+		// Note choisie par l'élève : « Réussi » avec indice compte réussi dans la séance
 		const isCorrect = body.grade >= 3;
 		const timeSpent = body.timeSpent || 0;
 
@@ -189,7 +202,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			}
 		}
 
-		return json({
+		return Response.json({
 			success: true,
 			buddy_xp: buddyXp,
 			review_gidouilles: reviewGidouilles,
@@ -203,6 +216,6 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		});
 	} catch (error) {
 		logger.error('Unexpected error in POST /api/srs/review/submit:', error);
-		return json({ error: 'Une erreur inattendue s’est produite' }, { status: 500 });
+		return Response.json({ error: 'Une erreur inattendue s’est produite' }, { status: 500 });
 	}
 };

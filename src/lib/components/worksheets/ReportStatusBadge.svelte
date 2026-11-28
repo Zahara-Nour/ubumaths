@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { Badge } from '$lib/components/ui/badge';
-	import type { ErrorReportStatus } from '$lib/types/worksheets';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
+	import type { ErrorReportStatus } from '#lib/types/worksheets.ts';
 
 	interface Props {
 		status: ErrorReportStatus;

@@ -80,7 +80,7 @@ Points travaillables par niveau en prod (2026-10-18, modèles publiés / tous le
   portent les lignes et non le lien : pour 40 Mathoux de 10 modèles, 172 Ko de données avec les
   liens, 80 Ko avec les anciennes catégories (mesuré le 2026-10-18, avant l'ADR 0035 : une ligne
   par identifiant est plus courte encore).
-- **Nom** (`mathouName`) : d'abord le **nom propre** de la notion (`mathou-noms.ts`, 134 noms,
+- **Nom** (`mathouName`) : d'abord le **nom propre** de la notion (`mathou-noms.ts`, 135 noms,
   clé = nom de la notion comme dans la migration de seed, car les identifiants diffèrent entre la
   base locale et la prod) : « Tangentin » pour « Dérivation ». Relus en partie par David le
   2026-10-19, le reste validé par défaut (à revoir : [mathoux-noms.md](../wip/mathoux-noms.md)).
@@ -319,7 +319,7 @@ et « Lunettes et chapeaux » ci-dessous.
 - **Où** : dans la Chatterie, « Décorer » sur chaque Mathou né ouvre `ChatterieDecorer` : les six
   dessinées sur CE Mathou, avec le prix, « Achetée » ou « Portée par … », et « Acheter »,
   « Poser » ou « Retirer » ; « Il te manque N gidouilles » à la place d'« Acheter » ; sans
-  consentement, « Acheter » est grisé et une phrase le dit. Après chaque action, `invalidateAll`.
+  consentement, « Acheter » est grisé et une phrase le dit. Après chaque action, `refreshAll`.
   Une lecture des achats en échec n'empêche pas la Chatterie : pas de « Décorer ». Dans l'onglet
   Boutique du Marché, `MathouDecorationsShowcase` montre les six sur un matou noir avec leur prix et
   mène à la Chatterie, **sans achat** (le Marché peut être fermé).
@@ -343,7 +343,7 @@ de perles.
   partiel, contraintes CHECK : chaque colonne n'accepte que les clés de son emplacement).
   `buy_mathou_decoration` pose à l'emplacement de la clé ; `set_mathou_collar` (service seul) pose,
   déplace ou retire ; `set_mathou_decoration` refuse un collier.
-- **Code** : `MATHOU_COLLARS` / `MATHOU_COLLAR_IDS` dans `$lib/mathoux/decorations.ts` (égalité avec
+- **Code** : `MATHOU_COLLARS` / `MATHOU_COLLAR_IDS` dans `#lib/mathoux/decorations.ts` (égalité avec
   la base vérifiée par `tests/integration/mathoux-colliers.test.ts`) ; `readOwnedDecorations` rend
   les deux sortes d'achats ; `readMathouMemory` lit `collar`, `Mathou.collar` le porte jusqu'au
   dessin (Chatterie, vue prof, carte de fin de séance).
@@ -381,7 +381,7 @@ Lot D des accessoires, décisions de David du 2026-10-25
   catalogue ; `mathou_decoration_slot` rend aussi `eyes` / `head` ; `student_mathoux.glasses` et
   `.hat` (mêmes garanties que `collar`) ; `buy_mathou_decoration` pose à l'emplacement de la clé ;
   `set_mathou_glasses` et `set_mathou_hat` (service seul) posent, déplacent ou retirent.
-- **Code** : `MATHOU_GLASSES` / `MATHOU_HATS` (et leurs `_IDS`) dans `$lib/mathoux/decorations.ts`
+- **Code** : `MATHOU_GLASSES` / `MATHOU_HATS` (et leurs `_IDS`) dans `#lib/mathoux/decorations.ts`
   (égalité avec la base vérifiée par `tests/integration/mathoux-lunettes-chapeaux.test.ts`) ;
   `readMathouMemory` lit `glasses` et `hat`, `Mathou.glasses` / `.hat` les portent jusqu'au dessin.
 - **Routes** : l'achat par `…/decorations/buy` ; la pose par `…/decorations/wear-glasses`

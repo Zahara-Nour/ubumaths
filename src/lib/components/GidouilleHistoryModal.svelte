@@ -12,12 +12,12 @@
 -->
 
 <script lang="ts">
-	import { Button } from '$lib/components/ui/button';
+	import { Button } from '#lib/components/ui/button/index.ts';
 	import { X, Plus, ArrowRight, Trash2 } from '@lucide/svelte';
-	import { modalStack } from '$lib/stores/modalStack.svelte';
-	import { toaster } from '$lib/stores/toaster.svelte';
-	import { studentCache } from '$lib/stores/studentDashboardCache.svelte';
-	import gidouilleImage from '$lib/assets/images/gidouille.png';
+	import { modalStack } from '#lib/stores/modalStack.svelte.ts';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
+	import { studentCache } from '#lib/stores/studentDashboardCache.svelte.ts';
+	import gidouilleImage from '#lib/assets/images/gidouille.png';
 
 	// Type for gidouille history entries (matches API response)
 	interface GidouilleHistoryEntry {

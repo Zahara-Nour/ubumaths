@@ -7,19 +7,19 @@
 	 * à une section.
 	 */
 
-	import { studySessionHref } from '$lib/navigation/return-links';
-	import { invalidateAll, goto } from '$app/navigation';
-	import * as Card from '$lib/components/ui/card';
-	import { Button } from '$lib/components/ui/button';
-	import BackLink from '$lib/components/navigation/BackLink.svelte';
-	import * as Dialog from '$lib/components/ui/dialog';
-	import { Input } from '$lib/components/ui/input';
-	import { Label } from '$lib/components/ui/label';
-	import { Textarea } from '$lib/components/ui/textarea';
-	import { Badge } from '$lib/components/ui/badge';
-	import MySelect from '$lib/components/MySelect.svelte';
+	import { studySessionHref } from '#lib/navigation/return-links.ts';
+	import { refreshAll, goto } from '$app/navigation';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import BackLink from '#lib/components/navigation/BackLink.svelte';
+	import * as Dialog from '#lib/components/ui/dialog/index.ts';
+	import { Input } from '#lib/components/ui/input/index.ts';
+	import { Label } from '#lib/components/ui/label/index.ts';
+	import { Textarea } from '#lib/components/ui/textarea/index.ts';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
+	import MySelect from '#lib/components/MySelect.svelte';
 	import { Plus, PlayCircle, Pencil, Trash2, BookOpen, FileText } from '@lucide/svelte';
-	import { toaster } from '$lib/stores/toaster.svelte';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
 	import type { PageData } from './$types';
 	import type { DeckSection, DeckCardLite } from './+page.server';
 	import { UNASSIGNED_KEY } from './constants';
@@ -92,7 +92,7 @@
 			}
 			toaster.success(editingSection ? 'Section modifiée.' : 'Section créée.');
 			showCreateDialog = false;
-			await invalidateAll();
+			await refreshAll();
 		} finally {
 			busy = false;
 		}
@@ -112,7 +112,7 @@
 				return;
 			}
 			toaster.success('Section supprimée.');
-			await invalidateAll();
+			await refreshAll();
 		} finally {
 			busy = false;
 		}
@@ -133,7 +133,7 @@
 				toaster.error(err.error ?? 'Erreur inconnue');
 				return;
 			}
-			await invalidateAll();
+			await refreshAll();
 		} finally {
 			busy = false;
 		}

@@ -1,30 +1,24 @@
 /**
- * Vérifie que toute variable importée depuis `$env/static/*` existe aussi dans
+ * Vérifie que toute variable OBLIGATOIRE de `src/env.ts` existe aussi dans
  * `.github/ci.env`.
  *
- * SvelteKit engendre les membres de `$env/static/*` à partir de l'environnement
- * réel. En local ils viennent de `.env`, en CI de `.github/ci.env` — et les deux
- * divergent (10 clés d'un côté, 5 de l'autre au 2026-09-08). Importer une clé
- * présente seulement en local donne donc un typecheck **vert en local et rouge
- * en CI**, sans rien pour prévenir : exactement l'aller-retour qu'on cherche à
- * supprimer.
+ * SvelteKit 3 : `$app/env/*` (et `$env/*`, qui le réexporte) n'expose que les
+ * variables déclarées dans `src/env.ts`. Une variable déclarée sans `schema` est
+ * obligatoire : absente de l'environnement, la génération des modules d'env
+ * échoue (build, tests). En local elles viennent de `.env`, en CI de
+ * `.github/ci.env` — et les deux divergent. Déclarer une clé présente seulement
+ * en local donne donc une suite **verte en local et rouge en CI**.
  *
  * Le contrôle ne juge pas les valeurs — elles n'ont pas à être vraies en CI,
- * juste à exister pour que le membre soit émis.
+ * juste à exister. Les variables avec `schema` ne sont pas exigées : le projet n'y
+ * met que des schémas qui acceptent `undefined` (`optionnelle`). Un schéma qui la
+ * refuserait (`z.string()`) rendrait la variable obligatoire sans que ce contrôle
+ * l'exige : la déclarer alors sans `schema`.
  */
-import { readFileSync, readdirSync, statSync } from 'node:fs';
-import { join } from 'node:path';
+import { readFileSync } from 'node:fs';
 
 const CI_ENV = '.github/ci.env';
-const ROOT = 'src';
-
-function walk(dir) {
-	return readdirSync(dir).flatMap((name) => {
-		const p = join(dir, name);
-		if (statSync(p).isDirectory()) return walk(p);
-		return /\.(ts|svelte|js)$/.test(name) ? [p] : [];
-	});
-}
+const ENV_DECLARATIONS = 'src/env.ts';
 
 function declaredKeys(file) {
 	const keys = new Set();
@@ -35,39 +29,54 @@ function declaredKeys(file) {
 	return keys;
 }
 
-// Capture le bloc `{ … }` d'un import, y compris sur plusieurs lignes, et
-// seulement pour `$env/static/*` — `$env/dynamic/*` se lit à l'exécution.
-const IMPORT_RE =
-	/import\s*(?:type\s*)?\{([^}]*)\}\s*from\s*['"]\$env\/static\/(?:private|public)['"]/g;
+// Une déclaration par ligne dans `defineEnvVars({ … })` : `NOM: { … },`.
+// Sans `schema` → obligatoire.
+const DECLARATION_RE = /^\s*([A-Z_][A-Z0-9_]*)\s*:\s*\{(.*)\},?\s*$/;
+// Début de déclaration (`NOM: {`) : sert à repérer une déclaration écrite sur
+// plusieurs lignes, que DECLARATION_RE ne lirait pas.
+const DECLARATION_START_RE = /^\s*([A-Z_][A-Z0-9_]*)\s*:\s*\{/;
 
 const ciKeys = declaredKeys(CI_ENV);
-const missing = new Map();
+const missing = [];
 
-for (const file of walk(ROOT)) {
-	const source = readFileSync(file, 'utf8');
-	for (const match of source.matchAll(IMPORT_RE)) {
-		for (const raw of match[1].split(',')) {
-			const name = raw.split(/\s+as\s+/)[0].trim();
-			if (!name || !/^[A-Z_][A-Z0-9_]*$/.test(name)) continue;
-			if (!ciKeys.has(name)) {
-				if (!missing.has(name)) missing.set(name, []);
-				missing.get(name).push(file);
-			}
-		}
+const unreadable = [];
+
+for (const line of readFileSync(ENV_DECLARATIONS, 'utf8').split('\n')) {
+	const m = line.match(DECLARATION_RE);
+	if (!m) {
+		const start = line.match(DECLARATION_START_RE);
+		if (start) unreadable.push(start[1]);
+		continue;
 	}
+	if (/\bschema\b/.test(m[2])) continue;
+	if (!ciKeys.has(m[1])) missing.push(m[1]);
 }
 
-if (missing.size === 0) {
+// Plutôt échouer que laisser passer une variable obligatoire sans la voir.
+if (unreadable.length > 0) {
+	console.error(
+		`❌ Déclaration(s) de ${ENV_DECLARATIONS} sur plusieurs lignes, illisible(s) pour ce contrôle :`
+	);
+	for (const name of unreadable) {
+		console.error(`   ${name}`);
+	}
+	console.error('Écrire chaque déclaration sur une ligne : `NOM: { … },`.');
+	process.exit(1);
+}
+
+if (missing.length === 0) {
 	process.exit(0);
 }
 
 console.error(
-	`❌ ${missing.size} variable(s) importée(s) de $env/static absente(s) de ${CI_ENV} :`
+	`❌ ${missing.length} variable(s) obligatoire(s) de ${ENV_DECLARATIONS} absente(s) de ${CI_ENV} :`
 );
-for (const [name, files] of missing) {
-	console.error(`   ${name}  —  ${files.join(', ')}`);
+for (const name of missing) {
+	console.error(`   ${name}`);
 }
 console.error('');
-console.error(`Le typecheck passera en local et échouera en CI. Ajoute-les à ${CI_ENV}`);
+console.error(
+	`Les tests et le build passeront en local et échoueront en CI. Ajoute-les à ${CI_ENV}`
+);
 console.error('(une valeur de substitution suffit : seule leur présence compte).');
 process.exit(1);

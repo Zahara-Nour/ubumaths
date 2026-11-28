@@ -12,8 +12,8 @@
  * la consigne écrit la lettre que l'élève lit sur la figure.
  */
 
-import type { Figure } from '$lib/geometry-core/graph/figure';
-import { isAngle } from '$lib/geometry-core/types/elements';
+import type { Figure } from '#lib/geometry-core/graph/figure.ts';
+import { isAngle } from '#lib/geometry-core/types/elements.ts';
 import type { ChoreographyCtx } from './types';
 
 /** Un argument de la consigne : son nom affiché, ou sa tournure neutre. */

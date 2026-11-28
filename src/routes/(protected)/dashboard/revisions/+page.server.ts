@@ -10,8 +10,8 @@
 
 import { error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
-import { summarizeChapterDecks, type ChapterDeckSummary } from '$lib/server/srs/chapter-deck';
-import { createServerLogger } from '$lib/utils/logger';
+import { summarizeChapterDecks, type ChapterDeckSummary } from '#lib/server/srs/chapter-deck.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('(protected)/dashboard/revisions/+page.server');
 
@@ -116,6 +116,7 @@ export const load: PageServerLoad = async ({ locals: { supabase, safeGetSession,
 					ownerId: deck.owner_id,
 					deckType: deck.deck_type,
 					isAssigned: deck.is_assigned,
+					isAutoManaged: deck.is_auto_managed,
 					config: deck.config,
 					createdAt: deck.created_at,
 					updatedAt: deck.updated_at,

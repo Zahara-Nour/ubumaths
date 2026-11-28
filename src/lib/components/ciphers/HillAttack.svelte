@@ -3,18 +3,18 @@
 	l'attaque ligne par ligne, qui casse chaque ligne de M⁻¹ séparément.
 -->
 <script lang="ts">
-	import { Input } from '$lib/components/ui/input';
-	import { Label } from '$lib/components/ui/label';
-	import { lettersOnly } from '$lib/ciphers/alphabet';
-	import { CipherInputError } from '$lib/ciphers/errors';
+	import { Input } from '#lib/components/ui/input/index.ts';
+	import { Label } from '#lib/components/ui/label/index.ts';
+	import { lettersOnly } from '#lib/ciphers/alphabet.ts';
+	import { CipherInputError } from '#lib/ciphers/errors.ts';
 	import {
 		MIN_ATTACK_PAIRS,
 		formatMatrix,
 		hillDecrypt,
 		hillRowAttack,
 		knownPlaintextAttack
-	} from '$lib/ciphers/hill';
-	import { attempt } from '$lib/ciphers/outcome';
+	} from '#lib/ciphers/hill.ts';
+	import { attempt } from '#lib/ciphers/outcome.ts';
 	import CipherOutput from './CipherOutput.svelte';
 
 	// Props

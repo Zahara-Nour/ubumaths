@@ -1,18 +1,21 @@
 <script lang="ts">
 	import { onMount, onDestroy } from 'svelte';
-	import { browser } from '$app/environment';
-	import { invalidateAll } from '$app/navigation';
-	import PythonEditor from '$lib/components/python/PythonEditor.svelte';
-	import LockedPythonEditor from '$lib/components/python/LockedPythonEditor.svelte';
-	import { parseTemplate } from '$lib/utils/locked-zones';
-	import PythonOutput from '$lib/components/python/PythonOutput.svelte';
-	import ExerciseValidationResult from '$lib/components/python/exercises/ExerciseValidationResult.svelte';
-	import MarkdownRenderer from '$lib/components/markdown/MarkdownRenderer.svelte';
-	import { Button } from '$lib/components/ui/button';
-	import { Badge } from '$lib/components/ui/badge';
-	import * as Tooltip from '$lib/components/ui/tooltip';
-	import { PlaygroundExecutor, type ExerciseValidationResult as Result } from '$lib/shared/python';
-	import { toaster } from '$lib/stores/toaster.svelte';
+	import { browser } from '$app/env';
+	import { refreshAll } from '$app/navigation';
+	import PythonEditor from '#lib/components/python/PythonEditor.svelte';
+	import LockedPythonEditor from '#lib/components/python/LockedPythonEditor.svelte';
+	import { parseTemplate } from '#lib/utils/locked-zones.ts';
+	import PythonOutput from '#lib/components/python/PythonOutput.svelte';
+	import ExerciseValidationResult from '#lib/components/python/exercises/ExerciseValidationResult.svelte';
+	import MarkdownRenderer from '#lib/components/markdown/MarkdownRenderer.svelte';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
+	import * as Tooltip from '#lib/components/ui/tooltip/index.ts';
+	import {
+		PlaygroundExecutor,
+		type ExerciseValidationResult as Result
+	} from '#lib/shared/python/index.ts';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
 	import {
 		Play,
 		CheckCircle2,
@@ -193,7 +196,7 @@
 			}
 
 			// Refresh submissions list from the server.
-			await invalidateAll();
+			await refreshAll();
 		} finally {
 			isSubmitting = false;
 		}

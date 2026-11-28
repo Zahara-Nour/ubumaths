@@ -34,6 +34,13 @@
  * coordonnées multiples du pas de la grille, vecteur non nul qui tient dans la
  * fenêtre.
  *
+ * Escalier à construire (une question) : `construire N` (1 à 6) à la place
+ * d'`escalier` sur la ligne d'une suite récurrente (`u(0) = 0 ; u(n+1) =
+ * sqrt(2*u(n)+3) pour n de 0 à 3 construire 3`) ; les rangs partent du premier
+ * terme et couvrent N termes, chaque coin (u_{k−1} ; u_k) est dans la fenêtre, deux
+ * termes consécutifs sont séparés d'au moins deux marges ; jamais avec `placer:`,
+ * `tracer:` ni `données:`.
+ *
  * Les variables de template (`{{a}}`) sont remplacées AVANT l'analyse : une
  * valeur négative produit donc `x--2` ou `+-3`, normalisés ici.
  *
@@ -66,22 +73,24 @@ import type {
 	CourbePoint,
 	CourbeSize,
 	CourbeSpec,
+	CourbeStaircaseToBuild,
 	CourbeTangent,
 	CourbeTarget,
 	CourbeWindow
 } from '../types/courbe';
 import { COURBE_LIMITS, COURBE_SIZES, courbeRangeProblem } from '../types/courbe';
-import { resolveNamedColor } from '$lib/theme/named-colors';
-import type { MathNode } from '$lib/mathAST/types';
-import { parseCustom } from '$lib/mathAST/parser/custom';
-import { compile } from '$lib/mathAST/eval/compile';
-import { transformAST } from '$lib/mathAST/visitor';
-import { variable } from '$lib/mathAST/factory';
-import { differentiate } from '$lib/mathAST/differentiation';
-import { computeSequenceTerms, PREV_TERM_VARIABLE } from '$lib/grapheur/sequence';
+import { resolveNamedColor } from '#lib/theme/named-colors.ts';
+import type { MathNode } from '#lib/mathAST/types.ts';
+import { parseCustom } from '#lib/mathAST/parser/custom/index.ts';
+import { compile } from '#lib/mathAST/eval/compile.ts';
+import { transformAST } from '#lib/mathAST/visitor.ts';
+import { variable } from '#lib/mathAST/factory.ts';
+import { differentiate } from '#lib/mathAST/differentiation/index.ts';
+import { computeSequenceTerms, PREV_TERM_VARIABLE } from '#lib/grapheur/sequence.ts';
 import { isGridNode, isInWindow, courbeGridSteps } from '../utils/courbe-placer';
 import { lineCoefficients, lineNodes } from '../utils/courbe-tracer';
 import { vectorProblem } from '../utils/courbe-vecteur';
+import { buildMargin, termName, twoDecimals } from '../utils/courbe-construire';
 import {
 	combinationCoords,
 	isCombinationText,
@@ -137,7 +146,8 @@ const KNOWN_KEYS = [
 	'axes',
 	'case',
 	'vecteurs',
-	'données'
+	'données',
+	'solution'
 ] as const;
 
 /** Clé écrite sans accent, lue comme la clé accentuée */
@@ -168,6 +178,9 @@ const STAIRCASE_WORD = 'escalier';
 
 /** Option de l'escalier : rappels et étiquettes u_0, u_1… sur l'axe des abscisses */
 const TERMS_WORD = 'termes';
+
+/** Option d'une suite récurrente, suivie d'un nombre : l'élève construit l'escalier (question) */
+const BUILD_WORD = 'construire';
 
 // ============================================================================
 // DÉTECTION
@@ -234,12 +247,19 @@ export function findCourbeBlocks(lines: string[]): CourbeBlockRange[] {
 /** Ligne du geste d'un bloc : `placer:` (points) ou `tracer:` (droite) */
 const GESTURE_LINE_REGEX = /^\s*(?:placer|tracer)\s*:/i;
 
+/** Ligne d'une suite à escalier à construire (`… construire 3`) */
+const BUILD_LINE_REGEX = /^\s*[A-Za-z][A-Za-z0-9]*\s*\(.*\)\s*=.*\sconstruire(?:\s|$)/i;
+
+/** `solution: oui` : la réponse est dessinée, l'élève n'a rien à faire (pas de case) */
+const SOLVED_LINE_REGEX = /^\s*solution\s*:\s*oui\s*$/i;
+
 /**
  * Les repères à points à placer (`placer:`) ou à droite à tracer (`tracer:`)
  * d'un énoncé, délimités comme le
  * parseur : corps sans clôtures, fermeture, et `nested` pour un bloc en
  * retrait, cité ou ouvert sur la ligne d'un item (l'élève ne pourrait pas y
- * répondre : sa case n'est pas créée)
+ * répondre : sa case n'est pas créée). Un repère `solution: oui` n'en est pas un :
+ * sa réponse est dessinée.
  */
 export function findCourbesToPlace(markdown: string): {
 	startIndex: number;
@@ -260,7 +280,11 @@ export function findCourbesToPlace(markdown: string): {
 				nested: lines[block.startIndex] !== plain[block.startIndex]
 			};
 		})
-		.filter((block) => block.body.some((line) => GESTURE_LINE_REGEX.test(line)));
+		.filter(
+			(block) =>
+				block.body.some((line) => GESTURE_LINE_REGEX.test(line) || BUILD_LINE_REGEX.test(line)) &&
+				!block.body.some((line) => SOLVED_LINE_REGEX.test(line))
+		);
 }
 
 /** L'énoncé a-t-il un repère à points à placer ou à droite à tracer ? */
@@ -493,6 +517,8 @@ interface LineOptions {
 	label: CourbeLabel | null;
 	staircase: boolean;
 	terms: boolean;
+	/** `construire N` : nombre de termes à construire, null sans le mot */
+	build: number | null;
 }
 
 /** Les options sont les derniers mots de la ligne : on les retire par la droite. */
@@ -503,7 +529,22 @@ function splitOptions(rest: string): LineOptions {
 	let label: CourbeLabel | null = null;
 	let staircase = false;
 	let terms = false;
-	while (tokens.length > 1 && isOption(tokens[tokens.length - 1])) {
+	let build: number | null = null;
+	while (tokens.length > 1) {
+		const last = tokens[tokens.length - 1];
+		// `construire N` : deux mots, le nombre en dernier
+		if (tokens.length > 2 && tokens[tokens.length - 2].toLowerCase() === BUILD_WORD) {
+			if (build !== null) throw new LineError(`« ${BUILD_WORD} » écrit deux fois`);
+			tokens.splice(-2);
+			build = parseBuildCount(last);
+			continue;
+		}
+		if (last.toLowerCase() === BUILD_WORD) {
+			throw new LineError(
+				`${BUILD_WORD} attend le nombre de termes à construire (ex. ${BUILD_WORD} 4)`
+			);
+		}
+		if (!isOption(last)) break;
 		const token = tokens.pop() as string;
 		const lower = token.toLowerCase();
 		if (token.startsWith('nom=')) label = parseLabel(token.slice(4));
@@ -512,7 +553,19 @@ function splitOptions(rest: string): LineOptions {
 		else if (lower === TERMS_WORD) terms = true;
 		else color = resolveNamedColor(lower) ?? color;
 	}
-	return { body: tokens.join(' '), color, dashed, label, staircase, terms };
+	return { body: tokens.join(' '), color, dashed, label, staircase, terms, build };
+}
+
+/** `construire N` : N entier de 1 à `COURBE_LIMITS.buildTerms` */
+function parseBuildCount(raw: string): number {
+	const max = COURBE_LIMITS.buildTerms;
+	const count = /^\d+$/.test(raw) ? Number(raw) : Number.NaN;
+	if (!(count >= 1 && count <= max)) {
+		throw new LineError(
+			`${BUILD_WORD} ${raw} : un nombre entier de termes à construire, de 1 à ${max}`
+		);
+	}
+	return count;
 }
 
 function parseFunctionLine(
@@ -527,10 +580,11 @@ function parseFunctionLine(
 	if (name === 'x' || name === 'y')
 		throw new LineError(`« ${name} » ne peut pas nommer une fonction`);
 
-	const { body: withDomain, color, dashed, label, staircase, terms } = splitOptions(rest);
-	if (staircase || terms) {
+	const { body: withDomain, color, dashed, label, staircase, terms, build } = splitOptions(rest);
+	if (staircase || terms || build !== null) {
+		const word = build !== null ? BUILD_WORD : staircase ? STAIRCASE_WORD : TERMS_WORD;
 		throw new LineError(
-			`« ${staircase ? STAIRCASE_WORD : TERMS_WORD} » s'emploie avec une suite récurrente, pas avec la fonction ${name}`
+			`« ${word} » s'emploie avec une suite récurrente, pas avec la fonction ${name}`
 		);
 	}
 	let body = withDomain;
@@ -794,8 +848,13 @@ function formatRanks(ranks: number[]): string {
 	return ranks.length > 3 ? `${shown}…` : shown;
 }
 
+/** Escalier à construire lu sur la ligne d'une suite, avant la fenêtre (marge) */
+type ParsedBuild = Omit<CourbeStaircaseToBuild, 'margin'>;
+
 interface ParsedSequence {
 	sequence: CourbeSequence;
+	/** `construire N` */
+	build: ParsedBuild | null;
 	/** Termes calculés, imputés au budget de la figure */
 	computed: number;
 	warnings: string[];
@@ -831,6 +890,17 @@ function parseSequenceLine(
 	if (options.staircase && !recurrence) {
 		throw new LineError(
 			`suite ${name} : l'escalier demande une suite récurrente (${name}(0) = … ; ${name}(n+1) = …)`
+		);
+	}
+	const build = options.build;
+	if (build !== null && options.staircase) {
+		throw new LineError(
+			`suite ${name} : « ${BUILD_WORD} » et « ${STAIRCASE_WORD} » ne vont pas ensemble (avec ${BUILD_WORD}, l'élève fait l'escalier lui-même)`
+		);
+	}
+	if (build !== null && !recurrence) {
+		throw new LineError(
+			`suite ${name} : ${BUILD_WORD} demande une suite récurrente (${name}(0) = … ; ${name}(n+1) = …)`
 		);
 	}
 
@@ -875,6 +945,19 @@ function parseSequenceLine(
 			`le premier terme ${name}(${firstTerm.n}) vient après le premier rang dessiné (${ranks.from})`
 		);
 	}
+	if (build !== null && firstTerm) {
+		const wanted = `pour n de ${firstTerm.n} à ${firstTerm.n + build}`;
+		if (ranks.from !== firstTerm.n) {
+			throw new LineError(
+				`suite ${name} : ${BUILD_WORD} part du premier terme ${name}(${firstTerm.n}) : écrire « ${wanted} »`
+			);
+		}
+		if (ranks.to - ranks.from < build) {
+			throw new LineError(
+				`suite ${name} : ${BUILD_WORD} ${build} demande ${build} termes après ${name}(${firstTerm.n}) : écrire « ${wanted} »`
+			);
+		}
+	}
 	const count = ranks.to - start + 1;
 	if (count > COURBE_LIMITS.sequenceTerms) {
 		throw new LineError(
@@ -886,7 +969,7 @@ function parseSequenceLine(
 	}
 
 	const ast = parseSequenceExpression(expressionText, name, recurrence);
-	if (options.staircase && collectVariables(ast, new Set()).has('n')) {
+	if ((options.staircase || build !== null) && collectVariables(ast, new Set()).has('n')) {
 		throw new LineError(
 			`suite ${name} : l'escalier demande une relation ${name}(n+1) = f(${name}(n)) sans n`
 		);
@@ -923,23 +1006,60 @@ function parseSequenceLine(
 		);
 	}
 
+	const expression = normalizeCourbeExpression(expressionText);
+	let parsedBuild: ParsedBuild | null = null;
+	if (build !== null && firstTerm) {
+		if (terms.length < build + 1) {
+			throw new LineError(
+				`suite ${name} : ${name}(${firstTerm.n + terms.length}) ne se calcule pas, impossible de construire ${build} termes`
+			);
+		}
+		parsedBuild = {
+			sequenceName: name,
+			firstIndex: firstTerm.n,
+			start: firstTerm.value,
+			terms: terms.slice(1, build + 1).map((t) => t.value),
+			relation: relationInX(expression, name),
+			line
+		};
+	}
+
 	return {
+		build: parsedBuild,
 		sequence: {
 			name,
 			kind: recurrence ? 'recurrence' : 'explicite',
-			expression: normalizeCourbeExpression(expressionText),
+			expression,
 			firstIndex: ranks.from,
-			lastIndex: ranks.to,
+			lastIndex: build !== null ? ranks.from : ranks.to,
 			firstTerm,
-			terms: terms.filter((t) => t.n >= ranks.from),
-			staircase: options.staircase ? { showTerms: options.terms, relation: ast } : null,
+			// Escalier à construire : le premier terme seul, les suivants sont les réponses
+			terms: build !== null ? terms.slice(0, 1) : terms.filter((t) => t.n >= ranks.from),
+			staircase:
+				options.staircase || build !== null
+					? {
+							showTerms: options.terms || build !== null,
+							relation: ast,
+							...(build !== null && { build: true as const })
+						}
+					: null,
 			color: options.color,
 			label: options.label,
 			line
 		},
 		computed: count,
-		warnings
+		// Escalier à construire : les termes calculés ne sont pas dessinés, rien à signaler
+		warnings: build !== null ? [] : warnings
 	};
+}
+
+/**
+ * La relation écrite en x, pour le juge : `sqrt(2*u(n)+3)` → `sqrt(2*(x)+3)` (même
+ * réécriture que `parseSequenceExpression`, la relation est déjà vérifiée sans n)
+ */
+function relationInX(expression: string, name: string): string {
+	const call = new RegExp(`(?<![A-Za-z0-9_\\\\])${name}\\s*\\(\\s*n\\s*\\)`, 'g');
+	return expression.replace(call, '(x)');
 }
 
 // ============================================================================
@@ -1104,6 +1224,36 @@ function traceProblem(
 	return `la droite ${tracer.equation} passe par moins de deux nœuds de la grille dans la fenêtre : l'élève ne peut pas la tracer (régler x:, y: ou grille:)`;
 }
 
+/**
+ * Ce qui empêche l'élève de construire l'escalier (message sans « construire : ») :
+ * un coin (u_{k−1} ; u_k) hors de la fenêtre, deux termes consécutifs à moins de deux
+ * marges (indiscernables au toucher) ; null s'il peut le construire
+ */
+function buildProblem(build: ParsedBuild, w: CourbeWindow, margin: number): string | null {
+	const french = (value: number) => formatPlain(value).replace('.', ',');
+	const where = `x de ${french(w.xMin)} à ${french(w.xMax)}, y de ${french(w.yMin)} à ${french(w.yMax)}`;
+	const name = (k: number) => termName(build.sequenceName, build.firstIndex + k);
+	const inX = (v: number) => v >= w.xMin && v <= w.xMax;
+	const inY = (v: number) => v >= w.yMin && v <= w.yMax;
+	if (!inX(build.start)) {
+		return `${name(0)} (${french(build.start)}) est hors de la fenêtre (${where}) : régler x:`;
+	}
+	const values = [build.start, ...build.terms];
+	for (let k = 1; k < values.length; k++) {
+		const v = values[k];
+		if (!inX(v) || !inY(v)) {
+			return `${name(k)} (≈ ${twoDecimals(v)}) est hors de la fenêtre (${where}) : régler x: ou y:`;
+		}
+	}
+	for (let k = 1; k < values.length; k++) {
+		const gap = Math.abs(values[k] - values[k - 1]);
+		if (gap < 2 * margin) {
+			return `${name(k - 1)} et ${name(k)} sont trop proches (écart ≈ ${twoDecimals(gap)}, moins de deux marges de ${french(margin)}) : l'élève ne peut pas les distinguer ; construire moins de termes ou resserrer x:`;
+		}
+	}
+	return null;
+}
+
 /** `axes: x = Durée (min) ; y = Température (°C)` : un titre par axe, un ou deux axes */
 function parseAxisTitles(value: string): CourbeAxisTitles {
 	const example = 'ex. axes: x = Durée (min) ; y = Température (°C)';
@@ -1168,8 +1318,13 @@ export function parseCourbeContent(source: string): CourbeNode {
 	/** `vecteurs:`, lu après points: */
 	let givenLine: { value: string; line: number } | undefined;
 	let donnees: CourbeData | undefined;
+	/** `construire N` : la marge se calcule une fois la fenêtre lue */
+	let build: ParsedBuild | undefined;
 	let caseIndex: number | undefined;
 	let caseLine = 0;
+	/** `solution: oui` : la réponse du geste dessinée (corrigé imprimé d'une série) */
+	let solution: boolean = false;
+	let solutionLine = 0;
 
 	const fail = (line: number, content: string, error: unknown) => {
 		const message = error instanceof Error ? error.message : String(error);
@@ -1191,6 +1346,12 @@ export function parseCourbeContent(source: string): CourbeNode {
 					throw new LineError(`au plus ${COURBE_LIMITS.sequences} suites par figure`);
 				}
 				const parsed = parseSequenceLine(name, arg, rest, line, sequenceTermsLeft);
+				if (parsed.build !== null && build !== undefined) {
+					throw new LineError(
+						`une seule suite à construire par repère (déjà ${build.sequenceName}, ligne ${build.line})`
+					);
+				}
+				if (parsed.build !== null) build = parsed.build;
 				sequences.push(parsed.sequence);
 				sequenceTermsLeft -= parsed.computed;
 				for (const message of parsed.warnings) {
@@ -1299,6 +1460,15 @@ export function parseCourbeContent(source: string): CourbeNode {
 				case 'données':
 					donnees = parseData(value, line);
 					break;
+				case 'solution': {
+					const answer = value.toLowerCase();
+					if (answer !== 'oui' && answer !== 'non') {
+						throw new LineError(`solution « ${value} » : oui ou non`);
+					}
+					solution = answer === 'oui';
+					solutionLine = line;
+					break;
+				}
 				case 'case':
 					if (!/^\d+$/.test(value)) {
 						throw new LineError(`case « ${value} » : numéro de case entier`);
@@ -1385,9 +1555,14 @@ export function parseCourbeContent(source: string): CourbeNode {
 		}
 	}
 
-	if (caseIndex !== undefined && !seenKeys.has('placer') && !seenKeys.has('tracer')) {
+	if (
+		caseIndex !== undefined &&
+		!seenKeys.has('placer') &&
+		!seenKeys.has('tracer') &&
+		build === undefined
+	) {
 		errors.push({
-			message: `Ligne ${caseLine} : case: sans objet sans placer: ni tracer:`,
+			message: `Ligne ${caseLine} : case: sans objet sans placer:, tracer: ni construire`,
 			line: caseLine,
 			content: lines[caseLine - 1].trim()
 		});
@@ -1478,6 +1653,59 @@ export function parseCourbeContent(source: string): CourbeNode {
 		}
 	}
 
+	// Escalier à construire : aucune autre suite en escalier, elle dessinerait la réponse
+	const drawnStaircase =
+		build === undefined ? undefined : sequences.find((q) => q.staircase && !q.staircase.build);
+	if (errors.length === 0 && drawnStaircase !== undefined) {
+		errors.push({
+			message: `Ligne ${drawnStaircase.line} : suite ${drawnStaircase.name} : pas d'${STAIRCASE_WORD} (ni de ${TERMS_WORD}) dans un repère où l'élève doit ${BUILD_WORD} un escalier : il dessinerait la réponse`,
+			line: drawnStaircase.line,
+			content: lines[drawnStaircase.line - 1].trim()
+		});
+	}
+
+	// Escalier à construire : seul geste du repère, coins visibles, termes discernables
+	let construire: CourbeStaircaseToBuild | undefined;
+	if (errors.length === 0 && build !== undefined) {
+		const gesture =
+			placer !== undefined
+				? 'placer:'
+				: seenKeys.has('tracer')
+					? 'tracer:'
+					: donnees !== undefined
+						? 'données:'
+						: null;
+		const margin = buildMargin(window as CourbeWindow);
+		const problem =
+			gesture !== null
+				? `pas avec ${gesture} (un seul geste par repère)`
+				: buildProblem(build, window as CourbeWindow, margin);
+		if (problem !== null) {
+			errors.push({
+				message: `Ligne ${build.line} : ${BUILD_WORD} : ${problem}`,
+				line: build.line,
+				content: lines[build.line - 1].trim()
+			});
+		} else construire = { ...build, margin };
+	}
+
+	// `solution: oui` : il faut une réponse à dessiner, et pas de case (c'est un corrigé)
+	if (solution) {
+		const problem =
+			placer === undefined && tracer === undefined && vecteur === undefined && build === undefined
+				? 's’emploie avec placer:, tracer: ou construire'
+				: caseIndex !== undefined
+					? 'pas avec case: (le corrigé ne se remplit pas)'
+					: null;
+		if (problem !== null) {
+			errors.push({
+				message: `Ligne ${solutionLine} : solution : ${problem}`,
+				line: solutionLine,
+				content: lines[solutionLine - 1].trim()
+			});
+		}
+	}
+
 	const spec: CourbeSpec | null =
 		errors.length === 0
 			? {
@@ -1495,8 +1723,10 @@ export function parseCourbeContent(source: string): CourbeNode {
 					...(tracer !== undefined && { tracer }),
 					...(vecteur !== undefined && { vecteur }),
 					...(vecteurs !== undefined && { vecteurs }),
+					...(construire !== undefined && { construire }),
 					...(axisTitles !== undefined && { axisTitles }),
-					...(donnees !== undefined && { donnees })
+					...(donnees !== undefined && { donnees }),
+					...(solution ? { solution: true as const } : {})
 				}
 			: null;
 

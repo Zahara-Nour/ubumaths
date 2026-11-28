@@ -13,7 +13,7 @@
 
 import { describe, it, expect, vi } from 'vitest';
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { Database } from '$lib/types/database';
+import type { Database } from '#lib/types/database.ts';
 
 const CIBLE = '550e8400-e29b-41d4-a716-446655440000';
 const ADMIN = '550e8400-e29b-41d4-a716-4466554400ff';

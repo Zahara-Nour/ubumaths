@@ -41,20 +41,20 @@
  */
 
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { Database } from '$lib/types/database';
+import type { Database } from '#lib/types/database.ts';
 import {
 	addBuddyXpFromReviewSession,
 	type BuddyXpFromExerciseResult
-} from '$lib/server/buddy-xp-service';
-import { getStudentBuddy } from '$lib/server/buddy-queries';
-import { creditStudentGidouilles } from '$lib/server/achievements/credit-gidouilles';
-import { createServiceRoleClient } from '$lib/server/serviceRoleClient';
+} from '#lib/server/buddy-xp-service.ts';
+import { getStudentBuddy } from '#lib/server/buddy-queries.ts';
+import { creditStudentGidouilles } from '#lib/server/achievements/credit-gidouilles.ts';
+import { createServiceRoleClient } from '#lib/server/serviceRoleClient.ts';
 import {
 	DAILY_XP_CAP,
 	REVIEW_REWARD_CARDS_ANY_DECK,
 	REVIEW_REWARD_CARDS_EMPTIED_DECK
-} from '$lib/utils/buddy-xp';
-import { createServerLogger } from '$lib/utils/logger';
+} from '#lib/utils/buddy-xp.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('server/srs/review-session-reward');
 

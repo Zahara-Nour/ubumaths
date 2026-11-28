@@ -17,14 +17,14 @@
  * la réponse existante sont relus en base par requireAuth, jamais pris du client.
  */
 
-import { error, json } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import { z } from 'zod';
 import type { RequestHandler } from './$types';
-import { requireAuth } from '$lib/server/middleware/auth';
-import { createServiceRoleClient } from '$lib/server/serviceRoleClient';
-import { AGE_QUESTION_GRADE } from '$lib/utils/age-declaration';
-import type { AgeDeclaration } from '$lib/types/database-helpers';
-import { createServerLogger } from '$lib/utils/logger';
+import { requireAuth } from '#lib/server/middleware/auth.ts';
+import { createServiceRoleClient } from '#lib/server/serviceRoleClient.ts';
+import { AGE_QUESTION_GRADE } from '#lib/utils/age-declaration.ts';
+import type { AgeDeclaration } from '#lib/types/database-helpers.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/student/age-declaration/+server');
 
@@ -100,5 +100,5 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		throw error(409, 'Réponse déjà enregistrée pour cette question');
 	}
 
-	return json({ success: true, ageDeclaration: declaration });
+	return Response.json({ success: true, ageDeclaration: declaration });
 };

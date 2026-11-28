@@ -26,7 +26,7 @@ import {
 	intervalSet
 } from '../factory';
 import { endpointToNumber } from '../endpoint';
-import { number, opposite } from '$lib/mathAST/factory';
+import { number, opposite } from '#lib/mathAST/factory.ts';
 
 describe('isEmpty', () => {
 	it('empty set is empty', () => {

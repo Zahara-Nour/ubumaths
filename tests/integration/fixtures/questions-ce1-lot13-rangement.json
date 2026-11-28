@@ -1,0 +1,79 @@
+[
+	{
+		"id": "14400c15-ba1c-4a00-861a-2b9b7f50a6ba",
+		"noeudAvant": null,
+		"noeudApres": "Géométrie > Figures planes > constructions",
+		"gradesAvant": ["CE1"],
+		"gradesApres": ["CE1"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["CE1§CE1-074"]
+	},
+	{
+		"id": "2647fb0f-99da-4d72-af30-24a1807774c4",
+		"noeudAvant": null,
+		"noeudApres": "Nombres et calculs > Entiers : numération > dénombrement",
+		"gradesAvant": ["CE1"],
+		"gradesApres": ["CE1"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["CE1§CE1-002"]
+	},
+	{
+		"id": "2fafe84d-219d-4298-a212-9f393339f43e",
+		"noeudAvant": "Nombres et calculs > Entiers : numération > dénombrement",
+		"noeudApres": "Nombres et calculs > Entiers : numération > dénombrement",
+		"gradesAvant": ["CE2"],
+		"gradesApres": ["CE1", "CE2"],
+		"statutAvant": "published",
+		"statutApres": "published",
+		"tagsAvant": ["CE2§CE2-002"],
+		"tagsApres": ["CE2§CE2-002", "CE1§CE1-002"]
+	},
+	{
+		"id": "3b5c6c13-d765-4aa6-9247-f2cdedb5b930",
+		"noeudAvant": null,
+		"noeudApres": "Géométrie > Figures planes > constructions",
+		"gradesAvant": ["CE1"],
+		"gradesApres": ["CE1"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["CE1§CE1-074"]
+	},
+	{
+		"id": "6140dae0-a92e-4f30-bae4-5f2c8559b32b",
+		"noeudAvant": null,
+		"noeudApres": "Nombres et calculs > Entiers : numération > dénombrement",
+		"gradesAvant": ["CE1"],
+		"gradesApres": ["CE1"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["CE1§CE1-001"]
+	},
+	{
+		"id": "7e23cca8-42ba-420c-8cd2-b5c4609a5579",
+		"noeudAvant": null,
+		"noeudApres": "Nombres et calculs > Entiers : numération > décomposition",
+		"gradesAvant": ["CE1"],
+		"gradesApres": ["CE1"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["CE1§CE1-003"]
+	},
+	{
+		"id": "aaebfe52-5740-47ab-8c5c-799023a6d906",
+		"noeudAvant": "Nombres et calculs > Entiers : numération > dénombrement",
+		"noeudApres": "Nombres et calculs > Entiers : numération > dénombrement",
+		"gradesAvant": ["CE2"],
+		"gradesApres": ["CE1", "CE2"],
+		"statutAvant": "published",
+		"statutApres": "published",
+		"tagsAvant": ["CE2§CE2-001"],
+		"tagsApres": ["CE2§CE2-001", "CE1§CE1-001"]
+	}
+]

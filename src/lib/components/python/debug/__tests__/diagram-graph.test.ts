@@ -5,7 +5,7 @@ import type {
 	DebugVariable,
 	HeapObject,
 	HeapEntry
-} from '$lib/shared/python/debug/types';
+} from '#lib/shared/python/debug/types.ts';
 
 // --- helpers -----------------------------------------------------------------
 

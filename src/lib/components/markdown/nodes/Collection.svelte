@@ -31,12 +31,12 @@
 		COLLECTION_SIZE_CM,
 		COLLECTION_UNAVAILABLE,
 		type CollectionNode
-	} from '$lib/ubumark/types/collection';
+	} from '#lib/ubumark/types/collection.ts';
 	import {
 		buildCollectionScene,
 		COLLECTION_VIEW,
 		findCollectionItemAt
-	} from '$lib/ubumark/utils/collection-scene';
+	} from '#lib/ubumark/utils/collection-scene.ts';
 	import { readAuthoringErrors } from '../authoring-errors';
 	import { SceneMarks, scenePointOf } from './scene-marks.svelte';
 	import CollectionObjets from './CollectionObjets.svelte';

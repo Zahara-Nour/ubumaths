@@ -26,12 +26,12 @@
  * - Only visible materials returned
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireRole } from '$lib/server/middleware/auth';
-import { listStudentSharedMaterialsSchema } from '$lib/server/validation';
-import { GOOGLE_CLASSROOM_ENABLED } from '$lib/config/google-classroom';
-import { createServerLogger } from '$lib/utils/logger';
+import { requireRole } from '#lib/server/middleware/auth.ts';
+import { listStudentSharedMaterialsSchema } from '#lib/server/validation/index.ts';
+import { GOOGLE_CLASSROOM_ENABLED } from '#lib/config/google-classroom.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/student/shared-materials/+server');
 
@@ -84,7 +84,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 
 	if (!studentClasses || studentClasses.length === 0) {
 		// Student has no classes - return empty result
-		return json({
+		return Response.json({
 			materials: [],
 			total: 0,
 			page,
@@ -281,7 +281,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 		};
 	});
 
-	return json({
+	return Response.json({
 		materials: transformedMaterials,
 		total: count || 0,
 		page,

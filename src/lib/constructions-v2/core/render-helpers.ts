@@ -8,11 +8,11 @@
  * that module doesn't support progress parameters and is shared by the whole app.
  */
 
-import type { Figure } from '$lib/geometry-core/graph/figure';
-import type { CoordinateTransformer } from '$lib/geometry-core/viewport/viewport';
-import { geoToNumber } from '$lib/geometry-core/compute/to-number';
-import type { ScalarParam } from '$lib/geometry-core/types/geo-value';
-import { isScalarRef, isInfinityParam } from '$lib/geometry-core/types/geo-value';
+import type { Figure } from '#lib/geometry-core/graph/figure.ts';
+import type { CoordinateTransformer } from '#lib/geometry-core/viewport/viewport.ts';
+import { geoToNumber } from '#lib/geometry-core/compute/to-number.ts';
+import type { ScalarParam } from '#lib/geometry-core/types/geo-value.ts';
+import { isScalarRef, isInfinityParam } from '#lib/geometry-core/types/geo-value.ts';
 import {
 	isSegment,
 	isArcByAngles,
@@ -21,12 +21,12 @@ import {
 	isCircleByPoint,
 	type GeoCircleByRadius,
 	type GeoCircleByPoint
-} from '$lib/geometry-core/types/elements';
+} from '#lib/geometry-core/types/elements.ts';
 // Style ÉCRAN : les couleurs nommées suivent le thème (lot 2, figures interactives)
 import {
 	resolveScreenStyle,
 	type GeoStyleResolved
-} from '$lib/geometry-core/rendering/svg-primitives';
+} from '#lib/geometry-core/rendering/svg-primitives.ts';
 import { partialSegment, type Point2D } from './animator';
 import type { DrawAnimationState, InstrumentPose, InstrumentState, InstrumentType } from '../types';
 import { COMPASS_CLOSED_OPENING } from '../constants';

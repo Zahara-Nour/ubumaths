@@ -11,8 +11,8 @@ import { render } from 'vitest-browser-svelte';
 import { userEvent } from 'vitest/browser';
 import { flushSync, tick } from 'svelte';
 import FlashCard from '../FlashCard.svelte';
-import type { InstanceBlank, QuestionInstance } from '$lib/questions/types';
-import { resolvedMarkdown } from '$lib/ubumark';
+import type { InstanceBlank, QuestionInstance } from '#lib/questions/types.ts';
+import { resolvedMarkdown } from '#lib/ubumark/index.ts';
 import type { MathfieldElement } from 'mathlive';
 
 function instanceWith(blank: InstanceBlank): QuestionInstance {

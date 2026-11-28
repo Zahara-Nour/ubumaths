@@ -8,10 +8,10 @@
 
 import type { PageServerLoad } from './$types';
 import { error } from '@sveltejs/kit';
-import { requireRole } from '$lib/server/middleware/auth';
-import { getTeacherChapters } from '$lib/server/chapters';
-import type { ChapterSummary } from '$lib/types/chapters';
-import { createServerLogger } from '$lib/utils/logger';
+import { requireRole } from '#lib/server/middleware/auth.ts';
+import { getTeacherChapters } from '#lib/server/chapters.ts';
+import type { ChapterSummary } from '#lib/types/chapters.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('(protected)/dashboard/teacher/cours/+page.server');
 

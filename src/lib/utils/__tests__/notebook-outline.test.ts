@@ -4,7 +4,7 @@
 
 import { describe, it, expect } from 'vitest';
 import { extractOutline } from '../notebook-outline';
-import type { NotebookCell } from '$lib/types/notebook';
+import type { NotebookCell } from '#lib/types/notebook.ts';
 
 function makeMarkdownCell(id: string, source: string): NotebookCell {
 	return {

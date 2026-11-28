@@ -16,11 +16,11 @@
  * - Class access scoped by RLS (mono-teacher: teacher/admin)
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireRole } from '$lib/server/middleware/auth';
-import { uuidSchema } from '$lib/server/validation';
-import { createServerLogger } from '$lib/utils/logger';
+import { requireRole } from '#lib/server/middleware/auth.ts';
+import { uuidSchema } from '#lib/server/validation/index.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/teacher/categories/[classId]/+server');
 
@@ -38,7 +38,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 	// Validate classId parameter
 	const validation = uuidSchema.safeParse(params.classId);
 	if (!validation.success) {
-		throw error(400, 'Invalid class ID format');
+		throw error(400, 'Identifiant de classe invalide');
 	}
 
 	const classId = validation.data;
@@ -72,7 +72,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 		}
 
 		// Transform to camelCase for frontend
-		return json({
+		return Response.json({
 			categories: (categories || []).map((cat) => ({
 				id: cat.id,
 				classId: cat.class_id,

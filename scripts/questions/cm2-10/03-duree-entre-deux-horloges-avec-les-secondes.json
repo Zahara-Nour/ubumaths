@@ -1,0 +1,808 @@
+{
+	"id": "99f80f5e-2549-46f6-b9f5-11072aa8fe42",
+	"title": "Combien de temps a-t-il duré ? (avec les secondes)",
+	"description": "Durée entre deux horloges à trotteuse, à la seconde près : moins d'une heure ; de 8 h 52 min 27 s à 11 h 37 min 18 s ; l'après-midi sur un cadran de 24 h",
+	"grades": ["CM2"],
+	"level": 9,
+	"delay": 150,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"zeros": "off"
+		}
+	},
+	"variations": [
+		{
+			"statement": "{{if:k==1|La course|{{if:k==2|La séance de cinéma|{{if:k==3|Le match|La randonnée}}}}}} commence et finit aux heures montrées. Combien de temps a-t-{{if:k==3|il|elle}} duré ?\n\n```horloge\nheure: {{h}} h {{a}} min {{x}} s ; {{hf}} h {{mf}} min {{sf}} s\nchiffres: tous\ngraduations: minutes\nlégendes: Début ; Fin\n```\n\nDurée : $?~\\text{min}~?~\\text{s}$.",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..4"
+				},
+				{
+					"name": "h",
+					"expression": "1..11"
+				},
+				{
+					"name": "a",
+					"expression": "0..59"
+				},
+				{
+					"name": "x",
+					"expression": "0..59"
+				},
+				{
+					"name": "c",
+					"expression": "8..44"
+				},
+				{
+					"name": "y",
+					"expression": "0..59"
+				},
+				{
+					"name": "d",
+					"expression": "eval:60*c+y"
+				},
+				{
+					"name": "t0",
+					"expression": "eval:3600*h+60*a+x"
+				},
+				{
+					"name": "tf",
+					"expression": "eval:t0+d"
+				},
+				{
+					"name": "hf",
+					"expression": "eval:floor(tf/3600)"
+				},
+				{
+					"name": "mf",
+					"expression": "eval:mod(floor(tf/60),60)"
+				},
+				{
+					"name": "sf",
+					"expression": "eval:mod(tf,60)"
+				},
+				{
+					"name": "t1",
+					"expression": "eval:60*floor((t0+59)/60)"
+				},
+				{
+					"name": "t2",
+					"expression": "eval:3600*floor((t1+3599)/3600)"
+				},
+				{
+					"name": "t3",
+					"expression": "eval:3600*hf"
+				},
+				{
+					"name": "t4",
+					"expression": "eval:t3+60*mf"
+				},
+				{
+					"name": "s1",
+					"expression": "eval:t1-t0"
+				},
+				{
+					"name": "m1",
+					"expression": "eval:(t2-t1)/60"
+				},
+				{
+					"name": "hp",
+					"expression": "eval:(t3-t2)/3600"
+				},
+				{
+					"name": "ss",
+					"expression": "eval:s1+sf"
+				},
+				{
+					"name": "mm",
+					"expression": "eval:m1+mf+floor(ss/60)"
+				},
+				{
+					"name": "dh",
+					"expression": "eval:floor(d/3600)"
+				},
+				{
+					"name": "dm",
+					"expression": "eval:mod(floor(d/60),60)"
+				},
+				{
+					"name": "ds",
+					"expression": "eval:mod(d,60)"
+				}
+			],
+			"conditions": ["floor(tf/3600)>h"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{dm}}"
+				},
+				{
+					"expectedAnswer": "{{ds}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Début : {{if:mod(t0,60)==0|{{if:mod(floor(t0/60),60)==0|${{eval:floor(t0/3600)}}~\\text{h}$|${{eval:floor(t0/3600)}}~\\text{h}~{{if:mod(floor(t0/60),60)<10|0{{eval:mod(floor(t0/60),60)}}|{{eval:mod(floor(t0/60),60)}}}}~\\text{min}$}}|${{eval:floor(t0/3600)}}~\\text{h}~{{if:mod(floor(t0/60),60)<10|0{{eval:mod(floor(t0/60),60)}}|{{eval:mod(floor(t0/60),60)}}}}~\\text{min}~{{if:mod(t0,60)<10|0{{eval:mod(t0,60)}}|{{eval:mod(t0,60)}}}}~\\text{s}$}}. Fin : {{if:mod(tf,60)==0|{{if:mod(floor(tf/60),60)==0|${{eval:floor(tf/3600)}}~\\text{h}$|${{eval:floor(tf/3600)}}~\\text{h}~{{if:mod(floor(tf/60),60)<10|0{{eval:mod(floor(tf/60),60)}}|{{eval:mod(floor(tf/60),60)}}}}~\\text{min}$}}|${{eval:floor(tf/3600)}}~\\text{h}~{{if:mod(floor(tf/60),60)<10|0{{eval:mod(floor(tf/60),60)}}|{{eval:mod(floor(tf/60),60)}}}}~\\text{min}~{{if:mod(tf,60)<10|0{{eval:mod(tf,60)}}|{{eval:mod(tf,60)}}}}~\\text{s}$}}.",
+					"On avance d'instant en instant, sans poser de soustraction.",
+					"{{if:s1>0|De {{if:mod(t0,60)==0|{{if:mod(floor(t0/60),60)==0|${{eval:floor(t0/3600)}}~\\text{h}$|${{eval:floor(t0/3600)}}~\\text{h}~{{if:mod(floor(t0/60),60)<10|0{{eval:mod(floor(t0/60),60)}}|{{eval:mod(floor(t0/60),60)}}}}~\\text{min}$}}|${{eval:floor(t0/3600)}}~\\text{h}~{{if:mod(floor(t0/60),60)<10|0{{eval:mod(floor(t0/60),60)}}|{{eval:mod(floor(t0/60),60)}}}}~\\text{min}~{{if:mod(t0,60)<10|0{{eval:mod(t0,60)}}|{{eval:mod(t0,60)}}}}~\\text{s}$}} à {{if:mod(t1,60)==0|{{if:mod(floor(t1/60),60)==0|${{eval:floor(t1/3600)}}~\\text{h}$|${{eval:floor(t1/3600)}}~\\text{h}~{{if:mod(floor(t1/60),60)<10|0{{eval:mod(floor(t1/60),60)}}|{{eval:mod(floor(t1/60),60)}}}}~\\text{min}$}}|${{eval:floor(t1/3600)}}~\\text{h}~{{if:mod(floor(t1/60),60)<10|0{{eval:mod(floor(t1/60),60)}}|{{eval:mod(floor(t1/60),60)}}}}~\\text{min}~{{if:mod(t1,60)<10|0{{eval:mod(t1,60)}}|{{eval:mod(t1,60)}}}}~\\text{s}$}} : ${{s1}}~\\text{s}$. |}}{{if:m1>0|De {{if:mod(t1,60)==0|{{if:mod(floor(t1/60),60)==0|${{eval:floor(t1/3600)}}~\\text{h}$|${{eval:floor(t1/3600)}}~\\text{h}~{{if:mod(floor(t1/60),60)<10|0{{eval:mod(floor(t1/60),60)}}|{{eval:mod(floor(t1/60),60)}}}}~\\text{min}$}}|${{eval:floor(t1/3600)}}~\\text{h}~{{if:mod(floor(t1/60),60)<10|0{{eval:mod(floor(t1/60),60)}}|{{eval:mod(floor(t1/60),60)}}}}~\\text{min}~{{if:mod(t1,60)<10|0{{eval:mod(t1,60)}}|{{eval:mod(t1,60)}}}}~\\text{s}$}} à {{if:mod(t2,60)==0|{{if:mod(floor(t2/60),60)==0|${{eval:floor(t2/3600)}}~\\text{h}$|${{eval:floor(t2/3600)}}~\\text{h}~{{if:mod(floor(t2/60),60)<10|0{{eval:mod(floor(t2/60),60)}}|{{eval:mod(floor(t2/60),60)}}}}~\\text{min}$}}|${{eval:floor(t2/3600)}}~\\text{h}~{{if:mod(floor(t2/60),60)<10|0{{eval:mod(floor(t2/60),60)}}|{{eval:mod(floor(t2/60),60)}}}}~\\text{min}~{{if:mod(t2,60)<10|0{{eval:mod(t2,60)}}|{{eval:mod(t2,60)}}}}~\\text{s}$}} : ${{m1}}~\\text{min}$.|}}",
+					"{{if:hp>0|De {{if:mod(t2,60)==0|{{if:mod(floor(t2/60),60)==0|${{eval:floor(t2/3600)}}~\\text{h}$|${{eval:floor(t2/3600)}}~\\text{h}~{{if:mod(floor(t2/60),60)<10|0{{eval:mod(floor(t2/60),60)}}|{{eval:mod(floor(t2/60),60)}}}}~\\text{min}$}}|${{eval:floor(t2/3600)}}~\\text{h}~{{if:mod(floor(t2/60),60)<10|0{{eval:mod(floor(t2/60),60)}}|{{eval:mod(floor(t2/60),60)}}}}~\\text{min}~{{if:mod(t2,60)<10|0{{eval:mod(t2,60)}}|{{eval:mod(t2,60)}}}}~\\text{s}$}} à {{if:mod(t3,60)==0|{{if:mod(floor(t3/60),60)==0|${{eval:floor(t3/3600)}}~\\text{h}$|${{eval:floor(t3/3600)}}~\\text{h}~{{if:mod(floor(t3/60),60)<10|0{{eval:mod(floor(t3/60),60)}}|{{eval:mod(floor(t3/60),60)}}}}~\\text{min}$}}|${{eval:floor(t3/3600)}}~\\text{h}~{{if:mod(floor(t3/60),60)<10|0{{eval:mod(floor(t3/60),60)}}|{{eval:mod(floor(t3/60),60)}}}}~\\text{min}~{{if:mod(t3,60)<10|0{{eval:mod(t3,60)}}|{{eval:mod(t3,60)}}}}~\\text{s}$}} : ${{hp}}~\\text{h}$. |}}{{if:mf>0|De {{if:mod(t3,60)==0|{{if:mod(floor(t3/60),60)==0|${{eval:floor(t3/3600)}}~\\text{h}$|${{eval:floor(t3/3600)}}~\\text{h}~{{if:mod(floor(t3/60),60)<10|0{{eval:mod(floor(t3/60),60)}}|{{eval:mod(floor(t3/60),60)}}}}~\\text{min}$}}|${{eval:floor(t3/3600)}}~\\text{h}~{{if:mod(floor(t3/60),60)<10|0{{eval:mod(floor(t3/60),60)}}|{{eval:mod(floor(t3/60),60)}}}}~\\text{min}~{{if:mod(t3,60)<10|0{{eval:mod(t3,60)}}|{{eval:mod(t3,60)}}}}~\\text{s}$}} à {{if:mod(t4,60)==0|{{if:mod(floor(t4/60),60)==0|${{eval:floor(t4/3600)}}~\\text{h}$|${{eval:floor(t4/3600)}}~\\text{h}~{{if:mod(floor(t4/60),60)<10|0{{eval:mod(floor(t4/60),60)}}|{{eval:mod(floor(t4/60),60)}}}}~\\text{min}$}}|${{eval:floor(t4/3600)}}~\\text{h}~{{if:mod(floor(t4/60),60)<10|0{{eval:mod(floor(t4/60),60)}}|{{eval:mod(floor(t4/60),60)}}}}~\\text{min}~{{if:mod(t4,60)<10|0{{eval:mod(t4,60)}}|{{eval:mod(t4,60)}}}}~\\text{s}$}} : ${{mf}}~\\text{min}$. |}}{{if:sf>0|De {{if:mod(t4,60)==0|{{if:mod(floor(t4/60),60)==0|${{eval:floor(t4/3600)}}~\\text{h}$|${{eval:floor(t4/3600)}}~\\text{h}~{{if:mod(floor(t4/60),60)<10|0{{eval:mod(floor(t4/60),60)}}|{{eval:mod(floor(t4/60),60)}}}}~\\text{min}$}}|${{eval:floor(t4/3600)}}~\\text{h}~{{if:mod(floor(t4/60),60)<10|0{{eval:mod(floor(t4/60),60)}}|{{eval:mod(floor(t4/60),60)}}}}~\\text{min}~{{if:mod(t4,60)<10|0{{eval:mod(t4,60)}}|{{eval:mod(t4,60)}}}}~\\text{s}$}} à {{if:mod(tf,60)==0|{{if:mod(floor(tf/60),60)==0|${{eval:floor(tf/3600)}}~\\text{h}$|${{eval:floor(tf/3600)}}~\\text{h}~{{if:mod(floor(tf/60),60)<10|0{{eval:mod(floor(tf/60),60)}}|{{eval:mod(floor(tf/60),60)}}}}~\\text{min}$}}|${{eval:floor(tf/3600)}}~\\text{h}~{{if:mod(floor(tf/60),60)<10|0{{eval:mod(floor(tf/60),60)}}|{{eval:mod(floor(tf/60),60)}}}}~\\text{min}~{{if:mod(tf,60)<10|0{{eval:mod(tf,60)}}|{{eval:mod(tf,60)}}}}~\\text{s}$}} : ${{sf}}~\\text{s}$.|}}",
+					"Les secondes : ${{s1}} + {{sf}} = {{ss}}${{if:ss>=60|, soit $1~\\text{min}~{{eval:ss-60}}~\\text{s}$|}}. Les minutes : ${{m1}} + {{mf}}{{if:ss>=60| + 1|}} = {{mm}}${{if:mm>=60|, soit $1~\\text{h}~{{eval:mm-60}}~\\text{min}$|}}.{{if:mm>=60| Les heures : ${{hp}} + 1 = {{dh}}$.|{{if:dh>0| Les heures : ${{dh}}~\\text{h}$.|}}}}",
+					"En tout : $\\textcolor{{{color:primary.0}}}{{{dm}}~\\text{min}~{{ds}}~\\text{s}}$."
+				]
+			}
+		},
+		{
+			"statement": "{{if:k==1|La course|{{if:k==2|La séance de cinéma|{{if:k==3|Le match|La randonnée}}}}}} commence et finit aux heures montrées. Combien de temps a-t-{{if:k==3|il|elle}} duré ?\n\n```horloge\nheure: {{h}} h {{a}} min {{x}} s ; {{hf}} h {{mf}} min {{sf}} s\nchiffres: tous\ngraduations: minutes\nlégendes: Début ; Fin\n```\n\nDurée : $?~\\text{h}~?~\\text{min}~?~\\text{s}$.",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..4"
+				},
+				{
+					"name": "h",
+					"expression": "7..14"
+				},
+				{
+					"name": "a",
+					"expression": "0..59"
+				},
+				{
+					"name": "x",
+					"expression": "0..59"
+				},
+				{
+					"name": "n",
+					"expression": "1..3"
+				},
+				{
+					"name": "c",
+					"expression": "0..59"
+				},
+				{
+					"name": "y",
+					"expression": "1..59"
+				},
+				{
+					"name": "d",
+					"expression": "eval:3600*n+60*c+y"
+				},
+				{
+					"name": "t0",
+					"expression": "eval:3600*h+60*a+x"
+				},
+				{
+					"name": "tf",
+					"expression": "eval:t0+d"
+				},
+				{
+					"name": "hf",
+					"expression": "eval:floor(tf/3600)"
+				},
+				{
+					"name": "mf",
+					"expression": "eval:mod(floor(tf/60),60)"
+				},
+				{
+					"name": "sf",
+					"expression": "eval:mod(tf,60)"
+				},
+				{
+					"name": "t1",
+					"expression": "eval:60*floor((t0+59)/60)"
+				},
+				{
+					"name": "t2",
+					"expression": "eval:3600*floor((t1+3599)/3600)"
+				},
+				{
+					"name": "t3",
+					"expression": "eval:3600*hf"
+				},
+				{
+					"name": "t4",
+					"expression": "eval:t3+60*mf"
+				},
+				{
+					"name": "s1",
+					"expression": "eval:t1-t0"
+				},
+				{
+					"name": "m1",
+					"expression": "eval:(t2-t1)/60"
+				},
+				{
+					"name": "hp",
+					"expression": "eval:(t3-t2)/3600"
+				},
+				{
+					"name": "ss",
+					"expression": "eval:s1+sf"
+				},
+				{
+					"name": "mm",
+					"expression": "eval:m1+mf+floor(ss/60)"
+				},
+				{
+					"name": "dh",
+					"expression": "eval:floor(d/3600)"
+				},
+				{
+					"name": "dm",
+					"expression": "eval:mod(floor(d/60),60)"
+				},
+				{
+					"name": "ds",
+					"expression": "eval:mod(d,60)"
+				}
+			],
+			"conditions": ["floor(tf/3600)>h"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{dh}}"
+				},
+				{
+					"expectedAnswer": "{{dm}}"
+				},
+				{
+					"expectedAnswer": "{{ds}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Début : {{if:mod(t0,60)==0|{{if:mod(floor(t0/60),60)==0|${{eval:floor(t0/3600)}}~\\text{h}$|${{eval:floor(t0/3600)}}~\\text{h}~{{if:mod(floor(t0/60),60)<10|0{{eval:mod(floor(t0/60),60)}}|{{eval:mod(floor(t0/60),60)}}}}~\\text{min}$}}|${{eval:floor(t0/3600)}}~\\text{h}~{{if:mod(floor(t0/60),60)<10|0{{eval:mod(floor(t0/60),60)}}|{{eval:mod(floor(t0/60),60)}}}}~\\text{min}~{{if:mod(t0,60)<10|0{{eval:mod(t0,60)}}|{{eval:mod(t0,60)}}}}~\\text{s}$}}. Fin : {{if:mod(tf,60)==0|{{if:mod(floor(tf/60),60)==0|${{eval:floor(tf/3600)}}~\\text{h}$|${{eval:floor(tf/3600)}}~\\text{h}~{{if:mod(floor(tf/60),60)<10|0{{eval:mod(floor(tf/60),60)}}|{{eval:mod(floor(tf/60),60)}}}}~\\text{min}$}}|${{eval:floor(tf/3600)}}~\\text{h}~{{if:mod(floor(tf/60),60)<10|0{{eval:mod(floor(tf/60),60)}}|{{eval:mod(floor(tf/60),60)}}}}~\\text{min}~{{if:mod(tf,60)<10|0{{eval:mod(tf,60)}}|{{eval:mod(tf,60)}}}}~\\text{s}$}}.",
+					"On avance d'instant en instant, sans poser de soustraction.",
+					"{{if:s1>0|De {{if:mod(t0,60)==0|{{if:mod(floor(t0/60),60)==0|${{eval:floor(t0/3600)}}~\\text{h}$|${{eval:floor(t0/3600)}}~\\text{h}~{{if:mod(floor(t0/60),60)<10|0{{eval:mod(floor(t0/60),60)}}|{{eval:mod(floor(t0/60),60)}}}}~\\text{min}$}}|${{eval:floor(t0/3600)}}~\\text{h}~{{if:mod(floor(t0/60),60)<10|0{{eval:mod(floor(t0/60),60)}}|{{eval:mod(floor(t0/60),60)}}}}~\\text{min}~{{if:mod(t0,60)<10|0{{eval:mod(t0,60)}}|{{eval:mod(t0,60)}}}}~\\text{s}$}} à {{if:mod(t1,60)==0|{{if:mod(floor(t1/60),60)==0|${{eval:floor(t1/3600)}}~\\text{h}$|${{eval:floor(t1/3600)}}~\\text{h}~{{if:mod(floor(t1/60),60)<10|0{{eval:mod(floor(t1/60),60)}}|{{eval:mod(floor(t1/60),60)}}}}~\\text{min}$}}|${{eval:floor(t1/3600)}}~\\text{h}~{{if:mod(floor(t1/60),60)<10|0{{eval:mod(floor(t1/60),60)}}|{{eval:mod(floor(t1/60),60)}}}}~\\text{min}~{{if:mod(t1,60)<10|0{{eval:mod(t1,60)}}|{{eval:mod(t1,60)}}}}~\\text{s}$}} : ${{s1}}~\\text{s}$. |}}{{if:m1>0|De {{if:mod(t1,60)==0|{{if:mod(floor(t1/60),60)==0|${{eval:floor(t1/3600)}}~\\text{h}$|${{eval:floor(t1/3600)}}~\\text{h}~{{if:mod(floor(t1/60),60)<10|0{{eval:mod(floor(t1/60),60)}}|{{eval:mod(floor(t1/60),60)}}}}~\\text{min}$}}|${{eval:floor(t1/3600)}}~\\text{h}~{{if:mod(floor(t1/60),60)<10|0{{eval:mod(floor(t1/60),60)}}|{{eval:mod(floor(t1/60),60)}}}}~\\text{min}~{{if:mod(t1,60)<10|0{{eval:mod(t1,60)}}|{{eval:mod(t1,60)}}}}~\\text{s}$}} à {{if:mod(t2,60)==0|{{if:mod(floor(t2/60),60)==0|${{eval:floor(t2/3600)}}~\\text{h}$|${{eval:floor(t2/3600)}}~\\text{h}~{{if:mod(floor(t2/60),60)<10|0{{eval:mod(floor(t2/60),60)}}|{{eval:mod(floor(t2/60),60)}}}}~\\text{min}$}}|${{eval:floor(t2/3600)}}~\\text{h}~{{if:mod(floor(t2/60),60)<10|0{{eval:mod(floor(t2/60),60)}}|{{eval:mod(floor(t2/60),60)}}}}~\\text{min}~{{if:mod(t2,60)<10|0{{eval:mod(t2,60)}}|{{eval:mod(t2,60)}}}}~\\text{s}$}} : ${{m1}}~\\text{min}$.|}}",
+					"{{if:hp>0|De {{if:mod(t2,60)==0|{{if:mod(floor(t2/60),60)==0|${{eval:floor(t2/3600)}}~\\text{h}$|${{eval:floor(t2/3600)}}~\\text{h}~{{if:mod(floor(t2/60),60)<10|0{{eval:mod(floor(t2/60),60)}}|{{eval:mod(floor(t2/60),60)}}}}~\\text{min}$}}|${{eval:floor(t2/3600)}}~\\text{h}~{{if:mod(floor(t2/60),60)<10|0{{eval:mod(floor(t2/60),60)}}|{{eval:mod(floor(t2/60),60)}}}}~\\text{min}~{{if:mod(t2,60)<10|0{{eval:mod(t2,60)}}|{{eval:mod(t2,60)}}}}~\\text{s}$}} à {{if:mod(t3,60)==0|{{if:mod(floor(t3/60),60)==0|${{eval:floor(t3/3600)}}~\\text{h}$|${{eval:floor(t3/3600)}}~\\text{h}~{{if:mod(floor(t3/60),60)<10|0{{eval:mod(floor(t3/60),60)}}|{{eval:mod(floor(t3/60),60)}}}}~\\text{min}$}}|${{eval:floor(t3/3600)}}~\\text{h}~{{if:mod(floor(t3/60),60)<10|0{{eval:mod(floor(t3/60),60)}}|{{eval:mod(floor(t3/60),60)}}}}~\\text{min}~{{if:mod(t3,60)<10|0{{eval:mod(t3,60)}}|{{eval:mod(t3,60)}}}}~\\text{s}$}} : ${{hp}}~\\text{h}$. |}}{{if:mf>0|De {{if:mod(t3,60)==0|{{if:mod(floor(t3/60),60)==0|${{eval:floor(t3/3600)}}~\\text{h}$|${{eval:floor(t3/3600)}}~\\text{h}~{{if:mod(floor(t3/60),60)<10|0{{eval:mod(floor(t3/60),60)}}|{{eval:mod(floor(t3/60),60)}}}}~\\text{min}$}}|${{eval:floor(t3/3600)}}~\\text{h}~{{if:mod(floor(t3/60),60)<10|0{{eval:mod(floor(t3/60),60)}}|{{eval:mod(floor(t3/60),60)}}}}~\\text{min}~{{if:mod(t3,60)<10|0{{eval:mod(t3,60)}}|{{eval:mod(t3,60)}}}}~\\text{s}$}} à {{if:mod(t4,60)==0|{{if:mod(floor(t4/60),60)==0|${{eval:floor(t4/3600)}}~\\text{h}$|${{eval:floor(t4/3600)}}~\\text{h}~{{if:mod(floor(t4/60),60)<10|0{{eval:mod(floor(t4/60),60)}}|{{eval:mod(floor(t4/60),60)}}}}~\\text{min}$}}|${{eval:floor(t4/3600)}}~\\text{h}~{{if:mod(floor(t4/60),60)<10|0{{eval:mod(floor(t4/60),60)}}|{{eval:mod(floor(t4/60),60)}}}}~\\text{min}~{{if:mod(t4,60)<10|0{{eval:mod(t4,60)}}|{{eval:mod(t4,60)}}}}~\\text{s}$}} : ${{mf}}~\\text{min}$. |}}{{if:sf>0|De {{if:mod(t4,60)==0|{{if:mod(floor(t4/60),60)==0|${{eval:floor(t4/3600)}}~\\text{h}$|${{eval:floor(t4/3600)}}~\\text{h}~{{if:mod(floor(t4/60),60)<10|0{{eval:mod(floor(t4/60),60)}}|{{eval:mod(floor(t4/60),60)}}}}~\\text{min}$}}|${{eval:floor(t4/3600)}}~\\text{h}~{{if:mod(floor(t4/60),60)<10|0{{eval:mod(floor(t4/60),60)}}|{{eval:mod(floor(t4/60),60)}}}}~\\text{min}~{{if:mod(t4,60)<10|0{{eval:mod(t4,60)}}|{{eval:mod(t4,60)}}}}~\\text{s}$}} à {{if:mod(tf,60)==0|{{if:mod(floor(tf/60),60)==0|${{eval:floor(tf/3600)}}~\\text{h}$|${{eval:floor(tf/3600)}}~\\text{h}~{{if:mod(floor(tf/60),60)<10|0{{eval:mod(floor(tf/60),60)}}|{{eval:mod(floor(tf/60),60)}}}}~\\text{min}$}}|${{eval:floor(tf/3600)}}~\\text{h}~{{if:mod(floor(tf/60),60)<10|0{{eval:mod(floor(tf/60),60)}}|{{eval:mod(floor(tf/60),60)}}}}~\\text{min}~{{if:mod(tf,60)<10|0{{eval:mod(tf,60)}}|{{eval:mod(tf,60)}}}}~\\text{s}$}} : ${{sf}}~\\text{s}$.|}}",
+					"Les secondes : ${{s1}} + {{sf}} = {{ss}}${{if:ss>=60|, soit $1~\\text{min}~{{eval:ss-60}}~\\text{s}$|}}. Les minutes : ${{m1}} + {{mf}}{{if:ss>=60| + 1|}} = {{mm}}${{if:mm>=60|, soit $1~\\text{h}~{{eval:mm-60}}~\\text{min}$|}}.{{if:mm>=60| Les heures : ${{hp}} + 1 = {{dh}}$.|{{if:dh>0| Les heures : ${{dh}}~\\text{h}$.|}}}}",
+					"En tout : $\\textcolor{{{color:primary.0}}}{{{dh}}~\\text{h}~{{dm}}~\\text{min}~{{ds}}~\\text{s}}$."
+				]
+			}
+		},
+		{
+			"statement": "{{if:k==1|La course|{{if:k==2|La séance de cinéma|{{if:k==3|Le match|La randonnée}}}}}} commence et finit aux heures montrées. Combien de temps a-t-{{if:k==3|il|elle}} duré ?\n\n```horloge\nheure: {{h}} h {{a}} min {{x}} s ; {{hf}} h {{mf}} min {{sf}} s\nchiffres: tous\ngraduations: minutes\ncadran: 24\nlégendes: Début ; Fin\n```\n\nDurée : $?~\\text{h}~?~\\text{min}~?~\\text{s}$.",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..4"
+				},
+				{
+					"name": "h",
+					"expression": "13..19"
+				},
+				{
+					"name": "a",
+					"expression": "0..59"
+				},
+				{
+					"name": "x",
+					"expression": "0..59"
+				},
+				{
+					"name": "n",
+					"expression": "1..2"
+				},
+				{
+					"name": "c",
+					"expression": "0..59"
+				},
+				{
+					"name": "y",
+					"expression": "1..59"
+				},
+				{
+					"name": "d",
+					"expression": "eval:3600*n+60*c+y"
+				},
+				{
+					"name": "t0",
+					"expression": "eval:3600*h+60*a+x"
+				},
+				{
+					"name": "tf",
+					"expression": "eval:t0+d"
+				},
+				{
+					"name": "hf",
+					"expression": "eval:floor(tf/3600)"
+				},
+				{
+					"name": "mf",
+					"expression": "eval:mod(floor(tf/60),60)"
+				},
+				{
+					"name": "sf",
+					"expression": "eval:mod(tf,60)"
+				},
+				{
+					"name": "t1",
+					"expression": "eval:60*floor((t0+59)/60)"
+				},
+				{
+					"name": "t2",
+					"expression": "eval:3600*floor((t1+3599)/3600)"
+				},
+				{
+					"name": "t3",
+					"expression": "eval:3600*hf"
+				},
+				{
+					"name": "t4",
+					"expression": "eval:t3+60*mf"
+				},
+				{
+					"name": "s1",
+					"expression": "eval:t1-t0"
+				},
+				{
+					"name": "m1",
+					"expression": "eval:(t2-t1)/60"
+				},
+				{
+					"name": "hp",
+					"expression": "eval:(t3-t2)/3600"
+				},
+				{
+					"name": "ss",
+					"expression": "eval:s1+sf"
+				},
+				{
+					"name": "mm",
+					"expression": "eval:m1+mf+floor(ss/60)"
+				},
+				{
+					"name": "dh",
+					"expression": "eval:floor(d/3600)"
+				},
+				{
+					"name": "dm",
+					"expression": "eval:mod(floor(d/60),60)"
+				},
+				{
+					"name": "ds",
+					"expression": "eval:mod(d,60)"
+				}
+			],
+			"conditions": ["floor(tf/3600)>h"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{dh}}"
+				},
+				{
+					"expectedAnswer": "{{dm}}"
+				},
+				{
+					"expectedAnswer": "{{ds}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Début : {{if:mod(t0,60)==0|{{if:mod(floor(t0/60),60)==0|${{eval:floor(t0/3600)}}~\\text{h}$|${{eval:floor(t0/3600)}}~\\text{h}~{{if:mod(floor(t0/60),60)<10|0{{eval:mod(floor(t0/60),60)}}|{{eval:mod(floor(t0/60),60)}}}}~\\text{min}$}}|${{eval:floor(t0/3600)}}~\\text{h}~{{if:mod(floor(t0/60),60)<10|0{{eval:mod(floor(t0/60),60)}}|{{eval:mod(floor(t0/60),60)}}}}~\\text{min}~{{if:mod(t0,60)<10|0{{eval:mod(t0,60)}}|{{eval:mod(t0,60)}}}}~\\text{s}$}}. Fin : {{if:mod(tf,60)==0|{{if:mod(floor(tf/60),60)==0|${{eval:floor(tf/3600)}}~\\text{h}$|${{eval:floor(tf/3600)}}~\\text{h}~{{if:mod(floor(tf/60),60)<10|0{{eval:mod(floor(tf/60),60)}}|{{eval:mod(floor(tf/60),60)}}}}~\\text{min}$}}|${{eval:floor(tf/3600)}}~\\text{h}~{{if:mod(floor(tf/60),60)<10|0{{eval:mod(floor(tf/60),60)}}|{{eval:mod(floor(tf/60),60)}}}}~\\text{min}~{{if:mod(tf,60)<10|0{{eval:mod(tf,60)}}|{{eval:mod(tf,60)}}}}~\\text{s}$}}.",
+					"On avance d'instant en instant, sans poser de soustraction.",
+					"{{if:s1>0|De {{if:mod(t0,60)==0|{{if:mod(floor(t0/60),60)==0|${{eval:floor(t0/3600)}}~\\text{h}$|${{eval:floor(t0/3600)}}~\\text{h}~{{if:mod(floor(t0/60),60)<10|0{{eval:mod(floor(t0/60),60)}}|{{eval:mod(floor(t0/60),60)}}}}~\\text{min}$}}|${{eval:floor(t0/3600)}}~\\text{h}~{{if:mod(floor(t0/60),60)<10|0{{eval:mod(floor(t0/60),60)}}|{{eval:mod(floor(t0/60),60)}}}}~\\text{min}~{{if:mod(t0,60)<10|0{{eval:mod(t0,60)}}|{{eval:mod(t0,60)}}}}~\\text{s}$}} à {{if:mod(t1,60)==0|{{if:mod(floor(t1/60),60)==0|${{eval:floor(t1/3600)}}~\\text{h}$|${{eval:floor(t1/3600)}}~\\text{h}~{{if:mod(floor(t1/60),60)<10|0{{eval:mod(floor(t1/60),60)}}|{{eval:mod(floor(t1/60),60)}}}}~\\text{min}$}}|${{eval:floor(t1/3600)}}~\\text{h}~{{if:mod(floor(t1/60),60)<10|0{{eval:mod(floor(t1/60),60)}}|{{eval:mod(floor(t1/60),60)}}}}~\\text{min}~{{if:mod(t1,60)<10|0{{eval:mod(t1,60)}}|{{eval:mod(t1,60)}}}}~\\text{s}$}} : ${{s1}}~\\text{s}$. |}}{{if:m1>0|De {{if:mod(t1,60)==0|{{if:mod(floor(t1/60),60)==0|${{eval:floor(t1/3600)}}~\\text{h}$|${{eval:floor(t1/3600)}}~\\text{h}~{{if:mod(floor(t1/60),60)<10|0{{eval:mod(floor(t1/60),60)}}|{{eval:mod(floor(t1/60),60)}}}}~\\text{min}$}}|${{eval:floor(t1/3600)}}~\\text{h}~{{if:mod(floor(t1/60),60)<10|0{{eval:mod(floor(t1/60),60)}}|{{eval:mod(floor(t1/60),60)}}}}~\\text{min}~{{if:mod(t1,60)<10|0{{eval:mod(t1,60)}}|{{eval:mod(t1,60)}}}}~\\text{s}$}} à {{if:mod(t2,60)==0|{{if:mod(floor(t2/60),60)==0|${{eval:floor(t2/3600)}}~\\text{h}$|${{eval:floor(t2/3600)}}~\\text{h}~{{if:mod(floor(t2/60),60)<10|0{{eval:mod(floor(t2/60),60)}}|{{eval:mod(floor(t2/60),60)}}}}~\\text{min}$}}|${{eval:floor(t2/3600)}}~\\text{h}~{{if:mod(floor(t2/60),60)<10|0{{eval:mod(floor(t2/60),60)}}|{{eval:mod(floor(t2/60),60)}}}}~\\text{min}~{{if:mod(t2,60)<10|0{{eval:mod(t2,60)}}|{{eval:mod(t2,60)}}}}~\\text{s}$}} : ${{m1}}~\\text{min}$.|}}",
+					"{{if:hp>0|De {{if:mod(t2,60)==0|{{if:mod(floor(t2/60),60)==0|${{eval:floor(t2/3600)}}~\\text{h}$|${{eval:floor(t2/3600)}}~\\text{h}~{{if:mod(floor(t2/60),60)<10|0{{eval:mod(floor(t2/60),60)}}|{{eval:mod(floor(t2/60),60)}}}}~\\text{min}$}}|${{eval:floor(t2/3600)}}~\\text{h}~{{if:mod(floor(t2/60),60)<10|0{{eval:mod(floor(t2/60),60)}}|{{eval:mod(floor(t2/60),60)}}}}~\\text{min}~{{if:mod(t2,60)<10|0{{eval:mod(t2,60)}}|{{eval:mod(t2,60)}}}}~\\text{s}$}} à {{if:mod(t3,60)==0|{{if:mod(floor(t3/60),60)==0|${{eval:floor(t3/3600)}}~\\text{h}$|${{eval:floor(t3/3600)}}~\\text{h}~{{if:mod(floor(t3/60),60)<10|0{{eval:mod(floor(t3/60),60)}}|{{eval:mod(floor(t3/60),60)}}}}~\\text{min}$}}|${{eval:floor(t3/3600)}}~\\text{h}~{{if:mod(floor(t3/60),60)<10|0{{eval:mod(floor(t3/60),60)}}|{{eval:mod(floor(t3/60),60)}}}}~\\text{min}~{{if:mod(t3,60)<10|0{{eval:mod(t3,60)}}|{{eval:mod(t3,60)}}}}~\\text{s}$}} : ${{hp}}~\\text{h}$. |}}{{if:mf>0|De {{if:mod(t3,60)==0|{{if:mod(floor(t3/60),60)==0|${{eval:floor(t3/3600)}}~\\text{h}$|${{eval:floor(t3/3600)}}~\\text{h}~{{if:mod(floor(t3/60),60)<10|0{{eval:mod(floor(t3/60),60)}}|{{eval:mod(floor(t3/60),60)}}}}~\\text{min}$}}|${{eval:floor(t3/3600)}}~\\text{h}~{{if:mod(floor(t3/60),60)<10|0{{eval:mod(floor(t3/60),60)}}|{{eval:mod(floor(t3/60),60)}}}}~\\text{min}~{{if:mod(t3,60)<10|0{{eval:mod(t3,60)}}|{{eval:mod(t3,60)}}}}~\\text{s}$}} à {{if:mod(t4,60)==0|{{if:mod(floor(t4/60),60)==0|${{eval:floor(t4/3600)}}~\\text{h}$|${{eval:floor(t4/3600)}}~\\text{h}~{{if:mod(floor(t4/60),60)<10|0{{eval:mod(floor(t4/60),60)}}|{{eval:mod(floor(t4/60),60)}}}}~\\text{min}$}}|${{eval:floor(t4/3600)}}~\\text{h}~{{if:mod(floor(t4/60),60)<10|0{{eval:mod(floor(t4/60),60)}}|{{eval:mod(floor(t4/60),60)}}}}~\\text{min}~{{if:mod(t4,60)<10|0{{eval:mod(t4,60)}}|{{eval:mod(t4,60)}}}}~\\text{s}$}} : ${{mf}}~\\text{min}$. |}}{{if:sf>0|De {{if:mod(t4,60)==0|{{if:mod(floor(t4/60),60)==0|${{eval:floor(t4/3600)}}~\\text{h}$|${{eval:floor(t4/3600)}}~\\text{h}~{{if:mod(floor(t4/60),60)<10|0{{eval:mod(floor(t4/60),60)}}|{{eval:mod(floor(t4/60),60)}}}}~\\text{min}$}}|${{eval:floor(t4/3600)}}~\\text{h}~{{if:mod(floor(t4/60),60)<10|0{{eval:mod(floor(t4/60),60)}}|{{eval:mod(floor(t4/60),60)}}}}~\\text{min}~{{if:mod(t4,60)<10|0{{eval:mod(t4,60)}}|{{eval:mod(t4,60)}}}}~\\text{s}$}} à {{if:mod(tf,60)==0|{{if:mod(floor(tf/60),60)==0|${{eval:floor(tf/3600)}}~\\text{h}$|${{eval:floor(tf/3600)}}~\\text{h}~{{if:mod(floor(tf/60),60)<10|0{{eval:mod(floor(tf/60),60)}}|{{eval:mod(floor(tf/60),60)}}}}~\\text{min}$}}|${{eval:floor(tf/3600)}}~\\text{h}~{{if:mod(floor(tf/60),60)<10|0{{eval:mod(floor(tf/60),60)}}|{{eval:mod(floor(tf/60),60)}}}}~\\text{min}~{{if:mod(tf,60)<10|0{{eval:mod(tf,60)}}|{{eval:mod(tf,60)}}}}~\\text{s}$}} : ${{sf}}~\\text{s}$.|}}",
+					"Les secondes : ${{s1}} + {{sf}} = {{ss}}${{if:ss>=60|, soit $1~\\text{min}~{{eval:ss-60}}~\\text{s}$|}}. Les minutes : ${{m1}} + {{mf}}{{if:ss>=60| + 1|}} = {{mm}}${{if:mm>=60|, soit $1~\\text{h}~{{eval:mm-60}}~\\text{min}$|}}.{{if:mm>=60| Les heures : ${{hp}} + 1 = {{dh}}$.|{{if:dh>0| Les heures : ${{dh}}~\\text{h}$.|}}}}",
+					"En tout : $\\textcolor{{{color:primary.0}}}{{{dh}}~\\text{h}~{{dm}}~\\text{min}~{{ds}}~\\text{s}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "9 h 52 min 40 s → 10 h 07 min 15 s = 14 min 35 s",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1",
+				"h": "9",
+				"a": "52",
+				"x": "40",
+				"c": "14",
+				"y": "35",
+				"d": "875",
+				"t0": "35560",
+				"tf": "36435",
+				"hf": "10",
+				"mf": "7",
+				"sf": "15",
+				"t1": "35580",
+				"t2": "36000",
+				"t3": "36000",
+				"t4": "36420",
+				"s1": "20",
+				"m1": "7",
+				"hp": "0",
+				"ss": "35",
+				"mm": "14",
+				"dh": "0",
+				"dm": "14",
+				"ds": "35"
+			},
+			"answers": ["14", "35"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 52 − 7 = 45 min, 40 − 15 = 25 s",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1",
+				"h": "9",
+				"a": "52",
+				"x": "40",
+				"c": "14",
+				"y": "35",
+				"d": "875",
+				"t0": "35560",
+				"tf": "36435",
+				"hf": "10",
+				"mf": "7",
+				"sf": "15",
+				"t1": "35580",
+				"t2": "36000",
+				"t3": "36000",
+				"t4": "36420",
+				"s1": "20",
+				"m1": "7",
+				"hp": "0",
+				"ss": "35",
+				"mm": "14",
+				"dh": "0",
+				"dm": "14",
+				"ds": "35"
+			},
+			"answers": ["45", "25"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 100 s dans une minute, 15 min 75 s",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1",
+				"h": "9",
+				"a": "52",
+				"x": "40",
+				"c": "14",
+				"y": "35",
+				"d": "875",
+				"t0": "35560",
+				"tf": "36435",
+				"hf": "10",
+				"mf": "7",
+				"sf": "15",
+				"t1": "35580",
+				"t2": "36000",
+				"t3": "36000",
+				"t4": "36420",
+				"s1": "20",
+				"m1": "7",
+				"hp": "0",
+				"ss": "35",
+				"mm": "14",
+				"dh": "0",
+				"dm": "14",
+				"ds": "35"
+			},
+			"answers": ["15", "75"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : minute entamée comptée, 15 min 35 s",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1",
+				"h": "9",
+				"a": "52",
+				"x": "40",
+				"c": "14",
+				"y": "35",
+				"d": "875",
+				"t0": "35560",
+				"tf": "36435",
+				"hf": "10",
+				"mf": "7",
+				"sf": "15",
+				"t1": "35580",
+				"t2": "36000",
+				"t3": "36000",
+				"t4": "36420",
+				"s1": "20",
+				"m1": "7",
+				"hp": "0",
+				"ss": "35",
+				"mm": "14",
+				"dh": "0",
+				"dm": "14",
+				"ds": "35"
+			},
+			"answers": ["15", "35"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "BO : 8 h 52 min 27 s → 11 h 37 min 18 s = 2 h 44 min 51 s",
+			"variationIndex": 1,
+			"variables": {
+				"k": "2",
+				"h": "8",
+				"a": "52",
+				"x": "27",
+				"n": "2",
+				"c": "44",
+				"y": "51",
+				"d": "9891",
+				"t0": "31947",
+				"tf": "41838",
+				"hf": "11",
+				"mf": "37",
+				"sf": "18",
+				"t1": "31980",
+				"t2": "32400",
+				"t3": "39600",
+				"t4": "41820",
+				"s1": "33",
+				"m1": "7",
+				"hp": "2",
+				"ss": "51",
+				"mm": "44",
+				"dh": "2",
+				"dm": "44",
+				"ds": "51"
+			},
+			"answers": ["2", "44", "51"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : soustraction chiffre à chiffre, 3 h 15 min 9 s",
+			"variationIndex": 1,
+			"variables": {
+				"k": "2",
+				"h": "8",
+				"a": "52",
+				"x": "27",
+				"n": "2",
+				"c": "44",
+				"y": "51",
+				"d": "9891",
+				"t0": "31947",
+				"tf": "41838",
+				"hf": "11",
+				"mf": "37",
+				"sf": "18",
+				"t1": "31980",
+				"t2": "32400",
+				"t3": "39600",
+				"t4": "41820",
+				"s1": "33",
+				"m1": "7",
+				"hp": "2",
+				"ss": "51",
+				"mm": "44",
+				"dh": "2",
+				"dm": "44",
+				"ds": "51"
+			},
+			"answers": ["3", "15", "9"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : retenues décimales, 2 h 84 min 91 s",
+			"variationIndex": 1,
+			"variables": {
+				"k": "2",
+				"h": "8",
+				"a": "52",
+				"x": "27",
+				"n": "2",
+				"c": "44",
+				"y": "51",
+				"d": "9891",
+				"t0": "31947",
+				"tf": "41838",
+				"hf": "11",
+				"mf": "37",
+				"sf": "18",
+				"t1": "31980",
+				"t2": "32400",
+				"t3": "39600",
+				"t4": "41820",
+				"s1": "33",
+				"m1": "7",
+				"hp": "2",
+				"ss": "51",
+				"mm": "44",
+				"dh": "2",
+				"dm": "44",
+				"ds": "51"
+			},
+			"answers": ["2", "84", "91"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : heure entamée comptée, 3 h 44 min 51 s",
+			"variationIndex": 1,
+			"variables": {
+				"k": "2",
+				"h": "8",
+				"a": "52",
+				"x": "27",
+				"n": "2",
+				"c": "44",
+				"y": "51",
+				"d": "9891",
+				"t0": "31947",
+				"tf": "41838",
+				"hf": "11",
+				"mf": "37",
+				"sf": "18",
+				"t1": "31980",
+				"t2": "32400",
+				"t3": "39600",
+				"t4": "41820",
+				"s1": "33",
+				"m1": "7",
+				"hp": "2",
+				"ss": "51",
+				"mm": "44",
+				"dh": "2",
+				"dm": "44",
+				"ds": "51"
+			},
+			"answers": ["3", "44", "51"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Début à l'heure pile : 9 h 0 min 0 s → 10 h 15 min 30 s",
+			"variationIndex": 1,
+			"variables": {
+				"k": "4",
+				"h": "9",
+				"a": "0",
+				"x": "0",
+				"n": "1",
+				"c": "15",
+				"y": "30",
+				"d": "4530",
+				"t0": "32400",
+				"tf": "36930",
+				"hf": "10",
+				"mf": "15",
+				"sf": "30",
+				"t1": "32400",
+				"t2": "32400",
+				"t3": "36000",
+				"t4": "36900",
+				"s1": "0",
+				"m1": "0",
+				"hp": "1",
+				"ss": "30",
+				"mm": "15",
+				"dh": "1",
+				"dm": "15",
+				"ds": "30"
+			},
+			"answers": ["1", "15", "30"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Écrit « 05 » : 1 h 05 min 08 s",
+			"variationIndex": 1,
+			"variables": {
+				"k": "3",
+				"h": "10",
+				"a": "20",
+				"x": "10",
+				"n": "1",
+				"c": "5",
+				"y": "8",
+				"d": "3908",
+				"t0": "37210",
+				"tf": "41118",
+				"hf": "11",
+				"mf": "25",
+				"sf": "18",
+				"t1": "37260",
+				"t2": "39600",
+				"t3": "39600",
+				"t4": "41100",
+				"s1": "50",
+				"m1": "39",
+				"hp": "0",
+				"ss": "68",
+				"mm": "65",
+				"dh": "1",
+				"dm": "5",
+				"ds": "8"
+			},
+			"answers": ["1", "05", "08"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Cadran de 24 h : 15 h 40 min 50 s → 17 h 06 min 20 s = 1 h 25 min 30 s",
+			"variationIndex": 2,
+			"variables": {
+				"k": "3",
+				"h": "15",
+				"a": "40",
+				"x": "50",
+				"n": "1",
+				"c": "25",
+				"y": "30",
+				"d": "5130",
+				"t0": "56450",
+				"tf": "61580",
+				"hf": "17",
+				"mf": "6",
+				"sf": "20",
+				"t1": "56460",
+				"t2": "57600",
+				"t3": "61200",
+				"t4": "61560",
+				"s1": "10",
+				"m1": "19",
+				"hp": "1",
+				"ss": "30",
+				"mm": "25",
+				"dh": "1",
+				"dm": "25",
+				"ds": "30"
+			},
+			"answers": ["1", "25", "30"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 24 h, 1706 − 1540 = 1 h 66 min",
+			"variationIndex": 2,
+			"variables": {
+				"k": "3",
+				"h": "15",
+				"a": "40",
+				"x": "50",
+				"n": "1",
+				"c": "25",
+				"y": "30",
+				"d": "5130",
+				"t0": "56450",
+				"tf": "61580",
+				"hf": "17",
+				"mf": "6",
+				"sf": "20",
+				"t1": "56460",
+				"t2": "57600",
+				"t3": "61200",
+				"t4": "61560",
+				"s1": "10",
+				"m1": "19",
+				"hp": "1",
+				"ss": "30",
+				"mm": "25",
+				"dh": "1",
+				"dm": "25",
+				"ds": "30"
+			},
+			"answers": ["1", "66", "30"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

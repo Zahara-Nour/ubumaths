@@ -1,8 +1,8 @@
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireRoles } from '$lib/server/middleware/auth';
+import { requireRoles } from '#lib/server/middleware/auth.ts';
 import { z } from 'zod';
-import { createServerLogger } from '$lib/utils/logger';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/marketplace/admin/activity/+server');
 
@@ -110,7 +110,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 
 	if (studentIds.length === 0) {
 		// Return empty activity
-		return json({ activities: [] });
+		return Response.json({ activities: [] });
 	}
 
 	// Fetch recent activities from different tables
@@ -310,5 +310,5 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 	// Limit to requested amount
 	const limitedActivities = activities.slice(0, limit);
 
-	return json({ activities: limitedActivities });
+	return Response.json({ activities: limitedActivities });
 };

@@ -16,10 +16,10 @@
 import type { Atelier } from './atelier.svelte';
 import { isList, isQualitative, type ListObject } from './types';
 import { commonRows, droppedNote, noCommonRowsMessage, valuesOn } from './pairs';
-import { summarizeTable } from '$lib/statistics/describe';
-import { Fraction } from '$lib/statistics/fraction';
-import { parseStatChartContent } from '$lib/ubumark/parser/stat-chart-parser';
-import { STAT_CHART_LIMITS, type StatChartNode } from '$lib/ubumark/types/stat-chart';
+import { summarizeTable } from '#lib/statistics/describe.ts';
+import { Fraction } from '#lib/statistics/fraction.ts';
+import { parseStatChartContent } from '#lib/ubumark/parser/stat-chart-parser.ts';
+import { STAT_CHART_LIMITS, type StatChartNode } from '#lib/ubumark/types/stat-chart.ts';
 
 // =============================================================================
 // Types

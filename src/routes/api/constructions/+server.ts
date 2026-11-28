@@ -4,20 +4,19 @@
  * POST - Create new construction
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { z } from 'zod';
-import { requireAuth, requireRoles } from '$lib/server/middleware/auth';
+import { requireAuth, requireRoles } from '#lib/server/middleware/auth.ts';
 import {
 	CONSTRUCTION_AUTHOR_ROLES,
 	CONSTRUCTION_COLUMNS,
 	canAuthorConstructions
-} from '$lib/server/constructions-access';
-import { constructionScriptSchema } from '$lib/constructions';
-import type { TablesInsert } from '$lib/types/database';
-import { toJson } from '$lib/types/database-helpers';
-import { syncResourceTags } from '$lib/server/resource-tags';
-import { createServerLogger } from '$lib/utils/logger';
+} from '#lib/server/constructions-access.ts';
+import type { TablesInsert } from '#lib/types/database.ts';
+import { toJson } from '#lib/types/database-helpers.ts';
+import { syncResourceTags } from '#lib/server/resource-tags.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/constructions/+server');
 
@@ -36,28 +35,24 @@ const listConstructionsQuerySchema = z.object({
 /**
  * Request body for creating a construction
  */
-const createConstructionSchema = z
-	.object({
-		title: z
-			.string()
-			.min(1, 'Le titre est requis')
-			.max(200, 'Le titre ne doit pas dépasser 200 caractères'),
-		description: z
-			.string()
-			.max(2000, 'La description ne doit pas dépasser 2000 caractères')
-			.optional(),
-		format: z.enum(['json', 'dsl']).default('json'),
-		script: constructionScriptSchema.optional(),
-		dsl_script: z.string().max(50000, 'Le script DSL est trop long').optional(),
-		is_public: z.boolean().default(false),
-		tags: z.array(z.string().min(1).max(50)).max(10, '10 tags au maximum').optional()
-	})
-	.refine(
-		(data) =>
-			(data.format === 'json' && data.script !== undefined) ||
-			(data.format === 'dsl' && data.dsl_script !== undefined),
-		{ message: 'Script requis : JSON pour le format json, DSL pour le format dsl' }
-	);
+const createConstructionSchema = z.object({
+	title: z
+		.string()
+		.min(1, 'Le titre est requis')
+		.max(200, 'Le titre ne doit pas dépasser 200 caractères'),
+	description: z
+		.string()
+		.max(2000, 'La description ne doit pas dépasser 2000 caractères')
+		.optional(),
+	// L'ancien format JSON n'est plus accepté (M38, 2026-11-28) : la prod n'a
+	// plus que des constructions au format DSL.
+	format: z.literal('dsl').default('dsl'),
+	dsl_script: z
+		.string({ error: 'Le script DSL est requis' })
+		.max(50000, 'Le script DSL est trop long'),
+	is_public: z.boolean().default(false),
+	tags: z.array(z.string().min(1).max(50)).max(10, '10 tags au maximum').optional()
+});
 
 // =============================================================================
 // HANDLERS
@@ -114,7 +109,7 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 
 	const totalPages = count ? Math.ceil(count / limit) : 0;
 
-	return json({
+	return Response.json({
 		constructions: data ?? [],
 		pagination: {
 			page,
@@ -150,7 +145,7 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 		throw error(400, `Données invalides : ${errorMsg}`);
 	}
 
-	const { title, description, format, script, dsl_script, is_public, tags } = validation.data;
+	const { title, description, format, dsl_script, is_public, tags } = validation.data;
 
 	// Insert construction
 	const { data, error: insertError } = await locals.supabase
@@ -160,9 +155,9 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 			// Postgres exprime l'absence par `null`, Zod par `undefined`.
 			description: description ?? null,
 			format,
-			// `script` est une colonne jsonb : conversion explicite plutôt que cast.
-			script: toJson(format === 'json' ? script : {}),
-			dsl_script: format === 'dsl' ? (dsl_script ?? null) : null,
+			// `script` (jsonb) ne servait qu'à l'ancien format JSON : toujours vide.
+			script: toJson({}),
+			dsl_script,
 			is_public
 		} satisfies TablesInsert<'constructions'>)
 		.select(CONSTRUCTION_COLUMNS)
@@ -178,5 +173,5 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 		throw error(500, 'Impossible de créer la construction');
 	}
 
-	return json({ construction: data }, { status: 201 });
+	return Response.json({ construction: data }, { status: 201 });
 };

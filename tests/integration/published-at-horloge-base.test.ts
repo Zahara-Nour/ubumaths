@@ -29,8 +29,8 @@ import {
 	setContentPublication,
 	listDistributedWorksheetIds,
 	type ChapterContentType
-} from '$lib/server/chapters-publication';
-import type { Database } from '$lib/types/database';
+} from '#lib/server/chapters-publication.ts';
+import type { Database } from '#lib/types/database.ts';
 
 const SUPABASE_URL = process.env.SUPABASE_TEST_URL || 'http://localhost:54321';
 const ANON_KEY =

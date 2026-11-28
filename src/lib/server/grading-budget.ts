@@ -16,10 +16,14 @@
  * par l'appelant.
  */
 
-import { gradeQuestion, type QuestionVerdict, type SubmittedAnswer } from '$lib/questions/grading';
+import {
+	gradeQuestion,
+	type QuestionVerdict,
+	type SubmittedAnswer
+} from '#lib/questions/grading.ts';
 // Case « figure » : le juge lit les positions des points dans ce registre (cf. questions/construction/positions)
-import '$lib/questions/construction/positions-setup';
-import type { QuestionInstance } from '$lib/questions/types';
+import '#lib/questions/construction/positions-setup.ts';
+import type { QuestionInstance } from '#lib/questions/types.ts';
 
 // Types
 export interface GradingItem {
@@ -52,6 +56,10 @@ export const GRADING_BUDGET_EXCEEDED_FEEDBACK =
 // Functions
 function emptyVerdict(): QuestionVerdict {
 	return { status: 'empty', points: 0, isCorrect: false, partial: false };
+}
+
+function pythonCaseVerdict(): QuestionVerdict {
+	return { status: 'incorrect', points: 0, isCorrect: false, partial: false };
 }
 
 function budgetExceededVerdict(): QuestionVerdict {
@@ -88,6 +96,10 @@ export function gradeWithinBudget(
 			skipped++;
 			return budgetExceededVerdict();
 		}
+		// Case Python : son verdict vient du navigateur, jamais cru par une note du serveur (Q1 de
+		// l'outil 49 ; le modèle n'entre pas dans une évaluation, cette garde le compte faux s'il y
+		// arrivait). Pas dans `gradeQuestion` : la carte d'entraînement s'en sert, côté navigateur
+		if ((instance.blanks ?? []).some((b) => b.construire === 'python')) return pythonCaseVerdict();
 		return grade(instance, answer);
 	});
 	const remainingMs = Math.max(0, budgetMs - (clock() - startedAt));

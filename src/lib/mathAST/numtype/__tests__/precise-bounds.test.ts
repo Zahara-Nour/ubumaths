@@ -9,14 +9,14 @@ import { describe, it, expect, beforeEach } from 'vitest';
 import { parseLatex } from '../../parser';
 import { inferType, inferTypeWithPreciseBounds, clearAllTypeCache } from '../infer';
 import type { TypeContext } from '../types';
-import type { IntervalDomain, EndpointType } from '$lib/math/intervals/types';
+import type { IntervalDomain, EndpointType } from '#lib/math/intervals/types.ts';
 import {
 	intervalSet,
 	interval,
 	endpointToNumber,
 	isNegativeInfinityEndpoint,
 	isPositiveInfinityEndpoint
-} from '$lib/math/intervals';
+} from '#lib/math/intervals/index.ts';
 import { infinity } from '../../factory';
 import { numericNode } from '../../common/numeric';
 

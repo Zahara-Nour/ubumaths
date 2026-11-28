@@ -11,8 +11,8 @@ import { page } from 'vitest/browser';
 import { describe, it, expect } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import TestSpecEditor from '../TestSpecEditor.svelte';
-import { templateMarkdown } from '$lib/ubumark';
-import type { QuestionVariation } from '$lib/questions/types';
+import { templateMarkdown } from '#lib/ubumark/index.ts';
+import type { QuestionVariation } from '#lib/questions/types.ts';
 
 // Constantes
 const STATEMENT = 'Combien ?\n\n```choix\n- $\\frac{1}{2}$\n- {{a}} cm\n```';

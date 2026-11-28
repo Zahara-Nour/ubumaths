@@ -1,0 +1,140 @@
+{
+	"id": "19b2b250-35c8-451d-b4fe-51374dbd2c13",
+	"title": "Est-ce une expérience aléatoire ?",
+	"description": "Reconnaître une expérience aléatoire (dé, pièce, sac, roue, cartes) parmi des situations au résultat connu d'avance (calcul, balle lâchée, jour suivant), une ou plusieurs à cocher",
+	"grades": ["CM1"],
+	"level": 1,
+	"delay": 60,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "{{if:s==1|On lance un dé et on regarde le nombre obtenu.|{{if:s==2|On lance une pièce de monnaie et on regarde si elle tombe sur pile ou sur face.|{{if:s==3|On tire une boule dans un sac sans regarder et on note sa couleur.|{{if:s==4|On fait tourner une roue de loterie et on regarde la case où elle s'arrête.|{{if:s==5|On tire une carte au hasard dans un jeu de cartes et on regarde si c'est un cœur.|{{if:s==6|On calcule $25 + 17$ et on note le résultat.|{{if:s==7|On lâche une balle au-dessus du sol et on regarde si elle tombe.|{{if:s==8|On regarde quel jour de la semaine vient après lundi.|{{if:s==9|On compte les jours du mois de janvier.|On multiplie $6$ par $7$ avec une calculatrice et on lit l'écran.}}}}}}}}}}}}}}}}}}\n\nEst-ce une expérience aléatoire ?\n\n```choix\nmelanger: non\n- Oui\n- Non\n```",
+			"variables": [
+				{
+					"name": "s",
+					"expression": "1..10"
+				},
+				{
+					"name": "r",
+					"expression": "eval:min(floor(s/6),1)"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{r}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Une **expérience aléatoire**, c'est une expérience dont on ne peut pas connaître le résultat à l'avance : c'est le hasard qui décide.",
+					"{{if:s==1|On ne peut pas savoir à l'avance quelle face sera dessus : c'est le hasard qui décide.|{{if:s==2|Personne ne peut dire à l'avance si la pièce tombera sur pile ou sur face.|{{if:s==3|Sans regarder, on ne sait pas quelle boule on va prendre : c'est le hasard.|{{if:s==4|On ne sait pas à l'avance où la roue va s'arrêter.|{{if:s==5|Les cartes sont mélangées : on ne sait pas à l'avance quelle carte on tirera.|{{if:s==6|Le résultat est toujours $42$ : on le connaît avant de commencer, le hasard n'y est pour rien.|{{if:s==7|La balle tombe à chaque fois : on sait à l'avance ce qui va se passer.|{{if:s==8|Après lundi vient toujours mardi : aucun hasard.|{{if:s==9|Janvier a toujours $31$ jours : le résultat est connu d'avance.|La calculatrice affiche toujours $42$ : on le sait avant d'appuyer.}}}}}}}}}}}}}}}}}}",
+					"Réponse : $\\textcolor{{{color:primary.0}}}{\\text{{{if:r==0|oui|non}}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Dans quelles situations est-ce le hasard qui décide du résultat ?\n\n```choix\nplusieurs: oui\n- {{if:t==1|On lance un dé et on regarde le nombre obtenu.|{{if:t==2|On lance une pièce de monnaie et on regarde la face du dessus.|On tire une carte dans un jeu de cartes bien mélangé.}}}}\n- {{if:t==1|On tire un jeton dans un sac sans regarder et on note son numéro.|{{if:t==2|On fait tourner une roue de loterie et on regarde sa couleur.|On tire une boule dans une urne sans regarder et on note sa couleur.}}}}\n- {{if:t==1|On compte les doigts d'une main.|{{if:t==2|On lâche une pierre dans l'eau et on regarde si elle coule.|On compte les roues d'un vélo.}}}}\n- {{if:t==1|On calcule $10 \\times 10$.|{{if:t==2|On regarde quel mois vient après mars.|On calcule la moitié de $20$.}}}}\n```",
+			"variables": [
+				{
+					"name": "t",
+					"expression": "1..3"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0;1"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le hasard décide quand on **ne peut pas savoir à l'avance** le résultat.",
+					"Expériences aléatoires : « {{if:t==1|On lance un dé et on regarde le nombre obtenu.|{{if:t==2|On lance une pièce de monnaie et on regarde la face du dessus.|On tire une carte dans un jeu de cartes bien mélangé.}}}} » et « {{if:t==1|On tire un jeton dans un sac sans regarder et on note son numéro.|{{if:t==2|On fait tourner une roue de loterie et on regarde sa couleur.|On tire une boule dans une urne sans regarder et on note sa couleur.}}}} ».",
+					"Les deux autres ont un résultat connu d'avance : ce ne sont pas des expériences aléatoires."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Dé : oui",
+			"variationIndex": 0,
+			"variables": {
+				"s": "1",
+				"r": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : dé, non",
+			"variationIndex": 0,
+			"variables": {
+				"s": "1",
+				"r": "0"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Balle lâchée : non",
+			"variationIndex": 0,
+			"variables": {
+				"s": "7",
+				"r": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : balle lâchée, oui",
+			"variationIndex": 0,
+			"variables": {
+				"s": "7",
+				"r": "1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Série 1 : dé et jeton",
+			"variationIndex": 1,
+			"variables": {
+				"t": "1"
+			},
+			"answers": ["0;1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : le calcul coché en plus",
+			"variationIndex": 1,
+			"variables": {
+				"t": "1"
+			},
+			"answers": ["0;1;3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Un seul coché : partiel",
+			"variationIndex": 1,
+			"variables": {
+				"t": "1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "unoptimal_form"
+			}
+		}
+	]
+}

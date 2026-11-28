@@ -23,17 +23,17 @@ import {
 } from '../helpers/database/trigger-test-helpers';
 import { DEFAULT_TEST_PASSWORD } from '../helpers/database/supabase-client';
 import { TestData } from '../helpers/database/test-data-factory';
-import type { Database } from '$lib/types/database';
+import type { Database } from '#lib/types/database.ts';
 
 // Le module serveur prend son client service dans process.env (qui peut viser la
 // prod via .env) : on le branche explicitement sur la base LOCALE de test.
-vi.mock('$lib/server/serviceRoleClient', async () => {
+vi.mock('#lib/server/serviceRoleClient.ts', async () => {
 	const helpers = await import('../helpers/database/trigger-test-helpers');
 	return { createServiceRoleClient: helpers.createServiceRoleClient };
 });
 
-import { ensureProgrammeDeck } from '$lib/server/srs/programme-deck';
-import { findAssignedDeckCopy } from '$lib/server/srs/deck-copy';
+import { ensureProgrammeDeck } from '#lib/server/srs/programme-deck.ts';
+import { findAssignedDeckCopy } from '#lib/server/srs/deck-copy.ts';
 
 // ============================================================================
 // TYPES

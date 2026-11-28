@@ -20,7 +20,7 @@ import {
 	lessThanOrEqualInterval,
 	nonZeroReals
 } from '../factory';
-import { numericNode } from '$lib/mathAST/common/numeric';
+import { numericNode } from '#lib/mathAST/common/numeric.ts';
 import type { MathNode } from '../../types';
 import type { Domain, RangeResult } from '../types';
 

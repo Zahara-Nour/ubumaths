@@ -9,7 +9,7 @@
  *
  * CHILD ACCOUNT (PR 3): the account address is fictitious. The link goes to the parent's
  * CONFIRMED address, sent by Brevo; it opens /auth/reset-password/parent, which changes the
- * password without logging the parent in (`$lib/server/child-password`).
+ * password without logging the parent in (`#lib/server/child-password.ts`).
  *
  * SECURITY:
  * - Server-side processing ensures email sending is secure
@@ -18,18 +18,18 @@
  */
 import { fail } from '@sveltejs/kit';
 import type { Actions } from './$types';
-import { createServerLogger } from '$lib/utils/logger';
-import { requestPasswordResetSchema } from '$lib/server/validation/auth';
-import { isChildAccountEmail } from '$lib/utils/child-account';
-import { createServiceRoleClient } from '$lib/server/serviceRoleClient';
-import { createChildResetToken, findChildResetTarget } from '$lib/server/child-password';
-import { sendChildPasswordResetEmail } from '$lib/server/email/brevo';
-import { waitForResponseFloor } from '$lib/server/response-floor';
-import { runAfterResponse } from '$lib/server/after-response';
+import { createServerLogger } from '#lib/utils/logger.ts';
+import { requestPasswordResetSchema } from '#lib/server/validation/auth.ts';
+import { isChildAccountEmail } from '#lib/utils/child-account.ts';
+import { createServiceRoleClient } from '#lib/server/serviceRoleClient.ts';
+import { createChildResetToken, findChildResetTarget } from '#lib/server/child-password.ts';
+import { sendChildPasswordResetEmail } from '#lib/server/email/brevo.ts';
+import { waitForResponseFloor } from '#lib/server/response-floor.ts';
+import { runAfterResponse } from '#lib/server/after-response.ts';
 import {
 	checkPasswordResetRateLimitByEmail,
 	checkPasswordResetRateLimitByIP
-} from '$lib/server/rateLimiter';
+} from '#lib/server/rateLimiter.ts';
 
 const logger = createServerLogger('auth/reset-password/+page.server.ts');
 

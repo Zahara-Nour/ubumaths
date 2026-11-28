@@ -15,10 +15,10 @@
 import { describe, it, expect } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
-import { parseMarkdown } from '$lib/ubumark';
+import { parseMarkdown } from '#lib/ubumark/index.ts';
 import { generateTypst } from '../typst-generator';
-import { expressionToLatex } from '$lib/components/markdown/utils/math-utils';
-import type { CapitalPairs } from '$lib/mathAST/parser/types';
+import { expressionToLatex } from '#lib/components/markdown/utils/math-utils.ts';
+import type { CapitalPairs } from '#lib/mathAST/parser/types.ts';
 
 const CORPUS_PATH = fileURLToPath(
 	new URL(

@@ -12,9 +12,9 @@
 import { readFileSync } from 'node:fs';
 import { describe, it, expect } from 'vitest';
 import { validateAnswer } from '../answer-validator';
-import { generateInstanceWithFixedVariables } from '$lib/questions/generator/test-instance-builder';
-import type { ConstraintMode, QuestionInstance, QuestionTemplate } from '$lib/questions/types';
-import type { ResolvedMarkdown } from '$lib/ubumark';
+import { generateInstanceWithFixedVariables } from '#lib/questions/generator/test-instance-builder.ts';
+import type { ConstraintMode, QuestionInstance, QuestionTemplate } from '#lib/questions/types.ts';
+import type { ResolvedMarkdown } from '#lib/ubumark/index.ts';
 
 // Question réelle #623 « Deviner le terme général » : attendu `a×b^n`
 const SUITE_TEMPLATE = JSON.parse(readFileSync('tests/fixtures/relecture/suites/623.json', 'utf-8'))

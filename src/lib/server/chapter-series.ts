@@ -16,18 +16,18 @@
  */
 
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { Database } from '$lib/types/database';
-import type { ChapterSeriesForm, ChapterSeriesRow } from '$lib/types/database-helpers';
-import { chapterIdOf, type ChapterSeries } from '$lib/types/chapters';
+import type { Database } from '#lib/types/database.ts';
+import type { ChapterSeriesForm, ChapterSeriesRow } from '#lib/types/database-helpers.ts';
+import { chapterIdOf, type ChapterSeries } from '#lib/types/chapters.ts';
 import {
 	buildSeriesLink,
 	seriesItemsSchema,
 	totalQuestions,
 	type SeriesItem
-} from '$lib/validation/series';
-import { readStoredSeriesMany } from '$lib/server/series-lines';
-import { isDeadlinePassed } from '$lib/utils/dates';
-import { createServerLogger } from '$lib/utils/logger';
+} from '#lib/validation/series.ts';
+import { readStoredSeriesMany } from '#lib/server/series-lines.ts';
+import { isDeadlinePassed } from '#lib/utils/dates.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 import { ownerColumn, ownerInsert, toOwner, type ContentOwner } from './content-owner';
 import { placementColumns, type SectionPlacement } from './chapters';
 

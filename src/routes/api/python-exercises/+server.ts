@@ -4,24 +4,24 @@
  * POST - Create new exercise
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireAuth, requireRole } from '$lib/server/middleware/auth';
+import { requireAuth, requireRole } from '#lib/server/middleware/auth.ts';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import {
 	createExerciseSchema,
 	listExercisesQuerySchema,
 	type CreateExerciseInput
-} from '$lib/server/validation/python-exercises';
-import type { PythonExercise, PythonExerciseStudentView } from '$lib/types/python-exercises';
-import type { Database } from '$lib/types/database';
-import { toJson } from '$lib/types/database-helpers';
+} from '#lib/server/validation/python-exercises.ts';
+import type { PythonExercise, PythonExerciseStudentView } from '#lib/types/python-exercises.ts';
+import type { Database } from '#lib/types/database.ts';
+import { toJson } from '#lib/types/database-helpers.ts';
 import {
 	fetchResourceIdsByAnyTag,
 	fetchTagNamesForResources,
 	syncResourceTags
-} from '$lib/server/resource-tags';
-import { createServerLogger } from '$lib/utils/logger';
+} from '#lib/server/resource-tags.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/python-exercises/+server');
 
@@ -72,7 +72,7 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 	if (tags && tags.length > 0) {
 		tagFilteredIds = await fetchResourceIdsByAnyTag(supabase, 'python_exercise', tags);
 		if (tagFilteredIds.length === 0) {
-			return json({
+			return Response.json({
 				exercises: [],
 				pagination: { limit, offset, total: 0 }
 			});
@@ -120,7 +120,7 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 
 		if (exerciseIds.length === 0) {
 			// Student has no assignments
-			return json({
+			return Response.json({
 				exercises: [],
 				pagination: {
 					limit,
@@ -136,7 +136,7 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 				? exerciseIds.filter((id) => tagFilteredIds!.includes(id))
 				: exerciseIds;
 		if (finalIds.length === 0) {
-			return json({
+			return Response.json({
 				exercises: [],
 				pagination: { limit, offset, total: 0 }
 			});
@@ -185,7 +185,7 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 		});
 	}
 
-	return json({
+	return Response.json({
 		exercises: responseData,
 		pagination: {
 			limit,
@@ -257,7 +257,7 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 		}
 	}
 
-	return json({ exercise: { ...exercise, tags: data.tags ?? [] } }, { status: 201 });
+	return Response.json({ exercise: { ...exercise, tags: data.tags ?? [] } }, { status: 201 });
 };
 
 /**

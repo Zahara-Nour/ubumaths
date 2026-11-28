@@ -37,15 +37,15 @@
 -->
 
 <script lang="ts">
-	import { lore } from '$lib/config/lore';
+	import { lore } from '#lib/config/lore.ts';
 	import { onMount } from 'svelte';
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 	import { goto } from '$app/navigation';
-	import { Button } from '$lib/components/ui/button';
-	import * as Card from '$lib/components/ui/card';
-	import { Badge } from '$lib/components/ui/badge';
-	import { toaster } from '$lib/stores/toaster.svelte';
-	import { googleOAuthErrorMessage } from '$lib/utils/google-oauth-error';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
+	import { googleOAuthErrorMessage } from '#lib/utils/google-oauth-error.ts';
 
 	// ============================================================================
 	// Types
@@ -92,20 +92,20 @@
 		await fetchStatus();
 
 		// Check if we just returned from OAuth
-		if ($page.url.searchParams.get('connected') === 'true') {
+		if (page.url.searchParams.get('connected') === 'true') {
 			toaster.success('Compte Google connecté avec succès');
 
 			// Clean up URL (remove query param)
-			const url = new URL($page.url);
+			const url = new URL(page.url.href);
 			url.searchParams.delete('connected');
-			await goto(url.pathname, { replaceState: true });
+			await goto(url.pathname, { replace: true });
 		}
 
 		// Retour de Google en erreur (refus, jeton) : le dire, puis nettoyer l'adresse.
-		const oauthError = googleOAuthErrorMessage($page.url.searchParams.get('error'));
+		const oauthError = googleOAuthErrorMessage(page.url.searchParams.get('error'));
 		if (oauthError) {
 			toaster.error(oauthError);
-			await goto($page.url.pathname, { replaceState: true });
+			await goto(page.url.pathname, { replace: true });
 		}
 	});
 

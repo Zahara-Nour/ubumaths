@@ -1,0 +1,434 @@
+{
+	"id": "651907b3-cb88-498f-92a1-d782b0a3fa1d",
+	"title": "Évolution en pourcentage avec apport constant",
+	"description": "Modéliser une évolution « p % puis apport constant » par u_{n+1} = a·u_n + b : relation, premiers termes, évolution à long terme (pièges : multiplier par p/100, apport avant le pourcentage, stabilisation confondue avec croissance sans limite)",
+	"grades": ["T_SPE"],
+	"level": 1,
+	"delay": 60,
+	"status": "published",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		},
+		"cleanCoefficients": true
+	},
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"statement": "{{if:k==0|Un club compte ${{eval:100*m}}$ adhérents en 2025. Chaque année, ${{p}}~\\%$ des adhérents ne renouvellent pas leur adhésion et ${{b}}$ nouveaux adhérents s'inscrivent. On note $u_n$ le nombre d'adhérents en $2025+n$.}}{{if:k==1|Un patient reçoit ${{eval:100*m}}~\\unit{mg}$ d'un médicament. Chaque heure, son organisme élimine ${{p}}~\\%$ de la quantité présente, puis on lui injecte ${{b}}~\\unit{mg}$. On note $u_n$ la quantité (en $\\unit{mg}$) présente au bout de $n$ heures.}}{{if:k==2|Mehdi place ${{eval:100*m}}~\\unit{€}$ à ${{p}}~\\%$ par an (intérêts composés) et ajoute ${{b}}~\\unit{€}$ à la fin de chaque année. On note $u_n$ la somme (en euros) au bout de $n$ années.}}\n\nQuelle relation vérifie la suite $(u_n)$ ?\n\n```choix\n- $u_{n+1}={{if:k==0|{{eval:1-p/100;d}}}}{{if:k==1|{{eval:1-p/100;d}}}}{{if:k==2|{{eval:1+p/100;d}}}}u_n+{{b}}$\n- $u_{n+1}={{eval:p/100;d}}u_n+{{b}}$\n- $u_{n+1}={{if:k==0|{{eval:1-p/100;d}}}}{{if:k==1|{{eval:1-p/100;d}}}}{{if:k==2|{{eval:1+p/100;d}}}}(u_n+{{b}})$\n- $u_{n+1}={{if:k==0|{{eval:1-p/100;d}}}}{{if:k==1|{{eval:1-p/100;d}}}}{{if:k==2|{{eval:1+p/100;d}}}}u_n-{{b}}$\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "0..2"
+				},
+				{
+					"name": "m",
+					"expression": "2..9"
+				},
+				{
+					"name": "p",
+					"expression": "2..9"
+				},
+				{
+					"name": "b",
+					"expression": "10..90"
+				}
+			],
+			"correction": {
+				"steps": [
+					"{{if:k==0|Perdre ${{p}}~\\%$, c'est multiplier par $1-\\dfrac{{{p}}}{100}={{if:k==0|{{eval:1-p/100;d}}}}{{if:k==1|{{eval:1-p/100;d}}}}{{if:k==2|{{eval:1+p/100;d}}}}$ ; on ajoute ensuite les ${{b}}$ nouveaux.}}{{if:k==1|Éliminer ${{p}}~\\%$, c'est multiplier par $1-\\dfrac{{{p}}}{100}={{if:k==0|{{eval:1-p/100;d}}}}{{if:k==1|{{eval:1-p/100;d}}}}{{if:k==2|{{eval:1+p/100;d}}}}$ ; l'injection vient **après** : on ajoute ${{b}}$ au résultat.}}{{if:k==2|Augmenter de ${{p}}~\\%$, c'est multiplier par $1+\\dfrac{{{p}}}{100}={{if:k==0|{{eval:1-p/100;d}}}}{{if:k==1|{{eval:1-p/100;d}}}}{{if:k==2|{{eval:1+p/100;d}}}}$ ; on ajoute ensuite les ${{b}}~\\unit{€}$ versés.}}",
+					"Donc $\\textcolor{{{color:primary.0}}}{u_{n+1}={{if:k==0|{{eval:1-p/100;d}}}}{{if:k==1|{{eval:1-p/100;d}}}}{{if:k==2|{{eval:1+p/100;d}}}}u_n+{{b}}}$.",
+					"{{if:k==0|Multiplier par ${{eval:p/100;d}}$ donnerait seulement les ${{p}}~\\%$ perdus, pas ce qui reste.}}{{if:k==1|Multiplier par ${{eval:p/100;d}}$ donnerait seulement les ${{p}}~\\%$ éliminés, pas ce qui reste.}}{{if:k==2|Multiplier par ${{eval:p/100;d}}$ donnerait seulement les intérêts, sans la somme placée.}}"
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:100*m*(1-p/100)+b}}"
+				},
+				{
+					"expectedAnswer": "{{eval:(100*m*(1-p/100)+b)*(1-p/100)+b}}"
+				}
+			],
+			"statement": "Une citerne contient ${{eval:100*m}}~\\unit{m^3}$ d'eau. Chaque semaine, ${{p}}~\\%$ de l'eau est consommée, puis on la remplit de ${{b}}~\\unit{m^3}$. On note $u_n$ le volume (en $\\unit{m^3}$) au bout de $n$ semaines : $u_0={{eval:100*m}}$ et $u_{n+1}={{eval:1-p/100;d}}u_n+{{b}}$.\n\nCalcule $u_1$ et $u_2$.\n\n$u_1=?$ et $u_2=?$",
+			"variables": [
+				{
+					"name": "m",
+					"expression": "2..9"
+				},
+				{
+					"name": "p",
+					"expression": "10|20|30"
+				},
+				{
+					"name": "b",
+					"expression": "10|20|30|40|50|60|70|80|90"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$u_1={{eval:1-p/100;d}}\\times{{eval:100*m}}+{{b}}=\\textcolor{{{color:primary.0}}}{{{eval:100*m*(1-p/100)+b}}}$.",
+					"$u_2={{eval:1-p/100;d}}\\times{{eval:100*m*(1-p/100)+b}}+{{b}}=\\textcolor{{{color:primary.0}}}{{{eval:(100*m*(1-p/100)+b)*(1-p/100)+b;d}}}$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"statement": "{{if:k==0|Une réserve contient $u_0={{eval:100*m-h}}$ tonnes de grain. Chaque mois, ${{p}}~\\%$ du grain est vendu, puis on rentre ${{eval:m*p}}$ tonnes : $u_{n+1}={{eval:1-p/100;d}}u_n+{{eval:m*p}}$.}}{{if:k==1|Une réserve contient $u_0={{eval:100*m+h}}$ tonnes de grain. Chaque mois, ${{p}}~\\%$ du grain est vendu, puis on rentre ${{eval:m*p}}$ tonnes : $u_{n+1}={{eval:1-p/100;d}}u_n+{{eval:m*p}}$.}}{{if:k==2|Un compte rapporte ${{p}}~\\%$ par an et reçoit ${{eval:m*p}}~\\unit{€}$ à la fin de chaque année, avec $u_0={{eval:100*m}}$ (en euros) : $u_{n+1}={{eval:1+p/100;d}}u_n+{{eval:m*p}}$.}}\n\nComment évolue cette quantité au fil du temps ?\n\n```choix\n- {{if:k==0|Elle augmente et se rapproche d'une valeur limite}}{{if:k==1|Elle diminue et se rapproche d'une valeur limite}}{{if:k==2|Elle augmente sans limite}}\n- {{if:k==0|Elle augmente sans limite}}{{if:k==1|Elle diminue jusqu'à devenir nulle}}{{if:k==2|Elle augmente et se rapproche d'une valeur limite}}\n- {{if:k==0|Elle diminue et se rapproche d'une valeur limite}}{{if:k==1|Elle augmente et se rapproche d'une valeur limite}}{{if:k==2|Elle diminue et se rapproche d'une valeur limite}}\n- {{if:k==0|Elle diminue jusqu'à devenir nulle}}{{if:k==1|Elle augmente sans limite}}{{if:k==2|Elle diminue jusqu'à devenir nulle}}\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "0..2"
+				},
+				{
+					"name": "m",
+					"expression": "2..9"
+				},
+				{
+					"name": "p",
+					"expression": "2..9"
+				},
+				{
+					"name": "h",
+					"expression": "20..90"
+				}
+			],
+			"correction": {
+				"steps": [
+					"{{if:k==0|La quantité qui ne change plus vérifie $\\ell={{eval:1-p/100;d}}\\ell+{{eval:m*p}}$, soit $\\ell={{eval:100*m}}$ : les ventes compensent alors exactement les rentrées.}}{{if:k==1|La quantité qui ne change plus vérifie $\\ell={{eval:1-p/100;d}}\\ell+{{eval:m*p}}$, soit $\\ell={{eval:100*m}}$ : les ventes compensent alors exactement les rentrées.}}{{if:k==2|Chaque année, la somme est multipliée par ${{eval:1+p/100;d}}>1$ **et** augmentée de ${{eval:m*p}}~\\unit{€}$ : rien ne la freine.}}",
+					"{{if:k==0|$u_0={{eval:100*m-h}}<{{eval:100*m}}$ : les rentrées dépassent les ventes, la quantité monte vers ${{eval:100*m}}$ sans l'atteindre.}}{{if:k==1|$u_0={{eval:100*m+h}}>{{eval:100*m}}$ : les ventes dépassent les rentrées, la quantité descend vers ${{eval:100*m}}$ sans l'atteindre.}}{{if:k==2|Elle dépasse donc n'importe quel montant au bout d'un nombre suffisant d'années.}}",
+					"Réponse : {{if:k==0|$\\textcolor{{{color:primary.0}}}{\\text{elle augmente et se rapproche de }{{eval:100*m}}}$}}{{if:k==1|$\\textcolor{{{color:primary.0}}}{\\text{elle diminue et se rapproche de }{{eval:100*m}}}$}}{{if:k==2|$\\textcolor{{{color:primary.0}}}{\\text{elle augmente sans limite}}$}}."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:100*m}}",
+					"expectedErrors": [
+						{
+							"answer": "0",
+							"message": "Les poissons réintroduits empêchent le nombre de tomber à zéro : cherche $\\ell$ tel que $\\ell={{eval:1-p/100;d}}\\ell+{{eval:m*p}}$.",
+							"label": "Population qui s'éteint"
+						},
+						{
+							"answer": "{{eval:100*m*p/(100-p)}}",
+							"message": "Tu as divisé l'apport par ${{eval:1-p/100;d}}$ : de $\\ell={{eval:1-p/100;d}}\\ell+{{eval:m*p}}$, on tire ${{eval:p/100;d}}\\ell={{eval:m*p}}$.",
+							"label": "Apport divisé par le coefficient multiplicateur"
+						},
+						{
+							"answer": "{{eval:-100*m}}",
+							"message": "Attention au signe : ${{eval:p/100;d}}\\ell={{eval:m*p}}$ donne une valeur positive.",
+							"label": "Erreur de signe"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{t}}"
+				}
+			],
+			"statement": "Un étang compte ${{u0}}$ poissons. Chaque année, ${{p}}~\\%$ des poissons disparaissent (pêche, prédateurs), puis on en réintroduit ${{eval:m*p}}$. On note $u_n$ le nombre de poissons au bout de $n$ années : $u_0={{u0}}$ et $u_{n+1}={{eval:1-p/100;d}}u_n+{{eval:m*p}}$.\n\nVers quelle valeur $\\ell$ le nombre de poissons se stabilise-t-il ?\n\n$\\ell=?$\n\nLe nombre de poissons finira-t-il par passer sous la moitié de sa valeur de départ ?\n\n```choix\nmelanger: non\n- Oui, car $\\ell$ est inférieure à la moitié de $u_0$\n- Non, car $\\ell$ est supérieure ou égale à la moitié de $u_0$\n- Oui, car le nombre de poissons diminue chaque année\n- Non, car on réintroduit des poissons chaque année\n```",
+			"variables": [
+				{
+					"name": "m",
+					"expression": "2..4"
+				},
+				{
+					"name": "p",
+					"expression": "5..25"
+				},
+				{
+					"name": "t",
+					"expression": "0..1"
+				},
+				{
+					"name": "j",
+					"expression": "1..3"
+				},
+				{
+					"name": "u0",
+					"expression": "eval:100*m*(2-t)+50*j"
+				}
+			],
+			"hint": "La valeur de stabilisation $\\ell$ ne change plus d'une année à l'autre : $\\ell={{eval:1-p/100;d}}\\ell+{{eval:m*p}}$. Compare-la ensuite à la moitié de $u_0$.",
+			"correction": {
+				"steps": [
+					"La valeur de stabilisation vérifie $\\ell={{eval:1-p/100;d}}\\ell+{{eval:m*p}}$, soit ${{eval:p/100;d}}\\ell={{eval:m*p}}$ et $\\ell=\\dfrac{{{eval:m*p}}}{{{eval:p/100;d}}}=\\textcolor{{{color:primary.0}}}{{{eval:100*m}}}$.",
+					"$u_0={{u0}}>{{eval:100*m}}$ : chaque année, le nombre de poissons diminue et se rapproche de ${{eval:100*m}}$, en restant au-dessus.",
+					"La moitié de $u_0$ vaut ${{eval:u0/2}}$. {{if:t==0|Comme $\\ell={{eval:100*m}}<{{eval:u0/2}}$, les termes finissent par passer sous ${{eval:u0/2}}$ : $\\textcolor{{{color:primary.1}}}{\\text{oui}}$.|Comme $\\ell={{eval:100*m}}\\geqslant{{eval:u0/2}}$ et que les termes restent au-dessus de $\\ell$, ils ne passent jamais sous ${{eval:u0/2}}$ : $\\textcolor{{{color:primary.1}}}{\\text{non}}$.}} Diminuer chaque année ne suffit pas : il faut comparer la limite à la moitié de $u_0$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"b": "30",
+				"k": "0",
+				"m": "5",
+				"p": "4"
+			},
+			"description": "v0 : a uₙ + b",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"b": "30",
+				"k": "0",
+				"m": "5",
+				"p": "4"
+			},
+			"description": "v0 : p/100",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"b": "30",
+				"k": "1",
+				"m": "5",
+				"p": "4"
+			},
+			"description": "v0 : apport avant",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"b": "30",
+				"k": "2",
+				"m": "5",
+				"p": "4"
+			},
+			"description": "v0 : épargne",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["430", "374"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"b": "30",
+				"m": "5",
+				"p": "20"
+			},
+			"description": "v1 : u₁ = 430, u₂ = 374",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["130", "56"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"b": "30",
+				"m": "5",
+				"p": "20"
+			},
+			"description": "v1 : u₁ = 130 (p/100)",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["220", "164"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"b": "10",
+				"m": "3",
+				"p": "30"
+			},
+			"description": "v1 : p = 30",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"h": "50",
+				"k": "0",
+				"m": "5",
+				"p": "4"
+			},
+			"description": "v2 : monte vers ℓ",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"h": "50",
+				"k": "0",
+				"m": "5",
+				"p": "4"
+			},
+			"description": "v2 : sans limite",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"h": "50",
+				"k": "2",
+				"m": "5",
+				"p": "4"
+			},
+			"description": "v2 : épargne sans limite",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["300", "0"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"m": "3",
+				"p": "20",
+				"t": "0",
+				"j": "2",
+				"u0": "700"
+			},
+			"description": "v3 : ℓ = 300 < 350, oui",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["300", "1"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"m": "3",
+				"p": "20",
+				"t": "1",
+				"j": "2",
+				"u0": "400"
+			},
+			"description": "v3 : ℓ = 300 ⩾ 200, non",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["300", "2"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"m": "3",
+				"p": "20",
+				"t": "0",
+				"j": "2",
+				"u0": "700"
+			},
+			"description": "v3 : « oui car décroît » refusé",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["300", "0"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"m": "3",
+				"p": "20",
+				"t": "1",
+				"j": "2",
+				"u0": "400"
+			},
+			"description": "v3 : « oui » refusé quand ℓ ⩾ u₀/2",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["300", "3"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"m": "3",
+				"p": "20",
+				"t": "1",
+				"j": "2",
+				"u0": "400"
+			},
+			"description": "v3 : « non car on réintroduit » refusé",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["0", "0"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Les poissons réintroduits empêchent le nombre de tomber à zéro : cherche $\\ell$ tel que $\\ell=0.8\\ell+60$."
+			},
+			"variables": {
+				"m": "3",
+				"p": "20",
+				"t": "0",
+				"j": "2",
+				"u0": "700"
+			},
+			"description": "v3 : ℓ = 0",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["75", "0"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as divisé l'apport par $0.8$ : de $\\ell=0.8\\ell+60$, on tire $0.2\\ell=60$."
+			},
+			"variables": {
+				"m": "3",
+				"p": "20",
+				"t": "0",
+				"j": "2",
+				"u0": "700"
+			},
+			"description": "v3 : b / 0,8",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["-300", "0"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Attention au signe : $0.2\\ell=60$ donne une valeur positive."
+			},
+			"variables": {
+				"m": "3",
+				"p": "20",
+				"t": "0",
+				"j": "2",
+				"u0": "700"
+			},
+			"description": "v3 : signe",
+			"variationIndex": 3
+		}
+	]
+}

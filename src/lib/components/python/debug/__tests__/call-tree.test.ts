@@ -1,6 +1,10 @@
 import { describe, it, expect } from 'vitest';
 import { buildCallTree, pruneTree } from '../call-tree';
-import type { DebugSnapshot, DebugStackFrame, DebugVariable } from '$lib/shared/python/debug/types';
+import type {
+	DebugSnapshot,
+	DebugStackFrame,
+	DebugVariable
+} from '#lib/shared/python/debug/types.ts';
 
 // --- helpers -----------------------------------------------------------------
 

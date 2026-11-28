@@ -16,8 +16,8 @@
 	`↗` `↘`.
 -->
 <script lang="ts">
-	import * as Popover from '$lib/components/ui/popover';
-	import type { HiddenCellKind } from '$lib/ubumark/types/variation-table';
+	import * as Popover from '#lib/components/ui/popover/index.ts';
+	import type { HiddenCellKind } from '#lib/ubumark/types/variation-table.ts';
 
 	// Types
 	interface Choice {

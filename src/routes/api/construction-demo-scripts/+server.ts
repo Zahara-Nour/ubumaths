@@ -8,12 +8,12 @@
  * même règle (migration 20261026120000).
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { z } from 'zod';
-import { requireRoles } from '$lib/server/middleware/auth';
-import { DEMO_SCRIPT_AUTHOR_ROLES } from '$lib/server/constructions-access';
-import { createServerLogger } from '$lib/utils/logger';
+import { requireRoles } from '#lib/server/middleware/auth.ts';
+import { DEMO_SCRIPT_AUTHOR_ROLES } from '#lib/server/constructions-access.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/construction-demo-scripts/+server');
 
@@ -41,7 +41,7 @@ export const GET: RequestHandler = async ({ locals }) => {
 		throw error(500, 'Impossible de charger les scripts');
 	}
 
-	return json(data);
+	return Response.json(data);
 };
 
 // POST — create or update a demo script (upsert by name)
@@ -70,7 +70,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		throw error(500, 'Impossible d’enregistrer le script');
 	}
 
-	return json(data, { status: 201 });
+	return Response.json(data, { status: 201 });
 };
 
 // DELETE — delete a demo script by id
@@ -98,5 +98,5 @@ export const DELETE: RequestHandler = async ({ url, locals }) => {
 		throw error(404, 'Script introuvable');
 	}
 
-	return json({ ok: true });
+	return Response.json({ ok: true });
 };

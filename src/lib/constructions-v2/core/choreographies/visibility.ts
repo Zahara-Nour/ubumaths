@@ -26,7 +26,7 @@
  * structural plumbing, not pedagogical content.
  */
 
-import type { Figure } from '$lib/geometry-core/graph/figure';
+import type { Figure } from '#lib/geometry-core/graph/figure.ts';
 import type { ChoreographyProduced, DecoratorTriple, TraceTag, Visibilite } from './types';
 
 /** Final-state style applied to `traces` whenever they are visible. */
@@ -96,26 +96,8 @@ export function applyFinalVisibility(
 	}
 }
 
-/**
- * Apply the trace style (dashed + reduced opacity) to an element. Figure's
- * public surface lacks a generic `applyStyle` method, so we mutate the
- * element's `style` field directly — same pattern used by
- * `applyInlineStyle` in `dsl/builtins.ts`.
- */
+/** Applique le style des traces (pointillés, opacité réduite) à un élément. */
 function applyTraceStyle(figure: Figure, id: string): void {
-	const el = figure.getElementById(id);
-	if (!el) return;
-	const merged = {
-		...el,
-		style: {
-			...el.style,
-			dash: TRACE_STYLE.dash,
-			opacity: TRACE_STYLE.opacity
-		}
-	};
-	// Figure stores elements in a private Map ; the `hideElement` / `showElement`
-	// helpers go through `this.elements.set(id, updated)` which is the
-	// idiomatic mutation path. We piggy-back on the same internal Map via
-	// `(figure as unknown as { elements: Map<string, GeoElement> }).elements`.
-	(figure as unknown as { elements: Map<string, typeof el> }).elements.set(id, merged);
+	if (!figure.getElementById(id)) return;
+	figure.updateStyle(id, { dash: TRACE_STYLE.dash, opacity: TRACE_STYLE.opacity });
 }

@@ -1,0 +1,362 @@
+{
+	"id": "ddbce820-5e75-4a7a-832e-33980cd4b43a",
+	"title": "Calculer un produit",
+	"description": "Multiplier deux nombres décimaux inférieurs à $1$",
+	"grades": ["6"],
+	"level": 3,
+	"delay": 20,
+	"status": "published",
+	"options": {
+		"constraints": {
+			"spacesFromFourDigits": true
+		}
+	},
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:{{expression1}};d}}"
+				}
+			],
+			"statement": "Calcule.\n\n$${{expression1}}$$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9"
+				},
+				{
+					"name": "b",
+					"expression": "1..2"
+				},
+				{
+					"name": "c",
+					"expression": "2..9"
+				},
+				{
+					"name": "d",
+					"expression": "1..2"
+				},
+				{
+					"name": "expression1",
+					"expression": "{{eval:a*10^(-b);d}}*{{eval:c*10^(-d);d}}"
+				}
+			],
+			"conditions": ["mod(a*c,10)!=0"],
+			"correction": {
+				"steps": [
+					"$${{a}}\\times {{c}}={{eval:a*c}}$$",
+					"donc :",
+					"${{eval:a*10^(-b);d}} \\times {{eval:c*10^(-d);d}}={{solution}}$ ($\\textcolor{{{color:primary.0}}}{{{b}}+{{d}}={{eval:b+d}}\\text{ décimales}}$)."
+				]
+			}
+		},
+		{
+			"statement": "On considère les nombres ${{x}}$ et ${{y}}$.\n\nLeur somme : $?$\n\nLeur produit : $?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9"
+				},
+				{
+					"name": "c",
+					"expression": "2..9"
+				},
+				{
+					"name": "x",
+					"expression": "eval:a/10;d"
+				},
+				{
+					"name": "y",
+					"expression": "eval:c/10;d"
+				}
+			],
+			"conditions": ["a*c != a+c"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(a+c)/10;d}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:a*c/100;d}}",
+							"message": "Tu as calculé le produit : la somme, c'est ${{x}} + {{y}}$.",
+							"label": "Produit au lieu de somme"
+						},
+						{
+							"answer": "{{eval:(a+c)/100;d}}",
+							"message": "Une somme de dixièmes s'écrit en dixièmes : le résultat n'a qu'une décimale.",
+							"label": "Dixièmes écrits en centièmes"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{eval:a*c/100;d}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:a*c/10;d}}",
+							"message": "Tu as gardé une seule décimale : dans un produit, on additionne les nombres de décimales des deux facteurs.",
+							"label": "Décimales mal comptées"
+						},
+						{
+							"answer": "{{eval:(a+c)/10;d}}",
+							"message": "Tu as calculé la somme : le produit, c'est ${{x}} \\times {{y}}$.",
+							"label": "Somme au lieu de produit"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Somme** : on additionne les dixièmes, ${{a}}$ dixièmes $+ {{c}}$ dixièmes $= {{eval:a+c}}$ dixièmes : ${{x}} + {{y}} = \\textcolor{{{color:primary.0}}}{{{eval:(a+c)/10;d}}}$.",
+					"**Produit** : ${{a}} \\times {{c}} = {{eval:a*c}}$, et le produit a $1 + 1 = 2$ décimales : ${{x}} \\times {{y}} = \\textcolor{{{color:primary.0}}}{{{eval:a*c/100;d}}}$."
+				]
+			},
+			"hint": "La somme, c'est le résultat d'une addition ; le produit, celui d'une multiplication. Compte bien les décimales dans chaque cas."
+		},
+		{
+			"statement": "On considère les nombres ${{x}}$ et ${{y}}$.\n\nLeur somme : $?$\n\nLeur produit : $?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9"
+				},
+				{
+					"name": "C",
+					"expression": "11..99"
+				},
+				{
+					"name": "x",
+					"expression": "eval:a/10;d"
+				},
+				{
+					"name": "y",
+					"expression": "eval:C/100;d"
+				}
+			],
+			"conditions": ["mod(C,10)!=0", "mod(a*C,10)!=0", "a*C != 10*a+C"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(10*a+C)/100;d}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:a*C/1000;d}}",
+							"message": "Tu as calculé le produit : la somme, c'est ${{x}} + {{y}}$.",
+							"label": "Produit au lieu de somme"
+						},
+						{
+							"answer": "{{eval:(a+C)/100;d}}",
+							"message": "Tu as aligné les derniers chiffres : on aligne les virgules, dixièmes sous dixièmes.",
+							"label": "Chiffres alignés à droite"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{eval:a*C/1000;d}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:a*C/100;d}}",
+							"message": "Dans un produit, on additionne les nombres de décimales des deux facteurs : ${{x}}$ en a une, ${{y}}$ en a deux.",
+							"label": "Décimales mal comptées"
+						},
+						{
+							"answer": "{{eval:(10*a+C)/100;d}}",
+							"message": "Tu as calculé la somme : le produit, c'est ${{x}} \\times {{y}}$.",
+							"label": "Somme au lieu de produit"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Somme** : on aligne les virgules, ${{x}} = {{x}}0$, donc ${{x}} + {{y}} = {{x}}0 + {{y}} = \\textcolor{{{color:primary.0}}}{{{eval:(10*a+C)/100;d}}}$.",
+					"**Produit** : ${{a}} \\times {{C}} = {{eval:a*C}}$, et le produit a $1 + 2 = 3$ décimales : ${{x}} \\times {{y}} = \\textcolor{{{color:primary.0}}}{{{eval:a*C/1000;d}}}$."
+				]
+			},
+			"hint": "La somme, c'est le résultat d'une addition ; le produit, celui d'une multiplication. Compte bien les décimales dans chaque cas."
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["0{,}006\\,3"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "7",
+				"b": "2",
+				"c": "9",
+				"d": "2"
+			},
+			"description": "0,07 × 0,09 = 0,006 3",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["0{,}0063"],
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["spaces"]
+			},
+			"variables": {
+				"a": "7",
+				"b": "2",
+				"c": "9",
+				"d": "2"
+			},
+			"description": "0,0063 sans espace : perfectible",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["0{,}063"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "7",
+				"b": "2",
+				"c": "9",
+				"d": "2"
+			},
+			"description": "décimales mal comptées : 0,063",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["0{,}027"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "9",
+				"b": "1",
+				"c": "3",
+				"d": "2"
+			},
+			"description": "0,9 × 0,03 = 0,027",
+			"variationIndex": 0
+		},
+		{
+			"description": "F9a : 0,4 et 0,5",
+			"variationIndex": 1,
+			"variables": {
+				"a": "4",
+				"c": "5"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0{,}9", "0{,}2"]
+		},
+		{
+			"description": "F9a : 0,20 accepté pour le produit",
+			"variationIndex": 1,
+			"variables": {
+				"a": "4",
+				"c": "5"
+			},
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["zeros"]
+			},
+			"answers": ["0{,}9", "0{,}20"]
+		},
+		{
+			"description": "F9a : produit 2",
+			"variationIndex": 1,
+			"variables": {
+				"a": "4",
+				"c": "5"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as gardé une seule décimale : dans un produit, on additionne les nombres de décimales des deux facteurs."
+			},
+			"answers": ["0{,}9", "2"]
+		},
+		{
+			"description": "F9a : produit à la place de la somme",
+			"variationIndex": 1,
+			"variables": {
+				"a": "4",
+				"c": "5"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as calculé le produit : la somme, c'est $0.4 + 0.5$."
+			},
+			"answers": ["0{,}2", "0{,}2"]
+		},
+		{
+			"description": "F9a : 0,7 + 0,8 = 1,5",
+			"variationIndex": 1,
+			"variables": {
+				"a": "7",
+				"c": "8"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["1{,}5", "0{,}56"]
+		},
+		{
+			"description": "F9a : 0,7 + 0,8 = 0,15",
+			"variationIndex": 1,
+			"variables": {
+				"a": "7",
+				"c": "8"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Une somme de dixièmes s'écrit en dixièmes : le résultat n'a qu'une décimale."
+			},
+			"answers": ["0{,}15", "0{,}56"]
+		},
+		{
+			"description": "F9b : 0,3 et 0,25",
+			"variationIndex": 2,
+			"variables": {
+				"a": "3",
+				"C": "25"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0{,}55", "0{,}075"]
+		},
+		{
+			"description": "F9b : alignés à droite",
+			"variationIndex": 2,
+			"variables": {
+				"a": "3",
+				"C": "25"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as aligné les derniers chiffres : on aligne les virgules, dixièmes sous dixièmes."
+			},
+			"answers": ["0{,}28", "0{,}075"]
+		},
+		{
+			"description": "F9b : produit 0,75",
+			"variationIndex": 2,
+			"variables": {
+				"a": "3",
+				"C": "25"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Dans un produit, on additionne les nombres de décimales des deux facteurs : $0.3$ en a une, $0.25$ en a deux."
+			},
+			"answers": ["0{,}55", "0{,}75"]
+		},
+		{
+			"description": "F9b : somme au lieu de produit",
+			"variationIndex": 2,
+			"variables": {
+				"a": "3",
+				"C": "25"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as calculé la somme : le produit, c'est $0.3 \\times 0.25$."
+			},
+			"answers": ["0{,}55", "0{,}55"]
+		}
+	]
+}

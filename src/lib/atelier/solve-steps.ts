@@ -14,45 +14,45 @@
  * @module atelier/solve-steps
  */
 
-import type { RenderedStep } from '$lib/mathAST/common/step-renderer-base';
-import type { EquationStep } from '$lib/mathAST/pedagogical-solve';
-import type { MathNode, RelationNode } from '$lib/mathAST/types';
+import type { RenderedStep } from '#lib/mathAST/common/step-renderer-base.ts';
+import type { EquationStep } from '#lib/mathAST/pedagogical-solve/index.ts';
+import type { MathNode, RelationNode } from '#lib/mathAST/types.ts';
 import type {
 	PedagogicalRenderOptions,
 	SchoolLevel,
 	StepRenderer
-} from '$lib/mathAST/common/step-renderer-base';
+} from '#lib/mathAST/common/step-renderer-base.ts';
 import {
 	AbsoluteValueEquationRenderer,
 	generateEquationSteps,
 	generateInequalitySteps,
 	LinearEquationRenderer,
 	QuadraticEquationRenderer
-} from '$lib/mathAST/pedagogical-solve';
-import { generateRemarkableValueSteps } from '$lib/mathAST/pedagogical-simplify/pipeline';
-import { PedagogicalSimplifyRenderer } from '$lib/mathAST/pedagogical-simplify/renderer';
-import { toLatex } from '$lib/mathAST/latex-generator';
-import { exactValueToShow } from '$lib/mathAST/eval/exact-value';
-import { getVariables } from '$lib/mathAST/eval/substitute';
-import { hasDecimalLiteral } from '$lib/mathAST/tidy/decimal';
-import { displayUnitsInLatex } from '$lib/mathAST/units/display';
-import { degreeSignWritten } from '$lib/mathAST/cli/core/degrees';
-import type { SolutionWriting } from '$lib/mathAST/cli/commands/solve-latex';
-import { stepsAsShown } from '$lib/mathAST/pedagogical-solve/shown-steps';
+} from '#lib/mathAST/pedagogical-solve/index.ts';
+import { generateRemarkableValueSteps } from '#lib/mathAST/pedagogical-simplify/pipeline.ts';
+import { PedagogicalSimplifyRenderer } from '#lib/mathAST/pedagogical-simplify/renderer.ts';
+import { toLatex } from '#lib/mathAST/latex-generator.ts';
+import { exactValueToShow } from '#lib/mathAST/eval/exact-value.ts';
+import { getVariables } from '#lib/mathAST/eval/substitute.ts';
+import { hasDecimalLiteral } from '#lib/mathAST/tidy/decimal.ts';
+import { displayUnitsInLatex } from '#lib/mathAST/units/display.ts';
+import { degreeSignWritten } from '#lib/mathAST/cli/core/degrees.ts';
+import type { SolutionWriting } from '#lib/mathAST/cli/commands/solve-latex.ts';
+import { stepsAsShown } from '#lib/mathAST/pedagogical-solve/shown-steps.ts';
 import {
 	DEFAULT_VARIABLE,
 	splitVariableArgument,
 	variableNameOf
-} from '$lib/mathAST/cli/core/variable-argument';
+} from '#lib/mathAST/cli/core/variable-argument.ts';
 import { astOf, variablesOf } from './parse';
 import { radiansInTrigonometry } from './angle-radians';
-import { anglesAsTyped } from '$lib/mathAST/cli/core/angle-radians';
+import { anglesAsTyped } from '#lib/mathAST/cli/core/angle-radians.ts';
 import { concludedSolutions, conclusionAgrees } from './solve-steps-check';
 import { summaryOf } from './steps-summary';
-import { approximateSolutionsLatex } from '$lib/mathAST/cli/approximation';
-import type { Domain } from '$lib/mathAST/domain/types';
-import { containsValue } from '$lib/mathAST/domain/algebra';
-import { evaluate } from '$lib/mathAST/eval';
+import { approximateSolutionsLatex } from '#lib/mathAST/cli/approximation.ts';
+import type { Domain } from '#lib/mathAST/domain/types.ts';
+import { containsValue } from '#lib/mathAST/domain/algebra.ts';
+import { evaluate } from '#lib/mathAST/eval/index.ts';
 import { conditionText, intervalText, type ComposedCondition } from './interval';
 
 // =============================================================================

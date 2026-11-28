@@ -3,7 +3,7 @@
  * ================================
  *
  * docs/systeme/base-de-donnees-tables.md est produite depuis
- * src/lib/types/database.ts (lui-même généré depuis la production par
+ * src/lib/types/database.ts (lui-même généré depuis les migrations du dépôt par
  * `pnpm db:types`) : elle ne peut pas se périmer. Ce qui est gardé ici :
  * - la lecture de database.ts (colonnes, nullabilité, clés étrangères, vues,
  *   fonctions) ;
@@ -17,74 +17,79 @@ import { describe, it, expect } from 'vitest';
 import { parseDatabaseTypes, domainOf, renderSchemaDoc } from '../generate-db-doc';
 
 const SOURCE = `export type Database = {
-  public: {
-    Tables: {
-      classes: {
-        Row: {
-          id: string
-          name: string
-          school_id: string | null
-        }
-        Insert: {
-          id?: string
-        }
-        Update: {
-          id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "classes_school_id_fkey"
-            columns: ["school_id"]
-            isOneToOne: false
-            referencedRelation: "schools"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "classes_school_id_fkey"
-            columns: ["school_id"]
-            isOneToOne: false
-            referencedRelation: "active_classes"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      schools: {
-        Row: {
-          id: string
-          metadata: Json | null
-        }
-        Insert: {
-          id?: string
-        }
-        Update: {
-          id?: string
-        }
-        Relationships: []
-      }
-    }
-    Views: {
-      active_classes: {
-        Row: {
-          id: string | null
-        }
-        Relationships: []
-      }
-    }
-    Functions: {
-      add_warning: {
-        Args: { p_student_id: string }
-        Returns: Json
-      }
-      is_teacher: { Args: never; Returns: boolean }
-      search_terms:
-        | { Args: { q: string }; Returns: Json }
-        | { Args: { q: string; n: number }; Returns: Json }
-    }
-    Enums: {
-      [_ in never]: never
-    }
-  }
-}
+	public: {
+		Tables: {
+			classes: {
+				Row: {
+					id: string;
+					name: string;
+					school_id: string | null;
+				};
+				ComputedFields: never;
+				Insert: {
+					id?: string;
+				};
+				Update: {
+					id?: string;
+				};
+				Relationships: [
+					{
+						foreignKeyName: 'classes_school_id_fkey';
+						columns: ['school_id'];
+						isOneToOne: false;
+						referencedRelation: 'schools';
+						referencedColumns: ['id'];
+					},
+					{
+						foreignKeyName: 'classes_school_id_fkey';
+						columns: ['school_id'];
+						isOneToOne: false;
+						referencedRelation: 'active_classes';
+						referencedColumns: ['id'];
+					}
+				];
+			};
+			schools: {
+				Row: {
+					id: string;
+					metadata: Json | null;
+					kind:
+						| Database['public']['Enums']['school_kind_with_a_very_long_name']
+						| null;
+				};
+				ComputedFields: never;
+				Insert: {
+					id?: string;
+				};
+				Update: {
+					id?: string;
+				};
+				Relationships: [];
+			};
+		};
+		Views: {
+			active_classes: {
+				Row: {
+					id: string | null;
+				};
+				Relationships: [];
+			};
+		};
+		Functions: {
+			add_warning: {
+				Args: { p_student_id: string };
+				Returns: Json;
+			};
+			is_teacher: { Args: Record<PropertyKey, never>; Returns: boolean };
+			search_terms:
+				| { Args: { q: string }; Returns: Json }
+				| { Args: { q: string; n: number }; Returns: Json };
+		};
+		Enums: {
+			[_ in never]: never;
+		};
+	};
+};
 `;
 
 describe('parseDatabaseTypes', () => {
@@ -104,6 +109,14 @@ describe('parseDatabaseTypes', () => {
 			{ columns: ['school_id'], table: 'schools', referencedColumns: ['id'] }
 		]);
 		expect(model.tables[1].foreignKeys).toEqual([]);
+	});
+
+	it('lit une colonne dont le type passe à la ligne', () => {
+		expect(model.tables[1].columns.map((c) => [c.name, c.nullable])).toEqual([
+			['id', false],
+			['metadata', true],
+			['kind', true]
+		]);
 	});
 
 	it('lit les vues et les fonctions, sans les confondre avec les tables', () => {

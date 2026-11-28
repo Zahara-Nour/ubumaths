@@ -11,8 +11,8 @@
  * @module journal/content
  */
 
-import { referencesToLabels } from '$lib/resources/references';
-import { stripMarkdown } from '$lib/ubumark';
+import { referencesToLabels } from '#lib/resources/references.ts';
+import { stripMarkdown } from '#lib/ubumark/index.ts';
 
 /**
  * Texte brut d'un contenu du cahier, pour les aperçus (grille de la semaine,

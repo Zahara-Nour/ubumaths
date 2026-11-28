@@ -1,21 +1,24 @@
 <script lang="ts">
-	import type { MarketplaceListing } from '$lib/types/marketplace';
-	import type { VipCard as VipCardType } from '$lib/types/vip-card';
-	import * as Card from '$lib/components/ui/card';
-	import { Badge } from '$lib/components/ui/badge';
-	import UserAvatar from '$lib/components/UserAvatar.svelte';
+	import type { MarketplaceListing } from '#lib/types/marketplace.ts';
+	import type { VipCard as VipCardType } from '#lib/types/vip-card.ts';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
+	import UserAvatar from '#lib/components/UserAvatar.svelte';
 	import { ArrowRight, Clock, TriangleAlert } from '@lucide/svelte';
-	import gidouilleImage from '$lib/assets/images/gidouille.png';
+	import gidouilleImage from '#lib/assets/images/gidouille.png';
 	import { formatDistanceToNow } from 'date-fns';
 	import { fr } from 'date-fns/locale';
-	import VipCard from '$lib/components/VipCard.svelte';
-	import { marketplaceStore } from '$lib/stores/marketplace.svelte';
+	import VipCard from '#lib/components/VipCard.svelte';
+	import { marketplaceStore } from '#lib/stores/marketplace.svelte.ts';
 
 	// Props
-	let { listing, onclick } = $props<{
+	let {
+		listing,
+		onclick
+	}: {
 		listing: MarketplaceListing;
 		onclick?: () => void;
-	}>();
+	} = $props();
 
 	// Check if user has a proposal on this listing
 	let myProposal = $derived(marketplaceStore.myProposals.find((p) => p.listing_id === listing.id));

@@ -1,0 +1,159 @@
+{
+	"id": "ac5fcd5c-d87c-4bea-9ab2-349b4855d955",
+	"title": "Motif évolutif : choisir la règle",
+	"description": "Motif dessiné en trois étapes : reconnaître, parmi quatre phrases, comment on passe d'une étape à la suivante",
+	"grades": ["CM1"],
+	"level": 1,
+	"delay": 60,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"spacesFromFourDigits": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Voici les trois premières étapes d'un motif de jetons.\n\n```figure\nfenetre: -0.7 ; 6.7 ; -1.6 ; {{eval:k-0.3;d}}\ndescription: Trois étapes d'un motif de jetons : 1, 2 puis 3 colonnes de {{k}} jetons.\n---\nJ000 = point(0, 0, visible=faux)\ncercle(J000, rayon=0.3, couleur=\"rouge\", remplissage=\"rouge\", opacite_fond=1, visible={{if:0<k|vrai|faux}})\nJ001 = point(0, 1, visible=faux)\ncercle(J001, rayon=0.3, couleur=\"rouge\", remplissage=\"rouge\", opacite_fond=1, visible={{if:1<k|vrai|faux}})\nJ002 = point(0, 2, visible=faux)\ncercle(J002, rayon=0.3, couleur=\"rouge\", remplissage=\"rouge\", opacite_fond=1, visible={{if:2<k|vrai|faux}})\nJ003 = point(0, 3, visible=faux)\ncercle(J003, rayon=0.3, couleur=\"rouge\", remplissage=\"rouge\", opacite_fond=1, visible={{if:3<k|vrai|faux}})\nJ100 = point(1.5, 0, visible=faux)\ncercle(J100, rayon=0.3, couleur=\"rouge\", remplissage=\"rouge\", opacite_fond=1, visible={{if:0<k|vrai|faux}})\nJ101 = point(1.5, 1, visible=faux)\ncercle(J101, rayon=0.3, couleur=\"rouge\", remplissage=\"rouge\", opacite_fond=1, visible={{if:1<k|vrai|faux}})\nJ102 = point(1.5, 2, visible=faux)\ncercle(J102, rayon=0.3, couleur=\"rouge\", remplissage=\"rouge\", opacite_fond=1, visible={{if:2<k|vrai|faux}})\nJ103 = point(1.5, 3, visible=faux)\ncercle(J103, rayon=0.3, couleur=\"rouge\", remplissage=\"rouge\", opacite_fond=1, visible={{if:3<k|vrai|faux}})\nJ110 = point(2.5, 0, visible=faux)\ncercle(J110, rayon=0.3, couleur=\"rouge\", remplissage=\"rouge\", opacite_fond=1, visible={{if:0<k|vrai|faux}})\nJ111 = point(2.5, 1, visible=faux)\ncercle(J111, rayon=0.3, couleur=\"rouge\", remplissage=\"rouge\", opacite_fond=1, visible={{if:1<k|vrai|faux}})\nJ112 = point(2.5, 2, visible=faux)\ncercle(J112, rayon=0.3, couleur=\"rouge\", remplissage=\"rouge\", opacite_fond=1, visible={{if:2<k|vrai|faux}})\nJ113 = point(2.5, 3, visible=faux)\ncercle(J113, rayon=0.3, couleur=\"rouge\", remplissage=\"rouge\", opacite_fond=1, visible={{if:3<k|vrai|faux}})\nJ200 = point(4, 0, visible=faux)\ncercle(J200, rayon=0.3, couleur=\"rouge\", remplissage=\"rouge\", opacite_fond=1, visible={{if:0<k|vrai|faux}})\nJ201 = point(4, 1, visible=faux)\ncercle(J201, rayon=0.3, couleur=\"rouge\", remplissage=\"rouge\", opacite_fond=1, visible={{if:1<k|vrai|faux}})\nJ202 = point(4, 2, visible=faux)\ncercle(J202, rayon=0.3, couleur=\"rouge\", remplissage=\"rouge\", opacite_fond=1, visible={{if:2<k|vrai|faux}})\nJ203 = point(4, 3, visible=faux)\ncercle(J203, rayon=0.3, couleur=\"rouge\", remplissage=\"rouge\", opacite_fond=1, visible={{if:3<k|vrai|faux}})\nJ210 = point(5, 0, visible=faux)\ncercle(J210, rayon=0.3, couleur=\"rouge\", remplissage=\"rouge\", opacite_fond=1, visible={{if:0<k|vrai|faux}})\nJ211 = point(5, 1, visible=faux)\ncercle(J211, rayon=0.3, couleur=\"rouge\", remplissage=\"rouge\", opacite_fond=1, visible={{if:1<k|vrai|faux}})\nJ212 = point(5, 2, visible=faux)\ncercle(J212, rayon=0.3, couleur=\"rouge\", remplissage=\"rouge\", opacite_fond=1, visible={{if:2<k|vrai|faux}})\nJ213 = point(5, 3, visible=faux)\ncercle(J213, rayon=0.3, couleur=\"rouge\", remplissage=\"rouge\", opacite_fond=1, visible={{if:3<k|vrai|faux}})\nJ220 = point(6, 0, visible=faux)\ncercle(J220, rayon=0.3, couleur=\"rouge\", remplissage=\"rouge\", opacite_fond=1, visible={{if:0<k|vrai|faux}})\nJ221 = point(6, 1, visible=faux)\ncercle(J221, rayon=0.3, couleur=\"rouge\", remplissage=\"rouge\", opacite_fond=1, visible={{if:1<k|vrai|faux}})\nJ222 = point(6, 2, visible=faux)\ncercle(J222, rayon=0.3, couleur=\"rouge\", remplissage=\"rouge\", opacite_fond=1, visible={{if:2<k|vrai|faux}})\nJ223 = point(6, 3, visible=faux)\ncercle(J223, rayon=0.3, couleur=\"rouge\", remplissage=\"rouge\", opacite_fond=1, visible={{if:3<k|vrai|faux}})\ntexte(0, -1, \"Étape 1\")\ntexte(2, -1, \"Étape 2\")\ntexte(5, -1, \"Étape 3\")\n```\n\nQuelle phrase dit comment on passe d'une étape à la suivante ?\n\n```choix\n- À chaque étape, on ajoute ${{k}}$ jetons.\n- À chaque étape, on ajoute ${{eval:k+1}}$ jetons.\n- À chaque étape, on double le nombre de jetons.\n- À chaque étape, on ajoute autant de jetons que le numéro de la nouvelle étape.\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "2..4"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**On compte.** Étape 1 : ${{eval:1*k}}$ ; étape 2 : ${{eval:2*k}}$ ; étape 3 : ${{eval:3*k}}$.",
+					"**La règle.** À chaque étape, on ajoute ${{k}}$ jetons. Pourquoi : on ajoute une colonne de ${{k}}$ jetons. Elle marche pour chaque passage : ${{eval:1*k}} + {{k}} = {{eval:2*k}}$ et ${{eval:2*k}} + {{k}} = {{eval:3*k}}$."
+				]
+			}
+		},
+		{
+			"statement": "Voici les trois premières étapes d'un motif de jetons.\n\n```figure\nfenetre: -0.7 ; 6.7 ; -1.6 ; 2.7\ndescription: Trois étapes d'un motif de jetons en escalier : 1 jeton, puis des colonnes de 1 et 2 jetons, puis des colonnes de 1, 2 et 3 jetons.\n---\nJ000 = point(0, 0, visible=faux)\ncercle(J000, rayon=0.3, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=1)\nJ100 = point(1.5, 0, visible=faux)\ncercle(J100, rayon=0.3, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=1)\nJ110 = point(2.5, 0, visible=faux)\ncercle(J110, rayon=0.3, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=1)\nJ111 = point(2.5, 1, visible=faux)\ncercle(J111, rayon=0.3, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=1)\nJ200 = point(4, 0, visible=faux)\ncercle(J200, rayon=0.3, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=1)\nJ210 = point(5, 0, visible=faux)\ncercle(J210, rayon=0.3, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=1)\nJ211 = point(5, 1, visible=faux)\ncercle(J211, rayon=0.3, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=1)\nJ220 = point(6, 0, visible=faux)\ncercle(J220, rayon=0.3, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=1)\nJ221 = point(6, 1, visible=faux)\ncercle(J221, rayon=0.3, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=1)\nJ222 = point(6, 2, visible=faux)\ncercle(J222, rayon=0.3, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=1)\ntexte(0, -1, \"Étape 1\")\ntexte(2, -1, \"Étape 2\")\ntexte(5, -1, \"Étape 3\")\n```\n\nQuelle phrase dit comment on passe d'une étape à la suivante ?\n\n```choix\n- À chaque étape, on ajoute autant de jetons que le numéro de la nouvelle étape.\n- À chaque étape, on ajoute $2$ jetons.\n- À chaque étape, on double le nombre de jetons.\n- À chaque étape, on ajoute $3$ jetons.\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**On compte.** Étape 1 : ${{eval:1}}$ ; étape 2 : ${{eval:3}}$ ; étape 3 : ${{eval:6}}$.",
+					"**La règle.** À chaque étape, on ajoute autant de jetons que le numéro de la nouvelle étape. Pourquoi : la nouvelle colonne a autant de jetons que le numéro de l'étape. Elle marche pour chaque passage : ${{eval:1}} + 2 = {{eval:3}}$ et ${{eval:3}} + 3 = {{eval:6}}$."
+				]
+			}
+		},
+		{
+			"statement": "Voici les trois premières étapes d'un motif d'allumettes.\n\n```figure\nfenetre: -0.5 ; 9.5 ; -1.5 ; 1.5\ndescription: Trois étapes d'un motif d'allumettes : une rangée de 1, 2 puis 3 carrés accolés.\n---\nC0B0 = point(0, 0, visible=faux)\nC0H0 = point(0, 1, visible=faux)\nC0B1 = point(1, 0, visible=faux)\nC0H1 = point(1, 1, visible=faux)\nsegment(C0B0, C0B1, couleur=\"marron\", epaisseur=3)\nsegment(C0H0, C0H1, couleur=\"marron\", epaisseur=3)\nsegment(C0B0, C0H0, couleur=\"marron\", epaisseur=3)\nsegment(C0B1, C0H1, couleur=\"marron\", epaisseur=3)\nC1B0 = point(2.5, 0, visible=faux)\nC1H0 = point(2.5, 1, visible=faux)\nC1B1 = point(3.5, 0, visible=faux)\nC1H1 = point(3.5, 1, visible=faux)\nC1B2 = point(4.5, 0, visible=faux)\nC1H2 = point(4.5, 1, visible=faux)\nsegment(C1B0, C1B1, couleur=\"marron\", epaisseur=3)\nsegment(C1H0, C1H1, couleur=\"marron\", epaisseur=3)\nsegment(C1B1, C1B2, couleur=\"marron\", epaisseur=3)\nsegment(C1H1, C1H2, couleur=\"marron\", epaisseur=3)\nsegment(C1B0, C1H0, couleur=\"marron\", epaisseur=3)\nsegment(C1B1, C1H1, couleur=\"marron\", epaisseur=3)\nsegment(C1B2, C1H2, couleur=\"marron\", epaisseur=3)\nC2B0 = point(6, 0, visible=faux)\nC2H0 = point(6, 1, visible=faux)\nC2B1 = point(7, 0, visible=faux)\nC2H1 = point(7, 1, visible=faux)\nC2B2 = point(8, 0, visible=faux)\nC2H2 = point(8, 1, visible=faux)\nC2B3 = point(9, 0, visible=faux)\nC2H3 = point(9, 1, visible=faux)\nsegment(C2B0, C2B1, couleur=\"marron\", epaisseur=3)\nsegment(C2H0, C2H1, couleur=\"marron\", epaisseur=3)\nsegment(C2B1, C2B2, couleur=\"marron\", epaisseur=3)\nsegment(C2H1, C2H2, couleur=\"marron\", epaisseur=3)\nsegment(C2B2, C2B3, couleur=\"marron\", epaisseur=3)\nsegment(C2H2, C2H3, couleur=\"marron\", epaisseur=3)\nsegment(C2B0, C2H0, couleur=\"marron\", epaisseur=3)\nsegment(C2B1, C2H1, couleur=\"marron\", epaisseur=3)\nsegment(C2B2, C2H2, couleur=\"marron\", epaisseur=3)\nsegment(C2B3, C2H3, couleur=\"marron\", epaisseur=3)\ntexte(0.5, -0.9, \"Étape 1\")\ntexte(3.5, -0.9, \"Étape 2\")\ntexte(7.5, -0.9, \"Étape 3\")\n```\n\nQuelle phrase dit comment on passe d'une étape à la suivante ?\n\n```choix\n- À chaque étape, on ajoute $3$ allumettes.\n- À chaque étape, on ajoute $4$ allumettes.\n- À chaque étape, on double le nombre d'allumettes.\n- À chaque étape, on ajoute autant d'allumettes que le numéro de la nouvelle étape.\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**On compte.** Étape 1 : ${{eval:4}}$ ; étape 2 : ${{eval:7}}$ ; étape 3 : ${{eval:10}}$.",
+					"**La règle.** À chaque étape, on ajoute $3$ allumettes. Pourquoi : un carré de plus ne demande que $3$ allumettes : il prend un côté au carré d'avant. Elle marche pour chaque passage : ${{eval:4}} + 3 = {{eval:7}}$ et ${{eval:7}} + 3 = {{eval:10}}$."
+				]
+			}
+		},
+		{
+			"statement": "Voici les trois premières étapes d'un motif d'allumettes.\n\n```figure\nfenetre: -0.5 ; 7 ; -1.5 ; 1.4\ndescription: Trois étapes d'un motif d'allumettes : une bande de 1, 2 puis 3 triangles accolés.\n---\nT0B0 = point(0, 0, visible=faux)\nT0B1 = point(1, 0, visible=faux)\nT0H0 = point(0.5, 0.87, visible=faux)\nsegment(T0B0, T0B1, couleur=\"marron\", epaisseur=3)\nsegment(T0B0, T0H0, couleur=\"marron\", epaisseur=3)\nsegment(T0H0, T0B1, couleur=\"marron\", epaisseur=3)\nT1B0 = point(1.75, 0, visible=faux)\nT1B1 = point(2.75, 0, visible=faux)\nT1H0 = point(2.25, 0.87, visible=faux)\nT1H1 = point(3.25, 0.87, visible=faux)\nsegment(T1B0, T1B1, couleur=\"marron\", epaisseur=3)\nsegment(T1H0, T1H1, couleur=\"marron\", epaisseur=3)\nsegment(T1B0, T1H0, couleur=\"marron\", epaisseur=3)\nsegment(T1H0, T1B1, couleur=\"marron\", epaisseur=3)\nsegment(T1B1, T1H1, couleur=\"marron\", epaisseur=3)\nT2B0 = point(4, 0, visible=faux)\nT2B1 = point(5, 0, visible=faux)\nT2B2 = point(6, 0, visible=faux)\nT2H0 = point(4.5, 0.87, visible=faux)\nT2H1 = point(5.5, 0.87, visible=faux)\nsegment(T2B0, T2B1, couleur=\"marron\", epaisseur=3)\nsegment(T2B1, T2B2, couleur=\"marron\", epaisseur=3)\nsegment(T2H0, T2H1, couleur=\"marron\", epaisseur=3)\nsegment(T2B0, T2H0, couleur=\"marron\", epaisseur=3)\nsegment(T2H0, T2B1, couleur=\"marron\", epaisseur=3)\nsegment(T2B1, T2H1, couleur=\"marron\", epaisseur=3)\nsegment(T2H1, T2B2, couleur=\"marron\", epaisseur=3)\ntexte(0.5, -0.9, \"Étape 1\")\ntexte(2.75, -0.9, \"Étape 2\")\ntexte(5.5, -0.9, \"Étape 3\")\n```\n\nQuelle phrase dit comment on passe d'une étape à la suivante ?\n\n```choix\n- À chaque étape, on ajoute $2$ allumettes.\n- À chaque étape, on ajoute $3$ allumettes.\n- À chaque étape, on double le nombre d'allumettes.\n- À chaque étape, on ajoute $1$ allumette.\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**On compte.** Étape 1 : ${{eval:3}}$ ; étape 2 : ${{eval:5}}$ ; étape 3 : ${{eval:7}}$.",
+					"**La règle.** À chaque étape, on ajoute $2$ allumettes. Pourquoi : un triangle de plus ne demande que $2$ allumettes : il prend un côté au triangle d'avant. Elle marche pour chaque passage : ${{eval:3}} + 2 = {{eval:5}}$ et ${{eval:5}} + 2 = {{eval:7}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Colonnes de 3 : on ajoute 3",
+			"variationIndex": 0,
+			"variables": {
+				"k": "3"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : on double",
+			"variationIndex": 0,
+			"variables": {
+				"k": "3"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Escalier : le numéro de l'étape",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : on ajoute 2 (vrai au premier passage seulement)",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Carrés : on ajoute 3",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : on ajoute 4",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Triangles : on ajoute 2",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : on ajoute 3",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

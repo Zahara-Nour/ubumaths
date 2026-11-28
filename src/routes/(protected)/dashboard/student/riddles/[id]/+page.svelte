@@ -5,13 +5,14 @@
 -->
 
 <script lang="ts">
-	import BackLink from '$lib/components/navigation/BackLink.svelte';
-	import { lore } from '$lib/config/lore';
+	import BackLink from '#lib/components/navigation/BackLink.svelte';
+	import { lore } from '#lib/config/lore.ts';
 	import type { PageData } from './$types';
-	import RiddleCard from '$lib/components/riddles/RiddleCard.svelte';
-	import { toaster } from '$lib/stores/toaster.svelte';
+	import RiddleCard from '#lib/components/riddles/RiddleCard.svelte';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
 	import { goto as _goto } from '$app/navigation';
-	import { syncGidouilles } from '$lib/utils/cache-sync';
+	import { syncGidouilles } from '#lib/utils/cache-sync.ts';
+	import { receiveBuddyGain } from '#lib/components/buddy/buddy-gain.ts';
 
 	let { data }: { data: PageData } = $props();
 
@@ -37,6 +38,8 @@
 			const result = await response.json();
 
 			if (response.ok && result.success) {
+				// Gain du Palotin : son widget à jour, et un retour après une pause à fêter
+				void receiveBuddyGain(result);
 				if (result.isCorrect === true) {
 					// Update cache with earned gidouilles (server-confirmed amount)
 					const gidouillesEarned = result.attempt.gidouilles_awarded || 0;

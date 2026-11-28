@@ -6,7 +6,7 @@
 import { describe, it, expect, afterEach } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import TrigCircle from '../TrigCircle.svelte';
-import { parseTrigCircleContent } from '$lib/ubumark/parser/trig-circle-parser';
+import { parseTrigCircleContent } from '#lib/ubumark/parser/trig-circle-parser.ts';
 
 let mains: HTMLElement[] = [];
 function mainElement(): HTMLElement {

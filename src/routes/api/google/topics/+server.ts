@@ -1,8 +1,8 @@
-import { json, error } from '@sveltejs/kit';
-import { assertGoogleClassroomEnabled } from '$lib/server/google/feature-guard';
+import { error } from '@sveltejs/kit';
+import { assertGoogleClassroomEnabled } from '#lib/server/google/feature-guard.ts';
 import type { RequestHandler } from './$types';
-import { requireRole } from '$lib/server/middleware/auth';
-import { createServerLogger } from '$lib/utils/logger';
+import { requireRole } from '#lib/server/middleware/auth.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/google/topics/+server');
 
@@ -40,7 +40,7 @@ export const GET: RequestHandler = async ({ locals }) => {
 				return acc;
 			}, []) || [];
 
-		return json({ topics: uniqueTopics });
+		return Response.json({ topics: uniqueTopics });
 	} catch (err) {
 		logger.error('[API] Error in topics endpoint:', err);
 		throw error(500, 'Une erreur inattendue s’est produite');

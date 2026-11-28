@@ -1,0 +1,583 @@
+{
+	"id": "3f4bacc6-2ee4-48c7-8ea4-e5ac52af62d4",
+	"title": "Problèmes de division euclidienne",
+	"description": "Interpréter le quotient et le reste, calculs de tête : boîtes pleines et reste (boîtes de 6, 10, 12), nombre de cars (un de plus pour le reste), jours en semaines et jours, heures en jours, minutes en heures",
+	"grades": ["6"],
+	"level": 1,
+	"delay": 60,
+	"status": "published",
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{q}}"
+				},
+				{
+					"expectedAnswer": "{{r}}"
+				}
+			],
+			"statement": "On range ${{N}}$ œufs dans des boîtes de ${{d}}$. Combien de boîtes pleines obtient-on ? Combien d'œufs reste-t-il ?\n\n$$?~\\text{boîtes pleines et}~?~\\text{œufs restants}$$",
+			"variables": [
+				{
+					"name": "sd",
+					"expression": "0..2"
+				},
+				{
+					"name": "d",
+					"expression": "{{if:sd==0|6|{{if:sd==1|10|12}}}}"
+				},
+				{
+					"name": "q",
+					"expression": "3..15"
+				},
+				{
+					"name": "r",
+					"expression": "1..{{eval:d-1}}"
+				},
+				{
+					"name": "N",
+					"expression": "eval:d*q+r"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Division euclidienne.** Diviser $N$ par $d$, c'est trouver le quotient $q$ et le reste $r$ tels que $N = (d \\times q) + r$, avec un reste plus petit que $d$.",
+					"$${{N}} = ({{d}} \\times \\textcolor{{{color:primary.0}}}{{{q}}}) + \\textcolor{{{color:primary.1}}}{{{r}}}$$",
+					"On obtient $\\textcolor{{{color:primary.0}}}{{{q}}}$ boîtes pleines et il reste $\\textcolor{{{color:primary.1}}}{{{r}}}$ œuf{{if:r>1|s|}}."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:q+1}}"
+				}
+			],
+			"statement": "${{E}}$ élèves partent en sortie. Un car a ${{c}}$ places. Combien de cars faut-il, au minimum, pour transporter tous les élèves ?\n\n$$?~\\text{cars}$$",
+			"variables": [
+				{
+					"name": "sc",
+					"expression": "0..4"
+				},
+				{
+					"name": "c",
+					"expression": "{{if:sc==0|30|{{if:sc==1|40|{{if:sc==2|45|{{if:sc==3|50|60}}}}}}}}"
+				},
+				{
+					"name": "q",
+					"expression": "2..9"
+				},
+				{
+					"name": "r",
+					"expression": "1..{{eval:c-1}}"
+				},
+				{
+					"name": "E",
+					"expression": "eval:c*q+r"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Division euclidienne.** Diviser $N$ par $d$, c'est trouver le quotient $q$ et le reste $r$ tels que $N = (d \\times q) + r$, avec un reste plus petit que $d$.",
+					"$${{E}} = ({{c}} \\times {{q}}) + \\textcolor{{{color:primary.1}}}{{{r}}}$$",
+					"${{q}}$ cars pleins ne suffisent pas : il reste ${{r}}$ élève{{if:r>1|s|}}. Il faut un car de plus : $\\textcolor{{{color:primary.0}}}{{{solution}}}$ cars."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{q}}"
+				},
+				{
+					"expectedAnswer": "{{r}}"
+				}
+			],
+			"statement": "Complète.\n\n$${{N}}~\\text{{{if:s==0|jours|{{if:s==1|heures|minutes}}}}} = ?~\\text{{{if:s==0|semaines|{{if:s==1|jours|heures}}}}}~?~\\text{{{if:s==0|jours|{{if:s==1|heures|minutes}}}}}$$",
+			"variables": [
+				{
+					"name": "s",
+					"expression": "0..2"
+				},
+				{
+					"name": "d",
+					"expression": "{{if:s==0|7|{{if:s==1|24|60}}}}"
+				},
+				{
+					"name": "q",
+					"expression": "2..10"
+				},
+				{
+					"name": "r",
+					"expression": "1..{{eval:d-1}}"
+				},
+				{
+					"name": "N",
+					"expression": "eval:d*q+r"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Une {{if:s==0|semaine|{{if:s==1|journée|heure}}}} compte ${{d}}$ {{if:s==0|jours|{{if:s==1|heures|minutes}}}} : on fait la division euclidienne de ${{N}}$ par ${{d}}$.",
+					"$${{N}} = ({{d}} \\times \\textcolor{{{color:primary.0}}}{{{q}}}) + \\textcolor{{{color:primary.1}}}{{{r}}}$$",
+					"$${{N}}~\\text{{{if:s==0|jours|{{if:s==1|heures|minutes}}}}} = \\textcolor{{{color:primary.0}}}{{{q}}}~\\text{{{if:s==0|semaines|{{if:s==1|jours|heures}}}}}~\\textcolor{{{color:primary.1}}}{{{r}}}~\\text{{{if:s==0|jour|{{if:s==1|heure|minute}}}}{{if:r>1|s|}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Zoé a ${{N}}$ perles. Elle fait des colliers de ${{d}}$ perles chacun. Combien de perles lui manque-t-il pour faire un collier de plus ?\n\n$$?~\\text{perles}$$",
+			"variables": [
+				{
+					"name": "d",
+					"expression": "8..15"
+				},
+				{
+					"name": "q",
+					"expression": "3..12"
+				},
+				{
+					"name": "r",
+					"expression": "1..{{eval:d-1}}"
+				},
+				{
+					"name": "N",
+					"expression": "eval:d*q+r"
+				}
+			],
+			"conditions": ["d != 2*r", "q+1 != d-r", "r != q+1", "d != q+1"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:d-r}}",
+					"expectedErrors": [
+						{
+							"answer": "{{r}}",
+							"message": "Tu as donné le reste : ce sont les perles qui restent, pas celles qui manquent.",
+							"label": "Reste au lieu du complément"
+						},
+						{
+							"answer": "{{eval:q+1}}",
+							"message": "Tu as compté des colliers : on demande un nombre de perles.",
+							"label": "Nombre de colliers"
+						},
+						{
+							"answer": "{{d}}",
+							"message": "Un collier entier demande ${{d}}$ perles, mais il en reste déjà quelques-unes après les colliers complets.",
+							"label": "Collier entier"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Division euclidienne.** Diviser $N$ par $d$, c'est trouver le quotient $q$ et le reste $r$ tels que $N = (d \\times q) + r$, avec un reste plus petit que $d$.",
+					"$${{N}} = ({{d}} \\times {{q}}) + \\textcolor{{{color:primary.1}}}{{{r}}}$$",
+					"Zoé fait ${{q}}$ colliers et il lui reste ${{r}}$ perle{{if:r>1|s|}}. Pour un collier de plus, il lui manque ${{d}} - {{r}} = \\textcolor{{{color:primary.0}}}{{{solution}}}$ perle{{if:d-r>1|s|}}."
+				]
+			},
+			"hint": "Cherche d'abord combien de colliers complets Zoé peut faire et combien de perles il lui reste."
+		},
+		{
+			"statement": "Avec ${{N}}$ perles, Zoé fait des colliers de ${{d}}$ perles chacun. Combien de colliers complets peut-elle faire ? Combien de perles lui reste-t-il ?\n\n$$?~\\text{colliers et}~?~\\text{perles restantes}$$",
+			"variables": [
+				{
+					"name": "d",
+					"expression": "8..15"
+				},
+				{
+					"name": "q",
+					"expression": "3..12"
+				},
+				{
+					"name": "r",
+					"expression": "1..{{eval:d-1}}"
+				},
+				{
+					"name": "N",
+					"expression": "eval:d*q+r"
+				}
+			],
+			"conditions": ["d != 2*r", "r != q+1", "r != q", "q != d-r"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{q}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:q+1}}",
+							"message": "Le dernier collier n'est pas complet : il lui manque des perles.",
+							"label": "Collier incomplet compté"
+						},
+						{
+							"answer": "{{r}}",
+							"message": "Tu as donné le reste : le nombre de colliers, c'est le quotient.",
+							"label": "Quotient et reste échangés"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{r}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:d-r}}",
+							"message": "Tu as compté les perles qui manquent pour un collier de plus : on demande celles qui restent.",
+							"label": "Complément au lieu du reste"
+						},
+						{
+							"answer": "{{q}}",
+							"message": "Tu as donné le nombre de colliers : le nombre de perles restantes, c'est le reste.",
+							"label": "Quotient et reste échangés"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Division euclidienne.** Diviser $N$ par $d$, c'est trouver le quotient $q$ et le reste $r$ tels que $N = (d \\times q) + r$, avec un reste plus petit que $d$.",
+					"$${{N}} = ({{d}} \\times \\textcolor{{{color:primary.0}}}{{{q}}}) + \\textcolor{{{color:primary.1}}}{{{r}}}$$",
+					"Zoé fait $\\textcolor{{{color:primary.0}}}{{{q}}}$ colliers et il lui reste $\\textcolor{{{color:primary.1}}}{{{r}}}$ perle{{if:r>1|s|}}."
+				]
+			},
+			"hint": "Cherche combien de fois ${{d}}$ perles tiennent dans ${{N}}$ perles."
+		},
+		{
+			"statement": "Aujourd'hui, nous sommes {{if:j==0|lundi|{{if:j==1|mardi|{{if:j==2|mercredi|{{if:j==3|jeudi|{{if:j==4|vendredi|{{if:j==5|samedi|dimanche}}}}}}}}}}}}. Quel jour serons-nous dans ${{N}}$ jours ?\n\n```choix\nmelanger: non\n- lundi\n- mardi\n- mercredi\n- jeudi\n- vendredi\n- samedi\n- dimanche\n```",
+			"variables": [
+				{
+					"name": "j",
+					"expression": "0..6"
+				},
+				{
+					"name": "N",
+					"expression": "50..150"
+				},
+				{
+					"name": "q",
+					"expression": "eval:floor(N/7)"
+				},
+				{
+					"name": "r",
+					"expression": "eval:mod(N,7)"
+				},
+				{
+					"name": "k",
+					"expression": "eval:mod(j+N,7)"
+				}
+			],
+			"conditions": ["r != 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{k}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Une semaine compte $7$ jours : on fait la division euclidienne de ${{N}}$ par $7$.",
+					"$${{N}} = (7 \\times {{q}}) + \\textcolor{{{color:primary.1}}}{{{r}}}$$",
+					"Dans ${{eval:7*q}}$ jours, soit ${{q}}$ semaines, nous serons encore {{if:j==0|lundi|{{if:j==1|mardi|{{if:j==2|mercredi|{{if:j==3|jeudi|{{if:j==4|vendredi|{{if:j==5|samedi|dimanche}}}}}}}}}}}} ; ${{r}}$ jour{{if:r>1|s|}} plus tard, nous serons $\\textcolor{{{color:primary.0}}}{\\text{{{if:k==0|lundi|{{if:k==1|mardi|{{if:k==2|mercredi|{{if:k==3|jeudi|{{if:k==4|vendredi|{{if:k==5|samedi|dimanche}}}}}}}}}}}}}}$."
+				]
+			},
+			"hint": "Les jours reviennent dans le même ordre toutes les semaines, c'est-à-dire tous les $7$ jours."
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["8", "7"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"N": "103",
+				"d": "12",
+				"q": "8",
+				"r": "7",
+				"sd": "2"
+			},
+			"description": "103 œufs, boîtes de 12 : 8 et 7",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["7", "8"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"N": "103",
+				"d": "12",
+				"q": "8",
+				"r": "7",
+				"sd": "2"
+			},
+			"description": "Erreur : quotient et reste échangés",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["8,58", "7"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"N": "103",
+				"d": "12",
+				"q": "8",
+				"r": "7",
+				"sd": "2"
+			},
+			"description": "Erreur : quotient décimal (8,58)",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["6"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"E": "230",
+				"c": "45",
+				"q": "5",
+				"r": "5",
+				"sc": "2"
+			},
+			"description": "230 élèves, 45 places : 6 cars",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["5"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"E": "230",
+				"c": "45",
+				"q": "5",
+				"r": "5",
+				"sc": "2"
+			},
+			"description": "Erreur : le reste oublié (5)",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["5,1"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"E": "230",
+				"c": "45",
+				"q": "5",
+				"r": "5",
+				"sc": "2"
+			},
+			"description": "Erreur : quotient décimal (5,1)",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["9", "3"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"N": "66",
+				"d": "7",
+				"q": "9",
+				"r": "3",
+				"s": "0"
+			},
+			"description": "66 jours = 9 semaines 3 jours",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["9,4", "0"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"N": "66",
+				"d": "7",
+				"q": "9",
+				"r": "3",
+				"s": "0"
+			},
+			"description": "Erreur : 9,4 semaines",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["2", "30"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"N": "150",
+				"d": "60",
+				"q": "2",
+				"r": "30",
+				"s": "2"
+			},
+			"description": "150 min = 2 h 30 min",
+			"variationIndex": 2
+		},
+		{
+			"description": "F12b : 87 perles, colliers de 12",
+			"variationIndex": 3,
+			"variables": {
+				"d": "12",
+				"q": "7",
+				"r": "3",
+				"N": "87"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["9"]
+		},
+		{
+			"description": "F12b : le reste (3)",
+			"variationIndex": 3,
+			"variables": {
+				"d": "12",
+				"q": "7",
+				"r": "3",
+				"N": "87"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as donné le reste : ce sont les perles qui restent, pas celles qui manquent."
+			},
+			"answers": ["3"]
+		},
+		{
+			"description": "F12b : nombre de colliers (8)",
+			"variationIndex": 3,
+			"variables": {
+				"d": "12",
+				"q": "7",
+				"r": "3",
+				"N": "87"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as compté des colliers : on demande un nombre de perles."
+			},
+			"answers": ["8"]
+		},
+		{
+			"description": "F12b : collier entier (12)",
+			"variationIndex": 3,
+			"variables": {
+				"d": "12",
+				"q": "7",
+				"r": "3",
+				"N": "87"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Un collier entier demande $12$ perles, mais il en reste déjà quelques-unes après les colliers complets."
+			},
+			"answers": ["12"]
+		},
+		{
+			"description": "F12b : 87 perles, 7 colliers et 3 perles",
+			"variationIndex": 4,
+			"variables": {
+				"d": "12",
+				"q": "7",
+				"r": "3",
+				"N": "87"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["7", "3"]
+		},
+		{
+			"description": "F12b : collier incomplet compté",
+			"variationIndex": 4,
+			"variables": {
+				"d": "12",
+				"q": "7",
+				"r": "3",
+				"N": "87"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Le dernier collier n'est pas complet : il lui manque des perles."
+			},
+			"answers": ["8", "3"]
+		},
+		{
+			"description": "F12b : complément au lieu du reste",
+			"variationIndex": 4,
+			"variables": {
+				"d": "12",
+				"q": "7",
+				"r": "3",
+				"N": "87"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as compté les perles qui manquent pour un collier de plus : on demande celles qui restent."
+			},
+			"answers": ["7", "9"]
+		},
+		{
+			"description": "F12b : quotient décimal",
+			"variationIndex": 4,
+			"variables": {
+				"d": "12",
+				"q": "7",
+				"r": "3",
+				"N": "87"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["7{,}25", "3"]
+		},
+		{
+			"description": "F12b : mardi + 100 jours = jeudi",
+			"variationIndex": 5,
+			"variables": {
+				"j": "1",
+				"N": "100"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["3"]
+		},
+		{
+			"description": "F12b : mardi + 100 jours, même jour",
+			"variationIndex": 5,
+			"variables": {
+				"j": "1",
+				"N": "100"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["1"]
+		},
+		{
+			"description": "F12b : mardi + 100 jours, un jour de moins",
+			"variationIndex": 5,
+			"variables": {
+				"j": "1",
+				"N": "100"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["2"]
+		},
+		{
+			"description": "F12b : dimanche + 60 jours = jeudi",
+			"variationIndex": 5,
+			"variables": {
+				"j": "6",
+				"N": "60"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["3"]
+		}
+	]
+}

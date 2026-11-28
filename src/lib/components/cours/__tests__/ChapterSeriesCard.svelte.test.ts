@@ -10,7 +10,7 @@
 import { describe, it, expect } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import ChapterSeriesCard from '../ChapterSeriesCard.svelte';
-import type { ChapterSeries } from '$lib/types/chapters';
+import type { ChapterSeries } from '#lib/types/chapters.ts';
 
 function serie(partiel: Partial<ChapterSeries> = {}): ChapterSeries {
 	return {
@@ -44,11 +44,11 @@ describe('ChapterSeriesCard', () => {
 		expect(texte(container as HTMLElement)).toContain('4 questions');
 	});
 
-	it('affiche « Entraînement » pour la forme interactive', async () => {
+	it('affiche « Contrôle blanc » pour la forme interactive', async () => {
 		const { container } = await render(ChapterSeriesCard, {
 			series: serie({ form: 'interactive', launchHref: '/automaths/test?mode=interactive' })
 		});
-		expect(texte(container as HTMLElement)).toContain('Entraînement');
+		expect(texte(container as HTMLElement)).toContain('Contrôle blanc');
 		expect(texte(container as HTMLElement)).not.toContain('Flash-cards');
 	});
 

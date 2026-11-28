@@ -9,12 +9,12 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { parse } from '$lib/mathAST/cli/core/pipeline';
-import { generatePedagogicalLimitSteps } from '$lib/mathAST/pedagogical-limits/pipeline';
-import type { PedagogicalLimitResult } from '$lib/mathAST/pedagogical-limits/types';
-import type { LimitDirection } from '$lib/mathAST/limits/types';
-import type { MathNode } from '$lib/mathAST/types';
-import { fraction, infinity, number } from '$lib/mathAST/factory';
+import { parse } from '#lib/mathAST/cli/core/pipeline.ts';
+import { generatePedagogicalLimitSteps } from '#lib/mathAST/pedagogical-limits/pipeline.ts';
+import type { PedagogicalLimitResult } from '#lib/mathAST/pedagogical-limits/types.ts';
+import type { LimitDirection } from '#lib/mathAST/limits/types.ts';
+import type { MathNode } from '#lib/mathAST/types.ts';
+import { fraction, infinity, number } from '#lib/mathAST/factory.ts';
 import { concludesLimitAnswer, showsNothing } from '../limit-steps-check';
 
 // =============================================================================

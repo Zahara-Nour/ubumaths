@@ -1,11 +1,11 @@
 <script lang="ts">
-	import { lore } from '$lib/config/lore';
+	import { lore } from '#lib/config/lore.ts';
 	import { goto } from '$app/navigation';
-	import { Button } from '$lib/components/ui/button';
-	import * as Card from '$lib/components/ui/card';
-	import MySelect from '$lib/components/MySelect.svelte';
-	import WorksheetCard from '$lib/components/student/worksheets/WorksheetCard.svelte';
-	import BackLink from '$lib/components/navigation/BackLink.svelte';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import MySelect from '#lib/components/MySelect.svelte';
+	import WorksheetCard from '#lib/components/student/worksheets/WorksheetCard.svelte';
+	import BackLink from '#lib/components/navigation/BackLink.svelte';
 	import { FileText, ChevronLeft, ChevronRight, Filter } from '@lucide/svelte';
 	import type { PageData } from './$types';
 

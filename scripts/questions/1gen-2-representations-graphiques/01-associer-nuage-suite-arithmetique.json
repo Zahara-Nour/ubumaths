@@ -1,0 +1,180 @@
+{
+	"id": "817d257f-dcc6-4c31-92ca-57b0d20665da",
+	"title": "Associer un nuage de points à une suite arithmétique",
+	"description": "Trois nuages de points ↔ trois suites arithmétiques (forme explicite, puis récurrence)",
+	"grades": ["1_GEN"],
+	"level": 1,
+	"delay": 60,
+	"status": "draft",
+	"shared": {},
+	"variations": [
+		{
+			"statement": "Chaque nuage de points représente les premiers termes d'une suite arithmétique $(u_n)$ : le point d'abscisse $n$ a pour ordonnée $u_n$.\n\nRelie chaque nuage à la suite qu'il représente.\n\n````associer\n- ```courbe\n  x: -1 ; 5\n  y: -5 ; 11\n  grille: 1 ; 1\n  u(n) = {{a1}}+({{r1}})*n pour n de 0 à 4   bleu\n  description: Nuage de 5 points : (0 ; {{a1}}), (1 ; {{eval:a1+r1}}), (2 ; {{eval:a1+2*r1}}), (3 ; {{eval:a1+3*r1}}), (4 ; {{eval:a1+4*r1}}).\n  ```\n  -> $u_n={{eval:(r1)*n}}{{eval:a1;+}}$\n- ```courbe\n  x: -1 ; 5\n  y: -5 ; 11\n  grille: 1 ; 1\n  u(n) = {{a2}}+({{r2}})*n pour n de 0 à 4   bleu\n  description: Nuage de 5 points : (0 ; {{a2}}), (1 ; {{eval:a2+r2}}), (2 ; {{eval:a2+2*r2}}), (3 ; {{eval:a2+3*r2}}), (4 ; {{eval:a2+4*r2}}).\n  ```\n  -> $u_n={{eval:(r2)*n}}{{eval:a2;+}}$\n- ```courbe\n  x: -1 ; 5\n  y: -5 ; 11\n  grille: 1 ; 1\n  u(n) = {{a3}}+({{r3}})*n pour n de 0 à 4   bleu\n  description: Nuage de 5 points : (0 ; {{a3}}), (1 ; {{eval:a3+r3}}), (2 ; {{eval:a3+2*r3}}), (3 ; {{eval:a3+3*r3}}), (4 ; {{eval:a3+4*r3}}).\n  ```\n  -> $u_n={{eval:(r3)*n}}{{eval:a3;+}}$\n````",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "n|n"
+				},
+				{
+					"name": "a1",
+					"expression": "-3..-1"
+				},
+				{
+					"name": "r1",
+					"expression": "1|2|3"
+				},
+				{
+					"name": "a2",
+					"expression": "1..4"
+				},
+				{
+					"name": "r2",
+					"expression": "-2|-1|1|2|3!r1"
+				},
+				{
+					"name": "a3",
+					"expression": "5..8"
+				},
+				{
+					"name": "r3",
+					"expression": "-2|-1|1|2|3"
+				}
+			],
+			"conditions": [
+				"a1+4*r1 >= -4",
+				"a2+4*r2 >= -4",
+				"a3+4*r3 >= -4",
+				"a1+4*r1 <= 10",
+				"a2+4*r2 <= 10",
+				"a3+4*r3 <= 10",
+				"r3 != r1",
+				"r3 != r2"
+			],
+			"correction": {
+				"steps": [
+					"Pour une suite arithmétique, on ajoute toujours la même raison $r$ pour passer d'un terme au suivant : les points du nuage sont **alignés**. On lit $u_0$ sur le point d'abscisse $0$, et $r$ dans la montée (ou la descente) d'un point au suivant.",
+					"Nuage 1 : le premier point est $(0\\,;{{a1}})$, donc $u_0={{a1}}$ ; d'un point au suivant, on {{if:r1>0|monte|descend}} de ${{eval:abs(r1)}}$, donc $r={{r1}}$. C'est $u_n={{eval:(r1)*n}}{{eval:a1;+}}$.",
+					"Nuage 2 : le premier point est $(0\\,;{{a2}})$, donc $u_0={{a2}}$ ; d'un point au suivant, on {{if:r2>0|monte|descend}} de ${{eval:abs(r2)}}$, donc $r={{r2}}$. C'est $u_n={{eval:(r2)*n}}{{eval:a2;+}}$.",
+					"Nuage 3 : le premier point est $(0\\,;{{a3}})$, donc $u_0={{a3}}$ ; d'un point au suivant, on {{if:r3>0|monte|descend}} de ${{eval:abs(r3)}}$, donc $r={{r3}}$. C'est $u_n={{eval:(r3)*n}}{{eval:a3;+}}$."
+				]
+			}
+		},
+		{
+			"statement": "Chaque nuage de points représente les premiers termes d'une suite arithmétique $(u_n)$ : le point d'abscisse $n$ a pour ordonnée $u_n$.\n\nRelie chaque nuage à la suite qu'il représente.\n\n````associer\n- ```courbe\n  x: -1 ; 5\n  y: -5 ; 11\n  grille: 1 ; 1\n  u(n) = {{a1}}+({{r1}})*n pour n de 0 à 4   bleu\n  description: Nuage de 5 points : (0 ; {{a1}}), (1 ; {{eval:a1+r1}}), (2 ; {{eval:a1+2*r1}}), (3 ; {{eval:a1+3*r1}}), (4 ; {{eval:a1+4*r1}}).\n  ```\n  -> $u_0={{a1}},\\ u_{n+1}=u_n{{r1;+}}$\n- ```courbe\n  x: -1 ; 5\n  y: -5 ; 11\n  grille: 1 ; 1\n  u(n) = {{a2}}+({{r2}})*n pour n de 0 à 4   bleu\n  description: Nuage de 5 points : (0 ; {{a2}}), (1 ; {{eval:a2+r2}}), (2 ; {{eval:a2+2*r2}}), (3 ; {{eval:a2+3*r2}}), (4 ; {{eval:a2+4*r2}}).\n  ```\n  -> $u_0={{a2}},\\ u_{n+1}=u_n{{r2;+}}$\n- ```courbe\n  x: -1 ; 5\n  y: -5 ; 11\n  grille: 1 ; 1\n  u(n) = {{a3}}+({{r3}})*n pour n de 0 à 4   bleu\n  description: Nuage de 5 points : (0 ; {{a3}}), (1 ; {{eval:a3+r3}}), (2 ; {{eval:a3+2*r3}}), (3 ; {{eval:a3+3*r3}}), (4 ; {{eval:a3+4*r3}}).\n  ```\n  -> $u_0={{a3}},\\ u_{n+1}=u_n{{r3;+}}$\n````",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "n|n"
+				},
+				{
+					"name": "a1",
+					"expression": "-3..-1"
+				},
+				{
+					"name": "r1",
+					"expression": "1|2|3"
+				},
+				{
+					"name": "a2",
+					"expression": "1..4"
+				},
+				{
+					"name": "r2",
+					"expression": "-2|-1|1|2|3!r1"
+				},
+				{
+					"name": "a3",
+					"expression": "5..8"
+				},
+				{
+					"name": "r3",
+					"expression": "-2|-1|1|2|3"
+				}
+			],
+			"conditions": [
+				"a1+4*r1 >= -4",
+				"a2+4*r2 >= -4",
+				"a3+4*r3 >= -4",
+				"a1+4*r1 <= 10",
+				"a2+4*r2 <= 10",
+				"a3+4*r3 <= 10",
+				"r3 != r1",
+				"r3 != r2"
+			],
+			"correction": {
+				"steps": [
+					"Pour une suite arithmétique, on ajoute toujours la même raison $r$ pour passer d'un terme au suivant : les points du nuage sont **alignés**. On lit $u_0$ sur le point d'abscisse $0$, et $r$ dans la montée (ou la descente) d'un point au suivant.",
+					"Nuage 1 : le premier point est $(0\\,;{{a1}})$, donc $u_0={{a1}}$ ; d'un point au suivant, on {{if:r1>0|monte|descend}} de ${{eval:abs(r1)}}$, donc $r={{r1}}$. C'est $u_0={{a1}},\\ u_{n+1}=u_n{{r1;+}}$.",
+					"Nuage 2 : le premier point est $(0\\,;{{a2}})$, donc $u_0={{a2}}$ ; d'un point au suivant, on {{if:r2>0|monte|descend}} de ${{eval:abs(r2)}}$, donc $r={{r2}}$. C'est $u_0={{a2}},\\ u_{n+1}=u_n{{r2;+}}$.",
+					"Nuage 3 : le premier point est $(0\\,;{{a3}})$, donc $u_0={{a3}}$ ; d'un point au suivant, on {{if:r3>0|monte|descend}} de ${{eval:abs(r3)}}$, donc $r={{r3}}$. C'est $u_0={{a3}},\\ u_{n+1}=u_n{{r3;+}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Nuages bien reliés",
+			"variationIndex": 0,
+			"variables": {
+				"a1": "-2",
+				"r1": "3",
+				"a2": "2",
+				"r2": "1",
+				"a3": "8",
+				"r3": "-2"
+			},
+			"answers": ["2", "0", "1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : nuages 1 et 2 échangés",
+			"variationIndex": 0,
+			"variables": {
+				"a1": "-2",
+				"r1": "3",
+				"a2": "2",
+				"r2": "1",
+				"a3": "8",
+				"r3": "-2"
+			},
+			"answers": ["0", "2", "1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Récurrences bien reliées",
+			"variationIndex": 1,
+			"variables": {
+				"a1": "-1",
+				"r1": "2",
+				"a2": "4",
+				"r2": "-1",
+				"a3": "6",
+				"r3": "1"
+			},
+			"answers": ["2", "0", "1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : nuages 2 et 3 échangés",
+			"variationIndex": 1,
+			"variables": {
+				"a1": "-1",
+				"r1": "2",
+				"a2": "4",
+				"r2": "-1",
+				"a3": "6",
+				"r3": "1"
+			},
+			"answers": ["2", "1", "0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

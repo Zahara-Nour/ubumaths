@@ -13,7 +13,7 @@
  */
 
 import { describe, it, expect, vi } from 'vitest';
-import type { Json } from '$lib/types/database';
+import type { Json } from '#lib/types/database.ts';
 import { attachReportErrors } from '../bug-report-errors';
 
 const ELEVE = '550e8400-e29b-41d4-a716-446655440001';

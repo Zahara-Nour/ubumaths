@@ -303,7 +303,7 @@ describe('common validation schemas', () => {
 
 			Object.entries(gradeMap).forEach(([input, expected]) => {
 				// Need to cast as GradeCode for the unified function
-				const result = formatGradeForDisplay(input as import('$lib/types/grades').GradeCode);
+				const result = formatGradeForDisplay(input as import('#lib/types/grades.ts').GradeCode);
 				expect(result).toBe(expected);
 			});
 		});

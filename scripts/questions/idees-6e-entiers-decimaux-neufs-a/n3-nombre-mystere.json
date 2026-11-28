@@ -1,0 +1,782 @@
+{
+	"id": "b7d28fdd-58ad-4b27-acc1-891820883536",
+	"title": "Le nombre mystère",
+	"description": "Trouver un nombre entier (4 ou 5 chiffres) ou décimal (deux chiffres après la virgule) à partir d'indices sur ses chiffres : un chiffre donné, double, moitié, plus grand ou plus petit de k, somme (pièges : chiffres écrits dans l'ordre inverse, indices pris à l'envers)",
+	"grades": ["6"],
+	"level": 1,
+	"delay": 90,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"spacesFromFourDigits": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Je suis un nombre {{if:n==5|entier de $5$ chiffres|entier de $4$ chiffres}}, tous différents.\n\n- Mon chiffre des {{if:R1==0|unités|{{if:R1==1|dizaines|{{if:R1==2|centaines|{{if:R1==3|milliers|dizaines de mille}}}}}}}} est {{if:t1==0|le double de mon chiffre des {{if:R0==0|unités|{{if:R0==1|dizaines|{{if:R0==2|centaines|{{if:R0==3|milliers|dizaines de mille}}}}}}}}|{{if:t1==1|la moitié de mon chiffre des {{if:R0==0|unités|{{if:R0==1|dizaines|{{if:R0==2|centaines|{{if:R0==3|milliers|dizaines de mille}}}}}}}}|{{if:t1==2|plus grand de ${{k1}}$ que mon chiffre des {{if:R0==0|unités|{{if:R0==1|dizaines|{{if:R0==2|centaines|{{if:R0==3|milliers|dizaines de mille}}}}}}}}|{{if:t1==3|plus petit de ${{k1}}$ que mon chiffre des {{if:R0==0|unités|{{if:R0==1|dizaines|{{if:R0==2|centaines|{{if:R0==3|milliers|dizaines de mille}}}}}}}}|la somme de mes chiffres des {{if:R0==0|unités|{{if:R0==1|dizaines|{{if:R0==2|centaines|{{if:R0==3|milliers|dizaines de mille}}}}}}}} et des }}}}}}}}.\n- Mon chiffre des {{if:R2==0|unités|{{if:R2==1|dizaines|{{if:R2==2|centaines|{{if:R2==3|milliers|dizaines de mille}}}}}}}} est {{if:t2==0|le double de mon chiffre des {{if:R1==0|unités|{{if:R1==1|dizaines|{{if:R1==2|centaines|{{if:R1==3|milliers|dizaines de mille}}}}}}}}|{{if:t2==1|la moitié de mon chiffre des {{if:R1==0|unités|{{if:R1==1|dizaines|{{if:R1==2|centaines|{{if:R1==3|milliers|dizaines de mille}}}}}}}}|{{if:t2==2|plus grand de ${{k2}}$ que mon chiffre des {{if:R1==0|unités|{{if:R1==1|dizaines|{{if:R1==2|centaines|{{if:R1==3|milliers|dizaines de mille}}}}}}}}|{{if:t2==3|plus petit de ${{k2}}$ que mon chiffre des {{if:R1==0|unités|{{if:R1==1|dizaines|{{if:R1==2|centaines|{{if:R1==3|milliers|dizaines de mille}}}}}}}}|la somme de mes chiffres des {{if:R1==0|unités|{{if:R1==1|dizaines|{{if:R1==2|centaines|{{if:R1==3|milliers|dizaines de mille}}}}}}}} et des {{if:R0==0|unités|{{if:R0==1|dizaines|{{if:R0==2|centaines|{{if:R0==3|milliers|dizaines de mille}}}}}}}}}}}}}}}}.\n- Mon chiffre des {{if:R3==0|unités|{{if:R3==1|dizaines|{{if:R3==2|centaines|{{if:R3==3|milliers|dizaines de mille}}}}}}}} est {{if:t3==0|le double de mon chiffre des {{if:R2==0|unités|{{if:R2==1|dizaines|{{if:R2==2|centaines|{{if:R2==3|milliers|dizaines de mille}}}}}}}}|{{if:t3==1|la moitié de mon chiffre des {{if:R2==0|unités|{{if:R2==1|dizaines|{{if:R2==2|centaines|{{if:R2==3|milliers|dizaines de mille}}}}}}}}|{{if:t3==2|plus grand de ${{k3}}$ que mon chiffre des {{if:R2==0|unités|{{if:R2==1|dizaines|{{if:R2==2|centaines|{{if:R2==3|milliers|dizaines de mille}}}}}}}}|{{if:t3==3|plus petit de ${{k3}}$ que mon chiffre des {{if:R2==0|unités|{{if:R2==1|dizaines|{{if:R2==2|centaines|{{if:R2==3|milliers|dizaines de mille}}}}}}}}|la somme de mes chiffres des {{if:R2==0|unités|{{if:R2==1|dizaines|{{if:R2==2|centaines|{{if:R2==3|milliers|dizaines de mille}}}}}}}} et des {{if:R1==0|unités|{{if:R1==1|dizaines|{{if:R1==2|centaines|{{if:R1==3|milliers|dizaines de mille}}}}}}}}}}}}}}}}.{{if:n==5|\n- Mon chiffre des {{if:R4==0|unités|{{if:R4==1|dizaines|{{if:R4==2|centaines|{{if:R4==3|milliers|dizaines de mille}}}}}}}} est {{if:t4==0|le double de mon chiffre des {{if:R3==0|unités|{{if:R3==1|dizaines|{{if:R3==2|centaines|{{if:R3==3|milliers|dizaines de mille}}}}}}}}|{{if:t4==1|la moitié de mon chiffre des {{if:R3==0|unités|{{if:R3==1|dizaines|{{if:R3==2|centaines|{{if:R3==3|milliers|dizaines de mille}}}}}}}}|{{if:t4==2|plus grand de ${{k4}}$ que mon chiffre des {{if:R3==0|unités|{{if:R3==1|dizaines|{{if:R3==2|centaines|{{if:R3==3|milliers|dizaines de mille}}}}}}}}|{{if:t4==3|plus petit de ${{k4}}$ que mon chiffre des {{if:R3==0|unités|{{if:R3==1|dizaines|{{if:R3==2|centaines|{{if:R3==3|milliers|dizaines de mille}}}}}}}}|la somme de mes chiffres des {{if:R3==0|unités|{{if:R3==1|dizaines|{{if:R3==2|centaines|{{if:R3==3|milliers|dizaines de mille}}}}}}}} et des {{if:R2==0|unités|{{if:R2==1|dizaines|{{if:R2==2|centaines|{{if:R2==3|milliers|dizaines de mille}}}}}}}}}}}}}}}}.|}}\n- Mon chiffre des {{if:R0==0|unités|{{if:R0==1|dizaines|{{if:R0==2|centaines|{{if:R0==3|milliers|dizaines de mille}}}}}}}} est ${{D0}}$.\n\nQui suis-je ?\n\n$$?$$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "4|5"
+				},
+				{
+					"name": "sens",
+					"expression": "0|1"
+				},
+				{
+					"name": "D0",
+					"expression": "1..9"
+				},
+				{
+					"name": "p1",
+					"expression": "0..3"
+				},
+				{
+					"name": "w1",
+					"expression": "0..59"
+				},
+				{
+					"name": "q1",
+					"expression": "0|1"
+				},
+				{
+					"name": "ok1",
+					"expression": "eval:(1-min(abs((p1)-(0)),1))*min(max((D0)-(1)+1,0),1)*min(max((4)-(D0)+1,0),1)+(1-min(abs((p1)-(1)),1))*(1-min(abs((mod(D0,2))-(0)),1))*min(max((D0)-(2)+1,0),1)+(1-min(abs((p1)-(2)),1))*min(max((8)-(D0)+1,0),1)+(1-min(abs((p1)-(3)),1))*min(max((D0)-(1)+1,0),1)+(1-min(abs((p1)-(4)),1))*min(max((9)-(D0+0)+1,0),1)*min(max((0)-(1)+1,0),1)"
+				},
+				{
+					"name": "oq1",
+					"expression": "eval:(1-min(abs((q1)-(0)),1))*min(max((D0)-(1)+1,0),1)*min(max((4)-(D0)+1,0),1)+(1-min(abs((q1)-(1)),1))*(1-min(abs((mod(D0,2))-(0)),1))*min(max((D0)-(2)+1,0),1)+(1-min(abs((q1)-(2)),1))*min(max((8)-(D0)+1,0),1)+(1-min(abs((q1)-(3)),1))*min(max((D0)-(1)+1,0),1)+(1-min(abs((q1)-(4)),1))*min(max((9)-(D0+0)+1,0),1)*min(max((0)-(1)+1,0),1)"
+				},
+				{
+					"name": "t1",
+					"expression": "eval:ok1*p1+(1-ok1)*(oq1*q1+(1-oq1)*(2+min(max((D0)-(5)+1,0),1)))"
+				},
+				{
+					"name": "k1",
+					"expression": "eval:1+mod(w1,(1-min(abs((t1)-(2)),1))*(9-D0)+(1-min(abs((t1)-(3)),1))*D0+1-(1-min(abs((t1)-(2)),1))-(1-min(abs((t1)-(3)),1)))"
+				},
+				{
+					"name": "D1",
+					"expression": "eval:((1-min(abs((t1)-(0)),1))*2*(D0)+(1-min(abs((t1)-(1)),1))*(D0)/2+(1-min(abs((t1)-(2)),1))*((D0)+k1)+(1-min(abs((t1)-(3)),1))*((D0)-k1)+(1-min(abs((t1)-(4)),1))*((D0)+(0)))"
+				},
+				{
+					"name": "p2",
+					"expression": "0..4"
+				},
+				{
+					"name": "w2",
+					"expression": "0..59"
+				},
+				{
+					"name": "q2",
+					"expression": "0|1|4"
+				},
+				{
+					"name": "ok2",
+					"expression": "eval:(1-min(abs((p2)-(0)),1))*min(max((D1)-(1)+1,0),1)*min(max((4)-(D1)+1,0),1)+(1-min(abs((p2)-(1)),1))*(1-min(abs((mod(D1,2))-(0)),1))*min(max((D1)-(2)+1,0),1)+(1-min(abs((p2)-(2)),1))*min(max((8)-(D1)+1,0),1)+(1-min(abs((p2)-(3)),1))*min(max((D1)-(1)+1,0),1)+(1-min(abs((p2)-(4)),1))*min(max((9)-(D1+D0)+1,0),1)*min(max((D0)-(1)+1,0),1)"
+				},
+				{
+					"name": "oq2",
+					"expression": "eval:(1-min(abs((q2)-(0)),1))*min(max((D1)-(1)+1,0),1)*min(max((4)-(D1)+1,0),1)+(1-min(abs((q2)-(1)),1))*(1-min(abs((mod(D1,2))-(0)),1))*min(max((D1)-(2)+1,0),1)+(1-min(abs((q2)-(2)),1))*min(max((8)-(D1)+1,0),1)+(1-min(abs((q2)-(3)),1))*min(max((D1)-(1)+1,0),1)+(1-min(abs((q2)-(4)),1))*min(max((9)-(D1+D0)+1,0),1)*min(max((D0)-(1)+1,0),1)"
+				},
+				{
+					"name": "t2",
+					"expression": "eval:ok2*p2+(1-ok2)*(oq2*q2+(1-oq2)*(2+min(max((D1)-(5)+1,0),1)))"
+				},
+				{
+					"name": "k2",
+					"expression": "eval:1+mod(w2,(1-min(abs((t2)-(2)),1))*(9-D1)+(1-min(abs((t2)-(3)),1))*D1+1-(1-min(abs((t2)-(2)),1))-(1-min(abs((t2)-(3)),1)))"
+				},
+				{
+					"name": "D2",
+					"expression": "eval:((1-min(abs((t2)-(0)),1))*2*(D1)+(1-min(abs((t2)-(1)),1))*(D1)/2+(1-min(abs((t2)-(2)),1))*((D1)+k2)+(1-min(abs((t2)-(3)),1))*((D1)-k2)+(1-min(abs((t2)-(4)),1))*((D1)+(D0)))"
+				},
+				{
+					"name": "p3",
+					"expression": "0..4"
+				},
+				{
+					"name": "w3",
+					"expression": "0..59"
+				},
+				{
+					"name": "q3",
+					"expression": "0|1|4"
+				},
+				{
+					"name": "ok3",
+					"expression": "eval:(1-min(abs((p3)-(0)),1))*min(max((D2)-(1)+1,0),1)*min(max((4)-(D2)+1,0),1)+(1-min(abs((p3)-(1)),1))*(1-min(abs((mod(D2,2))-(0)),1))*min(max((D2)-(2)+1,0),1)+(1-min(abs((p3)-(2)),1))*min(max((8)-(D2)+1,0),1)+(1-min(abs((p3)-(3)),1))*min(max((D2)-(1)+1,0),1)+(1-min(abs((p3)-(4)),1))*min(max((9)-(D2+D1)+1,0),1)*min(max((D1)-(1)+1,0),1)"
+				},
+				{
+					"name": "oq3",
+					"expression": "eval:(1-min(abs((q3)-(0)),1))*min(max((D2)-(1)+1,0),1)*min(max((4)-(D2)+1,0),1)+(1-min(abs((q3)-(1)),1))*(1-min(abs((mod(D2,2))-(0)),1))*min(max((D2)-(2)+1,0),1)+(1-min(abs((q3)-(2)),1))*min(max((8)-(D2)+1,0),1)+(1-min(abs((q3)-(3)),1))*min(max((D2)-(1)+1,0),1)+(1-min(abs((q3)-(4)),1))*min(max((9)-(D2+D1)+1,0),1)*min(max((D1)-(1)+1,0),1)"
+				},
+				{
+					"name": "t3",
+					"expression": "eval:ok3*p3+(1-ok3)*(oq3*q3+(1-oq3)*(2+min(max((D2)-(5)+1,0),1)))"
+				},
+				{
+					"name": "k3",
+					"expression": "eval:1+mod(w3,(1-min(abs((t3)-(2)),1))*(9-D2)+(1-min(abs((t3)-(3)),1))*D2+1-(1-min(abs((t3)-(2)),1))-(1-min(abs((t3)-(3)),1)))"
+				},
+				{
+					"name": "D3",
+					"expression": "eval:((1-min(abs((t3)-(0)),1))*2*(D2)+(1-min(abs((t3)-(1)),1))*(D2)/2+(1-min(abs((t3)-(2)),1))*((D2)+k3)+(1-min(abs((t3)-(3)),1))*((D2)-k3)+(1-min(abs((t3)-(4)),1))*((D2)+(D1)))"
+				},
+				{
+					"name": "p4",
+					"expression": "0..4"
+				},
+				{
+					"name": "w4",
+					"expression": "0..59"
+				},
+				{
+					"name": "q4",
+					"expression": "0|1|4"
+				},
+				{
+					"name": "ok4",
+					"expression": "eval:(1-min(abs((p4)-(0)),1))*min(max((D3)-(1)+1,0),1)*min(max((4)-(D3)+1,0),1)+(1-min(abs((p4)-(1)),1))*(1-min(abs((mod(D3,2))-(0)),1))*min(max((D3)-(2)+1,0),1)+(1-min(abs((p4)-(2)),1))*min(max((8)-(D3)+1,0),1)+(1-min(abs((p4)-(3)),1))*min(max((D3)-(1)+1,0),1)+(1-min(abs((p4)-(4)),1))*min(max((9)-(D3+D2)+1,0),1)*min(max((D2)-(1)+1,0),1)"
+				},
+				{
+					"name": "oq4",
+					"expression": "eval:(1-min(abs((q4)-(0)),1))*min(max((D3)-(1)+1,0),1)*min(max((4)-(D3)+1,0),1)+(1-min(abs((q4)-(1)),1))*(1-min(abs((mod(D3,2))-(0)),1))*min(max((D3)-(2)+1,0),1)+(1-min(abs((q4)-(2)),1))*min(max((8)-(D3)+1,0),1)+(1-min(abs((q4)-(3)),1))*min(max((D3)-(1)+1,0),1)+(1-min(abs((q4)-(4)),1))*min(max((9)-(D3+D2)+1,0),1)*min(max((D2)-(1)+1,0),1)"
+				},
+				{
+					"name": "t4",
+					"expression": "eval:ok4*p4+(1-ok4)*(oq4*q4+(1-oq4)*(2+min(max((D3)-(5)+1,0),1)))"
+				},
+				{
+					"name": "k4",
+					"expression": "eval:1+mod(w4,(1-min(abs((t4)-(2)),1))*(9-D3)+(1-min(abs((t4)-(3)),1))*D3+1-(1-min(abs((t4)-(2)),1))-(1-min(abs((t4)-(3)),1)))"
+				},
+				{
+					"name": "D4",
+					"expression": "eval:((1-min(abs((t4)-(0)),1))*2*(D3)+(1-min(abs((t4)-(1)),1))*(D3)/2+(1-min(abs((t4)-(2)),1))*((D3)+k4)+(1-min(abs((t4)-(3)),1))*((D3)-k4)+(1-min(abs((t4)-(4)),1))*((D3)+(D2)))"
+				},
+				{
+					"name": "R0",
+					"expression": "eval:0+sens*(n-1-0)"
+				},
+				{
+					"name": "R1",
+					"expression": "eval:1+sens*(n-1-2)"
+				},
+				{
+					"name": "R2",
+					"expression": "eval:2+sens*(n-1-4)"
+				},
+				{
+					"name": "R3",
+					"expression": "eval:3+sens*(n-1-6)"
+				},
+				{
+					"name": "R4",
+					"expression": "eval:4+sens*(n-1-8)"
+				},
+				{
+					"name": "E0",
+					"expression": "eval:D0"
+				},
+				{
+					"name": "E1",
+					"expression": "eval:((1-min(abs(((t1+(1-min(abs((t1)-(2)),1))*1+(1-min(abs((t1)-(3)),1))*-1))-(0)),1))*2*(E0)+(1-min(abs(((t1+(1-min(abs((t1)-(2)),1))*1+(1-min(abs((t1)-(3)),1))*-1))-(1)),1))*(E0)/2+(1-min(abs(((t1+(1-min(abs((t1)-(2)),1))*1+(1-min(abs((t1)-(3)),1))*-1))-(2)),1))*((E0)+k1)+(1-min(abs(((t1+(1-min(abs((t1)-(2)),1))*1+(1-min(abs((t1)-(3)),1))*-1))-(3)),1))*((E0)-k1)+(1-min(abs(((t1+(1-min(abs((t1)-(2)),1))*1+(1-min(abs((t1)-(3)),1))*-1))-(4)),1))*((E0)+(0)))"
+				},
+				{
+					"name": "E2",
+					"expression": "eval:((1-min(abs(((t2+(1-min(abs((t2)-(2)),1))*1+(1-min(abs((t2)-(3)),1))*-1))-(0)),1))*2*(E1)+(1-min(abs(((t2+(1-min(abs((t2)-(2)),1))*1+(1-min(abs((t2)-(3)),1))*-1))-(1)),1))*(E1)/2+(1-min(abs(((t2+(1-min(abs((t2)-(2)),1))*1+(1-min(abs((t2)-(3)),1))*-1))-(2)),1))*((E1)+k2)+(1-min(abs(((t2+(1-min(abs((t2)-(2)),1))*1+(1-min(abs((t2)-(3)),1))*-1))-(3)),1))*((E1)-k2)+(1-min(abs(((t2+(1-min(abs((t2)-(2)),1))*1+(1-min(abs((t2)-(3)),1))*-1))-(4)),1))*((E1)+(E0)))"
+				},
+				{
+					"name": "E3",
+					"expression": "eval:((1-min(abs(((t3+(1-min(abs((t3)-(2)),1))*1+(1-min(abs((t3)-(3)),1))*-1))-(0)),1))*2*(E2)+(1-min(abs(((t3+(1-min(abs((t3)-(2)),1))*1+(1-min(abs((t3)-(3)),1))*-1))-(1)),1))*(E2)/2+(1-min(abs(((t3+(1-min(abs((t3)-(2)),1))*1+(1-min(abs((t3)-(3)),1))*-1))-(2)),1))*((E2)+k3)+(1-min(abs(((t3+(1-min(abs((t3)-(2)),1))*1+(1-min(abs((t3)-(3)),1))*-1))-(3)),1))*((E2)-k3)+(1-min(abs(((t3+(1-min(abs((t3)-(2)),1))*1+(1-min(abs((t3)-(3)),1))*-1))-(4)),1))*((E2)+(E1)))"
+				},
+				{
+					"name": "E4",
+					"expression": "eval:((1-min(abs(((t4+(1-min(abs((t4)-(2)),1))*1+(1-min(abs((t4)-(3)),1))*-1))-(0)),1))*2*(E3)+(1-min(abs(((t4+(1-min(abs((t4)-(2)),1))*1+(1-min(abs((t4)-(3)),1))*-1))-(1)),1))*(E3)/2+(1-min(abs(((t4+(1-min(abs((t4)-(2)),1))*1+(1-min(abs((t4)-(3)),1))*-1))-(2)),1))*((E3)+k4)+(1-min(abs(((t4+(1-min(abs((t4)-(2)),1))*1+(1-min(abs((t4)-(3)),1))*-1))-(3)),1))*((E3)-k4)+(1-min(abs(((t4+(1-min(abs((t4)-(2)),1))*1+(1-min(abs((t4)-(3)),1))*-1))-(4)),1))*((E3)+(E2)))"
+				},
+				{
+					"name": "okE",
+					"expression": "eval:(1-ceil((E0)-floor(E0)))*min(max((E0)-(0)+1,0),1)*min(max((9)-(E0)+1,0),1)*(1-ceil((E1)-floor(E1)))*min(max((E1)-(0)+1,0),1)*min(max((9)-(E1)+1,0),1)*(1-ceil((E2)-floor(E2)))*min(max((E2)-(0)+1,0),1)*min(max((9)-(E2)+1,0),1)*(1-ceil((E3)-floor(E3)))*min(max((E3)-(0)+1,0),1)*min(max((9)-(E3)+1,0),1)*(1-(n-4)*(1-(1-ceil((E4)-floor(E4)))*min(max((E4)-(0)+1,0),1)*min(max((9)-(E4)+1,0),1)))"
+				},
+				{
+					"name": "F0",
+					"expression": "eval:D0"
+				},
+				{
+					"name": "F1",
+					"expression": "eval:((1-min(abs(((t1+(1-min(abs((t1)-(0)),1))*1+(1-min(abs((t1)-(1)),1))*-1))-(0)),1))*2*(F0)+(1-min(abs(((t1+(1-min(abs((t1)-(0)),1))*1+(1-min(abs((t1)-(1)),1))*-1))-(1)),1))*(F0)/2+(1-min(abs(((t1+(1-min(abs((t1)-(0)),1))*1+(1-min(abs((t1)-(1)),1))*-1))-(2)),1))*((F0)+k1)+(1-min(abs(((t1+(1-min(abs((t1)-(0)),1))*1+(1-min(abs((t1)-(1)),1))*-1))-(3)),1))*((F0)-k1)+(1-min(abs(((t1+(1-min(abs((t1)-(0)),1))*1+(1-min(abs((t1)-(1)),1))*-1))-(4)),1))*((F0)+(0)))"
+				},
+				{
+					"name": "F2",
+					"expression": "eval:((1-min(abs(((t2+(1-min(abs((t2)-(0)),1))*1+(1-min(abs((t2)-(1)),1))*-1))-(0)),1))*2*(F1)+(1-min(abs(((t2+(1-min(abs((t2)-(0)),1))*1+(1-min(abs((t2)-(1)),1))*-1))-(1)),1))*(F1)/2+(1-min(abs(((t2+(1-min(abs((t2)-(0)),1))*1+(1-min(abs((t2)-(1)),1))*-1))-(2)),1))*((F1)+k2)+(1-min(abs(((t2+(1-min(abs((t2)-(0)),1))*1+(1-min(abs((t2)-(1)),1))*-1))-(3)),1))*((F1)-k2)+(1-min(abs(((t2+(1-min(abs((t2)-(0)),1))*1+(1-min(abs((t2)-(1)),1))*-1))-(4)),1))*((F1)+(F0)))"
+				},
+				{
+					"name": "F3",
+					"expression": "eval:((1-min(abs(((t3+(1-min(abs((t3)-(0)),1))*1+(1-min(abs((t3)-(1)),1))*-1))-(0)),1))*2*(F2)+(1-min(abs(((t3+(1-min(abs((t3)-(0)),1))*1+(1-min(abs((t3)-(1)),1))*-1))-(1)),1))*(F2)/2+(1-min(abs(((t3+(1-min(abs((t3)-(0)),1))*1+(1-min(abs((t3)-(1)),1))*-1))-(2)),1))*((F2)+k3)+(1-min(abs(((t3+(1-min(abs((t3)-(0)),1))*1+(1-min(abs((t3)-(1)),1))*-1))-(3)),1))*((F2)-k3)+(1-min(abs(((t3+(1-min(abs((t3)-(0)),1))*1+(1-min(abs((t3)-(1)),1))*-1))-(4)),1))*((F2)+(F1)))"
+				},
+				{
+					"name": "F4",
+					"expression": "eval:((1-min(abs(((t4+(1-min(abs((t4)-(0)),1))*1+(1-min(abs((t4)-(1)),1))*-1))-(0)),1))*2*(F3)+(1-min(abs(((t4+(1-min(abs((t4)-(0)),1))*1+(1-min(abs((t4)-(1)),1))*-1))-(1)),1))*(F3)/2+(1-min(abs(((t4+(1-min(abs((t4)-(0)),1))*1+(1-min(abs((t4)-(1)),1))*-1))-(2)),1))*((F3)+k4)+(1-min(abs(((t4+(1-min(abs((t4)-(0)),1))*1+(1-min(abs((t4)-(1)),1))*-1))-(3)),1))*((F3)-k4)+(1-min(abs(((t4+(1-min(abs((t4)-(0)),1))*1+(1-min(abs((t4)-(1)),1))*-1))-(4)),1))*((F3)+(F2)))"
+				},
+				{
+					"name": "okF",
+					"expression": "eval:(1-ceil((F0)-floor(F0)))*min(max((F0)-(0)+1,0),1)*min(max((9)-(F0)+1,0),1)*(1-ceil((F1)-floor(F1)))*min(max((F1)-(0)+1,0),1)*min(max((9)-(F1)+1,0),1)*(1-ceil((F2)-floor(F2)))*min(max((F2)-(0)+1,0),1)*min(max((9)-(F2)+1,0),1)*(1-ceil((F3)-floor(F3)))*min(max((F3)-(0)+1,0),1)*min(max((9)-(F3)+1,0),1)*(1-(n-4)*(1-(1-ceil((F4)-floor(F4)))*min(max((F4)-(0)+1,0),1)*min(max((9)-(F4)+1,0),1)))"
+				},
+				{
+					"name": "V",
+					"expression": "eval:D0*10^(R0)+D1*10^(R1)+D2*10^(R2)+D3*10^(R3)+D4*10^(R4)*(n-4)"
+				},
+				{
+					"name": "Vr",
+					"expression": "eval:D0*10^(n-1-R0)+D1*10^(n-1-R1)+D2*10^(n-1-R2)+D3*10^(n-1-R3)+D4*10^(n-1-R4)*(n-4)"
+				},
+				{
+					"name": "VE",
+					"expression": "eval:okE*(E0*10^(R0)+E1*10^(R1)+E2*10^(R2)+E3*10^(R3)+E4*10^(R4)*(n-4))+(1-okE)*V"
+				},
+				{
+					"name": "VF",
+					"expression": "eval:okF*(F0*10^(R0)+F1*10^(R1)+F2*10^(R2)+F3*10^(R3)+F4*10^(R4)*(n-4))+(1-okF)*V"
+				}
+			],
+			"conditions": [
+				"abs(D0-D1) >= 1",
+				"abs(D0-D2) >= 1",
+				"abs(D0-D3) >= 1",
+				"abs(D0-D4)+(5-n) >= 1",
+				"abs(D1-D2) >= 1",
+				"abs(D1-D3) >= 1",
+				"abs(D1-D4)+(5-n) >= 1",
+				"abs(D2-D3) >= 1",
+				"abs(D2-D4)+(5-n) >= 1",
+				"abs(D3-D4)+(5-n) >= 1",
+				"D1 >= 0",
+				"D1 <= 9",
+				"D2 >= 0",
+				"D2 <= 9",
+				"D3 >= 0",
+				"D3 <= 9",
+				"D4 >= 0",
+				"D4 <= 9",
+				"(1-sens)*((5-n)*D3+(n-4)*D4)+sens*D0 >= 1"
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:V;d}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:Vr;d}}",
+							"message": "Tu as trouvé les bons chiffres, mais tu les as écrits dans l'ordre inverse : le chiffre des {{if:n==5|dizaines de mille|milliers}} s'écrit en premier, à gauche.",
+							"label": "Chiffres dans l'ordre inverse"
+						},
+						{
+							"answer": "{{eval:VE;d}}",
+							"message": "Relis les indices « plus grand » et « plus petit » : tu les as pris à l'envers.",
+							"label": "Plus grand et plus petit inversés"
+						},
+						{
+							"answer": "{{eval:VF;d}}",
+							"message": "Relis les indices « double » et « moitié » : tu les as pris à l'envers. Le double d'un chiffre est plus grand que lui.",
+							"label": "Double et moitié inversés"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le dernier indice donne directement un chiffre : le chiffre des {{if:R0==0|unités|{{if:R0==1|dizaines|{{if:R0==2|centaines|{{if:R0==3|milliers|dizaines de mille}}}}}}}} est ${{D0}}$. On s'en sert pour trouver les autres, un par un, en remontant les indices.",
+					"- Chiffre des {{if:R1==0|unités|{{if:R1==1|dizaines|{{if:R1==2|centaines|{{if:R1==3|milliers|dizaines de mille}}}}}}}} : {{if:t1==0|le double de ${{D0}}$|{{if:t1==1|la moitié de ${{D0}}$|{{if:t1==2|${{D0}}+{{k1}}$|{{if:t1==3|${{D0}}-{{k1}}$|${{D0}}+{{D0}}$}}}}}}}}, soit $\\textcolor{{{color:primary.0}}}{ {{D1}} }$.\n- Chiffre des {{if:R2==0|unités|{{if:R2==1|dizaines|{{if:R2==2|centaines|{{if:R2==3|milliers|dizaines de mille}}}}}}}} : {{if:t2==0|le double de ${{D1}}$|{{if:t2==1|la moitié de ${{D1}}$|{{if:t2==2|${{D1}}+{{k2}}$|{{if:t2==3|${{D1}}-{{k2}}$|${{D1}}+{{D0}}$}}}}}}}}, soit $\\textcolor{{{color:primary.0}}}{ {{D2}} }$.\n- Chiffre des {{if:R3==0|unités|{{if:R3==1|dizaines|{{if:R3==2|centaines|{{if:R3==3|milliers|dizaines de mille}}}}}}}} : {{if:t3==0|le double de ${{D2}}$|{{if:t3==1|la moitié de ${{D2}}$|{{if:t3==2|${{D2}}+{{k3}}$|{{if:t3==3|${{D2}}-{{k3}}$|${{D2}}+{{D1}}$}}}}}}}}, soit $\\textcolor{{{color:primary.0}}}{ {{D3}} }$.{{if:n==5|\n- Chiffre des {{if:R4==0|unités|{{if:R4==1|dizaines|{{if:R4==2|centaines|{{if:R4==3|milliers|dizaines de mille}}}}}}}} : {{if:t4==0|le double de ${{D3}}$|{{if:t4==1|la moitié de ${{D3}}$|{{if:t4==2|${{D3}}+{{k4}}$|{{if:t4==3|${{D3}}-{{k4}}$|${{D3}}+{{D2}}$}}}}}}}}, soit $\\textcolor{{{color:primary.0}}}{ {{D4}} }$.|}}",
+					"Le nombre mystère est $\\textcolor{{{color:primary.0}}}{{{eval:V;d}}}$."
+				]
+			},
+			"hint": "Commence par l'indice qui donne un chiffre directement, puis sers-toi de ce chiffre pour trouver les autres, un par un."
+		},
+		{
+			"statement": "Je suis un nombre décimal de {{if:n==5|$5$|$4$}} chiffres, tous différents, dont deux après la virgule.\n\n- Mon chiffre des {{if:R1b==-2|centièmes|{{if:R1b==-1|dixièmes|{{if:R1b==0|unités|{{if:R1b==1|dizaines|centaines}}}}}}}} est {{if:t1==0|le double de mon chiffre des {{if:R0b==-2|centièmes|{{if:R0b==-1|dixièmes|{{if:R0b==0|unités|{{if:R0b==1|dizaines|centaines}}}}}}}}|{{if:t1==1|la moitié de mon chiffre des {{if:R0b==-2|centièmes|{{if:R0b==-1|dixièmes|{{if:R0b==0|unités|{{if:R0b==1|dizaines|centaines}}}}}}}}|{{if:t1==2|plus grand de ${{k1}}$ que mon chiffre des {{if:R0b==-2|centièmes|{{if:R0b==-1|dixièmes|{{if:R0b==0|unités|{{if:R0b==1|dizaines|centaines}}}}}}}}|{{if:t1==3|plus petit de ${{k1}}$ que mon chiffre des {{if:R0b==-2|centièmes|{{if:R0b==-1|dixièmes|{{if:R0b==0|unités|{{if:R0b==1|dizaines|centaines}}}}}}}}|la somme de mes chiffres des {{if:R0b==-2|centièmes|{{if:R0b==-1|dixièmes|{{if:R0b==0|unités|{{if:R0b==1|dizaines|centaines}}}}}}}} et des }}}}}}}}.\n- Mon chiffre des {{if:R2b==-2|centièmes|{{if:R2b==-1|dixièmes|{{if:R2b==0|unités|{{if:R2b==1|dizaines|centaines}}}}}}}} est {{if:t2==0|le double de mon chiffre des {{if:R1b==-2|centièmes|{{if:R1b==-1|dixièmes|{{if:R1b==0|unités|{{if:R1b==1|dizaines|centaines}}}}}}}}|{{if:t2==1|la moitié de mon chiffre des {{if:R1b==-2|centièmes|{{if:R1b==-1|dixièmes|{{if:R1b==0|unités|{{if:R1b==1|dizaines|centaines}}}}}}}}|{{if:t2==2|plus grand de ${{k2}}$ que mon chiffre des {{if:R1b==-2|centièmes|{{if:R1b==-1|dixièmes|{{if:R1b==0|unités|{{if:R1b==1|dizaines|centaines}}}}}}}}|{{if:t2==3|plus petit de ${{k2}}$ que mon chiffre des {{if:R1b==-2|centièmes|{{if:R1b==-1|dixièmes|{{if:R1b==0|unités|{{if:R1b==1|dizaines|centaines}}}}}}}}|la somme de mes chiffres des {{if:R1b==-2|centièmes|{{if:R1b==-1|dixièmes|{{if:R1b==0|unités|{{if:R1b==1|dizaines|centaines}}}}}}}} et des {{if:R0b==-2|centièmes|{{if:R0b==-1|dixièmes|{{if:R0b==0|unités|{{if:R0b==1|dizaines|centaines}}}}}}}}}}}}}}}}.\n- Mon chiffre des {{if:R3b==-2|centièmes|{{if:R3b==-1|dixièmes|{{if:R3b==0|unités|{{if:R3b==1|dizaines|centaines}}}}}}}} est {{if:t3==0|le double de mon chiffre des {{if:R2b==-2|centièmes|{{if:R2b==-1|dixièmes|{{if:R2b==0|unités|{{if:R2b==1|dizaines|centaines}}}}}}}}|{{if:t3==1|la moitié de mon chiffre des {{if:R2b==-2|centièmes|{{if:R2b==-1|dixièmes|{{if:R2b==0|unités|{{if:R2b==1|dizaines|centaines}}}}}}}}|{{if:t3==2|plus grand de ${{k3}}$ que mon chiffre des {{if:R2b==-2|centièmes|{{if:R2b==-1|dixièmes|{{if:R2b==0|unités|{{if:R2b==1|dizaines|centaines}}}}}}}}|{{if:t3==3|plus petit de ${{k3}}$ que mon chiffre des {{if:R2b==-2|centièmes|{{if:R2b==-1|dixièmes|{{if:R2b==0|unités|{{if:R2b==1|dizaines|centaines}}}}}}}}|la somme de mes chiffres des {{if:R2b==-2|centièmes|{{if:R2b==-1|dixièmes|{{if:R2b==0|unités|{{if:R2b==1|dizaines|centaines}}}}}}}} et des {{if:R1b==-2|centièmes|{{if:R1b==-1|dixièmes|{{if:R1b==0|unités|{{if:R1b==1|dizaines|centaines}}}}}}}}}}}}}}}}.{{if:n==5|\n- Mon chiffre des {{if:R4b==-2|centièmes|{{if:R4b==-1|dixièmes|{{if:R4b==0|unités|{{if:R4b==1|dizaines|centaines}}}}}}}} est {{if:t4==0|le double de mon chiffre des {{if:R3b==-2|centièmes|{{if:R3b==-1|dixièmes|{{if:R3b==0|unités|{{if:R3b==1|dizaines|centaines}}}}}}}}|{{if:t4==1|la moitié de mon chiffre des {{if:R3b==-2|centièmes|{{if:R3b==-1|dixièmes|{{if:R3b==0|unités|{{if:R3b==1|dizaines|centaines}}}}}}}}|{{if:t4==2|plus grand de ${{k4}}$ que mon chiffre des {{if:R3b==-2|centièmes|{{if:R3b==-1|dixièmes|{{if:R3b==0|unités|{{if:R3b==1|dizaines|centaines}}}}}}}}|{{if:t4==3|plus petit de ${{k4}}$ que mon chiffre des {{if:R3b==-2|centièmes|{{if:R3b==-1|dixièmes|{{if:R3b==0|unités|{{if:R3b==1|dizaines|centaines}}}}}}}}|la somme de mes chiffres des {{if:R3b==-2|centièmes|{{if:R3b==-1|dixièmes|{{if:R3b==0|unités|{{if:R3b==1|dizaines|centaines}}}}}}}} et des {{if:R2b==-2|centièmes|{{if:R2b==-1|dixièmes|{{if:R2b==0|unités|{{if:R2b==1|dizaines|centaines}}}}}}}}}}}}}}}}.|}}\n- Mon chiffre des {{if:R0b==-2|centièmes|{{if:R0b==-1|dixièmes|{{if:R0b==0|unités|{{if:R0b==1|dizaines|centaines}}}}}}}} est ${{D0}}$.\n\nQui suis-je ?\n\n$$?$$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "4|5"
+				},
+				{
+					"name": "sens",
+					"expression": "0|1"
+				},
+				{
+					"name": "D0",
+					"expression": "1..9"
+				},
+				{
+					"name": "p1",
+					"expression": "0..3"
+				},
+				{
+					"name": "w1",
+					"expression": "0..59"
+				},
+				{
+					"name": "q1",
+					"expression": "0|1"
+				},
+				{
+					"name": "ok1",
+					"expression": "eval:(1-min(abs((p1)-(0)),1))*min(max((D0)-(1)+1,0),1)*min(max((4)-(D0)+1,0),1)+(1-min(abs((p1)-(1)),1))*(1-min(abs((mod(D0,2))-(0)),1))*min(max((D0)-(2)+1,0),1)+(1-min(abs((p1)-(2)),1))*min(max((8)-(D0)+1,0),1)+(1-min(abs((p1)-(3)),1))*min(max((D0)-(1)+1,0),1)+(1-min(abs((p1)-(4)),1))*min(max((9)-(D0+0)+1,0),1)*min(max((0)-(1)+1,0),1)"
+				},
+				{
+					"name": "oq1",
+					"expression": "eval:(1-min(abs((q1)-(0)),1))*min(max((D0)-(1)+1,0),1)*min(max((4)-(D0)+1,0),1)+(1-min(abs((q1)-(1)),1))*(1-min(abs((mod(D0,2))-(0)),1))*min(max((D0)-(2)+1,0),1)+(1-min(abs((q1)-(2)),1))*min(max((8)-(D0)+1,0),1)+(1-min(abs((q1)-(3)),1))*min(max((D0)-(1)+1,0),1)+(1-min(abs((q1)-(4)),1))*min(max((9)-(D0+0)+1,0),1)*min(max((0)-(1)+1,0),1)"
+				},
+				{
+					"name": "t1",
+					"expression": "eval:ok1*p1+(1-ok1)*(oq1*q1+(1-oq1)*(2+min(max((D0)-(5)+1,0),1)))"
+				},
+				{
+					"name": "k1",
+					"expression": "eval:1+mod(w1,(1-min(abs((t1)-(2)),1))*(9-D0)+(1-min(abs((t1)-(3)),1))*D0+1-(1-min(abs((t1)-(2)),1))-(1-min(abs((t1)-(3)),1)))"
+				},
+				{
+					"name": "D1",
+					"expression": "eval:((1-min(abs((t1)-(0)),1))*2*(D0)+(1-min(abs((t1)-(1)),1))*(D0)/2+(1-min(abs((t1)-(2)),1))*((D0)+k1)+(1-min(abs((t1)-(3)),1))*((D0)-k1)+(1-min(abs((t1)-(4)),1))*((D0)+(0)))"
+				},
+				{
+					"name": "p2",
+					"expression": "0..4"
+				},
+				{
+					"name": "w2",
+					"expression": "0..59"
+				},
+				{
+					"name": "q2",
+					"expression": "0|1|4"
+				},
+				{
+					"name": "ok2",
+					"expression": "eval:(1-min(abs((p2)-(0)),1))*min(max((D1)-(1)+1,0),1)*min(max((4)-(D1)+1,0),1)+(1-min(abs((p2)-(1)),1))*(1-min(abs((mod(D1,2))-(0)),1))*min(max((D1)-(2)+1,0),1)+(1-min(abs((p2)-(2)),1))*min(max((8)-(D1)+1,0),1)+(1-min(abs((p2)-(3)),1))*min(max((D1)-(1)+1,0),1)+(1-min(abs((p2)-(4)),1))*min(max((9)-(D1+D0)+1,0),1)*min(max((D0)-(1)+1,0),1)"
+				},
+				{
+					"name": "oq2",
+					"expression": "eval:(1-min(abs((q2)-(0)),1))*min(max((D1)-(1)+1,0),1)*min(max((4)-(D1)+1,0),1)+(1-min(abs((q2)-(1)),1))*(1-min(abs((mod(D1,2))-(0)),1))*min(max((D1)-(2)+1,0),1)+(1-min(abs((q2)-(2)),1))*min(max((8)-(D1)+1,0),1)+(1-min(abs((q2)-(3)),1))*min(max((D1)-(1)+1,0),1)+(1-min(abs((q2)-(4)),1))*min(max((9)-(D1+D0)+1,0),1)*min(max((D0)-(1)+1,0),1)"
+				},
+				{
+					"name": "t2",
+					"expression": "eval:ok2*p2+(1-ok2)*(oq2*q2+(1-oq2)*(2+min(max((D1)-(5)+1,0),1)))"
+				},
+				{
+					"name": "k2",
+					"expression": "eval:1+mod(w2,(1-min(abs((t2)-(2)),1))*(9-D1)+(1-min(abs((t2)-(3)),1))*D1+1-(1-min(abs((t2)-(2)),1))-(1-min(abs((t2)-(3)),1)))"
+				},
+				{
+					"name": "D2",
+					"expression": "eval:((1-min(abs((t2)-(0)),1))*2*(D1)+(1-min(abs((t2)-(1)),1))*(D1)/2+(1-min(abs((t2)-(2)),1))*((D1)+k2)+(1-min(abs((t2)-(3)),1))*((D1)-k2)+(1-min(abs((t2)-(4)),1))*((D1)+(D0)))"
+				},
+				{
+					"name": "p3",
+					"expression": "0..4"
+				},
+				{
+					"name": "w3",
+					"expression": "0..59"
+				},
+				{
+					"name": "q3",
+					"expression": "0|1|4"
+				},
+				{
+					"name": "ok3",
+					"expression": "eval:(1-min(abs((p3)-(0)),1))*min(max((D2)-(1)+1,0),1)*min(max((4)-(D2)+1,0),1)+(1-min(abs((p3)-(1)),1))*(1-min(abs((mod(D2,2))-(0)),1))*min(max((D2)-(2)+1,0),1)+(1-min(abs((p3)-(2)),1))*min(max((8)-(D2)+1,0),1)+(1-min(abs((p3)-(3)),1))*min(max((D2)-(1)+1,0),1)+(1-min(abs((p3)-(4)),1))*min(max((9)-(D2+D1)+1,0),1)*min(max((D1)-(1)+1,0),1)"
+				},
+				{
+					"name": "oq3",
+					"expression": "eval:(1-min(abs((q3)-(0)),1))*min(max((D2)-(1)+1,0),1)*min(max((4)-(D2)+1,0),1)+(1-min(abs((q3)-(1)),1))*(1-min(abs((mod(D2,2))-(0)),1))*min(max((D2)-(2)+1,0),1)+(1-min(abs((q3)-(2)),1))*min(max((8)-(D2)+1,0),1)+(1-min(abs((q3)-(3)),1))*min(max((D2)-(1)+1,0),1)+(1-min(abs((q3)-(4)),1))*min(max((9)-(D2+D1)+1,0),1)*min(max((D1)-(1)+1,0),1)"
+				},
+				{
+					"name": "t3",
+					"expression": "eval:ok3*p3+(1-ok3)*(oq3*q3+(1-oq3)*(2+min(max((D2)-(5)+1,0),1)))"
+				},
+				{
+					"name": "k3",
+					"expression": "eval:1+mod(w3,(1-min(abs((t3)-(2)),1))*(9-D2)+(1-min(abs((t3)-(3)),1))*D2+1-(1-min(abs((t3)-(2)),1))-(1-min(abs((t3)-(3)),1)))"
+				},
+				{
+					"name": "D3",
+					"expression": "eval:((1-min(abs((t3)-(0)),1))*2*(D2)+(1-min(abs((t3)-(1)),1))*(D2)/2+(1-min(abs((t3)-(2)),1))*((D2)+k3)+(1-min(abs((t3)-(3)),1))*((D2)-k3)+(1-min(abs((t3)-(4)),1))*((D2)+(D1)))"
+				},
+				{
+					"name": "p4",
+					"expression": "0..4"
+				},
+				{
+					"name": "w4",
+					"expression": "0..59"
+				},
+				{
+					"name": "q4",
+					"expression": "0|1|4"
+				},
+				{
+					"name": "ok4",
+					"expression": "eval:(1-min(abs((p4)-(0)),1))*min(max((D3)-(1)+1,0),1)*min(max((4)-(D3)+1,0),1)+(1-min(abs((p4)-(1)),1))*(1-min(abs((mod(D3,2))-(0)),1))*min(max((D3)-(2)+1,0),1)+(1-min(abs((p4)-(2)),1))*min(max((8)-(D3)+1,0),1)+(1-min(abs((p4)-(3)),1))*min(max((D3)-(1)+1,0),1)+(1-min(abs((p4)-(4)),1))*min(max((9)-(D3+D2)+1,0),1)*min(max((D2)-(1)+1,0),1)"
+				},
+				{
+					"name": "oq4",
+					"expression": "eval:(1-min(abs((q4)-(0)),1))*min(max((D3)-(1)+1,0),1)*min(max((4)-(D3)+1,0),1)+(1-min(abs((q4)-(1)),1))*(1-min(abs((mod(D3,2))-(0)),1))*min(max((D3)-(2)+1,0),1)+(1-min(abs((q4)-(2)),1))*min(max((8)-(D3)+1,0),1)+(1-min(abs((q4)-(3)),1))*min(max((D3)-(1)+1,0),1)+(1-min(abs((q4)-(4)),1))*min(max((9)-(D3+D2)+1,0),1)*min(max((D2)-(1)+1,0),1)"
+				},
+				{
+					"name": "t4",
+					"expression": "eval:ok4*p4+(1-ok4)*(oq4*q4+(1-oq4)*(2+min(max((D3)-(5)+1,0),1)))"
+				},
+				{
+					"name": "k4",
+					"expression": "eval:1+mod(w4,(1-min(abs((t4)-(2)),1))*(9-D3)+(1-min(abs((t4)-(3)),1))*D3+1-(1-min(abs((t4)-(2)),1))-(1-min(abs((t4)-(3)),1)))"
+				},
+				{
+					"name": "D4",
+					"expression": "eval:((1-min(abs((t4)-(0)),1))*2*(D3)+(1-min(abs((t4)-(1)),1))*(D3)/2+(1-min(abs((t4)-(2)),1))*((D3)+k4)+(1-min(abs((t4)-(3)),1))*((D3)-k4)+(1-min(abs((t4)-(4)),1))*((D3)+(D2)))"
+				},
+				{
+					"name": "R0",
+					"expression": "eval:0+sens*(n-1-0)"
+				},
+				{
+					"name": "R1",
+					"expression": "eval:1+sens*(n-1-2)"
+				},
+				{
+					"name": "R2",
+					"expression": "eval:2+sens*(n-1-4)"
+				},
+				{
+					"name": "R3",
+					"expression": "eval:3+sens*(n-1-6)"
+				},
+				{
+					"name": "R4",
+					"expression": "eval:4+sens*(n-1-8)"
+				},
+				{
+					"name": "E0",
+					"expression": "eval:D0"
+				},
+				{
+					"name": "E1",
+					"expression": "eval:((1-min(abs(((t1+(1-min(abs((t1)-(2)),1))*1+(1-min(abs((t1)-(3)),1))*-1))-(0)),1))*2*(E0)+(1-min(abs(((t1+(1-min(abs((t1)-(2)),1))*1+(1-min(abs((t1)-(3)),1))*-1))-(1)),1))*(E0)/2+(1-min(abs(((t1+(1-min(abs((t1)-(2)),1))*1+(1-min(abs((t1)-(3)),1))*-1))-(2)),1))*((E0)+k1)+(1-min(abs(((t1+(1-min(abs((t1)-(2)),1))*1+(1-min(abs((t1)-(3)),1))*-1))-(3)),1))*((E0)-k1)+(1-min(abs(((t1+(1-min(abs((t1)-(2)),1))*1+(1-min(abs((t1)-(3)),1))*-1))-(4)),1))*((E0)+(0)))"
+				},
+				{
+					"name": "E2",
+					"expression": "eval:((1-min(abs(((t2+(1-min(abs((t2)-(2)),1))*1+(1-min(abs((t2)-(3)),1))*-1))-(0)),1))*2*(E1)+(1-min(abs(((t2+(1-min(abs((t2)-(2)),1))*1+(1-min(abs((t2)-(3)),1))*-1))-(1)),1))*(E1)/2+(1-min(abs(((t2+(1-min(abs((t2)-(2)),1))*1+(1-min(abs((t2)-(3)),1))*-1))-(2)),1))*((E1)+k2)+(1-min(abs(((t2+(1-min(abs((t2)-(2)),1))*1+(1-min(abs((t2)-(3)),1))*-1))-(3)),1))*((E1)-k2)+(1-min(abs(((t2+(1-min(abs((t2)-(2)),1))*1+(1-min(abs((t2)-(3)),1))*-1))-(4)),1))*((E1)+(E0)))"
+				},
+				{
+					"name": "E3",
+					"expression": "eval:((1-min(abs(((t3+(1-min(abs((t3)-(2)),1))*1+(1-min(abs((t3)-(3)),1))*-1))-(0)),1))*2*(E2)+(1-min(abs(((t3+(1-min(abs((t3)-(2)),1))*1+(1-min(abs((t3)-(3)),1))*-1))-(1)),1))*(E2)/2+(1-min(abs(((t3+(1-min(abs((t3)-(2)),1))*1+(1-min(abs((t3)-(3)),1))*-1))-(2)),1))*((E2)+k3)+(1-min(abs(((t3+(1-min(abs((t3)-(2)),1))*1+(1-min(abs((t3)-(3)),1))*-1))-(3)),1))*((E2)-k3)+(1-min(abs(((t3+(1-min(abs((t3)-(2)),1))*1+(1-min(abs((t3)-(3)),1))*-1))-(4)),1))*((E2)+(E1)))"
+				},
+				{
+					"name": "E4",
+					"expression": "eval:((1-min(abs(((t4+(1-min(abs((t4)-(2)),1))*1+(1-min(abs((t4)-(3)),1))*-1))-(0)),1))*2*(E3)+(1-min(abs(((t4+(1-min(abs((t4)-(2)),1))*1+(1-min(abs((t4)-(3)),1))*-1))-(1)),1))*(E3)/2+(1-min(abs(((t4+(1-min(abs((t4)-(2)),1))*1+(1-min(abs((t4)-(3)),1))*-1))-(2)),1))*((E3)+k4)+(1-min(abs(((t4+(1-min(abs((t4)-(2)),1))*1+(1-min(abs((t4)-(3)),1))*-1))-(3)),1))*((E3)-k4)+(1-min(abs(((t4+(1-min(abs((t4)-(2)),1))*1+(1-min(abs((t4)-(3)),1))*-1))-(4)),1))*((E3)+(E2)))"
+				},
+				{
+					"name": "okE",
+					"expression": "eval:(1-ceil((E0)-floor(E0)))*min(max((E0)-(0)+1,0),1)*min(max((9)-(E0)+1,0),1)*(1-ceil((E1)-floor(E1)))*min(max((E1)-(0)+1,0),1)*min(max((9)-(E1)+1,0),1)*(1-ceil((E2)-floor(E2)))*min(max((E2)-(0)+1,0),1)*min(max((9)-(E2)+1,0),1)*(1-ceil((E3)-floor(E3)))*min(max((E3)-(0)+1,0),1)*min(max((9)-(E3)+1,0),1)*(1-(n-4)*(1-(1-ceil((E4)-floor(E4)))*min(max((E4)-(0)+1,0),1)*min(max((9)-(E4)+1,0),1)))"
+				},
+				{
+					"name": "F0",
+					"expression": "eval:D0"
+				},
+				{
+					"name": "F1",
+					"expression": "eval:((1-min(abs(((t1+(1-min(abs((t1)-(0)),1))*1+(1-min(abs((t1)-(1)),1))*-1))-(0)),1))*2*(F0)+(1-min(abs(((t1+(1-min(abs((t1)-(0)),1))*1+(1-min(abs((t1)-(1)),1))*-1))-(1)),1))*(F0)/2+(1-min(abs(((t1+(1-min(abs((t1)-(0)),1))*1+(1-min(abs((t1)-(1)),1))*-1))-(2)),1))*((F0)+k1)+(1-min(abs(((t1+(1-min(abs((t1)-(0)),1))*1+(1-min(abs((t1)-(1)),1))*-1))-(3)),1))*((F0)-k1)+(1-min(abs(((t1+(1-min(abs((t1)-(0)),1))*1+(1-min(abs((t1)-(1)),1))*-1))-(4)),1))*((F0)+(0)))"
+				},
+				{
+					"name": "F2",
+					"expression": "eval:((1-min(abs(((t2+(1-min(abs((t2)-(0)),1))*1+(1-min(abs((t2)-(1)),1))*-1))-(0)),1))*2*(F1)+(1-min(abs(((t2+(1-min(abs((t2)-(0)),1))*1+(1-min(abs((t2)-(1)),1))*-1))-(1)),1))*(F1)/2+(1-min(abs(((t2+(1-min(abs((t2)-(0)),1))*1+(1-min(abs((t2)-(1)),1))*-1))-(2)),1))*((F1)+k2)+(1-min(abs(((t2+(1-min(abs((t2)-(0)),1))*1+(1-min(abs((t2)-(1)),1))*-1))-(3)),1))*((F1)-k2)+(1-min(abs(((t2+(1-min(abs((t2)-(0)),1))*1+(1-min(abs((t2)-(1)),1))*-1))-(4)),1))*((F1)+(F0)))"
+				},
+				{
+					"name": "F3",
+					"expression": "eval:((1-min(abs(((t3+(1-min(abs((t3)-(0)),1))*1+(1-min(abs((t3)-(1)),1))*-1))-(0)),1))*2*(F2)+(1-min(abs(((t3+(1-min(abs((t3)-(0)),1))*1+(1-min(abs((t3)-(1)),1))*-1))-(1)),1))*(F2)/2+(1-min(abs(((t3+(1-min(abs((t3)-(0)),1))*1+(1-min(abs((t3)-(1)),1))*-1))-(2)),1))*((F2)+k3)+(1-min(abs(((t3+(1-min(abs((t3)-(0)),1))*1+(1-min(abs((t3)-(1)),1))*-1))-(3)),1))*((F2)-k3)+(1-min(abs(((t3+(1-min(abs((t3)-(0)),1))*1+(1-min(abs((t3)-(1)),1))*-1))-(4)),1))*((F2)+(F1)))"
+				},
+				{
+					"name": "F4",
+					"expression": "eval:((1-min(abs(((t4+(1-min(abs((t4)-(0)),1))*1+(1-min(abs((t4)-(1)),1))*-1))-(0)),1))*2*(F3)+(1-min(abs(((t4+(1-min(abs((t4)-(0)),1))*1+(1-min(abs((t4)-(1)),1))*-1))-(1)),1))*(F3)/2+(1-min(abs(((t4+(1-min(abs((t4)-(0)),1))*1+(1-min(abs((t4)-(1)),1))*-1))-(2)),1))*((F3)+k4)+(1-min(abs(((t4+(1-min(abs((t4)-(0)),1))*1+(1-min(abs((t4)-(1)),1))*-1))-(3)),1))*((F3)-k4)+(1-min(abs(((t4+(1-min(abs((t4)-(0)),1))*1+(1-min(abs((t4)-(1)),1))*-1))-(4)),1))*((F3)+(F2)))"
+				},
+				{
+					"name": "okF",
+					"expression": "eval:(1-ceil((F0)-floor(F0)))*min(max((F0)-(0)+1,0),1)*min(max((9)-(F0)+1,0),1)*(1-ceil((F1)-floor(F1)))*min(max((F1)-(0)+1,0),1)*min(max((9)-(F1)+1,0),1)*(1-ceil((F2)-floor(F2)))*min(max((F2)-(0)+1,0),1)*min(max((9)-(F2)+1,0),1)*(1-ceil((F3)-floor(F3)))*min(max((F3)-(0)+1,0),1)*min(max((9)-(F3)+1,0),1)*(1-(n-4)*(1-(1-ceil((F4)-floor(F4)))*min(max((F4)-(0)+1,0),1)*min(max((9)-(F4)+1,0),1)))"
+				},
+				{
+					"name": "R0b",
+					"expression": "eval:R0-2"
+				},
+				{
+					"name": "R1b",
+					"expression": "eval:R1-2"
+				},
+				{
+					"name": "R2b",
+					"expression": "eval:R2-2"
+				},
+				{
+					"name": "R3b",
+					"expression": "eval:R3-2"
+				},
+				{
+					"name": "R4b",
+					"expression": "eval:R4-2"
+				},
+				{
+					"name": "V",
+					"expression": "eval:D0*10^(R0)+D1*10^(R1)+D2*10^(R2)+D3*10^(R3)+D4*10^(R4)*(n-4)"
+				},
+				{
+					"name": "Vr",
+					"expression": "eval:D0*10^(n-1-R0)+D1*10^(n-1-R1)+D2*10^(n-1-R2)+D3*10^(n-1-R3)+D4*10^(n-1-R4)*(n-4)"
+				},
+				{
+					"name": "VE",
+					"expression": "eval:okE*(E0*10^(R0)+E1*10^(R1)+E2*10^(R2)+E3*10^(R3)+E4*10^(R4)*(n-4))+(1-okE)*V"
+				},
+				{
+					"name": "VF",
+					"expression": "eval:okF*(F0*10^(R0)+F1*10^(R1)+F2*10^(R2)+F3*10^(R3)+F4*10^(R4)*(n-4))+(1-okF)*V"
+				}
+			],
+			"conditions": [
+				"abs(D0-D1) >= 1",
+				"abs(D0-D2) >= 1",
+				"abs(D0-D3) >= 1",
+				"abs(D0-D4)+(5-n) >= 1",
+				"abs(D1-D2) >= 1",
+				"abs(D1-D3) >= 1",
+				"abs(D1-D4)+(5-n) >= 1",
+				"abs(D2-D3) >= 1",
+				"abs(D2-D4)+(5-n) >= 1",
+				"abs(D3-D4)+(5-n) >= 1",
+				"D1 >= 0",
+				"D1 <= 9",
+				"D2 >= 0",
+				"D2 <= 9",
+				"D3 >= 0",
+				"D3 <= 9",
+				"D4 >= 0",
+				"D4 <= 9",
+				"(1-sens)*((5-n)*D3+(n-4)*D4)+sens*D0 >= 1",
+				"(1-sens)*D0+sens*((5-n)*D3+(n-4)*D4) >= 1"
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:V/100;d}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:Vr/100;d}}",
+							"message": "Tu as trouvé les bons chiffres, mais tu les as écrits dans l'ordre inverse : le chiffre des {{if:n==5|centaines|dizaines}} s'écrit en premier, à gauche.",
+							"label": "Chiffres dans l'ordre inverse"
+						},
+						{
+							"answer": "{{eval:VE/100;d}}",
+							"message": "Relis les indices « plus grand » et « plus petit » : tu les as pris à l'envers.",
+							"label": "Plus grand et plus petit inversés"
+						},
+						{
+							"answer": "{{eval:VF/100;d}}",
+							"message": "Relis les indices « double » et « moitié » : tu les as pris à l'envers. Le double d'un chiffre est plus grand que lui.",
+							"label": "Double et moitié inversés"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le dernier indice donne directement un chiffre : le chiffre des {{if:R0b==-2|centièmes|{{if:R0b==-1|dixièmes|{{if:R0b==0|unités|{{if:R0b==1|dizaines|centaines}}}}}}}} est ${{D0}}$. On s'en sert pour trouver les autres, un par un, en remontant les indices.",
+					"- Chiffre des {{if:R1b==-2|centièmes|{{if:R1b==-1|dixièmes|{{if:R1b==0|unités|{{if:R1b==1|dizaines|centaines}}}}}}}} : {{if:t1==0|le double de ${{D0}}$|{{if:t1==1|la moitié de ${{D0}}$|{{if:t1==2|${{D0}}+{{k1}}$|{{if:t1==3|${{D0}}-{{k1}}$|${{D0}}+{{D0}}$}}}}}}}}, soit $\\textcolor{{{color:primary.0}}}{ {{D1}} }$.\n- Chiffre des {{if:R2b==-2|centièmes|{{if:R2b==-1|dixièmes|{{if:R2b==0|unités|{{if:R2b==1|dizaines|centaines}}}}}}}} : {{if:t2==0|le double de ${{D1}}$|{{if:t2==1|la moitié de ${{D1}}$|{{if:t2==2|${{D1}}+{{k2}}$|{{if:t2==3|${{D1}}-{{k2}}$|${{D1}}+{{D0}}$}}}}}}}}, soit $\\textcolor{{{color:primary.0}}}{ {{D2}} }$.\n- Chiffre des {{if:R3b==-2|centièmes|{{if:R3b==-1|dixièmes|{{if:R3b==0|unités|{{if:R3b==1|dizaines|centaines}}}}}}}} : {{if:t3==0|le double de ${{D2}}$|{{if:t3==1|la moitié de ${{D2}}$|{{if:t3==2|${{D2}}+{{k3}}$|{{if:t3==3|${{D2}}-{{k3}}$|${{D2}}+{{D1}}$}}}}}}}}, soit $\\textcolor{{{color:primary.0}}}{ {{D3}} }$.{{if:n==5|\n- Chiffre des {{if:R4b==-2|centièmes|{{if:R4b==-1|dixièmes|{{if:R4b==0|unités|{{if:R4b==1|dizaines|centaines}}}}}}}} : {{if:t4==0|le double de ${{D3}}$|{{if:t4==1|la moitié de ${{D3}}$|{{if:t4==2|${{D3}}+{{k4}}$|{{if:t4==3|${{D3}}-{{k4}}$|${{D3}}+{{D2}}$}}}}}}}}, soit $\\textcolor{{{color:primary.0}}}{ {{D4}} }$.|}}",
+					"Le nombre mystère est $\\textcolor{{{color:primary.0}}}{{{eval:V/100;d}}}$."
+				]
+			},
+			"hint": "Commence par l'indice qui donne un chiffre directement, puis sers-toi de ce chiffre pour trouver les autres, un par un."
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "v0 : 2 463",
+			"variationIndex": 0,
+			"variables": {
+				"n": "4",
+				"sens": "0",
+				"D0": "3",
+				"p1": "0",
+				"w1": "0",
+				"p2": "3",
+				"w2": "1",
+				"p3": "1",
+				"w3": "0",
+				"p4": "2",
+				"w4": "0",
+				"q1": "0",
+				"q2": "0",
+				"q3": "0",
+				"q4": "0"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["2\\,463"]
+		},
+		{
+			"description": "v0 : ordre inverse (3 642)",
+			"variationIndex": 0,
+			"variables": {
+				"n": "4",
+				"sens": "0",
+				"D0": "3",
+				"p1": "0",
+				"w1": "0",
+				"p2": "3",
+				"w2": "1",
+				"p3": "1",
+				"w3": "0",
+				"p4": "2",
+				"w4": "0",
+				"q1": "0",
+				"q2": "0",
+				"q3": "0",
+				"q4": "0"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as trouvé les bons chiffres, mais tu les as écrits dans l'ordre inverse : le chiffre des milliers s'écrit en premier, à gauche."
+			},
+			"answers": ["3\\,642"]
+		},
+		{
+			"description": "v0 : plus petit pris pour plus grand (4 863)",
+			"variationIndex": 0,
+			"variables": {
+				"n": "4",
+				"sens": "0",
+				"D0": "3",
+				"p1": "0",
+				"w1": "0",
+				"p2": "3",
+				"w2": "1",
+				"p3": "1",
+				"w3": "0",
+				"p4": "2",
+				"w4": "0",
+				"q1": "0",
+				"q2": "0",
+				"q3": "0",
+				"q4": "0"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Relis les indices « plus grand » et « plus petit » : tu les as pris à l'envers."
+			},
+			"answers": ["4\\,863"]
+		},
+		{
+			"description": "v0 : 24 976",
+			"variationIndex": 0,
+			"variables": {
+				"n": "5",
+				"sens": "1",
+				"D0": "2",
+				"p1": "0",
+				"w1": "0",
+				"p2": "2",
+				"w2": "4",
+				"p3": "3",
+				"w3": "1",
+				"p4": "3",
+				"w4": "0",
+				"q1": "0",
+				"q2": "0",
+				"q3": "0",
+				"q4": "0"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["24\\,976"]
+		},
+		{
+			"description": "v0 : double et moitié inversés (21 643)",
+			"variationIndex": 0,
+			"variables": {
+				"n": "5",
+				"sens": "1",
+				"D0": "2",
+				"p1": "0",
+				"w1": "0",
+				"p2": "2",
+				"w2": "4",
+				"p3": "3",
+				"w3": "1",
+				"p4": "3",
+				"w4": "0",
+				"q1": "0",
+				"q2": "0",
+				"q3": "0",
+				"q4": "0"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Relis les indices « double » et « moitié » : tu les as pris à l'envers. Le double d'un chiffre est plus grand que lui."
+			},
+			"answers": ["21\\,643"]
+		},
+		{
+			"description": "v1 : 63,75",
+			"variationIndex": 1,
+			"variables": {
+				"n": "4",
+				"sens": "0",
+				"D0": "5",
+				"p1": "2",
+				"w1": "1",
+				"p2": "3",
+				"w2": "3",
+				"p3": "0",
+				"w3": "0",
+				"p4": "0",
+				"w4": "0",
+				"q1": "0",
+				"q2": "0",
+				"q3": "0",
+				"q4": "0"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["63,75"]
+		},
+		{
+			"description": "v1 : ordre inverse (57,36)",
+			"variationIndex": 1,
+			"variables": {
+				"n": "4",
+				"sens": "0",
+				"D0": "5",
+				"p1": "2",
+				"w1": "1",
+				"p2": "3",
+				"w2": "3",
+				"p3": "0",
+				"w3": "0",
+				"p4": "0",
+				"w4": "0",
+				"q1": "0",
+				"q2": "0",
+				"q3": "0",
+				"q4": "0"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as trouvé les bons chiffres, mais tu les as écrits dans l'ordre inverse : le chiffre des dizaines s'écrit en premier, à gauche."
+			},
+			"answers": ["57,36"]
+		}
+	],
+	"rangement": {
+		"noeud": "Nombres et calculs > Entiers : numération > décomposition",
+		"point": "6-101"
+	}
+}

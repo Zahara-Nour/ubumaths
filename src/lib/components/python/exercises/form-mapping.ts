@@ -8,7 +8,7 @@
  * `buildSubmitBody` is automatically picked up by the test.
  */
 
-import type { ValidationConfig } from '$lib/types/python-exercises';
+import type { ValidationConfig } from '#lib/types/python-exercises.ts';
 
 export type Level = 'college' | 'lycee' | 'nsi' | 'etudiant';
 

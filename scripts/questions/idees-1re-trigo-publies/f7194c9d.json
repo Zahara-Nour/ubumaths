@@ -1,0 +1,610 @@
+{
+	"id": "f7194c9d-5056-4444-8a66-78205d1dde32",
+	"title": "Ramener un réel dans ]−π ; π]",
+	"description": "Trouver le réel de ]−π ; π] associé au même point du cercle trigonométrique qu'un réel donné (17π/6, −13π/4, 25π/3…), en retirant ou en ajoutant des tours",
+	"grades": ["1_SPE"],
+	"level": 2,
+	"delay": 45,
+	"status": "published",
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{r}}"
+				}
+			],
+			"statement": "Détermine le réel de l'intervalle $\\left]-\\pi\\,;\\pi\\right]$ associé au même point du cercle trigonométrique que le réel $\\frac{ {{a}}\\pi}{6}$.\n\n$?$",
+			"variables": [
+				{
+					"name": "r",
+					"expression": "\\frac{\\pi}{6}|-\\frac{\\pi}{6}|\\frac{5\\pi}{6}|-\\frac{5\\pi}{6}"
+				},
+				{
+					"name": "p",
+					"expression": "eval:6*r/\\pi"
+				},
+				{
+					"name": "k",
+					"expression": "1..3"
+				},
+				{
+					"name": "a",
+					"expression": "eval:p+12*k"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On retire des tours complets ($2\\pi=\\frac{12\\pi}{6}$) jusqu'à tomber dans $\\left]-\\pi\\,;\\pi\\right]$ :",
+					"$$\\frac{ {{a}}\\pi}{6}={{r}}+\\frac{ {{eval:12*k}}\\pi}{6}={{r}}+{{eval:2*k}}\\pi$$",
+					"Comme ${{r}}\\in\\left]-\\pi\\,;\\pi\\right]$, le réel cherché est $\\textcolor{{{color:primary.0}}}{{{r}} }$.",
+					"```trig\npreset: custom\nangles: {{p}}*pi/6\n```"
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{r}}"
+				}
+			],
+			"statement": "Détermine le réel de l'intervalle $\\left]-\\pi\\,;\\pi\\right]$ associé au même point du cercle trigonométrique que le réel $-\\frac{ {{a}}\\pi}{4}$.\n\n$?$",
+			"variables": [
+				{
+					"name": "r",
+					"expression": "\\frac{\\pi}{4}|-\\frac{\\pi}{4}|\\frac{3\\pi}{4}|-\\frac{3\\pi}{4}"
+				},
+				{
+					"name": "p",
+					"expression": "eval:4*r/\\pi"
+				},
+				{
+					"name": "k",
+					"expression": "1..3"
+				},
+				{
+					"name": "a",
+					"expression": "eval:8*k-p"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On ajoute des tours complets ($2\\pi=\\frac{8\\pi}{4}$) jusqu'à tomber dans $\\left]-\\pi\\,;\\pi\\right]$ :",
+					"$$-\\frac{ {{a}}\\pi}{4}={{r}}-\\frac{ {{eval:8*k}}\\pi}{4}={{r}}-{{eval:2*k}}\\pi$$",
+					"Comme ${{r}}\\in\\left]-\\pi\\,;\\pi\\right]$, le réel cherché est $\\textcolor{{{color:primary.0}}}{{{r}} }$.",
+					"```trig\npreset: custom\nangles: {{p}}*pi/4\n```"
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{r}}"
+				}
+			],
+			"statement": "Détermine le réel de l'intervalle $\\left]-\\pi\\,;\\pi\\right]$ associé au même point du cercle trigonométrique que le réel $\\frac{ {{a}}\\pi}{3}$.\n\n$?$",
+			"variables": [
+				{
+					"name": "r",
+					"expression": "\\frac{\\pi}{3}|-\\frac{\\pi}{3}|\\frac{2\\pi}{3}|-\\frac{2\\pi}{3}"
+				},
+				{
+					"name": "p",
+					"expression": "eval:3*r/\\pi"
+				},
+				{
+					"name": "k",
+					"expression": "1..4"
+				},
+				{
+					"name": "a",
+					"expression": "eval:p+6*k"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On retire des tours complets ($2\\pi=\\frac{6\\pi}{3}$) jusqu'à tomber dans $\\left]-\\pi\\,;\\pi\\right]$ :",
+					"$$\\frac{ {{a}}\\pi}{3}={{r}}+\\frac{ {{eval:6*k}}\\pi}{3}={{r}}+{{eval:2*k}}\\pi$$",
+					"Comme ${{r}}\\in\\left]-\\pi\\,;\\pi\\right]$, le réel cherché est $\\textcolor{{{color:primary.0}}}{{{r}} }$.",
+					"```trig\npreset: custom\nangles: {{p}}*pi/3\n```"
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{r}}"
+				}
+			],
+			"statement": "Détermine le réel de l'intervalle $\\left]-\\pi\\,;\\pi\\right]$ associé au même point du cercle trigonométrique que le réel $-\\frac{ {{a}}\\pi}{6}$.\n\n$?$",
+			"variables": [
+				{
+					"name": "r",
+					"expression": "\\frac{\\pi}{6}|-\\frac{\\pi}{6}|\\frac{5\\pi}{6}|-\\frac{5\\pi}{6}"
+				},
+				{
+					"name": "p",
+					"expression": "eval:6*r/\\pi"
+				},
+				{
+					"name": "k",
+					"expression": "1..3"
+				},
+				{
+					"name": "a",
+					"expression": "eval:12*k-p"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On ajoute des tours complets ($2\\pi=\\frac{12\\pi}{6}$) jusqu'à tomber dans $\\left]-\\pi\\,;\\pi\\right]$ :",
+					"$$-\\frac{ {{a}}\\pi}{6}={{r}}-\\frac{ {{eval:12*k}}\\pi}{6}={{r}}-{{eval:2*k}}\\pi$$",
+					"Comme ${{r}}\\in\\left]-\\pi\\,;\\pi\\right]$, le réel cherché est $\\textcolor{{{color:primary.0}}}{{{r}} }$.",
+					"```trig\npreset: custom\nangles: {{p}}*pi/6\n```"
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{r}}"
+				}
+			],
+			"statement": "Détermine le réel de l'intervalle $\\left]-\\pi\\,;\\pi\\right]$ associé au même point du cercle trigonométrique que le réel $\\frac{ {{a}}\\pi}{4}$.\n\n$?$",
+			"variables": [
+				{
+					"name": "r",
+					"expression": "\\frac{\\pi}{4}|-\\frac{\\pi}{4}|\\frac{3\\pi}{4}|-\\frac{3\\pi}{4}"
+				},
+				{
+					"name": "p",
+					"expression": "eval:4*r/\\pi"
+				},
+				{
+					"name": "k",
+					"expression": "1..3"
+				},
+				{
+					"name": "a",
+					"expression": "eval:p+8*k"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On retire des tours complets ($2\\pi=\\frac{8\\pi}{4}$) jusqu'à tomber dans $\\left]-\\pi\\,;\\pi\\right]$ :",
+					"$$\\frac{ {{a}}\\pi}{4}={{r}}+\\frac{ {{eval:8*k}}\\pi}{4}={{r}}+{{eval:2*k}}\\pi$$",
+					"Comme ${{r}}\\in\\left]-\\pi\\,;\\pi\\right]$, le réel cherché est $\\textcolor{{{color:primary.0}}}{{{r}} }$.",
+					"```trig\npreset: custom\nangles: {{p}}*pi/4\n```"
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{r}}"
+				}
+			],
+			"statement": "Détermine le réel de l'intervalle $\\left]-\\pi\\,;\\pi\\right]$ associé au même point du cercle trigonométrique que le réel $-\\frac{ {{a}}\\pi}{3}$.\n\n$?$",
+			"variables": [
+				{
+					"name": "r",
+					"expression": "\\frac{\\pi}{3}|-\\frac{\\pi}{3}|\\frac{2\\pi}{3}|-\\frac{2\\pi}{3}"
+				},
+				{
+					"name": "p",
+					"expression": "eval:3*r/\\pi"
+				},
+				{
+					"name": "k",
+					"expression": "1..4"
+				},
+				{
+					"name": "a",
+					"expression": "eval:6*k-p"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On ajoute des tours complets ($2\\pi=\\frac{6\\pi}{3}$) jusqu'à tomber dans $\\left]-\\pi\\,;\\pi\\right]$ :",
+					"$$-\\frac{ {{a}}\\pi}{3}={{r}}-\\frac{ {{eval:6*k}}\\pi}{3}={{r}}-{{eval:2*k}}\\pi$$",
+					"Comme ${{r}}\\in\\left]-\\pi\\,;\\pi\\right]$, le réel cherché est $\\textcolor{{{color:primary.0}}}{{{r}} }$.",
+					"```trig\npreset: custom\nangles: {{p}}*pi/3\n```"
+				]
+			}
+		},
+		{
+			"statement": "Détermine le réel de l'intervalle $\\left]-\\pi\\,;\\pi\\right]$ associé au même point du cercle trigonométrique que le réel $\\frac{ {{a}}\\pi}{ {{q}} }$.\n\n$?$",
+			"variables": [
+				{
+					"name": "q",
+					"expression": "5|12"
+				},
+				{
+					"name": "p",
+					"expression": "1..11;±"
+				},
+				{
+					"name": "k",
+					"expression": "1..3"
+				},
+				{
+					"name": "a",
+					"expression": "eval:p+2*q*k"
+				},
+				{
+					"name": "r",
+					"expression": "eval:p*\\pi/q"
+				}
+			],
+			"conditions": ["abs(p)<q", "gcd(abs(p),q)=1"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{r}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:-p*\\pi/q}}",
+							"message": "Ce réel est celui du point symétrique : ajouter ou retirer des tours ne change pas le point, changer de signe le change.",
+							"label": "Symétrique"
+						},
+						{
+							"answer": "{{eval:(p+2*q)*\\pi/q}}",
+							"message": "Ce réel est plus grand que $\\pi$ : retire encore un tour.",
+							"label": "Un tour de moins"
+						},
+						{
+							"answer": "{{eval:(p-2*q)*\\pi/q}}",
+							"message": "Tu as retiré un tour de trop : ce réel est plus petit que $-\\pi$.",
+							"label": "Un tour de trop"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"On retire des tours complets ($2\\pi=\\frac{ {{eval:2*q}}\\pi}{ {{q}} }$) jusqu'à tomber dans $\\left]-\\pi\\,;\\pi\\right]$ :",
+					"$$\\frac{ {{a}}\\pi}{ {{q}} }={{r}}+\\frac{ {{eval:2*q*k}}\\pi}{ {{q}} }={{r}}+{{eval:2*k}}\\pi$$",
+					"Comme ${{r}}\\in\\left]-\\pi\\,;\\pi\\right]$, le réel cherché est $\\textcolor{{{color:primary.0}}}{ {{r}} }$.",
+					"```trig\npreset: custom\nangles: {{p}}*pi/{{q}}\n```"
+				]
+			},
+			"hint": "Retire des tours complets, avec $2\\pi=\\frac{ {{eval:2*q}}\\pi}{ {{q}} }$."
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["\\frac{5\\pi}{6}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"k": "1",
+				"r": "\\frac{5\\pi}{6}"
+			},
+			"description": "17π/6 → 5π/6",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["\\frac{17\\pi}{6}"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"k": "1",
+				"r": "\\frac{5\\pi}{6}"
+			},
+			"description": "17π/6 : le réel de l'énoncé n'est pas dans ]−π ; π]",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["-\\frac{5\\pi}{6}"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"k": "1",
+				"r": "\\frac{5\\pi}{6}"
+			},
+			"description": "17π/6 : erreur de signe −5π/6",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["\\frac{11\\pi}{6}"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"k": "1",
+				"r": "\\frac{5\\pi}{6}"
+			},
+			"description": "17π/6 : retrait de π au lieu de 2π, 11π/6",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["\\frac{10\\pi}{12}"],
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["reducedFractions"]
+			},
+			"variables": {
+				"k": "1",
+				"r": "\\frac{5\\pi}{6}"
+			},
+			"description": "17π/6 : fraction non réduite 10π/12",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["\\frac{3\\pi}{4}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"k": "2",
+				"r": "\\frac{3\\pi}{4}"
+			},
+			"description": "−13π/4 → 3π/4",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["-\\frac{3\\pi}{4}"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"k": "2",
+				"r": "\\frac{3\\pi}{4}"
+			},
+			"description": "−13π/4 : erreur de signe −3π/4",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["-\\frac{5\\pi}{4}"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"k": "2",
+				"r": "\\frac{3\\pi}{4}"
+			},
+			"description": "−13π/4 : un seul tour ajouté, −5π/4",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["\\frac{\\pi}{3}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"k": "4",
+				"r": "\\frac{\\pi}{3}"
+			},
+			"description": "25π/3 → π/3",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["-\\frac{\\pi}{3}"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"k": "4",
+				"r": "\\frac{\\pi}{3}"
+			},
+			"description": "25π/3 : erreur de signe −π/3",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["\\frac{7\\pi}{3}"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"k": "4",
+				"r": "\\frac{\\pi}{3}"
+			},
+			"description": "25π/3 : un seul tour retiré, 7π/3",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["-\\frac{5\\pi}{6}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"k": "1",
+				"r": "-\\frac{5\\pi}{6}"
+			},
+			"description": "−17π/6 → −5π/6",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["\\frac{5\\pi}{6}"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"k": "1",
+				"r": "-\\frac{5\\pi}{6}"
+			},
+			"description": "−17π/6 : erreur de signe 5π/6",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["\\frac{7\\pi}{6}"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"k": "1",
+				"r": "-\\frac{5\\pi}{6}"
+			},
+			"description": "−17π/6 : 7π/6 hors de ]−π ; π]",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["-\\frac{3\\pi}{4}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"k": "2",
+				"r": "-\\frac{3\\pi}{4}"
+			},
+			"description": "13π/4 → −3π/4",
+			"variationIndex": 4
+		},
+		{
+			"answers": ["\\frac{5\\pi}{4}"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"k": "2",
+				"r": "-\\frac{3\\pi}{4}"
+			},
+			"description": "13π/4 : 5π/4 hors de ]−π ; π]",
+			"variationIndex": 4
+		},
+		{
+			"answers": ["\\frac{3\\pi}{4}"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"k": "2",
+				"r": "-\\frac{3\\pi}{4}"
+			},
+			"description": "13π/4 : erreur de signe 3π/4",
+			"variationIndex": 4
+		},
+		{
+			"answers": ["-\\frac{\\pi}{3}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"k": "1",
+				"r": "-\\frac{\\pi}{3}"
+			},
+			"description": "−7π/3 → −π/3",
+			"variationIndex": 5
+		},
+		{
+			"answers": ["\\frac{\\pi}{3}"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"k": "1",
+				"r": "-\\frac{\\pi}{3}"
+			},
+			"description": "−7π/3 : erreur de signe π/3",
+			"variationIndex": 5
+		},
+		{
+			"answers": ["\\frac{5\\pi}{3}"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"k": "1",
+				"r": "-\\frac{\\pi}{3}"
+			},
+			"description": "−7π/3 : 5π/3 hors de ]−π ; π]",
+			"variationIndex": 5
+		},
+		{
+			"answers": ["-\\frac{2\\pi}{6}"],
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["reducedFractions"]
+			},
+			"variables": {
+				"k": "1",
+				"r": "-\\frac{\\pi}{3}"
+			},
+			"description": "−7π/3 : fraction non réduite −2π/6",
+			"variationIndex": 5
+		},
+		{
+			"description": "23π/12 → −π/12",
+			"variationIndex": 6,
+			"variables": {
+				"q": "12",
+				"p": "-1",
+				"k": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["-\\frac{\\pi}{12}"]
+		},
+		{
+			"description": "23π/12 : symétrique π/12",
+			"variationIndex": 6,
+			"variables": {
+				"q": "12",
+				"p": "-1",
+				"k": "1"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Ce réel est celui du point symétrique : ajouter ou retirer des tours ne change pas le point, changer de signe le change."
+			},
+			"answers": ["\\frac{\\pi}{12}"]
+		},
+		{
+			"description": "23π/12 : gardé tel quel",
+			"variationIndex": 6,
+			"variables": {
+				"q": "12",
+				"p": "-1",
+				"k": "1"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Ce réel est plus grand que $\\pi$ : retire encore un tour."
+			},
+			"answers": ["\\frac{23\\pi}{12}"]
+		},
+		{
+			"description": "23π/12 : −25π/12, un tour de trop",
+			"variationIndex": 6,
+			"variables": {
+				"q": "12",
+				"p": "-1",
+				"k": "1"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as retiré un tour de trop : ce réel est plus petit que $-\\pi$."
+			},
+			"answers": ["-\\frac{25\\pi}{12}"]
+		},
+		{
+			"description": "17π/5 → −3π/5",
+			"variationIndex": 6,
+			"variables": {
+				"q": "5",
+				"p": "-3",
+				"k": "2"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["-\\frac{3\\pi}{5}"]
+		},
+		{
+			"description": "17π/5 : 7π/5, un tour de moins",
+			"variationIndex": 6,
+			"variables": {
+				"q": "5",
+				"p": "-3",
+				"k": "2"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Ce réel est plus grand que $\\pi$ : retire encore un tour."
+			},
+			"answers": ["\\frac{7\\pi}{5}"]
+		}
+	]
+}

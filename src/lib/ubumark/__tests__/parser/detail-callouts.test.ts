@@ -4,8 +4,8 @@
  */
 
 import { describe, expect, it } from 'vitest';
-import { parseMarkdown } from '$lib/ubumark';
-import type { BlockquoteNode, InlineNode, ParagraphNode } from '$lib/ubumark';
+import { parseMarkdown } from '#lib/ubumark/index.ts';
+import type { BlockquoteNode, InlineNode, ParagraphNode } from '#lib/ubumark/index.ts';
 
 function firstBlock(md: string) {
 	return parseMarkdown(md).children[0];
@@ -88,10 +88,11 @@ describe('détail en ligne [texte]{.type}', () => {
 		expect(bold && bold.type === 'text' ? bold.detail : undefined).toBe('reminder');
 	});
 
-	it('type inconnu : texte littéral', () => {
+	it('type inconnu : texte normal, sans crochets (ADR 0042, Q1)', () => {
 		const children = paragraphChildren('A [x]{.truc} B');
 		const all = children.map((c) => (c.type === 'text' ? c.content : '')).join('');
-		expect(all).toContain('[x]{.truc}');
+		expect(all).toBe('A x B');
+		expect(children.some((c) => 'detail' in c && c.detail)).toBe(false);
 	});
 
 	it('un lien reste un lien', () => {

@@ -15,10 +15,10 @@
 
 import type { FigureSize } from '../types/figure';
 import { FIGURE_AXES_MARGIN_PX, FIGURE_LABEL_FONT_PX, FIGURE_PIXEL_WIDTH } from '../types/figure';
-import { colorForScreen } from '$lib/theme/named-colors';
+import { colorForScreen } from '#lib/theme/named-colors.ts';
 import { FIGURE_DEFAULT_COLOR, type FigureScene } from './figure-scene';
 import { localizeFigureText } from './figure-text-locale';
-import { createTransformer } from '$lib/geometry-core/viewport/viewport';
+import { createTransformer } from '#lib/geometry-core/viewport/viewport.ts';
 import {
 	angleToSVG,
 	arcToSVG,
@@ -31,21 +31,21 @@ import {
 	segmentToSVG,
 	textToSVG,
 	vectorToSVG
-} from '$lib/geometry-core/rendering/svg-primitives';
-import { isPointElement, isText, isVector } from '$lib/geometry-core/types/elements';
+} from '#lib/geometry-core/rendering/svg-primitives.ts';
+import { isPointElement, isText, isVector } from '#lib/geometry-core/types/elements.ts';
 import {
 	labelDirection,
 	labelOffset,
 	svgTextPlacement,
 	textAnchorDirection
-} from '$lib/geometry-core/rendering/label-placement';
-import { geoToNumber } from '$lib/geometry-core/compute/to-number';
+} from '#lib/geometry-core/rendering/label-placement.ts';
+import { geoToNumber } from '#lib/geometry-core/compute/to-number.ts';
 import {
 	ACCENT_GLYPH,
 	hasCombiningAccent,
 	splitCombiningAccents,
 	type TextRun
-} from '$lib/geometry-core/rendering/combining-accents';
+} from '#lib/geometry-core/rendering/combining-accents.ts';
 
 // ============================================================================
 // TYPES

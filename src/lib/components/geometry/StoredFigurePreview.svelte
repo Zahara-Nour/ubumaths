@@ -13,12 +13,12 @@
 	change la taille de la toile.
 -->
 <script lang="ts">
-	import GeometryCanvas from '$lib/components/geometry/GeometryCanvas.svelte';
-	import FigureFrameLayer from '$lib/components/geometry/FigureFrameLayer.svelte';
-	import type { StoredFigureResult } from '$lib/utils/geometry-figure-script';
-	import { figureViewFromWindow, windowFromCanvasView } from '$lib/ubumark/utils/figure-view';
-	import type { FigureWindow } from '$lib/ubumark/types/figure';
-	import type { Viewport } from '$lib/geometry-core/viewport/types';
+	import GeometryCanvas from '#lib/components/geometry/GeometryCanvas.svelte';
+	import FigureFrameLayer from '#lib/components/geometry/FigureFrameLayer.svelte';
+	import type { StoredFigureResult } from '#lib/utils/geometry-figure-script.ts';
+	import { figureViewFromWindow, windowFromCanvasView } from '#lib/ubumark/utils/figure-view.ts';
+	import type { FigureWindow } from '#lib/ubumark/types/figure.ts';
+	import type { Viewport } from '#lib/geometry-core/viewport/types.ts';
 
 	interface Props {
 		/** `null` tant que le texte n'a pas été exécuté (rendu serveur, premier passage) */

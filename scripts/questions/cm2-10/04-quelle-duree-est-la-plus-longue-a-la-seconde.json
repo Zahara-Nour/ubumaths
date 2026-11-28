@@ -1,0 +1,379 @@
+{
+	"id": "57846784-e8e2-4912-9c47-83ab8c345ac5",
+	"title": "Quelle durée est la plus longue ? (à la seconde)",
+	"description": "Comparer deux durées lues sur quatre horloges à trotteuse, en heures, minutes et secondes, à quelques secondes près",
+	"grades": ["CM2"],
+	"level": 10,
+	"delay": 150,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"zeros": "off"
+		}
+	},
+	"variations": [
+		{
+			"statement": "Tom a regardé un film, puis un match.\n\n```horloge\nheure: {{eval:floor(t0/3600)}} h {{eval:mod(floor(t0/60),60)}} min {{eval:mod(t0,60)}} s ; {{eval:floor(t1/3600)}} h {{eval:mod(floor(t1/60),60)}} min {{eval:mod(t1,60)}} s ; {{eval:floor(t2/3600)}} h {{eval:mod(floor(t2/60),60)}} min {{eval:mod(t2,60)}} s ; {{eval:floor(t3/3600)}} h {{eval:mod(floor(t3/60),60)}} min {{eval:mod(t3,60)}} s\nchiffres: tous\ngraduations: minutes\nlégendes: Début du film ; Fin du film ; Début du match ; Fin du match\n```\n\nLequel a duré le plus longtemps ?\n\n```choix\nmelanger: non\n- Le film\n- Le match\n- Ils ont duré autant.\n```",
+			"variables": [
+				{
+					"name": "u",
+					"expression": "1..59"
+				},
+				{
+					"name": "sg",
+					"expression": "0..1"
+				},
+				{
+					"name": "w",
+					"expression": "eval:(2*sg-1)*u"
+				},
+				{
+					"name": "h1",
+					"expression": "8..10"
+				},
+				{
+					"name": "p",
+					"expression": "0..59"
+				},
+				{
+					"name": "x",
+					"expression": "0..59"
+				},
+				{
+					"name": "fm",
+					"expression": "20..95"
+				},
+				{
+					"name": "fs",
+					"expression": "0..59"
+				},
+				{
+					"name": "f",
+					"expression": "eval:60*fm+fs"
+				},
+				{
+					"name": "t0",
+					"expression": "eval:3600*h1+60*p+x"
+				},
+				{
+					"name": "t1",
+					"expression": "eval:t0+f"
+				},
+				{
+					"name": "q",
+					"expression": "0..59"
+				},
+				{
+					"name": "y",
+					"expression": "0..59"
+				},
+				{
+					"name": "t2",
+					"expression": "eval:3600*(floor(t1/3600)+1)+60*q+y"
+				},
+				{
+					"name": "g",
+					"expression": "eval:f+w"
+				},
+				{
+					"name": "t3",
+					"expression": "eval:t2+g"
+				},
+				{
+					"name": "r",
+					"expression": "{{if:w<0|0|{{if:w>0|1|2}}}}"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{r}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On calcule chaque durée d'instant en instant (minute pleine, heure pleine…).",
+					"Le film : de {{if:mod(t0,60)==0|{{if:mod(floor(t0/60),60)==0|${{eval:floor(t0/3600)}}~\\text{h}$|${{eval:floor(t0/3600)}}~\\text{h}~{{if:mod(floor(t0/60),60)<10|0{{eval:mod(floor(t0/60),60)}}|{{eval:mod(floor(t0/60),60)}}}}~\\text{min}$}}|${{eval:floor(t0/3600)}}~\\text{h}~{{if:mod(floor(t0/60),60)<10|0{{eval:mod(floor(t0/60),60)}}|{{eval:mod(floor(t0/60),60)}}}}~\\text{min}~{{if:mod(t0,60)<10|0{{eval:mod(t0,60)}}|{{eval:mod(t0,60)}}}}~\\text{s}$}} à {{if:mod(t1,60)==0|{{if:mod(floor(t1/60),60)==0|${{eval:floor(t1/3600)}}~\\text{h}$|${{eval:floor(t1/3600)}}~\\text{h}~{{if:mod(floor(t1/60),60)<10|0{{eval:mod(floor(t1/60),60)}}|{{eval:mod(floor(t1/60),60)}}}}~\\text{min}$}}|${{eval:floor(t1/3600)}}~\\text{h}~{{if:mod(floor(t1/60),60)<10|0{{eval:mod(floor(t1/60),60)}}|{{eval:mod(floor(t1/60),60)}}}}~\\text{min}~{{if:mod(t1,60)<10|0{{eval:mod(t1,60)}}|{{eval:mod(t1,60)}}}}~\\text{s}$}}. Il a duré {{if:floor(f/3600)==0|{{if:mod(floor(f/60),60)==0|{{if:mod(f,60)==0|$0~\\text{s}$|${{eval:mod(f,60)}}~\\text{s}$}}|{{if:mod(f,60)==0|${{eval:mod(floor(f/60),60)}}~\\text{min}$|${{eval:mod(floor(f/60),60)}}~\\text{min}~{{eval:mod(f,60)}}~\\text{s}$}}}}|{{if:mod(floor(f/60),60)==0|{{if:mod(f,60)==0|${{eval:floor(f/3600)}}~\\text{h}$|${{eval:floor(f/3600)}}~\\text{h}~{{eval:mod(f,60)}}~\\text{s}$}}|{{if:mod(f,60)==0|${{eval:floor(f/3600)}}~\\text{h}~{{eval:mod(floor(f/60),60)}}~\\text{min}$|${{eval:floor(f/3600)}}~\\text{h}~{{eval:mod(floor(f/60),60)}}~\\text{min}~{{eval:mod(f,60)}}~\\text{s}$}}}}}}.",
+					"Le match : de {{if:mod(t2,60)==0|{{if:mod(floor(t2/60),60)==0|${{eval:floor(t2/3600)}}~\\text{h}$|${{eval:floor(t2/3600)}}~\\text{h}~{{if:mod(floor(t2/60),60)<10|0{{eval:mod(floor(t2/60),60)}}|{{eval:mod(floor(t2/60),60)}}}}~\\text{min}$}}|${{eval:floor(t2/3600)}}~\\text{h}~{{if:mod(floor(t2/60),60)<10|0{{eval:mod(floor(t2/60),60)}}|{{eval:mod(floor(t2/60),60)}}}}~\\text{min}~{{if:mod(t2,60)<10|0{{eval:mod(t2,60)}}|{{eval:mod(t2,60)}}}}~\\text{s}$}} à {{if:mod(t3,60)==0|{{if:mod(floor(t3/60),60)==0|${{eval:floor(t3/3600)}}~\\text{h}$|${{eval:floor(t3/3600)}}~\\text{h}~{{if:mod(floor(t3/60),60)<10|0{{eval:mod(floor(t3/60),60)}}|{{eval:mod(floor(t3/60),60)}}}}~\\text{min}$}}|${{eval:floor(t3/3600)}}~\\text{h}~{{if:mod(floor(t3/60),60)<10|0{{eval:mod(floor(t3/60),60)}}|{{eval:mod(floor(t3/60),60)}}}}~\\text{min}~{{if:mod(t3,60)<10|0{{eval:mod(t3,60)}}|{{eval:mod(t3,60)}}}}~\\text{s}$}}. Il a duré {{if:floor(g/3600)==0|{{if:mod(floor(g/60),60)==0|{{if:mod(g,60)==0|$0~\\text{s}$|${{eval:mod(g,60)}}~\\text{s}$}}|{{if:mod(g,60)==0|${{eval:mod(floor(g/60),60)}}~\\text{min}$|${{eval:mod(floor(g/60),60)}}~\\text{min}~{{eval:mod(g,60)}}~\\text{s}$}}}}|{{if:mod(floor(g/60),60)==0|{{if:mod(g,60)==0|${{eval:floor(g/3600)}}~\\text{h}$|${{eval:floor(g/3600)}}~\\text{h}~{{eval:mod(g,60)}}~\\text{s}$}}|{{if:mod(g,60)==0|${{eval:floor(g/3600)}}~\\text{h}~{{eval:mod(floor(g/60),60)}}~\\text{min}$|${{eval:floor(g/3600)}}~\\text{h}~{{eval:mod(floor(g/60),60)}}~\\text{min}~{{eval:mod(g,60)}}~\\text{s}$}}}}}}.",
+					"{{if:w<0|Le **film** a duré le plus longtemps, de ${{eval:-w}}$ seconde{{if:w<-1|s|}}.|{{if:w>0|Le **match** a duré le plus longtemps, de ${{w}}$ seconde{{if:w>1|s|}}.|Ils ont duré **autant**.}}}}"
+				]
+			}
+		},
+		{
+			"statement": "Tom a regardé un film, puis un match.\n\n```horloge\nheure: {{eval:floor(t0/3600)}} h {{eval:mod(floor(t0/60),60)}} min {{eval:mod(t0,60)}} s ; {{eval:floor(t1/3600)}} h {{eval:mod(floor(t1/60),60)}} min {{eval:mod(t1,60)}} s ; {{eval:floor(t2/3600)}} h {{eval:mod(floor(t2/60),60)}} min {{eval:mod(t2,60)}} s ; {{eval:floor(t3/3600)}} h {{eval:mod(floor(t3/60),60)}} min {{eval:mod(t3,60)}} s\nchiffres: tous\ngraduations: minutes\nlégendes: Début du film ; Fin du film ; Début du match ; Fin du match\n```\n\nLequel a duré le plus longtemps ?\n\n```choix\nmelanger: non\n- Le film\n- Le match\n- Ils ont duré autant.\n```",
+			"variables": [
+				{
+					"name": "u",
+					"expression": "0..9"
+				},
+				{
+					"name": "sg",
+					"expression": "0..1"
+				},
+				{
+					"name": "w",
+					"expression": "eval:(2*sg-1)*u"
+				},
+				{
+					"name": "h1",
+					"expression": "8..10"
+				},
+				{
+					"name": "p",
+					"expression": "0..59"
+				},
+				{
+					"name": "x",
+					"expression": "0..59"
+				},
+				{
+					"name": "fm",
+					"expression": "20..95"
+				},
+				{
+					"name": "fs",
+					"expression": "0..59"
+				},
+				{
+					"name": "f",
+					"expression": "eval:60*fm+fs"
+				},
+				{
+					"name": "t0",
+					"expression": "eval:3600*h1+60*p+x"
+				},
+				{
+					"name": "t1",
+					"expression": "eval:t0+f"
+				},
+				{
+					"name": "q",
+					"expression": "0..59"
+				},
+				{
+					"name": "y",
+					"expression": "0..59"
+				},
+				{
+					"name": "t2",
+					"expression": "eval:3600*(floor(t1/3600)+1)+60*q+y"
+				},
+				{
+					"name": "g",
+					"expression": "eval:f+w"
+				},
+				{
+					"name": "t3",
+					"expression": "eval:t2+g"
+				},
+				{
+					"name": "r",
+					"expression": "{{if:w<0|0|{{if:w>0|1|2}}}}"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{r}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On calcule chaque durée d'instant en instant (minute pleine, heure pleine…).",
+					"Le film : de {{if:mod(t0,60)==0|{{if:mod(floor(t0/60),60)==0|${{eval:floor(t0/3600)}}~\\text{h}$|${{eval:floor(t0/3600)}}~\\text{h}~{{if:mod(floor(t0/60),60)<10|0{{eval:mod(floor(t0/60),60)}}|{{eval:mod(floor(t0/60),60)}}}}~\\text{min}$}}|${{eval:floor(t0/3600)}}~\\text{h}~{{if:mod(floor(t0/60),60)<10|0{{eval:mod(floor(t0/60),60)}}|{{eval:mod(floor(t0/60),60)}}}}~\\text{min}~{{if:mod(t0,60)<10|0{{eval:mod(t0,60)}}|{{eval:mod(t0,60)}}}}~\\text{s}$}} à {{if:mod(t1,60)==0|{{if:mod(floor(t1/60),60)==0|${{eval:floor(t1/3600)}}~\\text{h}$|${{eval:floor(t1/3600)}}~\\text{h}~{{if:mod(floor(t1/60),60)<10|0{{eval:mod(floor(t1/60),60)}}|{{eval:mod(floor(t1/60),60)}}}}~\\text{min}$}}|${{eval:floor(t1/3600)}}~\\text{h}~{{if:mod(floor(t1/60),60)<10|0{{eval:mod(floor(t1/60),60)}}|{{eval:mod(floor(t1/60),60)}}}}~\\text{min}~{{if:mod(t1,60)<10|0{{eval:mod(t1,60)}}|{{eval:mod(t1,60)}}}}~\\text{s}$}}. Il a duré {{if:floor(f/3600)==0|{{if:mod(floor(f/60),60)==0|{{if:mod(f,60)==0|$0~\\text{s}$|${{eval:mod(f,60)}}~\\text{s}$}}|{{if:mod(f,60)==0|${{eval:mod(floor(f/60),60)}}~\\text{min}$|${{eval:mod(floor(f/60),60)}}~\\text{min}~{{eval:mod(f,60)}}~\\text{s}$}}}}|{{if:mod(floor(f/60),60)==0|{{if:mod(f,60)==0|${{eval:floor(f/3600)}}~\\text{h}$|${{eval:floor(f/3600)}}~\\text{h}~{{eval:mod(f,60)}}~\\text{s}$}}|{{if:mod(f,60)==0|${{eval:floor(f/3600)}}~\\text{h}~{{eval:mod(floor(f/60),60)}}~\\text{min}$|${{eval:floor(f/3600)}}~\\text{h}~{{eval:mod(floor(f/60),60)}}~\\text{min}~{{eval:mod(f,60)}}~\\text{s}$}}}}}}.",
+					"Le match : de {{if:mod(t2,60)==0|{{if:mod(floor(t2/60),60)==0|${{eval:floor(t2/3600)}}~\\text{h}$|${{eval:floor(t2/3600)}}~\\text{h}~{{if:mod(floor(t2/60),60)<10|0{{eval:mod(floor(t2/60),60)}}|{{eval:mod(floor(t2/60),60)}}}}~\\text{min}$}}|${{eval:floor(t2/3600)}}~\\text{h}~{{if:mod(floor(t2/60),60)<10|0{{eval:mod(floor(t2/60),60)}}|{{eval:mod(floor(t2/60),60)}}}}~\\text{min}~{{if:mod(t2,60)<10|0{{eval:mod(t2,60)}}|{{eval:mod(t2,60)}}}}~\\text{s}$}} à {{if:mod(t3,60)==0|{{if:mod(floor(t3/60),60)==0|${{eval:floor(t3/3600)}}~\\text{h}$|${{eval:floor(t3/3600)}}~\\text{h}~{{if:mod(floor(t3/60),60)<10|0{{eval:mod(floor(t3/60),60)}}|{{eval:mod(floor(t3/60),60)}}}}~\\text{min}$}}|${{eval:floor(t3/3600)}}~\\text{h}~{{if:mod(floor(t3/60),60)<10|0{{eval:mod(floor(t3/60),60)}}|{{eval:mod(floor(t3/60),60)}}}}~\\text{min}~{{if:mod(t3,60)<10|0{{eval:mod(t3,60)}}|{{eval:mod(t3,60)}}}}~\\text{s}$}}. Il a duré {{if:floor(g/3600)==0|{{if:mod(floor(g/60),60)==0|{{if:mod(g,60)==0|$0~\\text{s}$|${{eval:mod(g,60)}}~\\text{s}$}}|{{if:mod(g,60)==0|${{eval:mod(floor(g/60),60)}}~\\text{min}$|${{eval:mod(floor(g/60),60)}}~\\text{min}~{{eval:mod(g,60)}}~\\text{s}$}}}}|{{if:mod(floor(g/60),60)==0|{{if:mod(g,60)==0|${{eval:floor(g/3600)}}~\\text{h}$|${{eval:floor(g/3600)}}~\\text{h}~{{eval:mod(g,60)}}~\\text{s}$}}|{{if:mod(g,60)==0|${{eval:floor(g/3600)}}~\\text{h}~{{eval:mod(floor(g/60),60)}}~\\text{min}$|${{eval:floor(g/3600)}}~\\text{h}~{{eval:mod(floor(g/60),60)}}~\\text{min}~{{eval:mod(g,60)}}~\\text{s}$}}}}}}.",
+					"{{if:w<0|Le **film** a duré le plus longtemps, de ${{eval:-w}}$ seconde{{if:w<-1|s|}}.|{{if:w>0|Le **match** a duré le plus longtemps, de ${{w}}$ seconde{{if:w>1|s|}}.|Ils ont duré **autant**.}}}}"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Film 1 h 47 min 20 s, match 27 s de moins : le film",
+			"variationIndex": 0,
+			"variables": {
+				"u": "27",
+				"sg": "0",
+				"w": "-27",
+				"h1": "8",
+				"p": "52",
+				"x": "15",
+				"fm": "107",
+				"fs": "20",
+				"f": "6440",
+				"t0": "31935",
+				"t1": "38375",
+				"q": "15",
+				"y": "40",
+				"t2": "40540",
+				"g": "6413",
+				"t3": "46953",
+				"r": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : le match (il finit plus tard)",
+			"variationIndex": 0,
+			"variables": {
+				"u": "27",
+				"sg": "0",
+				"w": "-27",
+				"h1": "8",
+				"p": "52",
+				"x": "15",
+				"fm": "107",
+				"fs": "20",
+				"f": "6440",
+				"t0": "31935",
+				"t1": "38375",
+				"q": "15",
+				"y": "40",
+				"t2": "40540",
+				"g": "6413",
+				"t3": "46953",
+				"r": "0"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : film plus long de 27 s, « autant » (minutes seules)",
+			"variationIndex": 0,
+			"variables": {
+				"u": "27",
+				"sg": "0",
+				"w": "-27",
+				"h1": "8",
+				"p": "52",
+				"x": "15",
+				"fm": "107",
+				"fs": "20",
+				"f": "6440",
+				"t0": "31935",
+				"t1": "38375",
+				"q": "15",
+				"y": "40",
+				"t2": "40540",
+				"g": "6413",
+				"t3": "46953",
+				"r": "0"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Match plus long de 8 s : le match",
+			"variationIndex": 0,
+			"variables": {
+				"u": "8",
+				"sg": "1",
+				"w": "8",
+				"h1": "9",
+				"p": "38",
+				"x": "50",
+				"fm": "95",
+				"fs": "35",
+				"f": "5735",
+				"t0": "34730",
+				"t1": "40465",
+				"q": "4",
+				"y": "5",
+				"t2": "43445",
+				"g": "5743",
+				"t3": "49188",
+				"r": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Même durée : autant",
+			"variationIndex": 1,
+			"variables": {
+				"u": "0",
+				"sg": "0",
+				"w": "0",
+				"h1": "10",
+				"p": "47",
+				"x": "33",
+				"fm": "80",
+				"fs": "20",
+				"f": "4820",
+				"t0": "38853",
+				"t1": "43673",
+				"q": "21",
+				"y": "9",
+				"t2": "48069",
+				"g": "4820",
+				"t3": "52889",
+				"r": "2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : même durée, le film",
+			"variationIndex": 1,
+			"variables": {
+				"u": "0",
+				"sg": "0",
+				"w": "0",
+				"h1": "10",
+				"p": "47",
+				"x": "33",
+				"fm": "80",
+				"fs": "20",
+				"f": "4820",
+				"t0": "38853",
+				"t1": "43673",
+				"q": "21",
+				"y": "9",
+				"t2": "48069",
+				"g": "4820",
+				"t3": "52889",
+				"r": "2"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Écart de 1 s : le film",
+			"variationIndex": 1,
+			"variables": {
+				"u": "1",
+				"sg": "0",
+				"w": "-1",
+				"h1": "8",
+				"p": "5",
+				"x": "0",
+				"fm": "120",
+				"fs": "0",
+				"f": "7200",
+				"t0": "29100",
+				"t1": "36300",
+				"q": "50",
+				"y": "30",
+				"t2": "42630",
+				"g": "7199",
+				"t3": "49829",
+				"r": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}

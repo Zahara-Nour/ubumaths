@@ -3,10 +3,10 @@
  * au moment de sa reprise en base (2026-10-10, ADR 0022, migration
  * 20261012153000). La base (`dictionary_entries`) fait foi ; ce fichier ne sert
  * qu'aux tests, et le code de l'application ne doit jamais l'importer.
- * Types et règles de lecture : $lib/dictionary/model.
+ * Types et règles de lecture : #lib/dictionary/model.
  */
 
-import type { MathTerm } from '$lib/dictionary/model';
+import type { MathTerm } from '#lib/dictionary/model.ts';
 
 export const REFERENCE_DICTIONARY: MathTerm[] = [
 	// =========================================================================

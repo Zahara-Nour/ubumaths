@@ -48,7 +48,7 @@ describe('registre des positions', () => {
 describe('jugement sans registre', () => {
 	it('validateAnswer rend l’erreur dans son message (jamais un verdict silencieux)', async () => {
 		vi.resetModules();
-		const { validateAnswer } = await import('$lib/utils/answer-validator');
+		const { validateAnswer } = await import('#lib/utils/answer-validator.ts');
 		const result = validateAnswer(['droite(1;2;7;2)'], {
 			templateId: 't',
 			statement: '',
@@ -64,7 +64,7 @@ describe('jugement sans registre', () => {
 					}
 				}
 			]
-		} as unknown as import('$lib/questions/types').QuestionInstance);
+		} as unknown as import('#lib/questions/types.ts').QuestionInstance);
 		expect(result.isCorrect).toBe(false);
 		expect(result.message).toContain('positions des figures non inscrites');
 	});

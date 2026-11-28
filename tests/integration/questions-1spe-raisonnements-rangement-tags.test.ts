@@ -15,6 +15,8 @@
  * passé la règle du nœud (point sur le nœud ou sa notion).
  *
  * @vitest-environment node
+ *
+ * @migration-de-donnees : hors des PR, rejoué la nuit (scripts/ci-integration-exclusions.sh)
  */
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 import { readFileSync } from 'node:fs';

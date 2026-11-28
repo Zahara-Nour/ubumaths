@@ -8,17 +8,19 @@
  * SECURITY:
  * - Requires teacher role
  * - Validates student_id as UUID and parent_email format
- * - Verifies teacher teaches the student
+ * - Vérifie les rôles (appelant prof ou admin, cible élève) ; mono-professeur :
+ *   aucune vérification de classe
  * - Limits to 5 emails per student (RGPD compliance)
  *
  * Flow:
  * 1. Validate input with Zod
  * 2. Verify teacher role
- * 3. Verify teacher-student relationship
+ * 3. Vérifier les rôles (appelant prof ou admin, cible élève)
  * 4. Fetch student info (name, grade)
  * 5. Create or update parental_consents record
  * 6. Send email via Brevo
- * 7. Update email_count in parental_consents
+ * 7. Reserve one send in email_count (conditional update), released if Brevo
+ *    refuses the send: a failed send must not eat into the quota
  * 8. Return success/error
  *
  * Migration note (2026-01-16):
@@ -27,17 +29,17 @@
  * - Emails now sent from noreply@ubumaths.fr
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import {
 	closePendingConsentRequest,
 	consentRequestPlan
-} from '$lib/server/parental-consent-requests';
+} from '#lib/server/parental-consent-requests.ts';
 import type { RequestHandler } from './$types';
 import { z } from 'zod';
-import { requireRole } from '$lib/server/middleware/auth';
-import { verifyTeacherStudent } from '$lib/server/middleware/student-access';
-import { sendConsentEmail, isBrevoConfigured } from '$lib/server/email/brevo';
-import { createServerLogger } from '$lib/utils/logger';
+import { requireRole } from '#lib/server/middleware/auth.ts';
+import { verifyTeacherStudent } from '#lib/server/middleware/student-access.ts';
+import { sendConsentEmail, isBrevoConfigured } from '#lib/server/email/brevo.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/consent/send-email/+server');
 
@@ -161,6 +163,9 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 	let consentToken: string;
 	let expiresAt: Date;
+	// Envois déjà comptés sur la demande utilisée (une panne de Brevo mangeait le
+	// quota quand le compteur avançait sans retour arrière, 2026-11-11).
+	let sentBefore: number;
 
 	// Le même lien ne repart que vers la même adresse : envoyé ailleurs, le lien déjà reçu
 	// par l'ancienne adresse accorderait la demande à la nouvelle, que personne n'a
@@ -174,21 +179,10 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	}
 
 	if (plan === 'reuse' && existingConsent) {
-		// Use existing token, increment count
+		// Use existing token
 		consentToken = existingConsent.consent_token;
 		expiresAt = new Date(existingConsent.expires_at);
-
-		const { error: updateError } = await supabase
-			.from('parental_consents')
-			.update({
-				email_count: existingConsent.email_count + 1,
-				last_email_sent_at: new Date().toISOString()
-			})
-			.eq('id', existingConsent.id);
-
-		if (updateError) {
-			logger.error('[Send Consent Email] Error updating consent record:', updateError);
-		}
+		sentBefore = existingConsent.email_count;
 	} else {
 		// Create new consent record
 		const { data: newConsent, error: insertError } = await supabase
@@ -197,7 +191,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 				student_id,
 				parent_email,
 				status: 'pending',
-				email_count: 1
+				email_count: 0
 			})
 			.select('consent_token, expires_at')
 			.single();
@@ -209,6 +203,23 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 		consentToken = newConsent.consent_token;
 		expiresAt = new Date(newConsent.expires_at);
+		sentBefore = 0;
+	}
+
+	// 7 bis. Réserver l'envoi AVANT l'appel à Brevo, sous condition que le compteur
+	// n'ait pas bougé : deux requêtes simultanées (double clic) ne passent pas toutes
+	// les deux. Zéro ligne rendue (course perdue, ou RLS qui refuse en silence) →
+	// rien ne part, sinon l'envoi échapperait au quota.
+	const { data: reserved, error: reserveError } = await supabase
+		.from('parental_consents')
+		.update({ email_count: sentBefore + 1 })
+		.eq('consent_token', consentToken)
+		.eq('email_count', sentBefore)
+		.select('id');
+
+	if (reserveError || !reserved?.length) {
+		logger.error('[Send Consent Email] Réservation de l’envoi refusée :', reserveError);
+		throw error(409, 'Un envoi est déjà en cours pour cet élève. Réessayer dans un instant.');
 	}
 
 	// 8. Get teacher info for reply-to
@@ -235,20 +246,34 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 	if (!result.success) {
 		logger.error('[Send Consent Email] Brevo error:', result.error);
+		// Rien n'est parti : la réservation est rendue.
+		const { data: released, error: releaseError } = await supabase
+			.from('parental_consents')
+			.update({ email_count: sentBefore })
+			.eq('consent_token', consentToken)
+			.eq('email_count', sentBefore + 1)
+			.select('id');
+		if (releaseError || !released?.length) {
+			logger.error('[Send Consent Email] Réservation non rendue :', releaseError);
+		}
 		throw error(500, `Échec de l'envoi de l'email: ${result.error}`);
 	}
 
-	// 10. Update last_email_sent_at
-	await supabase
+	// 10. Update last_email_sent_at (le courriel est parti : une erreur ici est
+	// seulement journalisée, un 500 ferait renvoyer)
+	const { error: sentAtError } = await supabase
 		.from('parental_consents')
 		.update({ last_email_sent_at: new Date().toISOString() })
 		.eq('consent_token', consentToken);
+	if (sentAtError) {
+		logger.error('[Send Consent Email] Date d’envoi non écrite :', sentAtError);
+	}
 
 	logger.info(
 		`[Send Consent Email] Email sent successfully to ${parent_email} for student ${student_id} by teacher ${user.id}`
 	);
 
-	return json({
+	return Response.json({
 		success: true,
 		message: 'Email de consentement envoyé avec succès !',
 		messageId: result.messageId,

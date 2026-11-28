@@ -1,0 +1,627 @@
+{
+	"id": "33d2cad7-dbc4-43e5-80df-a95fd7bd6e48",
+	"rangement": {
+		"noeud": "Proportionnalité > Situations de proportionnalité > quatrième proportionnelle",
+		"point": "6-192"
+	},
+	"title": "Compléter un tableau de proportionnalité",
+	"description": "Tableau de 5 colonnes dont 2 données (quantités premières entre elles, sans la valeur pour 1) : compléter par somme, double, × 10 (prix de cahiers), par différence, moitié, × 3 ou × 5 (carreaux), ou retrouver une quantité de la première ligne (sirop) ; pièges : même écart ajouté, mauvaise colonne, zéro écrit à droite d'un décimal",
+	"grades": ["6"],
+	"level": 6,
+	"delay": 90,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"zeros": "off"
+		}
+	},
+	"variations": [
+		{
+			"statement": "Tous les cahiers ont le même prix. Complète ce tableau de proportionnalité.\n\n| Nombre de cahiers | ${{x}}$ | ${{y}}$ | ${{eval:x+y}}$ | ${{eval:2*x}}$ | ${{eval:10*x}}$ |\n|---|---|---|---|---|---|\n| Prix (€) | ${{if:mod(100*(x*p/10),100)==0|{{if:mod(100*(x*p/10),100)==0|{{eval:x*p/10;d}}|{{eval:x*p/10;d2}}}}|{{eval:x*p/10;d2}}}}$ | ${{if:mod(100*(y*p/10),100)==0|{{if:mod(100*(y*p/10),100)==0|{{eval:y*p/10;d}}|{{eval:y*p/10;d2}}}}|{{eval:y*p/10;d2}}}}$ | $?$ | $?$ | $?$ |",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "2..7"
+				},
+				{
+					"name": "y",
+					"expression": "2..7"
+				},
+				{
+					"name": "p",
+					"expression": "11..35"
+				}
+			],
+			"conditions": ["gcd(x,y)==1", "x<y", "mod(p,10)!=0", "mod(x*p,10)!=0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(x+y)*p/10;d}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:y*p/10+x;d}}",
+							"message": "Tu as ajouté ${{x}}~\\unit{€}$ : ${{x}}$ cahiers de plus coûtent ${{eval:(x*p/10)[€]}}$ de plus.",
+							"label": "Quantité ajoutée au prix"
+						},
+						{
+							"answer": "{{eval:abs(y-x)*p/10;d}}",
+							"message": "Tu as fait la différence des prix : c'est le prix de ${{eval:abs(y-x)}}$ cahiers.",
+							"label": "Différence au lieu de somme"
+						},
+						{
+							"answer": "{{eval:(2*y-x)*p/10;d}}",
+							"message": "Le tableau ne continue pas avec le même écart : ${{eval:x+y}}$ cahiers, c'est ${{x}}$ cahiers et ${{y}}$ cahiers.",
+							"label": "Même écart ajouté"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{eval:2*x*p/10;d}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:x*p/10+2;d}}",
+							"message": "Tu as ajouté $2~\\unit{€}$ : deux fois plus de cahiers coûtent deux fois plus cher.",
+							"label": "Ajout de 2 au lieu du double"
+						},
+						{
+							"answer": "{{eval:2*y*p/10;d}}",
+							"message": "Tu as doublé le prix de ${{y}}$ cahiers : ${{eval:2*x}}$, c'est le double de ${{x}}$.",
+							"label": "Double de la mauvaise colonne"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{eval:x*p}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:x*p/10;d}}",
+							"message": "Multiplier par $10$, ce n'est pas écrire un $0$ à droite d'un nombre décimal : chaque chiffre prend une valeur dix fois plus grande.",
+							"label": "Zéro ajouté à droite d'un décimal"
+						},
+						{
+							"answer": "{{eval:10*x*p}}",
+							"message": "Tu as multiplié par $100$ : ${{eval:10*x}}$ cahiers, c'est $10$ fois ${{x}}$ cahiers.",
+							"label": "Multiplication par 100"
+						},
+						{
+							"answer": "{{eval:x*p/10+10;d}}",
+							"message": "Tu as ajouté $10~\\unit{€}$ : dix fois plus de cahiers coûtent dix fois plus cher.",
+							"label": "Ajout de 10 au lieu de × 10"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Combiner les colonnes.** ${{eval:x+y}} = {{x}} + {{y}}$, donc le prix de ${{eval:x+y}}$ cahiers est ${{if:mod(100*(x*p/10),100)==0|{{eval:x*p/10;d}}|{{eval:x*p/10;d2}}}} + {{if:mod(100*(y*p/10),100)==0|{{eval:y*p/10;d}}|{{eval:y*p/10;d2}}}} = \\textcolor{{{color:primary.0}}}{{{if:mod(100*((x+y)*p/10),100)==0|{{eval:(x+y)*p/10;d}}|{{eval:(x+y)*p/10;d2}}}}}$.",
+					"${{eval:2*x}} = 2 \\times {{x}}$, donc le prix est $2 \\times {{if:mod(100*(x*p/10),100)==0|{{eval:x*p/10;d}}|{{eval:x*p/10;d2}}}} = \\textcolor{{{color:primary.0}}}{{{if:mod(100*(2*x*p/10),100)==0|{{eval:2*x*p/10;d}}|{{eval:2*x*p/10;d2}}}}}$.",
+					"${{eval:10*x}} = 10 \\times {{x}}$, donc le prix est $10 \\times {{if:mod(100*(x*p/10),100)==0|{{eval:x*p/10;d}}|{{eval:x*p/10;d2}}}} = \\textcolor{{{color:primary.0}}}{{{eval:x*p}}}$."
+				]
+			},
+			"hint": "Pour chaque colonne, écris le nombre de cahiers à l'aide de ${{x}}$ et de ${{y}}$."
+		},
+		{
+			"statement": "Pour carreler un sol, on pose toujours le même nombre de carreaux par mètre carré. Complète ce tableau de proportionnalité.\n\n| Surface (m²) | ${{x}}$ | ${{y}}$ | ${{eval:abs(x-y)}}$ | ${{eval:x/2}}$ | ${{eval:k*y}}$ |\n|---|---|---|---|---|---|\n| Nombre de carreaux | ${{eval:x*c}}$ | ${{eval:y*c}}$ | $?$ | $?$ | $?$ |",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "4|8|10"
+				},
+				{
+					"name": "y",
+					"expression": "3|5|7"
+				},
+				{
+					"name": "k",
+					"expression": "3|5"
+				},
+				{
+					"name": "c",
+					"expression": "4..16"
+				}
+			],
+			"conditions": ["gcd(x,y)==1", "abs(x-y)>=2"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:abs(x-y)*c}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:(x+y)*c}}",
+							"message": "Tu as additionné : ${{eval:abs(x-y)}}$, c'est la différence de ${{x}}$ et ${{y}}$.",
+							"label": "Somme au lieu de différence"
+						},
+						{
+							"answer": "{{eval:max(x,y)*c-abs(x-y)}}",
+							"message": "Tu as enlevé ${{eval:abs(x-y)}}$ carreaux : enlève le nombre de carreaux de ${{eval:min(x,y)}}~\\unit{m^2}$.",
+							"label": "Quantité retirée au nombre de carreaux"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{eval:x*c/2}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:x*c-2}}",
+							"message": "Tu as enlevé $2$ : la moitié de la surface demande la moitié des carreaux.",
+							"label": "Retrait de 2 au lieu de la moitié"
+						},
+						{
+							"answer": "{{eval:2*x*c}}",
+							"message": "Tu as doublé : ${{eval:x/2}}$, c'est la moitié de ${{x}}$, pas le double.",
+							"label": "Double au lieu de moitié"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{eval:k*y*c}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:y*c+k}}",
+							"message": "Tu as ajouté ${{k}}$ : ${{k}}$ fois plus de surface demande ${{k}}$ fois plus de carreaux.",
+							"label": "Ajout au lieu de multiplication"
+						},
+						{
+							"answer": "{{eval:k*x*c}}",
+							"message": "Tu as multiplié la mauvaise colonne : ${{eval:k*y}}$, c'est ${{k}}$ fois ${{y}}$.",
+							"label": "Multiple de la mauvaise colonne"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Combiner les colonnes.** ${{eval:abs(x-y)}} = {{eval:max(x,y)}} - {{eval:min(x,y)}}$, donc il faut ${{eval:max(x,y)*c}} - {{eval:min(x,y)*c}} = \\textcolor{{{color:primary.0}}}{{{eval:abs(x-y)*c}}}$ carreaux.",
+					"${{eval:x/2}}$ est la moitié de ${{x}}$, donc il faut la moitié de ${{eval:x*c}}$ : $\\textcolor{{{color:primary.0}}}{{{eval:x*c/2}}}$ carreaux.",
+					"${{eval:k*y}} = {{k}} \\times {{y}}$, donc il faut ${{k}} \\times {{eval:y*c}} = \\textcolor{{{color:primary.0}}}{{{eval:k*y*c}}}$ carreaux."
+				]
+			},
+			"hint": "Pour chaque colonne, cherche comment obtenir la surface à partir de ${{x}}$ et de ${{y}}$ : somme, différence, moitié, multiple ?"
+		},
+		{
+			"statement": "Pour préparer une boisson, on verse toujours la même quantité de sirop par litre d'eau. Complète ce tableau de proportionnalité.\n\n| Volume d'eau (L) | ${{x}}$ | ${{y}}$ | $?$ | ${{eval:3*x}}$ | ${{eval:10*y}}$ |\n|---|---|---|---|---|---|\n| Volume de sirop (cL) | ${{eval:x*h/2;d}}$ | ${{eval:y*h/2;d}}$ | ${{eval:(x+y)*h/2;d}}$ | $?$ | $?$ |",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "2..6"
+				},
+				{
+					"name": "y",
+					"expression": "3..7"
+				},
+				{
+					"name": "h",
+					"expression": "5..19"
+				}
+			],
+			"conditions": ["gcd(x,y)==1", "x<y", "mod(y*h,2)==1"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:x+y}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:2*y-x}}",
+							"message": "Le tableau ne continue pas avec le même écart : regarde comment obtenir ${{eval:(x+y)*h/2;d}}$ à partir des deux volumes de sirop.",
+							"label": "Même écart ajouté"
+						},
+						{
+							"answer": "{{eval:(x+y)*h/2;d}}",
+							"message": "C'est le volume de sirop : la case demande le volume d'eau.",
+							"label": "Ligne recopiée"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{eval:3*x*h/2;d}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:x*h/2+3;d}}",
+							"message": "Tu as ajouté $3$ : trois fois plus d'eau demande trois fois plus de sirop.",
+							"label": "Ajout de 3 au lieu de × 3"
+						},
+						{
+							"answer": "{{eval:3*y*h/2;d}}",
+							"message": "Tu as multiplié la mauvaise colonne : ${{eval:3*x}}$, c'est $3$ fois ${{x}}$.",
+							"label": "Triple de la mauvaise colonne"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{eval:5*y*h;d}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:y*h/2;d}}",
+							"message": "Multiplier par $10$, ce n'est pas écrire un $0$ à droite d'un nombre décimal : chaque chiffre prend une valeur dix fois plus grande.",
+							"label": "Zéro ajouté à droite d'un décimal"
+						},
+						{
+							"answer": "{{eval:50*y*h}}",
+							"message": "Tu as multiplié par $100$ : ${{eval:10*y}}~\\unit{L}$, c'est $10$ fois ${{y}}~\\unit{L}$.",
+							"label": "Multiplication par 100"
+						},
+						{
+							"answer": "{{eval:y*h/2+10;d}}",
+							"message": "Tu as ajouté $10$ : dix fois plus d'eau demande dix fois plus de sirop.",
+							"label": "Ajout de 10 au lieu de × 10"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Combiner les colonnes.** ${{eval:x*h/2;d}} + {{eval:y*h/2;d}} = {{eval:(x+y)*h/2;d}}$ : ce volume de sirop va avec ${{x}} + {{y}} = \\textcolor{{{color:primary.0}}}{{{eval:x+y}}}$ litres d'eau.",
+					"${{eval:3*x}} = 3 \\times {{x}}$, donc il faut $3 \\times {{eval:x*h/2;d}} = \\textcolor{{{color:primary.0}}}{{{eval:3*x*h/2;d}}}$ centilitres de sirop.",
+					"${{eval:10*y}} = 10 \\times {{y}}$, donc il faut $10 \\times {{eval:y*h/2;d}} = \\textcolor{{{color:primary.0}}}{{{eval:5*y*h;d}}}$ centilitres de sirop."
+				]
+			},
+			"hint": "Dans la troisième colonne, compare le volume de sirop aux deux volumes de sirop connus."
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Facile : 3 → 4,50, 5 → 7,50 ; 12, 9, 45",
+			"variationIndex": 0,
+			"variables": {
+				"x": "3",
+				"y": "5",
+				"p": "15"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["12", "9", "45"]
+		},
+		{
+			"description": "Facile : 12,00 et 9,00 acceptés",
+			"variationIndex": 0,
+			"variables": {
+				"x": "3",
+				"y": "5",
+				"p": "15"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["12{,}00", "9{,}00", "45"]
+		},
+		{
+			"description": "Facile : 7,50 + 3 (10,5)",
+			"variationIndex": 0,
+			"variables": {
+				"x": "3",
+				"y": "5",
+				"p": "15"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as ajouté $3~\\unit{€}$ : $3$ cahiers de plus coûtent $4.50~\\unit{€}$ de plus."
+			},
+			"answers": ["10{,}5", "9", "45"]
+		},
+		{
+			"description": "Facile : différence des prix (3)",
+			"variationIndex": 0,
+			"variables": {
+				"x": "3",
+				"y": "5",
+				"p": "15"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as fait la différence des prix : c'est le prix de $2$ cahiers."
+			},
+			"answers": ["3", "9", "45"]
+		},
+		{
+			"description": "Facile : même écart (7,5)",
+			"variationIndex": 0,
+			"variables": {
+				"x": "3",
+				"y": "4",
+				"p": "15"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Le tableau ne continue pas avec le même écart : $7$ cahiers, c'est $3$ cahiers et $4$ cahiers."
+			},
+			"answers": ["7{,}5", "9", "45"]
+		},
+		{
+			"description": "Facile : 4,50 + 2 (6,5)",
+			"variationIndex": 0,
+			"variables": {
+				"x": "3",
+				"y": "5",
+				"p": "15"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as ajouté $2~\\unit{€}$ : deux fois plus de cahiers coûtent deux fois plus cher."
+			},
+			"answers": ["12", "6{,}5", "45"]
+		},
+		{
+			"description": "Facile : double de 7,50 (15)",
+			"variationIndex": 0,
+			"variables": {
+				"x": "3",
+				"y": "5",
+				"p": "15"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as doublé le prix de $5$ cahiers : $6$, c'est le double de $3$."
+			},
+			"answers": ["12", "15", "45"]
+		},
+		{
+			"description": "Facile : 4,50 → 4,50 (zéro ajouté)",
+			"variationIndex": 0,
+			"variables": {
+				"x": "3",
+				"y": "5",
+				"p": "15"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Multiplier par $10$, ce n'est pas écrire un $0$ à droite d'un nombre décimal : chaque chiffre prend une valeur dix fois plus grande."
+			},
+			"answers": ["12", "9", "4{,}50"]
+		},
+		{
+			"description": "Facile : × 100 (450)",
+			"variationIndex": 0,
+			"variables": {
+				"x": "3",
+				"y": "5",
+				"p": "15"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as multiplié par $100$ : $30$ cahiers, c'est $10$ fois $3$ cahiers."
+			},
+			"answers": ["12", "9", "450"]
+		},
+		{
+			"description": "Facile : 4,50 + 10 (14,5)",
+			"variationIndex": 0,
+			"variables": {
+				"x": "3",
+				"y": "5",
+				"p": "15"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as ajouté $10~\\unit{€}$ : dix fois plus de cahiers coûtent dix fois plus cher."
+			},
+			"answers": ["12", "9", "14{,}5"]
+		},
+		{
+			"description": "Moyen : 8 → 48, 3 → 18 ; 30, 24, 90",
+			"variationIndex": 1,
+			"variables": {
+				"x": "8",
+				"y": "3",
+				"k": "5",
+				"c": "6"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["30", "24", "90"]
+		},
+		{
+			"description": "Moyen : somme (66)",
+			"variationIndex": 1,
+			"variables": {
+				"x": "8",
+				"y": "3",
+				"k": "5",
+				"c": "6"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as additionné : $5$, c'est la différence de $8$ et $3$."
+			},
+			"answers": ["66", "24", "90"]
+		},
+		{
+			"description": "Moyen : 48 − 5 (43)",
+			"variationIndex": 1,
+			"variables": {
+				"x": "8",
+				"y": "3",
+				"k": "5",
+				"c": "6"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as enlevé $5$ carreaux : enlève le nombre de carreaux de $3~\\unit{m^2}$."
+			},
+			"answers": ["43", "24", "90"]
+		},
+		{
+			"description": "Moyen : 48 − 2 (46)",
+			"variationIndex": 1,
+			"variables": {
+				"x": "8",
+				"y": "3",
+				"k": "5",
+				"c": "6"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as enlevé $2$ : la moitié de la surface demande la moitié des carreaux."
+			},
+			"answers": ["30", "46", "90"]
+		},
+		{
+			"description": "Moyen : double (96)",
+			"variationIndex": 1,
+			"variables": {
+				"x": "8",
+				"y": "3",
+				"k": "5",
+				"c": "6"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as doublé : $4$, c'est la moitié de $8$, pas le double."
+			},
+			"answers": ["30", "96", "90"]
+		},
+		{
+			"description": "Moyen : 18 + 5 (23)",
+			"variationIndex": 1,
+			"variables": {
+				"x": "8",
+				"y": "3",
+				"k": "5",
+				"c": "6"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as ajouté $5$ : $5$ fois plus de surface demande $5$ fois plus de carreaux."
+			},
+			"answers": ["30", "24", "23"]
+		},
+		{
+			"description": "Moyen : 5 × 48 (240)",
+			"variationIndex": 1,
+			"variables": {
+				"x": "8",
+				"y": "3",
+				"k": "5",
+				"c": "6"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as multiplié la mauvaise colonne : $15$, c'est $5$ fois $3$."
+			},
+			"answers": ["30", "24", "240"]
+		},
+		{
+			"description": "Moyen : 4 et 7, 3 × 7",
+			"variationIndex": 1,
+			"variables": {
+				"x": "4",
+				"y": "7",
+				"k": "3",
+				"c": "10"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["30", "20", "210"]
+		},
+		{
+			"description": "Sirop : 2 → 9, 5 → 22,5 ; 7 L, 27, 225",
+			"variationIndex": 2,
+			"variables": {
+				"x": "2",
+				"y": "5",
+				"h": "9"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["7", "27", "225"]
+		},
+		{
+			"description": "Sirop : même écart (8)",
+			"variationIndex": 2,
+			"variables": {
+				"x": "2",
+				"y": "5",
+				"h": "9"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Le tableau ne continue pas avec le même écart : regarde comment obtenir $31.5$ à partir des deux volumes de sirop."
+			},
+			"answers": ["8", "27", "225"]
+		},
+		{
+			"description": "Sirop : volume de sirop recopié (31,5)",
+			"variationIndex": 2,
+			"variables": {
+				"x": "2",
+				"y": "5",
+				"h": "9"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "C'est le volume de sirop : la case demande le volume d'eau."
+			},
+			"answers": ["31{,}5", "27", "225"]
+		},
+		{
+			"description": "Sirop : 9 + 3 (12)",
+			"variationIndex": 2,
+			"variables": {
+				"x": "2",
+				"y": "5",
+				"h": "9"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as ajouté $3$ : trois fois plus d'eau demande trois fois plus de sirop."
+			},
+			"answers": ["7", "12", "225"]
+		},
+		{
+			"description": "Sirop : 3 × 22,5 (67,5)",
+			"variationIndex": 2,
+			"variables": {
+				"x": "2",
+				"y": "5",
+				"h": "9"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as multiplié la mauvaise colonne : $6$, c'est $3$ fois $2$."
+			},
+			"answers": ["7", "67{,}5", "225"]
+		},
+		{
+			"description": "Sirop : 22,5 → 22,50 (zéro ajouté)",
+			"variationIndex": 2,
+			"variables": {
+				"x": "2",
+				"y": "5",
+				"h": "9"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Multiplier par $10$, ce n'est pas écrire un $0$ à droite d'un nombre décimal : chaque chiffre prend une valeur dix fois plus grande."
+			},
+			"answers": ["7", "27", "22{,}50"]
+		},
+		{
+			"description": "Sirop : × 100 (2 250)",
+			"variationIndex": 2,
+			"variables": {
+				"x": "2",
+				"y": "5",
+				"h": "9"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as multiplié par $100$ : $50~\\unit{L}$, c'est $10$ fois $5~\\unit{L}$."
+			},
+			"answers": ["7", "27", "2\\,250"]
+		},
+		{
+			"description": "Sirop : 22,5 + 10 (32,5)",
+			"variationIndex": 2,
+			"variables": {
+				"x": "2",
+				"y": "5",
+				"h": "9"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as ajouté $10$ : dix fois plus d'eau demande dix fois plus de sirop."
+			},
+			"answers": ["7", "27", "32{,}5"]
+		}
+	]
+}

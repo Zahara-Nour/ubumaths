@@ -1,0 +1,729 @@
+{
+	"id": "943033bf-3420-4660-8941-14bf2c2030d9",
+	"title": "Critères de divisibilité",
+	"description": "Cocher les diviseurs d'un nombre de 4 chiffres parmi 2, 3, 4, 5, 9 (2 340 : tous) ; réponses variées (pièges : 4 jugé sur le dernier chiffre seul, 9 confondu avec 3)",
+	"grades": ["2"],
+	"level": 15,
+	"delay": 90,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"spacesFromFourDigits": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Par quels nombres ${{n}}$ est-il divisible ? Coche toutes les bonnes réponses.\n\n```choix\nplusieurs: oui\nmelanger: non\n- $2$\n- $3$\n- $4$\n- $5$\n- $9$\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "6..55"
+				},
+				{
+					"name": "n",
+					"expression": "eval:180*k"
+				},
+				{
+					"name": "m",
+					"expression": "eval:floor(n/1000)"
+				},
+				{
+					"name": "cc",
+					"expression": "eval:mod(floor(n/100),10)"
+				},
+				{
+					"name": "dz",
+					"expression": "eval:mod(floor(n/10),10)"
+				},
+				{
+					"name": "u",
+					"expression": "eval:mod(n,10)"
+				},
+				{
+					"name": "S",
+					"expression": "eval:floor(n/1000)+mod(floor(n/100),10)+mod(floor(n/10),10)+mod(n,10)"
+				},
+				{
+					"name": "S3",
+					"expression": "eval:mod(S,3)"
+				},
+				{
+					"name": "S9",
+					"expression": "eval:mod(S,9)"
+				},
+				{
+					"name": "du",
+					"expression": "eval:mod(n,100)"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0;1;2;3;4"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Par $2$ et par $5$** : on regarde le dernier chiffre, ${{u}}$. Il est pair : divisible par $2$. Il vaut $0$ ou $5$ : divisible par $5$.",
+					"**Par $3$ et par $9$** : on additionne les chiffres, ${{m}}+{{cc}}+{{dz}}+{{u}}={{S}}$. ${{S}}$ est un multiple de $3$ et de $9$ : divisible par $3$ et par $9$.",
+					"**Par $4$** : on regarde le nombre formé par les deux derniers chiffres, ${{du}}$. C'est un multiple de $4$ : divisible par $4$.",
+					"${{n}}$ est divisible par $\\textcolor{{{color:primary.0}}}{2}$, $\\textcolor{{{color:primary.0}}}{3}$, $\\textcolor{{{color:primary.0}}}{4}$, $\\textcolor{{{color:primary.0}}}{5}$ et $\\textcolor{{{color:primary.0}}}{9}$."
+				]
+			},
+			"hint": "Rappel : pour $2$ et $5$, on regarde le dernier chiffre ; pour $4$, le nombre formé par les deux derniers chiffres ; pour $3$ et $9$, la somme des chiffres."
+		},
+		{
+			"statement": "Par quels nombres ${{n}}$ est-il divisible ? Coche toutes les bonnes réponses.\n\n```choix\nplusieurs: oui\nmelanger: non\n- $2$\n- $3$\n- $4$\n- $5$\n- $9$\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "34..333"
+				},
+				{
+					"name": "n",
+					"expression": "eval:30*k"
+				},
+				{
+					"name": "m",
+					"expression": "eval:floor(n/1000)"
+				},
+				{
+					"name": "cc",
+					"expression": "eval:mod(floor(n/100),10)"
+				},
+				{
+					"name": "dz",
+					"expression": "eval:mod(floor(n/10),10)"
+				},
+				{
+					"name": "u",
+					"expression": "eval:mod(n,10)"
+				},
+				{
+					"name": "S",
+					"expression": "eval:floor(n/1000)+mod(floor(n/100),10)+mod(floor(n/10),10)+mod(n,10)"
+				},
+				{
+					"name": "S3",
+					"expression": "eval:mod(S,3)"
+				},
+				{
+					"name": "S9",
+					"expression": "eval:mod(S,9)"
+				},
+				{
+					"name": "du",
+					"expression": "eval:mod(n,100)"
+				}
+			],
+			"conditions": ["mod(k,2)==1", "mod(k,3)!=0"],
+			"blanks": [
+				{
+					"expectedAnswer": "0;1;3"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Par $2$ et par $5$** : on regarde le dernier chiffre, ${{u}}$. Il est pair : divisible par $2$. Il vaut $0$ ou $5$ : divisible par $5$.",
+					"**Par $3$ et par $9$** : on additionne les chiffres, ${{m}}+{{cc}}+{{dz}}+{{u}}={{S}}$. ${{S}}$ est un multiple de $3$, mais pas de $9$ : divisible par $3$, pas par $9$.",
+					"**Par $4$** : on regarde le nombre formé par les deux derniers chiffres, ${{du}}$. Ce n'est pas un multiple de $4$ : pas divisible par $4$.",
+					"${{n}}$ est divisible par $\\textcolor{{{color:primary.0}}}{2}$, $\\textcolor{{{color:primary.0}}}{3}$ et $\\textcolor{{{color:primary.0}}}{5}$."
+				]
+			},
+			"hint": "Rappel : pour $2$ et $5$, on regarde le dernier chiffre ; pour $4$, le nombre formé par les deux derniers chiffres ; pour $3$ et $9$, la somme des chiffres."
+		},
+		{
+			"statement": "Par quels nombres ${{n}}$ est-il divisible ? Coche toutes les bonnes réponses.\n\n```choix\nplusieurs: oui\nmelanger: non\n- $2$\n- $3$\n- $4$\n- $5$\n- $9$\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "112..1111"
+				},
+				{
+					"name": "n",
+					"expression": "eval:9*k"
+				},
+				{
+					"name": "m",
+					"expression": "eval:floor(n/1000)"
+				},
+				{
+					"name": "cc",
+					"expression": "eval:mod(floor(n/100),10)"
+				},
+				{
+					"name": "dz",
+					"expression": "eval:mod(floor(n/10),10)"
+				},
+				{
+					"name": "u",
+					"expression": "eval:mod(n,10)"
+				},
+				{
+					"name": "S",
+					"expression": "eval:floor(n/1000)+mod(floor(n/100),10)+mod(floor(n/10),10)+mod(n,10)"
+				},
+				{
+					"name": "S3",
+					"expression": "eval:mod(S,3)"
+				},
+				{
+					"name": "S9",
+					"expression": "eval:mod(S,9)"
+				},
+				{
+					"name": "du",
+					"expression": "eval:mod(n,100)"
+				}
+			],
+			"conditions": ["mod(k,2)==1", "mod(k,5)!=0"],
+			"blanks": [
+				{
+					"expectedAnswer": "1;4"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Par $2$ et par $5$** : on regarde le dernier chiffre, ${{u}}$. Il est impair : pas divisible par $2$. Ce n'est ni $0$ ni $5$ : pas divisible par $5$.",
+					"**Par $3$ et par $9$** : on additionne les chiffres, ${{m}}+{{cc}}+{{dz}}+{{u}}={{S}}$. ${{S}}$ est un multiple de $3$ et de $9$ : divisible par $3$ et par $9$.",
+					"**Par $4$** : on regarde le nombre formé par les deux derniers chiffres, ${{du}}$. Ce n'est pas un multiple de $4$ : pas divisible par $4$.",
+					"${{n}}$ est divisible par $\\textcolor{{{color:primary.0}}}{3}$ et $\\textcolor{{{color:primary.0}}}{9}$."
+				]
+			},
+			"hint": "Rappel : pour $2$ et $5$, on regarde le dernier chiffre ; pour $4$, le nombre formé par les deux derniers chiffres ; pour $3$ et $9$, la somme des chiffres."
+		},
+		{
+			"statement": "Par quels nombres ${{n}}$ est-il divisible ? Coche toutes les bonnes réponses.\n\n```choix\nplusieurs: oui\nmelanger: non\n- $2$\n- $3$\n- $4$\n- $5$\n- $9$\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "84..833"
+				},
+				{
+					"name": "n",
+					"expression": "eval:12*k"
+				},
+				{
+					"name": "m",
+					"expression": "eval:floor(n/1000)"
+				},
+				{
+					"name": "cc",
+					"expression": "eval:mod(floor(n/100),10)"
+				},
+				{
+					"name": "dz",
+					"expression": "eval:mod(floor(n/10),10)"
+				},
+				{
+					"name": "u",
+					"expression": "eval:mod(n,10)"
+				},
+				{
+					"name": "S",
+					"expression": "eval:floor(n/1000)+mod(floor(n/100),10)+mod(floor(n/10),10)+mod(n,10)"
+				},
+				{
+					"name": "S3",
+					"expression": "eval:mod(S,3)"
+				},
+				{
+					"name": "S9",
+					"expression": "eval:mod(S,9)"
+				},
+				{
+					"name": "du",
+					"expression": "eval:mod(n,100)"
+				}
+			],
+			"conditions": ["mod(k,3)!=0", "mod(k,5)!=0"],
+			"blanks": [
+				{
+					"expectedAnswer": "0;1;2"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Par $2$ et par $5$** : on regarde le dernier chiffre, ${{u}}$. Il est pair : divisible par $2$. Ce n'est ni $0$ ni $5$ : pas divisible par $5$.",
+					"**Par $3$ et par $9$** : on additionne les chiffres, ${{m}}+{{cc}}+{{dz}}+{{u}}={{S}}$. ${{S}}$ est un multiple de $3$, mais pas de $9$ : divisible par $3$, pas par $9$.",
+					"**Par $4$** : on regarde le nombre formé par les deux derniers chiffres, ${{du}}$. C'est un multiple de $4$ : divisible par $4$.",
+					"${{n}}$ est divisible par $\\textcolor{{{color:primary.0}}}{2}$, $\\textcolor{{{color:primary.0}}}{3}$ et $\\textcolor{{{color:primary.0}}}{4}$."
+				]
+			},
+			"hint": "Rappel : pour $2$ et $5$, on regarde le dernier chiffre ; pour $4$, le nombre formé par les deux derniers chiffres ; pour $3$ et $9$, la somme des chiffres."
+		},
+		{
+			"statement": "Par quels nombres ${{n}}$ est-il divisible ? Coche toutes les bonnes réponses.\n\n```choix\nplusieurs: oui\nmelanger: non\n- $2$\n- $3$\n- $4$\n- $5$\n- $9$\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "67..666"
+				},
+				{
+					"name": "n",
+					"expression": "eval:15*k"
+				},
+				{
+					"name": "m",
+					"expression": "eval:floor(n/1000)"
+				},
+				{
+					"name": "cc",
+					"expression": "eval:mod(floor(n/100),10)"
+				},
+				{
+					"name": "dz",
+					"expression": "eval:mod(floor(n/10),10)"
+				},
+				{
+					"name": "u",
+					"expression": "eval:mod(n,10)"
+				},
+				{
+					"name": "S",
+					"expression": "eval:floor(n/1000)+mod(floor(n/100),10)+mod(floor(n/10),10)+mod(n,10)"
+				},
+				{
+					"name": "S3",
+					"expression": "eval:mod(S,3)"
+				},
+				{
+					"name": "S9",
+					"expression": "eval:mod(S,9)"
+				},
+				{
+					"name": "du",
+					"expression": "eval:mod(n,100)"
+				}
+			],
+			"conditions": ["mod(k,2)==1", "mod(k,3)!=0"],
+			"blanks": [
+				{
+					"expectedAnswer": "1;3"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Par $2$ et par $5$** : on regarde le dernier chiffre, ${{u}}$. Il est impair : pas divisible par $2$. Il vaut $0$ ou $5$ : divisible par $5$.",
+					"**Par $3$ et par $9$** : on additionne les chiffres, ${{m}}+{{cc}}+{{dz}}+{{u}}={{S}}$. ${{S}}$ est un multiple de $3$, mais pas de $9$ : divisible par $3$, pas par $9$.",
+					"**Par $4$** : on regarde le nombre formé par les deux derniers chiffres, ${{du}}$. Ce n'est pas un multiple de $4$ : pas divisible par $4$.",
+					"${{n}}$ est divisible par $\\textcolor{{{color:primary.0}}}{3}$ et $\\textcolor{{{color:primary.0}}}{5}$."
+				]
+			},
+			"hint": "Rappel : pour $2$ et $5$, on regarde le dernier chiffre ; pour $4$, le nombre formé par les deux derniers chiffres ; pour $3$ et $9$, la somme des chiffres."
+		},
+		{
+			"statement": "Remplace $\\square$ par un chiffre pour que le nombre ${{d1}}\\square{{d3}}{{d4}}$ soit divisible par ${{k}}$. Donne une réponse possible.\n\n$\\square=?$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "3|9"
+				},
+				{
+					"name": "d1",
+					"expression": "1..9"
+				},
+				{
+					"name": "d3",
+					"expression": "0..9"
+				},
+				{
+					"name": "d4",
+					"expression": "0..9"
+				},
+				{
+					"name": "S",
+					"expression": "eval:d1+d3+d4"
+				},
+				{
+					"name": "x0",
+					"expression": "eval:mod(-S,k)"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{x0}}",
+					"rulesSuffice": true,
+					"validationRules": [
+						{
+							"type": "custom",
+							"expression": "({{S}}+answer) % {{k}} == 0",
+							"description": "Avec ce chiffre, la somme des chiffres n’est pas un multiple de {{k}}."
+						},
+						{
+							"type": "range",
+							"min": "0",
+							"max": "9",
+							"inclusive": true
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"Un nombre est divisible par ${{k}}$ quand la somme de ses chiffres est un multiple de ${{k}}$. Ici ${{d1}}+{{d3}}+{{d4}}={{S}}$ : il faut que ${{S}}+\\square$ soit un multiple de ${{k}}$.",
+					"Avec $\\square=\\textcolor{{{color:primary.0}}}{{{x0}}}$ : ${{S}}+{{x0}}={{eval:S+x0}}$, multiple de ${{k}}$.",
+					"{{if:k==3|Les chiffres ${{eval:x0+3}}$ et ${{eval:x0+6}}${{if:x0==0|, et même $9$,|}} conviennent aussi (on ajoute $3$ ou $6${{if:x0==0|, ou $9$|}}).|{{if:x0==0|Le chiffre $9$ convient aussi ($0+9$).|C'est le seul chiffre qui convient : ajouter $9$ ne donnerait plus un chiffre.}}}}"
+				]
+			},
+			"hint": "Rappel : un nombre est divisible par ${{k}}$ quand la somme de ses chiffres est un multiple de ${{k}}$."
+		},
+		{
+			"statement": "Quel est le plus petit nombre entier **plus grand que** ${{a}}$ qui soit divisible par $9$ ?\n\n$?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1001..9998"
+				},
+				{
+					"name": "m",
+					"expression": "eval:floor(a/1000)"
+				},
+				{
+					"name": "cc",
+					"expression": "eval:mod(floor(a/100),10)"
+				},
+				{
+					"name": "dz",
+					"expression": "eval:mod(floor(a/10),10)"
+				},
+				{
+					"name": "u",
+					"expression": "eval:mod(a,10)"
+				},
+				{
+					"name": "S",
+					"expression": "eval:floor(a/1000)+mod(floor(a/100),10)+mod(floor(a/10),10)+mod(a,10)"
+				},
+				{
+					"name": "j",
+					"expression": "eval:9-mod(a,9)"
+				},
+				{
+					"name": "A",
+					"expression": "eval:a+9-mod(a,9)"
+				},
+				{
+					"name": "low",
+					"expression": "eval:a-mod(a,9)"
+				}
+			],
+			"conditions": ["mod(a,9)!=0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{A}}",
+					"expectedErrors": [
+						{
+							"answer": "{{low}}",
+							"message": "Ce nombre est bien divisible par $9$, mais il est plus petit que ${{a}}$.",
+							"label": "Multiple de 9 juste en dessous"
+						},
+						{
+							"answer": "{{eval:a+9}}",
+							"message": "Ajouter $9$ ne donne un multiple de $9$ que si on part d'un multiple de $9$ : regarde la somme des chiffres.",
+							"label": "9 ajouté au nombre"
+						},
+						{
+							"answer": "{{eval:a+3-mod(a,3)}}",
+							"message": "Ce nombre est divisible par $3$, mais pas par $9$ : la somme de ses chiffres doit être un multiple de $9$.",
+							"label": "Multiple de 3 au lieu de 9"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"Un nombre est divisible par $9$ quand la somme de ses chiffres est un multiple de $9$. Pour ${{a}}$ : ${{m}}+{{cc}}+{{dz}}+{{u}}={{S}}$.",
+					"Il manque ${{j}}$ pour arriver au multiple de $9$ suivant : on ajoute ${{j}}$ à ${{a}}$.",
+					"$\\textcolor{{{color:primary.0}}}{{{A}}}={{eval:A/9}}\\times9$ : c'est le premier multiple de $9$ après ${{a}}$."
+				]
+			},
+			"hint": "Calcule la somme des chiffres de ${{a}}$ : de combien faut-il l'augmenter pour obtenir un multiple de $9$ ?"
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "2 340 : tous",
+			"variationIndex": 0,
+			"variables": {
+				"k": "13"
+			},
+			"answers": ["0;1;2;3;4"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Oubli de 4 (½ point)",
+			"variationIndex": 0,
+			"variables": {
+				"k": "13"
+			},
+			"answers": ["0;1;3;4"],
+			"expected": {
+				"status": "unoptimal_form"
+			}
+		},
+		{
+			"description": "1 110 : 2, 3, 5",
+			"variationIndex": 1,
+			"variables": {
+				"k": "37"
+			},
+			"answers": ["0;1;3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 4 coché pour 1 110",
+			"variationIndex": 1,
+			"variables": {
+				"k": "37"
+			},
+			"answers": ["0;1;2;3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "2 133 : 3 et 9",
+			"variationIndex": 2,
+			"variables": {
+				"k": "237"
+			},
+			"answers": ["1;4"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "2 136 : 2, 3, 4",
+			"variationIndex": 3,
+			"variables": {
+				"k": "178"
+			},
+			"answers": ["0;1;2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 9 coché pour 2 136",
+			"variationIndex": 3,
+			"variables": {
+				"k": "178"
+			},
+			"answers": ["0;1;2;4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "1 095 : 3 et 5",
+			"variationIndex": 4,
+			"variables": {
+				"k": "73"
+			},
+			"answers": ["1;3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "4▢52 divisible par 3 : 1",
+			"variationIndex": 5,
+			"variables": {
+				"k": "3",
+				"d1": "4",
+				"d3": "5",
+				"d4": "2"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "4▢52 divisible par 3 : 4",
+			"variationIndex": 5,
+			"variables": {
+				"k": "3",
+				"d1": "4",
+				"d3": "5",
+				"d4": "2"
+			},
+			"answers": ["4"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "4▢52 divisible par 3 : 7",
+			"variationIndex": 5,
+			"variables": {
+				"k": "3",
+				"d1": "4",
+				"d3": "5",
+				"d4": "2"
+			},
+			"answers": ["7"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "4▢52 par 3 : 2 refusé",
+			"variationIndex": 5,
+			"variables": {
+				"k": "3",
+				"d1": "4",
+				"d3": "5",
+				"d4": "2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "4▢52 par 3 : 10 n’est pas un chiffre",
+			"variationIndex": 5,
+			"variables": {
+				"k": "3",
+				"d1": "4",
+				"d3": "5",
+				"d4": "2"
+			},
+			"answers": ["10"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "4▢52 divisible par 9 : 7",
+			"variationIndex": 5,
+			"variables": {
+				"k": "9",
+				"d1": "4",
+				"d3": "5",
+				"d4": "2"
+			},
+			"answers": ["7"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "4▢52 par 9 : 1 refusé (divisible par 3 seulement)",
+			"variationIndex": 5,
+			"variables": {
+				"k": "9",
+				"d1": "4",
+				"d3": "5",
+				"d4": "2"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "5▢07 par 3 : 0, 3, 6 ou 9",
+			"variationIndex": 5,
+			"variables": {
+				"k": "3",
+				"d1": "5",
+				"d3": "0",
+				"d4": "7"
+			},
+			"answers": ["9"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "1▢35 par 9 : 0 ou 9",
+			"variationIndex": 5,
+			"variables": {
+				"k": "9",
+				"d1": "1",
+				"d3": "3",
+				"d4": "5"
+			},
+			"answers": ["9"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Après 1 250 : 1 251",
+			"variationIndex": 6,
+			"variables": {
+				"a": "1250"
+			},
+			"answers": ["1\\,251"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Après 1 250 : 1251 sans espace, perfectible (réglage du modèle)",
+			"variationIndex": 6,
+			"variables": {
+				"a": "1250"
+			},
+			"answers": ["1251"],
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["spaces"]
+			}
+		},
+		{
+			"description": "Erreur prévue : 1 242, en dessous",
+			"variationIndex": 6,
+			"variables": {
+				"a": "1250"
+			},
+			"answers": ["1\\,242"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Ce nombre est bien divisible par $9$, mais il est plus petit que $1250$."
+			}
+		},
+		{
+			"description": "Erreur prévue : 1 259 = 1 250 + 9",
+			"variationIndex": 6,
+			"variables": {
+				"a": "1250"
+			},
+			"answers": ["1\\,259"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Ajouter $9$ ne donne un multiple de $9$ que si on part d'un multiple de $9$ : regarde la somme des chiffres."
+			}
+		},
+		{
+			"description": "Erreur prévue : 1 257, multiple de 3",
+			"variationIndex": 6,
+			"variables": {
+				"a": "1255"
+			},
+			"answers": ["1\\,257"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Ce nombre est divisible par $3$, mais pas par $9$ : la somme de ses chiffres doit être un multiple de $9$."
+			}
+		},
+		{
+			"description": "Après 1 255 : 1 260",
+			"variationIndex": 6,
+			"variables": {
+				"a": "1255"
+			},
+			"answers": ["1\\,260"],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}

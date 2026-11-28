@@ -17,7 +17,7 @@ import { describe, it, expect } from 'vitest';
 import { analyzeSign } from '../analyze';
 import { parseLatex } from '../../parser';
 import { toCustom } from '../../custom-generator';
-import { closedEndpoint, interval, posInfinityEndpoint } from '$lib/math/intervals/factory';
+import { closedEndpoint, interval, posInfinityEndpoint } from '#lib/math/intervals/factory.ts';
 import type { Domain } from '../../domain/types';
 import type { SignAnalysisResult } from '../types';
 

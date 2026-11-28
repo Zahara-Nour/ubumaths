@@ -11,13 +11,13 @@
 	 * `atelier-refonte-interface-phase0.md`), qui appelle `share()` ; cette barre
 	 * garde ce qui se lit : le bandeau d'un atelier reçu, le retour, le lien.
 	 */
-	import { useAtelier } from '$lib/atelier/context';
-	import { encodeAtelier, MAX_URL_PAYLOAD } from '$lib/atelier/url';
-	import { keepReceived } from '$lib/atelier/merge';
-	import { renamedOnReadMessage } from '$lib/atelier/geometry';
+	import { useAtelier } from '#lib/atelier/context.ts';
+	import { encodeAtelier, MAX_URL_PAYLOAD } from '#lib/atelier/url.ts';
+	import { keepReceived } from '#lib/atelier/merge.ts';
+	import { renamedOnReadMessage } from '#lib/atelier/geometry.ts';
 	import { onMount } from 'svelte';
-	import type { AtelierState } from '$lib/atelier/persistence';
-	import { Button } from '$lib/components/ui/button';
+	import type { AtelierState } from '#lib/atelier/persistence.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
 
 	interface Props {
 		/** L'atelier reçu par l'URL, quand il y en a un : on est alors éphémère. */

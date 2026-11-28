@@ -35,39 +35,42 @@
 <script lang="ts">
 	import type { LayoutData } from './$types';
 	import { page } from '$app/state';
-	import { navigating } from '$app/stores';
+	import { navigating } from '$app/state';
 	import { Sun, Moon, Minus, Plus, Maximize, Minimize, Menu } from '@lucide/svelte';
-	import { getNavLinks, getZoneTitle, isNavLinkActive } from '$lib/config/dashboard-nav';
-	import { submitLogoutForm } from '$lib/utils/auth';
+	import { getNavLinks, getZoneTitle, isNavLinkActive } from '#lib/config/dashboard-nav.ts';
+	import { submitLogoutForm } from '#lib/utils/auth.ts';
 	import { resolve } from '$app/paths';
-	import { Button } from '$lib/components/ui/button';
-	import UserAvatar from '$lib/components/UserAvatar.svelte';
-	import { theme } from '$lib/stores/theme.svelte';
-	import { fontSize } from '$lib/stores/fontSize.svelte';
-	import { notificationStore } from '$lib/stores/notifications.svelte';
-	import { notificationsRealtimeManager } from '$lib/stores/notificationsRealtime.svelte';
-	import { activityStore } from '$lib/stores/activity.svelte';
-	import gidouille from '$lib/assets/images/gidouille.png';
-	import AlmanachHeaderDate from '$lib/components/almanach/AlmanachHeaderDate.svelte';
-	import NotificationBanner from '$lib/components/notifications/NotificationBanner.svelte';
-	import NotificationDropdown from '$lib/components/notifications/NotificationDropdown.svelte';
-	import SkeletonPage from '$lib/components/skeleton/SkeletonPage.svelte';
-	import SkeletonDashboard from '$lib/components/skeleton/SkeletonDashboard.svelte';
-	import SkeletonList from '$lib/components/skeleton/SkeletonList.svelte';
-	import SkeletonForm from '$lib/components/skeleton/SkeletonForm.svelte';
-	import { getSkeletonType } from '$lib/utils/skeleton-detector';
-	import TestModeToggle from '$lib/components/teacher/TestModeToggle.svelte';
-	import MobileNavDrawer, { type NavItem } from '$lib/components/navigation/MobileNavDrawer.svelte';
-	import BugReportFAB from '$lib/components/bug-reports/BugReportFAB.svelte';
-	import BugReportDialog from '$lib/components/bug-reports/BugReportDialog.svelte';
-	import FreezeReportPrompt from '$lib/components/bug-reports/FreezeReportPrompt.svelte';
+	import { resolvePath } from '#lib/navigation/resolve-path.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import UserAvatar from '#lib/components/UserAvatar.svelte';
+	import { theme } from '#lib/stores/theme.svelte.ts';
+	import { fontSize } from '#lib/stores/fontSize.svelte.ts';
+	import EasyReadingToggle from '#lib/components/EasyReadingToggle.svelte';
+	import { notificationStore } from '#lib/stores/notifications.svelte.ts';
+	import { notificationsRealtimeManager } from '#lib/stores/notificationsRealtime.svelte.ts';
+	import { activityStore } from '#lib/stores/activity.svelte.ts';
+	import { privateMessages } from '#lib/stores/privateMessages.svelte.ts';
+	import gidouille from '#lib/assets/images/gidouille.png';
+	import AlmanachHeaderDate from '#lib/components/almanach/AlmanachHeaderDate.svelte';
+	import NotificationBanner from '#lib/components/notifications/NotificationBanner.svelte';
+	import NotificationDropdown from '#lib/components/notifications/NotificationDropdown.svelte';
+	import SkeletonPage from '#lib/components/skeleton/SkeletonPage.svelte';
+	import SkeletonDashboard from '#lib/components/skeleton/SkeletonDashboard.svelte';
+	import SkeletonList from '#lib/components/skeleton/SkeletonList.svelte';
+	import SkeletonForm from '#lib/components/skeleton/SkeletonForm.svelte';
+	import { getSkeletonType } from '#lib/utils/skeleton-detector.ts';
+	import TestModeToggle from '#lib/components/teacher/TestModeToggle.svelte';
+	import MobileNavDrawer, { type NavItem } from '#lib/components/navigation/MobileNavDrawer.svelte';
+	import BugReportFAB from '#lib/components/bug-reports/BugReportFAB.svelte';
+	import BugReportDialog from '#lib/components/bug-reports/BugReportDialog.svelte';
+	import FreezeReportPrompt from '#lib/components/bug-reports/FreezeReportPrompt.svelte';
 	import {
 		setFreezePromptCallback,
 		setAutoReportCallback,
 		getFreezeDetectionContext
-	} from '$lib/utils/freezeDetection';
-	import { toaster } from '$lib/stores/toaster.svelte';
-	import { bugReportsConfigStore } from '$lib/stores/bugReportsConfig.svelte';
+	} from '#lib/utils/freezeDetection.ts';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
+	import { bugReportsConfigStore } from '#lib/stores/bugReportsConfig.svelte.ts';
 
 	import type { Snippet } from 'svelte';
 
@@ -103,14 +106,19 @@
 		data.profile.role === 'admin' || adminElevationActive ? 'admin' : data.profile.role
 	);
 
-	// Navigation links — extracted to $lib/config/dashboard-nav.ts for testability
+	// Navigation links — extracted to #lib/config/dashboard-nav.ts for testability
 	let allLinks = $derived(
-		getNavLinks(navRole, data.pendingVipRequestsCount, data.marketplaceEnabled)
+		getNavLinks(
+			navRole,
+			data.pendingVipRequestsCount,
+			data.marketplaceEnabled,
+			privateMessages.unreadCount
+		)
 	);
 	let mainLinks = $derived(allLinks.filter((l) => !l.footer));
 	let footerLinks = $derived(allLinks.filter((l) => l.footer));
 
-	// Lien surligné de la barre latérale (règles dans $lib/config/dashboard-nav.ts)
+	// Lien surligné de la barre latérale (règles dans #lib/config/dashboard-nav.ts)
 	function isActive(href: string) {
 		return isNavLinkActive(href, page.url.pathname);
 	}
@@ -296,7 +304,7 @@
 
 				<!-- Gidouille - links to home -->
 				<a
-					href={resolve('/')}
+					href={resolve('')}
 					data-sveltekit-preload-data="hover"
 					class="transition-opacity hover:opacity-80"
 					aria-label="Retour à l'accueil"
@@ -321,7 +329,7 @@
 			<!-- Test Mode Toggle (teachers only) - hidden on mobile -->
 			{#if data.profile.role === 'teacher'}
 				<div class="hidden md:block">
-					<TestModeToggle currentUserIsTest={data.profile.is_test} />
+					<TestModeToggle currentUserIsTest={data.profile.is_test} enabled={data.teacherTestMode} />
 				</div>
 			{/if}
 
@@ -330,7 +338,7 @@
 				 on the profile page and in the mobile hamburger drawer. -->
 			<div class="border-l pl-2">
 				<a
-					href={resolve('/dashboard/profile')}
+					href={resolve('dashboard/profile')}
 					class="relative block h-10 w-10 cursor-pointer rounded-full transition-all hover:ring-2 hover:ring-ring focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
 					aria-label="Mon profil"
 				>
@@ -371,6 +379,8 @@
 						<Plus class="h-5 w-5" />
 					</Button>
 				</div>
+
+				<EasyReadingToggle />
 
 				<!-- Dark mode toggle -->
 				<Button
@@ -415,10 +425,10 @@
 				<span class="text-center text-xs leading-tight font-medium">{link.label}</span>
 				{#if link.badge && link.badge > 0}
 					<span
-						class="absolute top-1 right-0 flex h-5 w-5 items-center justify-center rounded-full bg-amber-500 text-[10px] font-bold text-white ring-2 ring-background dark:bg-amber-600"
-						aria-label="{link.badge} demandes en attente"
+						class="absolute top-1 right-0 flex h-5 min-w-5 items-center justify-center rounded-full bg-amber-500 px-1 text-[10px] font-bold text-white ring-2 ring-background dark:bg-amber-600"
 					>
-						{link.badge}
+						<span aria-hidden="true">{link.badge > 99 ? '99+' : link.badge}</span>
+						<span class="sr-only">{link.badgeLabel}</span>
 					</span>
 				{/if}
 			{/snippet}
@@ -426,7 +436,7 @@
 			<nav class="flex flex-col items-center gap-1 py-4" aria-label="Navigation principale">
 				{#each mainLinks as link (link.href)}
 					<a
-						href={resolve(link.href as '/')}
+						href={resolvePath(link.href)}
 						class="group relative flex w-16 flex-col items-center gap-1 rounded-lg px-2 py-3 transition-all duration-300 {isActive(
 							link.href
 						)
@@ -455,7 +465,7 @@
 							</button>
 						{:else}
 							<a
-								href={resolve(link.href as '/')}
+								href={resolvePath(link.href)}
 								class="group relative flex w-16 flex-col items-center gap-1 rounded-lg px-2 py-3 transition-all duration-300 {isActive(
 									link.href
 								)
@@ -490,12 +500,12 @@
 			<div class="relative {isFullWidthRoute ? 'p-2' : 'p-4 sm:p-6 lg:p-8'}">
 				<div class={isFullWidthRoute ? 'w-full' : 'mx-auto max-w-4xl'}>
 					<!-- Always render children so page can load -->
-					<div class:opacity-0={$navigating} class="transition-opacity duration-200">
+					<div class:opacity-0={navigating.to} class="transition-opacity duration-200">
 						{@render children()}
 					</div>
 
 					<!-- Overlay skeleton during navigation -->
-					{#if $navigating}
+					{#if navigating.to}
 						<div class="absolute inset-0 bg-background p-4 sm:p-6 lg:p-8">
 							<div class="mx-auto max-w-7xl">
 								{#if skeletonType === 'dashboard'}

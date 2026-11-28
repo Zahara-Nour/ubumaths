@@ -9,9 +9,9 @@
 	 */
 
 	import { Cat } from '@lucide/svelte';
-	import BackLink from '$lib/components/navigation/BackLink.svelte';
-	import ChatterieRaces from '$lib/components/mathoux/ChatterieRaces.svelte';
-	import { collectionCountsPhrase } from '$lib/mathoux/collection-logic';
+	import BackLink from '#lib/components/navigation/BackLink.svelte';
+	import ChatterieRaces from '#lib/components/mathoux/ChatterieRaces.svelte';
+	import { collectionCountsPhrase } from '#lib/mathoux/collection-logic.ts';
 	import type { PageData } from './$types';
 
 	const BACK_HREF = '/dashboard/teacher/gamification/mathoux';

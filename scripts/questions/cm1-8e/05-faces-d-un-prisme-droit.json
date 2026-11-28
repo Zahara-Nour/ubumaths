@@ -1,0 +1,273 @@
+{
+	"id": "f83c0424-7010-43e0-9ae0-ac7da1d948d5",
+	"title": "Les faces d'un prisme droit",
+	"description": "Faces latérales rectangles, bases triangles ; 5 faces = 2 bases + 3 faces latérales ; bases à 5 à 8 côtés, sans dessin",
+	"grades": ["CM1"],
+	"level": 18,
+	"delay": 60,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Quelle est la forme de la face grisée de ce prisme droit ?\n\n```solide\nforme: prisme {{if:o==1|triangle 3 2.5 4|{{if:o==2|triangle-rectangle 3 2 4.5|triangle 4 2 3}}}}\nmarquer: face {{if:o==1|dessous|{{if:o==2|{{if:m==1|dessous|gauche}}|dessous}}}}\ncotes: cm\n```\n\n```choix\n- C'est un rectangle.\n- C'est un triangle.\n- C'est un carré.\n```",
+			"variables": [
+				{
+					"name": "o",
+					"expression": "1..3"
+				},
+				{
+					"name": "m",
+					"expression": "1..2"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La face grisée relie la base de devant à celle de derrière : c'est une face latérale.",
+					"En perspective, elle est dessinée penchée ; dans le vrai prisme, ses angles sont droits et ses côtés n'ont pas tous la même longueur (voir les cotes).",
+					"Les faces latérales d'un prisme droit sont des $\\textcolor{{{color:primary.0}}}{\\text{rectangles}}$."
+				]
+			}
+		},
+		{
+			"statement": "Quelle est la forme de la face grisée de ce prisme droit ?\n\n```solide\nforme: prisme {{if:o==1|triangle 3 2.5 4|{{if:o==2|triangle-rectangle 3 2 4.5|triangle 4 2 3}}}}\nmarquer: face {{if:m==1|devant|derriere}}\n```\n\n```choix\n- C'est un triangle.\n- C'est un rectangle.\n- C'est un carré.\n```",
+			"variables": [
+				{
+					"name": "o",
+					"expression": "1..3"
+				},
+				{
+					"name": "m",
+					"expression": "1..2"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La face grisée est {{if:m==1|devant|derrière}} : c'est une des deux bases du prisme. Elle a $3$ côtés.",
+					"Les bases de ce prisme sont des $\\textcolor{{{color:primary.0}}}{\\text{triangles}}$, pareils et face à face."
+				]
+			}
+		},
+		{
+			"statement": "Combien ce prisme droit a-t-il de faces ? Combien de bases, combien de faces latérales ?\n\n```solide\nforme: prisme {{if:o==1|triangle 3 2.5 4|{{if:o==2|triangle-rectangle 3 2 4.5|triangle 4 2 3}}}}\n```\n\n[_] faces : [_] bases et [_] faces latérales",
+			"variables": [
+				{
+					"name": "o",
+					"expression": "1..3"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "5"
+				},
+				{
+					"expectedAnswer": "2"
+				},
+				{
+					"expectedAnswer": "3"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Les $2$ bases sont les triangles de devant et de derrière.",
+					"Chaque côté de la base porte une face latérale, un rectangle : $3$ faces latérales.",
+					"$2 + 3 = \\textcolor{{{color:primary.0}}}{5}$ faces."
+				]
+			}
+		},
+		{
+			"statement": "Les bases d'un prisme droit sont des polygones à ${{n}}$ côtés. Combien ce prisme a-t-il de faces latérales, et combien de faces en tout ?\n\n[_] faces latérales et [_] faces en tout",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "5..8"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{n}}"
+				},
+				{
+					"expectedAnswer": "{{eval:n+2}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Chaque côté d'une base porte une face latérale, un rectangle : $\\textcolor{{{color:primary.0}}}{{{n}}}$ faces latérales.",
+					"Avec les $2$ bases : ${{n}} + 2 = \\textcolor{{{color:primary.0}}}{{{eval:n+2}}}$ faces en tout."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Face latérale du dessous : rectangle",
+			"variationIndex": 0,
+			"variables": {
+				"o": "1",
+				"m": "1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Face latérale de gauche : rectangle",
+			"variationIndex": 0,
+			"variables": {
+				"o": "2",
+				"m": "2"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : face latérale prise pour un triangle",
+			"variationIndex": 0,
+			"variables": {
+				"o": "3",
+				"m": "2"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : face latérale prise pour un carré",
+			"variationIndex": 0,
+			"variables": {
+				"o": "1",
+				"m": "2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Base de devant : triangle",
+			"variationIndex": 1,
+			"variables": {
+				"o": "1",
+				"m": "1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Base de derrière : triangle",
+			"variationIndex": 1,
+			"variables": {
+				"o": "2",
+				"m": "2"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : base prise pour un rectangle",
+			"variationIndex": 1,
+			"variables": {
+				"o": "3",
+				"m": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "5 faces : 2 bases, 3 latérales",
+			"variationIndex": 2,
+			"variables": {
+				"o": "1"
+			},
+			"answers": ["5", "2", "3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : une seule base",
+			"variationIndex": 2,
+			"variables": {
+				"o": "1"
+			},
+			"answers": ["4", "1", "3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : compté comme un pavé",
+			"variationIndex": 2,
+			"variables": {
+				"o": "2"
+			},
+			"answers": ["6", "2", "4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Bases à 5 côtés : 5 et 7",
+			"variationIndex": 3,
+			"variables": {
+				"n": "5"
+			},
+			"answers": ["5", "7"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Bases à 8 côtés : 8 et 10",
+			"variationIndex": 3,
+			"variables": {
+				"n": "8"
+			},
+			"answers": ["8", "10"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : une seule base",
+			"variationIndex": 3,
+			"variables": {
+				"n": "6"
+			},
+			"answers": ["6", "7"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : bases oubliées",
+			"variationIndex": 3,
+			"variables": {
+				"n": "7"
+			},
+			"answers": ["7", "7"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

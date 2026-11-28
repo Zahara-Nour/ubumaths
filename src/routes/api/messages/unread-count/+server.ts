@@ -1,7 +1,7 @@
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireAuth } from '$lib/server/middleware/auth';
-import { createServerLogger } from '$lib/utils/logger';
+import { requireAuth } from '#lib/server/middleware/auth.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/messages/unread-count/+server');
 
@@ -26,7 +26,7 @@ export const GET: RequestHandler = async ({ locals }) => {
 			throw error(500, 'Erreur lors de la récupération du compteur de messages non lus');
 		}
 
-		return json({ unreadCount: count || 0 });
+		return Response.json({ unreadCount: count || 0 });
 	} catch (err) {
 		logger.error('Error in unread count API:', err);
 		if (err && typeof err === 'object' && 'status' in err) {

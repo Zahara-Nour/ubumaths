@@ -10,7 +10,7 @@
 import { describe, it, expect } from 'vitest';
 import { tableMock } from './table-mock';
 import { fetchCopyNumbering } from '../display-number';
-import { assignmentCopyScope, copyDisplayNumbers } from '$lib/worksheets/worksheet-copy';
+import { assignmentCopyScope, copyDisplayNumbers } from '#lib/worksheets/worksheet-copy.ts';
 
 const WORKSHEET_ID = '550e8400-e29b-41d4-a716-446655440011';
 const ASSIGNMENT_ID = '550e8400-e29b-41d4-a716-446655440010';

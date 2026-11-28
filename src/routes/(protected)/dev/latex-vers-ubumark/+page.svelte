@@ -4,14 +4,14 @@
 		splitStatementAndSolution,
 		type TranspileResult,
 		type SplitResult
-	} from '$lib/ubumark/importers/latex';
-	import ExerciseDisplay from '$lib/components/exercises/ExerciseDisplay.svelte';
-	import { MarkdownRenderer } from '$lib/components/markdown';
-	import LaTeXEditor from '$lib/components/LaTeXEditor.svelte';
-	import * as Tabs from '$lib/components/ui/tabs';
-	import { Button } from '$lib/components/ui/button';
-	import { Badge } from '$lib/components/ui/badge';
-	import type { Exercise } from '$lib/exercises/types';
+	} from '#lib/ubumark/importers/latex/index.ts';
+	import ExerciseDisplay from '#lib/components/exercises/ExerciseDisplay.svelte';
+	import { MarkdownRenderer } from '#lib/components/markdown/index.ts';
+	import CodeEditor from '#lib/components/CodeEditor.svelte';
+	import * as Tabs from '#lib/components/ui/tabs/index.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
+	import type { Exercise } from '#lib/exercises/types.ts';
 
 	// ============================================================================
 	// STATE
@@ -323,8 +323,9 @@ Soit $f(x) = x^2 - 4x + 3$ et $g(x) = \\frac{1}{x-1}$.
 
 		<!-- Input Tab -->
 		<Tabs.Content value="input" class="mt-4">
-			<LaTeXEditor
+			<CodeEditor
 				bind:value={latexInput}
+				ariaLabel="Éditeur LaTeX"
 				height="600px"
 				placeholder="Entrez votre code LaTeX ici..."
 				lineWrapping={true}
@@ -342,8 +343,9 @@ Soit $f(x) = x^2 - 4x + 3$ et $g(x) = \\frac{1}{x-1}$.
 				</Button>
 			</div>
 			{#if editableMarkdown || transpileResult}
-				<LaTeXEditor
+				<CodeEditor
 					bind:value={editableMarkdown}
+					ariaLabel="Éditeur Markdown"
 					height="600px"
 					placeholder="Markdown genere (editable)..."
 					lineWrapping={true}
@@ -387,7 +389,7 @@ Soit $f(x) = x^2 - 4x + 3$ et $g(x) = \\frac{1}{x-1}$.
 					</div>
 
 					<div class="rounded-lg border border-border p-4">
-						<h3 class="mb-2 font-semibold">Enonce</h3>
+						<h3 class="mb-2 font-semibold">Énoncé</h3>
 						<pre
 							class="overflow-x-auto rounded bg-muted p-3 font-mono text-sm whitespace-pre-wrap">{splitResult.statement}</pre>
 					</div>

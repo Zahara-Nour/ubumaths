@@ -6,9 +6,9 @@
 
 <script lang="ts">
 	import type { PageData } from './$types';
-	import RiddleOfTheDayCard from '$lib/components/riddles/RiddleOfTheDayCard.svelte';
-	import RiddleCard from '$lib/components/riddles/RiddleCard.svelte';
-	import * as Card from '$lib/components/ui/card';
+	import RiddleOfTheDayCard from '#lib/components/riddles/RiddleOfTheDayCard.svelte';
+	import RiddleCard from '#lib/components/riddles/RiddleCard.svelte';
+	import * as Card from '#lib/components/ui/card/index.ts';
 	import { Sparkles, BookOpen } from '@lucide/svelte';
 
 	let { data }: { data: PageData } = $props();

@@ -17,15 +17,15 @@
  * @module atelier/factor-steps
  */
 
-import type { RenderedStep } from '$lib/mathAST/common/step-renderer-base';
-import type { MathNode } from '$lib/mathAST/types';
-import { generatePedagogicalSimplifySteps } from '$lib/mathAST/pedagogical-simplify/pipeline';
-import { PedagogicalSimplifyRenderer } from '$lib/mathAST/pedagogical-simplify/renderer';
-import { toLatex } from '$lib/mathAST/latex-generator';
-import { toCustom } from '$lib/mathAST/custom-generator';
+import type { RenderedStep } from '#lib/mathAST/common/step-renderer-base.ts';
+import type { MathNode } from '#lib/mathAST/types.ts';
+import { generatePedagogicalSimplifySteps } from '#lib/mathAST/pedagogical-simplify/pipeline.ts';
+import { PedagogicalSimplifyRenderer } from '#lib/mathAST/pedagogical-simplify/renderer.ts';
+import { toLatex } from '#lib/mathAST/latex-generator.ts';
+import { toCustom } from '#lib/mathAST/custom-generator.ts';
 import { astOf } from './parse';
 import { summaryOf } from './steps-summary';
-import { keepingDomain } from '$lib/mathAST/pedagogical-simplify/keep-domain';
+import { keepingDomain } from '#lib/mathAST/pedagogical-simplify/keep-domain.ts';
 import { domainAlternative, type DomainAlternative } from './domain-guard';
 
 // =============================================================================

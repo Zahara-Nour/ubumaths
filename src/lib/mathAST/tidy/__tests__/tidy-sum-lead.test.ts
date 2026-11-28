@@ -331,9 +331,18 @@ describe('complexe : la partie réelle en tête, même négative', () => {
 		['i-1', '-1 + \\imaginaryI'],
 		['-1-i', '-1 - \\imaginaryI'],
 		['-i-1', '-1 - \\imaginaryI'],
-		// l'écriture de la partie imaginaire ne change pas : i√3/2
-		['-\\dfrac12+\\dfrac{\\sqrt3}{2}i', '-\\dfrac{1}{2} + \\dfrac{\\imaginaryI \\sqrt{3}}{2}'],
-		['\\dfrac{\\sqrt3}{2}i-\\dfrac12', '-\\dfrac{1}{2} + \\dfrac{\\imaginaryI \\sqrt{3}}{2}'],
+		// V35 — sous une barre de fraction, `i` suit la fraction (décision de David,
+		// 2026-11-03 ; numérateur entier, `i` seul, imaginaire pur : 2026-11-27)
+		['-\\dfrac12+\\dfrac{\\sqrt3}{2}i', '-\\dfrac{1}{2} + \\dfrac{\\sqrt{3}}{2} \\imaginaryI'],
+		['\\dfrac{\\sqrt3}{2}i-\\dfrac12', '-\\dfrac{1}{2} + \\dfrac{\\sqrt{3}}{2} \\imaginaryI'],
+		['-\\dfrac12+\\dfrac{i\\sqrt3}{2}', '-\\dfrac{1}{2} + \\dfrac{\\sqrt{3}}{2} \\imaginaryI'],
+		['-\\dfrac12-\\dfrac{\\sqrt3}{2}i', '-\\dfrac{1}{2} - \\dfrac{\\sqrt{3}}{2} \\imaginaryI'],
+		['1+\\dfrac{3i}{2}', '1 + \\dfrac{3}{2} \\imaginaryI'],
+		['\\dfrac{\\sqrt3}{2}+\\dfrac{i}{2}', '\\dfrac{\\sqrt{3}}{2} + \\dfrac{1}{2} \\imaginaryI'],
+		['\\dfrac{i\\sqrt3}{2}', '\\dfrac{\\sqrt{3}}{2} \\imaginaryI'],
+		['-\\dfrac{i\\sqrt3}{2}', '-\\dfrac{\\sqrt{3}}{2} \\imaginaryI'],
+		['\\dfrac{i}{2}', '\\dfrac{1}{2} \\imaginaryI'],
+		['\\dfrac{i}{\\sqrt2}', '\\dfrac{\\sqrt{2}}{2} \\imaginaryI'],
 		// partie réelle irrationnelle
 		['\\sqrt2+i', '\\sqrt{2} + \\imaginaryI'],
 		['i+\\sqrt2', '\\sqrt{2} + \\imaginaryI'],
@@ -367,6 +376,16 @@ describe('complexe : la partie réelle en tête, même négative', () => {
 		['x+iy', '\\imaginaryI y + x'],
 		['z-1', 'z - 1'],
 		['i x-2', '\\imaginaryI x - 2'],
+		// V35 ne touche ni l'écriture sans fraction, ni π, ni une inconnue, ni 1/i, ni i²
+		['2\\sqrt3 i', '2 \\imaginaryI \\sqrt{3}'],
+		['0.5i', '0.5 \\imaginaryI'],
+		['\\dfrac{\\pi}{2}i', '\\dfrac{\\imaginaryI \\pi}{2}'],
+		['1+\\dfrac{2\\pi}{3}i', '1 + \\dfrac{2 \\imaginaryI \\pi}{3}'],
+		['\\exponentialE^{i\\pi/3}', '\\exponentialE^{\\dfrac{\\imaginaryI \\pi}{3}}'],
+		['\\dfrac{x i}{2}', '\\dfrac{\\imaginaryI x}{2}'],
+		['\\dfrac{i}{x}', '\\dfrac{\\imaginaryI}{x}'],
+		['\\dfrac{1}{i}', '\\dfrac{1}{\\imaginaryI}'],
+		['\\dfrac{i^2}{2}', '\\dfrac{\\imaginaryI^2}{2}'],
 		// i ailleurs qu'en facteur d'un terme : pas une forme algébrique
 		['\\exponentialE^{i\\pi/3}-1', '\\exponentialE^{\\dfrac{\\imaginaryI \\pi}{3}} - 1']
 	])('témoin : tidy(%s) = %s', (input, expected) => {

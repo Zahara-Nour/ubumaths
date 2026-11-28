@@ -1,9 +1,9 @@
 <script lang="ts">
 	import { onDestroy, untrack } from 'svelte';
-	import { parseDsl } from '$lib/geometry-core/dsl';
-	import { DslRuntimeError } from '$lib/geometry-core/dsl/errors';
-	import type { DslRuntimeErrorDetails } from '$lib/geometry-core/dsl/errors';
-	import { Figure } from '$lib/geometry-core/graph/figure';
+	import { parseDsl } from '#lib/geometry-core/dsl/index.ts';
+	import { DslRuntimeError } from '#lib/geometry-core/dsl/errors.ts';
+	import type { DslRuntimeErrorDetails } from '#lib/geometry-core/dsl/errors.ts';
+	import { Figure } from '#lib/geometry-core/graph/figure.ts';
 	import { ConstructionExecutor } from '../core/executor';
 	import type {
 		InstrumentType,
@@ -181,10 +181,7 @@
 
 	function handleStepChange(stepIndex: number) {
 		try {
-			executor.reset();
-			for (let i = 0; i <= stepIndex; i++) {
-				executor.step();
-			}
+			executor.seekTo(stepIndex);
 			animatingIds = executor.lastStepNewElementIds;
 			animatingPointIds = executor.lastStepNewPointIds;
 			animatingLineIds = executor.lastStepNewLineIds;
@@ -350,7 +347,9 @@
 	});
 </script>
 
-<div class="construction-player {className}">
+<!-- E3 : le lecteur garde la largeur de sa figure ; une longue consigne ou un
+     message d'arrêt passe à la ligne au lieu de l'étirer -->
+<div class="construction-player {className}" style="max-width: {width}px">
 	{#if parseResult.error}
 		<!-- Parse errors are fatal: the script is unparsable, we cannot show anything. -->
 		<div
@@ -402,7 +401,7 @@
 				{/if}
 				{#if executionStop}
 					<p
-						class="text-xs text-destructive"
+						class="text-xs break-words text-destructive"
 						class:mt-1={currentInstruction || currentSubStepInstruction}
 						data-testid="arret-execution"
 					>

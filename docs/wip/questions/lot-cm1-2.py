@@ -1,6 +1,6 @@
 """Écrit les 10 modèles du lot 2 du CM1 (numération des entiers) dans scripts/questions/cm1-2/.
 
-Phase 0 validée par David le 2026-10-29 (§ 8 du journal `docs/wip/questions-cm1-progress.md`).
+Phase 0 validée par David le 2026-10-29 (§ 8 du journal `docs/archive/wip/questions-cm1-progress.md`).
 Bornes : `cycle3.json`, CM1 (entiers jusqu'à 999 999, six rangs, ranger jusqu'à cinq nombres,
 diviseur candidat ≤ 10 ; exemples du programme : 342 320 filtres en cartons de 1 000, le nombre
 qui suit 99 999, 45 307 … 45 370, 141 n'est pas multiple de 7). Un point par modèle ; le nœud

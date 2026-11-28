@@ -16,7 +16,6 @@ Dépôts clonés dans `extern/` pour inspiration et comparaison. Leur contenu es
 - https://forge.apps.education.fr/sesamath/mathgraph.git
 - https://github.com/dgpad/dgpad.git
 - https://github.com/OpenBoard-org/OpenBoard.git
-- https://forge.apps.education.fr/coopmaths/mathalea.git
 - https://github.com/typst/typst.git
 - https://github.com/Zahara-Nour/new-tinymath.git — ancien site UbuMaths (TinyMath)
 - https://github.com/Navadra/navadra-jeu.git — jeu Navadra d'origine (chantier navadra)

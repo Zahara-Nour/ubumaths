@@ -17,12 +17,12 @@
 
 import { z } from 'zod';
 import type { PageServerLoad } from './$types';
-import { requireRoles } from '$lib/server/middleware/auth';
-import { gradeCodeSchema } from '$lib/server/validation/grades';
-import { getProgrammeMap, getProgrammeTree } from '$lib/server/programme-tree';
-import { getTranscription } from '$lib/server/programmes/transcriptions';
-import { OFFICIAL_PROGRAMMES } from '$lib/programmes/official-programmes';
-import { GRADE_CODES, GRADES } from '$lib/types/grades';
+import { requireRoles } from '#lib/server/middleware/auth.ts';
+import { gradeCodeSchema } from '#lib/server/validation/grades.ts';
+import { getProgrammeMap, getProgrammeTree } from '#lib/server/programme-tree.ts';
+import { getTranscription } from '#lib/server/programmes/transcriptions.ts';
+import { OFFICIAL_PROGRAMMES } from '#lib/programmes/official-programmes.ts';
+import { GRADE_CODES, GRADES } from '#lib/types/grades.ts';
 
 const viewSchema = z.enum(['liste', 'carte', 'pdf', 'texte']);
 

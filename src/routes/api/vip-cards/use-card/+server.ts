@@ -18,14 +18,14 @@
  *   - context optional
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireAuth } from '$lib/server/middleware/auth';
-import { requireConsent } from '$lib/server/middleware/consent';
-import { useCardSchema } from '$lib/server/validation/vip-cards';
-import { verifyTeacherStudentWithRole } from '$lib/server/middleware/student-access';
-import { useCardResultSchema } from '$lib/server/validation/vip-card-rpc';
-import { createServerLogger } from '$lib/utils/logger';
+import { requireAuth } from '#lib/server/middleware/auth.ts';
+import { requireConsent } from '#lib/server/middleware/consent.ts';
+import { useCardSchema } from '#lib/server/validation/vip-cards.ts';
+import { verifyTeacherStudentWithRole } from '#lib/server/middleware/student-access.ts';
+import { useCardResultSchema } from '#lib/server/validation/vip-card-rpc.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/vip-cards/use-card/+server');
 
@@ -98,7 +98,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		throw error(400, errorMessage);
 	}
 
-	return json({
+	return Response.json({
 		success: true,
 		cardName: rpcResult.cardName,
 		instanceId: rpcResult.instanceId,

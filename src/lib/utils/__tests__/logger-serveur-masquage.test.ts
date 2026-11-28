@@ -7,7 +7,7 @@
  * en face, ce qui doit rester lisible pour trier une erreur (codes d'erreur, chemins de pile).
  */
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { createServerLogger } from '$lib/utils/logger';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 afterEach(() => {
 	vi.restoreAllMocks();

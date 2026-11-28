@@ -7,12 +7,11 @@
  * - Mock Supabase client creation
  * - Test data fixtures
  * - Common test assertions
- * - Message template helpers
  */
 
 import { vi } from 'vitest';
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { Database } from '$lib/types/database';
+import type { Database } from '#lib/types/database.ts';
 import type { Mock } from 'vitest';
 
 // ============================================================================
@@ -96,8 +95,7 @@ export const mockIds = {
 	class2: 'class-3b',
 	message1: 'msg-001',
 	message2: 'msg-002',
-	draft1: 'draft-001',
-	template1: 'template-001'
+	draft1: 'draft-001'
 };
 
 /**
@@ -159,29 +157,6 @@ export const mockDraft = {
 	replying_to_message_id: null,
 	created_at: '2024-01-15T09:00:00Z',
 	updated_at: '2024-01-15T09:30:00Z'
-};
-
-/**
- * Mock message template
- */
-export const mockTemplate = {
-	id: mockIds.template1,
-	title: 'Assessment Question Template',
-	description: 'Template for asking about assessments',
-	subject_template: 'Question about {{assessment_title}}',
-	body_template: 'Hi {{student_name}}, I have a question about {{assessment_title}}.',
-	trigger_type: 'assessment_question' as const,
-	trigger_config: {},
-	scope: 'system' as const,
-	created_by: mockIds.teacher,
-	class_id: null,
-	variables: [
-		{ name: 'assessment_title', label: 'Assessment Title', example: 'Math Quiz 1' },
-		{ name: 'student_name', label: 'Student Name', example: 'Alice' }
-	],
-	is_active: true,
-	created_at: '2024-01-10T00:00:00Z',
-	updated_at: '2024-01-10T00:00:00Z'
 };
 
 /**
@@ -286,15 +261,6 @@ export function containsMathFormulas(content: string): boolean {
 }
 
 /**
- * Extract variables from template string
- */
-export function extractTemplateVariables(template: string): string[] {
-	const matches = template.match(/\{\{([^}]+)\}\}/g);
-	if (!matches) return [];
-	return matches.map((match) => match.replace(/\{\{|\}\}/g, '').trim());
-}
-
-/**
  * Check if message has been read
  */
 export function isMessageRead(inboxEntry: typeof mockInboxEntry): boolean {
@@ -345,17 +311,6 @@ export function createMockDraft(overrides: Partial<typeof mockDraft> = {}) {
 	};
 }
 
-/**
- * Create mock template with custom fields
- */
-export function createMockTemplate(overrides: Partial<typeof mockTemplate> = {}) {
-	return {
-		...mockTemplate,
-		...overrides,
-		id: overrides.id || `template-${Date.now()}`
-	};
-}
-
 // ============================================================================
 // VALIDATION HELPERS
 // ============================================================================
@@ -387,54 +342,6 @@ export function validateSendMessageData(data: Record<string, unknown>): {
 	}
 
 	return { valid: true };
-}
-
-/**
- * Validate template data
- */
-export function validateTemplateData(data: Record<string, unknown>): {
-	valid: boolean;
-	errors: string[];
-} {
-	const errors: string[] = [];
-
-	if (!data.title || typeof data.title !== 'string' || data.title.trim().length === 0) {
-		errors.push('Title is required');
-	}
-
-	if (
-		!data.subject_template ||
-		typeof data.subject_template !== 'string' ||
-		data.subject_template.trim().length === 0
-	) {
-		errors.push('Subject template is required');
-	}
-
-	if (
-		!data.body_template ||
-		typeof data.body_template !== 'string' ||
-		data.body_template.trim().length === 0
-	) {
-		errors.push('Body template is required');
-	}
-
-	if (!data.trigger_type) {
-		errors.push('Trigger type is required');
-	}
-
-	if (!data.scope || !['system', 'class'].includes(data.scope as string)) {
-		errors.push('Invalid scope');
-	}
-
-	if (data.scope === 'system' && data.class_id) {
-		errors.push('System templates cannot have class_id');
-	}
-
-	if (data.scope === 'class' && !data.class_id) {
-		errors.push('Class templates must have class_id');
-	}
-
-	return { valid: errors.length === 0, errors };
 }
 
 // ============================================================================

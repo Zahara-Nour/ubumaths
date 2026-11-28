@@ -102,7 +102,6 @@ describe('redirectHandle — pages de démo et de debug rangées sous /dev et /a
 		['/test-cadres', '/dev/cadres'],
 		['/test-font', '/dev/polices'],
 		['/test-erreur', '/dev/erreurs/page'],
-		['/blockly/playground', '/dev/blockly'],
 		['/dashboard/admin/errors/test', '/dev/erreurs/surveillance'],
 		['/dashboard/admin/debug/session', '/dev/session'],
 		['/dashboard/admin/debug/rls', '/dev/rls'],

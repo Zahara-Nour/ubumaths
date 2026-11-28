@@ -11,8 +11,8 @@
  */
 
 import { describe, expect, it } from 'vitest';
-import { CORPUS } from '$lib/mathAST/differentiation/__tests__/oracle/derivatives-corpus';
-import { WebReplEngine } from '$lib/mathAST/cli/web/web-repl-engine';
+import { CORPUS } from '#lib/mathAST/differentiation/__tests__/oracle/derivatives-corpus.ts';
+import { WebReplEngine } from '#lib/mathAST/cli/web/web-repl-engine.ts';
 import { deriveSteps } from '../derive-steps';
 import { decimalCommaLatex } from '../decimal-comma';
 

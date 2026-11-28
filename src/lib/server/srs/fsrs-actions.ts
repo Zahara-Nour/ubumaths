@@ -25,12 +25,12 @@
  */
 
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { Database, Json } from '$lib/types/database';
-import { FSRS } from '$lib/srs/fsrs';
-import type { CardState, CardStats, Grade, ReviewHistoryEntry } from '$lib/srs/types';
-import { createServiceRoleClient } from '$lib/server/serviceRoleClient';
+import type { Database, Json } from '#lib/types/database.ts';
+import { FSRS } from '#lib/srs/fsrs.ts';
+import type { CardState, CardStats, Grade, ReviewHistoryEntry } from '#lib/srs/types.ts';
+import { createServiceRoleClient } from '#lib/server/serviceRoleClient.ts';
 import { reviewBestOfDay } from './best-of-day';
-import { createServerLogger } from '$lib/utils/logger';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('server/srs/fsrs-actions');
 
@@ -142,7 +142,7 @@ export async function upsertCardStats(
 		next_review: stats.nextReview,
 		total_reviews: stats.totalReviews,
 		// ReviewHistoryEntry[] (interface) → JSONB column: bridge to Json
-		review_history: stats.reviewHistory as unknown as Json
+		review_history: stats.reviewHistory as unknown as NonNullable<Json>
 	};
 
 	if (options.verifyWrite) {

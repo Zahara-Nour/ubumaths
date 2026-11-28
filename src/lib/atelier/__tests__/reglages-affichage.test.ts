@@ -10,9 +10,9 @@
 
 import { describe, it, expect, vi } from 'vitest';
 import { Atelier } from '../atelier.svelte';
-import { GrapheurStore } from '$lib/stores/grapheur.svelte';
+import { GrapheurStore } from '#lib/stores/grapheur.svelte.ts';
 import { syncPlots, curveOf } from '../plot-sync';
-import { isExplicitFunction, type ExplicitFunction } from '$lib/grapheur/types';
+import { isExplicitFunction, type ExplicitFunction } from '#lib/grapheur/types.ts';
 import { loadAtelier, saveAtelier, ATELIER_STORAGE_KEY, type AtelierState } from '../persistence';
 import { encodeAtelier, decodeAtelier } from '../url';
 import { mergeInto } from '../merge';

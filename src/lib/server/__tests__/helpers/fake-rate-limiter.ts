@@ -1,13 +1,13 @@
 /**
- * Double du limiteur en base (`$lib/server/rateLimiter`) pour les tests unitaires de routes.
+ * Double du limiteur en base (`#lib/server/rateLimiter.ts`) pour les tests unitaires de routes.
  *
  * Sans lui, `rateLimit()` écrit dans `rate_limits` de la base locale (un second passage dans
  * l'heure rend 429) ou, sans clé service role, lève. Compteur par clé, propre au fichier de
  * test, mêmes règles que la RPC `check_and_increment_rate_limit` (fenêtre ignorée).
  *
- * Usage : `vi.mock('$lib/server/rateLimiter', () => import('$lib/server/__tests__/helpers/fake-rate-limiter'));`
+ * Usage : `vi.mock('#lib/server/rateLimiter.ts', () => import('#lib/server/__tests__/helpers/fake-rate-limiter.ts'));`
  */
-import type { RateLimitResult } from '$lib/server/rateLimiter';
+import type { RateLimitResult } from '#lib/server/rateLimiter.ts';
 
 const counts = new Map<string, number>();
 

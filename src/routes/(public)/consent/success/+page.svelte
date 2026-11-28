@@ -1,7 +1,7 @@
 <script lang="ts">
-	import { lore } from '$lib/config/lore';
-	import { Card, CardContent, CardHeader, CardTitle } from '$lib/components/ui/card';
-	import { Button } from '$lib/components/ui/button';
+	import { lore } from '#lib/config/lore.ts';
+	import { Card, CardContent, CardHeader, CardTitle } from '#lib/components/ui/card/index.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
 	import { CheckCircle2, ExternalLink } from '@lucide/svelte';
 </script>
 

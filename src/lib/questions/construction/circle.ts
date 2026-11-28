@@ -23,7 +23,8 @@
  * validée par David le 2026-11-08) : `cercle(O, passant=A)` (compas piqué en O,
  * ouvert jusqu'à A ; papier uni ou quadrillage) et `cercle(O, rayon=distance(D, E))`
  * (Report de [DE] piqué en O ; papier uni). Messages, dans l'ordre : il manque le
- * cercle, compas ouvert à l'œil (bon cercle, point de passage non construit), mauvais
+ * cercle, compas ouvert à l'œil (bon cercle, point de passage non construit ; pour
+ * `rayon=`, le message du mauvais rayon, E62), mauvais
  * centre, bon centre mais mauvais rayon. L'essai : le dernier cercle centré en O.
  * Sur quadrillage, les nœuds suffisent (tout cercle tracé est aimanté aux nœuds).
  *
@@ -44,8 +45,8 @@ import {
 	centeredCircleOf,
 	type CenteredCircle,
 	type CircleCheck
-} from '$lib/ubumark/types/construction';
-import type { LengthUnit } from '$lib/ubumark/types/construction';
+} from '#lib/ubumark/types/construction.ts';
+import type { LengthUnit } from '#lib/ubumark/types/construction.ts';
 import type { DrawnCircle, DrawnLine, DrawnObject, DrawnRegle } from './answer';
 import { basePointsOf, constructionOf, isInFrame, rulerGraduationOf } from './instruments';
 import type { ConstructionVerdict, Position } from './judge';
@@ -84,8 +85,6 @@ export const goodCenterRadiusFeedback = (radius: string) =>
 	`Ton cercle a le bon centre mais pas le bon rayon : reporte la longueur ${radius}.`;
 export const centeredThroughEyeballedFeedback = (through: string) =>
 	`Ton compas est ouvert à l’œil : ouvre-le jusqu’à ${through}.`;
-export const centeredRadiusEyeballedFeedback = (radius: string) =>
-	`Ton compas est ouvert à l’œil : prends l’écartement ${radius} avec le Report.`;
 export const centeredRulerEyeballedFeedback = () =>
 	'Ton compas est ouvert à l’œil : ouvre-le sur une graduation de la règle.';
 export const severalCirclesFeedback = (center: string, expected = 1) =>
@@ -414,7 +413,8 @@ export function judgeCircles(
 	expected: ExpectedPoints | undefined,
 	points: ReadonlyMap<string, Position>,
 	shapes: FigureShapes | undefined,
-	objects: readonly DrawnObject[]
+	objects: readonly DrawnObject[],
+	{ composite = false }: { composite?: boolean } = {}
 ): ConstructionVerdict {
 	// Rayon donné en cm (PR 3) : la règle graduée et le compas, rien d'autre (garanti par le parseur)
 	const ruled = checks.some((c) => centeredCircleOf(c.expression)?.kind === 'longueur');
@@ -452,6 +452,9 @@ export function judgeCircles(
 		const free = circleIndexes.filter((i) => !taken.has(i));
 		const centered = centeredCircleOf(check.expression);
 		if (centered) {
+			// Figure composée (outil n° 45) : un cercle d'un autre centre est celui d'une autre
+			// étape, pas un essai de celui-ci (« Pique ton compas en A » ne dirait pas vrai)
+			const tries = composite ? free.filter((i) => hasCenter(circleAt(i), target.center)) : free;
 			// Quadrillage : chaque toucher est aimanté à un nœud, tout cercle tracé est construit
 			const onGrid = Boolean(shapes?.grid);
 			// Les cercles qui recouvrent un AUTRE cercle attendu ne sont pas des essais de
@@ -463,10 +466,11 @@ export function judgeCircles(
 				const verdict = judgeRuled(
 					centered,
 					target,
-					{ free, all: circleIndexes },
+					{ free: tries, all: circleIndexes },
 					circleAt,
 					others,
-					(i) => graduationOf(circleAt(i), rulersBefore(i), rulerLength)
+					(i) => compassGraduationOf(circleAt(i), rulersBefore(i), rulerLength),
+					composite
 				);
 				if (typeof verdict !== 'number') return verdict;
 				taken.add(verdict);
@@ -475,7 +479,7 @@ export function judgeCircles(
 			const verdict = judgeCentered(
 				centered,
 				target,
-				free,
+				tries,
 				circleAt,
 				(i) => onGrid || built(i),
 				others
@@ -547,13 +551,15 @@ function judgeCentered(
 	const good = covering.find(built);
 	if (good !== undefined) return good;
 	if (covering.length > 0) {
-		// Le centre est un point de la figure : seul le rayon a pu être pris à l'œil
+		// Le centre est un point de la figure : seul le rayon a pu être pris à l'œil.
+		// Rayon donné par un segment : un seul message, celui du mauvais rayon (E62 :
+		// au toucher, un rayon pris à l'œil ne tombe jamais pile, l'élève ne lisait que lui)
 		return {
 			status: 'incorrect',
 			feedback:
 				centered.kind === 'passant'
 					? centeredThroughEyeballedFeedback(radiusWord)
-					: centeredRadiusEyeballedFeedback(radiusWord)
+					: goodCenterRadiusFeedback(radiusWord)
 		};
 	}
 	const attempts = free.filter((i) => {
@@ -583,7 +589,7 @@ function judgeCentered(
  * La graduation (mm, plus de 0) où le compas est ouvert : son point d'ouverture
  * sur une graduation d'une règle posée avec son 0 au centre du cercle ; null sinon
  */
-function graduationOf(
+export function compassGraduationOf(
 	circle: DrawnCircle,
 	rulers: readonly DrawnRegle[],
 	rulerLength: number
@@ -612,7 +618,8 @@ function judgeRuled(
 	indexes: { free: readonly number[]; all: readonly number[] },
 	circleAt: (i: number) => DrawnCircle,
 	others: readonly ExpectedCircle[],
-	graduation: (i: number) => number | null
+	graduation: (i: number) => number | null,
+	composite = false
 ): number | ConstructionVerdict {
 	const shapeOf = (i: number): ExpectedCircle => ({
 		center: centerOf(circleAt(i)),
@@ -641,7 +648,8 @@ function judgeRuled(
 		others.filter(
 			(other) => distance(other.center, target.center) <= tolerance(other.center, target.center)
 		).length;
-	if (distinct.length > expectedHere) {
+	// Figure composée (outil n° 45) : un autre cercle de ce centre est celui d'une autre étape
+	if (!composite && distinct.length > expectedHere) {
 		return {
 			status: 'incorrect',
 			feedback: severalCirclesFeedback(centered.center, expectedHere)

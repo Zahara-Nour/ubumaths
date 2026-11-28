@@ -13,7 +13,7 @@ import { page, userEvent } from 'vitest/browser';
 import { render } from 'vitest-browser-svelte';
 import Page from '../+page.svelte';
 
-vi.mock('$lib/dictionary/fetch-dictionary', () => ({ fetchDictionary: async () => [] }));
+vi.mock('#lib/dictionary/fetch-dictionary.ts', () => ({ fetchDictionary: async () => [] }));
 
 const USAGES = ['usage-message', 'usage-cahier', 'usage-enonce'];
 

@@ -5,13 +5,18 @@
  *   correction) et ne corrige rien ; à la fin, la copie part au serveur ;
  * - après l'envoi : correction par question avec ses points, note sur 20 et
  *   « x/n questions », tels que le serveur les rend ;
- * - recharger : mêmes questions, cases vides ; Course : chrono au temps restant.
+ * - recharger : mêmes questions, cases vides ; Course : chrono au temps restant ;
+ * - page d'attente (chantier `diaporama-reglages`, PR 2b) : lue AVANT le
+ *   démarrage (lecture seule) ; la tentative ne démarre qu'au clic.
  */
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import { page } from 'vitest/browser';
-import type { PublicQuestion } from '$lib/questions/public-question';
-import type { EvaluationStartResponse } from '$lib/types/evaluation-attempt';
+import type { PublicQuestion } from '#lib/questions/public-question.ts';
+import type {
+	EvaluationOverviewResponse,
+	EvaluationStartResponse
+} from '#lib/types/evaluation-attempt.ts';
 
 const url = vi.hoisted(() => ({ current: new URL('http://localhost/automaths/test') }));
 vi.mock('$app/state', () => ({
@@ -21,17 +26,18 @@ vi.mock('$app/state', () => ({
 		}
 	}
 }));
-vi.mock('$app/navigation', async (importOriginal) => ({
-	...(await importOriginal<typeof import('$app/navigation')>()),
-	goto: vi.fn(async () => {}),
-	replaceState: vi.fn()
-}));
+vi.mock('$app/navigation', async () =>
+	(await import('#tests/helpers/app-navigation-mock.ts')).appNavigationMock({
+		goto: vi.fn(async () => {}),
+		replaceState: vi.fn()
+	})
+);
 
 import Page from '../+page.svelte';
 import { goto, replaceState } from '$app/navigation';
 
 // Le dictionnaire arrive de /api/dictionnaire (ADR 0022) : ici, le jeu de référence figé
-vi.mock('$lib/dictionary/fetch-dictionary', async () => {
+vi.mock('#lib/dictionary/fetch-dictionary.ts', async () => {
 	const { REFERENCE_DICTIONARY: entries } =
 		await import('../../../../../../tests/fixtures/lexique/dictionnaire-reference');
 	return { fetchDictionary: async () => entries };
@@ -110,12 +116,40 @@ function apiCalls(): Array<[string, RequestInit | undefined]> {
 		.filter(([href]) => href.startsWith('/api/'));
 }
 
+/** Page d'attente rendue par la lecture seule, d'après la tentative que `start` rendra */
+function overviewOf(start: EvaluationStartResponse): EvaluationOverviewResponse {
+	if (start.preview) {
+		return {
+			preview: true,
+			evaluation: start.evaluation,
+			questionCount: start.evaluation.items.length,
+			durationSeconds: start.evaluation.time_limit ?? 60,
+			resumed: false
+		};
+	}
+	const { attempt, evaluation } = start;
+	return {
+		preview: false,
+		evaluation,
+		questionCount: attempt.questions.length,
+		durationSeconds:
+			evaluation.form === 'course'
+				? (attempt.remainingSeconds ?? 0)
+				: attempt.questions.reduce((sum, q) => sum + q.delaySeconds, 0),
+		resumed: attempt.resumed
+	};
+}
+
 function mockApi(
 	start: EvaluationStartResponse,
-	submitReply: { status: number; body: unknown } = { status: 200, body: SUBMIT_RESPONSE }
+	submitReply: { status: number; body: unknown } = { status: 200, body: SUBMIT_RESPONSE },
+	overviewReply: { status: number; body: unknown } = { status: 200, body: overviewOf(start) }
 ) {
 	fetchMock = vi.fn(async (input: RequestInfo | URL, init?: RequestInit) => {
 		const href = String(input);
+		if (href === `/api/evaluations/assignments/${ASSIGNMENT}` && !init?.method) {
+			return new Response(JSON.stringify(overviewReply.body), { status: overviewReply.status });
+		}
 		if (href.startsWith('/api/') && href.includes('/start')) {
 			return new Response(JSON.stringify(start), { status: 200 });
 		}
@@ -128,13 +162,31 @@ function mockApi(
 	vi.stubGlobal('fetch', fetchMock);
 }
 
-async function renderPage() {
+/** Ouvre la page d'un contrôle assigné : elle s'arrête sur la page d'attente */
+async function renderWaitingPage() {
 	url.current = new URL(`http://localhost/automaths/test?assignment=${ASSIGNMENT}`);
 	const main = document.body.appendChild(document.createElement('main'));
-	return await render(Page, {
+	const rendered = await render(Page, {
 		target: main,
 		props: { data: { user: { id: 'eleve' } } } as never
 	});
+	await expect.element(page.getByTestId('series-start-summary')).toBeVisible();
+	return rendered;
+}
+
+function startButton(): HTMLButtonElement {
+	const button = [...document.querySelectorAll<HTMLButtonElement>('button')].find((b) =>
+		/C'est parti|Reprendre/.test(b.textContent ?? '')
+	);
+	expect(button, 'bouton de la page d’attente').toBeDefined();
+	return button!;
+}
+
+/** Ouvre la page puis passe la page d'attente (la tentative démarre au clic) */
+async function renderPage() {
+	const rendered = await renderWaitingPage();
+	startButton().click();
+	return rendered;
 }
 
 /** Coche le choix `index` de la question affichée puis « Valider » */
@@ -161,13 +213,15 @@ describe('Évaluation notée — page élève', () => {
 		document.body.innerHTML = '';
 	});
 
-	it('E19 : ne demande que /start (aucun modèle), n’affiche aucune correction pendant', async () => {
+	it('E19 : ne demande que la page d’attente puis /start (aucun modèle), n’affiche aucune correction pendant', async () => {
 		mockApi(startResponse());
 		const { container } = await renderPage();
 
 		await expect.element(page.getByText('Combien font 2 + 2 ?')).toBeVisible();
-		expect(apiCalls()).toHaveLength(1);
-		expect(apiCalls()[0][0]).toContain(`/assignments/${ASSIGNMENT}/start`);
+		expect(apiCalls().map(([href]) => href)).toEqual([
+			`/api/evaluations/assignments/${ASSIGNMENT}`,
+			`/api/evaluations/assignments/${ASSIGNMENT}/start`
+		]);
 		expect(container.textContent).not.toMatch(/Correction|bonnes réponses|\/20/);
 	});
 
@@ -180,8 +234,8 @@ describe('Évaluation notée — page élève', () => {
 		await expect.element(page.getByText('Combien font 1 + 2 ?')).toBeVisible();
 		await answerCurrent(1);
 
-		await vi.waitFor(() => expect(apiCalls()).toHaveLength(2));
-		const [submitUrl, init] = apiCalls()[1] as [string, RequestInit];
+		await vi.waitFor(() => expect(apiCalls()).toHaveLength(3));
+		const [submitUrl, init] = apiCalls()[2] as [string, RequestInit];
 		expect(submitUrl).toContain(`/attempts/${ATTEMPT}/submit`);
 		const body = JSON.parse(String(init.body));
 		expect(
@@ -257,8 +311,8 @@ describe('Évaluation notée — Course reprise après la fin du temps', () => {
 		});
 		await renderPage();
 
-		await vi.waitFor(() => expect(apiCalls()).toHaveLength(2), { timeout: 5000 });
-		expect(apiCalls()[1][0]).toContain(`/attempts/${ATTEMPT}/submit`);
+		await vi.waitFor(() => expect(apiCalls()).toHaveLength(3), { timeout: 5000 });
+		expect(apiCalls()[2][0]).toContain(`/attempts/${ATTEMPT}/submit`);
 		await expect.element(page.getByTestId('evaluation-grade')).toHaveTextContent('0/20');
 		expect(document.body.textContent).toMatch(/après la fin du temps/);
 	});
@@ -308,5 +362,116 @@ describe('Évaluation notée — envoi réussi, réponse perdue (409)', () => {
 		await vi.waitFor(() =>
 			expect(goto).toHaveBeenCalledWith(`/dashboard/student/assessments/${ASSIGNMENT}/results`)
 		);
+	});
+});
+
+describe('Contrôle assigné — page d’attente avant le démarrage (PR 2b)', () => {
+	beforeEach(() => {
+		vi.spyOn(console, 'error').mockImplementation(() => {});
+	});
+	afterEach(() => {
+		vi.unstubAllGlobals();
+		document.body.innerHTML = '';
+	});
+
+	it('Course : titre, forme, questions, temps ; la tentative ne démarre PAS avant le clic', async () => {
+		mockApi(startResponse({}, 'course'));
+		await renderWaitingPage();
+
+		expect(document.querySelector('h2')?.textContent).toBe('Tables');
+		await expect
+			.element(page.getByTestId('series-start-summary'))
+			.toHaveTextContent('Course aux nombres · 2 questions · 5 min');
+		// Rien n'a démarré : ni /start, ni question, ni chrono
+		await new Promise((resolve) => setTimeout(resolve, 100));
+		expect(apiCalls().map(([href]) => href)).toEqual([
+			`/api/evaluations/assignments/${ASSIGNMENT}`
+		]);
+		expect(document.body.textContent).not.toContain('Combien font 2 + 2 ?');
+
+		startButton().click();
+		await expect.element(page.getByText('Combien font 2 + 2 ?')).toBeVisible();
+		expect(apiCalls()[1]).toEqual([
+			`/api/evaluations/assignments/${ASSIGNMENT}/start`,
+			{ method: 'POST' }
+		]);
+	});
+
+	it('Contrôle blanc : « environ » la somme des chronos', async () => {
+		mockApi(startResponse());
+		await renderWaitingPage();
+		await expect
+			.element(page.getByTestId('series-start-summary'))
+			.toHaveTextContent('Contrôle blanc · 2 questions · environ 2 min');
+	});
+
+	it('Course commencée : « il te reste », bouton « Reprendre »', async () => {
+		mockApi(startResponse({ resumed: true, remainingSeconds: 125 }, 'course'));
+		await renderWaitingPage();
+		await expect
+			.element(page.getByTestId('series-start-summary'))
+			.toHaveTextContent('Tu reprends ton contrôle : il te reste 2 min 5 s');
+		expect(startButton().textContent).toContain('Reprendre');
+	});
+
+	it('Contrôle blanc commencé : mêmes questions, réponses à retaper', async () => {
+		mockApi(startResponse({ resumed: true }));
+		await renderWaitingPage();
+		await expect
+			.element(page.getByTestId('series-start-summary'))
+			.toHaveTextContent('Tu reprends ton contrôle : 2 questions, réponses à retaper');
+	});
+
+	it('refus dès la page d’attente (date limite) : le message, jamais de /start', async () => {
+		mockApi(startResponse(), undefined, {
+			status: 403,
+			body: { error: 'La date limite est dépassée' }
+		});
+		url.current = new URL(`http://localhost/automaths/test?assignment=${ASSIGNMENT}`);
+		const main = document.body.appendChild(document.createElement('main'));
+		await render(Page, { target: main, props: { data: { user: { id: 'eleve' } } } as never });
+
+		await expect.element(page.getByText('La date limite est dépassée')).toBeVisible();
+		expect(apiCalls().some(([href]) => href.includes('/start'))).toBe(false);
+	});
+
+	it('démarrage en échec (500) : retour à la page d’attente, « C’est parti ! » réessaie', async () => {
+		mockApi(startResponse());
+		const succeed = fetchMock.getMockImplementation() as (
+			input: RequestInfo | URL,
+			init?: RequestInit
+		) => Promise<Response>;
+		let startCalls = 0;
+		fetchMock.mockImplementation(async (input: RequestInfo | URL, init?: RequestInit) => {
+			if (String(input).includes('/start') && ++startCalls === 1) {
+				return new Response(
+					JSON.stringify({
+						error: 'Impossible de commencer le contrôle, réessayer dans un instant'
+					}),
+					{ status: 500 }
+				);
+			}
+			return succeed(input, init);
+		});
+		await renderWaitingPage();
+
+		startButton().click();
+		await vi.waitFor(() => expect(startCalls).toBe(1));
+		await vi.waitFor(() => expect(startButton().disabled).toBe(false));
+		await expect.element(page.getByTestId('series-start-summary')).toBeVisible();
+
+		startButton().click();
+		await expect.element(page.getByText('Combien font 2 + 2 ?')).toBeVisible();
+		expect(startCalls).toBe(2);
+	});
+
+	it('double clic sur « C’est parti ! » : un seul démarrage', async () => {
+		mockApi(startResponse());
+		await renderWaitingPage();
+		const button = startButton();
+		button.click();
+		button.click();
+		await expect.element(page.getByText('Combien font 2 + 2 ?')).toBeVisible();
+		expect(apiCalls().filter(([href]) => href.includes('/start'))).toHaveLength(1);
 	});
 });

@@ -9,7 +9,10 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { findLinesToPlace, parseNumberLineContent } from '$lib/ubumark/parser/number-line-parser';
+import {
+	findLinesToPlace,
+	parseNumberLineContent
+} from '#lib/ubumark/parser/number-line-parser.ts';
 import {
 	expectedInterval,
 	isIncompleteRepresentation,
@@ -18,7 +21,7 @@ import {
 	representerMistakes,
 	stateOfAnswer,
 	type RepresenterState
-} from '$lib/ubumark/utils/number-line-representer';
+} from '#lib/ubumark/utils/number-line-representer.ts';
 
 const LINE = ['start: -5', 'end: 5', 'step: 1'];
 const parse = (...lines: string[]) => parseNumberLineContent(lines);

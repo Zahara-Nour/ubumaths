@@ -20,7 +20,7 @@ describe('pied de page de l’accueil', () => {
 	});
 
 	it('affiche le panneau « Infos et confidentialité »', () => {
-		expect(layout).toMatch(/import InfoPanel from '\$lib\/components\/InfoPanel\.svelte'/);
+		expect(layout).toMatch(/import InfoPanel from '#lib\/components\/InfoPanel\.svelte'/);
 		expect(layout).toMatch(/<InfoPanel\s*\/>/);
 	});
 });

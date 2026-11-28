@@ -2,7 +2,7 @@
  * Shared (client-safe) constants for the unified game leaderboards.
  * =================================================================
  *
- * Lives OUTSIDE `$lib/server` so both the page UI and the server-side Zod schema
+ * Lives OUTSIDE `#lib/server` so both the page UI and the server-side Zod schema
  * can import the same source of truth. The value tuples must match the RPC
  * whitelists (`game_leaderboard` / `minesweeper_scoped_leaderboard`).
  */

@@ -95,20 +95,19 @@ Les scripts sont stockés en base dans `constructions.dsl_script`. Routes :
 `src/routes/(protected)/constructions/` (liste, `[id]`, `[id]/edit`, `new`, `conversion`, `essais`) et
 la vitrine `src/routes/(public)/demo/constructions/`.
 
-⚠️ L'ancien module `src/lib/constructions/` (XML, avant le DSL) vit encore : utilisé par
-`whiteboard/components/InstrumentLayer.svelte`, `QuestionTemplateForm.svelte` et
-`routes/api/constructions/convert`. Il ne fait pas partie de ce système.
+L'ancien module src/lib/constructions (sans « -v2 ») (JSON, avant le DSL) est retiré depuis le 2026-11-28
+(M38) ; ses instruments vivent dans `src/lib/whiteboard/components/instruments/`.
 
 ### Composants et consommateurs
 
-| Fichier                                                                     | Rôle                                                                                |
-| --------------------------------------------------------------------------- | ----------------------------------------------------------------------------------- |
-| `src/lib/components/geometry/GeometryCanvas.svelte`                         | Toile interactive : SVG, rough.js (main levée), MathLive (`mtexte`), drag, curseurs |
-| `src/lib/components/geometry/ElementPopover.svelte`, `SliderControl.svelte` | Panneau d'un objet, curseur                                                         |
-| `src/lib/ubumark/utils/figure-scene.ts`                                     | Bloc ` ```figure ` : interprète, refuse ce que le PDF ne sait pas dessiner, budget  |
-| `src/lib/ubumark/utils/figure-svg.ts`                                       | Bloc ` ```figure ` à l'écran : SVG statique (`figureToSvg`), sans `GeometryCanvas`  |
-| `src/lib/ubumark/generators/figure-typst.ts`                                | Bloc ` ```figure ` au PDF : `exportToTypst`                                         |
-| `src/lib/components/markdown/nodes/FigureBlock*.svelte`                     | Composants du bloc (chargement à la demande)                                        |
+| Fichier                                                                     | Rôle                                                                                           |
+| --------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------- |
+| `src/lib/components/geometry/GeometryCanvas.svelte`                         | Toile interactive : SVG, rough.js (main levée), MathLive (`mtexte`), drag, curseurs            |
+| `src/lib/components/geometry/ElementPopover.svelte`, `SliderControl.svelte` | Panneau d'un objet, curseur                                                                    |
+| `src/lib/ubumark/utils/figure-scene.ts`                                     | Bloc ` ```figure ` : interprète, refuse ce que le PDF ne sait pas dessiner, budget             |
+| `src/lib/ubumark/utils/figure-svg.ts`                                       | Bloc ` ```figure ` à l'écran : SVG statique (`figureToSvg`), sans `GeometryCanvas`             |
+| `src/lib/ubumark/generators/figure-typst.ts`                                | Bloc ` ```figure ` au PDF : `exportToTypst` ; `mesure AB` : à 1 cm si ça tient (`atRealScale`) |
+| `src/lib/components/markdown/nodes/FigureBlock*.svelte`                     | Composants du bloc (chargement à la demande)                                                   |
 
 ### La vue Géométrie de l'atelier
 
@@ -234,9 +233,9 @@ possible.
 ### Invariants (à ne pas casser)
 
 - **Pas d'`eval` ni de `new Function`** dans le pipeline : les expressions passent par `compile()`
-  de `$lib/mathAST/eval/compile`.
+  de `#lib/mathAST/eval/compile.ts`.
 - **`graph/` n'importe jamais `dsl/` en valeur** (aucune occurrence aujourd'hui). Un helper partagé
-  va dans `$lib/mathAST/analysis/` ou un dossier commun.
+  va dans `#lib/mathAST/analysis/` ou un dossier commun.
 - **Gardes de type** : `types/elements.ts` exporte 86 fonctions `isXxx` ; tout code nouveau les
   utilise au lieu de `as GeoXxx` (42 casts historiques subsistent, ne pas en ajouter).
 - **Caches — ne jamais muter un résultat** : `PARSE_CACHE` et `PARSE_FAILURE_CACHE` plafonnés à
@@ -275,11 +274,18 @@ possible.
   masqué (`etiquette="aucune"`, `labelHidden`, `Figure.setLabelHidden`) est respecté pour les
   POINTS sur les quatre surfaces (écran, SVG, TikZ, Typst — croix comprise, depuis le
   2026-10-19) ; droites, segments et cercles l'ignorent encore à l'écran.
+- **Noms sans chevauchement (écran, constructions seulement)** : `rendering/label-avoidance.ts`
+  `placeLabels(figure, transformer, dims)` choisit pour chaque nom de point, segment, demi-droite et
+  droite la première place libre parmi quelques candidates (la place habituelle d'abord) : pas sur
+  un autre nom, un point, un codage d'angle ou de longueur, un arc, ni hors du cadre. Points
+  d'abord, puis segments et demi-droites, puis droites ; un `labelOffset` ne bouge pas. Activé par
+  la prop `avoidLabelOverlap` de `GeometryCanvas` (défaut false), que seule `ConstructionCanvas`
+  passe ; les exports SVG/TikZ/Typst gardent les places habituelles (E4, 2026-11-24).
 
 ### Thème clair / sombre
 
 - **Couleurs d'auteur** : un NOM (`couleur="rouge"`, 12 noms, synonymes anglais) est gardé tel quel
-  jusqu'au rendu (`resolveColorName` → `$lib/theme/named-colors`), puis devient
+  jusqu'au rendu (`resolveColorName` → `#lib/theme/named-colors.ts`), puis devient
   `var(--color-fig-<nom>)` à l'écran (défini en `light-dark()` dans `src/app.css`) et sa variante
   claire au PDF (`NAMED_COLOR_PRINT`, `colorForPrint`). Un hexadécimal reste fixe.
 - **Habillage** de `GeometryCanvas` (fond, grille, halos, survol) : tokens `var(--color-*)`
@@ -468,7 +474,9 @@ Pas d'ADR propre à la géométrie ; le PDF suit [ADR 0004](../../adr/0004-pdf-t
   moteur a été dépassée : `constructions-v2` est construit SUR le DSL.)
 
 Abandonné ou jamais fait : machine à états d'outils (création d'objets à la souris), index spatial
-RBush, `validation/` branché sur des exercices.
+RBush, `validation/` branché sur des exercices. Les figures faites par l'élève sont jugées
+ailleurs, sans `checks.ts` : case « figure » des questions, `src/lib/questions/construction/`
+([questions](../questions.md)).
 
 ## 11. Points ouverts
 
@@ -480,14 +488,6 @@ RBush, `validation/` branché sur des exercices.
   table.
 - La CSP autorise `unsafe-eval` pour Typst (`src/hooks.server.ts`).
 - `figure.ts` (~5 000 lignes) et `builtins.ts` (~7 400 lignes) sont les deux plus gros fichiers.
-- Trois interfaces de configuration Newton divergentes : `NewtonConfig`, `IntersectionConfig`,
-  `IntersectionConfig1D`.
-- `courbe("x^2 + y^2 = a^2")` avec `a = slider(…)` rend une conique **dégénérée** : les
-  coefficients sont évalués sans le curseur (`a` y vaut 0) et ne le suivent pas (constaté le
-  2026-10-18). La vue Figure de l'atelier contourne par `parameterRecipe` ; le DSL ne s'en sert
-  pas encore.
-- `courbe("x^2 = 4")` est refusée (« la variable y est absente ») au lieu de deux droites ;
-  l'atelier, lui, la dessine (marching squares).
 - `GeometryCanvas` écrit l'étiquette d'une courbe implicite avec `svg.label`, que
   `implicitCurveToSVG` ne rend pas : le nom ne s'affiche pas (et le `<text>` n'a pas de `y`).
 

@@ -9,7 +9,7 @@
  * - Server-side sanitization is the ONLY defense against stored XSS
  *
  * **Configuration**:
- * - Uses shared config from `$lib/utils/sanitize-configs.ts`
+ * - Uses shared config from `#lib/utils/sanitize-configs.ts`
  * - Server and client use IDENTICAL configuration (defense-in-depth)
  * - 13 safe tags, 0 attributes, strict whitelist
  *
@@ -29,8 +29,8 @@
  */
 
 import * as DOMPurifyModule from 'isomorphic-dompurify';
-import { NOTIFICATION_SANITIZE_CONFIG } from '$lib/utils/sanitize-configs';
-import { createServerLogger } from '$lib/utils/logger';
+import { NOTIFICATION_SANITIZE_CONFIG } from '#lib/utils/sanitize-configs.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('server/sanitization');
 

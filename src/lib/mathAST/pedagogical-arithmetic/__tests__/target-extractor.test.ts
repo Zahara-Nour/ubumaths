@@ -20,7 +20,7 @@ import type {
 	QuestionInstance,
 	ConstraintOptions,
 	PrecisionType
-} from '$lib/questions/types';
+} from '#lib/questions/types.ts';
 import { extractPedagogicalTarget } from '../target-extractor';
 
 // =============================================================================

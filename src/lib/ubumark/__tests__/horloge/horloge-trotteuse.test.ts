@@ -4,9 +4,9 @@
  */
 
 import { describe, expect, it } from 'vitest';
-import { generateHorlogeTypst } from '$lib/ubumark/generators/horloge-typst';
-import { parseHorlogeContent } from '$lib/ubumark/parser/horloge-parser';
-import { buildHorlogeScene } from '$lib/ubumark/utils/horloge-scene';
+import { generateHorlogeTypst } from '#lib/ubumark/generators/horloge-typst.ts';
+import { parseHorlogeContent } from '#lib/ubumark/parser/horloge-parser.ts';
+import { buildHorlogeScene } from '#lib/ubumark/utils/horloge-scene.ts';
 import {
 	handsAnswer,
 	handsMistakes,
@@ -15,8 +15,8 @@ import {
 	readHands,
 	timeOfAnswer,
 	timeText
-} from '$lib/ubumark/utils/horloge-placer';
-import { maskGestureAnswers, findUnmaskedAnswers } from '$lib/questions/masked-statement';
+} from '#lib/ubumark/utils/horloge-placer.ts';
+import { maskGestureAnswers, findUnmaskedAnswers } from '#lib/questions/masked-statement.ts';
 
 const parse = (...lines: string[]) => parseHorlogeContent(lines.join('\n'));
 const messages = (...lines: string[]) => parse(...lines).errors.map((e) => e.message);

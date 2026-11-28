@@ -35,7 +35,8 @@ describe('simplify garde i dans un produit', () => {
 		['2 a i', '2 \\imaginaryI a'],
 		['a i + a i', '2 \\imaginaryI a'],
 		['3 i', '3 \\imaginaryI'],
-		['\\frac{i}{2}', '\\dfrac{\\imaginaryI}{2}'],
+		// V35 : sous une barre de fraction, `i` suit la fraction
+		['\\frac{i}{2}', '\\dfrac{1}{2} \\imaginaryI'],
 		['i^2', '-1']
 	])('%s → %s', (input, expected) => {
 		expect(simp(input)).toBe(expected);

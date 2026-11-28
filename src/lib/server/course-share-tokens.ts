@@ -13,7 +13,7 @@
  * jetons (lecture, rotation, révocation) : les deux tables ont la même forme,
  * mais le client Supabase typé ne sait pas écrire `from(table)` sur une union de
  * noms de table sans transtypage. Les briques communes
- * (`generateShareTokenString`, `endOfSchoolYear`) sont importées, pas
+ * (`generateShareTokenString`, `classSchoolYearExpiry`) sont importées, pas
  * recopiées. Factoriser obligerait à toucher le module du
  * cahier, en production et sans test qui le couvre de bout en bout : un
  * risque sans gain pour trois fonctions de quelques lignes.
@@ -23,16 +23,14 @@
 
 import { z } from 'zod';
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { Database } from '$lib/types/database';
-import { generateShareTokenString } from '$lib/server/exercise-share-tokens';
-import {
-	endOfSchoolYear,
-	type JournalShareToken,
-	type PublicWorksheet
-} from '$lib/server/journal-share-tokens';
-import { buildSeriesLink, seriesItemsSchema, totalQuestions } from '$lib/validation/series';
-import { readStoredSeriesMany } from '$lib/server/series-lines';
-import { createServerLogger } from '$lib/utils/logger';
+import type { Database } from '#lib/types/database.ts';
+import { generateShareTokenString } from '#lib/server/exercise-share-tokens.ts';
+import type { JournalShareToken, PublicWorksheet } from '#lib/server/journal-share-tokens.ts';
+import { classSchoolYearExpiry } from '#lib/server/school-year.ts';
+import { buildSeriesLink, seriesItemsSchema, totalQuestions } from '#lib/validation/series.ts';
+import { readStoredSeriesMany } from '#lib/server/series-lines.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
+import { withBranches } from '#lib/server/worksheets/worksheet-classification.ts';
 
 const logger = createServerLogger('server/course-share-tokens');
 
@@ -145,6 +143,24 @@ const publicWorksheetSchema = z.object({
 	config: z.unknown(),
 	status: z.string(),
 	grades: z.array(z.string()).nullable(),
+	// Catégorie, titre libre et notions (ADR 0041) : le PDF du lien est celui de
+	// la classe ; sans ces clés, le schéma les retire
+	category: z.string().nullable().optional(),
+	custom_title: z.boolean().optional(),
+	classifications: z
+		.array(
+			z.object({
+				node_id: z.string().uuid(),
+				name: z.string(),
+				kind: z.string().optional(),
+				branch: z.string().nullable().optional(),
+				// Traductions du nœud (ADR 0043) : `withBranches` en tire le nom anglais
+				translations: z.unknown().optional(),
+				position: z.number().int()
+			})
+		)
+		.max(1000)
+		.optional(),
 	translations: z.unknown(),
 	total_points: z.number().nullable(),
 	estimated_duration_minutes: z.number().nullable(),
@@ -425,6 +441,15 @@ export async function rotateCourseShareToken(
 	classId: string,
 	userId: string
 ): Promise<{ token: CourseShareToken | null; error: string | null }> {
+	// Avant la révocation : une fin d'année illisible ne doit pas laisser le
+	// cours sans lien.
+	let expiresAt: Date;
+	try {
+		expiresAt = await classSchoolYearExpiry(supabase, classId);
+	} catch {
+		return { token: null, error: 'Impossible de créer le lien du cours' };
+	}
+
 	const { error: revokeError } = await revokeCourseShareToken(supabase, classId);
 	if (revokeError) return { token: null, error: revokeError };
 
@@ -435,7 +460,7 @@ export async function rotateCourseShareToken(
 			// CSPRNG (finding H8, audit d'août).
 			token: generateShareTokenString(),
 			created_by: userId,
-			expires_at: endOfSchoolYear().toISOString()
+			expires_at: expiresAt.toISOString()
 		})
 		.select(TOKEN_COLUMNS)
 		.single();
@@ -508,7 +533,10 @@ export async function resolveCourseWorksheetByShareToken(
 		logger.error('[course-share] fiche de forme inattendue:', parsed.error.issues[0]);
 		return null;
 	}
-	return parsed.data;
+	// Branche des notions, pour le titre imprimé (ADR 0041) : lue dans l'arbre, public
+	const { classifications } = parsed.data;
+	if (!classifications) return parsed.data;
+	return { ...parsed.data, classifications: await withBranches(supabase, classifications) };
 }
 
 /**

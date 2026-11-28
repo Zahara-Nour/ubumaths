@@ -4,8 +4,8 @@
  */
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { Database } from '$lib/types/database';
-import type { Glossary } from '$lib/server/dictionary/load';
+import type { Database } from '#lib/types/database.ts';
+import type { Glossary } from '#lib/server/dictionary/load.ts';
 
 const glossary: Glossary = {
 	entries: [
@@ -32,7 +32,7 @@ const glossary: Glossary = {
 };
 
 const loadGlossary = vi.fn(async () => glossary);
-vi.mock('$lib/server/dictionary/load', () => ({
+vi.mock('#lib/server/dictionary/load.ts', () => ({
 	loadGlossary: (...args: unknown[]) => loadGlossary(...(args as []))
 }));
 

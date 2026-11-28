@@ -15,7 +15,7 @@
 -->
 <script lang="ts">
 	import type { JSONContent } from '@tiptap/core';
-	import { MarkdownRenderer } from '$lib/components/markdown';
+	import { MarkdownRenderer } from '#lib/components/markdown/index.ts';
 	import { tipTapToMarkdown } from './markdown-export';
 
 	interface Props {

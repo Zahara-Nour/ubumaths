@@ -7,8 +7,8 @@ import { page } from 'vitest/browser';
 import { describe, expect, it, vi } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import Caesar from '../cesar/+page.svelte';
-import { DISPATCHES, dispatchCiphertext } from '$lib/ciphers/dispatches';
-import { decryptQuery } from '$lib/ciphers/tool-link';
+import { DISPATCHES, dispatchCiphertext } from '#lib/ciphers/dispatches.ts';
+import { decryptQuery } from '#lib/ciphers/tool-link.ts';
 
 function activeTab(container: HTMLElement): string {
 	return container.querySelector('[role="tab"][data-state="active"]')?.textContent?.trim() ?? '';

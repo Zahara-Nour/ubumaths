@@ -1,0 +1,1948 @@
+[
+	{
+		"id": "0e392697-75f1-4e5e-a346-27e7974fd9b3",
+		"type": "fill_in_blanks",
+		"options": {
+			"constraints": {
+				"spacesFromFourDigits": true
+			}
+		},
+		"precision": null,
+		"grades": ["CM1"],
+		"delay": 120,
+		"level": 16,
+		"variations": [
+			{
+				"statement": "Construis ${{m}}\\,{{c}}{{d}}{{u}}$ avec le matériel.\n\n```collection\nconstruire: {{n}}\n```",
+				"variables": [
+					{
+						"name": "m",
+						"expression": "1..9"
+					},
+					{
+						"name": "t",
+						"expression": "0..1"
+					},
+					{
+						"name": "x",
+						"expression": "1..9"
+					},
+					{
+						"name": "u",
+						"expression": "1..9"
+					},
+					{
+						"name": "c",
+						"expression": "eval:t*x"
+					},
+					{
+						"name": "d",
+						"expression": "eval:(1-t)*x"
+					},
+					{
+						"name": "n",
+						"expression": "eval:1000*m+100*c+10*d+u"
+					}
+				],
+				"correction": {
+					"steps": [
+						"${{m}}\\,{{c}}{{d}}{{u}}$, c'est ${{m}}$ {{if:m<=1|millier|milliers}}, ${{c}}$ centaine{{if:c>1|s|}}, ${{d}}$ dizaine{{if:d>1|s|}} et ${{u}}$ {{if:u<=1|unité|unités}} : le zéro dit qu'il n'y a **rien** à ce rang.",
+						"On pose ${{m}}$ {{if:m<=1|gros cube|gros cubes}}, ${{c}}$ plaque{{if:c>1|s|}}, ${{d}}$ barre{{if:d>1|s|}} et ${{u}}$ {{if:u<=1|petit cube|petits cubes}}."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{a}}"
+					},
+					{
+						"expectedAnswer": "{{c}}"
+					},
+					{
+						"expectedAnswer": "{{d}}"
+					}
+				],
+				"statement": "On veut ranger ${{n}}$ timbres en carnets de $1\\,000$, de $100$ et de $10$ timbres, avec le moins de carnets possible.\n\nIl faut $?$ carnets de $1\\,000$, $?$ carnets de $100$ et $?$ carnets de $10$.",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "11..99"
+					},
+					{
+						"name": "c",
+						"expression": "0..9"
+					},
+					{
+						"name": "d",
+						"expression": "1..9"
+					},
+					{
+						"name": "n",
+						"expression": "eval:1000*a+100*c+10*d"
+					}
+				],
+				"conditions": ["mod(a,10)!=0"],
+				"correction": {
+					"steps": [
+						"Le moins de carnets possible : on prend d'abord le plus de carnets de $1\\,000$.",
+						"$${{n}}=\\textcolor{{{color:primary.0}}}{{{a}}}\\times 1\\,000+\\textcolor{{{color:primary.0}}}{{{c}}}\\times 100+\\textcolor{{{color:primary.0}}}{{{d}}}\\times 10$$",
+						"Dans ${{n}}$, il y a ${{a}}$ milliers, pas seulement ${{eval:mod(a,10)}}$ : le chiffre des milliers ne suffit pas."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{k}}"
+					}
+				],
+				"statement": "Combien faut-il de carnets de $100$ timbres pour avoir ${{n}}$ timbres ?\n\nIl faut $?$ carnets.",
+				"variables": [
+					{
+						"name": "k",
+						"expression": "101..2999"
+					},
+					{
+						"name": "n",
+						"expression": "eval:100*k"
+					}
+				],
+				"conditions": ["mod(k,10)!=0"],
+				"correction": {
+					"steps": [
+						"On cherche le **nombre de centaines** de ${{n}}$, pas le chiffre des centaines.",
+						"$${{n}}=\\textcolor{{{color:primary.0}}}{{{k}}}\\times 100$$"
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "draft",
+		"title": "Construire une quantité avec des paquets",
+		"description": "Construire au matériel un nombre à zéro intercalé ; ranger en carnets de 1 000, 100 et 10 avec le moins de carnets ; nombre de carnets de 100",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["3045"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"c": "0",
+					"d": "4",
+					"m": "3",
+					"n": "3045",
+					"t": "0",
+					"u": "5",
+					"x": "4"
+				},
+				"description": "3 045 construit",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["3450"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"c": "0",
+					"d": "4",
+					"m": "3",
+					"n": "3045",
+					"t": "0",
+					"u": "5",
+					"x": "4"
+				},
+				"description": "Erreur : 3 450 construit (zéro mal placé)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["34", "5", "6"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "34",
+					"c": "5",
+					"d": "6",
+					"n": "34560"
+				},
+				"description": "34 560 : 34, 5, 6",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["4", "5", "6"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "34",
+					"c": "5",
+					"d": "6",
+					"n": "34560"
+				},
+				"description": "Erreur : 4 carnets de 1 000 (le chiffre des milliers)",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["345"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"k": "345",
+					"n": "34500"
+				},
+				"description": "34 500 : 345 carnets",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["5"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"k": "345",
+					"n": "34500"
+				},
+				"description": "Erreur : 5 (le chiffre des centaines)",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["2\\,345"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"k": "2345",
+					"n": "234500"
+				},
+				"description": "2 345 carnets, avec espace",
+				"variationIndex": 2
+			}
+		],
+		"classification_node_id": null
+	},
+	{
+		"id": "4241d466-9668-49b2-8f36-015be0af4ae9",
+		"type": "fill_in_blanks",
+		"options": {
+			"constraints": {
+				"spacesFromFourDigits": true
+			}
+		},
+		"precision": null,
+		"grades": ["CM1"],
+		"delay": 45,
+		"level": 4,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{x}}"
+					}
+				],
+				"statement": "Quel nombre repère le point $A$ ?\n\n```line\nstart: {{a}}\nend: {{fin}}\nstep: {{s}}\nmajor: 5\nlabels: {{a}}, {{l}}\npoints: A={{x}}\n```\n\n$$A : ?$$",
+				"variables": [
+					{
+						"name": "s",
+						"expression": "1|10|100"
+					},
+					{
+						"name": "b",
+						"expression": "1..99"
+					},
+					{
+						"name": "a",
+						"expression": "eval:10*s*b"
+					},
+					{
+						"name": "l",
+						"expression": "eval:a+5*s"
+					},
+					{
+						"name": "fin",
+						"expression": "eval:a+10*s"
+					},
+					{
+						"name": "k",
+						"expression": "1..9"
+					},
+					{
+						"name": "x",
+						"expression": "eval:a+k*s"
+					}
+				],
+				"conditions": ["k!=5"],
+				"correction": {
+					"steps": [
+						"**Le pas.** De ${{a}}$ à ${{l}}$, il y a $5$ intervalles : un intervalle vaut $({{l}} - {{a}}) \\div 5 = {{s}}$.",
+						"Le point $A$ est à ${{k}}$ intervalle{{if:k>1|s|}} de ${{a}}$ : il repère ${{a}} + {{k}} \\times {{s}} = \\textcolor{{{color:primary.0}}}{{{x}}}$."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{x}}"
+					}
+				],
+				"statement": "Quel nombre repère le point $A$ ?\n\n```line\nstart: {{a}}\nend: {{fin}}\nstep: {{s}}\nmajor: 5\nlabels: {{a}}, {{l}}\npoints: A={{x}}\n```\n\n$$A : ?$$",
+				"variables": [
+					{
+						"name": "s",
+						"expression": "1000|10000"
+					},
+					{
+						"name": "b2",
+						"expression": "1..98"
+					},
+					{
+						"name": "b",
+						"expression": "eval:1+mod(b2,floor(100000/s)-2)"
+					},
+					{
+						"name": "a",
+						"expression": "eval:10*s*b"
+					},
+					{
+						"name": "l",
+						"expression": "eval:a+5*s"
+					},
+					{
+						"name": "fin",
+						"expression": "eval:a+10*s"
+					},
+					{
+						"name": "k",
+						"expression": "1..9"
+					},
+					{
+						"name": "x",
+						"expression": "eval:a+k*s"
+					}
+				],
+				"conditions": ["k!=5"],
+				"correction": {
+					"steps": [
+						"**Le pas.** De ${{a}}$ à ${{l}}$, il y a $5$ intervalles : un intervalle vaut $({{l}} - {{a}}) \\div 5 = {{s}}$.",
+						"Le point $A$ est à ${{k}}$ intervalle{{if:k>1|s|}} de ${{a}}$ : il repère ${{a}} + {{k}} \\times {{s}} = \\textcolor{{{color:primary.0}}}{{{x}}}$."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{x}}"
+					}
+				],
+				"statement": "Quel nombre repère le point $A$ ?\n\n```line\nstart: {{a}}\nend: {{fin}}\nstep: {{s}}\nmajor: 5\nlabels: {{a}}, {{l}}\npoints: A={{x}}\n```\n\n$$A : ?$$",
+				"variables": [
+					{
+						"name": "s",
+						"expression": "100000"
+					},
+					{
+						"name": "a",
+						"expression": "0"
+					},
+					{
+						"name": "l",
+						"expression": "500000"
+					},
+					{
+						"name": "fin",
+						"expression": "900000"
+					},
+					{
+						"name": "k",
+						"expression": "1..9"
+					},
+					{
+						"name": "x",
+						"expression": "eval:a+k*s"
+					}
+				],
+				"conditions": ["k!=5"],
+				"correction": {
+					"steps": [
+						"**Le pas.** De ${{a}}$ à ${{l}}$, il y a $5$ intervalles : un intervalle vaut $({{l}} - {{a}}) \\div 5 = {{s}}$.",
+						"Le point $A$ est à ${{k}}$ intervalle{{if:k>1|s|}} de ${{a}}$ : il repère ${{a}} + {{k}} \\times {{s}} = \\textcolor{{{color:primary.0}}}{{{x}}}$."
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "draft",
+		"title": "Lire un nombre sur une demi-droite graduée",
+		"description": "Pas de 1 à 100 000, à déduire de deux graduations écrites ; nombres jusqu'à 999 999",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["34\\,300"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "34000",
+					"b": "34",
+					"k": "3",
+					"l": "34500",
+					"s": "100",
+					"x": "34300",
+					"fin": "35000"
+				},
+				"description": "A repère 34 300",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["34\\,003"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "34000",
+					"b": "34",
+					"k": "3",
+					"l": "34500",
+					"s": "100",
+					"x": "34300",
+					"fin": "35000"
+				},
+				"description": "Erreur : 34 003 (intervalle compté pour 1)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["34\\,200"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "34000",
+					"b": "34",
+					"k": "3",
+					"l": "34500",
+					"s": "100",
+					"x": "34300",
+					"fin": "35000"
+				},
+				"description": "Erreur : 34 200 (graduation voisine)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["34300"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["spaces"]
+				},
+				"variables": {
+					"a": "34000",
+					"b": "34",
+					"k": "3",
+					"l": "34500",
+					"s": "100",
+					"x": "34300",
+					"fin": "35000"
+				},
+				"description": "Sans espaces : forme à améliorer",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["347\\,000"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "340000",
+					"b": "34",
+					"k": "7",
+					"l": "345000",
+					"s": "1000",
+					"x": "347000",
+					"b2": "33",
+					"fin": "350000"
+				},
+				"description": "A repère 347 000",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["340\\,700"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "340000",
+					"b": "34",
+					"k": "7",
+					"l": "345000",
+					"s": "1000",
+					"x": "347000",
+					"b2": "33",
+					"fin": "350000"
+				},
+				"description": "Erreur : 340 700 (pas de 100)",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["300\\,000"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "0",
+					"k": "3",
+					"l": "500000",
+					"s": "100000",
+					"x": "300000",
+					"fin": "900000"
+				},
+				"description": "A repère 300 000",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["3"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "0",
+					"k": "3",
+					"l": "500000",
+					"s": "100000",
+					"x": "300000",
+					"fin": "900000"
+				},
+				"description": "Erreur : 3 (intervalle compté pour 1)",
+				"variationIndex": 2
+			}
+		],
+		"classification_node_id": null
+	},
+	{
+		"id": "620f11e8-1d3e-4e36-b01c-c074aecca70d",
+		"type": "fill_in_blanks",
+		"options": {
+			"constraints": {
+				"spacesFromFourDigits": true
+			}
+		},
+		"precision": null,
+		"grades": ["CM1"],
+		"delay": 45,
+		"level": 9,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:10^p}}"
+					}
+				],
+				"statement": "Complète.\n\n$$1~\\text{{{if:u==1|centième|{{if:u==2|dixième|unité}}}}} = ?~\\text{{{if:w==1|centièmes|{{if:w==2|dixièmes|unités}}}}}$$",
+				"variables": [
+					{
+						"name": "u",
+						"expression": "2..3"
+					},
+					{
+						"name": "w",
+						"expression": "1..2"
+					},
+					{
+						"name": "p",
+						"expression": "eval:u-w"
+					}
+				],
+				"conditions": ["p>=1"],
+				"correction": {
+					"steps": [
+						"**D'un rang au rang juste à sa droite, on multiplie par $10$** : $1$ unité $= 10$ dixièmes, $1$ dixième $= 10$ centièmes.",
+						"Des {{if:u==1|centièmes|{{if:u==2|dixièmes|unités}}}} aux {{if:w==1|centièmes|{{if:w==2|dixièmes|unités}}}}, on descend de ${{p}}$ rang{{if:p>1|s|}} : $1~\\text{{{if:u==1|centième|{{if:u==2|dixième|unité}}}}} = \\textcolor{{{color:primary.0}}}{{{eval:10^p}}}~\\text{{{if:w==1|centièmes|{{if:w==2|dixièmes|unités}}}}}$."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:k*10^p}}"
+					}
+				],
+				"statement": "Complète.\n\n$${{k}}~\\text{{{if:u==1|centièmes|{{if:u==2|dixièmes|unités}}}}} = ?~\\text{{{if:w==1|centièmes|{{if:w==2|dixièmes|unités}}}}}$$",
+				"variables": [
+					{
+						"name": "k",
+						"expression": "2..9"
+					},
+					{
+						"name": "u",
+						"expression": "2..3"
+					},
+					{
+						"name": "w",
+						"expression": "1..2"
+					},
+					{
+						"name": "p",
+						"expression": "eval:u-w"
+					}
+				],
+				"conditions": ["p>=1"],
+				"correction": {
+					"steps": [
+						"**D'un rang au rang juste à sa droite, on multiplie par $10$** : $1$ unité $= 10$ dixièmes, $1$ dixième $= 10$ centièmes.",
+						"$1~\\text{{{if:u==1|centième|{{if:u==2|dixième|unité}}}}} = {{eval:10^p}}~\\text{{{if:w==1|centièmes|{{if:w==2|dixièmes|unités}}}}}$, donc ${{k}}~\\text{{{if:u==1|centièmes|{{if:u==2|dixièmes|unités}}}}} = {{k}} \\times {{eval:10^p}} = \\textcolor{{{color:primary.0}}}{{{eval:k*10^p}}}~\\text{{{if:w==1|centièmes|{{if:w==2|dixièmes|unités}}}}}$."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{k}}"
+					}
+				],
+				"statement": "Complète.\n\n$${{eval:k*10^p}}~\\text{{{if:w==1|centièmes|{{if:w==2|dixièmes|unités}}}}} = ?~\\text{{{if:u==1|centièmes|{{if:u==2|dixièmes|unités}}}}}$$",
+				"variables": [
+					{
+						"name": "k",
+						"expression": "2..9"
+					},
+					{
+						"name": "u",
+						"expression": "2..3"
+					},
+					{
+						"name": "w",
+						"expression": "1..2"
+					},
+					{
+						"name": "p",
+						"expression": "eval:u-w"
+					}
+				],
+				"conditions": ["p>=1"],
+				"correction": {
+					"steps": [
+						"**D'un rang au rang juste à sa droite, on multiplie par $10$** : $1$ unité $= 10$ dixièmes, $1$ dixième $= 10$ centièmes.",
+						"$1~\\text{{{if:u==1|centième|{{if:u==2|dixième|unité}}}}} = {{eval:10^p}}~\\text{{{if:w==1|centièmes|{{if:w==2|dixièmes|unités}}}}}$ : dans ${{eval:k*10^p}}$ {{if:w==1|centièmes|{{if:w==2|dixièmes|unités}}}}, il y a ${{eval:k*10^p}} \\div {{eval:10^p}} = \\textcolor{{{color:primary.0}}}{{{k}}}$ {{if:u==1|centièmes|{{if:u==2|dixièmes|unités}}}}."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{t}}"
+					},
+					{
+						"expectedAnswer": "{{r}}"
+					}
+				],
+				"statement": "Complète : ${{n}}$ {{if:w==1|centièmes|{{if:w==2|dixièmes|unités}}}}, c'est…\n\n$$?~\\text{{{if:h==1|centièmes|{{if:h==2|dixièmes|unités}}}}}\\text{ et } ?~\\text{{{if:w==1|centièmes|{{if:w==2|dixièmes|unités}}}}}$$",
+				"variables": [
+					{
+						"name": "w",
+						"expression": "1..2"
+					},
+					{
+						"name": "h",
+						"expression": "eval:w+1"
+					},
+					{
+						"name": "t",
+						"expression": "1..9"
+					},
+					{
+						"name": "r",
+						"expression": "1..9"
+					},
+					{
+						"name": "n",
+						"expression": "eval:10*t+r"
+					}
+				],
+				"correction": {
+					"steps": [
+						"**D'un rang au rang juste à sa droite, on multiplie par $10$** : $1$ unité $= 10$ dixièmes, $1$ dixième $= 10$ centièmes.",
+						"$10~\\text{{{if:w==1|centièmes|{{if:w==2|dixièmes|unités}}}}} = 1~\\text{{{if:h==1|centième|{{if:h==2|dixième|unité}}}}}$ : dans ${{n}}$ {{if:w==1|centièmes|{{if:w==2|dixièmes|unités}}}}, il y a ${{t}}$ fois $10$ {{if:w==1|centièmes|{{if:w==2|dixièmes|unités}}}}, et il en reste ${{r}}$.",
+						"$${{n}}~\\text{{{if:w==1|centièmes|{{if:w==2|dixièmes|unités}}}}} = \\textcolor{{{color:primary.0}}}{{{t}}}~\\text{{{if:t<=1|{{if:h==1|centième|{{if:h==2|dixième|unité}}}}|{{if:h==1|centièmes|{{if:h==2|dixièmes|unités}}}}}}}\\text{ et } \\textcolor{{{color:primary.0}}}{{{r}}}~\\text{{{if:r<=1|{{if:w==1|centième|{{if:w==2|dixième|unité}}}}|{{if:w==1|centièmes|{{if:w==2|dixièmes|unités}}}}}}}$$"
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{n}}"
+					}
+				],
+				"statement": "Complète.\n\n$${{eval:n/100;d}} = ?~\\text{centièmes}$$",
+				"variables": [
+					{
+						"name": "n",
+						"expression": "101..999"
+					}
+				],
+				"conditions": ["mod(n,10)!=0", "mod(n,100)>=10"],
+				"correction": {
+					"steps": [
+						"$1$ unité $= 100$ centièmes et $1$ dixième $= 10$ centièmes.",
+						"${{eval:n/100;d}}$, c'est ${{eval:floor(n/100)}}$ unité{{if:n>=200|s|}}, ${{eval:floor(mod(n,100)/10)}}$ dixième{{if:mod(n,100)>=20|s|}} et ${{eval:mod(n,10)}}$ centième{{if:mod(n,10)>1|s|}} : ${{eval:100*floor(n/100)}}+{{eval:10*floor(mod(n,100)/10)}}+{{eval:mod(n,10)}}=\\textcolor{{{color:primary.0}}}{{{n}}}$ centièmes."
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "draft",
+		"title": "Unités, dixièmes, centièmes",
+		"description": "Relations entre unités, dixièmes et centièmes, dans les deux sens ; échanges ; un nombre décimal écrit en centièmes (pas de millièmes)",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["100"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"p": "2",
+					"u": "3",
+					"w": "1"
+				},
+				"description": "1 unité = 100 centièmes",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["10"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"p": "2",
+					"u": "3",
+					"w": "1"
+				},
+				"description": "Erreur : 1 unité = 10 centièmes",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["40"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"k": "4",
+					"p": "1",
+					"u": "2",
+					"w": "1"
+				},
+				"description": "4 dixièmes = 40 centièmes",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["400"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"k": "4",
+					"p": "1",
+					"u": "2",
+					"w": "1"
+				},
+				"description": "Erreur : 400",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["3"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"k": "3",
+					"p": "2",
+					"u": "3",
+					"w": "1"
+				},
+				"description": "300 centièmes = 3 unités",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["30"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"k": "3",
+					"p": "2",
+					"u": "3",
+					"w": "1"
+				},
+				"description": "Erreur : 30 unités",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["3", "5"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"h": "2",
+					"n": "35",
+					"r": "5",
+					"t": "3",
+					"w": "1"
+				},
+				"description": "35 centièmes = 3 dixièmes et 5 centièmes",
+				"variationIndex": 3
+			},
+			{
+				"answers": ["5", "3"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"h": "2",
+					"n": "35",
+					"r": "5",
+					"t": "3",
+					"w": "1"
+				},
+				"description": "Erreur : 5 et 3 (échangés)",
+				"variationIndex": 3
+			},
+			{
+				"answers": ["235"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"n": "235"
+				},
+				"description": "2,35 = 235 centièmes",
+				"variationIndex": 4
+			},
+			{
+				"answers": ["35"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"n": "235"
+				},
+				"description": "Erreur : 35 centièmes (unités oubliées)",
+				"variationIndex": 4
+			}
+		],
+		"classification_node_id": null
+	},
+	{
+		"id": "a047650a-0f85-4bc8-b0e0-51b51b18aeb4",
+		"type": "fill_in_blanks",
+		"options": {
+			"constraints": {
+				"spacesFromFourDigits": true
+			}
+		},
+		"precision": null,
+		"grades": ["CM1"],
+		"delay": 60,
+		"level": 15,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{z}}"
+					}
+				],
+				"statement": "Quelle collection a le plus de petits cubes ?\n\n```collection\nmilliers: {{mA}} ; {{mB}}\ncentaines: {{cA}} ; {{cB}}\ndizaines: {{r}} ; {{r}}\nunités: {{u}} ; {{u}}\ndessin: barres\nlégendes: A ; B\n```\n\n```choix\nmelanger: non\n- La collection A\n- Elles en ont autant\n- La collection B\n```",
+				"variables": [
+					{
+						"name": "p",
+						"expression": "1..7"
+					},
+					{
+						"name": "q",
+						"expression": "13..19"
+					},
+					{
+						"name": "k",
+						"expression": "0..4"
+					},
+					{
+						"name": "ecart",
+						"expression": "eval:k-2"
+					},
+					{
+						"name": "s",
+						"expression": "0..1"
+					},
+					{
+						"name": "r",
+						"expression": "1..9"
+					},
+					{
+						"name": "u",
+						"expression": "1..9"
+					},
+					{
+						"name": "mA",
+						"expression": "eval:p+s"
+					},
+					{
+						"name": "cA",
+						"expression": "eval:q+s*(ecart-10)"
+					},
+					{
+						"name": "mB",
+						"expression": "eval:p+1-s"
+					},
+					{
+						"name": "cB",
+						"expression": "eval:q+(1-s)*(ecart-10)"
+					},
+					{
+						"name": "vA",
+						"expression": "eval:1000*mA+100*cA+10*r+u"
+					},
+					{
+						"name": "vB",
+						"expression": "eval:1000*mB+100*cB+10*r+u"
+					},
+					{
+						"name": "z",
+						"expression": "eval:sign(vB-vA)+1"
+					}
+				],
+				"correction": {
+					"steps": [
+						"Dix plaques font un gros cube : on **regroupe** avant de comparer.",
+						"A : ${{mA}}$ {{if:mA<=1|gros cube|gros cubes}} et ${{cA}}$ {{if:cA<=1|plaque|plaques}}, c'est ${{vA}}$ cubes.",
+						"B : ${{mB}}$ {{if:mB<=1|gros cube|gros cubes}} et ${{cB}}$ {{if:cB<=1|plaque|plaques}}, c'est ${{vB}}$ cubes.",
+						"{{if:z==0|$\\textcolor{{{color:primary.0}}}{\\text{A}}$ a le plus de cubes.|{{if:z==1|$\\textcolor{{{color:primary.0}}}{\\text{Elles en ont autant}}$.|$\\textcolor{{{color:primary.0}}}{\\text{B}}$ a le plus de cubes.}}}}"
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{z}}"
+					}
+				],
+				"statement": "Deux collections de timbres sont rangées en paquets.\n\n- Collection A : ${{mA}}$ {{if:mA<=1|paquet|paquets}} de $100\\,000$, ${{cA}}$ {{if:cA<=1|paquet|paquets}} de $10\\,000$ et ${{r}}$ {{if:r<=1|paquet|paquets}} de $1\\,000$.\n- Collection B : ${{mB}}$ {{if:mB<=1|paquet|paquets}} de $100\\,000$, ${{cB}}$ {{if:cB<=1|paquet|paquets}} de $10\\,000$ et ${{r}}$ {{if:r<=1|paquet|paquets}} de $1\\,000$.\n\nQuelle collection a le plus de timbres ?\n\n```choix\nmelanger: non\n- La collection A\n- Elles en ont autant\n- La collection B\n```",
+				"variables": [
+					{
+						"name": "p",
+						"expression": "1..7"
+					},
+					{
+						"name": "q",
+						"expression": "13..19"
+					},
+					{
+						"name": "k",
+						"expression": "0..4"
+					},
+					{
+						"name": "ecart",
+						"expression": "eval:k-2"
+					},
+					{
+						"name": "s",
+						"expression": "0..1"
+					},
+					{
+						"name": "r",
+						"expression": "1..9"
+					},
+					{
+						"name": "u",
+						"expression": "1..9"
+					},
+					{
+						"name": "mA",
+						"expression": "eval:p+s"
+					},
+					{
+						"name": "cA",
+						"expression": "eval:q+s*(ecart-10)"
+					},
+					{
+						"name": "mB",
+						"expression": "eval:p+1-s"
+					},
+					{
+						"name": "cB",
+						"expression": "eval:q+(1-s)*(ecart-10)"
+					},
+					{
+						"name": "vA",
+						"expression": "eval:100000*mA+10000*cA+1000*r"
+					},
+					{
+						"name": "vB",
+						"expression": "eval:100000*mB+10000*cB+1000*r"
+					},
+					{
+						"name": "z",
+						"expression": "eval:sign(vB-vA)+1"
+					}
+				],
+				"correction": {
+					"steps": [
+						"Dix paquets de $10\\,000$ font un paquet de $100\\,000$ : on **regroupe** avant de comparer.",
+						"A : ${{vA}}$ timbres ; B : ${{vB}}$ timbres.",
+						"{{if:z==0|$\\textcolor{{{color:primary.0}}}{\\text{A}}$ a le plus de timbres.|{{if:z==1|$\\textcolor{{{color:primary.0}}}{\\text{Elles en ont autant}}$.|$\\textcolor{{{color:primary.0}}}{\\text{B}}$ a le plus de timbres.}}}}"
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "draft",
+		"title": "Comparer deux collections organisées",
+		"description": "Deux collections au matériel, l'une avec plus de dix plaques ; deux collections de timbres en paquets de 100 000, 10 000 et 1 000 ; A, B ou autant",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"k": "1",
+					"p": "2",
+					"q": "15",
+					"r": "3",
+					"s": "0",
+					"u": "4",
+					"z": "0",
+					"cA": "15",
+					"cB": "4",
+					"mA": "2",
+					"mB": "3",
+					"vA": "3534",
+					"vB": "3434",
+					"ecart": "-1"
+				},
+				"description": "A 3534 > B 3434 : A",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["2"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"k": "1",
+					"p": "2",
+					"q": "15",
+					"r": "3",
+					"s": "0",
+					"u": "4",
+					"z": "0",
+					"cA": "15",
+					"cB": "4",
+					"mA": "2",
+					"mB": "3",
+					"vA": "3534",
+					"vB": "3434",
+					"ecart": "-1"
+				},
+				"description": "Erreur : B choisi parce qu'il a plus de gros cubes",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["2"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"k": "3",
+					"p": "2",
+					"q": "15",
+					"r": "3",
+					"s": "0",
+					"u": "4",
+					"z": "2",
+					"cA": "15",
+					"cB": "6",
+					"mA": "2",
+					"mB": "3",
+					"vA": "3534",
+					"vB": "3634",
+					"ecart": "1"
+				},
+				"description": "A 3534 < B 3634 : B",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["1"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"k": "2",
+					"p": "2",
+					"q": "15",
+					"r": "3",
+					"s": "0",
+					"u": "4",
+					"z": "1",
+					"cA": "15",
+					"cB": "5",
+					"mA": "2",
+					"mB": "3",
+					"vA": "3534",
+					"vB": "3534",
+					"ecart": "0"
+				},
+				"description": "autant : A 3534, B 3534",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["2"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"k": "2",
+					"p": "2",
+					"q": "15",
+					"r": "3",
+					"s": "0",
+					"u": "4",
+					"z": "1",
+					"cA": "15",
+					"cB": "5",
+					"mA": "2",
+					"mB": "3",
+					"vA": "3534",
+					"vB": "3534",
+					"ecart": "0"
+				},
+				"description": "Erreur : autant, B choisi (plus de gros cubes)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["2"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"k": "0",
+					"p": "3",
+					"q": "16",
+					"r": "5",
+					"s": "1",
+					"u": "0",
+					"z": "2",
+					"cA": "4",
+					"cB": "16",
+					"mA": "4",
+					"mB": "3",
+					"vA": "445000",
+					"vB": "465000",
+					"ecart": "-2"
+				},
+				"description": "timbres, échangés : A 445000 < B 465000 : B",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"k": "0",
+					"p": "3",
+					"q": "16",
+					"r": "5",
+					"s": "1",
+					"u": "0",
+					"z": "2",
+					"cA": "4",
+					"cB": "16",
+					"mA": "4",
+					"mB": "3",
+					"vA": "445000",
+					"vB": "465000",
+					"ecart": "-2"
+				},
+				"description": "Erreur : timbres, A choisi (plus de gros paquets)",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"k": "0",
+					"p": "4",
+					"q": "18",
+					"r": "2",
+					"s": "0",
+					"u": "0",
+					"z": "0",
+					"cA": "18",
+					"cB": "6",
+					"mA": "4",
+					"mB": "5",
+					"vA": "582000",
+					"vB": "562000",
+					"ecart": "-2"
+				},
+				"description": "timbres : A 582000 > B 562000 : A",
+				"variationIndex": 1
+			}
+		],
+		"classification_node_id": null
+	},
+	{
+		"id": "a62b2ce5-d4d0-4c02-9850-e70b6f2f5546",
+		"type": "fill_in_blanks",
+		"options": {
+			"constraints": {
+				"spaces": "off"
+			}
+		},
+		"precision": null,
+		"grades": ["CM1"],
+		"delay": 45,
+		"level": 5,
+		"variations": [
+			{
+				"statement": "Place le nombre ${{x}}$ sur la demi-droite graduée.\n\n```line\nstart: {{a}}\nend: {{fin}}\nstep: {{s}}\nmajor: 5\nlabels: {{a}}, {{l}}\nplacer: {{x}}\n```",
+				"variables": [
+					{
+						"name": "s",
+						"expression": "1|10|100"
+					},
+					{
+						"name": "b",
+						"expression": "1..99"
+					},
+					{
+						"name": "a",
+						"expression": "eval:10*s*b"
+					},
+					{
+						"name": "l",
+						"expression": "eval:a+5*s"
+					},
+					{
+						"name": "fin",
+						"expression": "eval:a+10*s"
+					},
+					{
+						"name": "k",
+						"expression": "1..9"
+					},
+					{
+						"name": "x",
+						"expression": "eval:a+k*s"
+					}
+				],
+				"conditions": ["k!=5"],
+				"correction": {
+					"steps": [
+						"**Le pas.** De ${{a}}$ à ${{l}}$, il y a $5$ intervalles : un intervalle vaut $({{l}} - {{a}}) \\div 5 = {{s}}$.",
+						"${{x}} = {{a}} + {{k}} \\times {{s}}$ : on part de ${{a}}$ et on avance de ${{k}}$ intervalle{{if:k>1|s|}}."
+					]
+				}
+			},
+			{
+				"statement": "Place le nombre ${{x}}$ sur la demi-droite graduée.\n\n```line\nstart: {{a}}\nend: {{fin}}\nstep: {{s}}\nmajor: 5\nlabels: {{a}}, {{l}}\nplacer: {{x}}\n```",
+				"variables": [
+					{
+						"name": "s",
+						"expression": "1000|10000"
+					},
+					{
+						"name": "b2",
+						"expression": "1..98"
+					},
+					{
+						"name": "b",
+						"expression": "eval:1+mod(b2,floor(100000/s)-2)"
+					},
+					{
+						"name": "a",
+						"expression": "eval:10*s*b"
+					},
+					{
+						"name": "l",
+						"expression": "eval:a+5*s"
+					},
+					{
+						"name": "fin",
+						"expression": "eval:a+10*s"
+					},
+					{
+						"name": "k",
+						"expression": "1..9"
+					},
+					{
+						"name": "x",
+						"expression": "eval:a+k*s"
+					}
+				],
+				"conditions": ["k!=5"],
+				"correction": {
+					"steps": [
+						"**Le pas.** De ${{a}}$ à ${{l}}$, il y a $5$ intervalles : un intervalle vaut $({{l}} - {{a}}) \\div 5 = {{s}}$.",
+						"${{x}} = {{a}} + {{k}} \\times {{s}}$ : on part de ${{a}}$ et on avance de ${{k}}$ intervalle{{if:k>1|s|}}."
+					]
+				}
+			},
+			{
+				"statement": "Place le nombre ${{x}}$ sur la demi-droite graduée.\n\n```line\nstart: {{a}}\nend: {{fin}}\nstep: {{s}}\nmajor: 5\nlabels: {{a}}, {{l}}\nplacer: {{x}}\n```",
+				"variables": [
+					{
+						"name": "s",
+						"expression": "100000"
+					},
+					{
+						"name": "a",
+						"expression": "0"
+					},
+					{
+						"name": "l",
+						"expression": "500000"
+					},
+					{
+						"name": "fin",
+						"expression": "900000"
+					},
+					{
+						"name": "k",
+						"expression": "1..9"
+					},
+					{
+						"name": "x",
+						"expression": "eval:a+k*s"
+					}
+				],
+				"conditions": ["k!=5"],
+				"correction": {
+					"steps": [
+						"**Le pas.** De ${{a}}$ à ${{l}}$, il y a $5$ intervalles : un intervalle vaut $({{l}} - {{a}}) \\div 5 = {{s}}$.",
+						"${{x}} = {{a}} + {{k}} \\times {{s}}$ : on part de ${{a}}$ et on avance de ${{k}}$ intervalle{{if:k>1|s|}}."
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "draft",
+		"title": "Placer un nombre sur une demi-droite graduée",
+		"description": "Pas de 1 à 100 000, à déduire de deux graduations écrites ; nombres jusqu'à 999 999",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["34300"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "34000",
+					"b": "34",
+					"k": "3",
+					"l": "34500",
+					"s": "100",
+					"x": "34300",
+					"fin": "35000"
+				},
+				"description": "34 300 placé",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["34200"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "34000",
+					"b": "34",
+					"k": "3",
+					"l": "34500",
+					"s": "100",
+					"x": "34300",
+					"fin": "35000"
+				},
+				"description": "Erreur : 34 200 (graduation voisine)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["860000"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "800000",
+					"b": "8",
+					"k": "6",
+					"l": "850000",
+					"s": "10000",
+					"x": "860000",
+					"b2": "7",
+					"fin": "900000"
+				},
+				"description": "860 000 placé",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["806000"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "800000",
+					"b": "8",
+					"k": "6",
+					"l": "850000",
+					"s": "10000",
+					"x": "860000",
+					"b2": "7",
+					"fin": "900000"
+				},
+				"description": "Erreur : 806 000 (pas de 1 000)",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["700000"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "0",
+					"k": "7",
+					"l": "500000",
+					"s": "100000",
+					"x": "700000",
+					"fin": "900000"
+				},
+				"description": "700 000 placé",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["600000"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "0",
+					"k": "7",
+					"l": "500000",
+					"s": "100000",
+					"x": "700000",
+					"fin": "900000"
+				},
+				"description": "Erreur : 600 000 (graduation voisine)",
+				"variationIndex": 2
+			}
+		],
+		"classification_node_id": null
+	},
+	{
+		"id": "c08f689b-0039-4388-8671-5bcd8a220246",
+		"type": "fill_in_blanks",
+		"options": {
+			"constraints": {
+				"spacesFromFourDigits": true
+			}
+		},
+		"precision": null,
+		"grades": ["CM1"],
+		"delay": 60,
+		"level": 9,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				],
+				"statement": "Sans poser l'opération, choisis la meilleure estimation.\n\n$${{a}} + {{b}} + {{c}} \\approx \\ldots$$\n\n```choix\n- ${{eval:100*(x+y+z)}}$\n- ${{eval:10*(100*(x+y+z))}}$\n- ${{eval:(100*(x+y+z))/10}}$\n- ${{eval:100*(x+y+z)+200}}$\n```",
+				"variables": [
+					{
+						"name": "x",
+						"expression": "2..9"
+					},
+					{
+						"name": "y",
+						"expression": "2..9"
+					},
+					{
+						"name": "z",
+						"expression": "2..9"
+					},
+					{
+						"name": "ea0",
+						"expression": "0..24"
+					},
+					{
+						"name": "ea",
+						"expression": "eval:ea0-12"
+					},
+					{
+						"name": "eb0",
+						"expression": "0..24"
+					},
+					{
+						"name": "eb",
+						"expression": "eval:eb0-12"
+					},
+					{
+						"name": "ec0",
+						"expression": "0..24"
+					},
+					{
+						"name": "ec",
+						"expression": "eval:ec0-12"
+					},
+					{
+						"name": "a",
+						"expression": "eval:100*x+ea"
+					},
+					{
+						"name": "b",
+						"expression": "eval:100*y+eb"
+					},
+					{
+						"name": "c",
+						"expression": "eval:100*z+ec"
+					}
+				],
+				"conditions": ["ea!=0", "eb!=0", "ec!=0"],
+				"correction": {
+					"steps": [
+						"On arrondit chaque nombre à la centaine la plus proche : ${{a}} \\approx {{eval:100*x}}$, ${{b}} \\approx {{eval:100*y}}$, ${{c}} \\approx {{eval:100*z}}$.",
+						"$${{a}} + {{b}} + {{c}} \\approx {{eval:100*x}} + {{eval:100*y}} + {{eval:100*z}} = \\textcolor{{{color:primary.0}}}{{{eval:100*(x+y+z)}}}$$"
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				],
+				"statement": "Sans poser l'opération, choisis la meilleure estimation.\n\n$${{a}} \\times {{b}} \\approx \\ldots$$\n\n```choix\n- ${{eval:100*x*y}}$\n- ${{eval:10*(100*x*y)}}$\n- ${{eval:(100*x*y)/10}}$\n- ${{eval:100*x*y+100*x}}$\n```",
+				"variables": [
+					{
+						"name": "x",
+						"expression": "2..9"
+					},
+					{
+						"name": "y",
+						"expression": "2..9"
+					},
+					{
+						"name": "ea0",
+						"expression": "0..8"
+					},
+					{
+						"name": "ea",
+						"expression": "eval:ea0-4"
+					},
+					{
+						"name": "eb0",
+						"expression": "0..8"
+					},
+					{
+						"name": "eb",
+						"expression": "eval:eb0-4"
+					},
+					{
+						"name": "a",
+						"expression": "eval:10*x+ea"
+					},
+					{
+						"name": "b",
+						"expression": "eval:10*y+eb"
+					}
+				],
+				"conditions": ["ea!=0", "eb!=0"],
+				"correction": {
+					"steps": [
+						"On arrondit chaque nombre à la dizaine la plus proche : ${{a}} \\approx {{eval:10*x}}$ et ${{b}} \\approx {{eval:10*y}}$.",
+						"$${{a}} \\times {{b}} \\approx {{eval:10*x}} \\times {{eval:10*y}} = \\textcolor{{{color:primary.0}}}{{{eval:100*x*y}}}$$"
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				],
+				"statement": "Sans poser l'opération, choisis la meilleure estimation.\n\n$${{n}} \\div {{d}} \\approx \\ldots$$\n\n```choix\n- ${{eval:100*q}}$\n- ${{eval:10*(100*q)}}$\n- ${{eval:(100*q)/10}}$\n- ${{eval:100*d*q}}$\n```",
+				"variables": [
+					{
+						"name": "d",
+						"expression": "2..5"
+					},
+					{
+						"name": "q",
+						"expression": "1..4"
+					},
+					{
+						"name": "ea0",
+						"expression": "0..12"
+					},
+					{
+						"name": "ea",
+						"expression": "eval:ea0-6"
+					},
+					{
+						"name": "n",
+						"expression": "eval:100*d*q+ea"
+					}
+				],
+				"conditions": ["ea!=0", "d*q<=9", "d*q>=2"],
+				"correction": {
+					"steps": [
+						"On remplace ${{n}}$ par un nombre proche facile à diviser par ${{d}}$ : ${{n}} \\approx {{eval:100*d*q}}$.",
+						"$${{n}} \\div {{d}} \\approx {{eval:100*d*q}} \\div {{d}} = \\textcolor{{{color:primary.0}}}{{{eval:100*q}}}$$"
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "draft",
+		"title": "Estimer le résultat d'une opération",
+		"description": "Somme de trois nombres proches de centaines, produit de deux nombres proches de dizaines, quotient d'un nombre proche d'un multiple de 100 ; choisir parmi quatre valeurs",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "212",
+					"b": "298",
+					"c": "496",
+					"x": "2",
+					"y": "3",
+					"z": "5",
+					"ea": "12",
+					"eb": "-2",
+					"ec": "-4",
+					"ea0": "24",
+					"eb0": "10",
+					"ec0": "8"
+				},
+				"description": "212 + 298 + 496 ≈ 1 000",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["1"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "212",
+					"b": "298",
+					"c": "496",
+					"x": "2",
+					"y": "3",
+					"z": "5",
+					"ea": "12",
+					"eb": "-2",
+					"ec": "-4",
+					"ea0": "24",
+					"eb0": "10",
+					"ec0": "8"
+				},
+				"description": "Erreur : 10 000 (un zéro de trop)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "52",
+					"b": "37",
+					"x": "5",
+					"y": "4",
+					"ea": "2",
+					"eb": "-3",
+					"ea0": "6",
+					"eb0": "1"
+				},
+				"description": "52 × 37 ≈ 2 000",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["2"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "52",
+					"b": "37",
+					"x": "5",
+					"y": "4",
+					"ea": "2",
+					"eb": "-3",
+					"ea0": "6",
+					"eb0": "1"
+				},
+				"description": "Erreur : 200",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"d": "2",
+					"n": "597",
+					"q": "3",
+					"ea": "-3",
+					"ea0": "3"
+				},
+				"description": "597 ÷ 2 ≈ 300",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["3"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"d": "2",
+					"n": "597",
+					"q": "3",
+					"ea": "-3",
+					"ea0": "3"
+				},
+				"description": "Erreur : 600 (pas divisé)",
+				"variationIndex": 2
+			}
+		],
+		"classification_node_id": null
+	},
+	{
+		"id": "d00b1f79-7982-43d5-858b-0255689079e1",
+		"type": "fill_in_blanks",
+		"options": {
+			"constraints": {
+				"spacesFromFourDigits": true
+			}
+		},
+		"precision": null,
+		"grades": ["CM1"],
+		"delay": 90,
+		"level": 15,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:1000*m+100*c+10*d+u}}"
+					}
+				],
+				"statement": "Combien de petits cubes y a-t-il en tout ?\n\n```collection\nmilliers: {{m}}\ncentaines: {{c}}\ndizaines: {{d}}\nunités: {{u}}\n```\n\nIl y a $?$ cubes en tout.",
+				"variables": [
+					{
+						"name": "m",
+						"expression": "1..5"
+					},
+					{
+						"name": "c",
+						"expression": "11..19"
+					},
+					{
+						"name": "d",
+						"expression": "1..9"
+					},
+					{
+						"name": "u",
+						"expression": "11..19"
+					}
+				],
+				"correction": {
+					"steps": [
+						"Un gros cube vaut $1\\,000$ cubes, une plaque $100$, une barre $10$, **même quand il y en a plus de dix**.",
+						"${{m}}$ {{if:m<=1|gros cube|gros cubes}} : ${{eval:1000*m}}$ ; ${{c}}$ plaques : ${{eval:100*c}}$ ; ${{d}}$ {{if:d<=1|barre|barres}} : ${{eval:10*d}}$ ; ${{u}}$ petits cubes : ${{u}}$.",
+						"$${{eval:1000*m}}+{{eval:100*c}}+{{eval:10*d}}+{{u}}=\\textcolor{{{color:primary.0}}}{{{solution}}}$$"
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:1000*m+100*c+10*d+u}}"
+					}
+				],
+				"statement": "Une collection est organisée ainsi : ${{u}}$ unités, ${{d}}$ dizaines, ${{c}}$ centaines et ${{m}}$ {{if:m<=1|millier|milliers}}.\n\nCombien d'objets compte-t-elle ?\n\nElle compte $?$ objets.",
+				"variables": [
+					{
+						"name": "u",
+						"expression": "10..29"
+					},
+					{
+						"name": "d",
+						"expression": "11..19"
+					},
+					{
+						"name": "c",
+						"expression": "11..39"
+					},
+					{
+						"name": "m",
+						"expression": "1..9"
+					}
+				],
+				"correction": {
+					"steps": [
+						"On écrit la valeur de chaque groupement, puis on ajoute.",
+						"${{u}}$ unités : ${{u}}$ ; ${{d}}$ dizaines : ${{eval:10*d}}$ ; ${{c}}$ centaines : ${{eval:100*c}}$ ; ${{m}}$ {{if:m<=1|millier|milliers}} : ${{eval:1000*m}}$.",
+						"$${{u}}+{{eval:10*d}}+{{eval:100*c}}+{{eval:1000*m}}=\\textcolor{{{color:primary.0}}}{{{solution}}}$$"
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:100000*a+1000*b+10*c}}"
+					}
+				],
+				"statement": "Une collection est organisée ainsi : ${{a}}$ {{if:a<=1|centaine de milliers|centaines de milliers}}, ${{b}}$ milliers et ${{c}}$ dizaines.\n\nCombien d'objets compte-t-elle ?\n\nElle compte $?$ objets.",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..8"
+					},
+					{
+						"name": "b",
+						"expression": "11..49"
+					},
+					{
+						"name": "c",
+						"expression": "11..99"
+					}
+				],
+				"correction": {
+					"steps": [
+						"On écrit la valeur de chaque groupement, puis on ajoute.",
+						"${{a}}$ {{if:a<=1|centaine de milliers|centaines de milliers}} : ${{eval:100000*a}}$ ; ${{b}}$ milliers : ${{eval:1000*b}}$ ; ${{c}}$ dizaines : ${{eval:10*c}}$.",
+						"$${{eval:100000*a}}+{{eval:1000*b}}+{{eval:10*c}}=\\textcolor{{{color:primary.0}}}{{{solution}}}$$"
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "draft",
+		"title": "Dénombrer une collection organisée en groupements",
+		"description": "Matériel à gros cubes avec plus de dix plaques et de dix petits cubes ; groupements écrits en unités de numération, jusqu'à 999 999",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["4\\,462"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"c": "14",
+					"d": "5",
+					"m": "3",
+					"u": "12"
+				},
+				"description": "matériel : 3 gros cubes, 14 plaques, 5 barres, 12 cubes → 4 462",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["3\\,462"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"c": "14",
+					"d": "5",
+					"m": "3",
+					"u": "12"
+				},
+				"description": "Erreur : plaques au-delà de dix oubliées (3 462)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["4462"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["spaces"]
+				},
+				"variables": {
+					"c": "14",
+					"d": "5",
+					"m": "3",
+					"u": "12"
+				},
+				"description": "Sans espaces : forme à améliorer",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["5\\,297"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"c": "31",
+					"d": "18",
+					"m": "2",
+					"u": "17"
+				},
+				"description": "BO : 17 unités, 18 dizaines, 31 centaines, 2 milliers → 5 297",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["2\\,311"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"c": "31",
+					"d": "18",
+					"m": "2",
+					"u": "17"
+				},
+				"description": "Erreur : chiffres recopiés dans l'ordre (2 311)",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["415\\,320"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "4",
+					"b": "15",
+					"c": "32"
+				},
+				"description": "4 centaines de milliers, 15 milliers, 32 dizaines → 415 320",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["550\\,320"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "4",
+					"b": "15",
+					"c": "32"
+				},
+				"description": "Erreur : 15 milliers lus 15 dizaines de milliers (550 320)",
+				"variationIndex": 2
+			}
+		],
+		"classification_node_id": null
+	}
+]

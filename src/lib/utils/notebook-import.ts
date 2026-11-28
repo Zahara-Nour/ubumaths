@@ -12,7 +12,7 @@ import type {
 	StreamOutput,
 	ErrorOutput,
 	DisplayOutput
-} from '$lib/types/notebook';
+} from '#lib/types/notebook.ts';
 
 // Validation limits
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB

@@ -8,8 +8,8 @@
  * `3.1` pour `3{,}1` ou `\dfrac{1}{2}` pour `\frac{1}{2}` sont verts.
  */
 
-import type { QuestionInstance } from '$lib/questions/types';
-import { validateAnswerDetailed } from '$lib/utils/answer-validator';
+import type { QuestionInstance } from '#lib/questions/types.ts';
+import { validateAnswerDetailed } from '#lib/utils/answer-validator.ts';
 
 // Types
 export interface BlankColors {

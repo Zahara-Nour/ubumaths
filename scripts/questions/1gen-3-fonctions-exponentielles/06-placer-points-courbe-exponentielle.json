@@ -1,0 +1,164 @@
+{
+	"id": "9ead685c-6032-4b2b-982d-0cadfcdf40b4",
+	"title": "Placer des points de la courbe d'une fonction exponentielle",
+	"description": "f(x) = k × aˣ : calculer f(0) à f(4) puis placer les points ; tableau de valeurs donné",
+	"grades": ["1_GEN"],
+	"level": 1,
+	"delay": 90,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true
+	},
+	"variations": [
+		{
+			"statement": "On considère la fonction $f$ définie sur $[0\\,;+\\infty[$ par $f(x)={{if:k>1|{{k}}\\times}}2^x$.\n\nPlace les points $A$, $B$, $C$, $D$ et $E$ de la courbe de $f$ d'abscisses $0$, $1$, …, $4$.\n\n```courbe\nx: -1 ; 5\ny: -{{k}} ; {{eval:k*17}}\ngrille: 1 ; {{k}}\nplacer: A=(0 ; {{eval:k*2^0}}) ; B=(1 ; {{eval:k*2^1}}) ; C=(2 ; {{eval:k*2^2}}) ; D=(3 ; {{eval:k*2^3}}) ; E=(4 ; {{eval:k*2^4}})\ntaille: moyenne\ndescription: Repère : x de −1 à 5 en abscisse, de 1 en 1 ; ordonnée graduée de {{k}} en {{k}}.\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1|2"
+				}
+			],
+			"conditions": [],
+			"correction": {
+				"steps": [
+					"On calcule les images : $f(0)={{eval:k*2^0;d}}$, $f(1)={{eval:k*2^1;d}}$, $f(2)={{eval:k*2^2;d}}$, $f(3)={{eval:k*2^3;d}}$, $f(4)={{eval:k*2^4;d}}$. On multiplie par $2$ d'une abscisse à la suivante.",
+					"On place $A\\textcolor{{{color:primary.0}}}{(0\\,;{{eval:k*2^0;d}})}$, $B\\textcolor{{{color:primary.0}}}{(1\\,;{{eval:k*2^1;d}})}$, $C\\textcolor{{{color:primary.0}}}{(2\\,;{{eval:k*2^2;d}})}$, $D\\textcolor{{{color:primary.0}}}{(3\\,;{{eval:k*2^3;d}})}$, $E\\textcolor{{{color:primary.0}}}{(4\\,;{{eval:k*2^4;d}})}$. Les points ne sont pas alignés : la courbe d'une fonction $x\\mapsto k\\times a^x$ n'est pas une droite ; elle monte de plus en plus vite."
+				]
+			}
+		},
+		{
+			"statement": "On considère la fonction $f$ définie sur $[0\\,;+\\infty[$ par $f(x)={{k}}\\times0{,}5^x$.\n\nPlace les points $A$, $B$, $C$, $D$ et $E$ de la courbe de $f$ d'abscisses $0$, $1$, …, $4$.\n\n```courbe\nx: -1 ; 5\ny: -{{g}} ; {{eval:g*17}}\ngrille: 1 ; {{g}}\nplacer: A=(0 ; {{eval:k*0.5^0}}) ; B=(1 ; {{eval:k*0.5^1}}) ; C=(2 ; {{eval:k*0.5^2}}) ; D=(3 ; {{eval:k*0.5^3}}) ; E=(4 ; {{eval:k*0.5^4}})\ntaille: moyenne\ndescription: Repère : x de −1 à 5 en abscisse, de 1 en 1 ; ordonnée graduée de {{g}} en {{g}}.\n```",
+			"variables": [
+				{
+					"name": "g",
+					"expression": "1|2|3|5"
+				},
+				{
+					"name": "k",
+					"expression": "eval:16*g"
+				}
+			],
+			"conditions": [],
+			"correction": {
+				"steps": [
+					"On calcule les images : $f(0)={{eval:k*0.5^0;d}}$, $f(1)={{eval:k*0.5^1;d}}$, $f(2)={{eval:k*0.5^2;d}}$, $f(3)={{eval:k*0.5^3;d}}$, $f(4)={{eval:k*0.5^4;d}}$. On divise par $2$ d'une abscisse à la suivante.",
+					"On place $A\\textcolor{{{color:primary.0}}}{(0\\,;{{eval:k*0.5^0;d}})}$, $B\\textcolor{{{color:primary.0}}}{(1\\,;{{eval:k*0.5^1;d}})}$, $C\\textcolor{{{color:primary.0}}}{(2\\,;{{eval:k*0.5^2;d}})}$, $D\\textcolor{{{color:primary.0}}}{(3\\,;{{eval:k*0.5^3;d}})}$, $E\\textcolor{{{color:primary.0}}}{(4\\,;{{eval:k*0.5^4;d}})}$. Les points ne sont pas alignés : la courbe d'une fonction $x\\mapsto k\\times a^x$ n'est pas une droite ; elle descend de moins en moins vite."
+				]
+			}
+		},
+		{
+			"statement": "Une culture compte ${{k}}$ milliers de bactéries. Leur nombre, en milliers, au bout de $x$ heures est modélisé par $f(x)={{k}}\\times1{,}5^x$. On a calculé :\n\n| $x$ | $0$ | $1$ | $2$ | $3$ |\n| --- | --- | --- | --- | --- |\n| $f(x)$ | ${{eval:k;d}}$ | ${{eval:k*1.5;d}}$ | ${{eval:k*1.5^2;d}}$ | ${{eval:k*1.5^3;d}}$ |\n\nPlace les points $A$, $B$, $C$ et $D$ de la courbe de $f$ d'abscisses $0$, $1$, $2$ et $3$.\n\n```courbe\nx: -1 ; 4\ny: -{{g}} ; {{eval:g*29}}\ngrille: 1 ; {{g}}\naxes: x = Heures ; y = Milliers\nplacer: A=(0 ; {{eval:k*1.5^0}}) ; B=(1 ; {{eval:k*1.5^1}}) ; C=(2 ; {{eval:k*1.5^2}}) ; D=(3 ; {{eval:k*1.5^3}})\ntaille: moyenne\ndescription: Repère : x de −1 à 4 en abscisse, de 1 en 1 ; ordonnée graduée de {{g}} en {{g}}.\n```",
+			"variables": [
+				{
+					"name": "g",
+					"expression": "1|2"
+				},
+				{
+					"name": "k",
+					"expression": "eval:8*g"
+				}
+			],
+			"conditions": [],
+			"correction": {
+				"steps": [
+					"Chaque colonne du tableau donne un point $(x\\,;f(x))$.",
+					"On place $A\\textcolor{{{color:primary.0}}}{(0\\,;{{eval:k*1.5^0;d}})}$, $B\\textcolor{{{color:primary.0}}}{(1\\,;{{eval:k*1.5^1;d}})}$, $C\\textcolor{{{color:primary.0}}}{(2\\,;{{eval:k*1.5^2;d}})}$, $D\\textcolor{{{color:primary.0}}}{(3\\,;{{eval:k*1.5^3;d}})}$. Les points ne sont pas alignés : la courbe d'une fonction $x\\mapsto k\\times a^x$ n'est pas une droite ; elle monte de plus en plus vite."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "f(x) = 2ˣ : 1, 2, 4, 8, 16",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1"
+			},
+			"answers": ["0;1", "1;2", "2;4", "3;8", "4;16"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 2x au lieu de 2ˣ (0, 2, 4, 6, 8)",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1"
+			},
+			"answers": ["0;0", "1;2", "2;4", "3;6", "4;8"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "f(x) = 2 × 2ˣ : 2, 4, 8, 16, 32",
+			"variationIndex": 0,
+			"variables": {
+				"k": "2"
+			},
+			"answers": ["0;2", "1;4", "2;8", "3;16", "4;32"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : f(0) = 0",
+			"variationIndex": 0,
+			"variables": {
+				"k": "2"
+			},
+			"answers": ["0;0", "1;4", "2;8", "3;16", "4;32"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "f(x) = 32 × 0,5ˣ : 32, 16, 8, 4, 2",
+			"variationIndex": 1,
+			"variables": {
+				"g": "2",
+				"k": "32"
+			},
+			"answers": ["0;32", "1;16", "2;8", "3;4", "4;2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 32 − 0,5x × … (on retire 8 : 32, 24, 16, 8, 0)",
+			"variationIndex": 1,
+			"variables": {
+				"g": "2",
+				"k": "32"
+			},
+			"answers": ["0;32", "1;24", "2;16", "3;8", "4;0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Bactéries 8 × 1,5ˣ : 8, 12, 18, 27",
+			"variationIndex": 2,
+			"variables": {
+				"g": "1",
+				"k": "8"
+			},
+			"answers": ["0;8", "1;12", "2;18", "3;27"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : abscisse et ordonnée échangées pour B",
+			"variationIndex": 2,
+			"variables": {
+				"g": "1",
+				"k": "8"
+			},
+			"answers": ["0;8", "12;1", "2;18", "3;27"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

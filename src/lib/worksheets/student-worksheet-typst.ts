@@ -9,7 +9,7 @@
  *
  * @example
  * ```typescript
- * import { generateStudentWorksheetTypst } from '$lib/worksheets/student-worksheet-typst';
+ * import { generateStudentWorksheetTypst } from '#lib/worksheets/student-worksheet-typst.ts';
  *
  * const typstContent = generateStudentWorksheetTypst(worksheet, 'correction');
  * // Compile with TypstService
@@ -23,9 +23,9 @@ import type {
 	WorksheetConfig,
 	WorksheetRow,
 	WorksheetTemplateRow
-} from '$lib/types/worksheets';
-import { WorksheetGenerator } from '$lib/typst/generators/worksheet-generator';
-import type { TextSize } from '$lib/typst/text-size';
+} from '#lib/types/worksheets.ts';
+import { WorksheetGenerator } from '#lib/typst/generators/worksheet-generator.ts';
+import type { TextSize } from '#lib/typst/text-size.ts';
 import { documentFromStudentView } from './document/student-adapter';
 
 // ============================================================================
@@ -62,6 +62,8 @@ export interface StudentPdfOptions {
 	className?: string | null;
 	/** Taille du texte de l'élève (`student_print_settings`) ; normale par défaut */
 	textSize?: TextSize;
+	/** Lecture facilitée de l'élève (`student_print_settings`, Luciole) ; faux par défaut */
+	easyReading?: boolean;
 }
 
 // ============================================================================
@@ -112,7 +114,12 @@ export function generateStudentWorksheetTypst(
 		config,
 		style_id: worksheet.style_id ?? null,
 		total_points: worksheet.total_points ?? null,
-		estimated_duration_minutes: worksheet.estimated_duration_minutes ?? null
+		estimated_duration_minutes: worksheet.estimated_duration_minutes ?? null,
+		// Badge du niveau et titre composé (ADR 0041), comme le PDF du prof
+		grades: worksheet.grades ?? [],
+		category: worksheet.category ?? null,
+		custom_title: worksheet.custom_title ?? true,
+		classifications: worksheet.classifications ?? []
 	} as unknown as WorksheetRow;
 
 	const generator = new WorksheetGenerator(
@@ -128,7 +135,8 @@ export function generateStudentWorksheetTypst(
 			withCorrections: ending === 'none' ? undefined : ending,
 			correctionFonts: options.correctionFonts,
 			individualCopyNotice: options.individualCopyNotice,
-			textSize: options.textSize
+			textSize: options.textSize,
+			easyReading: options.easyReading
 		}
 	);
 	return generator.generate({

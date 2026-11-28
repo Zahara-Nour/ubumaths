@@ -13,9 +13,9 @@ import { describe, it, expect, beforeAll, afterEach } from 'vitest';
 import { userEvent } from 'vitest/browser';
 import { render } from 'vitest-browser-svelte';
 import QuestionCard from '../QuestionCard.svelte';
-import { toDisplayInstance, toPublicQuestion } from '$lib/questions/public-question';
-import type { GradeLevel, QuestionInstance } from '$lib/questions/types';
-import type { ResolvedMarkdown } from '$lib/ubumark';
+import { toDisplayInstance, toPublicQuestion } from '#lib/questions/public-question.ts';
+import type { GradeLevel, QuestionInstance } from '#lib/questions/types.ts';
+import type { ResolvedMarkdown } from '#lib/ubumark/index.ts';
 import type { MathfieldElement } from 'mathlive';
 
 const TAB_SELECTOR = '.MLK__toolbar [data-tooltip="Factorielle et coefficient binomial"]';

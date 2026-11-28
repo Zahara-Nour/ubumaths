@@ -1,0 +1,251 @@
+{
+	"id": "a5b2c4fa-8987-4d93-a4f0-0827d91fb389",
+	"title": "Produit de puissances (exposants relatifs)",
+	"description": "a^x × a^y = a^(x+y) avec des exposants négatifs ; exposant manquant",
+	"grades": ["T_TECHNO"],
+	"level": 1,
+	"delay": 45,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Écris sous la forme d'une seule puissance : ${{a}}^{ {{m}} }\\times{{a}}^{ {{p}} }$.\n\n${{a}}^{ {{m}} }\\times{{a}}^{ {{p}} }=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2|3|5|1.5"
+				},
+				{
+					"name": "m",
+					"expression": "-3|-2.5|-1.5|-0.5"
+				},
+				{
+					"name": "p",
+					"expression": "0.5|1|1.5|2|2.5|3.5"
+				}
+			],
+			"conditions": ["m+p != 0", "m+p != 1"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{a}}^{ {{eval:m+p;d}} }",
+					"requiredForm": "power"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Pour $a>0$ et tous réels $x$ et $y$ : $a^x\\times a^y=a^{x+y}$. On **ajoute** les exposants.",
+					"${{a}}^{ {{m}} }\\times{{a}}^{ {{p}} }={{a}}^{ {{m}}+{{p}} }=\\textcolor{{{color:primary.0}}}{{{a}}^{ {{eval:m+p;d}} }}$."
+				]
+			}
+		},
+		{
+			"statement": "Écris sous la forme d'une seule puissance : ${{a}}^{ {{m}} }\\times{{a}}^{ {{p}} }$.\n\n${{a}}^{ {{m}} }\\times{{a}}^{ {{p}} }=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2|3|5|1.5"
+				},
+				{
+					"name": "m",
+					"expression": "-0.5|-1|-1.5|-2|-2.5"
+				},
+				{
+					"name": "p",
+					"expression": "-0.5|-1|-1.5|-2"
+				}
+			],
+			"conditions": ["m != p"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{a}}^{ {{eval:m+p;d}} }",
+					"requiredForm": "power"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Pour $a>0$ et tous réels $x$ et $y$ : $a^x\\times a^y=a^{x+y}$. On **ajoute** les exposants. Ces propriétés valent pour tous les réels $x$ et $y$, **positifs ou négatifs**, comme pour les puissances entières.",
+					"${{a}}^{ {{m}} }\\times{{a}}^{ {{p}} }={{a}}^{ {{m}}+({{p}}) }=\\textcolor{{{color:primary.0}}}{{{a}}^{ {{eval:m+p;d}} }}$."
+				]
+			}
+		},
+		{
+			"statement": "Quel réel $x$ vérifie ${{a}}^{ {{m}} }\\times{{a}}^x={{a}}^{ {{r}} }$ ?\n\n$x=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2|3|5|1.5"
+				},
+				{
+					"name": "m",
+					"expression": "1.5|2|2.5|3"
+				},
+				{
+					"name": "r",
+					"expression": "-1|-0.5|0.5|1"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:r-m;d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Pour $a>0$ et tous réels $x$ et $y$ : $a^x\\times a^y=a^{x+y}$. On **ajoute** les exposants.",
+					"${{a}}^{ {{m}} }\\times{{a}}^x={{a}}^{ {{m}}+x }$ : il faut ${{m}}+x={{r}}$, donc $x={{r}}-{{m}}=\\textcolor{{{color:primary.0}}}{{{eval:r-m;d}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "2^-1,5 × 2^2 = 2^0,5",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"m": "-1.5",
+				"p": "2"
+			},
+			"answers": ["2^{0,5}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "3^-3 × 3^1 = 3^-2",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"m": "-3",
+				"p": "1"
+			},
+			"answers": ["3^{-2}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : signe perdu (3^4)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"m": "-3",
+				"p": "1"
+			},
+			"answers": ["3^{4}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : exposants multipliés (3^-3)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"m": "-3",
+				"p": "1"
+			},
+			"answers": ["3^{-3}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Forme : 1/9 au lieu d'une puissance",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"m": "-3",
+				"p": "1"
+			},
+			"answers": ["\\frac{1}{9}"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		},
+		{
+			"description": "5^-0,5 × 5^-2 = 5^-2,5",
+			"variationIndex": 1,
+			"variables": {
+				"a": "5",
+				"m": "-0.5",
+				"p": "-2"
+			},
+			"answers": ["5^{-2,5}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 5^1,5 (soustraction)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "5",
+				"m": "-0.5",
+				"p": "-2"
+			},
+			"answers": ["5^{1,5}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 5^2,5 (signe perdu)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "5",
+				"m": "-0.5",
+				"p": "-2"
+			},
+			"answers": ["5^{2,5}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "2^2,5 × 2^x = 2^-1 : x = −3,5",
+			"variationIndex": 2,
+			"variables": {
+				"a": "2",
+				"m": "2.5",
+				"r": "-1"
+			},
+			"answers": ["-3,5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : −1 − (−2,5)… 1,5",
+			"variationIndex": 2,
+			"variables": {
+				"a": "2",
+				"m": "2.5",
+				"r": "-1"
+			},
+			"answers": ["1,5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 3,5 (signe)",
+			"variationIndex": 2,
+			"variables": {
+				"a": "2",
+				"m": "2.5",
+				"r": "-1"
+			},
+			"answers": ["3,5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

@@ -1,6 +1,6 @@
 """Écrit les 9 modèles du lot 10 du CE1 (espace et mesure) dans scripts/questions/ce1-10/.
 
-Phase 0 validée par David le 2026-11-02 (§ 17 du journal `docs/wip/questions-ce1-progress.md`,
+Phase 0 validée par David le 2026-11-02 (§ 17 du journal `docs/archive/wip/questions-ce1-progress.md`,
 « tes recos ? » puis « go »). Bornes `cycle2.json` : CE1-044 (règle graduée, encadrer entre deux
 entiers de centimètres), CE1-064 (reconnaître cube, boule, cône, pyramide, cylindre, pavé), CE1-065
 (nommer cube, boule, pavé, cône, pyramide : pas le cylindre), CE1-079 (assemblages de cubes),

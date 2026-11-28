@@ -1,0 +1,186 @@
+{
+	"id": "087df1a4-6e57-4121-930d-e08c744220c4",
+	"title": "Choisir l'unité d'aire",
+	"description": "Choisir entre cm², dm² et m² l'unité qui convient pour l'aire d'un objet, ou la mesure plausible de son aire",
+	"grades": ["CM2"],
+	"level": 1,
+	"delay": 60,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"spacesFromFourDigits": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Dans quelle unité mesure-t-on le plus simplement l'aire {{if:j==1|d'un timbre|{{if:j==2|d'une carte à jouer|{{if:j==3|d'une gomme|d'un ticket de bus}}}}}} ?\n\n```choix\n- $\\unit{cm^2}$\n- $\\unit{dm^2}$\n- $\\unit{m^2}$\n```",
+			"variables": [
+				{
+					"name": "j",
+					"expression": "1..4"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"C'est un petit objet : il tient à peine quelques carrés de $1~\\unit{cm}$ de côté. Le $\\unit{dm^2}$ et le $\\unit{m^2}$ seraient bien trop grands.",
+					"L'aire {{if:j==1|d'un timbre|{{if:j==2|d'une carte à jouer|{{if:j==3|d'une gomme|d'un ticket de bus}}}}}} se mesure en $\\textcolor{{{color:primary.0}}}{\\unit{cm^2}}$."
+				]
+			}
+		},
+		{
+			"statement": "Dans quelle unité mesure-t-on le plus simplement l'aire {{if:j==1|d'une feuille de cahier|{{if:j==2|de la couverture d'un livre|{{if:j==3|d'un set de table|de l'écran d'un ordinateur portable}}}}}} ?\n\n```choix\n- $\\unit{dm^2}$\n- $\\unit{cm^2}$\n- $\\unit{m^2}$\n```",
+			"variables": [
+				{
+					"name": "j",
+					"expression": "1..4"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Un carré de $1~\\unit{dm}$ de côté ($10~\\unit{cm}$) est de la taille d'une main : l'objet en contient quelques-uns. En $\\unit{cm^2}$, le nombre serait très grand ; un $\\unit{m^2}$ est bien plus grand que l'objet.",
+					"L'aire {{if:j==1|d'une feuille de cahier|{{if:j==2|de la couverture d'un livre|{{if:j==3|d'un set de table|de l'écran d'un ordinateur portable}}}}}} se mesure en $\\textcolor{{{color:primary.0}}}{\\unit{dm^2}}$."
+				]
+			}
+		},
+		{
+			"statement": "Dans quelle unité mesure-t-on le plus simplement l'aire {{if:j==1|d'une salle de classe|{{if:j==2|d'une chambre|{{if:j==3|d'un terrain de basket|du sol d'un gymnase}}}}}} ?\n\n```choix\n- $\\unit{m^2}$\n- $\\unit{dm^2}$\n- $\\unit{cm^2}$\n```",
+			"variables": [
+				{
+					"name": "j",
+					"expression": "1..4"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Un carré de $1~\\unit{m}$ de côté tient plusieurs fois sur ce sol : on compte en $\\unit{m^2}$. En $\\unit{cm^2}$ ou en $\\unit{dm^2}$, les nombres seraient énormes.",
+					"L'aire {{if:j==1|d'une salle de classe|{{if:j==2|d'une chambre|{{if:j==3|d'un terrain de basket|du sol d'un gymnase}}}}}} se mesure en $\\textcolor{{{color:primary.0}}}{\\unit{m^2}}$."
+				]
+			}
+		},
+		{
+			"statement": "Quelle peut être l'aire {{if:j==1|d'une feuille de cahier|{{if:j==2|d'une salle de classe|{{if:j==3|d'un timbre|d'une porte}}}}}} ?\n\n```choix\n- ${{if:j==1|6~\\unit{dm^2}|{{if:j==2|60~\\unit{m^2}|{{if:j==3|6~\\unit{cm^2}|2~\\unit{m^2}}}}}}}$\n- ${{if:j==1|6~\\unit{cm^2}|{{if:j==2|60~\\unit{dm^2}|{{if:j==3|6~\\unit{dm^2}|2~\\unit{dm^2}}}}}}}$\n- ${{if:j==1|6~\\unit{m^2}|{{if:j==2|60~\\unit{cm^2}|{{if:j==3|6~\\unit{m^2}|2~\\unit{cm^2}}}}}}}$\n```",
+			"variables": [
+				{
+					"name": "j",
+					"expression": "1..4"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"{{if:j==1|Une feuille de cahier mesure environ $3~\\unit{dm}$ sur $2~\\unit{dm}$ : $3 \\times 2 = 6$.|{{if:j==2|Une salle de classe mesure environ $10~\\unit{m}$ sur $6~\\unit{m}$ : $10 \\times 6 = 60$.|{{if:j==3|Un timbre mesure environ $3~\\unit{cm}$ sur $2~\\unit{cm}$ : $3 \\times 2 = 6$.|Une porte mesure environ $2~\\unit{m}$ de haut sur $1~\\unit{m}$ de large : $2 \\times 1 = 2$.}}}}}}",
+					"L'aire est d'environ $\\textcolor{{{color:primary.0}}}{{{if:j==1|6~\\unit{dm^2}|{{if:j==2|60~\\unit{m^2}|{{if:j==3|6~\\unit{cm^2}|2~\\unit{m^2}}}}}}}}$ ; les deux autres mesures sont beaucoup trop petites ou beaucoup trop grandes."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Timbre : cm²",
+			"variationIndex": 0,
+			"variables": {
+				"j": "1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : m² pour un timbre",
+			"variationIndex": 0,
+			"variables": {
+				"j": "1"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Feuille de cahier : dm²",
+			"variationIndex": 1,
+			"variables": {
+				"j": "1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : m² pour une feuille",
+			"variationIndex": 1,
+			"variables": {
+				"j": "1"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Salle de classe : m²",
+			"variationIndex": 2,
+			"variables": {
+				"j": "1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : cm² pour une salle",
+			"variationIndex": 2,
+			"variables": {
+				"j": "1"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Feuille : 6 dm²",
+			"variationIndex": 3,
+			"variables": {
+				"j": "1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 6 m² pour une feuille",
+			"variationIndex": 3,
+			"variables": {
+				"j": "1"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

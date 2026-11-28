@@ -1,0 +1,272 @@
+{
+	"id": "22bbd82a-96b6-4fd5-b536-fa49014ae306",
+	"title": "Logarithme d'une puissance",
+	"description": "log(aⁿ) = n log a (n entier naturel) : formule ; compléter ; log 8 en fonction de log 2 ; valeur approchée ; nombre de chiffres de 2ⁿ",
+	"grades": ["T_TECHNO"],
+	"level": 1,
+	"delay": 30,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Pour tout réel $a>0$ et tout entier naturel $n$, $\\log\\left(a^n\\right)$ est égal à :\n\n```choix\n- $n\\log(a)$\n- $\\left(\\log(a)\\right)^n$\n- $\\log(a)+n$\n- $a\\log(n)$\n```",
+			"variables": [],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Pour $a>0$ et $n$ entier naturel : $\\log\\left(a^n\\right)=\\textcolor{{{color:primary.0}}}{n\\log(a)}$.",
+					"C'est la propriété du produit répétée : $\\log(a\\times a\\times\\cdots\\times a)=\\log(a)+\\log(a)+\\cdots+\\log(a)$."
+				]
+			}
+		},
+		{
+			"statement": "Complète.\n\n$\\log\\left({{a}}^{ {{n}} }\\right)=?\\times\\log({{a}})$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9"
+				},
+				{
+					"name": "n",
+					"expression": "2..12"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{n}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Pour $a>0$ et $n$ entier naturel : $\\log\\left(a^n\\right)=n\\log(a)$.",
+					"$\\log\\left({{a}}^{ {{n}} }\\right)=\\textcolor{{{color:primary.0}}}{{{n}}}\\times\\log({{a}})$."
+				]
+			}
+		},
+		{
+			"statement": "Écris $\\log({{eval:a^n}})$ en fonction de $\\log({{a}})$.\n\n$\\log({{eval:a^n}})=?\\log({{a}})$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2|3|5|7"
+				},
+				{
+					"name": "n",
+					"expression": "2..6"
+				}
+			],
+			"conditions": ["a^n <= 729", "a^n/a != n"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{n}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Pour $a>0$ et $n$ entier naturel : $\\log\\left(a^n\\right)=n\\log(a)$.",
+					"${{eval:a^n}}={{a}}^{ {{n}} }$, donc $\\log({{eval:a^n}})=\\textcolor{{{color:primary.0}}}{{{n}}}\\log({{a}})$."
+				]
+			}
+		},
+		{
+			"statement": "On donne $\\log({{a}})\\approx{{eval:la;d}}$. Déduis-en une valeur approchée de $\\log\\left({{a}}^{ {{n}} }\\right)$.\n\n$\\log\\left({{a}}^{ {{n}} }\\right)\\approx ?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2|3|5|7"
+				},
+				{
+					"name": "n",
+					"expression": "2..9"
+				},
+				{
+					"name": "la",
+					"expression": "eval:round(1000*log(a))/1000"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:n*la;d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Pour $a>0$ et $n$ entier naturel : $\\log\\left(a^n\\right)=n\\log(a)$.",
+					"$\\log\\left({{a}}^{ {{n}} }\\right)={{n}}\\log({{a}})\\approx{{n}}\\times{{eval:la;d}}\\approx\\textcolor{{{color:primary.0}}}{{{eval:n*la;d}}}$."
+				]
+			}
+		},
+		{
+			"statement": "On donne $\\log(2)\\approx0{,}30103$. Combien de chiffres a l'écriture décimale de $2^{ {{n}} }$ ?\n\n$?$ chiffres",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "20|30|40|50|64|100"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:floor(n*0.30103)+1}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Pour $a>0$ et $n$ entier naturel : $\\log\\left(a^n\\right)=n\\log(a)$.",
+					"$\\log\\left(2^{ {{n}} }\\right)={{n}}\\log(2)\\approx{{eval:n*0.30103;d}}$, donc $10^{ {{eval:floor(n*0.30103)}} }\\leqslant2^{ {{n}} }<10^{ {{eval:floor(n*0.30103)+1}} }$.",
+					"Un entier compris entre $10^k$ et $10^{k+1}$ (exclu) a $k+1$ chiffres : $2^{ {{n}} }$ a $\\textcolor{{{color:primary.0}}}{{{eval:floor(n*0.30103)+1}}}$ chiffres."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "log(a^n) = n log a",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : (log a)^n",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "log(3^7) = 7 × log 3",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3",
+				"n": "7"
+			},
+			"answers": ["7"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 3",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3",
+				"n": "7"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "log 8 = 3 log 2",
+			"variationIndex": 2,
+			"variables": {
+				"a": "2",
+				"n": "3"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 4 (8 ÷ 2)",
+			"variationIndex": 2,
+			"variables": {
+				"a": "2",
+				"n": "3"
+			},
+			"answers": ["4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "log 125 = 3 log 5",
+			"variationIndex": 2,
+			"variables": {
+				"a": "5",
+				"n": "3"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "log(2^5) ≈ 5 × 0,301 = 1,505",
+			"variationIndex": 3,
+			"variables": {
+				"a": "2",
+				"n": "5",
+				"la": "0.301"
+			},
+			"answers": ["1,505"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 0,301 + 5",
+			"variationIndex": 3,
+			"variables": {
+				"a": "2",
+				"n": "5",
+				"la": "0.301"
+			},
+			"answers": ["5,301"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "2^50 a 16 chiffres",
+			"variationIndex": 4,
+			"variables": {
+				"n": "50"
+			},
+			"answers": ["16"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 15 (partie entière)",
+			"variationIndex": 4,
+			"variables": {
+				"n": "50"
+			},
+			"answers": ["15"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "2^64 a 20 chiffres",
+			"variationIndex": 4,
+			"variables": {
+				"n": "64"
+			},
+			"answers": ["20"],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}

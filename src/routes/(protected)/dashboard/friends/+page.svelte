@@ -1,14 +1,14 @@
 <script lang="ts">
-	import { lore } from '$lib/config/lore';
+	import { lore } from '#lib/config/lore.ts';
 	import { onMount } from 'svelte';
-	import { friendsManager } from '$lib/stores/friends.svelte';
-	import { presenceManager } from '$lib/stores/presence.svelte';
-	import FriendsList from '$lib/components/FriendsList.svelte';
-	import FriendRequests from '$lib/components/FriendRequests.svelte';
-	import AddFriend from '$lib/components/AddFriend.svelte';
-	import * as Tabs from '$lib/components/ui/tabs';
-	import * as Dialog from '$lib/components/ui/dialog';
-	import { Button } from '$lib/components/ui/button';
+	import { friendsManager } from '#lib/stores/friends.svelte.ts';
+	import { presenceManager } from '#lib/stores/presence.svelte.ts';
+	import FriendsList from '#lib/components/FriendsList.svelte';
+	import FriendRequests from '#lib/components/FriendRequests.svelte';
+	import AddFriend from '#lib/components/AddFriend.svelte';
+	import * as Tabs from '#lib/components/ui/tabs/index.ts';
+	import * as Dialog from '#lib/components/ui/dialog/index.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
 	import { Users, Bell, Plus } from '@lucide/svelte';
 
 	let addFriendModalOpen = $state(false);

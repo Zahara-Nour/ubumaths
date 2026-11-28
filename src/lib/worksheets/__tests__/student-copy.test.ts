@@ -10,7 +10,7 @@ import {
 	isGuidanceLevel,
 	resolveCopyExercise
 } from '../student-copy';
-import type { Exercise } from '$lib/exercises/types';
+import type { Exercise } from '#lib/exercises/types.ts';
 
 describe('guidanceVariationIndex : la version d’après le niveau, jamais au hasard', () => {
 	const GA = ['guided', 'autonomous'];

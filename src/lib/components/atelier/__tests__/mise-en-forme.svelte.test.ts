@@ -12,7 +12,7 @@ import { render } from 'vitest-browser-svelte';
 import { userEvent } from 'vitest/browser';
 import { tick } from 'svelte';
 import AtelierContainer from '../AtelierContainer.svelte';
-import { Atelier } from '$lib/atelier/atelier.svelte';
+import { Atelier } from '#lib/atelier/atelier.svelte.ts';
 
 async function settle() {
 	await tick();

@@ -7,7 +7,9 @@
 
 	- Repère anisotrope : la fenêtre x et y de l'auteur remplit un cadre 4:3.
 	- Suites : un disque par terme (n ; u_n), non reliés ; ou, avec `escalier`,
-	  courbe de la relation, droite y = x et escalier dans le repère (u_n ; u_{n+1}).
+	  courbe de la relation, droite y = x et escalier dans le repère (u_n ; u_{n+1}) ;
+	  avec `construire N` (question), u₀ seul : l'élève construit l'escalier
+	  (`CourbeConstruire`).
 	- Couleurs par tokens `var(--color-*)` (clair / sombre).
 	- `role="img"` + `aria-label` (description de l'auteur, sinon automatique).
 	- Erreur (Q48) : message situé pour le prof (`showErrors`, ou contexte posé
@@ -16,7 +18,7 @@
 	@module components/markdown/nodes/Courbe
 -->
 <script module lang="ts">
-	import type { CourbeColor } from '$lib/ubumark/types/courbe';
+	import type { CourbeColor } from '#lib/ubumark/types/courbe.ts';
 
 	/** Point posé par-dessus la figure (repère à points à placer) : disque coloré et nom */
 	export interface CourbeMark {
@@ -46,10 +48,16 @@
 		COURBE_DATA_COLOR,
 		type CourbeLabel,
 		type CourbeNode
-	} from '$lib/ubumark/types/courbe';
-	import { namedColorScreen, namedColorTable } from '$lib/theme/named-colors';
-	import { buildCourbeScene, COURBE_PAD, type ScenePoint } from '$lib/ubumark/utils/courbe-scene';
+	} from '#lib/ubumark/types/courbe.ts';
+	import { namedColorScreen, namedColorTable } from '#lib/theme/named-colors.ts';
+	import {
+		buildCourbeScene,
+		COURBE_PAD,
+		type ScenePoint
+	} from '#lib/ubumark/utils/courbe-scene.ts';
+	import { solvedOverlay } from '#lib/ubumark/utils/courbe-solution.ts';
 	import CourbePlacer from './CourbePlacer.svelte';
+	import CourbeConstruire from './CourbeConstruire.svelte';
 	import type { BuildCase } from './CollectionConstruire.svelte';
 	import { readContentLocale } from '../content-locale';
 	import { readAuthoringErrors } from '../authoring-errors';
@@ -91,6 +99,8 @@
 	const ARROW_HALF_WIDTH = 5;
 	/** Écart du nom d'un vecteur donné à sa flèche, en px */
 	const VECTOR_LABEL_GAP = 10;
+	/** Réponse dessinée d'un corrigé (`solution: oui`) : le vert des corrections */
+	const SOLUTION_COLOR = 'vert' as const;
 
 	/** Couleurs : palette commune des figures (app.css), claire ou sombre */
 	const COLOR_VAR = namedColorTable(COURBE_COLORS, namedColorScreen);
@@ -118,15 +128,31 @@
 	 * `CourbePlacer` qui compte au budget
 	 */
 	let toPlace = $derived(
-		node.spec?.placer !== undefined ||
-			node.spec?.tracer !== undefined ||
-			node.spec?.vecteur !== undefined
+		node.spec?.solution !== true &&
+			(node.spec?.placer !== undefined ||
+				node.spec?.tracer !== undefined ||
+				node.spec?.vecteur !== undefined ||
+				node.spec?.construire !== undefined)
 	);
+	/** `solution: oui` : la réponse attendue dessinée en vert, rien à faire (V108) */
+	let overlay = $derived(node.spec?.solution === true ? solvedOverlay(node.spec) : null);
+	let shownMarks = $derived<CourbeMark[]>([
+		...marks,
+		...(overlay?.marks ?? []).map((m) => ({ ...m, color: SOLUTION_COLOR }))
+	]);
+	let shownTraces = $derived<CourbeTrace[]>([
+		...traces,
+		...(overlay?.traces ?? []).map((t) => ({ ...t, color: SOLUTION_COLOR }))
+	]);
 	let admitted = $derived(toPlace || (budget()?.admits(node) ?? true));
 	let computed = $derived.by(() => {
 		const spec = node.spec;
 		if (!spec || !admitted || toPlace) return null;
-		return withinBudget(budget(), () => buildCourbeScene(spec, { locale: locale() }));
+		// Corrigé dessiné : le repère sans ses gestes, la réponse par-dessus
+		const drawn = overlay
+			? { ...spec, placer: undefined, tracer: undefined, vecteur: undefined, construire: undefined }
+			: spec;
+		return withinBudget(budget(), () => buildCourbeScene(drawn, { locale: locale() }));
 	});
 	let overBudget = $derived(node.spec !== null && computed === null);
 	let scene = $derived(computed);
@@ -215,7 +241,9 @@
 	}
 </script>
 
-{#if toPlace}
+{#if toPlace && node.spec?.construire !== undefined}
+	<CourbeConstruire {node} {answers} {showErrors} {showControls} class={className} />
+{:else if toPlace}
 	<CourbePlacer {node} {answers} {showErrors} {showControls} class={className} />
 {:else if scene}
 	<figure class="courbe-figure {className}">
@@ -386,6 +414,16 @@
 							style:stroke={COLOR_VAR[seq.color]}
 						/>
 					{/each}
+					{#if seq.staircase.start}
+						<!-- Escalier à construire : u₀ marqué sur l'axe -->
+						<circle
+							class="courbe-depart"
+							cx={sx(seq.staircase.start.x)}
+							cy={sy(seq.staircase.start.y)}
+							r="3.5"
+							style:fill={COLOR_VAR[seq.color]}
+						/>
+					{/if}
 					{#each seq.staircase.termLabels as l, i (i)}
 						<text
 							class="courbe-rang"
@@ -475,7 +513,7 @@
 			{/each}
 
 			<!-- Droites tracées (droite à tracer) et flèches (vecteur à tracer) -->
-			{#each traces as t, i (i)}
+			{#each shownTraces as t, i (i)}
 				{#if t.arrow}
 					{@const head = arrowHead(t)}
 					<g
@@ -507,7 +545,7 @@
 			{/each}
 
 			<!-- Points posés (repère à points à placer) -->
-			{#each marks as m, i (i)}
+			{#each shownMarks as m, i (i)}
 				<circle
 					class="courbe-pose"
 					cx={sx(m.x)}

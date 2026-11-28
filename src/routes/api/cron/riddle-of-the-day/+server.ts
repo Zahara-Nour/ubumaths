@@ -12,12 +12,11 @@
  * `selected_by = auth.uid()`, qu'un automate sans compte ne peut pas remplir.
  * Journal : `background_job_runs` (job `auto_select_daily_riddle`).
  */
-import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { verifyCronAuth } from '$lib/server/auth/cron';
-import { checkAndAutoSelectToday } from '$lib/server/riddle-auto-select';
-import { createServiceRoleClient } from '$lib/server/serviceRoleClient';
-import { createServerLogger } from '$lib/utils/logger';
+import { verifyCronAuth } from '#lib/server/auth/cron.ts';
+import { checkAndAutoSelectToday } from '#lib/server/riddle-auto-select.ts';
+import { createServiceRoleClient } from '#lib/server/serviceRoleClient.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/cron/riddle-of-the-day');
 
@@ -47,7 +46,7 @@ const handler: RequestHandler = async ({ request }) => {
 					: { message: result.message }
 			});
 		}
-		return json(
+		return Response.json(
 			{ success: result.success, message: result.message },
 			{ status: result.success ? 200 : 500 }
 		);
@@ -60,7 +59,7 @@ const handler: RequestHandler = async ({ request }) => {
 			});
 		}
 		logger.error('[CRON] Énigme du jour :', err);
-		return json({ success: false, message: 'Erreur serveur' }, { status: 500 });
+		return Response.json({ success: false, message: 'Erreur serveur' }, { status: 500 });
 	}
 };
 

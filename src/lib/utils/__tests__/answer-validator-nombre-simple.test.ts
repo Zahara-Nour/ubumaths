@@ -18,9 +18,9 @@ import {
 	isNumberOrNumberFractionLatex,
 	isQuantityValueLatex,
 	isSimpleNumberLatex
-} from '$lib/mathAST/cosmetic-transforms';
-import type { InstanceBlank, QuestionInstance } from '$lib/questions/types';
-import type { ResolvedMarkdown } from '$lib/ubumark';
+} from '#lib/mathAST/cosmetic-transforms.ts';
+import type { InstanceBlank, QuestionInstance } from '#lib/questions/types.ts';
+import type { ResolvedMarkdown } from '#lib/ubumark/index.ts';
 
 // ============================================================================
 // HELPERS

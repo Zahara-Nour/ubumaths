@@ -27,7 +27,7 @@ export const COVERAGE_CONFIG: CoverageConfig = {
 		'.husky/*',
 		'.lintstagedrc.js',
 		'vercel.json',
-		'svelte.config.js',
+		'src/env.ts',
 		'vite.config.ts',
 		'.nvmrc',
 		'.claude/settings.json',
@@ -42,7 +42,15 @@ export const COVERAGE_CONFIG: CoverageConfig = {
 		'scripts/with-db-lock.sh',
 		'scripts/vercel-ignore-build.sh',
 		'scripts/releve-web-vitals.ts',
-		'scripts/check-production-health.ts'
+		'scripts/check-production-health.ts',
+		'scripts/garde-dev-depot-principal.sh',
+		'scripts/surveillance-machine.sh',
+		'scripts/surveillance-machine-installer.sh',
+		'scripts/menage-machine.sh',
+		'scripts/machine-commun.sh',
+		'scripts/bilan-machine.sh',
+		'scripts/liberer-disque.sh',
+		'scripts/durees/**'
 	],
 	excluded: [
 		'**/__tests__/**',
@@ -56,12 +64,5 @@ export const COVERAGE_CONFIG: CoverageConfig = {
 	// Retirer une zone quand sa doc est écrite (et lui donner son `couvre:`) : `--couverture`
 	// échoue sur un trou périmé. Ordre : un fichier appartient au PREMIER trou qui le
 	// désigne, un glob précis passe donc avant le glob large qui le contient.
-	trous: [
-		{ glob: 'src/lib/shared/blockly/**', note: 'Blockly, calculatrice' },
-		{ glob: 'src/lib/components/blockly/**', note: 'Blockly, calculatrice' },
-		{ glob: 'src/lib/stores/blocklyPlayground.svelte.ts', note: 'Blockly, calculatrice' },
-		{ glob: 'src/routes/(protected)/dev/blockly/**', note: 'Blockly, calculatrice' },
-		{ glob: 'src/lib/workers/js-sandbox.worker.ts', note: 'Blockly, calculatrice' },
-		{ glob: 'src/routes/(protected)/calculatrice/**', note: 'Blockly, calculatrice' }
-	]
+	trous: [{ glob: 'src/routes/(protected)/calculatrice/**', note: 'calculatrice' }]
 };

@@ -31,8 +31,8 @@
 
 import { createClient } from '@supabase/supabase-js';
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { Database } from '$lib/types/database';
-import { createServerLogger } from '$lib/utils/logger';
+import type { Database } from '#lib/types/database.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 import { config } from 'dotenv';
 
 // Load environment variables from .env file
@@ -678,6 +678,26 @@ export async function checkChildSignupRateLimitByParentEmail(
 	}
 
 	return result;
+}
+
+/**
+ * Invitations de cours particulier : « Inviter » et « Renvoyer » de la page admin (décision 9
+ * de David, 2026-11-25). Au plus 20 envois par heure et par admin : le quota de Brevo
+ * (300 courriels par jour) sert aussi aux consentements et au carnet. Fermé en cas de panne :
+ * chaque essai envoie un courriel.
+ */
+export async function checkPrivateLessonInvitationRateLimit(
+	adminUserId: string
+): Promise<RateLimitResult> {
+	const message = 'Trop d’invitations envoyées cette heure-ci. Réessayez plus tard.';
+	if (!adminUserId) return { allowed: false, message };
+	return checkRateLimitWithMessage(
+		`ratelimit:private-lesson-invitation:${adminUserId}`,
+		20,
+		3600,
+		message,
+		true
+	);
 }
 
 /**

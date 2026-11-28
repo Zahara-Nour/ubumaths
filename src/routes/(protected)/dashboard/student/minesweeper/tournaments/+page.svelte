@@ -1,9 +1,9 @@
 <script lang="ts">
-	import { Card } from '$lib/components/ui/card';
-	import { Separator } from '$lib/components/ui/separator';
-	import TournamentCard from '$lib/components/game/minesweeper/TournamentCard.svelte';
+	import { Card } from '#lib/components/ui/card/index.ts';
+	import { Separator } from '#lib/components/ui/separator/index.ts';
+	import TournamentCard from '#lib/components/game/minesweeper/TournamentCard.svelte';
 	import type { PageData } from './$types';
-	import type { Tournament } from '$lib/types/minesweeper';
+	import type { Tournament } from '#lib/types/minesweeper.ts';
 
 	// Props
 	let { data }: { data: PageData } = $props();

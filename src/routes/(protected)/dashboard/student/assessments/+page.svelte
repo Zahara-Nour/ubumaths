@@ -1,9 +1,9 @@
 <script lang="ts">
-	import { lore } from '$lib/config/lore';
+	import { lore } from '#lib/config/lore.ts';
 	import { goto } from '$app/navigation';
-	import EvaluationCard from '$lib/components/assessments/EvaluationCard.svelte';
-	import BackLink from '$lib/components/navigation/BackLink.svelte';
-	import * as Card from '$lib/components/ui/card';
+	import EvaluationCard from '#lib/components/assessments/EvaluationCard.svelte';
+	import BackLink from '#lib/components/navigation/BackLink.svelte';
+	import * as Card from '#lib/components/ui/card/index.ts';
 	import { FileQuestion } from '@lucide/svelte';
 	import type { PageData } from './$types';
 

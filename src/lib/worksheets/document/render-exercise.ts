@@ -16,20 +16,21 @@
  * @module worksheets/document/render-exercise
  */
 
-import { parseMarkdown } from '$lib/ubumark';
+import { parseMarkdown } from '#lib/ubumark/index.ts';
 import {
 	TYPST_BREAK_MARKER,
 	escapeTypst,
+	escapeTypstBrackets,
 	generateTypst,
 	processTableCellContent
-} from '$lib/ubumark/generators/typst-generator';
-import { genericFunctionsConfig } from '$lib/components/markdown/utils/math-utils';
-import { correctionForPrint } from '$lib/questions/correction-detail';
-import { documentLabels } from '$lib/typst/labels';
-import { CORRECTION_FONT_RULES } from '$lib/typst/correction-fonts';
-import { SECTION_COLOR, exerciseBadge } from '$lib/typst/worksheet-palette';
+} from '#lib/ubumark/generators/typst-generator.ts';
+import { genericFunctionsConfig } from '#lib/components/markdown/utils/math-utils.ts';
+import { correctionForPrint } from '#lib/questions/correction-detail.ts';
+import { documentLabels } from '#lib/typst/labels.ts';
+import { CORRECTION_FONT_RULES } from '#lib/typst/correction-fonts.ts';
+import { SECTION_COLOR, exerciseBadge } from '#lib/typst/worksheet-palette.ts';
 // Rendu Typst des blocs ```figure (registre : voir figure-typst-registry.ts)
-import '$lib/ubumark/generators/figure-typst-setup';
+import '#lib/ubumark/generators/figure-typst-setup.ts';
 import type { DocumentExercise, DocumentForm, DocumentSection, WorksheetDocument } from './types';
 import { answerFrameTypst, estimateAnswerFrames } from './answer-frames';
 import {
@@ -38,7 +39,7 @@ import {
 	printedQuestionLines,
 	resolveAnswerFrames
 } from './answer-frame-lines';
-import type { TypstTranspilerOptions } from '$lib/exercises/types';
+import type { TypstTranspilerOptions } from '#lib/exercises/types.ts';
 
 // ============================================================================
 // TYPES
@@ -190,8 +191,9 @@ function withSectionHeaders(
 // ============================================================================
 
 function renderSectionHeader(section: DocumentSection, layout: ExerciseLayout): string {
-	const title = escapeTypst(section.title);
-	const instructions = section.instructions ? escapeTypst(section.instructions) : null;
+	// Texte du prof : un `]` fermerait le bloc de contenu `[…]` qui l'entoure (T23)
+	const title = escapeTypstBrackets(section.title);
+	const instructions = section.instructions ? escapeTypstBrackets(section.instructions) : null;
 
 	switch (layout) {
 		case 'badge':
@@ -287,7 +289,7 @@ function renderTemplateExercise(
 
 	// Consigne du prof : elle fait partie de l'énoncé, sur la fiche seulement
 	if (form === 'worksheet' && exercise.instructions) {
-		content += `\n\n  #text(style: "italic", fill: gray)[${escapeTypst(exercise.instructions)}]`;
+		content += `\n\n  #text(style: "italic", fill: gray)[${escapeTypstBrackets(exercise.instructions)}]`;
 	}
 	content += `\n]\n`;
 

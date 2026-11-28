@@ -1,0 +1,267 @@
+{
+	"id": "10bd7075-2ff9-4bf1-9161-1fb141ea4d0a",
+	"title": "Résoudre une inéquation aˣ < b ou xᵃ < b avec log",
+	"description": "aˣ < b et aˣ ⩾ b pour a > 1 ; aˣ > b pour 0 < a < 1 (le sens change) ; xᵃ ⩽ b pour x > 0 ; réponse en intervalle, bornes exactes",
+	"grades": ["T_TECHNO"],
+	"level": 3,
+	"delay": 120,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"answerKind": "intervalles"
+		}
+	},
+	"variations": [
+		{
+			"statement": "Résous l'inéquation ${{a}}^x<{{b}}$. Donne l'ensemble des solutions, bornes en valeur exacte.\n\n$S=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2|3|5|7"
+				},
+				{
+					"name": "b",
+					"expression": "3|5|6|10|11|12|15|20|50"
+				},
+				{
+					"name": "x",
+					"expression": "eval:log(b)/log(a)"
+				}
+			],
+			"conditions": ["abs(x-round(x)) > 0.001"],
+			"blanks": [
+				{
+					"expectedAnswer": "]-\\infty;\\dfrac{\\log({{b}})}{\\log({{a}})}["
+				}
+			],
+			"correction": {
+				"steps": [
+					"Les deux membres sont strictement positifs : on prend leur logarithme, qui garde l'égalité (ou le sens de l'inégalité, car $\\log$ est strictement croissante), et on utilise $\\log\\left(a^x\\right)=x\\log(a)$.",
+					"${{a}}^x<{{b}}\\iff x\\log({{a}})<\\log({{b}})\\iff x<\\dfrac{\\log({{b}})}{\\log({{a}})}$, car $\\log({{a}})>0$.",
+					"$S=\\textcolor{{{color:primary.0}}}{\\left]-\\infty\\,;\\dfrac{\\log({{b}})}{\\log({{a}})}\\right[}$."
+				]
+			}
+		},
+		{
+			"statement": "Résous l'inéquation ${{a}}^x\\geqslant{{b}}$. Donne l'ensemble des solutions, bornes en valeur exacte.\n\n$S=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2|3|5|7"
+				},
+				{
+					"name": "b",
+					"expression": "3|5|6|10|11|12|15|20|50"
+				},
+				{
+					"name": "x",
+					"expression": "eval:log(b)/log(a)"
+				}
+			],
+			"conditions": ["abs(x-round(x)) > 0.001"],
+			"blanks": [
+				{
+					"expectedAnswer": "[\\dfrac{\\log({{b}})}{\\log({{a}})};+\\infty["
+				}
+			],
+			"correction": {
+				"steps": [
+					"Les deux membres sont strictement positifs : on prend leur logarithme, qui garde l'égalité (ou le sens de l'inégalité, car $\\log$ est strictement croissante), et on utilise $\\log\\left(a^x\\right)=x\\log(a)$.",
+					"${{a}}^x\\geqslant{{b}}\\iff x\\log({{a}})\\geqslant\\log({{b}})\\iff x\\geqslant\\dfrac{\\log({{b}})}{\\log({{a}})}$, car $\\log({{a}})>0$.",
+					"$S=\\textcolor{{{color:primary.0}}}{\\left[\\dfrac{\\log({{b}})}{\\log({{a}})}\\,;+\\infty\\right[}$."
+				]
+			}
+		},
+		{
+			"statement": "Résous l'inéquation ${{eval:a;d}}^x>{{eval:b;d}}$. Donne l'ensemble des solutions, bornes en valeur exacte.\n\n$S=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "0.2|0.5|0.8|0.9"
+				},
+				{
+					"name": "b",
+					"expression": "0.1|0.3|0.05|0.01"
+				},
+				{
+					"name": "x",
+					"expression": "eval:log(b)/log(a)"
+				}
+			],
+			"conditions": ["abs(x-round(x)) > 0.001"],
+			"blanks": [
+				{
+					"expectedAnswer": "]-\\infty;\\dfrac{\\log({{b}})}{\\log({{a}})}["
+				}
+			],
+			"correction": {
+				"steps": [
+					"Les deux membres sont strictement positifs : on prend leur logarithme, qui garde l'égalité (ou le sens de l'inégalité, car $\\log$ est strictement croissante), et on utilise $\\log\\left(a^x\\right)=x\\log(a)$.",
+					"${{eval:a;d}}^x>{{eval:b;d}}\\iff x\\log({{eval:a;d}})>\\log({{eval:b;d}})$.",
+					"Pour $a>1$, $\\log(a)>0$ ; pour $0<a<1$, $\\log(a)<0$ : diviser par $\\log(a)$ change alors le sens. Ici $\\log({{eval:a;d}})<0$ : $x<\\dfrac{\\log({{eval:b;d}})}{\\log({{eval:a;d}})}$.",
+					"$S=\\textcolor{{{color:primary.0}}}{\\left]-\\infty\\,;\\dfrac{\\log({{eval:b;d}})}{\\log({{eval:a;d}})}\\right[}$ (borne environ ${{eval:round(100*x)/100;d}}$)."
+				]
+			}
+		},
+		{
+			"statement": "Résous dans $\\left]0\\,;+\\infty\\right[$ l'inéquation $x^{ {{a}} }\\leqslant{{eval:c^a}}$.\n\n$S=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..4"
+				},
+				{
+					"name": "c",
+					"expression": "2..5"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "]0;{{c}}]"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$x>0$ : on prend le logarithme des deux membres, ce qui garde le sens.",
+					"$x^{ {{a}} }\\leqslant{{eval:c^a}}\\iff {{a}}\\log(x)\\leqslant\\log({{eval:c^a}})\\iff\\log(x)\\leqslant\\dfrac{\\log({{eval:c^a}})}{ {{a}} }=\\log({{c}})$, car ${{eval:c^a}}={{c}}^{ {{a}} }$.",
+					"$\\log$ est strictement croissante : $x\\leqslant{{c}}$. Avec $x>0$ : $S=\\textcolor{{{color:primary.0}}}{\\left]0\\,;{{c}}\\right]}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "2^x < 5 : ]−∞ ; log 5/log 2[",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"b": "5"
+			},
+			"answers": ["]-\\infty;\\dfrac{\\log(5)}{\\log(2)}["],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : sens changé",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"b": "5"
+			},
+			"answers": ["]\\dfrac{\\log(5)}{\\log(2)};+\\infty["],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : borne approchée (exacte demandée)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"b": "5"
+			},
+			"answers": ["]-\\infty;2,32["],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : borne fermée",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"b": "5"
+			},
+			"answers": ["]-\\infty;\\dfrac{\\log(5)}{\\log(2)}]"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "3^x ⩾ 20 : [log 20/log 3 ; +∞[",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3",
+				"b": "20"
+			},
+			"answers": ["[\\dfrac{\\log(20)}{\\log(3)};+\\infty["],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : log(20/3)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3",
+				"b": "20"
+			},
+			"answers": ["[\\log(\\dfrac{20}{3});+\\infty["],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "0,5^x > 0,1 : ]−∞ ; log 0,1/log 0,5[",
+			"variationIndex": 2,
+			"variables": {
+				"a": "0.5",
+				"b": "0.1"
+			},
+			"answers": ["]-\\infty;\\dfrac{\\log(0.1)}{\\log(0.5)}["],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : sens non changé",
+			"variationIndex": 2,
+			"variables": {
+				"a": "0.5",
+				"b": "0.1"
+			},
+			"answers": ["]\\dfrac{\\log(0.1)}{\\log(0.5)};+\\infty["],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "x³ ⩽ 64 : ]0 ; 4]",
+			"variationIndex": 3,
+			"variables": {
+				"a": "3",
+				"c": "4"
+			},
+			"answers": ["]0;4]"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : x > 0 oublié",
+			"variationIndex": 3,
+			"variables": {
+				"a": "3",
+				"c": "4"
+			},
+			"answers": ["]-\\infty;4]"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 64/3",
+			"variationIndex": 3,
+			"variables": {
+				"a": "3",
+				"c": "4"
+			},
+			"answers": ["]0;\\dfrac{64}{3}]"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

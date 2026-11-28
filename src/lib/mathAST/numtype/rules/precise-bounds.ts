@@ -11,12 +11,15 @@
 import {
 	computeRangeWithCriticalPointsExact,
 	computeRangeWithCriticalPoints
-} from '$lib/mathAST/domain/range-helpers';
+} from '#lib/mathAST/domain/range-helpers.ts';
 import type { MathNode } from '../../types';
-import type { IntervalDomain } from '$lib/math/intervals/types';
-import type { Domain } from '$lib/mathAST/domain/types';
-import { intervalSet as domainIntervalSet } from '$lib/mathAST/domain/factory';
-import { isPositiveInfinityEndpoint, isNegativeInfinityEndpoint } from '$lib/math/intervals';
+import type { IntervalDomain } from '#lib/math/intervals/types.ts';
+import type { Domain } from '#lib/mathAST/domain/types.ts';
+import { intervalSet as domainIntervalSet } from '#lib/mathAST/domain/factory.ts';
+import {
+	isPositiveInfinityEndpoint,
+	isNegativeInfinityEndpoint
+} from '#lib/math/intervals/index.ts';
 
 /**
  * Compute precise bounds for an expression using the closed interval method

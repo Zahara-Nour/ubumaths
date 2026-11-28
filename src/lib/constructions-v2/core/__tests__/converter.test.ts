@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { convertXmlToDsl } from '../../converter';
 import { ConstructionExecutor } from '../executor';
-import { parseDsl } from '$lib/geometry-core/dsl';
+import { parseDsl } from '#lib/geometry-core/dsl/index.ts';
 import { existsSync, readFileSync } from 'fs';
 import { resolve } from 'path';
 

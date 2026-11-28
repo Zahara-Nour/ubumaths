@@ -1,0 +1,157 @@
+{
+  "fiche": "Fonctions affines : entraînement technique",
+  "fiche_en": "Affine functions: skills practice",
+  "grade": "2",
+  "topic": "Fonctions affines",
+  "sections": [
+    {
+      "id": "S1",
+      "title": "Reconnaître une fonction affine",
+      "position": 1,
+      "en": "Recognising an affine function"
+    },
+    {
+      "id": "S2",
+      "title": "Images et antécédents",
+      "position": 2,
+      "en": "Images and preimages"
+    },
+    {
+      "id": "S3",
+      "title": "Déterminer l'expression d'une fonction affine",
+      "position": 3,
+      "en": "Finding the expression"
+    },
+    {
+      "id": "S4",
+      "title": "Représentation graphique",
+      "position": 4,
+      "en": "Graphs of affine functions"
+    },
+    {
+      "id": "S5",
+      "title": "Sens de variation",
+      "position": 5,
+      "en": "Increasing or decreasing"
+    },
+    {
+      "id": "S6",
+      "title": "Signe d'une fonction affine",
+      "position": 6,
+      "en": "Sign of an affine function"
+    },
+    {
+      "id": "S7",
+      "title": "Équations et inéquations",
+      "position": 7,
+      "en": "Equations and inequalities"
+    }
+  ],
+  "exercises": [
+    {
+      "key": "T01",
+      "section": "S1",
+      "title": "Linéaire, affine ou ni l'un ni l'autre",
+      "en_title": "Linear, affine or neither",
+      "category": "automatisme"
+    },
+    {
+      "key": "T02",
+      "section": "S1",
+      "title": "Affine après calcul",
+      "en_title": "Affine after simplifying",
+      "category": "automatisme"
+    },
+    {
+      "key": "T03",
+      "section": "S2",
+      "title": "Images par une fonction affine",
+      "en_title": "Images under an affine function",
+      "category": "automatisme"
+    },
+    {
+      "key": "T04",
+      "section": "S2",
+      "title": "Compléter un tableau de valeurs",
+      "en_title": "Completing a table of values",
+      "category": "automatisme"
+    },
+    {
+      "key": "T05",
+      "section": "S3",
+      "title": "Avec deux images",
+      "en_title": "From two images",
+      "category": "automatisme"
+    },
+    {
+      "key": "T06",
+      "section": "S3",
+      "title": "Avec le coefficient directeur et une image",
+      "en_title": "From the gradient and one image",
+      "category": "automatisme"
+    },
+    {
+      "key": "T07",
+      "section": "S3",
+      "title": "Lire m et p sur un graphique",
+      "en_title": "Reading m and p from a graph",
+      "category": "automatisme"
+    },
+    {
+      "key": "T08",
+      "section": "S4",
+      "title": "Tracer la droite représentative",
+      "en_title": "Drawing the graph of an affine function",
+      "category": "automatisme"
+    },
+    {
+      "key": "T09",
+      "section": "S4",
+      "title": "Le point est-il sur la droite ?",
+      "en_title": "Is the point on the line?",
+      "category": "automatisme"
+    },
+    {
+      "key": "T10",
+      "section": "S5",
+      "title": "Sens de variation et tableau",
+      "en_title": "Direction of variation and table",
+      "category": "automatisme"
+    },
+    {
+      "key": "T11",
+      "section": "S5",
+      "title": "Comparer des images sans les calculer",
+      "en_title": "Comparing images without working them out",
+      "category": "automatisme"
+    },
+    {
+      "key": "T12",
+      "section": "S6",
+      "title": "Tableau de signes",
+      "en_title": "Sign tables",
+      "category": "automatisme"
+    },
+    {
+      "key": "T13",
+      "section": "S6",
+      "title": "Inéquations du premier degré",
+      "en_title": "Linear inequalities",
+      "category": "automatisme"
+    },
+    {
+      "key": "T14",
+      "section": "S7",
+      "title": "Résoudre f(x) = k et f(x) < k",
+      "en_title": "Solving f(x) = k and f(x) < k",
+      "category": "automatisme"
+    },
+    {
+      "key": "T15",
+      "section": "S7",
+      "title": "Comparer deux fonctions affines",
+      "en_title": "Comparing two affine functions",
+      "category": "automatisme"
+    }
+  ]
+}

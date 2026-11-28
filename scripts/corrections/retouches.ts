@@ -7,6 +7,8 @@
  * Usage :
  *   pnpm corrections:retouches              (simulation : lit la prod, affiche le diff)
  *   pnpm corrections:retouches --publier    (écrit les colonnes modifiées)
+ *   --lot texte-colore                      autre liste (`lib/retouches-texte-colore.ts`) ;
+ *                                           sans `--lot` : la liste du 2026-09-30 (`lib/retouches.ts`)
  *
  * Pour chaque retouche, appliquée à la ligne de prod COURANTE, avant toute écriture :
  * 1. le modèle retouché passe `checkTemplate` (structure, schéma strict, toutes les
@@ -25,12 +27,14 @@ import type { QuestionTemplate } from '../../src/lib/questions/types';
 import type { Database, Json } from '../../src/lib/types/database';
 import { toQuestionTemplate } from '../../src/lib/types/question-template';
 import { checkTemplate } from '../../src/lib/questions/review/check-template';
-import { createScriptClient, hasFlag } from '../relecture/common';
+import { argValue, createScriptClient, hasFlag } from '../relecture/common';
 import { parseRows } from './lib/files';
 import type { LotEntry } from './lib/lot';
 import type { Proposal } from './lib/proposal';
 import { publishRefusal } from './lib/publish-gate';
 import { canonical, changedColumns, readableDiff, RETOUCHES } from './lib/retouches';
+import type { Retouche } from './lib/retouches';
+import { TEXTE_COLORE_RETOUCHES } from './lib/retouches-texte-colore';
 import { verifyProposal } from './lib/verify';
 import { LOTS } from './lots';
 
@@ -41,6 +45,9 @@ import { LOTS } from './lots';
 const BACKUP_DIR = 'data/migration-output/backups';
 
 type TemplateUpdate = Database['public']['Tables']['question_templates']['Update'];
+
+/** Listes de retouches choisies par `--lot` (sans : la liste du 2026-09-30) */
+const RETOUCHE_LOTS: Record<string, Retouche[]> = { 'texte-colore': TEXTE_COLORE_RETOUCHES };
 
 // ============================================================================
 // FUNCTIONS
@@ -107,17 +114,26 @@ function verifyExistingCorrection(template: QuestionTemplate): { passed: boolean
 
 async function main(): Promise<number> {
 	const publish = hasFlag('--publier');
+	const lot = argValue('--lot');
+	// Revue : `--lot=texte-colore` ou `--lot` sans valeur retombaient en silence sur
+	// l'ancienne liste (écriture en prod possible) : refusé
+	if (!lot && process.argv.some((arg) => arg.startsWith('--lot'))) {
+		throw new Error('écrire `--lot <nom>` (avec une espace, et un nom)');
+	}
+	const retouches = lot ? RETOUCHE_LOTS[lot] : RETOUCHES;
+	if (!retouches)
+		throw new Error(`lot inconnu : ${lot} (connus : ${Object.keys(RETOUCHE_LOTS).join(', ')})`);
 	const { supabase, target } = createScriptClient(publish);
 	console.log(`${publish ? 'ÉCRITURE' : 'SIMULATION'} — base : ${target}\n`);
 
-	const ids = [...new Set(RETOUCHES.map((r) => r.templateId))];
-	if (ids.length !== RETOUCHES.length) throw new Error('deux retouches visent le même modèle');
+	const ids = [...new Set(retouches.map((r) => r.templateId))];
+	if (ids.length !== retouches.length) throw new Error('deux retouches visent le même modèle');
 	const { data, error } = await supabase.from('question_templates').select('*').in('id', ids);
 	if (error) throw new Error(`lecture des modèles : ${error.message}`);
 	const liveRows = parseRows(data, 'question_templates');
 
 	const ready: { id: string; updatedAt: string | null; columns: Record<string, unknown> }[] = [];
-	for (const retouche of RETOUCHES) {
+	for (const retouche of retouches) {
 		const row = liveRows.find((r) => r.id === retouche.templateId);
 		const label = retouche.templateId.slice(0, 8);
 		if (!row) {
@@ -148,20 +164,22 @@ async function main(): Promise<number> {
 		const specs = `${check.specs.filter((s) => s.passed).length}/${check.specs.length} specs`;
 		const draws = `${check.generation.attempts - check.generation.failures.length}/${check.generation.attempts} tirages`;
 		const hasCorrection = after.variations.some((v) => v.correction) || !!after.shared?.correction;
-		const verified = hasCorrection ? verifyExistingCorrection(after) : null;
+		const verified =
+			hasCorrection && !retouche.skipVerifier ? verifyExistingCorrection(after) : null;
 		const ok = check.passed && (verified?.passed ?? true);
 		console.log(
 			`  ${ok ? '✓' : '✗'} checkTemplate ${check.passed ? 'vert' : `ROUGE (${check.reasons.join(', ')})`} : ${specs}, ${draws}` +
 				(verified
 					? ` ; vérificateur ${verified.passed ? 'vert' : 'ROUGE'} : ${verified.detail}`
 					: '') +
+				(retouche.skipVerifier ? ` ; vérificateur non passé : ${retouche.skipVerifier}` : '') +
 				'\n'
 		);
 		if (ok) ready.push({ id: row.id, updatedAt: row.updated_at, columns });
 	}
 
-	console.log(`${ready.length}/${RETOUCHES.length} retouche(s) prête(s).`);
-	const refusal = publishRefusal(ready.length, RETOUCHES.length);
+	console.log(`${ready.length}/${retouches.length} retouche(s) prête(s).`);
+	const refusal = publishRefusal(ready.length, retouches.length);
 	if (!publish) {
 		console.log('Simulation : rien n’a été écrit. Ajouter --publier après feu vert.');
 		return refusal ? 1 : 0;
@@ -174,7 +192,7 @@ async function main(): Promise<number> {
 	mkdirSync(BACKUP_DIR, { recursive: true });
 	const backup = join(
 		BACKUP_DIR,
-		`retouches-${new Date().toISOString().replace(/[:.]/g, '-')}.json`
+		`retouches-${lot ?? 'liste'}-${new Date().toISOString().replace(/[:.]/g, '-')}.json`
 	);
 	writeFileSync(backup, JSON.stringify(liveRows, null, 2));
 	console.log(`Sauvegarde : ${backup}`);

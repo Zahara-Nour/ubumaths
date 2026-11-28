@@ -4,7 +4,7 @@
 
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { downloadIpynb } from '../notebook-export';
-import type { NotebookContent } from '$lib/types/notebook';
+import type { NotebookContent } from '#lib/types/notebook.ts';
 
 describe('downloadIpynb', () => {
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any

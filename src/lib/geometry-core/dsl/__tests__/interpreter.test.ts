@@ -365,3 +365,19 @@ describe('interpreter — rough rendering style', () => {
 		expect(el?.style?.render).toBe('rough');
 	});
 });
+
+describe('interpreter — nom à prime (L58)', () => {
+	it("M' = point(1, 1) crée un point d'étiquette M'", () => {
+		const { figure, symbols } = run("M = point(0, 0)\nM' = point(1, 1)\nM'' = point(2, 2)");
+		for (const [name, coord] of [
+			["M'", 1],
+			["M''", 2]
+		] as const) {
+			const id = symbols.get(name)!.figureId!;
+			expect(figure.getElementById(id)!.label).toBe(name);
+			const pos = figure.getPosition(id)!;
+			expect(geoToNumber(pos.x)).toBe(coord);
+			expect(geoToNumber(pos.y)).toBe(coord);
+		}
+	});
+});

@@ -13,7 +13,7 @@ import { render } from 'vitest-browser-svelte';
 import { commands, server } from 'vitest/browser';
 import { flushSync } from 'svelte';
 import AtelierContainer from '../AtelierContainer.svelte';
-import { figure24 } from '$lib/atelier/__tests__/fixtures/figure-24';
+import { figure24 } from '#lib/atelier/__tests__/fixtures/figure-24.ts';
 
 function stats(times: number[]): string {
 	const sorted = [...times].sort((x, y) => x - y);

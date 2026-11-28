@@ -14,31 +14,32 @@
  * Historical note: welcome emails used to be sent through the teacher's Gmail account
  * (better deliverability to same-domain school inboxes). That path was abandoned once the
  * teacher's Google Workspace account no longer existed; the previous Gmail implementation
- * still lives in $lib/server/google/gmail.ts (see git history).
+ * still lives in #lib/server/google/gmail.ts (see git history).
  *
  * SECURITY:
  * - Requires teacher role
  * - Validates student_id as UUID
- * - Verifies teacher teaches the student
+ * - Vérifie les rôles (appelant prof ou admin, cible élève) ; mono-professeur :
+ *   aucune vérification de classe
  *
  * Flow:
  * 1. Verify teacher role
  * 2. Check the transactional email service (Brevo) is configured
  * 3. Validate input with Zod
- * 4. Verify teacher-student relationship
+ * 4. Vérifier les rôles (appelant prof ou admin, cible élève)
  * 5. Fetch student info (email, firstname)
  * 6. Send email via Brevo (reply-to = teacher email)
  * 7. Record in welcome_emails_sent
  * 8. Return success/error
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { z } from 'zod';
-import { requireRole } from '$lib/server/middleware/auth';
-import { verifyTeacherStudent } from '$lib/server/middleware/student-access';
-import { sendWelcomeEmail, isBrevoConfigured } from '$lib/server/email/brevo';
-import { createServerLogger } from '$lib/utils/logger';
+import { requireRole } from '#lib/server/middleware/auth.ts';
+import { verifyTeacherStudent } from '#lib/server/middleware/student-access.ts';
+import { sendWelcomeEmail, isBrevoConfigured } from '#lib/server/email/brevo.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/teacher/send-welcome-email/+server');
 
@@ -132,7 +133,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		`[Send Welcome Email] Email sent successfully to student ${student.id} by teacher ${user.id}`
 	);
 
-	return json({
+	return Response.json({
 		success: true,
 		message: 'Email de bienvenue envoye avec succes !',
 		messageId: result.messageId

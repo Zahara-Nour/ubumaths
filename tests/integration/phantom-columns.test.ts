@@ -15,7 +15,7 @@
  */
 import { describe, it, expect, expectTypeOf } from 'vitest';
 import { createServiceRoleClient } from '../helpers/database/trigger-test-helpers';
-import type { Tables } from '$lib/types/database';
+import type { Tables } from '#lib/types/database.ts';
 
 const db = createServiceRoleClient();
 

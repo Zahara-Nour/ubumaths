@@ -1,8 +1,8 @@
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireAuth } from '$lib/server/middleware/auth';
-import { reportMessageSchema } from '$lib/server/validation/chat';
-import { createServerLogger } from '$lib/utils/logger';
+import { requireAuth } from '#lib/server/middleware/auth.ts';
+import { reportMessageSchema } from '#lib/server/validation/chat.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/chat/reports/+server');
 
@@ -41,7 +41,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	try {
 		body = await request.json();
 	} catch {
-		throw error(400, 'Invalid JSON');
+		throw error(400, 'Corps de requête JSON invalide');
 	}
 
 	const validation = reportMessageSchema.safeParse(body);
@@ -79,5 +79,5 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		throw error(500, 'Failed to report message');
 	}
 
-	return json({ success: true, reportId }, { status: 201 });
+	return Response.json({ success: true, reportId }, { status: 201 });
 };

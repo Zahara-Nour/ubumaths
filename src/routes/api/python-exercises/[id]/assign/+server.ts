@@ -3,15 +3,15 @@
  * POST - Assign exercise to class or student
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireRole } from '$lib/server/middleware/auth';
+import { requireRole } from '#lib/server/middleware/auth.ts';
 import {
 	assignExerciseSchema,
 	type AssignExerciseInput
-} from '$lib/server/validation/python-exercises';
-import { validateUuidParam } from '$lib/server/validation/params';
-import { createServerLogger } from '$lib/utils/logger';
+} from '#lib/server/validation/python-exercises.ts';
+import { validateUuidParam } from '#lib/server/validation/params.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/python-exercises/[id]/assign/+server');
 
@@ -129,5 +129,5 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 		throw error(500, 'Impossible de créer l’affectation');
 	}
 
-	return json({ assignment }, { status: 201 });
+	return Response.json({ assignment }, { status: 201 });
 };

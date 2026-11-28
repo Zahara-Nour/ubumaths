@@ -6,11 +6,11 @@
  * Purpose: Add or remove gidouilles for all students in a class
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireRoles } from '$lib/server/middleware/auth';
+import { requireRoles } from '#lib/server/middleware/auth.ts';
 import { z } from 'zod';
-import { createServerLogger } from '$lib/utils/logger';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/teacher/rewards/update-class/+server');
 
@@ -47,7 +47,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			throw error(500, rpcError.message || 'Failed to update class gidouilles');
 		}
 
-		return json({
+		return Response.json({
 			success: true,
 			message: `${studentsUpdated} élève(s) mis à jour avec succès`,
 			studentsUpdated

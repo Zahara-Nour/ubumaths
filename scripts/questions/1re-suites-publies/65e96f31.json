@@ -1,0 +1,478 @@
+{
+	"id": "65e96f31-31fe-4c2b-b894-e689b998b849",
+	"title": "Terme général d'une suite arithmétique",
+	"description": "À partir de u_0 et de la raison, ou de la relation de récurrence (raison entière ou décimale)",
+	"grades": ["1_SPE", "1_TECHNO", "1_GEN", "T_TECHNO"],
+	"level": 1,
+	"delay": 30,
+	"status": "published",
+	"shared": {
+		"cleanCoefficients": true
+	},
+	"options": {
+		"constraints": {
+			"form": "warn"
+		}
+	},
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{a}}{{eval:r;+}}n"
+				}
+			],
+			"statement": "$(u_n)$ est la suite arithmétique de premier terme $u_0={{a}}$ et de raison $r={{r}}$.\n\nExprime $u_n$ en fonction de $n$.\n\n$u_n=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "-9..9"
+				},
+				{
+					"name": "r",
+					"expression": "1..9;±"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Pour une suite arithmétique de premier terme $u_0$ et de raison $r$, $u_n=u_0+n\\times r$.",
+					"Ici $u_0={{a}}$ et $r=\\textcolor{{{color:primary.0}}}{{{r}}}$, donc $u_n={{a}}+n\\times\\textcolor{{{color:primary.0}}}{{{eval:r;()}}}={{solution}}$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{a}}{{eval:r;+}}n",
+					"expectedErrors": [
+						{
+							"answer": "{{r}}{{eval:a;+}}n",
+							"message": "Tu as échangé le premier terme et la raison : $u_n=u_0+n\\times r$.",
+							"label": "u₀ et r échangés"
+						},
+						{
+							"answer": "{{a}}{{eval:r;+}}(n-1)",
+							"message": "Le premier terme est $u_0$ : $u_n=u_0+n\\times r$, sans $n-1$.",
+							"label": "Formule de u₁"
+						},
+						{
+							"answer": "{{a}}\\times{{eval:r;()}}^n",
+							"message": "On ajoute la même raison à chaque rang : la suite est arithmétique, pas géométrique.",
+							"label": "Confusion avec le géométrique"
+						}
+					]
+				}
+			],
+			"statement": "La suite $(u_n)$ est définie par $u_0={{a}}$ et, pour tout entier naturel $n$ :\n\n$$u_{n+1}=u_n{{eval:r;+}}$$\n\nExprime $u_n$ en fonction de $n$.\n\n$u_n=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "r",
+					"expression": "1..9;±"
+				}
+			],
+			"correction": {
+				"steps": [
+					"À chaque rang, on ajoute le même nombre $\\textcolor{{{color:primary.0}}}{{{r}}}$ : $(u_n)$ est arithmétique, de raison $r={{r}}$ et de premier terme $u_0={{a}}$.",
+					"$u_n=u_0+n\\times r={{a}}+n\\times\\textcolor{{{color:primary.0}}}{{{eval:r;()}}}={{solution}}$"
+				]
+			},
+			"hint": "Quelle est la nature de la suite ? Repère son premier terme et sa raison."
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{a}}{{eval:r;+;d}}n",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:r;d}}{{eval:a;+}}n",
+							"message": "Tu as échangé le premier terme et la raison : $u_n=u_0+n\\times r$.",
+							"label": "u₀ et r échangés"
+						},
+						{
+							"answer": "{{a}}{{eval:r;+;d}}(n-1)",
+							"message": "Le premier terme est $u_0$ : $u_n=u_0+n\\times r$, sans $n-1$.",
+							"label": "Formule de u₁"
+						},
+						{
+							"answer": "{{a}}\\times{{eval:r;();d}}^n",
+							"message": "On ajoute la même raison à chaque rang : la suite est arithmétique, pas géométrique.",
+							"label": "Confusion avec le géométrique"
+						}
+					]
+				}
+			],
+			"blankDefaults": {
+				"acceptDecimal": true
+			},
+			"statement": "La suite $(u_n)$ est définie par $u_0={{a}}$ et, pour tout entier naturel $n$ :\n\n$$u_{n+1}=u_n{{eval:r;+;d}}$$\n\nExprime $u_n$ en fonction de $n$.\n\n$u_n=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "kr",
+					"expression": "1..49!10,20,30,40"
+				},
+				{
+					"name": "sg",
+					"expression": "1|-1"
+				},
+				{
+					"name": "r",
+					"expression": "eval:sg*kr/10;d"
+				}
+			],
+			"correction": {
+				"steps": [
+					"À chaque rang, on ajoute le même nombre $\\textcolor{{{color:primary.0}}}{{{eval:r;d}}}$ : $(u_n)$ est arithmétique, de raison $r={{eval:r;d}}$ et de premier terme $u_0={{a}}$.",
+					"$u_n=u_0+n\\times r={{a}}+n\\times\\textcolor{{{color:primary.0}}}{{{eval:r;();d}}}={{solution}}$"
+				]
+			},
+			"hint": "Quelle est la nature de la suite ? Repère son premier terme et sa raison."
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["5+3n"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "5",
+				"r": "3"
+			},
+			"description": "u_0=5, r=3 : 5+3n",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["3n+5"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "5",
+				"r": "3"
+			},
+			"description": "ordre inversé 3n+5",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["-2-7n"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "-2",
+				"r": "-7"
+			},
+			"description": "u_0=−2, r=−7 : −2−7n",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["-7n-2"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "-2",
+				"r": "-7"
+			},
+			"description": "ordre inversé −7n−2",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["3+5n"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "5",
+				"r": "3"
+			},
+			"description": "u_0 et r échangés : 3+5n",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["5+3(n-1)"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "5",
+				"r": "3"
+			},
+			"description": "formule de u_1 : 5+3(n−1)",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["5\\times3^n"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "5",
+				"r": "3"
+			},
+			"description": "confusion avec le géométrique 5×3^n",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["-2+7n"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "-2",
+				"r": "-7"
+			},
+			"description": "signe de la raison −2+7n",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["5+3\\times n"],
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["products"]
+			},
+			"variables": {
+				"a": "5",
+				"r": "3"
+			},
+			"description": "signe × inutile 5+3×n : forme non optimale",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["-7+n"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "-7",
+				"r": "1"
+			},
+			"description": "u_0=−7, r=1 (coefficient 1 nettoyé) : −7+n",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["n-7"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "-7",
+				"r": "1"
+			},
+			"description": "u_0=−7, r=1 : n−7",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["-7+1n"],
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["factorOne"]
+			},
+			"variables": {
+				"a": "-7",
+				"r": "1"
+			},
+			"description": "u_0=−7, r=1 : −7+1n non nettoyé",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["7n"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "0",
+				"r": "7"
+			},
+			"description": "u_0=0, r=7 : 7n",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["0+7n"],
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["nullTerms"]
+			},
+			"variables": {
+				"a": "0",
+				"r": "7"
+			},
+			"description": "u_0=0, r=7 : 0+7n non réduit",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["-1-n"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "-1",
+				"r": "-1"
+			},
+			"description": "u_0=−1, r=−1 : −1−n",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["-1+n"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "-1",
+				"r": "-1"
+			},
+			"description": "u_0=−1, r=−1 : −1+n (signe de r perdu)",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["5+3n"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "5",
+				"r": "3"
+			},
+			"description": "u0 = 5, u(n+1) = u(n) + 3 : 5 + 3n",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["3n+5"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "5",
+				"r": "3"
+			},
+			"description": "ordre inversé 3n + 5",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["-2-7n"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "-2",
+				"r": "-7"
+			},
+			"description": "u0 = −2, r = −7 : −2 − 7n",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["3+5n"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as échangé le premier terme et la raison : $u_n=u_0+n\\times r$."
+			},
+			"variables": {
+				"a": "5",
+				"r": "3"
+			},
+			"description": "u0 et r échangés",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["5+3(n-1)"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Le premier terme est $u_0$ : $u_n=u_0+n\\times r$, sans $n - 1$."
+			},
+			"variables": {
+				"a": "5",
+				"r": "3"
+			},
+			"description": "formule de u1",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["5\\times3^n"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "On ajoute la même raison à chaque rang : la suite est arithmétique, pas géométrique."
+			},
+			"variables": {
+				"a": "5",
+				"r": "3"
+			},
+			"description": "géométrique",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["4-2{,}5n"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "4",
+				"kr": "25",
+				"sg": "-1"
+			},
+			"description": "u0 = 4, r = −2,5 : 4 − 2,5n",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["-2{,}5n+4"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "4",
+				"kr": "25",
+				"sg": "-1"
+			},
+			"description": "ordre inversé −2,5n + 4",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["-2{,}5+4n"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as échangé le premier terme et la raison : $u_n=u_0+n\\times r$."
+			},
+			"variables": {
+				"a": "4",
+				"kr": "25",
+				"sg": "-1"
+			},
+			"description": "u0 et r échangés",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["4-2{,}5(n-1)"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Le premier terme est $u_0$ : $u_n=u_0+n\\times r$, sans $n - 1$."
+			},
+			"variables": {
+				"a": "4",
+				"kr": "25",
+				"sg": "-1"
+			},
+			"description": "formule de u1",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["4\\times(-2{,}5)^n"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "On ajoute la même raison à chaque rang : la suite est arithmétique, pas géométrique."
+			},
+			"variables": {
+				"a": "4",
+				"kr": "25",
+				"sg": "-1"
+			},
+			"description": "géométrique",
+			"variationIndex": 2
+		}
+	]
+}

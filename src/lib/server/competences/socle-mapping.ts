@@ -28,7 +28,7 @@
  *  du domaine 1 — donc pas de D1.3 — selon le BO.)
  */
 
-import type { MathCompetenceCode } from '$lib/types/skills';
+import type { MathCompetenceCode } from '#lib/types/skills.ts';
 
 /** Socle domains per competence, in BO order (domain 1 → `D1.3` for maths). */
 export const COMPETENCE_SOCLE_MAPPING: Record<MathCompetenceCode, string[]> = {

@@ -9,20 +9,20 @@
 	local reçoit le texte que produit le champ, par le chemin de Calcul.
 -->
 <script lang="ts">
-	import '$lib/utils/mathlive-styles';
+	import '#lib/utils/mathlive-styles.ts';
 	import { convertLatexToMarkup } from 'mathlive';
-	import { WebReplEngine } from '$lib/mathAST/cli/web/web-repl-engine';
-	import { Atelier } from '$lib/atelier/atelier.svelte';
-	import { CalcDesk, type Entry } from '$lib/atelier/desk.svelte';
-	import { commandCatalog } from '$lib/atelier/commands';
-	import NaturalField from '$lib/components/atelier/NaturalField.svelte';
+	import { WebReplEngine } from '#lib/mathAST/cli/web/web-repl-engine.ts';
+	import { Atelier } from '#lib/atelier/atelier.svelte.ts';
+	import { CalcDesk, type Entry } from '#lib/atelier/desk.svelte.ts';
+	import { commandCatalog } from '#lib/atelier/commands.ts';
+	import NaturalField from '#lib/components/atelier/NaturalField.svelte';
 	import {
 		calcTextOf,
 		commandWords,
 		lineKindOf,
 		REMOVED_SHORTCUTS,
 		type LineKind
-	} from '$lib/atelier/natural-input';
+	} from '#lib/atelier/natural-input.ts';
 
 	// Types
 	interface Row {

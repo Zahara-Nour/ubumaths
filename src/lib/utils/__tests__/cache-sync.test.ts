@@ -7,10 +7,8 @@
  * Test Categories:
  * 1. VIP Cards Sync (syncVipCards)
  * 2. Gidouilles Sync (syncGidouilles + rollbackGidouilles)
- * 3. Warnings Sync (syncWarnings)
- * 4. Cache Context Detection (isTeacherContext)
- * 5. Cache Invalidation Helpers
- * 6. Error Handling
+ * 3. Cache Context Detection (isTeacherContext)
+ * 4. Error Handling
  *
  * TESTING STRATEGY:
  * - Mock both teacherCache and studentCache
@@ -20,57 +18,33 @@
  */
 
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { isTeacherContext, isStudentContext } from '$lib/types/cache-context';
-import type { TeacherCacheContext, StudentCacheContext } from '$lib/types/cache-context';
-import type { StudentVipCards } from '$lib/types/vip-card';
-import type { StudentWarningCounts } from '$lib/server/warnings';
+import { isTeacherContext, isStudentContext } from '#lib/types/cache-context.ts';
+import type { TeacherCacheContext, StudentCacheContext } from '#lib/types/cache-context.ts';
+import type { StudentVipCards } from '#lib/types/vip-card.ts';
 
 // ============================================================================
 // TEST SETUP
 // ============================================================================
 
 // Mock the cache stores
-vi.mock('$lib/stores/teacherDashboardCache.svelte', () => ({
+vi.mock('#lib/stores/teacherDashboardCache.svelte.ts', () => ({
 	teacherCache: {
 		updateVipCardsOptimistic: vi.fn(),
-		updateGidouillesOptimistic: vi.fn(),
-		updateWarningsOptimistic: vi.fn(),
-		invalidateRewards: vi.fn(),
-		invalidateWarnings: vi.fn(),
-		getStudentRewards: vi.fn(),
-		getStudentWarnings: vi.fn()
+		updateGidouillesOptimistic: vi.fn()
 	}
 }));
 
-vi.mock('$lib/stores/studentDashboardCache.svelte', () => ({
+vi.mock('#lib/stores/studentDashboardCache.svelte.ts', () => ({
 	studentCache: {
 		updateVipCardsOptimistic: vi.fn(),
-		updateGidouillesOptimistic: vi.fn(),
-		updateWarningsOptimistic: vi.fn(),
-		invalidateRewards: vi.fn(),
-		invalidateWarnings: vi.fn(),
-		invalidateProfile: vi.fn(),
-		getRewards: vi.fn(),
-		getWarnings: vi.fn(),
-		getProfile: vi.fn()
+		updateGidouillesOptimistic: vi.fn()
 	}
 }));
 
 // Import after mocking
-import { teacherCache } from '$lib/stores/teacherDashboardCache.svelte';
-import { studentCache } from '$lib/stores/studentDashboardCache.svelte';
-import {
-	syncVipCards,
-	syncGidouilles,
-	rollbackGidouilles,
-	syncWarnings,
-	invalidateRewards,
-	invalidateWarnings,
-	invalidateProfile,
-	refetchRewards,
-	refetchWarnings,
-	refetchProfile
-} from '../cache-sync';
+import { teacherCache } from '#lib/stores/teacherDashboardCache.svelte.ts';
+import { studentCache } from '#lib/stores/studentDashboardCache.svelte.ts';
+import { syncVipCards, syncGidouilles, rollbackGidouilles } from '../cache-sync';
 
 // Sample contexts
 const teacherContext: TeacherCacheContext = {
@@ -95,13 +69,6 @@ const sampleVipCards: StudentVipCards = {
 		earnedAt: '2025-01-16T11:00:00Z',
 		usedAt: null
 	}
-};
-
-const sampleWarnings: StudentWarningCounts = {
-	C: 2,
-	M: 1,
-	R: 0,
-	T: 3
 };
 
 // ============================================================================
@@ -298,240 +265,6 @@ describe('rollbackGidouilles', () => {
 		expect(studentCache.updateGidouillesOptimistic).toHaveBeenCalledWith(-5);
 
 		expect(studentCache.updateGidouillesOptimistic).toHaveBeenCalledTimes(2);
-	});
-});
-
-// ============================================================================
-// WARNINGS SYNC TESTS
-// ============================================================================
-
-describe('syncWarnings', () => {
-	beforeEach(() => {
-		vi.clearAllMocks();
-	});
-
-	it('should update teacher cache when context is teacher', () => {
-		const periodId = 'period-2025';
-
-		syncWarnings(teacherContext, periodId, sampleWarnings);
-
-		expect(teacherCache.updateWarningsOptimistic).toHaveBeenCalledWith(
-			'class-123',
-			'period-2025',
-			'student-456',
-			sampleWarnings
-		);
-		expect(teacherCache.updateWarningsOptimistic).toHaveBeenCalledTimes(1);
-		expect(studentCache.updateWarningsOptimistic).not.toHaveBeenCalled();
-	});
-
-	it('should update student cache when context is student', () => {
-		const periodId = 'period-2025';
-
-		syncWarnings(studentContext, periodId, sampleWarnings);
-
-		expect(studentCache.updateWarningsOptimistic).toHaveBeenCalledWith(
-			'period-2025',
-			sampleWarnings
-		);
-		expect(studentCache.updateWarningsOptimistic).toHaveBeenCalledTimes(1);
-		expect(teacherCache.updateWarningsOptimistic).not.toHaveBeenCalled();
-	});
-
-	it('should handle warnings with all zeros', () => {
-		const zeroWarnings: StudentWarningCounts = {
-			C: 0,
-			M: 0,
-			R: 0,
-			T: 0
-		};
-
-		syncWarnings(studentContext, 'period-2025', zeroWarnings);
-
-		expect(studentCache.updateWarningsOptimistic).toHaveBeenCalledWith('period-2025', zeroWarnings);
-	});
-
-	it('should handle different periods independently', () => {
-		syncWarnings(studentContext, 'period-2024', sampleWarnings);
-		syncWarnings(studentContext, 'period-2025', { C: 5, M: 2, R: 1, T: 0 });
-
-		expect(studentCache.updateWarningsOptimistic).toHaveBeenCalledTimes(2);
-		expect(studentCache.updateWarningsOptimistic).toHaveBeenNthCalledWith(
-			1,
-			'period-2024',
-			sampleWarnings
-		);
-		expect(studentCache.updateWarningsOptimistic).toHaveBeenNthCalledWith(2, 'period-2025', {
-			C: 5,
-			M: 2,
-			R: 1,
-			T: 0
-		});
-	});
-});
-
-// ============================================================================
-// INVALIDATION TESTS
-// ============================================================================
-
-describe('invalidateRewards', () => {
-	beforeEach(() => {
-		vi.clearAllMocks();
-	});
-
-	it('should invalidate teacher cache rewards', () => {
-		invalidateRewards(teacherContext);
-
-		expect(teacherCache.invalidateRewards).toHaveBeenCalledWith('class-123');
-		expect(teacherCache.invalidateRewards).toHaveBeenCalledTimes(1);
-		expect(studentCache.invalidateRewards).not.toHaveBeenCalled();
-	});
-
-	it('should invalidate student cache rewards', () => {
-		invalidateRewards(studentContext);
-
-		expect(studentCache.invalidateRewards).toHaveBeenCalled();
-		expect(studentCache.invalidateRewards).toHaveBeenCalledTimes(1);
-		expect(teacherCache.invalidateRewards).not.toHaveBeenCalled();
-	});
-});
-
-describe('invalidateWarnings', () => {
-	beforeEach(() => {
-		vi.clearAllMocks();
-	});
-
-	it('should invalidate teacher cache warnings for period', () => {
-		invalidateWarnings(teacherContext, 'period-2025');
-
-		expect(teacherCache.invalidateWarnings).toHaveBeenCalledWith('class-123', 'period-2025');
-		expect(teacherCache.invalidateWarnings).toHaveBeenCalledTimes(1);
-		expect(studentCache.invalidateWarnings).not.toHaveBeenCalled();
-	});
-
-	it('should invalidate student cache warnings for period', () => {
-		invalidateWarnings(studentContext, 'period-2025');
-
-		expect(studentCache.invalidateWarnings).toHaveBeenCalledWith('period-2025');
-		expect(studentCache.invalidateWarnings).toHaveBeenCalledTimes(1);
-		expect(teacherCache.invalidateWarnings).not.toHaveBeenCalled();
-	});
-});
-
-describe('invalidateProfile', () => {
-	beforeEach(() => {
-		vi.clearAllMocks();
-	});
-
-	it('should do nothing for teacher context (no profile in teacher cache)', () => {
-		invalidateProfile(teacherContext);
-
-		expect(studentCache.invalidateProfile).not.toHaveBeenCalled();
-	});
-
-	it('should invalidate student cache profile', () => {
-		invalidateProfile(studentContext);
-
-		expect(studentCache.invalidateProfile).toHaveBeenCalled();
-		expect(studentCache.invalidateProfile).toHaveBeenCalledTimes(1);
-	});
-});
-
-// ============================================================================
-// REFETCH TESTS
-// ============================================================================
-
-describe('refetchRewards', () => {
-	beforeEach(() => {
-		vi.clearAllMocks();
-	});
-
-	it('should invalidate and refetch for teacher context', async () => {
-		const mockRewards = new Map([['student1', { gidouilles: 100, bonus: 50, vip_cards: {} }]]);
-		vi.mocked(teacherCache.getStudentRewards).mockResolvedValue(mockRewards);
-
-		const result = await refetchRewards(teacherContext);
-
-		expect(teacherCache.invalidateRewards).toHaveBeenCalledWith('class-123');
-		expect(teacherCache.getStudentRewards).toHaveBeenCalledWith('class-123');
-		expect(result).toEqual(mockRewards);
-	});
-
-	it('should invalidate and refetch for student context', async () => {
-		const mockRewards = { gidouilles: 50, bonus: 25, vip_cards: sampleVipCards };
-		vi.mocked(studentCache.getRewards).mockResolvedValue(mockRewards);
-
-		const result = await refetchRewards(studentContext);
-
-		expect(studentCache.invalidateRewards).toHaveBeenCalled();
-		expect(studentCache.getRewards).toHaveBeenCalled();
-		expect(result).toEqual(mockRewards);
-	});
-});
-
-describe('refetchWarnings', () => {
-	beforeEach(() => {
-		vi.clearAllMocks();
-	});
-
-	it('should invalidate and refetch for teacher context', async () => {
-		const mockWarnings = new Map([['student1', sampleWarnings]]);
-		vi.mocked(teacherCache.getStudentWarnings).mockResolvedValue(mockWarnings);
-
-		const result = await refetchWarnings(teacherContext, 'period-2025');
-
-		expect(teacherCache.invalidateWarnings).toHaveBeenCalledWith('class-123', 'period-2025');
-		expect(teacherCache.getStudentWarnings).toHaveBeenCalledWith('class-123', 'period-2025');
-		expect(result).toEqual(mockWarnings);
-	});
-
-	it('should invalidate and refetch for student context', async () => {
-		const mockWarnings = { counts: sampleWarnings, warnings: [] };
-		vi.mocked(studentCache.getWarnings).mockResolvedValue(mockWarnings);
-
-		const result = await refetchWarnings(studentContext, 'period-2025');
-
-		expect(studentCache.invalidateWarnings).toHaveBeenCalledWith('period-2025');
-		expect(studentCache.getWarnings).toHaveBeenCalledWith('period-2025');
-		expect(result).toEqual(mockWarnings);
-	});
-});
-
-describe('refetchProfile', () => {
-	beforeEach(() => {
-		vi.clearAllMocks();
-	});
-
-	it('should return null for teacher context (no profile)', async () => {
-		const result = await refetchProfile(teacherContext);
-
-		expect(result).toBeNull();
-		expect(studentCache.invalidateProfile).not.toHaveBeenCalled();
-		expect(studentCache.getProfile).not.toHaveBeenCalled();
-	});
-
-	it('should invalidate and refetch for student context', async () => {
-		const mockProfile = {
-			id: 'student-123',
-			email: null,
-			firstname: null,
-			lastname: null,
-			full_name: 'Test Student',
-			avatar_url: null,
-			grade: null,
-			is_test: false,
-			school_id: null,
-			classes: [],
-			gidouilles: 100,
-			vip_cards: {}
-		};
-		vi.mocked(studentCache.getProfile).mockResolvedValue(mockProfile);
-
-		const result = await refetchProfile(studentContext);
-
-		expect(studentCache.invalidateProfile).toHaveBeenCalled();
-		expect(studentCache.getProfile).toHaveBeenCalled();
-		expect(result).toEqual(mockProfile);
 	});
 });
 

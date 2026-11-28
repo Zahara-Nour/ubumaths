@@ -7,8 +7,8 @@
 -->
 <script lang="ts">
 	import FencedDslNodeView from './FencedDslNodeView.svelte';
-	import ProbabilityTreeRender from '$lib/components/markdown/nodes/ProbabilityTree.svelte';
-	import { parseProbTreeContent } from '$lib/ubumark/parser/probability-tree-parser';
+	import ProbabilityTreeRender from '#lib/components/markdown/nodes/ProbabilityTree.svelte';
+	import { parseProbTreeContent } from '#lib/ubumark/parser/probability-tree-parser.ts';
 
 	// TipTap fournit six props ; on ne déclare QUE celles utilisées — `editor`,
 	// `getPos` et `nodeSize` sont inutiles ici, et les déclarer sans s'en servir

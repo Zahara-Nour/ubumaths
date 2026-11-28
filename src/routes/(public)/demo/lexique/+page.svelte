@@ -8,17 +8,17 @@
 	`/dev/mots-cliquables` (chantier demo-debug, PR 6d).
 -->
 <script lang="ts">
-	import { demoSeo } from '$lib/seo/demo-pages';
-	import SeoHead from '$lib/seo/SeoHead.svelte';
-	import BackLink from '$lib/components/navigation/BackLink.svelte';
-	import MySelect from '$lib/components/MySelect.svelte';
-	import * as Card from '$lib/components/ui/card';
-	import { MarkdownRenderer } from '$lib/components/markdown';
-	import QuestionCard from '$lib/components/questions/QuestionCard.svelte';
-	import { provideReaderGrade } from '$lib/lexicon/reader-grade';
-	import { GRADES, type GradeCode } from '$lib/types/grades';
-	import type { QuestionInstance } from '$lib/questions/types';
-	import { resolvedMarkdown } from '$lib/ubumark';
+	import { demoSeo } from '#lib/seo/demo-pages.ts';
+	import SeoHead from '#lib/seo/SeoHead.svelte';
+	import BackLink from '#lib/components/navigation/BackLink.svelte';
+	import MySelect from '#lib/components/MySelect.svelte';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import { MarkdownRenderer } from '#lib/components/markdown/index.ts';
+	import QuestionCard from '#lib/components/questions/QuestionCard.svelte';
+	import { provideReaderGrade } from '#lib/dictionary/reader-grade.ts';
+	import { GRADES, type GradeCode } from '#lib/types/grades.ts';
+	import type { QuestionInstance } from '#lib/questions/types.ts';
+	import { resolvedMarkdown } from '#lib/ubumark/index.ts';
 
 	// Types
 	interface Sentence {

@@ -11,19 +11,19 @@
 import { describe, it, expect } from 'vitest';
 import { generateInstance } from '../generator/instance-generator';
 import { questionTemplateSchema } from '../template-schema';
-import { createQuestionTemplateSchema } from '$lib/server/validation/questions';
-import { validateAnswer } from '$lib/utils/answer-validator';
+import { createQuestionTemplateSchema } from '#lib/server/validation/questions.ts';
+import { validateAnswer } from '#lib/utils/answer-validator.ts';
 import {
 	cleanCoefficientsAst,
 	cleanCoefficientsCustom,
 	keepsValue,
 	latexRelationsToCustom
 } from '../clean-coefficients';
-import { coefficientCleanupSteps } from '$lib/mathAST/cosmetic-transforms';
-import { parseCustomSafe, toLatex } from '$lib/mathAST';
+import { coefficientCleanupSteps } from '#lib/mathAST/cosmetic-transforms.ts';
+import { parseCustomSafe, toLatex } from '#lib/mathAST/index.ts';
 import { templateGenericFunctions } from '../generic-functions';
 import type { QuestionInstance, QuestionTemplate, SharedVariationDefaults } from '../types';
-import { templateMarkdown } from '$lib/ubumark';
+import { templateMarkdown } from '#lib/ubumark/index.ts';
 
 // ============================================================================
 // HELPERS
@@ -539,5 +539,53 @@ describe('generateInstance avec cleanCoefficients — nom devant la formule', ()
 		['r = 6 : 2', 'r = 6 : 2']
 	])('pas un nom de courbe : %s inchangé (%s)', (formula, shown) => {
 		expect(statementOf(formula, { cleanCoefficients: true })).toContain(`$${shown}$`);
+	});
+});
+
+// Défaut trouvé le 2026-11-24 (chantier idees-tle-probas) : la parenthèse collée à un nom
+// INDICÉ (`P_A(G)`, `C_M(x)`, `f_1(x)`) était retirée comme celle d'un produit, d'où
+// « P_A G = 0,7 » dans l'énoncé (modèles de prod : ecf4d46b, bb7bcab6, 5925e666).
+describe('cleanCoefficientsAst — notation fonctionnelle d’un nom indicé', () => {
+	it.each([
+		'P_A(G)',
+		'C_M(x)',
+		'f_1(x)',
+		'P_A(G)=0.7',
+		'u_n(1)',
+		'u_{n+1}(x)',
+		'P_A(G)P(A)',
+		'\\varphi(x)',
+		'f^(-1)(x)'
+	])('%s : intact', (source) => {
+		expect(cleaned(source)).toBe(raw(source));
+	});
+
+	it.each([
+		['\\varphi(x)=1x', '\\varphi(x)=x'],
+		['f^(-1)(x)=1x', 'f^(-1)(x)=x'],
+		['u_{n+1}(x)=1x+0', 'u_{n+1}(x)=x']
+	])('%s : la parenthèse reste, le coefficient part', (source, expected) => {
+		expect(cleaned(source)).toBe(raw(expected));
+	});
+
+	it('le reste de la formule est nettoyé, la parenthèse gardée', () => {
+		expect(cleaned('C_M(x)=1x+0')).toBe(raw('C_M(x)=x'));
+	});
+});
+
+describe('generateInstance avec cleanCoefficients — nom indicé suivi d’une parenthèse', () => {
+	const vars = [{ name: 'g', expression: '7' }];
+	const statementOf = (formula: string) =>
+		String(
+			generate(template(`Soit $${formula}$. $x=?$`, '1', vars, { cleanCoefficients: true }))
+				.statement
+		);
+
+	it.each([
+		['P_A(G)={{eval:g/10;d}}', 'P_A \\left( G \\right) = 0.7'],
+		['P_B(G)', 'P_B \\left( G \\right)'],
+		['C_M(x)={{g}}x', 'C_M \\left( x \\right) = 7 x']
+	])('%s → %s', (formula, shown) => {
+		expect(statementOf(formula)).toContain(`$${shown}$`);
 	});
 });

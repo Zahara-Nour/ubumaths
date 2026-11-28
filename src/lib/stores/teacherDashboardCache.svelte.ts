@@ -2,12 +2,11 @@
  * Teacher Dashboard Cache Store
  * ===============================
  *
- * Centralized caching system for teacher dashboard with 5 separate caches:
+ * Centralized caching system for teacher dashboard with 4 separate caches:
  * 1. Student Basic Info (2h TTL)
  * 2A. Student Rewards (10min TTL + optimistic)
  * 2B. Student Warnings (10min TTL + optimistic, per period)
  * 3. Class Info (24h TTL)
- * 4. School Info (24h TTL)
  *
  * FEATURES:
  * - Automatic TTL-based expiration
@@ -18,7 +17,7 @@
  *
  * USAGE:
  * ```typescript
- * import { teacherCache } from '$lib/stores/teacherDashboardCache.svelte';
+ * import { teacherCache } from '#lib/stores/teacherDashboardCache.svelte.ts';
  *
  * // Get rewards with auto-fetch
  * const rewards = await teacherCache.getStudentRewards(classId);
@@ -36,18 +35,16 @@ import type {
 	StudentRewards,
 	StudentWarningCounts,
 	ClassInfo,
-	SchoolInfo,
 	CachedStudents,
 	CachedRewards,
 	CachedWarnings,
 	CachedClass,
-	CachedSchool,
 	CacheStats
-} from '$lib/types/teacher-cache';
-import type { StudentVipCards } from '$lib/types/vip-card';
-import type { ClassWithData } from '$lib/server/students';
-import { createLogger } from '$lib/utils/logger';
-import { browser } from '$app/environment';
+} from '#lib/types/teacher-cache.ts';
+import type { StudentVipCards } from '#lib/types/vip-card.ts';
+import type { ClassWithData } from '#lib/server/students.ts';
+import { createLogger } from '#lib/utils/logger.ts';
+import { browser } from '$app/env';
 import { SvelteMap } from 'svelte/reactivity';
 
 // ============================================================================
@@ -60,7 +57,6 @@ export class TeacherDashboardCache {
 	private rewardsCache = new SvelteMap<string, CachedRewards>();
 	private warningsCache = new SvelteMap<string, CachedWarnings>();
 	private classesCache = new SvelteMap<string, CachedClass>();
-	private schoolCache = new SvelteMap<string, CachedSchool>();
 	private periodsCache = new SvelteMap<
 		string,
 		{ currentPeriod: unknown | null; allPeriods: unknown[]; cachedAt: number }
@@ -71,7 +67,6 @@ export class TeacherDashboardCache {
 	private readonly REWARDS_TTL = 10 * 60 * 1000; // 10 minutes
 	private readonly WARNINGS_TTL = 10 * 60 * 1000; // 10 minutes
 	private readonly CLASS_TTL = 24 * 60 * 60 * 1000; // 24 hours
-	private readonly SCHOOL_TTL = 24 * 60 * 60 * 1000; // 24 hours
 	private readonly PERIODS_TTL = 60 * 60 * 1000; // 1 hour (quasi-static)
 
 	// Monitoring (controlled by ENABLE_CACHE_MONITORING env variable)
@@ -221,68 +216,6 @@ export class TeacherDashboardCache {
 			`Fetched warnings for class:period ${key}: ${warnings.size} students (${elapsed}ms)`
 		);
 		return warnings;
-	}
-
-	/**
-	 * Get class information
-	 * Auto-fetches if cache expired or missing
-	 *
-	 * @param classId - The class ID
-	 * @returns Promise resolving to class info with schedules
-	 */
-	async getClassInfo(classId: string): Promise<ClassInfo> {
-		const startTime = performance.now();
-		const cached = this.classesCache.get(classId);
-		const now = Date.now();
-
-		// Return cached data if fresh
-		if (cached && now - cached.fetchedAt < this.CLASS_TTL) {
-			const elapsed = (performance.now() - startTime).toFixed(2);
-			this.log('info', `Cache HIT: Class info for ${classId} (${elapsed}ms)`);
-			return cached.classInfo;
-		}
-
-		const ttlExpired = cached ? 'TTL expired' : 'Not in cache';
-		this.log('info', `Cache MISS: Class info for ${classId} (${ttlExpired}) - Fetching...`);
-
-		// Fetch from API
-		const classInfo = await this.fetchClassInfo(classId);
-		this.classesCache.set(classId, { classInfo, fetchedAt: now });
-
-		const elapsed = (performance.now() - startTime).toFixed(2);
-		this.log('info', `Fetched class info for ${classId} (${elapsed}ms)`);
-		return classInfo;
-	}
-
-	/**
-	 * Get school information with periods
-	 * Auto-fetches if cache expired or missing
-	 *
-	 * @param schoolId - The school ID
-	 * @returns Promise resolving to school info with periods
-	 */
-	async getSchoolInfo(schoolId: string): Promise<SchoolInfo> {
-		const startTime = performance.now();
-		const cached = this.schoolCache.get(schoolId);
-		const now = Date.now();
-
-		// Return cached data if fresh
-		if (cached && now - cached.fetchedAt < this.SCHOOL_TTL) {
-			const elapsed = (performance.now() - startTime).toFixed(2);
-			this.log('info', `Cache HIT: School info for ${schoolId} (${elapsed}ms)`);
-			return cached.schoolInfo;
-		}
-
-		const ttlExpired = cached ? 'TTL expired' : 'Not in cache';
-		this.log('info', `Cache MISS: School info for ${schoolId} (${ttlExpired}) - Fetching...`);
-
-		// Fetch from API
-		const schoolInfo = await this.fetchSchoolInfo(schoolId);
-		this.schoolCache.set(schoolId, { schoolInfo, fetchedAt: now });
-
-		const elapsed = (performance.now() - startTime).toFixed(2);
-		this.log('info', `Fetched school info for ${schoolId} (${elapsed}ms)`);
-		return schoolInfo;
 	}
 
 	// ========================================================================
@@ -438,10 +371,12 @@ export class TeacherDashboardCache {
 		const newRewardsMap = new SvelteMap(cached.rewards);
 		newRewardsMap.set(studentId, updatedRewards);
 
-		// Update cache with new object to trigger SvelteMap reactivity
+		// Update cache with new object to trigger SvelteMap reactivity.
+		// L'échéance repart de maintenant : sinon le gain disparaîtrait à
+		// l'échéance de l'ancienne lecture (écart L44).
 		this.rewardsCache.set(classId, {
-			...cached,
-			rewards: newRewardsMap
+			rewards: newRewardsMap,
+			fetchedAt: Date.now()
 		});
 
 		this.log(
@@ -477,10 +412,12 @@ export class TeacherDashboardCache {
 		const newRewardsMap = new SvelteMap(cached.rewards);
 		newRewardsMap.set(studentId, updatedRewards);
 
-		// Update cache with new object to trigger SvelteMap reactivity
+		// Update cache with new object to trigger SvelteMap reactivity.
+		// L'échéance repart de maintenant : sinon le gain disparaîtrait à
+		// l'échéance de l'ancienne lecture (écart L44).
 		this.rewardsCache.set(classId, {
-			...cached,
-			rewards: newRewardsMap
+			rewards: newRewardsMap,
+			fetchedAt: Date.now()
 		});
 
 		this.log('trace', `[Cache] Optimistic bonus update: student ${studentId} → ${newBonus}`);
@@ -512,6 +449,8 @@ export class TeacherDashboardCache {
 		// Update the SvelteMap - this automatically triggers reactivity
 		// for all $derived that read via .get(studentId)
 		cached.rewards.set(studentId, updatedRewards);
+		// L'échéance repart de maintenant (écart L44, voir updateGidouillesOptimistic)
+		this.rewardsCache.set(classId, { ...cached, fetchedAt: Date.now() });
 
 		this.log('trace', `[Cache] Optimistic VIP cards update: student ${studentId}`);
 	}
@@ -552,6 +491,8 @@ export class TeacherDashboardCache {
 		};
 
 		cached.rewards.set(studentId, updatedRewards);
+		// L'échéance repart de maintenant (écart L44, voir updateGidouillesOptimistic)
+		this.rewardsCache.set(classId, { ...cached, fetchedAt: Date.now() });
 		this.log(
 			'trace',
 			`[Cache] Optimistic VIP card add: student ${studentId}, card ${cardInstance.card_id}`
@@ -655,16 +596,6 @@ export class TeacherDashboardCache {
 	}
 
 	/**
-	 * Invalidate school info cache
-	 *
-	 * @param schoolId - The school ID
-	 */
-	invalidateSchool(schoolId: string): void {
-		this.schoolCache.delete(schoolId);
-		this.log('trace', 'Cache invalidated: school info for:', schoolId);
-	}
-
-	/**
 	 * Clear all caches
 	 */
 	invalidateAll(): void {
@@ -672,7 +603,6 @@ export class TeacherDashboardCache {
 		this.rewardsCache.clear();
 		this.warningsCache.clear();
 		this.classesCache.clear();
-		this.schoolCache.clear();
 		this.log('trace', 'Cache: All caches cleared');
 	}
 
@@ -762,32 +692,6 @@ export class TeacherDashboardCache {
 			console.error('[Cache] Error fetching warnings:', error);
 			return null;
 		}
-	}
-
-	/**
-	 * Fetch class info from API
-	 * NOTE: This currently throws an error as the endpoint doesn't exist yet.
-	 * For now, class info will be populated via hydration from load functions.
-	 * @private
-	 */
-	private async fetchClassInfo(_classId: string): Promise<ClassInfo> {
-		console.warn('[Cache] fetchClassInfo not implemented yet - use hydration instead');
-		throw new Error(
-			'Chargement des informations de classe non disponible : utiliser hydrateClassInfo()'
-		);
-	}
-
-	/**
-	 * Fetch school info from API
-	 * NOTE: This currently throws an error as the endpoint doesn't exist yet.
-	 * For now, school info will be populated via hydration from load functions.
-	 * @private
-	 */
-	private async fetchSchoolInfo(_schoolId: string): Promise<SchoolInfo> {
-		console.warn('[Cache] fetchSchoolInfo not implemented yet - use hydration instead');
-		throw new Error(
-			'Chargement des informations d’établissement non disponible : utiliser hydrateSchoolInfo()'
-		);
 	}
 
 	// ========================================================================
@@ -908,21 +812,6 @@ export class TeacherDashboardCache {
 		this.log('trace', `[Cache] Hydrated ${classes.length} classes`);
 	}
 
-	/**
-	 * Hydrate school info cache
-	 *
-	 * @param schoolId - The school ID
-	 * @param schoolInfo - School information object
-	 */
-	hydrateSchoolInfo(schoolId: string, schoolInfo: SchoolInfo): void {
-		this.schoolCache.set(schoolId, {
-			schoolInfo,
-			fetchedAt: Date.now()
-		});
-
-		this.log('trace', `[Cache] Hydrated school info for school ${schoolId}`);
-	}
-
 	// ========================================================================
 	// PERIODS CACHE
 	// ========================================================================
@@ -986,7 +875,6 @@ export class TeacherDashboardCache {
 			this.rewardsCache.size +
 			this.warningsCache.size +
 			this.classesCache.size +
-			this.schoolCache.size +
 			this.periodsCache.size;
 
 		// Estimate memory: ~1KB per entry (rough estimate)
@@ -1001,7 +889,6 @@ export class TeacherDashboardCache {
 			rewards: this.rewardsCache.size,
 			warnings: this.warningsCache.size,
 			classes: this.classesCache.size,
-			school: this.schoolCache.size,
 			periods: this.periodsCache.size,
 			totalEntries,
 			memoryEstimate

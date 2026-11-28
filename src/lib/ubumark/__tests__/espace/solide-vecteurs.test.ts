@@ -3,10 +3,10 @@
  * — chantier `solide-vecteur`, lot 1 (D-SV : Q1 points déclarés, Q3 `vecteurs:`)
  */
 import { describe, expect, it } from 'vitest';
-import { generateEspaceTypst } from '$lib/ubumark/generators/espace-typst';
-import { parseEspaceContent } from '$lib/ubumark/parser/espace-parser';
-import type { SolideSpec } from '$lib/ubumark/types/espace';
-import { buildSolideScene, solideLabel } from '$lib/ubumark/utils/espace-solides';
+import { generateEspaceTypst } from '#lib/ubumark/generators/espace-typst.ts';
+import { parseEspaceContent } from '#lib/ubumark/parser/espace-parser.ts';
+import type { SolideSpec } from '#lib/ubumark/types/espace.ts';
+import { buildSolideScene, solideLabel } from '#lib/ubumark/utils/espace-solides.ts';
 
 const CUBE = ['forme: cube 2', 'sommets: A B C D E F G H'];
 

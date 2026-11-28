@@ -1,0 +1,526 @@
+{
+	"id": "46913a48-c97f-4f00-9cdc-b98214b8420b",
+	"title": "Taux de variation et nombre dérivé",
+	"description": "Taux de variation de x² ou x² + bx entre a et a + h, simplifié en fonction de h, puis sa limite f′(a) quand h tend vers 0",
+	"grades": ["1_SPE", "1_TECHNO"],
+	"level": 1,
+	"delay": 60,
+	"status": "published",
+	"shared": {
+		"cleanCoefficients": true
+	},
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:2*a}}+h"
+				},
+				{
+					"expectedAnswer": "{{eval:2*a}}"
+				}
+			],
+			"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=x^2$.\n\nPour $h\\neq0$, exprime le taux de variation de $f$ entre ${{a}}$ et ${{a}}+h$ sous forme simplifiée, puis déduis-en $f'({{a}})$.\n\n$\\dfrac{f({{a}}+h)-f({{a}})}{h}=?$\n\n$f'({{a}})=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..6;±"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$f({{a}}+h)=({{a}}+h)^2={{eval:a^2}}{{eval:2*a;+}}h+h^2$ et $f({{a}})={{eval:a^2}}$, donc $f({{a}}+h)-f({{a}})={{eval:2*a}}h+h^2$.",
+					"Pour $h\\neq0$, on simplifie par $h$ : $$\\dfrac{f({{a}}+h)-f({{a}})}{h}=\\dfrac{h({{eval:2*a}}+h)}{h}={{eval:2*a}}+h$$",
+					"Quand $h$ tend vers $0$, ${{eval:2*a}}+h$ tend vers ${{eval:2*a}}$.",
+					"Conclusion : le taux de variation vaut ${{eval:2*a}}+h$ et $f'({{a}})={{eval:2*a}}$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:2*a+b}}+h"
+				},
+				{
+					"expectedAnswer": "{{eval:2*a+b}}"
+				}
+			],
+			"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)={{eval:x^2+b*x}}$.\n\nPour $h\\neq0$, exprime le taux de variation de $f$ entre ${{a}}$ et ${{a}}+h$ sous forme simplifiée, puis déduis-en $f'({{a}})$.\n\n$\\dfrac{f({{a}}+h)-f({{a}})}{h}=?$\n\n$f'({{a}})=?$",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "b",
+					"expression": "1..6;±"
+				},
+				{
+					"name": "a",
+					"expression": "1..4;±"
+				}
+			],
+			"conditions": ["2*a+b != 0"],
+			"correction": {
+				"steps": [
+					"$f({{a}}+h)=({{a}}+h)^2{{b;+}}({{a}}+h)$, soit $f({{a}}+h)={{eval:a^2+a*b}}{{eval:2*a+b;+}}h+h^2$ et $f({{a}})={{eval:a^2+a*b}}$, donc $f({{a}}+h)-f({{a}})={{eval:2*a+b}}h+h^2$.",
+					"Pour $h\\neq0$, on simplifie par $h$ : $$\\dfrac{f({{a}}+h)-f({{a}})}{h}=\\dfrac{h({{eval:2*a+b}}+h)}{h}={{eval:2*a+b}}+h$$",
+					"Quand $h$ tend vers $0$, ${{eval:2*a+b}}+h$ tend vers ${{eval:2*a+b}}$.",
+					"Conclusion : le taux de variation vaut ${{eval:2*a+b}}+h$ et $f'({{a}})={{eval:2*a+b}}$."
+				]
+			}
+		},
+		{
+			"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)={{eval:al*x^2+b*x+c}}$.\n\nPour $h\\neq0$, exprime le taux de variation de $f$ entre ${{a}}$ et ${{a}}+h$ sous forme simplifiée, puis déduis-en $f'({{a}})$.\n\n$\\dfrac{f({{a}}+h)-f({{a}})}{h}=?$\n\n$f'({{a}})=?$",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "h",
+					"expression": "h|h"
+				},
+				{
+					"name": "al",
+					"expression": "2|3|-1|-2|-3"
+				},
+				{
+					"name": "b",
+					"expression": "1..6;±"
+				},
+				{
+					"name": "c",
+					"expression": "-6..6"
+				},
+				{
+					"name": "a",
+					"expression": "1..4;±"
+				}
+			],
+			"conditions": ["2*al*a+b != 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:al*h+2*al*a+b}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:h+2*al*a+b}}",
+							"message": "Le terme en $h^2$ garde son coefficient : après division par $h$, il reste ${{al}}h$.",
+							"label": "Coefficient de h oublié"
+						},
+						{
+							"answer": "{{eval:al*h+2*a+b}}",
+							"message": "N'oublie pas de multiplier $2\\times{{a;()}}\\,h$ par ${{al}}$.",
+							"label": "α oublié devant 2ah"
+						},
+						{
+							"answer": "{{eval:al*h+2*al*a}}",
+							"message": "N'oublie pas le terme ${{b}}x$ : il donne ${{b}}h$ dans la différence.",
+							"label": "Terme βx oublié"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{eval:2*al*a+b}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:2*a+b}}",
+							"message": "N'oublie pas de multiplier $2\\times{{a;()}}$ par ${{al}}$.",
+							"label": "α oublié"
+						},
+						{
+							"answer": "{{eval:al*a^2+b*a+c}}",
+							"message": "Tu as donné l'image de ${{a}}$ : le nombre dérivé est la limite du taux quand $h$ tend vers $0$.",
+							"label": "Image au lieu du nombre dérivé"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"$f({{a}}+h)-f({{a}})={{if:al==-1|-|{{al}}}}\\left(({{a}}+h)^2-{{a;()}}^2\\right){{b;+}}h$.",
+					"Or $({{a}}+h)^2-{{a;()}}^2={{eval:2*a}}h+h^2$, donc $f({{a}}+h)-f({{a}})={{eval:al*h^2+(2*al*a+b)*h}}$.",
+					"Pour $h\\neq0$, on divise par $h$ : $$\\dfrac{f({{a}}+h)-f({{a}})}{h}=\\textcolor{{{color:primary.0}}}{ {{eval:al*h+2*al*a+b}} }$$",
+					"Quand $h$ tend vers $0$, ce taux tend vers ${{eval:2*al*a+b}}$ : $f'({{a}})=\\textcolor{{{color:primary.0}}}{ {{eval:2*al*a+b}} }$."
+				]
+			},
+			"hint": "Développe $({{a}}+h)^2$, n'oublie pas le coefficient ${{al}}$ devant, soustrais $f({{a}})$, puis divise par $h$."
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["6+h", "6"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "3"
+			},
+			"description": "variation 0 : a=3 : 6+h et 6",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["h+6", "6"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "3"
+			},
+			"description": "variation 0 : a=3 : h+6 (ordre des termes)",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["\\frac{6h+h^2}{h}", "6"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			},
+			"variables": {
+				"a": "3"
+			},
+			"description": "variation 0 : a=3 : h non simplifié (6h+h²)/h",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["6", "6"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "3"
+			},
+			"description": "variation 0 : a=3 : limite prise trop tôt (6 dans la 1re case)",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["6+h", "9"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "3"
+			},
+			"description": "variation 0 : a=3 : f(3)=9 au lieu de f′(3)",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["6+2h", "6"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "3"
+			},
+			"description": "variation 0 : a=3 : h² oublié dans le développement (6)",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["-4+h", "-4"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "-2"
+			},
+			"description": "variation 0 : a=−2 : −4+h et −4",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["4+h", "4"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "-2"
+			},
+			"description": "variation 0 : a=−2 : signe de a perdu (4+h)",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["7+h", "7"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "2",
+				"b": "3"
+			},
+			"description": "variation 1 : x²+3x, a=2 : 7+h et 7",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["h+7", "7"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "2",
+				"b": "3"
+			},
+			"description": "variation 1 : x²+3x, a=2 : h+7",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["4+h", "4"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "2",
+				"b": "3"
+			},
+			"description": "variation 1 : x²+3x, a=2 : b oublié (4+h)",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["7+h", "10"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "2",
+				"b": "3"
+			},
+			"description": "variation 1 : x²+3x, a=2 : f(2)=10 au lieu de f′(2)",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["\\frac{7h+h^2}{h}", "7"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			},
+			"variables": {
+				"a": "2",
+				"b": "3"
+			},
+			"description": "variation 1 : x²+3x, a=2 : h non simplifié (7h+h²)/h",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["-7+h", "-7"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "-1",
+				"b": "-5"
+			},
+			"description": "variation 1 : x²−5x, a=−1 : −7+h et −7",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["-3+h", "-3"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "-1",
+				"b": "-5"
+			},
+			"description": "variation 1 : x²−5x, a=−1 : signe de a perdu (−3+h)",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["1+h", "1"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "2",
+				"b": "-3"
+			},
+			"description": "variation 1 : x²−3x, a=2 : f′(2)=1 → 1+h et 1 (coefficient 1)",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["h+1", "1"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "2",
+				"b": "-3"
+			},
+			"description": "variation 1 : x²−3x, a=2 : h+1",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["-1+h", "-1"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "2",
+				"b": "-5"
+			},
+			"description": "variation 1 : x²−5x, a=2 : f′(2)=−1 → −1+h et −1",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["1+h", "1"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "2",
+				"b": "-5"
+			},
+			"description": "variation 1 : x²−5x, a=2 : signe perdu (1+h)",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["5+h", "5"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "2",
+				"b": "1"
+			},
+			"description": "variation 1 : x²+x (b=1), a=2 : 5+h et 5",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["-7+h", "-7"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "-3",
+				"b": "-1"
+			},
+			"description": "variation 1 : x²−x (b=−1), a=−3 : −7+h et −7",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["2+h", "2"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "2",
+				"b": "-2"
+			},
+			"description": "variation 1 : x²−2x, a=2 (f(2)=0) : 2+h et 2",
+			"variationIndex": 1
+		},
+		{
+			"description": "2x² + 3x + 1, a = 1 : 2h + 7 et 7",
+			"variationIndex": 2,
+			"variables": {
+				"al": "2",
+				"b": "3",
+				"c": "1",
+				"a": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["2h+7", "7"]
+		},
+		{
+			"description": "2x² + 3x + 1, a = 1 : 7 + 2h",
+			"variationIndex": 2,
+			"variables": {
+				"al": "2",
+				"b": "3",
+				"c": "1",
+				"a": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["7+2h", "7"]
+		},
+		{
+			"description": "Coefficient de h oublié",
+			"variationIndex": 2,
+			"variables": {
+				"al": "2",
+				"b": "3",
+				"c": "1",
+				"a": "1"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Le terme en $h^2$ garde son coefficient : après division par $h$, il reste $2 h$."
+			},
+			"answers": ["h+7", "7"]
+		},
+		{
+			"description": "α oublié devant 2ah",
+			"variationIndex": 2,
+			"variables": {
+				"al": "2",
+				"b": "3",
+				"c": "1",
+				"a": "1"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "N'oublie pas de multiplier $2\\times1\\,h$ par $2$."
+			},
+			"answers": ["2h+5", "7"]
+		},
+		{
+			"description": "Terme βx oublié",
+			"variationIndex": 2,
+			"variables": {
+				"al": "2",
+				"b": "3",
+				"c": "1",
+				"a": "1"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "N'oublie pas le terme $3 x$ : il donne $3 h$ dans la différence."
+			},
+			"answers": ["2h+4", "7"]
+		},
+		{
+			"description": "α oublié (nombre dérivé)",
+			"variationIndex": 2,
+			"variables": {
+				"al": "2",
+				"b": "3",
+				"c": "1",
+				"a": "1"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "N'oublie pas de multiplier $2\\times1$ par $2$."
+			},
+			"answers": ["2h+7", "5"]
+		},
+		{
+			"description": "Image au lieu du nombre dérivé",
+			"variationIndex": 2,
+			"variables": {
+				"al": "2",
+				"b": "3",
+				"c": "1",
+				"a": "1"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as donné l'image de $1$ : le nombre dérivé est la limite du taux quand $h$ tend vers $0$."
+			},
+			"answers": ["2h+7", "6"]
+		},
+		{
+			"description": "−x² + 4x − 2, a = 3 : −h − 2 et −2",
+			"variationIndex": 2,
+			"variables": {
+				"al": "-1",
+				"b": "4",
+				"c": "-2",
+				"a": "3"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["-h-2", "-2"]
+		}
+	]
+}

@@ -16,7 +16,7 @@
 	@module components/markdown/nodes/BlankInput
 -->
 <script lang="ts">
-	import { cn } from '$lib/utils';
+	import { cn } from '#lib/utils.ts';
 
 	interface Props {
 		/** 1-based index of the blank */
@@ -123,7 +123,7 @@
 	oninput={handleInput}
 	onkeydown={handleKeydown}
 	class={inputClasses}
-	aria-label="Reponse {index}"
+	aria-label="Réponse {index}"
 	aria-invalid={isCorrect === false ? 'true' : undefined}
 	aria-describedby={validationState ? stateId : undefined}
 	data-state={validationState}

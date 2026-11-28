@@ -22,20 +22,22 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
 	import { resolve } from '$app/paths';
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 	import { slide } from 'svelte/transition';
 	import type { ActionData } from './$types';
-	import { Button } from '$lib/components/ui/button';
-	import { Input } from '$lib/components/ui/input';
-	import { Label } from '$lib/components/ui/label';
-	import * as Card from '$lib/components/ui/card';
-	import * as Alert from '$lib/components/ui/alert';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import { Input } from '#lib/components/ui/input/index.ts';
+	import { Label } from '#lib/components/ui/label/index.ts';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import * as Alert from '#lib/components/ui/alert/index.ts';
 	import { Loader2 } from '@lucide/svelte';
-	import MyPasswordInput from '$lib/components/MyPasswordInput.svelte';
-	import { GOOGLE_LOGIN_ENABLED } from '$lib/config/google-login';
+	import MyPasswordInput from '#lib/components/MyPasswordInput.svelte';
+	import { browser } from '$app/env';
+	import type { Component } from 'svelte';
+	import { GOOGLE_LOGIN_ENABLED } from '#lib/config/google-login.ts';
 
 	// Feature flag: Google OAuth login button (single source of truth in
-	// $lib/config/google-login, also enforced server-side in the googleSignIn action
+	// #lib/config/google-login, also enforced server-side in the googleSignIn action
 	// and /auth/callback). Disabled after the school change (@voltairedoha.com gone).
 
 	// Form action result (contains error if login failed)
@@ -50,9 +52,19 @@
 	let isEmailLoading = $state(false);
 
 	// Extract error from URL query params (for OAuth callback errors)
-	let urlError = $derived.by(() => {
-		const currentPage = $page;
-		return currentPage.url.searchParams.get('error');
+	let urlError = $derived(page.url.searchParams.get('error'));
+
+	// Connexion en un geste aux comptes fictifs : serveur de dev seulement.
+	// `import.meta.env.DEV` est remplacé par `false` au build, qui n'embarque donc ni
+	// les boutons ni les comptes (garde de CI « Comptes fictifs absents du build »).
+	let DevAccountButtons = $state<Component | null>(null);
+	$effect(() => {
+		if (!browser || DevAccountButtons) return;
+		if (import.meta.env.DEV) {
+			import('#lib/components/dev/DevAccountButtons.svelte')
+				.then((module) => (DevAccountButtons = module.default))
+				.catch((e) => console.debug('[Comptes fictifs] Chargement impossible :', e));
+		}
 	});
 </script>
 
@@ -66,9 +78,11 @@
 
 		<Card.Content class="space-y-6">
 			<!-- Display errors from OAuth callback, form actions, or rate limiting -->
-			{#if urlError || form?.error}
+			<!-- L'erreur du formulaire d'abord : l'adresse reste après un échec (stayOnPage), un
+			     `?error=` venu d'un lien ne doit pas masquer « Identifiants invalides » -->
+			{#if form?.error || urlError}
 				<Alert.Root variant="destructive">
-					<Alert.Description>{urlError || form?.error}</Alert.Description>
+					<Alert.Description>{form?.error || urlError}</Alert.Description>
 				</Alert.Root>
 			{/if}
 
@@ -80,7 +94,7 @@
 					use:enhance={() => {
 						isGoogleLoading = true;
 						return async ({ update }) => {
-							await update();
+							await update({ navigate: false });
 							isGoogleLoading = false;
 						};
 					}}
@@ -158,7 +172,7 @@
 						use:enhance={() => {
 							isEmailLoading = true;
 							return async ({ update }) => {
-								await update();
+								await update({ navigate: false });
 								isEmailLoading = false;
 							};
 						}}
@@ -197,7 +211,7 @@
 							<div class="flex items-center justify-between">
 								<Label for="password">Mot de passe</Label>
 								<a
-									href={resolve('/auth/reset-password')}
+									href={resolve('auth/reset-password')}
 									class="text-sm text-primary hover:underline"
 								>
 									Mot de passe oublié ?
@@ -229,8 +243,13 @@
 			<!-- Controlled self-registration: students create an account with their class code -->
 			<p class="text-center text-sm text-muted-foreground">
 				Nouvel élève ?
-				<a href={resolve('/auth/register')} class="text-primary hover:underline">Créer un compte</a>
+				<a href={resolve('auth/register')} class="text-primary hover:underline">Créer un compte</a>
 			</p>
+
+			<!-- Comptes fictifs : serveur de dev seulement -->
+			{#if DevAccountButtons}
+				<DevAccountButtons />
+			{/if}
 		</Card.Content>
 	</Card.Root>
 </div>

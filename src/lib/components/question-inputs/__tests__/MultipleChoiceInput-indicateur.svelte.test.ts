@@ -13,7 +13,7 @@ import { page, userEvent } from 'vitest/browser';
 import { describe, it, expect } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import MultipleChoiceInput from '../MultipleChoiceInput.svelte';
-import type { ResolvedMarkdown } from '$lib/ubumark';
+import type { ResolvedMarkdown } from '#lib/ubumark/index.ts';
 
 const choices = ['2', '3', '4'].map((content, originalIndex) => ({
 	content: content as ResolvedMarkdown,

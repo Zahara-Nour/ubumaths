@@ -21,7 +21,7 @@ import {
 	greaterThanOrEqualInterval,
 	openInterval
 } from '../factory';
-import { number } from '$lib/mathAST/factory';
+import { number } from '#lib/mathAST/factory.ts';
 import type { MathNode } from '../../types';
 
 // =============================================================================

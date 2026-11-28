@@ -18,6 +18,7 @@ import {
 	missingSidesFeedback,
 	notJoinedFeedback,
 	oppositeAnglesFeedback,
+	severalTrianglesFeedback,
 	vertexEyeballedAnglesFeedback,
 	wrongAngleTriangleFeedback,
 	wrongLengthFeedback,
@@ -27,7 +28,7 @@ import { constructionOf, intersectTraits, repereAt, traitOf, type Trait } from '
 import { solutionLines, solutionTriangle } from '../drawing';
 import { serializeConstructionAnswer, type DrawnObject, type DrawnRepere } from '../answer';
 import type { Position } from '../judge';
-import { readConstructionHeader } from '$lib/ubumark/parser/construction-parser';
+import { readConstructionHeader } from '#lib/ubumark/parser/construction-parser.ts';
 
 function checksOf(source: string) {
 	const { spec, errors } = readConstructionHeader(source);
@@ -348,6 +349,40 @@ describe('triangle par un côté et deux angles : verdict', () => {
 		});
 	});
 
+	it('faux : mauvaise graduation en B, côtés arrêtés aux repères sans se rejoindre (écart E50)', () => {
+		// 115° au lieu de 65° : les deux côtés d'angle se croisent hors de la figure ; l'élève
+		// arrête [AC] et [BC] à ses repères. La graduation se lit sur la direction du côté.
+		const markB = repere(B, A, 115, -1);
+		const lineB = droite(B, repereAt(markB));
+		const objects = [
+			MARK_A,
+			LINE_A,
+			markB,
+			lineB,
+			segment(A, repereAt(MARK_A)),
+			segment(B, repereAt(markB))
+		];
+		expect(judge(ANGLES, objects)).toEqual({
+			status: 'incorrect',
+			feedback: wrongScaleAngleFeedback('ABC', 115, 65)
+		});
+	});
+
+	it('faux : bonne graduation, côtés arrêtés aux repères sans se rejoindre : message inchangé', () => {
+		const objects = [
+			MARK_A,
+			LINE_A,
+			MARK_B,
+			LINE_B,
+			segment(A, repereAt(MARK_A)),
+			segment(B, repereAt(MARK_B))
+		];
+		expect(judge(ANGLES, objects)).toEqual({
+			status: 'incorrect',
+			feedback: notJoinedFeedback('A', 'B', 'C')
+		});
+	});
+
 	it('faux : autre mesure en A', () => {
 		expect(judge(ANGLES, built(repere(A, B, 45, 1), MARK_B))).toEqual({
 			status: 'incorrect',
@@ -482,12 +517,91 @@ describe('deux côtés et l’angle compris', () => {
 		});
 	});
 
+	it('juste : côté d’angle tracé en segment au-delà de C, [BC] seul jusqu’au report (2e revue de #2658)', () => {
+		const m = repereAt(MARK_A);
+		const side = segment(A, { x: A.x + (m.x - A.x) * 2.5, y: A.y + (m.y - A.y) * 2.5 });
+		// Le côté est un segment parti de A : un seul croisement avec l'arc
+		const [c] = cross(side, REPORT);
+		expect(judge(SAS, [MARK_A, side, REPORT, segment(B, c)])).toEqual({ status: 'correct' });
+	});
+
+	it('faux : côté d’angle en segment, [BC] arrêté à l’œil sur lui', () => {
+		const m = repereAt(MARK_A);
+		const side = segment(A, { x: A.x + (m.x - A.x) * 2.5, y: A.y + (m.y - A.y) * 2.5 });
+		const c = { x: A.x + (m.x - A.x) * 1.5, y: A.y + (m.y - A.y) * 1.5 };
+		expect(judge(SAS, [MARK_A, side, segment(B, c)])).toEqual({
+			status: 'incorrect',
+			feedback: vertexEyeballedAnglesFeedback('C')
+		});
+	});
+
 	it('faux : C pris à l’œil sur le côté d’angle', () => {
 		const m = repereAt(MARK_A);
 		const c = { x: A.x + (m.x - A.x) * 1.5, y: A.y + (m.y - A.y) * 1.5 };
 		expect(judge(SAS, [MARK_A, LINE_A, segment(A, c), segment(B, c)])).toEqual({
 			status: 'incorrect',
 			feedback: vertexEyeballedAnglesFeedback('C')
+		});
+	});
+});
+
+describe('revue de #2660 : un seul C, côté sans repère', () => {
+	const SAS = figure('triangle ABC : AC = u ; CAB = 40', [
+		...BODY,
+		'u = segment(point(1, 7), point(5, 7))'
+	]);
+	const REPORT = report(A, { x: 1, y: 7 }, { x: 5, y: 7 });
+	const m = repereAt(MARK_A);
+	/** Le point du côté d'angle de A à `k` fois la distance du repère */
+	const along = (k: number) => ({ x: A.x + (m.x - A.x) * k, y: A.y + (m.y - A.y) * k });
+	const SIDE = segment(A, along(2.5));
+
+	it('faux : éventail de [BC] arrêtés sur le côté d’angle, un seul au croisement (angle compris)', () => {
+		const [c] = cross(SIDE, REPORT);
+		expect(judge(SAS, [MARK_A, SIDE, REPORT, segment(B, along(1.2)), segment(B, c)])).toEqual({
+			status: 'incorrect',
+			feedback: severalTrianglesFeedback('A', 'B', 'C')
+		});
+	});
+
+	it('faux : éventail de [BC] arrêtés sur le côté d’angle, un seul au croisement (deux angles)', () => {
+		const sideA = segment(A, along(3));
+		expect(
+			judge(ANGLES, [MARK_A, sideA, MARK_B, LINE_B, segment(B, along(1.2)), segment(B, C)])
+		).toEqual({
+			status: 'incorrect',
+			feedback: severalTrianglesFeedback('A', 'B', 'C')
+		});
+	});
+
+	it('faux : deux triangles justes, de part et d’autre de (AB) (comme Q17 en cm)', () => {
+		const below = built(repere(A, B, 40, -1), repere(B, A, 65, 1));
+		expect(judge(ANGLES, [...NOMINAL, ...below])).toEqual({
+			status: 'incorrect',
+			feedback: severalTrianglesFeedback('A', 'B', 'C')
+		});
+	});
+
+	it('juste : un seul [BC], au croisement (non-régression)', () => {
+		const sideA = segment(A, along(3));
+		expect(judge(ANGLES, [MARK_A, sideA, MARK_B, LINE_B, segment(B, C)])).toEqual({
+			status: 'correct'
+		});
+	});
+
+	it('faux : côté [AC] sans repère qui passe par le bout de [BC] : « trace ses côtés avec le rapporteur »', () => {
+		const end = { x: 6, y: 6 };
+		const sideA = segment(A, { x: A.x + (end.x - A.x) * 1.5, y: A.y + (end.y - A.y) * 1.5 });
+		expect(judge(ANGLES, [sideA, segment(B, end)])).toEqual({
+			status: 'incorrect',
+			feedback: vertexEyeballedAnglesFeedback('C')
+		});
+	});
+
+	it('faux : côtés qui ne se rejoignent vraiment pas : message inchangé', () => {
+		expect(judge(ANGLES, [segment(A, C), segment(B, { x: C.x + 1, y: C.y })])).toEqual({
+			status: 'incorrect',
+			feedback: notJoinedFeedback('A', 'B', 'C')
 		});
 	});
 });
@@ -527,7 +641,7 @@ describe('aide à l’écriture : les exemples du lot 7 se construisent', () => 
 		'Construire un triangle par un côté et deux angles (rapporteur)',
 		'Construire un triangle par deux côtés et l’angle compris'
 	])('%s', async (title) => {
-		const { figureACompleterEntry } = await import('$lib/block-catalog/figure-a-completer');
+		const { figureACompleterEntry } = await import('#lib/block-catalog/figure-a-completer.ts');
 		const example = figureACompleterEntry.examples.find((e) => e.title === title);
 		expect(example).toBeDefined();
 		const lines = (example?.source ?? '').split('\n');

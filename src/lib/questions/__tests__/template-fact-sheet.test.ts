@@ -10,7 +10,7 @@ import {
 	describeValidationSettings,
 	lowestGradeLabel,
 	nodePath
-} from '$lib/questions/template-fact-sheet';
+} from '#lib/questions/template-fact-sheet.ts';
 
 describe('describeValidationSettings', () => {
 	it('modèle exemple : seulement « Espaces dès 4 chiffres »', () => {

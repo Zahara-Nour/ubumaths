@@ -11,10 +11,10 @@
 -->
 
 <script lang="ts">
-	import { Avatar, AvatarFallback, AvatarImage } from '$lib/components/ui/avatar';
-	import { Skeleton } from '$lib/components/ui/skeleton';
+	import { Avatar, AvatarFallback, AvatarImage } from '#lib/components/ui/avatar/index.ts';
+	import { Skeleton } from '#lib/components/ui/skeleton/index.ts';
 	import { Trophy, Medal, Award } from '@lucide/svelte';
-	import { cn } from '$lib/utils';
+	import { cn } from '#lib/utils.ts';
 
 	// Type for leaderboard entry
 	export type LeaderboardEntry = {

@@ -1,0 +1,66 @@
+/**
+ * GET|POST /api/cron/invitations-cours-particulier
+ * ================================================
+ * Décision 8 du chantier `invitation-cours-particulier` : une invitation de cours
+ * particulier expirée, annulée ou utilisée est effacée 30 jours après sa fin
+ * (`purgeEndedInvitations`, `src/lib/server/private-lessons/invitations.ts`). PR 4 : le même
+ * passage supprime les comptes orphelins d'une création interrompue
+ * (`cleanupOrphanAccounts`, `src/lib/server/private-lessons/orphans.ts`).
+ *
+ * Appelée chaque nuit par le cron Vercel (GET, `vercel.json`) et à la demande depuis
+ * `/dashboard/admin/cron` (POST). AUTH : `Bearer CRON_SECRET` seulement.
+ * Journal : `background_job_runs` (job `private_lesson_invitations_purge`), avec les
+ * nombres seulement — jamais un prénom ni une adresse.
+ */
+import { error } from '@sveltejs/kit';
+import type { RequestHandler } from './$types';
+import { verifyCronAuth } from '#lib/server/auth/cron.ts';
+import { createServiceRoleClient } from '#lib/server/serviceRoleClient.ts';
+import { purgeEndedInvitations } from '#lib/server/private-lessons/invitations.ts';
+import { cleanupOrphanAccounts } from '#lib/server/private-lessons/orphans.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
+
+const logger = createServerLogger('api/cron/invitations-cours-particulier/+server');
+
+const JOB_NAME = 'private_lesson_invitations_purge';
+
+const handler: RequestHandler = async ({ request }) => {
+	verifyCronAuth(request);
+
+	const serviceClient = createServiceRoleClient();
+	const { data: runId, error: startError } = await serviceClient.rpc('start_job_run', {
+		p_job_name: JOB_NAME
+	});
+	// Le journal sert à l'admin ; son absence ne doit pas empêcher la purge.
+	if (startError) logger.error('[CRON] Journal de la tâche non ouvert :', startError);
+
+	// Deux travaux indépendants : l'échec de l'un n'empêche pas l'autre. Le nettoyage des
+	// orphelins d'abord : il relit l'invitation, que la purge pourrait effacer.
+	const errors: string[] = [];
+	const orphans = await cleanupOrphanAccounts(serviceClient).catch((err: unknown) => {
+		errors.push(`Orphelins : ${err instanceof Error ? err.message : 'erreur inconnue'}`);
+		return null;
+	});
+	const purge = await purgeEndedInvitations(serviceClient).catch((err: unknown) => {
+		errors.push(err instanceof Error ? err.message : 'Purge : erreur inconnue');
+		return null;
+	});
+	const report = { ...purge, orphans };
+
+	if (runId) {
+		await serviceClient.rpc('complete_job_run', {
+			p_run_id: runId,
+			p_status: errors.length === 0 ? 'success' : 'failed',
+			p_metadata: { ...report },
+			...(errors.length > 0 ? { p_error_message: errors.join(' ; ') } : {})
+		});
+	}
+	if (errors.length > 0) {
+		logger.error('[CRON] Invitations de cours particulier :', errors.join(' ; '));
+		throw error(500, 'Purge des invitations impossible');
+	}
+	return Response.json({ success: true, report });
+};
+
+export const GET = handler;
+export const POST = handler;

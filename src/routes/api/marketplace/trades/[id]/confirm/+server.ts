@@ -1,10 +1,10 @@
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireAuth } from '$lib/server/middleware/auth';
-import { validateUuidParam } from '$lib/server/validation/params';
-import { notifyTradeCompleted } from '$lib/server/marketplace/notifications';
-import { executeTradeSchema } from '$lib/server/validation/marketplace-rpc';
-import { createServerLogger } from '$lib/utils/logger';
+import { requireAuth } from '#lib/server/middleware/auth.ts';
+import { validateUuidParam } from '#lib/server/validation/params.ts';
+import { notifyTradeCompleted } from '#lib/server/marketplace/notifications.ts';
+import { executeTradeSchema } from '#lib/server/validation/marketplace-rpc.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/marketplace/trades/[id]/confirm/+server');
 
@@ -56,7 +56,7 @@ export const POST: RequestHandler = async ({ params, locals }) => {
 	// Verify trade is still negotiating
 	if (trade.status !== 'negotiating') {
 		// Trade already completed or cancelled
-		return json({
+		return Response.json({
 			success: true,
 			confirmed: true,
 			executed: trade.status === 'completed',
@@ -137,7 +137,7 @@ export const POST: RequestHandler = async ({ params, locals }) => {
 
 	// Trade may have been completed by the other user in a race condition
 	if (updatedTradeState.status !== 'negotiating') {
-		return json({
+		return Response.json({
 			success: true,
 			confirmed: true,
 			executed: updatedTradeState.status === 'completed',
@@ -148,7 +148,7 @@ export const POST: RequestHandler = async ({ params, locals }) => {
 	// Check if BOTH have now confirmed (using LATEST state)
 	if (!updatedTradeState.confirmed_by_initiator || !updatedTradeState.confirmed_by_partner) {
 		// Partner hasn't confirmed yet - wait for them
-		return json({
+		return Response.json({
 			success: true,
 			confirmed: true,
 			executed: false,
@@ -180,7 +180,7 @@ export const POST: RequestHandler = async ({ params, locals }) => {
 
 		// If trade was already completed by another request, that's OK
 		if (errorMsg.includes('not in negotiating status')) {
-			return json({
+			return Response.json({
 				success: true,
 				confirmed: true,
 				executed: true,
@@ -239,7 +239,7 @@ export const POST: RequestHandler = async ({ params, locals }) => {
 		logger.error('Relecture impossible :', completedTradeError);
 	}
 
-	return json({
+	return Response.json({
 		success: true,
 		confirmed: true,
 		executed: true,

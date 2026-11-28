@@ -9,8 +9,9 @@
 
 import { describe, it, expect } from 'vitest';
 import { placeAsymptoteLabels, plainTextOf } from '../asymptote-labels';
+import { labelBoxCenterY, labelBoxHeight, labelBoxSpan } from '../label-box';
 import type { FunctionAnalysis } from '../types';
-import { DEFAULT_VIEWPORT, createTransformer } from '$lib/geometry-core/viewport';
+import { DEFAULT_VIEWPORT, createTransformer } from '#lib/geometry-core/viewport/index.ts';
 
 const SIZE = { width: 600, height: 600 };
 const transformer = createTransformer(DEFAULT_VIEWPORT, SIZE.width, SIZE.height);
@@ -92,6 +93,39 @@ describe('placeAsymptoteLabels', () => {
 		const rows = labels.map((label) => Math.round(label.y / 22));
 		expect(new Set(rows).size).toBeLessThanOrEqual(3);
 		expect(Math.max(...rows) - Math.min(...rows)).toBeLessThan(5);
+	});
+
+	// E6 (2026-11-23) : tan(x) sur [−10 ; 10], cadre de 912 px — la boîte de
+	// `x = 5π/2`, retournée à gauche près du bord, recouvrait `x = 3π/2`
+	it('ne superpose pas les boîtes AFFICHÉES, bascule à gauche comprise', () => {
+		const size = { width: 912, height: 564 };
+		const wide = createTransformer(
+			{ xMin: -10, xMax: 10, yMin: -10, yMax: 10 },
+			size.width,
+			size.height
+		);
+		const poles = [-5, -3, -1, 1, 3, 5].map((k) => (k * Math.PI) / 2);
+		const labels = placeAsymptoteLabels(
+			analysisOf({
+				verticalAsymptotes: poles.map((x) => ({ x, functionId: 'f', behavior: 'both' as const }))
+			}),
+			wide,
+			size
+		);
+		expect(labels.length).toBe(6);
+		const boxes = labels.map((label) => {
+			const span = labelBoxSpan(label.x, label.text, size.width);
+			const height = labelBoxHeight(label.latex);
+			const center = labelBoxCenterY(label.y, height, size.height);
+			return { ...span, top: center - height / 2, bottom: center + height / 2 };
+		});
+		for (const [i, a] of boxes.entries()) {
+			for (const b of boxes.slice(i + 1)) {
+				const overlapX = a.left < b.right && b.left < a.right;
+				const overlapY = a.top < b.bottom && b.top < a.bottom;
+				expect(overlapX && overlapY).toBe(false);
+			}
+		}
 	});
 
 	it('sépare les étiquettes de deux fonctions qui partagent une asymptote', () => {

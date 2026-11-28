@@ -8,11 +8,11 @@
 import { describe, it, expect } from 'vitest';
 import { Atelier } from '../atelier.svelte';
 import { AtelierFigure, syncFigure } from '../figure-sync';
-import type { Figure } from '$lib/geometry-core/graph/figure';
-import type { GeoElement } from '$lib/geometry-core/types/elements';
-import { geoToNumber } from '$lib/geometry-core/compute/to-number';
-import { exportToSVG } from '$lib/geometry-core/rendering/export-svg';
-import { findElementNear } from '$lib/geometry-core/interaction/hit-testing';
+import type { Figure } from '#lib/geometry-core/graph/figure.ts';
+import type { GeoElement } from '#lib/geometry-core/types/elements.ts';
+import { geoToNumber } from '#lib/geometry-core/compute/to-number.ts';
+import { exportToSVG } from '#lib/geometry-core/rendering/export-svg.ts';
+import { findElementNear } from '#lib/geometry-core/interaction/hit-testing.ts';
 
 // =============================================================================
 // Outils

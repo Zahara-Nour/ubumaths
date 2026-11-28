@@ -52,23 +52,23 @@
 -->
 
 <script lang="ts">
-	import { Button } from '$lib/components/ui/button';
-	import { Textarea } from '$lib/components/ui/textarea';
-	import { Input } from '$lib/components/ui/input';
-	import * as Avatar from '$lib/components/ui/avatar';
-	import { toaster } from '$lib/stores/toaster.svelte';
-	import { personalities, type PersonalityKey } from '$lib/config/personalities';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import { Textarea } from '#lib/components/ui/textarea/index.ts';
+	import { Input } from '#lib/components/ui/input/index.ts';
+	import * as Avatar from '#lib/components/ui/avatar/index.ts';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
+	import { personalities, type PersonalityKey } from '#lib/config/personalities.ts';
 	import { Trash2, Send, User, Paperclip, X, Link as LinkIcon } from '@lucide/svelte';
-	import pereUbuImage from '$lib/assets/images/avatar-pereubu.png';
-	import { MarkdownRenderer } from '$lib/components/markdown';
-	import { convertLegacyLatexToMarkdown } from '$lib/utils/latex-syntax-adapter';
-	import { buildChatRequestBody } from '$lib/utils/chat-request';
+	import pereUbuImage from '#lib/assets/images/avatar-pereubu.png';
+	import { MarkdownRenderer } from '#lib/components/markdown/index.ts';
+	import { convertLegacyLatexToMarkdown } from '#lib/utils/latex-syntax-adapter.ts';
+	import { buildChatRequestBody } from '#lib/utils/chat-request.ts';
 	import {
 		clearChatHistory,
 		forgetOtherChatHistories,
 		loadChatHistory,
 		saveChatHistory
-	} from '$lib/utils/chat-history';
+	} from '#lib/utils/chat-history.ts';
 
 	interface TextContent {
 		type: 'text';

@@ -5,10 +5,14 @@ couvre:
   - src/lib/validation/series.ts
   - src/lib/srs/generator.ts
   - src/lib/utils/answer-validator.ts
+  - src/lib/utils/grade-badge.ts
+  - src/lib/utils/grades.ts
+  - src/lib/types/grades.ts
+  - src/lib/server/validation/grades.ts
   - src/lib/mathAST/cosmetic-transforms.ts
   - 'src/lib/questions/review/**'
   - 'src/lib/types/{question-display,question-template}.ts'
-  - 'src/lib/server/{evaluation-attempts,questions-bulk-status,template-publication,template-fact-sheet,grading-budget,corrected-detail,template-review,point-bounds,classification-node-error,classification-nodes}.ts'
+  - 'src/lib/server/{evaluation-attempts,questions-bulk-status,template-publication,template-fact-sheet,grading-budget,corrected-detail,template-review,point-bounds,classification-node-error,classification-nodes,question-template-columns}.ts'
   - 'src/routes/(protected)/dev/modeles/**'
   - src/lib/components/MathKeyboardClose.svelte
   - 'src/lib/components/dev/**'
@@ -18,9 +22,10 @@ couvre:
   - 'src/lib/components/questions/**'
   - 'src/lib/components/question-inputs/**'
   - src/lib/components/markdown/nodes/BlankInput.svelte
-  - 'src/lib/components/{QuestionTemplateForm,SharedFieldsEditor,ChoiceCaseEditor}.svelte'
-  - 'src/lib/components/{QuestionTemplateCard,QuestionPreview*,QuestionCategoryFields,QuestionTemplateHelpDialogs,CategorySelector,CartFloatingButton,CartQuestionCard,DisplayOptionsEditor,ValidationOptionsEditor,PrecisionEditor,VariableEditor,AnswerEditor,CourseQuestionToggle}.svelte'
+  - 'src/lib/components/{QuestionTemplateForm,SharedFieldsEditor,ChoiceCaseEditor,JsonEditor}.svelte'
+  - 'src/lib/components/{QuestionTemplateCard,QuestionPreview*,QuestionCategoryFields,QuestionTemplateHelpDialogs,CategorySelector,CartQuestionCard,DisplayOptionsEditor,ValidationOptionsEditor,PrecisionEditor,VariableEditor,AnswerEditor,ExpectedErrorsEditor,CourseQuestionToggle}.svelte'
   - 'src/lib/stores/{questionCart,questionCategories,questionTemplates}.svelte.ts'
+  - 'src/lib/components/series/{MySeriesPreview,MySeriesDock}.svelte'
   - src/lib/components/exercises/VariationEditor.svelte
   - 'src/routes/api/questions/**'
   - 'src/routes/(protected)/dashboard/admin/questions/**'
@@ -32,14 +37,14 @@ couvre:
 
 > Première doc de référence du module ; le savoir était éparpillé dans les journaux de
 > [`archive/wip/`](../archive/wip/) (cités ici pour le **pourquoi**, jamais pour le code).
-> Vérifié contre le code le 2026-10-11 ; étape 4 des cases à unité le 2026-10-21, attendu en h-min-s et dans l'unité imposée le 2026-11-03 ; QCM et vecteurs le 2026-10-22 ; QCM retiré (case choix seule) le 2026-10-28 ; espaces de groupement le 2026-10-23 ; fiche du modèle le 2026-10-23 ; forme de la réponse finale demandée (`finalForm`) le 2026-10-24 ; étapes des équations écrites comme la réponse (lot 5f-4) le 2026-10-25 ; case d'un bloc `operation le 2026-10-25 (multiplication à remplir, PR 2b, et division à remplir, PR 3b, le même jour) ; étapes des inéquations (Q50) le 2026-10-25 ; case « figure » (bloc `construction, moteur) le 2026-10-25, symétrique le 2026-11-02, instruments sur papier uni le 2026-11-02, droite à construire (médiatrice) et milieu sur papier uni le 2026-11-02, bissectrice le 2026-11-06, cercle circonscrit le 2026-11-02, cercle de centre donné le 2026-11-08, triangle de trois longueurs, report et 4e sommet le 2026-11-03, point construit de proche en proche le 2026-11-03, angle à mesurer (`mesure AOB`) le 2026-11-03, rapporteur déjà posé le 2026-11-04, triangle par un côté et deux angles ou deux côtés et l'angle compris (côté d'angle) le 2026-11-03, triangle rectangle (équerre, quadrillage) le 2026-11-08, segment de longueur donnée à la règle graduée le 2026-11-08, carré et rectangle cotés sur papier uni le 2026-11-09 ; copie corrigée d'une case « figure » le 2026-10-25 ; figure construite à chaque tirage (`checkTemplate`) le 2026-10-26 ; case d'un bloc `collection à construire le 2026-10-26 ; d'un bloc `monnaie à construire le 2026-10-26 ; figure de travail (bloc ``figure-de-travail, `graded-part.ts`) le 2026-10-26 ; droite à placer (``line, `placer:`) le 2026-10-26, à plusieurs points le 2026-10-27 ; horloge à placer (``horloge, `placer:`) le 2026-10-27, trotteuse le 2026-11-01 ; diagramme en barres à construire (``barres, `placer:`) le 2026-10-28, réponse d'une monnaie à centimes (`3,45`) le 2026-11-01, échelle à choisir le 2026-10-29 ; étiquettes à ranger (`ranger) le 2026-10-28 ; repère à placer (``courbe, `placer:`) le 2026-11-01, droite à tracer (``courbe, `tracer:`) le 2026-11-02, vecteur à tracer (``courbe, `tracer: vecteur`) le 2026-11-03, somme à tracer (`tracer: vecteur u + v`) le 2026-11-08 ; cercle trigonométrique à placer (``trig, `placer:`) le 2026-11-02 ; droite à représenter (``line, `representer:`) le 2026-11-03, réponse incomplète bloquée le 2026-11-03 ; assemblage de cubes dans un choix (`--espace-taille`) le 2026-10-30 ; figure à colorier (`partage, `colorier:`) le 2026-10-29, assemblage de cubes à geste (`cubes, `dessiner:`/`retrouver:`) le 2026-10-30, patron à geste (`patron, `designer:`/`completer:`) le 2026-10-30, solide à geste (`tracer: vecteur`) le 2026-11-03, plusieurs figures (`unites:`, attendue `7/4`) le 2026-10-29 ; texte d'aide des cases à écrire le 2026-10-26 ; boîte à moustaches à construire (``boite-a-moustaches, `placer:`) le 2026-11-01 ; tableau de signes à compléter (``variation à `?` : cases, juge, masquage) le 2026-11-03, sa saisie le 2026-11-03, son corrigé (ligne `sign-table`) le 2026-11-03 ; tableau de variations à compléter (valeur et flèche d'une ligne `variation:`, chantier `variations-a-completer`) le 2026-11-08.
+> Vérifié contre le code le 2026-10-11 ; case programme Python (bloc python-a-ecrire, outil 49) le 2026-11-28 ; bloc yohaku (outil n° 56) le 2026-11-28 ; recherche du catalogue Automaths le 2026-11-18, refaite le 2026-11-26 ; « Ma série » du catalogue le 2026-11-19 ; ligne des niveaux et des variations des tuiles le 2026-11-26 ; texte à trous (``trous) le 2026-11-14 ; étape 4 des cases à unité le 2026-10-21, attendu en h-min-s et dans l'unité imposée le 2026-11-03 ; QCM et vecteurs le 2026-10-22 ; QCM retiré (case choix seule) le 2026-10-28 ; espaces de groupement le 2026-10-23 ; fiche du modèle le 2026-10-23 ; forme de la réponse finale demandée (`finalForm`) le 2026-10-24 ; étapes des équations écrites comme la réponse (lot 5f-4) le 2026-10-25 ; case d'un bloc `operation le 2026-10-25 (multiplication à remplir, PR 2b, et division à remplir, PR 3b, le même jour) ; étapes des inéquations (Q50) le 2026-10-25 ; case « figure » (bloc `construction, moteur) le 2026-10-25, symétrique le 2026-11-02, instruments sur papier uni le 2026-11-02, droite à construire (médiatrice) et milieu sur papier uni le 2026-11-02, bissectrice le 2026-11-06, cercle circonscrit le 2026-11-02, cercle de centre donné le 2026-11-08, triangle de trois longueurs, report et 4e sommet le 2026-11-03, point construit de proche en proche le 2026-11-03, angle à mesurer (`mesure AOB`) le 2026-11-03, rapporteur déjà posé le 2026-11-04, triangle par un côté et deux angles ou deux côtés et l'angle compris (côté d'angle) le 2026-11-03, triangle rectangle (équerre, quadrillage) le 2026-11-08, segment de longueur donnée à la règle graduée le 2026-11-08, segment à mesurer (`mesure AB`) le 2026-11-12, carré et rectangle cotés sur papier uni le 2026-11-09 ; copie corrigée d'une case « figure » le 2026-10-25 ; figure construite à chaque tirage (`checkTemplate`) le 2026-10-26 ; case d'un bloc `collection à construire le 2026-10-26 ; d'un bloc `monnaie à construire le 2026-10-26 ; figure de travail (bloc ``figure-de-travail, `graded-part.ts`) le 2026-10-26 ; droite à placer (``line, `placer:`) le 2026-10-26, à plusieurs points le 2026-10-27 ; horloge à placer (``horloge, `placer:`) le 2026-10-27, trotteuse le 2026-11-01 ; diagramme en barres à construire (``barres, `placer:`) le 2026-10-28, réponse d'une monnaie à centimes (`3,45`) le 2026-11-01, échelle à choisir le 2026-10-29 ; étiquettes à ranger (`ranger) le 2026-10-28 ; repère à placer (``courbe, `placer:`) le 2026-11-01, droite à tracer (``courbe, `tracer:`) le 2026-11-02, vecteur à tracer (``courbe, `tracer: vecteur`) le 2026-11-03, somme à tracer (`tracer: vecteur u + v`) le 2026-11-08 ; cercle trigonométrique à placer (``trig, `placer:`) le 2026-11-02 ; droite à représenter (``line, `representer:`) le 2026-11-03, réponse incomplète bloquée le 2026-11-03 ; droite à graduer (``line, `graduer:`) le 2026-11-28 ; assemblage de cubes dans un choix (`--espace-taille`) le 2026-10-30 ; figure à colorier (`partage, `colorier:`) le 2026-10-29, assemblage de cubes à geste (`cubes, `dessiner:`/`retrouver:`) le 2026-10-30, patron à geste (`patron, `designer:`/`completer:`) le 2026-10-30, solide à geste (`tracer: vecteur`) le 2026-11-03, plusieurs figures (`unites:`, attendue `7/4`) le 2026-10-29 ; texte d'aide des cases à écrire le 2026-10-26 ; boîte à moustaches à construire (``boite-a-moustaches, `placer:`) le 2026-11-01 ; tableau de signes à compléter (``variation à `?`: cases, juge, masquage) le 2026-11-03, sa saisie le 2026-11-03, son corrigé (ligne`sign-table`) le 2026-11-03 ; tableau de variations à compléter (valeur et flèche d'une ligne `variation:`, chantier `variations-a-completer`) le 2026-11-08 ; `series-trace.ts` le 2026-11-11 ; fin de question dans la copie d'un contrôle (`submission.ts`) le 2026-11-11 ; bloc associer le 2026-11-14, courbe dans un élément le 2026-11-14 ; programme tortue (carte, corrigé) le 2026-11-14, nombre maximal de blocs (`blocs:`) le 2026-11-15, son niveau (`niveau:`, 4e / 3e) le 2026-11-16 ; durée trop courte dans le panier et l'éditeur de série le 2026-11-14, durée observée le 2026-11-15 ; programme de calcul (``calcul, PR 5a) le 2026-11-14, son corrigé (PR 5b) le 2026-11-14, son niveau (`niveau:`, 4e / 3e) le 2026-11-16 ; robot à produire (``robot, `produire: oui`) le 2026-11-15, sa carte et son corrigé (PR 1b) le 2026-11-15 ; graine de série d'un lien (`memes-nombres`) le 2026-11-19 ; avertissement « N questions différentes » du panier le 2026-11-21 ; choix des variations dans l'éditeur de série le 2026-11-21 ; limite cachée d'un tableau de variations (juge des infinis, erreurs prévues, QCM) le 2026-11-23 ; labyrinthe (`labyrinthe) le 2026-11-24 ; case choix à côté d'un tableau à compléter à variables (outil 63) le 2026-11-28 ; construire l'escalier (``courbe, `construire N`, outil 48) le 2026-11-28 ; figure composée (`composite.ts`, outil 45) le 2026-11-28.
 
 ## À quoi ça sert
 
 Un professeur (ou l'admin) rédige des **modèles de question** paramétrés ; le moteur en tire des
 **instances** (une par élève, par graine), les affiche, juge la réponse de l'élève (valeur **et**
 écriture), puis montre une **correction**. Les instances alimentent les **séries** (Automaths, en
-classe, flash-cards, entraînement, course aux nombres, évaluation), les paquets **SRS** et les
+classe, flash-cards, contrôle blanc, course aux nombres, évaluation), les paquets **SRS** et les
 **fiches**.
 
 Termes ([CONTEXT.md](../../CONTEXT.md), sections « Les questions » et « Les usages des questions ») :
@@ -56,50 +61,51 @@ le SRS ([srs.md](srs.md)).
 
 ### `src/lib/questions/` — le moteur des modèles (208 fichiers suivis, 118 fichiers de test)
 
-| Fichier / dossier                                                | Rôle                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
-| ---------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `src/lib/questions/types.ts`                                     | **Le contrat** : `QuestionTemplate`, `QuestionVariation`, `SharedVariationDefaults`, `TemplateBlank`, `BlankDefaults`, `InstanceBlank`, `QuestionInstance`, `ValidationStatus`, `ConstraintId`, `RequiredForm`, `ValidationRule`, `GeneratedSteps`, `TestSpec`. Aussi `getQuestionType`, `isCourseCard`, `isCourseQuestion`, `mapDbTemplateToForm`.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
-| `src/lib/questions/template-schema.ts`                           | Schéma Zod **strict** `questionTemplateSchema` (éditeur JSON, `checkTemplate`).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
-| `src/lib/questions/index.ts`                                     | API publique (`generateInstance`, `resolveVariables`, `shuffleChoices`, `validateTemplate`, ré-export de `$lib/math`).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
-| `generator/`                                                     | Génération : `instance-generator.ts` (`generateInstance`), `variable-resolver.ts`, `condition-evaluator.ts`, `variable-conditionals.ts`, `content-resolver.ts`, `assign-blank-indices.ts`, `choice-shuffler.ts`, `correction-resolver.ts`, `correction-generator.ts` (`generateCorrection`, mode B), `test-instance-builder.ts` (variables fixées, pour les specs).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
-| `validators/`                                                    | Structure d'un modèle : `template-validator.ts` (`validateTemplate`), `choice-answer-count.ts` (`choiceAnswerCountErrors`), `negative-substitution.ts` (`findUnparenthesizedNegatives`, avertissement).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
-| `intervals/`, `equations/`, `vectors/`, `matrices/`, `calculus/` | Une chaîne de jugement par **nature de case** (`AnswerKind`) : `interval-answer.ts`, `equation-answer.ts`, `vector-answer.ts`, `matrix-answer.ts`, `primitive-answer.ts` + `differential-equation-answer.ts`. Les `keyboard-*.ts` sont les claviers MathLive de ces cases.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
-| `units/`                                                         | Correction des cases à unité : `parser.ts`, `validator.ts` (`validateQuantityAnswer`), `quantity-comparison.ts` (`compareQuantities`), messages (`feedback.ts`), `student-input.ts`, calcul écrit par l'élève (`student-calculation.ts`), durées composées (`composite-duration.ts`, attendu en h-min-s de `{{eval}}` lu en une durée : `singleExpectedDuration`, 2026-11-03), touches du clavier par grandeur (`keyboard-units.ts`, octets compris depuis le 2026-10-13) — contrat : [grandeurs.md](grandeurs.md).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
-| `combinatorics/`                                                 | Clavier du dénombrement ; la notation non calculée est jugée par `combinatorial-notation.ts`.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
-| `parser/color-parser.ts`, `colors.ts`                            | Couleurs dans les énoncés (palettes ; `colors.ts` sert aussi l'atelier).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
-| `src/lib/questions/required-form-validator.ts`                   | `requiredForm` : `checkRequiredForm`, `requiredFormVerdict` (`ok` / `acceptable` / `violated`), `REQUIRED_FORM_FEEDBACK`. Formes complexes : `complex-forms.ts` (base de `re^{iθ}` : la constante `euler()` ; `i` : le nœud `complex(0, 1)`, lettre comme `\imaginaryI`).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
-| `src/lib/questions/validation-rule-evaluator.ts`                 | `validationRules` : `evaluateRule`, `evaluateRules`, `createEvaluationContext`.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
-| `src/lib/questions/constraint-validators.ts`                     | Ancien jeu de contrôles cosmétiques sur le LaTeX brut. **En service : `checkUnit` et `checkReducedFractions` seulement** (les anciens contrôles, morts, ont été retirés ; le jugement passe par `cosmetic-transforms.ts`).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
-| `src/lib/questions/feedback.ts`, `constraint-constants.ts`       | Messages français des contraintes (`CONSTRAINT_FEEDBACK`), libellés et modes proposés à l'éditeur (`CONSTRAINT_IDS`, `CONSTRAINT_LABELS`). Ceux des règles de superflu sont tirés de leur fiche (`mathAST/superflu/rules.ts`).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
-| Options de case                                                  | `rounding.ts` (arrondi), `rules-suffice.ts` (`rulesDecide`), `angle-modulo.ts`, `answer-variable-prefix.ts`, `answer-degree-suffix.ts`, `answer-assumptions.ts` (ADR 0012), `generic-functions.ts` (`templateGenericFunctions`), `clean-coefficients.ts` (`cleanCoefficientsAst`), `capital-pairs.ts` (sens de `AB`), `formula-reading.ts` (`readingOf`), `figure-name-check.ts` (garde auteur).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
-| `graded-part.ts`                                                 | `gradedPart` : les cases **notées** d'une question — les figures de travail (bloc ```figure-de-travail) retirées, avec leur valeur, avant toute notation (serveur et élève) ; `spread` remet un résultat par case notée à la taille de l'instance ; `isWorkFigureBlank`.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
-| `work-figure-editor.ts`                                          | `readWorkFigureCases` : les figures de travail de l'énoncé (outil, erreurs) pour la carte en lecture seule de l'éditeur.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
-| `construction/`                                                  | Case « figure » (bloc ```figure-a-completer) : `answer.ts` (`parseConstructionAnswer`, réponse bornée), `judge.ts` (`judgeConstruction`, positions, tout-ou-rien), `polygon.ts` (`judgePolygon`, carré / rectangle sur quadrillage), `ruled-polygon.ts` (`judgeRuledPolygon`, carré / rectangle cotés sur papier uni), `symmetry.ts` (`judgeSymmetry`, symétrique sur quadrillage ou papier uni), `point.ts` (`judgePoints`, points à placer), `line.ts` (`judgeLines`, droites à construire), `circle.ts` (`judgeCircles`, cercles à construire), `triangle.ts` (`judgeTriangle`, triangle de trois longueurs, ou par des angles donnés, ou rectangle), `segment-length.ts` (`judgeSegmentLength`, segment de longueur donnée à la règle graduée), `instruments.ts` (équerre, compas, report, intersections, aimantation des instruments : `snapInstrument` ; graduations de la règle graduée : `rulerGraduation`, `rulerGraduationNear`), `drawing.ts` (tracé de l'écran, `snapToGrid`, `snapWithInstruments`, `solutionLines`), registre des positions `positions.ts` (`constructionPositions`, `constructionShapes`) et son inscription `positions-setup.ts` (geometry-core). |
-| Sécurité de la réponse                                           | `answer-complexity.ts` (`isAnswerTooComplex`, garde Q58), `student-answer-safety.ts` (réponse rendue chez le prof).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
-| Correction                                                       | `expected-result.ts` (`buildExpectedResult`, `fillMarkdown`), `expected-result-markdown.ts`, `correction-card-verdict.ts`, `correction-detail.ts` (`splitCorrectionDetail`, `detailedCorrection`, `correctionForPrint` pour les fiches PDF, ADR 0017), `correction-placeholders.ts`, `grade-level-to-school-level.ts` (`gradeLevelToSchoolLevel`).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
-| Case choix                                                       | `choice-case.ts` (réponse « 0;2 », positions affichées → indices d'origine), `choices.ts` (`statusFromChoices`, `choiceLetter`).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
-| Cours                                                            | `course-card.ts` (`excludeCourseCards`), `course-question.ts`.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
-| Séries et évaluations                                            | `series-items.ts` (`drawSeriesQuestions`, `buildSeriesItems`), `grading.ts` (`gradeQuestion`, `gradeOutOf20`), `public-question.ts` (`toPublicQuestion`, `toDisplayInstance`), `submission.ts`.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
-| Catalogue, éditeur, publication                                  | `catalogue.ts`, `classification-tree.ts` (chemin d'un nœud, cascade du sélecteur, filtre de liste), `cart-preview.ts`, `form-options.ts`, `template-put-body.ts`, `bulk-status.ts`, `test-spec-runner.ts` (`runAllTestSpecs`), `constants.ts` (bucket des images), `template-fact-sheet.ts` (fiche du modèle : types, réglages en mots, chemin dans l'arbre).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| Fichier / dossier                                                                              | Rôle                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| ---------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `src/lib/questions/types.ts`                                                                   | **Le contrat** : `QuestionTemplate`, `QuestionVariation`, `SharedVariationDefaults`, `TemplateBlank`, `BlankDefaults`, `InstanceBlank`, `QuestionInstance`, `ValidationStatus`, `ConstraintId`, `RequiredForm`, `ValidationRule`, `GeneratedSteps`, `TestSpec`. Aussi `getQuestionType`, `isCourseCard`, `isCourseQuestion`, `mapDbTemplateToForm`.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
+| `src/lib/questions/template-schema.ts`                                                         | Schéma Zod **strict** `questionTemplateSchema` (éditeur JSON, `checkTemplate`).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| `src/lib/questions/index.ts`                                                                   | API publique (`generateInstance`, `resolveVariables`, `shuffleChoices`, `validateTemplate`, ré-export de `#lib/math/index.ts`).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| `generator/`                                                                                   | Génération : `instance-generator.ts` (`generateInstance`), `variable-resolver.ts`, `condition-evaluator.ts`, `variable-conditionals.ts`, `content-resolver.ts`, `assign-blank-indices.ts`, `choice-shuffler.ts`, `correction-resolver.ts`, `correction-generator.ts` (`generateCorrection`, mode B), `test-instance-builder.ts` (variables fixées, pour les specs).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
+| `validators/`                                                                                  | Structure d'un modèle : `template-validator.ts` (`validateTemplate`), `choice-answer-count.ts` (`choiceAnswerCountErrors`), `negative-substitution.ts` (`findUnparenthesizedNegatives`, avertissement).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
+| `intervals/`, `equations/`, `vectors/`, `matrices/`, `calculus/`, `resolution/`, `parametric/` | Une chaîne de jugement par **nature de case** (`AnswerKind`) : `interval-answer.ts`, `equation-answer.ts`, `vector-answer.ts`, `matrix-answer.ts`, `primitive-answer.ts` + `differential-equation-answer.ts`, `resolution-answer.ts` (équation résolue ligne par ligne ; `resolution-lines.ts` : lignes ↔ valeur de la case), `parametric/parametric-line-answer.ts` (droite paramétrique de l'espace ; `parametric-lines.ts` : lignes ↔ valeur de la case). Les `keyboard-*.ts` sont les claviers MathLive de ces cases.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| `units/`                                                                                       | Correction des cases à unité : `parser.ts`, `validator.ts` (`validateQuantityAnswer`), `quantity-comparison.ts` (`compareQuantities`), messages (`feedback.ts`), `student-input.ts`, calcul écrit par l'élève (`student-calculation.ts`), durées composées (`composite-duration.ts`, attendu en h-min-s de `{{eval}}` lu en une durée : `singleExpectedDuration`, 2026-11-03), touches du clavier par grandeur (`keyboard-units.ts`, octets compris depuis le 2026-10-13) — contrat : [grandeurs.md](grandeurs.md).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
+| `combinatorics/`                                                                               | Clavier du dénombrement ; la notation non calculée est jugée par `combinatorial-notation.ts`.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+| `parser/color-parser.ts`, `colors.ts`                                                          | Couleurs dans les énoncés (palettes ; `colors.ts` sert aussi l'atelier).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| `src/lib/questions/required-form-validator.ts`                                                 | `requiredForm` : `checkRequiredForm`, `requiredFormVerdict` (`ok` / `acceptable` / `violated`), `REQUIRED_FORM_FEEDBACK`. Formes complexes : `complex-forms.ts` (base de `re^{iθ}` : la constante `euler()` ; `i` : le nœud `complex(0, 1)`, lettre comme `\imaginaryI`).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| `src/lib/questions/validation-rule-evaluator.ts`                                               | `validationRules` : `evaluateRule`, `evaluateRules`, `createEvaluationContext`.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| `src/lib/questions/constraint-validators.ts`                                                   | Ancien jeu de contrôles cosmétiques sur le LaTeX brut. **En service : `checkUnit` et `checkReducedFractions` seulement** (les anciens contrôles, morts, ont été retirés ; le jugement passe par `cosmetic-transforms.ts`).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| `src/lib/questions/feedback.ts`, `constraint-constants.ts`                                     | Messages français des contraintes (`CONSTRAINT_FEEDBACK`), libellés et modes proposés à l'éditeur (`CONSTRAINT_IDS`, `CONSTRAINT_LABELS`). Ceux des règles de superflu sont tirés de leur fiche (`mathAST/superflu/rules.ts`).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| Options de case                                                                                | `rounding.ts` (arrondi), `rules-suffice.ts` (`rulesDecide`), `angle-modulo.ts`, `answer-variable-prefix.ts`, `answer-degree-suffix.ts`, `answer-assumptions.ts` (ADR 0012), `generic-functions.ts` (`templateGenericFunctions`), `clean-coefficients.ts` (`cleanCoefficientsAst`), `capital-pairs.ts` (sens de `AB`), `formula-reading.ts` (`readingOf`), `figure-name-check.ts` (garde auteur).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| `graded-part.ts`                                                                               | `gradedPart` : les cases **notées** d'une question — les figures de travail (bloc ```figure-de-travail) retirées, avec leur valeur, avant toute notation (serveur et élève) ; `spread` remet un résultat par case notée à la taille de l'instance ; `isWorkFigureBlank`.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| `work-figure-editor.ts`                                                                        | `readWorkFigureCases` : les figures de travail de l'énoncé (outil, erreurs) pour la carte en lecture seule de l'éditeur.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| `construction/`                                                                                | Case « figure » (bloc ```figure-a-completer) : `answer.ts` (`parseConstructionAnswer`, réponse bornée), `judge.ts` (`judgeConstruction`, positions, tout-ou-rien), `polygon.ts` (`judgePolygon`, carré / rectangle sur quadrillage), `ruled-polygon.ts` (`judgeRuledPolygon`, carré / rectangle cotés sur papier uni), `symmetry.ts` (`judgeSymmetry`, symétrique sur quadrillage ou papier uni), `point.ts` (`judgePoints`, points à placer), `line.ts` (`judgeLines`, droites à construire), `circle.ts` (`judgeCircles`, cercles à construire), `triangle.ts` (`judgeTriangle`, triangle de trois longueurs, ou par des angles donnés, ou rectangle), `segment-length.ts` (`judgeSegmentLength`, segment de longueur donnée à la règle graduée), `composite.ts` (`judgeComposite`, figure composée : une étape par `verifier:`, outil n° 45), `segment-measure.ts` (`judgeSegmentMeasure`, segment à mesurer à la règle graduée), `instruments.ts` (équerre, compas, report, intersections, aimantation des instruments : `snapInstrument` ; graduations de la règle graduée : `rulerGraduation`, `rulerGraduationNear`), `drawing.ts` (tracé de l'écran, `snapToGrid`, `snapWithInstruments`, `solutionLines`), registre des positions `positions.ts` (`constructionPositions`, `constructionShapes`) et son inscription `positions-setup.ts` (geometry-core). |
+| Sécurité de la réponse                                                                         | `answer-complexity.ts` (`isAnswerTooComplex`, garde Q58), `student-answer-safety.ts` (réponse rendue chez le prof).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
+| Correction                                                                                     | `expected-result.ts` (`buildExpectedResult`, `fillMarkdown`), `expected-result-markdown.ts`, `correction-card-verdict.ts`, `correction-detail.ts` (`splitCorrectionDetail`, `detailedCorrection`, `correctionForPrint` pour les fiches PDF, ADR 0017), `correction-placeholders.ts`, `grade-level-to-school-level.ts` (`gradeLevelToSchoolLevel`).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| Case choix                                                                                     | `choice-case.ts` (réponse « 0;2 », positions affichées → indices d'origine), `choices.ts` (`statusFromChoices`, `choiceLetter`).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| Cours                                                                                          | `course-card.ts` (`excludeCourseCards`, `seriesFormExcludesCourseCards`), `course-question.ts`.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| Case programme Python                                                                          | `python/` (outil 49) : `python-answer.ts` (valeur de la case = code + verdict, `python1:` + JSON ; attendu `python-attendu1:` + JSON), `judge-python-case.ts` (`judgePythonCase`, dans le navigateur), `python-case.ts` (`hasPythonCase`, `excludePythonCases`).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| Séries et évaluations                                                                          | `series-items.ts` (`drawSeriesQuestions`, `buildSeriesItems`), `series-draw.ts` (variations réparties, doublons refusés, `variationOfSeed`, `distinctQuestionCount`, `distinctLimit`), `grading.ts` (`gradeQuestion`, `gradeOutOf20`), `public-question.ts` (`toPublicQuestion`, `toDisplayInstance`), `submission.ts` (copie d'un contrôle : réponses, durée et fin de chaque question, même vide), `series-trace.ts` (`buildSeriesTrace`, `createTraceRecorder` : une trace par question d'une série libre, ADR 0038 — voir [evaluations.md](evaluations.md)).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| Catalogue, éditeur, publication                                                                | `catalogue.ts`, `catalogue-search.ts` (recherche du catalogue Automaths), `series-summary.ts` (nombre et durée de « Ma série »), `classification-tree.ts` (chemin d'un nœud, cascade du sélecteur, filtre de liste), `cart-preview.ts`, `form-options.ts`, `template-put-body.ts`, `bulk-status.ts`, `test-spec-runner.ts` (`runAllTestSpecs`), `constants.ts` (bucket des images), `template-fact-sheet.ts` (fiche du modèle : types, réglages en mots, chemin dans l'arbre).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
 
 ### Hors du dossier
 
-| Fichier                                                                             | Rôle                                                                                                                                                       |
-| ----------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `src/lib/utils/answer-validator.ts`                                                 | **Le juge** : `validateAnswer`, `validateAnswerDetailed`, `validateBlanks`, `validateChoice`, `isBlankValueCorrect` (≈ 2 500 lignes).                      |
-| `src/lib/mathAST/cosmetic-transforms.ts`                                            | Contrôle de forme unifié `checkForm` (importé sous le nom `checkFormUnified`) et `cosmeticViolations` : les contraintes cosmétiques réelles.               |
-| `src/lib/math/index.ts`                                                             | `areEquivalent`, `evaluateExpression` : le décideur d'équivalence → [convention-equivalence](mathast/convention-equivalence.md).                           |
-| `src/lib/mathAST/pedagogical-*/`                                                    | Étapes de correction générées (mode B) ; stratégies par niveau `STRATEGIES`, `STRATEGIES_QUADRATIC`, `STRATEGIES_RATIONAL` (`pedagogical-solve/types.ts`). |
-| `src/lib/types/question-display.ts`, `src/lib/types/question-template.ts`           | `ValidationResult` ; `toQuestionTemplate` (ligne de base → modèle).                                                                                        |
-| `src/lib/server/validation/questions.ts`                                            | Zod des routes : `createQuestionTemplateSchema`, `updateQuestionTemplateSchema`, `bulkTemplateStatusSchema`, `generateQuestionSchema`.                     |
-| `src/lib/questions/review/check-template.ts`                                        | `checkTemplate` : le contrôle complet (structure, schéma strict, specs, 50 tirages par variation, figure de chaque case « figure » construite).            |
-| `src/lib/server/template-publication.ts`                                            | `templatePublicationErrors` : **le** contrôle de publication, partagé par le `PUT` d'un modèle et la publication par lot.                                  |
-| `src/lib/server/questions-bulk-status.ts`                                           | Publication par lot.                                                                                                                                       |
-| `src/lib/server/evaluation-attempts.ts`, `grading-budget.ts`, `corrected-detail.ts` | Évaluations notées, corrigées par le serveur (ADR 0015).                                                                                                   |
+| Fichier                                                                             | Rôle                                                                                                                                                                 |
+| ----------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `src/lib/utils/answer-validator.ts`                                                 | **Le juge** : `validateAnswer`, `validateAnswerDetailed`, `validateBlanks`, `validateChoice`, `isBlankValueCorrect` (≈ 2 500 lignes).                                |
+| `src/lib/mathAST/cosmetic-transforms.ts`                                            | Contrôle de forme unifié `checkForm` (importé sous le nom `checkFormUnified`) et `cosmeticViolations` : les contraintes cosmétiques réelles.                         |
+| `src/lib/math/index.ts`                                                             | `areEquivalent`, `evaluateExpression` : le décideur d'équivalence → [convention-equivalence](mathast/convention-equivalence.md).                                     |
+| `src/lib/mathAST/pedagogical-*/`                                                    | Étapes de correction générées (mode B) ; stratégies par niveau `STRATEGIES`, `STRATEGIES_QUADRATIC`, `STRATEGIES_RATIONAL` (`pedagogical-solve/types.ts`).           |
+| `src/lib/types/question-display.ts`, `src/lib/types/question-template.ts`           | `ValidationResult` ; `toQuestionTemplate` (ligne de base → modèle).                                                                                                  |
+| `src/lib/server/validation/questions.ts`                                            | Zod des routes : `createQuestionTemplateSchema`, `updateQuestionTemplateSchema`, `bulkTemplateStatusSchema`, `generateQuestionSchema`.                               |
+| `src/lib/questions/review/check-template.ts`                                        | `checkTemplate` : le contrôle complet (structure, schéma strict, specs, 50 tirages par variation, figure de chaque case « figure » construite, aucune variable `e`). |
+| `src/lib/server/template-publication.ts`                                            | `templatePublicationErrors` : **le** contrôle de publication, partagé par le `PUT` d'un modèle et la publication par lot.                                            |
+| `src/lib/server/questions-bulk-status.ts`                                           | Publication par lot.                                                                                                                                                 |
+| `src/lib/server/evaluation-attempts.ts`, `grading-budget.ts`, `corrected-detail.ts` | Évaluations notées, corrigées par le serveur (ADR 0015).                                                                                                             |
 
 ### `src/lib/exercises/` — exercices de fiche (autre moteur)
 
-Les **exercices** (table `exercises`) sont les exercices rédigés des fiches PDF, pas des modèles
+Les **exercices** (table `exercises`, contenu dans `exercise_versions`, ADR 0044) sont les exercices rédigés des fiches PDF, pas des modèles
 de question. Ils ont leur propre générateur (`src/lib/exercises/generator/instance-generator.ts`,
 syntaxe `{{}}` d'ubumark, résolue dans l'énoncé, la correction et les réponses `answers_md`), leur export Typst (`typst/exercise-typst-generator.ts`), leur import /
 export validé par Zod (`validation.ts`, `markdown-frontmatter.ts` ; le format v2.0 porte aussi
@@ -121,7 +127,8 @@ rend un exercice privé écrit `search_indexed: false` dans la même requête
 Seul `series.ts` concerne les questions : composition d'une série (`seriesItemSchema`,
 `seriesItemsSchema`, `savedSeriesItemsSchema`, bornes `MAX_SERIES_ITEMS`, `MAX_ITEM_QUANTITY`,
 `MAX_SERIES_QUESTIONS`, `MAX_QUESTION_DELAY_SECONDS`), relue aussi pour un lien
-`/automaths/panier?modeles=…` (`buildSeriesLink`). L'ancienne forme (catégories) n'est plus relue
+`/automaths/panier?modeles=…` (`buildSeriesLink`, qui porte aussi la forme et, pour « Mêmes nombres
+pour tous », la graine de série `SERIES_SEED_PARAM`). L'ancienne forme (catégories) n'est plus relue
 ([evaluations.md § Les formes d'une série](evaluations.md#les-formes-dune-série)).
 `shop.ts` et `marketplace.ts` relèvent de [jeux-et-economie](jeux-et-economie.md).
 
@@ -141,10 +148,14 @@ Seul `series.ts` concerne les questions : composition d'une série (`seriesItemS
 - Affichage et correction : `src/lib/components/questions/` — `QuestionCard.svelte` et
   `FlashCard.svelte` (appellent `validateAnswer`), `CorrectionCard.svelte`, `CorrectionView.svelte`,
   `ExpectedResultView.svelte`, `GeneratedStepsCorrection.svelte` (étapes générées : titre et
-  explication rendus par `InlineMarkdown`, formules entre `$…$` depuis V25), `CourseCardView.svelte`,
-  `TestSpecEditor.svelte`.
+  explication rendus par `InlineMarkdown`, formules entre `$…$` depuis V25 ; listes clées par
+  position, jamais par `step.id`, que chaque producteur numérote à sa façon — E10), `CourseCardView.svelte`,
+  `SelfAssessButtons.svelte` (« Pas réussi / Réussi », auto-évaluation commune aux cartes de cours,
+  Flash-cards et révisions ; raccourcis 1 / 2 sur option), `TestSpecEditor.svelte`.
 - Éditeur : `src/lib/components/QuestionTemplateForm.svelte`, `SharedFieldsEditor.svelte`,
-  `exercises/VariationEditor.svelte`. Ses sous-composants, à la racine de `src/lib/components/`
+  `exercises/VariationEditor.svelte`. Son mode « JSON brut » charge à la demande
+  `src/lib/components/JsonEditor.svelte` (CodeMirror ; venu de l'ancien moteur de constructions,
+  retiré le 2026-11-28). Ses sous-composants, à la racine de `src/lib/components/`
   (vérifié le 2026-10-13) : `questions/ClassificationNodePicker` (« Rangé dans » : branche →
   notion → sous-notion en cascade, trois `MySelect`, tout facultatif ; écrit
   `classification_node_id` ; l'arbre non archivé est lu par `server/classification-nodes.ts`, et
@@ -166,18 +177,22 @@ Seul `series.ts` concerne les questions : composition d'une série (`seriesItemS
   posés, ou « aucun » en alerte avec sa raison (N points possibles à poser, ou aucun point de la
   plus basse classe du modèle ou d'une classe suivante sur le nœud ni sa notion), réglages de
   validation qui s'écartent du défaut, dans les mots de l'éditeur (`describeValidationSettings`).
-  Lectures : `$lib/server/template-fact-sheet` (`loadTemplateFactSheet`, `buildTemplateFactSheet`),
+  Lectures : `#lib/server/template-fact-sheet.ts` (`loadTemplateFactSheet`, `buildTemplateFactSheet`),
   qui réutilise `loadNodesWithAncestors` et `loadTemplateProgrammeTags`. Sur l'aperçu, une lecture
   en échec affiche « Fiche illisible : … » et laisse l'aperçu utilisable, jamais « aucun » ;
   l'éditeur reste en 500.
 - Revue des modèles (`/dev/modeles`, admin seul, chantier revue-modeles) : TOUS les modèles en base,
-  rangés programme > branche > notion > sous-notion (`buildReviewTree`, `$lib/questions/template-review`).
+  rangés programme > branche > notion > sous-notion (`buildReviewTree`, `#lib/questions/template-review.ts`).
   Le programme est le `grade` des points tagués (un modèle de deux programmes apparaît dans les deux ;
   sans point → « Hors programme » ; sans nœud → « Non rangé »). Chaque étage compte ✅ validé · 🔶 à
-  revoir · ⚪ sans verdict ; filtres dans l'adresse (`verdict`, `statut`, `alertes`, `noeud`). Les fiches
-  (`components/dev/TemplateReviewSheet.svelte`) ne se chargent que pour le nœud choisi, ou pour tout ce
-  que les filtres retiennent, 80 au plus (`MAX_SHEETS`). Une fiche : statut, niveau, rangement, point
-  et ses bornes (`docs/systeme/programmes/bornes/*.json`, intégrés au build par `$lib/server/point-bounds`),
+  revoir · ⚪ sans verdict ; filtres dans l'adresse (`verdict`, `statut`, `alertes`, `noeud`, `titre` —
+  sans casse ni accents, `normalizeSearch` —, `point` — code exact, « Point inconnu » s'il n'est pas en
+  base —, `serie`), bornés par Zod (400). Une **série** enregistrée (`loadReviewSeries`, composition lue
+  par `series-lines`) remplace le nœud : ses modèles dans son ordre, doublons compris, « × quantité ·
+  délai s » sur chaque fiche, « Modèle introuvable » pour un modèle disparu (`seriesSelection`). Les
+  fiches (`components/dev/TemplateReviewSheet.svelte`) ne se chargent que pour la série ou le nœud
+  choisi, ou pour tout ce que les filtres retiennent, 80 au plus (`MAX_SHEETS`). Une fiche : statut, niveau, rangement, point
+  et ses bornes (`docs/systeme/programmes/bornes/*.json`, intégrés au build par `#lib/server/point-bounds.ts`),
   plages et conditions, specs, un aperçu par variation tiré dans le navigateur par `generateInstance`
   sur le modèle réduit à cette variation (`VariationPreview`, graine 7 + i, « ↻ » en tire une autre,
   rendu par `QuestionPreviewTabs`), et le verdict « validé / à revoir » + commentaire (actions
@@ -186,41 +201,178 @@ Seul `series.ts` concerne les questions : composition d'une série (`seriesItemS
   **modifié depuis le verdict** (`updated_at` du modèle postérieur au verdict — les migrations de
   rangement le font bouger aussi). Reprise des verdicts des anciennes pages à cocher :
   `scripts/questions/reprise-verdicts.ts` (simulation par défaut, `--ecrire`).
+  **Parcours d'une série** (chantier parcours-serie, phase 0 du 2026-11-19) : série choisie,
+  l'affichage par défaut est « Parcours » (`components/dev/SeriesParcours.svelte`), « Fiches » celui
+  d'avant (`?vue=fiches`, `parseReviewView`). En tête (collant) : questions et durée totale
+  (`seriesTotals`, `formatSeriesDuration`), rendu élève commun à toutes les cartes (Flash-card par
+  défaut, Contrôle blanc, En classe) et « Tout retirer » (nouvelle graine pour toutes). Une rangée par
+  modèle dans l'ordre de la série (`ParcoursRow`) : rang, « × quantité · durée », statut, verdict, une
+  carte par variation (`VariationPreview` en `compact` → `QuestionPreviewTabs` en `bare`, sans barre
+  d'onglets) sur un plateau plus sombre que la rangée, dessinée à l'approche de l'écran (`LazyMount`),
+  et le verdict (`ReviewVerdictForm`, commun avec la fiche). Puis « Ailleurs dans les mêmes
+  notions » : les modèles rangés dans les **notions** de la série (2e étage du chemin, `notionOf`,
+  `seriesNotions`) ou en dessous, tagués sur un point du **niveau de la série**, absents de la série,
+  filtres appliqués (`neighbourTemplates`, ordre de l'arbre puis titre) ; le plafond `MAX_SHEETS`
+  vaut pour la page entière, la série d'abord. Enfin « Points sans aucun modèle » : points du niveau
+  dans ces notions, non archivés, qu'aucun modèle ne tague (`pointsWithoutTemplate`, sur les points
+  de `loadReviewOverview`). L'arbre des programmes se replie (préférence du navigateur).
 - Automaths : catalogue rangé dans le navigateur selon l'**arbre des notions**
-  (`src/lib/questions/catalogue.ts` : `buildCatalogue`) — sélecteur de branche, onglets de notion,
-  rubriques de sous-notion, dans l'ordre de l'arbre (`position`, puis nom), puis par niveau et titre.
+  (`src/lib/questions/catalogue.ts` : `buildCatalogue`) — branches, notions et sous-notions
+  (rubriques) dans l'ordre de l'arbre (`position`, puis nom), puis par niveau et titre. **Navigation**
+  (PR 3a, phase 0 du 2026-11-18) : liste des branches et notions à compteurs
+  (`CatalogueTreeNav`, liste à deux étages commune aux deux vues ; `notionTemplateCount`), colonne de gauche sur grand écran (`lg`), panneau
+  du bas sur téléphone (bouton « Notion : … · n ») ; seule la branche de la notion affichée est
+  dépliée au départ. La notion (`CatalogueNotionSections`) montre ses sous-notions toutes dépliées,
+  avec des pastilles à compteurs collées en haut qui y descendent (les sections du dessus sont
+  d'abord calculées, pour que la cible ne glisse pas ; une fois la page immobile, la section est
+  recalée sous les pastilles, jamais pendant le défilement doux ni après un geste de l'élève). Cartes de 18rem (12rem × 1,5 depuis le
+  2026-11-26, `CATALOGUE_TILE_CARD_HEIGHT` de `tile-card.ts`, que seules les tuiles du catalogue et de
+  Ma série lisent), plus basses sur téléphone (13,5rem, variable `--tile-card-height` de
+  `QuestionPreviewCard`, règle `@media`).
   Les modèles posés sur la notion elle-même forment la rubrique « Général », en tête ; une branche,
   notion ou sous-notion sans modèle publié n'apparaît pas ; un modèle hors de l'arbre lu va dans
-  « Non classés » (jamais perdu). La tuile ne montre plus l'ancien sous-domaine. Le panier et les
-  séries désignent le **modèle** par son id (ADR 0035). Les aperçus (graine `PREVIEW_SEED`) ne sont calculés que pour la rubrique
-  dépliée (`CatalogueGallery`, montée par un `{#if}` : l'accordéon et les onglets de bits-ui
-  gardent le contenu fermé dans le DOM), une fois par modèle (`templatePreview`), et réutilisés par le
+  « Non classés » (jamais perdu). **Filtre par niveau** (`filterTemplatesByGrade`, appliqué avant le
+  rangement) : menu « Niveau » (tous par défaut) et case « et niveaux inférieurs » (décochée au départ),
+  qui descend l'arbre des prérequis (`getAccessibleGrades` : la 1re techno passe par la 2de, pas par la
+  1re spé) ; un modèle sans niveau n'apparaît sous aucun niveau. Le niveau et la notion affichée
+  sont gardés dans l'adresse (`?niveau=4&inferieurs=1&notion=<id>`, sans entrée d'historique ; la
+  notion désigne aussi sa branche ; notion inconnue ou absente au niveau choisi → première notion), et
+  retenus pour la visite (`sessionStorage`, clé `chiphre_automaths_adresse`) : revenu sur `/automaths`
+  sans paramètre (retour du panier), le catalogue reprend la dernière adresse. **Vue « Programme »**
+  (PR 3b, phase 0 du 2026-11-18 ; `src/lib/questions/catalogue-programme.ts` : `buildProgramme`,
+  `CatalogueProgrammeSections`) : bascule « Programme | Notions » (`aria-pressed`) dès que le niveau
+  choisi a un programme, « Programme » par défaut ; « Tous les niveaux », ou une liste servie sans
+  programme (cache de Vercel d'avant le déploiement) → Notions seule. Colonne (ou panneau « Chapitre :
+  … · n ») : parties → chapitres du **programme du niveau choisi seul**, tirés de la `rubrique` des
+  points (« Partie > Chapitre [> Automatismes] » : le 3e étage rejoint son chapitre, une rubrique d'un
+  seul mot est son propre chapitre), dans l'ordre du BO (`display_order`) ; compteurs = questions
+  distinctes. Chapitre : une section par point (intitulé), ses questions dessous (lecture A) : celles
+  rattachées au point dans la liste filtrée par niveau ; aucune → celles du nœud du point, sous-notions
+  comprises (« Questions de « Fractions » ») ; rien → « Pas encore de question ». « Et niveaux
+  inférieurs » ne change que les questions. Adresse `?vue=programme&chapitre=<slug du chapitre>` (ou
+  `?vue=notions&notion=<id>`) ; un lien qui ne porte qu'une notion garde la vue Notions ; chapitre
+  inconnu → premier chapitre. Les points (`points` : non archivés, avec niveau, tous niveaux) et les
+  ids des points de chaque modèle publié (`templatePoints`) arrivent avec la liste des modèles (+~6 %
+  compressé). **Recherche**
+  (`src/lib/questions/catalogue-search.ts` : `searchCatalogue`, phase 0 du 2026-11-18, refaite le
+  2026-11-26) : champ en haut, sans curseur automatique, « / » l'y met ; sans accents ni majuscules,
+  singulier et pluriel confondus (-s, -x, -aux/-al), tous les mots, chacun au **début d'un mot**
+  (« aire » ne trouve pas « linéaire ») ; dès 2 lettres, 200 ms après la frappe. Trois parts :
+  **raccourcis** « Aller à : » (3 au plus) vers la notion ou la sous-notion dont le nom contient les
+  mots (nom exact, puis plus court, puis plus fourni ; jamais une branche ni un nœud sans question
+  au niveau) : la recherche s'efface, la notion s'ouvre en vue « Notions » et la page descend à la
+  sous-notion (`initialRubricId` de `CatalogueNotionSections`) ; **bons résultats** : titre,
+  description, nom de la sous-notion et énoncé de chaque variation (`shared` compris) sans
+  variables `{{…}}`, blocs (figures, choix des QCM), formules ni code (`plainMarkdownText`),
+  groupés par sous-notion, le groupe qui a le plus de **titres** d'abord, puis la somme des
+  pertinences (3 si tous les mots sont dans le titre, 2 avec la description, 1 sinon) ; titres
+  d'abord dans un groupe ; à égalité, ordre de l'arbre ; « Non classés » en dernier ; groupe replié **« Aussi dans les
+  corrigés et le programme »** (`others`) : mots trouvés seulement avec la correction écrite
+  (étapes, retours) ou les intitulés des points du programme (`pointNames`, dérivés par le cache de
+  `points` et `templatePoints`). Ni la consigne, ni le coup de pouce, ni les noms de notion et de
+  branche (« calcul » ramenait « Nombres et calculs » entier). Les résultats (filtrés par le niveau)
+  remplacent la liste des notions (« Branche › Notion › sous-notion · n ») avec un compteur ; les
+  premiers groupes sont dépliés jusqu'à 60 cartes (`initiallyOpenGroups`), les suivants repliés
+  (aperçus calculés à l'ouverture). Aucun résultat avec un niveau → « Chercher
+  dans tous les niveaux ». Croix ou Échap → retour à la notion. La recherche est dans l'adresse
+  (`?q=…`) et retenue avec elle. La tuile ne montre plus l'ancien sous-domaine. Le panier et les
+  séries désignent le **modèle** par son id (ADR 0035). Les aperçus (graine `PREVIEW_SEED`) ne sont calculés qu'à l'approche de
+  leur section (`LazyCatalogueGallery` : `IntersectionObserver`, 800 px d'avance, montée définitive)
+  ou pour un groupe de résultats déplié (`CatalogueGallery`), une fois par modèle (`templatePreview`), et réutilisés par le
   panier. Avant (novembre 2026), le serveur calculait les 1 912 aperçus à chaque visite : 7 à 11 s.
-  `QuestionPreviewCard` (tuile du catalogue = la flash-card, plus l'ajout au panier),
-  `CartFloatingButton` (vers `/automaths/panier`), `CartQuestionCard` (tuile d'un modèle du
-  panier, sous son titre : durée par pas de 5 s entre 5 et 300 s, nombre de questions ; modèle plus
-  publié → « Modèle retiré », avec « Retirer du panier »).
+  `QuestionPreviewCard` (tuile du catalogue = la flash-card, plus « Ajouter » — nom accessible
+  « Ajouter à ma série » —, puis « Dans ma série » qui retire la question entière, répétitions et
+  durée comprises). Au-dessus de la carte des deux tuiles, catalogue et Ma série (`TileCard`, phase 0 du
+  2026-11-26) : une ligne fine, à gauche les niveaux du modèle (`formatGradeBadge`,
+  `src/lib/utils/grade-badge.ts` : « CM1–CM2 » quand chaque niveau a le précédent pour prérequis direct,
+  sinon « CM1 · 6e »), à droite « ‹ 2/5 › » dès deux variations : les flèches changent l'exemple
+  montré (`variationExample`, graine fixe ; l'aperçu du modèle pour sa propre variation). Dans le
+  catalogue, et dans Ma série pour un élève ou un visiteur, elles ne changent jamais la série (Ma série :
+  les seules variations choisies défilent). La difficulté (`level`) reste dans l'intitulé, nommée
+  « Difficulté ». Bouton de retournement de 32 px dans ces tuiles (`compactFlip` de `FlashCard`) ; la
+  carte de l'élève garde le sien. **« Ma série »** (PR 4, phase 0 du 2026-11-19) : à l'écran, le panier s'appelle
+  « Ma série » partout (catalogue, page `/automaths/panier` « Ma série », « Retour à ma série » des
+  formes de série) ; l'adresse et le code (`questionCart`) gardent « panier ». `MySeriesPreview`
+  (aperçu : « 3 questions · environ 2 min 30 », chaque modèle avec ses répétitions « ×4 » et une
+  croix qui le retire, « Ouvrir ma série » vers la page détaillée ; aucun réglage ; série vide → « Ta
+  série est vide : ajoute des questions avec « Ajouter ». ») ; nombre et durée totale par
+  `series-summary.ts` (`seriesTotalSeconds` = répétitions × `effectiveDelay`, `formatSeriesDuration`).
+  Grand écran (≥ 1 280 px, `xl`) : colonne à droite du catalogue, collante (`aside` « Ma série »).
+  Plus petit, `MySeriesDock` : bouton rond fixe, sans pulsation (tablette, ≥ 640 px) → panneau à
+  droite ; barre en bas « Ma série · 3 questions · 2 min 30 » (téléphone, absente si la série est
+  vide) → panneau du bas ; le catalogue garde un espace en bas, `pb-28`, pour que la dernière carte
+  remonte au-dessus. `CartQuestionCard` (tuile d'un modèle de
+  la page détaillée, sous son titre : durée par pas de 5 s entre 5 et 600 s (`MAX_QUESTION_DELAY_SECONDS`, celle de la série enregistrée ; écart L92), corbeille « Retirer de ma
+  série » entre les deux, sans confirmation (2026-11-26), nombre de questions ; modèle plus
+  publié → « Modèle retiré », avec « Retirer de ma série » ; pour un prof, la marque « Durée sans doute
+  trop courte » à la durée choisie, puis la « Durée observée » chez ses élèves avec « Appliquer »
+  (`ObservedDelayHint`), voir [evaluations.md](evaluations.md) ; plus de répétitions que de
+  questions différentes → « Ce modèle n'a que N questions différentes. » (« qu'une question » pour 1)
+  avec « Passer à N », compte de `distinctLimit` (`series-draw.ts`, même tirage que la série à graine
+  fixe, mis en cache par modèle : un modèle épuisé n'est plus recompté, une recherche plus loin va au
+  moins deux fois plus loin ; une génération en échec n'avertit pas ; chantier `idees-format`) ;
+  pour un prof, le choix des variations de la ligne SUR LA CARTE (`TileCard`, chantier `automaths`,
+  PR A2, phase 0 du 2026-11-26 ; plus de fenêtre `VariationPicker` dans Ma série) : les flèches
+  parcourent toutes les variations, retirées comprises ; le numéro « 2/3 » garde (vert) ou retire
+  (rouge et barré) la variation affichée, infobulle « Retirer cette variation de la série » /
+  « Remettre cette variation » ; la dernière gardée ne se retire pas (`aria-disabled`, l'infobulle le
+  dit) ; sous la ligne, « 2 variations sur 3 » quand il en manque et « 1 en QCM » quand des variations
+  gardées sont en QCM (« 2 variations sur 3 · 1 en QCM », PR A3) ; case « En QCM » sur la ligne quand
+  la variation affichée peut se poser en QCM (même test que la fenêtre : `mayBeChoice`, puis
+  `canBeChoice` sur l'exemple à graine fixe), retirer une variation retire son QCM. Le compte de
+  `distinctLimit` et l'aperçu de la tuile suivent ce choix.
+  Ce contrôle vit dans le panier seulement : l'éditeur de série et le serveur n'en font pas, une
+  ligne trop longue est raccourcie au tirage). L'éditeur de série
+  (`/dashboard/teacher/series/[id]/edit`) affiche la durée de chaque ligne en lecture, avec la même
+  marque et la même suggestion (appliquée à la copie de travail, écrite à l'enregistrement), et le
+  choix des variations dans une fenêtre (`VariationPicker`, `components/series/` : chaque variation
+  montrée par un exemple à côté de sa case, la dernière case cochée ne se décoche pas ; modèles publiés de la série lus sans leurs cas de
+  test, colonnes partagées avec la liste du catalogue : `server/question-template-columns.ts`).
 - Stores (`src/lib/stores/`) :
   - `questionCart.svelte.ts` (`questionCart`) : le **panier**, des lignes `SeriesItem`
-    (`templateId`, nombre de questions 1 à 99, durée par question) ; persistant en `localStorage`
-    (`chiphre_question_cart`). `replaceWith` / `mergeItems` y chargent une série (lien de série).
+    (`templateId`, nombre de questions 1 à 99, durée par question, variations choisies facultatives)
+    ; persistant en `localStorage` (`chiphre_question_cart`). `setVariations` règle le choix (vide =
+    toutes, le champ disparaît). `replaceWith` / `mergeItems` y chargent une série (lien de série) ;
+    une ligne déjà présente garde sa durée et ses variations.
     Un panier d'avant l'ADR 0035 (catégories) n'est plus relu : au chargement ses lignes sont
     retirées, le panier réécrit, et un message le dit.
   - `questionTemplates.svelte.ts` (`questionTemplatesCache`) : modèles publiés et arbre des
-    notions (`nodes`, nœuds non archivés), **seule source des pages Automaths** (catalogue, panier, `test`) — leurs `load` n'en envoient aucun.
+    notions (`nodes`, nœuds non archivés), points du programme (`points`) et ids des points de
+    chaque modèle (`templatePoints`), d'où il tire leurs intitulés (`pointNames`, pour la
+    recherche ; une réponse d'avant le déploiement apporte ses `pointNames` et aucun `points`), **seule source des pages Automaths** (catalogue, panier, `test`) — leurs `load` n'en envoient aucun.
     `fetchTemplates()` lit `/api/questions/templates/all` une fois par onglet (lectures
     simultanées partagées) ; naviguer entre ces pages ne recharge rien. Les pages admin
     invalident les deux caches après écriture : la relecture passe par `?frais=…`, adresse que
     le cache de Vercel ne connaît pas.
-- `/api/questions/templates/all` : liste publique (`{ templates, nodes }` : modèles publiés et
-  nœuds non archivés de l'arbre, colonnes du rangement seulement) gardée **5 min par Vercel**
-  (`s-maxage=300, stale-while-revalidate=300`) — un modèle publié ou dépublié l'est pour les
+- `/api/questions/templates/all` : liste publique (`{ templates, nodes, points, templatePoints }` :
+  modèles publiés, nœuds non archivés de l'arbre, colonnes du rangement seulement, points du
+  programme non archivés avec un niveau (`id, name, grade, rubrique, display_order, node_id`, tous
+  niveaux, ~2 500) et ids des points de chaque modèle publié — liens lus en anonyme, policy
+  `20261118204254` ; leur lecture en échec sert la liste sans eux, `points: []`,
+  `templatePoints: {}`) gardée **5 min par Vercel**
+  (`Vercel-CDN-Cache-Control: max-age=300, stale-while-revalidate=300`, en-tête que Vercel ne
+  transmet pas) — un modèle publié ou dépublié l'est pour les
   élèves en 5 à 10 min. Servie à tous : lue par un client **anonyme** (`createAnonymousSupabase`),
   jamais par la session ; un échec répond 500, sans cache. Le hook passe en `private, no-store`
-  toute réponse qui pose un cookie. Vercel retire `s-maxage` de l'en-tête rendu au client (on y lit
-  `public, max-age=0`) : le cache se vérifie à `x-vercel-cache` (`MISS` puis `HIT`).
+  toute réponse qui pose un cookie. Le navigateur reçoit `Cache-Control: public, max-age=0` et
+  relit donc toujours, en local comme en prod (un `stale-while-revalidate` dans `Cache-Control`
+  lui resservait la liste périmée sur le serveur de dev, E85) : le cache de Vercel se vérifie à
+  `x-vercel-cache` (`MISS` puis `HIT`).
+  Les modèles y sont **sans leurs cas de test** (`test_specs`, ~31 % du poids : 11 → 7,7 Mo bruts
+  en novembre 2026) : colonnes listées dans le `+server.ts`, avec une garde de compilation qui
+  échoue si une colonne ajoutée à `question_templates` n'y est pas rangée. Côté navigateur, la
+  liste est typée `CatalogueTemplate` (`Omit<QuestionTemplate, 'testSpecs'>`) : lire `testSpecs`
+  ou `test_specs` dans le cache ne compile pas, mais un modèle du cache passé à une fonction qui
+  attend un `QuestionTemplate` reste accepté — la protection, c'est la liste de colonnes.
+  L'éditeur, seul lecteur des cas de test, charge le modèle complet par son id. Le cache passe
+  chaque ligne par `mapDbTemplateToForm` (`exercise_instruction` → `exerciseInstruction`…) : sans
+  elle, la consigne d'exercice disparaissait des cartes Automaths (corrigé en novembre 2026).
 - Routes : `src/routes/api/questions/` (`templates`, `templates/[id]`, `templates/bulk-status`,
-  `generate/[id]`), admin `src/routes/(protected)/dashboard/admin/questions/`
+  `generate/[id]`) ; leurs écritures (`POST`, `PUT`, `DELETE`, `bulk-status`) se gardent par
+  `requireAdmin` et écrivent avec le client rendu (vrai compte admin, ou prof en mode
+  administration : [auth.md](auth.md) § Élévation admin ; la RLS réserve l'écriture des modèles
+  au compte admin) ; un `DELETE` qui ne supprime aucune ligne répond 404. Admin
+  `src/routes/(protected)/dashboard/admin/questions/`
   (liste, `create`, `[id]/edit`, `[id]/preview`), Automaths `src/routes/(public)/automaths/`
   (catalogue, `panier`, `test`), séries du prof `src/routes/(protected)/dashboard/teacher/series/`.
 - Lecture de **tous** les modèles (`templates/all`, brouillons et arbre des
@@ -288,7 +440,7 @@ collé dans un formulaire parti d'une entrée : pas de carte pour le choix, « a
 l'énoncé résolu ; l'éditeur ne réaligne que si l'énoncé brut compte comme lui — aucune variable dans
 un ``operation (une division `{{a}} ÷ 7`porte deux cases), et même genre de cases dans le même
 ordre en comptant aussi l'énoncé où chaque`{{…}}`vaut`1`(un`{{if:k==1|[_]|…}}` qui porte une case
-les fait différer). Une expression (`<<expr:…>>`) n'est jamais réalignée : son format de réponse peut porter des cases (`?/?`) que l'éditeur ne connaît pas. Forme de CP-058 (`{{if:}}` dans le texte, variables dans la figure) : réalignée.
+les fait différer). Une expression (`<<expr:…>>`) n'est jamais réalignée : son format de réponse peut porter des cases (`?/?`) que l'éditeur ne connaît pas. Forme de CP-058 (`{{if:}}` dans le texte, variables dans la figure) : réalignée. Un tableau à compléter (``variation à `?`) qui porte une variable (`domain: -inf, {{al}}, +inf`) ne se lit pas sur l'énoncé brut et y compte pour une case, ni plus ni moins une fois chaque variable à `1` : jamais réaligné (`variationCasesUnresolved`, `assign-blank-indices.ts`). Pour la même raison, `choiceAnswerCountErrors` ne lit pas à l'enregistrement la bonne réponse des cases choix d'un tel énoncé (elle se lit par le rang de la case, connu au tirage seulement, où le générateur la contrôle sur l'énoncé résolu) ; un bloc choix mal écrit y reste signalé, « case choix » sans numéro. `figureNameWarnings` n'y lit que les cases d'avant le premier tableau (outil 63 : un choix après le tableau lisait la réponse vide d'une cellule, « aucune bonne réponse »).
 
 ### 2. Fusion `shared` ⊕ variation (`resolveVariationWithShared`)
 
@@ -382,18 +534,35 @@ quand l'origine est imposée, `vectorExpected`, `utils/courbe-vecteur.ts`), rép
 Somme à tracer (`tracer: vecteur u + v depuis A`, chantier `somme-vecteurs`) : la même case et le même juge,
 l'attendue calculée de la combinaison ; la bonne réponse seule (`BuildAnswer`) dessine aussi la construction
 en pointillés (`constructionTraces`, `utils/courbe-combinaison.ts`).
-Cercle trigonométrique à placer (``trig, `placer: M = 2*pi/3 ; N = -pi/4`) : une case par point,
-   `type: 'text'`, réponse attendue = la mesure principale du point en LaTeX (`\frac{2\pi}{3}`,
-   `-\frac{\pi}{4}`), réponse de l'élève = le cran de π/12 où il a posé le point (`'8'`, `''` pas posé),
-   juge à part aux deux mêmes endroits (`isPlacedAngleCorrect`, `utils/trig-placer.ts` : le même cran,
-   modulo 2π). Masqué en évaluation notée (`placer: M=? ; N=?`).
-   Droite à représenter (``line, `representer: [2, +inf[`) : UNE case `type: 'text'`, `construire: 'line'`,
-réponse attendue = l'intervalle écrit par `representerAnswer` (`'[2 ; +∞['`, `']-∞ ; 2/3]'`), réponse
-de l'élève de même (incomplète : `'2 comprise, côté ?'`) ; juge à part aux deux mêmes endroits,
-choisi quand l'attendue est un intervalle (`isLineToRepresentBlank` → `isRepresentedIntervalCorrect`,
-`utils/number-line-representer.ts`). Masquée en `representer: ?` ou `? ; ?`. Réponse incomplète
-(`isIncompleteRepresentation`) = case vide : Valider grisé (`QuestionCard`), Entrée met le focus sur
-la droite (`FillBlanksInput`) — même critère aux deux endroits (`isLineToRepresentBlank`) ; le flash l'accepte comme une case vide.
+Escalier à construire (``courbe, `construire N` sur la ligne d'une suite récurrente, outil 48) : une case
+   `type: 'text'` par terme (`spec.construire.terms`, `data-construire-case` / `-cases`), réponse de l'élève de la case k = la
+   chaîne de ses termes jusqu'à k (`1.73;;2.8`, vide pour un terme pas posé, `staircaseAnswer`), attendue
+   `escalier k=2 ; u0=0 ; marge=0.09 ; f=sqrt(2*(x)+3)` (`staircaseExpected`, `build-answer.ts`) ; juge à part aux deux
+   mêmes endroits (`isStaircaseTermCorrect`, `utils/courbe-construire.ts`) : juste si |x_k − f(x_{k−1})| ≤ marge, soit
+   3 % de la largeur de la fenêtre, **jugé depuis le terme précédent de l'élève** (u₀ pour le premier) : une erreur ne
+   coûte qu'une case (décision de David, 2026-11-28). Quand toutes les cases de la question sont connues
+   (`validateGradedBlanks`, `detailGradedBlanks`), chaque case d'un repère est jugée sur la chaîne de sa **dernière**
+   case (`staircaseChains`) : une réponse forgée dont les chaînes ne se prolongent pas ne fait pas tout juste. Correction (`BuildAnswer`, `staircaseMistake`) : une phrase par
+   terme faux, et le vrai escalier en vert (`solutionCobweb`). PDF : repère sans escalier ; `solution: oui` : escalier vert.
+   Cercle trigonométrique à placer (``trig, `placer: M = 2*pi/3 ; N = -pi/4`) : une case par point,
+`type: 'text'`, réponse attendue = la mesure principale du point en LaTeX (`\frac{2\pi}{3}`,
+`-\frac{\pi}{4}`), réponse de l'élève = le cran de π/12 où il a posé le point (`'8'`, `''` pas posé),
+juge à part aux deux mêmes endroits (`isPlacedAngleCorrect`, `utils/trig-placer.ts` : le même cran,
+modulo 2π). Masqué en évaluation notée (`placer: M=? ; N=?`).
+Droite à représenter (``line, `representer: [2, +inf[`) : UNE case `type: 'text'`, `construire: 'line'`,
+   réponse attendue = l'intervalle écrit par `representerAnswer` (`'[2 ; +∞['`, `']-∞ ; 2/3]'`), réponse
+   de l'élève de même (incomplète : `'2 comprise, côté ?'`) ; juge à part aux deux mêmes endroits,
+   choisi quand l'attendue est un intervalle (`isLineToRepresentBlank` → `isRepresentedIntervalCorrect`,
+   `utils/number-line-representer.ts`). Masquée en `representer: ?` ou `? ; ?`. Réponse incomplète
+   (`isIncompleteRepresentation`) = case vide : Valider grisé (`QuestionCard`), Entrée met le focus sur
+   la droite (`FillBlanksInput`) — même critère aux deux endroits (`isLineToRepresentBlank`) ; le flash l'accepte comme une case vide.
+   Droite à graduer (``line, `graduer: 3`, `placer: A=5/3` facultatif, outil n° 61) : case N = le nombre
+de parts (`type: 'math'`, attendue `'3'`, `partsAnswer`), puis une case par point (N + 1 + k, attendue
+`placerAnswer` sur la droite partagée : `'\frac{5}{3}'`) ; `buildCaseCount` = `graduerCaseCount`,
+`point` 0 = les parts. Juge ordinaire : chaque point sur sa valeur (6 parts et A sur 10/6 → parts
+fausses, A juste). Case des parts vide tant que l'élève n'a pas touché − / + (Valider grisé). Masquée
+en `graduer: ?` ; `graduer: ?` écrit dans un modèle est refusé (`MASKED_IN_TEMPLATE`). Détail :
+[ubumark.md](ubumark.md) § Droite à graduer.
 Étiquettes à ranger (``ranger, chantier `reponses-a-placer` § 21, 22 ; `ranger-parser.ts`,
    `findRangersToPlace`) : le prof écrit les étiquettes dans le **bon** ordre ; une case par place
    (`buildCaseCount` = nombre d'étiquettes, `point` = rang de la place), `type: 'text'`,
@@ -408,13 +577,51 @@ la droite (`FillBlanksInput`) — même critère aux deux endroits (`isLineToRep
    devinerait) ou plus de 8 étiquettes, vide, `signe:` autre que `<` / `>`. Deux étiquettes identiques après
    tirage : condition implicite, le tirage des variables est refait (`rangerLabelsCollide`, résolution à part
    sur une source jetable) ; toujours identiques après 100 essais → échec, message au prof.
+   Éléments à associer (``associer, chantier [`associer`](../archive/wip/associer-progress.md), outils-manquants
+n° 27 ; `associer-parser.ts`, `findAssociersToPlace`) : le prof écrit `- élément -> étiquette`, un
+intrus `- -> étiquette` ; une étiquette écrite deux fois n'est montrée qu'une fois (classement). Une
+case par élément (`buildCaseCount` = nombre d'éléments, `point` = rang de l'élément), `type: 'text'`,
+`construire: 'associer'` (« éléments à associer »). Geste de l'écran : `geste: relier` (défaut, traits)
+ou `geste: étiquettes`, gardé dans l'énoncé de l'instance ; juge et corrigé communs. Au tirage, les étiquettes sont mélangées comme
+celles d'un ranger (`rangerOrder` : jamais l'ordre écrit) ; le bloc de l'énoncé de l'instance est
+réécrit **sans liens** (`- élément ->`, puis `- -> étiquette` dans l'ordre affiché :
+`replaceAssocierBlocks`, `serializeAssocierBlock`), la version publique n'a rien à cacher. Réponse
+attendue d'un élément = la position **affichée** de sa bonne étiquette (`'2'`, la même pour deux
+éléments qui la partagent) ; juge à part : égalité stricte, comme ranger. Refus (messages du parseur) :
+moins de 2 ou plus de 8 éléments, moins de 3 ou plus de 10 étiquettes différentes, ligne sans `->`,
+élément sans étiquette quand d'autres en ont, `[_]` dans un élément, deux éléments identiques ; `case:`
+écrite ; « ordre indifférent ». Deux éléments (ou deux étiquettes écrites différemment) identiques après
+tirage : le tirage est refait (`associerTextsCollide`) ; après 100 essais → échec, message au prof.
+Courbe dans un élément (lot 2, ` ```courbe ` en retrait, clôture ```; détail
+[ubumark.md](ubumark.md)) : variables de la courbe résolues au tirage, comparaison des éléments sur leur
+texte entier ; une courbe à placer dans un élément n'est pas une case (`assignBlankIndices` l'écarte, le
+parseur associer la refuse) ; au plus 6 éléments.
+Texte à trous (``trous, chantier [`trous-etiquettes`](../archive/wip/trous-etiquettes-progress.md),
+   outils-manquants n° 34 ; `trous-parser.ts`, `findTrousToPlace`) : le prof écrit son texte, chaque trou
+   étant sa bonne étiquette entre crochets hors formule (`[arithmétique]`, `[$r$]`), et `intrus: a ; b` en
+   dernière ligne ; une étiquette écrite deux fois n'est montrée qu'une fois. Même mécanique qu'associer à
+   étiquettes : une case par trou (`buildCaseCount` = nombre de trous, `point` = rang du trou),
+   `type: 'text'`, `construire: 'trous'` (« texte à trous »). Au tirage, la réserve est mélangée
+   (`rangerOrder`) ; le bloc de l'énoncé de l'instance est réécrit **aux trous vides** (`[]`) avec la
+   réserve dans l'ordre affiché en dernière ligne `étiquettes: …` (`replaceTrousBlocks`,
+   `serializeTrousBlock`) ; garde anti-fuite `findUnmaskedAnswers` (`'trous'` si un trou garde son
+   étiquette, même avec `étiquettes:` : `trousHasFilledHole`). Réponse attendue d'un trou = la position **affichée** de sa bonne étiquette ; juge à part :
+   égalité stricte, comme ranger et associer. Refus (messages du parseur, détail [ubumark.md](ubumark.md)) :
+   aucun trou, plus de 10, trou vide, moins de 3 ou plus de 12 étiquettes différentes, `[_]` ou `?` en
+   formule dans le bloc, un bloc dans le texte, `[` sans `]`, un lien, un trou dans du gras, un intrus déjà étiquette d'un trou ; trous vides écrits par le prof
+   (`étiquettes:`) ; `case:` écrite ; « ordre indifférent ». Deux étiquettes écrites différemment
+   identiques après tirage : le tirage est refait (`trousLabelsCollide`) ; après 100 essais → échec,
+   « Texte à trous : deux étiquettes identiques… ».
    Tableau de signes à compléter (``variation à `?`, chantier [tableau-signes](../archive/wip/tableau-signes-progress.md) ;
 `findVariationsToFill`, `questions/sign-table-case.ts`) : au premier niveau, une case par cellule cachée,
 N, N + 1… dans l'ordre de lecture du parseur (`cases` du nœud), seul N posé (`case: N`) ;
 `variationBlanks` (texte du bloc, rang de la cellule). Réponse attendue tirée du bloc
 (`readSignTableCases`), jamais écrite dans `blanks` (refusée : « sa réponse vient du tableau de signes ») ;
 `cellule` sur la case (`valeur` / `signe` / `marque` / `fleche`). Valeur (de x, ou d'une ligne `variation:`,
-`-2: ?4, top`) : `type: 'math'`, juge ordinaire avec `acceptDecimal` forcé (`1,5` vaut `\frac{3}{2}`) ;
+`-2: ?4, top`, ou limite, `+inf: ?+inf, top`, `3: ||, ?-inf, +inf`) : `type: 'math'`, juge ordinaire avec
+`acceptDecimal` forcé (`1,5` vaut `\frac{3}{2}`) ; un infini attendu ou répondu est jugé au jeton
+(`infiniteCellVerdict`, `infinityToken` : `−∞`, `-inf`, `-\infty` se valent, ∞ sans signe est faux, aux
+deux endroits du juge) ;
 signe, marque et flèche (`-2,2: ?flèche`, chantier [variations-a-completer](../archive/wip/variations-a-completer-progress.md)) :
 `type: 'text'`, attendu `+` / `-` / `z` / `||` / `rien` / `↗` / `↘` (LaTeX du corrigé `\nearrow`, `\searrow`),
 juge à part aux deux endroits (`isSignCellCorrect` : même jeton, `0` vaut `z`, case vide jamais juste). Refus : bloc en retrait, cité ou dans un choix, non fermé, refusé par le parseur
@@ -457,7 +664,7 @@ L'élève répond `A/G` (origine/extrémité) ; juge à part, `isSolideAnswerCor
 Un bloc ``choix (case « choix », chantier `figure-et-choix`, au premier niveau, sinon échec)
    compte pour **une** case, `case: N` posé en tête du bloc (`choix-parser.ts`, lu dans
    `assignBlankIndices`) : réglages en tête (`plusieurs: oui`, `melanger: non` ; défauts : une
-   réponse, mélangé), puis un choix par ligne `- …` (suite en retrait de 2 espaces ; clôture ````
+   réponse, mélangé), puis un choix par ligne `- …` (suite en retrait de 2 espaces ; clôture```
    si un choix contient un bloc). Les choix sont résolus avec l'énoncé (variables, `{{if}}`). Une
    case dans un choix (`?` en formule, `[_]`) est refusée, message situé. La case **est** dans
    `blanks[]` : sa bonne réponse `expectedAnswer` = indice(s) d'**origine** (« 1 », « 0;2 »,
@@ -503,7 +710,8 @@ correction relues en syntaxe maison (`resolveMarkdownContent`, `resolveCorrectio
 `QuestionPreviewBaseCard`) posent le sens par `provideCapitalPairs` pour les `~…~`. Le
 préremplissage n'est pas relu par le parseur (texte LaTeX tel quel).
 
-Qui génère : le navigateur (Automaths `test`, aperçus, `FlashCard`), le SRS (`src/lib/srs/generator.ts`,
+Qui génère : le navigateur (Automaths `test`, aperçus, `FlashCard` ; graine neuve par question, ou
+tirée de la graine d'un lien « Mêmes nombres pour tous » par `seriesSeedSequence`), le SRS (`src/lib/srs/generator.ts`,
 une graine neuve à chaque révision), le serveur pour les évaluations (graine enregistrée par élève)
 et pour une série figée (`src/lib/worksheets/serie-automatismes.ts`, ADR 0011).
 
@@ -517,6 +725,54 @@ MathLive qui transforment deux majuscules (`AA` → ∀, `EE`, `!EE`, `NN`, `ZZ`
 `TT`) sont retirés du champ au montage (`MathPrompt`, `withoutCapitalPairShortcuts`) : `AA'` reste
 la longueur AA'. Ailleurs, ils restent.
 
+**Case « programme Python »** (bloc ```python-a-ecrire, outil 49) : `FillBlanksInput` monte
+`PythonCaseInput.svelte`, l'éditeur CodeMirror des exercices Python (`PythonEditor`) prérempli par
+`depart:`, librement modifiable ; « Python se charge… » tant que Pyodide n'est pas prêt (runtime
+partagé de la page, `python-case-runtime.svelte.ts`, chargé à la demande ; un test pose le sien
+par `PYTHON_CASE_RUNTIME_KEY`). `validateAnswer` étant synchrone, la case inscrit une
+**préparation** dans le registre de la carte (`answer-preparations.ts`, contexte posé par
+`QuestionCard` et `FlashCard`, les deux seuls hôtes de `FillBlanksInput`) : « Valider » attend
+`prepareAll()` (le programme tourne, la valeur reçoit `{ code, verdict }`), puis valide. Sans
+préparation inscrite, « Valider » reste synchrone. Le temps écoulé (`submitPendingAnswer`,
+synchrone) valide la dernière valeur, sans verdict : faux. Une frappe remet le verdict à null.
+Une boucle sans fin bloque le worker : le délai du fil principal (5 s + 5 s) rend la main, le
+worker est détruit et remplacé. Éditeur verrouillé (`inert`) pendant le calcul et après la
+validation.
+
+**Case « résolution »** (`answerKind: 'resolution'`, outil 55) : posée seule dans un bloc
+`$$?$$` (`$$\placeholder[N]{}$$`), elle n'est pas un champ à trous. `FillBlanksInput` la
+reconnaît (`resolutionCaseOf`) et monte `ResolutionInput.svelte` : une colonne de lignes MathLive,
+« Ajouter une ligne », une croix par ligne. Entrée sur une ligne écrite ajoute une ligne dessous
+(écouteur natif du `beforeinput` `insertLineBreak`, posé sur la ligne : celui de `FillBlanksInput`
+valide la question) ; sur une ligne vide, la règle commune (valider, ou première case vide). Les
+lignes partent dans UNE valeur, séparées par `\\` (`formatResolutionAnswer`). Une fois la réponse
+validée, chaque ligne porte ✓ ou ✗ jusqu'à la première fausse, la suite sans marque
+(`judgeResolutionAnswer` côté navigateur, avec l'équation de la case) ; jamais pendant la saisie, et jamais dans une évaluation notée (la version publique n'a
+pas l'équation). Le corrigé affiche l'attendue (`x = 4`) dans le bloc ; les étapes, par le mode B
+(`generatedSteps: linear-equation`). ⚠️ `read-only` n'est posé que sur une case verrouillée :
+`read-only="false"` laisse MathLive en lecture seule. « Aller à la première case vide » vise la
+ligne marquée `data-resolution-focus` (la première vide, sinon la dernière).
+
+**Case « droite paramétrique »** (`answerKind: 'droite-parametrique'`, outil 64) : posée seule
+dans un bloc `$$?$$`, comme la résolution. `FillBlanksInput` la reconnaît (`parametricCaseOf`) et
+monte `ParametricLineInput.svelte` : une accolade, trois lignes MathLive `x =`, `y =`, `z =`. Les
+lignes partent dans UNE valeur, `x=1+2t\\y=2\\z=-1+3t`, le nom de la coordonnée gardant la place
+d'une ligne vide (`formatParametricAnswer`) ; rien d'écrit = valeur vide. Une fois validée, la
+case entière est marquée juste ou fausse (pas de marque par ligne : c'est la droite qui est
+jugée). L'attendue s'écrit de même (`x={{a}}+({{u}})t\\…`, entourée ou non de
+`\begin{cases}`) ; `cleanCoefficients` nettoie chaque ligne à part ; le corrigé la rend en
+système, `\begin{cases}…\end{cases}\quad(t\in\mathbb{R})`. « Aller à la première case vide »
+vise la ligne `data-parametrique-focus` (la première vide, sinon la dernière). Au verso, la
+réponse de l'élève est rendue en système aussi : chaque ligne neutralisée à part
+(`neutralizeStudentLatex`), l'accolade ajoutée ensuite (`parametricStudentLatex`,
+`expected-result.ts`), `&` rendus inertes ; bornes de rendu (longueur, imbrication) mesurées
+sur la réponse ENTIÈRE, et au-delà, ou avec un autre nombre de lignes que trois, la réponse
+est montrée en texte inerte. `validateTemplate` refuse une case « droite paramétrique » qui
+n'est pas seule dans un bloc `$$?$$` ; le formulaire du modèle la règle par défaut (case à
+cocher « représentation paramétrique d'une droite », `calculus-editor.ts`). Une ligne
+« x = 1+2t » retapée dans la ligne de x est tolérée. Espace seulement :
+une attendue de deux lignes est refusée par le lanceur de specs.
+
 Le clavier par défaut de MathLive (123, symboles, abc, grec) n'a aucune touche pour se fermer.
 Tant qu'il est ouvert, un bouton « Fermer le clavier » est posé au-dessus de lui
 (`src/lib/components/MathKeyboardClose.svelte`, monté dans le layout racine, pour tous les
@@ -526,37 +782,59 @@ clavier. ⚠️ Ni `blur()` sur le champ, ni `mathVirtualKeyboard.hide()` (MathL
 clavier. Sous 500 px de haut (téléphone en paysage), les touches passent de 42 à 32 px
 (`--keycap-height`, `src/app.css`) : le clavier passe de 242 à 202 px.
 
+Case dans une cellule de tableau markdown (`| $?$ |`, cadre `table-with-blanks` de
+`FillBlanksInput.svelte`, outil n° 57) : sur écran tactile (`pointer: coarse`), pas de bouton
+clavier dans la case — la toucher ouvre le clavier, comme la case de valeur d'un ` ```variation `
+(`ubumark.md`) ; sous 30 rem de large, cellules (`0.25em`) et cases (`2px`) resserrées. Un tableau
+de 5 colonnes à cases tient dans un iPhone ; plus large, il défile de côté dans son cadre.
+
 Natures de réponse :
 
-| Nature                            | Déclaration                                                  | Jugée par                                                                                                                                                                                                                 |
-| --------------------------------- | ------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Expression / nombre               | case ordinaire                                               | équivalence + forme (§ 5)                                                                                                                                                                                                 |
-| Figure (tracé)                    | bloc ```figure-a-completer (`verifier:`)                     | `construction/judge.ts` (ci-dessous) ; réponse `droite(x1;y1;x2;y2)`, `segment(x1;y1;x2;y2)`, `point(x;y)`, `cercle(cx;cy;x;y)`, `report(cx;cy;ax;ay;bx;by)` ou `repere(vx;vy;ax;ay;r;deg;sens)`, objets séparés par `\|` |
-| Figure de travail                 | bloc ```figure-de-travail (sans `verifier:`)                 | **jamais notée** : retirée avant toute notation (`gradedPart`) ; son tracé (même chaîne) reste dans la réponse, enregistré en évaluation                                                                                  |
-| Opération posée                   | bloc ```operation (`cases: résultat`)                        | case ordinaire : chiffres de la grille lus comme un nombre (`operation-answer.ts` ; division : `operation-division-answer.ts`, quotient et reste)                                                                         |
-| Collection à construire           | bloc ```collection (`construire: N`)                         | case ordinaire : la valeur posée, composition libre (`collection-construire.ts`)                                                                                                                                          |
-| Monnaie à construire              | bloc ```monnaie (`construire: N`)                            | case ordinaire : la somme posée (`35`, ou `3,45` / `2,2` / `1 000` : `amountAnswer`, sans zéro final ni millier collé), coupures libres dans la réserve (`monnaie-construire.ts`)                                         |
-| Droite à placer                   | bloc ```line (`placer: N`)                                   | case ordinaire : la graduation du point de l'élève (`number-line-placer.ts`), exacte, sans tolérance ; une case par point                                                                                                 |
-| Droite à représenter              | bloc ```line (`representer: [2, +inf[`)                      | `isRepresentedIntervalCorrect` (`number-line-representer.ts`) : borne(s), côté et crochets, nombres comparés ; une case                                                                                                   |
-| Repère à placer                   | bloc ```courbe (`placer: A=(2 ; 3)`)                         | `isPlacedPointCorrect` (`courbe-placer.ts`) : les deux coordonnées exactes, aimant aux nœuds de la grille ; une case par point                                                                                            |
-| Droite à tracer                   | bloc ```courbe (`tracer: y = 2x - 1`)                        | `isTracedLineCorrect` (`courbe-tracer.ts`) : deux nœuds distincts de la droite, n'importe lesquels ; une case                                                                                                             |
-| Vecteur à tracer                  | bloc ```courbe (`tracer: vecteur (3 ; -2)`)                  | `isTracedVectorCorrect` (`courbe-vecteur.ts`) : extrémité moins origine = le vecteur, où qu'il soit (origine imposée `depuis A` : depuis A) ; une case                                                                    |
-| Barres à construire               | bloc ```barres (`placer: Danse`, `axe:`)                     | case ordinaire : la hauteur posée (`barres-placer.ts`), aimant à l'unité ; une case par barre                                                                                                                             |
-| Boîte à moustaches à construire   | bloc ```boite-a-moustaches (`placer: Notes`, `axe:`)         | case ordinaire : la valeur du trait posé (`boxplot-placer.ts`), aimant à la graduation ; cinq cases par boîte (note partielle), traits dans le désordre faux                                                              |
-| Étiquettes à ranger               | bloc ```ranger (`- …`, `signe: <`)                           | égalité stricte : la position affichée de l'étiquette posée ; une case par place                                                                                                                                          |
-| Tableau de signes à compléter     | bloc ```variation (`?-3`, `?+`, `?z`, `?rien`)               | valeur de x : case ordinaire, décimal exact accepté ; signe, marque : `isSignCellCorrect` (`sign-table-case.ts`), même jeton (`0` = `z`) ; une case par cellule cachée                                                    |
-| Tableau de variations à compléter | bloc ```variation, ligne `variation:` (`?4, top`, `?flèche`) | valeur : case ordinaire, décimal exact accepté ; flèche : `isSignCellCorrect`, jeton `↗` / `↘` lu sur les positions écrites ; une case par cellule cachée                                                                 |
-| Cercle trigo à placer             | bloc ```trig (`placer: M = 2*pi/3`)                          | `isPlacedAngleCorrect` (`trig-placer.ts`) : le cran de π/12 de l'angle, modulo 2π, aimant à 24 crans ; une case par point                                                                                                 |
-| Horloge à placer                  | bloc ```horloge (`placer: 9 h 25`)                           | `isPlacedTimeCorrect` (`horloge-placer.ts`) : grande aiguille sur la minute ; petite pile sur l'heure à minutes = 0, entre deux heures sinon, ou sur le cran de sa vraie place ; trotteuse sur la seconde exacte          |
-| Texte                             | `[_]` hors formule                                           | casse et accents ignorés ; 1 lettre d'écart tolérée dès 5 lettres                                                                                                                                                         |
-| Grandeur                          | `unit: { expected, required? }`                              | `validateQuantityAnswer` (conversion, unité imposée ; l'attendu est réécrit au tirage dans l'unité imposée, `expectedInRequiredUnit`)                                                                                     |
-| Ensemble en intervalles           | `answerKind: 'intervalles'`                                  | `interval-answer.ts` ; option `openableBounds` ; contrainte `intervalForm` (morceaux non réunis, fraction ou racine simplifiable : ½ ; [détail](mathast/convention-equivalence.md))                                       |
-| Équation de droite / cercle       | `answerKind: 'equation'`                                     | `equation-answer.ts` (même ensemble de points) ; formes `reduite`, `cartesienne`, `centre-rayon`                                                                                                                          |
-| Vecteur dans une case             | `answerKind: 'vecteur'`                                      | `vector-answer.ts` ; `vectorMode` `exact` ou `colineaire`                                                                                                                                                                 |
-| Matrice dans une case             | `answerKind: 'matrice'`                                      | `matrix-answer.ts` (dimensions, puis chaque coefficient)                                                                                                                                                                  |
-| Primitive / solution d'ED         | `answerKind: 'primitive'` / `'solution-ed'`                  | `calculus/` (dérivation / substitution) ; `solutionMode`                                                                                                                                                                  |
-| Case choix                        | bloc ```choix (`plusieurs:`, `melanger:`)                    | `statusFromChoices` (1 / ½ / 0) ; réponse = indices d'origine cochés, triés, séparés par `;` (`choice-case.ts`)                                                                                                           |
-| Carte de cours                    | `options.courseCard`                                         | rien : auto-évaluation (`validateAnswer` rend un message)                                                                                                                                                                 |
+| Nature                            | Déclaration                                                                                                                                     | Jugée par                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| --------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Expression / nombre               | case ordinaire                                                                                                                                  | équivalence + forme (§ 5)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| Figure (tracé)                    | bloc ```figure-a-completer (`verifier:`)                                                                                                        | `construction/judge.ts` (ci-dessous) ; réponse `droite(x1;y1;x2;y2)`, `segment(x1;y1;x2;y2)`, `point(x;y)`, `cercle(cx;cy;x;y)`, `report(cx;cy;ax;ay;bx;by)` ou `repere(vx;vy;ax;ay;r;deg;sens)`, objets séparés par `\|`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| Figure de travail                 | bloc ```figure-de-travail (sans `verifier:`)                                                                                                    | **jamais notée** : retirée avant toute notation (`gradedPart`) ; son tracé (même chaîne) reste dans la réponse, enregistré en évaluation                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
+| Opération posée                   | bloc ```operation (`cases: résultat`)                                                                                                           | case ordinaire : chiffres de la grille lus comme un nombre (`operation-answer.ts` ; division : `operation-division-answer.ts`, quotient et reste)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| Collection à construire           | bloc ```collection (`construire: N`)                                                                                                            | case ordinaire : la valeur posée, composition libre (`collection-construire.ts`)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| Monnaie à construire              | bloc ```monnaie (`construire: N`)                                                                                                               | case ordinaire : la somme posée (`35`, ou `3,45` / `2,2` / `1 000` : `amountAnswer`, sans zéro final ni millier collé), coupures libres dans la réserve (`monnaie-construire.ts`)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| Droite à placer                   | bloc ```line (`placer: N`)                                                                                                                      | case ordinaire : la graduation du point de l'élève (`number-line-placer.ts`), exacte, sans tolérance ; une case par point                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| Droite à représenter              | bloc ```line (`representer: [2, +inf[`)                                                                                                         | `isRepresentedIntervalCorrect` (`number-line-representer.ts`) : borne(s), côté et crochets, nombres comparés ; une case                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| Droite à graduer                  | bloc ```line (`graduer: 3`)                                                                                                                     | case ordinaire : le nombre de parts (`3`), puis chaque point de `placer:` sur sa valeur ; une case pour les parts, une par point                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| Repère à placer                   | bloc ```courbe (`placer: A=(2 ; 3)`)                                                                                                            | `isPlacedPointCorrect` (`courbe-placer.ts`) : les deux coordonnées exactes, aimant aux nœuds de la grille ; une case par point                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+| Droite à tracer                   | bloc ```courbe (`tracer: y = 2x - 1`)                                                                                                           | `isTracedLineCorrect` (`courbe-tracer.ts`) : deux nœuds distincts de la droite, n'importe lesquels ; une case                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| Vecteur à tracer                  | bloc ```courbe (`tracer: vecteur (3 ; -2)`)                                                                                                     | `isTracedVectorCorrect` (`courbe-vecteur.ts`) : extrémité moins origine = le vecteur, où qu'il soit (origine imposée `depuis A` : depuis A) ; une case                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
+| Escalier à construire             | bloc ```courbe (`construire 3`)                                                                                                                 | `isStaircaseTermCorrect` (`courbe-construire.ts`) : le terme est à moins de 3 % de la largeur de f(terme précédent de l'élève) ; une case par terme                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| Figure à colorier                 | bloc ```partage (`colorier: 3/8`)                                                                                                               | `isColoringCorrect` (`utils/partage-colorier.ts`) : le nombre de parts coloriées, pas lesquelles ; une case                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| Assemblage de cubes à geste       | bloc ```cubes (`dessiner: face`, `retrouver: face, droite`)                                                                                     | `isCubesAnswerCorrect` (`utils/cubes-gestes.ts`) : la vue à une translation près, ou les mêmes vues ; une case                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+| Patron à geste                    | bloc ```patron (`designer: opposee`, `completer: 5`)                                                                                            | `isPatronAnswerCorrect` (`utils/patron-gestes.ts`) : mêmes faces, ou toute pose qui se plie en cube ; une case                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+| Vecteur sur un solide             | bloc ```solide (`tracer: vecteur AB + AD depuis A`)                                                                                             | `isSolideAnswerCorrect` (`utils/solide-gestes.ts`) : l'un des couples origine / extrémité calculés en 3D ; une case                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| Barres à construire               | bloc ```barres (`placer: Danse`, `axe:`)                                                                                                        | case ordinaire : la hauteur posée (`barres-placer.ts`), aimant à l'unité ; une case par barre                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| Boîte à moustaches à construire   | bloc ```boite-a-moustaches (`placer: Notes`, `axe:`)                                                                                            | case ordinaire : la valeur du trait posé (`boxplot-placer.ts`), aimant à la graduation ; cinq cases par boîte (note partielle), traits dans le désordre faux                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
+| Éléments à associer               | bloc ```associer (`- élément -> étiquette`, `- -> intrus`)                                                                                      | égalité stricte : la position affichée de l'étiquette posée ; une case par élément                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| Texte à trous                     | bloc ```trous (`[étiquette]`, `intrus:`)                                                                                                        | égalité stricte : la position affichée de l'étiquette posée ; une case par trou                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| Expression, ou bien : impossible  | case ordinaire + `impossibleLabel` (« pas factorisable »), attendue `impossible` sur les tirages sans réponse (`{{if:delta<0\|impossible\|…}}`) | `impossibleVerdict` (`answer-validator.ts`), avant toute lecture : bouton enfoncé (valeur de la case = marque réservée `IMPOSSIBLE_ANSWER`, impossible à taper ; le texte du bouton tapé dans la case n'est PAS le bouton) et tirage sans réponse → juste ; l'un sans l'autre → faux, sans message de forme ; ni l'un ni l'autre → chaîne habituelle. Bouton sur TOUS les tirages, sous l'énoncé (`FillBlanksInput`, « Case N : » s'il y en a plusieurs) ; enfoncé, il vide la case et la verrouille (grisée par MathLive), second clic → case libre et vide ; garde défensive : une valeur qui porte déjà la marque (aucun parent ne la remonte aujourd'hui, `QuestionCard` et `FlashCard` repartent de `prefilled`) verrouille la case dès que MathLive est chargé ; la marque est montrée en texte du bouton dans la correction et les résultats du prof (`blankViews`, `expected-result.ts`) ; option dans « Valeurs par défaut des cases » du formulaire ; attendue `impossible` sans bouton → tirage en erreur (publication refusée) ; `impossible-answer.ts` |
+| Étiquettes à ranger               | bloc ```ranger (`- …`, `signe: <`)                                                                                                              | égalité stricte : la position affichée de l'étiquette posée ; une case par place                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| Tableau de signes à compléter     | bloc ```variation (`?-3`, `?+`, `?z`, `?rien`)                                                                                                  | valeur de x : case ordinaire, décimal exact accepté ; signe, marque : `isSignCellCorrect` (`sign-table-case.ts`), même jeton (`0` = `z`) ; une case par cellule cachée                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
+| Tableau de variations à compléter | bloc ```variation, ligne `variation:` (`?4, top`, `?flèche`)                                                                                    | valeur, limite : case ordinaire, décimal exact accepté, infini jugé au jeton signe compris (`infiniteCellVerdict`) ; flèche : `isSignCellCorrect`, jeton `↗` / `↘` lu sur les positions écrites ; une case par cellule cachée                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| Cercle trigo à placer             | bloc ```trig (`placer: M = 2*pi/3`)                                                                                                             | `isPlacedAngleCorrect` (`trig-placer.ts`) : le cran de π/12 de l'angle, modulo 2π, aimant à 24 crans ; une case par point                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| Horloge à placer                  | bloc ```horloge (`placer: 9 h 25`)                                                                                                              | `isPlacedTimeCorrect` (`horloge-placer.ts`) : grande aiguille sur la minute ; petite pile sur l'heure à minutes = 0, entre deux heures sinon, ou sur le cran de sa vraie place ; trotteuse sur la seconde exacte                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| Programme tortue                  | bloc ```tortue (`attendu:`, `comparer:`)                                                                                                        | `tortueAnswerVerdict` (`ubumark/utils/tortue-answer.ts` → `jugerProgrammeTortue`) : programme de l'élève en notation texte rejoué, même tracé (`position`) ou même forme (`forme`) ; attendu = `position \| <programme>`, `position \| blocs 3 \| <programme>` avec `blocs:` (au-delà, faux), `4e \| position \| …` avec `niveau:` (rejoué au niveau) ; message de la tortue en `feedback` ; une case                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| Programme de calcul               | bloc ```calcul (`attendu:`, `essais:`)                                                                                                          | `calculAnswerVerdict` (`ubumark/utils/calcul-answer.ts` → `jugerProgrammeCalcul`) : programme de l'élève en notation texte rejoué sur chaque essai, mêmes nombres affichés dans le même ordre ; attendu = `<essais> \| <programme>` (`−3 ; 0 ; … \| afficher (nombre + 2) × 4`), précédé du niveau au-dessus de la 5e (`4e \| …`, blocs admis du niveau, `niveau:`) ; message (illisible, rien d'affiché, erreur sur un essai) en `feedback` ; une case                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| Robot à produire                  | bloc ```robot (`produire: oui`)                                                                                                                 | `robotAnswerVerdict` (`ubumark/utils/robot-answer.ts`) : code de l'élève (`→ → ↑`, `avance de 4, pivote à gauche`) rejoué sur la scène, juste s'il finit sur l'arrivée sans sortir ni toucher une case grise ; attendu = `<scène> \| <code le plus court>` (`flèches 8x5 2,1 6,4 4,1 \| → → …`) ; raison (sortie, case grise, arrivée manquée, instruction inconnue) en `feedback` ; une case, jugée avant la garde de complexité ; labyrinthe à parcourir (bloc ```labyrinthe, `parcourir: oui`) : `labyrintheAnswerVerdict` (`ubumark/utils/labyrinthe-answer.ts`), chemin `2,1 2,2 …` de l'entrée à la dernière colonne par des cases voisines du bon chemin ; attendu = `6x4 2 \| 2,1 …`, graine posée dans le bloc par le générateur (`avecGraines`) ; `expectedAnswerLatex` = le bon chemin en texte (une réponse juste, comme pour le robot) ; « Sortie 3 : 73 → … » dit par `LabyrintheCorrige` et la série (`cheminDit`) ; raison (entrée, case sautée, intrus, sortie manquée) en `feedback` ; une case                                                   |
+| Grille à remplir (Yohaku)         | bloc ```yohaku (cases `[…]`)                                                                                                                    | `yohakuAnswerVerdict` (`ubumark/utils/yohaku-answer.ts`) : chaque ligne et chaque colonne de la grille de l'élève donne son total (`areEquivalent`), plusieurs remplissages justes ; attendu = JSON de l'opération, de la solution et des totaux ; raison : lignes et colonnes fausses nommées                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      | <code le plus court>` (`flèches 8x5 2,1 6,4 4,1 \| → → …`) ; raison (sortie, case grise, arrivée manquée, instruction inconnue) en `feedback`; une case, jugée avant la garde de complexité ; labyrinthe à parcourir (bloc ```labyrinthe,`parcourir: oui`) : `labyrintheAnswerVerdict` (`ubumark/utils/labyrinthe-answer.ts`), chemin `2,1 2,2 …`de l'entrée à la dernière colonne par des cases voisines du bon chemin ; attendu =`6x4 2 \| 2,1 …`, graine posée dans le bloc par le générateur (`avecGraines`) ; `expectedAnswerLatex`= le bon chemin en texte (une réponse juste, comme pour le robot) ; « Sortie 3 : 73 → … » dit par`LabyrintheCorrige` et la série (`cheminDit`) ; raison (entrée, case sautée, intrus, sortie manquée) en `feedback` ; une case |
+| Programme Python                  | bloc ```python-a-ecrire (`fonction:`, `solution:`, `essais:`)                                                                                   | `pythonAnswerVerdict` (`questions/python/python-answer.ts`) : LIT le verdict rangé dans la valeur ; le programme a tourné AVANT la validation, dans le navigateur (`judgePythonCase`, worker Pyodide, un appel par essai contre la solution de l'auteur, arrêt au premier raté) ; sans verdict (temps écoulé) : faux, « Ton programme n'a pas été essayé. » ; jamais cru par le serveur (`gradeWithinBudget` : faux ; pas `gradeQuestion`, qui donne aussi le badge de la carte d'entraînement) ; trace de la tentative raccourcie sous 2 000 caractères (`pythonAnswerForTrace`) ; une case, jugée avant la garde de complexité                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| Texte                             | `[_]` hors formule                                                                                                                              | casse et accents ignorés ; 1 lettre d'écart tolérée dès 5 lettres                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| Grandeur                          | `unit: { expected, required? }`                                                                                                                 | `validateQuantityAnswer` (conversion, unité imposée ; l'attendu est réécrit au tirage dans l'unité imposée, `expectedInRequiredUnit`)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| Ensemble en intervalles           | `answerKind: 'intervalles'`                                                                                                                     | `interval-answer.ts` ; option `openableBounds` ; contrainte `intervalForm` (morceaux non réunis, fraction ou racine simplifiable : ½ ; [détail](mathast/convention-equivalence.md))                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| Équation de droite / cercle       | `answerKind: 'equation'`                                                                                                                        | `equation-answer.ts` (même ensemble de points) ; formes `reduite`, `cartesienne`, `centre-rayon`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| Vecteur dans une case             | `answerKind: 'vecteur'`                                                                                                                         | `vector-answer.ts` ; `vectorMode` `exact` ou `colineaire`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| Matrice dans une case             | `answerKind: 'matrice'`                                                                                                                         | `matrix-answer.ts` (dimensions, puis chaque coefficient)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
+| Primitive / solution d'ED         | `answerKind: 'primitive'` / `'solution-ed'`                                                                                                     | `calculus/` (dérivation / substitution) ; `solutionMode`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
+| Équation résolue ligne par ligne  | `answerKind: 'resolution'`, `equation` (énoncé), `minLines`                                                                                     | `resolution-answer.ts` : chaque ligne a les mêmes solutions que la précédente (la première que `equation`, ensembles du solveur de mathAST) ; une ligne fausse = réponse fausse, même si la dernière est juste ; dernière ligne `x = valeur`, valeur jugée comme une case ordinaire, contre le membre droit de l'attendue, avec les réglages de la case (`x = 12/3` : ½ ; `x = 8-4` : mal écrit ; `acceptDecimal`) ; `minLines` (défaut 1, `x = 4` seul juste) ; 20 lignes au plus ; jugée avant la garde de complexité, qui mesure chaque ligne, avec une garde de coût du solveur (exposants ≤ 10, degré écrit ≤ 20) ; arrêt à la première ligne fausse ; message de la première ligne fausse en `feedback` ; attendue vérifiée par le lanceur de specs (`readExpectedResolution`)                                                                                                                                                                                                                                                                                |
+| Droite paramétrique de l'espace   | `answerKind: 'droite-parametrique'`, attendue `x=1+2t\\y=2\\z=-1+3t`                                                                            | `parametric-line-answer.ts` : **même droite**, quel que soit le point ou le vecteur choisi ; chaque ligne a + b·p, vérifié exactement (f(p) − f(0) − (f(1) − f(0))·p = 0) ; une seule lettre de paramètre, la même partout, ni x, ni y, ni z (`k`, `\lambda` acceptées) ; point (p = 0) sur la droite attendue, vecteur non nul colinéaire (déterminants 2×2 nuls, valeurs exactes) ; l'écriture n'est pas jugée (`1+2t-0` juste) ; messages : ligne vide, illisible, deux lettres, pas affine, vecteur nul, point hors de la droite, vecteur non colinéaire ; jugée avant la garde de complexité, qui mesure chaque ligne ; aucune erreur prévue (refus du générateur) ; attendue vérifiée par le lanceur de specs (`readExpectedParametricLine`)                                                                                                                                                                                                                                                                                                                  |
+| Case choix                        | bloc ```choix (`plusieurs:`, `melanger:`)                                                                                                       | `statusFromChoices` (1 / ½ / 0) ; réponse = indices d'origine cochés, triés, séparés par `;` (`choice-case.ts`)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| Carte de cours                    | `options.courseCard`                                                                                                                            | rien : auto-évaluation (`validateAnswer` rend un message)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 
 Après « Valider », la `FlashCard` colore chaque case au recto avec le verdict par case du
 validateur (`computeBlankColors`, `components/questions/blank-verdicts.ts` → `validateAnswerDetailed`,
@@ -584,7 +862,8 @@ pointillés, un toucher ouvre dessous + / −, 0 / ‖ / rien, ou ↗ / ↘ ; au
 `data-construire-case` (Entrée → première case vide). Flash : cellules vides ; bonne réponse : remplies.
 Énoncé masqué d'évaluation : même écran. Tableau de **variations** (chantier `variations-a-completer`) :
 une flèche cachée n'est pas dessinée et les deux valeurs qui l'encadrent sont au milieu
-(`variationRowForDisplay`) ; une valeur cachée est une case à sa hauteur.
+(`variationRowForDisplay`) ; à côté d'une double barre, c'est la limite du côté de la flèche qui
+passe au milieu, l'autre côté garde sa hauteur (outil 59) ; une valeur cachée est une case à sa hauteur.
 
 Corrigé (résultat attendu, `expected-result.ts`) : le tableau sort de l'énoncé rempli et de la consigne
 (`withoutSignTableCases`, aussi dans `instructionOf`) ; une ligne `sign-table` par tableau, à sa place :
@@ -616,7 +895,16 @@ grise pas « Valider » (`FlashCard`, `QuestionCard` ; la version publique porte
 0. Vide → `empty`. Nature `intervalles` → sa chaîne. Puis **garde de complexité**
    (`isAnswerTooComplex`) : une écriture démesurée est `incorrect` **avant** toute lecture.
    Puis `equation`, `vecteur`, `matrice`, `primitive` / `solution-ed` : chacune sa chaîne.
-   Case « figure » (`blank.construction`), juste après le vide : `judgeConstruction`. Chaque
+   Nature `resolution` : sa chaîne AVANT la garde de complexité (plusieurs lignes dépassent
+   vite la longueur d'une réponse), le juge mesure chaque ligne ; de même pour la nature
+   `droite-parametrique`.
+   Case « figure » (`blank.construction`), juste après le vide : `judgeConstruction`. Principes
+   (verdict du conseil, chantier `geometrie-validation` clos le 2026-11-19, journal archivé dans
+   `docs/archive/wip/geometrie-validation-progress.md`) : juger le **résultat**, jamais les gestes
+   (aucun geste enregistré : aucune réponse d'élève n'est conservée) ; vérifier des **propriétés**,
+   pas comparer à une figure attendue (plusieurs bonnes figures : le carré d'un côté ou de l'autre de
+   [AB]) ; objets de l'élève retrouvés par leurs **coordonnées** (aimantation aux nœuds), pas par des
+   identifiants ; **tout-ou-rien**, avec le message de la première vérification ratée. Chaque
    vérification `droite_par P ; Q` prend **sa** droite parmi celles tracées (une droite qui passe par
    P et Q, quels que soient les deux points qui l'ont tracée) ; une droite qu'aucune ne prend est
    « de trop » (faux) ; message de la première vérification ratée (« Ta droite passe par A et C, pas
@@ -626,7 +914,8 @@ grise pas « Valider » (`FlashCard`, `QuestionCard` ; la version publique porte
    donné : sans effet) ; un rectangle est présent si ses quatre côtés sont couverts ; le carré, d'un
    côté ou de l'autre de [AB]. Messages, dans l'ordre : trait hors des lignes du quadrillage (si les
    côtés donnés les suivent), figure non fermée (ou fermée sur un côté donné prolongé : « Le côté déjà tracé ne doit pas être
-   prolongé… », « Les côtés déjà tracés ne doivent pas être prolongés… » pour le rectangle), pas un carré, trait de trop, trait qui dépasse.
+   prolongé… », « Les côtés déjà tracés ne doivent pas être prolongés… » pour le rectangle ; carré fermé sur la droite (AB) à côté de [AB], décalé, accolé par un sommet ou séparé par un trou : « Ton carré doit être construit sur le côté déjà tracé. » ; carré fermé sur une partie de [AB] : « Ton carré doit avoir pour côté le côté déjà tracé. »), pas un carré,
+   trait de trop, trait qui dépasse.
    Rectangle sans angle droit en B : erreur de l'auteur.
    **Carré et rectangle cotés sur papier uni** (chantier `regle-graduee`, PR 6, décisions Q11, Q13, Q19,
    Q20 ; `construction/ruled-polygon.ts`) : `carre A ; B ; C ; D` et `rectangle A ; B ; C ; D : BC = 3 cm`
@@ -656,7 +945,41 @@ grise pas « Valider » (`FlashCard`, `QuestionCard` ; la version publique porte
    côté où l'élève a le plus tracé (sinon le plus haut), les deux règles (B vers C, A vers D,
    `solutionRulers`), les perpendiculaires et les deux angles droits (`solutionTriangle` rend une
    `TriangleCorrection` pour ce cas). Les formes du quadrillage (`carre A ; B`, `rectangle A ; B ; C`)
-   sont inchangées. Vérification `symetrique par d` (outil segment,
+   sont inchangées.
+   **Rectangle sans équerre** (chantier `rectangle-sans-equerre`, 4-038, phase 0 validée le 2026-11-17 ;
+   `construction/diagonal-rectangle.ts`) : `rectangle A ; B ; C ; D : AB = 4 cm ; AC = 6 cm`
+   (`DiagonalRectangleCheck`, `isDiagonalRectangleCheck` : clé `diagonal` ; `side` et `diagonal` en mm
+   entiers). La diagonale [AC] est un segment de la figure de bouts A et C (ni une droite, ni un segment
+   plus long), de la longueur écrite ; B et D absents (le
+   contrôle des noms de `instance-generator.ts` demande A et C). Palette Segment · Compas · Règle graduée
+   exactement (`DIAGONAL_RECTANGLE_TOOLS`), papier uni, seul dans la figure. Juge
+   (`judgeDiagonalRectangle`) : le RÉSULTAT, toute méthode juste passe. Quadrilatère fermé A → X → C → Y
+   (X, Y bouts de segments, de part et d'autre de (AC), côtés couverts par les segments fusionnés) ; B est
+   le seul des deux à la longueur donnée de A, sinon celui que l'élève a mesuré depuis A (compas piqué en
+   A, règle posée en A), sinon le plus près de la longueur donnée. « Construit » (`builtPredicate`) étend `constructionOf` de proche en proche : un compas
+   ouvert sur une graduation d'une règle posée avant lui, son 0 au centre construit (`compassGraduationOf`),
+   est un trait construit ; le bout d'un segment arrêté sur une graduation d'une règle posée avant lui, son
+   0 sur un point construit et sa direction vers un point construit, est un point construit, quel que soit
+   l'autre bout du segment ([CD] ou [OD] arrêté sur la règle posée de B vers O) (une règle
+   posée à l'œil ne construit rien). Messages, dans l'ordre : hors palette (point, report…) → faux sans
+   message ; aucun côté parti de A ou de C → « Trace les côtés du rectangle ABCD. » ; « Ta figure n'est pas
+   fermée. » ; « Trace un seul rectangle ABCD. » ; B non construit → « Ton sommet B est placé à l'œil :
+   construis-le avec ton compas ou ta règle. » ; [AB] faux → « Ton côté [AB] mesure 4,5 cm au lieu de
+   4 cm. » (arrondi au mm ; s'il tombe juste : « … ne mesure pas exactement 4 cm. ») ; B hors du cercle de
+   diamètre [AC] → « Ton angle ABC n'est pas droit : B doit être sur le cercle de diamètre [AC]. » ; D non
+   construit ; BD ≠ AC → « Tes diagonales n'ont pas la même longueur… » ; milieux différents → « Tes
+   diagonales n'ont pas le même milieu… » ; trait de trop, trait qui dépasse (`leftoverFeedback`), les
+   segments sur [AC], sur [BD] et sur la médiatrice de [AC] étant des traits de construction (un segment
+   sur (AC) ou (BD) qui sort de la diagonale dépasse ; sur la médiatrice, il faut deux cercles de même
+   rayon centrés en A et en C, et le segment qui sort de leurs croisements dépasse ; sans eux, trait de
+   trop). Erreurs de l'auteur : A ou C absents ou confondus, B
+   ou D déjà dans la figure, [AC] pas tracé ou d'une autre longueur que celle écrite, fenêtre absente,
+   diagonale plus longue que la règle, figure hors de la fenêtre des deux côtés ; parseur : un autre côté
+   que [AB], une autre diagonale, côté ≥ diagonale, longueur pas au mm, quadrillage, autre vérification,
+   palette autre. Correction : [AB], [BC], [CD], [DA] du rectangle dont B est le plus près d'un bout tracé
+   (sinon B le plus haut), et (`solutionTriangle`) le cercle de diamètre [AC], l'arc de centre A de rayon
+   AB, la diagonale [BD] ; ni règle ni codage. Vue : la Règle posée propose aussi le Segment (tracer le
+   long de la règle). Vérification `symetrique par d` (outil segment,
    `construction/symmetry.ts`, chantier `controles-figure`) : l'élève trace l'image de tout ce que la
    figure trace (segments, côtés des polygones visibles) sauf l'axe — ou des seuls traits entre les points
    listés (`symetrique A ; B ; C par d`) ; `par O` (un point) : symétrie centrale. Même fusion par droite
@@ -714,19 +1037,57 @@ grise pas « Valider » (`FlashCard`, `QuestionCard` ; la version publique porte
    avec tes instruments. ». Messages : il manque la droite (« Trace la médiatrice de [AB]. », « Trace la
    droite m. »), puis, pour une médiatrice, la droite qui touche au but (perpendiculaire à [AB] ou par
    son milieu ; une droite qui repasse un trait de la figure, (AB) elle-même, n'est pas un essai) : « … perpendiculaire à [AB] mais ne passe pas par son milieu. », « … passe par le milieu
-   de [AB] mais n'est pas perpendiculaire à [AB]. », « Ce n'est pas la médiatrice de [AB]. » ; autre
-   expression : « Ta droite n'est pas à sa place. ». Un point ou un segment dans la réponse : faux, sans
+   de [AB] mais n'est pas perpendiculaire à [AB]. », « Ce n'est pas la médiatrice de [AB]. » ;
+   perpendiculaire ou parallèle par un point (`perpendiculaire(A, d)`, `parallele(A, d)`, outil n° 40,
+   `throughLineOf`), aussi sur quadrillage, lue sur la DERNIÈRE droite de l'élève qui ne repasse pas un
+   trait de la figure : rien → « Trace la perpendiculaire à (d) passant par A. », l'une pour l'autre →
+   « Ta droite est parallèle à (d) : on demande la perpendiculaire. » (et l'inverse), bonne direction →
+   « … perpendiculaire à (d) mais ne passe pas par A. », par A → « Ta droite passe par A mais n'est pas
+   perpendiculaire à (d). » ; autre expression : « Ta droite n'est pas à sa place. ». Un point ou un segment dans la réponse : faux, sans
    message. Erreurs de l'auteur : expression qui ne se calcule pas ou ne donne pas une droite, droite
    hors de la fenêtre, deux vérifications pour la même droite ; sur quadrillage, droite sans deux nœuds
-   dans la fenêtre ; sur papier uni, autre chose qu'une médiatrice, A ou B invisible, ou médiatrice
+   dans la fenêtre ; parallèle par un point de (d) ((d) elle-même) ; sur papier uni, autre chose qu'une
+   médiatrice, une bissectrice, une perpendiculaire ou une parallèle par un point (forme à deux arguments
+   seulement : (d) nommée), (d) non tracée, A invisible ou hors de la fenêtre, droite attendue sans 2
+   unités dans la fenêtre (`throughLineSupportError` ; l'élève pose l'équerre le long de (d) et la glisse
+   jusqu'à A, la parallèle en deux équerres : `isSupported` le reconnaît depuis le lot 2b), A ou B invisible, ou médiatrice
    qui n'a pas 2 unités dans la fenêtre (`mediatriceSupportError`, aussi pour `milieu(A, B)` : l'élève y
    croise deux cercles de même rayon, quel qu'il soit ; avant le lot 9, les cercles de rayon AB devaient
-   s'y couper). Une `droite` ne se mêle à aucune autre
+   s'y couper). Médiatrice et milieu à la règle graduée (outil n° 38, papier uni, `regle` dans `outils:` ;
+   médiatrice : `droite, regle, point, equerre`, milieu : `regle, point`) : l'élève pose la règle sur [AB],
+   son 0 en A ou en B, marque le milieu au Point (aimanté aux graduations du mm, ‹ › le déplacent d'un
+   millimètre, `nudgeRulerEnd` forme `point`), puis trace à l'équerre par ce point. Le juge lit la palette
+   (`FigureShapes.tools`, rempli par `positions-setup.ts`) : avec la règle et une médiatrice ou un milieu
+   vérifié, `constructionOf` reçoit `rulerLength` et un point posé sur une graduation d'une règle bien posée
+   (0 sur un point construit, bord vers un point construit ou le long d'un trait droit construit par ce 0)
+   est construit ; partout ailleurs, une règle posée reste une réponse forgée. Milieu posé à l'œil (point
+   posé sur (AB), ni point de départ ni sur une graduation) : « Ton milieu est placé à l'œil : pose la règle
+   sur [AB] et marque-le sur une graduation. » (`midpointEyeballedFeedback`). Erreur de l'auteur : [AB] qui
+   ne mesure pas un nombre pair de millimètres ou plus long que la règle (`rulerMidpointError`).
+   **Figure composée** (outil n° 45, `construction/composite.ts`, appelé par `judgeConstruction` et
+   `assertConstructionChecks` quand l'appelant passe le bloc, `source`) : chaque `verifier:` est une étape,
+   jugée dans l'ordre par son juge habituel, sur un bloc à elle (`stepSource` : sa seule vérification, ses
+   outils, les points construits avant elle ajoutés en `X = point(x, y)`). Une étape juste construit ses
+   points — B de `segment AB = 6 cm` (`segmentLengthEnd`), C et D du carré coté (`ruledPolygonCorners`), le
+   point placé — aux positions de l'élève pour juger la suite, à celles de la correction pour la garde de
+   l'auteur (`assertComposite`, « Étape n : … ») et le dessin (`compositeSteps`). Chaque juge ne reçoit que
+   les objets qu'il sait lire ; mode `composite` : carré coté sans « trait de trop » (les diagonales), et
+   parmi plusieurs figures fermées celles à angles droits ; point sans « point de trop » ; cercle de centre
+   donné qui ne compte que les cercles de ce centre. Forgé : un objet dont l'outil n'est pas dans
+   `outils:`. Verdict : la première étape fausse, « Étape n : <message de son juge> ».
+   `segment [AC]` : un segment tracé (ou des segments bout à bout) joint A et C, sinon « Trace le segment
+   [AC]. ». Le croisement de deux traits se vérifie par `point O = intersection(segment(A, C), segment(B,
+D))` (aussi `droite(…)`), ses quatre points connus. Correction à l'écran : celle de chaque étape, avec ses
+   points (`FigureACompleterView`, `correctionSteps`). Tests : `construction-figure-composee.test.ts`,
+   `figure-a-completer-figure-composee.svelte.test.ts`. Une
+   `droite` ne se mêle à aucune autre
    vérification, et sa palette ne prend que règle, équerre, compas, report (parseur : un point ou un segment
    tracé ferait une réponse forgée). Palette : règle, équerre, compas, avec ou sans quadrillage, et le report sur papier uni (lot 9 : il garde l'écartement des deux cercles égaux ; `LINE_GRID_TOOLS` sur quadrillage, où `outils: report` est refusé)
    (`PLAIN_PAPER_TOOLS.droite`) ; sur quadrillage, tous ses touchers vont aux nœuds (l'équerre choisit
    d'abord sa droite). Correction : la droite en pointillés ;
-   médiatrice : angle droit au milieu et moitiés codés (`solutionCodages`). Bissectrice
+   médiatrice : angle droit au milieu et moitiés codés (`solutionCodages`) ; perpendiculaire par un
+   point : angle droit codé au pied sur (d) ; parallèle : la perpendiculaire à (d) par A en trait fin et
+   ses deux angles droits (`solutionThroughLines`). Bissectrice
    (`droite d = bissectrice(A, O, B)`, lot 9) : papier uni seulement ; O, A, B visibles, non alignés, les deux côtés tracés (un trait droit de la
    figure par O qui s'en va vers A, même plus court que OA, et de même vers B, `sideDrawn` : sinon l'arc
    en O n'a rien à couper ; le message nomme le côté manquant),
@@ -766,8 +1127,8 @@ cercle(O, passant=A)` (palette : le compas ; papier uni ou quadrillage, O et A s
    quadrillage par le parseur). Lecture des deux formes : `centeredCircleOf` (`ubumark/types/construction.ts`).
    Juste : un cercle de l'élève qui recouvre le cercle attendu, construit (sur quadrillage, tout cercle
    tracé l'est : les touchers vont aux nœuds). Sinon, dans l'ordre : bon cercle au point de passage non
-   construit → « Ton compas est ouvert à l'œil : ouvre-le jusqu'à A. » (rayon : « … prends l'écartement DE
-   avec le Report. ») ; aucun cercle → « Trace le cercle de centre O passant par A. » (« … et de rayon
+   construit → « Ton compas est ouvert à l'œil : ouvre-le jusqu'à A. » (rayon donné par un segment : le
+   message du mauvais rayon ci-dessous, le seul, E62) ; aucun cercle → « Trace le cercle de centre O passant par A. » (« … et de rayon
    DE. ») ; aucun cercle centré en O → « Pique ton compas en O. » ; sinon « Ton cercle a le bon centre mais
    ne passe pas par A. » (« … mais pas le bon rayon : reporte la longueur DE. »). Erreurs de l'auteur :
    point nommé invisible, cercle qui sort de la fenêtre, centre ou point de passage hors des nœuds sur
@@ -823,11 +1184,16 @@ cercle(O, passant=A)` (palette : le compas ; papier uni ou quadrillage, O et A s
    croisement de deux côtés d'angle, l'un parti de A, l'autre de B (`angleSideVertex`), ou du côté
    d'angle et d'un cercle construit centré au même sommet : un point construit par les exceptions de
    la règle ci-dessus ne suffit pas ; un cercle ou un report sans longueur donnée : faux, sans message.
-   Messages, après ceux du lot 4 : « Ton sommet C est placé à l'œil : trace ses côtés avec le
-   rapporteur. », « Tes deux angles sont tracés de part et d'autre de [AB] : trace-les du même côté. »
+   Messages, après ceux du lot 4 : « Trace un seul triangle ABC. » (plusieurs C distincts, revue de
+   #2660 : sinon un éventail de [BC] arrêtés sur un côté d'angle, dont un seul au croisement, serait
+   juste), « Ton sommet C est placé à l'œil : trace ses côtés avec le rapporteur. » (aussi quand un
+   côté sans repère passe par le bout de l'autre sans que les deux se rejoignent : ce message remplace
+   alors « doivent se rejoindre », jamais au triangle rectangle), plusieurs C justes de part et d'autre
+   de (AB) compris, « Tes deux angles sont tracés de part et d'autre de [AB] : trace-les du même côté. »
    (repères de côtés opposés ET un angle faux), « Ton angle ABC mesure 115° au lieu de 65° : tu as lu la
    mauvaise graduation du rapporteur. » (180 − a, repère du côté de C), « Ton angle CAB mesure 45° au
-   lieu de 40°. », puis la longueur. Erreurs de l'auteur, en plus : fenêtre trop allongée
+   lieu de 40°. », puis la longueur. Quand les côtés ne se rejoignent pas, la mauvaise graduation est déjà
+   reconnue sur la direction du côté d'angle, avant de chercher C (`sideScaleFeedbackOf`). Erreurs de l'auteur, en plus : fenêtre trop allongée
    (`protractorWindowError`), rapporteur qui ne tient en A ou en B d'aucun côté de (AB), ou pas du même
    côté aux deux sommets, A et B confondus. Correction : les côtés vers un C où le rapporteur tient, les
    angles codés (`TriangleCorrection.angles`, dessinés comme l'arc du lot 5).
@@ -854,8 +1220,8 @@ cercle(O, passant=A)` (palette : le compas ; papier uni ou quadrillage, O et A s
    carreaux.
    **Côté coté en cm** (chantier `regle-graduee`, PR 4) : `triangle ABC : CAB = 90 ; AC = 4 cm` (aussi
    `3,5 cm`, `3 cm 5 mm`, `35 mm`, au mm près ; `TriangleLength` `{ length, unit }`, `isRuledLength`),
-   papier uni, palette Segment · Équerre · Règle graduée exactement (`triangleTools`) ; les cm sans
-   l'angle droit ou sur quadrillage sont refusés par le parseur, un côté plus long que la règle
+   papier uni, palette Segment · Équerre · Règle graduée exactement (`triangleTools`) ; les cm sur
+   quadrillage, ou mêlés à un segment à reporter, sont refusés par le parseur, un côté plus long que la règle
    (`rulerLengthOf`) à la publication. Un seul triangle (Q17) : plusieurs C distincts (un de chaque côté
    de (AB) compte pour deux, un même C atteint deux fois pour un) → « Trace un seul triangle ABC. ».
    Même ordre que ci-dessus, le croisement du report remplacé par la graduation, lue au bout du trait
@@ -865,7 +1231,53 @@ cercle(O, passant=A)` (palette : le compas ; papier uni ou quadrillage, O et A s
    est placé à l'œil : arrête [AC] sur une graduation de la règle. » ; puis « Ton côté [AC] mesure
    3,8 cm au lieu de 4 cm. » (dans l'unité de l'auteur). Report : hors palette, faux sans message.
    Correction : la règle posée au sommet le long de la perpendiculaire, vers le C de la correction
-   (`triangleRuler`, par `solutionRulers`), sans arc ni codage de longueur.
+   (`triangleRulers`, par `solutionRulers`), sans arc ni codage de longueur.
+   **Triangle quelconque coté en cm** (chantier `triangle-cote-cm`, phase 0 validée le 2026-11-14,
+   `judgeRuledTriangle`) : `triangle ABC : AC = 4 cm ; BC = 5 cm` (palette Segment · Compas · Règle
+   graduée) et `triangle ABC : CAB = 50 ; AC = 4 cm` (Segment · Rapporteur · Règle graduée · Compas ;
+   palette entière exigée), [AB] tracé, papier uni ; toutes les longueurs en cm ou
+   aucune (parseur). Hors palette (Report, point, droite) : faux sans message. Un seul C (Q17), puis,
+   dans l'ordre : côté manquant ; C placé à l'œil (trois longueurs : hors d'un cercle centré en A ou en
+   B, « Ton sommet C est placé à l'œil : construis-le avec ton compas. » ; avec l'angle : hors d'un côté
+   d'angle construit en V, le message du lot 7, puis ni sur une graduation d'une règle posée en V avant
+   le côté, ni sur un cercle centré en V, « Ton point C est placé à l'œil : arrête [AC] sur une
+   graduation de la règle. ») ; compas ouvert à l'œil, c'est-à-dire pas sur une graduation d'une règle
+   posée à son centre AVANT lui (`compassGraduationOf` de `circle.ts`, « Ton compas est ouvert à
+   l'œil : ouvre-le sur une graduation de la règle. ») ; mauvaise longueur, lue sur la graduation (de
+   la règle ou de l'ouverture du compas) ou au bout du trait vu (Q18, arrondie au mm) : « Ton côté
+   [AC] mesure 3,8 cm au lieu de 4 cm. » ; enfin l'angle faux (messages du lot 7, `angleFeedbackOf`).
+   Avec l'angle, la graduation de la règle et l'arc du compas sont justes tous les deux (décision 3) ;
+   le côté d'angle (segment parti de V qui porte le repère) peut dépasser C, C se lit sur lui : Q18 ne
+   vaut que pour [VC] et ce qui le prolonge depuis C (option A, David, 2026-11-14, revue de #2658).
+   Un côté d'angle tracé en segment tient lieu de [VC] : [BC] seul, arrêté sur lui, ferme le
+   triangle (`joinedVertices`, `angleSideSegments` ; 2e revue de #2658) ; cela vaut aussi pour le
+   triangle à angle sans cm (lot 7), où C doit toujours être au croisement construit.
+   Erreurs de l'auteur : celles du triangle (impossible, rapporteur qui sort, C hors de la fenêtre) et
+   un côté plus long que la règle. Correction : une règle posée au bout de chaque côté coté, vers C
+   (`triangleRulers`) ; trois longueurs : les arcs de 4 cm et 5 cm ; avec l'angle : l'angle codé, sans
+   arc. À l'écran, le Compas choisi avec une règle posée mène l'ouverture (indices, ‹ ›) comme le
+   cercle de rayon donné en cm (`rulerShape` de `FigureACompleterView`) ; règle posée, le bout d'un
+   segment va d'abord à un croisement de traits proche (tout croisement : arcs, droites, segments ;
+   hors du départ), puis à la graduation (revue de #2658 : une règle laissée en B vers C ne doit pas
+   avaler le croisement des arcs).
+   **Triangle à reproduire sur quadrillage** (outil n° 47, chantier `outil-triangle-quadrillage`,
+   phase 0 validée le 2026-11-28 ; `construction/triangle-copy.ts`, `isCopyCheck`) :
+   `triangle ABC : reproduit DEF`, le modèle DEF tracé, ABC = DEF **déplacé** (A ↔ D, B ↔ E, C ↔ F),
+   au segment seul. Forme 1 : B dans la figure, [AB] tracé, égal à [DE] déplacé ; l'élève trace [AC]
+   et [BC]. Forme 2 : seul A placé ; l'élève trace les trois côtés (B attendu en A + (E − D)). On juge
+   le résultat : traits fusionnés par droite (`mergeSegments` de `polygon.ts`), dans n'importe quel
+   ordre et sens, [AB] repassé sans effet ; les trois côtés couverts → juste, sauf trait de trop ou qui
+   dépasse (`leftoverFeedback`). Sinon, dans l'ordre : un triangle fermé de l'élève (A, et B en forme 1, plus des bouts de ses traits) qui est le modèle simplement déplacé, mais commencé à un autre coin que D → « Ton triangle est bien pareil au modèle, mais il ne part pas du bon coin : A doit être à la place de D. » (revue de la PR, validé par David) ; un triangle fermé aux mêmes longueurs que le modèle → « Ton triangle est retourné par
+   rapport au modèle. » (retourné ou tourné, décision 1) ; un autre triangle fermé → « Ton sommet C
+   n'est pas au bon endroit : compte les carreaux depuis A sur le modèle. » (forme 2 : le sommet faux,
+   B ou C, ou « Tes sommets B et C… ») ; forme 2 sans triangle fermé : « Ton triangle doit partir du
+   point A. » (aucun trait en A) ou « Ta figure n'est pas fermée. » ; forme 1 : les messages du
+   triangle (côtés manquants, aussi pour un trait seul dans le prolongement de [AB], côté manquant, côtés qui ne se rejoignent pas). Hors palette (point) :
+   faux sans message. Erreurs de l'auteur : un sommet du modèle ou A absent, caché, hors de la fenêtre
+   ou hors d'un nœud ; un côté du modèle non tracé ; modèle aplati ; A posé sur D ; [AB] qui n'est pas [DE] déplacé (le message donne où placer B)
+   ou non tracé ; C déjà dans la figure ; B ou C attendus hors de la fenêtre. Correction : [AC] et
+   [BC], ou les trois côtés (`copySolution`), sans arc ni codage (`copyCorrection`). Le générateur
+   demande les noms du modèle et de A.
    Vérification `angle AOy = 50` (`construction/angle.ts`, lot 5 du chantier) : [OA) est donné (A, O
    nommés et visibles, `points` = A puis O) ; y nomme le côté à tracer (messages seulement) ; mesure
    entière de 1 à 179 (parseur). L'élève pose le rapporteur (outil `rapporteur` : centre, puis un point
@@ -918,6 +1330,34 @@ cercle(O, passant=A)` (palette : le compas ; papier uni ou quadrillage, O et A s
    comme à l'écran, pour qu'aucun côté ne cache le nombre à lire). Même juge,
    mêmes messages. En plus : `outils:` refusé ; la pose demandée qui sort de la figure, l'autre tenant →
    « écrire « mesure BOA, rapporteur posé » ». La garde du masquage admet le suffixe.
+   Vérification `mesure AB` (`construction/segment-measure.ts`, n° 26 de `outils-manquants.md`, CP-035,
+   CE1-044, phase 0 du 2026-11-12, `SegmentMeasureCheck`) : le segment [AB] est tracé ; l'élève pose la règle
+   graduée (palette : elle seule ; le 0, puis la direction, comme pour `segment AB = 6 cm` ; ni ‹ › ni
+   clavier, rien à tracer ; la règle jamais notée) et tape la longueur sous la figure (case « Longueur du
+   segment [AB] », chiffres seulement, trois au plus, unité affichée). Réponse : les règles puis `mesure(6)`
+   en dernier (`splitMeasuredAnswer`, comme l'angle) ; autre chose qu'une règle : faux, sans message. La
+   longueur attendue est **calculée sur la figure** (1 unité = 1 cm, ADR 0036), en cm entiers, ou en mm
+   entiers avec `mesure AB en mm` ; juste : exacte. Messages : la dernière règle posée longe [AB] (A et B à
+   3 mm au plus de son bord) sans son 0 sur A ni sur B (à 0,5 mm près), et le nombre tapé est la graduation
+   lue au bout le plus loin (à une demi-unité près) → « Le 0 de la règle doit être sur A : le segment [AB]
+   mesure 6 cm, pas 7 cm. » ; sinon « Le segment [AB] mesure 6 cm, pas 5 cm. » ; une règle sans nombre
+   « Tape la longueur du segment [AB], en cm. » ; rien : vide. Erreurs de l'auteur : quadrillage, fenêtre
+   absente, A ou B absent, invisible ou hors de la fenêtre, confondus, [AB] porté par aucun trait droit
+   (segment, demi-droite, droite), longueur pas entière dans l'unité (cm : « écrire mesure AB en mm »),
+   plus longue que la règle (`rulerLengthOf`), une autre vérification, un autre outil. Correction
+   (`solutionRulers` → `segmentMeasureRuler`, `solutionSegmentMeasure`) : la règle posée au 0 en A le long
+   de [AB], la longueur écrite au milieu de [AB] du côté opposé au corps de la règle ; aucun trait. Énoncé
+   masqué : `verifier: mesure AB` reste, points calculés réécrits en coordonnées (`maskMeasureFigure`).
+   Énoncé PDF (PR 2, Q4 a, 2026-11-12) : la figure est imprimée à l'échelle 1 unité = 1 cm pour qu'une vraie
+   règle lise la bonne longueur, si elle tient dans la place disponible (`layout` + `measure` à la compilation :
+   page ou colonne de fiche) ; sinon réduite à la largeur de sa taille comme les autres figures (jamais de
+   débordement ; la mesure à la règle est alors fausse sur ce papier). Deux canevas dans le Typst
+   (`atRealScale`, `figure-typst.ts`).
+   Le 0 posé depuis B (graduations vers A) : « doit être sur B ». Limites connues (revue, comme
+   `mesure AOB`) : une figure qui affiche la longueur (`cote(A, B)`, un `texte`) n'est pas refusée ; dans
+   l'énoncé masqué, seuls les points sont réécrits (un `rayon=6` d'un objet caché reste écrit, la garde ne
+   cherche que `angle=` et `rotation(`). L'énoncé PDF n'est pas encore à l'échelle 1 unité = 1 cm (PR 2
+   du n° 26).
    Vérification `segment AB = 6 cm` (`construction/segment-length.ts`, chantier `regle-graduee`,
    CE2-039, [ADR 0036](../adr/0036-le-cm-de-la-figure.md)) : A est un point de la figure (nommé, visible,
    dans la fenêtre), B nomme l'autre bout (messages seulement, absent de la figure) ; la longueur
@@ -1015,31 +1455,83 @@ cercle(O, passant=A)` (palette : le compas ; papier uni ou quadrillage, O et A s
    affiché ; le navigateur envoie des positions affichées, que le serveur ramène aux indices
    d'origine avant de corriger et d'enregistrer (`toOriginalChoiceValues`, dans
    `submitEvaluationAttempt`) ; illisible → 400, rien d'écrit.
-1. **`validationRules`** (précondition) : `divisor`, `multiple`, `range`, `equation_root`,
+1. **Bouton « impossible »** (case à `impossibleLabel`) : jugé en premier, sur la marque
+   `IMPOSSIBLE_ANSWER` (jamais sur ce qui est tapé), sans rien lire ;
+   l'attendue `impossible` n'atteint jamais le parseur (ni normalisation, ni `{{eval:}}`, ni unité
+   au tirage ; affichée `\text{<texte>}` par `expectedAnswerLatex` et `{{solution}}`). Une erreur prévue
+   `impossible` (clic sur un tirage qui a une réponse) est traitée de même ; casse ignorée. Une case à
+   bouton n'est jamais changée en QCM (`canBeChoice`) ; bouton réservé aux cases ordinaires de
+   formule (ni opération, ni construction, ni bloc), sinon le tirage est en erreur.
+2. **`validationRules`** (précondition) : `divisor`, `multiple`, `range`, `equation_root`,
    `equivalent`, `predicate` (`isPrime`, `isEven`…), `custom`. Une règle violée → faux, avec son
    message français. `rulesSuffice` : les règles **décident seules**, `expectedAnswer` n'est plus
    qu'un exemple (« une réponse possible ») ; une case `rulesSuffice` sans règle est refusée
    (`rules-suffice.ts`).
-2. **Valeur** : équivalence (`areEquivalent`, avec les hypothèses `answerAssumptions` du modèle,
+3. **Valeur** : équivalence (`areEquivalent`, avec les hypothèses `answerAssumptions` du modèle,
    ADR 0012) ou valeur numérique (`precision` : `decimal`, `significant`, `magnitude`,
    `tolerance`), grandeur, `angleModulo: '2pi'`. Arrondi : plus de chiffres que demandé mais bon
    arrondi → `bad_form` (contrainte `rounding`, non réglable, message « Arrondis au … ») ; moins de
-   décimales accepté si la valeur est exactement l'arrondi.
-3. **`requiredForm`** : `product`, `sum`, `additionOnly`, `fraction`, `power`, formes d'équation,
+   décimales, valeur exactement l'arrondi → juste en valeur, jugé à l'étape 5 (perfectible : la règle
+   est renversée le 2026-11-26, cf. **Zéros finaux** ci-dessous). Réponse comptée fausse sans autre
+   message, dans une case de formule sans unité : si le parseur la refuse pour un nombre collé
+   derrière un facteur (`(n+2)4^n`, `x2` ; règle du 2026-10-08, `mathAST/parser/number-after-factor.ts`),
+   la carte le dit (`numberAfterFactorFeedback` : « Nombre « 4 » écrit après un facteur : écris le
+   nombre devant, ou mets un signe × entre les deux. »), en ordre fixé (`validateSingleBlank`)
+   comme en ordre libre ; le verdict reste faux (écart E76).
+4. **`requiredForm`** : `product`, `sum`, `additionOnly`, `fraction`, `power`, formes d'équation,
    formes complexes (`exponentielle`, `algebrique`), ou motif `{ pattern, acceptable? }`
    (motifs `mathAST/pattern`). Violée → `bad_form` ; forme `acceptable` → `unoptimal_form`.
+   Exemple, « un seul quotient simplifié » : `{ pattern: '($n+2)/v', acceptable: 'u/v' }`, le
+   quotient juste dont le numérateur n'est pas `n+2` (`4^n(n+2)/(4^{n+1}(n+1))`) vaut ½ point
+   (écart E77, modèle `cdb5a1cf`).
    Virgule nue (`0,5n`) décimale comme `0{,}5n`, sauf écriture à virgule séparatrice
-   (`mathAST/decimal-comma`).
-4. **Forme** selon la case : texte → rien ; `requiredForm` → seulement les violations cosmétiques ;
+   (`mathAST/decimal-comma`). Même relecture dans `correction-generator.ts` : une formule du modèle
+   à virgule décimale nue (`0,6x^2-0,6`) que le parseur refuse est relue une seconde fois, sans toucher
+   aux virgules séparatrices ; une formule déjà lisible n'est jamais relue.
+5. **Forme** selon la case : texte → rien ; `requiredForm` → seulement les violations cosmétiques ;
    grandeur → la partie numérique (`studentValueLatex`, la saisie sans ses unités : `2\times3`
    pour `2\times3\,m`) doit être un nombre simple, une fraction ou une notation scientifique ; `precision` / `rulesSuffice` →
    nombre simple (fraction admise en `rulesSuffice`) — `isSimpleNumberLatex` : un nombre, un signe ; entre
    parenthèses inutiles (`(-3)`), il reste juste mais perfectible (`brackets`) ; un séparateur décimal sans
    chiffre d'un côté (`.5`, `5{,}`) est `bad_form` (BIPM § 5.4.4), y compris dans une fraction ou une
-   notation scientifique (décisions de David du 2026-10-21) ; `acceptCombinatorialNotation`,
+   notation scientifique (décisions de David du 2026-10-21) ; dans toute autre case sans unité, un
+   nombre seul ainsi mal écrit (`58,`, `,5`) que la chaîne refuse est relu par `validateSingleBlank`
+   (`malformedBareNumber`) : valeur relue juste → `bad_form` et message de forme, valeur fausse → le
+   refus d'origine (même règle que devant une unité, cf. [grandeurs.md](grandeurs.md)) ; `acceptCombinatorialNotation`,
    `acceptDecimal`, `angleModulo` → exceptions documentées dans `types.ts` ; sinon **mode exact** :
    `checkFormUnified` passe réponse et attendu dans le même pipeline de retouches cosmétiques
    (`cosmetic-transforms.ts`) puis les compare.
+
+**Zéros finaux** (`zeros`, décision de l'auteur du 2026-11-26) : un zéro final ne s'écrit que s'il
+dit quelque chose : arrondi, centimes, ou demandé par l'auteur. Le juge ne le signale donc pas
+sans regarder la case (`questions/meaningful-zeros.ts`, option `meaningfulTrailingZeros` de
+`cosmeticViolations`, qui ne juge alors plus que les zéros de tête) :
+
+- **arrondi à N décimales** (`precision: { type: 'decimal', digits: N }`) : la bonne écriture a
+  exactement N décimales. `3,0` au dixième de 3,04 est juste, sans violation `zeros`, quelle que
+  soit l'écriture de l'attendu et même en `zeros: 'strict'` ; `3` (valeur exactement l'arrondi) est
+  `unoptimal_form`, violation `rounding` en avertissement, message « Arrondi au dixième : écris le
+  chiffre des dixièmes, même si c'est 0. » (centième, millième ; au-delà « Arrondi à N décimales :
+  écris les N décimales, même les zéros. ») ; à l'unité (N = 0), rien ne change. Trop de chiffres
+  (`3,00`) ou arrondi non fait (`3,04`) : étape 3, inchangé ;
+- **arrondi à N chiffres significatifs** : ramené aux décimales que ces N chiffres font écrire
+  (3,04 à 2 chiffres → `3,0` juste, `3` perfectible, « Arrondi à 2 chiffres significatifs : écris
+  les 2 chiffres, même les zéros. ») ; aucune exigence quand le dernier chiffre gardé est dans la
+  partie entière (`1 200` pour 1 234 à 2 chiffres) ;
+- **bonne réponse montrée** par le message d'une valeur fausse (« La réponse arrondie à 1 décimales
+  est 3,0 », « … avec 2 chiffres significatifs est 3,0 ») : écrite avec les mêmes zéros utiles,
+  virgule française (`writtenRoundedValue`) ;
+- **grandeur en euros** (unité tapée `€`, `euro(s)`, `EUR`) : exactement deux décimales (`3,70 €`)
+  est juste, sans violation `zeros` ; `3,7 €` reste juste ; `3,700 €` suit la règle `zeros`. Avec
+  un arrondi au centième en plus, `3,7 €` est perfectible (règle de l'arrondi) ;
+- partout ailleurs (valeur exacte, `none`, `magnitude`, `tolerance`, autres unités : `3,70 m`), la
+  règle `zeros` ne change pas ; `zeros: 'off'` coupe tout sauf le message d'arrondi.
+
+Mêmes verdicts en ordre fixé (`validateSingleBlank`, étape 5 : `checkSimpleNumberForm` et partie
+numérique d'une grandeur) et en ordre libre (`matchedAnswerForm`, qui passe par les mêmes
+fonctions). Seules les écritures décimales simples sont lues : une notation scientifique
+(`3{,}0\times10^{2}`) garde la règle `zeros` d'avant. Une case sans `precision` dont l'attendu
+s'écrit `3{,}0` reste en mode exact : `3{,}0` y est perfectible (`zeros`).
 
 Contraintes réglables (`options.constraints`, `ConfigurableConstraintId`) : `spaces`, `products`,
 `brackets`, `zeros`, `form`, `nullTerms`, `factorOne`, `factorZero`, `signs`, `reducedFractions`,
@@ -1069,8 +1561,14 @@ même configuration, `readingOf(instance)` (`formula-reading.ts`) : fonctions d�
 reçoivent pas (aucune réponse attendue à majuscules collées en base).
 
 Plusieurs cases : positionnelles par défaut ; `options.orderIndependent` → appariement maximal
-réponses ↔ cases (pas glouton). `validateAnswerDetailed` rend le verdict par case qu'utilise la
-correction.
+réponses ↔ cases (pas glouton), en deux temps (`matchAnswersToBlanks`) : les réponses justes
+d'abord, puis, sans en détacher aucune, celles qu'une case n'accepte qu'à un défaut d'écriture
+près (`looseMatchOf` : arrondi non fait, ou nombre seul mal écrit `58,` / `,5` dont la valeur relue
+est juste, même règle qu'en ordre fixé) ; celles-là sont `bad_form` avec leur message.
+`validateAnswerDetailed` rend le verdict par case qu'utilise la correction. Une saisie qui ne
+s'évalue pas (`58,5,`, `(`) dans une case à arrondi est une réponse fausse de CETTE case, jamais
+une exception (`evaluatedStudentNumber`) : les autres cases gardent leur verdict ; seule une
+erreur du modèle (attendu illisible, figure sans positions) lève encore.
 
 Où la validation tourne : **dans le navigateur** partout (ADR 0001 : le serveur reçoit un verdict),
 **sauf les évaluations notées**, corrigées par le serveur avec la même fonction (ADR 0015), sous un
@@ -1086,6 +1584,75 @@ d'une case choix (bon / coché à tort / oublié, à leur place dans l'énoncé)
 (R10). Rendu par `ExpectedResultView.svelte` ; la réponse de l'élève passe par
 `student-answer-safety.ts` dès qu'elle s'affiche chez un autre (copie lue par le prof).
 
+Type d'erreur (chantier `type-erreur`, PR 3) : une case fausse sans remarque du validateur reçoit en
+remarque la phrase de son type d'erreur deviné (`blankErrorGuess` et `errorGuessSentence` de
+`error-kinds.ts`), par exemple « Ta réponse est l'opposé du résultat : vérifie le signe. » ou « Ta
+réponse est 10 fois trop petite : vérifie la place de la virgule. ». Une remarque existante prime
+(%, unité, arrondi…). Mêmes exclusions que côté prof ([evaluations.md](evaluations.md), types
+d'erreur) : case hors écriture mathématique ordinaire, cases appariées librement, case `rulesSuffice` (son attendu
+n'est qu'un exemple), ambiguïté. Saisie,
+Contrôle blanc et copie corrigée montrent la phrase par ce seul chemin. La note ne change pas.
+
+Erreurs prévues (chantier `idees-format`, idée 3, `expected-errors.ts`) : une case peut porter
+`expectedErrors` (`[{ answer, message, label? }]`, 10 au plus), écrites par l'auteur. L'élève dont la
+réponse **fausse** a la même valeur qu'une erreur prévue (même juge de valeur que la correction,
+`isBlankValueCorrect`, sans forme exigée ni règles : `8/6` déclenche `4/3`) lit son message en tête
+des remarques de la case, à la place de la phrase du type deviné ; les autres remarques (unité,
+arrondi) suivent. La note ne change pas ; une mauvaise forme ou une réponse juste n'est jamais une
+erreur prévue (celle qui tombe sur la bonne réponse d'un tirage est donc ignorée) ; deux erreurs de
+même valeur : la première écrite. Le générateur résout réponses et messages (variables,
+`{{solution}}`) sur une **source de hasard à part** (graine mélangée) : aucun tirage de l'instance
+ne bouge. Une erreur prévue qui ne se calcule pas sur un tirage (`1/(a-5)` pour `a = 5`) fait
+échouer ce tirage : le rejeu le voit, l'auteur pose une condition. Case autre qu'une écriture mathématique ordinaire (choix, geste, figure, case signe / marque / flèche
+d'un tableau, `rulesSuffice`, `orderIndependent`) : génération refusée, message situé. Case `valeur`
+d'un tableau à compléter (valeur, limite ; chantier `variation-limite-infinie`) : erreurs prévues
+résolues comme pour une case de calcul, un infini écrit en LaTeX par `infinityToken`. Le rejeu de
+`checkTemplate` répond chaque erreur prévue de chaque tirage et refuse le modèle si elle n'est pas
+jugée fausse avec son message ; une spec peut nommer le message attendu
+(`expected.expectedErrorMessage`). La question publique d'une évaluation notée ne les porte pas
+(liste blanche de `public-question.ts`). Côté prof, l'erreur prévue compte sous son nom dans la
+ligne « Types d'erreur » des erreurs d'une question ([evaluations.md](evaluations.md)).
+Éditeur du prof : sous chaque case à écriture ordinaire d'`AnswerEditor`, `ExpectedErrorsEditor`
+(« Ajouter une erreur prévue ») ; trois champs : « Si l'élève répond » (`answer`), « Lui écrire »
+(`message`), « Nom court » facultatif (`label`, retiré quand il est vide : Zod refuse la chaîne
+vide) ; la dernière erreur retirée remet `expectedErrors` à `undefined`. Ligne sans réponse ou
+sans message : signalée sur la ligne (Zod refuse l'enregistrement). Pas sur une case choix ni une
+figure de travail : une telle case qui garde des erreurs prévues (case devenue choix) le dit et offre
+« Retirer » (sinon la génération échoue) ; une case texte l'affiche mais la génération la refuse
+(message situé).
+Garde : `AnswerEditor-erreurs-prevues.svelte.test.ts`.
+
+Case répondue en QCM (chantier `idees-format`, idée 4, `choice-from-errors.ts`) : quand le prof
+coche une variation « en QCM » sur une ligne de série (`choiceVariations`, [evaluations.md](evaluations.md)),
+`asChoiceInstance(instance, seed)` transforme la question **tirée** (le générateur n'y est pour rien :
+mêmes nombres en saisie et en QCM). Seulement pour une question à **une seule case** `math`, avec
+des erreurs prévues, sans veto de l'auteur (`neverChoice`, case « Jamais en QCM » d'`ExpectedErrorsEditor`),
+ni case d'opération posée, ni précision « ordre de grandeur » ou « tolérance » (pas un arrondi
+unique à montrer). Une case `valeur` (valeur ou limite d'une ligne `variation:`) seule case de l'unique
+tableau à compléter compte aussi (`withSingleCellShown`) : le tableau devient ordinaire, sa case
+`\ldots` à sa hauteur, le bloc ``choix le suit ; deux cases cachées : pas de QCM. Case à arrondir (décimales, chiffres significatifs) : l'attendu du modèle est la
+valeur exacte, la bonne réponse montrée est son arrondi (`roundToPrecision`, zéros finaux gardés :
+`1.40`), seulement si le juge de la case le trouve juste ; une erreur prévue égale à cet arrondi est
+retirée (choix de David, 2026-11-22).
+La case devient une case choix : bonne réponse à l'indice d'origine 0, puis jusqu'à **trois**
+erreurs prévues, dans l'ordre de l'auteur, sans doublon de valeur (même juge que l'erreur prévue,
+l'erreur lue sous son LaTeX puis sous sa forme interne : `1.5 km` vaut `1500 m`) ni d'écriture,
+ni égale à la bonne réponse sur ce tirage ; `expectedErrors[k]` est le choix `k + 1`. Ordre affiché
+mélangé sur une source de hasard à part. Dans l'énoncé, la case devient `\ldots` et le bloc ``choix
+suit. Aucune erreur prévue utilisable sur ce tirage → `null`, la question reste en saisie. Cocher
+une erreur prévue : `expectedErrorOf` rend son erreur, le résultat attendu affiche son message sous
+le bloc (une case choix n'a jamais d'autre remarque) et le prof la compte sous son nom.
+Repère : la case choix porte `fromExpectedErrors: true` ; `isAnsweredAsChoice(instance)` le lit (instance
+relue en base comprise ; un QCM écrit par l'auteur : non). La trace d'une série libre le transmet
+(`buildSeriesTrace` → `answered_as_choice`, formes où l'on tape, réponse donnée ou non) ; en contrôle, le
+serveur le lit sur la copie figée. Réussite en QCM = demi-réussite pour la révision espacée
+([srs.md](srs.md)) ; le suivi des points du programme la compte comme une réussite (Q1, 2026-11-22).
+Réglage proposé au prof (panier, éditeur de série) seulement pour une variation qui peut se poser en
+QCM : `mayBeChoice(variation)` lit le modèle seul (une case, erreurs prévues, pas de veto), puis
+`canBeChoice(instance)` tranche sur l'exemple tiré de la variation (mêmes conditions que le tirage).
+Gardes : `choice-from-errors.test.ts`, `choice-eligibility.test.ts`, `AnswerEditor-jamais-en-qcm.svelte.test.ts`,
+`VariationPicker.svelte.test.ts`.
+
 Case « figure » : une ligne `figure` (texte du bloc, réponse brute `droite(…)`, jamais rendue en
 markdown, lue par le juge borné) au lieu de « Réponse attendue : `droite(A;B)` ». `FigureAnswer.svelte`
 la dessine en lecture seule : droites de l'élève (vertes si juste ; sinon la bonne droite en
@@ -1099,7 +1666,7 @@ Case à construire (bloc `collection ou `monnaie, `construire:`), horloge à pla
 le cadran verrouillé avec les aiguilles de l'élève, ou à l'heure juste) ou droite à placer (``line,
 `placer:` : la droite verrouillée sans boutons, point de l'élève ou point juste ; vide : « Tu n'as rien
 placé. » ; droite à représenter, `representer:` : `NumberLineRepresenter` verrouillé avec l'intervalle
-de l'élève et les phrases, ou l'intervalle juste en vert ; plusieurs points : UNE ligne `build` pour la droite, à la place de sa première case, avec
+de l'élève et les phrases, ou l'intervalle juste en vert ; droite à graduer, `graduer:` : `NumberLineGraduer` verrouillé (« Parts dans une unité : 4 », points de l'élève, phrases), ou la droite juste partagée, points en vert ; plusieurs points : UNE ligne `build` pour la droite, à la place de sa première case, avec
 `answers` (réponse et statut de chaque point), juste quand tous le sont, « rien placé » quand aucun ne
 l'est ; diagramme en barres à construire, ``barres `placer:`, de même : UN diagramme, `answers` par
 barre, « Tu n'as rien posé. » quand aucune n'est construite ; `BarresPlacer` verrouillé avec les barres
@@ -1109,12 +1676,19 @@ construire, ``boite-a-moustaches `placer:`, de même : UNE figure, `answers` par
 verrouillé avec les traits de l'élève, ou `StatChart` avec la boîte juste (`solvedBoxPlotSpec`) ; étiquettes à ranger, ``ranger, de même : UNE
 ligne `build`, `answers` par place, et `expected` (la bonne position de chaque place, que le bloc ne dit
 pas) ; `RangerPlacer` verrouillé avec les places de l'élève, fausses marquées, et le rangement juste
-dessous ; repère à placer, ``courbe `placer:`, de même : UN repère, `answers` par point, « Tu n'as rien
+dessous ; éléments à associer, ``associer, de même : UNE ligne `build`, `answers` par élément et `expected` ;
+`AssocierPlacer` verrouillé (relier : traits de l'élève, le bon en pointillés sous un faux ; étiquettes :
+la bonne étiquette sous chaque place fausse) ; texte à trous, ``trous, de même : UNE ligne `build`,
+`answers` par trou et `expected` ; `TrousEtiquettes` verrouillé, sans réserve, la bonne étiquette sous
+chaque place fausse ; repère à placer, ``courbe `placer:`, de même : UN repère, `answers` par point, « Tu n'as rien
 placé. » quand aucun n'est posé ; `CourbePlacer` verrouillé avec les points de l'élève et ses phrases
 `placedPointMistake`, ou le repère avec les points justes, nommés ; droite à tracer, ``courbe
 `tracer:` : UNE case, `answer` = `x1;y1/x2;y2`, la droite de l'élève et sa phrase `tracedLineMistake`, ou
 la droite juste et deux de ses nœuds, `solutionLine` ; vecteur à tracer, ``courbe `tracer: vecteur` : de même,
-la flèche de l'élève et sa phrase `tracedVectorMistake`, ou la flèche juste, `solutionVector`) : une ligne `build` (genre, texte
+la flèche de l'élève et sa phrase `tracedVectorMistake`, ou la flèche juste, `solutionVector` ; programme tortue,
+``tortue : UNE case, `expected` = sa réponse attendue (`position | <programme>`, que l'énoncé masqué ne dit
+plus) ; `TortueCorrige` : tracé de l'élève vert ou rouge, l'attendu en pointillés, « Ton programme » et
+« Un programme juste » en texte, ou le tracé juste seul ; vide : « Tu n'as écrit aucun programme. » ; programme de calcul, ``calcul : de même UNE case, `expected` = `<essais> | <programme>`, même texte quand c'est vide ; corrigé `CalculCorrige` : programmes en texte et tableau nombre → résultat sur les essais ; robot à produire, ``robot `produire: oui` : de même UNE case, `expected` = `<scène> | <code>`, vide : « Tu n'as écrit aucun code. » (`EMPTY_CODE_TEXT`) ; corrigé `RobotCorrige` : trajet de l'élève, « Un code juste » = le code seul, lu par `readExpectedRobotAnswer` ; labyrinthe à parcourir, ``labyrinthe `parcourir: oui` : de même UNE case, `expected` = `<grille> | <chemin>`, vide : « Tu n'as tracé aucun chemin. » (`EMPTY_PATH_TEXT`) ; corrigé `LabyrintheCorrige` : chemin de l'élève, case fautive, bon chemin et sa sortie ; grille yohaku, ``yohaku avec une case `[…]` : de même UNE case, `expected` = JSON de l'opération, de la solution et des totaux, vide : « Tu n'as rien écrit dans la grille. » (`EMPTY_GRID_TEXT`) ; corrigé `YohakuCorrige` : grille de l'élève, lignes et colonnes fausses, ou la solution et « D'autres remplissages sont justes. » ; programme Python, ``python-a-ecrire : de même UNE case, `expected` = JSON de la fonction, de la solution, des essais et des exigences, vide : « Tu n'as écrit aucun programme. » ; corrigé `PythonCorrige` : le programme de l'élève (cadre vert ou rouge, message du verdict), puis la solution de l'auteur) : une ligne `build` (genre, texte
 du bloc sans `case:`, valeur posée), sur le même patron que la figure. `BuildAnswer.svelte` dessine le
 plan **verrouillé, sans réserve** : la construction de l'élève (cadre vert si juste ; faux : « Tu as
 posé 32 €. » ou « Ta collection vaut 32. » et une construction juste à côté), ou la construction juste
@@ -1200,7 +1774,39 @@ est un chantier à venir (David). Tests : `correction-forme-demandee.test.ts`,
 
 Concise / détaillée (ADR 0017) : `splitCorrectionDetail` retire ou garde `\detail{…}`, les blocs
 `> [!méthode]`, `> [!rappel]`, `> [!attention]` et les spans `{.rappel}`… ; un seul interrupteur
-(`correction-view-preference.ts`). Rédaction : [corrections-redaction](../pratiques/corrections-redaction.md).
+(`correction-view-preference.ts`). Un span est un détail dès qu'une de ses classes est un type de
+détail (`{.rappel .vert}` : détail coloré, retiré en concis) ; les autres (`{.def}`, `{.orange}`,
+classe inconnue) restent dans les deux versions, et une classe inconnue est signalée au prof par
+le rendu, plus par `splitCorrectionDetail` ([ADR 0042](../adr/0042-texte-colore-dans-la-prose.md)).
+Rédaction : [corrections-redaction](../pratiques/corrections-redaction.md). `CorrectionView` pose aussi le contexte « correction » (`components/markdown/correction-context.ts`) : un bloc écrit dans la correction le sait ; ` ```engrenages ` n'y tourne qu'ici (outil n° 52). Les rendus de correction qui ne passent pas par `CorrectionView` (aperçu de `QuestionPreview`, « Solution » d'`ExerciseDisplay`) s'enveloppent dans `InCorrection.svelte`, qui pose le même contexte.
+
+**Coup de pouce** (chantier `idees-format`, idée 5, phase 0 validée par David le 2026-11-22) : un
+indice que l'élève ouvre s'il est bloqué. Par variation, au choix (`hint.ts`) : `hint`, un gabarit
+écrit par l'auteur (variables, `{{eval:…}}`, 1 000 caractères au plus), ou `hintFromFirstStep: true`,
+la première étape de la correction (celle de la variation, sinon la partagée). Refusés par les deux
+schémas (`refineHints`, éditeur JSON strict et route d'écriture, qui sans ces champs les retirerait) :
+un indice qui contient `{{solution…}}` ou `{{answer…}}` (`solution_0`, `solution:2`, `answer_1` compris ; une variable du modèle qui vaut la réponse ne se voit pas), les deux à la fois, et la case « première
+étape » sur une correction de moins de deux étapes ou dont la première affiche `{{solution}}`. Une
+première étape qui calcule la réponse sans `{{solution}}` ne se voit pas : l'auteur qui coche en
+répond (mesure du 2026-11-22 : 991 variations publiées sur 7 685 ont une seule étape, 635 premières
+étapes affichent `{{solution}}`). Au tirage, `instance.hint` est la première étape déjà résolue, ou
+l'indice résolu comme le corrigé sur sa **propre** source de hasard (`hintSeed`, comme les erreurs
+prévues) : aucun autre tirage ne bouge ; résolu en vide, pas d'indice. La question publique de l'évaluation ne le porte pas (liste
+blanche). Formulaire : carte « Coup de pouce » sous la correction (case « première étape », sinon le
+texte ; la case l'emporte à l'enregistrement), copiée par la duplication, comptée dans « Modifications non sauvegardées ». Tests :
+`coup-de-pouce.test.ts`, `QuestionTemplateForm-coup-de-pouce.svelte.test.ts`.
+
+Côté élève (`FlashCard`, prop `showHint`) : bouton « Coup de pouce » sous l'énoncé, seulement si la
+variation a un indice (jamais sur une carte de cours) et si la forme le permet : **Saisie**,
+**Flash-cards** et **révision** (paquet Programme ou paquet d'un chapitre, `ReviewSession`). Jamais en
+évaluation, Contrôle blanc, Course aux nombres, En classe ni combat (ces formes ne passent pas
+`showHint`). Fermé au départ ; un clic l'ouvre pour de bon (rattaché à l'instance, la question
+suivante repart fermée) ; le chrono continue. Rendu par `MarkdownRenderer`, version détaillée
+(`splitCorrectionDetail`), comme une étape de correction (`{{if:…}}` compris). Le bouton disparaît
+après « Valider » s'il n'a pas été ouvert. `onHintOpen` prévient la forme : trace « avec indice »
+(`with_help`) et demi-réussite pour la révision espacée ([srs.md](srs.md)) ; le professeur voit
+« (avec indice) » après le nom dans les erreurs d'un point ([analytique-prof.md](analytique-prof.md)).
+Tests : `FlashCard-coup-de-pouce.svelte.test.ts`, les tests des trois formes.
 
 ### 8. Publication
 
@@ -1232,7 +1838,7 @@ Concise / détaillée (ADR 0017) : `splitCorrectionDetail` retire ou garde `\det
 - **Publication par lot** (`POST /api/questions/templates/bulk-status`, 1 à 100 modèles par envoi, `MAX_BULK_TEMPLATE_IDS` ; l’en-tête de la route dit encore 700) : chaque
   modèle repasse `templatePublicationErrors` (le même contrôle que le `PUT`) ; un échec le laisse en brouillon avec sa raison, sans contrôle de catégorie. Seules les lignes **rendues** par
   `.update().select()` comptent (RLS silencieuse).
-- Tags du programme (`[id]/edit`, `$lib/server/programme-tags`) : un point par programme, choisi
+- Tags du programme (`[id]/edit`, `#lib/server/programme-tags.ts`) : un point par programme, choisi
   parmi ceux du nœud du modèle et de sa notion ; un modèle sans nœud se range d'abord
   ([cours-et-chapitres.md](cours-et-chapitres.md)).
 - Un modèle publié devient lisible par tous et, sauf question de cours, entre au paquet SRS Programme (`entersProgrammeDeck`, [srs.md](srs.md)).
@@ -1268,7 +1874,8 @@ Concise / détaillée (ADR 0017) : `splitCorrectionDetail` retire ou garde `\det
    ` ```figure-a-completer ` ; tableau à compléter : valeur de x cachée → `??1`, `??2`… dans
    `domain:` et dans les clés des lignes, signe, marque ou flèche cachés → `?` seul, valeur cachée
    d'une ligne `variation:` → `?, position` ; valeurs qui encadrent une flèche cachée passées en
-   `center`, bornes implicites de leur ligne écrites (`-inf: , top`), `maskVariation`) ; la case
+   `center`, comme la limite d'une double barre du côté d'une flèche cachée (`||, ?, center, +inf, top`),
+   bornes implicites de leur ligne écrites (`-inf: , top`), `maskVariation`) ; grille ` ```yohaku ` : cases à remplir → `[?]`, totaux écrits en `totaux: L1 ; L2 | C1 ; C2` (`maskYohaku`) ; ` ```python-a-ecrire ` : jamais masqué (la solution juge dans le navigateur), toujours compté comme fuite par `findUnmaskedAnswers` — le modèle n'entre de toute façon pas dans un contrôle (invariant 9) ; la case
    garde le genre de son bloc (`cellule` pour une case de tableau) (`construire`, ou `figure`
    pour une figure à compléter, jamais `construction`), pour le même écran qu'hors évaluation
    (chantier [fuite-enonce](../archive/wip/fuite-enonce-progress.md)). Limite : un point invisible
@@ -1280,9 +1887,30 @@ Concise / détaillée (ADR 0017) : `splitCorrectionDetail` retire ou garde `\det
    question dont l'énoncé masqué dirait encore la réponse est écartée et journalisée comme une
    génération impossible (`gestureAnswerLeaks`, la tentative ne se perd pas) ; `toPublicQuestion`
    refuse de l'envoyer en dernier filet (reprise).
-9. **Carte de cours** : jamais dans une évaluation notée (`excludeCourseCards`), pas de spec ;
+9. **Carte de cours** : non évaluable, retirée des formes chronométrées (Contrôle blanc, Course aux
+   nombres) et des contrôles (`excludeCourseCards`, `seriesFormExcludesCourseCards`), gardée en
+   Flash-cards, Saisie (auto-évaluée) et En classe ; une question de cours évaluable n'est jamais retirée. Pas de spec ;
    `checkTemplate` vérifie seulement un recto et un verso non vides. Une carte de cours est
    toujours une question de cours.
+   **Case programme Python : jamais corrigée par le serveur** (outil 49, Q1 de David,
+   2026-11-28). Le programme tourne dans le navigateur (Pyodide) ; le serveur ne sait pas faire
+   tourner Python. Un modèle qui en a une (`hasPythonCase`, tronc commun ou une variation) est
+   retiré du tirage d'un contrôle (`excludePythonCases` de `drawSeriesQuestions`, posé par
+   `evaluation-attempts.ts` et l'aperçu prof de `/automaths/test`), et la page « Nouveau contrôle »
+   le dit au prof (`pythonTemplateTitles`, `server/series-python-cases.ts`). Ceinture et
+   bretelles : la correction du serveur (`gradeWithinBudget`, `server/grading-budget.ts`) compte
+   faux une question à case Python (le verdict rangé dans la valeur vient du navigateur) ; pas
+   `gradeQuestion`, partagé avec la carte d'entraînement, qui afficherait « Faux » sur un programme
+   juste. Une course finie ignore une validation tardive (programme qui tournait encore), et `findUnmaskedAnswers` la compte comme fuite. Combats de la
+   Descente : écartée par `isCombatInstance` (bloc inconnu, `construire`). Série d'automatismes
+   (fiche) : refusée comme les autres questions à programme. La solution part au navigateur
+   (Q2 : accepté, entraînement seulement). `checkTemplate` n'exige pas de spec d'un modèle dont
+   toutes les cases sont des programmes Python (aucune ne pourrait juger le programme côté serveur :
+   il est vérifié par ses tirages) ; s'il a aussi une case ordinaire (le rang après la fonction
+   `seuil`), la spec est exigée (`hasOrdinaryCase`, premier tirage de chaque variation). Dans une
+   spec, la case Python laissée vide (`""`) est comptée juste d'office (`withPythonCasesJudged`,
+   `test-spec-runner.ts`) : la spec vérifie les autres cases ; une réponse écrite est gardée telle
+   quelle. La spec donne une réponse par case, dans l'ordre (`""` à la place de la case Python). Limites : seul le premier tirage est examiné (une case ordinaire derrière un `{{if:…}}` absent de ce tirage n'exige pas de spec) ; dans un modèle mixte, la spec « correct » d'une variation en Python seul réussit à vide. Décision de David, 2026-11-28.
 10. **Plusieurs bonnes réponses** : réglage de la case choix (`plusieurs: oui`), jamais du modèle.
 11. **`cleanCoefficients`** nettoie `1x-1y+0=0` en `x-y=0` partout (énoncé, attendu, choix,
     étapes) sans jamais toucher une fonction ni un facteur non premier d'un produit. La
@@ -1316,6 +1944,12 @@ clavier branché dans `FillBlanksInput.svelte` ; le rendu dans `expected-result.
 publics dans `public-question.ts` ; l'éditeur (`QuestionTemplateForm.svelte`,
 `SharedFieldsEditor.svelte`). Modèles : les lots `reponse-*` archivés (intervalles, équation,
 vecteur) et `case-primitive-ed-progress.md`.
+
+**Nouvelle case jugée par un calcul asynchrone** (programme qui tourne, appel réseau) : imiter la
+case Python (outil 49). La case inscrit une préparation (`readAnswerPreparations().register`) qui
+range le verdict dans la valeur ; le juge de `validateSingleBlank` ne fait que le lire ; un
+verdict venu du navigateur n'est jamais cru par une correction serveur (exclure le modèle des
+contrôles, et `gradeQuestion`).
 
 **Nouvelle vérification de figure** (bloc ```figure-a-completer) : un membre de `ConstructionCheck` et
 de `CONSTRUCTION_CHECK_KINDS` (`ubumark/types/construction.ts`), sa lecture dans `readCheck`
@@ -1400,12 +2034,10 @@ Décisions de David sans ADR, consignées dans les journaux archivés :
 
 ## Écarts connus
 
-- **Sens de `AB` dans les exercices rédigés** : résolu par leur thème depuis le lot 6
-  (`exerciseCapitalPairs`, voir [exercices.md](exercices.md)) ; une copie de fiche stockée avant
-  garde le produit (Q-L).
-- **Évaluations notées** : le serveur régénère l'instance depuis la graine au moment de corriger ;
-  une copie commencée avant un changement de sens est corrigée avec le sens nouveau (aucune
-  réponse attendue à majuscules collées en base au 2026-10-12 : aucun verdict ne change).
+Les écarts de cette zone sont au [registre des écarts](../ecarts/registre.md) : `pnpm ecarts`. Un écart s'écrit là-bas, jamais ici.
+
+### Points non vérifiés
+
 - **Case graphique (droite graduée)** : `InstanceBlank.type` admet `'graphical'` et
   `graphicalConfig`, mais aucun générateur ne la produit (la droite à placer passe par
   `NumberLinePlacer.svelte` et `construire: 'line'`) ; `NumberLineInput.svelte` a été retiré.
@@ -1417,12 +2049,6 @@ Décisions de David sans ADR, consignées dans les journaux archivés :
   `cp-a2/04` et `ce1-2/04`, à réécrire en ` ```ranger ` (au moins 3 étiquettes) ; 6e 06, 07 et CM2
   sont réécrits (46 modèles publiés à ` ```ranger ` en prod le 2026-11-09). `axe: à choisir` est utilisé par
   `ce2-7c/08` (CE2-082, publié). Liste tenue à jour : [outils-manquants.md](../wip/outils-manquants.md).
-- `question_templates.type` existe en base, mais le code déduit le type de la structure
-  (`getQuestionType`). CONTEXT.md liste encore des types TinyMath (`numerical_exact`…) absents de
-  `QuestionType`.
-- **Durées du panier ≠ durées d'une série** : `questionCart.updateDelay` et `CartQuestionCard`
-  bornent à 5..300 s, la série enregistrée accepte jusqu'à `MAX_QUESTION_DELAY_SECONDS` (600).
-  Une série à 600 s chargée par `replaceWith` garde sa durée, mais le premier « − » la ramène à 300.
-- **Contrôles natifs** malgré la règle MySelect / MyCheckbox : `<select>` dans
-  `PrecisionEditor.svelte` et `QuestionPreview.svelte`, `<input type="checkbox">` dans
-  `QuestionPreview.svelte`.
+- `question_templates.type` existe en base et reste lu (filtre `type` de
+  `api/questions/templates`, entre autres), alors que l'affichage déduit le type de la structure (`getQuestionType`) : deux
+  sources pour une même notion.

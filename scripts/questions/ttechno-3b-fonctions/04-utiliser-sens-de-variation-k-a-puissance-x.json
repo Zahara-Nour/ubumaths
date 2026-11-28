@@ -1,0 +1,298 @@
+{
+	"id": "069c1a53-ba05-4721-a368-7378e4cbf945",
+	"title": "Utiliser le sens de variation de x ↦ k·a^x",
+	"description": "Comparer deux images sans calcul (k < 0 compris) ; abscisse du maximum sur [0 ; 5] ; retrouver k et a à partir de f(0) et f(1)",
+	"grades": ["T_TECHNO"],
+	"level": 2,
+	"delay": 45,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "On considère la fonction $f$ définie sur $\\mathbb{R}$ par $f(x)={{k}}\\times{{a}}^x$.\n\nSans calculer, compare $f({{x1}})$ et $f({{x2}})$.\n\n```choix\nmelanger: non\n- $f({{x1}})<f({{x2}})$\n- $f({{x1}})>f({{x2}})$\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "0.5|0.8|1.5|2|3"
+				},
+				{
+					"name": "k",
+					"expression": "-5|-4|-3|-2|2|3|4|5"
+				},
+				{
+					"name": "x1",
+					"expression": "-2|-1|0|0.5|1"
+				},
+				{
+					"name": "x2",
+					"expression": "1.5|2|3|4"
+				},
+				{
+					"name": "sens",
+					"expression": "eval:1-2*abs(min(floor(a),1)-min(max(k,0),1))"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:abs(min(floor(a),1)-min(max(k,0),1))}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Pour $k\\neq0$ et $a>0$ : si $k>0$, $x\\mapsto ka^x$ a **le même** sens de variation que $x\\mapsto a^x$ ; si $k<0$, elle a **le sens contraire** (multiplier par un nombre négatif renverse l'ordre).",
+					"$x\\mapsto{{a}}^x$ est {{if:a>1|croissante|décroissante}} et $k={{k}}$ est {{if:k>0|positif : même sens|négatif : sens contraire}}, donc $f$ est **{{if:sens>0|croissante|décroissante}}**.",
+					"${{x1}}<{{x2}}$, donc $\\textcolor{{{color:primary.0}}}{f({{x1}}){{if:sens>0|<|>}}f({{x2}})}$."
+				]
+			}
+		},
+		{
+			"statement": "On considère la fonction $f$ définie sur $[0\\,;5]$ par $f(x)={{k}}\\times{{a}}^x$.\n\nPour quelle valeur de $x$ la fonction $f$ atteint-elle son **maximum** sur $[0\\,;5]$ ?\n\n$x=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "0.5|0.8|1.5|2|3"
+				},
+				{
+					"name": "k",
+					"expression": "-5|-4|-3|-2|2|3|4|5"
+				},
+				{
+					"name": "sens",
+					"expression": "eval:1-2*abs(min(floor(a),1)-min(max(k,0),1))"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:5*(1-abs(min(floor(a),1)-min(max(k,0),1)))}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Pour $k\\neq0$ et $a>0$ : si $k>0$, $x\\mapsto ka^x$ a **le même** sens de variation que $x\\mapsto a^x$ ; si $k<0$, elle a **le sens contraire** (multiplier par un nombre négatif renverse l'ordre).",
+					"$x\\mapsto{{a}}^x$ est {{if:a>1|croissante|décroissante}} et $k={{k}}$ est {{if:k>0|positif : même sens|négatif : sens contraire}}, donc $f$ est **{{if:sens>0|croissante|décroissante}}**.",
+					"{{if:sens>0|$f$ croissante : son maximum est atteint à la borne de droite|$f$ décroissante : son maximum est atteint à la borne de gauche}}, $x=\\textcolor{{{color:primary.0}}}{{{eval:5*(1-abs(min(floor(a),1)-min(max(k,0),1)))}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Une fonction $f$ est définie sur $\\mathbb{R}$ par $f(x)=k\\times a^x$, avec $a>0$. On sait que $f(0)={{k}}$ et $f(1)={{eval:k*a;d}}$.\n\nDonne $k$ et $a$.\n\n$k=?$\n\n$a=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "0.5|1.5|2|3"
+				},
+				{
+					"name": "k",
+					"expression": "-5|-4|-3|-2|2|3|4|5"
+				},
+				{
+					"name": "sens",
+					"expression": "eval:1-2*abs(min(floor(a),1)-min(max(k,0),1))"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{k}}"
+				},
+				{
+					"expectedAnswer": "{{a}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$f(0)=k\\times a^0=k$, donc $k=\\textcolor{{{color:primary.0}}}{{{k}}}$.",
+					"$f(1)=k\\times a$, donc $a=\\dfrac{f(1)}{f(0)}=\\dfrac{ {{eval:k*a;d}} }{ {{k}} }=\\textcolor{{{color:primary.0}}}{{{a}}}$.",
+					"On en déduit le sens de variation : $x\\mapsto{{a}}^x$ est {{if:a>1|croissante|décroissante}} et $k={{k}}$ est {{if:k>0|positif : même sens|négatif : sens contraire}}, donc $f$ est **{{if:sens>0|croissante|décroissante}}**."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "3 × 2^x : f(0) < f(2)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"k": "3",
+				"x1": "0",
+				"x2": "2",
+				"sens": "1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "−3 × 2^x : f(0) > f(2)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"k": "-3",
+				"x1": "0",
+				"x2": "2",
+				"sens": "-1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur −3 × 2^x : « < » (signe de k oublié)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"k": "-3",
+				"x1": "0",
+				"x2": "2",
+				"sens": "-1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "−2 × 0,5^x : f(−1) < f(3)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "0.5",
+				"k": "-2",
+				"x1": "-1",
+				"x2": "3",
+				"sens": "1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur −2 × 0,5^x : « > »",
+			"variationIndex": 0,
+			"variables": {
+				"a": "0.5",
+				"k": "-2",
+				"x1": "-1",
+				"x2": "3",
+				"sens": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "4 × 1,5^x : max en 5",
+			"variationIndex": 1,
+			"variables": {
+				"a": "1.5",
+				"k": "4",
+				"sens": "1"
+			},
+			"answers": ["5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "−4 × 1,5^x : max en 0",
+			"variationIndex": 1,
+			"variables": {
+				"a": "1.5",
+				"k": "-4",
+				"sens": "-1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur −4 × 1,5^x : 5",
+			"variationIndex": 1,
+			"variables": {
+				"a": "1.5",
+				"k": "-4",
+				"sens": "-1"
+			},
+			"answers": ["5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "−5 × 0,8^x : max en 5",
+			"variationIndex": 1,
+			"variables": {
+				"a": "0.8",
+				"k": "-5",
+				"sens": "1"
+			},
+			"answers": ["5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "f(0) = −4, f(1) = −6 : k = −4, a = 1,5",
+			"variationIndex": 2,
+			"variables": {
+				"a": "1.5",
+				"k": "-4",
+				"sens": "-1"
+			},
+			"answers": ["-4", "1,5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : a = −2 (f(1) − f(0))",
+			"variationIndex": 2,
+			"variables": {
+				"a": "1.5",
+				"k": "-4",
+				"sens": "-1"
+			},
+			"answers": ["-4", "-2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : a = 6 (f(1) seul, signe perdu)",
+			"variationIndex": 2,
+			"variables": {
+				"a": "1.5",
+				"k": "-4",
+				"sens": "-1"
+			},
+			"answers": ["-4", "6"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "f(0) = 3, f(1) = 1,5 : k = 3, a = 0,5",
+			"variationIndex": 2,
+			"variables": {
+				"a": "0.5",
+				"k": "3",
+				"sens": "-1"
+			},
+			"answers": ["3", "0,5"],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}

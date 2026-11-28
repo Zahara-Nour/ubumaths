@@ -1,6 +1,6 @@
 """Écrit les 6 modèles du lot 12b du CE2 (constructions) dans scripts/questions/ce2-12b/.
 
-Phase 0 validée par David le 2026-11-08 (§ 19 du journal `docs/wip/questions-ce2-progress.md`,
+Phase 0 validée par David le 2026-11-08 (§ 19 du journal `docs/archive/wip/questions-ce2-progress.md`,
 « je suis tes recos ») : CE2-070, plus deux modèles de niveau 2 pour CE1-072. Outils livrés par
 le chantier `cercle-triangle-rectangle` (#2463, #2473) :
 

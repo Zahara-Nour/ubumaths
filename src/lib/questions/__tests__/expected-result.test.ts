@@ -17,9 +17,9 @@ import {
 } from '../expected-result';
 import { generateInstance } from '../generator/instance-generator';
 import { CONSTRAINT_FEEDBACK } from '../feedback';
-import { REAL_TEMPLATES } from '$lib/server/validation/__tests__/fixtures/real-templates';
+import { REAL_TEMPLATES } from '#lib/server/validation/__tests__/fixtures/real-templates.ts';
 import type { InstanceBlank, QuestionInstance, QuestionTemplate } from '../types';
-import type { ResolvedMarkdown } from '$lib/ubumark';
+import type { ResolvedMarkdown } from '#lib/ubumark/index.ts';
 
 // Fixtures
 function template(

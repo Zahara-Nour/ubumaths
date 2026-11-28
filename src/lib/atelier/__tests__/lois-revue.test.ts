@@ -6,10 +6,10 @@
 
 import { describe, it, expect } from 'vitest';
 import { Atelier } from '../atelier.svelte';
-import { WebReplEngine } from '$lib/mathAST/cli/web/web-repl-engine';
+import { WebReplEngine } from '#lib/mathAST/cli/web/web-repl-engine.ts';
 import { runInput, type CalcSession } from '../calcul';
-import { parseStatChartContent } from '$lib/ubumark/parser/stat-chart-parser';
-import { buildStatChartScene, type LawScene } from '$lib/ubumark/utils/stat-chart-scene';
+import { parseStatChartContent } from '#lib/ubumark/parser/stat-chart-parser.ts';
+import { buildStatChartScene, type LawScene } from '#lib/ubumark/utils/stat-chart-scene.ts';
 
 function session(): CalcSession {
 	return { atelier: new Atelier(), engine: new WebReplEngine() };

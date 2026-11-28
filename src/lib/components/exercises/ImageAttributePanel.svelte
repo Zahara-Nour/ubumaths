@@ -20,12 +20,12 @@
 	@see src/lib/exercises/services/image-dimensions.ts
 -->
 <script lang="ts">
-	import { Button } from '$lib/components/ui/button';
-	import { Separator } from '$lib/components/ui/separator';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import { Separator } from '#lib/components/ui/separator/index.ts';
 	import { Copy, Check, Image as ImageIcon, Settings } from '@lucide/svelte';
-	import { toaster } from '$lib/stores/toaster.svelte';
-	import type { ImageSizeClass, ImageAlignment } from '$lib/ubumark';
-	import { autoDetectSizeClass } from '$lib/exercises/services/image-dimensions';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
+	import type { ImageSizeClass, ImageAlignment } from '#lib/ubumark/index.ts';
+	import { autoDetectSizeClass } from '#lib/exercises/services/image-dimensions.ts';
 
 	import ImageUploader from './ImageUploader.svelte';
 	import ImageSizeSelector from './ImageSizeSelector.svelte';

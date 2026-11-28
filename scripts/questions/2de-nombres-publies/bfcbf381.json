@@ -1,0 +1,306 @@
+{
+	"id": "bfcbf381-d454-41f3-9097-939f72c0df16",
+	"title": "Le plus petit ensemble de nombres",
+	"description": "Choisir le plus petit des ensembles ℕ ⊂ ℤ ⊂ 𝔻 ⊂ ℚ ⊂ ℝ qui contient 12/4, −√49, −123, 7/4, 5/3, √7",
+	"grades": ["2"],
+	"level": 1,
+	"delay": 60,
+	"status": "published",
+	"shared": {
+		"cleanCoefficients": true
+	},
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"statement": "Quel est le **plus petit** ensemble de nombres qui contient $x=\\dfrac{ {{eval:(a)*(b)}} }{ {{b}} }$ ?\n\n```choix\nmelanger: non\n- $\\mathbb{N}$\n- $\\mathbb{Z}$\n- $𝔻$\n- $\\mathbb{Q}$\n- $\\mathbb{R}$\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9"
+				},
+				{
+					"name": "b",
+					"expression": "2..7"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On a $\\mathbb{N}\\subset\\mathbb{Z}\\subset𝔻\\subset\\mathbb{Q}\\subset\\mathbb{R}$ : chaque ensemble contient le précédent.",
+					"$x=\\dfrac{ {{eval:(a)*(b)}} }{ {{b}} }={{a}}$ est un entier positif : $x\\in\\textcolor{{{color:primary.0}}}{\\mathbb{N}}$, le plus petit des cinq."
+				]
+			},
+			"hint": "Commence par simplifier la fraction."
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "1"
+				}
+			],
+			"statement": "Quel est le **plus petit** ensemble de nombres qui contient $x=-\\sqrt{ {{eval:(a)^2}} }$ ?\n\n```choix\nmelanger: non\n- $\\mathbb{N}$\n- $\\mathbb{Z}$\n- $𝔻$\n- $\\mathbb{Q}$\n- $\\mathbb{R}$\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..12"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On a $\\mathbb{N}\\subset\\mathbb{Z}\\subset𝔻\\subset\\mathbb{Q}\\subset\\mathbb{R}$ : chaque ensemble contient le précédent.",
+					"$x=-\\sqrt{ {{eval:(a)^2}} }=-{{a}}$ est un entier négatif : $x\\notin\\mathbb{N}$ mais $x\\in\\textcolor{{{color:primary.0}}}{\\mathbb{Z}}$."
+				]
+			},
+			"hint": "Calcule d'abord $\\sqrt{ {{eval:(a)^2}} }$, puis regarde le signe."
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "2"
+				}
+			],
+			"statement": "Quel est le **plus petit** ensemble de nombres qui contient $x=\\dfrac{ {{p}} }{ {{q}} }$ ?\n\n```choix\nmelanger: non\n- $\\mathbb{N}$\n- $\\mathbb{Z}$\n- $𝔻$\n- $\\mathbb{Q}$\n- $\\mathbb{R}$\n```",
+			"variables": [
+				{
+					"name": "q",
+					"expression": "4|5|20|25|50"
+				},
+				{
+					"name": "p",
+					"expression": "1..99"
+				}
+			],
+			"conditions": ["gcd(p,q) == 1", "p > q"],
+			"correction": {
+				"steps": [
+					"On a $\\mathbb{N}\\subset\\mathbb{Z}\\subset𝔻\\subset\\mathbb{Q}\\subset\\mathbb{R}$ : chaque ensemble contient le précédent.",
+					"$x=\\dfrac{ {{p}} }{ {{q}} }=\\dfrac{ {{eval:(p)*100/(q)}} }{100}$ : une fraction de dénominateur $100$, donc $x$ est **décimal**, sans être entier : $x\\in\\textcolor{{{color:primary.0}}}{𝔻}$, $x\\notin\\mathbb{Z}$."
+				]
+			},
+			"hint": "Peux-tu écrire cette fraction avec un dénominateur $10$, $100$… ?"
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "3"
+				}
+			],
+			"statement": "Quel est le **plus petit** ensemble de nombres qui contient $x=\\dfrac{ {{p}} }{ {{q}} }$ ?\n\n```choix\nmelanger: non\n- $\\mathbb{N}$\n- $\\mathbb{Z}$\n- $𝔻$\n- $\\mathbb{Q}$\n- $\\mathbb{R}$\n```",
+			"variables": [
+				{
+					"name": "q",
+					"expression": "3|6|7|9|11"
+				},
+				{
+					"name": "p",
+					"expression": "1..40"
+				}
+			],
+			"conditions": ["gcd(p,q) == 1"],
+			"correction": {
+				"steps": [
+					"On a $\\mathbb{N}\\subset\\mathbb{Z}\\subset𝔻\\subset\\mathbb{Q}\\subset\\mathbb{R}$ : chaque ensemble contient le précédent.",
+					"La fraction $\\dfrac{ {{p}} }{ {{q}} }$ est irréductible et son dénominateur ${{q}}$ a un facteur premier autre que $2$ et $5$ : $x$ n'est pas décimal (son écriture décimale ne s'arrête pas).",
+					"C'est un quotient d'entiers : $x\\in\\textcolor{{{color:primary.0}}}{\\mathbb{Q}}$."
+				]
+			},
+			"hint": "La fraction est irréductible : son dénominateur ${{q}}$ ne contient-il que les facteurs premiers $2$ et $5$ ?"
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "4"
+				}
+			],
+			"statement": "Quel est le **plus petit** ensemble de nombres qui contient $x=\\sqrt{ {{k}} }$ ?\n\n```choix\nmelanger: non\n- $\\mathbb{N}$\n- $\\mathbb{Z}$\n- $𝔻$\n- $\\mathbb{Q}$\n- $\\mathbb{R}$\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "2|3|5|6|7|8|10|11|12|13"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On a $\\mathbb{N}\\subset\\mathbb{Z}\\subset𝔻\\subset\\mathbb{Q}\\subset\\mathbb{R}$ : chaque ensemble contient le précédent.",
+					"${{k}}$ n'est pas le carré d'un entier : $\\sqrt{ {{k}} }$ est **irrationnel** (admis), il n'est dans aucun des quatre premiers ensembles : $x\\in\\textcolor{{{color:primary.0}}}{\\mathbb{R}}$."
+				]
+			},
+			"hint": "${{k}}$ est-il le carré d'un entier ?"
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "1"
+				}
+			],
+			"statement": "Quel est le **plus petit** ensemble de nombres qui contient $x=-{{a}}$ ?\n\n```choix\nmelanger: non\n- $\\mathbb{N}$\n- $\\mathbb{Z}$\n- $𝔻$\n- $\\mathbb{Q}$\n- $\\mathbb{R}$\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..999"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On a $\\mathbb{N}\\subset\\mathbb{Z}\\subset𝔻\\subset\\mathbb{Q}\\subset\\mathbb{R}$ : chaque ensemble contient le précédent.",
+					"$x=-{{a}}$ est un entier négatif : $x\\notin\\mathbb{N}$ mais $x\\in\\textcolor{{{color:primary.0}}}{\\mathbb{Z}}$."
+				]
+			},
+			"hint": "Rappelle-toi : $\\mathbb{N}$ contient les entiers positifs ou nuls, $\\mathbb{Z}$ tous les entiers, positifs ou négatifs."
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "3",
+				"b": "5"
+			},
+			"description": "15/5 : ℕ",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "3",
+				"b": "5"
+			},
+			"description": "Erreur : ℚ (une fraction)",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "7"
+			},
+			"description": "−√49 : ℤ",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["4"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "7"
+			},
+			"description": "Erreur : ℝ (une racine)",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"p": "7",
+				"q": "4"
+			},
+			"description": "7/4 : 𝔻",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"p": "7",
+				"q": "4"
+			},
+			"description": "Erreur : ℚ",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["3"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"p": "5",
+				"q": "3"
+			},
+			"description": "5/3 : ℚ",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"p": "5",
+				"q": "3"
+			},
+			"description": "Erreur : 𝔻",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["4"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"k": "7"
+			},
+			"description": "√7 : ℝ",
+			"variationIndex": 4
+		},
+		{
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"k": "7"
+			},
+			"description": "Erreur : ℚ",
+			"variationIndex": 4
+		},
+		{
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "123"
+			},
+			"description": "−123 : ℤ",
+			"variationIndex": 5
+		},
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "123"
+			},
+			"description": "Erreur : ℕ (un entier)",
+			"variationIndex": 5
+		},
+		{
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "123"
+			},
+			"description": "Erreur : ℚ",
+			"variationIndex": 5
+		}
+	]
+}

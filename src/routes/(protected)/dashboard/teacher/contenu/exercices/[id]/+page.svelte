@@ -1,19 +1,20 @@
 <script lang="ts">
-	import { lore } from '$lib/config/lore';
-	import { invalidateAll } from '$app/navigation';
+	import { lore } from '#lib/config/lore.ts';
+	import { refreshAll } from '$app/navigation';
 	import { page } from '$app/state';
-	import { browser } from '$app/environment';
-	import ExerciseForm from '$lib/components/exercises/ExerciseForm.svelte';
-	import MySelect from '$lib/components/MySelect.svelte';
-	import MyCheckbox from '$lib/components/MyCheckbox.svelte';
-	import { toaster } from '$lib/stores/toaster.svelte';
-	import { Button } from '$lib/components/ui/button';
-	import BackLink from '$lib/components/navigation/BackLink.svelte';
-	import { Badge } from '$lib/components/ui/badge';
-	import * as Card from '$lib/components/ui/card';
-	import * as Dialog from '$lib/components/ui/dialog';
-	import * as Tabs from '$lib/components/ui/tabs';
-	import { Separator } from '$lib/components/ui/separator';
+	import { browser } from '$app/env';
+	import ExerciseForm from '#lib/components/exercises/ExerciseForm.svelte';
+	import ExerciseVersionsBar from '#lib/components/exercises/ExerciseVersionsBar.svelte';
+	import MySelect from '#lib/components/MySelect.svelte';
+	import MyCheckbox from '#lib/components/MyCheckbox.svelte';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import BackLink from '#lib/components/navigation/BackLink.svelte';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import * as Dialog from '#lib/components/ui/dialog/index.ts';
+	import * as Tabs from '#lib/components/ui/tabs/index.ts';
+	import { Separator } from '#lib/components/ui/separator/index.ts';
 	import {
 		Users,
 		Braces,
@@ -31,27 +32,27 @@
 		ChevronRight,
 		ChevronDown
 	} from '@lucide/svelte';
-	import { worksheetReturnHref } from '$lib/worksheets/exercise-edit-link';
-	import { generateExerciseTypst } from '$lib/exercises/typst/exercise-typst-generator';
-	import { getTypstService, PRIORITY } from '$lib/typst/service';
+	import { worksheetReturnHref } from '#lib/worksheets/exercise-edit-link.ts';
+	import { generateExerciseTypst } from '#lib/exercises/typst/exercise-typst-generator.ts';
+	import { getTypstService, PRIORITY } from '#lib/typst/service/index.ts';
 	import {
 		clearTrackedExternalImages,
 		getTrackedExternalImages
-	} from '$lib/ubumark/generators/typst-generator';
-	import { fetchExternalImages, urlToVirtualPath } from '$lib/typst/image-loader';
-	import CodeViewer from '$lib/components/CodeViewer.svelte';
-	import QrCodeButton from '$lib/components/qr/QrCodeButton.svelte';
-	import MarkdownRenderer from '$lib/components/markdown/MarkdownRenderer.svelte';
+	} from '#lib/ubumark/generators/typst-generator.ts';
+	import { fetchExternalImages, urlToVirtualPath } from '#lib/typst/image-loader.ts';
+	import CodeViewer from '#lib/components/CodeViewer.svelte';
+	import QrCodeButton from '#lib/components/qr/QrCodeButton.svelte';
+	import MarkdownRenderer from '#lib/components/markdown/MarkdownRenderer.svelte';
 	import { goto } from '$app/navigation';
 	import { resolve } from '$app/paths';
-	import type { Database } from '$lib/types/database';
+	import type { Database } from '#lib/types/database.ts';
 	import type { PageData } from './$types';
-	import { genericFunctionsConfig as toGenericFunctionsConfig } from '$lib/components/markdown/utils/math-utils';
-	import type { ExerciseShareToken } from '$lib/exercises/types';
-	import { getExerciseContentSafe } from '$lib/exercises/types';
-	import ProgrammePointLabel from '$lib/components/programme/ProgrammePointLabel.svelte';
-	import { provideCapitalPairs } from '$lib/components/markdown/content-capital-pairs';
-	import { exerciseCapitalPairs } from '$lib/questions/capital-pairs';
+	import { genericFunctionsConfig as toGenericFunctionsConfig } from '#lib/components/markdown/utils/math-utils.ts';
+	import type { ExerciseShareToken } from '#lib/exercises/types.ts';
+	import { getExerciseContentSafe } from '#lib/exercises/types.ts';
+	import ProgrammePointLabel from '#lib/components/programme/ProgrammePointLabel.svelte';
+	import { provideCapitalPairs } from '#lib/components/markdown/content-capital-pairs.ts';
+	import { exerciseCapitalPairs } from '#lib/questions/capital-pairs.ts';
 
 	type ExerciseInsert = Database['public']['Tables']['exercises']['Insert'];
 
@@ -174,7 +175,7 @@
 	// Get content from variations (single source of truth).
 	// data.exercise has Json columns (variables, variations) from Supabase; cast through unknown.
 	let exerciseContent = $derived(
-		getExerciseContentSafe(data.exercise as unknown as import('$lib/exercises/types').Exercise)
+		getExerciseContentSafe(data.exercise as unknown as import('#lib/exercises/types.ts').Exercise)
 	);
 
 	// Fonctions déclarées par l'exercice : même config que la fiche élève et le PDF
@@ -207,7 +208,8 @@
 				headers: {
 					'Content-Type': 'application/json'
 				},
-				body: JSON.stringify(updatedData)
+				// La version affichée est modifiée sur place (ADR 0044), pas forcément la plus récente
+				body: JSON.stringify({ ...updatedData, version_id: data.editedVersionId })
 			});
 
 			if (!response.ok) {
@@ -216,7 +218,7 @@
 			}
 
 			toaster.success(`${lore.learning.exercise} mise à jour avec succès`);
-			await invalidateAll();
+			await refreshAll();
 		} catch (error) {
 			console.error('Error updating exercise:', error);
 			toaster.error(
@@ -414,7 +416,7 @@
 
 			// Generate Typst content (this will track external image URLs)
 			const typstResult = await generateExerciseTypst({
-				exercise: data.exercise as unknown as import('$lib/exercises/types').Exercise,
+				exercise: data.exercise as unknown as import('#lib/exercises/types.ts').Exercise,
 				variationIndex,
 				seed,
 				includeSolution,
@@ -599,15 +601,24 @@
 		</div>
 	</div>
 
-	<ExerciseForm
-		exercise={data.exercise as unknown as import('$lib/exercises/types').Exercise}
-		onsubmit={handleUpdate}
-		{submitting}
-		supabase={data.supabase}
-		userId={data.user?.id}
-		{initialVariation}
-		onvariationchange={handleVariationChange}
+	<ExerciseVersionsBar
+		exerciseId={data.exercise.id}
+		versions={data.versions}
+		editedVersionId={data.editedVersionId}
 	/>
+
+	<!-- Une autre version = un autre contenu : le formulaire repart de zéro -->
+	{#key data.editedVersionId}
+		<ExerciseForm
+			exercise={data.exercise as unknown as import('#lib/exercises/types.ts').Exercise}
+			onsubmit={handleUpdate}
+			{submitting}
+			supabase={data.supabase}
+			userId={data.user?.id}
+			{initialVariation}
+			onvariationchange={handleVariationChange}
+		/>
+	{/key}
 
 	<!-- Points de programme (tagging → couverture auto dans le cahier de texte) -->
 	<Card.Root class="mt-6">

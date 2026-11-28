@@ -7,11 +7,11 @@
 	demo-debug, PR 6c).
 -->
 <script lang="ts">
-	import { demoSeo } from '$lib/seo/demo-pages';
-	import SeoHead from '$lib/seo/SeoHead.svelte';
-	import BackLink from '$lib/components/navigation/BackLink.svelte';
-	import VipCardHolo from '$lib/components/VipCardHolo.svelte';
-	import type { VipCardRarity } from '$lib/types/vip-card';
+	import { demoSeo } from '#lib/seo/demo-pages.ts';
+	import SeoHead from '#lib/seo/SeoHead.svelte';
+	import BackLink from '#lib/components/navigation/BackLink.svelte';
+	import VipCardHolo from '#lib/components/VipCardHolo.svelte';
+	import type { VipCardRarity } from '#lib/types/vip-card.ts';
 	import { DEMO_CARDS } from './cartes';
 
 	// Constantes

@@ -12,9 +12,9 @@
 	 * son panneau (`ObjectProperties`), dont l'état vit dans la liste — il
 	 * survit au renommage, qui change la clé de la carte.
 	 */
-	import type { AtelierObject } from '$lib/atelier/types';
-	import { PROPERTIES_ACTIONS, type ObjectAction } from '$lib/atelier/actions';
-	import { isFigureObject, isFunction, isList, isSequence, isValue } from '$lib/atelier/types';
+	import type { AtelierObject } from '#lib/atelier/types.ts';
+	import { PROPERTIES_ACTIONS, type ObjectAction } from '#lib/atelier/actions.ts';
+	import { isFigureObject, isFunction, isList, isSequence, isValue } from '#lib/atelier/types.ts';
 	import FunctionCard from './FunctionCard.svelte';
 	import ValueCard from './ValueCard.svelte';
 	import SequenceCard from './SequenceCard.svelte';

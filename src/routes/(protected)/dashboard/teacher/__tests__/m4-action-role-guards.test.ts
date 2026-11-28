@@ -19,7 +19,7 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { createMockSupabase, createMockLocals } from '$tests/helpers';
+import { createMockSupabase, createMockLocals } from '#tests/helpers/index.ts';
 
 const STUDENT_ID = '550e8400-e29b-41d4-a716-446655440003';
 const SOME_UUID = '550e8400-e29b-41d4-a716-446655440010';

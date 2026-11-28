@@ -1,7 +1,7 @@
 import type { PageServerLoad } from './$types';
 import { error, redirect } from '@sveltejs/kit';
-import { getTeacherTestMode } from '$lib/server/test-mode';
-import { createServerLogger } from '$lib/utils/logger';
+import { getTeacherTestMode } from '#lib/server/test-mode.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger(
 	'(protected)/dashboard/teacher/contenu/enigmes/stats/+page.server'

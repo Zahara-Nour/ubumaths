@@ -6,17 +6,17 @@
  * PATCH /api/documents - Update document metadata
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireAuth } from '$lib/server/middleware/auth';
+import { requireAuth } from '#lib/server/middleware/auth.ts';
 import {
 	documentListQuerySchema,
 	documentUpdateSchema,
 	documentDeleteSchema
-} from '$lib/server/validation/documents';
-import { deleteDocument, disableDocument, enableDocument } from '$lib/server/rag';
-import type { TablesUpdate } from '$lib/types/database';
-import { createServerLogger } from '$lib/utils/logger';
+} from '#lib/server/validation/documents.ts';
+import { deleteDocument, disableDocument, enableDocument } from '#lib/server/rag/index.ts';
+import type { TablesUpdate } from '#lib/types/database.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/documents/+server');
 
@@ -29,14 +29,14 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 
 		// Only teachers and admins can view documents
 		if (profile.role !== 'teacher' && profile.role !== 'admin') {
-			throw error(403, { message: 'Accès non autorisé' });
+			throw error(403, 'Accès non autorisé');
 		}
 
 		// Parse query parameters
 		const queryValidation = documentListQuerySchema.safeParse(Object.fromEntries(url.searchParams));
 
 		if (!queryValidation.success) {
-			throw error(400, { message: queryValidation.error.issues[0].message });
+			throw error(400, queryValidation.error.issues[0].message);
 		}
 
 		const { page, limit, search, sourceType, grade, topic, enabledOnly } = queryValidation.data;
@@ -78,7 +78,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 
 		if (queryError) {
 			logger.error('Error fetching documents:', queryError);
-			throw error(500, { message: 'Erreur lors de la récupération des documents' });
+			throw error(500, 'Erreur lors de la récupération des documents');
 		}
 
 		// Get chunk counts for each document
@@ -122,7 +122,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 			updatedAt: doc.updated_at
 		}));
 
-		return json({
+		return Response.json({
 			documents: formattedDocuments,
 			pagination: {
 				page,
@@ -136,7 +136,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 			throw err;
 		}
 		logger.error('Documents list error:', err);
-		throw error(500, { message: 'Erreur serveur' });
+		throw error(500, 'Erreur serveur');
 	}
 };
 
@@ -148,14 +148,14 @@ export const DELETE: RequestHandler = async ({ request, locals }) => {
 		const { user, profile } = await requireAuth(locals);
 
 		if (profile.role !== 'teacher' && profile.role !== 'admin') {
-			throw error(403, { message: 'Accès non autorisé' });
+			throw error(403, 'Accès non autorisé');
 		}
 
 		const body = await request.json();
 		const validation = documentDeleteSchema.safeParse(body);
 
 		if (!validation.success) {
-			throw error(400, { message: validation.error.issues[0].message });
+			throw error(400, validation.error.issues[0].message);
 		}
 
 		const { documentId } = validation.data;
@@ -176,7 +176,7 @@ export const DELETE: RequestHandler = async ({ request, locals }) => {
 			}
 
 			if (!doc || doc.teacher_id !== user.id) {
-				throw error(403, { message: 'Suppression réservée à l’auteur du document' });
+				throw error(403, 'Suppression réservée à l’auteur du document');
 			}
 		}
 
@@ -184,16 +184,16 @@ export const DELETE: RequestHandler = async ({ request, locals }) => {
 		const success = await deleteDocument(locals.supabase, documentId);
 
 		if (!success) {
-			throw error(500, { message: 'Erreur lors de la suppression du document' });
+			throw error(500, 'Erreur lors de la suppression du document');
 		}
 
-		return json({ success: true, message: 'Document supprimé' });
+		return Response.json({ success: true, message: 'Document supprimé' });
 	} catch (err) {
 		if (err && typeof err === 'object' && 'status' in err) {
 			throw err;
 		}
 		logger.error('Document delete error:', err);
-		throw error(500, { message: 'Erreur serveur' });
+		throw error(500, 'Erreur serveur');
 	}
 };
 
@@ -205,20 +205,20 @@ export const PATCH: RequestHandler = async ({ request, locals }) => {
 		const { user, profile } = await requireAuth(locals);
 
 		if (profile.role !== 'teacher' && profile.role !== 'admin') {
-			throw error(403, { message: 'Accès non autorisé' });
+			throw error(403, 'Accès non autorisé');
 		}
 
 		const body = await request.json();
 		const { documentId, ...updateData } = body;
 
 		if (!documentId || typeof documentId !== 'string') {
-			throw error(400, { message: 'ID de document requis' });
+			throw error(400, 'ID de document requis');
 		}
 
 		const validation = documentUpdateSchema.safeParse(updateData);
 
 		if (!validation.success) {
-			throw error(400, { message: validation.error.issues[0].message });
+			throw error(400, validation.error.issues[0].message);
 		}
 
 		// Verify ownership (unless admin)
@@ -237,7 +237,7 @@ export const PATCH: RequestHandler = async ({ request, locals }) => {
 			}
 
 			if (!doc || doc.teacher_id !== user.id) {
-				throw error(403, { message: 'Modification réservée à l’auteur du document' });
+				throw error(403, 'Modification réservée à l’auteur du document');
 			}
 		}
 
@@ -248,7 +248,7 @@ export const PATCH: RequestHandler = async ({ request, locals }) => {
 				: await disableDocument(locals.supabase, documentId);
 
 			if (!success) {
-				throw error(500, { message: 'Erreur lors de la mise à jour du document' });
+				throw error(500, 'Erreur lors de la mise à jour du document');
 			}
 		}
 
@@ -265,16 +265,16 @@ export const PATCH: RequestHandler = async ({ request, locals }) => {
 				.eq('id', documentId);
 
 			if (updateError) {
-				throw error(500, { message: 'Erreur lors de la mise à jour du document' });
+				throw error(500, 'Erreur lors de la mise à jour du document');
 			}
 		}
 
-		return json({ success: true, message: 'Document mis à jour' });
+		return Response.json({ success: true, message: 'Document mis à jour' });
 	} catch (err) {
 		if (err && typeof err === 'object' && 'status' in err) {
 			throw err;
 		}
 		logger.error('Document update error:', err);
-		throw error(500, { message: 'Erreur serveur' });
+		throw error(500, 'Erreur serveur');
 	}
 };

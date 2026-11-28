@@ -11,7 +11,7 @@
  * @example Basic rendering
  * ```svelte
  * <script>
- *   import { MarkdownRenderer } from '$lib/components/markdown';
+ *   import { MarkdownRenderer } from '#lib/components/markdown/index.ts';
  * </script>
  *
  * <MarkdownRenderer content="Calculate $2 + 3$" />
@@ -20,7 +20,7 @@
  * @example With blanks
  * ```svelte
  * <script>
- *   import { MarkdownRenderer, type BlankState } from '$lib/components/markdown';
+ *   import { MarkdownRenderer, type BlankState } from '#lib/components/markdown/index.ts';
  *
  *   const blankStates = new Map<number, BlankState>([[1, { index: 1, value: '' }]]);
  * </script>

@@ -1,0 +1,246 @@
+{
+	"id": "a24cffa6-79e7-4193-b738-c7a749377ba5",
+	"title": "Écart type des moyennes d'échantillons en Python",
+	"description": "N échantillons de taille n de X (μ = 10, écart type σ) : compléter la ligne de comptage abs(m - mu) <= k * sigma / sqrt(n), écart type des moyennes proche de σ/√n (case), effet de n multiplié par 4 (s divisé par 2)",
+	"grades": ["T_SPE"],
+	"level": 2,
+	"delay": 90,
+	"status": "draft",
+	"shared": {},
+	"variations": [
+		{
+			"statement": "Une variable aléatoire $X$ prend les valeurs ${{eval:10-s}}$ et ${{eval:10+s}}$ avec la probabilité $\\dfrac{1}{2}$ chacune : son espérance est $\\mu=10$ et son écart type est $\\sigma={{eval:s}}$. La fonction `moyennes(N, n)` ci-dessous simule $N$ échantillons de taille $n$ de $X$ et renvoie la liste de leurs moyennes. La fonction `proportion` doit renvoyer la proportion des moyennes de la liste `M` dont l'écart à $\\mu$ est inférieur ou égal à $k\\dfrac{\\sigma}{\\sqrt{n}}$.\n\n```python\nfrom math import sqrt\nfrom random import random\nfrom statistics import mean\n\ndef X():\n    if random() < 0.5:\n        return {{eval:10-s}}\n    return {{eval:10+s}}\n\ndef moyennes(N, n):\n    M = []\n    for j in range(N):\n        M.append(mean([X() for k in range(n)]))\n    return M\n\ndef proportion(M, mu, sigma, n, k):\n    c = 0\n    for m in M:\n        ...\n            c = c + 1\n    return c / len(M)\n```\n\nQue faut-il écrire à la place des points de suspension ?\n\n```choix\n- `if abs(m - mu) <= k * sigma / sqrt(n):`\n- `if abs(m - mu) <= k * sigma:`\n- `if m - mu <= k * sigma / sqrt(n):`\n- `if abs(m - mu) <= k * sigma / n:`\n```",
+			"variables": [
+				{
+					"name": "s",
+					"expression": "1..3"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"L'écart entre la moyenne `m` et $\\mu$ est $\\lvert m-\\mu\\rvert$ : la valeur absolue compte les écarts des deux côtés.",
+					"Le seuil est $k\\dfrac{\\sigma}{\\sqrt{n}}$, $k$ fois l'écart type de la moyenne d'un échantillon de taille $n$ (et non $k\\sigma$, ni $k\\dfrac{\\sigma}{n}$).",
+					"La ligne est donc `if abs(m - mu) <= k * sigma / sqrt(n):`."
+				]
+			}
+		},
+		{
+			"statement": "Une variable aléatoire $X$ prend les valeurs ${{eval:10-s}}$ et ${{eval:10+s}}$ avec la probabilité $\\dfrac{1}{2}$ chacune : son espérance est $\\mu=10$ et son écart type est $\\sigma={{eval:s}}$. La fonction `moyennes(N, n)` ci-dessous simule $N$ échantillons de taille $n$ de $X$ et renvoie la liste de leurs moyennes. On exécute le programme suivant, où `pstdev` calcule l'écart type d'une série.\n\n```python\nfrom random import random\nfrom statistics import mean, pstdev\n\ndef X():\n    if random() < 0.5:\n        return {{eval:10-s}}\n    return {{eval:10+s}}\n\ndef moyennes(N, n):\n    M = []\n    for j in range(N):\n        M.append(mean([X() for k in range(n)]))\n    return M\n\nprint(pstdev(moyennes(1000, {{eval:m^2}})))\n```\n\nDe quel nombre la valeur affichée est-elle, en général, proche ?\n\n$?$",
+			"variables": [
+				{
+					"name": "s",
+					"expression": "1|2|3|5"
+				},
+				{
+					"name": "m",
+					"expression": "5|10|20"
+				},
+				{
+					"name": "r",
+					"expression": "eval:s/m"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:r;d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La valeur affichée est l'écart type $s$ de la série des $1\\,000$ moyennes d'échantillons de taille $n={{eval:m^2}}$.",
+					"La moyenne $M_n$ d'un échantillon de taille $n$ a pour variance $\\dfrac{\\sigma^2}{n}$, donc pour écart type $\\dfrac{\\sigma}{\\sqrt{n}}$ : $s$ en est proche.",
+					"$\\dfrac{\\sigma}{\\sqrt{n}}=\\dfrac{{{eval:s}}}{\\sqrt{{{eval:m^2}}}}=\\dfrac{{{eval:s}}}{{{eval:m}}}=\\textcolor{{{color:primary.0}}}{{{eval:r;d}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Une variable aléatoire $X$ prend les valeurs ${{eval:10-s}}$ et ${{eval:10+s}}$ avec la probabilité $\\dfrac{1}{2}$ chacune : son espérance est $\\mu=10$ et son écart type est $\\sigma={{eval:s}}$. La fonction `moyennes(N, n)` ci-dessous simule $N$ échantillons de taille $n$ de $X$ et renvoie la liste de leurs moyennes. On calcule l'écart type $s$ de la série des moyennes renvoyée par `moyennes(1000, {{eval:n}})`, puis par `moyennes(1000, {{eval:4*n}})`.\n\n```python\nfrom random import random\nfrom statistics import mean\n\ndef X():\n    if random() < 0.5:\n        return {{eval:10-s}}\n    return {{eval:10+s}}\n\ndef moyennes(N, n):\n    M = []\n    for j in range(N):\n        M.append(mean([X() for k in range(n)]))\n    return M\n```\n\nComment $s$ change-t-il, en général, quand on passe de $n={{eval:n}}$ à $n={{eval:4*n}}$ ?\n\n```choix\n- Il est à peu près divisé par $2$.\n- Il est à peu près divisé par $4$.\n- Il est à peu près multiplié par $2$.\n- Il ne change presque pas.\n```",
+			"variables": [
+				{
+					"name": "s",
+					"expression": "1..3"
+				},
+				{
+					"name": "n",
+					"expression": "25|50|100"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$s$ est proche de l'écart type de la moyenne d'un échantillon, $\\dfrac{\\sigma}{\\sqrt{n}}$.",
+					"Quand $n$ est multiplié par $4$, $\\sqrt{n}$ est multiplié par $\\sqrt{4}=2$.",
+					"$s$ est donc $\\textcolor{{{color:primary.0}}}{\\text{à peu près divisé par }2}$ : les moyennes se resserrent autour de $\\mu$, mais seulement en $\\dfrac{1}{\\sqrt{n}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "if abs(m - mu) <= k * sigma / sqrt(n):",
+			"variationIndex": 0,
+			"variables": {
+				"s": "2"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : kσ",
+			"variationIndex": 0,
+			"variables": {
+				"s": "2"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : sans valeur absolue",
+			"variationIndex": 0,
+			"variables": {
+				"s": "2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : σ/n",
+			"variationIndex": 0,
+			"variables": {
+				"s": "2"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "σ = 2, n = 25 : 0,4",
+			"variationIndex": 1,
+			"variables": {
+				"s": "2",
+				"m": "5",
+				"r": "0.4"
+			},
+			"answers": ["0.4"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "σ = 5, n = 100 : 0,5 avec virgule",
+			"variationIndex": 1,
+			"variables": {
+				"s": "5",
+				"m": "10",
+				"r": "0.5"
+			},
+			"answers": ["0,5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "σ = 3, n = 400 : 0,15",
+			"variationIndex": 1,
+			"variables": {
+				"s": "3",
+				"m": "20",
+				"r": "0.15"
+			},
+			"answers": ["0.15"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : σ/n (σ = 5, n = 100)",
+			"variationIndex": 1,
+			"variables": {
+				"s": "5",
+				"m": "10",
+				"r": "0.5"
+			},
+			"answers": ["0.05"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : σ (σ = 2, n = 25)",
+			"variationIndex": 1,
+			"variables": {
+				"s": "2",
+				"m": "5",
+				"r": "0.4"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "divisé par 2",
+			"variationIndex": 2,
+			"variables": {
+				"s": "2",
+				"n": "25"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : divisé par 4",
+			"variationIndex": 2,
+			"variables": {
+				"s": "2",
+				"n": "25"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : multiplié par 2",
+			"variationIndex": 2,
+			"variables": {
+				"s": "2",
+				"n": "25"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : inchangé",
+			"variationIndex": 2,
+			"variables": {
+				"s": "2",
+				"n": "25"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

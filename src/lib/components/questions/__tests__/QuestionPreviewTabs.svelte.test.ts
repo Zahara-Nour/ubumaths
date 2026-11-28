@@ -1,6 +1,6 @@
 /**
  * Aperçu admin d'une question : un onglet par rendu élève RÉEL (décision Q61,
- * 2026-10-01). Flash-card (FlashSeries / révisions), Entraînement
+ * 2026-10-01). Flash-card (FlashSeries / révisions), Contrôle blanc
  * (TestInteractive puis carte de correction de fin de série), En classe
  * (ClassroomSeries : projection sans retournement, verso de la grille).
  *
@@ -14,9 +14,9 @@ import { describe, it, expect, afterEach, vi } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import { flushSync, tick } from 'svelte';
 import QuestionPreviewTabs from '../QuestionPreviewTabs.svelte';
-import FlashSeries from '$lib/components/test/FlashSeries.svelte';
-import type { QuestionInstance } from '$lib/questions/types';
-import { resolvedMarkdown } from '$lib/ubumark';
+import FlashSeries from '#lib/components/test/FlashSeries.svelte';
+import type { QuestionInstance } from '#lib/questions/types.ts';
+import { resolvedMarkdown } from '#lib/ubumark/index.ts';
 
 const COURBE_EN_ERREUR = ['```courbe', 'x: -4 ; 6', 'y: -8 ; 12', 'f(x) = 2*(x+1', '```'].join(
 	'\n'
@@ -111,13 +111,13 @@ function activePanel(root: HTMLElement): HTMLElement {
 }
 
 describe('QuestionPreviewTabs — onglets', () => {
-	it('trois onglets, Entraînement par défaut pour une question à saisie', async () => {
+	it('trois onglets, Contrôle blanc par défaut pour une question à saisie', async () => {
 		const { container } = await open(choiceQuestion());
 		const labels = [...container.querySelectorAll('[role="tab"]')].map((t) =>
 			t.textContent?.trim()
 		);
-		expect(labels).toEqual(['Flash-card', 'Entraînement', 'En classe']);
-		expect(tab(container, 'Entraînement').getAttribute('aria-selected')).toBe('true');
+		expect(labels).toEqual(['Flash-card', 'Contrôle blanc', 'En classe']);
+		expect(tab(container, 'Contrôle blanc').getAttribute('aria-selected')).toBe('true');
 	});
 
 	it('carte de cours : Flash-card par défaut', async () => {
@@ -125,7 +125,7 @@ describe('QuestionPreviewTabs — onglets', () => {
 		expect(tab(container, 'Flash-card').getAttribute('aria-selected')).toBe('true');
 	});
 
-	it('Entraînement : saisie + Valider, puis carte de correction, puis Recommencer', async () => {
+	it('Contrôle blanc : saisie + Valider, puis carte de correction, puis Recommencer', async () => {
 		const { container } = await open(choiceQuestion());
 		const panel = activePanel(container);
 		// QuestionCard interactive : choix cliquables, bouton Valider, pas de retournement
@@ -191,7 +191,7 @@ describe('QuestionPreviewTabs — onglets', () => {
 
 	it("changer d'onglet ne remplace pas l'instance", async () => {
 		const { container } = await open(choiceQuestion('Énoncé unique'));
-		for (const label of ['Flash-card', 'En classe', 'Entraînement']) {
+		for (const label of ['Flash-card', 'En classe', 'Contrôle blanc']) {
 			await selectTab(container, label);
 			expect(activePanel(container).textContent).toContain('Énoncé unique');
 		}
@@ -201,7 +201,7 @@ describe('QuestionPreviewTabs — onglets', () => {
 describe('QuestionPreviewTabs — erreurs d’auteur (Q48)', () => {
 	it('un bloc courbe mal écrit montre « Ligne » dans chaque onglet', async () => {
 		const { container } = await open(choiceQuestion(`Lire la figure.\n\n${COURBE_EN_ERREUR}`));
-		for (const label of ['Flash-card', 'Entraînement', 'En classe']) {
+		for (const label of ['Flash-card', 'Contrôle blanc', 'En classe']) {
 			await selectTab(container, label);
 			const text = activePanel(container).textContent ?? '';
 			expect(text, label).toContain('Ligne 3');
@@ -209,7 +209,7 @@ describe('QuestionPreviewTabs — erreurs d’auteur (Q48)', () => {
 		}
 	});
 
-	it('la carte de correction (Entraînement) montre aussi le message détaillé', async () => {
+	it('la carte de correction (Contrôle blanc) montre aussi le message détaillé', async () => {
 		const { container } = await open(choiceQuestion(`Lire la figure.\n\n${COURBE_EN_ERREUR}`));
 		const panel = activePanel(container);
 		panel.querySelectorAll<HTMLButtonElement>('.choice-button')[1].click();
@@ -229,7 +229,7 @@ describe('QuestionPreviewTabs — erreurs d’auteur (Q48)', () => {
 	it('droite à placer trop serrée : pas d’avertissement « téléphone » dans les onglets', async () => {
 		const serree = ['```line', 'start: 0', 'end: 20', 'step: 1', 'placer: 3', '```'].join('\n');
 		const { container } = await open(choiceQuestion(`Place 3.\n\n${serree}`));
-		for (const label of ['Flash-card', 'Entraînement', 'En classe']) {
+		for (const label of ['Flash-card', 'Contrôle blanc', 'En classe']) {
 			await selectTab(container, label);
 			const panel = activePanel(container);
 			expect(panel.querySelector('[role="slider"]'), label).not.toBeNull();
@@ -252,5 +252,20 @@ describe('QuestionPreviewTabs — erreurs d’auteur (Q48)', () => {
 		await tick();
 		expect(container.textContent).toContain('Figure indisponible');
 		expect(container.textContent).not.toContain('Ligne 3');
+	});
+});
+
+describe('QuestionPreviewTabs — sans barre d’onglets (parcours d’une série)', () => {
+	it('bare : ni onglets ni explications, le rendu choisi par le parent est montré', async () => {
+		const { container } = await render(QuestionPreviewTabs, {
+			target: mainElement(),
+			props: { instance: choiceQuestion(), tab: 'classroom', bare: true }
+		});
+		flushSync();
+		await tick();
+		expect(container.querySelectorAll('[role="tab"]')).toHaveLength(0);
+		expect(container.textContent).not.toContain('la carte ne se retourne pas');
+		expect(activePanel(container).textContent).toContain('Combien font 2 + 2 ?');
+		expect(findButton(container, 'Voir le verso')).toBeDefined();
 	});
 });

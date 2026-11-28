@@ -1,0 +1,178 @@
+{
+	"id": "4baa1364-2b79-421a-8e79-899fa41dd432",
+	"title": "Motif évolutif : les étapes suivantes",
+	"description": "Motif dessiné en trois étapes, qui grandit dans plusieurs sens (croix de jetons, L de carreaux, rectangle de jetons, deux étages de carrés d'allumettes) : le nombre d'éléments aux étapes 4, 5 et 6",
+	"grades": ["CM2"],
+	"level": 1,
+	"delay": 180,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"spacesFromFourDigits": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Voici les trois premières étapes d'un motif de jetons.\n\n```figure\nfenetre: -0.7 ; 17.7 ; -4.6 ; 3.7\ntaille: grande\ndescription: Trois étapes d'un motif de jetons en croix : un jeton au centre et quatre bras de 1, 2 puis 3 jetons, soit 5, 9 puis 13 jetons.\n---\nX0O = point(1, 0, visible=faux)\ncercle(X0O, rayon=0.3, couleur=\"rouge\", remplissage=\"rouge\", opacite_fond=1)\nX0D1 = point(2, 0, visible=faux)\ncercle(X0D1, rayon=0.3, couleur=\"rouge\", remplissage=\"rouge\", opacite_fond=1)\nX0G1 = point(0, 0, visible=faux)\ncercle(X0G1, rayon=0.3, couleur=\"rouge\", remplissage=\"rouge\", opacite_fond=1)\nX0H1 = point(1, 1, visible=faux)\ncercle(X0H1, rayon=0.3, couleur=\"rouge\", remplissage=\"rouge\", opacite_fond=1)\nX0B1 = point(1, -1, visible=faux)\ncercle(X0B1, rayon=0.3, couleur=\"rouge\", remplissage=\"rouge\", opacite_fond=1)\nX1O = point(6.5, 0, visible=faux)\ncercle(X1O, rayon=0.3, couleur=\"rouge\", remplissage=\"rouge\", opacite_fond=1)\nX1D1 = point(7.5, 0, visible=faux)\ncercle(X1D1, rayon=0.3, couleur=\"rouge\", remplissage=\"rouge\", opacite_fond=1)\nX1G1 = point(5.5, 0, visible=faux)\ncercle(X1G1, rayon=0.3, couleur=\"rouge\", remplissage=\"rouge\", opacite_fond=1)\nX1H1 = point(6.5, 1, visible=faux)\ncercle(X1H1, rayon=0.3, couleur=\"rouge\", remplissage=\"rouge\", opacite_fond=1)\nX1B1 = point(6.5, -1, visible=faux)\ncercle(X1B1, rayon=0.3, couleur=\"rouge\", remplissage=\"rouge\", opacite_fond=1)\nX1D2 = point(8.5, 0, visible=faux)\ncercle(X1D2, rayon=0.3, couleur=\"rouge\", remplissage=\"rouge\", opacite_fond=1)\nX1G2 = point(4.5, 0, visible=faux)\ncercle(X1G2, rayon=0.3, couleur=\"rouge\", remplissage=\"rouge\", opacite_fond=1)\nX1H2 = point(6.5, 2, visible=faux)\ncercle(X1H2, rayon=0.3, couleur=\"rouge\", remplissage=\"rouge\", opacite_fond=1)\nX1B2 = point(6.5, -2, visible=faux)\ncercle(X1B2, rayon=0.3, couleur=\"rouge\", remplissage=\"rouge\", opacite_fond=1)\nX2O = point(14, 0, visible=faux)\ncercle(X2O, rayon=0.3, couleur=\"rouge\", remplissage=\"rouge\", opacite_fond=1)\nX2D1 = point(15, 0, visible=faux)\ncercle(X2D1, rayon=0.3, couleur=\"rouge\", remplissage=\"rouge\", opacite_fond=1)\nX2G1 = point(13, 0, visible=faux)\ncercle(X2G1, rayon=0.3, couleur=\"rouge\", remplissage=\"rouge\", opacite_fond=1)\nX2H1 = point(14, 1, visible=faux)\ncercle(X2H1, rayon=0.3, couleur=\"rouge\", remplissage=\"rouge\", opacite_fond=1)\nX2B1 = point(14, -1, visible=faux)\ncercle(X2B1, rayon=0.3, couleur=\"rouge\", remplissage=\"rouge\", opacite_fond=1)\nX2D2 = point(16, 0, visible=faux)\ncercle(X2D2, rayon=0.3, couleur=\"rouge\", remplissage=\"rouge\", opacite_fond=1)\nX2G2 = point(12, 0, visible=faux)\ncercle(X2G2, rayon=0.3, couleur=\"rouge\", remplissage=\"rouge\", opacite_fond=1)\nX2H2 = point(14, 2, visible=faux)\ncercle(X2H2, rayon=0.3, couleur=\"rouge\", remplissage=\"rouge\", opacite_fond=1)\nX2B2 = point(14, -2, visible=faux)\ncercle(X2B2, rayon=0.3, couleur=\"rouge\", remplissage=\"rouge\", opacite_fond=1)\nX2D3 = point(17, 0, visible=faux)\ncercle(X2D3, rayon=0.3, couleur=\"rouge\", remplissage=\"rouge\", opacite_fond=1)\nX2G3 = point(11, 0, visible=faux)\ncercle(X2G3, rayon=0.3, couleur=\"rouge\", remplissage=\"rouge\", opacite_fond=1)\nX2H3 = point(14, 3, visible=faux)\ncercle(X2H3, rayon=0.3, couleur=\"rouge\", remplissage=\"rouge\", opacite_fond=1)\nX2B3 = point(14, -3, visible=faux)\ncercle(X2B3, rayon=0.3, couleur=\"rouge\", remplissage=\"rouge\", opacite_fond=1)\ntexte(1, -4, \"Étape 1\")\ntexte(6.5, -4, \"Étape 2\")\ntexte(14, -4, \"Étape 3\")\n```\n\nCombien de jetons y aura-t-il aux trois étapes suivantes ?\n\nÉtape 4 : $?$ jetons\n\nÉtape 5 : $?$ jetons\n\nÉtape 6 : $?$ jetons",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "17"
+				},
+				{
+					"expectedAnswer": "21"
+				},
+				{
+					"expectedAnswer": "25"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**On compte.** Étape 1 : $5$ ; étape 2 : $9$ ; étape 3 : $13$.",
+					"**La règle.** À chaque étape, on ajoute $4$ jetons. Pourquoi : chaque bras gagne un jeton.",
+					"**Les trois suivantes.** étape 4 : $13 + 4 = \\textcolor{{{color:primary.0}}}{17}$ ; étape 5 : $17 + 4 = \\textcolor{{{color:primary.0}}}{21}$ ; étape 6 : $21 + 4 = \\textcolor{{{color:primary.0}}}{25}$."
+				]
+			}
+		},
+		{
+			"statement": "Voici les trois premières étapes d'un motif de carreaux.\n\n```figure\nfenetre: -0.5 ; 11.5 ; -1.5 ; 4.5\ndescription: Trois étapes d'un motif de carreaux en forme de L : 3, 5 puis 7 carreaux.\n---\nL0V0a = point(0, 0, visible=faux)\nL0V0b = point(1, 0, visible=faux)\nL0V0c = point(1, 1, visible=faux)\nL0V0d = point(0, 1, visible=faux)\npolygone(L0V0a, L0V0b, L0V0c, L0V0d, couleur=\"noir\", remplissage=\"jaune\", opacite_fond=0.6)\nL0V1a = point(0, 1, visible=faux)\nL0V1b = point(1, 1, visible=faux)\nL0V1c = point(1, 2, visible=faux)\nL0V1d = point(0, 2, visible=faux)\npolygone(L0V1a, L0V1b, L0V1c, L0V1d, couleur=\"noir\", remplissage=\"jaune\", opacite_fond=0.6)\nL0H1a = point(1, 0, visible=faux)\nL0H1b = point(2, 0, visible=faux)\nL0H1c = point(2, 1, visible=faux)\nL0H1d = point(1, 1, visible=faux)\npolygone(L0H1a, L0H1b, L0H1c, L0H1d, couleur=\"noir\", remplissage=\"jaune\", opacite_fond=0.6)\nL1V0a = point(3, 0, visible=faux)\nL1V0b = point(4, 0, visible=faux)\nL1V0c = point(4, 1, visible=faux)\nL1V0d = point(3, 1, visible=faux)\npolygone(L1V0a, L1V0b, L1V0c, L1V0d, couleur=\"noir\", remplissage=\"jaune\", opacite_fond=0.6)\nL1V1a = point(3, 1, visible=faux)\nL1V1b = point(4, 1, visible=faux)\nL1V1c = point(4, 2, visible=faux)\nL1V1d = point(3, 2, visible=faux)\npolygone(L1V1a, L1V1b, L1V1c, L1V1d, couleur=\"noir\", remplissage=\"jaune\", opacite_fond=0.6)\nL1V2a = point(3, 2, visible=faux)\nL1V2b = point(4, 2, visible=faux)\nL1V2c = point(4, 3, visible=faux)\nL1V2d = point(3, 3, visible=faux)\npolygone(L1V2a, L1V2b, L1V2c, L1V2d, couleur=\"noir\", remplissage=\"jaune\", opacite_fond=0.6)\nL1H1a = point(4, 0, visible=faux)\nL1H1b = point(5, 0, visible=faux)\nL1H1c = point(5, 1, visible=faux)\nL1H1d = point(4, 1, visible=faux)\npolygone(L1H1a, L1H1b, L1H1c, L1H1d, couleur=\"noir\", remplissage=\"jaune\", opacite_fond=0.6)\nL1H2a = point(5, 0, visible=faux)\nL1H2b = point(6, 0, visible=faux)\nL1H2c = point(6, 1, visible=faux)\nL1H2d = point(5, 1, visible=faux)\npolygone(L1H2a, L1H2b, L1H2c, L1H2d, couleur=\"noir\", remplissage=\"jaune\", opacite_fond=0.6)\nL2V0a = point(7, 0, visible=faux)\nL2V0b = point(8, 0, visible=faux)\nL2V0c = point(8, 1, visible=faux)\nL2V0d = point(7, 1, visible=faux)\npolygone(L2V0a, L2V0b, L2V0c, L2V0d, couleur=\"noir\", remplissage=\"jaune\", opacite_fond=0.6)\nL2V1a = point(7, 1, visible=faux)\nL2V1b = point(8, 1, visible=faux)\nL2V1c = point(8, 2, visible=faux)\nL2V1d = point(7, 2, visible=faux)\npolygone(L2V1a, L2V1b, L2V1c, L2V1d, couleur=\"noir\", remplissage=\"jaune\", opacite_fond=0.6)\nL2V2a = point(7, 2, visible=faux)\nL2V2b = point(8, 2, visible=faux)\nL2V2c = point(8, 3, visible=faux)\nL2V2d = point(7, 3, visible=faux)\npolygone(L2V2a, L2V2b, L2V2c, L2V2d, couleur=\"noir\", remplissage=\"jaune\", opacite_fond=0.6)\nL2V3a = point(7, 3, visible=faux)\nL2V3b = point(8, 3, visible=faux)\nL2V3c = point(8, 4, visible=faux)\nL2V3d = point(7, 4, visible=faux)\npolygone(L2V3a, L2V3b, L2V3c, L2V3d, couleur=\"noir\", remplissage=\"jaune\", opacite_fond=0.6)\nL2H1a = point(8, 0, visible=faux)\nL2H1b = point(9, 0, visible=faux)\nL2H1c = point(9, 1, visible=faux)\nL2H1d = point(8, 1, visible=faux)\npolygone(L2H1a, L2H1b, L2H1c, L2H1d, couleur=\"noir\", remplissage=\"jaune\", opacite_fond=0.6)\nL2H2a = point(9, 0, visible=faux)\nL2H2b = point(10, 0, visible=faux)\nL2H2c = point(10, 1, visible=faux)\nL2H2d = point(9, 1, visible=faux)\npolygone(L2H2a, L2H2b, L2H2c, L2H2d, couleur=\"noir\", remplissage=\"jaune\", opacite_fond=0.6)\nL2H3a = point(10, 0, visible=faux)\nL2H3b = point(11, 0, visible=faux)\nL2H3c = point(11, 1, visible=faux)\nL2H3d = point(10, 1, visible=faux)\npolygone(L2H3a, L2H3b, L2H3c, L2H3d, couleur=\"noir\", remplissage=\"jaune\", opacite_fond=0.6)\ntexte(1, -0.9, \"Étape 1\")\ntexte(4.5, -0.9, \"Étape 2\")\ntexte(9, -0.9, \"Étape 3\")\n```\n\nCombien de carreaux y aura-t-il aux trois étapes suivantes ?\n\nÉtape 4 : $?$ carreaux\n\nÉtape 5 : $?$ carreaux\n\nÉtape 6 : $?$ carreaux",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "9"
+				},
+				{
+					"expectedAnswer": "11"
+				},
+				{
+					"expectedAnswer": "13"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**On compte.** Étape 1 : $3$ ; étape 2 : $5$ ; étape 3 : $7$.",
+					"**La règle.** À chaque étape, on ajoute $2$ carreaux. Pourquoi : un carreau en haut de la colonne et un au bout de la ligne.",
+					"**Les trois suivantes.** étape 4 : $7 + 2 = \\textcolor{{{color:primary.0}}}{9}$ ; étape 5 : $9 + 2 = \\textcolor{{{color:primary.0}}}{11}$ ; étape 6 : $11 + 2 = \\textcolor{{{color:primary.0}}}{13}$."
+				]
+			}
+		},
+		{
+			"statement": "Voici les trois premières étapes d'un motif de jetons.\n\n```figure\nfenetre: -0.7 ; 9.7 ; -1.6 ; 2.7\ndescription: Trois étapes d'un motif de jetons en rectangle : 1 ligne de 2 jetons, 2 lignes de 3 jetons, puis 3 lignes de 4 jetons.\n---\nR000 = point(0, 0, visible=faux)\ncercle(R000, rayon=0.3, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=1)\nR001 = point(1, 0, visible=faux)\ncercle(R001, rayon=0.3, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=1)\nR100 = point(2.5, 0, visible=faux)\ncercle(R100, rayon=0.3, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=1)\nR101 = point(3.5, 0, visible=faux)\ncercle(R101, rayon=0.3, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=1)\nR102 = point(4.5, 0, visible=faux)\ncercle(R102, rayon=0.3, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=1)\nR110 = point(2.5, 1, visible=faux)\ncercle(R110, rayon=0.3, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=1)\nR111 = point(3.5, 1, visible=faux)\ncercle(R111, rayon=0.3, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=1)\nR112 = point(4.5, 1, visible=faux)\ncercle(R112, rayon=0.3, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=1)\nR200 = point(6, 0, visible=faux)\ncercle(R200, rayon=0.3, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=1)\nR201 = point(7, 0, visible=faux)\ncercle(R201, rayon=0.3, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=1)\nR202 = point(8, 0, visible=faux)\ncercle(R202, rayon=0.3, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=1)\nR203 = point(9, 0, visible=faux)\ncercle(R203, rayon=0.3, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=1)\nR210 = point(6, 1, visible=faux)\ncercle(R210, rayon=0.3, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=1)\nR211 = point(7, 1, visible=faux)\ncercle(R211, rayon=0.3, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=1)\nR212 = point(8, 1, visible=faux)\ncercle(R212, rayon=0.3, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=1)\nR213 = point(9, 1, visible=faux)\ncercle(R213, rayon=0.3, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=1)\nR220 = point(6, 2, visible=faux)\ncercle(R220, rayon=0.3, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=1)\nR221 = point(7, 2, visible=faux)\ncercle(R221, rayon=0.3, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=1)\nR222 = point(8, 2, visible=faux)\ncercle(R222, rayon=0.3, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=1)\nR223 = point(9, 2, visible=faux)\ncercle(R223, rayon=0.3, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=1)\ntexte(0.5, -1, \"Étape 1\")\ntexte(3.5, -1, \"Étape 2\")\ntexte(7.5, -1, \"Étape 3\")\n```\n\nCombien de jetons y aura-t-il aux trois étapes suivantes ?\n\nÉtape 4 : $?$ jetons\n\nÉtape 5 : $?$ jetons\n\nÉtape 6 : $?$ jetons",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "20"
+				},
+				{
+					"expectedAnswer": "30"
+				},
+				{
+					"expectedAnswer": "42"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**On compte.** Étape 1 : $2$ ; étape 2 : $6$ ; étape 3 : $12$.",
+					"**La règle.** À chaque étape, on ajoute $2$ jetons de plus qu'à l'étape d'avant. Pourquoi : l'étape $n$ a $n$ lignes de $n + 1$ jetons.",
+					"**Les trois suivantes.** étape 4 : $12 + 8 = \\textcolor{{{color:primary.0}}}{20}$ ; étape 5 : $20 + 10 = \\textcolor{{{color:primary.0}}}{30}$ ; étape 6 : $30 + 12 = \\textcolor{{{color:primary.0}}}{42}$."
+				]
+			}
+		},
+		{
+			"statement": "Voici les trois premières étapes d'un motif d'allumettes.\n\n```figure\nfenetre: -0.5 ; 9.5 ; -1.5 ; 2.5\ndescription: Trois étapes d'un motif d'allumettes : deux étages de 1, 2 puis 3 carrés accolés, soit 7, 12 puis 17 allumettes.\n---\nE0P00 = point(0, 0, visible=faux)\nE0P01 = point(0, 1, visible=faux)\nE0P02 = point(0, 2, visible=faux)\nE0P10 = point(1, 0, visible=faux)\nE0P11 = point(1, 1, visible=faux)\nE0P12 = point(1, 2, visible=faux)\nsegment(E0P00, E0P10, couleur=\"marron\", epaisseur=3)\nsegment(E0P01, E0P11, couleur=\"marron\", epaisseur=3)\nsegment(E0P02, E0P12, couleur=\"marron\", epaisseur=3)\nsegment(E0P00, E0P01, couleur=\"marron\", epaisseur=3)\nsegment(E0P01, E0P02, couleur=\"marron\", epaisseur=3)\nsegment(E0P10, E0P11, couleur=\"marron\", epaisseur=3)\nsegment(E0P11, E0P12, couleur=\"marron\", epaisseur=3)\nE1P00 = point(2.5, 0, visible=faux)\nE1P01 = point(2.5, 1, visible=faux)\nE1P02 = point(2.5, 2, visible=faux)\nE1P10 = point(3.5, 0, visible=faux)\nE1P11 = point(3.5, 1, visible=faux)\nE1P12 = point(3.5, 2, visible=faux)\nE1P20 = point(4.5, 0, visible=faux)\nE1P21 = point(4.5, 1, visible=faux)\nE1P22 = point(4.5, 2, visible=faux)\nsegment(E1P00, E1P10, couleur=\"marron\", epaisseur=3)\nsegment(E1P10, E1P20, couleur=\"marron\", epaisseur=3)\nsegment(E1P01, E1P11, couleur=\"marron\", epaisseur=3)\nsegment(E1P11, E1P21, couleur=\"marron\", epaisseur=3)\nsegment(E1P02, E1P12, couleur=\"marron\", epaisseur=3)\nsegment(E1P12, E1P22, couleur=\"marron\", epaisseur=3)\nsegment(E1P00, E1P01, couleur=\"marron\", epaisseur=3)\nsegment(E1P01, E1P02, couleur=\"marron\", epaisseur=3)\nsegment(E1P10, E1P11, couleur=\"marron\", epaisseur=3)\nsegment(E1P11, E1P12, couleur=\"marron\", epaisseur=3)\nsegment(E1P20, E1P21, couleur=\"marron\", epaisseur=3)\nsegment(E1P21, E1P22, couleur=\"marron\", epaisseur=3)\nE2P00 = point(6, 0, visible=faux)\nE2P01 = point(6, 1, visible=faux)\nE2P02 = point(6, 2, visible=faux)\nE2P10 = point(7, 0, visible=faux)\nE2P11 = point(7, 1, visible=faux)\nE2P12 = point(7, 2, visible=faux)\nE2P20 = point(8, 0, visible=faux)\nE2P21 = point(8, 1, visible=faux)\nE2P22 = point(8, 2, visible=faux)\nE2P30 = point(9, 0, visible=faux)\nE2P31 = point(9, 1, visible=faux)\nE2P32 = point(9, 2, visible=faux)\nsegment(E2P00, E2P10, couleur=\"marron\", epaisseur=3)\nsegment(E2P10, E2P20, couleur=\"marron\", epaisseur=3)\nsegment(E2P20, E2P30, couleur=\"marron\", epaisseur=3)\nsegment(E2P01, E2P11, couleur=\"marron\", epaisseur=3)\nsegment(E2P11, E2P21, couleur=\"marron\", epaisseur=3)\nsegment(E2P21, E2P31, couleur=\"marron\", epaisseur=3)\nsegment(E2P02, E2P12, couleur=\"marron\", epaisseur=3)\nsegment(E2P12, E2P22, couleur=\"marron\", epaisseur=3)\nsegment(E2P22, E2P32, couleur=\"marron\", epaisseur=3)\nsegment(E2P00, E2P01, couleur=\"marron\", epaisseur=3)\nsegment(E2P01, E2P02, couleur=\"marron\", epaisseur=3)\nsegment(E2P10, E2P11, couleur=\"marron\", epaisseur=3)\nsegment(E2P11, E2P12, couleur=\"marron\", epaisseur=3)\nsegment(E2P20, E2P21, couleur=\"marron\", epaisseur=3)\nsegment(E2P21, E2P22, couleur=\"marron\", epaisseur=3)\nsegment(E2P30, E2P31, couleur=\"marron\", epaisseur=3)\nsegment(E2P31, E2P32, couleur=\"marron\", epaisseur=3)\ntexte(0.5, -0.9, \"Étape 1\")\ntexte(3.5, -0.9, \"Étape 2\")\ntexte(7.5, -0.9, \"Étape 3\")\n```\n\nCombien d'allumettes y aura-t-il aux trois étapes suivantes ?\n\nÉtape 4 : $?$ allumettes\n\nÉtape 5 : $?$ allumettes\n\nÉtape 6 : $?$ allumettes",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "22"
+				},
+				{
+					"expectedAnswer": "27"
+				},
+				{
+					"expectedAnswer": "32"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**On compte.** Étape 1 : $7$ ; étape 2 : $12$ ; étape 3 : $17$.",
+					"**La règle.** À chaque étape, on ajoute $5$ allumettes. Pourquoi : une colonne de deux carrés de plus demande $3$ allumettes couchées et $2$ debout.",
+					"**Les trois suivantes.** étape 4 : $17 + 5 = \\textcolor{{{color:primary.0}}}{22}$ ; étape 5 : $22 + 5 = \\textcolor{{{color:primary.0}}}{27}$ ; étape 6 : $27 + 5 = \\textcolor{{{color:primary.0}}}{32}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Croix : 17 ; 21 ; 25",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["17", "21", "25"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : + 1 par étape (14 ; 15 ; 16)",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["14", "15", "16"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "L : 9 ; 11 ; 13",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["9", "11", "13"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : + 1 par étape (8 ; 9 ; 10)",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["8", "9", "10"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Rectangle : 20 ; 30 ; 42",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["20", "30", "42"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : + 6 à chaque fois (18 ; 24 ; 30)",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["18", "24", "30"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Deux étages : 22 ; 27 ; 32",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["22", "27", "32"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 7 par colonne (24 ; 31 ; 38)",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["24", "31", "38"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

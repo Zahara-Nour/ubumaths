@@ -15,7 +15,7 @@ import { Atelier } from '../atelier.svelte';
 import { CalcDesk } from '../desk.svelte';
 import { constructionOf } from '../construction';
 import { FIGURE_TOOLS, FigureToolbox } from '../figure-tools.svelte';
-import { geoToNumber } from '$lib/geometry-core/compute/to-number';
+import { geoToNumber } from '#lib/geometry-core/compute/to-number.ts';
 
 // =============================================================================
 // Décor

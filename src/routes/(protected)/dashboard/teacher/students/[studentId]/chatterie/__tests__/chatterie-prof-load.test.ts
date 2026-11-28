@@ -6,23 +6,23 @@
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
-vi.mock('$lib/server/middleware/auth', () => ({ requireRole: vi.fn() }));
-vi.mock('$lib/server/middleware/student-access', () => ({
+vi.mock('#lib/server/middleware/auth.ts', () => ({ requireRole: vi.fn() }));
+vi.mock('#lib/server/middleware/student-access.ts', () => ({
 	verifyTeacherStudentWithRole: vi.fn()
 }));
-vi.mock('$lib/server/mathoux/collection', () => ({
+vi.mock('#lib/server/mathoux/collection.ts', () => ({
 	readMathouCollection: vi.fn(),
 	loadMathouCollection: vi.fn(),
 	loadMathouCollectionWithNews: vi.fn()
 }));
 
-import { requireRole } from '$lib/server/middleware/auth';
-import { verifyTeacherStudentWithRole } from '$lib/server/middleware/student-access';
+import { requireRole } from '#lib/server/middleware/auth.ts';
+import { verifyTeacherStudentWithRole } from '#lib/server/middleware/student-access.ts';
 import {
 	loadMathouCollection,
 	loadMathouCollectionWithNews,
 	readMathouCollection
-} from '$lib/server/mathoux/collection';
+} from '#lib/server/mathoux/collection.ts';
 import { load } from '../+page.server';
 
 const STUDENT_ID = '7d3f6c2e-1b4a-4c8d-9e0f-123456789abc';

@@ -2,18 +2,22 @@
 	Vitrine : les blocs ubumark (`/demo/blocs`)
 	===========================================
 
-	Neuf blocs rangés par niveau (primaire, collège, lycée), chacun avec le texte
+	Dix blocs rangés par niveau (primaire, collège, lycée), chacun avec le texte
 	qu'écrit le prof replié sous « Voir ce qu'écrit le prof ». Les exemples sont
-	ceux du catalogue (`$lib/block-catalog/showcase`) ; la syntaxe complète reste
+	ceux du catalogue (`#lib/block-catalog/showcase.ts`) ; la syntaxe complète reste
 	sur `/aide-ecriture/blocs` (chantier catalogue-blocs, PR 2).
 -->
 <script lang="ts">
-	import { demoSeo } from '$lib/seo/demo-pages';
-	import SeoHead from '$lib/seo/SeoHead.svelte';
-	import BackLink from '$lib/components/navigation/BackLink.svelte';
-	import MarkdownRenderer from '$lib/components/markdown/MarkdownRenderer.svelte';
-	import * as Card from '$lib/components/ui/card';
-	import { SHOWCASE_ITEMS, SHOWCASE_SECTIONS, showcaseSource } from '$lib/block-catalog/showcase';
+	import { demoSeo } from '#lib/seo/demo-pages.ts';
+	import SeoHead from '#lib/seo/SeoHead.svelte';
+	import BackLink from '#lib/components/navigation/BackLink.svelte';
+	import MarkdownRenderer from '#lib/components/markdown/MarkdownRenderer.svelte';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import {
+		SHOWCASE_ITEMS,
+		SHOWCASE_SECTIONS,
+		showcaseSource
+	} from '#lib/block-catalog/showcase.ts';
 </script>
 
 <SeoHead {...demoSeo('/demo/blocs')} />

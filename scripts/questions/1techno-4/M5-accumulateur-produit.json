@@ -1,0 +1,202 @@
+{
+	"id": "ecba4038-e4f2-4861-835b-2b2d3beab467",
+	"title": "Accumulateur pour calculer un produit",
+	"description": "Boucle p = p * k : produit des entiers de 1 à n, initialisation à 1, coefficient multiplicateur global d'évolutions successives, produit des éléments d'une liste",
+	"grades": ["1_TECHNO"],
+	"level": 2,
+	"delay": 90,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "On considère la fonction Python suivante.\n\n```python\ndef produit(n):\n    p = 1\n    for k in range(1, n + 1):\n        p = p * k\n    return p\n```\n\nQue renvoie `produit({{n}})` ?\n\n$?$",
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:f}}"
+				}
+			],
+			"variables": [
+				{
+					"name": "n",
+					"expression": "4..6"
+				},
+				{
+					"name": "f",
+					"expression": "eval:n!"
+				}
+			],
+			"correction": {
+				"steps": [
+					"`k` prend les valeurs $1$, $2$, …, ${{n}}$ (`range(1, n + 1)` s'arrête juste avant $n+1$). À chaque tour, `p` est multiplié par `k`.",
+					"Valeurs successives de `p` : $1$, $2$, $6$, $24${{if:n>=5|, $120$|}}{{if:n>=6|, $720$|}}.",
+					"`produit({{n}})` renvoie le produit des entiers de $1$ à ${{n}}$ : $\\textcolor{{{color:primary.0}}}{{{eval:f}}}$."
+				]
+			}
+		},
+		{
+			"statement": "La fonction Python ci-dessous doit renvoyer le produit $1\\times2\\times\\cdots\\times n$.\n\n```python\ndef produit(n):\n    p = ...\n    for k in range(1, n + 1):\n        p = p * k\n    return p\n```\n\nQuelle valeur faut-il donner à `p` au départ ?\n\n```choix\n- `1`\n- `0`\n- `n`\n- `k`\n```",
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"variables": [],
+			"correction": {
+				"steps": [
+					"`p` est un accumulateur : on le multiplie à chaque tour par `k`.",
+					"Il doit partir de $1$, qui ne change pas un produit. Avec $0$, `p` vaudrait toujours $0$ ; `k` n'existe pas encore avant la boucle."
+				]
+			}
+		},
+		{
+			"statement": "Un prix évolue plusieurs fois de suite. La liste `taux` contient les taux d'évolution successifs, écrits en décimal : $0{,}1$ pour une hausse de $10~\\%$, $-0{,}2$ pour une baisse de $20~\\%$.\n\n```python\ndef coef_global(taux):\n    cm = 1\n    for t in taux:\n        cm = cm * (1 + t)\n    return cm\n```\n\nQue renvoie `coef_global([0.{{a}}, -0.{{b}}])` ?\n\n$?$",
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(1+a/10)*(1-b/10);d}}"
+				}
+			],
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..5"
+				},
+				{
+					"name": "b",
+					"expression": "1..5"
+				}
+			],
+			"correction": {
+				"steps": [
+					"`cm` part de $1$ et est multiplié par chaque coefficient multiplicateur $1+t$.",
+					"$1\\times(1+0{,}{{a}})\\times(1-0{,}{{b}})=1{,}{{a}}\\times0{,}{{eval:10-b}}=\\textcolor{{{color:primary.0}}}{{{eval:(1+a/10)*(1-b/10);d}}}$ : c'est le coefficient multiplicateur global."
+				]
+			}
+		},
+		{
+			"statement": "On considère la fonction Python suivante.\n\n```python\ndef produit_liste(L):\n    p = 1\n    for x in L:\n        p = p * x\n    return p\n```\n\nQue renvoie `produit_liste([{{a}}, {{b}}, {{c}}])` ?\n\n$?$",
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a*b*c}}"
+				}
+			],
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..6"
+				},
+				{
+					"name": "b",
+					"expression": "2..6"
+				},
+				{
+					"name": "c",
+					"expression": "2..6"
+				}
+			],
+			"correction": {
+				"steps": [
+					"`p` part de $1$ et est multiplié par chaque élément de la liste.",
+					"$1\\times{{a}}\\times{{b}}\\times{{c}}=\\textcolor{{{color:primary.0}}}{{{eval:a*b*c}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "n = 5 : 120",
+			"variationIndex": 0,
+			"variables": {
+				"n": "5",
+				"f": "120"
+			},
+			"answers": ["120"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : somme",
+			"variationIndex": 0,
+			"variables": {
+				"n": "5",
+				"f": "120"
+			},
+			"answers": ["15"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "p = 1",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : p = 0",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "+10 % puis −20 % : 0,88",
+			"variationIndex": 2,
+			"variables": {
+				"a": "1",
+				"b": "2"
+			},
+			"answers": ["0.88"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : taux ajoutés",
+			"variationIndex": 2,
+			"variables": {
+				"a": "1",
+				"b": "2"
+			},
+			"answers": ["0.9"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "2 × 3 × 5 = 30",
+			"variationIndex": 3,
+			"variables": {
+				"a": "2",
+				"b": "3",
+				"c": "5"
+			},
+			"answers": ["30"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : somme",
+			"variationIndex": 3,
+			"variables": {
+				"a": "2",
+				"b": "3",
+				"c": "5"
+			},
+			"answers": ["10"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

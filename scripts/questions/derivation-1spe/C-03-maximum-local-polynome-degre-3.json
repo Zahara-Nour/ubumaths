@@ -110,8 +110,9 @@
 			],
 			"correction": {
 				"steps": [
-					"$f'(x)={{eval:6*x^2-6*(p+q)*x+6*p*q}}=6(x{{eval:-p;+}})(x{{eval:-q;+}})$.",
-					"$f'(x)$ s'annule en ${{p}}$ et en ${{q}}$, et a le signe de son coefficient de $x^2$ à l'extérieur des racines.",
+					"$f'(x)={{eval:6*x^2-6*(p+q)*x+6*p*q}}$.",
+					"On cherche des racines évidentes parmi les petits entiers : $f'({{p}})=6\\times({{p}})^2{{eval:-6*(p+q);+}}\\times({{p}}){{eval:6*p*q;+}}=0$ et $f'({{q}})=6\\times({{q}})^2{{eval:-6*(p+q);+}}\\times({{q}}){{eval:6*p*q;+}}=0$.",
+					"Donc $f'(x)=6(x{{eval:-p;+}})(x{{eval:-q;+}})$ : $f'(x)$ s'annule en ${{p}}$ et en ${{q}}$, et a le signe de son coefficient de $x^2$ à l'extérieur des racines.",
 					"```variation\nvariable: x\ndomain: -inf, {{p}}, {{q}}, +inf\n\nsign: f'(x)\n  -inf,{{p}}: +\n  {{p}}: z\n  {{p}},{{q}}: -\n  {{q}}: z\n  {{q}},+inf: +\n\nvariation: f(x)\n  {{p}}: {{eval:-p^3+3*p^2*q+c}}, top\n  {{q}}: {{eval:-q^3+3*p*q^2+c}}, bottom\n```",
 					"$f$ est croissante puis décroissante autour de ${{p}}$ : le maximum local est atteint en $x_0=\\textcolor{{{color:primary.0}}}{ {{p}} }$ et vaut $f({{p}})=2\\times({{p}})^3{{eval:-3*(p+q);+}}\\times({{p}})^2{{eval:6*p*q;+}}\\times({{p}}){{c;+}}=\\textcolor{{{color:primary.0}}}{ {{eval:-p^3+3*p^2*q+c}} }$."
 				]

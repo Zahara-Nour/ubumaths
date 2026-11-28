@@ -33,10 +33,10 @@
  * @module atelier/construction-intersect
  */
 
-import type { MathNode } from '$lib/mathAST/types';
-import type { GeoPoint } from '$lib/geometry-core/types/primitives';
-import type { Domain } from '$lib/mathAST/domain/types';
-import { exact, isExact, numeric, type GeoValue } from '$lib/geometry-core/types/geo-value';
+import type { MathNode } from '#lib/mathAST/types.ts';
+import type { GeoPoint } from '#lib/geometry-core/types/primitives.ts';
+import type { Domain } from '#lib/mathAST/domain/types.ts';
+import { exact, isExact, numeric, type GeoValue } from '#lib/geometry-core/types/geo-value.ts';
 import {
 	geoAdd,
 	geoDiv,
@@ -45,9 +45,9 @@ import {
 	geoMul,
 	geoSub,
 	simplifyExact
-} from '$lib/geometry-core/compute/geo-arithmetic';
-import { geoEqual, geoIsZero } from '$lib/geometry-core/compute/compare';
-import { geoToNumber } from '$lib/geometry-core/compute/to-number';
+} from '#lib/geometry-core/compute/geo-arithmetic.ts';
+import { geoEqual, geoIsZero } from '#lib/geometry-core/compute/compare.ts';
+import { geoToNumber } from '#lib/geometry-core/compute/to-number.ts';
 import {
 	intersectCC,
 	intersectFF,
@@ -56,13 +56,13 @@ import {
 	intersectLL,
 	intersectLQExact,
 	intersectQQ
-} from '$lib/geometry-core/geometry/intersections';
-import { compile } from '$lib/mathAST/eval/compile';
-import { getVariables, substitute } from '$lib/mathAST/eval/substitute';
-import { findNodes, mapNode } from '$lib/mathAST/transforms';
-import { isZeroExpression } from '$lib/mathAST/normal';
-import { exactZeros } from '$lib/mathAST/domain/exact-roots';
-import { containsValue } from '$lib/mathAST/domain/algebra';
+} from '#lib/geometry-core/geometry/intersections.ts';
+import { compile } from '#lib/mathAST/eval/compile.ts';
+import { getVariables, substitute } from '#lib/mathAST/eval/substitute.ts';
+import { findNodes, mapNode } from '#lib/mathAST/transforms.ts';
+import { isZeroExpression } from '#lib/mathAST/normal/index.ts';
+import { exactZeros } from '#lib/mathAST/domain/exact-roots.ts';
+import { containsValue } from '#lib/mathAST/domain/algebra.ts';
 import {
 	add,
 	cos,
@@ -72,8 +72,8 @@ import {
 	sin,
 	subtract,
 	variable
-} from '$lib/mathAST/factory';
-import { numericNode } from '$lib/mathAST/common/numeric';
+} from '#lib/mathAST/factory.ts';
+import { numericNode } from '#lib/mathAST/common/numeric.ts';
 import type { LineShape } from './construction-spec';
 
 // =============================================================================

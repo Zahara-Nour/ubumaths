@@ -1,0 +1,263 @@
+{
+	"id": "82a0e909-3b31-46b8-9b5b-136bb7342b9b",
+	"title": "Représenter l'espérance de B(n ; p) quand n ou p varie",
+	"description": "Placer les points (n ; np) à p fixé ; ils sont alignés sur une droite passant par l'origine ; n fixé et p variable ; formule de tableur",
+	"grades": ["T_TECHNO"],
+	"level": 2,
+	"delay": 90,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Pour $p={{p}}$ fixé, on note $E_n$ l'espérance de la loi $\\mathcal{B}(n\\,;{{p}})$. Place les points $A$, $B$, $C$, $D$ et $F$ de coordonnées $(n\\,;E_n)$ pour $n=10$, $20$, $30$, $40$ et $50$.\n\n```courbe\nx: -5 ; 55\ny: -1 ; 21\ngrille: 5 ; 1\naxes: x = n ; y = espérance\nplacer: A=(10 ; {{eval:round(10*p)}}) ; B=(20 ; {{eval:round(20*p)}}) ; C=(30 ; {{eval:round(30*p)}}) ; D=(40 ; {{eval:round(40*p)}}) ; F=(50 ; {{eval:round(50*p)}})\ntaille: moyenne\ndescription: Repère : n de −5 à 55 de 5 en 5, espérance de −1 à 21 de 1 en 1.\n```",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "0.1|0.2|0.3|0.4"
+				}
+			],
+			"conditions": [],
+			"correction": {
+				"steps": [
+					"L'espérance de $\\mathcal{B}(n\\,;p)$ est $np$ : $E_n={{p}}\\,n$.",
+					"$E_{10}={{eval:round(10*p)}}$, $E_{20}={{eval:round(20*p)}}$, $E_{30}={{eval:round(30*p)}}$, $E_{40}={{eval:round(40*p)}}$, $E_{50}={{eval:round(50*p)}}$.",
+					"```courbe\nx: -5 ; 55\ny: -1 ; 21\ngrille: 5 ; 1\naxes: x = n ; y = espérance\npoints: A(10 ; {{eval:round(10*p)}}), B(20 ; {{eval:round(20*p)}}), C(30 ; {{eval:round(30*p)}}), D(40 ; {{eval:round(40*p)}}), F(50 ; {{eval:round(50*p)}})\ntaille: moyenne\ndescription: Les cinq points (n ; np), alignés avec l'origine.\n```",
+					"Les points sont alignés sur la droite d'équation $y={{p}}\\,x$, qui passe par l'origine."
+				]
+			}
+		},
+		{
+			"statement": "Pour $p={{p}}$ fixé, on représente dans un repère les points $(n\\,;E_n)$, où $E_n$ est l'espérance de la loi $\\mathcal{B}(n\\,;{{p}})$, pour $n$ allant de $1$ à $50$. Comment sont placés ces points ?\n\n```choix\nmelanger: non\n- Sur une droite passant par l'origine, de coefficient directeur ${{p}}$.\n- Sur une droite passant par l'origine, de coefficient directeur $n$.\n- Sur une courbe qui n'est pas une droite.\n- Sur une droite horizontale d'ordonnée ${{p}}$.\n```",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "0.1|0.2|0.25|0.4|0.6"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"L'espérance de $\\mathcal{B}(n\\,;{{p}})$ est $E_n={{p}}\\times n$ : elle est proportionnelle à $n$.",
+					"Les points $(n\\,;{{p}}\\,n)$ sont donc sur la droite d'équation $y={{p}}\\,x$ : $\\textcolor{{{color:primary.0}}}{\\text{une droite passant par l'origine, de coefficient directeur }{{p}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Pour $n={{n}}$ fixé, on représente l'espérance de la loi $\\mathcal{B}({{n}}\\,;p)$ en fonction de $p$, pour $p$ allant de $0$ à $1$ : les points obtenus sont sur une droite passant par l'origine.\n\nQuel est son coefficient directeur ? Quelle est l'espérance pour $p={{q}}$ ?\n\nCoefficient directeur : $?$\n\nEspérance pour $p={{q}}$ : $?$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "10|20|25|40|50"
+				},
+				{
+					"name": "q",
+					"expression": "0.2|0.4|0.6"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{n}}"
+				},
+				{
+					"expectedAnswer": "{{eval:n*q;d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"L'espérance de $\\mathcal{B}({{n}}\\,;p)$ est ${{n}}\\,p$ : c'est une fonction linéaire de $p$, de coefficient $\\textcolor{{{color:primary.0}}}{{{n}}}$.",
+					"Pour $p={{q}}$ : ${{n}}\\times{{q}}=\\textcolor{{{color:primary.0}}}{{{eval:n*q;d}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Dans une feuille de calcul, on veut l'espérance de la loi $\\mathcal{B}(n\\,;p)$ pour $n$ allant de $1$ à $50$. Les valeurs de $n$ sont en colonne A (à partir de la ligne 2) et $p$ est dans la cellule D1.\n\n|   | A | B | C | D |\n|---|---|---|---|---|\n| 1 | n | espérance |   | 0,3 |\n| 2 | 1 |   |   |   |\n| 3 | 2 |   |   |   |\n\nQuelle formule écrire en B2, pour la recopier ensuite vers le bas ?\n\n```choix\nmelanger: non\n- =A2*D1\n- =A2+\\$D\\$1\n- =A2*\\$D\\$1\n- =\\$A\\$2*\\$D\\$1\n```",
+			"variables": [],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "2"
+				}
+			],
+			"correction": {
+				"steps": [
+					"L'espérance de $\\mathcal{B}(n\\,;p)$ est $np$ : en ligne 2, c'est A2 × D1.",
+					"En recopiant vers le bas, A2 doit devenir A3, A4… (c'est voulu) mais D1 doit rester D1 : on la bloque avec des « \\$ ».",
+					"La formule est « =A2*\\$D\\$1 », la $\\textcolor{{{color:primary.0}}}{\\text{troisième}}$ proposition. On trace ensuite le nuage des colonnes A et B : les points sont alignés avec l'origine."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "p = 0,2 : 2, 4, 6, 8, 10",
+			"variationIndex": 0,
+			"variables": {
+				"p": "0.2"
+			},
+			"answers": ["10;2", "20;4", "30;6", "40;8", "50;10"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : n/p au lieu de np",
+			"variationIndex": 0,
+			"variables": {
+				"p": "0.2"
+			},
+			"answers": ["10;5", "20;10", "30;15", "40;20", "50;25"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "p = 0,4 : 4, 8, 12, 16, 20",
+			"variationIndex": 0,
+			"variables": {
+				"p": "0.4"
+			},
+			"answers": ["10;4", "20;8", "30;12", "40;16", "50;20"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "choix : bonne réponse 0",
+			"variationIndex": 1,
+			"variables": {
+				"p": "0.25"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : coefficient n",
+			"variationIndex": 1,
+			"variables": {
+				"p": "0.25"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : courbe",
+			"variationIndex": 1,
+			"variables": {
+				"p": "0.25"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : horizontale",
+			"variationIndex": 1,
+			"variables": {
+				"p": "0.25"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "n = 20, p = 0,4 : 20 et 8",
+			"variationIndex": 2,
+			"variables": {
+				"n": "20",
+				"q": "0.4"
+			},
+			"answers": ["20", "8"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : coefficient p",
+			"variationIndex": 2,
+			"variables": {
+				"n": "20",
+				"q": "0.4"
+			},
+			"answers": ["0,4", "8"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "n = 25, p = 0,6 : 25 et 15",
+			"variationIndex": 2,
+			"variables": {
+				"n": "25",
+				"q": "0.6"
+			},
+			"answers": ["25", "15"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "n = 25, p = 0,2 : 25 et 5",
+			"variationIndex": 2,
+			"variables": {
+				"n": "25",
+				"q": "0.2"
+			},
+			"answers": ["25", "5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "choix : bonne réponse 2",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : sans $",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : somme",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : A bloquée",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

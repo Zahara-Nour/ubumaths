@@ -13,7 +13,7 @@ import { Atelier } from '../atelier.svelte';
 import { CalcDesk } from '../desk.svelte';
 import { intervalLabelOf } from '../interval';
 import type { Entry } from '../desk.svelte';
-import { WebReplEngine } from '$lib/mathAST/cli/web/web-repl-engine';
+import { WebReplEngine } from '#lib/mathAST/cli/web/web-repl-engine.ts';
 
 // =============================================================================
 // Décor

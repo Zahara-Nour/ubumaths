@@ -6,9 +6,9 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { areEquivalent, evaluateExpression } from '$lib/math';
-import { bareDecimalCommaToPoint, expectsSeparatorComma } from '$lib/mathAST/decimal-comma';
-import { isQuantityValueLatex, isSimpleNumberLatex } from '$lib/mathAST/cosmetic-transforms';
+import { areEquivalent, evaluateExpression } from '#lib/math/index.ts';
+import { bareDecimalCommaToPoint, expectsSeparatorComma } from '#lib/mathAST/decimal-comma.ts';
+import { isQuantityValueLatex, isSimpleNumberLatex } from '#lib/mathAST/cosmetic-transforms.ts';
 
 describe('bareDecimalCommaToPoint (contexte NOMBRE : toute virgule entre chiffres)', () => {
 	it.each([

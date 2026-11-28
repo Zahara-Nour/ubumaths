@@ -1,12 +1,12 @@
 /**
  * Droite graduée : une graduation décimale s'écrit avec une virgule en français
- * (`docs/wip/questions-6-progress.md` § 16 : la loupe des centièmes montrait
+ * (`docs/archive/wip/questions-6-progress.md` § 16 : la loupe des centièmes montrait
  * « 1.4 » et « 1.5 »)
  */
 import { describe, it, expect } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import NumberLine from '../NumberLine.svelte';
-import { parseNumberLineContent } from '$lib/ubumark/parser/number-line-parser';
+import { parseNumberLineContent } from '#lib/ubumark/parser/number-line-parser.ts';
 
 function node(...lines: string[]) {
 	const { node, errors } = parseNumberLineContent(lines);

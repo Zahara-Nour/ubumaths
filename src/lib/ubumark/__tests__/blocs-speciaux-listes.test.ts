@@ -8,7 +8,7 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { parseMarkdown, type BlockNode, type ListNode } from '$lib/ubumark';
+import { parseMarkdown, type BlockNode, type ListNode } from '#lib/ubumark/index.ts';
 
 const indent = (lines: string[]) => lines.map((l) => (l ? `   ${l}` : l));
 
@@ -33,7 +33,8 @@ describe('Q66 dans une liste — un ``` lointain ne ferme pas un bloc séparé p
 		['cubes', 'espace', ['```cubes', 'hauteurs: 2 1']],
 		['operation', 'operation', ['```operation', 'calcul: 45 + 37']],
 		['collection', 'collection', ['```collection', 'unités: 9']],
-		['monnaie', 'monnaie', ['```monnaie', 'billets: 10']]
+		['monnaie', 'monnaie', ['```monnaie', 'billets: 10']],
+		['schema-barres', 'schema-barres', ['```schema-barres', 'Or : ? (4)']]
 	])('%s : le bloc, puis le texte intermédiaire en paragraphe', (_, type, block) => {
 		const nodes = inItem([...block, '', 'Voici le texte qui suit le bloc', '', '```']);
 
@@ -65,6 +66,17 @@ describe('droite graduée FERMÉE dans un item de liste (chantier automatismes-1
 
 		const code = nodes.find((n) => n.type === 'code-block') as { code: string } | undefined;
 		expect(code?.code).toContain('start: 5');
+	});
+});
+
+describe('étiquettes à ranger FERMÉES dans un item de liste (écart L89)', () => {
+	it('un bloc ranger, ses étiquettes lues, pas un bloc de code brut', () => {
+		const nodes = inItem(['```ranger', 'signe: <', '- 3', '- 1', '- 2', '```']);
+
+		expect(nodes.map((n) => n.type)).toEqual(['paragraph', 'ranger']);
+		const ranger = nodes[1] as { labels: unknown[]; errors: string[] };
+		expect(ranger.labels).toHaveLength(3);
+		expect(ranger.errors).toEqual([]);
 	});
 });
 
@@ -137,6 +149,7 @@ describe('bloc ouvert sur la ligne de l’item', () => {
 		['cubes', 'espace', ['- ```cubes', '  hauteurs: 2 1', '  ```']],
 		['horloge', 'horloge', ['- ```horloge', '  heure: 9 h', '  ```']],
 		['partage', 'partage', ['1. ```partage', '   forme: bande 8', '   ```']],
+		['schema-barres', 'schema-barres', ['- ```schema-barres', '  Or : ? (4)', '  ```']],
 		['solide', 'espace', ['- ```solide', '  forme: pyramide carree 4 3', '  ```']],
 		['python', 'code-block', ['- ```python', '  print(1)', '  ```']]
 	])('%s : un seul nœud, sans erreur', (_, type, lines) => {

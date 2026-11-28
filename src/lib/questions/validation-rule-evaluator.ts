@@ -19,11 +19,11 @@ import type {
 	PredicateRule,
 	CustomExpressionRule
 } from './types';
-import { evaluateExpression, areEquivalent, type AnswerAssumptions } from '$lib/math';
-import { numberToLatexSafe } from '$lib/mathAST/common/numeric';
-import { evalResultToNumber } from '$lib/mathAST/eval';
-import type { CapitalPairs, GenericFunctionConfig } from '$lib/mathAST/parser';
-import { numbersAreClose } from '$lib/mathAST/common/constants';
+import { evaluateExpression, areEquivalent, type AnswerAssumptions } from '#lib/math/index.ts';
+import { numberToLatexSafe } from '#lib/mathAST/common/numeric.ts';
+import { evalResultToNumber } from '#lib/mathAST/eval/index.ts';
+import type { CapitalPairs, GenericFunctionConfig } from '#lib/mathAST/parser/index.ts';
+import { numbersAreClose } from '#lib/mathAST/common/constants.ts';
 import { isStudentFacingRuleDescription } from './rules-suffice';
 
 // ============================================================================

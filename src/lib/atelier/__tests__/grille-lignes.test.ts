@@ -11,7 +11,7 @@
 import { describe, it, expect } from 'vitest';
 import { Atelier } from '../atelier.svelte';
 import { CalcDesk } from '../desk.svelte';
-import { WebReplEngine } from '$lib/mathAST/cli/web/web-repl-engine';
+import { WebReplEngine } from '#lib/mathAST/cli/web/web-repl-engine.ts';
 import { runInput, type CalcSession } from '../calcul';
 import { actionsFor } from '../actions';
 import { listChart } from '../chart';

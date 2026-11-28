@@ -32,31 +32,28 @@
  */
 
 import type { LayoutServerLoad } from './$types';
-import type { ClassWithData } from '$lib/server/students';
-import type { Database } from '$lib/types/database';
+import type { ClassWithData } from '#lib/server/students.ts';
+import type { Database } from '#lib/types/database.ts';
 import { error } from '@sveltejs/kit';
-import { getTeacherClassesWithCounts } from '$lib/server/students';
+import { getTeacherClassesWithCounts } from '#lib/server/students.ts';
 import {
 	getCurrentAcademicPeriod,
 	getActiveSchoolYear,
 	getSchoolYearPeriods
-} from '$lib/server/warnings';
-import { createServerLogger } from '$lib/utils/logger';
+} from '#lib/server/warnings.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('(protected)/dashboard/teacher/+layout.server');
 
 type AcademicPeriod = Database['public']['Tables']['academic_periods']['Row'];
 
-export const load: LayoutServerLoad = async ({ locals, depends }) => {
+export const load: LayoutServerLoad = async ({ locals }) => {
 	const { user, profile, supabase } = locals;
 
 	// Must be logged in as teacher
 	if (!user || !profile || profile.role !== 'teacher') {
 		throw error(403, 'Accès refusé');
 	}
-
-	// Mark this data as dependent on 'teacher:classes' for reactive invalidation
-	depends('teacher:classes');
 
 	try {
 		// Fetch classes with counts using optimized RPC function

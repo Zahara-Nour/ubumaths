@@ -14,11 +14,11 @@
 	@module components/cours/ChapterSeriesCard
 -->
 <script lang="ts">
-	import { resolve } from '$app/paths';
-	import * as Card from '$lib/components/ui/card';
-	import { Badge } from '$lib/components/ui/badge';
+	import { resolvePath } from '#lib/navigation/resolve-path.ts';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
 	import { Layers } from '@lucide/svelte';
-	import type { ChapterSeries } from '$lib/types/chapters';
+	import type { ChapterSeries } from '#lib/types/chapters.ts';
 
 	interface Props {
 		/** Ce que la carte affiche — le lien du cours (ADR 0025) n'a rien de plus. */
@@ -29,7 +29,7 @@
 
 	const FORM_LABELS: Record<ChapterSeries['form'], string> = {
 		flash: 'Flash-cards',
-		interactive: 'Entraînement'
+		interactive: 'Contrôle blanc'
 	};
 
 	let title = $derived(series.title ?? 'Série');
@@ -44,7 +44,7 @@
 		<div class="min-w-0 flex-1">
 			{#if series.launchHref}
 				<a
-					href={resolve(series.launchHref as '/automaths/test')}
+					href={resolvePath(series.launchHref)}
 					class="font-medium underline-offset-4 hover:underline"
 				>
 					{title}

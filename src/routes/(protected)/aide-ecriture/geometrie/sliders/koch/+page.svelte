@@ -1,7 +1,7 @@
 <script lang="ts">
-	import BackLink from '$lib/components/navigation/BackLink.svelte';
+	import BackLink from '#lib/components/navigation/BackLink.svelte';
 	import DslDemo from '../../DslDemo.svelte';
-	import { buildKochDsl } from '$lib/components/geometry/koch-dsl';
+	import { buildKochDsl } from '#lib/components/geometry/koch-dsl.ts';
 
 	const dsl = buildKochDsl(4);
 </script>

@@ -10,9 +10,9 @@
 	import type { InstrumentType } from '../types/document';
 
 	// Import existing instrument components
-	import Ruler from '$lib/constructions/components/instruments/Ruler.svelte';
-	import Protractor from '$lib/constructions/components/instruments/Protractor.svelte';
-	import SetSquare from '$lib/constructions/components/instruments/SetSquare.svelte';
+	import Ruler from './instruments/Ruler.svelte';
+	import Protractor from './instruments/Protractor.svelte';
+	import SetSquare from './instruments/SetSquare.svelte';
 
 	// ==========================================================================
 	// Props

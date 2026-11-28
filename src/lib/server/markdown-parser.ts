@@ -1,7 +1,7 @@
 import { marked } from 'marked';
 import hljs from 'highlight.js';
-import { slugify } from '$lib/utils/string';
-import { createServerLogger } from '$lib/utils/logger';
+import { slugify } from '#lib/utils/string.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('server/markdown-parser');
 
@@ -168,4 +168,4 @@ function generateTableOfContents(content: string): TableOfContentsItem[] {
 }
 
 // Re-export from shared utility
-export { addHeaderIds } from '$lib/utils/markdown';
+export { addHeaderIds } from '#lib/utils/markdown.ts';

@@ -14,8 +14,8 @@
 -->
 
 <script lang="ts">
-	import UserAvatar from '$lib/components/UserAvatar.svelte';
-	import type { KanbanBoardMember } from '$lib/types/database-helpers';
+	import UserAvatar from '#lib/components/UserAvatar.svelte';
+	import type { KanbanBoardMember } from '#lib/types/database-helpers.ts';
 
 	type Props = {
 		assignees: KanbanBoardMember[];

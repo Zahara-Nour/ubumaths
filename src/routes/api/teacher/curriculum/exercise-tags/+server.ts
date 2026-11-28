@@ -9,13 +9,15 @@
  * in a cahier de texte entry. Teacher/admin only.
  */
 
-import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireRoles } from '$lib/server/middleware/auth';
-import { exerciseTagSchema, exerciseTagListQuerySchema } from '$lib/server/validation/curriculum';
-import { curriculumDbError } from '$lib/server/curriculum';
-import { readPointStatus } from '$lib/server/curriculum-point-status';
-import { createServerLogger } from '$lib/utils/logger';
+import { requireRoles } from '#lib/server/middleware/auth.ts';
+import {
+	exerciseTagSchema,
+	exerciseTagListQuerySchema
+} from '#lib/server/validation/curriculum.ts';
+import { curriculumDbError } from '#lib/server/curriculum.ts';
+import { readPointStatus } from '#lib/server/curriculum-point-status.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/teacher/curriculum/exercise-tags/+server');
 
@@ -26,7 +28,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 		exercise_id: url.searchParams.get('exercise_id')
 	});
 	if (!parsed.success) {
-		return json({ error: parsed.error.issues[0].message }, { status: 400 });
+		return Response.json({ error: parsed.error.issues[0].message }, { status: 400 });
 	}
 
 	const { data, error: dbErr } = await locals.supabase
@@ -36,10 +38,10 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 
 	if (dbErr) {
 		logger.error('[curriculum] exercise-tags GET failed:', dbErr);
-		return json({ error: 'Échec du chargement des tags' }, { status: 500 });
+		return Response.json({ error: 'Échec du chargement des tags' }, { status: 500 });
 	}
 
-	return json({ tags: data ?? [] });
+	return Response.json({ tags: data ?? [] });
 };
 
 export const POST: RequestHandler = async ({ request, locals }) => {
@@ -49,12 +51,12 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	try {
 		body = await request.json();
 	} catch {
-		return json({ error: 'Corps JSON invalide' }, { status: 400 });
+		return Response.json({ error: 'Corps JSON invalide' }, { status: 400 });
 	}
 
 	const parsed = exerciseTagSchema.safeParse(body);
 	if (!parsed.success) {
-		return json({ error: parsed.error.issues[0].message }, { status: 400 });
+		return Response.json({ error: parsed.error.issues[0].message }, { status: 400 });
 	}
 
 	// B3 : un point archivé ne se tague pas (retirer le tag reste permis, par le DELETE).
@@ -63,13 +65,13 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		status = await readPointStatus(locals.supabase, parsed.data.point_id);
 	} catch (e) {
 		logger.error('[curriculum] exercise-tags POST point read failed:', e);
-		return json({ error: 'Erreur serveur' }, { status: 500 });
+		return Response.json({ error: 'Erreur serveur' }, { status: 500 });
 	}
 	if (status === 'introuvable') {
-		return json({ error: 'Référence introuvable' }, { status: 400 });
+		return Response.json({ error: 'Référence introuvable' }, { status: 400 });
 	}
 	if (status === 'archive') {
-		return json({ error: 'Point archivé' }, { status: 400 });
+		return Response.json({ error: 'Point archivé' }, { status: 400 });
 	}
 
 	const { error: dbErr } = await locals.supabase
@@ -79,15 +81,15 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	if (dbErr) {
 		// 23505 = already tagged → idempotent success
 		if (dbErr.code === '23505') {
-			return json({ success: true, alreadyTagged: true });
+			return Response.json({ success: true, alreadyTagged: true });
 		}
 		const mapped = curriculumDbError(dbErr);
 		if (mapped) return mapped;
 		logger.error('[curriculum] exercise-tags POST failed:', dbErr);
-		return json({ error: dbErr.message }, { status: 500 });
+		return Response.json({ error: dbErr.message }, { status: 500 });
 	}
 
-	return json({ success: true }, { status: 201 });
+	return Response.json({ success: true }, { status: 201 });
 };
 
 export const DELETE: RequestHandler = async ({ url, locals }) => {
@@ -98,7 +100,7 @@ export const DELETE: RequestHandler = async ({ url, locals }) => {
 		point_id: url.searchParams.get('point_id')
 	});
 	if (!parsed.success) {
-		return json({ error: 'exercise_id et point_id requis (UUID)' }, { status: 400 });
+		return Response.json({ error: 'exercise_id et point_id requis (UUID)' }, { status: 400 });
 	}
 
 	// `.select()` : un refus RLS rend zéro ligne sans erreur, il ne doit pas passer pour un succès.
@@ -115,11 +117,11 @@ export const DELETE: RequestHandler = async ({ url, locals }) => {
 		const mapped = curriculumDbError(dbErr);
 		if (mapped) return mapped;
 		logger.error('[curriculum] exercise-tags DELETE failed:', dbErr);
-		return json({ error: 'Erreur serveur' }, { status: 500 });
+		return Response.json({ error: 'Erreur serveur' }, { status: 500 });
 	}
 	if (!deleted || deleted.length === 0) {
-		return json({ error: 'Tag introuvable ou non modifiable' }, { status: 404 });
+		return Response.json({ error: 'Tag introuvable ou non modifiable' }, { status: 404 });
 	}
 
-	return json({ success: true });
+	return Response.json({ success: true });
 };

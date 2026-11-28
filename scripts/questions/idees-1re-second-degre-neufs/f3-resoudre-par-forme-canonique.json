@@ -1,0 +1,368 @@
+{
+	"id": "f199b3c7-fa23-426e-ac6d-a66f75dff0c5",
+	"title": "Résoudre une équation par la forme canonique",
+	"description": "x² + bx + c (b pair) : forme canonique par complétion du carré, puis ensemble des solutions, sans discriminant",
+	"grades": ["1_SPE"],
+	"level": 2,
+	"delay": 120,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true
+	},
+	"variations": [
+		{
+			"statement": "On veut résoudre dans $\\mathbb{R}$ l'équation ${{eval:x^2+bx+c}}=0$ sans le discriminant.\n\n1. Écris ${{eval:x^2+bx+c}}$ sous forme canonique : ${{eval:x^2+bx+c}}=?$\n\n2. Déduis-en l'ensemble des solutions, entre accolades ($\\varnothing$ s'il n'y en a pas) : $S=?$",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "h",
+					"expression": "1..6;±"
+				},
+				{
+					"name": "m",
+					"expression": "1..6"
+				},
+				{
+					"name": "b",
+					"expression": "eval:-2*h"
+				},
+				{
+					"name": "c",
+					"expression": "eval:h^2-m^2"
+				}
+			],
+			"conditions": ["c != 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "(x{{eval:-h;+}})^2-{{eval:m^2}}",
+					"requiredForm": {
+						"pattern": "u*($x+v)^2+w"
+					},
+					"expectedErrors": [
+						{
+							"answer": "(x{{eval:h;+}})^2{{eval:c-h^2;+}}",
+							"message": "Le carré à compléter est $\\left(x+\\dfrac{b}{2}\\right)^2$ avec $b={{b}}$ : attention au signe.",
+							"label": "Signe de b/2"
+						},
+						{
+							"answer": "(x{{eval:-h;+}})^2{{eval:c;+}}",
+							"message": "Tu as gardé $c$ tel quel : en développant $(x{{eval:-h;+}})^2$, on obtient ${{eval:h^2}}$ en trop, à retirer.",
+							"label": "Constante non corrigée"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "\\{ {{eval:h-m}} ; {{eval:h+m}} \\}",
+					"answerKind": "intervalles",
+					"expectedErrors": [
+						{
+							"answer": "\\{ {{eval:h+m}} \\}",
+							"message": "$X^2={{eval:m^2}}$ a deux solutions, $X={{m}}$ et $X=-{{m}}$.",
+							"label": "Une seule racine carrée"
+						},
+						{
+							"answer": "\\{ {{eval:-h-m}} ; {{eval:-h+m}} \\}",
+							"message": "$x{{eval:-h;+}}=\\pm{{m}}$ donne $x={{h}}\\pm{{m}}$ : attention au signe.",
+							"label": "Signe de α"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"On complète le carré : $x^2{{eval:b;+}}x=(x{{eval:-h;+}})^2-{{eval:h^2}}$, donc ${{eval:x^2+bx+c}}=\\textcolor{{{color:primary.0}}}{(x{{eval:-h;+}})^2-{{eval:m^2}}}$.",
+					"$(x{{eval:-h;+}})^2={{eval:m^2}} \\iff x{{eval:-h;+}}={{m}}$ ou $x{{eval:-h;+}}=-{{m}}$.",
+					"Donc $S=\\textcolor{{{color:primary.0}}}{\\{ {{eval:h-m}} ; {{eval:h+m}} \\}}$."
+				]
+			},
+			"hint": "Complète le carré : $x^2+bx=\\left(x+\\dfrac{b}{2}\\right)^2-\\left(\\dfrac{b}{2}\\right)^2$."
+		},
+		{
+			"statement": "On veut résoudre dans $\\mathbb{R}$ l'équation ${{eval:x^2+bx+c}}=0$ sans le discriminant.\n\n1. Écris ${{eval:x^2+bx+c}}$ sous forme canonique : ${{eval:x^2+bx+c}}=?$\n\n2. Déduis-en l'ensemble des solutions, entre accolades ($\\varnothing$ s'il n'y en a pas) : $S=?$",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "h",
+					"expression": "1..6;±"
+				},
+				{
+					"name": "k",
+					"expression": "1..9"
+				},
+				{
+					"name": "b",
+					"expression": "eval:-2*h"
+				},
+				{
+					"name": "c",
+					"expression": "eval:h^2+k"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "(x{{eval:-h;+}})^2+{{k}}",
+					"requiredForm": {
+						"pattern": "u*($x+v)^2+w"
+					},
+					"expectedErrors": [
+						{
+							"answer": "(x{{eval:h;+}})^2{{eval:c-h^2;+}}",
+							"message": "Le carré à compléter est $\\left(x+\\dfrac{b}{2}\\right)^2$ avec $b={{b}}$ : attention au signe.",
+							"label": "Signe de b/2"
+						},
+						{
+							"answer": "(x{{eval:-h;+}})^2{{eval:c;+}}",
+							"message": "Tu as gardé $c$ tel quel : en développant $(x{{eval:-h;+}})^2$, on obtient ${{eval:h^2}}$ en trop, à retirer.",
+							"label": "Constante non corrigée"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "\\varnothing",
+					"answerKind": "intervalles",
+					"expectedErrors": [
+						{
+							"answer": "\\{ {{h}} \\}",
+							"message": "$(x{{eval:-h;+}})^2+{{k}}$ vaut au moins ${{k}}$ : il ne s'annule jamais.",
+							"label": "Sommet pris pour une solution"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"On complète le carré : $x^2{{eval:b;+}}x=(x{{eval:-h;+}})^2-{{eval:h^2}}$, donc ${{eval:x^2+bx+c}}=\\textcolor{{{color:primary.0}}}{(x{{eval:-h;+}})^2+{{k}}}$.",
+					"Un carré est positif ou nul, donc $(x{{eval:-h;+}})^2+{{k}}\\geqslant{{k}}>0$ : l'expression ne s'annule jamais.",
+					"Donc $S=\\textcolor{{{color:primary.0}}}{\\varnothing}$."
+				]
+			},
+			"hint": "Complète le carré : $x^2+bx=\\left(x+\\dfrac{b}{2}\\right)^2-\\left(\\dfrac{b}{2}\\right)^2$."
+		},
+		{
+			"statement": "On veut résoudre dans $\\mathbb{R}$ l'équation ${{eval:x^2+bx+c}}=0$ sans le discriminant.\n\n1. Écris ${{eval:x^2+bx+c}}$ sous forme canonique : ${{eval:x^2+bx+c}}=?$\n\n2. Déduis-en l'ensemble des solutions, entre accolades ($\\varnothing$ s'il n'y en a pas) : $S=?$\n\nDonne les solutions en valeur exacte.",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "h",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "k",
+					"expression": "2|3|5|6|7"
+				},
+				{
+					"name": "b",
+					"expression": "eval:-2*h"
+				},
+				{
+					"name": "c",
+					"expression": "eval:h^2-k"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "(x{{eval:-h;+}})^2-{{k}}",
+					"requiredForm": {
+						"pattern": "u*($x+v)^2+w"
+					},
+					"expectedErrors": [
+						{
+							"answer": "(x{{eval:h;+}})^2{{eval:c-h^2;+}}",
+							"message": "Le carré à compléter est $\\left(x+\\dfrac{b}{2}\\right)^2$ avec $b={{b}}$ : attention au signe.",
+							"label": "Signe de b/2"
+						},
+						{
+							"answer": "(x{{eval:-h;+}})^2{{eval:c;+}}",
+							"message": "Tu as gardé $c$ tel quel : en développant $(x{{eval:-h;+}})^2$, on obtient ${{eval:h^2}}$ en trop, à retirer.",
+							"label": "Constante non corrigée"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "\\{ {{h}}-\\sqrt{ {{k}} } ; {{h}}+\\sqrt{ {{k}} } \\}",
+					"answerKind": "intervalles",
+					"expectedErrors": [
+						{
+							"answer": "\\{ {{h}}+\\sqrt{ {{k}} } \\}",
+							"message": "$X^2={{k}}$ a deux solutions, $X=\\sqrt{ {{k}} }$ et $X=-\\sqrt{ {{k}} }$.",
+							"label": "Une seule racine carrée"
+						},
+						{
+							"answer": "\\{ {{eval:h-k}} ; {{eval:h+k}} \\}",
+							"message": "$(x{{eval:-h;+}})^2={{k}}$ donne $x{{eval:-h;+}}=\\pm\\sqrt{ {{k}} }$, pas $\\pm{{k}}$.",
+							"label": "Racine carrée oubliée"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"On complète le carré : $x^2{{eval:b;+}}x=(x{{eval:-h;+}})^2-{{eval:h^2}}$, donc ${{eval:x^2+bx+c}}=\\textcolor{{{color:primary.0}}}{(x{{eval:-h;+}})^2-{{k}}}$.",
+					"$(x{{eval:-h;+}})^2={{k}} \\iff x{{eval:-h;+}}=\\sqrt{ {{k}} }$ ou $x{{eval:-h;+}}=-\\sqrt{ {{k}} }$.",
+					"Donc $S=\\textcolor{{{color:primary.0}}}{\\{ {{h}}-\\sqrt{ {{k}} } ; {{h}}+\\sqrt{ {{k}} } \\}}$."
+				]
+			},
+			"hint": "Complète le carré : $x^2+bx=\\left(x+\\dfrac{b}{2}\\right)^2-\\left(\\dfrac{b}{2}\\right)^2$."
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "x² − 6x + 5",
+			"variationIndex": 0,
+			"variables": {
+				"h": "3",
+				"m": "2",
+				"b": "-6",
+				"c": "5"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["(x-3)^2-4", "\\{1;5\\}"]
+		},
+		{
+			"description": "Canonique : signe de b/2",
+			"variationIndex": 0,
+			"variables": {
+				"h": "3",
+				"m": "2",
+				"b": "-6",
+				"c": "5"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Le carré à compléter est $\\left(x+\\dfrac{b}{2}\\right)^2$ avec $b = -6$ : attention au signe."
+			},
+			"answers": ["(x+3)^2-4", "\\{1;5\\}"]
+		},
+		{
+			"description": "Canonique : c gardé",
+			"variationIndex": 0,
+			"variables": {
+				"h": "3",
+				"m": "2",
+				"b": "-6",
+				"c": "5"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as gardé $c$ tel quel : en développant $\\left( x - 3 \\right)^2$, on obtient $9$ en trop, à retirer."
+			},
+			"answers": ["(x-3)^2+5", "\\{1;5\\}"]
+		},
+		{
+			"description": "S : une seule solution",
+			"variationIndex": 0,
+			"variables": {
+				"h": "3",
+				"m": "2",
+				"b": "-6",
+				"c": "5"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "$X^2 = 4$ a deux solutions, $X = 2$ et $X = -2$."
+			},
+			"answers": ["(x-3)^2-4", "\\{5\\}"]
+		},
+		{
+			"description": "S : signe",
+			"variationIndex": 0,
+			"variables": {
+				"h": "3",
+				"m": "2",
+				"b": "-6",
+				"c": "5"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "$x-3=\\pm2$ donne $x=3\\pm2$ : attention au signe."
+			},
+			"answers": ["(x-3)^2-4", "\\{-5;-1\\}"]
+		},
+		{
+			"description": "x² + 4x + 7",
+			"variationIndex": 1,
+			"variables": {
+				"h": "-2",
+				"k": "3",
+				"b": "4",
+				"c": "7"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["(x+2)^2+3", "\\varnothing"]
+		},
+		{
+			"description": "S : sommet",
+			"variationIndex": 1,
+			"variables": {
+				"h": "-2",
+				"k": "3",
+				"b": "4",
+				"c": "7"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "$\\left( x + 2 \\right)^2 + 3$ vaut au moins $3$ : il ne s'annule jamais."
+			},
+			"answers": ["(x+2)^2+3", "\\{-2\\}"]
+		},
+		{
+			"description": "x² − 2x − 4",
+			"variationIndex": 2,
+			"variables": {
+				"h": "1",
+				"k": "5",
+				"b": "-2",
+				"c": "-4"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["(x-1)^2-5", "\\{1-\\sqrt{5};1+\\sqrt{5}\\}"]
+		},
+		{
+			"description": "S : une seule",
+			"variationIndex": 2,
+			"variables": {
+				"h": "1",
+				"k": "5",
+				"b": "-2",
+				"c": "-4"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "$X^2 = 5$ a deux solutions, $X = \\sqrt{5}$ et $X = -\\sqrt{5}$."
+			},
+			"answers": ["(x-1)^2-5", "\\{1+\\sqrt{5}\\}"]
+		},
+		{
+			"description": "S : racine oubliée",
+			"variationIndex": 2,
+			"variables": {
+				"h": "1",
+				"k": "5",
+				"b": "-2",
+				"c": "-4"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "$\\left( x - 1 \\right)^2 = 5$ donne $x-1=\\pm\\sqrt{ 5 }$, pas $\\pm5$."
+			},
+			"answers": ["(x-1)^2-5", "\\{-4;6\\}"]
+		}
+	]
+}

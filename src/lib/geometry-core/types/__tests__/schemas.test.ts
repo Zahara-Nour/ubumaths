@@ -8,7 +8,7 @@ import {
 } from '../schemas';
 import { exact, numeric } from '../geo-value';
 import { geoToNumber } from '../../compute/to-number';
-import { number, sqrt, fraction } from '$lib/mathAST';
+import { number, sqrt, fraction } from '#lib/mathAST/index.ts';
 
 // =============================================================================
 // geoValueSchema

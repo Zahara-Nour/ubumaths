@@ -18,16 +18,16 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 const requireRole = vi.fn();
 const instantiate = vi.fn();
 
-vi.mock('$lib/server/middleware/auth', () => ({
+vi.mock('#lib/server/middleware/auth.ts', () => ({
 	requireRole: (...a: unknown[]) => requireRole(...a)
 }));
-vi.mock('$lib/server/chapter-templates', async (importOriginal) => ({
-	...(await importOriginal<typeof import('$lib/server/chapter-templates')>()),
+vi.mock('#lib/server/chapter-templates.ts', async (importOriginal) => ({
+	...(await importOriginal<typeof import('#lib/server/chapter-templates.ts')>()),
 	instantiateTemplate: (...a: unknown[]) => instantiate(...a)
 }));
 
 const { actions } = await import('../+page.server');
-const { TemplateUnusableError } = await import('$lib/server/chapter-templates');
+const { TemplateUnusableError } = await import('#lib/server/chapter-templates.ts');
 
 const CLASSE = '11111111-1111-4111-8111-111111111111';
 const MODELE = '22222222-2222-4222-8222-222222222222';

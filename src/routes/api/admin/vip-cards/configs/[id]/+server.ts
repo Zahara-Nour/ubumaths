@@ -9,16 +9,16 @@
  * Security: Admin only
  */
 
-import { error, json } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import { z } from 'zod';
 import type { RequestHandler } from './$types';
-import { requireAdmin } from '$lib/server/middleware/auth';
-import { assertTypedConfirmation } from '$lib/server/confirmAction';
-import { updateConfigSchema } from '$lib/server/validation/vip-card-admin';
-import type { VipCardConfig } from '$lib/types/vip-card-admin';
-import { configToResponse } from '$lib/types/vip-card-admin';
-import type { TablesUpdate } from '$lib/types/database';
-import { createServerLogger } from '$lib/utils/logger';
+import { requireAdmin } from '#lib/server/middleware/auth.ts';
+import { assertTypedConfirmation } from '#lib/server/confirmAction.ts';
+import { updateConfigSchema } from '#lib/server/validation/vip-card-admin.ts';
+import type { VipCardConfig } from '#lib/types/vip-card-admin.ts';
+import { configToResponse } from '#lib/types/vip-card-admin.ts';
+import type { TablesUpdate } from '#lib/types/database.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/admin/vip-cards/configs/[id]/+server');
 
@@ -110,7 +110,7 @@ export const PATCH: RequestHandler = async ({ request, locals, params }) => {
 		}
 
 		// 7. Return updated config (convert snake_case to camelCase)
-		return json(configToResponse(updated as VipCardConfig));
+		return Response.json(configToResponse(updated as VipCardConfig));
 	} catch (err) {
 		logger.error('Error in PATCH /api/admin/vip-cards/configs/[id]:', err);
 
@@ -198,7 +198,7 @@ export const DELETE: RequestHandler = async ({ request, locals, params }) => {
 		}
 
 		// 5. Return success
-		return json({
+		return Response.json({
 			success: true,
 			message: `Configuration « ${existing.config_name} » supprimée`
 		});

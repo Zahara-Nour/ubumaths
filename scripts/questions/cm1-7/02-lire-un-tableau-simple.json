@@ -1,0 +1,235 @@
+{
+	"id": "f5742b78-a6c3-45b6-a341-81e4b67fb9de",
+	"title": "Lis un tableau à simple entrée",
+	"description": "Villes inventées : le nombre d'habitants d'une ville (10 000 à 999 999), la ville qui a un nombre d'habitants donné (case choix) ; l'altitude d'un sommet (1 000 à 4 800 m)",
+	"grades": ["CM1"],
+	"level": 4,
+	"delay": 90,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"spacesFromFourDigits": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Ce tableau donne le nombre d'habitants de cinq villes.\n\n| Ville | Nombre d'habitants |\n|---|---|\n| Brumeval | ${{p1}}$ |\n| Castelroc | ${{p2}}$ |\n| Pontaval | ${{p3}}$ |\n| Mirelande | ${{p4}}$ |\n| Sablonnière | ${{p5}}$ |\n\nQuel est le nombre d'habitants de {{if:k==0|Brumeval|{{if:k==1|Castelroc|{{if:k==2|Pontaval|{{if:k==3|Mirelande|Sablonnière}}}}}}}} ?\n\n$?$ habitants",
+			"variables": [
+				{
+					"name": "p1",
+					"expression": "10000..999999"
+				},
+				{
+					"name": "p2",
+					"expression": "10000..999999"
+				},
+				{
+					"name": "p3",
+					"expression": "10000..999999"
+				},
+				{
+					"name": "p4",
+					"expression": "10000..999999"
+				},
+				{
+					"name": "p5",
+					"expression": "10000..999999"
+				},
+				{
+					"name": "k",
+					"expression": "0..4"
+				},
+				{
+					"name": "n",
+					"expression": "eval:(p1)*((k-1)*(k-2)*(k-3)*(k-4))/(24)+(p2)*((k-0)*(k-2)*(k-3)*(k-4))/(-6)+(p3)*((k-0)*(k-1)*(k-3)*(k-4))/(4)+(p4)*((k-0)*(k-1)*(k-2)*(k-4))/(-6)+(p5)*((k-0)*(k-1)*(k-2)*(k-3))/(24)"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{n}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On cherche la ligne « {{if:k==0|Brumeval|{{if:k==1|Castelroc|{{if:k==2|Pontaval|{{if:k==3|Mirelande|Sablonnière}}}}}}}} », puis on lit la case de la colonne « Nombre d'habitants ».",
+					"{{if:k==0|Brumeval|{{if:k==1|Castelroc|{{if:k==2|Pontaval|{{if:k==3|Mirelande|Sablonnière}}}}}}}} : $\\textcolor{{{color:primary.0}}}{{{n}}}$ habitants."
+				]
+			}
+		},
+		{
+			"statement": "Ce tableau donne le nombre d'habitants de cinq villes.\n\n| Ville | Nombre d'habitants |\n|---|---|\n| Brumeval | ${{p1}}$ |\n| Castelroc | ${{p2}}$ |\n| Pontaval | ${{p3}}$ |\n| Mirelande | ${{p4}}$ |\n| Sablonnière | ${{p5}}$ |\n\nQuelle ville a ${{n}}$ habitants ?\n\n```choix\nmelanger: non\n- Brumeval\n- Castelroc\n- Pontaval\n- Mirelande\n- Sablonnière\n```",
+			"variables": [
+				{
+					"name": "p1",
+					"expression": "10000..999999"
+				},
+				{
+					"name": "p2",
+					"expression": "10000..999999"
+				},
+				{
+					"name": "p3",
+					"expression": "10000..999999"
+				},
+				{
+					"name": "p4",
+					"expression": "10000..999999"
+				},
+				{
+					"name": "p5",
+					"expression": "10000..999999"
+				},
+				{
+					"name": "k",
+					"expression": "0..4"
+				},
+				{
+					"name": "n",
+					"expression": "eval:(p1)*((k-1)*(k-2)*(k-3)*(k-4))/(24)+(p2)*((k-0)*(k-2)*(k-3)*(k-4))/(-6)+(p3)*((k-0)*(k-1)*(k-3)*(k-4))/(4)+(p4)*((k-0)*(k-1)*(k-2)*(k-4))/(-6)+(p5)*((k-0)*(k-1)*(k-2)*(k-3))/(24)"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{k}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On cherche ${{n}}$ dans la colonne « Nombre d'habitants », chiffre par chiffre, puis on lit la ville sur la même ligne.",
+					"C'est {{if:k==0|Brumeval|{{if:k==1|Castelroc|{{if:k==2|Pontaval|{{if:k==3|Mirelande|Sablonnière}}}}}}}}."
+				]
+			}
+		},
+		{
+			"statement": "Ce tableau donne l'altitude de cinq sommets.\n\n| Sommet | Altitude (m) |\n|---|---|\n| Pic de l'Aigle | ${{a1}}$ |\n| Mont Blanchet | ${{a2}}$ |\n| Dent du Loup | ${{a3}}$ |\n| Puy Vert | ${{a4}}$ |\n| Tête Grise | ${{a5}}$ |\n\nQuelle est l'altitude de {{if:k==0|le pic de l'Aigle|{{if:k==1|le mont Blanchet|{{if:k==2|la dent du Loup|{{if:k==3|le puy Vert|la tête Grise}}}}}}}} ?\n\n$?$ m",
+			"variables": [
+				{
+					"name": "a1",
+					"expression": "1000..4800"
+				},
+				{
+					"name": "a2",
+					"expression": "1000..4800"
+				},
+				{
+					"name": "a3",
+					"expression": "1000..4800"
+				},
+				{
+					"name": "a4",
+					"expression": "1000..4800"
+				},
+				{
+					"name": "a5",
+					"expression": "1000..4800"
+				},
+				{
+					"name": "k",
+					"expression": "0..4"
+				},
+				{
+					"name": "n",
+					"expression": "eval:(a1)*((k-1)*(k-2)*(k-3)*(k-4))/(24)+(a2)*((k-0)*(k-2)*(k-3)*(k-4))/(-6)+(a3)*((k-0)*(k-1)*(k-3)*(k-4))/(4)+(a4)*((k-0)*(k-1)*(k-2)*(k-4))/(-6)+(a5)*((k-0)*(k-1)*(k-2)*(k-3))/(24)"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{n}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On cherche la ligne de {{if:k==0|le pic de l'Aigle|{{if:k==1|le mont Blanchet|{{if:k==2|la dent du Loup|{{if:k==3|le puy Vert|la tête Grise}}}}}}}}, puis on lit la colonne « Altitude (m) ».",
+					"Son altitude : $\\textcolor{{{color:primary.0}}}{{{n}}}$ m."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Pontaval : 512 004",
+			"variationIndex": 0,
+			"variables": {
+				"p1": "245318",
+				"p2": "87650",
+				"p3": "512004",
+				"p4": "31872",
+				"p5": "698120",
+				"k": "2",
+				"n": "512004"
+			},
+			"answers": ["512 004"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : la ligne voisine (Castelroc)",
+			"variationIndex": 0,
+			"variables": {
+				"p1": "245318",
+				"p2": "87650",
+				"p3": "512004",
+				"p4": "31872",
+				"p5": "698120",
+				"k": "2",
+				"n": "512004"
+			},
+			"answers": ["87 650"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "698 120 : Sablonnière",
+			"variationIndex": 1,
+			"variables": {
+				"p1": "245318",
+				"p2": "87650",
+				"p3": "512004",
+				"p4": "31872",
+				"p5": "698120",
+				"k": "4",
+				"n": "698120"
+			},
+			"answers": ["4"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : Pontaval",
+			"variationIndex": 1,
+			"variables": {
+				"p1": "245318",
+				"p2": "87650",
+				"p3": "512004",
+				"p4": "31872",
+				"p5": "698120",
+				"k": "4",
+				"n": "698120"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Dent du Loup : 3 512 m",
+			"variationIndex": 2,
+			"variables": {
+				"a1": "2845",
+				"a2": "1930",
+				"a3": "3512",
+				"a4": "4120",
+				"a5": "1205",
+				"k": "2",
+				"n": "3512"
+			},
+			"answers": ["3 512"],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}

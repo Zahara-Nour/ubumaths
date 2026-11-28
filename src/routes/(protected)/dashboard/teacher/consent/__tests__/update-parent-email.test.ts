@@ -11,18 +11,18 @@
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
-vi.mock('$lib/server/email/brevo', () => ({ isBrevoConfigured: () => true }));
-vi.mock('$lib/server/middleware/auth', () => ({
+vi.mock('#lib/server/email/brevo.ts', () => ({ isBrevoConfigured: () => true }));
+vi.mock('#lib/server/middleware/auth.ts', () => ({
 	requireRole: vi.fn(async () => ({ user: { id: TEACHER_ID } })),
 	requireRoles: vi.fn()
 }));
-vi.mock('$lib/server/middleware/student-access', () => ({
+vi.mock('#lib/server/middleware/student-access.ts', () => ({
 	verifyTeacherStudent: vi.fn(async () => true)
 }));
 const { closePendingConsentRequest } = vi.hoisted(() => ({
 	closePendingConsentRequest: vi.fn()
 }));
-vi.mock('$lib/server/parental-consent-requests', () => ({ closePendingConsentRequest }));
+vi.mock('#lib/server/parental-consent-requests.ts', () => ({ closePendingConsentRequest }));
 
 const { actions } = await import('../+page.server');
 

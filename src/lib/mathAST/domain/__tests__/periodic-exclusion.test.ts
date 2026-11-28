@@ -22,7 +22,7 @@ import {
 	excludePoints
 } from '../algebra';
 import { formatDomainInterval, formatDomainCondition } from '../format';
-import { number } from '$lib/mathAST/factory';
+import { number } from '#lib/mathAST/factory.ts';
 
 describe('PeriodicExclusion type', () => {
 	describe('factory functions', () => {

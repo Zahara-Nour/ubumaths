@@ -15,9 +15,9 @@
 
 import type { Atelier } from './atelier.svelte';
 import { isList, isQualitative, type ListObject } from './types';
-import { summarizeList, type Summary } from '$lib/statistics/describe';
-import { buildComparisonScene } from '$lib/ubumark/utils/comparison-scene';
-import type { StatChartScene } from '$lib/ubumark/utils/stat-chart-scene';
+import { summarizeList, type Summary } from '#lib/statistics/describe.ts';
+import { buildComparisonScene } from '#lib/ubumark/utils/comparison-scene.ts';
+import type { StatChartScene } from '#lib/ubumark/utils/stat-chart-scene.ts';
 
 // =============================================================================
 // Types

@@ -12,7 +12,7 @@
 
 import { error } from '@sveltejs/kit';
 import { uuidSchema } from './validation/common';
-import { createServerLogger } from '$lib/utils/logger';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('server/template-guard');
 

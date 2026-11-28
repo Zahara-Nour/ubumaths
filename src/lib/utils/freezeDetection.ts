@@ -39,7 +39,8 @@
  * - https://developer.chrome.com/blog/memory-and-energy-saver-mode
  */
 
-import { browser } from '$app/environment';
+import { browser } from '$app/env';
+import { bugReportsConfigStore } from '#lib/stores/bugReportsConfig.svelte.ts';
 
 // =============================================================================
 // Configuration
@@ -76,19 +77,9 @@ export interface UserAction {
 	timestamp: string;
 }
 
-export interface WebVitalsData {
-	LCP?: number;
-	FID?: number;
-	CLS?: number;
-	FCP?: number;
-	TTFB?: number;
-	INP?: number;
-}
-
 interface FreezeStoreState {
 	freezeEvents: FreezeEvent[];
 	actions: UserAction[];
-	webVitals: WebVitalsData;
 	isUnresponsive: boolean;
 	lastHeartbeat: number;
 }
@@ -124,7 +115,6 @@ export function setAutoReportCallback(callback: AutoReportCallback): void {
 const state: FreezeStoreState = {
 	freezeEvents: [],
 	actions: [],
-	webVitals: {},
 	isUnresponsive: false,
 	lastHeartbeat: Date.now()
 };
@@ -185,21 +175,6 @@ export function getRecentActions(): UserAction[] {
 }
 
 /**
- * Get web vitals
- */
-function getWebVitals(): WebVitalsData {
-	return { ...state.webVitals };
-}
-
-/**
- * Update web vitals
- */
-export function updateWebVitals(vitals: Partial<WebVitalsData>): void {
-	state.webVitals = { ...state.webVitals, ...vitals };
-	persistState();
-}
-
-/**
  * Get last action
  */
 function getLastAction(): UserAction | undefined {
@@ -219,8 +194,7 @@ function persistState(): void {
 	try {
 		const dataToStore = {
 			freezeEvents: state.freezeEvents,
-			actions: state.actions,
-			webVitals: state.webVitals
+			actions: state.actions
 		};
 		sessionStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify(dataToStore));
 	} catch {
@@ -240,7 +214,6 @@ function restoreState(): void {
 			const data = JSON.parse(stored);
 			state.freezeEvents = data.freezeEvents || [];
 			state.actions = data.actions || [];
-			state.webVitals = data.webVitals || {};
 		}
 	} catch {
 		// Ignore parse errors
@@ -317,8 +290,12 @@ function initLongTaskObserver(): void {
 
 					addFreezeEvent(event);
 
-					// Log to error monitoring if very long
-					if (duration > LONG_TASK_ERROR_THRESHOLD_MS) {
+					// Log to error monitoring if very long — sauf si l'admin a coupé
+					// « Détection des freezes » dans la configuration (écart L110)
+					if (
+						duration > LONG_TASK_ERROR_THRESHOLD_MS &&
+						bugReportsConfigStore.freezeDetectionEnabled
+					) {
 						// Import dynamically to avoid circular dependencies
 						import('./errorMonitoring')
 							.then(({ capturePerformance }) => {
@@ -507,18 +484,21 @@ function initHeartbeat(): void {
 				}
 			}
 
-			// Log to error monitoring
-			import('./errorMonitoring')
-				.then(({ captureError }) => {
-					captureError(new Error(`UI unresponsive for ${drift}ms`), {
-						severity: drift > FREEZE_AUTO_REPORT_THRESHOLD_MS ? 'critical' : 'error',
-						context: { drift, url: window.location.href },
-						tags: ['freeze', 'unresponsive']
+			// Log to error monitoring — sauf si l'admin a coupé « Détection des
+			// freezes » dans la configuration (écart L110)
+			if (bugReportsConfigStore.freezeDetectionEnabled) {
+				import('./errorMonitoring')
+					.then(({ captureError }) => {
+						captureError(new Error(`UI unresponsive for ${drift}ms`), {
+							severity: drift > FREEZE_AUTO_REPORT_THRESHOLD_MS ? 'critical' : 'error',
+							context: { drift, url: window.location.href },
+							tags: ['freeze', 'unresponsive']
+						});
+					})
+					.catch(() => {
+						// Ignore import errors
 					});
-				})
-				.catch(() => {
-					// Ignore import errors
-				});
+			}
 		} else {
 			state.isUnresponsive = false;
 		}
@@ -675,22 +655,6 @@ function initActivityTracking(): void {
 }
 
 // =============================================================================
-// Web Vitals Integration
-// =============================================================================
-
-/**
- * Integrate with existing Web Vitals monitoring
- * This is called from errorMonitoring.ts when vitals are reported
- */
-export function reportWebVital(name: string, value: number): void {
-	const vitalName = name.toUpperCase() as keyof WebVitalsData;
-	if (['LCP', 'FID', 'CLS', 'FCP', 'TTFB', 'INP'].includes(vitalName)) {
-		state.webVitals[vitalName] = value;
-		persistState();
-	}
-}
-
-// =============================================================================
 // Initialization & Cleanup
 // =============================================================================
 
@@ -813,11 +777,9 @@ export function cleanupFreezeDetection(): void {
 export function getFreezeDetectionContext(): {
 	freezeEvents: FreezeEvent[];
 	recentActions: UserAction[];
-	webVitals: WebVitalsData;
 } {
 	return {
 		freezeEvents: getRecentFreezeEvents(),
-		recentActions: getRecentActions(),
-		webVitals: getWebVitals()
+		recentActions: getRecentActions()
 	};
 }

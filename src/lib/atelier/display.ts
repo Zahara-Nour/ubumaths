@@ -12,8 +12,8 @@
  */
 
 import { z } from 'zod';
-import { CURVE_COLORS, getNextSlot } from '$lib/grapheur/colors';
-import { COORDINATE_LIMIT, LINE_STYLES, LINE_WIDTHS } from '$lib/grapheur/types';
+import { CURVE_COLORS, getNextSlot } from '#lib/grapheur/colors.ts';
+import { COORDINATE_LIMIT, LINE_STYLES, LINE_WIDTHS } from '#lib/grapheur/types.ts';
 import {
 	POINT_SIZES,
 	type CurveDisplay,
@@ -21,7 +21,7 @@ import {
 	type SequenceDisplay,
 	type StrokeDisplay
 } from './types';
-import { DEFAULT_COBWEB_STEPS } from '$lib/grapheur/sequence';
+import { DEFAULT_COBWEB_STEPS } from '#lib/grapheur/sequence.ts';
 
 // =============================================================================
 // Constantes

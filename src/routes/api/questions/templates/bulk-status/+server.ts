@@ -13,14 +13,15 @@
  * 400 = corps invalide ; 401/403 = pas admin ; 500 = base illisible.
  */
 
-import { error, json } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireRole } from '$lib/server/middleware/auth';
-import { bulkTemplateStatusSchema } from '$lib/server/validation/questions';
-import { publishTemplates, unpublishTemplates } from '$lib/server/questions-bulk-status';
+import { requireAdmin } from '#lib/server/middleware/auth.ts';
+import { bulkTemplateStatusSchema } from '#lib/server/validation/questions.ts';
+import { publishTemplates, unpublishTemplates } from '#lib/server/questions-bulk-status.ts';
 
 export const POST: RequestHandler = async ({ request, locals }) => {
-	await requireRole(locals, 'admin');
+	// Prof en mode administration, ou vrai compte admin : la RLS réserve l'écriture à l'admin
+	const { supabase } = await requireAdmin(locals);
 
 	let body: unknown;
 	try {
@@ -37,8 +38,8 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	const { ids, status } = validation.data;
 	const result =
 		status === 'published'
-			? await publishTemplates(locals.supabase, ids)
-			: await unpublishTemplates(locals.supabase, ids);
+			? await publishTemplates(supabase, ids)
+			: await unpublishTemplates(supabase, ids);
 
-	return json(result);
+	return Response.json(result);
 };

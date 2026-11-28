@@ -36,3 +36,6 @@
 - Une fiche publiée cumule **deux gardes** : publiée dans le chapitre ET distribuée.
 - Les variations d'un même modèle doivent être **de difficulté équivalente** (tirage par élève).
 - Un plafond de taille a deux gardes : `storage.buckets.file_size_limit` ET le CHECK `valid_file_size`.
+- **Exception voulue, le cahier de texte** (David, 2026-11-24) : une entrée se publie par une case
+  « publié » et apparaît aux élèves à la date de la séance (`is_published` et
+  `entry_date <= current_date`), pas par une date `published_at`. On ne l'aligne pas.

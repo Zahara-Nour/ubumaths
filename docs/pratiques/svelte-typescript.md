@@ -1,3 +1,8 @@
+---
+couvre:
+  - src/lib/utils/enhance-stay-on-page.ts
+---
+
 # Best Practices
 
 Référence synthétique pour Claude : **Svelte 5 runes**, **TypeScript**, **SvelteKit patterns**, **organisation du code**. Règles non négociables dans [CLAUDE.md](../../CLAUDE.md). Tests/Zod : [quality-standards.md](qualite.md).
@@ -159,6 +164,15 @@ Pour du state partagé entre toutes les instances d'un composant, utiliser `<scr
 
 ## TypeScript
 
+### Imports `#lib` et `#tests`
+
+`src/lib` s'importe par `#lib/…`, `tests` par `#tests/…` : des **imports de sous-chemin** (champ `imports` de `package.json`), qui remplacent l'alias `$lib` retiré par SvelteKit 3.
+
+- **Extension toujours écrite** : `#lib/utils/logger.ts`, `#lib/stores/toaster.svelte.ts`, `#lib/components/ui/button/index.ts`, `#lib/components/navigation/BackLink.svelte`. Sans extension, ni Node ni TypeScript ne trouvent le fichier.
+- `tsconfig.json` déclare les mêmes chemins dans `paths` : sans eux, `pnpm check:incremental` (tsgo) ne relie pas `#lib/…/X.svelte` au composant et le type en composant générique (props en `any`).
+- Les scripts lancés par `tsx` les résolvent sans configuration (Node lit `package.json`).
+- **Branche partie avant #2826** (encore en `$lib`) : après `git merge origin/main`, `pnpm migrer:diese` convertit les imports des fichiers de la branche (modifiés depuis `origin/main` + non suivis), extension comprise ; `--essai` montre sans écrire, des fichiers en argument restreignent la liste. Un import dont le fichier n'existe pas est signalé (préfixe seul changé).
+
 ### Jamais `any`
 
 ```typescript
@@ -178,17 +192,17 @@ function isProfile(v: unknown): v is Profile {
 
 ### Types de base de données
 
-- `Database`, `Tables<>`, `TablesInsert<>`, `TablesUpdate<>`, `Json` → importer depuis `$lib/types/database` (auto-généré, **ne jamais y toucher**).
-- Alias de tables, unions, interfaces composites → **uniquement** dans `$lib/types/database-helpers.ts`.
+- `Database`, `Tables<>`, `TablesInsert<>`, `TablesUpdate<>`, `Json` → importer depuis `#lib/types/database.ts` (auto-généré, **ne jamais y toucher**).
+- Alias de tables, unions, interfaces composites → **uniquement** dans `#lib/types/database-helpers.ts`.
 
 ```typescript
 // ✅ Alias dans database-helpers.ts
-import type { Tables } from '$lib/types/database';
+import type { Tables } from '#lib/types/database.ts';
 export type Profile = Tables<'profiles'>;
 export type ProfileRole = 'teacher' | 'student' | 'admin';
 
 // ✅ Importation dans le code applicatif
-import type { Profile } from '$lib/types/database-helpers';
+import type { Profile } from '#lib/types/database-helpers.ts';
 ```
 
 ---
@@ -209,8 +223,8 @@ Ordre **obligatoire** dans tout fichier `.ts` ou `<script lang="ts">` :
 ```svelte
 <script lang="ts">
 	// 1. Imports
-	import { Badge } from '$lib/components/ui/badge';
-	import type { GradeCode } from '$lib/types/grades';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
+	import type { GradeCode } from '#lib/types/grades.ts';
 
 	// 2. Types
 	interface Props {
@@ -240,7 +254,7 @@ Ordre **obligatoire** dans tout fichier `.ts` ou `<script lang="ts">` :
 
 ## Supabase — clients SSR-compatibles
 
-> ⚠️ Ne jamais utiliser `supabaseClient.ts` (déprécié, singleton non SSR). Doc complète : [database.md](base-de-donnees.md).
+> ⚠️ Jamais de client Supabase créé au chargement d'un module (singleton non SSR, sans cookies) : `locals.supabase` ou `data.supabase`. Doc complète : [database.md](base-de-donnees.md).
 
 **Trois contextes, trois patterns :**
 
@@ -314,7 +328,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 ## Toaster (notifications)
 
 ```typescript
-import { toaster } from '$lib/stores/toaster.svelte';
+import { toaster } from '#lib/stores/toaster.svelte.ts';
 
 toaster.success('Sauvegardé');
 toaster.error('Erreur lors de la sauvegarde');
@@ -380,18 +394,37 @@ const store = getStore();
 
 ---
 
+## SvelteKit 3 — ce qui a changé chez nous
+
+Passage de kit 2 à kit 3.2.0 le 2026-11-18 (#2825). Ce que le guide de migration ne dit pas, ou ce qui nous a coûté :
+
+- **`goto`** : `keepFocus` et `noScroll` sont retirés (erreur en dev) → `reset: false`. Une route inconnue fait **rejeter** `goto` (kit 2 affichait une 404) : pour un lien venu des données (notification), passer par `gotoNotification`, qui retombe sur `location.assign`.
+- **`data-sveltekit-noscroll` / `keepfocus`** sont ignorés → `data-sveltekit-reset="false"`.
+- **`resolve('/x')`** attend un id de route ; un chemin s'écrit sans `/` (`resolve('shtam')`). Chemin porté par une variable → `resolvePath` (`#lib/navigation/resolve-path.ts`).
+- **`pushState` / `replaceState` gardés** malgré la dépréciation : leur remplaçant `goto(url, { state, shallow: true })` déclenche les hooks de navigation (barre de chargement à chaque frappe de la recherche du catalogue, rechargement complet si une nouvelle version est en ligne). À rouvrir seulement si kit 4 les retire. **`replaceState` est asynchrone** et rejette quand le routeur n'est pas démarré : un `try/catch` synchrone ne voit pas l'échec → `.catch`.
+- **`invalidateAll` → `refreshAll`**, **`json()` de kit → `Response.json`** (attention : `Response.json(undefined)` lève une `TypeError`, `json(undefined)` rendait un corps vide). Deux caches ont aussi une méthode `invalidateAll` (`teacherDashboardCache`, `studentDashboardCache`) : ce ne sont pas celles de kit.
+- **`$env/*`** ne rend plus que les variables déclarées dans `src/env.ts` → on importe `$app/env/public` / `$app/env/private`. `$app/stores` → `$app/state`, `$app/environment` → `$app/env`.
+- **`redirect()` vers une autre origine** exige `{ external }` : seule la connexion Google sort du site (liste blanche = origine Supabase).
+- **`fail()` répond avec son vrai statut** (plus de 200) : lire le corps, pas `response.ok`.
+- **`handleError` client** reçoit aussi les `error(...)` voulus, avec `kind` (`app`/`framework`/`unknown`) : ils ne sont pas journalisés.
+- **CSRF** : un POST/PUT/PATCH/DELETE d'une autre origine **sans `Content-Type`** est refusé (nos crons Vercel sont en GET).
+- **`page.url`** est en lecture seule : `new URL(page.url.href)` pour la modifier.
+- **`use:enhance` : `update()` navigue** (succès comme échec) vers l'adresse de l'action privée de `?/save` ; sur une page dont l'adresse porte une recherche (`?class=…&week=…`, `?serie=…`, un jeton `?u=…&t=…`), cette recherche est **perdue**. Formulaire `action="?/…"` → `use:enhance={stayOnPage}` (`#lib/utils/enhance-stay-on-page.ts`) au lieu d'un `use:enhance` nu, ou `await update({ navigate: false })` dans un callback. Relevé des 91 formulaires et correctif du 2026-11-20 (5 pages cassées : verdict de `/dev/modeles`, cahier de texte, modèles de fiches, mot de passe, mot de passe parent).
+
+---
+
 ## Anti-patterns clés (récapitulatif)
 
-| ❌ À éviter                                      | ✅ Correct                                              |
-| ------------------------------------------------ | ------------------------------------------------------- |
-| `export let x`                                   | `let { x } = $props()`                                  |
-| `$: doubled = x * 2`                             | `let doubled = $derived(x * 2)`                         |
-| `$: { sideEffect(x); }`                          | `$effect(() => { sideEffect(x); })`                     |
-| `<svelte:component this={C} />`                  | `<C />`                                                 |
-| `import { supabase } from '$lib/supabaseClient'` | `locals.supabase` (serveur) ou `data.supabase` (client) |
-| Types dans `database.ts`                         | Types dans `database-helpers.ts`                        |
-| `data: any`                                      | `data: unknown` + type guard                            |
-| `<select>` / `<input type="checkbox">`           | `<MySelect>` / `<MyCheckbox>`                           |
+| ❌ À éviter                                         | ✅ Correct                                              |
+| --------------------------------------------------- | ------------------------------------------------------- |
+| `export let x`                                      | `let { x } = $props()`                                  |
+| `$: doubled = x * 2`                                | `let doubled = $derived(x * 2)`                         |
+| `$: { sideEffect(x); }`                             | `$effect(() => { sideEffect(x); })`                     |
+| `<svelte:component this={C} />`                     | `<C />`                                                 |
+| client Supabase global créé au chargement du module | `locals.supabase` (serveur) ou `data.supabase` (client) |
+| Types dans `database.ts`                            | Types dans `database-helpers.ts`                        |
+| `data: any`                                         | `data: unknown` + type guard                            |
+| `<select>` / `<input type="checkbox">`              | `<MySelect>` / `<MyCheckbox>`                           |
 
 ---
 

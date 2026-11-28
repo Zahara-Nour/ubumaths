@@ -9,7 +9,7 @@
 
 import { describe, expect, it } from 'vitest';
 import { render } from 'vitest-browser-svelte';
-import type { ChapterSummary } from '$lib/types/chapters';
+import type { ChapterSummary } from '#lib/types/chapters.ts';
 import ChapterCard from '../ChapterCard.svelte';
 
 // Constantes

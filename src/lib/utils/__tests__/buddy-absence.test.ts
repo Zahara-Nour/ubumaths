@@ -4,7 +4,12 @@
  */
 
 import { describe, expect, it } from 'vitest';
-import { isLongAbsence, isWelcomeBackDue, lastExpiredWelcomeBackDay } from '../buddy-absence';
+import {
+	isLongAbsence,
+	isReturnToCelebrate,
+	isWelcomeBackDue,
+	lastExpiredWelcomeBackDay
+} from '../buddy-absence';
 
 describe('isLongAbsence', () => {
 	it('tout premier passage : pas triste', () => {
@@ -76,5 +81,26 @@ describe('lastExpiredWelcomeBackDay', () => {
 	it('par-dessus la fin d’année ; jour illisible : null', () => {
 		expect(lastExpiredWelcomeBackDay('2027-01-04')).toBe('2026-12-28');
 		expect(lastExpiredWelcomeBackDay('n’importe quoi')).toBeNull();
+	});
+});
+
+describe('isReturnToCelebrate — fêté après la 1re activité (R2, 2026-11-12)', () => {
+	it('retour à fêter et jour travaillé depuis (le jour même compris) : à fêter', () => {
+		expect(isReturnToCelebrate('2026-10-21', '2026-10-21', '2026-10-21')).toBe(true);
+		expect(isReturnToCelebrate('2026-10-21', '2026-10-24', '2026-10-25')).toBe(true);
+	});
+
+	it('pas encore travaillé depuis le retour : on attend', () => {
+		expect(isReturnToCelebrate('2026-10-21', '2026-09-28', '2026-10-22')).toBe(false);
+		expect(isReturnToCelebrate('2026-10-21', null, '2026-10-22')).toBe(false);
+	});
+
+	it('retour oublié (7 jours) ou absent : rien, même après un jour travaillé', () => {
+		expect(isReturnToCelebrate('2026-10-21', '2026-10-28', '2026-10-28')).toBe(false);
+		expect(isReturnToCelebrate(null, '2026-10-22', '2026-10-22')).toBe(false);
+	});
+
+	it('jour travaillé illisible : rien', () => {
+		expect(isReturnToCelebrate('2026-10-21', 'pas-un-jour', '2026-10-22')).toBe(false);
 	});
 });

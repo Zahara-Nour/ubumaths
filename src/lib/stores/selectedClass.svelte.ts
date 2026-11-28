@@ -14,7 +14,7 @@
  * USAGE:
  * ------
  * ```typescript
- * import { getSelectedClassId, setSelectedClass, selectedClassStore } from '$lib/stores/selectedClass.svelte';
+ * import { getSelectedClassId, setSelectedClass, selectedClassStore } from '#lib/stores/selectedClass.svelte.ts';
  *
  * // Get current selection
  * const classId = getSelectedClassId();
@@ -45,7 +45,7 @@
  * (/dashboard/teacher/+layout.svelte) which observes selectedClassId changes.
  */
 
-import type { Class } from '$lib/types/database-helpers';
+import type { Class } from '#lib/types/database-helpers.ts';
 
 // localStorage key for persisting selected class ID
 const STORAGE_KEY = 'teacher_selected_class_id';

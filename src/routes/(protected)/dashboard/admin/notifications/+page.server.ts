@@ -4,18 +4,18 @@ import {
 	getCreatedNotifications,
 	createNotification,
 	deleteNotification
-} from '$lib/server/notifications';
-import { requireAdmin } from '$lib/server/middleware/auth';
-import type { CreateNotificationData } from '$lib/types/notification';
+} from '#lib/server/notifications.ts';
+import { requireAdmin } from '#lib/server/middleware/auth.ts';
+import type { CreateNotificationData } from '#lib/types/notification.ts';
 import {
 	createNotificationSchema,
 	deleteNotificationSchema
-} from '$lib/server/validation/notifications';
+} from '#lib/server/validation/notifications.ts';
 import {
 	checkNotificationCreateRateLimit,
 	checkNotificationDeleteRateLimit
-} from '$lib/server/rateLimiter';
-import { createServerLogger } from '$lib/utils/logger';
+} from '#lib/server/rateLimiter.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('(protected)/dashboard/admin/notifications/+page.server');
 

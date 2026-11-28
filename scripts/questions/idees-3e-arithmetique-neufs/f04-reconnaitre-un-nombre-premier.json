@@ -1,0 +1,378 @@
+{
+	"id": "415db113-8612-4bef-87b7-9006a863e057",
+	"rangement": {
+		"noeud": "Arithmétique > Nombres premiers > primalité",
+		"point": null
+	},
+	"title": "Reconnaître un nombre premier",
+	"description": "Cocher les nombres premiers d'une liste (pièges : 1, 51, 57, 87, 91), donner un diviseur qui prouve qu'un nombre de 100 à 400 n'est pas premier, dire si un nombre de 101 à 199 est premier ou divisible par 7, 11 ou 13",
+	"grades": ["3"],
+	"level": 1,
+	"delay": 60,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"spacesFromFourDigits": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Coche tous les nombres premiers.\n\n```choix\nplusieurs: oui\n- ${{p1}}$\n- ${{t1}}$\n- ${{p2}}$\n- ${{t2}}$\n- ${{if:z==1|{{p3}}|{{t3}}}}$\n```",
+			"variables": [
+				{
+					"name": "p1",
+					"expression": "11|13|17|19|23|29|31|37|41|43|47"
+				},
+				{
+					"name": "t1",
+					"expression": "1|51|57|87|91"
+				},
+				{
+					"name": "p2",
+					"expression": "53|59|61|67|71|73|79|83|89|97"
+				},
+				{
+					"name": "t2",
+					"expression": "21|27|33|39|49|63|69|77|81|93"
+				},
+				{
+					"name": "z",
+					"expression": "0|1"
+				},
+				{
+					"name": "p3",
+					"expression": "2|3|5|7"
+				},
+				{
+					"name": "t3",
+					"expression": "15|25|35|45|55|65|75|85|95"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0;2{{if:z==1|;4|}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Nombre premier.** Un nombre entier est premier s'il a exactement deux diviseurs : $1$ et lui-même. $1$ n'est donc pas premier.",
+					"Ne sont pas premiers : {{if:t1==1|$1$, qui n'a qu'un seul diviseur|{{if:t1==51|${{t1}} = 3\\times 17$|{{if:t1==57|${{t1}} = 3\\times 19$|{{if:t1==87|${{t1}} = 3\\times 29$|{{if:t1==91|${{t1}} = 7\\times 13$|{{if:t1==21|${{t1}} = 3\\times 7$|{{if:t1==27|${{t1}} = 3\\times 9$|{{if:t1==33|${{t1}} = 3\\times 11$|{{if:t1==39|${{t1}} = 3\\times 13$|{{if:t1==49|${{t1}} = 7\\times 7$|{{if:t1==63|${{t1}} = 7\\times 9$|{{if:t1==69|${{t1}} = 3\\times 23$|{{if:t1==77|${{t1}} = 7\\times 11$|{{if:t1==81|${{t1}} = 9\\times 9$|{{if:t1==93|${{t1}} = 3\\times 31$|{{if:t1==15|${{t1}} = 3\\times 5$|{{if:t1==25|${{t1}} = 5\\times 5$|{{if:t1==35|${{t1}} = 5\\times 7$|{{if:t1==45|${{t1}} = 5\\times 9$|{{if:t1==55|${{t1}} = 5\\times 11$|{{if:t1==65|${{t1}} = 5\\times 13$|{{if:t1==75|${{t1}} = 5\\times 15$|{{if:t1==85|${{t1}} = 5\\times 17$|{{if:t1==95|${{t1}} = 5\\times 19$|${{t1}}$}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}} ; {{if:t2==51|${{t2}} = 3\\times 17$|{{if:t2==57|${{t2}} = 3\\times 19$|{{if:t2==87|${{t2}} = 3\\times 29$|{{if:t2==91|${{t2}} = 7\\times 13$|{{if:t2==21|${{t2}} = 3\\times 7$|{{if:t2==27|${{t2}} = 3\\times 9$|{{if:t2==33|${{t2}} = 3\\times 11$|{{if:t2==39|${{t2}} = 3\\times 13$|{{if:t2==49|${{t2}} = 7\\times 7$|{{if:t2==63|${{t2}} = 7\\times 9$|{{if:t2==69|${{t2}} = 3\\times 23$|{{if:t2==77|${{t2}} = 7\\times 11$|{{if:t2==81|${{t2}} = 9\\times 9$|{{if:t2==93|${{t2}} = 3\\times 31$|{{if:t2==15|${{t2}} = 3\\times 5$|{{if:t2==25|${{t2}} = 5\\times 5$|{{if:t2==35|${{t2}} = 5\\times 7$|{{if:t2==45|${{t2}} = 5\\times 9$|{{if:t2==55|${{t2}} = 5\\times 11$|{{if:t2==65|${{t2}} = 5\\times 13$|{{if:t2==75|${{t2}} = 5\\times 15$|{{if:t2==85|${{t2}} = 5\\times 17$|{{if:t2==95|${{t2}} = 5\\times 19$|${{t2}}$}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}{{if:z==0| ; {{if:t3==51|${{t3}} = 3\\times 17$|{{if:t3==57|${{t3}} = 3\\times 19$|{{if:t3==87|${{t3}} = 3\\times 29$|{{if:t3==91|${{t3}} = 7\\times 13$|{{if:t3==21|${{t3}} = 3\\times 7$|{{if:t3==27|${{t3}} = 3\\times 9$|{{if:t3==33|${{t3}} = 3\\times 11$|{{if:t3==39|${{t3}} = 3\\times 13$|{{if:t3==49|${{t3}} = 7\\times 7$|{{if:t3==63|${{t3}} = 7\\times 9$|{{if:t3==69|${{t3}} = 3\\times 23$|{{if:t3==77|${{t3}} = 7\\times 11$|{{if:t3==81|${{t3}} = 9\\times 9$|{{if:t3==93|${{t3}} = 3\\times 31$|{{if:t3==15|${{t3}} = 3\\times 5$|{{if:t3==25|${{t3}} = 5\\times 5$|{{if:t3==35|${{t3}} = 5\\times 7$|{{if:t3==45|${{t3}} = 5\\times 9$|{{if:t3==55|${{t3}} = 5\\times 11$|{{if:t3==65|${{t3}} = 5\\times 13$|{{if:t3==75|${{t3}} = 5\\times 15$|{{if:t3==85|${{t3}} = 5\\times 17$|{{if:t3==95|${{t3}} = 5\\times 19$|${{t3}}$}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}|}}.",
+					"Sont premiers : $\\textcolor{{{color:primary.0}}}{{{p1}}}$, $\\textcolor{{{color:primary.0}}}{{{p2}}}${{if:z==1|, $\\textcolor{{{color:primary.0}}}{{{p3}}}$|}} : aucun nombre premier plus petit ne les divise."
+				]
+			},
+			"hint": "Pour chaque nombre, essaie de le diviser par $2$, $3$, $5$, $7$. N'oublie pas que $1$ n'a qu'un seul diviseur."
+		},
+		{
+			"statement": "Le nombre ${{N}}$ n'est pas premier. Donne un diviseur de ${{N}}$, autre que $1$ et ${{N}}$, qui le prouve.\n\nUn diviseur de ${{N}}$ : $?$",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "2|3|5|7|11|13"
+				},
+				{
+					"name": "q",
+					"expression": "{{p}}..199"
+				},
+				{
+					"name": "N",
+					"expression": "eval:p*q"
+				}
+			],
+			"conditions": ["N>=100", "N<=400"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{p}}",
+					"rulesSuffice": true,
+					"validationRules": [
+						{
+							"type": "divisor",
+							"dividend": "{{N}}"
+						},
+						{
+							"type": "range",
+							"min": "1",
+							"max": "{{N}}",
+							"inclusive": false
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"On essaie les nombres premiers dans l'ordre : $2$, $3$, $5$, $7$, $11$, $13$…",
+					"${{N}} = {{p}} \\times {{q}}$ : $\\textcolor{{{color:primary.0}}}{{{p}}}$ et ${{q}}$ sont des diviseurs de ${{N}}$, autres que $1$ et ${{N}}$. ${{N}}$ n'est donc pas premier."
+				]
+			},
+			"hint": "Essaie de diviser ${{N}}$ par $2$, $3$, $5$, $7$, $11$, $13$."
+		},
+		{
+			"statement": "Que peut-on dire du nombre ${{N}}$ ?\n\n```choix\nmelanger: non\n- ${{N}}$ est premier.\n- ${{N}}$ est divisible par $7$.\n- ${{N}}$ est divisible par $11$.\n- ${{N}}$ est divisible par $13$.\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "0..3"
+				},
+				{
+					"name": "n0",
+					"expression": "101|103|107|109|113|127|131|137|139|149|151|157|163|167|173|179|181|191|193|197|199"
+				},
+				{
+					"name": "n1",
+					"expression": "119|133|161"
+				},
+				{
+					"name": "n2",
+					"expression": "121|187"
+				},
+				{
+					"name": "N",
+					"expression": "{{if:k==0|{{n0}}|{{if:k==1|{{n1}}|{{if:k==2|{{n2}}|169}}}}}}"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{k}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On essaie les nombres premiers dans l'ordre : $2$, $3$, $5$, $7$, $11$, $13$. Inutile d'aller plus loin : $17 \\times 17 = 289$ dépasse ${{N}}$.",
+					"{{if:k==0|Aucun ne divise ${{N}}$ : $\\textcolor{{{color:primary.0}}}{{{N}} \\text{ est premier}}$.|${{N}} = {{if:k==1|7|{{if:k==2|11|13}}}} \\times {{eval:N/{{if:k==1|7|{{if:k==2|11|13}}}}}}$ : $\\textcolor{{{color:primary.0}}}{{{N}} \\text{ est divisible par } {{if:k==1|7|{{if:k==2|11|13}}}}}$.}}"
+				]
+			},
+			"hint": "Essaie de diviser ${{N}}$ par $7$, par $11$, par $13$."
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "a : 2 premiers (17, 89)",
+			"variationIndex": 0,
+			"variables": {
+				"p1": "17",
+				"t1": "91",
+				"p2": "89",
+				"t2": "57",
+				"z": "0",
+				"p3": "2",
+				"t3": "85"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0;2"]
+		},
+		{
+			"description": "a : 91 coché",
+			"variationIndex": 0,
+			"variables": {
+				"p1": "17",
+				"t1": "91",
+				"p2": "89",
+				"t2": "57",
+				"z": "0",
+				"p3": "2",
+				"t3": "85"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["0;1;2"]
+		},
+		{
+			"description": "a : 89 oublié (½)",
+			"variationIndex": 0,
+			"variables": {
+				"p1": "17",
+				"t1": "91",
+				"p2": "89",
+				"t2": "57",
+				"z": "0",
+				"p3": "2",
+				"t3": "85"
+			},
+			"expected": {
+				"status": "unoptimal_form"
+			},
+			"answers": ["0"]
+		},
+		{
+			"description": "a : 3 premiers, avec 2",
+			"variationIndex": 0,
+			"variables": {
+				"p1": "41",
+				"t1": "1",
+				"p2": "53",
+				"t2": "49",
+				"z": "1",
+				"p3": "2",
+				"t3": "85"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0;2;4"]
+		},
+		{
+			"description": "a : 1 coché",
+			"variationIndex": 0,
+			"variables": {
+				"p1": "41",
+				"t1": "1",
+				"p2": "53",
+				"t2": "49",
+				"z": "1",
+				"p3": "2",
+				"t3": "85"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["0;1;2;4"]
+		},
+		{
+			"description": "b : 119 = 7 × 17, 7",
+			"variationIndex": 1,
+			"variables": {
+				"p": "7",
+				"q": "17"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["7"]
+		},
+		{
+			"description": "b : 119, 17",
+			"variationIndex": 1,
+			"variables": {
+				"p": "7",
+				"q": "17"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["17"]
+		},
+		{
+			"description": "b : 119, 1",
+			"variationIndex": 1,
+			"variables": {
+				"p": "7",
+				"q": "17"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["1"]
+		},
+		{
+			"description": "b : 119, lui-même",
+			"variationIndex": 1,
+			"variables": {
+				"p": "7",
+				"q": "17"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["119"]
+		},
+		{
+			"description": "b : 119, 3 ne divise pas",
+			"variationIndex": 1,
+			"variables": {
+				"p": "7",
+				"q": "17"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["3"]
+		},
+		{
+			"description": "b : 342, 6 (pas premier mais diviseur)",
+			"variationIndex": 1,
+			"variables": {
+				"p": "2",
+				"q": "171"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["6"]
+		},
+		{
+			"description": "c : 149 est premier",
+			"variationIndex": 2,
+			"variables": {
+				"k": "0",
+				"n0": "149"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0"]
+		},
+		{
+			"description": "c : 149 pris pour un multiple de 7",
+			"variationIndex": 2,
+			"variables": {
+				"k": "0",
+				"n0": "149"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["1"]
+		},
+		{
+			"description": "c : 133 = 7 × 19",
+			"variationIndex": 2,
+			"variables": {
+				"k": "1",
+				"n1": "133"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["1"]
+		},
+		{
+			"description": "c : 133 pris pour premier",
+			"variationIndex": 2,
+			"variables": {
+				"k": "1",
+				"n1": "133"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["0"]
+		},
+		{
+			"description": "c : 187 = 11 × 17",
+			"variationIndex": 2,
+			"variables": {
+				"k": "2",
+				"n2": "187"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["2"]
+		},
+		{
+			"description": "c : 169 = 13 × 13",
+			"variationIndex": 2,
+			"variables": {
+				"k": "3"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["3"]
+		}
+	]
+}

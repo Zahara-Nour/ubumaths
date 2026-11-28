@@ -5,7 +5,7 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { GrapheurStore } from '$lib/stores/grapheur.svelte';
+import { GrapheurStore } from '#lib/stores/grapheur.svelte.ts';
 
 /** Un grapheur qui ne range rien : les tests ne doivent pas écrire de stockage. */
 const graph = () => new GrapheurStore();

@@ -1,51 +1,28 @@
 /**
- * Shared Blockly Module Configuration
- *
- * Timeouts, limits, and constants for Blockly visual programming.
+ * Configuration du module Blockly partagé : limites, options de l'espace de blocs, thème,
+ * messages d'erreur.
  */
 
 import * as Blockly from 'blockly';
-import type { LoadingStage } from './types';
 
 // =============================================================================
-// Execution Configuration
+// Limites
 // =============================================================================
 
-/**
- * Blockly execution configuration
- */
+/** Limites de l'espace de blocs et du code généré pour l'aperçu */
 export const BLOCKLY_CONFIG = {
-	/** JavaScript execution timeout in milliseconds (10 seconds) */
-	JS_TIMEOUT_MS: 10_000,
-	/** Python execution timeout in milliseconds (30 seconds, via Pyodide) */
-	PYTHON_TIMEOUT_MS: 30_000,
-	/** Maximum generated code length in characters (100KB) */
+	/** Longueur maximale du code généré, en caractères (100 Ko) */
 	MAX_CODE_LENGTH: 100_000,
-	/** Maximum number of output lines to keep */
-	MAX_OUTPUT_LINES: 1000,
-	/** Maximum number of blocks in workspace (0 = unlimited) */
-	MAX_BLOCKS: 0,
-	/** Debounce delay for code generation (ms) */
-	CODE_GEN_DEBOUNCE_MS: 300
+	/** Nombre maximal de blocs dans l'espace (0 = sans limite) */
+	MAX_BLOCKS: 0
 } as const;
-
-// =============================================================================
-// Loading Stages
-// =============================================================================
-
-/**
- * Predefined loading stages for Blockly initialization
- */
-export const LOADING_STAGES: readonly LoadingStage[] = [
-	{ percent: 0, stage: 'Initialisation...' },
-	{ percent: 33, stage: 'Chargement de Blockly...' },
-	{ percent: 66, stage: "Initialisation de l'espace de travail..." },
-	{ percent: 100, stage: 'Pret !' }
-] as const;
 
 // =============================================================================
 // Workspace Configuration
 // =============================================================================
+
+/** Dossier des médias Blockly sous static/ (copie de node_modules/blockly/media) */
+export const BLOCKLY_MEDIA_PATH = '/blockly/media/';
 
 /**
  * Default Blockly workspace options
@@ -67,10 +44,13 @@ export const DEFAULT_WORKSPACE_OPTIONS = {
 	},
 	trashcan: true,
 	maxBlocks: BLOCKLY_CONFIG.MAX_BLOCKS,
-	// Disable sounds to avoid CSP issues (Blockly loads from external CDN)
+	// Sons coupés : pas de bruit en classe
 	sounds: false,
-	// Use unpkg CDN for Blockly media files (trashcan, sprites, etc.)
-	media: 'https://unpkg.com/blockly@12.5.1/media/',
+	// Médias (corbeille, sprites, icônes) servis par nous : aucune requête vers un tiers depuis le
+	// navigateur des élèves. Copie de node_modules/blockly/media, gardée à jour par media.test.ts.
+	media: BLOCKLY_MEDIA_PATH,
+	// Renderer explicite : Blockly 13 a changé celui par défaut
+	renderer: 'thrasos',
 	move: {
 		scrollbars: true,
 		drag: true,
@@ -98,75 +78,14 @@ export const CHIPHRE_THEME = Blockly.Theme.defineTheme('chiphre', {
 });
 
 // =============================================================================
-// Error Messages (French)
+// Messages d'erreur
 // =============================================================================
 
-/**
- * French error messages for user-facing errors
- */
+/** Messages d'erreur de la génération de code et de l'espace de blocs */
 export const ERROR_MESSAGES = {
-	TIMEOUT_JS: "L'execution JavaScript a depasse le delai maximum (10s)",
-	TIMEOUT_PYTHON: "L'execution Python a depasse le delai maximum (30s)",
-	CODE_TOO_LONG: 'Le code genere depasse la limite de caracteres autorisee',
-	TOO_MANY_OUTPUT_LINES: 'Trop de lignes de sortie (limite : 1000)',
-	EXECUTION_ERROR: "Erreur lors de l'execution du code",
-	CODE_GENERATION_FAILED: 'Echec de la generation du code',
-	WORKSPACE_NOT_INITIALIZED: "L'espace de travail n'est pas initialise",
-	BLOCKLY_NOT_LOADED: "Blockly n'est pas charge",
-	INVALID_LANGUAGE: 'Langage non supporte',
-	MAX_BLOCKS_REACHED: 'Nombre maximum de blocs atteint',
-	WORKSPACE_LOAD_FAILED: "Echec du chargement de l'espace de travail"
-} as const;
-
-// =============================================================================
-// Code Templates
-// =============================================================================
-
-/**
- * Code templates for wrapping generated code
- */
-export const CODE_TEMPLATES = {
-	/** JavaScript execution wrapper with timeout protection */
-	JAVASCRIPT_WRAPPER: `
-(function() {
-	'use strict';
-	const output = [];
-	const console_log = console.log;
-	console.log = function(...args) {
-		output.push(args.join(' '));
-	};
-	try {
-		%CODE%
-		return { success: true, output };
-	} catch (error) {
-		return { success: false, error: error.message, output };
-	} finally {
-		console.log = console_log;
-	}
-})();
-`.trim(),
-
-	/** Python execution setup (imports, etc.) */
-	PYTHON_SETUP: `
-import sys
-from io import StringIO
-`.trim()
-} as const;
-
-// =============================================================================
-// Display Constants
-// =============================================================================
-
-/**
- * UI display constants
- */
-export const DISPLAY_CONFIG = {
-	/** Maximum characters to display per output line */
-	MAX_LINE_LENGTH: 1000,
-	/** Truncation suffix for long lines */
-	TRUNCATION_SUFFIX: '...',
-	/** Default syntax highlighting language */
-	DEFAULT_HIGHLIGHT_LANGUAGE: 'javascript',
-	/** Output panel height (CSS value) */
-	OUTPUT_PANEL_HEIGHT: '300px'
+	CODE_TOO_LONG: 'Le code généré dépasse la limite de caractères autorisée',
+	CODE_GENERATION_FAILED: 'Échec de la génération du code',
+	WORKSPACE_NOT_INITIALIZED: "L'espace de travail n'est pas initialisé",
+	INVALID_LANGUAGE: 'Langage non pris en charge',
+	WORKSPACE_LOAD_FAILED: "Échec du chargement de l'espace de travail"
 } as const;

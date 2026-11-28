@@ -10,11 +10,13 @@
  * noms, le nombre de points ou de barres, la forme. La correction ne change pas :
  * le serveur juge sur l'instance complète.
  *
- * Masqué : ```line, ```courbe et ```trig (`placer:`), ```courbe (`tracer:` : l'équation
+ * Masqué : ```tortue (`attendu:`, la figure seule en `figure:`), ```calcul (`attendu:`), ```line, ```courbe et ```trig (`placer:`), ```line (`representer:`, `graduer:`), ```courbe (`tracer:` : l'équation
  * de la droite devient `tracer: ?`), ```horloge (`placer:`), ```collection et
  * ```monnaie (`construire:`, avec sa réserve par défaut écrite : `maskMonnaie`), ```partage (`colorier:`), ```barres (effectifs des
  * barres de `placer:`, `axe: à choisir` compris : l'échelle ne se déduit plus),
- * ```boite-a-moustaches (les cinq valeurs des boîtes de `placer:`, ou `données:`).
+ * ```boite-a-moustaches (les cinq valeurs des boîtes de `placer:`, ou `données:`),
+ * ```yohaku (chaque case à remplir devient `[?]`, les totaux sont écrits en `totaux:` : ils
+ * ne se calculent plus sans la solution).
  * Lot 2, des lignes réécrites (David, journal § 7) :
  * - ```cubes `retrouver:` : `hauteurs: ? ? / 0 ?` (l'empreinte est la vue de dessus,
  *   donnée) et `vues: face 2 1 ; droite 1 2` (tout assemblage qui a ces vues est juste :
@@ -35,7 +37,8 @@
  * Un bloc dans une option d'un ```choix n'est pas un geste (le générateur met le
  * choix à l'abri avant de repérer les gestes) : il reste tel quel, sinon les options
  * deviendraient identiques.
- * Sans objet : ```ranger (déjà mélangé), ```patron `designer:` (la tâche, que la
+ * Sans objet : ```ranger (déjà mélangé), ```associer (réécrit sans liens au tirage ; la garde
+ * `findUnmaskedAnswers` vérifie qu'il n'en reste aucun), ```trous (réécrit aux trous vides, gardé de même), ```patron `designer:` (la tâche, que la
  * consigne dit ; les faces se trouvent par le pliage), ```cubes `dessiner:` (la
  * perspective est la figure), ```solide `tracer:` (la combinaison est la tâche, que
  * la consigne dit ; les points se trouvent par le calcul), opération posée.
@@ -43,52 +46,66 @@
  * @module questions/masked-statement
  */
 
-import { findLinesToPlace } from '$lib/ubumark/parser/number-line-parser';
-import { findCourbesToPlace } from '$lib/ubumark/parser/courbe-parser';
-import { findTrigCirclesToPlace } from '$lib/ubumark/parser/trig-circle-parser';
+import { findLinesToPlace } from '#lib/ubumark/parser/number-line-parser.ts';
+import { findCourbesToPlace } from '#lib/ubumark/parser/courbe-parser.ts';
+import { findTrigCirclesToPlace } from '#lib/ubumark/parser/trig-circle-parser.ts';
+import {
+	figureText,
+	findTortuesToProgram,
+	parseTortueContent
+} from '#lib/ubumark/parser/tortue-parser.ts';
+import { findCalculsToProgram } from '#lib/ubumark/parser/calcul-parser.ts';
+import { findPythonsAEcrire } from '#lib/ubumark/parser/python-a-ecrire-parser.ts';
+import {
+	findYohakusARemplir,
+	parseYohakuContent,
+	YOHAKU_MASQUEE
+} from '#lib/ubumark/parser/yohaku-parser.ts';
 import {
 	findHorlogesToPlace,
 	isMaskedPlacerValue,
 	maskedPlacerValue
-} from '$lib/ubumark/parser/horloge-parser';
-import { findBuildCollections } from '$lib/ubumark/parser/collection-parser';
-import { defaultReserve, findBuildMonnaies } from '$lib/ubumark/parser/monnaie-parser';
-import { fromCents, isCents, readAmount, toCents } from '$lib/ubumark/utils/monnaie-valeurs';
-import { findPartagesToColorier } from '$lib/ubumark/parser/partage-parser';
+} from '#lib/ubumark/parser/horloge-parser.ts';
+import { findBuildCollections } from '#lib/ubumark/parser/collection-parser.ts';
+import { defaultReserve, findBuildMonnaies } from '#lib/ubumark/parser/monnaie-parser.ts';
+import { fromCents, isCents, readAmount, toCents } from '#lib/ubumark/utils/monnaie-valeurs.ts';
+import { findPartagesToColorier } from '#lib/ubumark/parser/partage-parser.ts';
 import {
 	findBarsToPlace,
 	findBoxPlotsToPlace,
 	parseStatChartContent
-} from '$lib/ubumark/parser/stat-chart-parser';
-import { findChoiceBlocks } from '$lib/ubumark/parser/choix-parser';
+} from '#lib/ubumark/parser/stat-chart-parser.ts';
+import { findChoiceBlocks } from '#lib/ubumark/parser/choix-parser.ts';
+import { findAssociersToPlace, parseAssocierBody } from '#lib/ubumark/parser/associer-parser.ts';
+import { findTrousToPlace, trousHasFilledHole } from '#lib/ubumark/parser/trous-parser.ts';
 import {
 	findCubesToBuild,
 	findPatronsToBuild,
 	parseEspaceContent
-} from '$lib/ubumark/parser/espace-parser';
-import { readConstructionHeader } from '$lib/ubumark/parser/construction-parser';
+} from '#lib/ubumark/parser/espace-parser.ts';
+import { readConstructionHeader } from '#lib/ubumark/parser/construction-parser.ts';
 import {
 	constructionPositions,
 	constructionShapes,
 	hasConstructionPositions
-} from '$lib/questions/construction/positions';
+} from '#lib/questions/construction/positions.ts';
 import {
 	findVariationsToFill,
 	variationRowForDisplay,
 	withImplicitEndpoints,
 	type VariationToFill
-} from '$lib/ubumark/parser/variation-table-parser';
-import type { VariationTableNode } from '$lib/ubumark/types/variation-table';
-import { unnestedLine } from '$lib/ubumark/parser/nested-line';
+} from '#lib/ubumark/parser/variation-table-parser.ts';
+import type { VariationTableNode, VariationValue } from '#lib/ubumark/types/variation-table.ts';
+import { unnestedLine } from '#lib/ubumark/parser/nested-line.ts';
 import {
 	isMaskedVectorValue,
 	isCombinationVectorValue,
 	isVectorValue,
 	MASKED_VALUE,
 	maskVectorValue
-} from '$lib/ubumark/utils/masked-value';
-import { sideColumns } from '$lib/ubumark/utils/espace-scene';
-import { transformGrid, trimGrid } from '$lib/ubumark/utils/espace-patrons';
+} from '#lib/ubumark/utils/masked-value.ts';
+import { sideColumns } from '#lib/ubumark/utils/espace-scene.ts';
+import { transformGrid, trimGrid } from '#lib/ubumark/utils/espace-patrons.ts';
 
 // Types
 interface FoundBlock {
@@ -105,9 +122,15 @@ type MaskLine = (line: string, rank: number) => string | string[] | null;
 // Constantes
 const PLACER_LINE = /^(placer\s*:)(.*)$/i;
 const REPRESENTER_LINE = /^(representer\s*:)(.*)$/i;
+const GRADUER_LINE = /^(graduer\s*:)(.*)$/i;
 const TRACER_LINE = /^(tracer\s*:)(.*)$/i;
 const BUILD_LINE = /^(construire\s*:)(.*)$/i;
+/** Ligne d'une grille yohaku : `ligne: [x+2] | x+3` */
+const YOHAKU_LIGNE = /^(ligne\s*:)(.*)$/i;
+/** Case d'une grille yohaku entre crochets, masquée ou non */
+const YOHAKU_CASE_A_REMPLIR = /^\[(.*)\]$/;
 const COLORIER_LINE = /^(colorier\s*:)(.*)$/i;
+const ATTENDU_LINE = /^(attendu\s*:)(.*)$/i;
 const RESERVE_LINE = /^réserve\s*:/i;
 /** `A=3` sur une droite : le nom avant `=` */
 const NAMED_TARGET = /^([^=\s]+)\s*=/;
@@ -196,6 +219,53 @@ function maskLines<T extends FoundBlock>(
  * dépend de la somme (pièces de centimes si elle en a, chantier `monnaie-centimes`) :
  * l'énoncé masqué l'écrit, pour que l'élève ait la même réserve qu'à l'entraînement.
  */
+/**
+ * Programme tortue : `attendu: ?` ; la figure à reproduire (`montrer: oui`) part seule, en
+ * segments (`figure:`), sans le programme qui la trace
+ */
+function maskTortue(block: FoundBlock): MaskLine {
+	const attendu = keyLine(ATTENDU_LINE, () => MASKED_VALUE);
+	const modele = parseTortueContent(block.body.join('\n')).spec?.modele ?? null;
+	return (line, rank) => {
+		const masked = attendu(line, rank);
+		if (masked === null || modele === null) return masked;
+		return `${masked}\nfigure: ${figureText(modele)}`;
+	};
+}
+
+/**
+ * Grille yohaku : chaque case entre crochets devient `[?]` ; après la dernière ligne, les
+ * totaux calculés depuis la solution (`totaux: L1 ; L2 | C1 ; C2`). Bloc illisible : laissé
+ * tel quel (le générateur le refuse).
+ */
+function maskYohaku(block: FoundBlock): MaskLine {
+	const spec = parseYohakuContent(block.body.join('\n')).spec;
+	if (spec === null) return () => null;
+	const rangs = block.body.flatMap((line, rank) => (YOHAKU_LIGNE.test(line.trim()) ? [rank] : []));
+	const derniere = rangs[rangs.length - 1];
+	const cases = keyLine(YOHAKU_LIGNE, (value) =>
+		value
+			.split('|')
+			.map((c) => (YOHAKU_CASE_A_REMPLIR.test(c.trim()) ? `[${YOHAKU_MASQUEE}]` : c.trim()))
+			.join(' | ')
+	);
+	return (line, rank) => {
+		const masked = cases(line, rank);
+		if (masked === null || typeof masked !== 'string' || rank !== derniere) return masked;
+		return [masked, `totaux: ${spec.totaux}`];
+	};
+}
+
+/** Une grille yohaku dont toutes les cases à remplir sont `[?]` */
+function yohakuMasked(block: FoundBlock): boolean {
+	return valuesOf(block.body, ['ligne']).every((value) =>
+		value.split('|').every((c) => {
+			const m = YOHAKU_CASE_A_REMPLIR.exec(c.trim());
+			return m === null || m[1].trim() === YOHAKU_MASQUEE;
+		})
+	);
+}
+
 function maskMonnaie(block: FoundBlock): MaskLine {
 	const build = keyLine(BUILD_LINE, () => MASKED_VALUE);
 	if (block.body.some((line) => RESERVE_LINE.test(line.trim()))) return build;
@@ -337,8 +407,12 @@ function findFiguresACompleter(lines: string[]): FoundBlock[] {
 	return found;
 }
 
-/** `verifier: mesure AOB` (lot 6), `, rapporteur posé` (lot 8) : rien à cacher */
-const MEASURE_CHECK = /^mesure\s+[A-Z]{3}(?:\s*,\s*rapporteur\s+pos[ée])?$/;
+/**
+ * `verifier: mesure AOB` (lot 6), `, rapporteur posé` (lot 8), `mesure AB` et
+ * `mesure AB en mm` (n° 26) : rien à cacher
+ */
+const MEASURE_CHECK =
+	/^mesure\s+(?:[A-Z]{3}(?:\s*,\s*rapporteur\s+pos[ée])?|[A-Z]{2}(?:\s+en\s+(?:cm|mm))?)$/;
 /** Définition d'un point nommé : `B = <expression>` */
 const POINT_DEFINITION = /^\s*([A-Za-z][A-Za-z0-9_']*)\s*=\s*(.+)$/;
 /** Une expression qui peut porter la mesure d'un angle (garde de l'énoncé masqué) */
@@ -390,7 +464,10 @@ function maskFigure(block: FoundBlock): MaskLine {
 	if (header.spec.masked || header.spec.checks.length === 0) return () => null;
 	// Angle à mesurer (lot 6) : `verifier: mesure AOB` reste (l'écran en tire la case) ; les
 	// points calculés sont écrits en coordonnées (`B = rotation(A, angle=50, …)` dirait la réponse)
-	if (header.spec.checks.some((c) => c.kind === 'mesure')) return maskMeasureFigure(block);
+	// Segment à mesurer (n° 26) : de même, `mesure AB` reste ; `B = milieu(A, C)` dirait la longueur
+	if (header.spec.checks.some((c) => c.kind === 'mesure' || c.kind === 'mesure_segment')) {
+		return maskMeasureFigure(block);
+	}
 	const separator = block.body.findIndex((line) => FIGURE_SEPARATOR.test(line.trim()));
 	const headerEnd = separator === -1 ? block.body.length : separator;
 	const toolsWritten = block.body.slice(0, headerEnd).some((line) => keyOf(line) === 'outils');
@@ -505,7 +582,18 @@ function maskVariation(block: VariationToFill): MaskLine {
 		const isPoint = !plainKey.includes(',');
 		const inVariationRow = block.node?.rows[ranks[rank]]?.type === 'variation';
 		let shownValue = value;
-		if (inVariationRow && isPoint && parts.length === 2) {
+		const limitsLine =
+			inVariationRow &&
+			isPoint &&
+			VARIATION_LINE_MARKERS.includes(parts[0]) &&
+			(parts.slice(1).some((part) => part.startsWith('?')) ||
+				(arrows?.centered.has(plainKey) ?? false));
+		if (limitsLine) {
+			// Limites autour d'une marque (cachées, ou touchées par une flèche cachée) : `?`
+			// à la place d'une limite cachée, hauteurs écrites (la forme courte
+			// `||, ?-inf, +inf` les déduirait de la limite), au milieu du côté d'une flèche cachée
+			shownValue = maskedLimits(block, ranks[rank], plainKey, parts) ?? MASKED_VALUE;
+		} else if (inVariationRow && isPoint && parts.length === 2) {
 			// Valeur d'une ligne variation: (cachée ou non) : hauteur gardée, sauf à côté
 			// d'une flèche cachée
 			const position = arrows?.centered.has(plainKey) ? 'center' : parts[1];
@@ -517,6 +605,43 @@ function maskVariation(block: VariationToFill): MaskLine {
 		if (renamed === plainKey && shownValue === value) return null;
 		return `${renamed}${separator}${shownValue}`;
 	};
+}
+
+/** Marques d'une ligne `variation:` autour desquelles une limite se cache */
+const VARIATION_LINE_MARKERS = ['||', '|h|', 'd'];
+
+/**
+ * Limites autour d'une marque, celles cachées remplacées par `?` :
+ * `||, ?, bottom, +inf, top` (deux limites) ou `||, left, ?, bottom` (une seule).
+ * null si la cellule n'a pas été lue (le parseur a refusé le bloc).
+ */
+function maskedLimits(
+	block: VariationToFill,
+	rowIndex: number,
+	key: string,
+	parts: readonly string[]
+): string | null {
+	const node = block.node;
+	if (node?.rows[rowIndex]?.type !== 'variation') return null;
+	// Telle que dessinée : la limite qui touche une flèche cachée est au milieu
+	const value = variationRowForDisplay(node, rowIndex).values.get(key);
+	if (!value?.marker) return null;
+	const hiddenSides = new Set(
+		(block.node?.cases ?? [])
+			.filter((cell) => cell.row === rowIndex && cell.key === key)
+			.map((cell) => cell.side)
+	);
+	if (value.limits) {
+		const [left, right] = value.limits;
+		const shown = (limit: typeof left, side: 'left' | 'right') =>
+			`${hiddenSides.has(side) ? MASKED_VALUE : limit.expression}, ${limit.position}`;
+		return `${parts[0]}, ${shown(left, 'left')}, ${shown(right, 'right')}`;
+	}
+	if (value.limitSide) {
+		const expression = hiddenSides.has(value.limitSide) ? MASKED_VALUE : value.expression;
+		return `${parts[0]}, ${value.limitSide}, ${expression}, ${value.position}`;
+	}
+	return null;
 }
 
 /**
@@ -536,11 +661,23 @@ function variationMasked(node: ReturnType<typeof findVariationsToFill>[number]['
 		const row = cell.row === 'domain' ? undefined : node.rows[cell.row];
 		if (cell.kind !== 'fleche' || row?.type !== 'variation') return true;
 		const filled = withImplicitEndpoints(row, node.domain);
-		return cell.key.split(',').every((point) => {
-			const value = filled.values.get(point);
-			return value === undefined || value.position === 'center';
-		});
+		const [from, to] = cell.key.split(',');
+		// La flèche repart du côté droit de son départ, arrive du côté gauche de son arrivée
+		return (
+			heightShown(filled.values.get(from), 'right') && heightShown(filled.values.get(to), 'left')
+		);
 	});
+}
+
+/**
+ * La valeur ne dit pas la hauteur d'une flèche qui la touche du côté `side` : absente ou
+ * au milieu ; pour une double barre, la limite de ce côté (s'il y en a une)
+ */
+function heightShown(value: VariationValue | undefined, side: 'left' | 'right'): boolean {
+	if (value === undefined) return true;
+	if (!value.marker) return value.position === 'center';
+	if (value.limits) return value.limits[side === 'left' ? 0 : 1].position === 'center';
+	return value.limitSide !== side || value.position === 'center';
 }
 
 /** `A=? ; B=?`, `?` : chaque cible de la ligne est masquée */
@@ -600,7 +737,7 @@ export function findUnmaskedAnswers(statement: string): string[] {
 	const keyMasked = (keys: string[]) => (block: FoundBlock) =>
 		valuesOf(block.body, keys).every(allMasked);
 	return [
-		...leaks('line', findLinesToPlace(statement), keyMasked(['placer', 'representer'])),
+		...leaks('line', findLinesToPlace(statement), keyMasked(['placer', 'representer', 'graduer'])),
 		...leaks(
 			'courbe',
 			findCourbesToPlace(statement),
@@ -611,9 +748,23 @@ export function findUnmaskedAnswers(statement: string): string[] {
 				)
 		),
 		...leaks('trig', findTrigCirclesToPlace(statement), keyMasked(['placer'])),
+		// Bloc cité ou en retrait compris : `attendu:` est la réponse elle-même, où qu'il soit
+		...leaks('tortue', findTortuesToProgram(statement), keyMasked(['attendu'])),
+		...leaks('calcul', findCalculsToProgram(statement), keyMasked(['attendu'])),
 		...leaks('horloge', findHorlogesToPlace(statement), (block) =>
 			valuesOf(block.body, ['placer']).every(isMaskedPlacerValue)
 		),
+		// Éléments à associer : l'énoncé d'instance n'a plus aucun lien (`- élément ->`)
+		...leaks('associer', own(findAssociersToPlace(statement)), (block) =>
+			parseAssocierBody(block.body).answers.every((answer) => answer === null)
+		),
+		// Texte à trous : l'énoncé d'instance n'a que des trous vides (`[]`), même avec sa réserve écrite
+		...leaks('trous', own(findTrousToPlace(statement)), (block) => !trousHasFilledHole(block.body)),
+		// Grille yohaku : la solution de l'auteur est la réponse, où qu'il soit
+		...leaks('yohaku', findYohakusARemplir(statement), yohakuMasked),
+		// Programme Python : jamais masqué, la solution de l'auteur juge dans le navigateur ; le
+		// bloc n'entre pas dans une évaluation (Q1), cette garde l'écarte s'il y arrivait
+		...leaks('python', findPythonsAEcrire(statement), () => false),
 		...leaks('collection', findBuildCollections(statement), keyMasked(['construire'])),
 		...leaks('monnaie', findBuildMonnaies(statement), keyMasked(['construire'])),
 		...leaks('partage', findPartagesToColorier(statement), keyMasked(['colorier'])),
@@ -658,9 +809,11 @@ export function maskGestureAnswers(statement: string): string {
 		);
 	const placer = keyLine(PLACER_LINE, maskLineTargets);
 	const representer = keyLine(REPRESENTER_LINE, maskRepresenter);
+	// Droite à graduer : le nombre de parts (le geste reste : − / +)
+	const graduer = keyLine(GRADUER_LINE, () => MASKED_VALUE);
 	maskBlocks(
 		findLinesToPlace(statement),
-		() => (line, rank) => placer(line, rank) ?? representer(line, rank)
+		() => (line, rank) => placer(line, rank) ?? representer(line, rank) ?? graduer(line, rank)
 	);
 	const courbePoints = keyLine(PLACER_LINE, maskCourbeTargets);
 	// Droite : l'équation entière ; vecteur : ses coordonnées seules (nom, origine gardés)
@@ -672,7 +825,13 @@ export function maskGestureAnswers(statement: string): string {
 		() => (line, rank) => courbePoints(line, rank) ?? courbeLine(line, rank)
 	);
 	maskBlocks(findTrigCirclesToPlace(statement), () => placer);
+	// Tous les blocs, cités ou en retrait compris : `attendu:` est la réponse elle-même
+	maskBlocks(findTortuesToProgram(statement), maskTortue);
+	// Programme de calcul : `attendu: ?` ; les essais et le départ restent (ni l'un ni l'autre
+	// ne dit la réponse)
+	maskBlocks(findCalculsToProgram(statement), () => keyLine(ATTENDU_LINE, () => MASKED_VALUE));
 	maskBlocks(findHorlogesToPlace(statement), () => keyLine(PLACER_LINE, maskedPlacerValue));
+	maskBlocks(findYohakusARemplir(statement), maskYohaku);
 	const build = keyLine(BUILD_LINE, () => MASKED_VALUE);
 	maskBlocks(findBuildCollections(statement), () => build);
 	maskBlocks(findBuildMonnaies(statement), maskMonnaie);

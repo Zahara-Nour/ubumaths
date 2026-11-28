@@ -1,0 +1,649 @@
+{
+	"id": "2fda6db8-bec6-4f10-bbef-942d2da65bb5",
+	"title": "Problèmes de durées (h, min, s, jours)",
+	"description": "Une ou plusieurs étapes, par instants intermédiaires : heure d'arrivée d'une course à la seconde, secondes en minutes, relais en trois étapes, traversée sur plusieurs jours, heures en jours",
+	"grades": ["CM2"],
+	"level": 11,
+	"delay": 180,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"zeros": "off"
+		}
+	},
+	"variations": [
+		{
+			"statement": "{{if:k==1|Léa|{{if:k==2|Karim|{{if:k==3|Inès|Hugo}}}}}} prend le départ d'une course à {{if:x==0|{{if:a==0|${{h}}~\\text{h}$|${{h}}~\\text{h}~{{if:a<10|0{{a}}|{{a}}}}~\\text{min}$}}|${{h}}~\\text{h}~{{if:a<10|0{{a}}|{{a}}}}~\\text{min}~{{if:x<10|0{{x}}|{{x}}}}~\\text{s}$}}. {{if:k==1|Elle|{{if:k==2|Il|{{if:k==3|Elle|Il}}}}}} court pendant {{if:0==0|{{if:c==0|{{if:y==0|$0~\\text{s}$|${{y}}~\\text{s}$}}|{{if:y==0|${{c}}~\\text{min}$|${{c}}~\\text{min}~{{y}}~\\text{s}$}}}}|{{if:c==0|{{if:y==0|$0~\\text{h}$|$0~\\text{h}~{{y}}~\\text{s}$}}|{{if:y==0|$0~\\text{h}~{{c}}~\\text{min}$|$0~\\text{h}~{{c}}~\\text{min}~{{y}}~\\text{s}$}}}}}}. À quelle heure franchit-{{if:k==1|elle|{{if:k==2|il|{{if:k==3|elle|il}}}}}} la ligne d'arrivée ?\n\n{{if:k==1|Elle|{{if:k==2|Il|{{if:k==3|Elle|Il}}}}}} arrive à $?~\\text{h}~?~\\text{min}~?~\\text{s}$.",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..4"
+				},
+				{
+					"name": "h",
+					"expression": "8..16"
+				},
+				{
+					"name": "a",
+					"expression": "0..59"
+				},
+				{
+					"name": "x",
+					"expression": "0..59"
+				},
+				{
+					"name": "c",
+					"expression": "5..59"
+				},
+				{
+					"name": "y",
+					"expression": "1..59"
+				},
+				{
+					"name": "xy",
+					"expression": "eval:x+y"
+				},
+				{
+					"name": "ac",
+					"expression": "eval:a+c+floor(xy/60)"
+				},
+				{
+					"name": "tf",
+					"expression": "eval:3600*h+60*a+x+60*c+y"
+				},
+				{
+					"name": "hf",
+					"expression": "eval:floor(tf/3600)"
+				},
+				{
+					"name": "mf",
+					"expression": "eval:mod(floor(tf/60),60)"
+				},
+				{
+					"name": "sf",
+					"expression": "eval:mod(tf,60)"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{hf}}"
+				},
+				{
+					"expectedAnswer": "{{mf}}"
+				},
+				{
+					"expectedAnswer": "{{sf}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"D'abord les secondes : ${{x}} + {{y}} = {{xy}}${{if:xy>=60|, soit $1~\\text{min}~{{eval:xy-60}}~\\text{s}$ : on garde ${{eval:xy-60}}~\\text{s}$ et on ajoute $1~\\text{min}$|}}.",
+					"Puis les minutes : ${{a}} + {{c}}{{if:xy>=60| + 1|}} = {{ac}}${{if:ac>=60|, soit $1~\\text{h}~{{eval:ac-60}}~\\text{min}$ : on passe à ${{eval:h+1}}~\\text{h}$|}}.",
+					"{{if:k==1|Elle|{{if:k==2|Il|{{if:k==3|Elle|Il}}}}}} arrive à $\\textcolor{{{color:primary.0}}}{{{hf}}~\\text{h}~{{if:mf<10|0{{mf}}|{{mf}}}}~\\text{min}~{{if:sf<10|0{{sf}}|{{sf}}}}~\\text{s}}$."
+				]
+			}
+		},
+		{
+			"statement": "Au chronomètre, {{if:k==1|Léa|{{if:k==2|Karim|{{if:k==3|Inès|Hugo}}}}}} a fait le tour du stade en ${{t}}$ secondes. Combien de minutes et de secondes cela fait-il ?\n\nCela fait $?~\\text{min}~?~\\text{s}$.",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..4"
+				},
+				{
+					"name": "n",
+					"expression": "1..4"
+				},
+				{
+					"name": "y",
+					"expression": "1..59"
+				},
+				{
+					"name": "t",
+					"expression": "eval:60*n+y"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{n}}"
+				},
+				{
+					"expectedAnswer": "{{y}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Une minute, c'est $60$ secondes.",
+					"Dans ${{t}}$ secondes, il y a ${{n}}$ fois $60$ secondes : ${{n}} \\times 60 = {{eval:60*n}}$, et il reste ${{t}} - {{eval:60*n}} = {{y}}$ secondes.",
+					"Cela fait $\\textcolor{{{color:primary.0}}}{{{n}}~\\text{min}~{{y}}~\\text{s}}$."
+				]
+			}
+		},
+		{
+			"statement": "Une course de relais part à {{if:0==0|{{if:a==0|${{h}}~\\text{h}$|${{h}}~\\text{h}~{{if:a<10|0{{a}}|{{a}}}}~\\text{min}$}}|${{h}}~\\text{h}~{{if:a<10|0{{a}}|{{a}}}}~\\text{min}~{{if:0<10|00|0}}~\\text{s}$}}. Les trois coureurs de l'équipe mettent {{if:0==0|{{if:c1==0|{{if:y1==0|$0~\\text{s}$|${{y1}}~\\text{s}$}}|{{if:y1==0|${{c1}}~\\text{min}$|${{c1}}~\\text{min}~{{y1}}~\\text{s}$}}}}|{{if:c1==0|{{if:y1==0|$0~\\text{h}$|$0~\\text{h}~{{y1}}~\\text{s}$}}|{{if:y1==0|$0~\\text{h}~{{c1}}~\\text{min}$|$0~\\text{h}~{{c1}}~\\text{min}~{{y1}}~\\text{s}$}}}}}}, puis {{if:0==0|{{if:c2==0|{{if:y2==0|$0~\\text{s}$|${{y2}}~\\text{s}$}}|{{if:y2==0|${{c2}}~\\text{min}$|${{c2}}~\\text{min}~{{y2}}~\\text{s}$}}}}|{{if:c2==0|{{if:y2==0|$0~\\text{h}$|$0~\\text{h}~{{y2}}~\\text{s}$}}|{{if:y2==0|$0~\\text{h}~{{c2}}~\\text{min}$|$0~\\text{h}~{{c2}}~\\text{min}~{{y2}}~\\text{s}$}}}}}}, puis {{if:0==0|{{if:c3==0|{{if:y3==0|$0~\\text{s}$|${{y3}}~\\text{s}$}}|{{if:y3==0|${{c3}}~\\text{min}$|${{c3}}~\\text{min}~{{y3}}~\\text{s}$}}}}|{{if:c3==0|{{if:y3==0|$0~\\text{h}$|$0~\\text{h}~{{y3}}~\\text{s}$}}|{{if:y3==0|$0~\\text{h}~{{c3}}~\\text{min}$|$0~\\text{h}~{{c3}}~\\text{min}~{{y3}}~\\text{s}$}}}}}}. À quelle heure l'équipe arrive-t-elle ?\n\nElle arrive à $?~\\text{h}~?~\\text{min}~?~\\text{s}$.",
+			"variables": [
+				{
+					"name": "h",
+					"expression": "9..16"
+				},
+				{
+					"name": "a",
+					"expression": "0..59"
+				},
+				{
+					"name": "c1",
+					"expression": "3..6"
+				},
+				{
+					"name": "y1",
+					"expression": "0..59"
+				},
+				{
+					"name": "c2",
+					"expression": "3..6"
+				},
+				{
+					"name": "y2",
+					"expression": "0..59"
+				},
+				{
+					"name": "c3",
+					"expression": "3..6"
+				},
+				{
+					"name": "y3",
+					"expression": "0..59"
+				},
+				{
+					"name": "t0",
+					"expression": "eval:3600*h+60*a"
+				},
+				{
+					"name": "u1",
+					"expression": "eval:t0+60*c1+y1"
+				},
+				{
+					"name": "u2",
+					"expression": "eval:u1+60*c2+y2"
+				},
+				{
+					"name": "u3",
+					"expression": "eval:u2+60*c3+y3"
+				},
+				{
+					"name": "hf",
+					"expression": "eval:floor(u3/3600)"
+				},
+				{
+					"name": "mf",
+					"expression": "eval:mod(floor(u3/60),60)"
+				},
+				{
+					"name": "sf",
+					"expression": "eval:mod(u3,60)"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{hf}}"
+				},
+				{
+					"expectedAnswer": "{{mf}}"
+				},
+				{
+					"expectedAnswer": "{{sf}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On avance d'instant en instant, coureur après coureur.",
+					"Le premier coureur : {{if:mod(t0,60)==0|{{if:mod(floor(t0/60),60)==0|${{eval:floor(t0/3600)}}~\\text{h}$|${{eval:floor(t0/3600)}}~\\text{h}~{{if:mod(floor(t0/60),60)<10|0{{eval:mod(floor(t0/60),60)}}|{{eval:mod(floor(t0/60),60)}}}}~\\text{min}$}}|${{eval:floor(t0/3600)}}~\\text{h}~{{if:mod(floor(t0/60),60)<10|0{{eval:mod(floor(t0/60),60)}}|{{eval:mod(floor(t0/60),60)}}}}~\\text{min}~{{if:mod(t0,60)<10|0{{eval:mod(t0,60)}}|{{eval:mod(t0,60)}}}}~\\text{s}$}} plus {{if:0==0|{{if:c1==0|{{if:y1==0|$0~\\text{s}$|${{y1}}~\\text{s}$}}|{{if:y1==0|${{c1}}~\\text{min}$|${{c1}}~\\text{min}~{{y1}}~\\text{s}$}}}}|{{if:c1==0|{{if:y1==0|$0~\\text{h}$|$0~\\text{h}~{{y1}}~\\text{s}$}}|{{if:y1==0|$0~\\text{h}~{{c1}}~\\text{min}$|$0~\\text{h}~{{c1}}~\\text{min}~{{y1}}~\\text{s}$}}}}}}{{if:mod(t0,60)+y1>=60| (secondes : ${{eval:mod(t0,60)}} + {{y1}} = {{eval:mod(t0,60)+y1}}$, soit $1~\\text{min}~{{eval:mod(t0,60)+y1-60}}~\\text{s}$)|}} → arrivée à {{if:mod(u1,60)==0|{{if:mod(floor(u1/60),60)==0|${{eval:floor(u1/3600)}}~\\text{h}$|${{eval:floor(u1/3600)}}~\\text{h}~{{if:mod(floor(u1/60),60)<10|0{{eval:mod(floor(u1/60),60)}}|{{eval:mod(floor(u1/60),60)}}}}~\\text{min}$}}|${{eval:floor(u1/3600)}}~\\text{h}~{{if:mod(floor(u1/60),60)<10|0{{eval:mod(floor(u1/60),60)}}|{{eval:mod(floor(u1/60),60)}}}}~\\text{min}~{{if:mod(u1,60)<10|0{{eval:mod(u1,60)}}|{{eval:mod(u1,60)}}}}~\\text{s}$}}.",
+					"Le deuxième : {{if:mod(u1,60)==0|{{if:mod(floor(u1/60),60)==0|${{eval:floor(u1/3600)}}~\\text{h}$|${{eval:floor(u1/3600)}}~\\text{h}~{{if:mod(floor(u1/60),60)<10|0{{eval:mod(floor(u1/60),60)}}|{{eval:mod(floor(u1/60),60)}}}}~\\text{min}$}}|${{eval:floor(u1/3600)}}~\\text{h}~{{if:mod(floor(u1/60),60)<10|0{{eval:mod(floor(u1/60),60)}}|{{eval:mod(floor(u1/60),60)}}}}~\\text{min}~{{if:mod(u1,60)<10|0{{eval:mod(u1,60)}}|{{eval:mod(u1,60)}}}}~\\text{s}$}} plus {{if:0==0|{{if:c2==0|{{if:y2==0|$0~\\text{s}$|${{y2}}~\\text{s}$}}|{{if:y2==0|${{c2}}~\\text{min}$|${{c2}}~\\text{min}~{{y2}}~\\text{s}$}}}}|{{if:c2==0|{{if:y2==0|$0~\\text{h}$|$0~\\text{h}~{{y2}}~\\text{s}$}}|{{if:y2==0|$0~\\text{h}~{{c2}}~\\text{min}$|$0~\\text{h}~{{c2}}~\\text{min}~{{y2}}~\\text{s}$}}}}}}{{if:mod(u1,60)+y2>=60| (secondes : ${{eval:mod(u1,60)}} + {{y2}} = {{eval:mod(u1,60)+y2}}$, soit $1~\\text{min}~{{eval:mod(u1,60)+y2-60}}~\\text{s}$)|}} → arrivée à {{if:mod(u2,60)==0|{{if:mod(floor(u2/60),60)==0|${{eval:floor(u2/3600)}}~\\text{h}$|${{eval:floor(u2/3600)}}~\\text{h}~{{if:mod(floor(u2/60),60)<10|0{{eval:mod(floor(u2/60),60)}}|{{eval:mod(floor(u2/60),60)}}}}~\\text{min}$}}|${{eval:floor(u2/3600)}}~\\text{h}~{{if:mod(floor(u2/60),60)<10|0{{eval:mod(floor(u2/60),60)}}|{{eval:mod(floor(u2/60),60)}}}}~\\text{min}~{{if:mod(u2,60)<10|0{{eval:mod(u2,60)}}|{{eval:mod(u2,60)}}}}~\\text{s}$}}.",
+					"Le troisième : {{if:mod(u2,60)==0|{{if:mod(floor(u2/60),60)==0|${{eval:floor(u2/3600)}}~\\text{h}$|${{eval:floor(u2/3600)}}~\\text{h}~{{if:mod(floor(u2/60),60)<10|0{{eval:mod(floor(u2/60),60)}}|{{eval:mod(floor(u2/60),60)}}}}~\\text{min}$}}|${{eval:floor(u2/3600)}}~\\text{h}~{{if:mod(floor(u2/60),60)<10|0{{eval:mod(floor(u2/60),60)}}|{{eval:mod(floor(u2/60),60)}}}}~\\text{min}~{{if:mod(u2,60)<10|0{{eval:mod(u2,60)}}|{{eval:mod(u2,60)}}}}~\\text{s}$}} plus {{if:0==0|{{if:c3==0|{{if:y3==0|$0~\\text{s}$|${{y3}}~\\text{s}$}}|{{if:y3==0|${{c3}}~\\text{min}$|${{c3}}~\\text{min}~{{y3}}~\\text{s}$}}}}|{{if:c3==0|{{if:y3==0|$0~\\text{h}$|$0~\\text{h}~{{y3}}~\\text{s}$}}|{{if:y3==0|$0~\\text{h}~{{c3}}~\\text{min}$|$0~\\text{h}~{{c3}}~\\text{min}~{{y3}}~\\text{s}$}}}}}}{{if:mod(u2,60)+y3>=60| (secondes : ${{eval:mod(u2,60)}} + {{y3}} = {{eval:mod(u2,60)+y3}}$, soit $1~\\text{min}~{{eval:mod(u2,60)+y3-60}}~\\text{s}$)|}} → arrivée à {{if:mod(u3,60)==0|{{if:mod(floor(u3/60),60)==0|${{eval:floor(u3/3600)}}~\\text{h}$|${{eval:floor(u3/3600)}}~\\text{h}~{{if:mod(floor(u3/60),60)<10|0{{eval:mod(floor(u3/60),60)}}|{{eval:mod(floor(u3/60),60)}}}}~\\text{min}$}}|${{eval:floor(u3/3600)}}~\\text{h}~{{if:mod(floor(u3/60),60)<10|0{{eval:mod(floor(u3/60),60)}}|{{eval:mod(floor(u3/60),60)}}}}~\\text{min}~{{if:mod(u3,60)<10|0{{eval:mod(u3,60)}}|{{eval:mod(u3,60)}}}}~\\text{s}$}}.",
+					"L'équipe arrive à $\\textcolor{{{color:primary.0}}}{{{hf}}~\\text{h}~{{if:mf<10|0{{mf}}|{{mf}}}}~\\text{min}~{{if:sf<10|0{{sf}}|{{sf}}}}~\\text{s}}$."
+				]
+			}
+		},
+		{
+			"statement": "Un bateau quitte le port le **{{if:jd==1|lundi|{{if:jd==2|mardi|{{if:jd==3|mercredi|{{if:jd==4|jeudi|vendredi}}}}}}}}** à {{if:0==0|{{if:a==0|${{hd}}~\\text{h}$|${{hd}}~\\text{h}~{{if:a<10|0{{a}}|{{a}}}}~\\text{min}$}}|${{hd}}~\\text{h}~{{if:a<10|0{{a}}|{{a}}}}~\\text{min}~{{if:0<10|00|0}}~\\text{s}$}}. La traversée dure {{if:n==0|{{if:c==0|{{if:0==0|$0~\\text{s}$|$0~\\text{s}$}}|{{if:0==0|${{c}}~\\text{min}$|${{c}}~\\text{min}~0~\\text{s}$}}}}|{{if:c==0|{{if:0==0|${{n}}~\\text{h}$|${{n}}~\\text{h}~0~\\text{s}$}}|{{if:0==0|${{n}}~\\text{h}~{{c}}~\\text{min}$|${{n}}~\\text{h}~{{c}}~\\text{min}~0~\\text{s}$}}}}}}.\n\nÀ quelle heure arrive-t-il ?\n\nIl arrive à $?~\\text{h}~?~\\text{min}$.\n\nQuel jour arrive-t-il ?\n\n```choix\nmelanger: non\n- le {{if:jd==1|lundi|{{if:jd==2|mardi|{{if:jd==3|mercredi|{{if:jd==4|jeudi|vendredi}}}}}}}}\n- le {{if:jd==1|mardi|{{if:jd==2|mercredi|{{if:jd==3|jeudi|{{if:jd==4|vendredi|samedi}}}}}}}}\n- le {{if:jd==1|mercredi|{{if:jd==2|jeudi|{{if:jd==3|vendredi|{{if:jd==4|samedi|dimanche}}}}}}}}\n```",
+			"variables": [
+				{
+					"name": "jd",
+					"expression": "1..5"
+				},
+				{
+					"name": "hd",
+					"expression": "14..23"
+				},
+				{
+					"name": "z",
+					"expression": "0..11"
+				},
+				{
+					"name": "a",
+					"expression": "eval:5*z"
+				},
+				{
+					"name": "n",
+					"expression": "15..40"
+				},
+				{
+					"name": "yc",
+					"expression": "0..11"
+				},
+				{
+					"name": "c",
+					"expression": "eval:5*yc"
+				},
+				{
+					"name": "ac",
+					"expression": "eval:a+c"
+				},
+				{
+					"name": "tt",
+					"expression": "eval:60*hd+a+60*n+c"
+				},
+				{
+					"name": "th",
+					"expression": "eval:floor(tt/60)"
+				},
+				{
+					"name": "mf",
+					"expression": "eval:mod(tt,60)"
+				},
+				{
+					"name": "hf",
+					"expression": "eval:mod(th,24)"
+				},
+				{
+					"name": "jr",
+					"expression": "eval:floor(th/24)"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{hf}}"
+				},
+				{
+					"expectedAnswer": "{{mf}}"
+				},
+				{
+					"expectedAnswer": "{{jr}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On compte les heures depuis le {{if:jd==1|lundi|{{if:jd==2|mardi|{{if:jd==3|mercredi|{{if:jd==4|jeudi|vendredi}}}}}}}} à $0~\\text{h}$.",
+					"Départ : ${{hd}}~\\text{h}~{{if:a<10|0{{a}}|{{a}}}}~\\text{min}$. On ajoute ${{n}}~\\text{h}$, puis ${{c}}~\\text{min}${{if:ac>=60| (${{a}} + {{c}} = {{ac}}$, soit $1~\\text{h}~{{eval:ac-60}}~\\text{min}$)|}} : on arrive à ${{th}}~\\text{h}~{{if:mf<10|0{{mf}}|{{mf}}}}~\\text{min}$ après le {{if:jd==1|lundi|{{if:jd==2|mardi|{{if:jd==3|mercredi|{{if:jd==4|jeudi|vendredi}}}}}}}} $0~\\text{h}$.",
+					"Un jour, c'est $24~\\text{h}$. {{if:jr==1|${{th}} - 24 = {{hf}}$ : c'est le lendemain.|${{th}} - 24 - 24 = {{hf}}$ : c'est le surlendemain.}}",
+					"Le bateau arrive le {{if:jr==1|**{{if:jd==1|mardi|{{if:jd==2|mercredi|{{if:jd==3|jeudi|{{if:jd==4|vendredi|samedi}}}}}}}}**|**{{if:jd==1|mercredi|{{if:jd==2|jeudi|{{if:jd==3|vendredi|{{if:jd==4|samedi|dimanche}}}}}}}}**}} à $\\textcolor{{{color:primary.0}}}{{{hf}}~\\text{h}~{{if:mf<10|0{{mf}}|{{mf}}}}~\\text{min}}$."
+				]
+			}
+		},
+		{
+			"statement": "Un voilier fait le tour d'une île en ${{t}}$ heures. Combien de jours et d'heures cela fait-il ?\n\nCela fait $?$ jour(s) et $?~\\text{h}$.",
+			"variables": [
+				{
+					"name": "dj",
+					"expression": "1..3"
+				},
+				{
+					"name": "rh",
+					"expression": "1..23"
+				},
+				{
+					"name": "t",
+					"expression": "eval:24*dj+rh"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{dj}}"
+				},
+				{
+					"expectedAnswer": "{{rh}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Un jour, c'est $24$ heures.",
+					"Dans ${{t}}$ heures, il y a ${{dj}}$ fois $24$ heures : ${{dj}} \\times 24 = {{eval:24*dj}}$, et il reste ${{t}} - {{eval:24*dj}} = {{rh}}$ heures.",
+					"Cela fait $\\textcolor{{{color:primary.0}}}{{{dj}}}$ jour{{if:dj>1|s|}} et $\\textcolor{{{color:primary.0}}}{{{rh}}~\\text{h}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "10 h 15 min 40 s + 25 min 35 s = 10 h 41 min 15 s",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1",
+				"h": "10",
+				"a": "15",
+				"x": "40",
+				"c": "25",
+				"y": "35",
+				"xy": "75",
+				"ac": "41",
+				"tf": "38475",
+				"hf": "10",
+				"mf": "41",
+				"sf": "15"
+			},
+			"answers": ["10", "41", "15"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 100 s dans une minute, 10 h 40 min 75 s",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1",
+				"h": "10",
+				"a": "15",
+				"x": "40",
+				"c": "25",
+				"y": "35",
+				"xy": "75",
+				"ac": "41",
+				"tf": "38475",
+				"hf": "10",
+				"mf": "41",
+				"sf": "15"
+			},
+			"answers": ["10", "40", "75"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : retenue oubliée, 10 h 40 min 15 s",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1",
+				"h": "10",
+				"a": "15",
+				"x": "40",
+				"c": "25",
+				"y": "35",
+				"xy": "75",
+				"ac": "41",
+				"tf": "38475",
+				"hf": "10",
+				"mf": "41",
+				"sf": "15"
+			},
+			"answers": ["10", "40", "15"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Passe l'heure : 9 h 50 min 30 s + 12 min 45 s = 10 h 03 min 15 s, « 03 »",
+			"variationIndex": 0,
+			"variables": {
+				"k": "2",
+				"h": "9",
+				"a": "50",
+				"x": "30",
+				"c": "12",
+				"y": "45",
+				"xy": "75",
+				"ac": "63",
+				"tf": "36195",
+				"hf": "10",
+				"mf": "3",
+				"sf": "15"
+			},
+			"answers": ["10", "03", "15"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 9 h 63 min 15 s",
+			"variationIndex": 0,
+			"variables": {
+				"k": "2",
+				"h": "9",
+				"a": "50",
+				"x": "30",
+				"c": "12",
+				"y": "45",
+				"xy": "75",
+				"ac": "63",
+				"tf": "36195",
+				"hf": "10",
+				"mf": "3",
+				"sf": "15"
+			},
+			"answers": ["9", "63", "15"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "135 s = 2 min 15 s",
+			"variationIndex": 1,
+			"variables": {
+				"k": "3",
+				"n": "2",
+				"y": "15",
+				"t": "135"
+			},
+			"answers": ["2", "15"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 100 s dans une minute, 1 min 35 s",
+			"variationIndex": 1,
+			"variables": {
+				"k": "3",
+				"n": "2",
+				"y": "15",
+				"t": "135"
+			},
+			"answers": ["1", "35"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Relais : 14 h 50 + 4 min 35 s + 5 min 12 s + 4 min 58 s = 15 h 04 min 45 s",
+			"variationIndex": 2,
+			"variables": {
+				"h": "14",
+				"a": "50",
+				"c1": "4",
+				"y1": "35",
+				"c2": "5",
+				"y2": "12",
+				"c3": "4",
+				"y3": "58",
+				"t0": "53400",
+				"u1": "53675",
+				"u2": "53987",
+				"u3": "54285",
+				"hf": "15",
+				"mf": "4",
+				"sf": "45"
+			},
+			"answers": ["15", "04", "45"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : relais, 14 h 63 min 105 s",
+			"variationIndex": 2,
+			"variables": {
+				"h": "14",
+				"a": "50",
+				"c1": "4",
+				"y1": "35",
+				"c2": "5",
+				"y2": "12",
+				"c3": "4",
+				"y3": "58",
+				"t0": "53400",
+				"u1": "53675",
+				"u2": "53987",
+				"u3": "54285",
+				"hf": "15",
+				"mf": "4",
+				"sf": "45"
+			},
+			"answers": ["14", "63", "105"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : relais, dernier coureur oublié, 14 h 59 min 47 s",
+			"variationIndex": 2,
+			"variables": {
+				"h": "14",
+				"a": "50",
+				"c1": "4",
+				"y1": "35",
+				"c2": "5",
+				"y2": "12",
+				"c3": "4",
+				"y3": "58",
+				"t0": "53400",
+				"u1": "53675",
+				"u2": "53987",
+				"u3": "54285",
+				"hf": "15",
+				"mf": "4",
+				"sf": "45"
+			},
+			"answers": ["14", "59", "47"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Lundi 21 h 40 + 27 h 35 min = mercredi 1 h 15",
+			"variationIndex": 3,
+			"variables": {
+				"jd": "1",
+				"hd": "21",
+				"z": "8",
+				"a": "40",
+				"n": "27",
+				"yc": "7",
+				"c": "35",
+				"ac": "75",
+				"tt": "2955",
+				"th": "49",
+				"mf": "15",
+				"hf": "1",
+				"jr": "2"
+			},
+			"answers": ["1", "15", "2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 49 h 15 (minuit non passé)",
+			"variationIndex": 3,
+			"variables": {
+				"jd": "1",
+				"hd": "21",
+				"z": "8",
+				"a": "40",
+				"n": "27",
+				"yc": "7",
+				"c": "35",
+				"ac": "75",
+				"tt": "2955",
+				"th": "49",
+				"mf": "15",
+				"hf": "1",
+				"jr": "2"
+			},
+			"answers": ["49", "15", "2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : bonne heure, le mardi",
+			"variationIndex": 3,
+			"variables": {
+				"jd": "1",
+				"hd": "21",
+				"z": "8",
+				"a": "40",
+				"n": "27",
+				"yc": "7",
+				"c": "35",
+				"ac": "75",
+				"tt": "2955",
+				"th": "49",
+				"mf": "15",
+				"hf": "1",
+				"jr": "2"
+			},
+			"answers": ["1", "15", "1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Mardi 14 h + 15 h = mercredi 5 h",
+			"variationIndex": 3,
+			"variables": {
+				"jd": "2",
+				"hd": "14",
+				"z": "0",
+				"a": "0",
+				"n": "15",
+				"yc": "0",
+				"c": "0",
+				"ac": "0",
+				"tt": "1740",
+				"th": "29",
+				"mf": "0",
+				"hf": "5",
+				"jr": "1"
+			},
+			"answers": ["5", "0", "1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "50 h = 2 jours 2 h",
+			"variationIndex": 4,
+			"variables": {
+				"dj": "2",
+				"rh": "2",
+				"t": "50"
+			},
+			"answers": ["2", "2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 50 h lues comme 5 jours 0 h",
+			"variationIndex": 4,
+			"variables": {
+				"dj": "2",
+				"rh": "2",
+				"t": "50"
+			},
+			"answers": ["5", "0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

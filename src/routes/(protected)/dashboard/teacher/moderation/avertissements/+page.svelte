@@ -37,23 +37,23 @@
 -->
 
 <script lang="ts">
-	import { lore } from '$lib/config/lore';
+	import { lore } from '#lib/config/lore.ts';
 	import type { PageData } from './$types';
-	import { Button } from '$lib/components/ui/button';
-	import * as Tabs from '$lib/components/ui/tabs';
-	import UserAvatar from '$lib/components/UserAvatar.svelte';
-	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
-	import * as Dialog from '$lib/components/ui/dialog';
-	import { Badge } from '$lib/components/ui/badge';
-	import { Separator } from '$lib/components/ui/separator';
-	import { toaster } from '$lib/stores/toaster.svelte';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import * as Tabs from '#lib/components/ui/tabs/index.ts';
+	import UserAvatar from '#lib/components/UserAvatar.svelte';
+	import * as DropdownMenu from '#lib/components/ui/dropdown-menu/index.ts';
+	import * as Dialog from '#lib/components/ui/dialog/index.ts';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
+	import { Separator } from '#lib/components/ui/separator/index.ts';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
 	import { History, AlertCircle, Plus } from '@lucide/svelte';
-	import type { StudentWarningCounts } from '$lib/server/warnings';
-	import { getWarningTypeLabel } from '$lib/types/warnings';
-	import { teacherCache } from '$lib/stores/teacherDashboardCache.svelte';
-	import { selectedClassStore } from '$lib/stores/selectedClass.svelte';
-	import { selectedPeriodStore } from '$lib/stores/selectedPeriod.svelte';
-	import type { Database } from '$lib/types/database';
+	import type { StudentWarningCounts } from '#lib/server/warnings.ts';
+	import { getWarningTypeLabel } from '#lib/types/warnings.ts';
+	import { teacherCache } from '#lib/stores/teacherDashboardCache.svelte.ts';
+	import { selectedClassStore } from '#lib/stores/selectedClass.svelte.ts';
+	import { selectedPeriodStore } from '#lib/stores/selectedPeriod.svelte.ts';
+	import type { Database } from '#lib/types/database.ts';
 
 	type AcademicPeriod = Database['public']['Tables']['academic_periods']['Row'];
 

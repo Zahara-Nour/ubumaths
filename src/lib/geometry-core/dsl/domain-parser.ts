@@ -19,9 +19,9 @@
 import type { GeoFunctionDomain } from '../types/elements';
 import type { ScalarParam } from '../types/geo-value';
 import type { SymbolTable } from './symbol-table';
-import type { EndpointType } from '$lib/math/intervals/types';
-import { parseCustom, getVariables } from '$lib/mathAST';
-import { legacyDecimalCommas } from '$lib/mathAST/parser/custom/legacy-decimal-commas';
+import type { EndpointType } from '#lib/math/intervals/types.ts';
+import { parseCustom, getVariables } from '#lib/mathAST/index.ts';
+import { legacyDecimalCommas } from '#lib/mathAST/parser/custom/legacy-decimal-commas.ts';
 import { DslRuntimeError } from './errors';
 
 // =============================================================================

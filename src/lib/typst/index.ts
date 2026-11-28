@@ -13,7 +13,7 @@
  *
  * @example Basic usage
  * ```typescript
- * import { compileToSvg, compileToPdf } from '$lib/typst';
+ * import { compileToSvg, compileToPdf } from '#lib/typst/index.ts';
  *
  * const svg = await compileToSvg(typstContent);
  * const pdf = await compileToPdf(typstContent);
@@ -21,7 +21,7 @@
  *
  * @example Using types
  * ```typescript
- * import type { TypstCompiler, CompileResult, GeneratorConfig } from '$lib/typst';
+ * import type { TypstCompiler, CompileResult, GeneratorConfig } from '#lib/typst/index.ts';
  * ```
  */
 
@@ -135,7 +135,7 @@ export {
 	resolveTypstImagePath as resolveImagePath,
 	markdownToTypst,
 	transpileImage
-} from '$lib/ubumark/generators';
+} from '#lib/ubumark/generators/index.ts';
 
 // ============================================================================
 // TEMPLATES

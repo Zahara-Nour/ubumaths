@@ -8,24 +8,24 @@
  * POST /api/questions/templates - Create new template
  */
 
-import { error, json } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import type { QuestionTemplate } from '$lib/questions/types';
-import { getQuestionType } from '$lib/questions/types';
-import { choiceAnswerCountErrors } from '$lib/questions/validators/choice-answer-count';
-import { classificationNodeErrorMessage } from '$lib/server/classification-node-error';
+import type { QuestionTemplate } from '#lib/questions/types.ts';
+import { getQuestionType } from '#lib/questions/types.ts';
+import { choiceAnswerCountErrors } from '#lib/questions/validators/choice-answer-count.ts';
+import { classificationNodeErrorMessage } from '#lib/server/classification-node-error.ts';
 import {
 	createQuestionTemplateSchema,
 	validateRequest,
 	createQuestionTemplateResponseSchema,
 	listQuestionsQuerySchema,
 	questionTemplatesListResponseSchema
-} from '$lib/server/validation';
-import { validateJsonResponse } from '$lib/server/validation/response-utils';
-import { requireRoles, requireRole } from '$lib/server/middleware/auth';
-import { toJson } from '$lib/types/database-helpers';
-import { templatePublicationErrors } from '$lib/server/template-publication';
-import { createServerLogger } from '$lib/utils/logger';
+} from '#lib/server/validation/index.ts';
+import { validateJsonResponse } from '#lib/server/validation/response-utils.ts';
+import { requireAdmin, requireRoles } from '#lib/server/middleware/auth.ts';
+import { toJson } from '#lib/types/database-helpers.ts';
+import { templatePublicationErrors } from '#lib/server/template-publication.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/questions/templates/+server');
 
@@ -106,7 +106,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 			'GET /api/questions/templates'
 		);
 
-		return json(validated);
+		return Response.json(validated);
 	} catch (err) {
 		logger.error('Error in GET /api/questions/templates:', err);
 
@@ -128,7 +128,8 @@ export const GET: RequestHandler = async ({ url, locals }) => {
  * Returns: { success: true, template: QuestionTemplate } | { success: false, errors: string[] }
  */
 export const POST: RequestHandler = async ({ request, locals }) => {
-	const { user } = await requireRole(locals, 'admin');
+	// Prof en mode administration, ou vrai compte admin : la RLS réserve l'écriture à l'admin
+	const { supabase, adminUserId } = await requireAdmin(locals);
 
 	try {
 		// ====================================================================
@@ -138,7 +139,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		const validation = validateRequest(createQuestionTemplateSchema, body);
 
 		if (!validation.success) {
-			return json(
+			return Response.json(
 				{
 					success: false,
 					errors: [validation.error]
@@ -160,7 +161,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 				draft: true
 			});
 			if (countErrors.length > 0) {
-				return json({ success: false, errors: countErrors }, { status: 400 });
+				return Response.json({ success: false, errors: countErrors }, { status: 400 });
 			}
 		}
 
@@ -170,12 +171,12 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			const { type: _ignoredType, ...candidate } = templateData;
 			const errors = templatePublicationErrors(candidate as QuestionTemplate);
 			if (errors.length > 0) {
-				return json({ success: false, errors }, { status: 400 });
+				return Response.json({ success: false, errors }, { status: 400 });
 			}
 		}
 
 		// Insert template (map camelCase to snake_case for database)
-		const { data: template, error: insertError } = await locals.supabase
+		const { data: template, error: insertError } = await supabase
 			.from('question_templates')
 			.insert({
 				type: getQuestionType({ options: templateData.options }),
@@ -197,7 +198,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 				status: templateData.status || 'published',
 				delay: templateData.delay || null,
 				test_specs: toJson(templateData.testSpecs ?? null),
-				created_by: user.id
+				created_by: adminUserId
 			})
 			.select()
 			.single();
@@ -206,7 +207,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			// Nœud refusé par la base (branche, archivé, inexistant) : faute de saisie, pas panne
 			const nodeMessage = classificationNodeErrorMessage(insertError);
 			if (nodeMessage) {
-				return json({ success: false, errors: [nodeMessage] }, { status: 400 });
+				return Response.json({ success: false, errors: [nodeMessage] }, { status: 400 });
 			}
 			logger.error('Error inserting template:', insertError);
 			throw error(500, 'Failed to create template');
@@ -222,7 +223,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			'POST /api/questions/templates'
 		);
 
-		return json(validated, { status: 201 });
+		return Response.json(validated, { status: 201 });
 	} catch (err) {
 		logger.error('Error in POST /api/questions/templates:', err);
 
@@ -230,7 +231,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			throw err;
 		}
 
-		return json({
+		return Response.json({
 			success: false,
 			errors: ['Internal server error']
 		});

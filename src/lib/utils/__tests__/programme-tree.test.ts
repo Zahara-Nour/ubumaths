@@ -22,7 +22,7 @@ import {
 	placeOfNode,
 	type ProgrammePointRow
 } from '../programme-tree';
-import type { ClassificationNode } from '$lib/types/database-helpers';
+import type { ClassificationNode } from '#lib/types/database-helpers.ts';
 
 const STAMP = '2026-10-10T00:00:00Z';
 
@@ -41,7 +41,8 @@ function node(
 		position,
 		archived_at: null,
 		created_at: STAMP,
-		updated_at: STAMP
+		updated_at: STAMP,
+		translations: {}
 	};
 }
 

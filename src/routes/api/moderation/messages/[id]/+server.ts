@@ -1,10 +1,10 @@
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireRoles } from '$lib/server/middleware/auth';
-import { deleteMessageSchema } from '$lib/server/validation/moderation';
+import { requireRoles } from '#lib/server/middleware/auth.ts';
+import { deleteMessageSchema } from '#lib/server/validation/moderation.ts';
 import { z } from 'zod';
-import { createServiceRoleClient } from '$lib/server/serviceRoleClient';
-import { createServerLogger } from '$lib/utils/logger';
+import { createServiceRoleClient } from '#lib/server/serviceRoleClient.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/moderation/messages/[id]/+server');
 
@@ -49,7 +49,7 @@ export const DELETE: RequestHandler = async ({ request, locals, params }) => {
 	try {
 		body = await request.json();
 	} catch {
-		throw error(400, 'Invalid JSON');
+		throw error(400, 'Corps de requête JSON invalide');
 	}
 
 	const validation = deleteMessageSchema.safeParse(body);
@@ -224,5 +224,5 @@ export const DELETE: RequestHandler = async ({ request, locals, params }) => {
 		// Don't fail the request if logging fails
 	}
 
-	return json({ success: true, message: 'Message deleted successfully' }, { status: 200 });
+	return Response.json({ success: true, message: 'Message deleted successfully' }, { status: 200 });
 };

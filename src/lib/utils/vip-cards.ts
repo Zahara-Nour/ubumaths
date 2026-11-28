@@ -2,10 +2,10 @@
 // ===========================
 // Helper functions for managing VIP cards in the reward system
 
-import type { StudentVipCards, VipCardAction } from '$lib/types/vip-card';
-import type { VipCardTemplate } from '$lib/stores/vipCardTemplates.svelte';
-import { getTemplateById } from '$lib/stores/vipCardTemplates.svelte';
-import { WARNING_TYPE_LABELS } from '$lib/types/warnings';
+import type { StudentVipCards, VipCardAction } from '#lib/types/vip-card.ts';
+import type { VipCardTemplate } from '#lib/stores/vipCardTemplates.svelte.ts';
+import { getTemplateById } from '#lib/stores/vipCardTemplates.svelte.ts';
+import { WARNING_TYPE_LABELS } from '#lib/types/warnings.ts';
 
 /**
  * Cost in gidouilles to purchase one VIP card

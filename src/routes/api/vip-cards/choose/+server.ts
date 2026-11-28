@@ -32,26 +32,26 @@
  * 9. Répondre avec les cartes reçues
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireAuth } from '$lib/server/middleware/auth';
-import { requireConsent } from '$lib/server/middleware/consent';
-import { chooseCardsSchema } from '$lib/server/validation/choose-cards';
-import type { VipCardAction } from '$lib/types/vip-card';
-import { getRarityPoints } from '$lib/types/vip-card';
-import { getTemplatesByIds, getTemplateById } from '$lib/server/vip-card-queries';
+import { requireAuth } from '#lib/server/middleware/auth.ts';
+import { requireConsent } from '#lib/server/middleware/consent.ts';
+import { chooseCardsSchema } from '#lib/server/validation/choose-cards.ts';
+import type { VipCardAction } from '#lib/types/vip-card.ts';
+import { getRarityPoints } from '#lib/types/vip-card.ts';
+import { getTemplatesByIds, getTemplateById } from '#lib/server/vip-card-queries.ts';
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { Database } from '$lib/types/database';
-import type { VipCardTemplate } from '$lib/stores/vipCardTemplates.svelte';
-import { verifyTeacherStudentWithRole } from '$lib/server/middleware/student-access';
-import { validateActivationContext } from '$lib/server/vip-card-context';
-import { asStudentVipCards } from '$lib/types/vip-card';
+import type { Database } from '#lib/types/database.ts';
+import type { VipCardTemplate } from '#lib/stores/vipCardTemplates.svelte.ts';
+import { verifyTeacherStudentWithRole } from '#lib/server/middleware/student-access.ts';
+import { validateActivationContext } from '#lib/server/vip-card-context.ts';
+import { asStudentVipCards } from '#lib/types/vip-card.ts';
 import {
 	findLockedCardInstances,
 	grantVipCardsAfterAction,
 	restoreActionCard
-} from '$lib/server/vip-card-grants';
-import { createServerLogger } from '$lib/utils/logger';
+} from '#lib/server/vip-card-grants.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/vip-cards/choose/+server');
 
@@ -233,7 +233,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		earnedAt
 	}));
 
-	return json({
+	return Response.json({
 		success: true,
 		actionCardUsed: {
 			cardId: actionCardInstance.cardId,

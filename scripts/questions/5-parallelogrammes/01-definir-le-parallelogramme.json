@@ -1,0 +1,110 @@
+{
+	"id": "9920615f-cf91-46f6-a2ae-1daf52fd5f90",
+	"title": "Définir le parallélogramme",
+	"description": "Reconnaître la définition du parallélogramme : un quadrilatère dont les côtés opposés sont parallèles deux à deux",
+	"grades": ["5"],
+	"level": 1,
+	"delay": 45,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Un parallélogramme est un quadrilatère :\n\n```choix\n- dont les côtés opposés sont parallèles deux à deux\n- qui a deux côtés opposés parallèles\n- qui a quatre côtés de même longueur\n- qui a quatre angles droits\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Définition.** Un parallélogramme est un quadrilatère dont les côtés opposés sont **parallèles deux à deux** : $(AB) \\parallel (DC)$ et $(AD) \\parallel (BC)$.",
+					"Avoir seulement **deux** côtés parallèles ne suffit pas (c'est un trapèze). Quatre côtés de même longueur, c'est un losange ; quatre angles droits, un rectangle : ce sont des parallélogrammes **particuliers**.",
+					"La définition est donc : $\\textcolor{{{color:primary.0}}}{\\text{les côtés opposés sont parallèles deux à deux}}$."
+				]
+			}
+		},
+		{
+			"statement": "On sait que $(AB) \\parallel (DC)$ et que $(AD) \\parallel (BC)$.\n\n```figure\nfenetre: -2.4 ; 8.4 ; -1.6 ; 5\ndescription: Un quadrilatère ABCD penché, sans codage.\n---\n{{if:k==1|A = point(0, 0, etiquette=\"bas-gauche\")\nB = point(5, 0, etiquette=\"bas-droite\")\nC = point(6.6, 3, etiquette=\"haut-droite\")\nD = point(1.6, 3, etiquette=\"haut-gauche\")\npolygone(A, B, C, D)|{{if:k==2|A = point(0, 0, etiquette=\"bas-gauche\")\nB = point(5.5, 0.8, etiquette=\"bas-droite\")\nC = point(4.1, 4, etiquette=\"haut-droite\")\nD = point(-1.4, 3.2, etiquette=\"haut-gauche\")\npolygone(A, B, C, D)|A = point(0, 0, etiquette=\"bas-gauche\")\nB = point(5.2, -0.6, etiquette=\"bas-droite\")\nC = point(7.4, 2.8, etiquette=\"haut-droite\")\nD = point(2.2, 3.4, etiquette=\"haut-gauche\")\npolygone(A, B, C, D)}}}}\n```\n\nLe quadrilatère $ABCD$ est :\n\n```choix\n- un parallélogramme\n- un rectangle\n- un losange\n- on ne peut pas savoir\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..3"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Les côtés opposés de $ABCD$ sont parallèles deux à deux.",
+					"**Définition.** Un parallélogramme est un quadrilatère dont les côtés opposés sont **parallèles deux à deux** : $(AB) \\parallel (DC)$ et $(AD) \\parallel (BC)$.",
+					"$ABCD$ est donc $\\textcolor{{{color:primary.0}}}{\\text{un parallélogramme}}$. Rien ne dit qu'il a un angle droit ou deux côtés consécutifs de même longueur : on ne peut pas dire rectangle ni losange."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Définition",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : deux côtés parallèles (trapèze)",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : quatre côtés égaux",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Côtés parallèles deux à deux : parallélogramme",
+			"variationIndex": 1,
+			"variables": {
+				"k": "1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : rectangle",
+			"variationIndex": 1,
+			"variables": {
+				"k": "2"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : on ne peut pas savoir",
+			"variationIndex": 1,
+			"variables": {
+				"k": "3"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

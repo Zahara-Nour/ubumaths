@@ -9,11 +9,11 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { WebReplEngine } from '$lib/mathAST/cli/web/web-repl-engine';
-import { parseLatexSafe } from '$lib/mathAST/parser';
-import { evaluate } from '$lib/mathAST/eval';
-import { substitute } from '$lib/mathAST/eval/substitute';
-import { number } from '$lib/mathAST/factory';
+import { WebReplEngine } from '#lib/mathAST/cli/web/web-repl-engine.ts';
+import { parseLatexSafe } from '#lib/mathAST/parser/index.ts';
+import { evaluate } from '#lib/mathAST/eval/index.ts';
+import { substitute } from '#lib/mathAST/eval/substitute.ts';
+import { number } from '#lib/mathAST/factory.ts';
 import { Atelier } from '../atelier.svelte';
 import { runInput, type CalcResult, type CalcSession } from '../calcul';
 import { graphLatexOf } from '../engine';

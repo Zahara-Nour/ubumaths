@@ -1,11 +1,11 @@
 <script lang="ts">
 	import { resolve } from '$app/paths';
-	import InlineMarkdown from '$lib/components/markdown/InlineMarkdown.svelte';
-	import MarkdownRenderer from '$lib/components/markdown/MarkdownRenderer.svelte';
+	import InlineMarkdown from '#lib/components/markdown/InlineMarkdown.svelte';
+	import MarkdownRenderer from '#lib/components/markdown/MarkdownRenderer.svelte';
 	import ShtamFooter from '../ShtamFooter.svelte';
-	import QrCodeButton from '$lib/components/qr/QrCodeButton.svelte';
-	import SeoHead from '$lib/seo/SeoHead.svelte';
-	import JsonLd from '$lib/seo/JsonLd.svelte';
+	import QrCodeButton from '#lib/components/qr/QrCodeButton.svelte';
+	import SeoHead from '#lib/seo/SeoHead.svelte';
+	import JsonLd from '#lib/seo/JsonLd.svelte';
 	import {
 		DEFAULT_OG_IMAGE,
 		SITE_LOGO,
@@ -13,7 +13,7 @@
 		SITE_URL,
 		absoluteUrl,
 		toPlainText
-	} from '$lib/seo/site';
+	} from '#lib/seo/site.ts';
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
@@ -46,7 +46,7 @@
 
 <article class="mx-auto flex w-full max-w-3xl flex-col gap-8 px-4 py-10 sm:px-6">
 	<a
-		href={resolve('/shtam')}
+		href={resolve('shtam')}
 		class="serif self-start rounded-sm text-lg font-bold underline-offset-4 hover:underline focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
 	>
 		← Le Shtam

@@ -31,7 +31,7 @@
 		HORLOGE_SIZE_CM,
 		type HorlogeNode,
 		type HorlogeTime
-	} from '$lib/ubumark/types/horloge';
+	} from '#lib/ubumark/types/horloge.ts';
 	import {
 		buildHorlogeScene,
 		handTip,
@@ -40,7 +40,7 @@
 		HORLOGE_STROKE,
 		HORLOGE_VIEW,
 		type HorlogeScene
-	} from '$lib/ubumark/utils/horloge-scene';
+	} from '#lib/ubumark/utils/horloge-scene.ts';
 	import {
 		HAND_TICKS,
 		handsAnswer,
@@ -49,7 +49,7 @@
 		tickAngle,
 		tickOfAngle,
 		type HorlogeHands
-	} from '$lib/ubumark/utils/horloge-placer';
+	} from '#lib/ubumark/utils/horloge-placer.ts';
 	import type { BuildCase } from './CollectionConstruire.svelte';
 
 	type Hand = 'hour' | 'minute' | 'second';
@@ -487,7 +487,8 @@
 
 	/* La seule couleur d'accent : la petite aiguille */
 	.horloge-aiguille-heures {
-		stroke: var(--color-primary);
+		/* Orange foncé en clair : le jaune-orange de l'accent n'a que 2,2 de contraste sur le cadran */
+		stroke: light-dark(var(--color-fig-orange), var(--color-primary));
 	}
 
 	/* Trotteuse : fine, avec contrepoids ; reconnue à sa forme, pas à une couleur de plus */

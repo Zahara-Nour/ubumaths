@@ -34,28 +34,28 @@ import type {
 } from '../types/stat-chart';
 import { STAT_CHART_LIMITS } from '../types/stat-chart';
 import type { CourbeColor } from '../types/courbe';
-import type { ContentLocale } from '$lib/types/locale';
-import { groupNumberText } from '$lib/mathAST/digit-grouping';
-import { computeGridStep } from '$lib/geometry-core/viewport/grid';
-import { categoryFrequencies, describeList, summarizeTable } from '$lib/statistics/describe';
+import type { ContentLocale } from '#lib/types/locale.ts';
+import { groupNumberText } from '#lib/mathAST/digit-grouping.ts';
+import { computeGridStep } from '#lib/geometry-core/viewport/grid.ts';
+import { categoryFrequencies, describeList, summarizeTable } from '#lib/statistics/describe.ts';
 import {
 	estimateClassQuantile,
 	summarizeClasses,
 	type ClassSummary,
 	type StatClass
-} from '$lib/statistics/classes';
+} from '#lib/statistics/classes.ts';
 import { COURBE_PIXEL_WIDTH, formatTick } from './courbe-scene';
 import { carreauGrid, usesCarreaux } from './stat-chart-carreaux';
 import { SCALE_TICKS } from './barres-placer';
-import { crossTable } from '$lib/statistics/cross-table';
+import { crossTable } from '#lib/statistics/cross-table.ts';
 import {
 	formatApproxValue,
 	formatFraction,
 	formatLawApproxValue,
 	formatLawIndicators,
 	formatStatNumber
-} from '$lib/statistics/format';
-import { Fraction } from '$lib/statistics/fraction';
+} from '#lib/statistics/format.ts';
+import { Fraction } from '#lib/statistics/fraction.ts';
 import {
 	decimalFit,
 	relationPole,
@@ -63,9 +63,9 @@ import {
 	squaredSign,
 	transformValue,
 	type VariableChange
-} from '$lib/statistics/variable-change';
-import { bivariateFit, readExactValue, toSafeNumber } from '$lib/statistics/bivariate';
-import { randomVariable, type RandomVariableLaw } from '$lib/statistics/random-variable';
+} from '#lib/statistics/variable-change.ts';
+import { bivariateFit, readExactValue, toSafeNumber } from '#lib/statistics/bivariate.ts';
+import { randomVariable, type RandomVariableLaw } from '#lib/statistics/random-variable.ts';
 import {
 	discreteSampler,
 	exponentialSampler,
@@ -78,7 +78,7 @@ import {
 	uniformDensitySampler,
 	uniformSampler,
 	type LawSampler
-} from '$lib/statistics/simulation';
+} from '#lib/statistics/simulation.ts';
 // ⚠️ Import circulaire (simulation-scene construit ses histogrammes par
 // `buildStatChartScene`) : sans risque, rien n'y est appelé au chargement
 import { buildRunningMeanScene, buildSampleMeansScene } from './simulation-scene';
@@ -100,7 +100,7 @@ import {
 	scatterEquation,
 	scatterNumber
 } from './scatter-lines';
-import { createRandomSource } from '$lib/utils/random';
+import { createRandomSource } from '#lib/utils/random.ts';
 import {
 	binomialDistribution,
 	binomialInterval,
@@ -108,17 +108,17 @@ import {
 	binomialProbability,
 	binomialThreshold,
 	type BinomialDistribution
-} from '$lib/statistics/binomial';
-import { roundExact, roundNumber } from '$lib/statistics/rounding';
+} from '#lib/statistics/binomial.ts';
+import { roundExact, roundNumber } from '#lib/statistics/rounding.ts';
 import {
 	geometricConditional,
 	geometricMoments,
 	GEOMETRIC_MAX_K,
 	geometricProbability,
 	geometricThreshold
-} from '$lib/statistics/geometric';
-import type { ThresholdResult } from '$lib/statistics/threshold';
-import { uniformMoments, uniformProbability } from '$lib/statistics/uniform';
+} from '#lib/statistics/geometric.ts';
+import type { ThresholdResult } from '#lib/statistics/threshold.ts';
+import { uniformMoments, uniformProbability } from '#lib/statistics/uniform.ts';
 import {
 	exponentialDensity,
 	exponentialMoments,
@@ -128,7 +128,7 @@ import {
 	normalProbability,
 	uniformDensityMoments,
 	uniformDensityProbability
-} from '$lib/statistics/density';
+} from '#lib/statistics/density.ts';
 
 // ============================================================================
 // TYPES
@@ -195,6 +195,8 @@ export interface SceneBar {
 	 * que seule la correction dessine ; absente sinon
 	 */
 	toPlace?: true;
+	/** Barre attendue d'un corrigé (`solution: oui`, V109) : dessinée en vert ; absente sinon */
+	solved?: true;
 	value: number;
 	/** Valeur écrite au-dessus de la barre (`valeurs: oui`) */
 	valueLabel: string;
@@ -593,6 +595,15 @@ export type StatChartScene =
 export interface StatChartSceneOptions {
 	/** Langue du document : séparateur décimal */
 	locale?: ContentLocale;
+	/**
+	 * Écran étroit (barres, boîtes à moustaches) : largeur du cadre réellement
+	 * dessiné, en px, à la place de celle de `taille:`. Les noms inclinés, les
+	 * graduations automatiques et les rangées de valeurs sont décidés pour elle
+	 * (écart E46 : le dessin n'est plus rétréci, son texte garde sa taille).
+	 */
+	plotWidth?: number;
+	/** Largeur d'un caractère d'un nom de catégorie à l'écran, en px (barres) */
+	labelCharPx?: number;
 }
 
 // ============================================================================
@@ -675,8 +686,9 @@ const CROSS_TABLE_SPOKEN: Record<
 
 /** Arrondi à `decimals` décimales, zéros inutiles retirés, séparateur selon la langue. */
 function formatRounded(value: number, decimals: number, locale: ContentLocale): string {
-	const factor = 10 ** decimals;
-	return formatTick(Math.round(value * factor) / factor, locale);
+	// `roundNumber` lit le décimal écrit : 100 × 23 / 80 = 28,749999… en flottant s'arrondit
+	// à 28,8 comme 28,75 (écart L114).
+	return formatTick(roundNumber(value, decimals), locale);
 }
 
 /** `= 15,75` / `≈ 14,44` : la règle du module statistique (Q13) */
@@ -706,9 +718,15 @@ const INDICATOR_ROWS: Record<StatChartIndicator, IndicatorRowId[]> = {
 	'classe-mediane': []
 };
 
-function buildBarScene(spec: StatChartSpec, locale: ContentLocale): BarScene {
-	const width = COURBE_PIXEL_WIDTH[spec.size];
-	const height = width * STAT_CHART_ASPECT_RATIO;
+function buildBarScene(
+	spec: StatChartSpec,
+	locale: ContentLocale,
+	options: StatChartSceneOptions = {}
+): BarScene {
+	// La hauteur reste celle de `taille:` : seul le cadre se resserre (`plotWidth`)
+	const height = COURBE_PIXEL_WIDTH[spec.size] * STAT_CHART_ASPECT_RATIO;
+	const width = options.plotWidth ?? COURBE_PIXEL_WIDTH[spec.size];
+	const labelCharPx = options.labelCharPx ?? STAT_CHART_CHAR_PX;
 	const two = spec.twoSeries;
 	const count = spec.data.length;
 
@@ -731,6 +749,7 @@ function buildBarScene(spec: StatChartSpec, locale: ContentLocale): BarScene {
 			? mutedAxis(locale)
 			: valueAxis(maxValue, height, unit, locale);
 	const toPlace = new Set(spec.toPlace ?? []);
+	const solved = new Set(spec.solvedBars ?? []);
 
 	const margin = (1 - BAR_WIDTH) / 2;
 	const barWidth = BAR_WIDTH / seriesList.length;
@@ -742,6 +761,7 @@ function buildBarScene(spec: StatChartSpec, locale: ContentLocale): BarScene {
 				label: shownLabel(d.label, locale),
 				...(two !== null && { series: s }),
 				...(toPlace.has(i) && { toPlace: true as const }),
+				...(solved.has(i) && { solved: true as const }),
 				value,
 				valueLabel: formatValue(value, unit, locale),
 				left,
@@ -753,7 +773,7 @@ function buildBarScene(spec: StatChartSpec, locale: ContentLocale): BarScene {
 
 	const bandPx = width / count;
 	const longest = Math.max(...spec.data.map((d) => d.label.length));
-	const rotateLabels = count > FLAT_LABELS_MAX || longest * STAT_CHART_CHAR_PX > bandPx;
+	const rotateLabels = count > FLAT_LABELS_MAX || longest * labelCharPx > bandPx;
 
 	// Barre à construire : son effectif n'est jamais dit avant la correction
 	const listed = spec.data.map((d, i) =>
@@ -3501,7 +3521,7 @@ export function buildStatChartScene(
 	options: StatChartSceneOptions = {}
 ): StatChartScene {
 	const locale = options.locale ?? 'fr';
-	const scene = buildKindScene(spec, locale);
+	const scene = buildKindScene(spec, locale, options);
 	// `série: seule` : l'énoncé — la série, ni figure ni indicateurs
 	const seriesOnly = spec.series?.mode === 'seule';
 	return {
@@ -3512,10 +3532,14 @@ export function buildStatChartScene(
 	};
 }
 
-function buildKindScene(spec: StatChartSpec, locale: ContentLocale): StatChartScene {
+function buildKindScene(
+	spec: StatChartSpec,
+	locale: ContentLocale,
+	options: StatChartSceneOptions
+): StatChartScene {
 	switch (spec.kind) {
 		case 'barres':
-			return buildBarScene(spec, locale);
+			return buildBarScene(spec, locale, options);
 		case 'circulaire':
 			return buildPieScene(spec, locale);
 		case 'histogramme':
@@ -3537,6 +3561,6 @@ function buildKindScene(spec: StatChartSpec, locale: ContentLocale): StatChartSc
 		case 'nuage':
 			return buildScatterScene(spec, locale);
 		case 'boite-a-moustaches':
-			return buildBoxPlotScene(spec, locale);
+			return buildBoxPlotScene(spec, locale, options.plotWidth);
 	}
 }

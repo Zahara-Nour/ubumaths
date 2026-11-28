@@ -1,0 +1,372 @@
+{
+	"id": "7d411132-aecc-4788-bb06-9c9d27012e1f",
+	"title": "Encadrement d'amplitude donnée",
+	"description": "Encadrer √2, π, 2/7… entre deux multiples consécutifs de 0,5, 0,2 ou 0,05 ; √a entre deux entiers consécutifs",
+	"grades": ["2"],
+	"level": 9,
+	"delay": 60,
+	"status": "published",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		},
+		"cleanCoefficients": true
+	},
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:floor((x)*(q))/(q)}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:(floor((x)*(q))+1)/(q)}}",
+							"message": "Tu as échangé les bornes : la plus petite va à gauche.",
+							"label": "Bornes échangées"
+						},
+						{
+							"answer": "{{eval:floor((x)*(10+90*max(sign((q)-10),0)))/(10+90*max(sign((q)-10),0))}}",
+							"message": "Tes bornes doivent être des multiples du pas demandé, pas de simples troncatures.",
+							"label": "Borne tronquée, pas un multiple du pas"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{eval:(floor((x)*(q))+1)/(q)}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:floor((x)*(q))/(q)}}",
+							"message": "Tu as échangé les bornes : la plus petite va à gauche.",
+							"label": "Bornes échangées"
+						},
+						{
+							"answer": "{{eval:(floor((x)*(10+90*max(sign((q)-10),0)))+1)/(10+90*max(sign((q)-10),0))}}",
+							"message": "Tes bornes doivent être des multiples du pas demandé, pas de simples troncatures.",
+							"label": "Borne arrondie par excès, pas un multiple du pas"
+						}
+					]
+				}
+			],
+			"statement": "On donne ${{if:m==0|\\sqrt{2}|{{if:m==1|\\sqrt{2}|{{if:m==2|\\sqrt{2}|{{if:m==3|\\sqrt{3}|{{if:m==4|\\sqrt{3}|{{if:m==5|\\sqrt{3}|{{if:m==6|\\sqrt{5}|{{if:m==7|\\sqrt{5}|{{if:m==8|\\sqrt{5}|{{if:m==9|\\sqrt{7}|{{if:m==10|\\sqrt{7}|{{if:m==11|\\sqrt{7}|{{if:m==12|\\pi|{{if:m==13|\\pi|{{if:m==14|\\pi|{{if:m==15|\\dfrac{2}{7}|{{if:m==16|\\dfrac{2}{7}|{{if:m==17|\\dfrac{2}{7}|{{if:m==18|\\dfrac{5}{3}|{{if:m==19|\\dfrac{5}{3}|\\dfrac{5}{3}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}={{if:m==0|1{,}414213\\ldots|{{if:m==1|1{,}414213\\ldots|{{if:m==2|1{,}414213\\ldots|{{if:m==3|1{,}732050\\ldots|{{if:m==4|1{,}732050\\ldots|{{if:m==5|1{,}732050\\ldots|{{if:m==6|2{,}236067\\ldots|{{if:m==7|2{,}236067\\ldots|{{if:m==8|2{,}236067\\ldots|{{if:m==9|2{,}645751\\ldots|{{if:m==10|2{,}645751\\ldots|{{if:m==11|2{,}645751\\ldots|{{if:m==12|3{,}141592\\ldots|{{if:m==13|3{,}141592\\ldots|{{if:m==14|3{,}141592\\ldots|{{if:m==15|0{,}285714\\ldots|{{if:m==16|0{,}285714\\ldots|{{if:m==17|0{,}285714\\ldots|{{if:m==18|1{,}666666\\ldots|{{if:m==19|1{,}666666\\ldots|1{,}666666\\ldots}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}$. Encadre ce nombre entre **deux multiples consécutifs** de ${{if:m==0|0{,}5|{{if:m==1|0{,}2|{{if:m==2|0{,}05|{{if:m==3|0{,}5|{{if:m==4|0{,}2|{{if:m==5|0{,}05|{{if:m==6|0{,}5|{{if:m==7|0{,}2|{{if:m==8|0{,}05|{{if:m==9|0{,}5|{{if:m==10|0{,}2|{{if:m==11|0{,}05|{{if:m==12|0{,}5|{{if:m==13|0{,}2|{{if:m==14|0{,}05|{{if:m==15|0{,}5|{{if:m==16|0{,}2|{{if:m==17|0{,}05|{{if:m==18|0{,}5|{{if:m==19|0{,}2|0{,}05}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}$ (encadrement d'amplitude ${{if:m==0|0{,}5|{{if:m==1|0{,}2|{{if:m==2|0{,}05|{{if:m==3|0{,}5|{{if:m==4|0{,}2|{{if:m==5|0{,}05|{{if:m==6|0{,}5|{{if:m==7|0{,}2|{{if:m==8|0{,}05|{{if:m==9|0{,}5|{{if:m==10|0{,}2|{{if:m==11|0{,}05|{{if:m==12|0{,}5|{{if:m==13|0{,}2|{{if:m==14|0{,}05|{{if:m==15|0{,}5|{{if:m==16|0{,}2|{{if:m==17|0{,}05|{{if:m==18|0{,}5|{{if:m==19|0{,}2|0{,}05}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}$).\n\n$$?<{{if:m==0|\\sqrt{2}|{{if:m==1|\\sqrt{2}|{{if:m==2|\\sqrt{2}|{{if:m==3|\\sqrt{3}|{{if:m==4|\\sqrt{3}|{{if:m==5|\\sqrt{3}|{{if:m==6|\\sqrt{5}|{{if:m==7|\\sqrt{5}|{{if:m==8|\\sqrt{5}|{{if:m==9|\\sqrt{7}|{{if:m==10|\\sqrt{7}|{{if:m==11|\\sqrt{7}|{{if:m==12|\\pi|{{if:m==13|\\pi|{{if:m==14|\\pi|{{if:m==15|\\dfrac{2}{7}|{{if:m==16|\\dfrac{2}{7}|{{if:m==17|\\dfrac{2}{7}|{{if:m==18|\\dfrac{5}{3}|{{if:m==19|\\dfrac{5}{3}|\\dfrac{5}{3}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}<?$$",
+			"variables": [
+				{
+					"name": "t",
+					"expression": "0..6"
+				},
+				{
+					"name": "j",
+					"expression": "0..2"
+				},
+				{
+					"name": "m",
+					"expression": "eval:3*t+j"
+				},
+				{
+					"name": "x",
+					"expression": "eval:(1-min(abs(t-0),1))*1.41421356+(1-min(abs(t-1),1))*1.73205080+(1-min(abs(t-2),1))*2.23606797+(1-min(abs(t-3),1))*2.64575131+(1-min(abs(t-4),1))*3.14159265+(1-min(abs(t-5),1))*0.28571428+(1-min(abs(t-6),1))*1.66666666"
+				},
+				{
+					"name": "q",
+					"expression": "eval:2+3*(1-min(abs(j-1),1))+18*(1-min(abs(j-2),1))"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Les multiples de ${{if:m==0|0{,}5|{{if:m==1|0{,}2|{{if:m==2|0{,}05|{{if:m==3|0{,}5|{{if:m==4|0{,}2|{{if:m==5|0{,}05|{{if:m==6|0{,}5|{{if:m==7|0{,}2|{{if:m==8|0{,}05|{{if:m==9|0{,}5|{{if:m==10|0{,}2|{{if:m==11|0{,}05|{{if:m==12|0{,}5|{{if:m==13|0{,}2|{{if:m==14|0{,}05|{{if:m==15|0{,}5|{{if:m==16|0{,}2|{{if:m==17|0{,}05|{{if:m==18|0{,}5|{{if:m==19|0{,}2|0{,}05}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}$ : $0$, ${{if:m==0|0{,}5|{{if:m==1|0{,}2|{{if:m==2|0{,}05|{{if:m==3|0{,}5|{{if:m==4|0{,}2|{{if:m==5|0{,}05|{{if:m==6|0{,}5|{{if:m==7|0{,}2|{{if:m==8|0{,}05|{{if:m==9|0{,}5|{{if:m==10|0{,}2|{{if:m==11|0{,}05|{{if:m==12|0{,}5|{{if:m==13|0{,}2|{{if:m==14|0{,}05|{{if:m==15|0{,}5|{{if:m==16|0{,}2|{{if:m==17|0{,}05|{{if:m==18|0{,}5|{{if:m==19|0{,}2|0{,}05}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}$, $2\\times{{if:m==0|0{,}5|{{if:m==1|0{,}2|{{if:m==2|0{,}05|{{if:m==3|0{,}5|{{if:m==4|0{,}2|{{if:m==5|0{,}05|{{if:m==6|0{,}5|{{if:m==7|0{,}2|{{if:m==8|0{,}05|{{if:m==9|0{,}5|{{if:m==10|0{,}2|{{if:m==11|0{,}05|{{if:m==12|0{,}5|{{if:m==13|0{,}2|{{if:m==14|0{,}05|{{if:m==15|0{,}5|{{if:m==16|0{,}2|{{if:m==17|0{,}05|{{if:m==18|0{,}5|{{if:m==19|0{,}2|0{,}05}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}$… On cherche les deux qui entourent le nombre :",
+					"$${{if:m==0|2|{{if:m==1|7|{{if:m==2|28|{{if:m==3|3|{{if:m==4|8|{{if:m==5|34|{{if:m==6|4|{{if:m==7|11|{{if:m==8|44|{{if:m==9|5|{{if:m==10|13|{{if:m==11|52|{{if:m==12|6|{{if:m==13|15|{{if:m==14|62|{{if:m==15|0|{{if:m==16|1|{{if:m==17|5|{{if:m==18|3|{{if:m==19|8|33}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}\\times{{if:m==0|0{,}5|{{if:m==1|0{,}2|{{if:m==2|0{,}05|{{if:m==3|0{,}5|{{if:m==4|0{,}2|{{if:m==5|0{,}05|{{if:m==6|0{,}5|{{if:m==7|0{,}2|{{if:m==8|0{,}05|{{if:m==9|0{,}5|{{if:m==10|0{,}2|{{if:m==11|0{,}05|{{if:m==12|0{,}5|{{if:m==13|0{,}2|{{if:m==14|0{,}05|{{if:m==15|0{,}5|{{if:m==16|0{,}2|{{if:m==17|0{,}05|{{if:m==18|0{,}5|{{if:m==19|0{,}2|0{,}05}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}=\\textcolor{{{color:primary.0}}}{{{if:m==0|1|{{if:m==1|1{,}4|{{if:m==2|1{,}4|{{if:m==3|1{,}5|{{if:m==4|1{,}6|{{if:m==5|1{,}7|{{if:m==6|2|{{if:m==7|2{,}2|{{if:m==8|2{,}2|{{if:m==9|2{,}5|{{if:m==10|2{,}6|{{if:m==11|2{,}6|{{if:m==12|3|{{if:m==13|3|{{if:m==14|3{,}1|{{if:m==15|0|{{if:m==16|0{,}2|{{if:m==17|0{,}25|{{if:m==18|1{,}5|{{if:m==19|1{,}6|1{,}65}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}<{{if:m==0|\\sqrt{2}|{{if:m==1|\\sqrt{2}|{{if:m==2|\\sqrt{2}|{{if:m==3|\\sqrt{3}|{{if:m==4|\\sqrt{3}|{{if:m==5|\\sqrt{3}|{{if:m==6|\\sqrt{5}|{{if:m==7|\\sqrt{5}|{{if:m==8|\\sqrt{5}|{{if:m==9|\\sqrt{7}|{{if:m==10|\\sqrt{7}|{{if:m==11|\\sqrt{7}|{{if:m==12|\\pi|{{if:m==13|\\pi|{{if:m==14|\\pi|{{if:m==15|\\dfrac{2}{7}|{{if:m==16|\\dfrac{2}{7}|{{if:m==17|\\dfrac{2}{7}|{{if:m==18|\\dfrac{5}{3}|{{if:m==19|\\dfrac{5}{3}|\\dfrac{5}{3}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}<\\textcolor{{{color:primary.1}}}{{{if:m==0|1{,}5|{{if:m==1|1{,}6|{{if:m==2|1{,}45|{{if:m==3|2|{{if:m==4|1{,}8|{{if:m==5|1{,}75|{{if:m==6|2{,}5|{{if:m==7|2{,}4|{{if:m==8|2{,}25|{{if:m==9|3|{{if:m==10|2{,}8|{{if:m==11|2{,}65|{{if:m==12|3{,}5|{{if:m==13|3{,}2|{{if:m==14|3{,}15|{{if:m==15|0{,}5|{{if:m==16|0{,}4|{{if:m==17|0{,}3|{{if:m==18|2|{{if:m==19|1{,}8|1{,}7}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}$$",
+					"L'écart entre les deux bornes est bien ${{if:m==0|0{,}5|{{if:m==1|0{,}2|{{if:m==2|0{,}05|{{if:m==3|0{,}5|{{if:m==4|0{,}2|{{if:m==5|0{,}05|{{if:m==6|0{,}5|{{if:m==7|0{,}2|{{if:m==8|0{,}05|{{if:m==9|0{,}5|{{if:m==10|0{,}2|{{if:m==11|0{,}05|{{if:m==12|0{,}5|{{if:m==13|0{,}2|{{if:m==14|0{,}05|{{if:m==15|0{,}5|{{if:m==16|0{,}2|{{if:m==17|0{,}05|{{if:m==18|0{,}5|{{if:m==19|0{,}2|0{,}05}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}$."
+				]
+			},
+			"hintFromFirstStep": true
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{m}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:(m)+1}}",
+							"message": "Tu as échangé les bornes : la plus petite va à gauche.",
+							"label": "Bornes échangées"
+						},
+						{
+							"answer": "{{eval:floor((n)/2)}}",
+							"message": "On cherche des carrés parfaits autour du nombre : prendre une racine, ce n'est pas diviser par 2.",
+							"label": "Divisé par 2 au lieu de la racine"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{eval:(m)+1}}",
+					"expectedErrors": [
+						{
+							"answer": "{{m}}",
+							"message": "Tu as échangé les bornes : la plus petite va à gauche.",
+							"label": "Bornes échangées"
+						},
+						{
+							"answer": "{{eval:floor((n)/2)+1}}",
+							"message": "On cherche des carrés parfaits autour du nombre : prendre une racine, ce n'est pas diviser par 2.",
+							"label": "Divisé par 2 au lieu de la racine"
+						}
+					]
+				}
+			],
+			"statement": "Encadre $\\sqrt{ {{n}} }$ entre **deux entiers consécutifs** (encadrement d'amplitude $1$).\n\n$$?<\\sqrt{ {{n}} }<?$$",
+			"variables": [
+				{
+					"name": "m",
+					"expression": "1..11"
+				},
+				{
+					"name": "r",
+					"expression": "1..{{eval:2*m}}"
+				},
+				{
+					"name": "n",
+					"expression": "eval:m*m+r"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On cherche les deux carrés parfaits qui entourent ${{n}}$ : si $m^2<n<(m+1)^2$, alors $m<\\sqrt{n}<m+1$.",
+					"$$\\textcolor{{{color:primary.1}}}{{{eval:m*m}}}<{{n}}<\\textcolor{{{color:primary.1}}}{{{eval:(m+1)^2}}}$$ car ${{m}}^{ 2 }={{eval:m*m}}$ et ${{eval:m+1}}^{ 2 }={{eval:(m+1)^2}}$.",
+					"$$\\textcolor{{{color:primary.0}}}{{{m}}}<\\sqrt{ {{n}} }<\\textcolor{{{color:primary.0}}}{{{eval:m+1}}}$$"
+				]
+			},
+			"hintFromFirstStep": true
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["3", "3.2"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"j": "1",
+				"m": "13",
+				"q": "5",
+				"t": "4",
+				"x": "3.14159265"
+			},
+			"description": "π et 0,2 : 3 et 3,2",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["3.1", "3.3"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"j": "1",
+				"m": "13",
+				"q": "5",
+				"t": "4",
+				"x": "3.14159265"
+			},
+			"description": "Erreur : 3,1 et 3,3 (pas des multiples de 0,2)",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["1.4", "1.45"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"j": "2",
+				"m": "2",
+				"q": "20",
+				"t": "0",
+				"x": "1.41421356"
+			},
+			"description": "√2 et 0,05 : 1,4 et 1,45",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["1.41", "1.46"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"j": "2",
+				"m": "2",
+				"q": "20",
+				"t": "0",
+				"x": "1.41421356"
+			},
+			"description": "Erreur : 1,41 et 1,46",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["2.5", "3"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"j": "0",
+				"m": "9",
+				"q": "2",
+				"t": "3",
+				"x": "2.64575131"
+			},
+			"description": "√7 et 0,5 : 2,5 et 3",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["7", "8"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"m": "7",
+				"r": "8",
+				"n": "57"
+			},
+			"description": "√57 entre 7 et 8",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["8", "7"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"m": "7",
+				"r": "8",
+				"n": "57"
+			},
+			"description": "Erreur : bornes échangées",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["28", "29"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"m": "7",
+				"r": "8",
+				"n": "57"
+			},
+			"description": "Erreur : 57 ÷ 2 au lieu de la racine",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["11", "12"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"m": "11",
+				"r": "22",
+				"n": "143"
+			},
+			"description": "√143 entre 11 et 12",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["3.1", "3.2"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tes bornes doivent être des multiples du pas demandé, pas de simples troncatures."
+			},
+			"variables": {
+				"j": "1",
+				"t": "4"
+			},
+			"description": "Erreur prévue : 3,1 (π, pas de 0,2)",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["1.45", "1.45"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as échangé les bornes : la plus petite va à gauche."
+			},
+			"variables": {
+				"j": "2",
+				"t": "0"
+			},
+			"description": "Erreur prévue : bornes échangées (case 1)",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["1.4", "1.42"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tes bornes doivent être des multiples du pas demandé, pas de simples troncatures."
+			},
+			"variables": {
+				"j": "2",
+				"t": "0"
+			},
+			"description": "Erreur prévue : 1,42 (√2, pas de 0,05)",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["2.5", "2.5"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as échangé les bornes : la plus petite va à gauche."
+			},
+			"variables": {
+				"j": "0",
+				"t": "3"
+			},
+			"description": "Erreur prévue : bornes échangées (case 2)",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["8", "8"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as échangé les bornes : la plus petite va à gauche."
+			},
+			"variables": {
+				"m": "7",
+				"r": "8"
+			},
+			"description": "Erreur prévue : 8 en case 1",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["28", "8"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "On cherche des carrés parfaits autour du nombre : prendre une racine, ce n'est pas diviser par 2."
+			},
+			"variables": {
+				"m": "7",
+				"r": "8"
+			},
+			"description": "Erreur prévue : 57 ÷ 2 (case 1)",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["7", "7"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as échangé les bornes : la plus petite va à gauche."
+			},
+			"variables": {
+				"m": "7",
+				"r": "8"
+			},
+			"description": "Erreur prévue : 7 en case 2",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["7", "29"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "On cherche des carrés parfaits autour du nombre : prendre une racine, ce n'est pas diviser par 2."
+			},
+			"variables": {
+				"m": "7",
+				"r": "8"
+			},
+			"description": "Erreur prévue : 57 ÷ 2 + 1 (case 2)",
+			"variationIndex": 1
+		}
+	]
+}

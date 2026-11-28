@@ -22,46 +22,77 @@
 	// 1. Brave browser blocks these scripts - dynamic import + catch handles this gracefully
 	// 2. Avoids adding to the root layout's static dependency chain (see Safari TDZ fix
 	//    in +layout.ts for details on WebKit module initialization issues)
-	import { browser } from '$app/environment';
+	import { browser } from '$app/env';
+	import { redactAnalyticsEvent } from '#lib/utils/analytics-redact.ts';
 
 	$effect(() => {
 		if (!browser) return;
 		Promise.all([import('@vercel/analytics'), import('@vercel/speed-insights/sveltekit')])
 			.then(([{ inject }, { injectSpeedInsights }]) => {
-				inject();
-				injectSpeedInsights();
+				// Le jeton d'un lien personnel (carnet de liaison) ne part pas chez Vercel
+				inject({ beforeSend: redactAnalyticsEvent });
+				injectSpeedInsights({ beforeSend: redactAnalyticsEvent });
 			})
 			.catch((e) => {
 				console.debug('[Analytics] Failed to initialize:', e);
 			});
 	});
 
-	import favicon from '$lib/assets/images/favicon.png';
-	import Header from '$lib/components/Header.svelte';
-	import Sidebar from '$lib/components/Sidebar.svelte';
-	import { theme } from '$lib/stores/theme.svelte';
-	import { fontSize } from '$lib/stores/fontSize.svelte';
-	import { initializeTemplates } from '$lib/stores/vipCardTemplates.svelte';
-	import { page } from '$app/state';
-	import { showsInfoButton } from '$lib/utils/footer';
-	import InfoPanel from '$lib/components/InfoPanel.svelte';
-	import { navigating } from '$app/stores';
+	import favicon from '#lib/assets/images/favicon.png';
+	import Header from '#lib/components/Header.svelte';
+	import Sidebar from '#lib/components/Sidebar.svelte';
+	// Chargés pour leur effet : à leur création, ces réglages s'appliquent à la page
+	// (thème, taille du texte, lecture facilitée lus dans le navigateur), sur toutes les pages.
+	// Déclarés dans `scripts/side-effect-modules.ts`, sinon le build les élague.
+	import '#lib/stores/theme.svelte.ts';
+	import '#lib/stores/fontSize.svelte.ts';
+	import '#lib/stores/easyReading.svelte.ts';
+	import { initializeTemplates } from '#lib/stores/vipCardTemplates.svelte.ts';
+	import { page, updated } from '$app/state';
+	import { afterNavigate, beforeNavigate } from '$app/navigation';
+	import { noteWebVitalsRoute } from '#lib/utils/errorMonitoring.ts';
+	import { shouldReloadOnNavigate } from '#lib/utils/app-version.ts';
+	import { showsInfoButton } from '#lib/utils/footer.ts';
+	import InfoPanel from '#lib/components/InfoPanel.svelte';
+	import { navigating } from '$app/state';
 	import type { LayoutData } from './$types';
-	import { Toaster } from 'svelte-sonner';
+	import AppToaster from '#lib/components/AppToaster.svelte';
 	import { ModeWatcher } from 'mode-watcher';
-	import SkeletonPage from '$lib/components/skeleton/SkeletonPage.svelte';
-	import SkeletonDashboard from '$lib/components/skeleton/SkeletonDashboard.svelte';
-	import SkeletonList from '$lib/components/skeleton/SkeletonList.svelte';
-	import SkeletonForm from '$lib/components/skeleton/SkeletonForm.svelte';
-	import { getSkeletonType } from '$lib/utils/skeleton-detector';
-	import ModalStackRenderer from '$lib/components/modals/ModalStackRenderer.svelte';
-	import MathKeyboardClose from '$lib/components/MathKeyboardClose.svelte';
-	import { provideReaderGrade } from '$lib/lexicon/reader-grade';
+	import SkeletonPage from '#lib/components/skeleton/SkeletonPage.svelte';
+	import SkeletonDashboard from '#lib/components/skeleton/SkeletonDashboard.svelte';
+	import SkeletonList from '#lib/components/skeleton/SkeletonList.svelte';
+	import SkeletonForm from '#lib/components/skeleton/SkeletonForm.svelte';
+	import { getSkeletonType } from '#lib/utils/skeleton-detector.ts';
+	import ModalStackRenderer from '#lib/components/modals/ModalStackRenderer.svelte';
+	import MathKeyboardClose from '#lib/components/MathKeyboardClose.svelte';
+	import { provideReaderGrade } from '#lib/dictionary/reader-grade.ts';
+	import type { Component } from 'svelte';
 
 	let { children, data }: { children: import('svelte').Snippet; data: LayoutData } = $props();
 
 	// Niveau de l'élève connecté : lu par les mots cliquables des questions
 	provideReaderGrade(() => data.profile?.grade);
+
+	// Onglet resté ouvert pendant un déploiement : sur un lien ou Précédent / Suivant, la page
+	// suivante se charge en entier avec le nouveau code (jamais sur un `goto` : en pleine activité)
+	// Lien : `cancel()` arrête la navigation de Kit (sinon l'ancien code charge la page en parallèle).
+	// Précédent / Suivant : surtout pas de `cancel()` (Kit annulerait le déplacement dans
+	// l'historique) ; l'adresse a déjà changé, on recharge.
+	beforeNavigate(({ willUnload, type, to, cancel }) => {
+		if (!to || !shouldReloadOnNavigate({ updated: updated.current, willUnload, type, to })) return;
+		if (type === 'popstate') {
+			location.reload();
+			return;
+		}
+		cancel();
+		location.href = to.url.href;
+	});
+
+	// Mesures de performance : la page affichée, par son identifiant de route (jamais son
+	// adresse réelle), à l'arrivée et à chaque navigation interne
+	afterNavigate(({ to }) => {
+		noteWebVitalsRoute(to?.route.id ?? null);
+	});
 
 	// Check if we're in a dashboard route
 	let isDashboardRoute = $derived(page.url.pathname.startsWith('/dashboard'));
@@ -78,11 +109,36 @@
 	// Determine which skeleton variant to show based on current route
 	let skeletonType = $derived(getSkeletonType(page.url.pathname));
 
-	// Initialize theme and fontSize stores (ensures DOM updates on mode/size changes)
+	// Palotin de l'élève connecté (maison, écusson, passages : chantier `palotins`).
+	// Chargé à la demande : ni le visiteur ni le professeur ne téléchargent son code,
+	// et le module d'entrée reste léger (Safari TDZ, cf. +layout.ts).
+	let PalotinPresence = $state<Component | null>(null);
+	const isStudent = $derived(data.profile?.role === 'student');
 	$effect(() => {
-		// Access to ensure reactivity
-		void theme.dark;
-		void fontSize.size;
+		if (!browser || !isStudent || PalotinPresence) return;
+		import('#lib/components/buddy/PalotinPresence.svelte')
+			.then((module) => (PalotinPresence = module.default))
+			.catch((e) => console.debug('[Palotin] Chargement impossible :', e));
+	});
+
+	// Bouton « signaler » : serveur de dev seulement. `import.meta.env.DEV` est remplacé par
+	// `false` au build, qui n'embarque donc ni le bouton ni l'adresse de sa route
+	// (garde : étape « Bouton signaler absent du build » de la CI).
+	let SignalerButton = $state<Component<{
+		account: { email: string; role: string } | null;
+	}> | null>(null);
+	const feedbackAccount = $derived(
+		data.user?.email && data.profile?.role
+			? { email: data.user.email, role: data.profile.role }
+			: null
+	);
+	$effect(() => {
+		if (!browser || SignalerButton) return;
+		if (import.meta.env.DEV) {
+			import('#lib/components/dev/SignalerButton.svelte')
+				.then((module) => (SignalerButton = module.default))
+				.catch((e) => console.debug('[Signaler] Chargement impossible :', e));
+		}
 	});
 
 	// Initialize VIP card templates store from server data
@@ -118,20 +174,28 @@
 <ModeWatcher track={true} defaultMode="system" />
 
 <!-- Loading bar that appears during navigation -->
-{#if $navigating}
+{#if navigating.to}
 	<div class="fixed top-0 right-0 left-0 z-[200] h-1 animate-pulse bg-primary shadow-lg"></div>
 {/if}
 
 <!-- Toast notifications -->
-<!-- gap={12} adds spacing between toasts to prevent overlap -->
-<!-- offset="16px" adds padding from screen edge -->
-<Toaster richColors position="top-right" expand={true} visibleToasts={5} gap={12} offset="16px" />
+<AppToaster />
 
 <!-- Modal Stack Renderer - renders modal stack from modalStack store -->
 <ModalStackRenderer />
 
 <!-- « Fermer le clavier » au-dessus du clavier virtuel MathLive, tant qu'il est ouvert -->
 <MathKeyboardClose />
+
+<!-- Palotin de l'élève : il décide lui-même des pages où il apparaît -->
+{#if PalotinPresence && isStudent}
+	<PalotinPresence />
+{/if}
+
+<!-- Bouton « signaler » : serveur de dev seulement -->
+{#if SignalerButton}
+	<SignalerButton account={feedbackAccount} />
+{/if}
 
 <div class="flex h-screen flex-col">
 	<!-- Header - only show on non-dashboard routes -->
@@ -157,7 +221,7 @@
 		>
 			<!-- Always render children so page can load -->
 			<div
-				class:opacity-0={$navigating && !isDashboardRoute}
+				class:opacity-0={navigating.to && !isDashboardRoute}
 				class:h-full={isWhiteboardRoute || isHomeRoute}
 				class="transition-opacity duration-200"
 			>
@@ -165,7 +229,7 @@
 			</div>
 
 			<!-- Overlay skeleton during navigation (only for non-dashboard routes) -->
-			{#if $navigating && !isDashboardRoute}
+			{#if navigating.to && !isDashboardRoute}
 				<div class="absolute inset-0 bg-background">
 					{#if skeletonType === 'dashboard'}
 						<SkeletonDashboard />

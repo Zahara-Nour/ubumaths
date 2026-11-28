@@ -25,8 +25,8 @@
  * - formule illisible, exception, ou rien à nettoyer : la formule d'origine.
  *
  * Une parenthèse dont le contenu nettoyé est une lettre ou un nombre disparaît
- * (`(x+0)^2` → `x^2`, `2(x+0)` → `2x`), sauf la notation fonctionnelle `C(x)` et un
- * nombre en facteur non premier (`2(3)`).
+ * (`(x+0)^2` → `x^2`, `2(x+0)` → `2x`), sauf la notation fonctionnelle (`C(x)`, `P_A(G)`)
+ * et un nombre en facteur non premier (`2(3)`).
  *
  * La syntaxe maison ne lit pas `\\leqslant`, `\\geq`, `\\neq`… : `latexRelationsToCustom`
  * les réécrit (`<=`, `>=`, `!=`) avant lecture, sinon une inégalité écrite en LaTeX
@@ -40,11 +40,11 @@ import {
 	toLatex,
 	type GenericFunctionConfig,
 	type MathNode
-} from '$lib/mathAST';
-import type { CapitalPairs } from '$lib/mathAST/parser/types';
-import { coefficientCleanupSteps } from '$lib/mathAST/cosmetic-transforms';
-import { mapNode, mapNodeTopDown } from '$lib/mathAST/transforms';
-import { positive, variable } from '$lib/mathAST/factory';
+} from '#lib/mathAST/index.ts';
+import type { CapitalPairs } from '#lib/mathAST/parser/types.ts';
+import { coefficientCleanupSteps } from '#lib/mathAST/cosmetic-transforms.ts';
+import { mapNode, mapNodeTopDown } from '#lib/mathAST/transforms.ts';
+import { positive, variable } from '#lib/mathAST/factory.ts';
 
 // Constantes
 
@@ -181,7 +181,8 @@ function lastFactor(node: MathNode): MathNode {
 
 /**
  * `(x+0)` devenu `(x)` : la parenthèse ne sert plus, `x`. Restent :
- * - la notation fonctionnelle `C(x)` (facteur précédent : une lettre ou une fonction) ;
+ * - la notation fonctionnelle `C(x)`, `P_A(G)`, `\varphi(x)` (facteur précédent : une
+ *   lettre, un nom indicé, une lettre grecque, un exposant ou une fonction) ;
  * - un nombre en facteur non premier (`2(3)` ne devient pas `2 3`) ;
  * - toute autre délimitation (valeur absolue, crochets).
  */
@@ -192,6 +193,11 @@ function withoutAtomicParentheses(ast: MathNode): MathNode {
 			const previous = lastFactor(node.left).type;
 			if (
 				previous === 'variable' ||
+				// Nom indicé (`P_A(G)`, `C_M(x)`, `f_1(x)`), lettre grecque (`\varphi(x)`),
+				// exposant (`f^(-1)(x)`) : notation fonctionnelle aussi
+				previous === 'subscript' ||
+				previous === 'greek' ||
+				previous === 'superscript' ||
 				previous === 'function' ||
 				node.right.content.type === 'number'
 			) {

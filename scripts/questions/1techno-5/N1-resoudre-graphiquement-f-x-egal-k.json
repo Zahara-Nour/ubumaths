@@ -1,0 +1,359 @@
+{
+	"id": "d0eb1666-9852-4bc5-8f7f-a0b4db23dcc3",
+	"title": "Résoudre graphiquement une équation f(x) = k",
+	"description": "Équation f(x) = k lue sur une courbe : une, deux, trois solutions, aucune ; ne pas confondre avec l'image de k",
+	"grades": ["1_TECHNO"],
+	"level": 1,
+	"delay": 90,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "La courbe $\\mathcal{C}_f$ ci-dessous représente une fonction $f$ définie sur $\\left[{{eval:z-4}}\\,;{{eval:z+4}}\\right]$.\n\n```courbe\nx: -6 ; 6\ny: -8 ; 8\ngrille: 1 ; 1\nf(x) = ({{s}})*((x-({{z}}))^3/16+(x-({{z}}))/2)+({{k}}) sur [{{eval:z-4}} ; {{eval:z+4}}]   bleu   nom=C_f\ntaille: moyenne\ndescription: Courbe d'une fonction f.\n```\n\nRésous graphiquement l'équation $f(x)={{k}}$.\n\nL'ensemble des solutions est $S=?$.",
+			"blanks": [
+				{
+					"expectedAnswer": "\\{ {{z}} \\}",
+					"answerKind": "intervalles"
+				}
+			],
+			"variables": [
+				{
+					"name": "s",
+					"expression": "1|-1"
+				},
+				{
+					"name": "z",
+					"expression": "-2..2"
+				},
+				{
+					"name": "k",
+					"expression": "-2..2!0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On trace la droite horizontale d'équation $y={{k}}$ : les solutions sont les **abscisses** des points où elle coupe $\\mathcal{C}_f$.",
+					"```courbe\nx: -6 ; 6\ny: -8 ; 8\ngrille: 1 ; 1\nf(x) = ({{s}})*((x-({{z}}))^3/16+(x-({{z}}))/2)+({{k}}) sur [{{eval:z-4}} ; {{eval:z+4}}]   bleu   nom=C_f\ng(x) = {{k}}   rouge   pointillé\npoints: A({{z}} ; {{k}}), A'({{z}} ; 0)\ntaille: moyenne\ndescription: Courbe d'une fonction f.\n```",
+					"La droite coupe la courbe en un seul point, d'abscisse ${{z}}$. $S=\\textcolor{{{color:primary.0}}}{\\{ {{z}} \\}}$."
+				]
+			}
+		},
+		{
+			"statement": "La courbe $\\mathcal{C}_f$ ci-dessous représente une fonction $f$ définie sur $\\left[{{eval:r-1}}\\,;{{eval:s+1}}\\right]$.\n\n```courbe\nx: -6 ; 6\ny: -8 ; 8\ngrille: 1 ; 1\nf(x) = ({{a}})*(x-({{r}}))*(x-({{s}}))/2+({{k}}) sur [{{eval:r-1}} ; {{eval:s+1}}]   bleu   nom=C_f\ntaille: moyenne\ndescription: Courbe d'une fonction f.\n```\n\nRésous graphiquement l'équation $f(x)={{k}}$.\n\nL'ensemble des solutions est $S=?$.",
+			"blanks": [
+				{
+					"expectedAnswer": "\\{ {{r}} ; {{s}} \\}",
+					"answerKind": "intervalles"
+				}
+			],
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1|-1"
+				},
+				{
+					"name": "r",
+					"expression": "-4..0"
+				},
+				{
+					"name": "d",
+					"expression": "2..4"
+				},
+				{
+					"name": "s",
+					"expression": "eval:r+d"
+				},
+				{
+					"name": "k",
+					"expression": "-3..3!0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On trace la droite horizontale d'équation $y={{k}}$ : les solutions sont les **abscisses** des points où elle coupe $\\mathcal{C}_f$.",
+					"```courbe\nx: -6 ; 6\ny: -8 ; 8\ngrille: 1 ; 1\nf(x) = ({{a}})*(x-({{r}}))*(x-({{s}}))/2+({{k}}) sur [{{eval:r-1}} ; {{eval:s+1}}]   bleu   nom=C_f\ng(x) = {{k}}   rouge   pointillé\npoints: A({{r}} ; {{k}}), B({{s}} ; {{k}}), A'({{r}} ; 0), B'({{s}} ; 0)\ntaille: moyenne\ndescription: Courbe d'une fonction f.\n```",
+					"La droite coupe la courbe en deux points, d'abscisses ${{r}}$ et ${{s}}$. $S=\\textcolor{{{color:primary.0}}}{\\{ {{r}} ; {{s}} \\}}$."
+				]
+			},
+			"conditions": ["s <= 4"]
+		},
+		{
+			"statement": "La courbe $\\mathcal{C}_f$ ci-dessous représente une fonction $f$ définie sur $\\left[{{eval:r-1}}\\,;{{eval:t+1}}\\right]$.\n\n```courbe\nx: -6 ; 6\ny: -8 ; 8\ngrille: 1 ; 1\nf(x) = ({{a}})*(x-({{r}}))*(x-({{s}}))*(x-({{t}}))/4+({{k}}) sur [{{eval:r-1}} ; {{eval:t+1}}]   bleu   nom=C_f\ntaille: moyenne\ndescription: Courbe d'une fonction f.\n```\n\nRésous graphiquement l'équation $f(x)={{k}}$.\n\nL'ensemble des solutions est $S=?$.",
+			"blanks": [
+				{
+					"expectedAnswer": "\\{ {{r}} ; {{s}} ; {{t}} \\}",
+					"answerKind": "intervalles"
+				}
+			],
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1|-1"
+				},
+				{
+					"name": "r",
+					"expression": "-4..0"
+				},
+				{
+					"name": "d",
+					"expression": "2|3"
+				},
+				{
+					"name": "g",
+					"expression": "2|3"
+				},
+				{
+					"name": "s",
+					"expression": "eval:r+d"
+				},
+				{
+					"name": "t",
+					"expression": "eval:s+g"
+				},
+				{
+					"name": "k",
+					"expression": "-3..3!0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On trace la droite horizontale d'équation $y={{k}}$ : les solutions sont les **abscisses** des points où elle coupe $\\mathcal{C}_f$.",
+					"```courbe\nx: -6 ; 6\ny: -8 ; 8\ngrille: 1 ; 1\nf(x) = ({{a}})*(x-({{r}}))*(x-({{s}}))*(x-({{t}}))/4+({{k}}) sur [{{eval:r-1}} ; {{eval:t+1}}]   bleu   nom=C_f\ng(x) = {{k}}   rouge   pointillé\npoints: A({{r}} ; {{k}}), B({{s}} ; {{k}}), C({{t}} ; {{k}})\ntaille: moyenne\ndescription: Courbe d'une fonction f.\n```",
+					"La droite coupe la courbe en trois points, d'abscisses ${{r}}$, ${{s}}$ et ${{t}}$. $S=\\textcolor{{{color:primary.0}}}{\\{ {{r}} ; {{s}} ; {{t}} \\}}$."
+				]
+			},
+			"conditions": ["d + g <= 5", "t <= 4", "abs(k) + 2.25*(d+g) <= 12.25"]
+		},
+		{
+			"statement": "La courbe $\\mathcal{C}_f$ ci-dessous représente une fonction $f$ définie sur $\\left[{{eval:m-3}}\\,;{{eval:m+3}}\\right]$.\n\n```courbe\nx: -6 ; 6\ny: -8 ; 8\ngrille: 1 ; 1\nf(x) = ({{a}})*(x-({{m}}))^2/2+({{M}}) sur [{{eval:m-3}} ; {{eval:m+3}}]   bleu   nom=C_f\ntaille: moyenne\ndescription: Courbe d'une fonction f.\n```\n\nRésous graphiquement l'équation $f(x)={{k}}$.\n\nL'ensemble des solutions est $S=?$.",
+			"blanks": [
+				{
+					"expectedAnswer": "\\varnothing",
+					"answerKind": "intervalles"
+				}
+			],
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1|-1"
+				},
+				{
+					"name": "m",
+					"expression": "-2..2"
+				},
+				{
+					"name": "M",
+					"expression": "-2..2"
+				},
+				{
+					"name": "h",
+					"expression": "1..3"
+				},
+				{
+					"name": "k",
+					"expression": "eval:M-(a)*(h)"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On trace la droite horizontale d'équation $y={{k}}$.",
+					"```courbe\nx: -6 ; 6\ny: -8 ; 8\ngrille: 1 ; 1\nf(x) = ({{a}})*(x-({{m}}))^2/2+({{M}}) sur [{{eval:m-3}} ; {{eval:m+3}}]   bleu   nom=C_f\ng(x) = {{k}}   rouge   pointillé\ntaille: moyenne\ndescription: Courbe d'une fonction f.\n```",
+					"La courbe reste {{if:a>0|au-dessus|au-dessous}} de cette droite : elle ne la coupe pas. L'équation n'a aucune solution, $S=\\textcolor{{{color:primary.0}}}{\\varnothing}$."
+				]
+			}
+		},
+		{
+			"statement": "La courbe $\\mathcal{C}_f$ ci-dessous représente une fonction $f$ définie sur $\\left[{{eval:r-1}}\\,;{{eval:s+1}}\\right]$.\n\n```courbe\nx: -6 ; 6\ny: -8 ; 8\ngrille: 1 ; 1\nf(x) = ({{a}})*(x-({{r}}))*(x-({{s}}))/2+({{k}}) sur [{{eval:r-1}} ; {{eval:s+1}}]   bleu   nom=C_f\ntaille: moyenne\ndescription: Courbe d'une fonction f.\n```\n\nPour résoudre graphiquement l'équation $f(x)={{k}}$, on cherche :\n\n```choix\n- les abscisses des points de $\\mathcal{C}_f$ dont l'ordonnée vaut ${{k}}$\n- l'ordonnée du point de $\\mathcal{C}_f$ d'abscisse ${{k}}$\n- les points où $\\mathcal{C}_f$ coupe l'axe des abscisses\n- le point où $\\mathcal{C}_f$ coupe l'axe des ordonnées\n```",
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1|-1"
+				},
+				{
+					"name": "r",
+					"expression": "-4..0"
+				},
+				{
+					"name": "d",
+					"expression": "2..4"
+				},
+				{
+					"name": "s",
+					"expression": "eval:r+d"
+				},
+				{
+					"name": "k",
+					"expression": "-3..3!0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$f(x)={{k}}$ : on connaît l'**image**, ${{k}}$, et on cherche les **antécédents** $x$.",
+					"Sur la courbe, ce sont les abscisses des points d'ordonnée ${{k}}$, où la droite $y={{k}}$ coupe $\\mathcal{C}_f$. L'ordonnée du point d'abscisse ${{k}}$, elle, serait l'image $f({{k}})$."
+				]
+			},
+			"conditions": ["s <= 4"]
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Une solution",
+			"variationIndex": 0,
+			"variables": {
+				"s": "1",
+				"z": "1",
+				"k": "2"
+			},
+			"answers": ["\\{1\\}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : image f(k) lue",
+			"variationIndex": 0,
+			"variables": {
+				"s": "1",
+				"z": "1",
+				"k": "2"
+			},
+			"answers": ["\\{2\\}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Deux solutions",
+			"variationIndex": 1,
+			"variables": {
+				"a": "1",
+				"r": "-3",
+				"d": "3",
+				"s": "0",
+				"k": "2"
+			},
+			"answers": ["\\{-3;0\\}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : une seule",
+			"variationIndex": 1,
+			"variables": {
+				"a": "1",
+				"r": "-3",
+				"d": "3",
+				"s": "0",
+				"k": "2"
+			},
+			"answers": ["\\{0\\}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Trois solutions",
+			"variationIndex": 2,
+			"variables": {
+				"a": "1",
+				"r": "-2",
+				"d": "2",
+				"g": "3",
+				"s": "0",
+				"t": "3",
+				"k": "1"
+			},
+			"answers": ["\\{-2;0;3\\}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : il en manque une",
+			"variationIndex": 2,
+			"variables": {
+				"a": "1",
+				"r": "-2",
+				"d": "2",
+				"g": "3",
+				"s": "0",
+				"t": "3",
+				"k": "1"
+			},
+			"answers": ["\\{-2;3\\}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Aucune solution",
+			"variationIndex": 3,
+			"variables": {
+				"a": "1",
+				"m": "0",
+				"M": "1",
+				"h": "2",
+				"k": "-1"
+			},
+			"answers": ["\\varnothing"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : le sommet",
+			"variationIndex": 3,
+			"variables": {
+				"a": "1",
+				"m": "0",
+				"M": "1",
+				"h": "2",
+				"k": "-1"
+			},
+			"answers": ["\\{0\\}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Antécédents",
+			"variationIndex": 4,
+			"variables": {
+				"a": "1",
+				"r": "-3",
+				"d": "3",
+				"s": "0",
+				"k": "2"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : image",
+			"variationIndex": 4,
+			"variables": {
+				"a": "1",
+				"r": "-3",
+				"d": "3",
+				"s": "0",
+				"k": "2"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

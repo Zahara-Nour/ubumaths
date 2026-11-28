@@ -1,12 +1,12 @@
 <script lang="ts">
-	import { lore } from '$lib/config/lore';
+	import { lore } from '#lib/config/lore.ts';
 	import { goto, replaceState } from '$app/navigation';
 	import { page } from '$app/state';
 	import { onMount } from 'svelte';
-	import { Button } from '$lib/components/ui/button';
-	import BackLink from '$lib/components/navigation/BackLink.svelte';
-	import * as Card from '$lib/components/ui/card';
-	import * as Dialog from '$lib/components/ui/dialog';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import BackLink from '#lib/components/navigation/BackLink.svelte';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import * as Dialog from '#lib/components/ui/dialog/index.ts';
 	import {
 		ShoppingCart,
 		Trash2,
@@ -16,13 +16,13 @@
 		Save,
 		AlertCircle
 	} from '@lucide/svelte';
-	import { questionCart } from '$lib/stores/questionCart.svelte';
-	import { questionTemplatesCache } from '$lib/stores/questionTemplates.svelte';
-	import CartQuestionCard from '$lib/components/CartQuestionCard.svelte';
-	import TestModeDialog from '$lib/components/test/TestModeDialog.svelte';
-	import SaveSeriesDialog from '$lib/components/series/SaveSeriesDialog.svelte';
-	import SeriesLinkShare from '$lib/components/series/SeriesLinkShare.svelte';
-	import { toaster } from '$lib/stores/toaster.svelte';
+	import { questionCart } from '#lib/stores/questionCart.svelte.ts';
+	import { questionTemplatesCache } from '#lib/stores/questionTemplates.svelte.ts';
+	import CartQuestionCard from '#lib/components/CartQuestionCard.svelte';
+	import TestModeDialog from '#lib/components/test/TestModeDialog.svelte';
+	import SaveSeriesDialog from '#lib/components/series/SaveSeriesDialog.svelte';
+	import SeriesLinkShare from '#lib/components/series/SeriesLinkShare.svelte';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
 	import {
 		SERIES_LINK_PARAM,
 		deleteSeriesLink,
@@ -30,9 +30,22 @@
 		hasSeriesLink,
 		parseSeriesLink,
 		type SeriesItem
-	} from '$lib/validation/series';
-	import { templatePreview } from '$lib/questions/catalogue';
-	import type { TestMode } from '$lib/types/test';
+	} from '#lib/validation/series.ts';
+	import { templatePreview } from '#lib/questions/catalogue.ts';
+	import {
+		allowedVariations,
+		distinctLimit,
+		variationExample
+	} from '#lib/questions/series-draw.ts';
+	import { generateInstance } from '#lib/questions/generator/instance-generator.ts';
+	import { fetchDurationSignals } from '#lib/utils/duration-signals.ts';
+	import {
+		observedSuggestion,
+		tooShortAt,
+		type DurationSignalsResponse
+	} from '#lib/types/duration-signals.ts';
+	import type { TestMode } from '#lib/types/test.ts';
+	import type { QuestionTemplate } from '#lib/questions/types.ts';
 	import type { PageData } from './$types';
 
 	let { data }: { data: PageData } = $props();
@@ -50,6 +63,31 @@
 	let isEmpty = $derived(cartItems.length === 0);
 	let totalInstances = $derived(questionCart.totalInstances);
 
+	// Durées trop courtes (chantier `durees-trop-courtes`) et durées observées
+	// (chantier `durees-ajustees`) chez les élèves du prof
+	let durationSignals = $state<DurationSignalsResponse | null>(null);
+	let signalTemplateIds = $derived(
+		isTeacher ? [...new Set(cartItems.map((i) => i.templateId))].sort().join(',') : ''
+	);
+
+	// Relu quand les modèles du panier changent (pas la durée : l'entrée se choisit ici)
+	$effect(() => {
+		const ids = signalTemplateIds;
+		if (!ids) {
+			durationSignals = null;
+			return;
+		}
+		// Pas de marque périmée pendant la lecture
+		durationSignals = null;
+		let cancelled = false;
+		void fetchDurationSignals(ids.split(',')).then((signals) => {
+			if (!cancelled) durationSignals = signals;
+		});
+		return () => {
+			cancelled = true;
+		};
+	});
+
 	// Test dialog state
 	let testDialogOpen = $state(false);
 	let saveSeriesDialogOpen = $state(false);
@@ -63,7 +101,9 @@
 	/**
 	 * Modèle et aperçu de chaque ligne du panier (graine fixe, calculé une fois
 	 * par modèle : changer une quantité ne relance aucun calcul). Modèle absent
-	 * de la liste des publiés : retiré (Q7).
+	 * de la liste des publiés : retiré (Q7). Variations choisies (idée 2) :
+	 * l'aperçu montre un exemple de la première d'entre elles, recalculé quand
+	 * le panier change (pas de cache : un tirage court, graine fixe).
 	 */
 	let cartItemsWithInstances = $derived(
 		cartItems.map((item) => {
@@ -71,10 +111,40 @@
 			return {
 				item,
 				template,
-				instance: template ? (templatePreview(template) ?? undefined) : undefined
+				instance: template ? (previewOf(template, item.variations) ?? undefined) : undefined
 			};
 		})
 	);
+
+	/** Aperçu d'une ligne : celui du modèle, ou un exemple de la 1re variation choisie */
+	function previewOf(template: QuestionTemplate, variations: readonly number[] | undefined) {
+		if (!variations) return templatePreview(template);
+		return variationExample(template, allowedVariations(template, variations)[0], generateInstance);
+	}
+
+	/** Questions différentes d'un modèle (variations choisies), quand la quantité les dépasse */
+	function distinctMaxOf(
+		template: QuestionTemplate | undefined,
+		quantity: number,
+		variations: readonly number[] | undefined
+	) {
+		return template ? distinctLimit(template, quantity, generateInstance, variations) : null;
+	}
+
+	function handleUpdateVariations(templateId: string, variations: number[] | undefined) {
+		questionCart.setVariations(templateId, variations);
+	}
+
+	function handleUpdateChoiceVariations(
+		templateId: string,
+		choiceVariations: number[] | undefined
+	) {
+		questionCart.setChoiceVariations(templateId, choiceVariations);
+	}
+
+	function handleUpdateQuantity(templateId: string, quantity: number) {
+		questionCart.updateQuantity(templateId, quantity);
+	}
 
 	function handleIncrementQuantity(templateId: string) {
 		questionCart.incrementQuantity(templateId);
@@ -97,7 +167,7 @@
 	 * Clear entire cart with confirmation
 	 */
 	function handleClearCart() {
-		if (confirm('Êtes-vous sûr de vouloir vider votre panier ? Cette action est irréversible.')) {
+		if (confirm('Vider ta série ? Cette action est irréversible.')) {
 			questionCart.clearCart();
 		}
 	}
@@ -155,7 +225,7 @@
 	 * Retire la composition de l'URL : un rechargement ne redemande rien (Q45)
 	 */
 	function clearSeriesParam() {
-		const url = new URL(page.url);
+		const url = new URL(page.url.href);
 		deleteSeriesLink(url.searchParams);
 		replaceState(`${url.pathname}${url.search}${url.hash}`, page.state);
 	}
@@ -164,10 +234,10 @@
 	function resolveIncomingSeries(choice: 'replace' | 'add' | 'cancel') {
 		if (incomingSeries && choice === 'replace') {
 			questionCart.replaceWith(incomingSeries);
-			toaster.success('Série chargée dans ton panier');
+			toaster.success('Série chargée dans « Ma série »');
 		} else if (incomingSeries && choice === 'add') {
 			questionCart.mergeItems(incomingSeries);
-			toaster.success('Série ajoutée à ton panier');
+			toaster.success('Questions ajoutées à ta série');
 		}
 		incomingSeries = null;
 		incomingDialogOpen = false;
@@ -199,7 +269,7 @@
 		}
 		if (questionCart.totalItems === 0) {
 			questionCart.replaceWith(parsed.lines);
-			toaster.success('Série chargée dans ton panier');
+			toaster.success('Série chargée dans « Ma série »');
 			clearSoon();
 			return;
 		}
@@ -209,7 +279,7 @@
 </script>
 
 <svelte:head>
-	<title>Panier - Automaths | Chiphre</title>
+	<title>Ma série - Automaths | Chiphre</title>
 </svelte:head>
 
 <div class="container mx-auto max-w-6xl px-4 py-8">
@@ -220,7 +290,7 @@
 			<div>
 				<h1 class="flex items-center gap-3 text-3xl font-bold tracking-tight">
 					<ShoppingCart class="h-8 w-8" />
-					Mon Panier
+					Ma série
 				</h1>
 			</div>
 		</div>
@@ -228,7 +298,7 @@
 		{#if !isEmpty}
 			<Button variant="outline" onclick={handleClearCart}>
 				<Trash2 class="mr-2 h-4 w-4" />
-				Vider le panier
+				Vider ma série
 			</Button>
 		{/if}
 	</div>
@@ -239,7 +309,7 @@
 			class="mb-6 flex items-start gap-3 rounded-lg border border-destructive/50 bg-destructive/10 p-4 text-sm"
 		>
 			<AlertCircle class="mt-0.5 h-4 w-4 shrink-0 text-destructive" />
-			<p>{linkError} Ton panier n'a pas été modifié.</p>
+			<p>{linkError} Ta série n'a pas été modifiée.</p>
 		</div>
 	{/if}
 
@@ -249,9 +319,9 @@
 			<Card.Content class="flex min-h-96 items-center justify-center p-12">
 				<div class="text-center">
 					<ShoppingCart class="mx-auto mb-4 h-16 w-16 text-muted-foreground/50" />
-					<h2 class="text-xl font-semibold text-muted-foreground">Votre panier est vide</h2>
+					<h2 class="text-xl font-semibold text-muted-foreground">Ta série est vide</h2>
 					<p class="mt-2 text-sm text-muted-foreground">
-						Ajoutez des questions depuis la page Automaths pour commencer.
+						Ajoute des questions depuis la page Automaths pour commencer.
 					</p>
 					<Button onclick={handleBackToSelection} class="mt-6">
 						<ArrowLeft class="mr-2 h-4 w-4" />
@@ -279,8 +349,18 @@
 							{instance}
 							onIncrementQuantity={handleIncrementQuantity}
 							onDecrementQuantity={handleDecrementQuantity}
+							onUpdateQuantity={handleUpdateQuantity}
 							onUpdateDelay={handleUpdateDelay}
+							distinctMax={distinctMaxOf(template, item.quantity, item.variations)}
+							onUpdateVariations={isTeacher ? handleUpdateVariations : undefined}
+							onUpdateChoiceVariations={isTeacher ? handleUpdateChoiceVariations : undefined}
 							onRemove={handleRemove}
+							tooShort={tooShortAt(durationSignals?.signals, item.templateId, item.delay)}
+							observedDelay={observedSuggestion(
+								durationSignals?.observed,
+								item.templateId,
+								item.delay
+							)}
 						/>
 					{/each}
 				</div>
@@ -334,8 +414,8 @@
 						<div>
 							<p class="font-semibold">Partager cette série</p>
 							<p class="text-xs text-muted-foreground">
-								Sans forme, le lien met la série dans le panier de qui l'ouvre ; avec une forme, il
-								la lance directement.
+								Sans forme, le lien met la série dans « Ma série » de qui l'ouvre ; avec une forme,
+								il la lance directement.
 							</p>
 						</div>
 						<SeriesLinkShare items={cartItems} canMakeQr={isTeacher} />
@@ -350,11 +430,11 @@
 <Dialog.Root bind:open={incomingDialogOpen} onOpenChange={handleIncomingOpenChange}>
 	<Dialog.Content class="max-w-md">
 		<Dialog.Header>
-			<Dialog.Title>Remplacer ton panier par cette série ?</Dialog.Title>
+			<Dialog.Title>Remplacer ta série par celle du lien ?</Dialog.Title>
 			<Dialog.Description>
 				{#if incomingSeries}
 					Ce lien contient {incomingSeries.length} modèle{incomingSeries.length > 1 ? 's' : ''}
-					de questions. Tu peux aussi les ajouter à ton panier actuel.
+					de questions. Tu peux aussi les ajouter à ta série actuelle.
 				{/if}
 			</Dialog.Description>
 		</Dialog.Header>

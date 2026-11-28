@@ -19,10 +19,10 @@
  * - Only returns classes owned by the teacher
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireRole } from '$lib/server/middleware/auth';
-import { createServerLogger } from '$lib/utils/logger';
+import { requireRole } from '#lib/server/middleware/auth.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/whiteboard/classes-for-drawer/+server');
 
@@ -74,7 +74,7 @@ export const GET: RequestHandler = async ({ locals }) => {
 			schedules: cls.class_schedules || []
 		}));
 
-		return json({ classes: classesForDrawer });
+		return Response.json({ classes: classesForDrawer });
 	} catch (err) {
 		// Re-throw SvelteKit errors
 		if (err && typeof err === 'object' && 'status' in err) {

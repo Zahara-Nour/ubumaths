@@ -1,24 +1,25 @@
 /**
- * Test System Types
- * Types for test/assessment functionality (display, interactive, course modes)
+ * Types des formes de série (TestMode) : En classe, Contrôle blanc, Course aux
+ * nombres, Flash-cards, Saisie (CONTEXT.md, ADR 0037).
  */
 
-import type { SeriesItem } from '$lib/validation/series';
-import type { QuestionInstance } from '$lib/questions/types';
-import type { AnswerData } from '$lib/types/question-display';
+import type { SeriesItem } from '#lib/validation/series.ts';
+import type { QuestionInstance } from '#lib/questions/types.ts';
+import type { AnswerData } from '#lib/types/question-display.ts';
 
 // ===========================================================================
 // TEST MODES
 // ===========================================================================
 
 /**
- * Test mode type
- * - display: Slideshow mode for revision/memorization (no scoring)
- * - interactive: Quiz mode with answer validation and scoring
- * - course: "Course aux nombres" - all questions displayed at once with time limit
- * - flash: « Flash-cards » - l'élève retourne chaque carte et s'auto-évalue, sans chrono
+ * Forme de série
+ * - display : « En classe » - projetée par le prof, questions une à une avec minuteur, sans note
+ * - interactive : « Contrôle blanc » - l'élève répond question par question, correction et note à la fin
+ * - course : « Course aux nombres » - toutes les questions à la fois, temps global, score
+ * - flash : « Flash-cards » - l'élève retourne chaque carte et s'auto-évalue, sans chrono
+ * - typing : « Saisie » - l'élève tape sa réponse, la carte se retourne après « Valider », sans chrono
  */
-export type TestMode = 'display' | 'interactive' | 'course' | 'flash';
+export type TestMode = 'display' | 'interactive' | 'course' | 'flash' | 'typing';
 
 // ===========================================================================
 // TEST CONFIGURATION
@@ -101,6 +102,11 @@ export interface TestAnswerResult {
 	isCorrect: boolean;
 	timeSpent?: number; // Time spent on this question (seconds)
 	attempts?: number;
+	/**
+	 * Fin de la question (contrôle, PR 4 bis) : validée, ou temps écoulé ; absente
+	 * pour une question laissée par « Terminer »
+	 */
+	endReason?: 'validated' | 'timeout';
 }
 
 // ===========================================================================

@@ -1,0 +1,1635 @@
+[
+	{
+		"id": "20907b18-072c-417e-8a4b-7b863104cedc",
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"grades": ["CM1"],
+		"delay": 90,
+		"level": 2,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				],
+				"statement": "Quelle phrase est vraie ?\n\n```choix\n- {{if:f==1|Les côtés opposés d'un rectangle sont parallèles.|{{if:f==2|Les côtés opposés d'un losange sont parallèles.|{{if:f==3|Un carré a ses côtés opposés parallèles, quatre côtés de la même longueur et quatre angles droits.|{{if:f==4|Les trois côtés d'un triangle équilatéral ont la même longueur.|{{if:f==5|Un triangle isocèle a deux côtés de la même longueur.|Un triangle rectangle a un angle droit.}}}}}}}}}}\n- {{if:f==1|Les quatre côtés d'un rectangle ont toujours la même longueur.|{{if:f==2|Un losange a quatre angles droits.|{{if:f==3|Un carré n'a aucun côté parallèle à un autre.|{{if:f==4|Un triangle équilatéral a un angle droit.|{{if:f==5|Un triangle isocèle a toujours un angle droit.|Un triangle rectangle a deux angles droits.}}}}}}}}}}\n- {{if:f==1|Un rectangle a deux angles droits.|{{if:f==2|Un losange a seulement deux côtés de la même longueur.|{{if:f==3|Un carré a deux côtés longs et deux côtés courts.|{{if:f==4|Un triangle équilatéral a deux côtés parallèles.|{{if:f==5|Un triangle isocèle a deux côtés parallèles.|Un triangle rectangle a deux côtés parallèles.}}}}}}}}}}\n- {{if:f==1|Deux côtés qui se suivent dans un rectangle sont parallèles.|{{if:f==2|Deux côtés qui se suivent dans un losange sont toujours perpendiculaires.|{{if:f==3|Un carré a un seul angle droit.|{{if:f==4|Un triangle équilatéral a seulement deux côtés de la même longueur.|{{if:f==5|Les trois côtés d'un triangle isocèle ont toujours des longueurs différentes.|Les trois côtés d'un triangle rectangle ont toujours la même longueur.}}}}}}}}}}\n```",
+				"variables": [
+					{
+						"name": "f",
+						"expression": "1..6"
+					}
+				],
+				"correction": {
+					"steps": [
+						"{{if:f==1|Un rectangle a quatre angles droits ; ses côtés opposés sont parallèles et de la même longueur.|{{if:f==2|Un losange a quatre côtés de la même longueur ; ses côtés opposés sont parallèles.|{{if:f==3|Un carré est à la fois un rectangle et un losange.|{{if:f==4|Un triangle équilatéral a trois côtés de la même longueur.|{{if:f==5|Un triangle isocèle a (au moins) deux côtés de la même longueur.|Un triangle rectangle a un angle droit, et un seul.}}}}}}}}}}",
+						"La phrase vraie : **{{if:f==1|Les côtés opposés d'un rectangle sont parallèles.|{{if:f==2|Les côtés opposés d'un losange sont parallèles.|{{if:f==3|Un carré a ses côtés opposés parallèles, quatre côtés de la même longueur et quatre angles droits.|{{if:f==4|Les trois côtés d'un triangle équilatéral ont la même longueur.|{{if:f==5|Un triangle isocèle a deux côtés de la même longueur.|Un triangle rectangle a un angle droit.}}}}}}}}}}**"
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{z}}"
+					}
+				],
+				"statement": "$ABCD$ est un {{if:q==1|rectangle|losange}}. Quel côté est parallèle au côté ${{if:s==0|[AB]|{{if:s==1|[BC]|{{if:s==2|[CD]|[DA]}}}}}}$ ?\n\n```figure\nfenetre: 0 ; 10 ; 0 ; 7\ndescription: Un quadrilatère ABCD.\n---\n{{if:q==1|A = point(2.22, 1.17, etiquette=\"bas-gauche\")\nB = point(8.48, 2.5, etiquette=\"droite\")\nC = point(7.78, 5.83, etiquette=\"haut-droite\")\nD = point(1.52, 4.5, etiquette=\"gauche\")\npolygone(A, B, C, D, couleur=\"bleu\", epaisseur=2)|A = point(4.35, 1.71, etiquette=\"bas\")\nB = point(8.01, 2.41, etiquette=\"droite\")\nC = point(5.65, 5.29, etiquette=\"haut\")\nD = point(1.99, 4.59, etiquette=\"gauche\")\npolygone(A, B, C, D, couleur=\"bleu\", epaisseur=2)}}\n```\n\n```choix\nmelanger: non\n- $[AB]$\n- $[BC]$\n- $[CD]$\n- $[DA]$\n```",
+				"variables": [
+					{
+						"name": "q",
+						"expression": "1..2"
+					},
+					{
+						"name": "s",
+						"expression": "0..3"
+					},
+					{
+						"name": "z",
+						"expression": "eval:(1-min(abs(s-0),1))*2+(1-min(abs(s-1),1))*3+(1-min(abs(s-2),1))*0+(1-min(abs(s-3),1))*1"
+					}
+				],
+				"correction": {
+					"steps": [
+						"Dans un {{if:q==1|rectangle|losange}}, les **côtés opposés** sont parallèles.",
+						"Le côté opposé à ${{if:s==0|[AB]|{{if:s==1|[BC]|{{if:s==2|[CD]|[DA]}}}}}}$ est $\\textcolor{{{color:primary.0}}}{{{if:s==0|[CD]|{{if:s==1|[DA]|{{if:s==2|[AB]|[BC]}}}}}}}$."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{z}}"
+					}
+				],
+				"statement": "$ABC$ est un triangle isocèle en ${{if:v==0|A|{{if:v==1|B|C}}}}$. Quel côté a la même longueur que ${{if:v==0|[AB]|{{if:v==1|[BC]|[CA]}}}}$ ?\n\n```figure\nfenetre: 0 ; 10 ; 0 ; 7\ndescription: Un triangle ABC.\n---\n{{if:v==0|{{if:o==0|A = point(5.0, 5.8, etiquette=\"haut\")\nB = point(3.1, 1.2, etiquette=\"bas-gauche\")\nC = point(6.9, 1.2, etiquette=\"bas-droite\")\npolygone(A, B, C, couleur=\"bleu\", epaisseur=2)|{{if:o==1|A = point(2.9, 5.93, etiquette=\"haut-gauche\")\nB = point(3.98, 1.07, etiquette=\"bas\")\nC = point(7.1, 3.25, etiquette=\"droite\")\npolygone(A, B, C, couleur=\"bleu\", epaisseur=2)|A = point(3.43, 1.01, etiquette=\"bas\")\nB = point(6.79, 4.69, etiquette=\"droite\")\nC = point(3.21, 5.99, etiquette=\"haut-gauche\")\npolygone(A, B, C, couleur=\"bleu\", epaisseur=2)}}}}|{{if:v==1|{{if:o==0|B = point(5.0, 5.8, etiquette=\"haut\")\nC = point(3.1, 1.2, etiquette=\"bas-gauche\")\nA = point(6.9, 1.2, etiquette=\"bas-droite\")\npolygone(B, C, A, couleur=\"bleu\", epaisseur=2)|{{if:o==1|B = point(2.9, 5.93, etiquette=\"haut-gauche\")\nC = point(3.98, 1.07, etiquette=\"bas\")\nA = point(7.1, 3.25, etiquette=\"droite\")\npolygone(B, C, A, couleur=\"bleu\", epaisseur=2)|B = point(3.43, 1.01, etiquette=\"bas\")\nC = point(6.79, 4.69, etiquette=\"droite\")\nA = point(3.21, 5.99, etiquette=\"haut-gauche\")\npolygone(B, C, A, couleur=\"bleu\", epaisseur=2)}}}}|{{if:o==0|C = point(5.0, 5.8, etiquette=\"haut\")\nA = point(3.1, 1.2, etiquette=\"bas-gauche\")\nB = point(6.9, 1.2, etiquette=\"bas-droite\")\npolygone(C, A, B, couleur=\"bleu\", epaisseur=2)|{{if:o==1|C = point(2.9, 5.93, etiquette=\"haut-gauche\")\nA = point(3.98, 1.07, etiquette=\"bas\")\nB = point(7.1, 3.25, etiquette=\"droite\")\npolygone(C, A, B, couleur=\"bleu\", epaisseur=2)|C = point(3.43, 1.01, etiquette=\"bas\")\nA = point(6.79, 4.69, etiquette=\"droite\")\nB = point(3.21, 5.99, etiquette=\"haut-gauche\")\npolygone(C, A, B, couleur=\"bleu\", epaisseur=2)}}}}}}}}\n```\n\n```choix\nmelanger: non\n- $[AB]$\n- $[BC]$\n- $[CA]$\n```",
+				"variables": [
+					{
+						"name": "v",
+						"expression": "0..2"
+					},
+					{
+						"name": "o",
+						"expression": "0..2"
+					},
+					{
+						"name": "z",
+						"expression": "eval:(1-min(abs(v-0),1))*2+(1-min(abs(v-1),1))*0+(1-min(abs(v-2),1))*1"
+					}
+				],
+				"correction": {
+					"steps": [
+						"Un triangle isocèle en ${{if:v==0|A|{{if:v==1|B|C}}}}$ a ses deux côtés qui partent de ${{if:v==0|A|{{if:v==1|B|C}}}}$ de la même longueur.",
+						"Ces deux côtés sont ${{if:v==0|[AB]|{{if:v==1|[BC]|[CA]}}}}$ et $\\textcolor{{{color:primary.0}}}{{{if:v==0|[AC]|{{if:v==1|[BA]|[CB]}}}}}$."
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "draft",
+		"title": "Côtés parallèles, côtés égaux : les figures usuelles",
+		"description": "Propriétés du rectangle, du losange, du carré et des triangles particuliers : phrase vraie, côté parallèle à un côté donné, côtés égaux du triangle isocèle",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"f": "2"
+				},
+				"description": "Phrase vraie du losange",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["1"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"f": "2"
+				},
+				"description": "Erreur : le losange a 4 angles droits",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["3"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"q": "1",
+					"s": "1",
+					"z": "3"
+				},
+				"description": "Rectangle : parallèle à [BC] = [DA]",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["1"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"q": "2",
+					"s": "0",
+					"z": "2"
+				},
+				"description": "Erreur : côté consécutif",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"o": "0",
+					"v": "1",
+					"z": "0"
+				},
+				"description": "Isocèle en B : [BA]",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["2"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"o": "0",
+					"v": "1",
+					"z": "0"
+				},
+				"description": "Erreur : la base",
+				"variationIndex": 2
+			}
+		],
+		"classification_node_id": null
+	},
+	{
+		"id": "265ed3cc-fad4-4859-80ff-58abeb2912c1",
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"grades": ["CM1", "CM2"],
+		"delay": 90,
+		"level": 2,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{c}}"
+					}
+				],
+				"statement": "Ces deux droites sont-elles parallèles ?\n\n```figure\nfenetre: -5 ; 5 ; -4 ; 4\ndescription: Une droite bleue et une droite rouge.\n---\nO = point(0, 0, visible=faux)\nM = point(O, longueur=1.2, angle={{eval:t+90}}, visible=faux)\nN = point(O, longueur=1.2, angle={{eval:t+270}}, visible=faux)\nU = point(M, longueur=3, angle={{eval:t}}, visible=faux)\nV = point(N, longueur=3, angle={{eval:t+g}}, visible=faux)\ndroite(M, U, couleur=\"bleu\", epaisseur=2)\ndroite(N, V, couleur=\"rouge\", epaisseur=2)\n```\n\n```choix\nmelanger: non\n- Oui, elles sont parallèles.\n- Non, elles ne sont pas parallèles.\n```",
+				"variables": [
+					{
+						"name": "c",
+						"expression": "0..1"
+					},
+					{
+						"name": "s",
+						"expression": "0..1"
+					},
+					{
+						"name": "d",
+						"expression": "10..16"
+					},
+					{
+						"name": "t",
+						"expression": "0..179"
+					},
+					{
+						"name": "g",
+						"expression": "eval:c*(2*s-1)*d"
+					}
+				],
+				"correction": {
+					"steps": [
+						"Deux droites **parallèles** ne se coupent jamais : l'écart entre elles reste le même partout.",
+						"On mesure l'écart entre les deux droites à deux endroits éloignés (avec la règle, ou en comptant à l'œil).",
+						"{{if:c==0|L'écart est le même partout : elles sont $\\textcolor{{{color:primary.0}}}{\\text{parallèles}}$.|L'écart change : les droites finiraient par se couper, elles ne sont $\\textcolor{{{color:primary.0}}}{\\text{pas parallèles}}$.}}"
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				],
+				"statement": "Sur quel dessin les deux droites sont-elles parallèles ?\n\n````choix\n- ```figure\n  fenetre: -5 ; 5 ; -4 ; 4\n  taille: grande\n  description: Deux droites.\n  ---\n  aO = point(0, 0, visible=faux)\n  aM = point(aO, longueur=1.2, angle={{eval:t0+90}}, visible=faux)\n  aN = point(aO, longueur=1.2, angle={{eval:t0+270}}, visible=faux)\n  aU = point(aM, longueur=3, angle={{eval:t0}}, visible=faux)\n  aV = point(aN, longueur=3, angle={{eval:t0+0}}, visible=faux)\n  droite(aM, aU, couleur=\"bleu\", epaisseur=2)\n  droite(aN, aV, couleur=\"rouge\", epaisseur=2)\n  ```\n- ```figure\n  fenetre: -5 ; 5 ; -4 ; 4\n  taille: grande\n  description: Deux droites.\n  ---\n  bO = point(0, 0, visible=faux)\n  bM = point(bO, longueur=1.2, angle={{eval:t1+90}}, visible=faux)\n  bN = point(bO, longueur=1.2, angle={{eval:t1+270}}, visible=faux)\n  bU = point(bM, longueur=3, angle={{eval:t1}}, visible=faux)\n  bV = point(bN, longueur=3, angle={{eval:t1+g1}}, visible=faux)\n  droite(bM, bU, couleur=\"bleu\", epaisseur=2)\n  droite(bN, bV, couleur=\"rouge\", epaisseur=2)\n  ```\n- ```figure\n  fenetre: -5 ; 5 ; -4 ; 4\n  taille: grande\n  description: Deux droites.\n  ---\n  cO = point(0, 0, visible=faux)\n  cM = point(cO, longueur=1.2, angle={{eval:t2+90}}, visible=faux)\n  cN = point(cO, longueur=1.2, angle={{eval:t2+270}}, visible=faux)\n  cU = point(cM, longueur=3, angle={{eval:t2}}, visible=faux)\n  cV = point(cN, longueur=3, angle={{eval:t2+g2}}, visible=faux)\n  droite(cM, cU, couleur=\"bleu\", epaisseur=2)\n  droite(cN, cV, couleur=\"rouge\", epaisseur=2)\n  ```\n````",
+				"variables": [
+					{
+						"name": "t0",
+						"expression": "0..179"
+					},
+					{
+						"name": "t1",
+						"expression": "0..179"
+					},
+					{
+						"name": "t2",
+						"expression": "0..179"
+					},
+					{
+						"name": "g1",
+						"expression": "12..16"
+					},
+					{
+						"name": "g2",
+						"expression": "-24..-18"
+					}
+				],
+				"correction": {
+					"steps": [
+						"Deux droites **parallèles** ne se coupent jamais : l'écart entre elles reste le même partout.",
+						"On mesure l'écart entre les deux droites à deux endroits éloignés (avec la règle, ou en comptant à l'œil).",
+						"Sur un seul dessin, l'écart ne change pas : c'est lui. Sur les deux autres, les droites se rapprochent d'un côté."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{w}}"
+					}
+				],
+				"statement": "Quelle droite est parallèle à la droite noire ?\n\n```figure\nfenetre: -5 ; 5 ; -5 ; 5\ndescription: Une droite noire et trois droites de couleur, bleue, rouge et verte.\n---\nO = point(0, 0, visible=faux)\nU = point(O, longueur=3, angle={{t}}, visible=faux)\ndroite(O, U, couleur=\"noir\", epaisseur=3)\nX0 = point(O, longueur=2.6, angle={{eval:t+270}}, visible=faux)\nY0 = point(X0, longueur=3, angle={{eval:t+g0}}, visible=faux)\ndroite(X0, Y0, couleur=\"bleu\", epaisseur=2)\nX1 = point(O, longueur=1.4, angle={{eval:t+90}}, visible=faux)\nY1 = point(X1, longueur=3, angle={{eval:t+g1}}, visible=faux)\ndroite(X1, Y1, couleur=\"rouge\", epaisseur=2)\nX2 = point(O, longueur=3.3, angle={{eval:t+90}}, visible=faux)\nY2 = point(X2, longueur=3, angle={{eval:t+g2}}, visible=faux)\ndroite(X2, Y2, couleur=\"vert\", epaisseur=2)\n```\n\n```choix\nmelanger: non\n- la droite bleue\n- la droite rouge\n- la droite verte\n```",
+				"variables": [
+					{
+						"name": "w",
+						"expression": "0..2"
+					},
+					{
+						"name": "t",
+						"expression": "0..179"
+					},
+					{
+						"name": "d0",
+						"expression": "8..11"
+					},
+					{
+						"name": "s0",
+						"expression": "0..1"
+					},
+					{
+						"name": "g0",
+						"expression": "eval:(1-(1-min(abs(w-0),1)))*(2*s0-1)*d0"
+					},
+					{
+						"name": "d1",
+						"expression": "14..20"
+					},
+					{
+						"name": "s1",
+						"expression": "0..1"
+					},
+					{
+						"name": "g1",
+						"expression": "eval:(1-(1-min(abs(w-1),1)))*(2*s1-1)*d1"
+					},
+					{
+						"name": "d2",
+						"expression": "20..28"
+					},
+					{
+						"name": "s2",
+						"expression": "0..1"
+					},
+					{
+						"name": "g2",
+						"expression": "eval:(1-(1-min(abs(w-2),1)))*(2*s2-1)*d2"
+					}
+				],
+				"correction": {
+					"steps": [
+						"On mesure, pour chaque droite de couleur, son écart avec la droite noire à deux endroits éloignés.",
+						"Seule la droite {{if:w==0|**bleue**|{{if:w==1|**rouge**|**verte**}}}} reste toujours à la même distance de la droite noire : c'est $\\textcolor{{{color:primary.0}}}{{{if:w==0|\\text{la droite bleue}|{{if:w==1|\\text{la droite rouge}|\\text{la droite verte}}}}}}$. Attention à celle qui est presque parallèle : son écart change un peu."
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "draft",
+		"title": "Ces droites sont-elles parallèles ?",
+		"description": "Reconnaître des droites parallèles : oui ou non, quel dessin, quelle droite parmi trois (dont une presque parallèle)",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"c": "0",
+					"d": "12",
+					"g": "0",
+					"s": "0",
+					"t": "20"
+				},
+				"description": "Parallèles",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["1"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"c": "1",
+					"d": "12",
+					"g": "-12",
+					"s": "0",
+					"t": "20"
+				},
+				"description": "Non (écart 12)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"c": "1",
+					"d": "10",
+					"g": "10",
+					"s": "1",
+					"t": "150"
+				},
+				"description": "Erreur : sécantes dites parallèles",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"g1": "14",
+					"g2": "-20",
+					"t0": "10",
+					"t1": "80",
+					"t2": "130"
+				},
+				"description": "Le bon dessin",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["1"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"g1": "14",
+					"g2": "-20",
+					"t0": "10",
+					"t1": "80",
+					"t2": "130"
+				},
+				"description": "Erreur : dessin à 14°",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["2"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"t": "30",
+					"w": "2",
+					"d0": "9",
+					"d1": "16",
+					"d2": "24",
+					"g0": "9",
+					"g1": "-16",
+					"g2": "0",
+					"s0": "1",
+					"s1": "0",
+					"s2": "1"
+				},
+				"description": "La verte",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"t": "30",
+					"w": "2",
+					"d0": "9",
+					"d1": "16",
+					"d2": "24",
+					"g0": "9",
+					"g1": "-16",
+					"g2": "0",
+					"s0": "1",
+					"s1": "0",
+					"s2": "1"
+				},
+				"description": "Erreur : la presque parallèle (bleue)",
+				"variationIndex": 2
+			}
+		],
+		"classification_node_id": null
+	},
+	{
+		"id": "273dce6f-950b-4379-a7e9-7cd9c937e362",
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"grades": ["CM1"],
+		"delay": 90,
+		"level": 1,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{k}}"
+					}
+				],
+				"statement": "D'après ses codes, quel est le nom le plus précis de cette figure ?\n\n```figure\nfenetre: 0 ; 10 ; 0 ; 7\ndescription: Une figure avec ses codes.\n---\n{{if:k==0|{{if:o==0|p0 = point(2.3, 2.0, visible=faux)\np1 = point(8.7, 2.0, visible=faux)\np2 = point(1.3, 5.0, visible=faux)\npolygone(p0, p1, p2, couleur=\"bleu\", epaisseur=2)|{{if:o==1|p0 = point(3.68, 1.71, visible=faux)\np1 = point(8.8, 5.29, visible=faux)\np2 = point(1.2, 3.55, visible=faux)\npolygone(p0, p1, p2, couleur=\"bleu\", epaisseur=2)|p0 = point(7.92, 3.97, visible=faux)\np1 = point(2.08, 6.1, visible=faux)\np2 = point(7.84, 0.9, visible=faux)\npolygone(p0, p1, p2, couleur=\"bleu\", epaisseur=2)}}}}|{{if:k==1|{{if:o==0|p0 = point(2.2, 1.8, visible=faux)\np1 = point(7.8, 1.8, visible=faux)\np2 = point(2.2, 5.2, visible=faux)\npolygone(p0, p1, p2, couleur=\"bleu\", epaisseur=2)\nangle(p2, p0, p1, marque=\"carre\", couleur=\"noir\")|{{if:o==1|p0 = point(3.68, 1.89, visible=faux)\np1 = point(8.27, 5.11, visible=faux)\np2 = point(1.73, 4.68, visible=faux)\npolygone(p0, p1, p2, couleur=\"bleu\", epaisseur=2)\nangle(p2, p0, p1, marque=\"carre\", couleur=\"noir\")|p0 = point(7.63, 4.14, visible=faux)\np1 = point(2.37, 6.06, visible=faux)\np2 = point(6.47, 0.94, visible=faux)\npolygone(p0, p1, p2, couleur=\"bleu\", epaisseur=2)\nangle(p2, p0, p1, marque=\"carre\", couleur=\"noir\")}}}}|{{if:k==2|{{if:o==0|p0 = point(3.1, 1.2, visible=faux)\np1 = point(6.9, 1.2, visible=faux)\np2 = point(5.0, 5.8, visible=faux)\npolygone(p0, p1, p2, couleur=\"bleu\", epaisseur=2)\nmarque_segment(p1, p2)\nmarque_segment(p2, p0)|{{if:o==1|p0 = point(3.98, 1.07, visible=faux)\np1 = point(7.1, 3.25, visible=faux)\np2 = point(2.9, 5.93, visible=faux)\npolygone(p0, p1, p2, couleur=\"bleu\", epaisseur=2)\nmarque_segment(p1, p2)\nmarque_segment(p2, p0)|p0 = point(6.79, 4.69, visible=faux)\np1 = point(3.21, 5.99, visible=faux)\np2 = point(3.43, 1.01, visible=faux)\npolygone(p0, p1, p2, couleur=\"bleu\", epaisseur=2)\nmarque_segment(p1, p2)\nmarque_segment(p2, p0)}}}}|{{if:k==3|{{if:o==0|p0 = point(5.0, 5.53, visible=faux)\np1 = point(2.66, 1.48, visible=faux)\np2 = point(7.34, 1.47, visible=faux)\npolygone(p0, p1, p2, couleur=\"bleu\", epaisseur=2)\nmarque_segment(p0, p1)\nmarque_segment(p1, p2)\nmarque_segment(p2, p0)|{{if:o==1|p0 = point(2.88, 5.83, visible=faux)\np1 = point(3.29, 1.17, visible=faux)\np2 = point(7.12, 3.85, visible=faux)\npolygone(p0, p1, p2, couleur=\"bleu\", epaisseur=2)\nmarque_segment(p0, p1)\nmarque_segment(p1, p2)\nmarque_segment(p2, p0)|p0 = point(3.61, 1.2, visible=faux)\np1 = point(7.2, 4.2, visible=faux)\np2 = point(2.8, 5.8, visible=faux)\npolygone(p0, p1, p2, couleur=\"bleu\", epaisseur=2)\nmarque_segment(p0, p1)\nmarque_segment(p1, p2)\nmarque_segment(p2, p0)}}}}|{{if:k==4|{{if:o==0|p0 = point(1.75, 1.55, visible=faux)\np1 = point(8.25, 2.05, visible=faux)\np2 = point(5.45, 5.45, visible=faux)\np3 = point(2.75, 5.05, visible=faux)\npolygone(p0, p1, p2, p3, couleur=\"bleu\", epaisseur=2)|{{if:o==1|p0 = point(3.12, 0.9, visible=faux)\np1 = point(8.04, 4.95, visible=faux)\np2 = point(3.89, 6.1, visible=faux)\np3 = point(1.96, 4.26, visible=faux)\npolygone(p0, p1, p2, p3, couleur=\"bleu\", epaisseur=2)|p0 = point(8.14, 4.1, visible=faux)\np1 = point(1.86, 5.85, visible=faux)\np2 = point(3.33, 1.7, visible=faux)\np3 = point(6.0, 1.15, visible=faux)\npolygone(p0, p1, p2, p3, couleur=\"bleu\", epaisseur=2)}}}}|{{if:k==5|{{if:o==0|p0 = point(3.0, 1.5, visible=faux)\np1 = point(7.0, 1.5, visible=faux)\np2 = point(7.0, 5.5, visible=faux)\np3 = point(3.0, 5.5, visible=faux)\npolygone(p0, p1, p2, p3, couleur=\"bleu\", epaisseur=2)\nmarque_segment(p0, p1)\nmarque_segment(p1, p2)\nmarque_segment(p2, p3)\nmarque_segment(p3, p0)\nangle(p3, p0, p1, marque=\"carre\", couleur=\"noir\")\nangle(p0, p1, p2, marque=\"carre\", couleur=\"noir\")\nangle(p1, p2, p3, marque=\"carre\", couleur=\"noir\")\nangle(p2, p3, p0, marque=\"carre\", couleur=\"noir\")|{{if:o==1|p0 = point(4.54, 0.9, visible=faux)\np1 = point(7.6, 3.04, visible=faux)\np2 = point(5.46, 6.1, visible=faux)\np3 = point(2.4, 3.96, visible=faux)\npolygone(p0, p1, p2, p3, couleur=\"bleu\", epaisseur=2)\nmarque_segment(p0, p1)\nmarque_segment(p1, p2)\nmarque_segment(p2, p3)\nmarque_segment(p3, p0)\nangle(p3, p0, p1, marque=\"carre\", couleur=\"noir\")\nangle(p0, p1, p2, marque=\"carre\", couleur=\"noir\")\nangle(p1, p2, p3, marque=\"carre\", couleur=\"noir\")\nangle(p2, p3, p0, marque=\"carre\", couleur=\"noir\")|p0 = point(7.56, 4.7, visible=faux)\np1 = point(3.8, 6.06, visible=faux)\np2 = point(2.44, 2.3, visible=faux)\np3 = point(6.2, 0.94, visible=faux)\npolygone(p0, p1, p2, p3, couleur=\"bleu\", epaisseur=2)\nmarque_segment(p0, p1)\nmarque_segment(p1, p2)\nmarque_segment(p2, p3)\nmarque_segment(p3, p0)\nangle(p3, p0, p1, marque=\"carre\", couleur=\"noir\")\nangle(p0, p1, p2, marque=\"carre\", couleur=\"noir\")\nangle(p1, p2, p3, marque=\"carre\", couleur=\"noir\")\nangle(p2, p3, p0, marque=\"carre\", couleur=\"noir\")}}}}|{{if:k==6|{{if:o==0|p0 = point(1.8, 1.8, visible=faux)\np1 = point(8.2, 1.8, visible=faux)\np2 = point(8.2, 5.2, visible=faux)\np3 = point(1.8, 5.2, visible=faux)\npolygone(p0, p1, p2, p3, couleur=\"bleu\", epaisseur=2)\nangle(p3, p0, p1, marque=\"carre\", couleur=\"noir\")\nangle(p0, p1, p2, marque=\"carre\", couleur=\"noir\")\nangle(p1, p2, p3, marque=\"carre\", couleur=\"noir\")\nangle(p2, p3, p0, marque=\"carre\", couleur=\"noir\")|{{if:o==1|p0 = point(3.67, 0.9, visible=faux)\np1 = point(7.9, 3.86, visible=faux)\np2 = point(6.33, 6.1, visible=faux)\np3 = point(2.1, 3.14, visible=faux)\npolygone(p0, p1, p2, p3, couleur=\"bleu\", epaisseur=2)\nangle(p3, p0, p1, marque=\"carre\", couleur=\"noir\")\nangle(p0, p1, p2, marque=\"carre\", couleur=\"noir\")\nangle(p1, p2, p3, marque=\"carre\", couleur=\"noir\")\nangle(p2, p3, p0, marque=\"carre\", couleur=\"noir\")|p0 = point(8.47, 3.99, visible=faux)\np1 = point(2.66, 6.1, visible=faux)\np2 = point(1.53, 3.01, visible=faux)\np3 = point(7.34, 0.9, visible=faux)\npolygone(p0, p1, p2, p3, couleur=\"bleu\", epaisseur=2)\nangle(p3, p0, p1, marque=\"carre\", couleur=\"noir\")\nangle(p0, p1, p2, marque=\"carre\", couleur=\"noir\")\nangle(p1, p2, p3, marque=\"carre\", couleur=\"noir\")\nangle(p2, p3, p0, marque=\"carre\", couleur=\"noir\")}}}}|{{if:o==0|p0 = point(5.0, 1.6, visible=faux)\np1 = point(8.2, 3.5, visible=faux)\np2 = point(5.0, 5.4, visible=faux)\np3 = point(1.8, 3.5, visible=faux)\npolygone(p0, p1, p2, p3, couleur=\"bleu\", epaisseur=2)\nmarque_segment(p0, p1)\nmarque_segment(p1, p2)\nmarque_segment(p2, p3)\nmarque_segment(p3, p0)|{{if:o==1|p0 = point(6.09, 1.94, visible=faux)\np1 = point(7.62, 5.34, visible=faux)\np2 = point(3.91, 5.06, visible=faux)\np3 = point(2.38, 1.66, visible=faux)\npolygone(p0, p1, p2, p3, couleur=\"bleu\", epaisseur=2)\nmarque_segment(p0, p1)\nmarque_segment(p1, p2)\nmarque_segment(p2, p3)\nmarque_segment(p3, p0)|p0 = point(5.65, 5.29, visible=faux)\np1 = point(1.99, 4.59, visible=faux)\np2 = point(4.35, 1.71, visible=faux)\np3 = point(8.01, 2.41, visible=faux)\npolygone(p0, p1, p2, p3, couleur=\"bleu\", epaisseur=2)\nmarque_segment(p0, p1)\nmarque_segment(p1, p2)\nmarque_segment(p2, p3)\nmarque_segment(p3, p0)}}}}}}}}}}}}}}}}}}\n```\n\n```choix\nmelanger: non\n- triangle\n- triangle rectangle\n- triangle isocèle\n- triangle équilatéral\n- quadrilatère\n- carré\n- rectangle\n- losange\n```",
+				"variables": [
+					{
+						"name": "k",
+						"expression": "0..7"
+					},
+					{
+						"name": "o",
+						"expression": "0..2"
+					}
+				],
+				"correction": {
+					"steps": [
+						"On compte les côtés, puis on lit les codes : petits traits (côtés de même longueur), petits carrés (angles droits).",
+						"C'est {{if:k==0|un polygone qui a trois côtés|{{if:k==1|un triangle qui a un angle droit|{{if:k==2|un triangle qui a deux côtés de la même longueur|{{if:k==3|un triangle qui a ses trois côtés de la même longueur|{{if:k==4|un polygone qui a quatre côtés|{{if:k==5|un quadrilatère qui a quatre angles droits et quatre côtés de la même longueur|{{if:k==6|un quadrilatère qui a quatre angles droits|un quadrilatère qui a quatre côtés de la même longueur}}}}}}}}}}}}}} : $\\textcolor{{{color:primary.0}}}{{{if:k==0|\\text{triangle}|{{if:k==1|\\text{triangle rectangle}|{{if:k==2|\\text{triangle isocèle}|{{if:k==3|\\text{triangle équilatéral}|{{if:k==4|\\text{quadrilatère}|{{if:k==5|\\text{carré}|{{if:k==6|\\text{rectangle}|\\text{losange}}}}}}}}}}}}}}}}$."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{k}}"
+					}
+				],
+				"statement": "Comment s'appelle {{if:k==0|un polygone qui a trois côtés|{{if:k==1|un triangle qui a un angle droit|{{if:k==2|un triangle qui a deux côtés de la même longueur|{{if:k==3|un triangle qui a ses trois côtés de la même longueur|{{if:k==4|un polygone qui a quatre côtés|{{if:k==5|un quadrilatère qui a quatre angles droits et quatre côtés de la même longueur|{{if:k==6|un quadrilatère qui a quatre angles droits|un quadrilatère qui a quatre côtés de la même longueur}}}}}}}}}}}}}} ?\n\n```choix\nmelanger: non\n- triangle\n- triangle rectangle\n- triangle isocèle\n- triangle équilatéral\n- quadrilatère\n- carré\n- rectangle\n- losange\n```",
+				"variables": [
+					{
+						"name": "k",
+						"expression": "0..7"
+					}
+				],
+				"correction": {
+					"steps": [
+						"On relit la définition de chaque figure.",
+						"{{if:k==0|Un polygone qui a trois côtés|{{if:k==1|Un triangle qui a un angle droit|{{if:k==2|Un triangle qui a deux côtés de la même longueur|{{if:k==3|Un triangle qui a ses trois côtés de la même longueur|{{if:k==4|Un polygone qui a quatre côtés|{{if:k==5|Un quadrilatère qui a quatre angles droits et quatre côtés de la même longueur|{{if:k==6|Un quadrilatère qui a quatre angles droits|Un quadrilatère qui a quatre côtés de la même longueur}}}}}}}}}}}}}}, c'est un $\\textcolor{{{color:primary.0}}}{{{if:k==0|\\text{triangle}|{{if:k==1|\\text{triangle rectangle}|{{if:k==2|\\text{triangle isocèle}|{{if:k==3|\\text{triangle équilatéral}|{{if:k==4|\\text{quadrilatère}|{{if:k==5|\\text{carré}|{{if:k==6|\\text{rectangle}|\\text{losange}}}}}}}}}}}}}}}}$."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{z}}"
+					}
+				],
+				"statement": "D'après ses codes, quel est le nom le plus précis de cette figure ?\n\n```figure\nfenetre: 0 ; 10 ; 0 ; 7\ndescription: Une figure avec ses codes, dans une position inhabituelle.\n---\n{{if:k==1|p0 = point(5.0, 0.9, visible=faux)\np1 = point(7.6, 3.5, visible=faux)\np2 = point(5.0, 6.1, visible=faux)\np3 = point(2.4, 3.5, visible=faux)\npolygone(p0, p1, p2, p3, couleur=\"bleu\", epaisseur=2)\nmarque_segment(p0, p1)\nmarque_segment(p1, p2)\nmarque_segment(p2, p3)\nmarque_segment(p3, p0)\nangle(p3, p0, p1, marque=\"carre\", couleur=\"noir\")\nangle(p0, p1, p2, marque=\"carre\", couleur=\"noir\")\nangle(p1, p2, p3, marque=\"carre\", couleur=\"noir\")\nangle(p2, p3, p0, marque=\"carre\", couleur=\"noir\")|{{if:k==2|p0 = point(2.98, 5.84, visible=faux)\np1 = point(2.97, 1.16, visible=faux)\np2 = point(7.03, 3.5, visible=faux)\npolygone(p0, p1, p2, couleur=\"bleu\", epaisseur=2)\nmarque_segment(p0, p1)\nmarque_segment(p1, p2)\nmarque_segment(p2, p0)|{{if:k==3|p0 = point(3.24, 0.9, visible=faux)\np1 = point(8.14, 3.5, visible=faux)\np2 = point(6.76, 6.1, visible=faux)\np3 = point(1.86, 3.5, visible=faux)\npolygone(p0, p1, p2, p3, couleur=\"bleu\", epaisseur=2)\nangle(p3, p0, p1, marque=\"carre\", couleur=\"noir\")\nangle(p0, p1, p2, marque=\"carre\", couleur=\"noir\")\nangle(p1, p2, p3, marque=\"carre\", couleur=\"noir\")\nangle(p2, p3, p0, marque=\"carre\", couleur=\"noir\")|p0 = point(4.03, 1.87, visible=faux)\np1 = point(7.75, 1.87, visible=faux)\np2 = point(5.97, 5.13, visible=faux)\np3 = point(2.25, 5.13, visible=faux)\npolygone(p0, p1, p2, p3, couleur=\"bleu\", epaisseur=2)\nmarque_segment(p0, p1)\nmarque_segment(p1, p2)\nmarque_segment(p2, p3)\nmarque_segment(p3, p0)}}}}}}\n```\n\n```choix\nmelanger: non\n- triangle\n- triangle rectangle\n- triangle isocèle\n- triangle équilatéral\n- quadrilatère\n- carré\n- rectangle\n- losange\n```",
+				"variables": [
+					{
+						"name": "k",
+						"expression": "1..4"
+					},
+					{
+						"name": "z",
+						"expression": "eval:(1-min(abs(k-1),1))*5+(1-min(abs(k-2),1))*3+(1-min(abs(k-3),1))*6+(1-min(abs(k-4),1))*7"
+					}
+				],
+				"correction": {
+					"steps": [
+						"La position de la figure ne change pas son nom : seuls comptent les côtés et les codes.",
+						"{{if:k==1|Quatre côtés de même longueur et quatre angles droits, même posé sur la pointe : c'est un $\\textcolor{{{color:primary.0}}}{\\text{carré}}$.|{{if:k==2|Trois côtés de même longueur, même la pointe en bas : c'est un $\\textcolor{{{color:primary.0}}}{\\text{triangle équilatéral}}$.|{{if:k==3|Quatre angles droits, même penché : c'est un $\\textcolor{{{color:primary.0}}}{\\text{rectangle}}$.|Quatre côtés de même longueur, sans angle droit, même posé sur un côté : c'est un $\\textcolor{{{color:primary.0}}}{\\text{losange}}$.}}}}}}"
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "draft",
+		"title": "Nommer une figure par sa définition",
+		"description": "Triangle (rectangle, isocèle, équilatéral), quadrilatère, carré, rectangle, losange : nom le plus précis d'après les codes ; nom d'après la définition ; figures tournées",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["7"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"k": "7",
+					"o": "1"
+				},
+				"description": "Losange codé",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["5"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"k": "5",
+					"o": "0"
+				},
+				"description": "Carré codé",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["7"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"k": "5",
+					"o": "0"
+				},
+				"description": "Erreur : carré dit losange",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["6"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"k": "6"
+				},
+				"description": "Définition du rectangle",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["6"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"k": "5"
+				},
+				"description": "Erreur : définition du carré dite rectangle",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["5"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"k": "1",
+					"z": "5"
+				},
+				"description": "Carré sur la pointe",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["7"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"k": "1",
+					"z": "5"
+				},
+				"description": "Erreur : carré sur la pointe dit losange",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["3"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"k": "2",
+					"z": "3"
+				},
+				"description": "Équilatéral pointe en bas",
+				"variationIndex": 2
+			}
+		],
+		"classification_node_id": null
+	},
+	{
+		"id": "54c0f87f-748c-4286-95d4-f0b8a49d5c08",
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"grades": ["CM1", "CM2"],
+		"delay": 90,
+		"level": 1,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{c}}"
+					}
+				],
+				"statement": "Ces deux droites sont-elles perpendiculaires ?\n\n```figure\nfenetre: -5 ; 5 ; -4 ; 4\ndescription: Une droite bleue et une droite rouge qui se coupent.\n---\nO = point(0, 0, visible=faux)\nU = point(O, longueur=3, angle={{eval:t}}, visible=faux)\nV = point(O, longueur=3, angle={{eval:t+90+g}}, visible=faux)\ndroite(O, U, couleur=\"bleu\", epaisseur=2)\ndroite(O, V, couleur=\"rouge\", epaisseur=2)\n```\n\n```choix\nmelanger: non\n- Oui, elles sont perpendiculaires.\n- Non, elles ne sont pas perpendiculaires.\n```",
+				"variables": [
+					{
+						"name": "c",
+						"expression": "0..1"
+					},
+					{
+						"name": "s",
+						"expression": "0..1"
+					},
+					{
+						"name": "d",
+						"expression": "20..35"
+					},
+					{
+						"name": "t",
+						"expression": "0..179"
+					},
+					{
+						"name": "g",
+						"expression": "eval:c*(2*s-1)*d"
+					}
+				],
+				"correction": {
+					"steps": [
+						"Deux droites **perpendiculaires** se coupent en formant un angle droit.",
+						"On pose le coin de l'équerre (ou le coin d'une feuille) là où les droites se coupent, un bord le long d'une droite.",
+						"{{if:c==0|L'autre droite suit exactement l'autre bord : elles sont $\\textcolor{{{color:primary.0}}}{\\text{perpendiculaires}}$.|L'autre droite s'écarte du bord de l'équerre : elles ne sont $\\textcolor{{{color:primary.0}}}{\\text{pas perpendiculaires}}$.}}"
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				],
+				"statement": "Sur quel dessin les deux droites sont-elles perpendiculaires ?\n\n````choix\n- ```figure\n  fenetre: -5 ; 5 ; -4 ; 4\n  taille: grande\n  description: Deux droites qui se coupent.\n  ---\n  aO = point(0, 0, visible=faux)\n  aU = point(aO, longueur=3, angle={{eval:t0}}, visible=faux)\n  aV = point(aO, longueur=3, angle={{eval:t0+90+0}}, visible=faux)\n  droite(aO, aU, couleur=\"bleu\", epaisseur=2)\n  droite(aO, aV, couleur=\"rouge\", epaisseur=2)\n  ```\n- ```figure\n  fenetre: -5 ; 5 ; -4 ; 4\n  taille: grande\n  description: Deux droites qui se coupent.\n  ---\n  bO = point(0, 0, visible=faux)\n  bU = point(bO, longueur=3, angle={{eval:t1}}, visible=faux)\n  bV = point(bO, longueur=3, angle={{eval:t1+90+g1}}, visible=faux)\n  droite(bO, bU, couleur=\"bleu\", epaisseur=2)\n  droite(bO, bV, couleur=\"rouge\", epaisseur=2)\n  ```\n- ```figure\n  fenetre: -5 ; 5 ; -4 ; 4\n  taille: grande\n  description: Deux droites qui se coupent.\n  ---\n  cO = point(0, 0, visible=faux)\n  cU = point(cO, longueur=3, angle={{eval:t2}}, visible=faux)\n  cV = point(cO, longueur=3, angle={{eval:t2+90+g2}}, visible=faux)\n  droite(cO, cU, couleur=\"bleu\", epaisseur=2)\n  droite(cO, cV, couleur=\"rouge\", epaisseur=2)\n  ```\n````",
+				"variables": [
+					{
+						"name": "t0",
+						"expression": "0..179"
+					},
+					{
+						"name": "t1",
+						"expression": "0..179"
+					},
+					{
+						"name": "t2",
+						"expression": "0..179"
+					},
+					{
+						"name": "g1",
+						"expression": "20..30"
+					},
+					{
+						"name": "g2",
+						"expression": "-35..-25"
+					}
+				],
+				"correction": {
+					"steps": [
+						"Deux droites **perpendiculaires** se coupent en formant un angle droit.",
+						"On pose le coin de l'équerre (ou le coin d'une feuille) là où les droites se coupent, un bord le long d'une droite.",
+						"Sur un seul dessin, l'angle est droit : c'est lui. Sur les deux autres, l'angle est plus petit ou plus grand qu'un angle droit."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{w}}"
+					}
+				],
+				"statement": "Quelle droite est perpendiculaire à la droite noire ?\n\n```figure\nfenetre: -5 ; 5 ; -5 ; 5\ndescription: Une droite noire et trois droites de couleur, bleue, rouge et verte.\n---\nO = point(0, 0, visible=faux)\nU = point(O, longueur=3, angle={{t}}, visible=faux)\ndroite(O, U, couleur=\"noir\", epaisseur=3)\nX0 = point(O, longueur=3, angle={{eval:t+180}}, visible=faux)\nY0 = point(X0, longueur=3, angle={{eval:t+90+g0}}, visible=faux)\ndroite(X0, Y0, couleur=\"bleu\", epaisseur=2)\nX1 = point(0, 0, visible=faux)\nY1 = point(X1, longueur=3, angle={{eval:t+90+g1}}, visible=faux)\ndroite(X1, Y1, couleur=\"rouge\", epaisseur=2)\nX2 = point(O, longueur=3, angle={{eval:t+0}}, visible=faux)\nY2 = point(X2, longueur=3, angle={{eval:t+90+g2}}, visible=faux)\ndroite(X2, Y2, couleur=\"vert\", epaisseur=2)\n```\n\n```choix\nmelanger: non\n- la droite bleue\n- la droite rouge\n- la droite verte\n```",
+				"variables": [
+					{
+						"name": "w",
+						"expression": "0..2"
+					},
+					{
+						"name": "t",
+						"expression": "0..179"
+					},
+					{
+						"name": "d0",
+						"expression": "20..35"
+					},
+					{
+						"name": "s0",
+						"expression": "0..1"
+					},
+					{
+						"name": "g0",
+						"expression": "eval:(1-(1-min(abs(w-0),1)))*(2*s0-1)*d0"
+					},
+					{
+						"name": "d1",
+						"expression": "20..35"
+					},
+					{
+						"name": "s1",
+						"expression": "0..1"
+					},
+					{
+						"name": "g1",
+						"expression": "eval:(1-(1-min(abs(w-1),1)))*(2*s1-1)*d1"
+					},
+					{
+						"name": "d2",
+						"expression": "20..35"
+					},
+					{
+						"name": "s2",
+						"expression": "0..1"
+					},
+					{
+						"name": "g2",
+						"expression": "eval:(1-(1-min(abs(w-2),1)))*(2*s2-1)*d2"
+					}
+				],
+				"correction": {
+					"steps": [
+						"On vérifie chaque droite de couleur avec l'équerre, posée là où elle coupe la droite noire.",
+						"Seule la droite {{if:w==0|**bleue**|{{if:w==1|**rouge**|**verte**}}}} fait un angle droit avec la droite noire : c'est $\\textcolor{{{color:primary.0}}}{{{if:w==0|\\text{la droite bleue}|{{if:w==1|\\text{la droite rouge}|\\text{la droite verte}}}}}}$."
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "draft",
+		"title": "Ces droites sont-elles perpendiculaires ?",
+		"description": "Reconnaître des droites perpendiculaires (sans code) : oui ou non, quel dessin, quelle droite parmi trois",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"c": "0",
+					"d": "25",
+					"g": "0",
+					"s": "1",
+					"t": "30"
+				},
+				"description": "Perpendiculaires",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["1"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"c": "1",
+					"d": "25",
+					"g": "25",
+					"s": "1",
+					"t": "30"
+				},
+				"description": "Non (écart 25)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"c": "1",
+					"d": "30",
+					"g": "-30",
+					"s": "0",
+					"t": "100"
+				},
+				"description": "Erreur : sécantes dites perpendiculaires",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"g1": "25",
+					"g2": "-30",
+					"t0": "20",
+					"t1": "60",
+					"t2": "140"
+				},
+				"description": "Le bon dessin",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["1"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"g1": "25",
+					"g2": "-30",
+					"t0": "20",
+					"t1": "60",
+					"t2": "140"
+				},
+				"description": "Erreur : dessin à 115°",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["1"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"t": "20",
+					"w": "1",
+					"d0": "25",
+					"d1": "30",
+					"d2": "22",
+					"g0": "-25",
+					"g1": "0",
+					"g2": "22",
+					"s0": "0",
+					"s1": "1",
+					"s2": "1"
+				},
+				"description": "La rouge",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["2"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"t": "20",
+					"w": "1",
+					"d0": "25",
+					"d1": "30",
+					"d2": "22",
+					"g0": "-25",
+					"g1": "0",
+					"g2": "22",
+					"s0": "0",
+					"s1": "1",
+					"s2": "1"
+				},
+				"description": "Erreur : la verte",
+				"variationIndex": 2
+			}
+		],
+		"classification_node_id": null
+	},
+	{
+		"id": "6108cc4c-4ae6-48e1-976a-504cf7054c02",
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"grades": ["CM1"],
+		"delay": 90,
+		"level": 3,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{v}}"
+					}
+				],
+				"statement": "D'après les codes, quel angle est droit ?\n\n```figure\nfenetre: 0 ; 10 ; 0 ; 7\ndescription: Un quadrilatère ABCD ; un de ses angles est codé par un petit carré.\n---\n{{if:k==1|{{if:v==0|A = point(3.04, 0.9, etiquette=\"bas-gauche\")\nB = point(7.42, 1.67, etiquette=\"droite\")\nC = point(4.38, 6.1, etiquette=\"haut\")\nD = point(2.58, 3.53, etiquette=\"gauche\")\npolygone(A, B, C, D, couleur=\"bleu\", epaisseur=2)\nangle(D, A, B, marque=\"carre\", couleur=\"noir\")|{{if:v==1|B = point(3.04, 0.9, etiquette=\"bas-gauche\")\nC = point(7.42, 1.67, etiquette=\"droite\")\nD = point(4.38, 6.1, etiquette=\"haut\")\nA = point(2.58, 3.53, etiquette=\"gauche\")\npolygone(B, C, D, A, couleur=\"bleu\", epaisseur=2)\nangle(A, B, C, marque=\"carre\", couleur=\"noir\")|{{if:v==2|C = point(3.04, 0.9, etiquette=\"bas-gauche\")\nD = point(7.42, 1.67, etiquette=\"droite\")\nA = point(4.38, 6.1, etiquette=\"haut\")\nB = point(2.58, 3.53, etiquette=\"gauche\")\npolygone(C, D, A, B, couleur=\"bleu\", epaisseur=2)\nangle(B, C, D, marque=\"carre\", couleur=\"noir\")|D = point(3.04, 0.9, etiquette=\"bas-gauche\")\nA = point(7.42, 1.67, etiquette=\"droite\")\nB = point(4.38, 6.1, etiquette=\"haut\")\nC = point(2.58, 3.53, etiquette=\"gauche\")\npolygone(D, A, B, C, couleur=\"bleu\", epaisseur=2)\nangle(C, D, A, marque=\"carre\", couleur=\"noir\")}}}}}}|{{if:k==2|{{if:v==0|A = point(6.26, 6.1, etiquette=\"haut-droite\")\nB = point(3.03, 4.92, etiquette=\"haut-gauche\")\nC = point(3.03, 0.9, etiquette=\"bas-gauche\")\nD = point(6.97, 4.16, etiquette=\"droite\")\npolygone(A, B, C, D, couleur=\"bleu\", epaisseur=2)\nangle(D, A, B, marque=\"carre\", couleur=\"noir\")|{{if:v==1|B = point(6.26, 6.1, etiquette=\"haut-droite\")\nC = point(3.03, 4.92, etiquette=\"haut-gauche\")\nD = point(3.03, 0.9, etiquette=\"bas-gauche\")\nA = point(6.97, 4.16, etiquette=\"droite\")\npolygone(B, C, D, A, couleur=\"bleu\", epaisseur=2)\nangle(A, B, C, marque=\"carre\", couleur=\"noir\")|{{if:v==2|C = point(6.26, 6.1, etiquette=\"haut-droite\")\nD = point(3.03, 4.92, etiquette=\"haut-gauche\")\nA = point(3.03, 0.9, etiquette=\"bas-gauche\")\nB = point(6.97, 4.16, etiquette=\"droite\")\npolygone(C, D, A, B, couleur=\"bleu\", epaisseur=2)\nangle(B, C, D, marque=\"carre\", couleur=\"noir\")|D = point(6.26, 6.1, etiquette=\"haut-droite\")\nA = point(3.03, 4.92, etiquette=\"haut-gauche\")\nB = point(3.03, 0.9, etiquette=\"bas-gauche\")\nC = point(6.97, 4.16, etiquette=\"droite\")\npolygone(D, A, B, C, couleur=\"bleu\", epaisseur=2)\nangle(C, D, A, marque=\"carre\", couleur=\"noir\")}}}}}}|{{if:k==3|{{if:v==0|A = point(6.83, 2.06, etiquette=\"droite\")\nB = point(4.5, 6.1, etiquette=\"haut\")\nC = point(3.17, 2.19, etiquette=\"gauche\")\nD = point(4.81, 0.9, etiquette=\"bas\")\npolygone(A, B, C, D, couleur=\"bleu\", epaisseur=2)\nangle(D, A, B, marque=\"carre\", couleur=\"noir\")|{{if:v==1|B = point(6.83, 2.06, etiquette=\"droite\")\nC = point(4.5, 6.1, etiquette=\"haut\")\nD = point(3.17, 2.19, etiquette=\"gauche\")\nA = point(4.81, 0.9, etiquette=\"bas\")\npolygone(B, C, D, A, couleur=\"bleu\", epaisseur=2)\nangle(A, B, C, marque=\"carre\", couleur=\"noir\")|{{if:v==2|C = point(6.83, 2.06, etiquette=\"droite\")\nD = point(4.5, 6.1, etiquette=\"haut\")\nA = point(3.17, 2.19, etiquette=\"gauche\")\nB = point(4.81, 0.9, etiquette=\"bas\")\npolygone(C, D, A, B, couleur=\"bleu\", epaisseur=2)\nangle(B, C, D, marque=\"carre\", couleur=\"noir\")|D = point(6.83, 2.06, etiquette=\"droite\")\nA = point(4.5, 6.1, etiquette=\"haut\")\nB = point(3.17, 2.19, etiquette=\"gauche\")\nC = point(4.81, 0.9, etiquette=\"bas\")\npolygone(D, A, B, C, couleur=\"bleu\", epaisseur=2)\nangle(C, D, A, marque=\"carre\", couleur=\"noir\")}}}}}}|{{if:v==0|A = point(3.2, 5.3, etiquette=\"haut-gauche\")\nB = point(4.8, 0.9, etiquette=\"bas\")\nC = point(6.8, 4.53, etiquette=\"droite\")\nD = point(5.4, 6.1, etiquette=\"haut\")\npolygone(A, B, C, D, couleur=\"bleu\", epaisseur=2)\nangle(D, A, B, marque=\"carre\", couleur=\"noir\")|{{if:v==1|B = point(3.2, 5.3, etiquette=\"haut-gauche\")\nC = point(4.8, 0.9, etiquette=\"bas\")\nD = point(6.8, 4.53, etiquette=\"droite\")\nA = point(5.4, 6.1, etiquette=\"haut\")\npolygone(B, C, D, A, couleur=\"bleu\", epaisseur=2)\nangle(A, B, C, marque=\"carre\", couleur=\"noir\")|{{if:v==2|C = point(3.2, 5.3, etiquette=\"haut-gauche\")\nD = point(4.8, 0.9, etiquette=\"bas\")\nA = point(6.8, 4.53, etiquette=\"droite\")\nB = point(5.4, 6.1, etiquette=\"haut\")\npolygone(C, D, A, B, couleur=\"bleu\", epaisseur=2)\nangle(B, C, D, marque=\"carre\", couleur=\"noir\")|D = point(3.2, 5.3, etiquette=\"haut-gauche\")\nA = point(4.8, 0.9, etiquette=\"bas\")\nB = point(6.8, 4.53, etiquette=\"droite\")\nC = point(5.4, 6.1, etiquette=\"haut\")\npolygone(D, A, B, C, couleur=\"bleu\", epaisseur=2)\nangle(C, D, A, marque=\"carre\", couleur=\"noir\")}}}}}}}}}}}}\n```\n\n```choix\nmelanger: non\n- l'angle de sommet A\n- l'angle de sommet B\n- l'angle de sommet C\n- l'angle de sommet D\n```",
+				"variables": [
+					{
+						"name": "k",
+						"expression": "1..4"
+					},
+					{
+						"name": "v",
+						"expression": "0..3"
+					}
+				],
+				"correction": {
+					"steps": [
+						"Le **petit carré** dans un coin est le code de l'angle droit.",
+						"Il est dessiné au sommet ${{if:v==0|A|{{if:v==1|B|{{if:v==2|C|D}}}}}}$ : l'angle de sommet $\\textcolor{{{color:primary.0}}}{{{if:v==0|A|{{if:v==1|B|{{if:v==2|C|D}}}}}}}$ est droit.",
+						"Les autres angles n'ont pas de code : on ne peut pas dire qu'ils sont droits."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{r}}"
+					}
+				],
+				"statement": "La figure n'est pas en vraie grandeur. $[AB]$ mesure ${{a}}~\\unit{cm}$ et $[BC]$ mesure ${{b}}~\\unit{cm}$.\n\n```figure\nfenetre: 0 ; 10 ; 0 ; 7\ndescription: Un quadrilatère ABCD ; [AB] et [DA] codés d'un trait, [BC] et [CD] de deux traits.\n---\n{{if:k==1|A = point(5.0, 6.2, etiquette=\"haut\")\nB = point(7.12, 4.27, etiquette=\"droite\")\nC = point(5.0, 0.8, etiquette=\"bas\")\nD = point(2.88, 4.27, etiquette=\"gauche\")\npolygone(A, B, C, D, couleur=\"bleu\", epaisseur=2)\nmarque_segment(A, B)\nmarque_segment(D, A)\nmarque_segment(B, C, traits=2)\nmarque_segment(C, D, traits=2)|{{if:k==2|A = point(2.2, 3.5, etiquette=\"gauche\")\nB = point(4.2, 5.7, etiquette=\"haut\")\nC = point(7.8, 3.5, etiquette=\"droite\")\nD = point(4.2, 1.3, etiquette=\"bas\")\npolygone(A, B, C, D, couleur=\"bleu\", epaisseur=2)\nmarque_segment(A, B)\nmarque_segment(D, A)\nmarque_segment(B, C, traits=2)\nmarque_segment(C, D, traits=2)|{{if:k==3|A = point(5.68, 0.87, etiquette=\"bas\")\nB = point(2.93, 2.0, etiquette=\"bas-gauche\")\nC = point(3.77, 6.13, etiquette=\"haut\")\nD = point(7.07, 3.5, etiquette=\"droite\")\npolygone(A, B, C, D, couleur=\"bleu\", epaisseur=2)\nmarque_segment(A, B)\nmarque_segment(D, A)\nmarque_segment(B, C, traits=2)\nmarque_segment(C, D, traits=2)|A = point(7.8, 3.5, etiquette=\"droite\")\nB = point(5.8, 1.3, etiquette=\"bas\")\nC = point(2.2, 3.5, etiquette=\"gauche\")\nD = point(5.8, 5.7, etiquette=\"haut\")\npolygone(A, B, C, D, couleur=\"bleu\", epaisseur=2)\nmarque_segment(A, B)\nmarque_segment(D, A)\nmarque_segment(B, C, traits=2)\nmarque_segment(C, D, traits=2)}}}}}}\n```\n\nCombien mesure $[{{if:q==1|DA|CD}}]$ ?\n\n$[{{if:q==1|DA|CD}}]$ mesure $?~\\unit{cm}$.",
+				"variables": [
+					{
+						"name": "k",
+						"expression": "1..4"
+					},
+					{
+						"name": "q",
+						"expression": "1..2"
+					},
+					{
+						"name": "a",
+						"expression": "3..6"
+					},
+					{
+						"name": "d",
+						"expression": "2..4"
+					},
+					{
+						"name": "b",
+						"expression": "eval:a+d"
+					},
+					{
+						"name": "r",
+						"expression": "eval:(2-q)*a+(q-1)*b"
+					}
+				],
+				"correction": {
+					"steps": [
+						"**Même nombre de traits, même longueur.**",
+						"{{if:q==1|$[DA]$ a un trait, comme $[AB]$ : il mesure aussi|$[CD]$ a deux traits, comme $[BC]$ : il mesure aussi}} $\\textcolor{{{color:primary.0}}}{{{r}}~\\unit{cm}}$."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{t}}"
+					}
+				],
+				"statement": "Que disent les codes de ce triangle ?\n\n```figure\nfenetre: 0 ; 10 ; 0 ; 7\ndescription: Un triangle avec ses codes.\n---\n{{if:t==0|{{if:o==0|p0 = point(3.4, 1.3, visible=faux)\np1 = point(6.6, 1.3, visible=faux)\np2 = point(5.0, 5.7, visible=faux)\npolygone(p0, p1, p2, couleur=\"bleu\", epaisseur=2)\nmarque_segment(p1, p2)\nmarque_segment(p2, p0)|{{if:o==1|p0 = point(4.3, 1.24, visible=faux)\np1 = point(6.92, 3.07, visible=faux)\np2 = point(3.08, 5.76, visible=faux)\npolygone(p0, p1, p2, couleur=\"bleu\", epaisseur=2)\nmarque_segment(p1, p2)\nmarque_segment(p2, p0)|p0 = point(6.5, 4.75, visible=faux)\np1 = point(3.5, 5.84, visible=faux)\np2 = point(3.5, 1.16, visible=faux)\npolygone(p0, p1, p2, couleur=\"bleu\", epaisseur=2)\nmarque_segment(p1, p2)\nmarque_segment(p2, p0)}}}}|{{if:t==1|{{if:o==0|p0 = point(5.0, 5.53, visible=faux)\np1 = point(2.66, 1.48, visible=faux)\np2 = point(7.34, 1.47, visible=faux)\npolygone(p0, p1, p2, couleur=\"bleu\", epaisseur=2)\nmarque_segment(p0, p1)\nmarque_segment(p1, p2)\nmarque_segment(p2, p0)|{{if:o==1|p0 = point(2.88, 5.83, visible=faux)\np1 = point(3.29, 1.17, visible=faux)\np2 = point(7.12, 3.85, visible=faux)\npolygone(p0, p1, p2, couleur=\"bleu\", epaisseur=2)\nmarque_segment(p0, p1)\nmarque_segment(p1, p2)\nmarque_segment(p2, p0)|p0 = point(3.61, 1.2, visible=faux)\np1 = point(7.2, 4.2, visible=faux)\np2 = point(2.8, 5.8, visible=faux)\npolygone(p0, p1, p2, couleur=\"bleu\", epaisseur=2)\nmarque_segment(p0, p1)\nmarque_segment(p1, p2)\nmarque_segment(p2, p0)}}}}|{{if:t==2|{{if:o==0|p0 = point(2.2, 1.8, visible=faux)\np1 = point(7.8, 1.8, visible=faux)\np2 = point(2.2, 5.2, visible=faux)\npolygone(p0, p1, p2, couleur=\"bleu\", epaisseur=2)\nangle(p2, p0, p1, marque=\"carre\", couleur=\"noir\")|{{if:o==1|p0 = point(3.68, 1.89, visible=faux)\np1 = point(8.27, 5.11, visible=faux)\np2 = point(1.73, 4.68, visible=faux)\npolygone(p0, p1, p2, couleur=\"bleu\", epaisseur=2)\nangle(p2, p0, p1, marque=\"carre\", couleur=\"noir\")|p0 = point(7.63, 4.14, visible=faux)\np1 = point(2.37, 6.06, visible=faux)\np2 = point(6.47, 0.94, visible=faux)\npolygone(p0, p1, p2, couleur=\"bleu\", epaisseur=2)\nangle(p2, p0, p1, marque=\"carre\", couleur=\"noir\")}}}}|{{if:o==0|p0 = point(2.8, 1.3, visible=faux)\np1 = point(7.2, 1.3, visible=faux)\np2 = point(2.8, 5.7, visible=faux)\npolygone(p0, p1, p2, couleur=\"bleu\", epaisseur=2)\nmarque_segment(p0, p1)\nmarque_segment(p2, p0)\nangle(p2, p0, p1, marque=\"carre\", couleur=\"noir\")|{{if:o==1|p0 = point(4.46, 1.7, visible=faux)\np1 = point(8.06, 4.22, visible=faux)\np2 = point(1.94, 5.3, visible=faux)\npolygone(p0, p1, p2, couleur=\"bleu\", epaisseur=2)\nmarque_segment(p0, p1)\nmarque_segment(p2, p0)\nangle(p2, p0, p1, marque=\"carre\", couleur=\"noir\")|p0 = point(6.91, 4.71, visible=faux)\np1 = point(3.09, 6.1, visible=faux)\np2 = point(5.52, 0.9, visible=faux)\npolygone(p0, p1, p2, couleur=\"bleu\", epaisseur=2)\nmarque_segment(p0, p1)\nmarque_segment(p2, p0)\nangle(p2, p0, p1, marque=\"carre\", couleur=\"noir\")}}}}}}}}}}\n```\n\n```choix\nmelanger: non\n- Deux côtés ont la même longueur.\n- Les trois côtés ont la même longueur.\n- Le triangle a un angle droit.\n- Le triangle a un angle droit et deux côtés de la même longueur.\n```",
+				"variables": [
+					{
+						"name": "t",
+						"expression": "0..3"
+					},
+					{
+						"name": "o",
+						"expression": "0..2"
+					}
+				],
+				"correction": {
+					"steps": [
+						"Les petits traits marquent les côtés de même longueur ; le petit carré marque l'angle droit.",
+						"{{if:t==0|Deux côtés portent un trait, le troisième n'en a pas, et il n'y a pas de petit carré.|{{if:t==1|Les trois côtés portent un trait.|{{if:t==2|Un petit carré, et aucun trait sur les côtés.|Un petit carré, et deux côtés portent un trait.}}}}}}",
+						"Les codes disent : {{if:t==0|**Deux côtés ont la même longueur.**|{{if:t==1|**Les trois côtés ont la même longueur.**|{{if:t==2|**Le triangle a un angle droit.**|**Le triangle a un angle droit et deux côtés de la même longueur.**}}}}}}"
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "draft",
+		"title": "Lire les codes d'une figure",
+		"description": "Codes de l'angle droit et des longueurs égales : quel angle est droit, quelle longueur a un côté codé, que disent les codes d'un triangle",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["2"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"k": "2",
+					"v": "2"
+				},
+				"description": "Angle droit en C",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"k": "2",
+					"v": "2"
+				},
+				"description": "Erreur : angle en A",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["4"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "4",
+					"b": "7",
+					"d": "3",
+					"k": "1",
+					"q": "1",
+					"r": "4"
+				},
+				"description": "[DA] = [AB] = 4",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["7"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "4",
+					"b": "7",
+					"d": "3",
+					"k": "3",
+					"q": "2",
+					"r": "7"
+				},
+				"description": "[CD] = [BC] = 7",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["4"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "4",
+					"b": "7",
+					"d": "3",
+					"k": "3",
+					"q": "2",
+					"r": "7"
+				},
+				"description": "Erreur : [CD] pris égal à [AB]",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["1"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"o": "1",
+					"t": "1"
+				},
+				"description": "Équilatéral",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["3"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"o": "0",
+					"t": "3"
+				},
+				"description": "Rectangle et isocèle",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["2"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"o": "0",
+					"t": "3"
+				},
+				"description": "Erreur : rectangle et isocèle dit rectangle",
+				"variationIndex": 2
+			}
+		],
+		"classification_node_id": null
+	},
+	{
+		"id": "f521ccf8-e812-40c4-ad47-5e2b43ccc1ff",
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"grades": ["CM1"],
+		"delay": 90,
+		"level": 3,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{z}}"
+					}
+				],
+				"statement": "Combien d'axes de symétrie a {{if:k==1|ce carré|{{if:k==2|ce rectangle|{{if:k==3|ce losange|{{if:k==4|ce triangle équilatéral|{{if:k==5|ce triangle isocèle|{{if:k==6|ce quadrilatère|ce triangle}}}}}}}}}}}} ?\n\n```figure\nfenetre: 0 ; 10 ; 0 ; 7\ndescription: Une figure avec ses codes.\n---\n{{if:k==1|{{if:o==0|p0 = point(3.0, 1.5, visible=faux)\np1 = point(7.0, 1.5, visible=faux)\np2 = point(7.0, 5.5, visible=faux)\np3 = point(3.0, 5.5, visible=faux)\npolygone(p0, p1, p2, p3, couleur=\"bleu\", epaisseur=2)\nmarque_segment(p0, p1)\nmarque_segment(p1, p2)\nmarque_segment(p2, p3)\nmarque_segment(p3, p0)\nangle(p3, p0, p1, marque=\"carre\", couleur=\"noir\")\nangle(p0, p1, p2, marque=\"carre\", couleur=\"noir\")\nangle(p1, p2, p3, marque=\"carre\", couleur=\"noir\")\nangle(p2, p3, p0, marque=\"carre\", couleur=\"noir\")|{{if:o==1|p0 = point(4.54, 0.9, visible=faux)\np1 = point(7.6, 3.04, visible=faux)\np2 = point(5.46, 6.1, visible=faux)\np3 = point(2.4, 3.96, visible=faux)\npolygone(p0, p1, p2, p3, couleur=\"bleu\", epaisseur=2)\nmarque_segment(p0, p1)\nmarque_segment(p1, p2)\nmarque_segment(p2, p3)\nmarque_segment(p3, p0)\nangle(p3, p0, p1, marque=\"carre\", couleur=\"noir\")\nangle(p0, p1, p2, marque=\"carre\", couleur=\"noir\")\nangle(p1, p2, p3, marque=\"carre\", couleur=\"noir\")\nangle(p2, p3, p0, marque=\"carre\", couleur=\"noir\")|p0 = point(7.56, 4.7, visible=faux)\np1 = point(3.8, 6.06, visible=faux)\np2 = point(2.44, 2.3, visible=faux)\np3 = point(6.2, 0.94, visible=faux)\npolygone(p0, p1, p2, p3, couleur=\"bleu\", epaisseur=2)\nmarque_segment(p0, p1)\nmarque_segment(p1, p2)\nmarque_segment(p2, p3)\nmarque_segment(p3, p0)\nangle(p3, p0, p1, marque=\"carre\", couleur=\"noir\")\nangle(p0, p1, p2, marque=\"carre\", couleur=\"noir\")\nangle(p1, p2, p3, marque=\"carre\", couleur=\"noir\")\nangle(p2, p3, p0, marque=\"carre\", couleur=\"noir\")}}}}|{{if:k==2|{{if:o==0|p0 = point(1.8, 1.8, visible=faux)\np1 = point(8.2, 1.8, visible=faux)\np2 = point(8.2, 5.2, visible=faux)\np3 = point(1.8, 5.2, visible=faux)\npolygone(p0, p1, p2, p3, couleur=\"bleu\", epaisseur=2)\nangle(p3, p0, p1, marque=\"carre\", couleur=\"noir\")\nangle(p0, p1, p2, marque=\"carre\", couleur=\"noir\")\nangle(p1, p2, p3, marque=\"carre\", couleur=\"noir\")\nangle(p2, p3, p0, marque=\"carre\", couleur=\"noir\")|{{if:o==1|p0 = point(3.67, 0.9, visible=faux)\np1 = point(7.9, 3.86, visible=faux)\np2 = point(6.33, 6.1, visible=faux)\np3 = point(2.1, 3.14, visible=faux)\npolygone(p0, p1, p2, p3, couleur=\"bleu\", epaisseur=2)\nangle(p3, p0, p1, marque=\"carre\", couleur=\"noir\")\nangle(p0, p1, p2, marque=\"carre\", couleur=\"noir\")\nangle(p1, p2, p3, marque=\"carre\", couleur=\"noir\")\nangle(p2, p3, p0, marque=\"carre\", couleur=\"noir\")|p0 = point(8.47, 3.99, visible=faux)\np1 = point(2.66, 6.1, visible=faux)\np2 = point(1.53, 3.01, visible=faux)\np3 = point(7.34, 0.9, visible=faux)\npolygone(p0, p1, p2, p3, couleur=\"bleu\", epaisseur=2)\nangle(p3, p0, p1, marque=\"carre\", couleur=\"noir\")\nangle(p0, p1, p2, marque=\"carre\", couleur=\"noir\")\nangle(p1, p2, p3, marque=\"carre\", couleur=\"noir\")\nangle(p2, p3, p0, marque=\"carre\", couleur=\"noir\")}}}}|{{if:k==3|{{if:o==0|p0 = point(5.0, 1.6, visible=faux)\np1 = point(8.2, 3.5, visible=faux)\np2 = point(5.0, 5.4, visible=faux)\np3 = point(1.8, 3.5, visible=faux)\npolygone(p0, p1, p2, p3, couleur=\"bleu\", epaisseur=2)\nmarque_segment(p0, p1)\nmarque_segment(p1, p2)\nmarque_segment(p2, p3)\nmarque_segment(p3, p0)|{{if:o==1|p0 = point(6.09, 1.94, visible=faux)\np1 = point(7.62, 5.34, visible=faux)\np2 = point(3.91, 5.06, visible=faux)\np3 = point(2.38, 1.66, visible=faux)\npolygone(p0, p1, p2, p3, couleur=\"bleu\", epaisseur=2)\nmarque_segment(p0, p1)\nmarque_segment(p1, p2)\nmarque_segment(p2, p3)\nmarque_segment(p3, p0)|p0 = point(5.65, 5.29, visible=faux)\np1 = point(1.99, 4.59, visible=faux)\np2 = point(4.35, 1.71, visible=faux)\np3 = point(8.01, 2.41, visible=faux)\npolygone(p0, p1, p2, p3, couleur=\"bleu\", epaisseur=2)\nmarque_segment(p0, p1)\nmarque_segment(p1, p2)\nmarque_segment(p2, p3)\nmarque_segment(p3, p0)}}}}|{{if:k==4|{{if:o==0|p0 = point(5.0, 5.53, visible=faux)\np1 = point(2.66, 1.48, visible=faux)\np2 = point(7.34, 1.47, visible=faux)\npolygone(p0, p1, p2, couleur=\"bleu\", epaisseur=2)\nmarque_segment(p0, p1)\nmarque_segment(p1, p2)\nmarque_segment(p2, p0)|{{if:o==1|p0 = point(2.88, 5.83, visible=faux)\np1 = point(3.29, 1.17, visible=faux)\np2 = point(7.12, 3.85, visible=faux)\npolygone(p0, p1, p2, couleur=\"bleu\", epaisseur=2)\nmarque_segment(p0, p1)\nmarque_segment(p1, p2)\nmarque_segment(p2, p0)|p0 = point(3.61, 1.2, visible=faux)\np1 = point(7.2, 4.2, visible=faux)\np2 = point(2.8, 5.8, visible=faux)\npolygone(p0, p1, p2, couleur=\"bleu\", epaisseur=2)\nmarque_segment(p0, p1)\nmarque_segment(p1, p2)\nmarque_segment(p2, p0)}}}}|{{if:k==5|{{if:o==0|p0 = point(3.1, 1.2, visible=faux)\np1 = point(6.9, 1.2, visible=faux)\np2 = point(5.0, 5.8, visible=faux)\npolygone(p0, p1, p2, couleur=\"bleu\", epaisseur=2)\nmarque_segment(p1, p2)\nmarque_segment(p2, p0)|{{if:o==1|p0 = point(3.98, 1.07, visible=faux)\np1 = point(7.1, 3.25, visible=faux)\np2 = point(2.9, 5.93, visible=faux)\npolygone(p0, p1, p2, couleur=\"bleu\", epaisseur=2)\nmarque_segment(p1, p2)\nmarque_segment(p2, p0)|p0 = point(6.79, 4.69, visible=faux)\np1 = point(3.21, 5.99, visible=faux)\np2 = point(3.43, 1.01, visible=faux)\npolygone(p0, p1, p2, couleur=\"bleu\", epaisseur=2)\nmarque_segment(p1, p2)\nmarque_segment(p2, p0)}}}}|{{if:k==6|{{if:o==0|p0 = point(1.75, 1.55, visible=faux)\np1 = point(8.25, 2.05, visible=faux)\np2 = point(5.45, 5.45, visible=faux)\np3 = point(2.75, 5.05, visible=faux)\npolygone(p0, p1, p2, p3, couleur=\"bleu\", epaisseur=2)|{{if:o==1|p0 = point(3.12, 0.9, visible=faux)\np1 = point(8.04, 4.95, visible=faux)\np2 = point(3.89, 6.1, visible=faux)\np3 = point(1.96, 4.26, visible=faux)\npolygone(p0, p1, p2, p3, couleur=\"bleu\", epaisseur=2)|p0 = point(8.14, 4.1, visible=faux)\np1 = point(1.86, 5.85, visible=faux)\np2 = point(3.33, 1.7, visible=faux)\np3 = point(6.0, 1.15, visible=faux)\npolygone(p0, p1, p2, p3, couleur=\"bleu\", epaisseur=2)}}}}|{{if:o==0|p0 = point(2.3, 2.0, visible=faux)\np1 = point(8.7, 2.0, visible=faux)\np2 = point(1.3, 5.0, visible=faux)\npolygone(p0, p1, p2, couleur=\"bleu\", epaisseur=2)|{{if:o==1|p0 = point(3.68, 1.71, visible=faux)\np1 = point(8.8, 5.29, visible=faux)\np2 = point(1.2, 3.55, visible=faux)\npolygone(p0, p1, p2, couleur=\"bleu\", epaisseur=2)|p0 = point(7.92, 3.97, visible=faux)\np1 = point(2.08, 6.1, visible=faux)\np2 = point(7.84, 0.9, visible=faux)\npolygone(p0, p1, p2, couleur=\"bleu\", epaisseur=2)}}}}}}}}}}}}}}}}\n```\n\nNombre d'axes : $?$",
+				"variables": [
+					{
+						"name": "k",
+						"expression": "1..7"
+					},
+					{
+						"name": "o",
+						"expression": "0..2"
+					},
+					{
+						"name": "z",
+						"expression": "eval:(1-min(abs(k-1),1))*4+(1-min(abs(k-2),1))*2+(1-min(abs(k-3),1))*2+(1-min(abs(k-4),1))*3+(1-min(abs(k-5),1))*1+(1-min(abs(k-6),1))*0+(1-min(abs(k-7),1))*0"
+					}
+				],
+				"correction": {
+					"steps": [
+						"Une droite est un axe de symétrie quand, en pliant la figure le long de cette droite, les deux moitiés se superposent exactement.",
+						"{{if:k==1|Le carré : les deux diagonales et les deux droites qui passent par les milieux des côtés opposés.|{{if:k==2|Le rectangle : les deux droites qui passent par les milieux des côtés opposés (pas les diagonales).|{{if:k==3|Le losange : ses deux diagonales.|{{if:k==4|Le triangle équilatéral : une droite par sommet, qui passe par le milieu du côté opposé.|{{if:k==5|Le triangle isocèle : la droite qui passe par son sommet principal et le milieu de la base.|{{if:k==6|Ce quadrilatère n'a ni côtés de même longueur ni angles droits : aucun pliage ne superpose ses deux moitiés.|Ce triangle a trois côtés de longueurs différentes : aucun pliage ne superpose ses deux moitiés.}}}}}}}}}}}}",
+						"Nombre d'axes : $\\textcolor{{{color:primary.0}}}{{{z}}}$."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				],
+				"statement": "Quelle figure n'a aucun axe de symétrie ?\n\n````choix\n- ```figure\n  fenetre: 0 ; 10 ; 0 ; 7\n  taille: grande\n  description: Une figure.\n  ---\n  {{if:k==1|p0 = point(1.93, 1.14, visible=faux)\n  p1 = point(8.07, 3.3, visible=faux)\n  p2 = point(4.49, 5.86, visible=faux)\n  p3 = point(1.99, 4.78, visible=faux)\n  polygone(p0, p1, p2, p3, couleur=\"noir\", epaisseur=2)|p0 = point(6.93, 4.68, visible=faux)\n  p1 = point(1.2, 2.59, visible=faux)\n  p2 = point(8.8, 2.32, visible=faux)\n  polygone(p0, p1, p2, couleur=\"noir\", epaisseur=2)}}\n  ```\n- ```figure\n  fenetre: 0 ; 10 ; 0 ; 7\n  taille: grande\n  description: Une figure.\n  ---\n  p0 = point(3.21, 1.01, visible=faux)\n  p1 = point(6.79, 2.31, visible=faux)\n  p2 = point(3.43, 5.99, visible=faux)\n  polygone(p0, p1, p2, couleur=\"noir\", epaisseur=2)\n  marque_segment(p1, p2)\n  marque_segment(p2, p0)\n  ```\n- ```figure\n  fenetre: 0 ; 10 ; 0 ; 7\n  taille: grande\n  description: Une figure.\n  ---\n  p0 = point(1.8, 1.8, visible=faux)\n  p1 = point(8.2, 1.8, visible=faux)\n  p2 = point(8.2, 5.2, visible=faux)\n  p3 = point(1.8, 5.2, visible=faux)\n  polygone(p0, p1, p2, p3, couleur=\"noir\", epaisseur=2)\n  angle(p3, p0, p1, marque=\"carre\", couleur=\"noir\")\n  angle(p0, p1, p2, marque=\"carre\", couleur=\"noir\")\n  angle(p1, p2, p3, marque=\"carre\", couleur=\"noir\")\n  angle(p2, p3, p0, marque=\"carre\", couleur=\"noir\")\n  ```\n- ```figure\n  fenetre: 0 ; 10 ; 0 ; 7\n  taille: grande\n  description: Une figure.\n  ---\n  p0 = point(6.54, 3.5, visible=faux)\n  p1 = point(5.0, 6.1, visible=faux)\n  p2 = point(3.46, 3.5, visible=faux)\n  p3 = point(5.0, 0.9, visible=faux)\n  polygone(p0, p1, p2, p3, couleur=\"noir\", epaisseur=2)\n  marque_segment(p0, p1)\n  marque_segment(p1, p2)\n  marque_segment(p2, p3)\n  marque_segment(p3, p0)\n  ```\n````",
+				"variables": [
+					{
+						"name": "k",
+						"expression": "1..2"
+					}
+				],
+				"correction": {
+					"steps": [
+						"Le triangle isocèle a un axe, le rectangle deux, le losange deux (ses diagonales).",
+						"La figure sans code, aux côtés tous différents, n'a $\\textcolor{{{color:primary.0}}}{\\text{aucun axe}}$ : c'est {{if:k==1|le quadrilatère|le triangle}} quelconque."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{z}}"
+					}
+				],
+				"statement": "La droite rouge est-elle un axe de symétrie de {{if:k==1|ce rectangle|{{if:k==2|ce carré|{{if:k==3|ce rectangle|{{if:k==4|ce losange|ce losange}}}}}}}} ?\n\n```figure\nfenetre: 0 ; 10 ; 0 ; 7\ndescription: Une figure avec ses codes et une droite rouge en tirets.\n---\n{{if:k==1|p0 = point(1.8, 1.8, visible=faux)\np1 = point(8.2, 1.8, visible=faux)\np2 = point(8.2, 5.2, visible=faux)\np3 = point(1.8, 5.2, visible=faux)\npolygone(p0, p1, p2, p3, couleur=\"bleu\", epaisseur=2)\nangle(p3, p0, p1, marque=\"carre\", couleur=\"noir\")\nangle(p0, p1, p2, marque=\"carre\", couleur=\"noir\")\nangle(p1, p2, p3, marque=\"carre\", couleur=\"noir\")\nangle(p2, p3, p0, marque=\"carre\", couleur=\"noir\")\nu = point(1.80, 1.80, visible=faux)\nv = point(8.20, 5.20, visible=faux)\ndroite(u, v, trait=\"tirets\", couleur=\"rouge\", epaisseur=2)|{{if:k==2|p0 = point(3.0, 1.5, visible=faux)\np1 = point(7.0, 1.5, visible=faux)\np2 = point(7.0, 5.5, visible=faux)\np3 = point(3.0, 5.5, visible=faux)\npolygone(p0, p1, p2, p3, couleur=\"bleu\", epaisseur=2)\nmarque_segment(p0, p1)\nmarque_segment(p1, p2)\nmarque_segment(p2, p3)\nmarque_segment(p3, p0)\nangle(p3, p0, p1, marque=\"carre\", couleur=\"noir\")\nangle(p0, p1, p2, marque=\"carre\", couleur=\"noir\")\nangle(p1, p2, p3, marque=\"carre\", couleur=\"noir\")\nangle(p2, p3, p0, marque=\"carre\", couleur=\"noir\")\nu = point(3.00, 1.50, visible=faux)\nv = point(7.00, 5.50, visible=faux)\ndroite(u, v, trait=\"tirets\", couleur=\"rouge\", epaisseur=2)|{{if:k==3|p0 = point(1.8, 1.8, visible=faux)\np1 = point(8.2, 1.8, visible=faux)\np2 = point(8.2, 5.2, visible=faux)\np3 = point(1.8, 5.2, visible=faux)\npolygone(p0, p1, p2, p3, couleur=\"bleu\", epaisseur=2)\nangle(p3, p0, p1, marque=\"carre\", couleur=\"noir\")\nangle(p0, p1, p2, marque=\"carre\", couleur=\"noir\")\nangle(p1, p2, p3, marque=\"carre\", couleur=\"noir\")\nangle(p2, p3, p0, marque=\"carre\", couleur=\"noir\")\nu = point(5.00, 1.80, visible=faux)\nv = point(5.00, 5.20, visible=faux)\ndroite(u, v, trait=\"tirets\", couleur=\"rouge\", epaisseur=2)|{{if:k==4|p0 = point(5.0, 1.6, visible=faux)\np1 = point(8.2, 3.5, visible=faux)\np2 = point(5.0, 5.4, visible=faux)\np3 = point(1.8, 3.5, visible=faux)\npolygone(p0, p1, p2, p3, couleur=\"bleu\", epaisseur=2)\nmarque_segment(p0, p1)\nmarque_segment(p1, p2)\nmarque_segment(p2, p3)\nmarque_segment(p3, p0)\nu = point(5.00, 1.60, visible=faux)\nv = point(5.00, 5.40, visible=faux)\ndroite(u, v, trait=\"tirets\", couleur=\"rouge\", epaisseur=2)|p0 = point(5.0, 1.6, visible=faux)\np1 = point(8.2, 3.5, visible=faux)\np2 = point(5.0, 5.4, visible=faux)\np3 = point(1.8, 3.5, visible=faux)\npolygone(p0, p1, p2, p3, couleur=\"bleu\", epaisseur=2)\nmarque_segment(p0, p1)\nmarque_segment(p1, p2)\nmarque_segment(p2, p3)\nmarque_segment(p3, p0)\nu = point(6.60, 2.55, visible=faux)\nv = point(3.40, 4.45, visible=faux)\ndroite(u, v, trait=\"tirets\", couleur=\"rouge\", epaisseur=2)}}}}}}}}\n```\n\n```choix\nmelanger: non\n- Oui\n- Non\n```",
+				"variables": [
+					{
+						"name": "k",
+						"expression": "1..5"
+					},
+					{
+						"name": "z",
+						"expression": "eval:(1-min(abs(k-1),1))*1+(1-min(abs(k-2),1))*0+(1-min(abs(k-3),1))*0+(1-min(abs(k-4),1))*0+(1-min(abs(k-5),1))*1"
+					}
+				],
+				"correction": {
+					"steps": [
+						"On imagine qu'on plie la figure le long de la droite rouge : les deux moitiés se superposent-elles exactement ?",
+						"{{if:k==1|Non : plié le long de sa diagonale, un rectangle (qui n'est pas un carré) ne se superpose pas, les coins dépassent. La diagonale n'est $\\textcolor{{{color:primary.0}}}{\\text{pas un axe}}$.|{{if:k==2|Oui : la diagonale d'un carré est un $\\textcolor{{{color:primary.0}}}{\\text{axe de symétrie}}$.|{{if:k==3|Oui : la droite qui passe par les milieux de deux côtés opposés est un $\\textcolor{{{color:primary.0}}}{\\text{axe de symétrie}}$ du rectangle.|{{if:k==4|Oui : la diagonale d'un losange est un $\\textcolor{{{color:primary.0}}}{\\text{axe de symétrie}}$.|Non : plié ainsi, un losange (qui n'est pas un carré) ne se superpose pas. Ses axes sont ses diagonales ; cette droite n'est $\\textcolor{{{color:primary.0}}}{\\text{pas un axe}}$.}}}}}}}}"
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "draft",
+		"title": "Les axes de symétrie des figures usuelles",
+		"description": "Nombre d'axes du carré, du rectangle, du losange, des triangles particuliers ; figure sans axe ; la diagonale du rectangle n'est pas un axe",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["4"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"k": "1",
+					"o": "0",
+					"z": "4"
+				},
+				"description": "Carré : 4",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["2"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"k": "2",
+					"o": "1",
+					"z": "2"
+				},
+				"description": "Rectangle : 2",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["4"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"k": "2",
+					"o": "1",
+					"z": "2"
+				},
+				"description": "Erreur : rectangle 4 (diagonales)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["3"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"k": "4",
+					"o": "2",
+					"z": "3"
+				},
+				"description": "Équilatéral : 3",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"k": "1"
+				},
+				"description": "Le quadrilatère quelconque",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["2"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"k": "1"
+				},
+				"description": "Erreur : le rectangle",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["1"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"k": "1",
+					"z": "1"
+				},
+				"description": "Diagonale du rectangle : non",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"k": "1",
+					"z": "1"
+				},
+				"description": "Erreur : diagonale du rectangle dite axe",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"k": "2",
+					"z": "0"
+				},
+				"description": "Diagonale du carré : oui",
+				"variationIndex": 2
+			}
+		],
+		"classification_node_id": null
+	},
+	{
+		"id": "f988f07a-5f4f-4740-9895-f2a675b16c9b",
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"grades": ["CM1", "CM2"],
+		"delay": 90,
+		"level": 1,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{k}}"
+					}
+				],
+				"statement": "Voici un cercle de centre $O$. Comment s'appelle le trait rouge ?\n\n```figure\nfenetre: -4 ; 4 ; -3.8 ; 3.8\ndescription: Un cercle de centre O et un trait rouge.\n---\nO = point(0, 0, etiquette=\"bas-droite\")\ncercle(O, rayon=3, epaisseur=2)\n{{if:k==0|A = point(O, longueur=3, angle={{t}}, visible=faux)\nsegment(O, A, couleur=\"rouge\", epaisseur=4)|{{if:k==1|A = point(O, longueur=3, angle={{t}}, visible=faux)\nB = point(O, longueur=3, angle={{eval:t+180}}, visible=faux)\nsegment(A, B, couleur=\"rouge\", epaisseur=4)|{{if:k==2|A = point(O, longueur=3, angle={{t}}, visible=faux)\nB = point(O, longueur=3, angle={{eval:t+100}}, visible=faux)\nsegment(A, B, couleur=\"rouge\", epaisseur=4)|arc(O, rayon=3, debut={{t}}, fin={{eval:t+100}}, couleur=\"rouge\", epaisseur=4)}}}}}}\n```\n\n```choix\nmelanger: non\n- un rayon\n- un diamètre\n- une corde\n- un arc de cercle\n```",
+				"variables": [
+					{
+						"name": "k",
+						"expression": "0..3"
+					},
+					{
+						"name": "t",
+						"expression": "0..359"
+					}
+				],
+				"correction": {
+					"steps": [
+						"Un **rayon** va du centre à un point du cercle. Un **diamètre** relie deux points du cercle en passant par le centre. Une **corde** relie deux points du cercle. Un **arc** est un morceau du cercle lui-même.",
+						"{{if:k==0|Le trait rouge part du centre $O$ et s'arrête sur le cercle :|{{if:k==1|Le trait rouge relie deux points du cercle et passe par le centre $O$ :|{{if:k==2|Le trait rouge relie deux points du cercle sans passer par le centre :|Le trait rouge est posé sur le cercle, il en suit la courbe :}}}}}} c'est {{if:k==0|**un rayon**|{{if:k==1|**un diamètre**|{{if:k==2|**une corde**|**un arc de cercle**}}}}}}."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{j}}"
+					}
+				],
+				"statement": "La figure bleue est-elle un cercle ou un disque ?\n\n```figure\nfenetre: -3 ; 3 ; -2.8 ; 2.8\ndescription: Une figure bleue : {{if:k==1|un cercle (la ligne seule)|un disque (la surface coloriée et son bord)}}.\n---\nO = point(0, 0, etiquette=\"bas-droite\")\ncercle(O, rayon=2.2, couleur=\"bleu\", epaisseur=2, remplissage=\"bleu\", opacite_fond={{if:k==1|0|0.45}})\n```\n\n```choix\nmelanger: non\n- un cercle\n- un disque\n```",
+				"variables": [
+					{
+						"name": "k",
+						"expression": "1..2"
+					},
+					{
+						"name": "j",
+						"expression": "eval:k-1"
+					}
+				],
+				"correction": {
+					"steps": [
+						"Le **cercle** est la ligne : tous ses points sont à la même distance du centre. Le **disque** est toute la surface à l'intérieur, avec son bord.",
+						"Ici, {{if:k==1|seule la ligne est tracée : c'est $\\textcolor{{{color:primary.0}}}{\\text{un cercle}}$.|la surface est coloriée : c'est $\\textcolor{{{color:primary.0}}}{\\text{un disque}}$.}}"
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{z}}"
+					}
+				],
+				"statement": "Un cercle a pour centre le point $O$ et pour rayon ${{r}}~\\unit{cm}$. On sait que $OA = {{dA}}~\\unit{cm}$, $OB = {{dB}}~\\unit{cm}$ et $OC = {{dC}}~\\unit{cm}$.\n\nQuel point est {{if:q==1|sur le cercle|à l'extérieur du disque}} ?\n\n```choix\nmelanger: non\n- le point A\n- le point B\n- le point C\n```",
+				"variables": [
+					{
+						"name": "q",
+						"expression": "1..2"
+					},
+					{
+						"name": "w",
+						"expression": "0..5"
+					},
+					{
+						"name": "r",
+						"expression": "3..8"
+					},
+					{
+						"name": "p",
+						"expression": "1..2"
+					},
+					{
+						"name": "s",
+						"expression": "1..3"
+					},
+					{
+						"name": "dA",
+						"expression": "eval:(1-min(abs(w-0),1))*(r-p)+(1-min(abs(w-1),1))*(r-p)+(1-min(abs(w-2),1))*r+(1-min(abs(w-3),1))*r+(1-min(abs(w-4),1))*(r+s)+(1-min(abs(w-5),1))*(r+s)"
+					},
+					{
+						"name": "dB",
+						"expression": "eval:(1-min(abs(w-0),1))*r+(1-min(abs(w-1),1))*(r+s)+(1-min(abs(w-2),1))*(r-p)+(1-min(abs(w-3),1))*(r+s)+(1-min(abs(w-4),1))*(r-p)+(1-min(abs(w-5),1))*r"
+					},
+					{
+						"name": "dC",
+						"expression": "eval:(1-min(abs(w-0),1))*(r+s)+(1-min(abs(w-1),1))*r+(1-min(abs(w-2),1))*(r+s)+(1-min(abs(w-3),1))*(r-p)+(1-min(abs(w-4),1))*r+(1-min(abs(w-5),1))*(r-p)"
+					},
+					{
+						"name": "u",
+						"expression": "eval:(1-min(abs(w-0),1))*1+(1-min(abs(w-1),1))*2+(1-min(abs(w-2),1))*0+(1-min(abs(w-3),1))*0+(1-min(abs(w-4),1))*2+(1-min(abs(w-5),1))*1"
+					},
+					{
+						"name": "x",
+						"expression": "eval:(1-min(abs(w-0),1))*2+(1-min(abs(w-1),1))*1+(1-min(abs(w-2),1))*2+(1-min(abs(w-3),1))*1+(1-min(abs(w-4),1))*0+(1-min(abs(w-5),1))*0"
+					},
+					{
+						"name": "z",
+						"expression": "eval:(2-q)*u+(q-1)*x"
+					}
+				],
+				"correction": {
+					"steps": [
+						"Les points **du cercle** sont tous à ${{r}}~\\unit{cm}$ de $O$ (le rayon). Plus près de $O$, on est à l'intérieur ; plus loin, on est à l'extérieur du disque.",
+						"{{if:q==1|Le point à exactement ${{r}}~\\unit{cm}$ de $O$ est sur le cercle|Le point à plus de ${{r}}~\\unit{cm}$ de $O$ est à l'extérieur du disque}} : c'est le point $\\textcolor{{{color:primary.0}}}{{{if:z==0|A|{{if:z==1|B|C}}}}}$."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{y}}"
+					}
+				],
+				"statement": "{{if:k==1|Le rayon d'un cercle mesure ${{r}}~\\unit{cm}$. Combien mesure son diamètre ?\n\nDiamètre : $?~\\unit{cm}$|Le diamètre d'un cercle mesure ${{eval:2*r}}~\\unit{cm}$. Combien mesure son rayon ?\n\nRayon : $?~\\unit{cm}$}}",
+				"variables": [
+					{
+						"name": "k",
+						"expression": "1..2"
+					},
+					{
+						"name": "r",
+						"expression": "2..9"
+					},
+					{
+						"name": "y",
+						"expression": "eval:(3-k)*r"
+					}
+				],
+				"correction": {
+					"steps": [
+						"Le **diamètre** traverse le cercle en passant par le centre : c'est deux rayons bout à bout.",
+						"{{if:k==1|$2 \\times {{r}} = \\textcolor{{{color:primary.0}}}{{{y}}~\\unit{cm}}$.|${{eval:2*r}} \\div 2 = \\textcolor{{{color:primary.0}}}{{{y}}~\\unit{cm}}$.}}"
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "draft",
+		"title": "Cercle, disque, rayon, diamètre, corde, arc",
+		"description": "Nommer rayon, diamètre, corde, arc ; cercle ou disque ; le cercle comme points à la même distance du centre ; rayon et diamètre (entiers)",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["2"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"k": "2",
+					"t": "40"
+				},
+				"description": "Corde",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["1"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"k": "2",
+					"t": "40"
+				},
+				"description": "Erreur : corde dite diamètre",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["3"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"k": "3",
+					"t": "200"
+				},
+				"description": "Arc",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["1"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"j": "1",
+					"k": "2"
+				},
+				"description": "Disque",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"j": "1",
+					"k": "2"
+				},
+				"description": "Erreur : disque dit cercle",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["1"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"p": "1",
+					"q": "1",
+					"r": "5",
+					"s": "2",
+					"u": "1",
+					"w": "0",
+					"x": "2",
+					"z": "1",
+					"dA": "4",
+					"dB": "5",
+					"dC": "7"
+				},
+				"description": "Sur le cercle : B (w = 0)",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"p": "1",
+					"q": "2",
+					"r": "5",
+					"s": "2",
+					"u": "1",
+					"w": "5",
+					"x": "0",
+					"z": "0",
+					"dA": "7",
+					"dB": "5",
+					"dC": "4"
+				},
+				"description": "Dehors : A (w = 5)",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"p": "1",
+					"q": "1",
+					"r": "5",
+					"s": "2",
+					"u": "1",
+					"w": "0",
+					"x": "2",
+					"z": "1",
+					"dA": "4",
+					"dB": "5",
+					"dC": "7"
+				},
+				"description": "Erreur : le point dedans",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["14"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"k": "1",
+					"r": "7",
+					"y": "14"
+				},
+				"description": "Rayon 7 → diamètre 14",
+				"variationIndex": 3
+			},
+			{
+				"answers": ["6"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"k": "2",
+					"r": "6",
+					"y": "6"
+				},
+				"description": "Diamètre 12 → rayon 6",
+				"variationIndex": 3
+			},
+			{
+				"answers": ["24"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"k": "2",
+					"r": "6",
+					"y": "6"
+				},
+				"description": "Erreur : le double au lieu de la moitié",
+				"variationIndex": 3
+			}
+		],
+		"classification_node_id": null
+	}
+]

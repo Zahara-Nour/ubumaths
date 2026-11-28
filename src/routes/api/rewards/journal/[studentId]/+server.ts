@@ -25,17 +25,17 @@
  * }
  */
 
-import { error, json } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireRoles } from '$lib/server/middleware/auth';
-import { verifyTeacherStudentWithRole } from '$lib/server/middleware/student-access';
+import { requireRoles } from '#lib/server/middleware/auth.ts';
+import { verifyTeacherStudentWithRole } from '#lib/server/middleware/student-access.ts';
 import {
 	rewardJournalQuerySchema,
 	studentIdParamSchema
-} from '$lib/server/validation/reward-journal';
-import { attachGidouillesBalances } from '$lib/server/reward-journal-balance';
-import type { RewardEvent, RewardJournalResponse } from '$lib/types/reward-journal';
-import { createServerLogger } from '$lib/utils/logger';
+} from '#lib/server/validation/reward-journal.ts';
+import { attachGidouillesBalances } from '#lib/server/reward-journal-balance.ts';
+import type { RewardEvent, RewardJournalResponse } from '#lib/types/reward-journal.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/rewards/journal/[studentId]/+server');
 
@@ -137,7 +137,7 @@ export const GET: RequestHandler = async ({ params, url, locals }) => {
 			}
 		};
 
-		return json(response);
+		return Response.json(response);
 	} catch (err) {
 		// Re-throw SvelteKit errors
 		if (err && typeof err === 'object' && 'status' in err) {

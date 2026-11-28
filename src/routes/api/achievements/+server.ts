@@ -15,14 +15,14 @@
  * - Status 500: Server error
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { achievementContextSchema } from '$lib/server/validation/achievements';
+import { achievementContextSchema } from '#lib/server/validation/achievements.ts';
 import {
 	getAchievementsByContext,
 	AchievementServiceError
-} from '$lib/server/achievements/service';
-import { createServerLogger } from '$lib/utils/logger';
+} from '#lib/server/achievements/service.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/achievements/+server');
 
@@ -45,7 +45,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 		// Fetch achievements from service layer
 		const achievements = await getAchievementsByContext(supabase, validatedContext);
 
-		return json({
+		return Response.json({
 			success: true,
 			achievements,
 			count: achievements.length

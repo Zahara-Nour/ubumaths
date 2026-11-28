@@ -1,0 +1,238 @@
+{
+	"id": "8a1d9a4a-cc92-4559-9a57-d1a746b5382d",
+	"title": "Problèmes parties-tout (jusqu'à 999 999)",
+	"description": "Chercher le tout (deux ou trois parties), une partie, ou l'état de départ (« il en a vendu 125 400, il lui en reste 86 350 ») avec des nombres jusqu'à 999 999 ; schéma en barres dans le corrigé",
+	"grades": ["CM1"],
+	"level": 23,
+	"delay": 90,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"spacesFromFourDigits": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Un parc d'attractions a reçu ${{a}}$ visiteurs en juillet et ${{b}}$ visiteurs en août{{if:t==1| ; en septembre, il en a reçu ${{c}}$|}}.\n\nCombien de visiteurs le parc a-t-il reçus en {{if:t==1|trois|deux}} mois ?\n\nLe parc a reçu $?$ visiteurs.",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "15000..400000"
+				},
+				{
+					"name": "b",
+					"expression": "15000..400000"
+				},
+				{
+					"name": "c",
+					"expression": "15000..190000"
+				},
+				{
+					"name": "t",
+					"expression": "0..1"
+				}
+			],
+			"conditions": ["a + b + c <= 999999"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a+b+t*c}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Chaque mois est une **partie** ; on cherche **le tout** : on ajoute les parties.\n\n```schema-barres\nVisiteurs : {{eval:floor((a)/1000)}} {{eval:floor(mod((a),1000)/100)}}{{eval:floor(mod((a),100)/10)}}{{eval:mod((a),10)}} (3) ; {{eval:floor((b)/1000)}} {{eval:floor(mod((b),1000)/100)}}{{eval:floor(mod((b),100)/10)}}{{eval:mod((b),10)}} (3){{if:t==1| ; {{eval:floor((c)/1000)}} {{eval:floor(mod((c),1000)/100)}}{{eval:floor(mod((c),100)/10)}}{{eval:mod((c),10)}} (2)|}} = ?\n```",
+					"$${{a}} + {{b}}{{if:t==1| + {{c}}|}} = \\textcolor{{{color:primary.0}}}{{{eval:a+b+t*c}}}$$",
+					"Le parc a reçu ${{eval:a+b+t*c}}$ visiteurs en {{if:t==1|trois|deux}} mois.",
+					"Le tout est plus grand que chaque partie : ${{eval:a+b+t*c}}$ est plus grand que ${{a}}$ et que ${{b}}$. C'est vraisemblable."
+				]
+			}
+		},
+		{
+			"statement": "La médiathèque de la ville possède ${{T}}$ livres. Parmi eux, ${{a}}$ sont des romans ; les autres sont des documentaires.\n\nCombien la médiathèque possède-t-elle de documentaires ?\n\nElle possède $?$ documentaires.",
+			"variables": [
+				{
+					"name": "T",
+					"expression": "20000..600000"
+				},
+				{
+					"name": "a",
+					"expression": "8000..500000"
+				}
+			],
+			"conditions": ["T - a >= 5000"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:T-a}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Tous les livres, c'est **le tout** ; les romans sont une partie, on cherche l'autre partie : on enlève.\n\n```schema-barres\nTous les livres : {{eval:floor((T)/1000)}} {{eval:floor(mod((T),1000)/100)}}{{eval:floor(mod((T),100)/10)}}{{eval:mod((T),10)}} (8)\nRomans, documentaires : {{eval:floor((a)/1000)}} {{eval:floor(mod((a),1000)/100)}}{{eval:floor(mod((a),100)/10)}}{{eval:mod((a),10)}} (5) ; ? (3)\n```",
+					"$${{T}} - {{a}} = \\textcolor{{{color:primary.0}}}{{{eval:T-a}}}$$",
+					"La médiathèque possède ${{eval:T-a}}$ documentaires.",
+					"On vérifie en remettant les deux parties ensemble : ${{a}} + {{eval:T-a}} = {{T}}$, on retrouve bien le tout."
+				]
+			}
+		},
+		{
+			"statement": "Un grossiste avait des bouteilles d'eau dans son entrepôt. Il en a vendu ${{a}}$ et il lui en reste ${{b}}$.\n\nCombien y avait-il de bouteilles dans l'entrepôt avant la vente ?\n\nIl y avait $?$ bouteilles.",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "12000..500000"
+				},
+				{
+					"name": "b",
+					"expression": "3000..400000"
+				}
+			],
+			"conditions": ["a + b <= 999999", "a != b"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a+b}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Les bouteilles du début, c'est **le tout** : celles qui sont vendues et celles qui restent. « Il en reste » ne veut pas dire qu'on enlève : on cherche le tout, on ajoute.\n\n```schema-barres\nAu début : ? (8)\nVendues, restantes : {{eval:floor((a)/1000)}} {{eval:floor(mod((a),1000)/100)}}{{eval:floor(mod((a),100)/10)}}{{eval:mod((a),10)}} (5) ; {{eval:floor((b)/1000)}} {{eval:floor(mod((b),1000)/100)}}{{eval:floor(mod((b),100)/10)}}{{eval:mod((b),10)}} (3)\n```",
+					"$${{a}} + {{b}} = \\textcolor{{{color:primary.0}}}{{{eval:a+b}}}$$",
+					"Il y avait ${{eval:a+b}}$ bouteilles dans l'entrepôt.",
+					"On vérifie : ${{eval:a+b}} - {{a}} = {{b}}$ ; après la vente, il en reste bien ${{b}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "deux mois : 245 300 + 187 650 = 432 950",
+			"variationIndex": 0,
+			"variables": {
+				"a": "245300",
+				"b": "187650",
+				"c": "50000",
+				"t": "0"
+			},
+			"answers": ["432\\,950"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : deux mois, soustraction (57 650)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "245300",
+				"b": "187650",
+				"c": "50000",
+				"t": "0"
+			},
+			"answers": ["57\\,650"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "trois mois : 125 000 + 230 400 + 98 750 = 454 150",
+			"variationIndex": 0,
+			"variables": {
+				"a": "125000",
+				"b": "230400",
+				"c": "98750",
+				"t": "1"
+			},
+			"answers": ["454\\,150"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : trois mois, le troisième oublié (355 400)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "125000",
+				"b": "230400",
+				"c": "98750",
+				"t": "1"
+			},
+			"answers": ["355\\,400"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Forme : sans les espaces (432950)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "245300",
+				"b": "187650",
+				"c": "50000",
+				"t": "0"
+			},
+			"answers": ["432950"],
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["spaces"]
+			}
+		},
+		{
+			"description": "partie : 356 200 − 148 750 = 207 450",
+			"variationIndex": 1,
+			"variables": {
+				"T": "356200",
+				"a": "148750"
+			},
+			"answers": ["207\\,450"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : partie, les deux ajoutés (504 950)",
+			"variationIndex": 1,
+			"variables": {
+				"T": "356200",
+				"a": "148750"
+			},
+			"answers": ["504\\,950"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : partie, retenue oubliée (217 450)",
+			"variationIndex": 1,
+			"variables": {
+				"T": "356200",
+				"a": "148750"
+			},
+			"answers": ["217\\,450"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "départ : 125 400 vendues, 86 350 restent → 211 750",
+			"variationIndex": 2,
+			"variables": {
+				"a": "125400",
+				"b": "86350"
+			},
+			"answers": ["211\\,750"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : départ, « il reste » lu soustraction (39 050)",
+			"variationIndex": 2,
+			"variables": {
+				"a": "125400",
+				"b": "86350"
+			},
+			"answers": ["39\\,050"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

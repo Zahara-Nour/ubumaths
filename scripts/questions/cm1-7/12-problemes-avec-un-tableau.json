@@ -1,0 +1,315 @@
+{
+	"id": "ae74fe73-874e-4eae-9fa4-6897148d88e7",
+	"title": "Résous un problème avec un tableau",
+	"description": "En deux étapes : le prix d'une famille au cinéma (tableau des prix), combien de repas de plus un jour que l'autre (double entrée), le nombre de rubans pour toutes les filles de l'école",
+	"grades": ["CM1"],
+	"level": 3,
+	"delay": 180,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"spacesFromFourDigits": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Voici les prix d'entrée au cinéma.\n\n| | Adulte | Enfant |\n|---|---|---|\n| Prix d'une entrée | ${{A}}$ € | ${{E}}$ € |\n\nUne famille de ${{a}}$ adulte{{if:a>1|s|}} et ${{b}}$ enfants va au cinéma. Combien paie-t-elle en tout ?\n\n$?$ €",
+			"variables": [
+				{
+					"name": "A",
+					"expression": "8..14"
+				},
+				{
+					"name": "E",
+					"expression": "4..7"
+				},
+				{
+					"name": "a",
+					"expression": "1..2"
+				},
+				{
+					"name": "b",
+					"expression": "2..4"
+				},
+				{
+					"name": "pa",
+					"expression": "eval:a*A"
+				},
+				{
+					"name": "pb",
+					"expression": "eval:b*E"
+				},
+				{
+					"name": "n",
+					"expression": "eval:pa+pb"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{n}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Les adultes : ${{a}} \\times {{A}} = {{pa}}$ €.",
+					"Les enfants : ${{b}} \\times {{E}} = {{pb}}$ €.",
+					"En tout : ${{pa}} + {{pb}} = \\textcolor{{{color:primary.0}}}{{{n}}}$ €."
+				]
+			}
+		},
+		{
+			"statement": "Ce tableau donne le nombre de repas servis à la cantine.\n\n```tableau-croise\nlignes: Filles ; Garçons\ncolonnes: Lundi ; Mardi ; Jeudi ; Vendredi\nFilles = {{f1}} ; {{f2}} ; {{f3}} ; {{f4}}\nGarçons = {{g1}} ; {{g2}} ; {{g3}} ; {{g4}}\ncoin: Élèves \\ Jour\ntotaux: non\n```\n\nCombien de repas a-t-on servis de plus le lundi que le mardi ?\n\n$?$ repas de plus",
+			"variables": [
+				{
+					"name": "f1",
+					"expression": "40..150"
+				},
+				{
+					"name": "f2",
+					"expression": "40..150"
+				},
+				{
+					"name": "f3",
+					"expression": "40..150"
+				},
+				{
+					"name": "f4",
+					"expression": "40..150"
+				},
+				{
+					"name": "g1",
+					"expression": "40..150"
+				},
+				{
+					"name": "g2",
+					"expression": "40..150"
+				},
+				{
+					"name": "g3",
+					"expression": "40..150"
+				},
+				{
+					"name": "g4",
+					"expression": "40..150"
+				},
+				{
+					"name": "x",
+					"expression": "eval:f1+g1"
+				},
+				{
+					"name": "y",
+					"expression": "eval:f2+g2"
+				},
+				{
+					"name": "d",
+					"expression": "eval:x-y"
+				}
+			],
+			"conditions": ["x > y"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le lundi : ${{f1}} + {{g1}} = {{x}}$ repas.",
+					"Le mardi : ${{f2}} + {{g2}} = {{y}}$ repas.",
+					"L'écart : ${{x}} - {{y}} = \\textcolor{{{color:primary.0}}}{{{d}}}$ repas de plus le lundi."
+				]
+			}
+		},
+		{
+			"statement": "Ce tableau donne le nombre d'élèves de l'école.\n\n```tableau-croise\nlignes: CP ; CE1 ; CE2 ; CM1 ; CM2\ncolonnes: Filles ; Garçons\nCP = {{f1}} ; {{g1}}\nCE1 = {{f2}} ; {{g2}}\nCE2 = {{f3}} ; {{g3}}\nCM1 = {{f4}} ; {{g4}}\nCM2 = {{f5}} ; {{g5}}\ncoin: Classe \\ Élèves\ntotaux: non\n```\n\nPour la fête de l'école, chaque fille reçoit ${{p}}$ rubans. Combien de rubans faut-il en tout ?\n\n$?$ rubans",
+			"variables": [
+				{
+					"name": "f1",
+					"expression": "8..16"
+				},
+				{
+					"name": "f2",
+					"expression": "8..16"
+				},
+				{
+					"name": "f3",
+					"expression": "8..16"
+				},
+				{
+					"name": "f4",
+					"expression": "8..16"
+				},
+				{
+					"name": "f5",
+					"expression": "8..16"
+				},
+				{
+					"name": "g1",
+					"expression": "8..16"
+				},
+				{
+					"name": "g2",
+					"expression": "8..16"
+				},
+				{
+					"name": "g3",
+					"expression": "8..16"
+				},
+				{
+					"name": "g4",
+					"expression": "8..16"
+				},
+				{
+					"name": "g5",
+					"expression": "8..16"
+				},
+				{
+					"name": "p",
+					"expression": "2..5"
+				},
+				{
+					"name": "s",
+					"expression": "eval:f1+f2+f3+f4+f5"
+				},
+				{
+					"name": "n",
+					"expression": "eval:s*p"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{n}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"D'abord le nombre de filles : la colonne « Filles », ${{f1}} + {{f2}} + {{f3}} + {{f4}} + {{f5}} = {{s}}$.",
+					"Chaque fille reçoit ${{p}}$ rubans : ${{s}} \\times {{p}} = \\textcolor{{{color:primary.0}}}{{{n}}}$ rubans."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "2 × 12 + 3 × 6 = 42",
+			"variationIndex": 0,
+			"variables": {
+				"A": "12",
+				"E": "6",
+				"a": "2",
+				"b": "3",
+				"pa": "24",
+				"pb": "18",
+				"n": "42"
+			},
+			"answers": ["42"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : un adulte et un enfant (18)",
+			"variationIndex": 0,
+			"variables": {
+				"A": "12",
+				"E": "6",
+				"a": "2",
+				"b": "3",
+				"pa": "24",
+				"pb": "18",
+				"n": "42"
+			},
+			"answers": ["18"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Lundi 215 − mardi 187 = 28",
+			"variationIndex": 1,
+			"variables": {
+				"f1": "112",
+				"f2": "98",
+				"f3": "125",
+				"f4": "87",
+				"g1": "103",
+				"g2": "89",
+				"g3": "96",
+				"g4": "119",
+				"x": "215",
+				"y": "187",
+				"d": "28"
+			},
+			"answers": ["28"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : les filles seulement (14)",
+			"variationIndex": 1,
+			"variables": {
+				"f1": "112",
+				"f2": "98",
+				"f3": "125",
+				"f4": "87",
+				"g1": "103",
+				"g2": "89",
+				"g3": "96",
+				"g4": "119",
+				"x": "215",
+				"y": "187",
+				"d": "28"
+			},
+			"answers": ["14"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "60 filles × 3 = 180",
+			"variationIndex": 2,
+			"variables": {
+				"f1": "12",
+				"f2": "10",
+				"f3": "14",
+				"f4": "11",
+				"f5": "13",
+				"g1": "9",
+				"g2": "15",
+				"g3": "12",
+				"g4": "10",
+				"g5": "14",
+				"p": "3",
+				"s": "60",
+				"n": "180"
+			},
+			"answers": ["180"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : tous les élèves × 3",
+			"variationIndex": 2,
+			"variables": {
+				"f1": "12",
+				"f2": "10",
+				"f3": "14",
+				"f4": "11",
+				"f5": "13",
+				"g1": "9",
+				"g2": "15",
+				"g3": "12",
+				"g4": "10",
+				"g5": "14",
+				"p": "3",
+				"s": "60",
+				"n": "180"
+			},
+			"answers": ["360"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

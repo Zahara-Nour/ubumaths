@@ -1,11 +1,11 @@
 <script lang="ts">
 	import { resolve } from '$app/paths';
-	import RestrictedRichText from '$lib/components/rich-text/RestrictedRichText.svelte';
-	import { lore } from '$lib/config/lore';
+	import RestrictedRichText from '#lib/components/rich-text/RestrictedRichText.svelte';
+	import { messageRoleLabel, replyRecipientId } from '#lib/utils/message-reply.ts';
 	import { page } from '$app/state';
-	import { privateMessages } from '$lib/stores/privateMessages.svelte';
-	import { Button } from '$lib/components/ui/button';
-	import BackLink from '$lib/components/navigation/BackLink.svelte';
+	import { privateMessages } from '#lib/stores/privateMessages.svelte.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import BackLink from '#lib/components/navigation/BackLink.svelte';
 	import {
 		Loader2,
 		Reply,
@@ -20,7 +20,7 @@
 	} from '@lucide/svelte';
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
-	import UserAvatar from '$lib/components/UserAvatar.svelte';
+	import UserAvatar from '#lib/components/UserAvatar.svelte';
 
 	const threadRootId = $derived(page.params.id);
 
@@ -32,6 +32,9 @@
 	});
 
 	const thread = $derived(privateMessages.currentThread);
+
+	// À qui part la réponse : au dernier qui m'a écrit dans ce fil, jamais à moi-même
+	const replyTo = $derived(page.data.user ? replyRecipientId(thread, page.data.user.id) : null);
 
 	// Format date
 	function formatDate(dateStr: string): string {
@@ -64,7 +67,7 @@
 
 	// Reply to message in thread
 	function replyToThread() {
-		if (!threadRootId) return;
+		if (!threadRootId || !replyTo) return;
 		// Get the root message (first in thread)
 		const rootMessage = thread[0];
 		if (!rootMessage) return;
@@ -74,7 +77,7 @@
 			subject: rootMessage.subject.startsWith('Re: ')
 				? rootMessage.subject
 				: `Re: ${rootMessage.subject}`,
-			recipientId: rootMessage.sender_id
+			recipientId: replyTo
 		});
 		goto(`/messages/compose?${params.toString()}`);
 	}
@@ -97,10 +100,12 @@
 				</div>
 			</div>
 			<div class="flex items-center gap-2">
-				<Button onclick={replyToThread}>
-					<Reply class="mr-2 h-4 w-4" />
-					Répondre
-				</Button>
+				{#if replyTo}
+					<Button onclick={replyToThread}>
+						<Reply class="mr-2 h-4 w-4" />
+						Répondre
+					</Button>
+				{/if}
 			</div>
 		</div>
 	</div>
@@ -138,9 +143,7 @@
 										{message.sender_name || 'Expéditeur inconnu'}
 									</div>
 									<div class="text-sm text-muted-foreground">
-										{message.sender_role === 'teacher'
-											? lore.entities.teacher
-											: lore.entities.student}
+										{messageRoleLabel(message.sender_role)}
 									</div>
 									<div class="mt-1 text-xs text-muted-foreground">
 										{formatDate(message.sent_at)}

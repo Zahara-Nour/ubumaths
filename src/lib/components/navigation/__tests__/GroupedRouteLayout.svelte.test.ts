@@ -1,11 +1,10 @@
 import { describe, expect, it, vi } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import { createRawSnippet } from 'svelte';
-import { readable } from 'svelte/store';
 import GroupedRouteLayout from '../GroupedRouteLayout.svelte';
 
-vi.mock('$app/stores', () => ({
-	page: readable({ url: new URL('http://localhost/dashboard/teacher/contenu') })
+vi.mock('$app/state', () => ({
+	page: { url: new URL('http://localhost/dashboard/teacher/contenu') }
 }));
 
 describe('GroupedRouteLayout', () => {

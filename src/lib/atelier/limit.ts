@@ -22,13 +22,18 @@
 
 import type { Atelier } from './atelier.svelte';
 import type { CalcResult } from './calcul';
-import type { MathNode } from '$lib/mathAST/types';
-import type { LimitDirection, LimitResult } from '$lib/mathAST/limits/types';
-import { evaluateLimit } from '$lib/mathAST/limits';
-import { LimitError } from '$lib/mathAST/limits/types';
-import { parse as parseCommandExpression } from '$lib/mathAST/cli/core/pipeline';
-import { getVariables } from '$lib/mathAST/eval/substitute';
-import { infinity, mathConstant, number, opposite, power } from '$lib/mathAST/factory';
+import type { MathNode } from '#lib/mathAST/types.ts';
+import type { LimitDirection, LimitResult } from '#lib/mathAST/limits/types.ts';
+import { evaluateLimit } from '#lib/mathAST/limits/index.ts';
+import { LimitError } from '#lib/mathAST/limits/types.ts';
+import {
+	limitForEveryParameter,
+	limitParameterCondition,
+	limitParameters
+} from '#lib/mathAST/limits/parametric.ts';
+import { parse as parseCommandExpression } from '#lib/mathAST/cli/core/pipeline.ts';
+import { getVariables } from '#lib/mathAST/eval/substitute.ts';
+import { infinity, mathConstant, number, opposite, power } from '#lib/mathAST/factory.ts';
 import {
 	isAddition,
 	isInfinity,
@@ -36,18 +41,18 @@ import {
 	isNumber,
 	isOpposite,
 	isSubtraction
-} from '$lib/mathAST/guards';
-import type { Domain } from '$lib/mathAST/domain/types';
-import { containsValue } from '$lib/mathAST/domain/algebra';
-import { evaluateNodeToApproximatedNumber } from '$lib/mathAST/eval/evaluate';
-import { toLatex } from '$lib/mathAST/latex-generator';
-import { toCustom } from '$lib/mathAST/custom-generator';
-import { transformAST, visitAST } from '$lib/mathAST/visitor';
+} from '#lib/mathAST/guards.ts';
+import type { Domain } from '#lib/mathAST/domain/types.ts';
+import { containsValue } from '#lib/mathAST/domain/algebra.ts';
+import { evaluateNodeToApproximatedNumber } from '#lib/mathAST/eval/evaluate.ts';
+import { toLatex } from '#lib/mathAST/latex-generator.ts';
+import { toCustom } from '#lib/mathAST/custom-generator.ts';
+import { transformAST, visitAST } from '#lib/mathAST/visitor.ts';
 import {
 	findUnknownFunctionCall,
 	unknownFunctionMessage
-} from '$lib/mathAST/parser/custom/tokenizer';
-import { bareFunctionMessage, bareFunctionName } from '$lib/mathAST/cli/core/variable-argument';
+} from '#lib/mathAST/parser/custom/tokenizer.ts';
+import { bareFunctionMessage, bareFunctionName } from '#lib/mathAST/cli/core/variable-argument.ts';
 import { astOf } from './parse';
 import { listCitedMessage } from './list-cited';
 import {
@@ -215,7 +220,21 @@ export function limitCommand(context: LimitContext, input: string, typed: string
 
 	const direction: LimitDirection = side ?? 'both';
 	const approach = point.kind === 'infinite' ? infinity(point.sign) : point.node;
-	const result = safeLimit(ast, variable, approach, direction);
+	const engineResult = safeLimit(ast, variable, approach, direction);
+	// V103 : une limite à paramètre que le moteur refuse alors qu'elle vaut la
+	// même chose pour tout k (`x² + kx` en 0⁺ → 0)
+	const parameters = limitParameters(ast, variable);
+	const engineRefused =
+		engineResult === null ||
+		(engineResult.status !== 'does-not-exist' && knownValue(engineResult) === null);
+	const everyParameter =
+		parameters.length > 0 && engineRefused
+			? limitForEveryParameter(ast, variable, approach, direction)
+			: null;
+	const result =
+		everyParameter === null
+			? engineResult
+			: concludedResult(everyParameter, variable, approach, direction);
 	if (result === null) return { kind: 'commande', input, output: unknownLimit(ast, variable) };
 
 	// « Comment ? » : les étapes portent sur l'expression, dans la lettre de
@@ -239,16 +258,27 @@ export function limitCommand(context: LimitContext, input: string, typed: string
 	}
 	const value = knownValue(result);
 	if (value === null) return { kind: 'commande', input, output: unknownLimit(ast, variable) };
+	// V103 : la condition sur les lettres qui rend la limite vraie (« 1/k, pour
+	// k ≠ 0 ») ; une condition qu'on ne sait pas écrire fait refuser
+	const condition =
+		parameters.length > 0
+			? limitParameterCondition(ast, variable, approach, direction, value)
+			: ({ kind: 'always' } as const);
+	if (condition === null) return { kind: 'commande', input, output: unknownLimit(ast, variable) };
 	// R1 : sans côté tapé, une fonction définie d'un seul côté (ln x en 0) l'écrit : x → 0⁺
 	const impliedSide = side === null ? (result.definedSide ?? null) : null;
 	if (impliedSide !== null) side = impliedSide;
 
 	const explained = explain({ kind: 'value', value, impliedSide });
+	// La virgule en texte : la virgule décimale lirait `0,5,` comme une liste
+	const conditionLatex =
+		condition.kind === 'when' ? `\\text{,}\\quad\\text{pour }${condition.latex}` : '';
+	const conditionText = condition.kind === 'when' ? `, pour ${condition.text}` : '';
 	return {
 		kind: 'commande',
 		input,
-		output: `lim ${shownLetter}→${pointTextOf(point, side)} ${body.text} = ${valueText(value)}`,
-		latex: `\\lim\\limits_{${shownLetter}\\to ${pointLatexOf(point, side)}} ${body.latex} = ${toLatex(value)}`,
+		output: `lim ${shownLetter}→${pointTextOf(point, side)} ${body.text} = ${valueText(value)}${conditionText}`,
+		latex: `\\lim\\limits_{${shownLetter}\\to ${pointLatexOf(point, side)}} ${body.latex} = ${toLatex(value)}${conditionLatex}`,
 		...stepsField(explained)
 	};
 }
@@ -555,6 +585,25 @@ function unknownLimit(ast: MathNode, variable: string): string {
 	const parameters = [...getVariables(ast)].filter((name) => name !== variable).sort();
 	if (parameters.length === 0) return UNKNOWN_LIMIT;
 	return `Je ne sais pas calculer cette limite : elle peut dépendre du signe de ${lettersText(parameters)}.`;
+}
+
+/** Une limite trouvée hors du moteur (`limitForEveryParameter`), écrite comme les siennes. */
+function concludedResult(
+	value: MathNode,
+	variable: string,
+	approach: MathNode,
+	direction: LimitDirection
+): LimitResult {
+	return {
+		variable,
+		approach,
+		direction,
+		status: isInfinity(value) ? 'infinite' : 'exact',
+		value,
+		indeterminateForm: 'none',
+		technique: 'linearity',
+		steps: []
+	};
 }
 
 /** `evaluateLimit` sans exception : `null` quand le moteur renonce. */

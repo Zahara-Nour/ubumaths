@@ -1,0 +1,273 @@
+{
+	"id": "464b1661-a5b8-43cd-a28d-e983b1de75d1",
+	"title": "Les symboles ⊥, //, ∈, ∉",
+	"description": "Écrire et lire les symboles : perpendiculaires (⊥) ou parallèles (//) sur une figure, sens d'une écriture, points sur une droite (∈, ∉)",
+	"grades": ["CM2"],
+	"level": 12,
+	"delay": 90,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Quelle écriture est vraie ?\n\n```figure\nfenetre: -5 ; 5 ; -5 ; 5\ndescription: Une droite (d) bleue et une droite (d') rouge.\n---\n{{if:c==0|O = point(0, 0, visible=faux)\nU = point(O, longueur=3, angle={{t}}, visible=faux)\nV = point(O, longueur=3, angle={{eval:t+90}}, visible=faux)\ndroite(O, U, couleur=\"bleu\", epaisseur=2)\ndroite(O, V, couleur=\"rouge\", epaisseur=2)\nLU = point(O, longueur=3.3, angle={{eval:t+15}}, visible=faux)\nLV = point(O, longueur=3.3, angle={{eval:t+90+15}}, visible=faux)\nangle(U, O, V, marque=\"carre\", couleur=\"noir\")\ntexte(LU, \"(d)\")\ntexte(LV, \"(d')\")|{{if:c==1|O = point(0, 0, visible=faux)\nM = point(O, longueur=1.2, angle={{eval:t+90}}, visible=faux)\nN = point(O, longueur=1.2, angle={{eval:t+270}}, visible=faux)\nU = point(M, longueur=3, angle={{t}}, visible=faux)\nV = point(N, longueur=3, angle={{t}}, visible=faux)\ndroite(M, U, couleur=\"bleu\", epaisseur=2)\ndroite(N, V, couleur=\"rouge\", epaisseur=2)\nLU = point(M, longueur=3.3, angle={{eval:t+15}}, visible=faux)\nLV = point(N, longueur=3.3, angle={{eval:t-15}}, visible=faux)\ntexte(LU, \"(d)\")\ntexte(LV, \"(d')\")|O = point(0, 0, visible=faux)\nU = point(O, longueur=3, angle={{t}}, visible=faux)\nV = point(O, longueur=3, angle={{eval:t+90+g}}, visible=faux)\ndroite(O, U, couleur=\"bleu\", epaisseur=2)\ndroite(O, V, couleur=\"rouge\", epaisseur=2)\nLU = point(O, longueur=3.3, angle={{eval:t+15}}, visible=faux)\nLV = point(O, longueur=3.3, angle={{eval:t+90+g+15}}, visible=faux)\ntexte(LU, \"(d)\")\ntexte(LV, \"(d')\")}}}}\n```\n\n```choix\nmelanger: non\n- $(d) \\perp (d')$\n- $(d) \\parallel (d')$\n- aucune des deux\n```",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "0..2"
+				},
+				{
+					"name": "t",
+					"expression": "0..179"
+				},
+				{
+					"name": "s",
+					"expression": "0..1"
+				},
+				{
+					"name": "d",
+					"expression": "25..35"
+				},
+				{
+					"name": "g",
+					"expression": "eval:(2*s-1)*d"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{c}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\perp$ se lit « est perpendiculaire à » ; $\\parallel$ se lit « est parallèle à ».",
+					"{{if:c==0|Le petit carré code un angle droit : $(d)$ et $(d')$ sont perpendiculaires. On écrit $\\textcolor{{{color:primary.0}}}{(d) \\perp (d')}$.|{{if:c==1|L'écart entre $(d)$ et $(d')$ reste le même partout : elles sont parallèles. On écrit $\\textcolor{{{color:primary.0}}}{(d) \\parallel (d')}$.|Les droites se coupent, mais pas en angle droit : elles ne sont ni perpendiculaires ni parallèles. $\\textcolor{{{color:primary.0}}}{\\text{Aucune des deux}}$ écriture n'est vraie.}}}}"
+				]
+			}
+		},
+		{
+			"statement": "Que veut dire l'écriture {{if:k==0|$(d) \\perp (d')$|{{if:k==1|$(d) \\parallel (d')$|{{if:k==2|$A \\in (d)$|$A \\notin (d)$}}}}}} ?\n\n```choix\n- Les droites $(d)$ et $(d')$ sont perpendiculaires.\n- Les droites $(d)$ et $(d')$ sont parallèles.\n- Le point $A$ est sur la droite $(d)$.\n- Le point $A$ n'est pas sur la droite $(d)$.\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "0..3"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{k}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\perp$ : « est perpendiculaire à » ; $\\parallel$ : « est parallèle à » ; $\\in$ : « appartient à » (est sur) ; $\\notin$ : « n'appartient pas à ».",
+					"{{if:k==0|$(d) \\perp (d')$|{{if:k==1|$(d) \\parallel (d')$|{{if:k==2|$A \\in (d)$|$A \\notin (d)$}}}}}} se lit : **{{if:k==0|Les droites $(d)$ et $(d')$ sont perpendiculaires.|{{if:k==1|Les droites $(d)$ et $(d')$ sont parallèles.|{{if:k==2|Le point $A$ est sur la droite $(d)$.|Le point $A$ n'est pas sur la droite $(d)$.}}}}}}**"
+				]
+			}
+		},
+		{
+			"statement": "Coche **toutes** les écritures vraies.\n\n```figure\nfenetre: -5 ; 5 ; -4 ; 4\ndescription: Une droite (d) et trois points A, B, C ; certains sont sur la droite.\n---\n{{if:o==0|{{if:p==0|P = point(0, 0, visible=faux)\nQ = point(0.985, 0.174, visible=faux)\ndroite(P, Q, couleur=\"bleu\", epaisseur=2)\ntexte(4.06, 1.17, \"(d)\")\nA = point(-2.76, -0.49, etiquette=\"haut\")\nB = point(0.42, -1.25, etiquette=\"bas\")\nC = point(2.73, 1.80, etiquette=\"haut\")|{{if:p==1|P = point(0, 0, visible=faux)\nQ = point(0.985, 0.174, visible=faux)\ndroite(P, Q, couleur=\"bleu\", epaisseur=2)\ntexte(4.06, 1.17, \"(d)\")\nA = point(-2.98, 0.79, etiquette=\"haut\")\nB = point(0.20, 0.03, etiquette=\"bas\")\nC = point(2.73, 1.80, etiquette=\"haut\")|{{if:p==2|P = point(0, 0, visible=faux)\nQ = point(0.985, 0.174, visible=faux)\ndroite(P, Q, couleur=\"bleu\", epaisseur=2)\ntexte(4.06, 1.17, \"(d)\")\nA = point(-2.98, 0.79, etiquette=\"haut\")\nB = point(0.42, -1.25, etiquette=\"bas\")\nC = point(2.95, 0.52, etiquette=\"haut\")|{{if:p==3|P = point(0, 0, visible=faux)\nQ = point(0.985, 0.174, visible=faux)\ndroite(P, Q, couleur=\"bleu\", epaisseur=2)\ntexte(4.06, 1.17, \"(d)\")\nA = point(-2.76, -0.49, etiquette=\"haut\")\nB = point(0.20, 0.03, etiquette=\"bas\")\nC = point(2.73, 1.80, etiquette=\"haut\")|{{if:p==4|P = point(0, 0, visible=faux)\nQ = point(0.985, 0.174, visible=faux)\ndroite(P, Q, couleur=\"bleu\", epaisseur=2)\ntexte(4.06, 1.17, \"(d)\")\nA = point(-2.76, -0.49, etiquette=\"haut\")\nB = point(0.42, -1.25, etiquette=\"bas\")\nC = point(2.95, 0.52, etiquette=\"haut\")|P = point(0, 0, visible=faux)\nQ = point(0.985, 0.174, visible=faux)\ndroite(P, Q, couleur=\"bleu\", epaisseur=2)\ntexte(4.06, 1.17, \"(d)\")\nA = point(-2.98, 0.79, etiquette=\"haut\")\nB = point(0.20, 0.03, etiquette=\"bas\")\nC = point(2.95, 0.52, etiquette=\"haut\")}}}}}}}}}}|{{if:o==1|{{if:p==0|P = point(0, 0, visible=faux)\nQ = point(0.819, 0.574, visible=faux)\ndroite(P, Q, couleur=\"bleu\", epaisseur=2)\ntexte(3.18, 2.78, \"(d)\")\nA = point(-2.29, -1.61, etiquette=\"haut-gauche\")\nB = point(0.91, -0.95, etiquette=\"bas-droite\")\nC = point(1.71, 2.79, etiquette=\"haut-gauche\")|{{if:p==1|P = point(0, 0, visible=faux)\nQ = point(0.819, 0.574, visible=faux)\ndroite(P, Q, couleur=\"bleu\", epaisseur=2)\ntexte(3.18, 2.78, \"(d)\")\nA = point(-3.04, -0.54, etiquette=\"haut-gauche\")\nB = point(0.16, 0.11, etiquette=\"bas-droite\")\nC = point(1.71, 2.79, etiquette=\"haut-gauche\")|{{if:p==2|P = point(0, 0, visible=faux)\nQ = point(0.819, 0.574, visible=faux)\ndroite(P, Q, couleur=\"bleu\", epaisseur=2)\ntexte(3.18, 2.78, \"(d)\")\nA = point(-3.04, -0.54, etiquette=\"haut-gauche\")\nB = point(0.91, -0.95, etiquette=\"bas-droite\")\nC = point(2.46, 1.72, etiquette=\"haut-gauche\")|{{if:p==3|P = point(0, 0, visible=faux)\nQ = point(0.819, 0.574, visible=faux)\ndroite(P, Q, couleur=\"bleu\", epaisseur=2)\ntexte(3.18, 2.78, \"(d)\")\nA = point(-2.29, -1.61, etiquette=\"haut-gauche\")\nB = point(0.16, 0.11, etiquette=\"bas-droite\")\nC = point(1.71, 2.79, etiquette=\"haut-gauche\")|{{if:p==4|P = point(0, 0, visible=faux)\nQ = point(0.819, 0.574, visible=faux)\ndroite(P, Q, couleur=\"bleu\", epaisseur=2)\ntexte(3.18, 2.78, \"(d)\")\nA = point(-2.29, -1.61, etiquette=\"haut-gauche\")\nB = point(0.91, -0.95, etiquette=\"bas-droite\")\nC = point(2.46, 1.72, etiquette=\"haut-gauche\")|P = point(0, 0, visible=faux)\nQ = point(0.819, 0.574, visible=faux)\ndroite(P, Q, couleur=\"bleu\", epaisseur=2)\ntexte(3.18, 2.78, \"(d)\")\nA = point(-3.04, -0.54, etiquette=\"haut-gauche\")\nB = point(0.16, 0.11, etiquette=\"bas-droite\")\nC = point(2.46, 1.72, etiquette=\"haut-gauche\")}}}}}}}}}}|{{if:o==2|{{if:p==0|P = point(0, 0, visible=faux)\nQ = point(-0.866, 0.500, visible=faux)\ndroite(P, Q, couleur=\"bleu\", epaisseur=2)\ntexte(-3.86, 1.71, \"(d)\")\nA = point(2.42, -1.40, etiquette=\"bas-gauche\")\nB = point(0.48, 1.23, etiquette=\"haut-droite\")\nC = point(-3.25, 0.37, etiquette=\"bas-gauche\")|{{if:p==1|P = point(0, 0, visible=faux)\nQ = point(-0.866, 0.500, visible=faux)\ndroite(P, Q, couleur=\"bleu\", epaisseur=2)\ntexte(-3.86, 1.71, \"(d)\")\nA = point(1.77, -2.53, etiquette=\"bas-gauche\")\nB = point(-0.17, 0.10, etiquette=\"haut-droite\")\nC = point(-3.25, 0.37, etiquette=\"bas-gauche\")|{{if:p==2|P = point(0, 0, visible=faux)\nQ = point(-0.866, 0.500, visible=faux)\ndroite(P, Q, couleur=\"bleu\", epaisseur=2)\ntexte(-3.86, 1.71, \"(d)\")\nA = point(1.77, -2.53, etiquette=\"bas-gauche\")\nB = point(0.48, 1.23, etiquette=\"haut-droite\")\nC = point(-2.60, 1.50, etiquette=\"bas-gauche\")|{{if:p==3|P = point(0, 0, visible=faux)\nQ = point(-0.866, 0.500, visible=faux)\ndroite(P, Q, couleur=\"bleu\", epaisseur=2)\ntexte(-3.86, 1.71, \"(d)\")\nA = point(2.42, -1.40, etiquette=\"bas-gauche\")\nB = point(-0.17, 0.10, etiquette=\"haut-droite\")\nC = point(-3.25, 0.37, etiquette=\"bas-gauche\")|{{if:p==4|P = point(0, 0, visible=faux)\nQ = point(-0.866, 0.500, visible=faux)\ndroite(P, Q, couleur=\"bleu\", epaisseur=2)\ntexte(-3.86, 1.71, \"(d)\")\nA = point(2.42, -1.40, etiquette=\"bas-gauche\")\nB = point(0.48, 1.23, etiquette=\"haut-droite\")\nC = point(-2.60, 1.50, etiquette=\"bas-gauche\")|P = point(0, 0, visible=faux)\nQ = point(-0.866, 0.500, visible=faux)\ndroite(P, Q, couleur=\"bleu\", epaisseur=2)\ntexte(-3.86, 1.71, \"(d)\")\nA = point(1.77, -2.53, etiquette=\"bas-gauche\")\nB = point(-0.17, 0.10, etiquette=\"haut-droite\")\nC = point(-2.60, 1.50, etiquette=\"bas-gauche\")}}}}}}}}}}|{{if:p==0|P = point(0, 0, visible=faux)\nQ = point(-0.966, 0.259, visible=faux)\ndroite(P, Q, couleur=\"bleu\", epaisseur=2)\ntexte(-4.17, 0.65, \"(d)\")\nA = point(2.70, -0.72, etiquette=\"bas\")\nB = point(0.14, 1.31, etiquette=\"haut\")\nC = point(-3.23, -0.48, etiquette=\"bas\")|{{if:p==1|P = point(0, 0, visible=faux)\nQ = point(-0.966, 0.259, visible=faux)\ndroite(P, Q, couleur=\"bleu\", epaisseur=2)\ntexte(-4.17, 0.65, \"(d)\")\nA = point(2.37, -1.98, etiquette=\"bas\")\nB = point(-0.19, 0.05, etiquette=\"haut\")\nC = point(-3.23, -0.48, etiquette=\"bas\")|{{if:p==2|P = point(0, 0, visible=faux)\nQ = point(-0.966, 0.259, visible=faux)\ndroite(P, Q, couleur=\"bleu\", epaisseur=2)\ntexte(-4.17, 0.65, \"(d)\")\nA = point(2.37, -1.98, etiquette=\"bas\")\nB = point(0.14, 1.31, etiquette=\"haut\")\nC = point(-2.90, 0.78, etiquette=\"bas\")|{{if:p==3|P = point(0, 0, visible=faux)\nQ = point(-0.966, 0.259, visible=faux)\ndroite(P, Q, couleur=\"bleu\", epaisseur=2)\ntexte(-4.17, 0.65, \"(d)\")\nA = point(2.70, -0.72, etiquette=\"bas\")\nB = point(-0.19, 0.05, etiquette=\"haut\")\nC = point(-3.23, -0.48, etiquette=\"bas\")|{{if:p==4|P = point(0, 0, visible=faux)\nQ = point(-0.966, 0.259, visible=faux)\ndroite(P, Q, couleur=\"bleu\", epaisseur=2)\ntexte(-4.17, 0.65, \"(d)\")\nA = point(2.70, -0.72, etiquette=\"bas\")\nB = point(0.14, 1.31, etiquette=\"haut\")\nC = point(-2.90, 0.78, etiquette=\"bas\")|P = point(0, 0, visible=faux)\nQ = point(-0.966, 0.259, visible=faux)\ndroite(P, Q, couleur=\"bleu\", epaisseur=2)\ntexte(-4.17, 0.65, \"(d)\")\nA = point(2.37, -1.98, etiquette=\"bas\")\nB = point(-0.19, 0.05, etiquette=\"haut\")\nC = point(-2.90, 0.78, etiquette=\"bas\")}}}}}}}}}}}}}}}}\n```\n\n```choix\nplusieurs: oui\nmelanger: non\n- $A \\in (d)$\n- $B \\in (d)$\n- $C \\in (d)$\n- $A \\notin (d)$\n- $B \\notin (d)$\n- $C \\notin (d)$\n```",
+			"variables": [
+				{
+					"name": "o",
+					"expression": "0..3"
+				},
+				{
+					"name": "p",
+					"expression": "0..5"
+				},
+				{
+					"name": "u",
+					"expression": "eval:(1-min(abs(p-0),1))*0+(1-min(abs(p-1),1))*3+(1-min(abs(p-2),1))*3+(1-min(abs(p-3),1))*0+(1-min(abs(p-4),1))*0+(1-min(abs(p-5),1))*3"
+				},
+				{
+					"name": "v",
+					"expression": "eval:(1-min(abs(p-0),1))*4+(1-min(abs(p-1),1))*1+(1-min(abs(p-2),1))*4+(1-min(abs(p-3),1))*1+(1-min(abs(p-4),1))*4+(1-min(abs(p-5),1))*1"
+				},
+				{
+					"name": "w",
+					"expression": "eval:(1-min(abs(p-0),1))*5+(1-min(abs(p-1),1))*5+(1-min(abs(p-2),1))*2+(1-min(abs(p-3),1))*5+(1-min(abs(p-4),1))*2+(1-min(abs(p-5),1))*2"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{u}};{{v}};{{w}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\in$ : le point est sur la droite ; $\\notin$ : il n'est pas sur la droite. Pour chaque point, une seule des deux écritures est vraie.",
+					"Ici : ${{if:u==0|A \\in (d)|A \\notin (d)}}$ ; ${{if:v==1|B \\in (d)|B \\notin (d)}}$ ; ${{if:w==2|C \\in (d)|C \\notin (d)}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Perpendiculaires",
+			"variationIndex": 0,
+			"variables": {
+				"c": "0",
+				"t": "30",
+				"s": "0",
+				"d": "30",
+				"g": "-30"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Parallèles",
+			"variationIndex": 0,
+			"variables": {
+				"c": "1",
+				"t": "120",
+				"s": "0",
+				"d": "30",
+				"g": "-30"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : parallèles dites ⊥",
+			"variationIndex": 0,
+			"variables": {
+				"c": "1",
+				"t": "120",
+				"s": "0",
+				"d": "30",
+				"g": "-30"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Sécantes : aucune",
+			"variationIndex": 0,
+			"variables": {
+				"c": "2",
+				"t": "60",
+				"s": "1",
+				"d": "28",
+				"g": "28"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : sécantes dites ⊥",
+			"variationIndex": 0,
+			"variables": {
+				"c": "2",
+				"t": "60",
+				"s": "1",
+				"d": "28",
+				"g": "28"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "⊥ : perpendiculaires",
+			"variationIndex": 1,
+			"variables": {
+				"k": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : ⊥ lu parallèles",
+			"variationIndex": 1,
+			"variables": {
+				"k": "0"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "∉ : pas sur la droite",
+			"variationIndex": 1,
+			"variables": {
+				"k": "3"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "A seul sur (d)",
+			"variationIndex": 2,
+			"variables": {
+				"o": "0",
+				"p": "0",
+				"u": "0",
+				"v": "4",
+				"w": "5"
+			},
+			"answers": ["0;4;5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "B et C sur (d)",
+			"variationIndex": 2,
+			"variables": {
+				"o": "2",
+				"p": "5",
+				"u": "3",
+				"v": "1",
+				"w": "2"
+			},
+			"answers": ["3;1;2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : ∈ pour un point hors de (d)",
+			"variationIndex": 2,
+			"variables": {
+				"o": "0",
+				"p": "0",
+				"u": "0",
+				"v": "4",
+				"w": "5"
+			},
+			"answers": ["0;1;5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Une seule écriture : partiel",
+			"variationIndex": 2,
+			"variables": {
+				"o": "1",
+				"p": "3",
+				"u": "0",
+				"v": "1",
+				"w": "5"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "unoptimal_form"
+			}
+		}
+	]
+}

@@ -1,0 +1,173 @@
+{
+	"id": "dfe8ca79-452b-4e6f-a235-ce2166441c60",
+	"rangement": {
+		"noeud": "Nombres et calculs > Puissances : sens et écritures > définition",
+		"point": "4-015"
+	},
+	"title": "Lire une puissance",
+	"description": "Compléter la lecture d’une puissance avec des étiquettes : « sept exposant cinq », « six au carré », « quatre au cube » (pièges : base et exposant échangés, double ou triple pour carré ou cube)",
+	"grades": ["4"],
+	"level": 1,
+	"delay": 20,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Complète la lecture de cette puissance avec les étiquettes.\n\n```trous\n${{a}}^{ {{n}} }$ se lit : [{{if:a==2|deux|{{if:a==3|trois|{{if:a==4|quatre|{{if:a==5|cinq|{{if:a==6|six|{{if:a==7|sept|{{if:a==8|huit|neuf}}}}}}}}}}}}}}] exposant [{{if:n==2|deux|{{if:n==3|trois|{{if:n==4|quatre|{{if:n==5|cinq|{{if:n==6|six|{{if:n==7|sept|{{if:n==8|huit|neuf}}}}}}}}}}}}}}].\nintrus: {{if:x==2|deux|{{if:x==3|trois|{{if:x==4|quatre|{{if:x==5|cinq|{{if:x==6|six|{{if:x==7|sept|{{if:x==8|huit|neuf}}}}}}}}}}}}}} ; {{if:y==2|deux|{{if:y==3|trois|{{if:y==4|quatre|{{if:y==5|cinq|{{if:y==6|six|{{if:y==7|sept|{{if:y==8|huit|neuf}}}}}}}}}}}}}}\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9"
+				},
+				{
+					"name": "n",
+					"expression": "2..9"
+				},
+				{
+					"name": "x",
+					"expression": "2..9"
+				},
+				{
+					"name": "y",
+					"expression": "2..9"
+				}
+			],
+			"conditions": ["a!=n", "x!=a", "x!=n", "y!=a", "y!=n", "x!=y"],
+			"blanks": [],
+			"correction": {
+				"steps": [
+					"**Lire une puissance.** On lit d’abord la base (le grand nombre), puis « exposant », puis l’exposant (le petit nombre écrit en haut).",
+					"Dans ${{a}}^{ {{n}} }$, la base est $\\textcolor{{{color:primary.0}}}{{{a}}}$ et l’exposant est $\\textcolor{{{color:primary.1}}}{{{n}}}$ : ${{a}}^{ {{n}} }$ se lit « {{if:a==2|deux|{{if:a==3|trois|{{if:a==4|quatre|{{if:a==5|cinq|{{if:a==6|six|{{if:a==7|sept|{{if:a==8|huit|neuf}}}}}}}}}}}}}} exposant {{if:n==2|deux|{{if:n==3|trois|{{if:n==4|quatre|{{if:n==5|cinq|{{if:n==6|six|{{if:n==7|sept|{{if:n==8|huit|neuf}}}}}}}}}}}}}} ». Lu « {{if:n==2|deux|{{if:n==3|trois|{{if:n==4|quatre|{{if:n==5|cinq|{{if:n==6|six|{{if:n==7|sept|{{if:n==8|huit|neuf}}}}}}}}}}}}}} exposant {{if:a==2|deux|{{if:a==3|trois|{{if:a==4|quatre|{{if:a==5|cinq|{{if:a==6|six|{{if:a==7|sept|{{if:a==8|huit|neuf}}}}}}}}}}}}}} », ce serait ${{n}}^{ {{a}} }$, un autre nombre."
+				]
+			},
+			"hint": "On lit d’abord le grand nombre (la base), puis le petit nombre écrit en haut (l’exposant)."
+		},
+		{
+			"statement": "Complète la lecture de cette puissance avec les étiquettes.\n\n```trous\n${{a}}^{ {{n}} }$ se lit : {{if:a==2|deux|{{if:a==3|trois|{{if:a==4|quatre|{{if:a==5|cinq|{{if:a==6|six|{{if:a==7|sept|{{if:a==8|huit|neuf}}}}}}}}}}}}}} au [{{if:n==2|carré|cube}}].\nintrus: {{if:n==2|cube|carré}} ; double ; triple\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "3..9"
+				},
+				{
+					"name": "n",
+					"expression": "2|3"
+				}
+			],
+			"conditions": [],
+			"blanks": [],
+			"correction": {
+				"steps": [
+					"**Carré et cube.** L’exposant $2$ se lit « au carré » (l’aire d’un carré de côté $a$ est $a^2$) ; l’exposant $3$ se lit « au cube » (le volume d’un cube d’arête $a$ est $a^3$).",
+					"${{a}}^{ {{n}} } = {{if:n==2|{{a}} \\times {{a}}|{{a}} \\times {{a}} \\times {{a}}}}$ se lit « {{if:a==2|deux|{{if:a==3|trois|{{if:a==4|quatre|{{if:a==5|cinq|{{if:a==6|six|{{if:a==7|sept|{{if:a==8|huit|neuf}}}}}}}}}}}}}} au {{if:n==2|carré|cube}} ». Le double de ${{a}}$ serait $2 \\times {{a}}$, et le triple $3 \\times {{a}}$ : ce ne sont pas des puissances."
+				]
+			},
+			"hint": "Pense à l’aire d’un carré et au volume d’un cube."
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "V1 : 7^5 se lit sept exposant cinq",
+			"variationIndex": 0,
+			"variables": {
+				"a": "7",
+				"n": "5",
+				"x": "2",
+				"y": "9"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["3", "0"]
+		},
+		{
+			"description": "V1 : base et exposant échangés",
+			"variationIndex": 0,
+			"variables": {
+				"a": "7",
+				"n": "5",
+				"x": "2",
+				"y": "9"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["0", "3"]
+		},
+		{
+			"description": "V1 : 3^8 se lit trois exposant huit",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"n": "8",
+				"x": "4",
+				"y": "6"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["3", "0"]
+		},
+		{
+			"description": "V1 : un intrus pour la base",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"n": "8",
+				"x": "4",
+				"y": "6"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["2", "0"]
+		},
+		{
+			"description": "V2 : 6^2 se lit six au carré",
+			"variationIndex": 1,
+			"variables": {
+				"a": "6",
+				"n": "2"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["3"]
+		},
+		{
+			"description": "V2 : 4^3 se lit quatre au cube",
+			"variationIndex": 1,
+			"variables": {
+				"a": "4",
+				"n": "3"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["3"]
+		},
+		{
+			"description": "V2 : double au lieu de carré",
+			"variationIndex": 1,
+			"variables": {
+				"a": "6",
+				"n": "2"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["1"]
+		},
+		{
+			"description": "V2 : carré au lieu de cube",
+			"variationIndex": 1,
+			"variables": {
+				"a": "4",
+				"n": "3"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["0"]
+		}
+	]
+}

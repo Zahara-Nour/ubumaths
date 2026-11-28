@@ -1,0 +1,268 @@
+{
+	"id": "0da1780b-c872-45a2-8fe0-0027f2ef8e22",
+	"title": "Est-ce un patron de cube ? Pourquoi ?",
+	"description": "Oui ou non (11 patrons, 8 faux patrons, tournés, retournés) ; pourquoi non : deux faces l'une sur l'autre (6 carrés), il manque une face (5), une face de trop (7)",
+	"grades": ["CM1", "CM2"],
+	"level": 4,
+	"delay": 45,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "On découpe cet assemblage de $6$ carrés et on le plie le long des traits. Obtient-on un cube ?\n\n```patron\nsolide: cube\nforme: {{if:v==1|{{k}}|faux {{j}}}}\ntourner: {{eval:90*t}}\nretourner: {{if:r==1|oui|non}}\n```\n\n```choix\nmelanger: non\n- Oui, il se plie en cube.\n- Non, il ne se plie pas en cube.\n```",
+			"variables": [
+				{
+					"name": "v",
+					"expression": "0..1"
+				},
+				{
+					"name": "k",
+					"expression": "1..11"
+				},
+				{
+					"name": "j",
+					"expression": "1..8"
+				},
+				{
+					"name": "t",
+					"expression": "0..3"
+				},
+				{
+					"name": "r",
+					"expression": "0..1"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:1-v}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On imagine une face posée au sol, puis on relève les autres autour d'elle.",
+					"{{if:v==1|Chaque carré vient sur une face différente, sans trou ni carré en double : $\\textcolor{{{color:primary.0}}}{\\text{oui}}$, c'est un patron de cube.|Deux carrés arrivent au même endroit, et il reste un trou : $\\textcolor{{{color:primary.0}}}{\\text{non}}$, ce n'est pas un patron de cube.}}"
+				]
+			}
+		},
+		{
+			"statement": "Cet assemblage de carrés ne se plie pas en cube. Pourquoi ?\n\n```patron\nsolide: cube\nforme: faux {{k}}\ntourner: {{eval:90*t}}\n```\n\n```choix\n- Il manque une face.\n- Il y a une face de trop.\n- Deux faces viendraient l'une sur l'autre.\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..8"
+				},
+				{
+					"name": "t",
+					"expression": "0..3"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "2"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Un cube a $6$ faces : son patron a $6$ carrés, chacun vient sur une face différente.",
+					"Ici, on compte $6$ carrés. En pliant, $\\textcolor{{{color:primary.0}}}{\\text{deux carrés arrivent au même endroit}}$, et il reste un trou."
+				]
+			}
+		},
+		{
+			"statement": "Cet assemblage de carrés ne se plie pas en cube. Pourquoi ?\n\n```patron\nsolide: cube\n{{if:k==1|forme:\n  X X X X\n  . X . .\nfaux: oui|{{if:k==2|forme:\n  . X .\n  X X X\n  . X .\nfaux: oui|{{if:k==3|forme:\n  X X .\n  . X X\n  . . X\nfaux: oui|{{if:k==4|forme:\n  X X X .\n  . . X X\nfaux: oui|forme:\n  X . . .\n  X X X X\nfaux: oui}}}}}}}}\ntourner: {{eval:90*t}}\n```\n\n```choix\n- Il manque une face.\n- Il y a une face de trop.\n- Deux faces viendraient l'une sur l'autre.\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..5"
+				},
+				{
+					"name": "t",
+					"expression": "0..3"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Un cube a $6$ faces : son patron a $6$ carrés, chacun vient sur une face différente.",
+					"Ici, on compte $5$ carrés. Même bien plié, il reste un trou : $\\textcolor{{{color:primary.0}}}{\\text{il manque une face}}$."
+				]
+			}
+		},
+		{
+			"statement": "Cet assemblage de carrés ne se plie pas en cube. Pourquoi ?\n\n```patron\nsolide: cube\n{{if:k==1|forme:\n  . X . .\n  X X X X\n  . X X .\nfaux: oui|{{if:k==2|forme:\n  X X . .\n  . X X X\n  . X X .\nfaux: oui|{{if:k==3|forme:\n  . X . . .\n  X X X X X\n  . X . . .\nfaux: oui|{{if:k==4|forme:\n  X X X .\n  . . X X\n  . . X X\nfaux: oui|forme:\n  X . .\n  X X X\n  X X X\nfaux: oui}}}}}}}}\ntourner: {{eval:90*t}}\n```\n\n```choix\n- Il manque une face.\n- Il y a une face de trop.\n- Deux faces viendraient l'une sur l'autre.\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..5"
+				},
+				{
+					"name": "t",
+					"expression": "0..3"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "1"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Un cube a $6$ faces : son patron a $6$ carrés, chacun vient sur une face différente.",
+					"Ici, on compte $7$ carrés. Un carré ne trouve pas de place : $\\textcolor{{{color:primary.0}}}{\\text{il y a une face de trop}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "La croix : oui",
+			"variationIndex": 0,
+			"variables": {
+				"v": "1",
+				"k": "1",
+				"j": "1",
+				"t": "0",
+				"r": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Patron 3-3 retourné : oui",
+			"variationIndex": 0,
+			"variables": {
+				"v": "1",
+				"k": "11",
+				"j": "2",
+				"t": "1",
+				"r": "1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Faux patron : non",
+			"variationIndex": 0,
+			"variables": {
+				"v": "0",
+				"k": "3",
+				"j": "2",
+				"t": "0",
+				"r": "0"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 5 carrés en ligne pris pour un patron",
+			"variationIndex": 0,
+			"variables": {
+				"v": "0",
+				"k": "3",
+				"j": "1",
+				"t": "2",
+				"r": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : patron tourné refusé",
+			"variationIndex": 0,
+			"variables": {
+				"v": "1",
+				"k": "8",
+				"j": "1",
+				"t": "3",
+				"r": "0"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "6 carrés : deux faces l'une sur l'autre",
+			"variationIndex": 1,
+			"variables": {
+				"k": "2",
+				"t": "0"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : « il manque une face » avec 6 carrés",
+			"variationIndex": 1,
+			"variables": {
+				"k": "4",
+				"t": "1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "5 carrés : il manque une face",
+			"variationIndex": 2,
+			"variables": {
+				"k": "1",
+				"t": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 5 carrés, « deux faces l'une sur l'autre »",
+			"variationIndex": 2,
+			"variables": {
+				"k": "3",
+				"t": "2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "7 carrés : une face de trop",
+			"variationIndex": 3,
+			"variables": {
+				"k": "5",
+				"t": "0"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 7 carrés, « il manque une face »",
+			"variationIndex": 3,
+			"variables": {
+				"k": "2",
+				"t": "3"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

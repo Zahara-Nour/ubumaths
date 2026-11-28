@@ -1,8 +1,8 @@
 import { beforeEach, describe, expect, it } from 'vitest';
-import { GrapheurStore } from '$lib/stores/grapheur.svelte';
-import { isSequence } from '$lib/grapheur/types';
-import { computeSequenceTerms, toComputeSpec } from '$lib/grapheur/sequence';
-import type { SequencePlottable } from '$lib/grapheur/types';
+import { GrapheurStore } from '#lib/stores/grapheur.svelte.ts';
+import { isSequence } from '#lib/grapheur/types.ts';
+import { computeSequenceTerms, toComputeSpec } from '#lib/grapheur/sequence.ts';
+import type { SequencePlottable } from '#lib/grapheur/types.ts';
 
 // Une instance neuve par test, fournie aux composants par le contexte.
 let grapheurStore = new GrapheurStore();

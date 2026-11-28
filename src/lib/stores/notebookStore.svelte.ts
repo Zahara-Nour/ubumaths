@@ -13,13 +13,13 @@
  * - Kernel restart capability
  */
 
-import { browser } from '$app/environment';
-import { NotebookExecutor } from '$lib/shared/python';
+import { browser } from '$app/env';
+import { NotebookExecutor } from '#lib/shared/python/index.ts';
 import type {
 	CompletionItem,
 	ExerciseValidationConfig,
 	ExerciseValidationResult
-} from '$lib/shared/python';
+} from '#lib/shared/python/index.ts';
 import type {
 	PythonNotebook,
 	NotebookCell,
@@ -29,7 +29,7 @@ import type {
 	CellOutput,
 	CellDirection,
 	AddCellOptions
-} from '$lib/types/notebook';
+} from '#lib/types/notebook.ts';
 
 // =============================================================================
 // Constants
@@ -270,7 +270,7 @@ function convertExecutorOutputs(executor: NotebookExecutor): CellOutput[] {
  * @example
  * ```svelte
  * <script>
- * import { NotebookStore } from '$lib/stores/notebookStore.svelte';
+ * import { NotebookStore } from '#lib/stores/notebookStore.svelte.ts';
  *
  * const notebook = new NotebookStore();
  * notebook.initPyodide();

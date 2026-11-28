@@ -74,6 +74,17 @@ describe('Timeline — step navigation', () => {
 		expect(getState().currentTime).toBe(500);
 	});
 
+	it('stepBackward recule d’un pas, même entre des pas de 0 ms (masque final, V76)', () => {
+		const { tl, getState, steps } = createTimeline();
+		tl.load([500, 500, 0, 0]);
+		tl.seekToStep(3);
+		tl.stepBackward();
+		expect(getState().currentStepIndex).toBe(2);
+		tl.stepBackward();
+		expect(getState().currentStepIndex).toBe(1);
+		expect(steps.slice(-2)).toEqual([2, 1]);
+	});
+
 	it('stepBackward from step 0 goes to -1', () => {
 		const { tl, getState } = createTimeline();
 		tl.load([500, 300]);
@@ -99,6 +110,13 @@ describe('Timeline — scrubbing', () => {
 		tl.scrubByProgress(0.5);
 		expect(getState().currentTime).toBe(500);
 		expect(getState().currentStepIndex).toBe(0);
+	});
+
+	it('au bout : les pas de durée 0 de la fin sont joués (masque final, V76)', () => {
+		const { tl, getState } = createTimeline();
+		tl.load([500, 500, 0, 0]);
+		tl.scrubByProgress(1);
+		expect(getState().currentStepIndex).toBe(3);
 	});
 
 	it('scrubByProgress clamps to 0-1', () => {

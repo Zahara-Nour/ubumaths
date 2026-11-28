@@ -22,17 +22,16 @@
 	@module components/markdown/MarkdownRenderer
 -->
 <script lang="ts">
-	import { parseMarkdown } from '$lib/ubumark';
-	import type { DocumentNode, ParseOptions, InputState } from '$lib/ubumark';
+	import { parseMarkdown } from '#lib/ubumark/index.ts';
+	import type { DocumentNode, ParseOptions, InputState } from '#lib/ubumark/index.ts';
 	import type { MarkdownDisplayMode } from './types';
-	import { getCachedAST, setCachedAST } from '$lib/utils/markdown-cache';
-	import type { GenericFunctionConfig } from '$lib/mathAST/parser/types';
-	import type { ExerciseHint } from '$lib/exercises/types';
+	import { getCachedAST, setCachedAST } from '#lib/utils/markdown-cache.ts';
+	import type { GenericFunctionConfig } from '#lib/mathAST/parser/types.ts';
+	import type { ExerciseHint } from '#lib/exercises/types.ts';
 
 	// List numbering
-	import { listNumberingStore } from '$lib/stores/listNumbering.svelte';
-	import { getMaxEnumerateDepth } from '$lib/ubumark/utils/list-depth';
-	import type { SchemeId, ListNumberingConfig } from '$lib/types/list-numbering';
+	import { getMaxEnumerateDepth } from '#lib/ubumark/utils/list-depth.ts';
+	import { DEFAULT_CONFIG, type SchemeId } from '#lib/types/list-numbering.ts';
 
 	// Import node components
 	import ParagraphNode from './nodes/ParagraphNode.svelte';
@@ -53,6 +52,7 @@
 	import StatChart from './nodes/StatChart.svelte';
 	import FigureBlock from './nodes/FigureBlock.svelte';
 	import QrBlock from './nodes/QrBlock.svelte';
+	import Engrenages from './nodes/Engrenages.svelte';
 	import ScratchBlock from './nodes/ScratchBlock.svelte';
 	import Horloge from './nodes/Horloge.svelte';
 	import Partage from './nodes/Partage.svelte';
@@ -60,8 +60,17 @@
 	import Operation from './nodes/Operation.svelte';
 	import Collection from './nodes/Collection.svelte';
 	import Monnaie from './nodes/Monnaie.svelte';
+	import SchemaBarres from './nodes/SchemaBarres.svelte';
 	import ChoiceBlock from './nodes/ChoiceBlock.svelte';
 	import RangerPlacer from './nodes/RangerPlacer.svelte';
+	import AssocierPlacer from './nodes/AssocierPlacer.svelte';
+	import TrousEtiquettes from './nodes/TrousEtiquettes.svelte';
+	import TortueProgramme from './nodes/TortueProgramme.svelte';
+	import RobotCode from './nodes/RobotCode.svelte';
+	import Labyrinthe from './nodes/Labyrinthe.svelte';
+	import Yohaku from './nodes/Yohaku.svelte';
+	import PythonAEcrire from './nodes/PythonAEcrire.svelte';
+	import CalculProgramme from './nodes/CalculProgramme.svelte';
 
 	// Raw markdown viewer with syntax highlighting
 	import MarkdownRaw from './MarkdownRaw.svelte';
@@ -77,9 +86,9 @@
 		restrictDocument,
 		stripFenceLanguages
 	} from './restricted-rendering';
-	import type { ContentLocale } from '$lib/types/locale';
-	import type { GradeCode } from '$lib/types/grades';
-	import { lexiconRuntime, loadLexiconRuntime } from '$lib/lexicon/runtime-store.svelte';
+	import type { ContentLocale } from '#lib/types/locale.ts';
+	import type { GradeCode } from '#lib/types/grades.ts';
+	import { lexiconRuntime, loadLexiconRuntime } from '#lib/dictionary/runtime-store.svelte.ts';
 	import { provideLexicon, readLexicon } from './lexicon-context';
 	import { provideInternalLinks, type InternalLinkReader } from './internal-link-context';
 
@@ -102,8 +111,6 @@
 		onInputSubmit?: (index: number) => void;
 		/** Whether inputs are disabled (e.g., after submission) */
 		inputsDisabled?: boolean;
-		/** Override list numbering config for this render (uses global store by default) */
-		listNumberingOverride?: Partial<ListNumberingConfig>;
 		/** Callback when a hashtag is clicked */
 		onHashtagClick?: (tag: string) => void;
 		/** Callback when a mention is clicked */
@@ -169,7 +176,6 @@
 		onInputChange,
 		onInputSubmit,
 		inputsDisabled = false,
-		listNumberingOverride,
 		onHashtagClick,
 		onMentionClick,
 		genericFunctions,
@@ -224,9 +230,11 @@
 				: isProjectMediaOnly()
 					? neutralizeUnsafeBlocks(doc)
 					: doc;
-			const grade = lexicon();
+			const reading = lexicon();
 			const runtime = lexiconRuntime();
-			return grade && runtime ? runtime.linkDocument(safe, grade) : safe;
+			return reading && runtime
+				? runtime.linkDocument(safe, reading.linkGrade, reading.link)
+				: safe;
 		};
 
 		// Check cache first
@@ -280,11 +288,8 @@
 	 * Uses auto-detection when scheme is 'auto', otherwise uses the specified scheme.
 	 */
 	const effectiveListScheme = $derived.by<SchemeId | null>(() => {
-		// Get config (override takes precedence over store)
-		const config = {
-			...listNumberingStore.config,
-			...listNumberingOverride
-		};
+		// Réglage unique pour tous : DEFAULT_CONFIG (plus de réglage admin, V120)
+		const config = DEFAULT_CONFIG;
 
 		// If scheme is explicitly set (not auto), use it
 		if (config.scheme !== 'auto') {
@@ -301,7 +306,8 @@
 </script>
 
 {#if mode === 'rendered' || mode === 'both'}
-	<div class="markdown-content {className}" class:has-margin-notes={hasMarginNotes}>
+	<!-- `lang` : un lecteur d'écran lit le contenu, formules comprises, dans sa langue -->
+	<div class="markdown-content {className}" class:has-margin-notes={hasMarginNotes} lang={locale}>
 		{#if ast}
 			<!-- Key includes genericFunctions to force re-render when it changes -->
 			{#each ast.children as node, i (`${i}-${genericFunctions?.names?.length ?? 0}`)}
@@ -401,6 +407,8 @@
 					<StatChart {node} />
 				{:else if node.type === 'qr'}
 					<QrBlock {node} />
+				{:else if node.type === 'engrenages'}
+					<Engrenages {node} />
 				{:else if node.type === 'scratch'}
 					<ScratchBlock {node} />
 				{:else if node.type === 'horloge'}
@@ -415,10 +423,28 @@
 					<Collection {node} />
 				{:else if node.type === 'monnaie'}
 					<Monnaie {node} />
+				{:else if node.type === 'schema-barres'}
+					<SchemaBarres {node} />
 				{:else if node.type === 'choice'}
 					<ChoiceBlock {node} />
 				{:else if node.type === 'ranger'}
 					<RangerPlacer {node} />
+				{:else if node.type === 'associer'}
+					<AssocierPlacer {node} />
+				{:else if node.type === 'trous'}
+					<TrousEtiquettes {node} />
+				{:else if node.type === 'tortue'}
+					<TortueProgramme {node} />
+				{:else if node.type === 'calcul'}
+					<CalculProgramme {node} />
+				{:else if node.type === 'robot'}
+					<RobotCode {node} />
+				{:else if node.type === 'labyrinthe'}
+					<Labyrinthe {node} />
+				{:else if node.type === 'yohaku'}
+					<Yohaku {node} />
+				{:else if node.type === 'python-a-ecrire'}
+					<PythonAEcrire {node} />
 				{/if}
 			{/each}
 		{:else}

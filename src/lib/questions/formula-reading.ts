@@ -9,7 +9,7 @@
  * contraintes d'écriture, règles).
  */
 
-import type { CapitalPairs, GenericFunctionConfig } from '$lib/mathAST/parser/types';
+import type { CapitalPairs, GenericFunctionConfig } from '#lib/mathAST/parser/types.ts';
 import { templateGenericFunctions } from './generic-functions';
 import type { QuestionInstance } from './types';
 

@@ -10,10 +10,10 @@
 
 import type { PageServerLoad, Actions } from './$types';
 import { error, fail, redirect } from '@sveltejs/kit';
-import { requireRole } from '$lib/server/middleware/auth';
+import { requireRole } from '#lib/server/middleware/auth.ts';
 import { z } from 'zod';
-import type { MathCompetenceCode, SubdimensionLetter } from '$lib/types/skills';
-import { createServerLogger } from '$lib/utils/logger';
+import type { MathCompetenceCode, SubdimensionLetter } from '#lib/types/skills.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger(
 	'(protected)/dashboard/teacher/evaluation-tasks/[id]/+page.server'

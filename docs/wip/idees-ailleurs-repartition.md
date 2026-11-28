@@ -1,0 +1,193 @@
+# Idées reprises d'ailleurs : qui prend quelle rubrique
+
+Ce tableau coordonne les sessions du skill [`idees-rubrique`](../../.claude/skills/idees-rubrique/SKILL.md),
+qui travaillent en parallèle. On y voit une rubrique par ligne et chaque modèle publié réservé.
+
+- **Pause levée (David, 2026-11-22)** : on prend de nouvelles rubriques sans attendre la fin de la
+  vérification du lot « nombres et calculs » de Seconde. Chaque lot neuf applique les critères
+  d'[idées de format](../archive/wip/idees-format/idees-format-exercices.md) (coup de pouce, erreurs prévues).
+- **Réserver** : `git pull --rebase`, modifier la ligne, commit direct sur `main`, push aussitôt. Si
+  le push est refusé : pull, relire, et changer de ligne si elle a été prise entre-temps.
+- **États** : libre → prise (sujet, date) → phase 0 → écrite → en prod → publiée.
+- Les codes sont les préfixes des exercices de l'autre plateforme. Comptes relevés le 2026-11-21,
+  sans les anciennes versions.
+
+## Seconde
+
+| Rubrique                                      | Codes          | Exercices | État                                                       | Sujet / session |
+| --------------------------------------------- | -------------- | --------- | ---------------------------------------------------------- | --------------- |
+| Nombres et calculs                            | 2N10 à 2N51    | ~70       | publiée (2026-11-20), revue faite (#3319, 2026-11-28)      | `ensembles-2de` |
+| Calcul littéral, équations, inéquations       | 2L, 2N52, 2N61 | ~60       | libre                                                      |                 |
+| Géométrie, vecteurs, repérage                 | 2G             | 57        | libre                                                      |                 |
+| Fonctions                                     | 2F             | 38        | libre                                                      |                 |
+| Statistiques                                  | 2S             | 19        | libre                                                      |                 |
+| Probabilités                                  | 2P             | 9         | libre                                                      |                 |
+| Algorithmique et programmation                | 2I             | 10        | libre                                                      |                 |
+| Sujets d'automatismes (mélange des rubriques) | 2A             | 13        | libre ; **à faire en dernier**, après les autres rubriques |                 |
+
+## Première
+
+Leurs rubriques telles quelles, une ligne chacune. Comptes relevés le 2026-11-22, sans les
+anciennes versions. Deux fichiers `1E11` ne figurent dans aucune rubrique : ils ne sont pas repris.
+
+### Spécialité
+
+| Rubrique                          | Codes | Exercices | État                 | Sujet / session                  |
+| --------------------------------- | ----- | --------- | -------------------- | -------------------------------- |
+| Suites numériques                 | 1AL1  | 19        | publiée (2026-11-22) | `idees-1re-suites`               |
+| Fonctions polynomiales de degré 2 | 1AL2  | 22        | publiée (2026-11-23) | `idees-1re-second-degre`         |
+| Dérivation                        | 1AN1  | 12        | publiée (2026-11-24) | `idees-1re-derivation`           |
+| Variations                        | 1AN2  | 5         | publiée (2026-11-26) | `idees-1re-variations`           |
+| Fonction exponentielle            | 1AN3  | 11        | publiée (2026-11-24) | `idees-1re-exponentielle`        |
+| Fonctions trigonométriques        | 1AN4  | 6         | publiée (2026-11-25) | `idees-1re-trigo`                |
+| Produit scalaire                  | 1G1   | 10        | publiée (2026-11-26) | `idees-1re-produit-scalaire`     |
+| Géométrie repérée                 | 1G2   | 5         | publiée (2026-11-27) | `idees-1re-geometrie-reperee`    |
+| Probabilités conditionnelles      | 1P1   | 8         | publiée (2026-11-25) | `idees-1re-probas-cond`          |
+| Variables aléatoires réelles      | 1P2   | 1         | publiée (2026-11-27) | `idees-1re-variables-aleatoires` |
+
+### Automatismes de l'épreuve anticipée
+
+| Rubrique                                     | Codes | Exercices | État                                                       | Sujet / session |
+| -------------------------------------------- | ----- | --------- | ---------------------------------------------------------- | --------------- |
+| Calcul numérique et algébrique               | 1A-C  | 127       | libre                                                      |                 |
+| Proportions et pourcentages                  | 1A-R  | 19        | libre                                                      |                 |
+| Évolutions et variations                     | 1A-E  | 22        | libre                                                      |                 |
+| Fonctions et représentations                 | 1A-F  | 58        | libre                                                      |                 |
+| Géométrie                                    | 1A-G  | 29        | libre                                                      |                 |
+| Statistiques                                 | 1A-S  | 36        | libre                                                      |                 |
+| Probabilités                                 | 1A-P  | 27        | libre                                                      |                 |
+| Annales (sujets 2026, mélange des rubriques) | 1A-A  | 14        | libre ; **à faire en dernier**, après les autres rubriques |                 |
+
+## Terminale
+
+Leurs rubriques telles quelles, une ligne chacune. Comptes relevés le 2026-11-22, sans les
+anciennes versions. Les rubriques sans exercice (sinus et cosinus `TSA6`, nombres premiers `TEA3`,
+complexes et polynômes `TEC4`, toutes les `TCA` sauf `TCA7`, `TCP`, les `TT` sauf `TTE`) ne
+figurent pas. Les deux fichiers `TA` ne sont pas repris.
+
+### Spécialité
+
+| Rubrique                                                                       | Codes       | Exercices | État                 | Sujet / session                     |
+| ------------------------------------------------------------------------------ | ----------- | --------- | -------------------- | ----------------------------------- |
+| Suites numériques                                                              | TSA1        | 26        | publiée (2026-11-22) | `idees-tle-suites`                  |
+| Limites de fonctions                                                           | TSA2        | 18        | publiée (2026-11-23) | `idees-tle-limites`                 |
+| Compléments sur la dérivation                                                  | TSA3, TCA7  | 14 + 3    | publiée (2026-11-24) | `idees-tle-derivation`              |
+| Continuité des fonctions                                                       | TSA4        | 6         | publiée (2026-11-26) | `idees-tle-continuite-combinatoire` |
+| Fonction logarithme népérien                                                   | TSA5        | 12        | publiée (2026-11-24) | `idees-tle-ln`                      |
+| Primitives et équations différentielles                                        | TSA7        | 7         | publiée (2026-11-25) | `idees-tle-integration`             |
+| Intégration                                                                    | TSA8        | 5         | publiée (2026-11-25) | `idees-tle-integration`             |
+| Combinatoire et dénombrement                                                   | TSG1        | 9         | publiée (2026-11-26) | `idees-tle-continuite-combinatoire` |
+| Géométrie dans l'espace                                                        | TSG2        | 26        | publiée (2026-11-26) | `idees-tle-geometrie-espace`        |
+| Probabilités (conditionnelles, binomiale, variables aléatoires, concentration) | TSP1 à TSP4 | 11        | publiée (2026-11-24) | `idees-tle-probas`                  |
+
+### Maths expertes
+
+| Rubrique                                              | Codes       | Exercices | État  | Sujet / session |
+| ----------------------------------------------------- | ----------- | --------- | ----- | --------------- |
+| Nombres complexes (algèbre, géométrie, trigonométrie) | TEC1 à TEC3 | 56        | libre |                 |
+| Arithmétique (divisibilité, PGCD, Bézout, Gauss)      | TEA1, TEA2  | 24        | libre |                 |
+| Matrices                                              | TEM1        | 13        | libre |                 |
+| Graphes                                               | TEG1        | 2         | libre |                 |
+
+### Technologique
+
+| Rubrique | Codes | Exercices | État                 | Sujet / session            |
+| -------- | ----- | --------- | -------------------- | -------------------------- |
+| Analyse  | TTE   | 12        | publiée (2026-11-26) | `idees-tle-techno-analyse` |
+
+## Sixième
+
+Leurs rubriques telles quelles, une ligne chacune. Comptes relevés le 2026-11-22, sans les
+anciennes versions. Les deux fichiers d'automatismes `6AutoN4` ne sont pas repris pour l'instant.
+
+| Rubrique                           | Codes | Exercices | État                 | Sujet / session             |
+| ---------------------------------- | ----- | --------- | -------------------- | --------------------------- |
+| Nombres entiers                    | 6N0   | 18        | publiée (2026-11-22) | `idees-6e-entiers`          |
+| Nombres entiers et décimaux        | 6N1   | 38        | publiée (2026-11-23) | `idees-6e-entiers-decimaux` |
+| Nombres décimaux                   | 6N2   | 55        | publiée (2026-11-23) | `idees-6e-decimaux`         |
+| Fractions                          | 6N3   | 53        | publiée (2026-11-25) | `idees-6e-fractions`        |
+| Algèbre                            | 6N4   | 9         | publiée (2026-11-28) | `idees-6e-algebre`          |
+| Résolution de problèmes            | 6N5   | 24        | publiée (2026-11-27) | `idees-6e-problemes`        |
+| Longueurs                          | 6M1   | 16        | publiée (2026-11-28) | `idees-6e-longueurs`        |
+| Aires                              | 6M2   | 17        | publiée (2026-11-27) | `idees-6e-aires`            |
+| Volumes                            | 6M3   | 3         | libre                |                             |
+| Durées                             | 6M4   | 11        | publiée (2026-11-27) | `idees-6e-durees`           |
+| Géométrie de base                  | 6G0   | 10        | libre                |                             |
+| Distances                          | 6G1   | 6         | libre                |                             |
+| Cercles et disques                 | 6G2   | 9         | prise (2026-11-28)   | `idees-6e-cercles`          |
+| Médiatrices                        | 6G3   | 5         | libre                |                             |
+| Angles                             | 6G4   | 12        | publiée (2026-11-28) | `idees-6e-angles`           |
+| Bissectrices                       | 6G5   | 3         | libre                |                             |
+| Triangles                          | 6G6   | 16        | libre                |                             |
+| Symétrie axiale                    | 6G7   | 13        | libre                |                             |
+| Espace                             | 6G8   | 4         | libre                |                             |
+| Organisation et gestion de données | 6P1   | 6         | libre                |                             |
+| Probabilités                       | 6P2   | 3         | libre                |                             |
+| Proportionnalité                   | 6P3   | 16        | publiée (2026-11-26) | `idees-6e-proportionnalite` |
+| Pensée informatique                | 6I1   | 10        | libre                |                             |
+
+## Troisième
+
+Leurs rubriques telles quelles, une ligne chacune. Comptes relevés le 2026-11-23, sans les
+anciennes versions. Leur rubrique « nombres et calcul » (`3N1`) n'a aucun exercice : elle ne figure
+pas. Le fichier `beta3I12` n'est pas repris.
+
+| Rubrique                                 | Codes     | Exercices | État                                                       | Sujet / session              |
+| ---------------------------------------- | --------- | --------- | ---------------------------------------------------------- | ---------------------------- |
+| Arithmétique                             | 3A1       | 26        | publiée (2026-11-23)                                       | `idees-3e-arithmetique`      |
+| Puissances                               | 3C1       | 5         | publiée (2026-11-25)                                       | `idees-3e-puissances`        |
+| Calcul littéral, équations               | 3L1       | 55        | publiée (2026-11-24)                                       | `idees-3e-calcul-litteral`   |
+| Généralités sur les fonctions            | 3F1       | 19        | publiée (2026-11-24)                                       | `idees-3e-fonctions`         |
+| Fonctions affines et linéaires           | 3F2       | 14        | publiée (2026-11-24)                                       | `idees-3e-fonctions-affines` |
+| Proportionnalité                         | 3P1       | 3         | publiée (2026-11-26)                                       | `idees-3e-proportionnalite`  |
+| Statistiques                             | 3S1       | 3         | publiée (2026-11-27)                                       | `idees-3e-statistiques`      |
+| Probabilités                             | 3S2       | 5         | publiée (2026-11-26)                                       | `idees-3e-probabilites`      |
+| Homothétie et rotation                   | 3G1       | 8         | publiée (2026-11-27)                                       | `idees-3e-transformations`   |
+| Théorème de Thalès                       | 3G2       | 10        | publiée (2026-11-27)                                       | `idees-3e-thales`            |
+| Trigonométrie                            | 3G3       | 13        | publiée (2026-11-25)                                       | `idees-3e-trigonometrie`     |
+| Espace                                   | 3G4       | 6         | publiée (2026-11-28)                                       | `idees-3e-espace`            |
+| Algorithmique et programmation           | 3I1       | 11        | publiée (2026-11-28)                                       | `idees-3e-algorithmique`     |
+| Automatismes (mélange des rubriques)     | 3Auto, 3a | 34        | libre ; **à faire en dernier**, après les autres rubriques |                              |
+| Sujets de brevet (mélange des rubriques) | 3Z1       | 15        | libre ; **à faire en dernier**, après les autres rubriques |                              |
+
+## Autres niveaux
+
+La première session qui prend un niveau liste son dossier dans la copie locale
+(`extern/banque-exercices/src/exercices/`) et ajoute ici une section pour ce niveau.
+
+## Modèles publiés réservés
+
+Une session qui ajoute des variations à un modèle publié le réserve ici, jusqu'à sa migration
+de contenu appliquée en prod.
+
+| Modèle (id court, titre)                            | Session            | Depuis     | Idées laissées par d'autres sessions |
+| --------------------------------------------------- | ------------------ | ---------- | ------------------------------------ |
+| b8939937 Cercle, disque, rayon, diamètre, corde     | `idees-6e-cercles` | 2026-11-28 |                                      |
+| 48524505 Cercle et disque : des ensembles de points | `idees-6e-cercles` | 2026-11-28 |                                      |
+| 2f3da9ce Problèmes de distances à un point          | `idees-6e-cercles` | 2026-11-28 |                                      |
+
+## Idées en attente
+
+Ce sont des idées notées pour un modèle déjà réservé, ou reportées par David (« plus tard »).
+
+- `idees-6e-angles` (2026-11-28, pour la session de la rubrique « Espace » 6G8) : 6G41, « compléter une
+  représentation en perspective cavalière » (cube ou pavé), rangé sous le préfixe 6G4 mais exercice de solides.
+- `ensembles-2de` (plus tard, David, 2026-11-28) : fiche 17, écrire en Python le test « x ∈ [2 ; 5[ »,
+  attend la case « programme Python » (outil n° 49, lot `python`). Les fiches 34 et 52 sont faites (#3319), la 16 refusée.
+- `idees-6e-entiers` (plus tard, David, 2026-11-22) : la rose des sommes (6N0A-2), en attente d'un outil
+  « grille ou figure jugée par ses contraintes » (`outils-manquants.md`).
+- `idees-3e-arithmetique` (2026-11-23, pour la session d'une rubrique de 6e sur la division) : « quel est le
+  plus grand reste possible dans une division euclidienne par d ? » (3A10), niveau 6e, aucun modèle.
+- `idees-6e-entiers-decimaux` (2026-11-23, David) : pourcentage approché d'une fraction (37/213 ≈ 17 %,
+  6N1F-4), hors bornes de 6e, pour la session de la 5e ou de la 4e (ade95ae4 n'a que des cas exacts).
+- `idees-3e-calcul-litteral` (2026-11-23, recommandation suivie par David) : motifs qui se répètent (3L13-7 :
+  nombre de formes du motif n, expression en n, numéro du motif qui utilise N formes ; 3L16 : ratio d'un
+  motif), idée de 4e-5e (4-021 ou 5e), pour la session d'une rubrique de calcul littéral de 4e ou de 5e.
+- `idees-6e-proportionnalite` (2026-11-25, pour la session de 5e) : utiliser une échelle 1/n (1/100 à
+  1/5 000 000) pour calculer une distance réelle ou sur le plan (6P3E, clone d'un exercice de 5e) ; la 5e
+  n'a que « trouver l'échelle » (c1a54695, 24a8e2b1).
+- `idees-6e-aires` (2026-11-27, pour la session de 5e) : conversions d'aire au-delà de m², dm², cm² (mm², dam², hm², km², ha, a ; deux sauts, QCM ×10/×100) et assemblages carré + rectangle + triangle où l'on déduit un côté d'une aire puis l'aire d'un triangle (6M2A-1, 6M2B-2) : hors bornes de 6e.
+- `idees-3e-algorithmique` (2026-11-28, pour la session de la rubrique « Pensée informatique » de 6e, 6I1) : 3I12-5
+  n'est que le niveau « 3 » de 6I1B-6 (cocher, parmi cinq programmes, tous ceux qui tracent un segment, un
+  carré ou un compte à rebours donné ; erreurs d'une unité dans « répéter n fois »), contenu de 5e (5-106).
+  Notre ``choix accepte plusieurs bonnes réponses.

@@ -1,10 +1,10 @@
 <script lang="ts">
-	import { lore } from '$lib/config/lore';
+	import { lore } from '#lib/config/lore.ts';
 	import { resolve } from '$app/paths';
-	import * as Card from '$lib/components/ui/card';
-	import * as Table from '$lib/components/ui/table';
-	import { Badge } from '$lib/components/ui/badge';
-	import MySelect from '$lib/components/MySelect.svelte';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import * as Table from '#lib/components/ui/table/index.ts';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
+	import MySelect from '#lib/components/MySelect.svelte';
 	import {
 		BookOpen,
 		CheckCircle2,
@@ -231,7 +231,7 @@
 					{#if data.rows.length === 0}
 						<p>Tu n'as pas encore travaillé de {lore.learning.exercise} Python.</p>
 						<p class="mt-2 text-sm">
-							Va sur <a href={resolve('/python-exercises')} class="text-primary hover:underline"
+							Va sur <a href={resolve('python-exercises')} class="text-primary hover:underline"
 								>la liste des {lore.learning.exercise}s</a
 							> pour démarrer.
 						</p>
@@ -301,7 +301,7 @@
 							<Table.Row>
 								<Table.Cell class="font-medium">
 									<a
-										href={resolve(`/python-exercises/${row.exercise.id}`)}
+										href={resolve(`python-exercises/${row.exercise.id}`)}
 										class="text-primary hover:underline"
 									>
 										{row.exercise.title}

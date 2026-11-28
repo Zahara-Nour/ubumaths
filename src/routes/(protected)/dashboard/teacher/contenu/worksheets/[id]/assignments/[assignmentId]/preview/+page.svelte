@@ -8,29 +8,30 @@
 -->
 
 <script lang="ts">
-	import { worksheetPdfFileName } from '$lib/worksheets/pdf-file-name';
-	import { WORKSHEET_TYPE_LABELS } from '$lib/utils/worksheet-type-labels';
-	import { lore } from '$lib/config/lore';
+	import { worksheetPdfFileName } from '#lib/worksheets/pdf-file-name.ts';
+	import { WORKSHEET_TYPE_LABELS } from '#lib/utils/worksheet-type-labels.ts';
+	import { lore } from '#lib/config/lore.ts';
 	import { onMount } from 'svelte';
-	import { Button } from '$lib/components/ui/button';
-	import BackLink from '$lib/components/navigation/BackLink.svelte';
-	import { Badge } from '$lib/components/ui/badge';
-	import * as Card from '$lib/components/ui/card';
-	import * as Dialog from '$lib/components/ui/dialog';
-	import * as Tabs from '$lib/components/ui/tabs';
-	import MySelect from '$lib/components/MySelect.svelte';
-	import TextSizeSelect from '$lib/components/worksheets/TextSizeSelect.svelte';
-	import { textSizeOf, type TextSize } from '$lib/typst/text-size';
-	import MarkdownRenderer from '$lib/components/markdown/MarkdownRenderer.svelte';
-	import { genericFunctionsConfig } from '$lib/components/markdown/utils/math-utils';
-	import InlineMarkdown from '$lib/components/markdown/InlineMarkdown.svelte';
-	import { generateAndDownloadPdf } from '$lib/typst/pdf-generator';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import BackLink from '#lib/components/navigation/BackLink.svelte';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import * as Dialog from '#lib/components/ui/dialog/index.ts';
+	import * as Tabs from '#lib/components/ui/tabs/index.ts';
+	import MySelect from '#lib/components/MySelect.svelte';
+	import TextSizeSelect from '#lib/components/worksheets/TextSizeSelect.svelte';
+	import EasyReadingPdfCheckbox from '#lib/components/worksheets/EasyReadingPdfCheckbox.svelte';
+	import { textSizeOf, type TextSize } from '#lib/typst/text-size.ts';
+	import MarkdownRenderer from '#lib/components/markdown/MarkdownRenderer.svelte';
+	import { genericFunctionsConfig } from '#lib/components/markdown/utils/math-utils.ts';
+	import InlineMarkdown from '#lib/components/markdown/InlineMarkdown.svelte';
+	import { generateAndDownloadPdf } from '#lib/typst/pdf-generator.ts';
 	import {
 		generateStudentWorksheetTypst,
 		type StudentPdfEnding
-	} from '$lib/worksheets/student-worksheet-typst';
-	import { fallbackWarning } from '$lib/typst/compiler/correction-fonts-compiler';
-	import { toaster } from '$lib/stores/toaster.svelte';
+	} from '#lib/worksheets/student-worksheet-typst.ts';
+	import { fallbackWarning } from '#lib/typst/compiler/correction-fonts-compiler.ts';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
 	import {
 		Eye,
 		User,
@@ -53,20 +54,20 @@
 		Star
 	} from '@lucide/svelte';
 	import type { PageData } from './$types';
-	import { detailedCorrection } from '$lib/questions/correction-detail';
-	import { provideCapitalPairs } from '$lib/components/markdown/content-capital-pairs';
+	import { detailedCorrection } from '#lib/questions/correction-detail.ts';
+	import { provideCapitalPairs } from '#lib/components/markdown/content-capital-pairs.ts';
 	import { page } from '$app/state';
-	import { assignmentCopiesHref, assignmentPreviewReturn } from '$lib/navigation/return-links';
+	import { assignmentCopiesHref, assignmentPreviewReturn } from '#lib/navigation/return-links.ts';
 	import {
 		ANCHOR_HIGHLIGHT_MS,
 		exerciseAnchorId,
 		scrollToAnchoredExercise
-	} from '$lib/worksheets/exercise-anchor';
+	} from '#lib/worksheets/exercise-anchor.ts';
 	import type {
 		StudentWorksheetView,
 		StudentExerciseView,
 		WorksheetType
-	} from '$lib/types/worksheets';
+	} from '#lib/types/worksheets.ts';
 
 	let { data }: { data: PageData } = $props();
 
@@ -100,6 +101,9 @@
 	// enregistrée pour lui si on la change ; en vue prof, normale et ponctuelle
 	let textSize = $state<TextSize>('normal');
 	let isSavingTextSize = $state(false);
+	// Lecture facilitée (PDF en Luciole) : même principe que la taille
+	let easyReading = $state(false);
+	let isSavingEasyReading = $state(false);
 
 	// PDF download state
 	let isPdfLoading = $state(false);
@@ -168,10 +172,15 @@
 			worksheet = responseData as StudentWorksheetView;
 			previewMode = responseData.preview_mode || 'teacher';
 			previewStudentName = responseData.preview_student_name || null;
-			// La taille de l'élève demandé ; un autre choisi entre-temps : réponse périmée
-			const sizeFor = selectedStudentId;
-			const size = sizeFor ? await studentTextSize(sizeFor) : 'normal';
-			if (selectedStudentId === sizeFor) textSize = size;
+			// Les réglages de l'élève demandé ; un autre choisi entre-temps : réponse périmée
+			const settingsFor = selectedStudentId;
+			const settings = settingsFor
+				? await studentPrintSettings(settingsFor)
+				: { textSize: 'normal' as const, easyReading: false };
+			if (selectedStudentId === settingsFor) {
+				textSize = settings.textSize;
+				easyReading = settings.easyReading;
+			}
 		} catch (err) {
 			console.error('Error fetching preview:', err);
 			error = err instanceof Error ? err.message : 'Erreur lors du chargement';
@@ -180,19 +189,55 @@
 		}
 	}
 
-	/** La taille enregistrée pour l'élève ; normale si elle est illisible */
-	async function studentTextSize(studentId: string): Promise<TextSize> {
+	/**
+	 * Les réglages d'impression enregistrés pour l'élève ; illisibles : taille
+	 * normale, lecture facilitée éteinte
+	 */
+	async function studentPrintSettings(
+		studentId: string
+	): Promise<{ textSize: TextSize; easyReading: boolean }> {
+		const fallback = { textSize: 'normal' as const, easyReading: false };
 		try {
 			const url = new URL('/api/worksheets/print-settings', window.location.origin);
 			url.searchParams.set('studentId', studentId);
 			const response = await fetch(url.toString());
-			if (!response.ok) return 'normal';
+			if (!response.ok) return fallback;
 			const body: unknown = await response.json();
-			return textSizeOf(
-				body && typeof body === 'object' && 'textSize' in body ? body.textSize : null
+			if (!body || typeof body !== 'object') return fallback;
+			return {
+				textSize: textSizeOf('textSize' in body ? body.textSize : null),
+				easyReading: 'easyReading' in body && body.easyReading === true
+			};
+		} catch {
+			return fallback;
+		}
+	}
+
+	/** Vue d'un élève : enregistrée pour lui ; vue prof : ce PDF seulement */
+	async function handleEasyReadingChange(checked: boolean) {
+		const previous = easyReading;
+		easyReading = checked;
+		const studentId = selectedStudentId;
+		const studentName = previewStudentName;
+		if (!studentId) return;
+
+		isSavingEasyReading = true;
+		try {
+			const response = await fetch('/api/worksheets/print-settings', {
+				method: 'PUT',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ studentId, easyReading: checked })
+			});
+			if (!response.ok) throw new Error(`HTTP ${response.status}`);
+			toaster.success(
+				`Lecture facilitée ${checked ? 'enregistrée' : 'retirée'} pour ${studentName ?? 'cet élève'} (toutes ses fiches)`
 			);
 		} catch {
-			return 'normal';
+			// Un autre élève choisi entre-temps : sa case vient de sa propre lecture
+			if (selectedStudentId === studentId) easyReading = previous;
+			toaster.error("La lecture facilitée n'a pas pu être enregistrée");
+		} finally {
+			isSavingEasyReading = false;
 		}
 	}
 
@@ -265,7 +310,8 @@
 			() =>
 				generateStudentWorksheetTypst(capturedWorksheet, ending, {
 					individualCopyNotice,
-					textSize
+					textSize,
+					easyReading
 				}),
 			filename
 		);
@@ -509,6 +555,11 @@
 						value={textSize}
 						onchange={handleTextSizeChange}
 						disabled={isSavingTextSize || loading}
+					/>
+					<EasyReadingPdfCheckbox
+						checked={easyReading}
+						onchange={handleEasyReadingChange}
+						disabled={isSavingEasyReading || loading}
 					/>
 					{#if data.students.length > 0}
 						<!-- Une copie au nom de chaque élève visé (ADR 0030, lot 5) -->
@@ -834,7 +885,7 @@
 				{#if hasCorrection}
 					<Tabs.Root value="statement" class="w-full">
 						<Tabs.List class="grid w-full grid-cols-2">
-							<Tabs.Trigger value="statement">Enonce</Tabs.Trigger>
+							<Tabs.Trigger value="statement">Énoncé</Tabs.Trigger>
 							<Tabs.Trigger value="correction">Correction</Tabs.Trigger>
 						</Tabs.List>
 						<Tabs.Content value="statement" class="mt-4">

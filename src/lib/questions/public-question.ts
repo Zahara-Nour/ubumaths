@@ -20,9 +20,9 @@
  * attendues vides, aucun choix marqué juste.
  */
 
-import type { ResolvedMarkdown } from '$lib/ubumark';
-import { unitKeysFor } from '$lib/questions/units/keyboard-units';
-import type { CapitalPairs } from '$lib/mathAST/parser/types';
+import type { ResolvedMarkdown } from '#lib/ubumark/index.ts';
+import { unitKeysFor } from '#lib/questions/units/keyboard-units.ts';
+import type { CapitalPairs } from '#lib/mathAST/parser/types.ts';
 import type { ConstraintMode, GradeLevel, InstanceBlank, QuestionInstance } from './types';
 import { isWorkFigureBlank } from './graded-part';
 import { findUnmaskedAnswers, maskGestureAnswers } from './masked-statement';

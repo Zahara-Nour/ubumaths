@@ -15,7 +15,7 @@
  */
 
 import type { BaseNode } from './ast';
-import type { MathNode } from '$lib/mathAST/types';
+import type { MathNode } from '#lib/mathAST/types.ts';
 
 // ============================================================================
 // VALUE TYPES
@@ -129,6 +129,11 @@ export interface NumberLineConfig {
 	arrows: boolean;
 	/** Scale type */
 	scale: NumberLineScale;
+	/**
+	 * Étiquettes aux grandes graduations quand `labels` est vide (défaut : oui).
+	 * Un zoom n'en a pas : l'élève retrouve lui-même les valeurs.
+	 */
+	autoLabels?: boolean;
 }
 
 /**
@@ -140,6 +145,15 @@ export interface NumberLineConfig {
 export interface NumberLineRepresenter {
 	bounded: boolean;
 	interval: NumberLineSegment | null;
+}
+
+/**
+ * Droite à graduer (`graduer: 3`, outil n° 61) : l'élève partage lui-même chaque
+ * intervalle de `step` en `parts` parts égales (puis pose les points de `placer:`
+ * sur ses graduations). `parts` null : valeur masquée (`graduer: ?`), énoncé envoyé.
+ */
+export interface NumberLineGraduer {
+	parts: number | null;
 }
 
 // ============================================================================
@@ -198,11 +212,25 @@ export interface NumberLineNode extends BaseNode {
 	 * écrit (chantier `docs/wip/reponses-a-placer-progress.md`). Jamais dessinés.
 	 */
 	placer?: NumberLineTarget[];
+	/**
+	 * Zooms (`zoom: 12.4 ; 12.5 ; step 0.01`, outil n° 54) : droites agrandies, chacune
+	 * sous la précédente et dans ses bornes, reliées par deux pointillés ; 4 au plus.
+	 * Les points se dessinent sur toutes les droites où ils tombent.
+	 */
+	zooms?: NumberLineConfig[];
 	/** Droite à représenter (`representer:`) : l'intervalle de l'élève. Jamais dessiné. */
 	representer?: NumberLineRepresenter;
+	/** Droite à graduer (`graduer:`) : le nombre de parts attendu. Jamais dessiné. */
+	graduer?: NumberLineGraduer;
+	/**
+	 * PDF (`unite: 6 cm`) : longueur réelle d'un intervalle de `step`, en cm ; la
+	 * droite n'est réduite que si la colonne est trop étroite. Sans effet à l'écran.
+	 */
+	unitCm?: number;
 	/**
 	 * Première case d'une droite à placer dans une question (`case: N`, posée par
-	 * le générateur) : le point k a la case N + k
+	 * le générateur) : le point k a la case N + k ; droite à graduer : la case N est
+	 * le nombre de parts, le point k a la case N + 1 + k
 	 */
 	caseIndex?: number;
 	/**

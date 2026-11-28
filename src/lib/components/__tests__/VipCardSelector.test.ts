@@ -22,7 +22,7 @@ import {
 	getTemplateById,
 	templateToVipCard,
 	type VipCardTemplate
-} from '$lib/stores/vipCardTemplates.svelte';
+} from '#lib/stores/vipCardTemplates.svelte.ts';
 
 // ============================================================================
 // TEST FIXTURES

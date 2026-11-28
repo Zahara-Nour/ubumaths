@@ -16,7 +16,7 @@
 	`natural-input.ts`, testée sans navigateur.
 -->
 <script lang="ts">
-	import '$lib/utils/mathlive-styles';
+	import '#lib/utils/mathlive-styles.ts';
 	import 'mathlive';
 	import { onMount } from 'svelte';
 	import { on } from 'svelte/events';
@@ -31,8 +31,8 @@
 		wordAtCaret,
 		type CommandWord,
 		type Proposal
-	} from '$lib/atelier/natural-input';
-	import { CALC_LAYOUT, commandsLayout } from '$lib/atelier/virtual-keyboard';
+	} from '#lib/atelier/natural-input.ts';
+	import { CALC_LAYOUT, commandsLayout } from '#lib/atelier/virtual-keyboard.ts';
 
 	// Types
 	interface Props {
@@ -132,7 +132,8 @@
 		const before = beforeCaret();
 		if (!field || before === null) return false;
 		const found = wordAtCaret(before, terminator === null);
-		const replacement = found && finishedWordLatex(found, lineKindOf(field.value, words), words);
+		const replacement =
+			found && finishedWordLatex(found, lineKindOf(field.value, words), words, field.value);
 		// Une barre après une unité (`km/h`) : sinon MathLive en fait une fraction
 		if (!found || !replacement || (terminator === '/' && !replacement.startsWith('\\mathrm'))) {
 			return false;
@@ -441,5 +442,17 @@
 	/* Le bouton ☰ : MathLive le laisse affiché même quand son menu est vide */
 	math-field[data-sans-menu]::part(menu-toggle) {
 		display: none;
+	}
+
+	/*
+	 * MathLive surligne tout `\text{…}` du champ qui a le focus (fond bleu
+	 * marqué en sombre), consigne comprise : les mots (« sur », « ou ») y
+	 * paraissaient sélectionnés. Deux variables publiques, une par thème
+	 * (`--highlight-text` en clair, `--text-highlight-background-color` en
+	 * sombre) : elles traversent le shadow DOM par héritage.
+	 */
+	math-field {
+		--highlight-text: transparent;
+		--text-highlight-background-color: transparent;
 	}
 </style>

@@ -1,0 +1,563 @@
+{
+	"id": "dc269779-aaa4-44af-8e02-e17a55417c65",
+	"title": "Logarithme décimal : définition",
+	"description": "log(10ⁿ) = n ; log de 100, 0,01… sans calculatrice ; 10ˣ = b donne x = log(b) ; 10^(log b) = b ; calculatrice ; nombre de chiffres d'un entier",
+	"grades": ["T_TECHNO"],
+	"level": 1,
+	"delay": 45,
+	"status": "published",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{n}}"
+				}
+			],
+			"statement": "Sans calculatrice, donne la valeur de $\\log\\left(10^{ {{n}} }\\right)$.\n\n$\\log\\left(10^{ {{n}} }\\right)=?$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "-5|-4|-3|-2|2|3|4|5|6|7"
+				}
+			],
+			"conditions": [],
+			"correction": {
+				"steps": [
+					"Pour $b>0$, $\\log(b)$ est l'unique réel $x$ tel que $10^x=b$. En particulier, $\\log\\left(10^n\\right)=n$ et $10^{\\log(b)}=b$.",
+					"$\\log\\left(10^{ {{n}} }\\right)$ est le réel $x$ tel que $10^x=10^{ {{n}} }$, donc $\\log\\left(10^{ {{n}} }\\right)=\\textcolor{{{color:primary.0}}}{{{n}}}$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{n}}"
+				}
+			],
+			"statement": "Sans calculatrice, donne la valeur de $\\log({{eval:10^n;d}})$.\n\n$\\log({{eval:10^n;d}})=?$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "-3|-2|-1|1|2|3"
+				}
+			],
+			"conditions": [],
+			"correction": {
+				"steps": [
+					"Pour $b>0$, $\\log(b)$ est l'unique réel $x$ tel que $10^x=b$. En particulier, $\\log\\left(10^n\\right)=n$ et $10^{\\log(b)}=b$.",
+					"${{eval:10^n;d}}=10^{ {{n}} }$, donc $\\log({{eval:10^n;d}})=\\textcolor{{{color:primary.0}}}{{{n}}}$.{{if:n<0| Un logarithme négatif : le nombre est compris entre $0$ et $1$.|}}"
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"statement": "Quel est le réel $x$ tel que $10^x={{b}}$ ?\n\n```choix\n- $x=\\log({{b}})$\n- $x=\\dfrac{ {{b}} }{10}$\n- $x=10^{ {{b}} }$\n- $x=\\sqrt[10]{ {{b}} }$\n```",
+			"variables": [
+				{
+					"name": "b",
+					"expression": "2|3|5|6|7|15|20|50"
+				}
+			],
+			"conditions": [],
+			"correction": {
+				"steps": [
+					"Pour $b>0$, $\\log(b)$ est l'unique réel $x$ tel que $10^x=b$. En particulier, $\\log\\left(10^n\\right)=n$ et $10^{\\log(b)}=b$.",
+					"$10^x={{b}}$ a une unique solution : $x=\\textcolor{{{color:primary.0}}}{\\log({{b}})}$ (environ ${{eval:round(100*log(b))/100;a2}}$ à la calculatrice)."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{b}}"
+				}
+			],
+			"statement": "Sans calculatrice, donne la valeur de $10^{\\log({{b}})}$.\n\n$10^{\\log({{b}})}=?$",
+			"variables": [
+				{
+					"name": "b",
+					"expression": "3|7|12|25|0.5|2.4|45"
+				}
+			],
+			"conditions": [],
+			"correction": {
+				"steps": [
+					"Pour $b>0$, $\\log(b)$ est l'unique réel $x$ tel que $10^x=b$. En particulier, $\\log\\left(10^n\\right)=n$ et $10^{\\log(b)}=b$.",
+					"$\\log({{b}})$ est l'exposant qu'il faut donner à $10$ pour obtenir ${{b}}$ : $10^{\\log({{b}})}=\\textcolor{{{color:primary.0}}}{{{b}}}$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"precision": {
+						"type": "decimal",
+						"digits": 2
+					},
+					"expectedAnswer": "{{eval:round(100*log(b))/100;a2}}"
+				}
+			],
+			"statement": "À la calculatrice, donne une valeur approchée de $\\log({{b}})$ au centième.\n\n$\\log({{b}})\\approx ?$",
+			"variables": [
+				{
+					"name": "b",
+					"expression": "2|3|7|15|42|250|0.4|0.06"
+				}
+			],
+			"conditions": [],
+			"correction": {
+				"steps": [
+					"La touche $\\log$ de la calculatrice donne le logarithme décimal.",
+					"$\\log({{b}})\\approx\\textcolor{{{color:primary.0}}}{{{eval:round(100*log(b))/100;a2}}}$ : on vérifie que $10^{ {{eval:round(100*log(b))/100;a2}} }$ est proche de ${{b}}$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:k+1}}"
+				}
+			],
+			"statement": "Un entier naturel $N$ vérifie $\\log(N)\\approx{{eval:k+f;d}}$.\n\nCombien de chiffres a l'écriture décimale de $N$ ?\n\n$?$ chiffres",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "2..9"
+				},
+				{
+					"name": "f",
+					"expression": "0.12|0.35|0.48|0.71|0.86"
+				}
+			],
+			"conditions": [],
+			"correction": {
+				"steps": [
+					"La fonction $\\log$ est définie et **strictement croissante** sur $\\left]0\\,;+\\infty\\right[$ : elle range les images dans le même ordre que les nombres.",
+					"${{k}}\\leqslant\\log(N)<{{eval:k+1}}$, donc $10^{ {{k}} }\\leqslant N<10^{ {{eval:k+1}} }$.",
+					"$10^{ {{k}} }$ s'écrit avec ${{eval:k+1}}$ chiffres (un $1$ suivi de ${{k}}$ zéros) et $10^{ {{eval:k+1}} }$ est le premier entier à ${{eval:k+2}}$ chiffres : $N$ a $\\textcolor{{{color:primary.0}}}{{{eval:k+1}}}$ chiffres."
+				]
+			}
+		},
+		{
+			"statement": "Sans calculatrice, calcule $A={{if:o==0|{{if:a==1||{{if:a==-1|-|{{a}}}}}}\\log\\left(10^{ {{n}} }\\right){{if:c==1|+|{{if:c==-1|-|{{c;+}}}}}}\\log({{eval:10^m;d}})|\\log\\left(10^{ {{n}} }\\right)\\times\\log({{eval:10^m;d}})}}$.\n\n$A=?$",
+			"variables": [
+				{
+					"name": "o",
+					"expression": "0|0|1"
+				},
+				{
+					"name": "a",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "c",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "n",
+					"expression": "1..5"
+				},
+				{
+					"name": "m",
+					"expression": "-3|-2|-1|1|2|3|4|5"
+				},
+				{
+					"name": "r",
+					"expression": "eval:(1-o)*(a*n+c*m)+o*n*m"
+				},
+				{
+					"name": "w1",
+					"expression": "eval:(1-o)*(a*n-c*m)-o*n*m"
+				},
+				{
+					"name": "w2",
+					"expression": "eval:(1-o)*(a*n+c*(m+1))+o*n*(m+1)"
+				},
+				{
+					"name": "w3",
+					"expression": "eval:(1-o)*(a+c)+o*(n+m)"
+				}
+			],
+			"conditions": ["r != w1", "r != w2", "r != w3", "w1 != w2", "w1 != w3", "w2 != w3"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{r}}",
+					"expectedErrors": [
+						{
+							"answer": "{{w1}}",
+							"message": "${{eval:10^m;d}}=10^{ {{m}} }$, donc $\\log({{eval:10^m;d}})={{m}}$ : vérifie le signe.",
+							"label": "Signe"
+						},
+						{
+							"answer": "{{w2}}",
+							"message": "{{if:m<0|${{eval:10^m;d}}=10^{ {{m}} }$ : le $1$ est au rang ${{eval:-m}}$ après la virgule.|${{eval:10^m;d}}=10^{ {{m}} }$ : on compte les zéros, pas les chiffres.}}",
+							"label": "Exposant décalé de 1"
+						},
+						{
+							"answer": "{{w3}}",
+							"message": "{{if:o==0|Les coefficients ne suffisent pas : $\\log\\left(10^{n}\\right)=n$ donne la valeur de chaque logarithme.|C'est un produit : on multiplie les deux logarithmes.}}",
+							"label": "{{if:o==0|Exposants oubliés|Somme au lieu du produit}}"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"Pour tout entier $n$, $\\log\\left(10^n\\right)=n$.",
+					"$\\log\\left(10^{ {{n}} }\\right)={{n}}$ et ${{eval:10^m;d}}=10^{ {{m}} }$, donc $\\log({{eval:10^m;d}})={{m}}$.",
+					"$A={{if:o==0|{{eval:a*n}}{{eval:c*m;+}}|{{n}}\\times{{if:m<0|({{m}})|{{m}}}}}}=\\textcolor{{{color:primary.0}}}{ {{r}} }$."
+				]
+			},
+			"hint": "Écris chaque nombre comme une puissance de $10$."
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["3"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"n": "3"
+			},
+			"description": "log(10^3) = 3",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["1000"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"n": "3"
+			},
+			"description": "Erreur : 1000",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["-4"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"n": "-4"
+			},
+			"description": "log(10^-4) = −4",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["4"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"n": "-4"
+			},
+			"description": "Erreur : 4 (signe)",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"n": "2"
+			},
+			"description": "log(100) = 2",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["10"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"n": "2"
+			},
+			"description": "Erreur : 10",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["-2"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"n": "-2"
+			},
+			"description": "log(0,01) = −2",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"n": "-2"
+			},
+			"description": "Erreur : 2 (signe)",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"b": "5"
+			},
+			"description": "10^x = 5 : x = log(5)",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"b": "5"
+			},
+			"description": "Erreur : x = 5/10",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"b": "5"
+			},
+			"description": "Erreur : x = 10^5",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["7"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"b": "7"
+			},
+			"description": "10^(log 7) = 7",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["10000000"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"b": "7"
+			},
+			"description": "Erreur : 10^7",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["1,62"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"b": "42"
+			},
+			"description": "log(42) ≈ 1,62",
+			"variationIndex": 4
+		},
+		{
+			"answers": ["3,74"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"b": "42"
+			},
+			"description": "Erreur : ln(42) ≈ 3,74",
+			"variationIndex": 4
+		},
+		{
+			"answers": ["-0,40"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"b": "0.4"
+			},
+			"description": "log(0,4) ≈ −0,40",
+			"variationIndex": 4
+		},
+		{
+			"answers": ["6"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"f": "0.35",
+				"k": "5"
+			},
+			"description": "log N ≈ 5,35 : 6 chiffres",
+			"variationIndex": 5
+		},
+		{
+			"answers": ["5"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"f": "0.35",
+				"k": "5"
+			},
+			"description": "Erreur : 5 (partie entière)",
+			"variationIndex": 5
+		},
+		{
+			"description": "F5 : 3 log(10²) − 2 log(0,01) = 10",
+			"variationIndex": 6,
+			"variables": {
+				"o": "0",
+				"a": "3",
+				"c": "-2",
+				"n": "2",
+				"m": "-2",
+				"r": "10",
+				"w1": "2",
+				"w2": "8",
+				"w3": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["10"]
+		},
+		{
+			"description": "F5 : signe de log(0,01)",
+			"variationIndex": 6,
+			"variables": {
+				"o": "0",
+				"a": "3",
+				"c": "-2",
+				"n": "2",
+				"m": "-2",
+				"r": "10",
+				"w1": "2",
+				"w2": "8",
+				"w3": "1"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "$0.01 = 10^{-2}$, donc $\\log(0.01)=-2$ : vérifie le signe."
+			},
+			"answers": ["2"]
+		},
+		{
+			"description": "F5 : zéros comptés après la virgule",
+			"variationIndex": 6,
+			"variables": {
+				"o": "0",
+				"a": "3",
+				"c": "-2",
+				"n": "2",
+				"m": "-2",
+				"r": "10",
+				"w1": "2",
+				"w2": "8",
+				"w3": "1"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "$0.01 = 10^{-2}$ : le $1$ est au rang $2$ après la virgule."
+			},
+			"answers": ["8"]
+		},
+		{
+			"description": "F5 : exposants oubliés",
+			"variationIndex": 6,
+			"variables": {
+				"o": "0",
+				"a": "3",
+				"c": "-2",
+				"n": "2",
+				"m": "-2",
+				"r": "10",
+				"w1": "2",
+				"w2": "8",
+				"w3": "1"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Les coefficients ne suffisent pas : $\\log\\left(10^{n}\\right)=n$ donne la valeur de chaque logarithme."
+			},
+			"answers": ["1"]
+		},
+		{
+			"description": "F5 : log(10³) × log(100) = 6",
+			"variationIndex": 6,
+			"variables": {
+				"o": "1",
+				"a": "1",
+				"c": "1",
+				"n": "3",
+				"m": "2",
+				"r": "6",
+				"w1": "-6",
+				"w2": "9",
+				"w3": "5"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["6"]
+		},
+		{
+			"description": "F5 : somme au lieu du produit",
+			"variationIndex": 6,
+			"variables": {
+				"o": "1",
+				"a": "1",
+				"c": "1",
+				"n": "3",
+				"m": "2",
+				"r": "6",
+				"w1": "-6",
+				"w2": "9",
+				"w3": "5"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "C'est un produit : on multiplie les deux logarithmes."
+			},
+			"answers": ["5"]
+		},
+		{
+			"description": "F5 : chiffres comptés",
+			"variationIndex": 6,
+			"variables": {
+				"o": "1",
+				"a": "1",
+				"c": "1",
+				"n": "3",
+				"m": "2",
+				"r": "6",
+				"w1": "-6",
+				"w2": "9",
+				"w3": "5"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "$100 = 10^2$ : on compte les zéros, pas les chiffres."
+			},
+			"answers": ["9"]
+		}
+	]
+}

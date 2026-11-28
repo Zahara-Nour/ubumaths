@@ -7,8 +7,8 @@
 import { describe, it, expect } from 'vitest';
 import { evaluateRule, type EvaluationContext } from '../validation-rule-evaluator';
 import type { CustomExpressionRule, InstanceBlank, QuestionInstance } from '../types';
-import { validateAnswer } from '$lib/utils/answer-validator';
-import type { ResolvedMarkdown } from '$lib/ubumark';
+import { validateAnswer } from '#lib/utils/answer-validator.ts';
+import type { ResolvedMarkdown } from '#lib/ubumark/index.ts';
 
 function custom(expression: string): CustomExpressionRule {
 	return { type: 'custom', expression };

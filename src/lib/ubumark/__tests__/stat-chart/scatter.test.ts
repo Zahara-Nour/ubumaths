@@ -14,7 +14,7 @@ import {
 } from '../../parser/stat-chart-parser';
 import { buildStatChartScene, type ScatterScene } from '../../utils/stat-chart-scene';
 import { generateStatChartTypst } from '../../generators/stat-chart-typst';
-import { parseMarkdown } from '$lib/ubumark';
+import { parseMarkdown } from '#lib/ubumark/index.ts';
 
 // =============================================================================
 // Helpers

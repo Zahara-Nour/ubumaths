@@ -1,0 +1,163 @@
+{
+	"id": "f15045ec-2ecd-41b5-8196-077bf3d7b3a1",
+	"title": "Calculer un terme d'une suite géométrique (forme explicite)",
+	"description": "Suite définie par $u_n=a\\times q^n$",
+	"grades": ["1_GEN"],
+	"level": 1,
+	"delay": 30,
+	"status": "draft",
+	"shared": {},
+	"variations": [
+		{
+			"statement": "La suite $(u_n)$ est définie, pour tout entier naturel $n$, par $u_n={{a}}\\times{{q}}^n$.\n\nCalcule $u_{{k}}$.\n\n$u_{{k}}=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9"
+				},
+				{
+					"name": "q",
+					"expression": "2|3"
+				},
+				{
+					"name": "k",
+					"expression": "2..5"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a*q^k;d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On remplace $n$ par ${{k}}$ : $u_{{k}}={{a}}\\times{{q}}^{{k}}$.",
+					"On calcule d'abord la puissance : ${{q}}^{{k}}={{eval:q^k}}$, puis $u_{{k}}={{a}}\\times{{eval:q^k}}=\\textcolor{{{color:primary.0}}}{{{eval:a*q^k;d}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Un village compte ${{c}}$ habitants en 2025. On modélise sa population $n$ années après 2025 par $u_n={{c}}\\times{{q}}^n$.\n\nCalcule $u_{ {{k}} }$, arrondi à l'unité.\n\n$u_{ {{k}} }\\approx ?$",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "1000|2000|5000"
+				},
+				{
+					"name": "q",
+					"expression": "1.02|1.03|1.05"
+				},
+				{
+					"name": "k",
+					"expression": "5..12"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:round(c*q^k)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On remplace $n$ par ${{k}}$ : $u_{ {{k}} }={{c}}\\times{{q}}^{ {{k}} }$.",
+					"À la calculatrice, $u_{ {{k}} }\\approx\\textcolor{{{color:primary.0}}}{{{eval:round(c*q^k)}}}$ habitants."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "u_n = 3×2^n, u_4 = 48",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"q": "2",
+				"k": "4"
+			},
+			"answers": ["48"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : (3×2)^4 = 1296",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"q": "2",
+				"k": "4"
+			},
+			"answers": ["1296"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 3×2×4 = 24",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"q": "2",
+				"k": "4"
+			},
+			"answers": ["24"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 3×3^3 = 81 (exposant k−1 ; juste : 243)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"q": "3",
+				"k": "4"
+			},
+			"answers": ["81"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "1000×1,05^10 ≈ 1629",
+			"variationIndex": 1,
+			"variables": {
+				"c": "1000",
+				"q": "1.05",
+				"k": "10"
+			},
+			"answers": ["1629"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : intérêts simples 1500",
+			"variationIndex": 1,
+			"variables": {
+				"c": "1000",
+				"q": "1.05",
+				"k": "10"
+			},
+			"answers": ["1500"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 1000×1,05×10 = 10500",
+			"variationIndex": 1,
+			"variables": {
+				"c": "1000",
+				"q": "1.05",
+				"k": "10"
+			},
+			"answers": ["10500"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

@@ -13,16 +13,16 @@
  * @module grapheur/sequence
  */
 
-import { compile } from '$lib/mathAST/eval/compile';
-import { getVariables } from '$lib/mathAST/eval/substitute';
-import { variable } from '$lib/mathAST/factory';
-import { isVariable } from '$lib/mathAST/guards';
-import { parseLatexSafe } from '$lib/mathAST/parser';
-import type { MathNode, SubscriptNode } from '$lib/mathAST/types';
-import { transformAST } from '$lib/mathAST/visitor';
+import { compile } from '#lib/mathAST/eval/compile.ts';
+import { getVariables } from '#lib/mathAST/eval/substitute.ts';
+import { variable } from '#lib/mathAST/factory.ts';
+import { isVariable } from '#lib/mathAST/guards.ts';
+import { parseLatexSafe } from '#lib/mathAST/parser/index.ts';
+import type { MathNode, SubscriptNode } from '#lib/mathAST/types.ts';
+import { transformAST } from '#lib/mathAST/visitor.ts';
 // Imported from geometry-core rather than from grapheur/types, which depends on
 // this module for MAX_SEQUENCE_TERMS.
-import type { Point, Viewport } from '$lib/geometry-core/viewport';
+import type { Point, Viewport } from '#lib/geometry-core/viewport/index.ts';
 
 // =============================================================================
 // Types

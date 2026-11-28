@@ -1,9 +1,9 @@
-import { CITIES } from '$lib/kingdom-tour/cities';
+import { CITIES } from '#lib/kingdom-tour/cities.ts';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 // Articles du test : un paru, un futur, un brouillon
-vi.mock('$lib/server/shtam/articles', async (importOriginal) => {
-	const original = await importOriginal<typeof import('$lib/server/shtam/articles')>();
+vi.mock('#lib/server/shtam/articles.ts', async (importOriginal) => {
+	const original = await importOriginal<typeof import('#lib/server/shtam/articles.ts')>();
 	const raw = (date: string, draft = false) =>
 		`---\ntitle: T\ndate: ${date}\nauthor: pile\nlede: C.\n${draft ? 'draft: true\n' : ''}---\n\nCorps.\n\n## Le vrai du faux\n\nFait.\n`;
 	const articles = original.parseArticles({
@@ -21,7 +21,7 @@ const exercisesQuery = {
 	filters: [] as [string, unknown][]
 };
 
-vi.mock('$lib/server/anonymous-supabase', () => ({
+vi.mock('#lib/server/anonymous-supabase.ts', () => ({
 	createAnonymousSupabase: () => ({
 		from: () => {
 			const chain = {
@@ -44,7 +44,7 @@ vi.mock('$lib/server/anonymous-supabase', () => ({
 }));
 
 // Glossaire : sa lecture a son propre test (sitemap-glossary.test.ts)
-vi.mock('$lib/server/sitemap-glossary', () => ({
+vi.mock('#lib/server/sitemap-glossary.ts', () => ({
 	fetchGlossaryPages: async () => [{ path: '/glossaire/base-puissance', lastmod: '2026-10-11' }]
 }));
 

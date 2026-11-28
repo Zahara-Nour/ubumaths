@@ -275,6 +275,8 @@
 	details ul {
 		margin: 6px 0 0;
 		padding-left: 18px;
+		/* Une spec de figure (segment(…)|segment(…)) n'a aucun espace : coupée où il faut */
+		overflow-wrap: anywhere;
 	}
 	summary {
 		cursor: pointer;
@@ -380,6 +382,17 @@
 	.fig .fp {
 		stroke-width: 1.5;
 		fill: none;
+	}
+	/* Construction juste d'une figure à compléter (comme `.bonne-droite` de l'appli) */
+	.fig .fig-solution {
+		stroke: var(--color-fig-vert);
+		stroke-width: 2.5;
+	}
+	.fig .fig-solution-point {
+		fill: var(--color-fig-vert);
+	}
+	.fig .fig-solution-nom {
+		fill: var(--color-fig-vert);
 	}
 	.fig .fg {
 		stroke: var(--line);
@@ -1073,6 +1086,30 @@
 	}
 	.h-axe {
 		fill: var(--fg);
+	}
+	/* Schéma en barres : SchemaBarres.svelte (segments sur fond discret, manquants en pointillés sans fond) */
+	.sb-schema {
+		display: block;
+		max-width: 100%;
+		height: auto;
+		margin: 0.5rem auto;
+		font-family: var(--body);
+		color: var(--fg);
+	}
+	.sb-segment {
+		fill: color-mix(in srgb, var(--fg) 8%, var(--surface));
+		stroke: currentColor;
+	}
+	.sb-manquant {
+		fill: none;
+	}
+	.sb-accolade {
+		fill: none;
+		stroke: currentColor;
+	}
+	.sb-texte {
+		fill: currentColor;
+		stroke: none;
 	}
 	.c-contour {
 		fill: none;

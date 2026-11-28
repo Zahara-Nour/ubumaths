@@ -4,7 +4,7 @@
 
 import { differenceInDays, isPast, format } from 'date-fns';
 import { fr } from 'date-fns/locale';
-import { DEADLINE_WARNING_DAYS } from '$lib/constants/deadlines';
+import { DEADLINE_WARNING_DAYS } from '#lib/constants/deadlines.ts';
 
 /**
  * Check if deadline has passed (considers timezone)

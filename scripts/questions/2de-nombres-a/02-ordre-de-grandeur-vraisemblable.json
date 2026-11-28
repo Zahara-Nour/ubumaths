@@ -1,0 +1,1449 @@
+{
+	"id": "ca1a1201-e819-4ad2-8237-dd61c3d1dbc2",
+	"title": "Ordre de grandeur : est-ce vraisemblable ?",
+	"description": "Juger si une valeur annoncée (aire, masse, taille, durée, volume, distance) est vraisemblable (piège : valeur à un facteur 10 de l'ordre de grandeur réaliste)",
+	"grades": ["2"],
+	"level": 12,
+	"delay": 30,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Une salle de classe a une aire de ${{if:k==0|{{v}}|{{w}}}}~\\unit{m^2}$. Est-ce vraisemblable ?\n\n```choix\nmelanger: non\n- Oui\n- Non\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "0|1"
+				},
+				{
+					"name": "v",
+					"expression": "50|60|70"
+				},
+				{
+					"name": "w",
+					"expression": "5|6|500|600|800"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{k}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Une salle de classe mesure environ $8~\\unit{m}$ sur $8~\\unit{m}$ : son aire est de l'ordre de $50$ à $70~\\unit{m^2}$.",
+					"{{if:k==0|La valeur annoncée, ${{v}}$, est de cet ordre de grandeur : c'est vraisemblable. Réponse : **Oui**.|La valeur annoncée, ${{w}}$, est environ **dix fois** trop {{if:w<v|petite|grande}} (ou plus) : ce n'est pas vraisemblable. Réponse : **Non**.}}"
+				]
+			},
+			"hint": "Imagine les dimensions d'une salle de classe (combien de mètres de long, de large ?) et calcule une aire approchée, puis compare."
+		},
+		{
+			"statement": "Un élève de Seconde pèse ${{if:k==0|{{v}}|{{w}}}}~\\unit{kg}$. Est-ce vraisemblable ?\n\n```choix\nmelanger: non\n- Oui\n- Non\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "0|1"
+				},
+				{
+					"name": "v",
+					"expression": "50|55|60|65"
+				},
+				{
+					"name": "w",
+					"expression": "5|6|500|600"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{k}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La masse d'un adolescent est de l'ordre de $50$ à $70~\\unit{kg}$.",
+					"{{if:k==0|La valeur annoncée, ${{v}}$, est de cet ordre de grandeur : c'est vraisemblable. Réponse : **Oui**.|La valeur annoncée, ${{w}}$, est environ **dix fois** trop {{if:w<v|petite|grande}} (ou plus) : ce n'est pas vraisemblable. Réponse : **Non**.}}"
+				]
+			},
+			"hint": "Pense à ta propre masse ou à celle d'un camarade, puis compare avec la valeur annoncée."
+		},
+		{
+			"statement": "Un élève de Seconde mesure ${{if:k==0|{{v}}|{{w}}}}~\\unit{cm}$. Est-ce vraisemblable ?\n\n```choix\nmelanger: non\n- Oui\n- Non\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "0|1"
+				},
+				{
+					"name": "v",
+					"expression": "160|165|170|175|180"
+				},
+				{
+					"name": "w",
+					"expression": "12|15|16"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{k}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Un adolescent mesure de l'ordre de $1{,}60~\\unit{m}$ à $1{,}80~\\unit{m}$, soit $160$ à $180~\\unit{cm}$.",
+					"{{if:k==0|La valeur annoncée, ${{v}}$, est de cet ordre de grandeur : c'est vraisemblable. Réponse : **Oui**.|La valeur annoncée, ${{w}}$, est environ **dix fois** trop {{if:w<v|petite|grande}} (ou plus) : ce n'est pas vraisemblable. Réponse : **Non**.}}"
+				]
+			},
+			"hint": "Pense à ta propre taille en mètres, convertis-la en centimètres, puis compare."
+		},
+		{
+			"statement": "Un film au cinéma dure ${{if:k==0|{{v}}|{{w}}}}~\\unit{min}$. Est-ce vraisemblable ?\n\n```choix\nmelanger: non\n- Oui\n- Non\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "0|1"
+				},
+				{
+					"name": "v",
+					"expression": "100|110|120"
+				},
+				{
+					"name": "w",
+					"expression": "8|9|10"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{k}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Un film dure de l'ordre d'une heure et demie à deux heures, soit $90$ à $120~\\unit{min}$.",
+					"{{if:k==0|La valeur annoncée, ${{v}}$, est de cet ordre de grandeur : c'est vraisemblable. Réponse : **Oui**.|La valeur annoncée, ${{w}}$, est environ **dix fois** trop {{if:w<v|petite|grande}} (ou plus) : ce n'est pas vraisemblable. Réponse : **Non**.}}"
+				]
+			},
+			"hint": "Une heure, c'est $60$ minutes. Combien de temps dure environ un film au cinéma ?"
+		},
+		{
+			"statement": "Une baignoire remplie contient ${{if:k==0|{{v}}|{{w}}}}~\\unit{L}$ d'eau. Est-ce vraisemblable ?\n\n```choix\nmelanger: non\n- Oui\n- Non\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "0|1"
+				},
+				{
+					"name": "v",
+					"expression": "150|200|250"
+				},
+				{
+					"name": "w",
+					"expression": "10|15|20"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{k}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Une baignoire remplie contient de l'ordre de $150$ à $250~\\unit{L}$ d'eau.",
+					"{{if:k==0|La valeur annoncée, ${{v}}$, est de cet ordre de grandeur : c'est vraisemblable. Réponse : **Oui**.|La valeur annoncée, ${{w}}$, est environ **dix fois** trop {{if:w<v|petite|grande}} (ou plus) : ce n'est pas vraisemblable. Réponse : **Non**.}}"
+				]
+			},
+			"hint": "Une bouteille d'eau contient environ $1{,}5~\\unit{L}$. Combien de bouteilles faudrait-il pour remplir une baignoire ?"
+		},
+		{
+			"statement": "Un téléphone portable a une masse de ${{if:k==0|{{v}}|{{w}}}}~\\unit{g}$. Est-ce vraisemblable ?\n\n```choix\nmelanger: non\n- Oui\n- Non\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "0|1"
+				},
+				{
+					"name": "v",
+					"expression": "180|200|220"
+				},
+				{
+					"name": "w",
+					"expression": "10|15|18"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{k}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Un téléphone portable a une masse de l'ordre de $150$ à $250~\\unit{g}$.",
+					"{{if:k==0|La valeur annoncée, ${{v}}$, est de cet ordre de grandeur : c'est vraisemblable. Réponse : **Oui**.|La valeur annoncée, ${{w}}$, est environ **dix fois** trop {{if:w<v|petite|grande}} (ou plus) : ce n'est pas vraisemblable. Réponse : **Non**.}}"
+				]
+			},
+			"hint": "Une tablette de chocolat pèse environ $100~\\unit{g}$. Un téléphone est-il plus léger ou plus lourd ?"
+		},
+		{
+			"statement": "Un immeuble de cinq étages a une hauteur de ${{if:k==0|{{v}}|{{w}}}}~\\unit{m}$. Est-ce vraisemblable ?\n\n```choix\nmelanger: non\n- Oui\n- Non\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "0|1"
+				},
+				{
+					"name": "v",
+					"expression": "15|18|20"
+				},
+				{
+					"name": "w",
+					"expression": "2|150|200"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{k}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Un étage mesure environ $3~\\unit{m}$ : cinq étages font de l'ordre de $15$ à $20~\\unit{m}$.",
+					"{{if:k==0|La valeur annoncée, ${{v}}$, est de cet ordre de grandeur : c'est vraisemblable. Réponse : **Oui**.|La valeur annoncée, ${{w}}$, est environ **dix fois** trop {{if:w<v|petite|grande}} (ou plus) : ce n'est pas vraisemblable. Réponse : **Non**.}}"
+				]
+			},
+			"hint": "Estime la hauteur d'un étage (du sol au plafond, plus le plancher), puis multiplie par le nombre d'étages."
+		},
+		{
+			"statement": "Un trajet à pied de ${{if:k==0|{{v}}|{{w}}}}~\\unit{km}$ dure une demi-heure. Est-ce vraisemblable ?\n\n```choix\nmelanger: non\n- Oui\n- Non\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "0|1"
+				},
+				{
+					"name": "v",
+					"expression": "2|3"
+				},
+				{
+					"name": "w",
+					"expression": "20|30|40"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{k}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On marche à environ $5~\\unit{km}$ par heure : en une demi-heure, on parcourt de l'ordre de $2$ à $3~\\unit{km}$.",
+					"{{if:k==0|La valeur annoncée, ${{v}}$, est de cet ordre de grandeur : c'est vraisemblable. Réponse : **Oui**.|La valeur annoncée, ${{w}}$, est environ **dix fois** trop {{if:w<v|petite|grande}} (ou plus) : ce n'est pas vraisemblable. Réponse : **Non**.}}"
+				]
+			},
+			"hint": "À pied, on marche à environ $5~\\unit{km}$ par heure. Quelle distance parcourt-on en une demi-heure ?"
+		},
+		{
+			"statement": "Quelle est l'aire la plus vraisemblable d'une salle de classe ?\n\n```choix\nmelanger: non\n- ${{eval:v*10^(0-p);d}}~\\unit{m^2}$\n- ${{eval:v*10^(1-p);d}}~\\unit{m^2}$\n- ${{eval:v*10^(2-p);d}}~\\unit{m^2}$\n- ${{eval:v*10^(3-p);d}}~\\unit{m^2}$\n```",
+			"variables": [
+				{
+					"name": "v",
+					"expression": "50|60|70"
+				},
+				{
+					"name": "p",
+					"expression": "0..3"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{p}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Une salle de classe mesure environ $8~\\unit{m}$ sur $8~\\unit{m}$ : son aire est de l'ordre de $50$ à $70~\\unit{m^2}$.",
+					"La valeur la plus vraisemblable est donc $\\textcolor{{{color:primary.0}}}{ {{v}}~\\unit{m^2}}$ : les autres sont au moins **dix fois** trop petites ou trop grandes."
+				]
+			},
+			"hint": "Imagine les dimensions d'une salle de classe (combien de mètres de long, de large ?) et calcule une aire approchée, puis compare."
+		},
+		{
+			"statement": "Quelle est la masse la plus vraisemblable d'un élève de Seconde ?\n\n```choix\nmelanger: non\n- ${{eval:v*10^(0-p);d}}~\\unit{kg}$\n- ${{eval:v*10^(1-p);d}}~\\unit{kg}$\n- ${{eval:v*10^(2-p);d}}~\\unit{kg}$\n- ${{eval:v*10^(3-p);d}}~\\unit{kg}$\n```",
+			"variables": [
+				{
+					"name": "v",
+					"expression": "50|55|60|65"
+				},
+				{
+					"name": "p",
+					"expression": "0..3"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{p}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La masse d'un adolescent est de l'ordre de $50$ à $70~\\unit{kg}$.",
+					"La valeur la plus vraisemblable est donc $\\textcolor{{{color:primary.0}}}{ {{v}}~\\unit{kg}}$ : les autres sont au moins **dix fois** trop petites ou trop grandes."
+				]
+			},
+			"hint": "Pense à ta propre masse ou à celle d'un camarade, puis compare avec la valeur annoncée."
+		},
+		{
+			"statement": "Quelle est la taille la plus vraisemblable d'un élève de Seconde ?\n\n```choix\nmelanger: non\n- ${{eval:v*10^(0-p);d}}~\\unit{cm}$\n- ${{eval:v*10^(1-p);d}}~\\unit{cm}$\n- ${{eval:v*10^(2-p);d}}~\\unit{cm}$\n- ${{eval:v*10^(3-p);d}}~\\unit{cm}$\n```",
+			"variables": [
+				{
+					"name": "v",
+					"expression": "160|165|170|175|180"
+				},
+				{
+					"name": "p",
+					"expression": "0..3"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{p}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Un adolescent mesure de l'ordre de $1{,}60~\\unit{m}$ à $1{,}80~\\unit{m}$, soit $160$ à $180~\\unit{cm}$.",
+					"La valeur la plus vraisemblable est donc $\\textcolor{{{color:primary.0}}}{ {{v}}~\\unit{cm}}$ : les autres sont au moins **dix fois** trop petites ou trop grandes."
+				]
+			},
+			"hint": "Pense à ta propre taille en mètres, convertis-la en centimètres, puis compare."
+		},
+		{
+			"statement": "Quelle est la durée la plus vraisemblable d'un film au cinéma ?\n\n```choix\nmelanger: non\n- ${{eval:v*10^(0-p);d}}~\\unit{min}$\n- ${{eval:v*10^(1-p);d}}~\\unit{min}$\n- ${{eval:v*10^(2-p);d}}~\\unit{min}$\n- ${{eval:v*10^(3-p);d}}~\\unit{min}$\n```",
+			"variables": [
+				{
+					"name": "v",
+					"expression": "100|110|120"
+				},
+				{
+					"name": "p",
+					"expression": "0..3"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{p}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Un film dure de l'ordre d'une heure et demie à deux heures, soit $90$ à $120~\\unit{min}$.",
+					"La valeur la plus vraisemblable est donc $\\textcolor{{{color:primary.0}}}{ {{v}}~\\unit{min}}$ : les autres sont au moins **dix fois** trop petites ou trop grandes."
+				]
+			},
+			"hint": "Une heure, c'est $60$ minutes. Combien de temps dure environ un film au cinéma ?"
+		},
+		{
+			"statement": "Quel est le volume d'eau le plus vraisemblable dans une baignoire remplie ?\n\n```choix\nmelanger: non\n- ${{eval:v*10^(0-p);d}}~\\unit{L}$\n- ${{eval:v*10^(1-p);d}}~\\unit{L}$\n- ${{eval:v*10^(2-p);d}}~\\unit{L}$\n- ${{eval:v*10^(3-p);d}}~\\unit{L}$\n```",
+			"variables": [
+				{
+					"name": "v",
+					"expression": "150|200|250"
+				},
+				{
+					"name": "p",
+					"expression": "0..3"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{p}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Une baignoire remplie contient de l'ordre de $150$ à $250~\\unit{L}$ d'eau.",
+					"La valeur la plus vraisemblable est donc $\\textcolor{{{color:primary.0}}}{ {{v}}~\\unit{L}}$ : les autres sont au moins **dix fois** trop petites ou trop grandes."
+				]
+			},
+			"hint": "Une bouteille d'eau contient environ $1{,}5~\\unit{L}$. Combien de bouteilles faudrait-il pour remplir une baignoire ?"
+		},
+		{
+			"statement": "Quelle est la masse la plus vraisemblable d'un téléphone portable ?\n\n```choix\nmelanger: non\n- ${{eval:v*10^(0-p);d}}~\\unit{g}$\n- ${{eval:v*10^(1-p);d}}~\\unit{g}$\n- ${{eval:v*10^(2-p);d}}~\\unit{g}$\n- ${{eval:v*10^(3-p);d}}~\\unit{g}$\n```",
+			"variables": [
+				{
+					"name": "v",
+					"expression": "180|200|220"
+				},
+				{
+					"name": "p",
+					"expression": "0..3"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{p}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Un téléphone portable a une masse de l'ordre de $150$ à $250~\\unit{g}$.",
+					"La valeur la plus vraisemblable est donc $\\textcolor{{{color:primary.0}}}{ {{v}}~\\unit{g}}$ : les autres sont au moins **dix fois** trop petites ou trop grandes."
+				]
+			},
+			"hint": "Une tablette de chocolat pèse environ $100~\\unit{g}$. Un téléphone est-il plus léger ou plus lourd ?"
+		},
+		{
+			"statement": "Quelle est la hauteur la plus vraisemblable d'un immeuble de cinq étages ?\n\n```choix\nmelanger: non\n- ${{eval:v*10^(0-p);d}}~\\unit{m}$\n- ${{eval:v*10^(1-p);d}}~\\unit{m}$\n- ${{eval:v*10^(2-p);d}}~\\unit{m}$\n- ${{eval:v*10^(3-p);d}}~\\unit{m}$\n```",
+			"variables": [
+				{
+					"name": "v",
+					"expression": "15|18|20"
+				},
+				{
+					"name": "p",
+					"expression": "0..3"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{p}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Un étage mesure environ $3~\\unit{m}$ : cinq étages font de l'ordre de $15$ à $20~\\unit{m}$.",
+					"La valeur la plus vraisemblable est donc $\\textcolor{{{color:primary.0}}}{ {{v}}~\\unit{m}}$ : les autres sont au moins **dix fois** trop petites ou trop grandes."
+				]
+			},
+			"hint": "Estime la hauteur d'un étage (du sol au plafond, plus le plancher), puis multiplie par le nombre d'étages."
+		},
+		{
+			"statement": "Quelle distance parcourt-on le plus vraisemblablement en marchant une demi-heure ?\n\n```choix\nmelanger: non\n- ${{eval:v*10^(0-p);d}}~\\unit{km}$\n- ${{eval:v*10^(1-p);d}}~\\unit{km}$\n- ${{eval:v*10^(2-p);d}}~\\unit{km}$\n- ${{eval:v*10^(3-p);d}}~\\unit{km}$\n```",
+			"variables": [
+				{
+					"name": "v",
+					"expression": "2|3"
+				},
+				{
+					"name": "p",
+					"expression": "0..3"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{p}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On marche à environ $5~\\unit{km}$ par heure : en une demi-heure, on parcourt de l'ordre de $2$ à $3~\\unit{km}$.",
+					"La valeur la plus vraisemblable est donc $\\textcolor{{{color:primary.0}}}{ {{v}}~\\unit{km}}$ : les autres sont au moins **dix fois** trop petites ou trop grandes."
+				]
+			},
+			"hint": "À pied, on marche à environ $5~\\unit{km}$ par heure. Quelle distance parcourt-on en une demi-heure ?"
+		},
+		{
+			"statement": "Donne une estimation de la hauteur d'un immeuble de cinq étages, en mètres.\n\n$h\\approx ?~\\unit{m}$",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "18",
+					"rulesSuffice": true,
+					"validationRules": [
+						{
+							"type": "range",
+							"min": "12",
+							"max": "25",
+							"inclusive": true
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"Un étage mesure environ $3~\\unit{m}$ (du sol au plafond, plus le plancher). Avec le rez-de-chaussée, l'immeuble a six niveaux : $6\\times 3=18~\\unit{m}$.",
+					"Une estimation est juste si elle a le bon ordre de grandeur : toute réponse entre $12$ et $25~\\unit{m}$ est acceptée, par exemple $h\\approx \\textcolor{{{color:primary.0}}}{18~\\unit{m}}$."
+				]
+			},
+			"hint": "Estime la hauteur d'un étage, puis multiplie par le nombre de niveaux (sans oublier le rez-de-chaussée)."
+		},
+		{
+			"statement": "Donne une estimation de l'aire d'une salle de classe, en mètres carrés.\n\n$\\mathcal{A}\\approx ?~\\unit{m^2}$",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "60",
+					"rulesSuffice": true,
+					"validationRules": [
+						{
+							"type": "range",
+							"min": "30",
+							"max": "100",
+							"inclusive": true
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"Une salle de classe mesure environ $8~\\unit{m}$ sur $7~\\unit{m}$ : $8\\times 7=56~\\unit{m^2}$.",
+					"Une estimation est juste si elle a le bon ordre de grandeur : toute réponse entre $30$ et $100~\\unit{m^2}$ est acceptée, par exemple $\\mathcal{A}\\approx \\textcolor{{{color:primary.0}}}{60~\\unit{m^2}}$."
+				]
+			},
+			"hint": "Imagine la longueur et la largeur de ta salle de classe, en mètres, puis calcule une aire approchée."
+		},
+		{
+			"statement": "Donne une estimation du volume d'eau d'une baignoire remplie, en litres.\n\n$V\\approx ?~\\unit{L}$",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "200",
+					"rulesSuffice": true,
+					"validationRules": [
+						{
+							"type": "range",
+							"min": "100",
+							"max": "300",
+							"inclusive": true
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"Une baignoire mesure environ $1{,}6~\\unit{m}$ sur $0{,}7~\\unit{m}$, et l'eau monte à environ $0{,}2~\\unit{m}$ : $16\\times 7\\times 2=224~\\unit{dm^3}$, soit environ $220~\\unit{L}$.",
+					"Une estimation est juste si elle a le bon ordre de grandeur : toute réponse entre $100$ et $300~\\unit{L}$ est acceptée, par exemple $V\\approx \\textcolor{{{color:primary.0}}}{200~\\unit{L}}$."
+				]
+			},
+			"hint": "Estime les dimensions de l'eau dans la baignoire en décimètres : un litre, c'est un décimètre cube."
+		},
+		{
+			"statement": "Sans calculer exactement, donne l'ordre de grandeur de ${{eval:(100*a-dx)*10^(s-1);d}}\\times {{eval:(10*b+dy)/100;d}}$.\n\n```choix\nmelanger: non\n- ${{eval:10^(1+s+0-p);d}}$\n- ${{eval:10^(1+s+1-p);d}}$\n- ${{eval:10^(1+s+2-p);d}}$\n- ${{eval:10^(1+s+3-p);d}}$\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9"
+				},
+				{
+					"name": "b",
+					"expression": "2..9"
+				},
+				{
+					"name": "dx",
+					"expression": "1..4"
+				},
+				{
+					"name": "dy",
+					"expression": "1..3"
+				},
+				{
+					"name": "s",
+					"expression": "0..2"
+				},
+				{
+					"name": "p",
+					"expression": "0..3"
+				}
+			],
+			"conditions": ["a*b >= 8", "a*b <= 15"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{p}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On remplace chaque nombre par une valeur proche et simple : ${{eval:(100*a-dx)*10^(s-1);d}}\\approx {{eval:a*10^(s+1)}}$ et ${{eval:(10*b+dy)/100;d}}\\approx {{eval:b/10;d}}$.",
+					"${{eval:a*10^(s+1)}}\\times {{eval:b/10;d}}={{eval:a*b*10^s}}$ : l'ordre de grandeur du produit est $\\textcolor{{{color:primary.0}}}{ {{eval:10^(1+s)}} }$."
+				]
+			},
+			"hint": "Remplace chaque nombre par une valeur proche qui n'a qu'un seul chiffre non nul, puis calcule de tête."
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Salle de 60 m² : Oui",
+			"variationIndex": 0,
+			"variables": {
+				"k": "0",
+				"v": "60",
+				"w": "600"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Salle de 600 m² : Non",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1",
+				"v": "60",
+				"w": "600"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : salle de 600 m² jugée vraisemblable",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1",
+				"v": "60",
+				"w": "600"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Élève de 60 kg : Oui",
+			"variationIndex": 1,
+			"variables": {
+				"k": "0",
+				"v": "60",
+				"w": "6"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Élève de 6 kg : Non",
+			"variationIndex": 1,
+			"variables": {
+				"k": "1",
+				"v": "60",
+				"w": "6"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Élève de 170 cm : Oui",
+			"variationIndex": 2,
+			"variables": {
+				"k": "0",
+				"v": "170",
+				"w": "16"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 170 cm jugés invraisemblables",
+			"variationIndex": 2,
+			"variables": {
+				"k": "0",
+				"v": "170",
+				"w": "16"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Film de 9 min : Non",
+			"variationIndex": 3,
+			"variables": {
+				"k": "1",
+				"v": "110",
+				"w": "9"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Baignoire de 200 L : Oui",
+			"variationIndex": 4,
+			"variables": {
+				"k": "0",
+				"v": "200",
+				"w": "15"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : baignoire de 15 L jugée vraisemblable",
+			"variationIndex": 4,
+			"variables": {
+				"k": "1",
+				"v": "200",
+				"w": "15"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Téléphone de 15 g : Non",
+			"variationIndex": 5,
+			"variables": {
+				"k": "1",
+				"v": "200",
+				"w": "15"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Immeuble de 18 m : Oui",
+			"variationIndex": 6,
+			"variables": {
+				"k": "0",
+				"v": "18",
+				"w": "150"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : immeuble de 150 m jugé vraisemblable",
+			"variationIndex": 6,
+			"variables": {
+				"k": "1",
+				"v": "18",
+				"w": "150"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "30 km en une demi-heure à pied : Non",
+			"variationIndex": 7,
+			"variables": {
+				"k": "1",
+				"v": "3",
+				"w": "30"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : élève de 6 kg jugé vraisemblable",
+			"variationIndex": 1,
+			"variables": {
+				"k": "1",
+				"v": "60",
+				"w": "6"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : film de 9 min jugé vraisemblable",
+			"variationIndex": 3,
+			"variables": {
+				"k": "1",
+				"v": "110",
+				"w": "9"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : téléphone de 15 g jugé vraisemblable",
+			"variationIndex": 5,
+			"variables": {
+				"k": "1",
+				"v": "200",
+				"w": "15"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 30 km en une demi-heure à pied jugés vraisemblables",
+			"variationIndex": 7,
+			"variables": {
+				"k": "1",
+				"v": "3",
+				"w": "30"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Salle de classe : bonne valeur en 2e position",
+			"variationIndex": 8,
+			"variables": {
+				"v": "60",
+				"p": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Salle de classe : valeur dix fois trop grande",
+			"variationIndex": 8,
+			"variables": {
+				"v": "60",
+				"p": "1"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Salle de classe : bonne valeur en 1re position",
+			"variationIndex": 8,
+			"variables": {
+				"v": "60",
+				"p": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Salle de classe : valeur mille fois trop petite",
+			"variationIndex": 8,
+			"variables": {
+				"v": "60",
+				"p": "3"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Masse d'un élève : bonne valeur en 2e position",
+			"variationIndex": 9,
+			"variables": {
+				"v": "60",
+				"p": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Masse d'un élève : valeur dix fois trop grande",
+			"variationIndex": 9,
+			"variables": {
+				"v": "60",
+				"p": "1"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Masse d'un élève : bonne valeur en 1re position",
+			"variationIndex": 9,
+			"variables": {
+				"v": "60",
+				"p": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Masse d'un élève : valeur mille fois trop petite",
+			"variationIndex": 9,
+			"variables": {
+				"v": "60",
+				"p": "3"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Taille d'un élève : bonne valeur en 2e position",
+			"variationIndex": 10,
+			"variables": {
+				"v": "170",
+				"p": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Taille d'un élève : valeur dix fois trop grande",
+			"variationIndex": 10,
+			"variables": {
+				"v": "170",
+				"p": "1"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Taille d'un élève : bonne valeur en 1re position",
+			"variationIndex": 10,
+			"variables": {
+				"v": "170",
+				"p": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Taille d'un élève : valeur mille fois trop petite",
+			"variationIndex": 10,
+			"variables": {
+				"v": "170",
+				"p": "3"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Film : bonne valeur en 2e position",
+			"variationIndex": 11,
+			"variables": {
+				"v": "120",
+				"p": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Film : valeur dix fois trop grande",
+			"variationIndex": 11,
+			"variables": {
+				"v": "120",
+				"p": "1"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Film : bonne valeur en 1re position",
+			"variationIndex": 11,
+			"variables": {
+				"v": "120",
+				"p": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Film : valeur mille fois trop petite",
+			"variationIndex": 11,
+			"variables": {
+				"v": "120",
+				"p": "3"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Baignoire : bonne valeur en 2e position",
+			"variationIndex": 12,
+			"variables": {
+				"v": "200",
+				"p": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Baignoire : valeur dix fois trop grande",
+			"variationIndex": 12,
+			"variables": {
+				"v": "200",
+				"p": "1"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Baignoire : bonne valeur en 1re position",
+			"variationIndex": 12,
+			"variables": {
+				"v": "200",
+				"p": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Baignoire : valeur mille fois trop petite",
+			"variationIndex": 12,
+			"variables": {
+				"v": "200",
+				"p": "3"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Téléphone : bonne valeur en 2e position",
+			"variationIndex": 13,
+			"variables": {
+				"v": "200",
+				"p": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Téléphone : valeur dix fois trop grande",
+			"variationIndex": 13,
+			"variables": {
+				"v": "200",
+				"p": "1"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Téléphone : bonne valeur en 1re position",
+			"variationIndex": 13,
+			"variables": {
+				"v": "200",
+				"p": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Téléphone : valeur mille fois trop petite",
+			"variationIndex": 13,
+			"variables": {
+				"v": "200",
+				"p": "3"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Immeuble : bonne valeur en 2e position",
+			"variationIndex": 14,
+			"variables": {
+				"v": "18",
+				"p": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Immeuble : valeur dix fois trop grande",
+			"variationIndex": 14,
+			"variables": {
+				"v": "18",
+				"p": "1"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Immeuble : bonne valeur en 1re position",
+			"variationIndex": 14,
+			"variables": {
+				"v": "18",
+				"p": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Immeuble : valeur mille fois trop petite",
+			"variationIndex": 14,
+			"variables": {
+				"v": "18",
+				"p": "3"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Marche : bonne valeur en 2e position",
+			"variationIndex": 15,
+			"variables": {
+				"v": "3",
+				"p": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Marche : valeur dix fois trop grande",
+			"variationIndex": 15,
+			"variables": {
+				"v": "3",
+				"p": "1"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Marche : bonne valeur en 1re position",
+			"variationIndex": 15,
+			"variables": {
+				"v": "3",
+				"p": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Marche : valeur mille fois trop petite",
+			"variationIndex": 15,
+			"variables": {
+				"v": "3",
+				"p": "3"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Immeuble : 15 accepté",
+			"variationIndex": 16,
+			"variables": {},
+			"answers": ["15"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Immeuble : 20,5 accepté",
+			"variationIndex": 16,
+			"variables": {},
+			"answers": ["20{,}5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Immeuble : 12 accepté",
+			"variationIndex": 16,
+			"variables": {},
+			"answers": ["12"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Immeuble : 25 accepté",
+			"variationIndex": 16,
+			"variables": {},
+			"answers": ["25"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Immeuble : 200 refusé",
+			"variationIndex": 16,
+			"variables": {},
+			"answers": ["200"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Immeuble : 5 refusé",
+			"variationIndex": 16,
+			"variables": {},
+			"answers": ["5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Immeuble : 1,8 refusé",
+			"variationIndex": 16,
+			"variables": {},
+			"answers": ["1{,}8"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Salle de classe : 56 accepté",
+			"variationIndex": 17,
+			"variables": {},
+			"answers": ["56"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Salle de classe : 80 accepté",
+			"variationIndex": 17,
+			"variables": {},
+			"answers": ["80"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Salle de classe : 30 accepté",
+			"variationIndex": 17,
+			"variables": {},
+			"answers": ["30"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Salle de classe : 100 accepté",
+			"variationIndex": 17,
+			"variables": {},
+			"answers": ["100"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Salle de classe : 600 refusé",
+			"variationIndex": 17,
+			"variables": {},
+			"answers": ["600"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Salle de classe : 6 refusé",
+			"variationIndex": 17,
+			"variables": {},
+			"answers": ["6"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Salle de classe : 15 refusé",
+			"variationIndex": 17,
+			"variables": {},
+			"answers": ["15"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Baignoire : 200 accepté",
+			"variationIndex": 18,
+			"variables": {},
+			"answers": ["200"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Baignoire : 150 accepté",
+			"variationIndex": 18,
+			"variables": {},
+			"answers": ["150"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Baignoire : 100 accepté",
+			"variationIndex": 18,
+			"variables": {},
+			"answers": ["100"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Baignoire : 300 accepté",
+			"variationIndex": 18,
+			"variables": {},
+			"answers": ["300"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Baignoire : 2000 refusé",
+			"variationIndex": 18,
+			"variables": {},
+			"answers": ["2000"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Baignoire : 20 refusé",
+			"variationIndex": 18,
+			"variables": {},
+			"answers": ["20"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Baignoire : 1,5 refusé",
+			"variationIndex": 18,
+			"variables": {},
+			"answers": ["1{,}5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "49,7 × 0,21 ≈ 10",
+			"variationIndex": 19,
+			"variables": {
+				"a": "5",
+				"b": "2",
+				"dx": "3",
+				"dy": "1",
+				"s": "0",
+				"p": "2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "49,7 × 0,21 : 100 (virgule de 0,21 oubliée)",
+			"variationIndex": 19,
+			"variables": {
+				"a": "5",
+				"b": "2",
+				"dx": "3",
+				"dy": "1",
+				"s": "0",
+				"p": "2"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "49,7 × 0,21 : 1",
+			"variationIndex": 19,
+			"variables": {
+				"a": "5",
+				"b": "2",
+				"dx": "3",
+				"dy": "1",
+				"s": "0",
+				"p": "2"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "3 980 × 0,32 ≈ 1 000",
+			"variationIndex": 19,
+			"variables": {
+				"a": "4",
+				"b": "3",
+				"dx": "2",
+				"dy": "2",
+				"s": "2",
+				"p": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "3 980 × 0,32 : 100",
+			"variationIndex": 19,
+			"variables": {
+				"a": "4",
+				"b": "3",
+				"dx": "2",
+				"dy": "2",
+				"s": "2",
+				"p": "0"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

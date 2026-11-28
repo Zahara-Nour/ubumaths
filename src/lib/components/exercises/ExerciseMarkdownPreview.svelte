@@ -14,7 +14,7 @@
 -->
 <script lang="ts">
 	import ExerciseDisplay from './ExerciseDisplay.svelte';
-	import type { Exercise } from '$lib/exercises/types';
+	import type { Exercise } from '#lib/exercises/types.ts';
 
 	interface Props {
 		markdown: string;

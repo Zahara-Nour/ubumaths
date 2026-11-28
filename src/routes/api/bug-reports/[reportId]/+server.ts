@@ -9,16 +9,17 @@
  * AUTH: Authenticated users (own reports) or admin
  */
 
-import { error, json } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireAuth } from '$lib/server/middleware/auth';
+import { requireAuth } from '#lib/server/middleware/auth.ts';
 import {
 	updateBugReportUserSchema,
 	updateBugReportAdminSchema
-} from '$lib/server/validation/bug-reports';
+} from '#lib/server/validation/bug-reports.ts';
 import { z } from 'zod';
-import type { TablesUpdate } from '$lib/types/database';
-import { createServerLogger } from '$lib/utils/logger';
+import type { TablesUpdate } from '#lib/types/database.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
+import { deleteBugReportWithScreenshot } from '#lib/server/bug-report-screenshots.ts';
 
 const logger = createServerLogger('api/bug-reports/[reportId]/+server');
 
@@ -72,7 +73,7 @@ export const GET: RequestHandler = async ({ params, locals }) => {
 			throw error(403, 'Accès non autorisé');
 		}
 
-		return json({ report });
+		return Response.json({ report });
 	} catch (err) {
 		if (err && typeof err === 'object' && 'status' in err) {
 			throw err;
@@ -128,10 +129,15 @@ export const PATCH: RequestHandler = async ({ params, request, locals }) => {
 			if (validation.data.status !== undefined) {
 				updateData.status = validation.data.status;
 
-				// If resolving, set resolved_by and resolved_at
+				// Résolu : qui et quand. Rouvert (tout autre statut) : la résolution
+				// passée s'efface, sinon un rapport en attente garderait un nom de
+				// résolveur (écart L125).
 				if (['resolved', 'wont_fix', 'duplicate'].includes(validation.data.status)) {
 					updateData.resolved_by = user.id;
 					updateData.resolved_at = new Date().toISOString();
+				} else {
+					updateData.resolved_by = null;
+					updateData.resolved_at = null;
 				}
 			}
 
@@ -151,7 +157,7 @@ export const PATCH: RequestHandler = async ({ params, request, locals }) => {
 				throw error(500, 'Erreur lors de la mise à jour du rapport');
 			}
 
-			return json({ success: true, report: updatedReport });
+			return Response.json({ success: true, report: updatedReport });
 		} else {
 			// User can only update their own pending reports
 			if (existingReport.user_id !== user.id) {
@@ -191,7 +197,7 @@ export const PATCH: RequestHandler = async ({ params, request, locals }) => {
 				throw error(500, 'Erreur lors de la mise à jour du rapport');
 			}
 
-			return json({ success: true, report: updatedReport });
+			return Response.json({ success: true, report: updatedReport });
 		}
 	} catch (err) {
 		if (err && typeof err === 'object' && 'status' in err) {
@@ -220,25 +226,20 @@ export const DELETE: RequestHandler = async ({ params, locals }) => {
 	}
 
 	try {
-		// ⚠️ Une suppression refusée par la RLS, ou d'un rapport inconnu, touche
-		// zéro ligne sans erreur : on vérifie les lignes rendues avant d'annoncer
-		// la suppression (cf. docs/pratiques/rls-echecs-silencieux.md).
-		const { data: deletedReports, error: deleteError } = await locals.supabase
-			.from('bug_reports')
-			.delete()
-			.eq('id', params.reportId)
-			.select('id');
+		// La capture d'écran part avec le rapport, et avant lui (écart T25).
+		const outcome = await deleteBugReportWithScreenshot(locals.supabase, idValidation.data);
 
-		if (deleteError) {
-			logger.error('[API] Error deleting bug report:', deleteError);
+		if (outcome === 'screenshot_failed') {
+			throw error(500, 'Suppression impossible : la capture n’a pas pu être effacée');
+		}
+		if (outcome === 'delete_failed') {
 			throw error(500, 'Erreur lors de la suppression du rapport');
 		}
-
-		if (!deletedReports || deletedReports.length === 0) {
+		if (outcome === 'not_found') {
 			throw error(404, 'Rapport non trouvé : rien n’a été supprimé');
 		}
 
-		return json({ success: true });
+		return Response.json({ success: true });
 	} catch (err) {
 		if (err && typeof err === 'object' && 'status' in err) {
 			throw err;

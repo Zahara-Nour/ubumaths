@@ -14,7 +14,7 @@
  * USAGE:
  * ------
  * ```typescript
- * import { getSelectedPeriodId, setSelectedPeriod, selectedPeriodStore } from '$lib/stores/selectedPeriod.svelte';
+ * import { getSelectedPeriodId, setSelectedPeriod, selectedPeriodStore } from '#lib/stores/selectedPeriod.svelte.ts';
  *
  * // Get current selection
  * const periodId = getSelectedPeriodId();
@@ -45,7 +45,7 @@
  * (/dashboard/teacher/+layout.svelte) which auto-selects the current period if none selected.
  */
 
-import type { Database } from '$lib/types/database';
+import type { Database } from '#lib/types/database.ts';
 
 type AcademicPeriod = Database['public']['Tables']['academic_periods']['Row'];
 

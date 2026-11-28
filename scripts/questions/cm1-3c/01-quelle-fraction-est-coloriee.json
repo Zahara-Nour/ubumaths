@@ -115,15 +115,15 @@
 			}
 		},
 		{
-			"statement": "Quelle fraction de la figure est coloriée ?\n\n```partage\nforme: {{if:e==0|bande 5|{{if:e==1|bande 7|{{if:e==2|bande 8|{{if:e==3|bande 9|{{if:e==4|bande 10|{{if:e==5|bande 12|{{if:e==6|grille 3×3|{{if:e==7|grille 2×4|{{if:e==8|grille 2×5|grille 3×4}}}}}}}}}}}}}}}}}}\ngris: {{if:g==2|{{eval:mod(s+0*p,N)+1}}, {{eval:mod(s+1*p,N)+1}}|{{if:g==3|{{eval:mod(s+0*p,N)+1}}, {{eval:mod(s+1*p,N)+1}}, {{eval:mod(s+2*p,N)+1}}|{{if:g==4|{{eval:mod(s+0*p,N)+1}}, {{eval:mod(s+1*p,N)+1}}, {{eval:mod(s+2*p,N)+1}}, {{eval:mod(s+3*p,N)+1}}|{{if:g==5|{{eval:mod(s+0*p,N)+1}}, {{eval:mod(s+1*p,N)+1}}, {{eval:mod(s+2*p,N)+1}}, {{eval:mod(s+3*p,N)+1}}, {{eval:mod(s+4*p,N)+1}}|{{if:g==6|{{eval:mod(s+0*p,N)+1}}, {{eval:mod(s+1*p,N)+1}}, {{eval:mod(s+2*p,N)+1}}, {{eval:mod(s+3*p,N)+1}}, {{eval:mod(s+4*p,N)+1}}, {{eval:mod(s+5*p,N)+1}}|{{if:g==7|{{eval:mod(s+0*p,N)+1}}, {{eval:mod(s+1*p,N)+1}}, {{eval:mod(s+2*p,N)+1}}, {{eval:mod(s+3*p,N)+1}}, {{eval:mod(s+4*p,N)+1}}, {{eval:mod(s+5*p,N)+1}}, {{eval:mod(s+6*p,N)+1}}|{{if:g==8|{{eval:mod(s+0*p,N)+1}}, {{eval:mod(s+1*p,N)+1}}, {{eval:mod(s+2*p,N)+1}}, {{eval:mod(s+3*p,N)+1}}, {{eval:mod(s+4*p,N)+1}}, {{eval:mod(s+5*p,N)+1}}, {{eval:mod(s+6*p,N)+1}}, {{eval:mod(s+7*p,N)+1}}|{{if:g==9|{{eval:mod(s+0*p,N)+1}}, {{eval:mod(s+1*p,N)+1}}, {{eval:mod(s+2*p,N)+1}}, {{eval:mod(s+3*p,N)+1}}, {{eval:mod(s+4*p,N)+1}}, {{eval:mod(s+5*p,N)+1}}, {{eval:mod(s+6*p,N)+1}}, {{eval:mod(s+7*p,N)+1}}, {{eval:mod(s+8*p,N)+1}}|{{if:g==10|{{eval:mod(s+0*p,N)+1}}, {{eval:mod(s+1*p,N)+1}}, {{eval:mod(s+2*p,N)+1}}, {{eval:mod(s+3*p,N)+1}}, {{eval:mod(s+4*p,N)+1}}, {{eval:mod(s+5*p,N)+1}}, {{eval:mod(s+6*p,N)+1}}, {{eval:mod(s+7*p,N)+1}}, {{eval:mod(s+8*p,N)+1}}, {{eval:mod(s+9*p,N)+1}}|{{eval:mod(s+0*p,N)+1}}, {{eval:mod(s+1*p,N)+1}}, {{eval:mod(s+2*p,N)+1}}, {{eval:mod(s+3*p,N)+1}}, {{eval:mod(s+4*p,N)+1}}, {{eval:mod(s+5*p,N)+1}}, {{eval:mod(s+6*p,N)+1}}, {{eval:mod(s+7*p,N)+1}}, {{eval:mod(s+8*p,N)+1}}, {{eval:mod(s+9*p,N)+1}}, {{eval:mod(s+10*p,N)+1}}}}}}}}}}}}}}}}}}}}\n```\n\n$$?$$",
+			"statement": "Quelle fraction de la figure est coloriée ?\n\n```partage\nforme: {{if:h==0|bande 5|{{if:h==1|bande 7|{{if:h==2|bande 8|{{if:h==3|bande 9|{{if:h==4|bande 10|{{if:h==5|bande 12|{{if:h==6|grille 3×3|{{if:h==7|grille 2×4|{{if:h==8|grille 2×5|grille 3×4}}}}}}}}}}}}}}}}}}\ngris: {{if:g==2|{{eval:mod(s+0*p,N)+1}}, {{eval:mod(s+1*p,N)+1}}|{{if:g==3|{{eval:mod(s+0*p,N)+1}}, {{eval:mod(s+1*p,N)+1}}, {{eval:mod(s+2*p,N)+1}}|{{if:g==4|{{eval:mod(s+0*p,N)+1}}, {{eval:mod(s+1*p,N)+1}}, {{eval:mod(s+2*p,N)+1}}, {{eval:mod(s+3*p,N)+1}}|{{if:g==5|{{eval:mod(s+0*p,N)+1}}, {{eval:mod(s+1*p,N)+1}}, {{eval:mod(s+2*p,N)+1}}, {{eval:mod(s+3*p,N)+1}}, {{eval:mod(s+4*p,N)+1}}|{{if:g==6|{{eval:mod(s+0*p,N)+1}}, {{eval:mod(s+1*p,N)+1}}, {{eval:mod(s+2*p,N)+1}}, {{eval:mod(s+3*p,N)+1}}, {{eval:mod(s+4*p,N)+1}}, {{eval:mod(s+5*p,N)+1}}|{{if:g==7|{{eval:mod(s+0*p,N)+1}}, {{eval:mod(s+1*p,N)+1}}, {{eval:mod(s+2*p,N)+1}}, {{eval:mod(s+3*p,N)+1}}, {{eval:mod(s+4*p,N)+1}}, {{eval:mod(s+5*p,N)+1}}, {{eval:mod(s+6*p,N)+1}}|{{if:g==8|{{eval:mod(s+0*p,N)+1}}, {{eval:mod(s+1*p,N)+1}}, {{eval:mod(s+2*p,N)+1}}, {{eval:mod(s+3*p,N)+1}}, {{eval:mod(s+4*p,N)+1}}, {{eval:mod(s+5*p,N)+1}}, {{eval:mod(s+6*p,N)+1}}, {{eval:mod(s+7*p,N)+1}}|{{if:g==9|{{eval:mod(s+0*p,N)+1}}, {{eval:mod(s+1*p,N)+1}}, {{eval:mod(s+2*p,N)+1}}, {{eval:mod(s+3*p,N)+1}}, {{eval:mod(s+4*p,N)+1}}, {{eval:mod(s+5*p,N)+1}}, {{eval:mod(s+6*p,N)+1}}, {{eval:mod(s+7*p,N)+1}}, {{eval:mod(s+8*p,N)+1}}|{{if:g==10|{{eval:mod(s+0*p,N)+1}}, {{eval:mod(s+1*p,N)+1}}, {{eval:mod(s+2*p,N)+1}}, {{eval:mod(s+3*p,N)+1}}, {{eval:mod(s+4*p,N)+1}}, {{eval:mod(s+5*p,N)+1}}, {{eval:mod(s+6*p,N)+1}}, {{eval:mod(s+7*p,N)+1}}, {{eval:mod(s+8*p,N)+1}}, {{eval:mod(s+9*p,N)+1}}|{{eval:mod(s+0*p,N)+1}}, {{eval:mod(s+1*p,N)+1}}, {{eval:mod(s+2*p,N)+1}}, {{eval:mod(s+3*p,N)+1}}, {{eval:mod(s+4*p,N)+1}}, {{eval:mod(s+5*p,N)+1}}, {{eval:mod(s+6*p,N)+1}}, {{eval:mod(s+7*p,N)+1}}, {{eval:mod(s+8*p,N)+1}}, {{eval:mod(s+9*p,N)+1}}, {{eval:mod(s+10*p,N)+1}}}}}}}}}}}}}}}}}}}}\n```\n\n$$?$$",
 			"variables": [
 				{
-					"name": "e",
+					"name": "h",
 					"expression": "0..9"
 				},
 				{
 					"name": "N",
-					"expression": "{{if:e==0|5|{{if:e==1|7|{{if:e==2|8|{{if:e==3|9|{{if:e==4|10|{{if:e==5|12|{{if:e==6|9|{{if:e==7|8|{{if:e==8|10|12}}}}}}}}}}}}}}}}}}"
+					"expression": "{{if:h==0|5|{{if:h==1|7|{{if:h==2|8|{{if:h==3|9|{{if:h==4|10|{{if:h==5|12|{{if:h==6|9|{{if:h==7|8|{{if:h==8|10|12}}}}}}}}}}}}}}}}}}"
 				},
 				{
 					"name": "g",
@@ -313,7 +313,7 @@
 			"description": "Éparpillées, 3 parts sur 10 : 3/10",
 			"variationIndex": 3,
 			"variables": {
-				"e": "4",
+				"h": "4",
 				"N": "10",
 				"g": "3",
 				"p": "3",
@@ -328,7 +328,7 @@
 			"description": "Erreur : 1/10 (un seul bloc compté)",
 			"variationIndex": 3,
 			"variables": {
-				"e": "4",
+				"h": "4",
 				"N": "10",
 				"g": "3",
 				"p": "3",

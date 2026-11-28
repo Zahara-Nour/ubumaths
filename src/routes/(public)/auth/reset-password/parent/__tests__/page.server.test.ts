@@ -12,9 +12,9 @@ const { setChildPasswordFromToken, checkPasswordResetRateLimitByIP } = vi.hoiste
 	checkPasswordResetRateLimitByIP: vi.fn()
 }));
 
-vi.mock('$lib/server/serviceRoleClient', () => ({ createServiceRoleClient: () => ({}) }));
-vi.mock('$lib/server/child-password', () => ({ setChildPasswordFromToken }));
-vi.mock('$lib/server/rateLimiter', () => ({ checkPasswordResetRateLimitByIP }));
+vi.mock('#lib/server/serviceRoleClient.ts', () => ({ createServiceRoleClient: () => ({}) }));
+vi.mock('#lib/server/child-password.ts', () => ({ setChildPasswordFromToken }));
+vi.mock('#lib/server/rateLimiter.ts', () => ({ checkPasswordResetRateLimitByIP }));
 
 const { actions, load } = await import('../+page.server');
 

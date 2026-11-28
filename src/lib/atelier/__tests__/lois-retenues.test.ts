@@ -8,9 +8,9 @@
 import { describe, it, expect } from 'vitest';
 import { Atelier } from '../atelier.svelte';
 import { ATELIER_STATE_VERSION } from '../persistence';
-import { WebReplEngine } from '$lib/mathAST/cli/web/web-repl-engine';
+import { WebReplEngine } from '#lib/mathAST/cli/web/web-repl-engine.ts';
 import { runInput, type CalcSession } from '../calcul';
-import type { LawScene } from '$lib/ubumark/utils/stat-chart-scene';
+import type { LawScene } from '#lib/ubumark/utils/stat-chart-scene.ts';
 
 function session(): CalcSession {
 	return { atelier: new Atelier(), engine: new WebReplEngine() };

@@ -8,63 +8,65 @@
 	 */
 	import { onMount, tick } from 'svelte';
 	import { toast } from 'svelte-sonner';
-	import { Atelier } from '$lib/atelier/atelier.svelte';
-	import { provideAtelier } from '$lib/atelier/context';
+	import { Atelier } from '#lib/atelier/atelier.svelte.ts';
+	import { provideAtelier } from '#lib/atelier/context.ts';
 	import {
 		keepCalcHistory,
 		openSession,
 		type HistoryKeeper,
 		type Session,
 		type SessionNotice
-	} from '$lib/atelier/session';
-	import { isFunction, isList, type AtelierObject } from '$lib/atelier/types';
-	import type { ImportedHistory } from '$lib/atelier/history-import';
-	import type { RemovedWithDependents } from '$lib/atelier/atelier.svelte';
-	import { derivativeName, displayName } from '$lib/atelier/names';
-	import type { AtelierState } from '$lib/atelier/persistence';
-	import type { ObjectAction } from '$lib/atelier/actions';
+	} from '#lib/atelier/session.ts';
+	import { isFunction, isList, type AtelierObject } from '#lib/atelier/types.ts';
+	import type { ImportedHistory } from '#lib/atelier/history-import.ts';
+	import type { RemovedWithDependents } from '#lib/atelier/atelier.svelte.ts';
+	import { derivativeName, displayName } from '#lib/atelier/names.ts';
+	import type { AtelierState } from '#lib/atelier/persistence.ts';
+	import type { ObjectAction } from '#lib/atelier/actions.ts';
 	import ObjectPanel from './ObjectPanel.svelte';
 	import CalculView from './CalculView.svelte';
 	import DataView from './DataView.svelte';
 	import FigureView from './FigureView.svelte';
 	import ShareBar from './ShareBar.svelte';
 	import AtelierSettings from './AtelierSettings.svelte';
-	import { readInputMode, writeInputMode, type InputMode } from '$lib/atelier/input-mode';
-	import { readAngleUnit, writeAngleUnit, type AngleUnit } from '$lib/atelier/angle-unit';
+	import { readInputMode, writeInputMode, type InputMode } from '#lib/atelier/input-mode.ts';
+	import { readAngleUnit, writeAngleUnit, type AngleUnit } from '#lib/atelier/angle-unit.ts';
 	import {
 		readPointDragMode,
 		writePointDragMode,
 		type PointDragMode
-	} from '$lib/atelier/point-drag-mode';
-	import { readDomainMode, writeDomainMode, type DomainMode } from '$lib/atelier/domain-mode';
-	import { CalcDesk } from '$lib/atelier/desk.svelte';
-	import GrapheurContainer from '$lib/components/grapheur/GrapheurContainer.svelte';
-	import { GrapheurStore } from '$lib/stores/grapheur.svelte';
-	import { provideGrapheurStore } from '$lib/stores/grapheur-context';
-	import { syncPlots } from '$lib/atelier/plot-sync';
-	import { consoleReadings } from '$lib/atelier/reading';
-	import { ATELIER_STATE_VERSION } from '$lib/atelier/persistence';
-	import { ConfirmDialog } from '$lib/components/ui/confirm-dialog';
-	import { toaster } from '$lib/stores/toaster.svelte';
-	import { cascadeMessage, citingCellsNote, removedMessage } from '$lib/atelier/removal';
-	import { tabulationReport } from '$lib/atelier/tabulate';
-	import { pythonOf, pythonPageOf } from '$lib/atelier/to-python';
+	} from '#lib/atelier/point-drag-mode.ts';
+	import { readDomainMode, writeDomainMode, type DomainMode } from '#lib/atelier/domain-mode.ts';
+	import { CalcDesk } from '#lib/atelier/desk.svelte.ts';
+	import GrapheurContainer from '#lib/components/grapheur/GrapheurContainer.svelte';
+	import { GrapheurStore } from '#lib/stores/grapheur.svelte.ts';
+	import { provideGrapheurStore } from '#lib/stores/grapheur-context.ts';
+	import { syncPlots } from '#lib/atelier/plot-sync.ts';
+	import { consoleReadings } from '#lib/atelier/reading.ts';
+	import { ATELIER_STATE_VERSION } from '#lib/atelier/persistence.ts';
+	import { ConfirmDialog } from '#lib/components/ui/confirm-dialog/index.ts';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
+	import { cascadeMessage, citingCellsNote, removedMessage } from '#lib/atelier/removal.ts';
+	import { tabulationReport } from '#lib/atelier/tabulate.ts';
+	import { pythonOf, pythonPageOf } from '#lib/atelier/to-python.ts';
 	import {
 		ArchiveRestore,
 		EllipsisVertical,
+		Expand,
 		FolderOpen,
 		Redo2,
 		RotateCcw,
 		Save,
 		Share2,
+		Shrink,
 		SquareTerminal,
 		Undo2,
 		X
 	} from '@lucide/svelte';
-	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
+	import * as DropdownMenu from '#lib/components/ui/dropdown-menu/index.ts';
 	import ToolButton from './ToolButton.svelte';
-	import { FIELD_SELECTOR, consoleShortcut, isMacPlatform } from '$lib/atelier/console-key';
-	import { downloadHistory, historyToUbumark } from '$lib/atelier/history-export';
+	import { FIELD_SELECTOR, consoleShortcut, isMacPlatform } from '#lib/atelier/console-key.ts';
+	import { downloadHistory, historyToUbumark } from '#lib/atelier/history-export.ts';
 	import { rovingToolbar } from './roving-toolbar';
 	import {
 		ATELIER_FILE_TOO_BIG,
@@ -72,10 +74,10 @@
 		atelierFileName,
 		atelierFileToJson,
 		readAtelierFile
-	} from '$lib/atelier/atelier-file';
-	import type { KeptHistory } from '$lib/atelier/history-storage';
-	import { downloadText } from '$lib/atelier/history-export';
-	import { renamedOnReadMessage } from '$lib/atelier/geometry';
+	} from '#lib/atelier/atelier-file.ts';
+	import type { KeptHistory } from '#lib/atelier/history-storage.ts';
+	import { downloadText } from '#lib/atelier/history-export.ts';
+	import { renamedOnReadMessage } from '#lib/atelier/geometry.ts';
 	import {
 		RETRIEVE_LABEL,
 		SET_ASIDE_NOTICE,
@@ -87,7 +89,7 @@
 		replacePersonal,
 		replacementLoss,
 		swapWithSetAside
-	} from '$lib/atelier/replace';
+	} from '#lib/atelier/replace.ts';
 
 	interface Props {
 		/** L'atelier à piloter. Sans lui, le conteneur crée le sien. */
@@ -618,6 +620,13 @@
 	let graphExpanded = $state(false);
 	/** Seulement sur la vue Graphe : une autre vue ouverte par une commande le défait. */
 	const graphFills = $derived(graphExpanded && activeView === 'graphe');
+	/**
+	 * L'atelier en plein écran (bouton à côté des réglages) : TOUT l'atelier
+	 * recouvre la fenêtre, sans l'en-tête ni le menu du site. Pas le plein écran
+	 * du navigateur : Échap en sortirait aussi (Chrome), et David l'a écarté.
+	 * Non retenu : chaque visite repart en mode normal.
+	 */
+	let fullScreen = $state(false);
 	let calculView = $state<CalculView | null>(null);
 	let consoleButton = $state<ToolButton | null>(null);
 	let consolePanel = $state<HTMLElement | null>(null);
@@ -1044,9 +1053,9 @@
 		else openConsole();
 	}
 
-	// Graphe agrandi : la page derrière ne défile plus
+	// Graphe agrandi ou plein écran : la page derrière ne défile plus
 	$effect(() => {
-		if (!graphFills) return;
+		if (!graphFills && !fullScreen) return;
 		document.body.style.overflow = 'hidden';
 		return () => {
 			document.body.style.overflow = '';
@@ -1068,14 +1077,20 @@
 	 * écouté sur `window`, donc après le `document`).
 	 */
 	function handleExpandedEscape(event: KeyboardEvent) {
-		if (!graphFills || event.key !== 'Escape' || event.defaultPrevented) return;
+		if (!(graphFills || fullScreen) || event.key !== 'Escape' || event.defaultPrevented) return;
 		const target = event.target instanceof Element ? event.target : null;
 		if (target !== null && target.closest(FIELD_SELECTOR) !== null) return;
 		const open =
 			'[role="alertdialog"], [role="dialog"][data-state="open"], [role="menu"], [role="listbox"]';
 		if (document.querySelector(open)) return;
+		// Un Échap venu de la console est le sien (la fermer) : l'ordre des deux
+		// écouteurs n'est pas sûr (délégation de Svelte), on ne compte pas dessus
+		if (target !== null && consolePanel?.contains(target)) return;
 		event.preventDefault();
-		graphExpanded = false;
+		// Le graphe agrandi d'abord, puis la console ouverte : un Échap par étage
+		if (graphFills) graphExpanded = false;
+		else if (consoleOpen) closeConsole();
+		else fullScreen = false;
 	}
 
 	/**
@@ -1197,7 +1212,7 @@
 <svelte:window onkeydown={handleUndoKey} onkeydowncapture={handleConsoleShortcut} />
 <svelte:document onkeydown={handleExpandedEscape} />
 
-<div class="atelier" class:graphe-agrandi={graphFills}>
+<div class="atelier" class:graphe-agrandi={graphFills} class:plein-ecran={fullScreen}>
 	<ObjectPanel bind:selected onAction={handleAction} onTabulate={handleTabulate} />
 
 	<!-- `section` et non `main` : la page est déjà dans le `<main>` du layout,
@@ -1284,6 +1299,12 @@
 					bind:angleUnit={() => atelier.angleUnit, chooseAngleUnit}
 					bind:pointDragMode={() => atelier.pointDragMode, choosePointDragMode}
 					bind:domainMode={() => atelier.domainMode, chooseDomainMode}
+				/>
+				<ToolButton
+					label={fullScreen ? 'Quitter le plein écran' : 'Plein écran'}
+					icon={fullScreen ? Shrink : Expand}
+					hint={fullScreen ? 'Échap' : undefined}
+					onclick={() => (fullScreen = !fullScreen)}
 				/>
 			</div>
 		</div>
@@ -1475,23 +1496,38 @@
 </div>
 
 <style>
+	/* Une rangée bornée à la hauteur de la page : sans elle, la rangée implicite
+	   (`auto`) suivait le contenu de la zone et « Mes objets » passait sous le bas
+	   de l'écran (777 px pour 736 à 1280×800) */
 	.atelier {
 		display: grid;
 		grid-template-columns: minmax(14rem, 18rem) 1fr;
+		grid-template-rows: minmax(0, 1fr);
 		height: 100%;
 		min-height: 0;
+	}
+	/* « Mes objets » replié sur bureau : une bande, la vue prend la place.
+	   Pas sous le graphe agrandi : le panneau y est masqué, la vue reste seule */
+	@media (min-width: 721px) {
+		.atelier:not(.graphe-agrandi):has(> :global(.panneau.replie-large)) {
+			grid-template-columns: auto 1fr;
+		}
 	}
 
 	/* Le graphe agrandi prend toute la fenêtre, par-dessus l'en-tête et le menu
 	   du site ; les menus et fenêtres, rendus à la fin du `body` avec le même
 	   z-index, passent encore devant. Masqués (pas démontés — un champ en cours
-	   d'écriture garde son texte), le panneau, la barre et les onglets */
+	   d'écriture garde son texte), le panneau, la barre et les onglets.
+	   Le plein écran prend la même place, mais garde tout l'atelier */
+	.atelier.plein-ecran,
 	.atelier.graphe-agrandi {
 		position: fixed;
 		inset: 0;
 		z-index: 50;
 		height: auto;
 		background: var(--color-background);
+	}
+	.atelier.graphe-agrandi {
 		grid-template-columns: 1fr;
 		grid-template-rows: minmax(0, 1fr);
 	}
@@ -1520,6 +1556,18 @@
 		display: flex;
 		align-items: center;
 		gap: 0.25rem;
+	}
+	/* E7 (2026-11-23) : au téléphone, neuf boutons de 40 px et leurs marges
+	   faisaient 416 px ; le dernier (plein écran) était coupé à 393. Les boutons
+	   gardent leur taille (le doigt), les marges se resserrent : 372 px */
+	@media (max-width: 480px) {
+		.barre {
+			gap: 0.25rem;
+			padding: 0.25rem 0.125rem;
+		}
+		.outils {
+			gap: 0;
+		}
 	}
 	.onglets {
 		display: flex;

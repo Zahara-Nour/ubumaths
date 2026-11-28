@@ -18,10 +18,10 @@ import { describe, expect, it } from 'vitest';
 import { readdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { generateInstance } from '$lib/questions/generator/instance-generator';
-import type { QuestionTemplate } from '$lib/questions/types';
-import { validateAnswer } from '$lib/utils/answer-validator';
-import { singleExpectedDuration } from '$lib/questions/units/composite-duration';
+import { generateInstance } from '#lib/questions/generator/instance-generator.ts';
+import type { QuestionTemplate } from '#lib/questions/types.ts';
+import { validateAnswer } from '#lib/utils/answer-validator.ts';
+import { singleExpectedDuration } from '#lib/questions/units/composite-duration.ts';
 
 // ============================================================================
 // TYPES

@@ -11,7 +11,7 @@
  * @module questions/angle-modulo
  */
 
-import { evaluateExpression } from '$lib/math';
+import { evaluateExpression } from '#lib/math/index.ts';
 
 /** Au-delà, la réponse n'est pas « un argument » mais un nombre démesuré */
 const MAX_TURNS = 1000;

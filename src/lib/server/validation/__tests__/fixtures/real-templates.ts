@@ -9,7 +9,7 @@
  * (`answer`, `type`), et restaient verts pendant que la route refusait tout.
  */
 
-import type { QuestionTemplate } from '$lib/questions/types';
+import type { QuestionTemplate } from '#lib/questions/types.ts';
 
 // Texte à trous, une case (table d'addition)
 const singleBlankRow = {

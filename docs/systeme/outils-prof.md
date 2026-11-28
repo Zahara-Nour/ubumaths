@@ -2,7 +2,6 @@
 couvre:
   - 'src/lib/whiteboard/**'
   - 'src/lib/slides/**'
-  - 'src/lib/constructions/**'
   - 'src/lib/components/google/**'
   - 'src/lib/server/google/**'
   - src/lib/server/kanban.ts
@@ -31,14 +30,13 @@ couvre:
 
 ## État d'un coup d'œil
 
-| Outil                   | Route                                  | Lien dans l'interface                       | Données en prod (2026-10-10)                 | État                         |
-| ----------------------- | -------------------------------------- | ------------------------------------------- | -------------------------------------------- | ---------------------------- |
-| Tableau blanc           | `/whiteboard`                          | « Whiteboard » (Header, Sidebar), prof      | 11 modèles ; documents hors base             | **vivant**                   |
-| Diaporamas (UbuSlides)  | aucune propre (bibliothèque)           | via le notebook Python et `ClassroomSeries` | aucune table                                 | **vivant** (bibliothèque)    |
-| Tableur (V4)            | `/spreadsheet` → `/atelier` (308)      | aucun                                       | table supprimée le 2026-10-25                | **retiré** le 2026-10-24     |
-| Kanban                  | `/organisation/kanban`                 | « Suivi du site », menu **admin** seul      | 2 tableaux, 3 cartes (mai 2026)              | vivant, usage interne        |
-| Anciennes constructions | `/constructions/conversion`            | bouton depuis `/constructions`              | 0 construction au format `json` (sur 9)      | **résiduel**                 |
-| Google Classroom        | `/dashboard/teacher/settings/google` … | masqués (`GOOGLE_CLASSROOM_ENABLED`)        | 1 intégration, 3 cours (derniers en 2025-12) | **éteint**, plomberie gardée |
+| Outil                  | Route                                  | Lien dans l'interface                       | Données en prod (2026-10-10)                 | État                         |
+| ---------------------- | -------------------------------------- | ------------------------------------------- | -------------------------------------------- | ---------------------------- |
+| Tableau blanc          | `/whiteboard`                          | « Whiteboard » (Header, Sidebar), prof      | 11 modèles ; documents hors base             | **vivant**                   |
+| Diaporamas (UbuSlides) | aucune propre (bibliothèque)           | via le notebook Python et `ClassroomSeries` | aucune table                                 | **vivant** (bibliothèque)    |
+| Tableur (V4)           | `/spreadsheet` → `/atelier` (308)      | aucun                                       | table supprimée le 2026-10-25                | **retiré** le 2026-10-24     |
+| Kanban                 | `/organisation/kanban`                 | « Suivi du site », menu **admin** seul      | 2 tableaux, 3 cartes (mai 2026)              | vivant, usage interne        |
+| Google Classroom       | `/dashboard/teacher/settings/google` … | masqués (`GOOGLE_CLASSROOM_ENABLED`)        | 1 intégration, 3 cours (derniers en 2025-12) | **éteint**, plomberie gardée |
 
 ---
 
@@ -64,7 +62,7 @@ annotations, export PNG / SVG / PDF, modèles de page.
 | `src/lib/whiteboard/core/`                             | Géométrie pure : `hit-testing.ts`, `snapping.ts`, `binding*.ts`, `elbow-routing.ts`, `curved-path.ts`, `history.svelte.ts` (`createHistoryManager`, 50 pas), `stroke-smoothing.ts` (perfect-freehand), `rough-renderer.ts`, `pdf-export.ts`, `serialization.ts` |
 | `src/lib/whiteboard/utils/`                            | `file-operations.ts` (`.ubw`), `pdf-loader.ts`, `image-loader.ts`, `sync-state.ts` (état Drive)                                                                                                                                                                 |
 | `src/lib/whiteboard/services/`                         | `template-service.ts` (modèles), `drive-sync.ts` (Google Drive)                                                                                                                                                                                                 |
-| `src/lib/whiteboard/components/InstrumentLayer.svelte` | Instruments — **importés de l'ancien `src/lib/constructions/`** (voir §5)                                                                                                                                                                                       |
+| `src/lib/whiteboard/components/InstrumentLayer.svelte` | Instruments `Ruler`, `Protractor`, `SetSquare` de `components/instruments/` (venus de l'ancien moteur de constructions, §5)                                                                                                                                     |
 | `src/lib/whiteboard/components/FileDrawer.svelte`      | Tiroir de fichiers : local, Drive et export Classroom (tous deux masqués par le drapeau, sans appel aux routes Google)                                                                                                                                          |
 | `src/routes/api/whiteboard/`                           | `templates/` (modèles, favoris), `drive/` (list, load, save, folder, autosave, thumbnail), `classes-for-drawer`, `classes-with-course`, `export-to-classroom`                                                                                                   |
 
@@ -112,24 +110,25 @@ défilement automatique. ≠ le **Deck** de révision SRS (voir CONTEXT.md).
 
 ### Carte du code
 
-| Fichier                                          | Rôle                                                                                          |
-| ------------------------------------------------ | --------------------------------------------------------------------------------------------- |
-| `src/lib/slides/index.ts`                        | Exports : `Deck`, `Slide`, `UbuMarkSlide`, `AnnotatableSlide`, `WhiteboardSlide`…             |
-| `src/lib/slides/core/Deck.svelte`                | Conteneur : contexte, clavier, mise à l'échelle, transitions                                  |
-| `src/lib/slides/stores/deckStore.svelte.ts`      | `createDeckStore` : position `{ h, v, f }`, navigation                                        |
-| `src/lib/slides/stores/autoSlideTimer.svelte.ts` | `createAutoSlideTimer` : défilement automatique                                               |
-| `src/lib/slides/navigation/hash.ts`              | `parseHash` / `formatHash` / `syncHashEffect` : position dans l'URL                           |
-| `src/lib/slides/actions/`                        | `keyboard.ts`, `swipe.ts`, `editableTarget.ts` (`isFromEditableField`)                        |
-| `src/lib/slides/core/config.ts`                  | `defaultConfig`, `mergeConfig`                                                                |
-| `src/lib/slides/core/slide-theme.ts`             | `slideColorScheme` : thème du contenu d'une diapositive d'après son fond (ou sa prop `theme`) |
-| `src/lib/slides/transitions/`                    | slide, fade, zoom, convex, concave                                                            |
+| Fichier                                          | Rôle                                                                                                                                              |
+| ------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `src/lib/slides/index.ts`                        | Exports : `Deck`, `Slide`, `UbuMarkSlide`, `AnnotatableSlide`, `WhiteboardSlide`…                                                                 |
+| `src/lib/slides/core/Deck.svelte`                | Conteneur : contexte, clavier, mise à l'échelle, transitions ; `holdOnExpire` : à la fin du compte d'une diapositive, pause au lieu d'avancer     |
+| `src/lib/slides/stores/deckStore.svelte.ts`      | `createDeckStore` : position `{ h, v, f }`, navigation ; `right()` / `left()` (→, ←, boutons, balayage) : un fragment d'abord, puis l'horizontale |
+| `src/lib/slides/stores/autoSlideTimer.svelte.ts` | `createAutoSlideTimer` : défilement automatique                                                                                                   |
+| `src/lib/slides/navigation/hash.ts`              | `parseHash` / `formatHash` / `syncHashEffect` : position dans l'URL                                                                               |
+| `src/lib/slides/actions/`                        | `keyboard.ts`, `swipe.ts`, `editableTarget.ts` (`isFromEditableField`)                                                                            |
+| `src/lib/slides/core/config.ts`                  | `defaultConfig`, `mergeConfig`                                                                                                                    |
+| `src/lib/slides/core/slide-theme.ts`             | `slideColorScheme` : thème du contenu d'une diapositive d'après son fond (ou sa prop `theme`)                                                     |
+| `src/lib/slides/transitions/`                    | slide, fade, zoom, convex, concave                                                                                                                |
 
 ### Consommateurs (seuls points d'entrée)
 
 - `src/lib/components/notebook/presentation/NotebookPresentation.svelte` — mode présentation
   du notebook Python (`/python-notebook/[id]/present`) : `Deck`, `Slide`, `UbuMarkSlide`.
 - `src/lib/components/test/ClassroomSeries.svelte` — série de questions projetée en classe,
-  montée par `QuestionPreviewTabs.svelte` et `/automaths/test`.
+  montée par `QuestionPreviewTabs.svelte` et `/automaths/test` ; se sert de `holdOnExpire` pour
+  « Pause à la fin du temps » (cf. `docs/systeme/evaluations.md`).
 - `/dev/diaporama` (`src/routes/(protected)/dev/diaporama/`, admin seul, ex-`/slides/demo`,
   `/slides/demo-embedded` et `/slides/test-transitions`) — `DemoDeck.svelte` démontre tout le
   moteur (transitions, fragments, arrière-plans, code, UbuMark, case choix en `FlashCard`, annotation,
@@ -262,41 +261,18 @@ Intégration : `tests/integration/kanban-rls.test.ts`, `tests/integration/kanban
 
 ---
 
-## 5. Ancien moteur de constructions (`src/lib/constructions/`)
+## 5. Ancien moteur de constructions (retiré)
 
-### Ce que c'est
+Le moteur **d'avant le DSL** (src/lib/constructions (sans « -v2 »), scripts en JSON plat, convertisseur XML
+→ JSON) est retiré depuis le 2026-11-28 (écart M38) : la prod n'avait plus aucune construction
+au format JSON. Le système actuel est `constructions-v2` + `geometry-core`
+([geometrie/README.md](geometrie/README.md)) ; sa page `/constructions/conversion` traduit le
+XML **vers le DSL**. Deux morceaux gardés, déplacés :
 
-Le moteur **d'avant le DSL** : des scripts de construction en **JSON plat**
-(`{ "point": "A", "at": [100, 200] }`, `{ "move": "pencil", … }`), validés par
-`constructionScriptSchema` (`schemas.ts`), joués par `core/engine.svelte.ts`,
-`core/renderer.ts`, `core/timeline.svelte.ts`, avec un évaluateur d'expressions
-(`core/evaluator.ts`). `converter.ts` (`convertInstrumenPoche`) traduit un XML InstrumenPoche
-**vers ce JSON**. Le système actuel est `constructions-v2` + `geometry-core`
-([geometrie/README.md](geometrie/README.md)), dont le propre `convertXmlToDsl` traduit le XML
-**vers le DSL**.
-
-### Frontière avec constructions-v2 — qui l'importe encore
-
-| Consommateur                                                   | Ce qu'il prend                                                                  |
-| -------------------------------------------------------------- | ------------------------------------------------------------------------------- |
-| `src/lib/whiteboard/components/InstrumentLayer.svelte`         | `Ruler`, `Protractor`, `SetSquare` (.svelte) — les instruments du tableau blanc |
-| `src/lib/components/QuestionTemplateForm.svelte`               | `JsonEditor.svelte` seul (éditeur JSON générique du formulaire de question)     |
-| `src/routes/(protected)/constructions/conversion/+page.svelte` | lecteur, `convertInstrumenPoche` **et** `convertXmlToDsl` (comparaison)         |
-| `src/routes/api/constructions/+server.ts`                      | `constructionScriptSchema` pour accepter `format: 'json'` à la création         |
-| `src/routes/api/constructions/convert/+server.ts`              | `convertInstrumenPoche`                                                         |
-
-La page `/constructions/[id]` ne joue **que** `dsl_script` (lecteur v2) ; une construction
-`format = 'json'` y affiche « ancien format JSON qui n'est plus supporté ». Il n'en reste
-aucune en prod (0 sur 9).
-
-### Invariants
-
-- Aucun code nouveau ne doit dépendre de ce module ; `constructions-v2` a ses propres
-  instruments (`src/lib/constructions-v2/instruments/components/`).
-
-### Tests
-
-`src/lib/constructions/__tests__/converter.test.ts`, `src/lib/constructions/core/__tests__/evaluator.test.ts`.
+| Morceau                                        | Nouvelle place                               | Utilisé par                                            |
+| ---------------------------------------------- | -------------------------------------------- | ------------------------------------------------------ |
+| Instruments `Ruler`, `Protractor`, `SetSquare` | `src/lib/whiteboard/components/instruments/` | `InstrumentLayer.svelte`                               |
+| `JsonEditor.svelte` (éditeur JSON générique)   | `src/lib/components/JsonEditor.svelte`       | `QuestionTemplateForm.svelte` (formulaire de question) |
 
 ---
 
@@ -374,6 +350,10 @@ Aucun ADR propre à ces outils. Google Classroom : drapeau décrit dans
 `src/lib/config/google-classroom.ts`.
 
 ## Écarts connus
+
+Les écarts de cette zone sont au [registre des écarts](../ecarts/registre.md) : `pnpm ecarts`. Un écart s'écrit là-bas, jamais ici.
+
+### Points non vérifiés
 
 1. **Tableur V4** : retiré le 2026-10-24 (§ 3) ; ses deux écarts (accès du prof, alias sans
    fonction) sont sans objet.

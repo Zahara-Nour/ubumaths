@@ -16,7 +16,8 @@ Toutes les commandes `pnpm <script>` de `package.json`, par usage. Vérifié con
 ## Verrous (Mac mini, 24 Go)
 
 - **Gros process** (`scripts/gros-process.sh`) : `check`, `check:incremental`, `build`, `lint` passent sous **un seul verrou**. Un second sort en **exit 2** en nommant le détenteur : on attend, on ne contourne pas. Pas de verrou en CI ni sur Vercel.
-- **Supabase local** (`scripts/with-db-lock.sh`) : tous les `db:*` locaux, `test:integration`, `test:definer-guard`, `db:seed-riche`.
+- **Base de dev** (verrou `supabase`, `scripts/with-db-lock.sh`) : `db:start`, `db:stop`, `db:reset`, `db:neuf`, `db:a-jour`, `db:seed-riche`, `db:dev-accounts`.
+- **Pile de test** (verrou `supabase-test`, `scripts/pile-de-test.sh`) : `test:integration`, `test:definer-guard`, `db:test:stop`, `db:test:reset`. Les tests ne touchent plus la base de dev.
 - Mesures (durée, mémoire) : [mesures-mac-mini.md](mesures-mac-mini.md).
 
 ---
@@ -64,15 +65,17 @@ Toutes les commandes `pnpm <script>` de `package.json`, par usage. Vérifié con
 
 ## Tests
 
-| Commande                     | Effet                                           | Notes                             |
-| ---------------------------- | ----------------------------------------------- | --------------------------------- |
-| `pnpm test:server <chemin>`  | Tests serveur (env node)                        | Toujours ciblés en local          |
-| `pnpm test:client <chemin>`  | Tests navigateur (`*.svelte.test.ts`)           | Chromium / Playwright             |
-| `pnpm test:integration`      | Intégration + base (Supabase local), verrouillé | ~180 s ; `test:integration:watch` |
-| `pnpm test:definer-guard`    | Garde des fonctions `SECURITY DEFINER`          | Verrou Supabase                   |
-| `pnpm test` / `test:changed` | Vitest sur les fichiers modifiés                |                                   |
-| `pnpm test:e2e`              | Playwright end-to-end                           |                                   |
-| `pnpm test:lint-rules`       | Règles ESLint maison                            |                                   |
+| Commande                     | Effet                                             | Notes                                            |
+| ---------------------------- | ------------------------------------------------- | ------------------------------------------------ |
+| `pnpm test:server <chemin>`  | Tests serveur (env node)                          | Toujours ciblés en local                         |
+| `pnpm test:client <chemin>`  | Tests navigateur (`*.svelte.test.ts`)             | Chromium / Playwright                            |
+| `pnpm test:integration`      | Intégration, sur la pile de test (démarrée seule) | ~180 s ; `test:integration:watch`                |
+| `pnpm ecarts`                | Registre des écarts : liste, `rejouer`, `ajouter` | [registre-des-ecarts.md](registre-des-ecarts.md) |
+| `pnpm nuit`                  | Bilan de la tâche de nuit (`--lancer` la joue)    | [tache-de-nuit.md](tache-de-nuit.md)             |
+| `pnpm test:definer-guard`    | Garde des fonctions `SECURITY DEFINER`            | Verrou Supabase                                  |
+| `pnpm test` / `test:changed` | Vitest sur les fichiers modifiés                  |                                                  |
+| `pnpm test:e2e`              | Playwright end-to-end                             |                                                  |
+| `pnpm test:lint-rules`       | Règles ESLint maison                              |                                                  |
 
 Architecture des tests : [tests.md](tests.md).
 
@@ -80,15 +83,19 @@ Architecture des tests : [tests.md](tests.md).
 
 ## Base de données (Supabase)
 
-| Commande                     | Effet                                                         | Notes                                  |
-| ---------------------------- | ------------------------------------------------------------- | -------------------------------------- |
-| `pnpm db:start` / `db:stop`  | Supabase local (Docker)                                       |                                        |
-| `pnpm db:reset`              | Recrée la base locale depuis le baseline                      | Verrouillé                             |
-| `pnpm db:seed-riche`         | Contenu de la prod + 30 élèves fictifs (`eleveNN@local.test`) | Après `db:reset`                       |
-| `pnpm db:dev-accounts`       | Comptes de dev locaux                                         |                                        |
-| `pnpm db:migrate`            | `supabase db push` vers la base **EU de production**          | Conditions : CLAUDE.md §Migrations     |
-| `pnpm db:types`              | Régénère `src/lib/types/database.ts` **depuis la production** | Une RPC pas encore en prod n'y est pas |
-| `pnpm db:link` / `db:status` | Lie le projet / compte les profils manquants                  |                                        |
+| Commande                              | Effet                                                                                        | Notes                                                                                        |
+| ------------------------------------- | -------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------- |
+| `pnpm db:start` / `db:stop`           | Supabase local (Docker)                                                                      |                                                                                              |
+| `pnpm db:reset`                       | Recrée la base locale depuis le baseline                                                     | Verrouillé                                                                                   |
+| `pnpm db:a-jour`                      | Base de dev : joue les migrations en attente, sans rien effacer                              | Auto avant `pnpm dev`                                                                        |
+| `pnpm db:test:stop` / `db:test:reset` | Pile de test : l'arrêter / la reconstruire                                                   |                                                                                              |
+| `pnpm db:seed-riche`                  | Contenu de la prod + 30 élèves fictifs (`eleveNN@local.test`)                                | Après `db:reset`                                                                             |
+| `pnpm db:neuf`                        | Remise à neuf : `db:reset` puis `db:seed-riche`, sous un seul verrou                         | Rare ; demande « oui » (`--oui`)                                                             |
+| `pnpm db:dev-accounts`                | Comptes de dev locaux                                                                        |                                                                                              |
+| `pnpm db:migrate`                     | `supabase db push` vers la base **EU de production**                                         | Conditions : CLAUDE.md §Migrations                                                           |
+| `pnpm db:types`                       | Régénère `src/lib/types/database.ts` depuis les **migrations de la branche** (pile de test)  | À commiter avec la migration ; `pnpm db:types:verifier` compare sans écrire (garde de la CI) |
+| `pnpm db:types:prod`                  | Compare le schéma de la **prod** au `database.ts` du dépôt (lecture seule, rien n'est écrit) | Depuis le dépôt principal ; joué par `pnpm deploy:prod` avant la version                     |
+| `pnpm db:link` / `db:status`          | Lie le projet / compte les profils manquants                                                 |                                                                                              |
 
 Pratiques : [base-de-donnees.md](base-de-donnees.md) · schéma : [../systeme/base-de-donnees.md](../systeme/base-de-donnees.md).
 
@@ -96,15 +103,15 @@ Pratiques : [base-de-donnees.md](base-de-donnees.md) · schéma : [../systeme/ba
 
 ## CI, mise en prod, maintenance
 
-| Commande                                                   | Effet                                                         | Notes                                                                                           |
-| ---------------------------------------------------------- | ------------------------------------------------------------- | ----------------------------------------------------------------------------------------------- |
-| `pnpm ci` / `ci:list` / `ci:status` / `ci:fail` / `ci:web` | Suivre, lister, résumer, lire les échecs, ouvrir la CI GitHub | `ci:fail` : logs des seules étapes rouges                                                       |
-| `pnpm deploy:status` / `status`                            | État du dernier commit de main (CI + Vercel)                  |                                                                                                 |
-| **`pnpm deploy:prod`**                                     | **Version (CHANGELOG, tag) + avance la branche `production`** | ⛔ **Uniquement sur demande explicite de David** (ADR 0021) ; `--essai` montre ce qui partirait |
-| `pnpm release` (`:patch`, `:minor`, `:major`)              | Crée une version seule (`scripts/release.ts`)                 | Appelé par `deploy:prod` ; 1.0.0 = `release:major`, à la main                                   |
-| `pnpm maintenance:on` / `:off` / `:status`                 | Mode maintenance de la prod (503)                             | Redéploie le dernier déploiement prod                                                           |
-| `pnpm vercel:env`                                          | Variables d'env de production (lecture)                       |                                                                                                 |
-| `pnpm env:pull` / `env:pull:prod`                          | `.env.local` depuis Vercel                                    | ⚠️ vraies clés, ⚠️ secrets de prod                                                              |
+| Commande                                                   | Effet                                                         | Notes                                                                                                                                                                                                                                                                                 |
+| ---------------------------------------------------------- | ------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `pnpm ci` / `ci:list` / `ci:status` / `ci:fail` / `ci:web` | Suivre, lister, résumer, lire les échecs, ouvrir la CI GitHub | `ci:fail` : logs des seules étapes rouges                                                                                                                                                                                                                                             |
+| `pnpm deploy:status` / `status`                            | État du dernier commit de main (CI + Vercel)                  |                                                                                                                                                                                                                                                                                       |
+| **`pnpm deploy:prod`**                                     | **Version (CHANGELOG, tag) + avance la branche `production`** | ⛔ **Uniquement sur demande explicite de David** (ADR 0021) ; `--essai` montre ce qui partirait ; `--migration-apres <horodatage>` laisse une migration destructive pour après ; `--sans-controle-types` saute le contrôle « prod = dépôt » ; `--verifier` revérifie le site en ligne |
+| `pnpm release` (`:patch`, `:minor`, `:major`)              | Crée une version seule (`scripts/release.ts`)                 | Appelé par `deploy:prod` ; 1.0.0 = `release:major`, à la main                                                                                                                                                                                                                         |
+| `pnpm maintenance:on` / `:off` / `:status`                 | Mode maintenance de la prod (503)                             | Redéploie le dernier déploiement prod                                                                                                                                                                                                                                                 |
+| `pnpm vercel:env`                                          | Variables d'env de production (lecture)                       |                                                                                                                                                                                                                                                                                       |
+| `pnpm env:pull` / `env:pull:prod`                          | `.env.local` depuis Vercel                                    | ⚠️ vraies clés, ⚠️ secrets de prod                                                                                                                                                                                                                                                    |
 
 `pnpm release` décide le niveau (`feat` → mineur, le reste → patch) puis délègue CHANGELOG, commit et tag à `commit-and-tag-version` (remplace `standard-version` depuis le 2026-10-10), qui sous 1.0.0 rétrogradait chaque niveau d'un cran.
 

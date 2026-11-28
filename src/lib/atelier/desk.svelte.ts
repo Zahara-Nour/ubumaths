@@ -16,7 +16,7 @@
  */
 
 import type { Atelier, MovedStep, Refused, RemovedWithDependents } from './atelier.svelte';
-import { WebReplEngine } from '$lib/mathAST/cli/web/web-repl-engine';
+import { WebReplEngine } from '#lib/mathAST/cli/web/web-repl-engine.ts';
 import {
 	runInput,
 	runAction,
@@ -28,21 +28,21 @@ import {
 	type CalcResult,
 	type CalcSession
 } from './calcul';
-import { summarizeList, summarizeTable } from '$lib/statistics/describe';
-import { formatLawIndicators, formatStatNumber, formatSummary } from '$lib/statistics/format';
+import { summarizeList, summarizeTable } from '#lib/statistics/describe.ts';
+import { formatLawIndicators, formatStatNumber, formatSummary } from '#lib/statistics/format.ts';
 import { categoryCounts } from './chart';
-import { randomVariable } from '$lib/statistics/random-variable';
-import { fitAffine } from '$lib/statistics/fit';
-import { bivariateFit, type BivariateFit } from '$lib/statistics/bivariate';
-import { roundFraction } from '$lib/statistics/rounding';
-import type { Fraction } from '$lib/statistics/fraction';
+import { randomVariable } from '#lib/statistics/random-variable.ts';
+import { fitAffine } from '#lib/statistics/fit.ts';
+import { bivariateFit, type BivariateFit } from '#lib/statistics/bivariate.ts';
+import { roundFraction } from '#lib/statistics/rounding.ts';
+import type { Fraction } from '#lib/statistics/fraction.ts';
 import {
 	affineExpression,
 	exactCorrelationText,
 	scatterNumber,
 	shortestDecimal
-} from '$lib/ubumark/utils/scatter-lines';
-import { STAT_TEXT } from '$lib/ubumark/utils/stat-chart-text';
+} from '#lib/ubumark/utils/scatter-lines.ts';
+import { STAT_TEXT } from '#lib/ubumark/utils/stat-chart-text.ts';
 import { syncPlots } from './plot-sync';
 import { removedLine, restoredLine } from './removal';
 import { stepOf, type ImportedHistory } from './history-import';
@@ -56,15 +56,15 @@ import {
 	type ExportFormat
 } from './history-export';
 import { termsOf } from './engine';
-import { groupNumberText } from '$lib/mathAST/digit-grouping';
+import { groupNumberText } from '#lib/mathAST/digit-grouping.ts';
 import { isFunction, isList, isQualitative, type AtelierObject, type ListObject } from './types';
 import { wordsReason } from './actions';
 import { lawFractions } from './simulate';
 import { nextName, displayName } from './names';
-import type { GrapheurStore } from '$lib/stores/grapheur.svelte';
-import type { RenderedStep } from '$lib/mathAST/common/step-renderer-base';
-import type { VariationTableNode } from '$lib/ubumark/types/variation-table';
-import type { StatChartScene } from '$lib/ubumark/utils/stat-chart-scene';
+import type { GrapheurStore } from '#lib/stores/grapheur.svelte.ts';
+import type { RenderedStep } from '#lib/mathAST/common/step-renderer-base.ts';
+import type { VariationTableNode } from '#lib/ubumark/types/variation-table.ts';
+import type { StatChartScene } from '#lib/ubumark/utils/stat-chart-scene.ts';
 import { commonRows, droppedNote, noCommonRowsMessage, valuesOn } from './pairs';
 
 // =============================================================================

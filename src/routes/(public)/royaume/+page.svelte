@@ -5,7 +5,7 @@
 	 *
 	 * Une visite guidée par Père Ubu : le Royaume et ses six Provinces, les lieux qui
 	 * s'ouvrent sans compte, la rigueur sous le décor, la dépêche du jour, un mot aux
-	 * parents, et les portes pour entrer. Le contenu vit dans `$lib/kingdom-tour/tour` ;
+	 * parents, et les portes pour entrer. Le contenu vit dans `#lib/kingdom-tour/tour.ts` ;
 	 * ce qu'on peut promettre, dans `docs/systeme/carte-des-fonctionnalites.md`.
 	 *
 	 * Tout est rendu côté serveur et lisible sans JavaScript ; les animations ne font que
@@ -34,13 +34,13 @@
 		ShieldCheck,
 		Terminal
 	} from '@lucide/svelte';
-	import { MONTH_PALETTES } from '$lib/almanach/palettes';
-	import PereUbuFigure from '$lib/components/kingdom-tour/PereUbuFigure.svelte';
-	import ProvinceMap from '$lib/components/kingdom-tour/ProvinceMap.svelte';
-	import FormDemo from '$lib/components/kingdom-tour/FormDemo.svelte';
-	import CipherDemo from '$lib/components/kingdom-tour/CipherDemo.svelte';
-	import { reveal } from '$lib/kingdom-tour/reveal';
-	import { buildSpiral } from '$lib/kingdom-tour/spiral';
+	import { MONTH_PALETTES } from '#lib/almanach/palettes.ts';
+	import PereUbuFigure from '#lib/components/kingdom-tour/PereUbuFigure.svelte';
+	import ProvinceMap from '#lib/components/kingdom-tour/ProvinceMap.svelte';
+	import FormDemo from '#lib/components/kingdom-tour/FormDemo.svelte';
+	import CipherDemo from '#lib/components/kingdom-tour/CipherDemo.svelte';
+	import { reveal } from '#lib/kingdom-tour/reveal.ts';
+	import { buildSpiral } from '#lib/kingdom-tour/spiral.ts';
 	import {
 		FINAL_CALLS,
 		HERO_CALLS,
@@ -50,8 +50,8 @@
 		STRENGTHS,
 		type PlaceId,
 		type StrengthId
-	} from '$lib/kingdom-tour/tour';
-	import SeoHead from '$lib/seo/SeoHead.svelte';
+	} from '#lib/kingdom-tour/tour.ts';
+	import SeoHead from '#lib/seo/SeoHead.svelte';
 	import type { PageProps } from './$types';
 
 	// Constantes
@@ -115,7 +115,7 @@
 </script>
 
 <SeoHead
-	title="Le Tour du Royaume — Chiphre"
+	title="Le Tour du Royaume | Chiphre"
 	description="Visite Chiphre, le Royaume du Père Ubu : six Provinces pour les grands domaines des maths, Automaths, l’Atelier, le Cabinet Noir, des jeux et Python. Presque tout s’ouvre sans compte."
 />
 

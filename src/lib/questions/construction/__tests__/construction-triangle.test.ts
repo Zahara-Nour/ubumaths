@@ -24,7 +24,7 @@ import { intersectTraits, traitOf, type Trait } from '../instruments';
 import { solutionLines } from '../drawing';
 import { serializeConstructionAnswer, type DrawnObject } from '../answer';
 import type { Position } from '../judge';
-import { readConstructionHeader } from '$lib/ubumark/parser/construction-parser';
+import { readConstructionHeader } from '#lib/ubumark/parser/construction-parser.ts';
 
 function checksOf(source: string) {
 	const { spec, errors } = readConstructionHeader(source);
@@ -407,7 +407,7 @@ describe('aide à l’écriture : les exemples du lot 4 se construisent', () => 
 		'Construire un triangle de trois longueurs données',
 		'Placer le 4e sommet d’un parallélogramme'
 	])('%s', async (title) => {
-		const { figureACompleterEntry } = await import('$lib/block-catalog/figure-a-completer');
+		const { figureACompleterEntry } = await import('#lib/block-catalog/figure-a-completer.ts');
 		const example = figureACompleterEntry.examples.find((e) => e.title === title);
 		expect(example).toBeDefined();
 		const lines = (example?.source ?? '').split('\n');

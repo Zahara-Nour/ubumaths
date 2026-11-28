@@ -1,11 +1,11 @@
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireAdmin } from '$lib/server/middleware/auth';
+import { requireAdmin } from '#lib/server/middleware/auth.ts';
 import {
 	annuaireSearchQuerySchema,
 	annuaireResponseSchema,
 	type AnnuaireSchool
-} from '$lib/server/validation/schools';
+} from '#lib/server/validation/schools.ts';
 
 /**
  * Proxy to the national "Annuaire de l'éducation nationale" open dataset
@@ -86,7 +86,7 @@ export const GET: RequestHandler = async ({ url, fetch, locals }) => {
 			academy: r.libelle_academie ?? ''
 		}));
 
-	return json({
+	return Response.json({
 		schools,
 		total: validated.data.total_count,
 		page: parsed.data.page,

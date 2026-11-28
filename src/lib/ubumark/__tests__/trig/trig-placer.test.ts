@@ -21,7 +21,7 @@ import {
 	stepOfLatex,
 	stepOfRadians,
 	stepRadians
-} from '$lib/ubumark/utils/trig-placer';
+} from '#lib/ubumark/utils/trig-placer.ts';
 
 const PI = Math.PI;
 

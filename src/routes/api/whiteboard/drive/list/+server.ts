@@ -19,15 +19,15 @@
  * - Requires Google integration with drive.file scope
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { GoogleNotConnectedError, GoogleTokenExpiredError } from '$lib/server/google/errors';
-import { requireRole } from '$lib/server/middleware/auth';
-import { GoogleDriveClient } from '$lib/server/google/drive-api';
-import { getTeacherAccessToken } from '$lib/server/google/sync';
-import { DRIVE_MIME_TYPE } from '$lib/whiteboard/utils/sync-state';
-import { listFilesQuerySchema } from '$lib/server/validation/whiteboard-drive';
-import { createServerLogger } from '$lib/utils/logger';
+import { GoogleNotConnectedError, GoogleTokenExpiredError } from '#lib/server/google/errors.ts';
+import { requireRole } from '#lib/server/middleware/auth.ts';
+import { GoogleDriveClient } from '#lib/server/google/drive-api.ts';
+import { getTeacherAccessToken } from '#lib/server/google/sync.ts';
+import { DRIVE_MIME_TYPE } from '#lib/whiteboard/utils/sync-state.ts';
+import { listFilesQuerySchema } from '#lib/server/validation/whiteboard-drive.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/whiteboard/drive/list/+server');
 
@@ -95,7 +95,7 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 		// Filter out autosave files from the gallery
 		const visibleFiles = files.filter((f) => f.appProperties?.isAutosave !== 'true');
 
-		return json({
+		return Response.json({
 			files: visibleFiles.map((f) => {
 				const thumbnailFileId = f.appProperties?.thumbnailFileId;
 				return {

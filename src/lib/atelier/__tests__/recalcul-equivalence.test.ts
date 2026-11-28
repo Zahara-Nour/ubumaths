@@ -17,12 +17,12 @@
 
 import { describe, it, expect, afterEach } from 'vitest';
 import { Atelier } from '../atelier.svelte';
-import { WebReplEngine } from '$lib/mathAST/cli/web/web-repl-engine';
+import { WebReplEngine } from '#lib/mathAST/cli/web/web-repl-engine.ts';
 import { runInput } from '../calcul';
 import { valueAnswerOf } from '../calcul';
 import { figureSummaryOf, followsOf } from '../card-state';
 import { AtelierFigure, syncFigure } from '../figure-sync';
-import { geoToNumber } from '$lib/geometry-core/compute/to-number';
+import { geoToNumber } from '#lib/geometry-core/compute/to-number.ts';
 import { isFigureObject } from '../types';
 import { perfSwitches } from '../perf-switches';
 import { figure24 } from './fixtures/figure-24';

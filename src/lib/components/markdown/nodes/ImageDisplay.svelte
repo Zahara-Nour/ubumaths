@@ -16,15 +16,16 @@
 	@see image-dimensions.ts for dimension calculations
 -->
 <script lang="ts">
-	import type { ImageSizeClass, ImageAlignment } from '$lib/ubumark';
+	import type { ImageSizeClass, ImageAlignment } from '#lib/ubumark/index.ts';
 	import {
 		getDimensionsForFormat,
 		shouldUseFigureEnvironment
-	} from '$lib/exercises/services/image-dimensions';
+	} from '#lib/exercises/services/image-dimensions.ts';
 	import { escapeHtml } from '../utils';
-	import { PUBLIC_SUPABASE_URL } from '$env/static/public';
-	import { getQuestionImageUrl } from '$lib/questions/constants';
-	import { sanitizeUrl } from '$lib/utils/sanitize';
+	import { PUBLIC_SUPABASE_URL } from '$app/env/public';
+	import { getQuestionImageUrl } from '#lib/questions/constants.ts';
+	import { toBrowserAddress } from '#lib/utils/supabase-address.ts';
+	import { sanitizeUrl } from '#lib/utils/sanitize-url.ts';
 	import {
 		isProjectStorageImage,
 		readProjectMediaOnly,
@@ -82,7 +83,9 @@
 	);
 
 	// Escaped values for safe rendering
-	let escapedSrc = $derived(escapeHtml(resolvedSrc));
+	// Adresse rendue au navigateur, après les contrôles d'origine ci-dessus (en dev
+	// sur la base locale : le relais du serveur de dev ; inchangée en prod)
+	let escapedSrc = $derived(escapeHtml(toBrowserAddress(resolvedSrc)));
 	let escapedAlt = $derived(escapeHtml(alt));
 	let escapedTitle = $derived(title ? escapeHtml(title) : undefined);
 	let escapedCaption = $derived(caption ? escapeHtml(caption) : undefined);

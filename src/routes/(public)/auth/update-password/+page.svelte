@@ -9,6 +9,7 @@
 -->
 <script lang="ts">
 	import { enhance } from '$app/forms';
+	import { stayOnPage } from '#lib/utils/enhance-stay-on-page.ts';
 	import { resolve } from '$app/paths';
 	import { page } from '$app/state';
 	import type { ActionData, PageData } from './$types';
@@ -16,13 +17,13 @@
 		calculatePasswordStrength,
 		getStrengthBarWidth,
 		getStrengthBarColor
-	} from '$lib/utils/passwordStrength';
-	import { Button } from '$lib/components/ui/button';
-	import { Label } from '$lib/components/ui/label';
-	import * as Card from '$lib/components/ui/card';
-	import * as Alert from '$lib/components/ui/alert';
-	import MyPasswordInput from '$lib/components/MyPasswordInput.svelte';
-	import BackLink from '$lib/components/navigation/BackLink.svelte';
+	} from '#lib/utils/passwordStrength.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import { Label } from '#lib/components/ui/label/index.ts';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import * as Alert from '#lib/components/ui/alert/index.ts';
+	import MyPasswordInput from '#lib/components/MyPasswordInput.svelte';
+	import BackLink from '#lib/components/navigation/BackLink.svelte';
 
 	// Form action result
 	let { data, form }: { data: PageData; form: ActionData } = $props();
@@ -42,7 +43,7 @@
 	<Card.Root class="w-full max-w-md">
 		<Card.Header>
 			{#if fromProfile}
-				<BackLink href={resolve('/dashboard/profile')} label="Retour à mon profil" />
+				<BackLink href={resolve('dashboard/profile')} label="Retour à mon profil" />
 			{/if}
 			<Card.Title class="text-center text-3xl"
 				><h1 class="text-3xl! leading-none!">Nouveau mot de passe</h1></Card.Title
@@ -57,7 +58,7 @@
 		</Card.Header>
 
 		<Card.Content>
-			<form method="POST" action="?/updatePassword" use:enhance class="space-y-4">
+			<form method="POST" action="?/updatePassword" use:enhance={stayOnPage} class="space-y-4">
 				{#if data.needsCurrentPassword}
 					<div class="space-y-2">
 						<Label for="currentPassword">Mot de passe actuel</Label>
@@ -155,7 +156,7 @@
 
 				{#if !fromProfile && !data.mustChange}
 					<div class="text-center text-sm">
-						<a href={resolve('/auth/login')} class="font-medium text-primary hover:underline"
+						<a href={resolve('auth/login')} class="font-medium text-primary hover:underline"
 							>Retour à la connexion</a
 						>
 					</div>

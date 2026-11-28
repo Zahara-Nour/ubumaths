@@ -14,9 +14,9 @@ import { withTranslatedField, translatedField } from '../translation-draft';
 import {
 	exerciseTranslationsSchema,
 	exerciseVariationSchema
-} from '$lib/server/validation/exercises';
-import { resolveCopyExercise } from '$lib/worksheets/student-copy';
-import { buildWorksheetCopy, type WorksheetForCopy } from '$lib/worksheets/worksheet-copy';
+} from '#lib/server/validation/exercises.ts';
+import { resolveCopyExercise } from '#lib/worksheets/student-copy.ts';
+import { buildWorksheetCopy, type WorksheetForCopy } from '#lib/worksheets/worksheet-copy.ts';
 
 // ============================================================================
 // FIXTURES — une variable tirée, une variation avec réponses traduites

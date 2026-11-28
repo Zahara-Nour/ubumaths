@@ -1,0 +1,282 @@
+{
+	"id": "a14d1b12-505f-492c-8f72-35efa16ab3be",
+	"title": "Compter les fréquences dans [p − ks ; p + ks]",
+	"description": "Fonction Python compter(freqs, p, s, k) : valeur renvoyée sur huit fréquences (k = 1 ou 2), condition à compléter, pourcentage sur 500 échantillons, effet de k",
+	"grades": ["1_TECHNO"],
+	"level": 3,
+	"delay": 90,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "On considère la fonction Python suivante.\n\n```python\ndef compter(freqs, p, s, k):\n    c = 0\n    for f in freqs:\n        if p - k * s <= f <= p + k * s:\n            c = c + 1\n    return c\n```\n\nOn appelle `compter(L, 0.{{pt}}, 0.05, {{k}})` avec\n\n`L = [0.{{f1}}, 0.{{f2}}, 0.{{f3}}, 0.{{f4}}, 0.{{f5}}, 0.{{f6}}, 0.{{f7}}, 0.{{f8}}]`\n\nQue renvoie cet appel ?\n\n$?$",
+			"blanks": [
+				{
+					"expectedAnswer": "{{nb}}"
+				}
+			],
+			"variables": [
+				{
+					"name": "pt",
+					"expression": "3..6"
+				},
+				{
+					"name": "k",
+					"expression": "1|2"
+				},
+				{
+					"name": "lo",
+					"expression": "eval:10*pt-18"
+				},
+				{
+					"name": "hi",
+					"expression": "eval:10*pt+18"
+				},
+				{
+					"name": "f1",
+					"expression": "{{lo}}..{{hi}}"
+				},
+				{
+					"name": "f2",
+					"expression": "{{lo}}..{{hi}}"
+				},
+				{
+					"name": "f3",
+					"expression": "{{lo}}..{{hi}}"
+				},
+				{
+					"name": "f4",
+					"expression": "{{lo}}..{{hi}}"
+				},
+				{
+					"name": "f5",
+					"expression": "{{lo}}..{{hi}}"
+				},
+				{
+					"name": "f6",
+					"expression": "{{lo}}..{{hi}}"
+				},
+				{
+					"name": "f7",
+					"expression": "{{lo}}..{{hi}}"
+				},
+				{
+					"name": "f8",
+					"expression": "{{lo}}..{{hi}}"
+				},
+				{
+					"name": "nb",
+					"expression": "eval:min(max(f1-(10*pt-5*k),0),1)*min(max((10*pt+5*k)-f1,0),1)+min(max(f2-(10*pt-5*k),0),1)*min(max((10*pt+5*k)-f2,0),1)+min(max(f3-(10*pt-5*k),0),1)*min(max((10*pt+5*k)-f3,0),1)+min(max(f4-(10*pt-5*k),0),1)*min(max((10*pt+5*k)-f4,0),1)+min(max(f5-(10*pt-5*k),0),1)*min(max((10*pt+5*k)-f5,0),1)+min(max(f6-(10*pt-5*k),0),1)*min(max((10*pt+5*k)-f6,0),1)+min(max(f7-(10*pt-5*k),0),1)*min(max((10*pt+5*k)-f7,0),1)+min(max(f8-(10*pt-5*k),0),1)*min(max((10*pt+5*k)-f8,0),1)"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Avec $p=0{,}{{pt}}$, $s=0{,}05$ et $k={{k}}$, la fonction compte les valeurs de la liste situées dans $[{{eval:(10*pt-5*k)/100;d}}\\,;{{eval:(10*pt+5*k)/100;d}}]$.",
+					"| $f$ | $0{,}{{f1}}$ | $0{,}{{f2}}$ | $0{,}{{f3}}$ | $0{,}{{f4}}$ | $0{,}{{f5}}$ | $0{,}{{f6}}$ | $0{,}{{f7}}$ | $0{,}{{f8}}$ |\n| --- | --- | --- | --- | --- | --- | --- | --- | --- |\n| Dans l'intervalle | {{if:f1>10*pt-5*k && f1<10*pt+5*k|oui|non}} | {{if:f2>10*pt-5*k && f2<10*pt+5*k|oui|non}} | {{if:f3>10*pt-5*k && f3<10*pt+5*k|oui|non}} | {{if:f4>10*pt-5*k && f4<10*pt+5*k|oui|non}} | {{if:f5>10*pt-5*k && f5<10*pt+5*k|oui|non}} | {{if:f6>10*pt-5*k && f6<10*pt+5*k|oui|non}} | {{if:f7>10*pt-5*k && f7<10*pt+5*k|oui|non}} | {{if:f8>10*pt-5*k && f8<10*pt+5*k|oui|non}} |",
+					"La fonction renvoie $\\textcolor{{{color:primary.0}}}{{{nb}}}$."
+				]
+			},
+			"conditions": [
+				"mod(f1,5) != 0",
+				"mod(f2,5) != 0",
+				"mod(f3,5) != 0",
+				"mod(f4,5) != 0",
+				"mod(f5,5) != 0",
+				"mod(f6,5) != 0",
+				"mod(f7,5) != 0",
+				"mod(f8,5) != 0",
+				"nb >= 2",
+				"nb <= 6"
+			]
+		},
+		{
+			"statement": "Dans $N$ échantillons de taille $n$ d'une loi de Bernoulli de paramètre $p$, on a rangé les fréquences des $1$ dans la liste `freqs` ; $s$ est l'écart type de ces fréquences. La fonction ci-dessous doit compter les fréquences situées dans l'intervalle $[p-ks\\,;p+ks]$.\n\n```python\ndef compter(freqs, p, s, k):\n    c = 0\n    for f in freqs:\n        if ...:\n            c = c + 1\n    return c\n```\n\nQue faut-il écrire à la place des points de suspension ?\n\n```choix\n- `p - k * s <= f <= p + k * s`\n- `p - s <= f <= p + s`\n- `f <= p + k * s`\n- `p - k <= f <= p + k`\n```",
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"variables": [],
+			"correction": {
+				"steps": [
+					"$f$ est dans $[p-ks\\,;p+ks]$ quand $p-ks\\leqslant f$ **et** $f\\leqslant p+ks$.",
+					"En Python : `p - k * s <= f <= p + k * s`. Sans `k`, on n'utiliserait que l'intervalle $[p-s\\,;p+s]$ ; avec `f <= p + k * s` seul, on oublierait la borne de gauche."
+				]
+			}
+		},
+		{
+			"statement": "On a simulé $500$ échantillons de taille $100$ d'une loi de Bernoulli de paramètre $0{,}{{pt}}$ et rangé les fréquences des $1$ dans la liste `freqs`. La fonction suivante compte les fréquences situées dans $[p-ks\\,;p+ks]$, où $s$ est l'écart type des fréquences.\n\n```python\ndef compter(freqs, p, s, k):\n    c = 0\n    for f in freqs:\n        if p - k * s <= f <= p + k * s:\n            c = c + 1\n    return c\n```\n\nL'appel `compter(freqs, 0.{{pt}}, s, 2)` renvoie ${{c}}$. Quel pourcentage des $500$ fréquences est situé dans $[p-2s\\,;p+2s]$ ?\n\n$?\\,\\%$",
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:c/5;d}}"
+				}
+			],
+			"variables": [
+				{
+					"name": "pt",
+					"expression": "3..6"
+				},
+				{
+					"name": "c",
+					"expression": "460..490"
+				}
+			],
+			"correction": {
+				"steps": [
+					"${{c}}$ fréquences sur $500$ sont dans l'intervalle.",
+					"$\\dfrac{ {{c}} }{500}={{eval:c/500;d}}$, soit $\\textcolor{{{color:primary.0}}}{{{eval:c/5;d}}}~\\%$."
+				]
+			}
+		},
+		{
+			"statement": "On a rangé dans la liste `freqs` les fréquences des $1$ de plusieurs centaines d'échantillons, et $s$ est leur écart type. On considère la fonction suivante.\n\n```python\ndef compter(freqs, p, s, k):\n    c = 0\n    for f in freqs:\n        if p - k * s <= f <= p + k * s:\n            c = c + 1\n    return c\n```\n\nAvec la même liste, on appelle `compter(freqs, p, s, 1)`, puis `compter(freqs, p, s, 2)`. Le second nombre renvoyé est…\n\n```choix\n- supérieur ou égal au premier\n- inférieur ou égal au premier\n- toujours égal au premier\n- toujours le double du premier\n```",
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"variables": [],
+			"correction": {
+				"steps": [
+					"L'intervalle $[p-s\\,;p+s]$ est contenu dans $[p-2s\\,;p+2s]$ : toute fréquence comptée avec $k=1$ l'est aussi avec $k=2$.",
+					"Le second nombre est donc **supérieur ou égal** au premier, sans être en général le double."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "p = 0,4, k = 1 : quatre valeurs",
+			"variationIndex": 0,
+			"variables": {
+				"pt": "4",
+				"k": "1",
+				"lo": "22",
+				"hi": "58",
+				"f1": "38",
+				"f2": "27",
+				"f3": "44",
+				"f4": "52",
+				"f5": "41",
+				"f6": "33",
+				"f7": "47",
+				"f8": "36",
+				"nb": "4"
+			},
+			"answers": ["4"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : intervalle de k = 2",
+			"variationIndex": 0,
+			"variables": {
+				"pt": "4",
+				"k": "1",
+				"lo": "22",
+				"hi": "58",
+				"f1": "38",
+				"f2": "27",
+				"f3": "44",
+				"f4": "52",
+				"f5": "41",
+				"f6": "33",
+				"f7": "47",
+				"f8": "36",
+				"nb": "4"
+			},
+			"answers": ["6"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "p = 0,4, k = 2 : six valeurs",
+			"variationIndex": 0,
+			"variables": {
+				"pt": "4",
+				"k": "2",
+				"lo": "22",
+				"hi": "58",
+				"f1": "38",
+				"f2": "27",
+				"f3": "44",
+				"f4": "52",
+				"f5": "41",
+				"f6": "33",
+				"f7": "47",
+				"f8": "36",
+				"nb": "6"
+			},
+			"answers": ["6"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Condition complète",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : k oublié",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "467 sur 500 : 93,4 %",
+			"variationIndex": 2,
+			"variables": {
+				"pt": "4",
+				"c": "467"
+			},
+			"answers": ["93.4"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : le nombre",
+			"variationIndex": 2,
+			"variables": {
+				"pt": "4",
+				"c": "467"
+			},
+			"answers": ["467"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Supérieur ou égal",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : inférieur",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

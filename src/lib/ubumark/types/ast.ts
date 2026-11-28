@@ -14,6 +14,7 @@
  */
 
 import type { CalloutKind, DetailKind } from '../utils/detail-kinds';
+import type { NamedColor } from '#lib/theme/named-colors.ts';
 
 // ============================================================================
 // BASE NODE
@@ -45,6 +46,13 @@ export interface TextNode extends BaseNode {
 	detail?: DetailKind;
 	/** Marquage à la main d'un mot du lexique : `[mot]{.def}`, `{.def=…}`, `{.nodef}` */
 	lexicon?: LexiconMark;
+	/** Texte coloré `[texte]{.orange}` : un nom de la palette des figures (ADR 0042) */
+	color?: NamedColor;
+	/**
+	 * Classes inconnues d'un marquage `[texte]{.turquoise}` : le texte est rendu
+	 * normalement, le prof voit un message. Posé sur le premier nœud du passage.
+	 */
+	unknownClasses?: string[];
 	/**
 	 * Mots du dictionnaire repérés dans ce texte (mots cliquables) : positions
 	 * dans `content`. Le texte n'est pas découpé : l'arbre garde sa forme, et les
@@ -83,6 +91,8 @@ export interface MathInlineNode extends BaseNode {
 	expressionName?: string;
 	/** Détail de correction en ligne `[texte]{.rappel}` (ADR 0017) */
 	detail?: DetailKind;
+	/** Formule dans un texte coloré `[…]{.orange}` (ADR 0042) */
+	color?: NamedColor;
 }
 
 /**
@@ -560,15 +570,25 @@ export type { CourbeNode } from './courbe';
 export type { FigureNode } from './figure';
 export type { StatChartNode } from './stat-chart';
 export type { QrNode } from './qr';
+export type { EngrenagesNode } from './engrenages';
 export type { ScratchNode } from './scratch';
 export type { HorlogeNode } from './horloge';
+export type { TortueNode } from './tortue';
+export type { CalculNode } from './calcul';
+export type { RobotNode } from './robot';
+export type { LabyrintheNode } from './labyrinthe';
+export type { YohakuNode } from './yohaku';
+export type { PythonAEcrireNode } from './python-a-ecrire';
 export type { PartageNode } from './partage';
 export type { EspaceNode } from './espace';
 export type { OperationNode } from './operation';
 export type { CollectionNode } from './collection';
 export type { MonnaieNode } from './monnaie';
+export type { SchemaBarresNode } from './schema-barres';
 export type { ChoiceNode } from './choix';
 export type { RangerNode } from './ranger';
+export type { AssocierNode } from './associer';
+export type { TrousNode } from './trous';
 
 // Import the types for use in BlockNode union
 import type { VariationTableNode } from './variation-table';
@@ -579,15 +599,25 @@ import type { CourbeNode } from './courbe';
 import type { FigureNode } from './figure';
 import type { StatChartNode } from './stat-chart';
 import type { QrNode } from './qr';
+import type { EngrenagesNode } from './engrenages';
 import type { ScratchNode } from './scratch';
 import type { HorlogeNode } from './horloge';
+import type { TortueNode } from './tortue';
+import type { CalculNode } from './calcul';
+import type { RobotNode } from './robot';
+import type { LabyrintheNode } from './labyrinthe';
+import type { YohakuNode } from './yohaku';
+import type { PythonAEcrireNode } from './python-a-ecrire';
 import type { PartageNode } from './partage';
 import type { EspaceNode } from './espace';
 import type { OperationNode } from './operation';
 import type { CollectionNode } from './collection';
 import type { MonnaieNode } from './monnaie';
+import type { SchemaBarresNode } from './schema-barres';
 import type { ChoiceNode } from './choix';
 import type { RangerNode } from './ranger';
+import type { AssocierNode } from './associer';
+import type { TrousNode } from './trous';
 
 /**
  * Union of block nodes (top-level document structure)
@@ -611,15 +641,25 @@ export type BlockNode =
 	| FigureNode
 	| StatChartNode
 	| QrNode
+	| EngrenagesNode
 	| ScratchNode
 	| HorlogeNode
+	| TortueNode
+	| CalculNode
+	| RobotNode
+	| LabyrintheNode
+	| YohakuNode
+	| PythonAEcrireNode
 	| PartageNode
 	| EspaceNode
 	| OperationNode
 	| CollectionNode
 	| MonnaieNode
+	| SchemaBarresNode
 	| ChoiceNode
-	| RangerNode;
+	| RangerNode
+	| AssocierNode
+	| TrousNode;
 
 // ============================================================================
 // COMPOSITE NODES

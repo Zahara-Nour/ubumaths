@@ -17,9 +17,9 @@
 import { describe, it, expect } from 'vitest';
 import { ConstructionExecutor } from '../executor';
 import { applyFinalVisibility } from '../choreographies/visibility';
-import { Figure } from '$lib/geometry-core/graph/figure';
-import { numeric } from '$lib/geometry-core/types/geo-value';
-import type { GeoPoint } from '$lib/geometry-core/types/primitives';
+import { Figure } from '#lib/geometry-core/graph/figure.ts';
+import { numeric } from '#lib/geometry-core/types/geo-value.ts';
+import type { GeoPoint } from '#lib/geometry-core/types/primitives.ts';
 
 function pt(x: number, y: number): GeoPoint {
 	return { x: numeric(x), y: numeric(y) };
@@ -247,5 +247,25 @@ describe('applyFinalVisibility — tag modifiers (Design C)', () => {
 		for (const id of result!.produced.traces) {
 			expect(exec.figure.getElementById(id)?.visible).toBe(true);
 		}
+	});
+});
+
+describe('masque / montre : instantanés dans la lecture', () => {
+	it('un pas `masque(…)` ou `montre(…)` dure 0 ms', () => {
+		const exec = new ConstructionExecutor();
+		exec.load(
+			['A = point(0, 0)', 'B = point(3, 0)', 'masque(A)', 'masque(B)', 'montre(A)'].join('\n')
+		);
+		expect(exec.loadError).toBeNull();
+		expect(exec.stepDurations.slice(2)).toEqual([0, 0, 0]);
+		// les points, eux, gardent leur durée
+		expect(exec.stepDurations[0]).toBeGreaterThan(0);
+	});
+
+	it('une autre instruction sans élément neuf garde sa durée', () => {
+		const exec = new ConstructionExecutor();
+		exec.load(['A = point(0, 0)', 'style(A, couleur="rouge")'].join('\n'));
+		expect(exec.loadError).toBeNull();
+		expect(exec.stepDurations[1]).toBeGreaterThan(0);
 	});
 });

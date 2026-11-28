@@ -13,7 +13,7 @@ import { SolveInequalityError, InequalityNotSolvable } from '../types';
 import { parseLatex } from '../../../parser';
 import { toLatex } from '../../../latex-generator';
 import { number, relation } from '../../../factory';
-import { closedInterval } from '$lib/math/intervals/factory';
+import { closedInterval } from '#lib/math/intervals/factory.ts';
 import type { Domain, IntervalSet } from '../../../domain/types';
 import type { MathNode, RelationNode } from '../../../types';
 

@@ -13,12 +13,12 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 const applyFsrsReview = vi.hoisted(() => vi.fn());
 const ensureProgrammeDeckCard = vi.hoisted(() => vi.fn());
 
-vi.mock('$lib/server/srs/fsrs-actions', () => ({ applyFsrsReview }));
-vi.mock('$lib/server/srs/programme-deck', () => ({ ensureProgrammeDeckCard }));
-vi.mock('$lib/server/middleware/auth', () => ({
+vi.mock('#lib/server/srs/fsrs-actions.ts', () => ({ applyFsrsReview }));
+vi.mock('#lib/server/srs/programme-deck.ts', () => ({ ensureProgrammeDeckCard }));
+vi.mock('#lib/server/middleware/auth.ts', () => ({
 	requireAuth: async () => ({ user: { id: ELEVE }, profile: { role: 'student' } })
 }));
-vi.mock('$lib/server/middleware/consent', () => ({ requireConsent: () => {} }));
+vi.mock('#lib/server/middleware/consent.ts', () => ({ requireConsent: () => {} }));
 
 import { POST } from '../+server';
 

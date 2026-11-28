@@ -25,7 +25,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { createMockSupabase, createMockLocals, createMockRequest } from '$tests/helpers';
+import { createMockSupabase, createMockLocals, createMockRequest } from '#tests/helpers/index.ts';
 
 // ---------------------------------------------------------------------------
 // Module mocks (hoisted)
@@ -34,7 +34,7 @@ import { createMockSupabase, createMockLocals, createMockRequest } from '$tests/
 // Silence rate limiter (fail-open / allow) and let us assert it was consulted.
 // NOTE: the endpoint uses the DEDICATED elevation buckets, not the login ones,
 // so we mock the elevation-specific functions here.
-vi.mock('$lib/server/rateLimiter', () => ({
+vi.mock('#lib/server/rateLimiter.ts', () => ({
 	checkElevationRateLimitByIP: vi.fn().mockResolvedValue({ allowed: true }),
 	checkElevationRateLimitByEmail: vi.fn().mockResolvedValue({ allowed: true })
 }));
@@ -43,7 +43,7 @@ vi.mock('$lib/server/rateLimiter', () => ({
 // client du prof ne voit pas le profil admin : aucune policy ne le lui montre, et
 // l'élévation échouait en 500 « Compte administrateur introuvable »).
 const serviceAdminSingle = vi.fn();
-vi.mock('$lib/server/serviceRoleClient', () => ({
+vi.mock('#lib/server/serviceRoleClient.ts', () => ({
 	createServiceRoleClient: () => {
 		const chain = {
 			select: () => chain,

@@ -12,9 +12,9 @@
 	@module components/questions/FigureAnswer
 -->
 <script lang="ts">
-	import FigureBlock from '$lib/components/markdown/nodes/FigureBlock.svelte';
-	import { parseFigure } from '$lib/ubumark/parser/figure-parser';
-	import type { ExpectedStatus } from '$lib/questions/expected-result';
+	import FigureBlock from '#lib/components/markdown/nodes/FigureBlock.svelte';
+	import { parseFigure } from '#lib/ubumark/parser/figure-parser.ts';
+	import type { ExpectedStatus } from '#lib/questions/expected-result.ts';
 
 	interface Props {
 		/** Texte du bloc (variables résolues), entre les clôtures */

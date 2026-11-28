@@ -20,7 +20,7 @@ import {
 	extractNumericValue
 } from '../analyzer';
 import type { DimensionalContext } from '../types';
-import { parseLatex } from '$lib/mathAST/parser';
+import { parseLatex } from '#lib/mathAST/parser/index.ts';
 import {
 	number,
 	variable,
@@ -48,9 +48,9 @@ import {
 	quantity,
 	quantityVar,
 	withUnit
-} from '$lib/mathAST';
-import { unit, unitWithPower, dimensionless, fromComponents } from '$lib/mathAST/units/factory';
-import type { Unit } from '$lib/mathAST/units/types';
+} from '#lib/mathAST/index.ts';
+import { unit, unitWithPower, dimensionless, fromComponents } from '#lib/mathAST/units/factory.ts';
+import type { Unit } from '#lib/mathAST/units/types.ts';
 
 // =============================================================================
 // Helper Functions

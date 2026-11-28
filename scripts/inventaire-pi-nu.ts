@@ -11,7 +11,7 @@
 import { readdirSync, readFileSync, statSync, writeFileSync } from 'node:fs';
 import { isDeepStrictEqual } from 'node:util';
 import { join } from 'node:path';
-import { rewriteBarePi } from '$lib/ubumark/parameterization/validator/bare-pi';
+import { rewriteBarePi } from '#lib/ubumark/parameterization/validator/bare-pi.ts';
 
 function jsonFiles(dir: string): string[] {
 	return readdirSync(dir).flatMap((name) => {

@@ -9,7 +9,7 @@
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
-import { contrastRatio } from '$lib/theme/author-color';
+import { contrastRatio } from '#lib/theme/author-color.ts';
 import { THEME_COLORS, type ThemeColor } from '../cell-format';
 import {
 	DARK_FILL_BASE,

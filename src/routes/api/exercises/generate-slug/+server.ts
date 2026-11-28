@@ -14,11 +14,11 @@
  * - slug: string - The generated unique slug
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireAuth } from '$lib/server/middleware/auth';
+import { requireAuth } from '#lib/server/middleware/auth.ts';
 import { z } from 'zod';
-import { generateExerciseSlug, isValidSlug } from '$lib/exercises/slug-generator';
+import { generateExerciseSlug, isValidSlug } from '#lib/exercises/slug-generator.ts';
 
 const generateSlugSchema = z.object({
 	topic: z.string().optional()
@@ -51,5 +51,5 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		throw error(500, 'Impossible de générer le slug');
 	}
 
-	return json({ slug });
+	return Response.json({ slug });
 };

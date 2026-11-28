@@ -7,11 +7,11 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { Atelier } from '$lib/atelier/atelier.svelte';
-import { WebReplEngine } from '$lib/mathAST/cli/web/web-repl-engine';
-import type { CalcSession } from '$lib/atelier/calcul';
-import { parseLatex } from '$lib/mathAST/parser';
-import { integrate } from '$lib/mathAST/integration/integrate';
+import { Atelier } from '#lib/atelier/atelier.svelte.ts';
+import { WebReplEngine } from '#lib/mathAST/cli/web/web-repl-engine.ts';
+import type { CalcSession } from '#lib/atelier/calcul.ts';
+import { parseLatex } from '#lib/mathAST/parser/index.ts';
+import { integrate } from '#lib/mathAST/integration/integrate.ts';
 import { DEFAULT_POINTS, type PrimitiveCase } from './oracle/primitives-corpus';
 import { judgePrimitive } from './oracle/primitives-oracle';
 

@@ -1,5 +1,5 @@
 import { describe, test, expect } from 'vitest';
-import { escapeHtml, isAlreadyEscaped, escapeHtmlSafe } from '../html-escape';
+import { escapeHtml } from '../html-escape';
 
 describe('escapeHtml', () => {
 	test('escapes < and >', () => {
@@ -79,62 +79,5 @@ describe('escapeHtml', () => {
 	test('handles OWASP XSS vector: event handler', () => {
 		const payload = `" onclick="alert(1)`;
 		expect(escapeHtml(payload)).toBe('&quot; onclick=&quot;alert(1)');
-	});
-});
-
-describe('isAlreadyEscaped', () => {
-	test('detects &amp;', () => {
-		expect(isAlreadyEscaped('Tom &amp; Jerry')).toBe(true);
-	});
-
-	test('detects &lt; and &gt;', () => {
-		expect(isAlreadyEscaped('&lt;p&gt;')).toBe(true);
-	});
-
-	test('detects &quot;', () => {
-		expect(isAlreadyEscaped('&quot;Hello&quot;')).toBe(true);
-	});
-
-	test('detects &#039;', () => {
-		expect(isAlreadyEscaped('&#039;Hi&#039;')).toBe(true);
-	});
-
-	test('returns false for unescaped ampersand', () => {
-		expect(isAlreadyEscaped('Tom & Jerry')).toBe(false);
-	});
-
-	test('returns false for unescaped HTML', () => {
-		expect(isAlreadyEscaped('<p>Hello</p>')).toBe(false);
-	});
-
-	test('returns false for plain text', () => {
-		expect(isAlreadyEscaped('Hello World')).toBe(false);
-	});
-});
-
-describe('escapeHtmlSafe', () => {
-	test('escapes if not already escaped', () => {
-		expect(escapeHtmlSafe('Tom & Jerry')).toBe('Tom &amp; Jerry');
-	});
-
-	test('does not double-escape &amp;', () => {
-		expect(escapeHtmlSafe('Tom &amp; Jerry')).toBe('Tom &amp; Jerry');
-	});
-
-	test('does not double-escape &lt; &gt;', () => {
-		expect(escapeHtmlSafe('&lt;p&gt;')).toBe('&lt;p&gt;');
-	});
-
-	test('handles null', () => {
-		expect(escapeHtmlSafe(null)).toBe('');
-	});
-
-	test('handles undefined', () => {
-		expect(escapeHtmlSafe(undefined)).toBe('');
-	});
-
-	test('handles numbers', () => {
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
-		expect(escapeHtmlSafe(42 as any)).toBe('42');
 	});
 });

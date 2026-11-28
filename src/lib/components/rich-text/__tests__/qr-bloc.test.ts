@@ -5,7 +5,7 @@
 import { describe, expect, it } from 'vitest';
 import { markdownToTipTap } from '../markdown-import';
 import { tipTapToMarkdown } from '../markdown-export';
-import { QR_TEMPLATE } from '$lib/ubumark/parser/qr-parser';
+import { QR_TEMPLATE } from '#lib/ubumark/parser/qr-parser.ts';
 
 describe('bloc ```qr — aller-retour de l’éditeur riche', () => {
 	it('arrive en bloc de code `qr` avec son texte', () => {

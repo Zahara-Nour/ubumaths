@@ -1,5 +1,5 @@
 <script lang="ts" module>
-	import { lore } from '$lib/config/lore';
+	import { lore } from '#lib/config/lore.ts';
 	function getDateFromPeriod(period: string): string {
 		let dateFrom = new Date();
 
@@ -22,7 +22,7 @@
 </script>
 
 <script lang="ts">
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 	import { goto } from '$app/navigation';
 	import type { PageData } from './$types';
 	import {
@@ -31,18 +31,18 @@
 		CardDescription,
 		CardHeader,
 		CardTitle
-	} from '$lib/components/ui/card';
-	import { Button } from '$lib/components/ui/button';
-	import { Badge } from '$lib/components/ui/badge';
-	import { Tabs, TabsContent, TabsList, TabsTrigger } from '$lib/components/ui/tabs';
-	import MySelect from '$lib/components/MySelect.svelte';
-	import MarketplaceStats from '$lib/components/marketplace/teacher/MarketplaceStats.svelte';
-	import TradeHistoryTable from '$lib/components/marketplace/teacher/TradeHistoryTable.svelte';
-	import ActivityFeed from '$lib/components/marketplace/teacher/ActivityFeed.svelte';
-	import ListingsMonitor from '$lib/components/marketplace/teacher/ListingsMonitor.svelte';
-	import MarketplaceAnalytics from '$lib/components/marketplace/teacher/MarketplaceAnalytics.svelte';
-	import MarketplaceSettings from '$lib/components/marketplace/MarketplaceSettings.svelte';
-	import { toaster } from '$lib/stores/toaster.svelte';
+	} from '#lib/components/ui/card/index.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
+	import { Tabs, TabsContent, TabsList, TabsTrigger } from '#lib/components/ui/tabs/index.ts';
+	import MySelect from '#lib/components/MySelect.svelte';
+	import MarketplaceStats from '#lib/components/marketplace/teacher/MarketplaceStats.svelte';
+	import TradeHistoryTable from '#lib/components/marketplace/teacher/TradeHistoryTable.svelte';
+	import ActivityFeed from '#lib/components/marketplace/teacher/ActivityFeed.svelte';
+	import ListingsMonitor from '#lib/components/marketplace/teacher/ListingsMonitor.svelte';
+	import MarketplaceAnalytics from '#lib/components/marketplace/teacher/MarketplaceAnalytics.svelte';
+	import MarketplaceSettings from '#lib/components/marketplace/MarketplaceSettings.svelte';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
 	import {
 		RefreshCw,
 		Settings,
@@ -92,7 +92,7 @@
 
 	// Handle filter changes - receive new value directly from onchange callback
 	async function handleClassChange(newClassId: string) {
-		const url = new URL($page.url);
+		const url = new URL(page.url.href);
 		if (newClassId) {
 			url.searchParams.set('class_id', newClassId);
 		} else {
@@ -102,7 +102,7 @@
 	}
 
 	async function handlePeriodChange(newPeriod: string) {
-		const url = new URL($page.url);
+		const url = new URL(page.url.href);
 		url.searchParams.set('period', newPeriod);
 		await goto(url.toString());
 	}
@@ -111,7 +111,7 @@
 	async function refreshData() {
 		isLoading = true;
 		try {
-			await goto($page.url.toString(), { invalidateAll: true });
+			await goto(page.url.toString(), { refreshAll: true });
 			toaster.success('Données actualisées');
 		} catch (err) {
 			console.error('Error refreshing data:', err);
@@ -128,7 +128,7 @@
 
 	// Handle settings update (refresh data after saving)
 	async function handleSettingsUpdate() {
-		await goto($page.url.toString(), { invalidateAll: true });
+		await goto(page.url.toString(), { refreshAll: true });
 	}
 
 	// Format number with spaces as thousands separator

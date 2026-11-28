@@ -1,0 +1,329 @@
+{
+	"id": "ed662be1-4a51-4453-93d8-377df181d52d",
+	"rangement": {
+		"noeud": "Géométrie > Trigonométrie du triangle rectangle > calcul d'angles",
+		"point": "3-061"
+	},
+	"title": "Deux triangles rectangles accolés : tous les angles",
+	"description": "Triangles ABC rectangle en B et ACD rectangle en A accolés par [AC] : on donne BA, AD et un angle ; calculer les trois autres angles au degré (somme des angles, AC par cos ou sin gardé exact, puis tan)",
+	"grades": ["3"],
+	"level": 2,
+	"delay": 240,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Le triangle $ABC$ est rectangle en $B$ et le triangle $ACD$ est rectangle en $A$. On donne $BA = {{ba}}~\\unit{cm}$, $AD = {{eval:ad;d}}~\\unit{cm}$ et $\\widehat{BAC} = {{a}}^{\\circ}$. Calcule les angles ci-dessous, arrondis au degré. Garde les valeurs exactes dans la calculatrice jusqu'au dernier calcul.\n\n```figure\nfenetre: 0 ; 8 ; 0.5 ; {{eval:round(10*(4.2+5*ad/ac))/10;d}}\ndescription: Triangle ABC rectangle en B et triangle ACD rectangle en A, accolés par le côté [AC].\n---\nA = point(1.5, 3.5, etiquette=\"gauche\")\nC = point(6.5, 3.5, etiquette=\"droite\")\nB = point(A, longueur=5*cos({{al}}), angle=-{{al}}, etiquette=\"bas\")\nD = point(A, longueur={{eval:round(100*5*ad/ac)/100;d}}, angle=90, etiquette=\"haut\")\nsegment(A, B)\nsegment(B, C)\nsegment(C, A)\nsegment(A, D)\nsegment(D, C)\nangle(C, B, A, marque=\"carre\")\nangle(C, A, D, marque=\"carre\")\nangle(B, A, C)\n```\n\n$\\widehat{BCA} = ?^{\\circ}$\n\n$\\widehat{ACD} \\approx ?^{\\circ}$\n\n$\\widehat{ADC} \\approx ?^{\\circ}$",
+			"variables": [
+				{
+					"name": "ba",
+					"expression": "4..7"
+				},
+				{
+					"name": "a",
+					"expression": "25..65"
+				},
+				{
+					"name": "al",
+					"expression": "eval:a"
+				},
+				{
+					"name": "ac",
+					"expression": "eval:ba/cos(al*\\pi/180)"
+				},
+				{
+					"name": "r",
+					"expression": "70..120"
+				},
+				{
+					"name": "ad",
+					"expression": "eval:round(r*ac/10)/10"
+				},
+				{
+					"name": "acd",
+					"expression": "eval:atan(ad/ac)*180/\\pi"
+				}
+			],
+			"conditions": [
+				"abs(ad - ac) >= 0.3",
+				"abs(1*(acd) - round(1*(acd))) < 0.4",
+				"round(acd) != 45",
+				"round(atan(ad/(round(10*ac)/10))*180/\\pi) != 90-round(acd)"
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:90-a}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:180-a}}",
+							"message": "La somme des angles d'un triangle vaut 180° : n'oublie pas l'angle droit (90°) dans le calcul.",
+							"label": "Angle droit oublié"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{eval:round(acd)}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:round(atan(ad/(round(10*ac)/10))*180/\\pi)}}",
+							"message": "Tu as arrondi AC avant de t'en servir : garde la valeur exacte de AC dans la calculatrice.",
+							"label": "AC arrondi trop tôt"
+						},
+						{
+							"answer": "{{eval:90-round(acd)}}",
+							"message": "Tu as renversé la tangente : pour l'angle en C, le côté opposé est [AD] et le côté adjacent est [AC], donc tan = AD ÷ AC.",
+							"label": "Tangente renversée"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{eval:90-round(acd)}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:180-round(acd)}}",
+							"message": "La somme des angles d'un triangle vaut 180° : n'oublie pas l'angle droit (90°) dans le calcul.",
+							"label": "Angle droit oublié"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"Dans le triangle $ABC$, la somme des angles vaut $180^{\\circ}$ : $$\\widehat{BCA} = 180^{\\circ} - 90^{\\circ} - {{a}}^{\\circ} = \\textcolor{{{color:primary.0}}}{{{eval:90-a}}^{\\circ}}$$",
+					"Dans le triangle $ABC$ rectangle en $B$, l'hypoténuse est $[AC]$ : $$\\cos\\widehat{BAC} = \\dfrac{BA}{AC} \\quad\\text{donc}\\quad AC = \\dfrac{ {{ba}} }{\\cos({{a}}^{\\circ})} \\approx {{eval:round(100*ac)/100;d}}~\\unit{cm}$$ On garde cette valeur exacte dans la calculatrice.",
+					"Dans le triangle $ACD$ rectangle en $A$ : $$\\tan\\widehat{ACD} = \\dfrac{AD}{AC} \\quad\\text{donc}\\quad \\widehat{ACD} \\approx \\textcolor{{{color:primary.0}}}{{{eval:round(acd)}}^{\\circ}}$$",
+					"La somme des angles du triangle $ACD$ : $$\\widehat{ADC} \\approx 180^{\\circ} - 90^{\\circ} - {{eval:round(acd)}}^{\\circ} = \\textcolor{{{color:primary.0}}}{{{eval:90-round(acd)}}^{\\circ}}$$"
+				]
+			},
+			"hint": "Commence par le triangle ABC : la somme de ses angles donne le troisième, et un rapport trigonométrique donne AC. Ensuite, dans le triangle ACD rectangle en A, tu connais les deux côtés de l'angle droit."
+		},
+		{
+			"statement": "Le triangle $ABC$ est rectangle en $B$ et le triangle $ACD$ est rectangle en $A$. On donne $BA = {{ba}}~\\unit{cm}$, $AD = {{eval:ad;d}}~\\unit{cm}$ et $\\widehat{BCA} = {{a}}^{\\circ}$. Calcule les angles ci-dessous, arrondis au degré. Garde les valeurs exactes dans la calculatrice jusqu'au dernier calcul.\n\n```figure\nfenetre: 0 ; 8 ; 0.5 ; {{eval:round(10*(4.2+5*ad/ac))/10;d}}\ndescription: Triangle ABC rectangle en B et triangle ACD rectangle en A, accolés par le côté [AC].\n---\nA = point(1.5, 3.5, etiquette=\"gauche\")\nC = point(6.5, 3.5, etiquette=\"droite\")\nB = point(A, longueur=5*cos({{al}}), angle=-{{al}}, etiquette=\"bas\")\nD = point(A, longueur={{eval:round(100*5*ad/ac)/100;d}}, angle=90, etiquette=\"haut\")\nsegment(A, B)\nsegment(B, C)\nsegment(C, A)\nsegment(A, D)\nsegment(D, C)\nangle(C, B, A, marque=\"carre\")\nangle(C, A, D, marque=\"carre\")\nangle(A, C, B)\n```\n\n$\\widehat{BAC} = ?^{\\circ}$\n\n$\\widehat{ACD} \\approx ?^{\\circ}$\n\n$\\widehat{ADC} \\approx ?^{\\circ}$",
+			"variables": [
+				{
+					"name": "ba",
+					"expression": "4..7"
+				},
+				{
+					"name": "a",
+					"expression": "25..65"
+				},
+				{
+					"name": "al",
+					"expression": "eval:90-a"
+				},
+				{
+					"name": "ac",
+					"expression": "eval:ba/cos(al*\\pi/180)"
+				},
+				{
+					"name": "r",
+					"expression": "70..120"
+				},
+				{
+					"name": "ad",
+					"expression": "eval:round(r*ac/10)/10"
+				},
+				{
+					"name": "acd",
+					"expression": "eval:atan(ad/ac)*180/\\pi"
+				}
+			],
+			"conditions": [
+				"abs(ad - ac) >= 0.3",
+				"abs(1*(acd) - round(1*(acd))) < 0.4",
+				"round(acd) != 45",
+				"round(atan(ad/(round(10*ac)/10))*180/\\pi) != 90-round(acd)"
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:90-a}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:180-a}}",
+							"message": "La somme des angles d'un triangle vaut 180° : n'oublie pas l'angle droit (90°) dans le calcul.",
+							"label": "Angle droit oublié"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{eval:round(acd)}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:round(atan(ad/(round(10*ac)/10))*180/\\pi)}}",
+							"message": "Tu as arrondi AC avant de t'en servir : garde la valeur exacte de AC dans la calculatrice.",
+							"label": "AC arrondi trop tôt"
+						},
+						{
+							"answer": "{{eval:90-round(acd)}}",
+							"message": "Tu as renversé la tangente : pour l'angle en C, le côté opposé est [AD] et le côté adjacent est [AC], donc tan = AD ÷ AC.",
+							"label": "Tangente renversée"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{eval:90-round(acd)}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:180-round(acd)}}",
+							"message": "La somme des angles d'un triangle vaut 180° : n'oublie pas l'angle droit (90°) dans le calcul.",
+							"label": "Angle droit oublié"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"Dans le triangle $ABC$, la somme des angles vaut $180^{\\circ}$ : $$\\widehat{BAC} = 180^{\\circ} - 90^{\\circ} - {{a}}^{\\circ} = \\textcolor{{{color:primary.0}}}{{{eval:90-a}}^{\\circ}}$$",
+					"Dans le triangle $ABC$ rectangle en $B$, l'hypoténuse est $[AC]$ : $$\\sin\\widehat{BCA} = \\dfrac{BA}{AC} \\quad\\text{donc}\\quad AC = \\dfrac{ {{ba}} }{\\sin({{a}}^{\\circ})} \\approx {{eval:round(100*ac)/100;d}}~\\unit{cm}$$ On garde cette valeur exacte dans la calculatrice.",
+					"Dans le triangle $ACD$ rectangle en $A$ : $$\\tan\\widehat{ACD} = \\dfrac{AD}{AC} \\quad\\text{donc}\\quad \\widehat{ACD} \\approx \\textcolor{{{color:primary.0}}}{{{eval:round(acd)}}^{\\circ}}$$",
+					"La somme des angles du triangle $ACD$ : $$\\widehat{ADC} \\approx 180^{\\circ} - 90^{\\circ} - {{eval:round(acd)}}^{\\circ} = \\textcolor{{{color:primary.0}}}{{{eval:90-round(acd)}}^{\\circ}}$$"
+				]
+			},
+			"hint": "Commence par le triangle ABC : la somme de ses angles donne le troisième, et un rapport trigonométrique donne AC. Ensuite, dans le triangle ACD rectangle en A, tu connais les deux côtés de l'angle droit."
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "v0 : BA = 5, angle 40°, AD = 5.9 : ['50', '42', '48']",
+			"variationIndex": 0,
+			"variables": {
+				"ba": "5",
+				"a": "40",
+				"al": "40",
+				"ac": "6.527036446661393",
+				"r": "90",
+				"ad": "5.9",
+				"acd": "42.11145134726725"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["50", "42", "48"]
+		},
+		{
+			"description": "v0 : angle droit oublié",
+			"variationIndex": 0,
+			"variables": {
+				"ba": "5",
+				"a": "40",
+				"al": "40",
+				"ac": "6.527036446661393",
+				"r": "90",
+				"ad": "5.9",
+				"acd": "42.11145134726725"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "La somme des angles d'un triangle vaut 180° : n'oublie pas l'angle droit (90°) dans le calcul."
+			},
+			"answers": ["140", "42", "48"]
+		},
+		{
+			"description": "v0 : tangente renversée",
+			"variationIndex": 0,
+			"variables": {
+				"ba": "5",
+				"a": "40",
+				"al": "40",
+				"ac": "6.527036446661393",
+				"r": "90",
+				"ad": "5.9",
+				"acd": "42.11145134726725"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as renversé la tangente : pour l'angle en C, le côté opposé est [AD] et le côté adjacent est [AC], donc tan = AD ÷ AC."
+			},
+			"answers": ["50", "48", "48"]
+		},
+		{
+			"description": "v0 : angle droit oublié",
+			"variationIndex": 0,
+			"variables": {
+				"ba": "5",
+				"a": "40",
+				"al": "40",
+				"ac": "6.527036446661393",
+				"r": "90",
+				"ad": "5.9",
+				"acd": "42.11145134726725"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "La somme des angles d'un triangle vaut 180° : n'oublie pas l'angle droit (90°) dans le calcul."
+			},
+			"answers": ["50", "42", "138"]
+		},
+		{
+			"description": "v1 : BA = 6, angle 35°, AD = 11.5 : ['55', '48', '42']",
+			"variationIndex": 1,
+			"variables": {
+				"ba": "6",
+				"a": "35",
+				"al": "55",
+				"ac": "10.460680773726589",
+				"r": "110",
+				"ad": "11.5",
+				"acd": "47.70957930705795"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["55", "48", "42"]
+		},
+		{
+			"description": "v1 : angle droit oublié",
+			"variationIndex": 1,
+			"variables": {
+				"ba": "6",
+				"a": "35",
+				"al": "55",
+				"ac": "10.460680773726589",
+				"r": "110",
+				"ad": "11.5",
+				"acd": "47.70957930705795"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "La somme des angles d'un triangle vaut 180° : n'oublie pas l'angle droit (90°) dans le calcul."
+			},
+			"answers": ["145", "48", "42"]
+		},
+		{
+			"description": "v1 : tangente renversée",
+			"variationIndex": 1,
+			"variables": {
+				"ba": "6",
+				"a": "35",
+				"al": "55",
+				"ac": "10.460680773726589",
+				"r": "110",
+				"ad": "11.5",
+				"acd": "47.70957930705795"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as renversé la tangente : pour l'angle en C, le côté opposé est [AD] et le côté adjacent est [AC], donc tan = AD ÷ AC."
+			},
+			"answers": ["55", "42", "42"]
+		},
+		{
+			"description": "v1 : angle droit oublié",
+			"variationIndex": 1,
+			"variables": {
+				"ba": "6",
+				"a": "35",
+				"al": "55",
+				"ac": "10.460680773726589",
+				"r": "110",
+				"ad": "11.5",
+				"acd": "47.70957930705795"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "La somme des angles d'un triangle vaut 180° : n'oublie pas l'angle droit (90°) dans le calcul."
+			},
+			"answers": ["55", "48", "132"]
+		}
+	]
+}

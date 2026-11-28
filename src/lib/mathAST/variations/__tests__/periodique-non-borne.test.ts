@@ -29,16 +29,16 @@ import { formatInterval } from '../../domain/format';
 import { toLatex } from '../../latex-generator';
 import { tidy } from '../../tidy';
 import { containsValue, intersect } from '../../domain/algebra';
-import { endpointToNumber } from '$lib/math/intervals/endpoint';
+import { endpointToNumber } from '#lib/math/intervals/endpoint.ts';
 import {
 	closedEndpoint,
 	interval,
 	negInfinityEndpoint,
 	openEndpoint,
 	posInfinityEndpoint
-} from '$lib/math/intervals/factory';
+} from '#lib/math/intervals/factory.ts';
 import type { Domain } from '../../domain/types';
-import type { Interval } from '$lib/math/intervals/types';
+import type { Interval } from '#lib/math/intervals/types.ts';
 import type { VariationResult } from '../types';
 
 function endpoint(latex: string, closed: boolean) {

@@ -13,9 +13,9 @@
 import { describe, it, expect } from 'vitest';
 import { readdirSync } from 'node:fs';
 import { resolve } from 'node:path';
-import { OFFICIAL_PROGRAMMES } from '$lib/programmes/official-programmes';
-import { parseMarkdown } from '$lib/ubumark';
-import { GRADE_CODES, type GradeCode } from '$lib/types/grades';
+import { OFFICIAL_PROGRAMMES } from '#lib/programmes/official-programmes.ts';
+import { parseMarkdown } from '#lib/ubumark/index.ts';
+import { GRADE_CODES, type GradeCode } from '#lib/types/grades.ts';
 import { getTranscription } from '../transcriptions';
 
 // Constantes

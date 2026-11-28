@@ -2,7 +2,7 @@
 let dev = true;
 try {
 	// Dynamic import to avoid build errors in standalone scripts
-	const env = await import('$app/environment');
+	const env = await import('$app/env');
 	dev = env.dev;
 } catch {
 	// Fallback for standalone Node.js scripts (tsx, vitest, etc.)
@@ -480,7 +480,7 @@ function formatServerMessage(
  *
  * @example
  * ```ts
- * import { createServerLogger } from '$lib/utils/logger';
+ * import { createServerLogger } from '#lib/utils/logger.ts';
  *
  * const logger = createServerLogger('api/users/+server.ts');
  *

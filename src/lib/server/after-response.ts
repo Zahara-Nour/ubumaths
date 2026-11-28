@@ -11,7 +11,7 @@
  * s'arrête.
  */
 import { waitUntil } from '@vercel/functions';
-import { createServerLogger } from '$lib/utils/logger';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 // Constantes
 

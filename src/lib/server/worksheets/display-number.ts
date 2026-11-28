@@ -4,7 +4,7 @@
  * `worksheet_exercises.position` n'est PAS ce numéro : elle redémarre à 1 dans
  * chaque section, et une fiche qui mélange ses exercices donne à chaque copie
  * son ordre. Ce module charge la fiche entière et applique la règle partagée
- * (`$lib/worksheets/exercise-numbering`, et pour une copie d'affectation
+ * (`#lib/worksheets/exercise-numbering.ts`, et pour une copie d'affectation
  * `copyDisplayNumbers`), celle de la page élève et du générateur PDF.
  *
  * Il existe parce qu'un message envoyé à un élève doit nommer l'exercice comme
@@ -14,9 +14,9 @@
  * @module server/worksheets/display-number
  */
 
-import { orderExercisesForDisplay } from '$lib/worksheets/exercise-numbering';
-import { assignmentCopyScope, copyDisplayNumbers } from '$lib/worksheets/worksheet-copy';
-import { createServerLogger } from '$lib/utils/logger';
+import { orderExercisesForDisplay } from '#lib/worksheets/exercise-numbering.ts';
+import { assignmentCopyScope, copyDisplayNumbers } from '#lib/worksheets/worksheet-copy.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('server/worksheets/display-number');
 

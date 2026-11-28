@@ -15,7 +15,7 @@
  * (voir `core/variable-argument.ts`).
  */
 
-import chalk from 'chalk';
+import { colors } from '../core/terminal-colors';
 import { BaseCommand } from './base-command';
 import type { CommandContext, CommandResult } from '../types';
 import { toCustom } from '../../custom-generator';
@@ -166,8 +166,8 @@ export class DiffCommand extends BaseCommand {
 			const derivLatex = toLatex(derivative);
 
 			const output = [
-				chalk.bold(`d/d${variableLabel}(${exprCustom})`) + ' = ' + chalk.cyan(derivCustom),
-				chalk.dim('LaTeX:') + ' ' + derivLatex,
+				colors.bold(`d/d${variableLabel}(${exprCustom})`) + ' = ' + colors.cyan(derivCustom),
+				colors.dim('LaTeX:') + ' ' + derivLatex,
 				...(hint === null ? [] : [hint])
 			].join('\n');
 

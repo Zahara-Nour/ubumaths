@@ -74,20 +74,20 @@ Chiphre »…), `noindex`. SvelteKit renvoie le bon code HTTP.
 
 ## Carte du code
 
-| Fichier                                         | Rôle                                                                 |
-| ----------------------------------------------- | -------------------------------------------------------------------- |
-| `src/routes/+error.svelte`                      | La page                                                              |
-| `src/lib/error-page/error-copy.ts`              | Titre, phrase sur π (`piVerb`, `piTwist`), actions, détail technique |
-| `src/lib/error-page/pi-status.ts`               | Table code → première apparition dans π (rang, chiffres voisins)     |
-| `src/lib/error-page/pi-decimals.ts`             | 1 800 premières décimales, pour la spirale                           |
-| `src/lib/error-page/pi-spiral.ts`               | Géométrie de la spirale (pure, testée)                               |
-| `src/lib/error-page/suggestions.ts`             | « Tu cherchais peut-être… »                                          |
-| `src/lib/components/error-page/PiSpiral.svelte` | Rendu SVG de la spirale                                              |
-| `src/lib/error-page/pi-spiral-svg.ts`           | La même spirale en texte SVG, pour la page de maintenance            |
-| `src/lib/server/maintenance.ts`                 | Page de maintenance (HTML autonome, même famille)                    |
-| `src/routes/(protected)/dev/erreurs/page/`      | Démo : tous les cas, vraie erreur par code                           |
-| `src/hooks.client.ts` (`handleError`)           | Remplit `detail` ; journalise une 404 de navigation en avertissement |
-| `src/lib/seo/sitemap-pages.ts`                  | Pages candidates aux suggestions (leur `title` est le texte du lien) |
+| Fichier                                         | Rôle                                                                                                       |
+| ----------------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
+| `src/routes/+error.svelte`                      | La page                                                                                                    |
+| `src/lib/error-page/error-copy.ts`              | Titre, phrase sur π (`piVerb`, `piTwist`), actions, détail technique                                       |
+| `src/lib/error-page/pi-status.ts`               | Table code → première apparition dans π (rang, chiffres voisins)                                           |
+| `src/lib/error-page/pi-decimals.ts`             | 1 800 premières décimales, pour la spirale                                                                 |
+| `src/lib/error-page/pi-spiral.ts`               | Géométrie de la spirale (pure, testée)                                                                     |
+| `src/lib/error-page/suggestions.ts`             | « Tu cherchais peut-être… »                                                                                |
+| `src/lib/components/error-page/PiSpiral.svelte` | Rendu SVG de la spirale                                                                                    |
+| `src/lib/error-page/pi-spiral-svg.ts`           | La même spirale en texte SVG, pour la page de maintenance                                                  |
+| `src/lib/server/maintenance.ts`                 | Page de maintenance (HTML autonome, même famille)                                                          |
+| `src/routes/(protected)/dev/erreurs/page/`      | Démo : tous les cas, vraie erreur par code                                                                 |
+| `src/hooks.client.ts` (`handleError`)           | Selon `kind` : exception → `detail` + erreur journalisée ; 404 → avertissement ; `error(...)` voulu → rien |
+| `src/lib/seo/sitemap-pages.ts`                  | Pages candidates aux suggestions (leur `title` est le texte du lien)                                       |
 
 ## Invariants
 
@@ -173,9 +173,4 @@ serveur sans pile. Exclue par `robots.txt`, `noindex`.
 
 ## Écarts connus
 
-- Les messages 4xx des chargements de page et de `src/lib/server` sont en français correct
-  depuis le 2026-10-11 (~100 messages traduits), et le restent : le garde
-  `src/lib/__tests__/messages-erreur-en-francais.test.ts` refuse un mot anglais ou un mot sans
-  accent dans un `error(4xx, '…')` de ces fichiers. Hors garde : les `+server.ts` (API, réponse
-  JSON qui n'atteint pas la page d'erreur) et les messages dynamiques venus de la base
-  (`warnings.ts` relaie le texte d'une RPC).
+Les écarts de cette zone sont au [registre des écarts](../ecarts/registre.md) : `pnpm ecarts`. Un écart s'écrit là-bas, jamais ici.

@@ -14,7 +14,7 @@
  */
 
 import type { QuestionTemplate, ResolvedVariable } from '../types';
-import { tokenize } from '$lib/ubumark';
+import { tokenize } from '#lib/ubumark/index.ts';
 
 // ============================================================================
 // TYPES

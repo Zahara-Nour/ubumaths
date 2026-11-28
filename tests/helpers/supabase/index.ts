@@ -15,7 +15,7 @@
  *   mockSuccess,
  *   mockError,
  *   mockSequence
- * } from '$tests/helpers/supabase';
+ * } from '#tests/helpers/supabase/index.ts';
  *
  * describe('MyAPI', () => {
  *   it('should work', async () => {

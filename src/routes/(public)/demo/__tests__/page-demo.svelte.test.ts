@@ -10,14 +10,14 @@
 import { describe, expect, it } from 'vitest';
 import { page } from 'vitest/browser';
 import { render } from 'vitest-browser-svelte';
-import { DEMO_PAGES } from '$lib/seo/demo-pages';
+import { DEMO_PAGES } from '#lib/seo/demo-pages.ts';
 import Page from '../+page.svelte';
 
 describe('/demo', () => {
 	it('montre le titre et une carte par vitrine, dans l’ordre, avec sa description', async () => {
 		await render(Page);
 
-		await expect.poll(() => document.title).toBe('Démonstrations — Chiphre');
+		await expect.poll(() => document.title).toBe('Démonstrations | Chiphre');
 		await expect
 			.element(page.getByRole('heading', { level: 1, name: 'Démonstrations' }))
 			.toBeVisible();

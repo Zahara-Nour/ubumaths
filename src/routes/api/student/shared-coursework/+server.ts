@@ -23,12 +23,12 @@
  * - No service role needed - uses denormalized fields!
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireRole } from '$lib/server/middleware/auth';
-import { listStudentSharedCourseworkSchema } from '$lib/server/validation';
-import { GOOGLE_CLASSROOM_ENABLED } from '$lib/config/google-classroom';
-import { createServerLogger } from '$lib/utils/logger';
+import { requireRole } from '#lib/server/middleware/auth.ts';
+import { listStudentSharedCourseworkSchema } from '#lib/server/validation/index.ts';
+import { GOOGLE_CLASSROOM_ENABLED } from '#lib/config/google-classroom.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/student/shared-coursework/+server');
 
@@ -77,7 +77,7 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 
 		// If student is not in any classes, return empty result
 		if (!studentClasses || studentClasses.length === 0) {
-			return json({
+			return Response.json({
 				coursework: [],
 				pagination: {
 					page,
@@ -152,7 +152,7 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 
 		// If no coursework found, return empty result
 		if (!sharedCourseworkList || sharedCourseworkList.length === 0) {
-			return json({
+			return Response.json({
 				coursework: [],
 				pagination: {
 					page,
@@ -256,7 +256,7 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 		// Calculate pagination metadata
 		const totalPages = Math.ceil((count || 0) / limit);
 
-		return json({
+		return Response.json({
 			coursework: enrichedData,
 			pagination: {
 				page,

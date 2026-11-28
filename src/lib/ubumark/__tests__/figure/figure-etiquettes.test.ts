@@ -10,8 +10,8 @@ import { parseFigureContent } from '../../parser/figure-parser';
 import { buildFigureScene } from '../../utils/figure-scene';
 import { figureToSvg, type FigureShape } from '../../utils/figure-svg';
 import { generateFigureTypst } from '../../generators/figure-typst';
-import { runDsl } from '$lib/geometry-core/dsl';
-import { exportToTypst } from '$lib/geometry-core/rendering/export-typst';
+import { runDsl } from '#lib/geometry-core/dsl/index.ts';
+import { exportToTypst } from '#lib/geometry-core/rendering/export-typst.ts';
 
 type LabelShape = Extract<FigureShape, { kind: 'label' }>;
 type DotShape = Extract<FigureShape, { kind: 'dot' }>;

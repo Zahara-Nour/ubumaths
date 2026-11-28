@@ -14,7 +14,6 @@ import { constructionExpected, constructionPositions, constructionShapes } from 
 import { ConstructionAuthorError, assertConstructionChecks, judgeConstruction } from '../judge';
 import {
 	centeredMissingFeedback,
-	centeredRadiusEyeballedFeedback,
 	centeredThroughEyeballedFeedback,
 	goodCenterRadiusFeedback,
 	goodCenterThroughFeedback,
@@ -23,7 +22,7 @@ import {
 import { solutionCircles } from '../drawing';
 import { serializeConstructionAnswer, type DrawnObject } from '../answer';
 import type { Position } from '../judge';
-import { readConstructionHeader } from '$lib/ubumark/parser/construction-parser';
+import { readConstructionHeader } from '#lib/ubumark/parser/construction-parser.ts';
 
 function checksOf(source: string) {
 	const { spec, errors } = readConstructionHeader(source);
@@ -272,14 +271,11 @@ describe('cercle de centre donné, rayon= : verdicts', () => {
 		);
 	});
 
-	it('bon rayon pris à l’œil au compas', () => {
+	it('bon rayon pris à l’œil au compas : le même message que pour une autre longueur (E62)', () => {
 		expect(judge(RAYON, [cercle(O2, { x: 5, y: 4 })])).toEqual({
 			status: 'incorrect',
-			feedback: centeredRadiusEyeballedFeedback('DE')
+			feedback: 'Ton cercle a le bon centre mais pas le bon rayon : reporte la longueur DE.'
 		});
-		expect(centeredRadiusEyeballedFeedback('DE')).toBe(
-			'Ton compas est ouvert à l’œil : prends l’écartement DE avec le Report.'
-		);
 	});
 });
 

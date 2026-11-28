@@ -3,13 +3,13 @@
  */
 
 import { describe, expect, it } from 'vitest';
-import { parseMarkdown, type ListNode } from '$lib/ubumark';
+import { parseMarkdown, type ListNode } from '#lib/ubumark/index.ts';
 import {
 	parseCollectionContent,
 	withChoiceCollectionSize
-} from '$lib/ubumark/parser/collection-parser';
-import { resolveText } from '$lib/ubumark/parameterization/resolver/text-resolver';
-import type { CollectionNode } from '$lib/ubumark/types/collection';
+} from '#lib/ubumark/parser/collection-parser.ts';
+import { resolveText } from '#lib/ubumark/parameterization/resolver/text-resolver.ts';
+import type { CollectionNode } from '#lib/ubumark/types/collection.ts';
 
 const doc = (...lines: string[]) => parseMarkdown(lines.join('\n')).children;
 

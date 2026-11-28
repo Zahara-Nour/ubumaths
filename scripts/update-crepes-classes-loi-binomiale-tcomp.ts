@@ -23,7 +23,7 @@ import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { createClient } from '@supabase/supabase-js';
 import { config } from 'dotenv';
-import type { Database, Json } from '$lib/types/database';
+import type { Database, Json } from '#lib/types/database.ts';
 
 config({ path: '.env' });
 

@@ -1,27 +1,27 @@
 <script lang="ts">
-	import { Input } from '$lib/components/ui/input';
-	import { Button } from '$lib/components/ui/button';
-	import ConsentButton from '$lib/components/ConsentButton.svelte';
-	import { Skeleton } from '$lib/components/ui/skeleton';
-	import { consent } from '$lib/stores/consent.svelte';
-	import Badge from '$lib/components/ui/badge/badge.svelte';
+	import { Input } from '#lib/components/ui/input/index.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import ConsentButton from '#lib/components/ConsentButton.svelte';
+	import { Skeleton } from '#lib/components/ui/skeleton/index.ts';
+	import { consent } from '#lib/stores/consent.svelte.ts';
+	import Badge from '#lib/components/ui/badge/badge.svelte';
 	import { Search, ShoppingCart, Sparkles, Gem } from '@lucide/svelte';
-	import gidouilleImage from '$lib/assets/images/gidouille.png';
-	import MySelect from '$lib/components/MySelect.svelte';
+	import gidouilleImage from '#lib/assets/images/gidouille.png';
+	import MySelect from '#lib/components/MySelect.svelte';
 	import VipCardPurchaseModal from './VipCardPurchaseModal.svelte';
-	import type { VipCard, VipCardRarity } from '$lib/types/vip-card';
-	import { RARITY_PRICES } from '$lib/types/vip-card';
+	import type { VipCard, VipCardRarity } from '#lib/types/vip-card.ts';
+	import { RARITY_PRICES } from '#lib/types/vip-card.ts';
 	import {
 		RARITY_ORDER,
 		RARITY_FILTER_OPTIONS,
 		RARITY_SECTION_CONFIG,
 		RARITY_DISPLAY_ORDER
-	} from '$lib/constants/vip-card-ui';
-	import { cn } from '$lib/utils';
-	import { syncGidouilles, syncVipCards, rollbackGidouilles } from '$lib/utils/cache-sync';
-	import { studentCache } from '$lib/stores/studentDashboardCache.svelte';
-	import type { CacheContext } from '$lib/types/cache-context';
-	import type { StudentVipCards } from '$lib/types/vip-card';
+	} from '#lib/constants/vip-card-ui.ts';
+	import { cn } from '#lib/utils.ts';
+	import { syncGidouilles, syncVipCards, rollbackGidouilles } from '#lib/utils/cache-sync.ts';
+	import { studentCache } from '#lib/stores/studentDashboardCache.svelte.ts';
+	import type { CacheContext } from '#lib/types/cache-context.ts';
+	import type { StudentVipCards } from '#lib/types/vip-card.ts';
 
 	interface Props {
 		supabase: unknown; // Only used to detect auth context

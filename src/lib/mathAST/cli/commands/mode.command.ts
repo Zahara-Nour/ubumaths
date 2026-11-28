@@ -4,7 +4,7 @@
  * Shows or sets the evaluation mode (exact or decimal).
  */
 
-import chalk from 'chalk';
+import { colors } from '../core/terminal-colors';
 import { BaseCommand } from './base-command';
 import type { CommandContext, CommandResult } from '../types';
 import { setMode, type EvalMode } from '../core/eval-state';
@@ -55,8 +55,8 @@ export class ModeCommand extends BaseCommand {
 		// No argument: show current mode
 		if (!input) {
 			const modeStr =
-				ctx.evalState.mode === 'exact' ? chalk.green('exact') : chalk.yellow('decimal');
-			const output = chalk.bold('Current mode:') + ' ' + modeStr;
+				ctx.evalState.mode === 'exact' ? colors.green('exact') : colors.yellow('decimal');
+			const output = colors.bold('Current mode:') + ' ' + modeStr;
 			return {
 				success: true,
 				output
@@ -79,8 +79,8 @@ export class ModeCommand extends BaseCommand {
 		const newMode: EvalMode = input;
 		setMode(ctx.evalState, newMode);
 
-		const modeStr = newMode === 'exact' ? chalk.green('exact') : chalk.yellow('decimal');
-		const output = chalk.bold('Mode set to:') + ' ' + modeStr;
+		const modeStr = newMode === 'exact' ? colors.green('exact') : colors.yellow('decimal');
+		const output = colors.bold('Mode set to:') + ' ' + modeStr;
 
 		return {
 			success: true,

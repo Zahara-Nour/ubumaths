@@ -1,0 +1,267 @@
+{
+	"id": "4c2de9af-6293-48de-9c3a-1eaf555e55ea",
+	"title": "Quelle collection a le plus de cubes ?",
+	"description": "Comparer deux collections dessinées (moins de 100) : rangées en barres et cubes ; une collection partiellement groupée, piège « plus de cubes seuls ne veut pas dire plus de cubes »",
+	"grades": ["CP"],
+	"level": 2,
+	"delay": 90,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Quelle collection a le plus de petits cubes ?\n\n```collection\ndizaines: {{da}} ; {{db}}\nunités: {{ua}} ; {{ub}}\nlégendes: A ; B\n```\n\n```choix\nmelanger: non\n- La collection A\n- Elles en ont autant\n- La collection B\n```",
+			"variables": [
+				{
+					"name": "da",
+					"expression": "1..9"
+				},
+				{
+					"name": "ua",
+					"expression": "0..9"
+				},
+				{
+					"name": "db",
+					"expression": "1..9"
+				},
+				{
+					"name": "ub",
+					"expression": "0..9"
+				},
+				{
+					"name": "va",
+					"expression": "eval:10*da+ua"
+				},
+				{
+					"name": "vb",
+					"expression": "eval:10*db+ub"
+				},
+				{
+					"name": "z",
+					"expression": "eval:sign(vb-va)+1"
+				}
+			],
+			"conditions": ["va != vb", "da != db || ua != ub"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{z}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On compte chaque collection : une barre, c'est $10$ cubes.",
+					"A : ${{da}}$ barres et ${{ua}}$ cubes, c'est ${{va}}$. B : ${{db}}$ barres et ${{ub}}$ cubes, c'est ${{vb}}$.",
+					"{{if:z==0|$\\textcolor{{{color:primary.0}}}{\\text{A}}$ a le plus de cubes.|{{if:z==1|Elles en ont $\\textcolor{{{color:primary.0}}}{\\text{autant}}$.|$\\textcolor{{{color:primary.0}}}{\\text{B}}$ a le plus de cubes.}}}}"
+				]
+			}
+		},
+		{
+			"statement": "Quelle collection a le plus de petits cubes ?\n\n```collection\ndizaines: {{da}} ; {{db}}\nunités: {{ua}} ; {{ub}}\nlégendes: A ; B\n```\n\n```choix\nmelanger: non\n- La collection A\n- Elles en ont autant\n- La collection B\n```",
+			"variables": [
+				{
+					"name": "d",
+					"expression": "1..7"
+				},
+				{
+					"name": "x",
+					"expression": "1..9"
+				},
+				{
+					"name": "y",
+					"expression": "0..9"
+				},
+				{
+					"name": "da",
+					"expression": "eval:d"
+				},
+				{
+					"name": "ua",
+					"expression": "eval:10+x"
+				},
+				{
+					"name": "db",
+					"expression": "eval:d+1"
+				},
+				{
+					"name": "ub",
+					"expression": "eval:y"
+				},
+				{
+					"name": "va",
+					"expression": "eval:10*da+ua"
+				},
+				{
+					"name": "vb",
+					"expression": "eval:10*db+ub"
+				},
+				{
+					"name": "z",
+					"expression": "eval:sign(vb-va)+1"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{z}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"A a ${{ua}}$ cubes tout seuls : avec $10$ d'entre eux, on fait une barre de plus.",
+					"A : ${{eval:d+1}}$ barres et ${{x}}$ cubes, c'est ${{va}}$. B : ${{db}}$ barres et ${{ub}}$ cubes, c'est ${{vb}}$.",
+					"{{if:z==0|$\\textcolor{{{color:primary.0}}}{\\text{A}}$ a le plus de cubes.|{{if:z==1|Elles en ont $\\textcolor{{{color:primary.0}}}{\\text{autant}}$.|$\\textcolor{{{color:primary.0}}}{\\text{B}}$ a le plus de cubes.}}}}"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "A 52, B 49 : A",
+			"variationIndex": 0,
+			"variables": {
+				"da": "5",
+				"ua": "2",
+				"db": "4",
+				"ub": "9",
+				"va": "52",
+				"vb": "49",
+				"z": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : B (9 cubes seuls contre 2)",
+			"variationIndex": 0,
+			"variables": {
+				"da": "5",
+				"ua": "2",
+				"db": "4",
+				"ub": "9",
+				"va": "52",
+				"vb": "49",
+				"z": "0"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "A 36, B 63 : B",
+			"variationIndex": 0,
+			"variables": {
+				"da": "3",
+				"ua": "6",
+				"db": "6",
+				"ub": "3",
+				"va": "36",
+				"vb": "63",
+				"z": "2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "BO : A 3 barres et 15 cubes (45), B 4 barres et 2 cubes (42) : A",
+			"variationIndex": 1,
+			"variables": {
+				"d": "3",
+				"x": "5",
+				"y": "2",
+				"da": "3",
+				"ua": "15",
+				"db": "4",
+				"ub": "2",
+				"va": "45",
+				"vb": "42",
+				"z": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : B (plus de barres)",
+			"variationIndex": 1,
+			"variables": {
+				"d": "3",
+				"x": "5",
+				"y": "2",
+				"da": "3",
+				"ua": "15",
+				"db": "4",
+				"ub": "2",
+				"va": "45",
+				"vb": "42",
+				"z": "0"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Autant : 45 et 45",
+			"variationIndex": 1,
+			"variables": {
+				"d": "3",
+				"x": "5",
+				"y": "5",
+				"da": "3",
+				"ua": "15",
+				"db": "4",
+				"ub": "5",
+				"va": "45",
+				"vb": "45",
+				"z": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : A (15 cubes seuls contre 5)",
+			"variationIndex": 1,
+			"variables": {
+				"d": "3",
+				"x": "5",
+				"y": "5",
+				"da": "3",
+				"ua": "15",
+				"db": "4",
+				"ub": "5",
+				"va": "45",
+				"vb": "45",
+				"z": "1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "A 27, B 38 : B",
+			"variationIndex": 1,
+			"variables": {
+				"d": "1",
+				"x": "7",
+				"y": "8",
+				"da": "1",
+				"ua": "17",
+				"db": "2",
+				"ub": "8",
+				"va": "27",
+				"vb": "28",
+				"z": "2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}

@@ -1,9 +1,9 @@
-import { error, json } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireRole } from '$lib/server/middleware/auth';
-import type { GradeCode } from '$lib/types/grades';
-import { getTeacherExercises } from '$lib/server/exercises';
-import { createServerLogger } from '$lib/utils/logger';
+import { requireRole } from '#lib/server/middleware/auth.ts';
+import type { GradeCode } from '#lib/types/grades.ts';
+import { getTeacherExercises } from '#lib/server/exercises.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/teacher/exercises/+server');
 
@@ -79,7 +79,7 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 			throw error(500, 'Failed to load exercises');
 		}
 
-		return json({
+		return Response.json({
 			exercises: result.data || [],
 			pagination: {
 				page: result.page,

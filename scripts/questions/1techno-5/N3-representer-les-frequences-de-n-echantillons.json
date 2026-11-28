@@ -1,0 +1,186 @@
+{
+	"id": "8d2047fe-91f1-47fa-888e-aeb296f2434b",
+	"title": "Représenter les fréquences des 1 dans N échantillons",
+	"description": "Nuage (j ; fréquence) de 500 échantillons de Bernoulli : valeur autour de laquelle les points se concentrent, instruction qui donne le nuage ou l'histogramme, effet d'une taille plus grande",
+	"grades": ["1_TECHNO"],
+	"level": 3,
+	"delay": 90,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "On simule $500$ échantillons de taille $100$ d'une loi de Bernoulli avec le programme suivant.\n\n```python\nfrom random import random\nimport matplotlib.pyplot as plt\n\ndef frequence(n, p):\n    c = 0\n    for k in range(n):\n        if random() < p:\n            c = c + 1\n    return c / n\n\nN = 500\nfreqs = [frequence(100, 0.{{pt}}) for j in range(N)]\nplt.scatter(range(N), freqs)\nplt.show()\n```\n\nVoici les $100$ premiers points du nuage obtenu.\n\n```nuage\nx: 1 ; 2 ; 3 ; 4 ; 5 ; 6 ; 7 ; 8 ; 9 ; 10 ; 11 ; 12 ; 13 ; 14 ; 15 ; 16 ; 17 ; 18 ; 19 ; 20 ; 21 ; 22 ; 23 ; 24 ; 25 ; 26 ; 27 ; 28 ; 29 ; 30 ; 31 ; 32 ; 33 ; 34 ; 35 ; 36 ; 37 ; 38 ; 39 ; 40 ; 41 ; 42 ; 43 ; 44 ; 45 ; 46 ; 47 ; 48 ; 49 ; 50 ; 51 ; 52 ; 53 ; 54 ; 55 ; 56 ; 57 ; 58 ; 59 ; 60 ; 61 ; 62 ; 63 ; 64 ; 65 ; 66 ; 67 ; 68 ; 69 ; 70 ; 71 ; 72 ; 73 ; 74 ; 75 ; 76 ; 77 ; 78 ; 79 ; 80 ; 81 ; 82 ; 83 ; 84 ; 85 ; 86 ; 87 ; 88 ; 89 ; 90 ; 91 ; 92 ; 93 ; 94 ; 95 ; 96 ; 97 ; 98 ; 99 ; 100\ny: 0,{{eval:10*pt+6}} ; 0,{{eval:10*pt-1}} ; 0,{{eval:10*pt+1}} ; 0,{{eval:10*pt-2}} ; 0,{{eval:10*pt+6}} ; 0,{{eval:10*pt+2}} ; 0,{{eval:10*pt-1}} ; 0,{{eval:10*pt-5}} ; 0,{{eval:10*pt+1}} ; 0,{{eval:10*pt-5}} ; 0,{{eval:10*pt-1}} ; 0,{{eval:10*pt-6}} ; 0,{{eval:10*pt+1}} ; 0,{{eval:10*pt+0}} ; 0,{{eval:10*pt+0}} ; 0,{{eval:10*pt-1}} ; 0,{{eval:10*pt-3}} ; 0,{{eval:10*pt-3}} ; 0,{{eval:10*pt+2}} ; 0,{{eval:10*pt+8}} ; 0,{{eval:10*pt-2}} ; 0,{{eval:10*pt+5}} ; 0,{{eval:10*pt-1}} ; 0,{{eval:10*pt+6}} ; 0,{{eval:10*pt-1}} ; 0,{{eval:10*pt+4}} ; 0,{{eval:10*pt+6}} ; 0,{{eval:10*pt+5}} ; 0,{{eval:10*pt-2}} ; 0,{{eval:10*pt+0}} ; 0,{{eval:10*pt+0}} ; 0,{{eval:10*pt+1}} ; 0,{{eval:10*pt+2}} ; 0,{{eval:10*pt+0}} ; 0,{{eval:10*pt+3}} ; 0,{{eval:10*pt+9}} ; 0,{{eval:10*pt-2}} ; 0,{{eval:10*pt+6}} ; 0,{{eval:10*pt-4}} ; 0,{{eval:10*pt+3}} ; 0,{{eval:10*pt+8}} ; 0,{{eval:10*pt-9}} ; 0,{{eval:10*pt+8}} ; 0,{{eval:10*pt+2}} ; 0,{{eval:10*pt-7}} ; 0,{{eval:10*pt+3}} ; 0,{{eval:10*pt+5}} ; 0,{{eval:10*pt+3}} ; 0,{{eval:10*pt+2}} ; 0,{{eval:10*pt+5}} ; 0,{{eval:10*pt-5}} ; 0,{{eval:10*pt-10}} ; 0,{{eval:10*pt-2}} ; 0,{{eval:10*pt+6}} ; 0,{{eval:10*pt-3}} ; 0,{{eval:10*pt-11}} ; 0,{{eval:10*pt+3}} ; 0,{{eval:10*pt-2}} ; 0,{{eval:10*pt-7}} ; 0,{{eval:10*pt+6}} ; 0,{{eval:10*pt-3}} ; 0,{{eval:10*pt+0}} ; 0,{{eval:10*pt+1}} ; 0,{{eval:10*pt+2}} ; 0,{{eval:10*pt+1}} ; 0,{{eval:10*pt+1}} ; 0,{{eval:10*pt-4}} ; 0,{{eval:10*pt+1}} ; 0,{{eval:10*pt-4}} ; 0,{{eval:10*pt+5}} ; 0,{{eval:10*pt-9}} ; 0,{{eval:10*pt-5}} ; 0,{{eval:10*pt+2}} ; 0,{{eval:10*pt+10}} ; 0,{{eval:10*pt-1}} ; 0,{{eval:10*pt-2}} ; 0,{{eval:10*pt+3}} ; 0,{{eval:10*pt+4}} ; 0,{{eval:10*pt+9}} ; 0,{{eval:10*pt-2}} ; 0,{{eval:10*pt+0}} ; 0,{{eval:10*pt+5}} ; 0,{{eval:10*pt+3}} ; 0,{{eval:10*pt+3}} ; 0,{{eval:10*pt+9}} ; 0,{{eval:10*pt-6}} ; 0,{{eval:10*pt-2}} ; 0,{{eval:10*pt+8}} ; 0,{{eval:10*pt+4}} ; 0,{{eval:10*pt-7}} ; 0,{{eval:10*pt-1}} ; 0,{{eval:10*pt+7}} ; 0,{{eval:10*pt+2}} ; 0,{{eval:10*pt+1}} ; 0,{{eval:10*pt-2}} ; 0,{{eval:10*pt+3}} ; 0,{{eval:10*pt+2}} ; 0,{{eval:10*pt-3}} ; 0,{{eval:10*pt-3}} ; 0,{{eval:10*pt-1}}\nnom x: Échantillon\nnom y: Fréquence des 1\ndescription: Nuage de 100 points : en abscisse le numéro de l'échantillon, en ordonnée la fréquence des 1 observée.\n```\n\nAutour de quelle valeur les points se concentrent-ils ?\n\n```choix\n- $0{,}{{pt}}$\n- $0{,}{{eval:10-pt}}$\n- $0{,}5$\n- $0{,}{{eval:pt+2}}$\n```",
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"variables": [
+				{
+					"name": "pt",
+					"expression": "3|4|6"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Chaque point a pour ordonnée la fréquence des $1$ dans un échantillon de taille $100$ : ces fréquences fluctuent autour de la probabilité $p$ du programme.",
+					"Ici `frequence(100, 0.{{pt}})` : les points se concentrent autour de $\\textcolor{{{color:primary.0}}}{0{,}{{pt}}}$, la plupart à moins de $0{,}1$ de cette valeur."
+				]
+			}
+		},
+		{
+			"statement": "On simule $500$ échantillons de taille $100$ d'une loi de Bernoulli avec le programme suivant.\n\n```python\nfrom random import random\nimport matplotlib.pyplot as plt\n\ndef frequence(n, p):\n    c = 0\n    for k in range(n):\n        if random() < p:\n            c = c + 1\n    return c / n\n\nN = 500\nfreqs = [frequence(100, 0.{{pt}}) for j in range(N)]\n# instruction de tracé\nplt.show()\n```\n\nLe programme affiche le nuage ci-dessous (on n'a gardé que les $100$ premiers points).\n\n```nuage\nx: 1 ; 2 ; 3 ; 4 ; 5 ; 6 ; 7 ; 8 ; 9 ; 10 ; 11 ; 12 ; 13 ; 14 ; 15 ; 16 ; 17 ; 18 ; 19 ; 20 ; 21 ; 22 ; 23 ; 24 ; 25 ; 26 ; 27 ; 28 ; 29 ; 30 ; 31 ; 32 ; 33 ; 34 ; 35 ; 36 ; 37 ; 38 ; 39 ; 40 ; 41 ; 42 ; 43 ; 44 ; 45 ; 46 ; 47 ; 48 ; 49 ; 50 ; 51 ; 52 ; 53 ; 54 ; 55 ; 56 ; 57 ; 58 ; 59 ; 60 ; 61 ; 62 ; 63 ; 64 ; 65 ; 66 ; 67 ; 68 ; 69 ; 70 ; 71 ; 72 ; 73 ; 74 ; 75 ; 76 ; 77 ; 78 ; 79 ; 80 ; 81 ; 82 ; 83 ; 84 ; 85 ; 86 ; 87 ; 88 ; 89 ; 90 ; 91 ; 92 ; 93 ; 94 ; 95 ; 96 ; 97 ; 98 ; 99 ; 100\ny: 0,{{eval:10*pt+6}} ; 0,{{eval:10*pt-1}} ; 0,{{eval:10*pt+1}} ; 0,{{eval:10*pt-2}} ; 0,{{eval:10*pt+6}} ; 0,{{eval:10*pt+2}} ; 0,{{eval:10*pt-1}} ; 0,{{eval:10*pt-5}} ; 0,{{eval:10*pt+1}} ; 0,{{eval:10*pt-5}} ; 0,{{eval:10*pt-1}} ; 0,{{eval:10*pt-6}} ; 0,{{eval:10*pt+1}} ; 0,{{eval:10*pt+0}} ; 0,{{eval:10*pt+0}} ; 0,{{eval:10*pt-1}} ; 0,{{eval:10*pt-3}} ; 0,{{eval:10*pt-3}} ; 0,{{eval:10*pt+2}} ; 0,{{eval:10*pt+8}} ; 0,{{eval:10*pt-2}} ; 0,{{eval:10*pt+5}} ; 0,{{eval:10*pt-1}} ; 0,{{eval:10*pt+6}} ; 0,{{eval:10*pt-1}} ; 0,{{eval:10*pt+4}} ; 0,{{eval:10*pt+6}} ; 0,{{eval:10*pt+5}} ; 0,{{eval:10*pt-2}} ; 0,{{eval:10*pt+0}} ; 0,{{eval:10*pt+0}} ; 0,{{eval:10*pt+1}} ; 0,{{eval:10*pt+2}} ; 0,{{eval:10*pt+0}} ; 0,{{eval:10*pt+3}} ; 0,{{eval:10*pt+9}} ; 0,{{eval:10*pt-2}} ; 0,{{eval:10*pt+6}} ; 0,{{eval:10*pt-4}} ; 0,{{eval:10*pt+3}} ; 0,{{eval:10*pt+8}} ; 0,{{eval:10*pt-9}} ; 0,{{eval:10*pt+8}} ; 0,{{eval:10*pt+2}} ; 0,{{eval:10*pt-7}} ; 0,{{eval:10*pt+3}} ; 0,{{eval:10*pt+5}} ; 0,{{eval:10*pt+3}} ; 0,{{eval:10*pt+2}} ; 0,{{eval:10*pt+5}} ; 0,{{eval:10*pt-5}} ; 0,{{eval:10*pt-10}} ; 0,{{eval:10*pt-2}} ; 0,{{eval:10*pt+6}} ; 0,{{eval:10*pt-3}} ; 0,{{eval:10*pt-11}} ; 0,{{eval:10*pt+3}} ; 0,{{eval:10*pt-2}} ; 0,{{eval:10*pt-7}} ; 0,{{eval:10*pt+6}} ; 0,{{eval:10*pt-3}} ; 0,{{eval:10*pt+0}} ; 0,{{eval:10*pt+1}} ; 0,{{eval:10*pt+2}} ; 0,{{eval:10*pt+1}} ; 0,{{eval:10*pt+1}} ; 0,{{eval:10*pt-4}} ; 0,{{eval:10*pt+1}} ; 0,{{eval:10*pt-4}} ; 0,{{eval:10*pt+5}} ; 0,{{eval:10*pt-9}} ; 0,{{eval:10*pt-5}} ; 0,{{eval:10*pt+2}} ; 0,{{eval:10*pt+10}} ; 0,{{eval:10*pt-1}} ; 0,{{eval:10*pt-2}} ; 0,{{eval:10*pt+3}} ; 0,{{eval:10*pt+4}} ; 0,{{eval:10*pt+9}} ; 0,{{eval:10*pt-2}} ; 0,{{eval:10*pt+0}} ; 0,{{eval:10*pt+5}} ; 0,{{eval:10*pt+3}} ; 0,{{eval:10*pt+3}} ; 0,{{eval:10*pt+9}} ; 0,{{eval:10*pt-6}} ; 0,{{eval:10*pt-2}} ; 0,{{eval:10*pt+8}} ; 0,{{eval:10*pt+4}} ; 0,{{eval:10*pt-7}} ; 0,{{eval:10*pt-1}} ; 0,{{eval:10*pt+7}} ; 0,{{eval:10*pt+2}} ; 0,{{eval:10*pt+1}} ; 0,{{eval:10*pt-2}} ; 0,{{eval:10*pt+3}} ; 0,{{eval:10*pt+2}} ; 0,{{eval:10*pt-3}} ; 0,{{eval:10*pt-3}} ; 0,{{eval:10*pt-1}}\nnom x: Échantillon\nnom y: Fréquence des 1\ndescription: Nuage de 100 points : en abscisse le numéro de l'échantillon, en ordonnée la fréquence des 1 observée.\n```\n\nQuelle instruction de tracé a-t-on écrite ?\n\n```choix\n- `plt.scatter(range(N), freqs)`\n- `plt.hist(freqs)`\n- `plt.scatter(freqs, range(N))`\n```",
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"variables": [
+				{
+					"name": "pt",
+					"expression": "3|4|6"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le graphique est un **nuage** : chaque échantillon donne un point, son numéro en abscisse et sa fréquence en ordonnée.",
+					"`plt.scatter(X, Y)` place les points d'abscisses `X` et d'ordonnées `Y` : il faut `plt.scatter(range(N), freqs)`. `plt.hist(freqs)` donnerait un histogramme."
+				]
+			}
+		},
+		{
+			"statement": "On simule $500$ échantillons de taille $100$ d'une loi de Bernoulli avec le programme suivant.\n\n```python\nfrom random import random\nimport matplotlib.pyplot as plt\n\ndef frequence(n, p):\n    c = 0\n    for k in range(n):\n        if random() < p:\n            c = c + 1\n    return c / n\n\nN = 500\nfreqs = [frequence(100, 0.{{pt}}) for j in range(N)]\n# instruction de tracé\nplt.show()\n```\n\nLe programme affiche le graphique ci-dessous.\n\n```histogramme\naxes: Fréquence des 1 ; Nombre d'échantillons\n[0,{{eval:10*pt-15}} ; 0,{{eval:10*pt-10}}[ = 6\n[0,{{eval:10*pt-10}} ; 0,{{eval:10*pt-5}}[ = 62\n[0,{{eval:10*pt-5}} ; 0,{{eval:10*pt}}[ = 166\n[0,{{eval:10*pt}} ; 0,{{eval:10*pt+5}}[ = 186\n[0,{{eval:10*pt+5}} ; 0,{{eval:10*pt+10}}[ = 70\n[0,{{eval:10*pt+10}} ; 0,{{eval:10*pt+15}}[ = 10\ndescription: Histogramme des fréquences des 1 dans 500 échantillons, six classes d'amplitude 0,05.\n```\n\nQuelle instruction de tracé a-t-on écrite ?\n\n```choix\n- `plt.hist(freqs)`\n- `plt.scatter(range(N), freqs)`\n- `plt.hist(range(N))`\n```",
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"variables": [
+				{
+					"name": "pt",
+					"expression": "3|4|6"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le graphique est un **histogramme** : il compte combien des $500$ fréquences tombent dans chaque classe.",
+					"`plt.hist(L)` trace l'histogramme des valeurs de la liste `L` : ici `plt.hist(freqs)`. `plt.scatter` donnerait un nuage de points."
+				]
+			}
+		},
+		{
+			"statement": "On simule $500$ échantillons de taille $100$ d'une loi de Bernoulli avec le programme suivant.\n\n```python\nfrom random import random\nimport matplotlib.pyplot as plt\n\ndef frequence(n, p):\n    c = 0\n    for k in range(n):\n        if random() < p:\n            c = c + 1\n    return c / n\n\nN = 500\nfreqs = [frequence(100, 0.{{pt}}) for j in range(N)]\nplt.scatter(range(N), freqs)\nplt.show()\n```\n\nOn remplace `frequence(100, 0.{{pt}})` par `frequence(1000, 0.{{pt}})`. Comment le nuage change-t-il ?\n\n```choix\n- les points se resserrent autour de $0{,}{{pt}}$\n- les points s'écartent davantage de $0{,}{{pt}}$\n- les points se concentrent autour d'une autre valeur\n- le nuage compte $1000$ points\n```",
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"variables": [
+				{
+					"name": "pt",
+					"expression": "3|4|6"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le nombre de points reste $N=500$ : seule la **taille** de chaque échantillon passe de $100$ à $1000$.",
+					"Plus l'échantillon est grand, moins sa fréquence fluctue : les points se resserrent autour de $\\textcolor{{{color:primary.0}}}{0{,}{{pt}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Autour de p",
+			"variationIndex": 0,
+			"variables": {
+				"pt": "3"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 1 − p",
+			"variationIndex": 0,
+			"variables": {
+				"pt": "3"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "scatter(range(N), freqs)",
+			"variationIndex": 1,
+			"variables": {
+				"pt": "4"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : hist",
+			"variationIndex": 1,
+			"variables": {
+				"pt": "4"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "hist(freqs)",
+			"variationIndex": 2,
+			"variables": {
+				"pt": "6"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : scatter",
+			"variationIndex": 2,
+			"variables": {
+				"pt": "6"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Plus resserré",
+			"variationIndex": 3,
+			"variables": {
+				"pt": "4"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 1000 points",
+			"variationIndex": 3,
+			"variables": {
+				"pt": "4"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

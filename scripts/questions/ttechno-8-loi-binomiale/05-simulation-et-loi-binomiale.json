@@ -1,0 +1,246 @@
+{
+	"id": "ae383e7c-937d-44e8-bf19-280ebf98be6e",
+	"title": "Simulation d'échantillons et loi binomiale",
+	"description": "Le nombre de 1 d'un échantillon de Bernoulli suit B(n ; p) ; fréquences observées et probabilités quand le nombre d'échantillons grandit ; compter les 1 en Python",
+	"grades": ["T_TECHNO"],
+	"level": 2,
+	"delay": 60,
+	"status": "draft",
+	"shared": {},
+	"variations": [
+		{
+			"statement": "En première, on a simulé ${{nb}}$ échantillons de taille ${{n}}$ d'une loi de Bernoulli de paramètre ${{p}}$ (des $1$ avec la probabilité ${{p}}$, des $0$ sinon) et compté, dans chaque échantillon, le nombre de $1$. Le tableau donne, pour chaque nombre $k$ de $1$, l'effectif et la fréquence observés, et la probabilité $P(X=k)$ pour $X$ de loi $\\mathcal{B}({{n}}\\,;{{p}})$.\n\n```simulation\nX ~ B({{n}} ; {{eval:p;d}})\ntirages: {{nb}}\ngraine: {{g}}\n```\n\nQuelle loi suit le nombre de $1$ d'un échantillon de taille ${{n}}$ ?\n\n```choix\nmelanger: non\n- $\\mathcal{B}({{n}}\\,;{{p}})$\n- $\\mathcal{B}({{nb}}\\,;{{p}})$\n- la loi de Bernoulli de paramètre ${{p}}$\n- $\\mathcal{B}({{p}}\\,;{{n}})$\n```",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "5..8"
+				},
+				{
+					"name": "p",
+					"expression": "0.2|0.3|0.4|0.5"
+				},
+				{
+					"name": "nb",
+					"expression": "200|500"
+				},
+				{
+					"name": "g",
+					"expression": "1..30"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Un échantillon, c'est ${{n}}$ épreuves de Bernoulli identiques et indépendantes, de succès « obtenir $1$ », de probabilité ${{p}}$.",
+					"Le nombre de $1$ compte les succès : il suit la loi $\\textcolor{{{color:primary.0}}}{\\mathcal{B}({{n}}\\,;{{p}})}$. Le nombre ${{nb}}$ d'échantillons n'est pas un paramètre de la loi : c'est le nombre de répétitions de la simulation."
+				]
+			}
+		},
+		{
+			"statement": "En première, on a simulé ${{nb}}$ échantillons de taille ${{n}}$ d'une loi de Bernoulli de paramètre ${{p}}$ (des $1$ avec la probabilité ${{p}}$, des $0$ sinon) et compté, dans chaque échantillon, le nombre de $1$. Le tableau donne, pour chaque nombre $k$ de $1$, l'effectif et la fréquence observés, et la probabilité $P(X=k)$ pour $X$ de loi $\\mathcal{B}({{n}}\\,;{{p}})$.\n\n```simulation\nX ~ B({{n}} ; {{eval:p;d}})\ntirages: {{nb}}\ngraine: {{g}}\n```\n\nSi l'on simule beaucoup plus d'échantillons (par exemple $10\\,000$), que deviennent en général les fréquences observées ?\n\n```choix\nmelanger: non\n- Elles deviennent toutes égales.\n- Elles se rapprochent des probabilités $P(X=k)$.\n- Elles s'éloignent des probabilités $P(X=k)$.\n- Elles deviennent toutes égales à ${{p}}$.\n```",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "5..8"
+				},
+				{
+					"name": "p",
+					"expression": "0.2|0.3|0.4|0.5"
+				},
+				{
+					"name": "nb",
+					"expression": "200|500"
+				},
+				{
+					"name": "g",
+					"expression": "1..30"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "1"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Avec ${{nb}}$ échantillons, les fréquences observées sont déjà proches des probabilités, avec des écarts dus au hasard.",
+					"Plus on simule d'échantillons, plus ces écarts sont faibles en général : les fréquences observées $\\textcolor{{{color:primary.0}}}{\\text{se rapprochent des probabilités}}$ $P(X=k)$ de la loi $\\mathcal{B}({{n}}\\,;{{p}})$.",
+					"Le diagramme des fréquences observées ressemble alors de plus en plus au diagramme en bâtons de la loi binomiale."
+				]
+			}
+		},
+		{
+			"statement": "La fonction Python `nombre_de_1` simule un échantillon de taille `n` d'une loi de Bernoulli de paramètre `p` et renvoie le nombre de $1$ obtenus (`random()` renvoie un nombre au hasard entre $0$ et $1$).\n\n```python\nfrom random import random\n\ndef nombre_de_1(n, p):\n    c = 0\n    for k in range(n):\n        ...\n            c = c + 1\n    return c\n```\n\nQue faut-il écrire à la place des points de suspension ?\n\n```choix\nmelanger: non\n- `if random() > p:`\n- `if random() == p:`\n- `if p < 1:`\n- `if random() < p:`\n```",
+			"variables": [],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "3"
+				}
+			],
+			"correction": {
+				"steps": [
+					"`random()` tombe dans $[0\\,;p[$ avec la probabilité $p$ : la condition `random() < p` est vraie avec la probabilité $p$, c'est le tirage d'un $1$.",
+					"La ligne est `if random() < p:`, la $\\textcolor{{{color:primary.0}}}{\\text{quatrième}}$ proposition : `c` compte alors les $1$ de l'échantillon, qui suit la loi $\\mathcal{B}(n\\,;p)$.",
+					"`random() > p` donnerait un $1$ avec la probabilité $1-p$ ; `random() == p` ne serait presque jamais vrai ; `p < 1` serait toujours vrai."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "choix : bonne réponse 0",
+			"variationIndex": 0,
+			"variables": {
+				"n": "6",
+				"p": "0.3",
+				"nb": "200",
+				"g": "4"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : N au lieu de n",
+			"variationIndex": 0,
+			"variables": {
+				"n": "6",
+				"p": "0.3",
+				"nb": "200",
+				"g": "4"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : Bernoulli",
+			"variationIndex": 0,
+			"variables": {
+				"n": "6",
+				"p": "0.3",
+				"nb": "200",
+				"g": "4"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : paramètres inversés",
+			"variationIndex": 0,
+			"variables": {
+				"n": "6",
+				"p": "0.3",
+				"nb": "200",
+				"g": "4"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "choix : bonne réponse 1",
+			"variationIndex": 1,
+			"variables": {
+				"n": "5",
+				"p": "0.5",
+				"nb": "500",
+				"g": "11"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : loi uniforme",
+			"variationIndex": 1,
+			"variables": {
+				"n": "5",
+				"p": "0.5",
+				"nb": "500",
+				"g": "11"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : contresens",
+			"variationIndex": 1,
+			"variables": {
+				"n": "5",
+				"p": "0.5",
+				"nb": "500",
+				"g": "11"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : p",
+			"variationIndex": 1,
+			"variables": {
+				"n": "5",
+				"p": "0.5",
+				"nb": "500",
+				"g": "11"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "choix : bonne réponse 3",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : probabilité 1 − p",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : égalité",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : toujours vrai",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

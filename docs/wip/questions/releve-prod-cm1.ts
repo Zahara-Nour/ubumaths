@@ -24,7 +24,7 @@ const supabase = createClient(url, key, {
 });
 
 const CHAMPS =
-	'id,type,options,precision,grades,delay,multiple_answers,theme,domain,subdomain,level,variations,' +
+	'id,type,options,precision,grades,delay,level,variations,' +
 	'exercise_instruction,status,title,description,shared,default_display_options,test_specs,classification_node_id';
 
 async function lire<T>(requete: PromiseLike<{ data: T[] | null; error: unknown }>): Promise<T[]> {
@@ -45,7 +45,7 @@ const points = await lire(
 	supabase
 		.from('curriculum_points')
 		.select('id,code,grade,node_id,archived_at')
-		.in('grade', ['CM1', 'CM2', '6'])
+		.in('grade', ['CE2', 'CM1', 'CM2', '6'])
 		.order('code')
 );
 const tags = await lire(

@@ -11,8 +11,8 @@
 
 import { describe, it, expect } from 'vitest';
 import { validateAnswer } from '../answer-validator';
-import type { InstanceBlank, QuestionInstance } from '$lib/questions/types';
-import type { ResolvedMarkdown } from '$lib/ubumark';
+import type { InstanceBlank, QuestionInstance } from '#lib/questions/types.ts';
+import type { ResolvedMarkdown } from '#lib/ubumark/index.ts';
 
 // ============================================================================
 // HELPERS

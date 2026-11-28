@@ -9,15 +9,15 @@
  * @vitest-environment node
  */
 import { describe, it, expect, vi, afterEach } from 'vitest';
-import { createMockLocals, createMockRequest } from '$tests/helpers';
+import { createMockLocals, createMockRequest } from '#tests/helpers/index.ts';
 
-vi.mock('$lib/server/middleware/auth', () => ({ requireAdmin: vi.fn() }));
-vi.mock('$lib/server/confirmAction', () => ({ assertTypedConfirmation: vi.fn() }));
-vi.mock('$lib/server/env', () => ({
+vi.mock('#lib/server/middleware/auth.ts', () => ({ requireAdmin: vi.fn() }));
+vi.mock('#lib/server/confirmAction.ts', () => ({ assertTypedConfirmation: vi.fn() }));
+vi.mock('#lib/server/env.ts', () => ({
 	getEnv: () => ({ CRON_SECRET: 'test-secret-12345678901234567890' })
 }));
-vi.mock('$lib/server/serviceRoleClient', () => ({ createServiceRoleClient: vi.fn() }));
-vi.mock('$lib/server/rateLimiter', () => ({
+vi.mock('#lib/server/serviceRoleClient.ts', () => ({ createServiceRoleClient: vi.fn() }));
+vi.mock('#lib/server/rateLimiter.ts', () => ({
 	checkEndpointRateLimit: vi.fn(async () => ({ allowed: true }))
 }));
 

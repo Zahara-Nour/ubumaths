@@ -332,7 +332,16 @@ function ensureApproximate(sol: Solution): Solution {
 function deduplicateSolutions(solutions: Solution[], tolerance = 1e-10): Solution[] {
 	const result: Solution[] = [];
 	for (const sol of solutions) {
-		const isDuplicate = result.some((existing) => {
+		const duplicateIndex = result.findIndex((existing) => {
+			// Deux conditions différentes sont deux cas : « 0 si a = 0 » ne dit pas
+			// « 0 si c = 0 » ((x² − a²b)(x² − c²d) = 0), les deux restent écrits
+			if (
+				existing.condition !== undefined &&
+				sol.condition !== undefined &&
+				!nodesEqual(existing.condition, sol.condition)
+			) {
+				return false;
+			}
 			// Compare by approximate value if both are defined
 			if (existing.approximate !== undefined && sol.approximate !== undefined) {
 				return Math.abs(existing.approximate - sol.approximate) < tolerance;
@@ -340,8 +349,12 @@ function deduplicateSolutions(solutions: Solution[], tolerance = 1e-10): Solutio
 			// Compare by normalized form as fallback
 			return normalFormsEquivalent(normalize(existing.value), normalize(sol.value));
 		});
-		if (!isDuplicate) {
+		if (duplicateIndex === -1) {
 			result.push(sol);
+		} else if (result[duplicateIndex].condition !== undefined && sol.condition === undefined) {
+			// La même valeur sans condition l'emporte : « 0 si a = 0 » ne doit pas
+			// faire perdre le 0 toujours solution (V124, x⁴ − a²bx² = 0)
+			result[duplicateIndex] = sol;
 		}
 	}
 	return result;

@@ -109,9 +109,22 @@ n'ont pas de modèle » ; il refuse de travailler sans **niveau**.
 - Il suit la démarche de [couvrir-un-niveau.md](couvrir-un-niveau.md), tirée du chantier du CP :
   relevé en lecture seule, vérification de l'existant contre les bornes, classement des points
   sans modèle, **proposition des outils qui manquent** (nouveaux blocs, gestes de réponse, en
-  chantiers à part), lots avec phase 0, migration nœud + tag, page à cocher, publication.
+  chantiers à part), lots avec phase 0 (page à cocher), migration nœud + tag, relecture dans
+  `/dev/modeles`, publication.
 - Rien n'est écrit en production par lui : `create-questions --publier` et la publication, c'est
   toi qui les lances.
+
+## `idees-rubrique` — une rubrique d'ailleurs par session
+
+`/idees-rubrique <niveau> <rubrique>` (ou « prends la rubrique fonctions de Seconde ») : la session
+réserve la rubrique dans [idees-ailleurs-repartition.md](../wip/idees-ailleurs-repartition.md), puis
+reprend les idées d'exercices d'une autre plateforme pour compléter nos modèles. Elle fait le relevé
+dans le code source, la phase 0 avec toi, le gros lot (modèles neufs et variations de modèles publiés,
+réservés eux aussi), la relecture dans `/dev/modeles` et la publication.
+
+- Plusieurs sessions tournent en même temps, une par rubrique. C'est la démarche du chantier
+  `ensembles-2de`, appliquée à n'importe quel niveau.
+- Jamais le nom de la plateforme dans un commit (le hook le refuse), une branche ou une PR.
 
 ## `reprendre` — repartir d'un chantier après un `/clear`
 
@@ -138,6 +151,17 @@ peut pas lancer lui-même ces commandes de l'interface. En **Sonnet**, comme `re
 Créée le 2026-10-29.
 
 ---
+
+## `prendre-lot` — une session de plus sur les écarts restants
+
+`/prendre-lot` (ou « prends un lot ») dans une session neuve : elle lit
+[`docs/wip/ecarts-lots.md`](../wip/ecarts-lots.md), où les écarts « à faire » du registre sont
+rangés en lots qui ne touchent pas les mêmes fichiers, prend le premier lot libre, le **réserve**
+par un commit poussé avant tout travail, puis ouvre son chantier (`ecarts-<lot>` : worktree,
+branche, journal). `/prendre-lot <nom>` pour choisir toi-même. Elle refuse de prendre un lot quand
+quatre sont déjà en cours, ou un deuxième lot mathAST en même temps qu'un premier. À la fin du lot
+elle l'écrit « fait » dans le fichier et te propose `/clear` puis `/prendre-lot` pour le suivant ;
+un lot interrompu se reprend par `/reprendre ecarts-<lot>`. Créée le 2026-11-28.
 
 ## Les commandes du projet : retirées le 2026-10-10
 

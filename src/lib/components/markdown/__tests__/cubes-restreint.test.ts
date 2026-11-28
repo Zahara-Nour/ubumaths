@@ -3,7 +3,7 @@
  * tout bloc spécial (invariant 8 de `docs/systeme/ubumark.md`).
  */
 import { describe, expect, it } from 'vitest';
-import { parseMarkdown } from '$lib/ubumark';
+import { parseMarkdown } from '#lib/ubumark/index.ts';
 import {
 	RESTRICTED_BLOCK_PLACEHOLDER,
 	restrictDocument,

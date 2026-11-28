@@ -5,9 +5,9 @@
 
 import type { PageServerLoad } from './$types';
 import { error } from '@sveltejs/kit';
-import { validateUuidParam } from '$lib/server/validation/params';
-import { createServerLogger } from '$lib/utils/logger';
-import { canAuthorConstructions } from '$lib/server/constructions-access';
+import { validateUuidParam } from '#lib/server/validation/params.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
+import { canAuthorConstructions } from '#lib/server/constructions-access.ts';
 
 const logger = createServerLogger('(protected)/constructions/[id]/+page.server');
 

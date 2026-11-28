@@ -3,10 +3,10 @@
  */
 
 import { describe, expect, it } from 'vitest';
-import { parseMarkdown, type ListNode } from '$lib/ubumark';
-import { parseHorlogeContent } from '$lib/ubumark/parser/horloge-parser';
-import { resolveText } from '$lib/ubumark/parameterization/resolver/text-resolver';
-import type { HorlogeNode } from '$lib/ubumark/types/horloge';
+import { parseMarkdown, type ListNode } from '#lib/ubumark/index.ts';
+import { parseHorlogeContent } from '#lib/ubumark/parser/horloge-parser.ts';
+import { resolveText } from '#lib/ubumark/parameterization/resolver/text-resolver.ts';
+import type { HorlogeNode } from '#lib/ubumark/types/horloge.ts';
 
 const doc = (...lines: string[]) => parseMarkdown(lines.join('\n')).children;
 

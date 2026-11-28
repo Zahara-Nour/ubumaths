@@ -5,8 +5,8 @@
  * Type definitions for VIP card administration system
  */
 
-import type { VipCardAction } from '$lib/types/vip-card';
-import { asVipCardCategory, asVipCardAction } from '$lib/types/vip-card';
+import type { VipCardAction } from '#lib/types/vip-card.ts';
+import { asVipCardCategory, asVipCardAction } from '#lib/types/vip-card.ts';
 
 /**
  * Database table types

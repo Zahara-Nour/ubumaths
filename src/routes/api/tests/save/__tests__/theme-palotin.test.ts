@@ -10,24 +10,24 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
 const addBuddyXpFromTest = vi.hoisted(() =>
-	vi.fn<typeof import('$lib/server/buddy-xp-service').addBuddyXpFromTest>(async () => null)
+	vi.fn<typeof import('#lib/server/buddy-xp-service.ts').addBuddyXpFromTest>(async () => null)
 );
 const fetchTemplateThemeIds = vi.hoisted(() =>
 	vi.fn<(supabase: unknown, templateIds: string[]) => Promise<Map<string, string>>>()
 );
 
-vi.mock('$lib/server/buddy-xp-service', () => ({ addBuddyXpFromTest }));
-vi.mock('$lib/server/buddy-themes', () => ({ fetchTemplateThemeIds }));
-vi.mock('$lib/server/srs/record-series-reviews', () => ({ recordSeriesReviews: vi.fn() }));
-vi.mock('$lib/server/serviceRoleClient', () => ({ createServiceRoleClient: () => ({}) }));
-vi.mock('$lib/server/course-card-attempts', () => ({
+vi.mock('#lib/server/buddy-xp-service.ts', () => ({ addBuddyXpFromTest }));
+vi.mock('#lib/server/buddy-themes.ts', () => ({ fetchTemplateThemeIds }));
+vi.mock('#lib/server/srs/record-series-reviews.ts', () => ({ recordSeriesReviews: vi.fn() }));
+vi.mock('#lib/server/serviceRoleClient.ts', () => ({ createServiceRoleClient: () => ({}) }));
+vi.mock('#lib/server/course-card-attempts.ts', () => ({
 	CourseCardLookupError: class extends Error {},
 	fetchCourseCardTemplateIds: async () => cartesDeCours
 }));
 
 import { POST } from '../+server';
 
-vi.mock('$lib/server/middleware/auth', () => ({
+vi.mock('#lib/server/middleware/auth.ts', () => ({
 	// Garde commune simulée : la session vient de `locals.safeGetSession`
 	requireAuth: async (locals: { safeGetSession: () => Promise<{ user: unknown }> }) => {
 		const { user } = await locals.safeGetSession();
@@ -114,7 +114,7 @@ async function enregistrer(answers: ReturnType<typeof reponse>[], mode = 'intera
 		}
 	} as never);
 	// Un corps refusé par Zod rendrait 400 : tous les cas seraient rouges pour rien.
-	expect(response.status, 'statut de la route').toBe(201);
+	expect(response.status, 'statut de la route').toBe(200);
 	return response;
 }
 

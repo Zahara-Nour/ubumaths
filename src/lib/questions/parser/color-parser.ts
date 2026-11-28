@@ -1,5 +1,5 @@
 import { getColor, COLOR_PALETTES } from '../colors';
-import type { RandomSource } from '$lib/utils/random';
+import type { RandomSource } from '#lib/utils/random.ts';
 
 export interface ColorParseResult {
 	success: boolean;

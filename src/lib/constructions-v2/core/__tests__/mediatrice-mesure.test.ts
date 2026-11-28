@@ -7,9 +7,9 @@
 import { describe, it, expect } from 'vitest';
 import { ConstructionExecutor } from '../executor';
 import type { SubStep } from '../choreographies/types';
-import { geoToNumber } from '$lib/geometry-core/compute/to-number';
-import { isSegment } from '$lib/geometry-core/types/elements';
-import { numeric } from '$lib/geometry-core/types/geo-value';
+import { geoToNumber } from '#lib/geometry-core/compute/to-number.ts';
+import { isSegment } from '#lib/geometry-core/types/elements.ts';
+import { numeric } from '#lib/geometry-core/types/geo-value.ts';
 
 /** Charge le script et rend les sous-étapes chorégraphiées, dans l'ordre. */
 function subSteps(lines: string[]): { exec: ConstructionExecutor; steps: SubStep[] } {
@@ -55,12 +55,12 @@ describe('mediatrice @mesure — déroulé', () => {
 		const { exec, steps } = subSteps(SCRIPT);
 		expect(exec.totalSteps).toBe(2 + 7);
 		expect(steps.map((s) => s.kind)).toEqual([
-			'compass-measure',
-			'compass-measure',
+			'instrument-move',
+			'instrument-move',
 			'point-fade-in',
-			'compass-measure',
+			'instrument-move',
 			'ruler-trace',
-			'compass-measure',
+			'instrument-move',
 			'ruler-trace'
 		]);
 	});

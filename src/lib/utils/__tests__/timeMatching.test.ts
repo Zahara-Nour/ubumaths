@@ -1,8 +1,8 @@
 import { describe, it, expect } from 'vitest';
 import { findCurrentSchedule, isWeekend, getNoClassMessage } from '../timeMatching';
 import type { WeekConfig } from '../week-config';
-import type { Class } from '$lib/types/database-helpers';
-import type { Tables } from '$lib/types/database';
+import type { Class } from '#lib/types/database-helpers.ts';
+import type { Tables } from '#lib/types/database.ts';
 
 type ClassSchedule = Tables<'class_schedules'>;
 

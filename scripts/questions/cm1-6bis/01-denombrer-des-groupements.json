@@ -1,0 +1,210 @@
+{
+	"id": "d00b1f79-7982-43d5-858b-0255689079e1",
+	"title": "Dénombrer une collection organisée en groupements",
+	"description": "Matériel à gros cubes avec plus de dix plaques et de dix petits cubes ; groupements écrits en unités de numération, jusqu'à 999 999",
+	"grades": ["CM1"],
+	"level": 15,
+	"delay": 90,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"spacesFromFourDigits": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Combien de petits cubes y a-t-il en tout ?\n\n```collection\nmilliers: {{m}}\ncentaines: {{c}}\ndizaines: {{d}}\nunités: {{u}}\n```\n\nIl y a $?$ cubes en tout.",
+			"variables": [
+				{
+					"name": "m",
+					"expression": "1..5"
+				},
+				{
+					"name": "c",
+					"expression": "11..19"
+				},
+				{
+					"name": "d",
+					"expression": "1..9"
+				},
+				{
+					"name": "u",
+					"expression": "11..19"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:1000*m+100*c+10*d+u}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Un gros cube vaut $1\\,000$ cubes, une plaque $100$, une barre $10$, **même quand il y en a plus de dix**.",
+					"${{m}}$ {{if:m<=1|gros cube|gros cubes}} : ${{eval:1000*m}}$ ; ${{c}}$ plaques : ${{eval:100*c}}$ ; ${{d}}$ {{if:d<=1|barre|barres}} : ${{eval:10*d}}$ ; ${{u}}$ petits cubes : ${{u}}$.",
+					"$${{eval:1000*m}}+{{eval:100*c}}+{{eval:10*d}}+{{u}}=\\textcolor{{{color:primary.0}}}{{{solution}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Une collection est organisée ainsi : ${{u}}$ unités, ${{d}}$ dizaines, ${{c}}$ centaines et ${{m}}$ {{if:m<=1|millier|milliers}}.\n\nCombien d'objets compte-t-elle ?\n\nElle compte $?$ objets.",
+			"variables": [
+				{
+					"name": "u",
+					"expression": "10..29"
+				},
+				{
+					"name": "d",
+					"expression": "11..19"
+				},
+				{
+					"name": "c",
+					"expression": "11..39"
+				},
+				{
+					"name": "m",
+					"expression": "1..9"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:1000*m+100*c+10*d+u}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On écrit la valeur de chaque groupement, puis on ajoute.",
+					"${{u}}$ unités : ${{u}}$ ; ${{d}}$ dizaines : ${{eval:10*d}}$ ; ${{c}}$ centaines : ${{eval:100*c}}$ ; ${{m}}$ {{if:m<=1|millier|milliers}} : ${{eval:1000*m}}$.",
+					"$${{u}}+{{eval:10*d}}+{{eval:100*c}}+{{eval:1000*m}}=\\textcolor{{{color:primary.0}}}{{{solution}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Une collection est organisée ainsi : ${{a}}$ {{if:a<=1|centaine de milliers|centaines de milliers}}, ${{b}}$ milliers et ${{c}}$ dizaines.\n\nCombien d'objets compte-t-elle ?\n\nElle compte $?$ objets.",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..8"
+				},
+				{
+					"name": "b",
+					"expression": "11..49"
+				},
+				{
+					"name": "c",
+					"expression": "11..99"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:100000*a+1000*b+10*c}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On écrit la valeur de chaque groupement, puis on ajoute.",
+					"${{a}}$ {{if:a<=1|centaine de milliers|centaines de milliers}} : ${{eval:100000*a}}$ ; ${{b}}$ milliers : ${{eval:1000*b}}$ ; ${{c}}$ dizaines : ${{eval:10*c}}$.",
+					"$${{eval:100000*a}}+{{eval:1000*b}}+{{eval:10*c}}=\\textcolor{{{color:primary.0}}}{{{solution}}}$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "matériel : 3 gros cubes, 14 plaques, 5 barres, 12 cubes → 4 462",
+			"variationIndex": 0,
+			"variables": {
+				"m": "3",
+				"c": "14",
+				"d": "5",
+				"u": "12"
+			},
+			"answers": ["4\\,462"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : plaques au-delà de dix oubliées (3 462)",
+			"variationIndex": 0,
+			"variables": {
+				"m": "3",
+				"c": "14",
+				"d": "5",
+				"u": "12"
+			},
+			"answers": ["3\\,462"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Sans espaces : forme à améliorer",
+			"variationIndex": 0,
+			"variables": {
+				"m": "3",
+				"c": "14",
+				"d": "5",
+				"u": "12"
+			},
+			"answers": ["4462"],
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["spaces"]
+			}
+		},
+		{
+			"description": "BO : 17 unités, 18 dizaines, 31 centaines, 2 milliers → 5 297",
+			"variationIndex": 1,
+			"variables": {
+				"u": "17",
+				"d": "18",
+				"c": "31",
+				"m": "2"
+			},
+			"answers": ["5\\,297"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : chiffres recopiés dans l'ordre (2 311)",
+			"variationIndex": 1,
+			"variables": {
+				"u": "17",
+				"d": "18",
+				"c": "31",
+				"m": "2"
+			},
+			"answers": ["2\\,311"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "4 centaines de milliers, 15 milliers, 32 dizaines → 415 320",
+			"variationIndex": 2,
+			"variables": {
+				"a": "4",
+				"b": "15",
+				"c": "32"
+			},
+			"answers": ["415\\,320"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 15 milliers lus 15 dizaines de milliers (550 320)",
+			"variationIndex": 2,
+			"variables": {
+				"a": "4",
+				"b": "15",
+				"c": "32"
+			},
+			"answers": ["550\\,320"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

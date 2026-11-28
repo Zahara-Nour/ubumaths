@@ -5,20 +5,25 @@
  * PUT - Reorder exercises in the worksheet
  */
 
-import { json, error } from '@sveltejs/kit';
+import {
+	latestVersionId,
+	WORKSHEET_LINE_VERSION,
+	withLineVersion
+} from '#lib/server/exercise-versions.ts';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireRoles } from '$lib/server/middleware/auth';
+import { requireRoles } from '#lib/server/middleware/auth.ts';
 import {
 	validateCreateWorksheetExercise,
 	validateReorderExercises,
 	worksheetExercisesResponseSchema,
 	createWorksheetExerciseResponseSchema,
 	reorderExercisesResponseSchema
-} from '$lib/server/validation/worksheets';
-import { uuidSchema } from '$lib/server/validation/common';
-import { validateJsonResponse } from '$lib/server/validation/response-utils';
-import { toJson } from '$lib/types/database-helpers';
-import { createServerLogger } from '$lib/utils/logger';
+} from '#lib/server/validation/worksheets.ts';
+import { uuidSchema } from '#lib/server/validation/common.ts';
+import { validateJsonResponse } from '#lib/server/validation/response-utils.ts';
+import { toJson } from '#lib/types/database-helpers.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/worksheets/[id]/exercises/+server');
 
@@ -82,7 +87,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 	);
 
 	// Fetch worksheet exercises with joined exercise data
-	const { data: exercises, error: dbError } = await locals.supabase
+	const { data: exerciseLines, error: dbError } = await locals.supabase
 		.from('worksheet_exercises')
 		.select(
 			`
@@ -91,11 +96,9 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 				id,
 				title,
 				variables,
-				shared,
-				variations,
-				generic_functions,
 				topic
-			)
+			),
+			${WORKSHEET_LINE_VERSION}
 		`
 		)
 		.eq('worksheet_id', params.id)
@@ -105,15 +108,17 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 		logger.error('Failed to fetch exercises:', dbError);
 		throw error(500, 'Impossible de charger les exercices');
 	}
+	// Contenu : la version choisie par la fiche (ADR 0044), pas la dernière
+	const exercises = (exerciseLines ?? []).map((line) => withLineVersion(line));
 
 	// Validate response
 	const validated = validateJsonResponse(
 		worksheetExercisesResponseSchema,
-		{ exercises: exercises ?? [] },
+		{ exercises },
 		'GET /api/worksheets/[id]/exercises'
 	);
 
-	return json(validated);
+	return Response.json(validated);
 };
 
 /**
@@ -170,6 +175,14 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 		throw error(404, 'Exercice introuvable');
 	}
 
+	// La fiche prend la DERNIÈRE version de l'exercice (ADR 0044, point 5) ; créer ensuite une
+	// version ne change pas cette ligne.
+	const exerciseVersionId = await latestVersionId(locals.supabase, data.exercise_id);
+	if (!exerciseVersionId) {
+		logger.error('Exercice sans version lisible :', data.exercise_id);
+		throw error(500, "Impossible d'ajouter l'exercice à la fiche");
+	}
+
 	// Verify section exists if provided
 	if (data.section_id) {
 		const { data: sectionExists, error: sectionError } = await locals.supabase
@@ -190,6 +203,7 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 		.insert({
 			worksheet_id: params.id,
 			exercise_id: data.exercise_id,
+			exercise_version_id: exerciseVersionId,
 			section_id: data.section_id ?? null,
 			position: data.position,
 			points: data.points ?? null,
@@ -221,7 +235,7 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 		'POST /api/worksheets/[id]/exercises'
 	);
 
-	return json(validated, { status: 201 });
+	return Response.json(validated, { status: 201 });
 };
 
 /**
@@ -321,5 +335,5 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 		'PUT /api/worksheets/[id]/exercises'
 	);
 
-	return json(validated);
+	return Response.json(validated);
 };

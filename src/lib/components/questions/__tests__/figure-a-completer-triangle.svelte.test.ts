@@ -10,9 +10,9 @@
 import { describe, it, expect, afterEach } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import FlashCard from '../FlashCard.svelte';
-import { generateInstance } from '$lib/questions/generator/instance-generator';
-import type { QuestionInstance, QuestionTemplate } from '$lib/questions/types';
-import { templateMarkdown } from '$lib/ubumark';
+import { generateInstance } from '#lib/questions/generator/instance-generator.ts';
+import type { QuestionInstance, QuestionTemplate } from '#lib/questions/types.ts';
+import { templateMarkdown } from '#lib/ubumark/index.ts';
 
 // Fenêtre 0..12 × 0..9 ; A(2 ; 2), B(8 ; 2) ; u = 4 de (1 ; 8) à (5 ; 8), v = 3 de (7 ; 8) à (10 ; 8).
 // C du haut : (2 + 43/12 ; 2 + √(16 − (43/12)²)) ≈ (5,583 ; 3,778)

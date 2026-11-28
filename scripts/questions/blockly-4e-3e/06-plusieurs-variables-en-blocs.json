@@ -1,0 +1,198 @@
+{
+	"id": "dbab36af-697d-4734-ae52-468cca749db2",
+	"title": "Plusieurs variables en blocs",
+	"description": "Écrire en blocs un programme à plusieurs variables : échange, suite, plus grand de deux.",
+	"grades": ["3"],
+	"level": 2,
+	"delay": 300,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Le programme crée deux variables : **a** vaut le nombre choisi et **b** vaut le nombre choisi $+\\ {{k}}$.\n\nÉcris-le, puis ajoute ce qu'il faut pour **échanger** les valeurs de a et de b. Termine en affichant a, puis b.\n\n```calcul\nniveau: 3e\nattendu: mettre a à nombre ; mettre b à nombre + {{k}} ; mettre c à a ; mettre a à b ; mettre b à c ; afficher a ; afficher b\nessais: 0 ; 3 ; 10\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "2..9"
+				}
+			],
+			"conditions": [],
+			"blanks": [],
+			"correction": {
+				"steps": [
+					"« Mettre a à b » efface l'ancienne valeur de a : on la perd si on ne l'a pas rangée.",
+					"On utilise une troisième variable **c** : mettre c à a, puis a à b, puis b à c.",
+					"Pour le nombre $3$ : a vaut $3$ et b vaut ${{k}} + 3$ au départ ; à la fin, a et b ont échangé leurs valeurs."
+				]
+			}
+		},
+		{
+			"statement": "On écrit une suite de nombres : le premier vaut $1$, le deuxième est le nombre choisi, et chaque nombre suivant est la **somme des deux précédents**.\n\nAvec deux variables, écris un programme qui affiche les ${{n}}$ nombres qui suivent les deux premiers.\n\n```calcul\nniveau: 3e\nattendu: mettre a à 1 ; mettre b à nombre ; répéter {{n}} [ mettre c à a + b ; mettre a à b ; mettre b à c ; afficher b ]\nessais: 1 ; 2 ; 5\n```",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "4..6"
+				}
+			],
+			"conditions": [],
+			"blanks": [],
+			"correction": {
+				"steps": [
+					"Deux variables gardent les deux derniers nombres : **a** (l'avant-dernier) et **b** (le dernier). Au départ, a vaut $1$ et b le nombre choisi.",
+					"À chaque tour : c prend la valeur a $+$ b, puis a prend l'ancienne valeur de b, et b prend c. On affiche b.",
+					"Pour $1$, la suite est $1, 1, 2, 3, 5, 8, 13$… : le programme affiche $2, 3, 5, 8$…"
+				]
+			}
+		},
+		{
+			"statement": "Écris un programme qui calcule les deux nombres nombre $\\times {{a}} - {{b}}$ et nombre $+\\ {{c}}$, puis qui affiche **le plus grand** des deux.\n\n```calcul\nniveau: 3e\nattendu: mettre x à nombre × {{a}} − {{b}} ; mettre y à nombre + {{c}} ; si x > y alors [ afficher x ] sinon [ afficher y ]\nessais: -3 ; 0 ; 5 ; 20\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..4"
+				},
+				{
+					"name": "b",
+					"expression": "1..9"
+				},
+				{
+					"name": "c",
+					"expression": "1..9"
+				}
+			],
+			"conditions": [],
+			"blanks": [],
+			"correction": {
+				"steps": [
+					"On range les deux calculs dans deux variables, **x** et **y**.",
+					"On les compare : si x $>$ y, on affiche x ; sinon, on affiche y.",
+					"Selon le nombre choisi, c'est tantôt l'un, tantôt l'autre qui est le plus grand."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Échange : référence",
+			"variationIndex": 0,
+			"variables": {
+				"k": "4"
+			},
+			"answers": [
+				"mettre a à nombre ; mettre b à nombre + 4 ; mettre c à a ; mettre a à b ; mettre b à c ; afficher a ; afficher b"
+			],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Échange : par différence",
+			"variationIndex": 0,
+			"variables": {
+				"k": "4"
+			},
+			"answers": [
+				"mettre a à nombre ; mettre b à nombre + 4 ; mettre a à a + b ; mettre b à a − b ; mettre a à a − b ; afficher a ; afficher b"
+			],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : échange sans variable de plus",
+			"variationIndex": 0,
+			"variables": {
+				"k": "4"
+			},
+			"answers": [
+				"mettre a à nombre ; mettre b à nombre + 4 ; mettre a à b ; mettre b à a ; afficher a ; afficher b"
+			],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Suite : référence",
+			"variationIndex": 1,
+			"variables": {
+				"n": "4"
+			},
+			"answers": [
+				"mettre a à 1 ; mettre b à nombre ; répéter 4 [ mettre c à a + b ; mettre a à b ; mettre b à c ; afficher b ]"
+			],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Suite : sans troisième variable",
+			"variationIndex": 1,
+			"variables": {
+				"n": "4"
+			},
+			"answers": [
+				"mettre a à 1 ; mettre b à nombre ; répéter 4 [ mettre b à a + b ; mettre a à b − a ; afficher b ]"
+			],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : a mis à jour trop tôt",
+			"variationIndex": 1,
+			"variables": {
+				"n": "4"
+			},
+			"answers": [
+				"mettre a à 1 ; mettre b à nombre ; répéter 4 [ mettre a à b ; mettre b à a + b ; afficher b ]"
+			],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Plus grand : référence",
+			"variationIndex": 2,
+			"variables": {
+				"a": "3",
+				"b": "5",
+				"c": "4"
+			},
+			"answers": [
+				"mettre x à nombre × 3 − 5 ; mettre y à nombre + 4 ; si x > y alors [ afficher x ] sinon [ afficher y ]"
+			],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Plus grand : comparaison directe",
+			"variationIndex": 2,
+			"variables": {
+				"a": "3",
+				"b": "5",
+				"c": "4"
+			},
+			"answers": [
+				"si nombre × 3 − 5 < nombre + 4 alors [ afficher nombre + 4 ] sinon [ afficher nombre × 3 − 5 ]"
+			],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : affiche le plus petit",
+			"variationIndex": 2,
+			"variables": {
+				"a": "3",
+				"b": "5",
+				"c": "4"
+			},
+			"answers": [
+				"mettre x à nombre × 3 − 5 ; mettre y à nombre + 4 ; si x < y alors [ afficher x ] sinon [ afficher y ]"
+			],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

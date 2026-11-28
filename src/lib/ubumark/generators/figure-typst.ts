@@ -23,12 +23,15 @@
 import type { FigureNode, FigureWindow } from '../types/figure';
 import { FIGURE_WIDTH_CM } from '../types/figure';
 import { buildFigureScene, type FigureFrame } from '../utils/figure-scene';
-import { exportToTypst } from '$lib/geometry-core/rendering/export-typst';
+import { exportToTypst } from '#lib/geometry-core/rendering/export-typst.ts';
 import { localizeFigureText } from '../utils/figure-text-locale';
 import { FIGURE_TYPST_UNAVAILABLE, type FigureTypstOptions } from './figure-typst-registry';
 import { protractorTypst } from './protractor-typst';
-import { posedProtractorOf } from '$lib/questions/construction/measure';
-import { allNamedPointPositions, figureShapes } from '$lib/questions/construction/positions-setup';
+import { posedProtractorOf } from '#lib/questions/construction/measure.ts';
+import {
+	allNamedPointPositions,
+	figureShapes
+} from '#lib/questions/construction/positions-setup.ts';
 import type { FigureScene } from '../utils/figure-scene';
 
 /**
@@ -128,21 +131,51 @@ export function generateFigureTypst(node: FigureNode, options: FigureTypstOption
 
 	const v = scene.viewport;
 	const unitCm = Math.round((FIGURE_WIDTH_CM[node.header.size] / (v.xMax - v.xMin)) * 1e4) / 1e4;
-	// Rapporteur posé AU-DESSUS des objets, translucide, comme l'écran : le nombre à
-	// lire n'est jamais caché par un côté de l'angle
-	const overlay = posedProtractorLines(node, scene, unitCm);
-	const canvas = exportToTypst(scene.figure, scene.viewport, {
-		...(scene.frame ? { underlay: frameToTypst(scene.frame, v, 1 / unitCm) } : {}),
-		...(overlay.length > 0 ? { overlay } : {}),
-		scale: unitCm,
-		markScale: 1 / unitCm,
-		includeImport: false,
-		includeViewportBounds: true,
-		// Objets découpés à la fenêtre comme à l'écran ; repère, noms et textes entiers
-		clipToViewport: true,
-		annotate: true,
-		// Nombres des textes : virgule en français, point en anglais (comme l'écran)
-		formatText: (text) => localizeFigureText(text, scene.locale)
-	});
-	return `#import "@preview/cetz:0.3.0"\n\n#align(center)[\n${canvas}\n]`;
+	const canvasAt = (unit: number): string => {
+		// Rapporteur posé AU-DESSUS des objets, translucide, comme l'écran : le nombre à
+		// lire n'est jamais caché par un côté de l'angle
+		const overlay = posedProtractorLines(node, scene, unit);
+		return exportToTypst(scene.figure, scene.viewport, {
+			...(scene.frame ? { underlay: frameToTypst(scene.frame, v, 1 / unit) } : {}),
+			...(overlay.length > 0 ? { overlay } : {}),
+			scale: unit,
+			markScale: 1 / unit,
+			includeImport: false,
+			includeViewportBounds: true,
+			// Objets découpés à la fenêtre comme à l'écran ; repère, noms et textes entiers
+			clipToViewport: true,
+			annotate: true,
+			// Nombres des textes : virgule en français, point en anglais (comme l'écran)
+			formatText: (text) => localizeFigureText(text, scene.locale)
+		});
+	};
+	const body = measuresSegment(node)
+		? atRealScale(canvasAt(1), canvasAt(unitCm))
+		: canvasAt(unitCm);
+	return `#import "@preview/cetz:0.3.0"\n\n#align(center)[\n${body}\n]`;
+}
+
+/** `verifier: mesure AB` : l'élève mesure le segment à la règle */
+function measuresSegment(node: FigureNode): boolean {
+	return node.construction?.checks.some((c) => c.kind === 'mesure_segment') ?? false;
+}
+
+/**
+ * Figure à mesurer à la règle (`mesure AB`, n° 26, Q4 a) : à l'échelle
+ * 1 unité = 1 cm si elle tient dans la place disponible (`layout` la donne à la
+ * compilation : colonne de fiche ou page), sinon réduite comme les autres
+ * figures (décision de David du 2026-11-12). Jamais de débordement.
+ */
+function atRealScale(realCanvas: string, reducedCanvas: string): string {
+	const asLet = (name: string, canvas: string) =>
+		canvas.replace(/^#cetz\.canvas/, `let ${name} = cetz.canvas`);
+	return [
+		'#layout(size => {',
+		asLet('figure-cm', realCanvas),
+		'if measure(figure-cm).width <= size.width { figure-cm } else {',
+		asLet('figure-reduite', reducedCanvas),
+		'figure-reduite',
+		'}',
+		'})'
+	].join('\n');
 }

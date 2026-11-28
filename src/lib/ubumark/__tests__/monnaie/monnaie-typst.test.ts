@@ -4,12 +4,12 @@
  */
 
 import { describe, expect, it } from 'vitest';
-import { parseMarkdown } from '$lib/ubumark';
-import { generateTypst } from '$lib/ubumark/generators/typst-generator';
-import { generateMonnaieTypst } from '$lib/ubumark/generators/monnaie-typst';
-import { parseMonnaieContent } from '$lib/ubumark/parser/monnaie-parser';
-import { buildMonnaieScene, MONNAIE_VIEW } from '$lib/ubumark/utils/monnaie-scene';
-import { MONNAIE_UNAVAILABLE } from '$lib/ubumark/types/monnaie';
+import { parseMarkdown } from '#lib/ubumark/index.ts';
+import { generateTypst } from '#lib/ubumark/generators/typst-generator.ts';
+import { generateMonnaieTypst } from '#lib/ubumark/generators/monnaie-typst.ts';
+import { parseMonnaieContent } from '#lib/ubumark/parser/monnaie-parser.ts';
+import { buildMonnaieScene, MONNAIE_VIEW } from '#lib/ubumark/utils/monnaie-scene.ts';
+import { MONNAIE_UNAVAILABLE } from '#lib/ubumark/types/monnaie.ts';
 
 const node = (...lines: string[]) => parseMonnaieContent(lines.join('\n'));
 const typst = (...lines: string[]) => generateMonnaieTypst(node(...lines));

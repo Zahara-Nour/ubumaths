@@ -22,11 +22,11 @@
 import type { PageServerLoad } from './$types';
 import { error } from '@sveltejs/kit';
 import { z } from 'zod';
-import { requireRole } from '$lib/server/middleware/auth';
-import { verifyTeacherStudentWithRole } from '$lib/server/middleware/student-access';
-import { readMathouCollection } from '$lib/server/mathoux/collection';
-import type { MathouCollection } from '$lib/mathoux/collection-logic';
-import { createServerLogger } from '$lib/utils/logger';
+import { requireRole } from '#lib/server/middleware/auth.ts';
+import { verifyTeacherStudentWithRole } from '#lib/server/middleware/student-access.ts';
+import { readMathouCollection } from '#lib/server/mathoux/collection.ts';
+import type { MathouCollection } from '#lib/mathoux/collection-logic.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger(
 	'(protected)/dashboard/teacher/students/[studentId]/chatterie/+page.server'

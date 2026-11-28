@@ -3,22 +3,22 @@
  * Generated from migration: 20250123000000_worksheets.sql
  */
 
-import type { DocumentNode } from '$lib/ubumark';
+import type { DocumentNode } from '#lib/ubumark/index.ts';
 import type {
 	ExerciseVariation,
 	SharedExerciseDefaults,
 	ExerciseHint,
 	ExerciseResource
-} from '$lib/exercises/types';
-import type { GradeCode } from '$lib/types/grades';
-import type { CapitalPairs } from '$lib/mathAST/parser/types';
-import type { GuidanceLevel } from '$lib/worksheets/student-copy';
+} from '#lib/exercises/types.ts';
+import type { GradeCode } from '#lib/types/grades.ts';
+import type { CapitalPairs } from '#lib/mathAST/parser/types.ts';
+import type { GuidanceLevel } from '#lib/worksheets/student-copy.ts';
 import {
 	DEFAULT_CONTENT_LOCALE,
 	isContentLocale,
 	type ContentLocale,
 	type TranslatedLocale
-} from '$lib/types/locale';
+} from '#lib/types/locale.ts';
 
 // =============================================================================
 // ENUMS AND CONSTANTS
@@ -323,7 +323,7 @@ export interface ResolvedExercise {
 	/** Hints from the selected variation */
 	hints?: ExerciseHint[];
 	/**
-	 * Lettres que l'exercice déclare comme fonctions (`exercises.generic_functions`).
+	 * Lettres que l'exercice déclare comme fonctions (`generic_functions` de sa version, `exercise_versions`).
 	 * Absent : défauts du parseur. Sans elles, `C'(x)` s'imprime en erreur dans le PDF.
 	 * Les instances stockées avant l'ajout du champ ne l'ont pas.
 	 */
@@ -378,6 +378,20 @@ export interface WorksheetTemplateRow {
 	updated_at: string;
 }
 
+/** Une notion de la fiche, telle que lue avec son nom (ADR 0041) */
+export interface WorksheetClassificationView {
+	node_id: string;
+	name: string;
+	kind?: string;
+	/** Nom de la branche de la notion, pour le titre (ADR 0041) ; absent : non lu */
+	branch?: string | null;
+	/** Nom anglais de la notion (ADR 0043) ; `null` : pas traduite ; absent : non lu */
+	name_en?: string | null;
+	/** Nom anglais de sa branche (ADR 0043) ; `null` : pas traduite ; absent : non lu */
+	branch_en?: string | null;
+	position: number;
+}
+
 export interface WorksheetRow {
 	id: string;
 	title: string;
@@ -399,6 +413,23 @@ export interface WorksheetRow {
 	estimated_duration_minutes: number | null;
 	total_points: number | null;
 	grades: string[];
+	/**
+	 * Catégorie de la fiche d'exercices (ADR 0041) ; vide hors fiche
+	 * d'exercices. Optionnelle : les fiches construites hors de la base n'en ont
+	 * pas. Lue par `isWorksheetCategory` avant usage (colonne `text`).
+	 */
+	category?: string | null;
+	/**
+	 * Vrai : `title` est un titre libre, imprimé tel quel ; faux : le titre
+	 * composé des notions et de la catégorie (ADR 0041). Absente : vrai.
+	 */
+	custom_title?: boolean;
+	/**
+	 * Notions de la fiche, dans l'ordre d'impression (`worksheet_classifications`,
+	 * ADR 0041). Pas une colonne : lues à part, comme `tags` ; absentes, rien
+	 * ne s'imprime.
+	 */
+	classifications?: WorksheetClassificationView[];
 	/**
 	 * ⚠️ Optionnel, et ça n'est pas un oubli : `tags` n'est plus une colonne de
 	 * `worksheets` depuis 20260908180000. Les étiquettes vivent dans
@@ -880,6 +911,15 @@ export interface StudentWorksheetView {
 	/** Cartouche du gabarit, comme le PDF du prof (lot 4b) : total, durée */
 	total_points?: number | null;
 	estimated_duration_minutes?: number | null;
+	/**
+	 * Niveau, catégorie, titre libre et notions de la fiche (ADR 0041) : badge
+	 * et titre composé du PDF, comme celui du prof. Absents : titre tel quel,
+	 * sans badge.
+	 */
+	grades?: string[];
+	category?: string | null;
+	custom_title?: boolean;
+	classifications?: WorksheetClassificationView[];
 }
 
 /**
@@ -1240,9 +1280,9 @@ export interface WorksheetCitationsReport {
 /**
  * Une séance du cahier de texte qui cite une fiche PAR NUMÉRO d'exercice.
  *
- * Vit ici, et non dans `$lib/server/worksheets/citations`, parce que le panneau
+ * Vit ici, et non dans `#lib/server/worksheets/citations.ts`, parce que le panneau
  * d'avertissement qui l'affiche est un composant : rien de ce qu'importe le
- * client ne doit venir de `$lib/server`.
+ * client ne doit venir de `#lib/server`.
  */
 export interface WorksheetCitation {
 	entryId: string;

@@ -7,7 +7,7 @@
 
 import { redirect, error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
-import { getTeacherClassesWithCounts } from '$lib/server/students';
+import { getTeacherClassesWithCounts } from '#lib/server/students.ts';
 
 export interface ClassForTournament {
 	id: string;

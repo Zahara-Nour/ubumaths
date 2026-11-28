@@ -1,6 +1,6 @@
 /**
  * Tracé de l'élève (toucher A puis B, aimantation, Effacer) : comportements
- * validés par David le 2026-10-25 (`docs/wip/geometrie-validation-progress.md` § 5).
+ * validés par David le 2026-10-25 (`docs/archive/wip/geometrie-validation-progress.md` § 5).
  */
 import { describe, it, expect } from 'vitest';
 import {

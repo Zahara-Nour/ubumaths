@@ -12,9 +12,9 @@
  * @module questions/units/required-unit
  */
 
-import { parseCustom } from '$lib/mathAST/parser/custom';
-import { valueIn } from '$lib/mathAST/eval/evaluate-with-modifiers';
-import { decimalString } from '$lib/mathAST/tidy/decimal';
+import { parseCustom } from '#lib/mathAST/parser/custom/index.ts';
+import { valueIn } from '#lib/mathAST/eval/evaluate-with-modifiers.ts';
+import { decimalString } from '#lib/mathAST/tidy/decimal.ts';
 import { singleExpectedDuration } from './composite-duration';
 
 /**

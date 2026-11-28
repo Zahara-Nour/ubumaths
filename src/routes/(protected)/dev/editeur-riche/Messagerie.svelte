@@ -4,9 +4,9 @@
 -->
 <script lang="ts">
 	import { tick } from 'svelte';
-	import RichTextEditor from '$lib/components/rich-text/RichTextEditor.svelte';
-	import RichTextDisplay from '$lib/components/rich-text/RichTextDisplay.svelte';
-	import * as Avatar from '$lib/components/ui/avatar';
+	import RichTextEditor from '#lib/components/rich-text/RichTextEditor.svelte';
+	import RichTextDisplay from '#lib/components/rich-text/RichTextDisplay.svelte';
+	import * as Avatar from '#lib/components/ui/avatar/index.ts';
 
 	interface Message {
 		id: number;

@@ -5,7 +5,7 @@
  * Shows function expressions, and optionally derivatives and inverses if defined.
  */
 
-import chalk from 'chalk';
+import { colors } from '../core/terminal-colors';
 import { BaseCommand } from './base-command';
 import type { CommandContext, CommandResult } from '../types';
 import { toCustom } from '../../index';
@@ -55,11 +55,11 @@ export class FnsCommand extends BaseCommand {
 		if (funcNames.length === 0) {
 			return {
 				success: true,
-				output: chalk.dim('No functions defined')
+				output: colors.dim('No functions defined')
 			};
 		}
 
-		const lines: string[] = [chalk.bold('Functions:')];
+		const lines: string[] = [colors.bold('Functions:')];
 
 		// Sort function names alphabetically
 		const sortedNames = [...funcNames].sort();
@@ -72,12 +72,14 @@ export class FnsCommand extends BaseCommand {
 			const exprStr = toCustom(definition.expression);
 
 			// Main function definition
-			lines.push('  ' + chalk.yellow(`${name}(${paramsDisplay})`) + ' = ' + chalk.cyan(exprStr));
+			lines.push('  ' + colors.yellow(`${name}(${paramsDisplay})`) + ' = ' + colors.cyan(exprStr));
 
 			// Show derivative if defined
 			if (definition.derivative) {
 				const derivStr = toCustom(definition.derivative);
-				lines.push('    ' + chalk.dim(`${name}'(${paramsDisplay})`) + ' = ' + chalk.dim(derivStr));
+				lines.push(
+					'    ' + colors.dim(`${name}'(${paramsDisplay})`) + ' = ' + colors.dim(derivStr)
+				);
 			}
 
 			// Show inverse if defined
@@ -86,9 +88,9 @@ export class FnsCommand extends BaseCommand {
 				// Use superscript -1 for inverse notation
 				lines.push(
 					'    ' +
-						chalk.dim(`${name}${'\u207B\u00B9'}(${paramsDisplay})`) +
+						colors.dim(`${name}${'\u207B\u00B9'}(${paramsDisplay})`) +
 						' = ' +
-						chalk.dim(invStr)
+						colors.dim(invStr)
 				);
 			}
 		}

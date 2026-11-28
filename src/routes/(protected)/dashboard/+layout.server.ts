@@ -7,6 +7,8 @@
  *
  * For teachers:
  * - Loads count of pending VIP card activation requests (for sidebar badge)
+ * - Lit le mode test du COMPTE (`user_preferences`), pour l'interrupteur de
+ *   l'en-tête : jamais celui du navigateur, qui diffère d'un appareil à l'autre
  *
  * For students:
  * - Checks if marketplace is enabled for their class
@@ -19,10 +21,11 @@
  */
 
 import type { LayoutServerLoad } from './$types';
-import { toPataphysicalDate } from '$lib/almanach/calendar';
-import { countPendingActivationRequests } from '$lib/server/vip-card-queries';
-import { isMarketplaceEnabled } from '$lib/server/marketplace/helpers';
-import { createServerLogger } from '$lib/utils/logger';
+import { toPataphysicalDate } from '#lib/almanach/calendar.ts';
+import { countPendingActivationRequests } from '#lib/server/vip-card-queries.ts';
+import { isMarketplaceEnabled } from '#lib/server/marketplace/helpers.ts';
+import { getTeacherTestMode } from '#lib/server/test-mode.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('(protected)/dashboard/+layout.server');
 
@@ -33,8 +36,11 @@ export const load: LayoutServerLoad = async ({ locals }) => {
 	let pendingVipRequestsCount = 0;
 	// Check if marketplace is enabled for students
 	let marketplaceEnabled = false;
+	// Mode test enregistré sur le compte du prof
+	let teacherTestMode = false;
 
 	if (profile?.role === 'teacher' && profile?.id) {
+		teacherTestMode = await getTeacherTestMode(profile.id, supabase);
 		try {
 			pendingVipRequestsCount = await countPendingActivationRequests(supabase, profile.id);
 		} catch (error) {
@@ -57,6 +63,7 @@ export const load: LayoutServerLoad = async ({ locals }) => {
 	return {
 		pendingVipRequestsCount,
 		marketplaceEnabled,
+		teacherTestMode,
 		almanachToday: toPataphysicalDate(new Date())
 	};
 };

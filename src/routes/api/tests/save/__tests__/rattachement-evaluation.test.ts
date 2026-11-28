@@ -11,18 +11,18 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
 const applyFsrsReview = vi.hoisted(() => vi.fn());
-vi.mock('$lib/server/srs/fsrs-actions', () => ({ applyFsrsReview }));
-vi.mock('$lib/server/srs/programme-deck', () => ({ ensureProgrammeDeckCard: vi.fn() }));
+vi.mock('#lib/server/srs/fsrs-actions.ts', () => ({ applyFsrsReview }));
+vi.mock('#lib/server/srs/programme-deck.ts', () => ({ ensureProgrammeDeckCard: vi.fn() }));
 const addBuddyXpFromTest = vi.hoisted(() => vi.fn(async () => null));
-vi.mock('$lib/server/buddy-xp-service', () => ({ addBuddyXpFromTest }));
-vi.mock('$lib/server/serviceRoleClient', () => ({
+vi.mock('#lib/server/buddy-xp-service.ts', () => ({ addBuddyXpFromTest }));
+vi.mock('#lib/server/serviceRoleClient.ts', () => ({
 	createServiceRoleClient: () => ({
 		from: () => ({ select: () => ({ in: async () => ({ data: [], error: null }) }) })
 	})
 }));
 
 import { POST } from '../+server';
-import { createFakeSupabase } from '$lib/server/__tests__/helpers/fake-supabase';
+import { createFakeSupabase } from '#lib/server/__tests__/helpers/fake-supabase.ts';
 
 const STUDENT = '11111111-1111-4111-8111-111111111111';
 const TEACHER = '22222222-2222-4222-8222-222222222222';
@@ -188,18 +188,15 @@ describe('POST /api/tests/save — plus aucune évaluation', () => {
 		expect(fake.on('test_sessions')).toHaveLength(0);
 	});
 
-	it('entraînement libre : evaluation_id nul, aucune lecture d’assignation, FSRS et XP comme avant', async () => {
-		const { response, fake } = await enregistrer({ mode: 'interactive' });
-		expect(response.status).toBe(201);
-		expect(sessionInseree).toMatchObject({ evaluation_id: null });
-		expect(fake.on('evaluation_assignments')).toHaveLength(0);
-		expect(applyFsrsReview).toHaveBeenCalledTimes(1);
-		expect(addBuddyXpFromTest).toHaveBeenCalledTimes(1);
-	});
-
-	it('course libre : enregistrée comme avant', async () => {
-		const { response } = await enregistrer({ mode: 'course' });
-		expect(response.status).toBe(201);
-		expect(sessionInseree).toMatchObject({ evaluation_id: null, mode: 'course' });
-	});
+	it.each(['interactive', 'course'] as const)(
+		'%s libre : aucune lecture d’assignation, gain calculé, aucune séance écrite',
+		async (mode) => {
+			const { response, fake } = await enregistrer({ mode });
+			expect(response.status).toBe(200);
+			expect(sessionInseree).toBeNull();
+			expect(fake.on('evaluation_assignments')).toHaveLength(0);
+			expect(applyFsrsReview).not.toHaveBeenCalled();
+			expect(addBuddyXpFromTest).toHaveBeenCalledTimes(1);
+		}
+	);
 });

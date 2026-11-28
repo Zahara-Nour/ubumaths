@@ -11,8 +11,8 @@
  * les résultats de la séance restent affichés tels quels.
  */
 
-import { mathouxSummarySchema } from '$lib/mathoux/summary';
-import { hasNews, type MathouNews } from '$lib/mathoux/news';
+import { mathouxSummarySchema } from '#lib/mathoux/summary.ts';
+import { hasNews, type MathouNews } from '#lib/mathoux/news.ts';
 
 /** Les nouveautés de ce calcul, ou `null` s'il n'y a rien à annoncer. */
 export async function fetchMathouNews(): Promise<MathouNews | null> {

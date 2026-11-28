@@ -1,6 +1,6 @@
 ---
 name: couvrir-niveau
-description: Couvrir les points du programme d'un niveau en modèles de questions (relevé, vérification de l'existant, classement des points sans modèle, création des outils qui manquent (nouveaux blocs, gestes de réponse), lots, brouillons en prod, nœud + tag par migration, page à cocher, publication). Utiliser quand David dit « couvre le CE1 », « compléter les modèles de 6e », « quels points du niveau X n'ont pas de modèle », ou reprend un lot de modèles de questions. Exige le niveau avant tout travail.
+description: Couvrir les points du programme d'un niveau en modèles de questions (relevé, vérification de l'existant, classement des points sans modèle, création des outils qui manquent (nouveaux blocs, gestes de réponse), lots, brouillons en prod, nœud + tag par migration, relecture dans /dev/modeles, publication). Utiliser quand David dit « couvre le CE1 », « compléter les modèles de 6e », « quels points du niveau X n'ont pas de modèle », ou reprend un lot de modèles de questions. Exige le niveau avant tout travail.
 ---
 
 # Couvrir un niveau en modèles de questions
@@ -23,7 +23,11 @@ Chantier de référence : le CP ([journal](../../../docs/wip/questions-progress.
    nombre de modèles ; modèles du niveau avec statut, nœud, tags.
 2. Bornes : `docs/systeme/programmes/bornes/` (le cycle du niveau).
 3. Vérifier chaque modèle existant contre les bornes (plages ET corrigé) ; modèles non tagués :
-   point du niveau, d'un niveau suivant, ou rien.
+   point du niveau, d'un niveau suivant, ou rien. Chercher aussi les modèles **de tous les niveaux**
+   (pas par mots-clés de titre) qu'on pourrait taguer au lieu d'en écrire : la 1re spé, la 2de, la Tle…
+   **Avant de proposer un tag**, vérifier en base les deux règles de l'ADR 0020 (doc, § 9) : **un seul
+   point par programme** sur un modèle, et le point **sur le nœud du modèle ou sur sa notion**
+   (`question_template_points_check_rules`). Un tag qui les viole est refusé à la migration.
 4. Classer chaque point sans modèle : **A** texte, **B** outil existant, **C** outil neuf,
    **D** non évaluable.
 5. Écrire tout cela dans le journal, puis **questions à David** (ordre des outils, corrections,
@@ -34,8 +38,7 @@ Chantier de référence : le CP ([journal](../../../docs/wip/questions-progress.
 **D'abord le catalogue** des outils existants (doc, § 3 bis) : tableau de variations, cercle
 trigo, courbes et grapheur, droite graduée, arbres, statistiques, géométrie (**en refonte** :
 lire `figure-et-choix`), horloge, opérations posées, collection,
-monnaie ; réponses en case, QCM (**en cours de réécriture en case « choix »**, chantier
-`figure-et-choix` : demander à David la forme à écrire tant que ce n'est pas en prod), construire,
+monnaie ; réponses en case, QCM écrit en case « choix » (ADR 0033 ; l'ancien QCM est refusé), construire,
 figure à compléter, gestes `placer:` (droite, repère, cercle trigo, horloge). Un point classé C à
 tort coûte un chantier. **Puis la liste unique des outils manquants,
 `docs/wip/outils-manquants.md`** : le geste y est peut-être déjà prévu ; un point classé C s'y ajoute
@@ -58,20 +61,29 @@ couvre (ce niveau et les suivants) et sa place dans l'ordre des lots. David déc
    plages, niveaux numérotés, forme de réponse, **question d'accès** de la migration. Attendre
    la validation ; consigner les décisions dans le journal.
 2. **Écrire** : script `docs/wip/questions/lot-<x>.py` (gabarit `lot-c.py`) → JSON de
-   `scripts/questions/<niveau>-<lot>/` ; `testSpecs` justes ET erreurs typiques ;
+   `scripts/questions/<niveau>-<lot>/` ; `testSpecs` justes ET erreurs typiques ; **erreurs prévues** des cases (réponse +
+   message à l'élève, `couvrir-un-niveau.md` § 5), proposées par le script, que le prof complète,
+   trois par case visées (QCM possible) ; un **coup de pouce** par variation (`hint` ou
+   `hintFromFirstStep`, jamais la réponse) ; forme et réglages du modèle selon les faits vérifiés du même § ;
    `create-questions` en simulation tout vert ; essai en base **locale** (`.env.local` chargé) et
    modèles joués dans l'aperçu admin. PR des fichiers (revue : aucune, contenu), merge.
 3. **Prod** : `deploy:prod` si un bloc neuf l'exige (David seul) ; **David** lance
    `create-questions --publier` (brouillons) ; l'`id` de chaque modèle est écrit en tête de son
    fichier : commiter les fichiers. Un fichier ne porte ni `theme`, ni `domain`, ni `subdomain`
    (refusés, ADR 0035).
-4. **Migration nœud + tag** (gabarit `20261026210000_questions_cp_c_rangement_tags.sql` + son
-   test d'intégration) : test rouge sans la migration puis vert, `security-auditor`, CI verte,
+4. **Migration nœud + tag, générée** (doc, § 6) : champ `rangement` dans chaque fichier du lot
+   (`{ "noeud": "Branche > Notion > Sous-notion", "point": "6-115" }`), puis
+   `pnpm tsx scripts/questions/migration-rangement.ts --dir scripts/questions/<lot>` : la
+   migration et sa fixture sont écrites, **aucun test à écrire** (un refus refuse tout le lot).
+   PR de la migration, de sa fixture et des JSON seuls, `security-auditor`, CI verte,
    `pnpm check:migrations --pr <n>`, merge, `db:migrate` depuis le dépôt principal, vérification en prod.
-5. **Page à cocher** : `pnpm tsx scripts/questions/page-a-cocher.ts --dir … --titre … --intro …
-   --sortie <scratchpad>/….html` (lit la base ; alertes : sans point, sans nœud, niveau, bloc non
-   dessiné), publiée en artefact avec la capacité `db`, rendu vérifié à 390 px, ouverte dans
-   Chrome ; lire et **compter** les verdicts en base.
+5. **Relecture dans `/dev/modeles`** (demandé le 2026-11-20 ; doc, § 8) : la vraie appli, modèles
+   joués, blocs dessinés, réponses jugées. Donner à David l'adresse qui montre tout le lot :
+   brouillons → `/dev/modeles?noeud=…` ou `?point=…` ; modèles publiés → série de relecture
+   (`scripts/series/creer-serie.ts`, 50 modèles au plus, David l'enregistre). **Les verdicts se lisent
+   en base** (`question_template_reviews` : « À revoir » + commentaire, `reviewed_at` postérieur au
+   lot) et se **comptent** avant de dire « tout est relu ». La page à cocher (`page-a-cocher.ts`,
+   artefact `db`) ne sert plus qu'en **phase 0**, pour trancher les fiches avant d'écrire.
 6. **Publication** : `pnpm tsx scripts/questions/publier-lot.ts --dir …` en simulation (tous les
    brouillons du lot, ou rien), puis **David** le lance avec `--publier` ; le script relit
    `published` en base. Journal + « Reprendre ici » à jour, commit direct.

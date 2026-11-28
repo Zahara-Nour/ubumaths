@@ -1,6 +1,6 @@
 import { error, redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
-import type { PythonExercise } from '$lib/types/python-exercises';
+import type { PythonExercise } from '#lib/types/python-exercises.ts';
 
 /**
  * Load the exercise for the edit page. Author-only.

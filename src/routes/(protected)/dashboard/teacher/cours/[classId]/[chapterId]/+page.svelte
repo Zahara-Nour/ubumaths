@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { lore } from '$lib/config/lore';
+	import { lore } from '#lib/config/lore.ts';
 	/**
 	 * Le chapitre, vu par le professeur
 	 * ==================================
@@ -27,26 +27,26 @@
 	 */
 
 	import { applyAction, enhance } from '$app/forms';
-	import { goto, invalidateAll } from '$app/navigation';
-	import { navigating } from '$app/stores';
-	import { Button } from '$lib/components/ui/button';
-	import BackLink from '$lib/components/navigation/BackLink.svelte';
-	import * as Card from '$lib/components/ui/card';
-	import * as Dialog from '$lib/components/ui/dialog';
-	import { Badge } from '$lib/components/ui/badge';
-	import { Label } from '$lib/components/ui/label';
-	import { Input } from '$lib/components/ui/input';
-	import { Textarea } from '$lib/components/ui/textarea';
+	import { goto, refreshAll } from '$app/navigation';
+	import { navigating } from '$app/state';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import BackLink from '#lib/components/navigation/BackLink.svelte';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import * as Dialog from '#lib/components/ui/dialog/index.ts';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
+	import { Label } from '#lib/components/ui/label/index.ts';
+	import { Input } from '#lib/components/ui/input/index.ts';
+	import { Textarea } from '#lib/components/ui/textarea/index.ts';
 	import {
 		ChapterAddDialogs,
 		ChapterSectionsEditor,
 		StudentProgressTable
-	} from '$lib/components/cours/teacher';
-	import { chapterHasTemplateContent } from '$lib/components/cours/teacher/chapter-has-template-content';
-	import { ChapterTemplateIndicator } from '$lib/components/templates';
-	import { ConfirmDialog } from '$lib/components/ui/confirm-dialog';
-	import { toaster } from '$lib/stores/toaster.svelte';
-	import { getChapterColorClasses } from '$lib/types/chapters';
+	} from '#lib/components/cours/teacher/index.ts';
+	import { chapterHasTemplateContent } from '#lib/components/cours/teacher/chapter-has-template-content.ts';
+	import { ChapterTemplateIndicator } from '#lib/components/templates/index.ts';
+	import { ConfirmDialog } from '#lib/components/ui/confirm-dialog/index.ts';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
+	import { getChapterColorClasses } from '#lib/types/chapters.ts';
 	import { BookMarked, Copy, Eye, EyeOff } from '@lucide/svelte';
 	import type { PageData, ActionData } from './$types';
 
@@ -135,7 +135,7 @@
 				toaster.warning(form.warning);
 			}
 
-			invalidateAll();
+			refreshAll();
 		} else if (form?.error) {
 			toaster.error(form.error);
 		}
@@ -143,7 +143,7 @@
 	});
 
 	// Navigating state (reserved for future loading indicators)
-	let _isNavigating = $derived(!!$navigating);
+	let _isNavigating = $derived(!!navigating.to);
 
 	// Le formulaire caché de « Détacher du modèle », envoyé après confirmation.
 	let detachForm: HTMLFormElement | undefined = $state();
@@ -364,7 +364,7 @@
 	takenExerciseIds={data.exercises.map((e) => e.exerciseId)}
 	takenWorksheetIds={data.worksheets.map((w) => w.worksheetId)}
 	takenSeriesIds={data.chapterSeries.map((cs) => cs.seriesId)}
-	onDocumentAdded={() => invalidateAll()}
+	onDocumentAdded={() => refreshAll()}
 />
 
 <!--

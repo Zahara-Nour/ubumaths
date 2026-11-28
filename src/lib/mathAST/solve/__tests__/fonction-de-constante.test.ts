@@ -22,7 +22,7 @@ import { toLatex } from '../../latex-generator';
 import { substitute } from '../../eval/substitute';
 import { evaluateNodeToApproximatedNumber } from '../../eval/evaluate';
 import { containsValue } from '../../domain/algebra';
-import { endpointToNumber } from '$lib/math/intervals/endpoint';
+import { endpointToNumber } from '#lib/math/intervals/endpoint.ts';
 import type { Domain, IntervalSet } from '../../domain/types';
 import type { MathNode, RelationNode } from '../../types';
 

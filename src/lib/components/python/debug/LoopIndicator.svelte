@@ -7,9 +7,9 @@
 	 */
 
 	// Imports
-	import type { DebugLoopInfo } from '$lib/shared/python/debug/types';
-	import { Progress } from '$lib/components/ui/progress';
-	import { cn } from '$lib/utils';
+	import type { DebugLoopInfo } from '#lib/shared/python/debug/types.ts';
+	import { Progress } from '#lib/components/ui/progress/index.ts';
+	import { cn } from '#lib/utils.ts';
 	import Repeat from '@lucide/svelte/icons/repeat';
 	import RefreshCw from '@lucide/svelte/icons/refresh-cw';
 

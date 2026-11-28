@@ -53,6 +53,10 @@ let adminStyleId: string;
 let exerciseId: string;
 
 interface StudentView {
+	grades?: string[];
+	category?: string | null;
+	custom_title?: boolean;
+	classifications?: Array<{ node_id: string; name: string; position: number }>;
 	style_id?: string | null;
 	template?: Record<string, unknown> | null;
 	exercises?: Array<{ printed_frame_lines?: unknown; correction?: string | null }>;
@@ -110,7 +114,8 @@ async function assigned(ids: { style_id?: string | null }) {
 		[`${RUN} fiche`, teacherId, ids.style_id ?? null]
 	);
 	await sql(
-		'insert into public.worksheet_exercises (worksheet_id, exercise_id, position) values ($1, $2, 1)',
+		`insert into public.worksheet_exercises (worksheet_id, exercise_id, exercise_version_id, position)
+		 values ($1, $2, (select v.id from public.exercise_versions v where v.exercise_id = $2 order by v.number desc limit 1), 1)`,
 		[worksheetId, exerciseId]
 	);
 	const [{ id: assignmentId }] = await sql(
@@ -269,5 +274,50 @@ describe('ce qui reste fermé', () => {
 			.eq('id', profStyleId);
 		expect(styles ?? []).toEqual([]);
 		expect(templates ?? []).toEqual([]);
+	});
+});
+
+describe('niveau, catégorie et notions de la fiche dans la vue de l’élève (ADR 0041)', () => {
+	it('l’élève reçoit niveau, catégorie, case et notions nommées : son PDF a badge et titre composé', async () => {
+		const assignmentId = await assigned({});
+		const [{ worksheet_id: worksheetId }] = await sql(
+			'select worksheet_id from public.worksheet_assignments where id = $1',
+			[assignmentId]
+		);
+		const [{ id: branchId }] = await sql(
+			`insert into public.classification_nodes (kind, parent_id, name)
+			 values ('branch', null, $1) returning id`,
+			[`${RUN} branche`]
+		);
+		const [{ id: notionId }] = await sql(
+			`insert into public.classification_nodes (kind, parent_id, name)
+			 values ('notion', $1, $2) returning id`,
+			[branchId, `${RUN} Suites`]
+		);
+		await sql(
+			`update public.worksheets set grades = $2, category = 'technical_practice', custom_title = false
+			 where id = $1`,
+			[worksheetId, ['1_SPE']]
+		);
+		await sql(
+			'insert into public.worksheet_classifications (worksheet_id, node_id, position) values ($1, $2, 0)',
+			[worksheetId, notionId]
+		);
+
+		try {
+			const { status, body } = await viewOf(student, assignmentId);
+			expect(status).toBe(200);
+			expect(body).toMatchObject({
+				grades: ['1_SPE'],
+				category: 'technical_practice',
+				custom_title: false,
+				classifications: [{ node_id: notionId, name: `${RUN} Suites`, position: 0 }]
+			});
+		} finally {
+			await sql('delete from public.worksheets where id = $1', [worksheetId]);
+			await sql('delete from public.classification_nodes where id = any($1)', [
+				[notionId, branchId]
+			]);
+		}
 	});
 });

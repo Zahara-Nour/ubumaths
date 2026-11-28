@@ -7,8 +7,8 @@
 
 	USAGE:
 	```typescript
-	import { modalStack } from '$lib/stores/modalStack.svelte';
-	import TournamentDefeatModal from '$lib/components/game/minesweeper/TournamentDefeatModal.svelte';
+	import { modalStack } from '#lib/stores/modalStack.svelte.ts';
+	import TournamentDefeatModal from '#lib/components/game/minesweeper/TournamentDefeatModal.svelte';
 
 	modalStack.push({
 		component: TournamentDefeatModal,
@@ -26,12 +26,12 @@
 -->
 
 <script lang="ts">
-	import * as Card from '$lib/components/ui/card';
-	import { Button } from '$lib/components/ui/button';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
 	import { RotateCcw, ArrowLeft } from '@lucide/svelte';
-	import type { Difficulty } from '$lib/types/minesweeper';
-	import { DIFFICULTY_LABELS } from '$lib/types/minesweeper';
-	import { formatDuration } from '$lib/utils/format';
+	import type { Difficulty } from '#lib/types/minesweeper.ts';
+	import { DIFFICULTY_LABELS } from '#lib/types/minesweeper.ts';
+	import { formatDuration } from '#lib/utils/format.ts';
 
 	interface Props {
 		timeElapsed: number;

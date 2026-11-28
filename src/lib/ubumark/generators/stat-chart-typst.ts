@@ -19,7 +19,7 @@
 
 import { COURBE_COLORS, type CourbeSize } from '../types/courbe';
 import { PIE_COLOR_SEQUENCE, type StatChartNode } from '../types/stat-chart';
-import { namedColorTable, namedColorTypst } from '$lib/theme/named-colors';
+import { namedColorTable, namedColorTypst } from '#lib/theme/named-colors.ts';
 import { WIDTH_CM } from './courbe-typst';
 import { STAT_TEXT } from '../utils/stat-chart-text';
 import {
@@ -150,11 +150,12 @@ function barsTypst(scene: BarScene, size: CourbeSize): string {
 	for (const bar of scene.bars) {
 		// Barre à construire (`placer:`) : sur la fiche, l'enfant la dessine
 		if (bar.toPlace) continue;
-		lines.push('  // barre');
+		// Barre attendue d'un corrigé (`solution: oui`, V109) : en vert
+		lines.push(bar.solved ? '  // barre solution' : '  // barre');
 		lines.push(
 			bar.series === 1 && second !== null
 				? `  rect((${X(bar.left)}, 0), (${X(bar.right)}, ${Y(bar.value)}), fill: hachures, stroke: 0.6pt + ${second})`
-				: `  rect((${X(bar.left)}, 0), (${X(bar.right)}, ${Y(bar.value)}), fill: ${bar.highlighted === false ? OUTSIDE_COLOR : color}, stroke: none)`
+				: `  rect((${X(bar.left)}, 0), (${X(bar.right)}, ${Y(bar.value)}), fill: ${bar.solved ? TYPST_COLORS.vert : bar.highlighted === false ? OUTSIDE_COLOR : color}, stroke: none)`
 		);
 		const center = X((bar.left + bar.right) / 2);
 		if (scene.showValues) {

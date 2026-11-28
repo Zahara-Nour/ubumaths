@@ -11,8 +11,8 @@
 import { describe, it, expect } from 'vitest';
 import { generateInstance } from '../instance-generator';
 import type { QuestionTemplate } from '../../types';
-import type { Variable } from '$lib/ubumark';
-import { evalResultToNumber } from '$lib/mathAST/eval/evaluate-with-modifiers';
+import type { Variable } from '#lib/ubumark/index.ts';
+import { evalResultToNumber } from '#lib/mathAST/eval/evaluate-with-modifiers.ts';
 import { specVerdicts } from '../../__tests__/spec-verdicts.helper';
 
 function valueOf(expression: string, variables: Variable[] = []): string {

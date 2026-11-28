@@ -21,7 +21,7 @@ import {
 	GoogleNotFoundError
 } from './errors';
 import { sleep, calculateBackoff } from './utils';
-import { createServerLogger } from '$lib/utils/logger';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('server/google/drive-api');
 

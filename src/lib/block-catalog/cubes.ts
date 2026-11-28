@@ -47,6 +47,13 @@ export const cubesEntry: BlockCatalogEntry = {
 					defaultValue: null,
 					description:
 						'Geste de l’élève : la perspective est cachée ; les vues listées sont dessinées, la vue de dessus (toujours donnée) sert de grille où l’élève écrit la hauteur de chaque pile. Juste si son assemblage a la même vue de dessus et les mêmes vues listées. Ne va pas avec vue: ni dessiner:.'
+				},
+				{
+					key: 'tourner',
+					values: 'oui | non',
+					defaultValue: 'non',
+					description:
+						'oui : l’élève peut faire tourner l’assemblage à l’écran, en le faisant glisser du doigt ou de la souris, ou avec les flèches du clavier. Il s’ouvre en perspective cavalière, comme sans cette ligne, puis passe en douceur à une vue sans déformation. Les cubes restent pleins : en tournant, on découvre l’arrière, la gauche et le dessous, donc aussi les cubes cachés au départ. Chaque face garde sa teinte : l’arrière comme le devant, la gauche comme la droite, le dessous comme le dessus. On peut regarder par-dessus et par-dessous, pas renverser l’assemblage. Un bouton « Vue de départ » (ou la touche Échap) le ramène à la cavalière ; chaque nouvelle question repart de la vue de départ. Tourner ne compte pas dans la réponse. Sur la fiche PDF, c’est toujours la vue de départ. Éteint par défaut : compter les cubes cachés est souvent ce qu’on évalue. Seulement pour la perspective, sans geste : avec vue: dessus, face, droite ou gauche, avec dessiner: ou avec retrouver:, l’assemblage se dessine comme sans cette ligne et un message le dit à l’auteur.'
 				}
 			]
 		}
@@ -79,16 +86,28 @@ export const cubesEntry: BlockCatalogEntry = {
 			explanation: 'Vue de droite : le devant est à gauche. Avec vue: gauche, il passe à droite.'
 		},
 		{
+			title: 'Un assemblage que l’élève peut tourner',
+			source: fence('cubes', 'hauteurs: 2 1 1 / 1 0 1', 'tourner: oui'),
+			explanation:
+				'Faire glisser l’assemblage le fait tourner : de derrière, on voit les quatre cubes de la rangée du fond. « Vue de départ » revient à la perspective cavalière.'
+		},
+		{
 			title: 'Colorier la vue de face (geste)',
 			source: fence('cubes', 'hauteurs: 2 1 1 / 1 0 1', 'dessiner: face'),
 			explanation:
 				'L’élève colorie la vue de face dans le quadrillage de 5 × 4 carreaux ; dans une question, ce bloc est la case.'
 		},
 		{
-			title: 'Retrouver l’assemblage d’après ses vues (geste)',
-			source: fence('cubes', 'hauteurs: 2 1 / 1 2', 'retrouver: face, droite'),
+			title: 'Retrouver une rangée de piles avec sa vue de face (geste, facile)',
+			source: fence('cubes', 'hauteurs: 2 3 1', 'retrouver: face'),
 			explanation:
-				'L’élève écrit une hauteur sur chaque carreau de la vue de dessus. 2 1 / 1 2 est juste, 1 2 / 2 1 ou 2 2 / 2 2 aussi : elles ont les mêmes vues.'
+				'La perspective est cachée. Une seule rangée : chaque colonne de la vue de face donne la hauteur de sa pile. Dans les carreaux de la vue de dessus, la réponse est 2, 3 et 1 : aucune autre ne convient.'
+		},
+		{
+			title: 'Retrouver l’assemblage d’après deux vues (geste, plus difficile)',
+			source: fence('cubes', 'hauteurs: 3 1 / 1 2', 'retrouver: face, droite'),
+			explanation:
+				'Quatre piles en carré : il faut croiser la vue de face et la vue de droite. L’élève touche chaque carreau de la vue de dessus et y écrit le nombre de cubes de la pile. 3 1 / 1 2 est juste, 3 2 / 2 1 ou 3 2 / 2 2 aussi : elles ont les mêmes vues de face et de droite.'
 		}
 	],
 	mistakes: [

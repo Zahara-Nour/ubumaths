@@ -11,9 +11,19 @@
 import { describe, it, expect, afterEach } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import JournalContent from '../JournalContent.svelte';
-import { resolveResource } from '$lib/resources';
-import { PUBLIC_SUPABASE_URL } from '$env/static/public';
-import MarkdownRenderer from '$lib/components/markdown/MarkdownRenderer.svelte';
+import { resolveResource } from '#lib/resources/index.ts';
+import { PUBLIC_SUPABASE_URL } from '$app/env/public';
+import { dev } from '$app/env';
+import { isRelayed } from '#lib/dev/supabase-relay.ts';
+import { toBrowserAddress } from '#lib/utils/supabase-address.ts';
+
+/** Adresse attendue dans la page : écrite en toutes lettres, pas recalculée par le code testé. */
+function rendue(chemin: string): string {
+	return isRelayed(PUBLIC_SUPABASE_URL, dev)
+		? `/__dev/supabase${chemin}`
+		: `${PUBLIC_SUPABASE_URL}${chemin}`;
+}
+import MarkdownRenderer from '#lib/components/markdown/MarkdownRenderer.svelte';
 
 const FICHE = '664fee6b-c9d0-4406-a9eb-9e0655c2b1ac';
 const JETON = 'jeton-de-partage-0123456789abcdef';
@@ -232,7 +242,10 @@ describe('JournalContent — images', () => {
 			content: `![Figure](${STOCKAGE})`,
 			links: { role: 'student' }
 		});
-		expect(container.querySelector('img')?.getAttribute('src')).toBe(STOCKAGE);
+		// En dev sur la base locale, l'adresse rendue au navigateur passe par le relais
+		expect(container.querySelector('img')?.getAttribute('src')).toBe(
+			rendue('/storage/v1/object/public/medias/figure.png')
+		);
 	});
 
 	it('image imbriquée (liste, citation, tableau) : un lien, aucune <img>', async () => {
@@ -262,7 +275,7 @@ describe('JournalContent — images', () => {
 			for (const img of container.querySelectorAll('img')) {
 				expect(img.getAttribute('src'), src).toMatch(
 					new RegExp(
-						`^${PUBLIC_SUPABASE_URL.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}/storage/v1/object/`
+						`^${toBrowserAddress(`${PUBLIC_SUPABASE_URL}/`).replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}storage/v1/object/`
 					)
 				);
 			}
@@ -314,7 +327,9 @@ describe('JournalContent — vidéos', () => {
 			content: `!video[Démo](${STOCKAGE})`,
 			links: { role: 'student' }
 		});
-		expect(container.querySelector('video source')?.getAttribute('src')).toBe(STOCKAGE);
+		expect(container.querySelector('video source')?.getAttribute('src')).toBe(
+			rendue('/storage/v1/object/public/medias/clip.mp4')
+		);
 	});
 
 	it('vidéo imbriquée (liste, citation) : un lien, aucune requête vers l’hôte', async () => {

@@ -12,11 +12,11 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { WebReplEngine } from '$lib/mathAST/cli/web/web-repl-engine';
-import { evaluateLimit } from '$lib/mathAST/limits/evaluate';
-import { analyzeSign } from '$lib/mathAST/sign';
-import { parseLatex } from '$lib/mathAST/parser';
-import { toLatex } from '$lib/mathAST/latex-generator';
+import { WebReplEngine } from '#lib/mathAST/cli/web/web-repl-engine.ts';
+import { evaluateLimit } from '#lib/mathAST/limits/evaluate.ts';
+import { analyzeSign } from '#lib/mathAST/sign/index.ts';
+import { parseLatex } from '#lib/mathAST/parser/index.ts';
+import { toLatex } from '#lib/mathAST/latex-generator.ts';
 import { computeDomain } from '../compute';
 import { formatInterval } from '../format';
 import { fraction, func, number, variable } from '../../factory';

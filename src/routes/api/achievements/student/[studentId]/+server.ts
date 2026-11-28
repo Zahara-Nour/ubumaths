@@ -25,13 +25,16 @@
  * - Status 500: Server error
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireRole } from '$lib/server/middleware/auth';
-import { verifyTeacherStudentWithRole } from '$lib/server/middleware/student-access';
-import { studentIdSchema, achievementContextSchema } from '$lib/server/validation/achievements';
-import { getStudentAchievements, AchievementServiceError } from '$lib/server/achievements/service';
-import { createServerLogger } from '$lib/utils/logger';
+import { requireRole } from '#lib/server/middleware/auth.ts';
+import { verifyTeacherStudentWithRole } from '#lib/server/middleware/student-access.ts';
+import { studentIdSchema, achievementContextSchema } from '#lib/server/validation/achievements.ts';
+import {
+	getStudentAchievements,
+	AchievementServiceError
+} from '#lib/server/achievements/service.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/achievements/student/[studentId]/+server');
 
@@ -77,13 +80,13 @@ export const GET: RequestHandler = async ({ params, url, locals }) => {
 			}
 		} else {
 			// Unknown role
-			throw error(403, 'Not authorized');
+			throw error(403, 'Accès refusé');
 		}
 
 		// Fetch student achievements
 		const achievements = await getStudentAchievements(supabase, studentId, validatedContext);
 
-		return json({
+		return Response.json({
 			success: true,
 			achievements,
 			count: achievements.length

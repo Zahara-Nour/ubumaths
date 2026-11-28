@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 360" width="600" height="360" font-family="Helvetica, Arial, sans-serif">
+  <rect width="600" height="360" fill="#ffffff"/>
+  <path d="M93.2918731741394 244.6127243480605 A214 214 0 0 1 506.70812682586063 244.61272434806057 L406.25184089179754 271.52990503872275 A110 110 0 0 0 193.74815910820251 271.5299050387227 Z" fill="#f3f4f6" stroke="#1f2937" stroke-width="3"/>
+  <path d="M110.7 249.3 A196 196 0 0 1 180.7 144.5" fill="none" stroke="#ef4444" stroke-width="12"/>
+  <text x="175.3" y="223.7" font-size="20" font-weight="bold" text-anchor="middle" fill="#b91c1c" transform="rotate(-56.25 175.3 216.7)">reserve</text>
+  <line x1="135.8" y1="256.0" x2="106.8" y2="248.2" stroke="#1f2937" stroke-width="4"/><text x="68.2" y="245.9" font-size="22" text-anchor="middle" fill="#1f2937">0 L</text><line x1="136.8" y1="215.0" x2="122.6" y2="207.7" stroke="#1f2937" stroke-width="2"/><line x1="159.0" y1="181.7" x2="146.8" y2="171.4" stroke="#1f2937" stroke-width="2"/><line x1="196.5" y1="165.1" x2="178.2" y2="141.3" stroke="#1f2937" stroke-width="4"/><text x="153.9" y="117.6" font-size="22" text-anchor="middle" fill="#1f2937">15 L</text><line x1="222.2" y1="133.2" x2="215.5" y2="118.7" stroke="#1f2937" stroke-width="2"/><line x1="260.2" y1="120.4" x2="256.7" y2="104.7" stroke="#1f2937" stroke-width="2"/><line x1="300.0" y1="130.0" x2="300.0" y2="100.0" stroke="#1f2937" stroke-width="4"/><text x="300.0" y="68.0" font-size="22" text-anchor="middle" fill="#1f2937">30 L</text><line x1="339.8" y1="120.4" x2="343.3" y2="104.7" stroke="#1f2937" stroke-width="2"/><line x1="377.8" y1="133.2" x2="384.5" y2="118.7" stroke="#1f2937" stroke-width="2"/><line x1="403.5" y1="165.1" x2="421.8" y2="141.3" stroke="#1f2937" stroke-width="4"/><text x="446.1" y="117.6" font-size="22" text-anchor="middle" fill="#1f2937">45 L</text><line x1="441.0" y1="181.7" x2="453.2" y2="171.4" stroke="#1f2937" stroke-width="2"/><line x1="463.2" y1="215.0" x2="477.4" y2="207.7" stroke="#1f2937" stroke-width="2"/><line x1="464.2" y1="256.0" x2="493.2" y2="248.2" stroke="#1f2937" stroke-width="4"/><text x="531.8" y="245.9" font-size="22" text-anchor="middle" fill="#1f2937">60 L</text>
+  <!-- pompe -->
+  <g transform="translate(276 200)" fill="#1f2937">
+    <rect x="0" y="0" width="34" height="48" rx="4"/>
+    <rect x="6" y="6" width="22" height="14" fill="#ffffff"/>
+    <path d="M34 10 L44 18 L44 40 Q44 46 49 46 Q54 46 54 40 L54 14" fill="none" stroke="#1f2937" stroke-width="4"/>
+  </g>
+  <!-- aiguille -->
+  <line x1="300" y1="300" x2="454.5" y2="258.6" stroke="#1d4ed8" stroke-width="7" stroke-linecap="round"/>
+  <circle cx="300" cy="300" r="14" fill="#1d4ed8"/>
+  <text x="300" y="345" font-size="18" text-anchor="middle" fill="#1f2937">Gauge at the start: full tank</text>
+</svg>

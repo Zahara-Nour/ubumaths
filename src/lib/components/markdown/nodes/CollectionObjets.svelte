@@ -16,7 +16,7 @@
 <svelte:options namespace="svg" />
 
 <script lang="ts">
-	import { COLLECTION_VIEW, type CollectionItem } from '$lib/ubumark/utils/collection-scene';
+	import { COLLECTION_VIEW, type CollectionItem } from '#lib/ubumark/utils/collection-scene.ts';
 
 	interface Props {
 		items: CollectionItem[];

@@ -52,7 +52,7 @@ import type {
 	PointSize,
 	StrokeDisplay
 } from './types';
-import type { CompiledFn, MathNode } from '$lib/mathAST';
+import type { CompiledFn, MathNode } from '#lib/mathAST/index.ts';
 import {
 	add,
 	compile,
@@ -61,24 +61,24 @@ import {
 	multiply,
 	number as mathNumber,
 	opposite
-} from '$lib/mathAST';
-import { differentiate } from '$lib/mathAST/differentiation';
-import { isZeroExpression } from '$lib/mathAST/normal';
-import { Figure } from '$lib/geometry-core/graph/figure';
+} from '#lib/mathAST/index.ts';
+import { differentiate } from '#lib/mathAST/differentiation/index.ts';
+import { isZeroExpression } from '#lib/mathAST/normal/index.ts';
+import { Figure } from '#lib/geometry-core/graph/figure.ts';
 import type {
 	CurveParameter,
 	GeoFunctionDomain,
 	GeoStyle
-} from '$lib/geometry-core/types/elements';
-import type { CurvePiece, Restriction } from '$lib/grapheur/restriction';
-import { exact, numeric, type ScalarParam } from '$lib/geometry-core/types/geo-value';
-import { geoToNumber } from '$lib/geometry-core/compute/to-number';
-import { resolveScreenStyle } from '$lib/geometry-core/rendering/svg-primitives';
+} from '#lib/geometry-core/types/elements.ts';
+import type { CurvePiece, Restriction } from '#lib/grapheur/restriction.ts';
+import { exact, numeric, type ScalarParam } from '#lib/geometry-core/types/geo-value.ts';
+import { geoToNumber } from '#lib/geometry-core/compute/to-number.ts';
+import { resolveScreenStyle } from '#lib/geometry-core/rendering/svg-primitives.ts';
 import {
 	classifyConic,
 	degenerateConic,
 	type DegenerateConic
-} from '$lib/geometry-core/geometry/conic-classify';
+} from '#lib/geometry-core/geometry/conic-classify.ts';
 import {
 	conicCoefficientNodes,
 	conicCoefficients,
@@ -88,12 +88,12 @@ import {
 	quadraticOrImplicit,
 	type CurveShape,
 	type QuadraticShape
-} from '$lib/geometry-core/geometry/curve-nature';
+} from '#lib/geometry-core/geometry/curve-nature.ts';
 import { isFigureObject, isFunction, isValue, type FunctionObject } from './types';
 import { plotRestrictionOf } from './interval';
 import { constantOf } from './constant';
 import { pointCoordinatesOf } from './parse';
-import { hideIndexedNames } from '$lib/mathAST/common/indexed-names';
+import { hideIndexedNames } from '#lib/mathAST/common/indexed-names.ts';
 import { substitutedAstOf, substitutedTextOf } from './engine';
 import {
 	constructionOf,
@@ -104,10 +104,10 @@ import {
 	type FigureRecipes
 } from './construction';
 import { intersectionPoint, type Support } from './construction-intersect';
-import { isExact, type GeoValue } from '$lib/geometry-core/types/geo-value';
-import { simplifyExact } from '$lib/geometry-core/compute/geo-arithmetic';
-import { substitute } from '$lib/mathAST/eval/substitute';
-import type { GeoPoint } from '$lib/geometry-core/types/primitives';
+import { isExact, type GeoValue } from '#lib/geometry-core/types/geo-value.ts';
+import { simplifyExact } from '#lib/geometry-core/compute/geo-arithmetic.ts';
+import { substitute } from '#lib/mathAST/eval/substitute.ts';
+import type { GeoPoint } from '#lib/geometry-core/types/primitives.ts';
 import { displayName } from './names';
 
 // =============================================================================

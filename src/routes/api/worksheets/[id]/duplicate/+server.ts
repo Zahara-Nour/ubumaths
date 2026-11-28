@@ -3,16 +3,16 @@
  * POST - Duplicate a worksheet
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { fetchResourceTagNames, syncResourceTags } from '$lib/server/resource-tags';
-import { requireRoles } from '$lib/server/middleware/auth';
+import { fetchResourceTagNames, syncResourceTags } from '#lib/server/resource-tags.ts';
+import { requireRoles } from '#lib/server/middleware/auth.ts';
 import {
 	validateWorksheetId,
 	createWorksheetResponseSchema
-} from '$lib/server/validation/worksheets';
-import { validateJsonResponse } from '$lib/server/validation/response-utils';
-import { createServerLogger } from '$lib/utils/logger';
+} from '#lib/server/validation/worksheets.ts';
+import { validateJsonResponse } from '#lib/server/validation/response-utils.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/worksheets/[id]/duplicate/+server');
 
@@ -76,7 +76,8 @@ export const POST: RequestHandler = async ({ locals, params }) => {
 	// - fiche : `status` (toujours brouillon), `version` (repart à 1),
 	//   `published_at` et `archived_at` (une copie neuve n'est ni publiée ni
 	//   archivée), `created_by` / `school_id` (la copie appartient à qui duplique),
-	//   `title` (suffixé « (copie) » ; la traduction du titre reste celle d'origine) ;
+	//   `title` (suffixé « (copie) » ; la traduction du titre reste celle d'origine ;
+	//   un titre composé se recompose au prochain enregistrement, ADR 0041) ;
 	// - sections et exercices : `worksheet_id` (la copie) et `section_id`
 	//   (remappé vers la section copiée).
 	// Test colonne par colonne : tests/integration/duplication-fiche-complete.test.ts.
@@ -95,6 +96,9 @@ export const POST: RequestHandler = async ({ locals, params }) => {
 			estimated_duration_minutes: original.estimated_duration_minutes,
 			total_points: original.total_points,
 			grades: original.grades,
+			// Catégorie et titre libre (ADR 0041) ; les notions sont recopiées plus bas
+			category: original.category,
+			custom_title: original.custom_title,
 			created_by: user.id,
 			school_id: profile.school_id
 		})
@@ -157,6 +161,8 @@ export const POST: RequestHandler = async ({ locals, params }) => {
 		const exerciseInserts = exercises.map((ex) => ({
 			worksheet_id: duplicate.id,
 			exercise_id: ex.exercise_id,
+			// La copie garde la version de chaque exercice (ADR 0044) : même contenu que l'original
+			exercise_version_id: ex.exercise_version_id,
 			section_id: ex.section_id ? (sectionMapping[ex.section_id] ?? null) : null,
 			position: ex.position,
 			points: ex.points,
@@ -191,6 +197,27 @@ export const POST: RequestHandler = async ({ locals, params }) => {
 		}
 	}
 
+	// Les notions de la fiche (ADR 0041), dans leur ordre d'impression.
+	const { data: notions, error: notionsError } = await locals.supabase
+		.from('worksheet_classifications')
+		.select('node_id, position')
+		.eq('worksheet_id', worksheetId);
+	if (notionsError) await abortCopy('notions (lecture)', notionsError);
+	if (notions && notions.length > 0) {
+		const { data: insertedNotions, error: insertNotionsError } = await locals.supabase
+			.from('worksheet_classifications')
+			.insert(
+				notions.map((n) => ({ worksheet_id: copyId, node_id: n.node_id, position: n.position }))
+			)
+			.select('node_id');
+		if (insertNotionsError || insertedNotions?.length !== notions.length) {
+			await abortCopy(
+				'notions',
+				insertNotionsError ?? { expected: notions.length, received: insertedNotions?.length ?? 0 }
+			);
+		}
+	}
+
 	// Les étiquettes de la fiche d'origine suivent la copie. Elles ne sont plus
 	// une colonne (migration 20260908180000), donc le `insert` qui duplique la
 	// ligne ne les emporte plus : sans cette recopie explicite, dupliquer une
@@ -209,5 +236,5 @@ export const POST: RequestHandler = async ({ locals, params }) => {
 		'POST /api/worksheets/[id]/duplicate'
 	);
 
-	return json(validated, { status: 201 });
+	return Response.json(validated, { status: 201 });
 };

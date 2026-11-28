@@ -1,0 +1,563 @@
+{
+	"id": "66f9abbf-6e85-42ff-bf3c-af6d573491c3",
+	"title": "Calcul du périmètre d'un rectangle.",
+	"description": "A partir d'une description",
+	"grades": ["6"],
+	"level": 1,
+	"delay": 15,
+	"status": "published",
+	"shared": {
+		"statement": "Quel est le périmètre d'un **rectangle** de longueur ${{c}}$ et de largeur ${{d}}$ ?\n\nLe périmètre du rectangle est $?$.",
+		"variables": [
+			{
+				"name": "a",
+				"expression": "1..11"
+			},
+			{
+				"name": "b",
+				"expression": "1..11!a"
+			},
+			{
+				"name": "c",
+				"expression": "eval:a[mm]"
+			},
+			{
+				"name": "d",
+				"expression": "eval:b[mm]"
+			}
+		],
+		"conditions": ["a>b"],
+		"correction": {
+			"steps": [
+				"Le périmètre d'un rectangle de longueur ${{c}}$ et de largeur ${{d}}$ est $2 \\times ({{c}}+{{d}}) =$ {{solution:html}}."
+			]
+		}
+	},
+	"variations": [
+		{
+			"blanks": [
+				{
+					"unit": {
+						"expected": true
+					},
+					"expectedAnswer": "{{eval:(c+d)*2;[mm]}}"
+				}
+			],
+			"statement": "Quel est le périmètre d'un **rectangle** de longueur ${{c}}$ et de largeur ${{d}}$ ?\n\nLe périmètre du rectangle est $?$.",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "eval:a[mm]"
+				},
+				{
+					"name": "d",
+					"expression": "eval:b[mm]"
+				}
+			]
+		},
+		{
+			"blanks": [
+				{
+					"unit": {
+						"expected": true
+					},
+					"expectedAnswer": "{{eval:(c+d)*2;[cm]}}"
+				}
+			],
+			"statement": "Quel est le périmètre d'un **rectangle** de longueur ${{c}}$ et de largeur ${{d}}$ ?\n\nLe périmètre du rectangle est $?$.",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "eval:a[cm]"
+				},
+				{
+					"name": "d",
+					"expression": "eval:b[cm]"
+				}
+			]
+		},
+		{
+			"blanks": [
+				{
+					"unit": {
+						"expected": true
+					},
+					"expectedAnswer": "{{eval:(c+d)*2;[dm]}}"
+				}
+			],
+			"statement": "Quel est le périmètre d'un **rectangle** de longueur ${{c}}$ et de largeur ${{d}}$ ?\n\nLe périmètre du rectangle est $?$.",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "eval:a[dm]"
+				},
+				{
+					"name": "d",
+					"expression": "eval:b[dm]"
+				}
+			]
+		},
+		{
+			"blanks": [
+				{
+					"unit": {
+						"expected": true
+					},
+					"expectedAnswer": "{{eval:(c+d)*2;[m]}}"
+				}
+			],
+			"statement": "Quel est le périmètre d'un **rectangle** de longueur ${{c}}$ et de largeur ${{d}}$ ?\n\nLe périmètre du rectangle est $?$.",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "eval:a[m]"
+				},
+				{
+					"name": "d",
+					"expression": "eval:b[m]"
+				}
+			]
+		},
+		{
+			"blanks": [
+				{
+					"unit": {
+						"expected": true
+					},
+					"expectedAnswer": "{{eval:(c+d)*2;[dam]}}"
+				}
+			],
+			"statement": "Quel est le périmètre d'un **rectangle** de longueur ${{c}}$ et de largeur ${{d}}$ ?\n\nLe périmètre du rectangle est $?$.",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "eval:a[dam]"
+				},
+				{
+					"name": "d",
+					"expression": "eval:b[dam]"
+				}
+			]
+		},
+		{
+			"blanks": [
+				{
+					"unit": {
+						"expected": true
+					},
+					"expectedAnswer": "{{eval:(c+d)*2;[hm]}}"
+				}
+			],
+			"statement": "Quel est le périmètre d'un **rectangle** de longueur ${{c}}$ et de largeur ${{d}}$ ?\n\nLe périmètre du rectangle est $?$.",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "eval:a[hm]"
+				},
+				{
+					"name": "d",
+					"expression": "eval:b[hm]"
+				}
+			]
+		},
+		{
+			"blanks": [
+				{
+					"unit": {
+						"expected": true
+					},
+					"expectedAnswer": "{{eval:(c+d)*2;[km]}}"
+				}
+			],
+			"statement": "Quel est le périmètre d'un **rectangle** de longueur ${{c}}$ et de largeur ${{d}}$ ?\n\nLe périmètre du rectangle est $?$.",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "eval:a[km]"
+				},
+				{
+					"name": "d",
+					"expression": "eval:b[km]"
+				}
+			]
+		},
+		{
+			"statement": "Quel est le périmètre de ce **rectangle** ?\n\n```figure\nfenetre: -1 ; {{eval:a+3}} ; -1.5 ; {{eval:b+1}}\ndescription: Un rectangle de {{a}} cm de longueur et {{b}} cm de largeur ; ses côtés opposés sont codés de la même longueur.\n---\nA = point(0, 0, visible=faux)\nB = point({{a}}, 0, visible=faux)\nC = point({{a}}, {{b}}, visible=faux)\nD = point(0, {{b}}, visible=faux)\npolygone(A, B, C, D, couleur=\"noir\", epaisseur=2, remplissage=\"bleu\", opacite_fond=0.2)\nmarque_segment(A, B)\nmarque_segment(C, D)\nmarque_segment(B, C, traits=2)\nmarque_segment(D, A, traits=2)\nangle(B, A, D, marque=\"carre\")\nM = milieu(A, B, visible=faux)\nN = milieu(B, C, visible=faux)\ntexte(M, \"{{a}} cm\", dy=-0.4, ancre=\"haut\")\ntexte(N, \"{{b}} cm\", dx=0.3, ancre=\"gauche\")\n```\n\nLe périmètre du rectangle est $?$.",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "3..11"
+				},
+				{
+					"name": "b",
+					"expression": "2..10"
+				},
+				{
+					"name": "c",
+					"expression": "eval:a+b"
+				},
+				{
+					"name": "d",
+					"expression": "eval:2*(a+b)"
+				}
+			],
+			"conditions": ["a>b", "a*b!=2*(a+b)"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{d}}\\unit{cm}",
+					"unit": {
+						"expected": true
+					},
+					"expectedErrors": [
+						{
+							"answer": "{{c}}\\unit{cm}",
+							"message": "Tu n'as compté que deux côtés : le tour du rectangle passe par les quatre, soit $2 \\times (L + l)$.",
+							"label": "Demi-périmètre"
+						},
+						{
+							"answer": "{{eval:a*b}}\\unit{cm}",
+							"message": "Tu as multiplié la longueur par la largeur : c'est l'aire. Le périmètre est le tour.",
+							"label": "Aire"
+						},
+						{
+							"answer": "{{eval:2*a+b}}\\unit{cm}",
+							"message": "La largeur aussi compte deux fois : il y a deux largeurs, comme deux longueurs.",
+							"label": "Une seule largeur"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"Les côtés codés de la même façon ont la même longueur : deux côtés de ${{a}}~\\unit{cm}$ et deux de ${{b}}~\\unit{cm}$.",
+					"$$2 \\times ({{a}} + {{b}}) = 2 \\times {{c}} = \\textcolor{{{color:primary.0}}}{{{d}}~\\unit{cm}}$$"
+				]
+			},
+			"hint": "Une longueur et une largeur sont écrites : combien de fois chacune fait-elle partie du tour ?"
+		},
+		{
+			"statement": "Quel est le périmètre d'un **rectangle** de longueur ${{eval:a/10;d}}~\\unit{cm}$ et de largeur ${{eval:b/10;d}}~\\unit{cm}$ ?\n\nLe périmètre du rectangle est $?$.",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "51..94"
+				},
+				{
+					"name": "b",
+					"expression": "11..34"
+				},
+				{
+					"name": "c",
+					"expression": "eval:a+b"
+				},
+				{
+					"name": "d",
+					"expression": "eval:2*(a+b)"
+				}
+			],
+			"conditions": ["mod(a,10)!=0", "mod(b,10)!=0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:d/10;d}}\\unit{cm}",
+					"unit": {
+						"expected": true
+					},
+					"expectedErrors": [
+						{
+							"answer": "{{eval:c/10;d}}\\unit{cm}",
+							"message": "Tu n'as compté que deux côtés : le tour du rectangle passe par les quatre, soit $2 \\times (L + l)$.",
+							"label": "Demi-périmètre"
+						},
+						{
+							"answer": "{{eval:a*b/100;d}}\\unit{cm}",
+							"message": "Tu as multiplié la longueur par la largeur : c'est l'aire. Le périmètre est le tour.",
+							"label": "Aire"
+						},
+						{
+							"answer": "{{eval:(2*a+b)/10;d}}\\unit{cm}",
+							"message": "La largeur aussi compte deux fois : il y a deux largeurs, comme deux longueurs.",
+							"label": "Une seule largeur"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"$${{eval:a/10;d}} + {{eval:b/10;d}} = {{eval:c/10;d}}$$",
+					"$$2 \\times {{eval:c/10;d}} = \\textcolor{{{color:primary.0}}}{{{eval:d/10;d}}~\\unit{cm}}$$"
+				]
+			},
+			"hint": "Additionne d'abord la longueur et la largeur : c'est la moitié du tour."
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["26\\unit{mm}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "8",
+				"b": "5"
+			},
+			"description": "2 × (8+5) mm = 26 mm",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["13\\unit{mm}"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "8",
+				"b": "5"
+			},
+			"description": "demi-périmètre 13",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["26"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "8",
+				"b": "5"
+			},
+			"description": "sans unité",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["26\\unit{cm}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "8",
+				"b": "5"
+			},
+			"description": "2 × (8+5) cm = 26 cm",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["26\\unit{dm}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "8",
+				"b": "5"
+			},
+			"description": "2 × (8+5) dm = 26 dm",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["26\\unit{m}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "8",
+				"b": "5"
+			},
+			"description": "2 × (8+5) m = 26 m",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["26\\unit{dam}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "8",
+				"b": "5"
+			},
+			"description": "2 × (8+5) dam = 26 dam",
+			"variationIndex": 4
+		},
+		{
+			"answers": ["26\\unit{hm}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "8",
+				"b": "5"
+			},
+			"description": "2 × (8+5) hm = 26 hm",
+			"variationIndex": 5
+		},
+		{
+			"answers": ["26\\unit{km}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "8",
+				"b": "5"
+			},
+			"description": "2 × (8+5) km = 26 km",
+			"variationIndex": 6
+		},
+		{
+			"description": "Figure 8 × 5 : 26 cm",
+			"variationIndex": 7,
+			"variables": {
+				"a": "8",
+				"b": "5",
+				"c": "13",
+				"d": "26"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["26\\unit{cm}"]
+		},
+		{
+			"description": "Figure 8 × 5 : 260 mm accepté",
+			"variationIndex": 7,
+			"variables": {
+				"a": "8",
+				"b": "5",
+				"c": "13",
+				"d": "26"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["260\\unit{mm}"]
+		},
+		{
+			"description": "Figure 8 × 5 : 13 cm",
+			"variationIndex": 7,
+			"variables": {
+				"a": "8",
+				"b": "5",
+				"c": "13",
+				"d": "26"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu n'as compté que deux côtés : le tour du rectangle passe par les quatre, soit $2 \\times (L + l)$."
+			},
+			"answers": ["13\\unit{cm}"]
+		},
+		{
+			"description": "Figure 8 × 5 : 40 cm (aire)",
+			"variationIndex": 7,
+			"variables": {
+				"a": "8",
+				"b": "5",
+				"c": "13",
+				"d": "26"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as multiplié la longueur par la largeur : c'est l'aire. Le périmètre est le tour."
+			},
+			"answers": ["40\\unit{cm}"]
+		},
+		{
+			"description": "Figure 8 × 5 : 21 cm",
+			"variationIndex": 7,
+			"variables": {
+				"a": "8",
+				"b": "5",
+				"c": "13",
+				"d": "26"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "La largeur aussi compte deux fois : il y a deux largeurs, comme deux longueurs."
+			},
+			"answers": ["21\\unit{cm}"]
+		},
+		{
+			"description": "Figure 8 × 5 : 26 sans unité",
+			"variationIndex": 7,
+			"variables": {
+				"a": "8",
+				"b": "5",
+				"c": "13",
+				"d": "26"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["26"]
+		},
+		{
+			"description": "7,3 × 2,4 : 19,4 cm",
+			"variationIndex": 8,
+			"variables": {
+				"a": "73",
+				"b": "24",
+				"c": "97",
+				"d": "194"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["19{,}4\\unit{cm}"]
+		},
+		{
+			"description": "7,3 × 2,4 : 194 mm accepté",
+			"variationIndex": 8,
+			"variables": {
+				"a": "73",
+				"b": "24",
+				"c": "97",
+				"d": "194"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["194\\unit{mm}"]
+		},
+		{
+			"description": "7,3 × 2,4 : 9,7 cm",
+			"variationIndex": 8,
+			"variables": {
+				"a": "73",
+				"b": "24",
+				"c": "97",
+				"d": "194"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu n'as compté que deux côtés : le tour du rectangle passe par les quatre, soit $2 \\times (L + l)$."
+			},
+			"answers": ["9{,}7\\unit{cm}"]
+		},
+		{
+			"description": "7,3 × 2,4 : 17,52 cm (aire)",
+			"variationIndex": 8,
+			"variables": {
+				"a": "73",
+				"b": "24",
+				"c": "97",
+				"d": "194"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as multiplié la longueur par la largeur : c'est l'aire. Le périmètre est le tour."
+			},
+			"answers": ["17{,}52\\unit{cm}"]
+		},
+		{
+			"description": "7,3 × 2,4 : 17 cm",
+			"variationIndex": 8,
+			"variables": {
+				"a": "73",
+				"b": "24",
+				"c": "97",
+				"d": "194"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "La largeur aussi compte deux fois : il y a deux largeurs, comme deux longueurs."
+			},
+			"answers": ["17\\unit{cm}"]
+		}
+	]
+}

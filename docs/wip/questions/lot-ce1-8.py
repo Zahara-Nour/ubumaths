@@ -1,6 +1,6 @@
 """Écrit les 6 modèles du lot 8 du CE1 (monnaie) dans scripts/questions/ce1-8/.
 
-Phase 0 validée par David le 2026-11-01 (§ 15 du journal `docs/wip/questions-ce1-progress.md`).
+Phase 0 validée par David le 2026-11-01 (§ 15 du journal `docs/archive/wip/questions-ce1-progress.md`).
 Bornes `cycle2.json`, CE1-054 à 057, 086 ; BO c2 p.28 : euros et centimes, centimes < 100, ou
 écriture à virgule ; ordonner quatre prix quelles que soient leurs écritures (12 € > 60 centimes) ;
 « pas de pièce de 1 € » (pièces de 10, 20, 50 c). Décisions :

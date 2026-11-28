@@ -1,6 +1,6 @@
 <script lang="ts">
-	import BackLink from '$lib/components/navigation/BackLink.svelte';
-	import StoredFigureForm from '$lib/components/geometry/StoredFigureForm.svelte';
+	import BackLink from '#lib/components/navigation/BackLink.svelte';
+	import StoredFigureForm from '#lib/components/geometry/StoredFigureForm.svelte';
 	import type { PageData } from './$types';
 
 	let { data }: { data: PageData } = $props();

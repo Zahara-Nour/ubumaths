@@ -25,7 +25,7 @@
 import * as YAML from 'yaml';
 import type { ExerciseExport, ExerciseFrontmatter } from './types';
 import { validateFrontmatter } from './validation';
-import { sanitizeForSlug } from '$lib/utils/filename';
+import { sanitizeForSlug } from '#lib/utils/filename.ts';
 
 // ============================================================================
 // CONSTANTS

@@ -10,7 +10,7 @@ import type { TypeContext, NumericType, MathType } from './types';
 import { EMPTY_CONTEXT } from './types';
 import { isSubtype } from './algebra';
 import { inferType } from './infer';
-import type { IntervalDomain } from '$lib/math/intervals/types';
+import type { IntervalDomain } from '#lib/math/intervals/types.ts';
 import { numericNode } from '../common/numeric';
 import { compareNumericNodes } from '../eval/compare-numeric';
 

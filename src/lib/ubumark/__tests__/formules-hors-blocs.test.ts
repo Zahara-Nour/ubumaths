@@ -13,7 +13,7 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { parseMarkdown, type BlockNode } from '$lib/ubumark';
+import { parseMarkdown, type BlockNode } from '#lib/ubumark/index.ts';
 
 const children = (markdown: string) => parseMarkdown(markdown).children as BlockNode[];
 const types = (markdown: string) => children(markdown).map((c) => c.type);
@@ -94,6 +94,12 @@ describe('blocs spéciaux après une formule sur plusieurs lignes', () => {
 		const md = '$$\na\n$$\n\n```trig\npoint: pi/3\n```\n\nfin';
 
 		expect(types(md)).not.toContain('code-block');
+	});
+
+	it('schéma en barres : un nœud, pas un bloc de code', () => {
+		const md = '$$\na\n$$\n\n```schema-barres\nOr : ? (4) ; 70 (2)\n```\n\nfin';
+
+		expect(types(md)).toEqual(['math-block', 'schema-barres', 'paragraph']);
 	});
 });
 

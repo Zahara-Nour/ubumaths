@@ -8,7 +8,7 @@
  * - Transpiler options
  * - Rendering options
  *
- * Note: AST types and ParseOptions are now in $lib/ubumark
+ * Note: AST types and ParseOptions are now in #lib/ubumark
  *
  * @module exercises/types
  */
@@ -17,10 +17,10 @@
 // IMPORTS
 // ============================================================================
 
-import type { Variable, ResolvedVariable, DocumentNode } from '$lib/ubumark';
-import type { GradeCode } from '$lib/types/grades';
-import type { ContentLocale, TranslatedLocale } from '$lib/types/locale';
-import type { CapitalPairs, GenericFunctionConfig } from '$lib/mathAST/parser/types';
+import type { Variable, ResolvedVariable, DocumentNode } from '#lib/ubumark/index.ts';
+import type { GradeCode } from '#lib/types/grades.ts';
+import type { ContentLocale, TranslatedLocale } from '#lib/types/locale.ts';
+import type { CapitalPairs, GenericFunctionConfig } from '#lib/mathAST/parser/types.ts';
 
 // ============================================================================
 // EXERCISE CATEGORY
@@ -98,9 +98,9 @@ export type {
 	RenderOptions,
 	Variable,
 	ResolvedVariable
-} from '$lib/ubumark';
+} from '#lib/ubumark/index.ts';
 
-export { DEFAULT_IMAGE_SIZE_MAPPINGS } from '$lib/ubumark';
+export { DEFAULT_IMAGE_SIZE_MAPPINGS } from '#lib/ubumark/index.ts';
 
 // ============================================================================
 // RESOURCE TYPES
@@ -344,6 +344,9 @@ export interface Exercise {
 	// Metadata
 	/** Exercise title (optional, for organization) */
 	title?: string;
+
+	/** Titre traduit (`exercises.translations`) ; le français reste dans `title` */
+	translations?: ExerciseTitleTranslations | null;
 
 	/** Source reference (e.g., book name, author) */
 	source?: string;
@@ -598,6 +601,12 @@ export interface TranslatedExerciseContent {
 
 /** Translations by locale. French is never a key: it is the base content. */
 export type ExerciseTranslations = Partial<Record<TranslatedLocale, TranslatedExerciseContent>>;
+
+/**
+ * Traductions des colonnes de l'exercice (`exercises.translations`) : le titre
+ * seul, sur le modèle des fiches. Le contenu se traduit dans les variations.
+ */
+export type ExerciseTitleTranslations = Partial<Record<TranslatedLocale, { title?: string }>>;
 
 export interface ExerciseVariation {
 	/**
@@ -1010,7 +1019,7 @@ export type ExerciseUpdate = Partial<Omit<Exercise, 'id' | 'created_at' | 'creat
 	id: string;
 };
 
-// Note: AST NODE TYPES and PARSER OPTIONS have been moved to $lib/ubumark/types
+// Note: AST NODE TYPES and PARSER OPTIONS have been moved to #lib/ubumark/types
 
 // ============================================================================
 // TRANSPILER OPTIONS
@@ -1115,7 +1124,7 @@ export interface TypstTranspilerOptions {
 	author?: string;
 
 	/**
-	 * Fonctions déclarées par l'exercice (`exercises.generic_functions`), même
+	 * Fonctions déclarées par l'exercice (`generic_functions` de sa version, `exercise_versions`), même
 	 * sens qu'à l'écran (`expressionToLatex`) :
 	 * - `undefined` : défauts du parseur (f, g, h, u, v, w, F, G, H) ;
 	 * - `null` : aucune lettre n'est une fonction ;
@@ -1171,7 +1180,7 @@ export type ResolvedTypstTranspilerOptions = Required<
 		'genericFunctions' | 'capitalPairs' | 'afterQuestion' | 'keepEndWithNext' | 'chainedStart'
 	>;
 
-// Note: RenderOptions, ParseResult, and MathPlaceholder are re-exported from $lib/ubumark
+// Note: RenderOptions, ParseResult, and MathPlaceholder are re-exported from #lib/ubumark
 
 // ============================================================================
 // EXPORT/IMPORT TYPES
@@ -1730,8 +1739,8 @@ export interface CreateExerciseAssignment {
 	/** Exercise to assign */
 	exercise_id: string;
 
-	/** Who to assign to */
-	assigned_to_type: AssignmentTargetType;
+	/** Who to assign to (« public » ne se crée plus : élève ou classe seulement) */
+	assigned_to_type: Exclude<AssignmentTargetType, 'public'>;
 
 	/** Student ID (required if assigned_to_type='student') */
 	student_id?: string;
@@ -1830,77 +1839,6 @@ export interface AssignedExerciseWithDetails extends ExerciseAssignment {
 }
 
 /**
- * Exercise with completion status for student view
- *
- * Combines Exercise with optional assignment and completion data.
- * Used when displaying exercises to students to show which are assigned
- * and track their progress.
- *
- * @example Assigned exercise with completion
- * ```typescript
- * const exercise: ExerciseWithCompletion = {
- *   // ... all Exercise fields ...
- *   id: 'ex-123',
- *   title: 'Addition Practice',
- *   // ... other exercise fields ...
- *
- *   assignment: {
- *     id: 'assign-456',
- *     exercise_id: 'ex-123',
- *     assigned_by: 'teacher-789',
- *     assigned_to_type: 'student',
- *     student_id: 'student-abc',
- *     class_id: null,
- *     assigned_at: '2024-01-15T10:00:00Z',
- *     optional_deadline: '2024-01-20T23:59:59Z',
- *     notes: 'Complete this week',
- *     is_active: true
- *   },
- *
- *   completion: {
- *     id: 'complete-789',
- *     exercise_id: 'ex-123',
- *     assignment_id: 'assign-456',
- *     student_id: 'student-abc',
- *     completed_at: '2024-01-16T14:30:00Z',
- *     last_viewed_at: '2024-01-16T14:30:00Z',
- *     view_count: 2,
- *     created_at: '2024-01-15T10:30:00Z'
- *   },
- *
- *   is_accessible: true // Has assignment
- * };
- * ```
- *
- * @example Public exercise without assignment
- * ```typescript
- * const exercise: ExerciseWithCompletion = {
- *   // ... all Exercise fields ...
- *   id: 'ex-456',
- *   is_public: true,
- *   // ... other fields ...
- *
- *   assignment: undefined, // Not assigned, just public
- *   completion: undefined, // Not yet viewed
- *   is_accessible: true // Is public
- * };
- * ```
- */
-export interface ExerciseWithCompletion extends Exercise {
-	/** Assignment data if exercise was assigned to this student */
-	assignment?: ExerciseAssignment;
-
-	/** Completion tracking data if student has viewed/completed */
-	completion?: ExerciseCompletion;
-
-	/**
-	 * Whether student can access this exercise
-	 * True if: has assignment OR exercise.is_public=true
-	 */
-	is_accessible: boolean;
-}
-
-/**
  * Union type for assignment target data
  *
  * Type-safe representation of assignment targets.
@@ -1944,12 +1882,11 @@ export type AssignmentTarget =
  * };
  * ```
  *
- * @example Assign to classes and make public
+ * @example Assign to classes
  * ```typescript
  * const bulk: BulkAssignmentData = {
  *   exercise_id: 'ex-456',
- *   classes: ['class-3eme-a', 'class-3eme-b'],
- *   make_public: true
+ *   classes: ['class-3eme-a', 'class-3eme-b']
  * };
  * ```
  */
@@ -1962,9 +1899,6 @@ export interface BulkAssignmentData {
 
 	/** Class IDs to assign to (creates one assignment per class) */
 	classes?: string[];
-
-	/** Whether to create a public assignment (accessible to all students) */
-	make_public?: boolean;
 
 	/** Optional deadline for all assignments */
 	optional_deadline?: string | null;
@@ -2063,37 +1997,6 @@ export interface PaginatedResponse<T> {
 // ============================================================================
 
 /**
- * Filter options for student exercise list
- *
- * Used when students browse available exercises.
- * Helps filter by completion status, assignment status, and accessibility.
- *
- * @example Show only assigned uncompleted exercises
- * ```typescript
- * const filters: StudentExerciseFilters = {
- *   show_completed: false,
- *   show_assigned_only: true
- * };
- * ```
- */
-export interface StudentExerciseFilters {
-	/** Include completed exercises in results */
-	show_completed?: boolean;
-
-	/** Show only assigned exercises (exclude public exercises) */
-	show_assigned_only?: boolean;
-
-	/** Show public exercises (not assigned to student) */
-	show_public?: boolean;
-
-	/** Show only exercises with deadlines */
-	has_deadline?: boolean;
-
-	/** Search in title and statement */
-	search?: string;
-}
-
-/**
  * Filter options for teacher assignment management
  *
  * Used when teachers view and manage their assignments.
@@ -2183,7 +2086,7 @@ export interface AssignmentStats {
  * Ensures that assignment data has the correct target fields:
  * - student assignments must have student_id
  * - class assignments must have class_id
- * - public assignments must not have student_id or class_id
+ * - any other target (« public » compris) is refused
  *
  * @param data - Assignment data to validate
  * @returns Validation result with error message if invalid
@@ -2217,8 +2120,10 @@ export function validateAssignmentData(data: CreateExerciseAssignment): {
 	if (data.assigned_to_type === 'class' && !data.class_id) {
 		return { valid: false, error: 'class_id required for class assignment' };
 	}
-	if (data.assigned_to_type === 'public' && (data.student_id || data.class_id)) {
-		return { valid: false, error: 'public assignment cannot have student_id or class_id' };
+	// Garde à l'exécution : le type interdit déjà « public », une valeur venue d'ailleurs aussi.
+	const target: string = data.assigned_to_type;
+	if (target !== 'student' && target !== 'class') {
+		return { valid: false, error: 'assignment target must be a student or a class' };
 	}
 	return { valid: true };
 }

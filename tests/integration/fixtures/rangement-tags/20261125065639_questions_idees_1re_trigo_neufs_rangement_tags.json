@@ -1,0 +1,24 @@
+{
+	"migration": "supabase/migrations/20261125065639_questions_idees_1re_trigo_neufs_rangement_tags.sql",
+	"ranges": [
+		{
+			"id": "6a461989-66f1-457d-9673-969e869b7dd5",
+			"title": "Ramener un réel dans [0 ; 2π[",
+			"fichier": "n1-ramener-un-reel-dans-0-2pi.json",
+			"branche": "Fonctions",
+			"notion": "Fonctions trigonométriques",
+			"sousNotion": "cercle et radians",
+			"point": "1SPE-304"
+		},
+		{
+			"id": "7dba5a1d-305e-4cdf-aa9a-a07acfc1b4af",
+			"title": "Calculer sin x connaissant cos x",
+			"fichier": "n2-calculer-sin-connaissant-cos.json",
+			"branche": "Fonctions",
+			"notion": "Fonctions trigonométriques",
+			"sousNotion": "cosinus et sinus d'un réel",
+			"point": "1SPE-305"
+		}
+	],
+	"niveaux": []
+}

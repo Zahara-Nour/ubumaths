@@ -39,24 +39,25 @@
  *   a notification for the worksheet owner (teacher)
  */
 
-import { error, json } from '@sveltejs/kit';
+import { WORKSHEET_LINE_VERSION, withLineVersion } from '#lib/server/exercise-versions.ts';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireRole } from '$lib/server/middleware/auth';
+import { requireRole } from '#lib/server/middleware/auth.ts';
 import {
 	validateStudentErrorReportParams,
 	validateCreateErrorReport,
 	createErrorReportResponseSchema
-} from '$lib/server/validation/worksheets';
-import { validateJsonResponse } from '$lib/server/validation/response-utils';
-import type { StudentErrorReportView, WorksheetErrorReportInsert } from '$lib/types/worksheets';
+} from '#lib/server/validation/worksheets.ts';
+import { validateJsonResponse } from '#lib/server/validation/response-utils.ts';
+import type { StudentErrorReportView, WorksheetErrorReportInsert } from '#lib/types/worksheets.ts';
 import {
 	assignmentCopyScope,
 	resolveWorksheetExerciseCopy,
 	worksheetExerciseSeed,
 	type ExerciseContentRow
-} from '$lib/worksheets/worksheet-copy';
-import { fetchCopyNumbering } from '$lib/server/worksheets/display-number';
-import { createServerLogger } from '$lib/utils/logger';
+} from '#lib/worksheets/worksheet-copy.ts';
+import { fetchCopyNumbering } from '#lib/server/worksheets/display-number.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger(
 	'api/student/worksheets/[assignmentId]/exercises/[exerciseId]/report/+server'
@@ -141,17 +142,21 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 		};
 
 		// Step 3: Find the worksheet_exercise by exercise_id within this worksheet
-		const { data: worksheetExercise, error: weError } = await locals.supabase
+		const { data: worksheetLine, error: weError } = await locals.supabase
 			.from('worksheet_exercises')
-			.select('id, position, variation_index, exercise:exercises (id, title, shared, variations)')
+			.select(
+				`id, position, variation_index, exercise:exercises (id, title), ${WORKSHEET_LINE_VERSION}`
+			)
 			.eq('worksheet_id', worksheet.id)
 			.eq('exercise_id', exerciseId)
 			.single();
 
-		if (weError || !worksheetExercise) {
+		if (weError || !worksheetLine) {
 			logger.error('[API] Error fetching worksheet exercise:', weError);
 			throw error(404, 'Exercice non trouve dans ce devoir');
 		}
+		// Contenu : la version de la fiche (ADR 0044), celle que l'élève a vue
+		const worksheetExercise = withLineVersion(worksheetLine);
 
 		// Step 4: La version et la graine de la copie de l'élève (ADR 0023), par
 		// le même calcul que l'API élève : la page du prof montre ce qu'il a vu
@@ -237,7 +242,7 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 			'POST /api/student/worksheets/[assignmentId]/exercises/[exerciseId]/report'
 		);
 
-		return json(validated, { status: 201 });
+		return Response.json(validated, { status: 201 });
 	} catch (err) {
 		// Re-throw SvelteKit errors
 		if (err && typeof err === 'object' && 'status' in err) {

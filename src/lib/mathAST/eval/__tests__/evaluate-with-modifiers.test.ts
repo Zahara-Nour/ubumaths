@@ -7,11 +7,11 @@
 
 import { describe, it, expect } from 'vitest';
 import { evaluateAstWithModifiers } from '../evaluate-with-modifiers';
-import { parseLatex } from '$lib/mathAST/parser';
-import { parseCustom } from '$lib/mathAST/parser/custom';
+import { parseLatex } from '#lib/mathAST/parser/index.ts';
+import { parseCustom } from '#lib/mathAST/parser/custom/index.ts';
 import { evaluate } from '../evaluate';
 import { substitute } from '../substitute';
-import type { EvalModifiers } from '$lib/ubumark';
+import type { EvalModifiers } from '#lib/ubumark/index.ts';
 
 // Parse puis évalue : l'ancienne enveloppe de production, supprimée
 function evaluateLatex(latex: string, modifiers: EvalModifiers = {}): string {

@@ -11,9 +11,9 @@
 	 * @component
 	 */
 
-	import type { CoordinateTransformer } from '$lib/grapheur/viewport';
-	import type { IntegralResult } from '$lib/grapheur/analysis';
-	import { curveColorValue } from '$lib/grapheur/colors';
+	import type { CoordinateTransformer } from '#lib/grapheur/viewport.ts';
+	import type { IntegralResult } from '#lib/grapheur/analysis.ts';
+	import { curveColorValue } from '#lib/grapheur/colors.ts';
 
 	// Props
 	let {

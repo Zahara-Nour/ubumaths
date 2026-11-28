@@ -9,21 +9,21 @@
 	 * - Optional screenshot upload
 	 * - Auto-captured context display
 	 */
-	import * as Dialog from '$lib/components/ui/dialog';
-	import { Button } from '$lib/components/ui/button';
-	import { Input } from '$lib/components/ui/input';
-	import { Textarea } from '$lib/components/ui/textarea';
-	import { Label } from '$lib/components/ui/label';
-	import * as RadioGroup from '$lib/components/ui/radio-group';
-	import MySelect from '$lib/components/MySelect.svelte';
-	import { toaster } from '$lib/stores/toaster.svelte';
-	import { getFreezeDetectionContext } from '$lib/utils/freezeDetection';
-	import type { BugReportCategory, BugReportSeverity } from '$lib/types/bug-reports';
+	import * as Dialog from '#lib/components/ui/dialog/index.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import { Input } from '#lib/components/ui/input/index.ts';
+	import { Textarea } from '#lib/components/ui/textarea/index.ts';
+	import { Label } from '#lib/components/ui/label/index.ts';
+	import * as RadioGroup from '#lib/components/ui/radio-group/index.ts';
+	import MySelect from '#lib/components/MySelect.svelte';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
+	import { getFreezeDetectionContext } from '#lib/utils/freezeDetection.ts';
+	import type { BugReportCategory, BugReportSeverity } from '#lib/types/bug-reports.ts';
 	import {
 		BUG_REPORT_CATEGORY_LABELS,
 		BUG_REPORT_CATEGORY_ICONS,
 		BUG_REPORT_SEVERITY_LABELS
-	} from '$lib/types/bug-reports';
+	} from '#lib/types/bug-reports.ts';
 	import { Loader2, Upload, X } from '@lucide/svelte';
 
 	interface Props {

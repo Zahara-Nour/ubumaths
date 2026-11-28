@@ -4,19 +4,19 @@
 
 import { error, fail, redirect } from '@sveltejs/kit';
 import type { Actions, PageServerLoad } from './$types';
-import { requireRoles } from '$lib/server/middleware/auth';
-import { uuidSchema } from '$lib/server/validation/common';
-import { classIdsFieldSchema } from '$lib/server/validation/evaluations';
+import { requireRoles } from '#lib/server/middleware/auth.ts';
+import { uuidSchema } from '#lib/server/validation/common.ts';
+import { classIdsFieldSchema } from '#lib/server/validation/evaluations.ts';
 import {
 	assignEvaluation,
 	EvaluationError,
 	getEvaluation,
 	getEvaluationAssignments,
 	removeAssignment
-} from '$lib/server/evaluations';
-import { notifyNewAssessment } from '$lib/server/auto-notifications';
-import { getTeacherClassesWithCounts } from '$lib/server/students';
-import { validateUuidParam } from '$lib/server/validation/params';
+} from '#lib/server/evaluations.ts';
+import { notifyNewAssessment } from '#lib/server/auto-notifications.ts';
+import { getTeacherClassesWithCounts } from '#lib/server/students.ts';
+import { validateUuidParam } from '#lib/server/validation/params.ts';
 
 export const load: PageServerLoad = async ({ params, locals }) => {
 	const { user, profile } = await requireRoles(locals, ['teacher', 'admin']);

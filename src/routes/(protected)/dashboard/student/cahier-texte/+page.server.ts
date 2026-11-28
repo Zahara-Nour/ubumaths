@@ -9,11 +9,11 @@
  */
 
 import type { PageServerLoad } from './$types';
-import { requireRole } from '$lib/server/middleware/auth';
-import { getUpcomingHomework } from '$lib/server/journal';
-import type { UpcomingHomework, JournalDayView } from '$lib/types/journal';
+import { requireRole } from '#lib/server/middleware/auth.ts';
+import { getUpcomingHomework } from '#lib/server/journal.ts';
+import type { UpcomingHomework, JournalDayView } from '#lib/types/journal.ts';
 import { z } from 'zod';
-import { createServerLogger } from '$lib/utils/logger';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('(protected)/dashboard/student/cahier-texte/+page.server');
 

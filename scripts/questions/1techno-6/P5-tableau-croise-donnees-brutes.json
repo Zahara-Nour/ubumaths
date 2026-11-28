@@ -1,0 +1,639 @@
+{
+	"id": "2405ca31-d856-454d-9e1e-682ec371e088",
+	"title": "Tableau croisé d'après des données brutes",
+	"description": "Compter 12 individus selon deux critères et compléter le tableau croisé (cases et totaux)",
+	"grades": ["1_TECHNO"],
+	"level": 2,
+	"delay": 60,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Voici le sexe et le régime de $12$ élèves d'une classe.\n\n| Élève | Sexe | Régime |\n|---|---|---|\n| 1 | {{if:x1 == 1|Fille|Garçon}} | {{if:y1 == 1|Externe|Demi-pensionnaire}} |\n| 2 | {{if:x2 == 1|Fille|Garçon}} | {{if:y2 == 1|Externe|Demi-pensionnaire}} |\n| 3 | {{if:x3 == 1|Fille|Garçon}} | {{if:y3 == 1|Externe|Demi-pensionnaire}} |\n| 4 | {{if:x4 == 1|Fille|Garçon}} | {{if:y4 == 1|Externe|Demi-pensionnaire}} |\n| 5 | {{if:x5 == 1|Fille|Garçon}} | {{if:y5 == 1|Externe|Demi-pensionnaire}} |\n| 6 | {{if:x6 == 1|Fille|Garçon}} | {{if:y6 == 1|Externe|Demi-pensionnaire}} |\n| 7 | {{if:x7 == 1|Fille|Garçon}} | {{if:y7 == 1|Externe|Demi-pensionnaire}} |\n| 8 | {{if:x8 == 1|Fille|Garçon}} | {{if:y8 == 1|Externe|Demi-pensionnaire}} |\n| 9 | {{if:x9 == 1|Fille|Garçon}} | {{if:y9 == 1|Externe|Demi-pensionnaire}} |\n| 10 | {{if:x10 == 1|Fille|Garçon}} | {{if:y10 == 1|Externe|Demi-pensionnaire}} |\n| 11 | {{if:x11 == 1|Fille|Garçon}} | {{if:y11 == 1|Externe|Demi-pensionnaire}} |\n| 12 | {{if:x12 == 1|Fille|Garçon}} | {{if:y12 == 1|Externe|Demi-pensionnaire}} |\n\nOn range ces données dans le tableau croisé ci-dessous.\n\n```tableau-croise\nlignes: Fille ; Garçon\ncolonnes: Externe ; Demi-pensionnaire\nFille = {{oo}} ; {{on}}\nGarçon = {{no}} ; {{nn}}\ncoin: Sexe \\ Régime\nmasquer: Fille/Externe ; Fille/Demi-pensionnaire ; Garçon/Externe ; Garçon/Demi-pensionnaire\n```\n\nComplète les cases cachées.\n\nFilles externes : $?$\n\nFilles demi-pensionnaires : $?$\n\nGarçons externes : $?$\n\nGarçons demi-pensionnaires : $?$",
+			"blanks": [
+				{
+					"expectedAnswer": "{{oo}}"
+				},
+				{
+					"expectedAnswer": "{{on}}"
+				},
+				{
+					"expectedAnswer": "{{no}}"
+				},
+				{
+					"expectedAnswer": "{{nn}}"
+				}
+			],
+			"variables": [
+				{
+					"name": "x1",
+					"expression": "0|1"
+				},
+				{
+					"name": "y1",
+					"expression": "0|1"
+				},
+				{
+					"name": "x2",
+					"expression": "0|1"
+				},
+				{
+					"name": "y2",
+					"expression": "0|1"
+				},
+				{
+					"name": "x3",
+					"expression": "0|1"
+				},
+				{
+					"name": "y3",
+					"expression": "0|1"
+				},
+				{
+					"name": "x4",
+					"expression": "0|1"
+				},
+				{
+					"name": "y4",
+					"expression": "0|1"
+				},
+				{
+					"name": "x5",
+					"expression": "0|1"
+				},
+				{
+					"name": "y5",
+					"expression": "0|1"
+				},
+				{
+					"name": "x6",
+					"expression": "0|1"
+				},
+				{
+					"name": "y6",
+					"expression": "0|1"
+				},
+				{
+					"name": "x7",
+					"expression": "0|1"
+				},
+				{
+					"name": "y7",
+					"expression": "0|1"
+				},
+				{
+					"name": "x8",
+					"expression": "0|1"
+				},
+				{
+					"name": "y8",
+					"expression": "0|1"
+				},
+				{
+					"name": "x9",
+					"expression": "0|1"
+				},
+				{
+					"name": "y9",
+					"expression": "0|1"
+				},
+				{
+					"name": "x10",
+					"expression": "0|1"
+				},
+				{
+					"name": "y10",
+					"expression": "0|1"
+				},
+				{
+					"name": "x11",
+					"expression": "0|1"
+				},
+				{
+					"name": "y11",
+					"expression": "0|1"
+				},
+				{
+					"name": "x12",
+					"expression": "0|1"
+				},
+				{
+					"name": "y12",
+					"expression": "0|1"
+				},
+				{
+					"name": "oo",
+					"expression": "eval:x1*y1+x2*y2+x3*y3+x4*y4+x5*y5+x6*y6+x7*y7+x8*y8+x9*y9+x10*y10+x11*y11+x12*y12"
+				},
+				{
+					"name": "on",
+					"expression": "eval:x1*(1-y1)+x2*(1-y2)+x3*(1-y3)+x4*(1-y4)+x5*(1-y5)+x6*(1-y6)+x7*(1-y7)+x8*(1-y8)+x9*(1-y9)+x10*(1-y10)+x11*(1-y11)+x12*(1-y12)"
+				},
+				{
+					"name": "no",
+					"expression": "eval:(1-x1)*y1+(1-x2)*y2+(1-x3)*y3+(1-x4)*y4+(1-x5)*y5+(1-x6)*y6+(1-x7)*y7+(1-x8)*y8+(1-x9)*y9+(1-x10)*y10+(1-x11)*y11+(1-x12)*y12"
+				},
+				{
+					"name": "nn",
+					"expression": "eval:(1-x1)*(1-y1)+(1-x2)*(1-y2)+(1-x3)*(1-y3)+(1-x4)*(1-y4)+(1-x5)*(1-y5)+(1-x6)*(1-y6)+(1-x7)*(1-y7)+(1-x8)*(1-y8)+(1-x9)*(1-y9)+(1-x10)*(1-y10)+(1-x11)*(1-y11)+(1-x12)*(1-y12)"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On compte, ligne par ligne des données, les individus de chaque case ; chaque total est la **somme** de sa ligne ou de sa colonne.",
+					"Filles externes : $\\textcolor{{{color:primary.0}}}{{{oo}}}$ ; Filles demi-pensionnaires : $\\textcolor{{{color:primary.0}}}{{{on}}}$ ; Garçons externes : $\\textcolor{{{color:primary.0}}}{{{no}}}$ ; Garçons demi-pensionnaires : $\\textcolor{{{color:primary.0}}}{{{nn}}}$.",
+					"```tableau-croise\nlignes: Fille ; Garçon\ncolonnes: Externe ; Demi-pensionnaire\nFille = {{oo}} ; {{on}}\nGarçon = {{no}} ; {{nn}}\ncoin: Sexe \\ Régime\n```"
+				]
+			},
+			"conditions": ["oo >= 1", "on >= 1", "no >= 1", "nn >= 1"]
+		},
+		{
+			"statement": "Dans un club, on a relevé pour $12$ adhérents s'ils sont majeurs et s'ils pratiquent la compétition.\n\n| Adhérent | Âge | Compétition |\n|---|---|---|\n| 1 | {{if:x1 == 1|Majeur|Mineur}} | {{if:y1 == 1|Oui|Non}} |\n| 2 | {{if:x2 == 1|Majeur|Mineur}} | {{if:y2 == 1|Oui|Non}} |\n| 3 | {{if:x3 == 1|Majeur|Mineur}} | {{if:y3 == 1|Oui|Non}} |\n| 4 | {{if:x4 == 1|Majeur|Mineur}} | {{if:y4 == 1|Oui|Non}} |\n| 5 | {{if:x5 == 1|Majeur|Mineur}} | {{if:y5 == 1|Oui|Non}} |\n| 6 | {{if:x6 == 1|Majeur|Mineur}} | {{if:y6 == 1|Oui|Non}} |\n| 7 | {{if:x7 == 1|Majeur|Mineur}} | {{if:y7 == 1|Oui|Non}} |\n| 8 | {{if:x8 == 1|Majeur|Mineur}} | {{if:y8 == 1|Oui|Non}} |\n| 9 | {{if:x9 == 1|Majeur|Mineur}} | {{if:y9 == 1|Oui|Non}} |\n| 10 | {{if:x10 == 1|Majeur|Mineur}} | {{if:y10 == 1|Oui|Non}} |\n| 11 | {{if:x11 == 1|Majeur|Mineur}} | {{if:y11 == 1|Oui|Non}} |\n| 12 | {{if:x12 == 1|Majeur|Mineur}} | {{if:y12 == 1|Oui|Non}} |\n\nOn range ces données dans le tableau croisé ci-dessous.\n\n```tableau-croise\nlignes: Majeur ; Mineur\ncolonnes: Oui ; Non\nMajeur = {{oo}} ; {{on}}\nMineur = {{no}} ; {{nn}}\ncoin: Âge \\ Compétition\nmasquer: Majeur/Oui ; Mineur/Non ; Total/Oui ; Majeur/Total\n```\n\nComplète les cases cachées.\n\nMajeurs en compétition : $?$\n\nMineurs hors compétition : $?$\n\nTotal des adhérents en compétition : $?$\n\nTotal des majeurs : $?$",
+			"blanks": [
+				{
+					"expectedAnswer": "{{oo}}"
+				},
+				{
+					"expectedAnswer": "{{nn}}"
+				},
+				{
+					"expectedAnswer": "{{eval:oo+no}}"
+				},
+				{
+					"expectedAnswer": "{{eval:oo+on}}"
+				}
+			],
+			"variables": [
+				{
+					"name": "x1",
+					"expression": "0|1"
+				},
+				{
+					"name": "y1",
+					"expression": "0|1"
+				},
+				{
+					"name": "x2",
+					"expression": "0|1"
+				},
+				{
+					"name": "y2",
+					"expression": "0|1"
+				},
+				{
+					"name": "x3",
+					"expression": "0|1"
+				},
+				{
+					"name": "y3",
+					"expression": "0|1"
+				},
+				{
+					"name": "x4",
+					"expression": "0|1"
+				},
+				{
+					"name": "y4",
+					"expression": "0|1"
+				},
+				{
+					"name": "x5",
+					"expression": "0|1"
+				},
+				{
+					"name": "y5",
+					"expression": "0|1"
+				},
+				{
+					"name": "x6",
+					"expression": "0|1"
+				},
+				{
+					"name": "y6",
+					"expression": "0|1"
+				},
+				{
+					"name": "x7",
+					"expression": "0|1"
+				},
+				{
+					"name": "y7",
+					"expression": "0|1"
+				},
+				{
+					"name": "x8",
+					"expression": "0|1"
+				},
+				{
+					"name": "y8",
+					"expression": "0|1"
+				},
+				{
+					"name": "x9",
+					"expression": "0|1"
+				},
+				{
+					"name": "y9",
+					"expression": "0|1"
+				},
+				{
+					"name": "x10",
+					"expression": "0|1"
+				},
+				{
+					"name": "y10",
+					"expression": "0|1"
+				},
+				{
+					"name": "x11",
+					"expression": "0|1"
+				},
+				{
+					"name": "y11",
+					"expression": "0|1"
+				},
+				{
+					"name": "x12",
+					"expression": "0|1"
+				},
+				{
+					"name": "y12",
+					"expression": "0|1"
+				},
+				{
+					"name": "oo",
+					"expression": "eval:x1*y1+x2*y2+x3*y3+x4*y4+x5*y5+x6*y6+x7*y7+x8*y8+x9*y9+x10*y10+x11*y11+x12*y12"
+				},
+				{
+					"name": "on",
+					"expression": "eval:x1*(1-y1)+x2*(1-y2)+x3*(1-y3)+x4*(1-y4)+x5*(1-y5)+x6*(1-y6)+x7*(1-y7)+x8*(1-y8)+x9*(1-y9)+x10*(1-y10)+x11*(1-y11)+x12*(1-y12)"
+				},
+				{
+					"name": "no",
+					"expression": "eval:(1-x1)*y1+(1-x2)*y2+(1-x3)*y3+(1-x4)*y4+(1-x5)*y5+(1-x6)*y6+(1-x7)*y7+(1-x8)*y8+(1-x9)*y9+(1-x10)*y10+(1-x11)*y11+(1-x12)*y12"
+				},
+				{
+					"name": "nn",
+					"expression": "eval:(1-x1)*(1-y1)+(1-x2)*(1-y2)+(1-x3)*(1-y3)+(1-x4)*(1-y4)+(1-x5)*(1-y5)+(1-x6)*(1-y6)+(1-x7)*(1-y7)+(1-x8)*(1-y8)+(1-x9)*(1-y9)+(1-x10)*(1-y10)+(1-x11)*(1-y11)+(1-x12)*(1-y12)"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On compte, ligne par ligne des données, les individus de chaque case ; chaque total est la **somme** de sa ligne ou de sa colonne.",
+					"Majeurs en compétition : $\\textcolor{{{color:primary.0}}}{{{oo}}}$ ; Mineurs hors compétition : $\\textcolor{{{color:primary.0}}}{{{nn}}}$ ; Total des adhérents en compétition : $\\textcolor{{{color:primary.0}}}{{{eval:oo+no}}}$ ; Total des majeurs : $\\textcolor{{{color:primary.0}}}{{{eval:oo+on}}}$.",
+					"```tableau-croise\nlignes: Majeur ; Mineur\ncolonnes: Oui ; Non\nMajeur = {{oo}} ; {{on}}\nMineur = {{no}} ; {{nn}}\ncoin: Âge \\ Compétition\n```"
+				]
+			},
+			"conditions": ["oo >= 1", "on >= 1", "no >= 1", "nn >= 1"]
+		},
+		{
+			"statement": "Un magasin a interrogé $12$ clients : ont-ils payé par carte, et ont-ils acheté un article en promotion ?\n\n| Client | Paiement | Promotion |\n|---|---|---|\n| 1 | {{if:x1 == 1|Carte|Espèces}} | {{if:y1 == 1|Oui|Non}} |\n| 2 | {{if:x2 == 1|Carte|Espèces}} | {{if:y2 == 1|Oui|Non}} |\n| 3 | {{if:x3 == 1|Carte|Espèces}} | {{if:y3 == 1|Oui|Non}} |\n| 4 | {{if:x4 == 1|Carte|Espèces}} | {{if:y4 == 1|Oui|Non}} |\n| 5 | {{if:x5 == 1|Carte|Espèces}} | {{if:y5 == 1|Oui|Non}} |\n| 6 | {{if:x6 == 1|Carte|Espèces}} | {{if:y6 == 1|Oui|Non}} |\n| 7 | {{if:x7 == 1|Carte|Espèces}} | {{if:y7 == 1|Oui|Non}} |\n| 8 | {{if:x8 == 1|Carte|Espèces}} | {{if:y8 == 1|Oui|Non}} |\n| 9 | {{if:x9 == 1|Carte|Espèces}} | {{if:y9 == 1|Oui|Non}} |\n| 10 | {{if:x10 == 1|Carte|Espèces}} | {{if:y10 == 1|Oui|Non}} |\n| 11 | {{if:x11 == 1|Carte|Espèces}} | {{if:y11 == 1|Oui|Non}} |\n| 12 | {{if:x12 == 1|Carte|Espèces}} | {{if:y12 == 1|Oui|Non}} |\n\nOn range ces données dans le tableau croisé ci-dessous.\n\n```tableau-croise\nlignes: Carte ; Espèces\ncolonnes: Oui ; Non\nCarte = {{oo}} ; {{on}}\nEspèces = {{no}} ; {{nn}}\ncoin: Paiement \\ Promotion\nmasquer: Carte/Non ; Espèces/Oui ; Total/Non ; Espèces/Total\n```\n\nComplète les cases cachées.\n\nCarte, sans promotion : $?$\n\nEspèces, avec promotion : $?$\n\nTotal sans promotion : $?$\n\nTotal en espèces : $?$",
+			"blanks": [
+				{
+					"expectedAnswer": "{{on}}"
+				},
+				{
+					"expectedAnswer": "{{no}}"
+				},
+				{
+					"expectedAnswer": "{{eval:on+nn}}"
+				},
+				{
+					"expectedAnswer": "{{eval:no+nn}}"
+				}
+			],
+			"variables": [
+				{
+					"name": "x1",
+					"expression": "0|1"
+				},
+				{
+					"name": "y1",
+					"expression": "0|1"
+				},
+				{
+					"name": "x2",
+					"expression": "0|1"
+				},
+				{
+					"name": "y2",
+					"expression": "0|1"
+				},
+				{
+					"name": "x3",
+					"expression": "0|1"
+				},
+				{
+					"name": "y3",
+					"expression": "0|1"
+				},
+				{
+					"name": "x4",
+					"expression": "0|1"
+				},
+				{
+					"name": "y4",
+					"expression": "0|1"
+				},
+				{
+					"name": "x5",
+					"expression": "0|1"
+				},
+				{
+					"name": "y5",
+					"expression": "0|1"
+				},
+				{
+					"name": "x6",
+					"expression": "0|1"
+				},
+				{
+					"name": "y6",
+					"expression": "0|1"
+				},
+				{
+					"name": "x7",
+					"expression": "0|1"
+				},
+				{
+					"name": "y7",
+					"expression": "0|1"
+				},
+				{
+					"name": "x8",
+					"expression": "0|1"
+				},
+				{
+					"name": "y8",
+					"expression": "0|1"
+				},
+				{
+					"name": "x9",
+					"expression": "0|1"
+				},
+				{
+					"name": "y9",
+					"expression": "0|1"
+				},
+				{
+					"name": "x10",
+					"expression": "0|1"
+				},
+				{
+					"name": "y10",
+					"expression": "0|1"
+				},
+				{
+					"name": "x11",
+					"expression": "0|1"
+				},
+				{
+					"name": "y11",
+					"expression": "0|1"
+				},
+				{
+					"name": "x12",
+					"expression": "0|1"
+				},
+				{
+					"name": "y12",
+					"expression": "0|1"
+				},
+				{
+					"name": "oo",
+					"expression": "eval:x1*y1+x2*y2+x3*y3+x4*y4+x5*y5+x6*y6+x7*y7+x8*y8+x9*y9+x10*y10+x11*y11+x12*y12"
+				},
+				{
+					"name": "on",
+					"expression": "eval:x1*(1-y1)+x2*(1-y2)+x3*(1-y3)+x4*(1-y4)+x5*(1-y5)+x6*(1-y6)+x7*(1-y7)+x8*(1-y8)+x9*(1-y9)+x10*(1-y10)+x11*(1-y11)+x12*(1-y12)"
+				},
+				{
+					"name": "no",
+					"expression": "eval:(1-x1)*y1+(1-x2)*y2+(1-x3)*y3+(1-x4)*y4+(1-x5)*y5+(1-x6)*y6+(1-x7)*y7+(1-x8)*y8+(1-x9)*y9+(1-x10)*y10+(1-x11)*y11+(1-x12)*y12"
+				},
+				{
+					"name": "nn",
+					"expression": "eval:(1-x1)*(1-y1)+(1-x2)*(1-y2)+(1-x3)*(1-y3)+(1-x4)*(1-y4)+(1-x5)*(1-y5)+(1-x6)*(1-y6)+(1-x7)*(1-y7)+(1-x8)*(1-y8)+(1-x9)*(1-y9)+(1-x10)*(1-y10)+(1-x11)*(1-y11)+(1-x12)*(1-y12)"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On compte, ligne par ligne des données, les individus de chaque case ; chaque total est la **somme** de sa ligne ou de sa colonne.",
+					"Carte, sans promotion : $\\textcolor{{{color:primary.0}}}{{{on}}}$ ; Espèces, avec promotion : $\\textcolor{{{color:primary.0}}}{{{no}}}$ ; Total sans promotion : $\\textcolor{{{color:primary.0}}}{{{eval:on+nn}}}$ ; Total en espèces : $\\textcolor{{{color:primary.0}}}{{{eval:no+nn}}}$.",
+					"```tableau-croise\nlignes: Carte ; Espèces\ncolonnes: Oui ; Non\nCarte = {{oo}} ; {{on}}\nEspèces = {{no}} ; {{nn}}\ncoin: Paiement \\ Promotion\n```"
+				]
+			},
+			"conditions": ["oo >= 1", "on >= 1", "no >= 1", "nn >= 1"]
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Quatre cases",
+			"variationIndex": 0,
+			"variables": {
+				"x1": "1",
+				"y1": "1",
+				"x2": "1",
+				"y2": "0",
+				"x3": "0",
+				"y3": "1",
+				"x4": "1",
+				"y4": "1",
+				"x5": "0",
+				"y5": "0",
+				"x6": "1",
+				"y6": "0",
+				"x7": "1",
+				"y7": "1",
+				"x8": "0",
+				"y8": "0",
+				"x9": "0",
+				"y9": "1",
+				"x10": "1",
+				"y10": "1",
+				"x11": "1",
+				"y11": "0",
+				"x12": "0",
+				"y12": "0"
+			},
+			"answers": ["4", "3", "2", "3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : deux cases échangées",
+			"variationIndex": 0,
+			"variables": {
+				"x1": "1",
+				"y1": "1",
+				"x2": "1",
+				"y2": "0",
+				"x3": "0",
+				"y3": "1",
+				"x4": "1",
+				"y4": "1",
+				"x5": "0",
+				"y5": "0",
+				"x6": "1",
+				"y6": "0",
+				"x7": "1",
+				"y7": "1",
+				"x8": "0",
+				"y8": "0",
+				"x9": "0",
+				"y9": "1",
+				"x10": "1",
+				"y10": "1",
+				"x11": "1",
+				"y11": "0",
+				"x12": "0",
+				"y12": "0"
+			},
+			"answers": ["3", "4", "2", "3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Cases et totaux",
+			"variationIndex": 1,
+			"variables": {
+				"x1": "1",
+				"y1": "1",
+				"x2": "1",
+				"y2": "0",
+				"x3": "0",
+				"y3": "1",
+				"x4": "1",
+				"y4": "1",
+				"x5": "0",
+				"y5": "0",
+				"x6": "1",
+				"y6": "0",
+				"x7": "1",
+				"y7": "1",
+				"x8": "0",
+				"y8": "0",
+				"x9": "0",
+				"y9": "1",
+				"x10": "1",
+				"y10": "1",
+				"x11": "1",
+				"y11": "0",
+				"x12": "0",
+				"y12": "0"
+			},
+			"answers": ["4", "3", "6", "7"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : total de ligne au lieu de colonne",
+			"variationIndex": 1,
+			"variables": {
+				"x1": "1",
+				"y1": "1",
+				"x2": "1",
+				"y2": "0",
+				"x3": "0",
+				"y3": "1",
+				"x4": "1",
+				"y4": "1",
+				"x5": "0",
+				"y5": "0",
+				"x6": "1",
+				"y6": "0",
+				"x7": "1",
+				"y7": "1",
+				"x8": "0",
+				"y8": "0",
+				"x9": "0",
+				"y9": "1",
+				"x10": "1",
+				"y10": "1",
+				"x11": "1",
+				"y11": "0",
+				"x12": "0",
+				"y12": "0"
+			},
+			"answers": ["4", "3", "7", "7"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Cases et totaux",
+			"variationIndex": 2,
+			"variables": {
+				"x1": "1",
+				"y1": "1",
+				"x2": "1",
+				"y2": "0",
+				"x3": "0",
+				"y3": "1",
+				"x4": "1",
+				"y4": "1",
+				"x5": "0",
+				"y5": "0",
+				"x6": "1",
+				"y6": "0",
+				"x7": "1",
+				"y7": "1",
+				"x8": "0",
+				"y8": "0",
+				"x9": "0",
+				"y9": "1",
+				"x10": "1",
+				"y10": "1",
+				"x11": "1",
+				"y11": "0",
+				"x12": "0",
+				"y12": "0"
+			},
+			"answers": ["3", "2", "6", "5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur",
+			"variationIndex": 2,
+			"variables": {
+				"x1": "1",
+				"y1": "1",
+				"x2": "1",
+				"y2": "0",
+				"x3": "0",
+				"y3": "1",
+				"x4": "1",
+				"y4": "1",
+				"x5": "0",
+				"y5": "0",
+				"x6": "1",
+				"y6": "0",
+				"x7": "1",
+				"y7": "1",
+				"x8": "0",
+				"y8": "0",
+				"x9": "0",
+				"y9": "1",
+				"x10": "1",
+				"y10": "1",
+				"x11": "1",
+				"y11": "0",
+				"x12": "0",
+				"y12": "0"
+			},
+			"answers": ["2", "3", "6", "5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

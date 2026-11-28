@@ -4,11 +4,11 @@
 -->
 <script lang="ts">
 	import type { Snippet } from 'svelte';
-	import MyCheckbox from '$lib/components/MyCheckbox.svelte';
-	import { Button } from '$lib/components/ui/button';
-	import { toBlocks } from '$lib/ciphers/alphabet';
-	import type { CipherOutcome } from '$lib/ciphers/outcome';
-	import { toaster } from '$lib/stores/toaster.svelte';
+	import MyCheckbox from '#lib/components/MyCheckbox.svelte';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import { toBlocks } from '#lib/ciphers/alphabet.ts';
+	import type { CipherOutcome } from '#lib/ciphers/outcome.ts';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
 
 	// Types
 	interface Props {

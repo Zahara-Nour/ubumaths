@@ -1,0 +1,1133 @@
+{
+	"id": "10a51999-6d45-41fb-80db-03b70dfeecb8",
+	"title": "Arrondir un nombre décimal",
+	"description": "Arrondir à l'unité, au dixième, au centième, au millième, dont une retenue (2,996 → 3,00) (pièges : tronquer au lieu d'arrondir, garder trop de chiffres, oublier la retenue)",
+	"grades": ["2"],
+	"level": 11,
+	"delay": 40,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"zeros": "off"
+		}
+	},
+	"variations": [
+		{
+			"statement": "Arrondis ${{eval:(1000*a+f)/1000;d}}$ à l'unité.\n\n${{eval:(1000*a+f)/1000;d}}\\approx ?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..99"
+				},
+				{
+					"name": "f",
+					"expression": "1..999"
+				},
+				{
+					"name": "h",
+					"expression": "eval:floor(f/500)"
+				},
+				{
+					"name": "s",
+					"expression": "eval:floor(f/100)"
+				}
+			],
+			"conditions": ["f != 500"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a+h}}",
+					"precision": {
+						"type": "decimal",
+						"digits": 0
+					},
+					"expectedErrors": [
+						{
+							"answer": "{{a}}",
+							"message": "Tu as coupé le nombre sans l'arrondir : regarde d'abord le chiffre des dixièmes.",
+							"label": "Troncature au lieu d'un arrondi"
+						},
+						{
+							"answer": "{{eval:a+1}}",
+							"message": "Tu as augmenté le chiffre des unités alors que le chiffre des dixièmes est plus petit que 5.",
+							"label": "Augmenté à tort (chiffre suivant < 5)"
+						},
+						{
+							"answer": "{{eval:10*round((1000*a+f)/10000)}}",
+							"message": "Tu as arrondi à la dizaine : on te demande d'arrondir à l'unité.",
+							"label": "Arrondi à la dizaine au lieu de l'unité"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"On repère le chiffre des unités : ${{a}}$. On regarde le chiffre **suivant**, celui des dixièmes : ${{s}}$.",
+					"{{if:h==1|${{s}}\\geqslant 5$ : on **augmente de 1** le chiffre des unités, et on supprime les chiffres suivants.|${{s}}<5$ : on **garde** le chiffre des unités, et on supprime les chiffres suivants.}}",
+					"${{eval:(1000*a+f)/1000;d}}\\approx \\textcolor{{{color:primary.0}}}{{{eval:a+h}}}$."
+				]
+			},
+			"hintFromFirstStep": true
+		},
+		{
+			"statement": "Arrondis ${{eval:(10000*a+1000*t+g)/10000;d}}$ au dixième.\n\n${{eval:(10000*a+1000*t+g)/10000;d}}\\approx ?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "0..49"
+				},
+				{
+					"name": "t",
+					"expression": "0..9"
+				},
+				{
+					"name": "g",
+					"expression": "1..999"
+				},
+				{
+					"name": "h",
+					"expression": "eval:floor(g/500)"
+				},
+				{
+					"name": "s",
+					"expression": "eval:floor(g/100)"
+				}
+			],
+			"conditions": ["t + h >= 1", "t + h <= 9", "g != 500"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(10*a+t+h)/10;d}}",
+					"precision": {
+						"type": "decimal",
+						"digits": 1
+					},
+					"expectedErrors": [
+						{
+							"answer": "{{eval:(10*a+t)/10;d}}",
+							"message": "Tu as coupé le nombre sans l'arrondir : regarde d'abord le chiffre des centièmes.",
+							"label": "Troncature au lieu d'un arrondi"
+						},
+						{
+							"answer": "{{eval:(10*a+t+1)/10;d}}",
+							"message": "Tu as augmenté le chiffre des dixièmes alors que le chiffre des centièmes est plus petit que 5.",
+							"label": "Augmenté à tort (chiffre suivant < 5)"
+						},
+						{
+							"answer": "{{eval:a+floor(t/5)}}",
+							"message": "Tu as arrondi à l'unité : on te demande d'arrondir au dixième.",
+							"label": "Arrondi à l'unité au lieu du dixième"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"On repère le chiffre des dixièmes : ${{t}}$. On regarde le chiffre **suivant**, celui des centièmes : ${{s}}$.",
+					"{{if:h==1|${{s}}\\geqslant 5$ : on **augmente de 1** le chiffre des dixièmes, et on supprime les chiffres suivants.|${{s}}<5$ : on **garde** le chiffre des dixièmes, et on supprime les chiffres suivants.}}",
+					"${{eval:(10000*a+1000*t+g)/10000;d}}\\approx \\textcolor{{{color:primary.0}}}{{{eval:(10*a+t+h)/10;d}}}$."
+				]
+			},
+			"hintFromFirstStep": true
+		},
+		{
+			"statement": "Arrondis ${{eval:(100000*a+10000*dd+1000*cc+g)/100000;d}}$ au centième.\n\n${{eval:(100000*a+10000*dd+1000*cc+g)/100000;d}}\\approx ?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "0..9"
+				},
+				{
+					"name": "dd",
+					"expression": "0..9"
+				},
+				{
+					"name": "cc",
+					"expression": "0..9"
+				},
+				{
+					"name": "g",
+					"expression": "1..999"
+				},
+				{
+					"name": "h",
+					"expression": "eval:floor(g/500)"
+				},
+				{
+					"name": "s",
+					"expression": "eval:floor(g/100)"
+				}
+			],
+			"conditions": ["cc + h >= 1", "cc + h <= 9", "g != 500"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(100*a+10*dd+cc+h)/100;d}}",
+					"precision": {
+						"type": "decimal",
+						"digits": 2
+					},
+					"expectedErrors": [
+						{
+							"answer": "{{eval:(100*a+10*dd+cc)/100;d}}",
+							"message": "Tu as coupé le nombre sans l'arrondir : regarde d'abord le chiffre des millièmes.",
+							"label": "Troncature au lieu d'un arrondi"
+						},
+						{
+							"answer": "{{eval:(100*a+10*dd+cc+1)/100;d}}",
+							"message": "Tu as augmenté le chiffre des centièmes alors que le chiffre des millièmes est plus petit que 5.",
+							"label": "Augmenté à tort (chiffre suivant < 5)"
+						},
+						{
+							"answer": "{{eval:(10*a+dd+floor(cc/5))/10;d}}",
+							"message": "Tu as arrondi au dixième : on te demande d'arrondir au centième.",
+							"label": "Arrondi au dixième au lieu du centième"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"On repère le chiffre des centièmes : ${{cc}}$. On regarde le chiffre **suivant**, celui des millièmes : ${{s}}$.",
+					"{{if:h==1|${{s}}\\geqslant 5$ : on **augmente de 1** le chiffre des centièmes, et on supprime les chiffres suivants.|${{s}}<5$ : on **garde** le chiffre des centièmes, et on supprime les chiffres suivants.}}",
+					"${{eval:(100000*a+10000*dd+1000*cc+g)/100000;d}}\\approx \\textcolor{{{color:primary.0}}}{{{eval:(100*a+10*dd+cc+h)/100;d}}}$."
+				]
+			},
+			"hintFromFirstStep": true
+		},
+		{
+			"statement": "Arrondis ${{eval:(100000*a+10000*dd+1000*cc+100*mm+g)/100000;d}}$ au millième.\n\n${{eval:(100000*a+10000*dd+1000*cc+100*mm+g)/100000;d}}\\approx ?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "0..20"
+				},
+				{
+					"name": "dd",
+					"expression": "0..9"
+				},
+				{
+					"name": "cc",
+					"expression": "0..9"
+				},
+				{
+					"name": "mm",
+					"expression": "0..9"
+				},
+				{
+					"name": "g",
+					"expression": "1..99"
+				},
+				{
+					"name": "h",
+					"expression": "eval:floor(g/50)"
+				},
+				{
+					"name": "s",
+					"expression": "eval:floor(g/10)"
+				}
+			],
+			"conditions": ["mm + h >= 1", "mm + h <= 9", "g != 50"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(1000*a+100*dd+10*cc+mm+h)/1000;d}}",
+					"precision": {
+						"type": "decimal",
+						"digits": 3
+					},
+					"expectedErrors": [
+						{
+							"answer": "{{eval:(1000*a+100*dd+10*cc+mm)/1000;d}}",
+							"message": "Tu as coupé le nombre sans l'arrondir : regarde d'abord le chiffre des dix-millièmes.",
+							"label": "Troncature au lieu d'un arrondi"
+						},
+						{
+							"answer": "{{eval:(1000*a+100*dd+10*cc+mm+1)/1000;d}}",
+							"message": "Tu as augmenté le chiffre des millièmes alors que le chiffre des dix-millièmes est plus petit que 5.",
+							"label": "Augmenté à tort (chiffre suivant < 5)"
+						},
+						{
+							"answer": "{{eval:(100*a+10*dd+cc+floor(mm/5))/100;d}}",
+							"message": "Tu as arrondi au centième : on te demande d'arrondir au millième.",
+							"label": "Arrondi au centième au lieu du millième"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"On repère le chiffre des millièmes : ${{mm}}$. On regarde le chiffre **suivant**, celui des dix-millièmes : ${{s}}$.",
+					"{{if:h==1|${{s}}\\geqslant 5$ : on **augmente de 1** le chiffre des millièmes, et on supprime les chiffres suivants.|${{s}}<5$ : on **garde** le chiffre des millièmes, et on supprime les chiffres suivants.}}",
+					"${{eval:(100000*a+10000*dd+1000*cc+100*mm+g)/100000;d}}\\approx \\textcolor{{{color:primary.0}}}{{{eval:(1000*a+100*dd+10*cc+mm+h)/1000;d}}}$."
+				]
+			},
+			"hintFromFirstStep": true
+		},
+		{
+			"statement": "Arrondis ${{eval:(1000*a+990+m)/1000;d}}$ au centième.\n\n${{eval:(1000*a+990+m)/1000;d}}\\approx ?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "0..19"
+				},
+				{
+					"name": "m",
+					"expression": "5..9"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a+1}}",
+					"precision": {
+						"type": "decimal",
+						"digits": 2
+					},
+					"expectedErrors": [
+						{
+							"answer": "{{eval:(100*a+99)/100;d}}",
+							"message": "Tu as coupé le nombre sans l'arrondir : regarde d'abord le chiffre des millièmes.",
+							"label": "Troncature au lieu d'un arrondi"
+						},
+						{
+							"answer": "{{eval:(100*a+90)/100;d}}",
+							"message": "Tu as écrit $0$ à la place du $9$ des centièmes, mais tu as oublié la retenue sur les dixièmes.",
+							"label": "Retenue oubliée sur les dixièmes"
+						},
+						{
+							"answer": "{{a}}",
+							"message": "Tu as fait passer la retenue aux dixièmes, mais pas jusqu'au chiffre des unités.",
+							"label": "Retenue oubliée sur les unités"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"On repère le chiffre des centièmes : $9$. On regarde le chiffre **suivant**, celui des millièmes : ${{m}}\\geqslant 5$, on **augmente de 1** le chiffre des centièmes.",
+					"Mais $9+1=10$ : il y a une **retenue**. ${{eval:a}}{,}99$ devient ${{eval:a+1}}{,}00$, comme quand on ajoute $0{,}01$ à ${{eval:a}}{,}99$.",
+					"${{eval:(1000*a+990+m)/1000;d}}\\approx \\textcolor{{{color:primary.0}}}{{{eval:a+1}}{,}00}$ : au centième, on écrit les deux zéros."
+				]
+			},
+			"hint": "Regarde le chiffre des millièmes pour savoir s'il faut augmenter le chiffre des centièmes. Attention, ce chiffre des centièmes est un $9$ : pense à la retenue."
+		},
+		{
+			"statement": "À l'aide de la calculatrice, donne l'arrondi au centième de $\\sqrt{ {{n}} }$.\n\n$\\sqrt{ {{n}} }\\approx ?$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "2..99"
+				},
+				{
+					"name": "c",
+					"expression": "eval:mod(floor(100*sqrt(n)),10)"
+				},
+				{
+					"name": "s",
+					"expression": "eval:mod(floor(1000*sqrt(n)),10)"
+				},
+				{
+					"name": "h",
+					"expression": "eval:floor(s/5)"
+				}
+			],
+			"conditions": ["floor(sqrt(n))^2 != n"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:sqrt(n);a2}}",
+					"precision": {
+						"type": "decimal",
+						"digits": 2
+					},
+					"expectedErrors": [
+						{
+							"answer": "{{eval:floor(100*sqrt(n))/100;a2}}",
+							"message": "Tu as coupé le nombre sans l'arrondir : regarde d'abord le chiffre des millièmes.",
+							"label": "Troncature au lieu d'un arrondi"
+						},
+						{
+							"answer": "{{eval:ceil(100*sqrt(n))/100;a2}}",
+							"message": "Tu as augmenté le chiffre des centièmes alors que le chiffre des millièmes est plus petit que 5.",
+							"label": "Augmenté à tort (chiffre suivant < 5)"
+						},
+						{
+							"answer": "{{eval:sqrt(n);a1}}",
+							"message": "Tu as arrondi au dixième : on te demande d'arrondir au centième.",
+							"label": "Arrondi au dixième au lieu du centième"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"La calculatrice affiche $\\sqrt{ {{n}} }\\approx {{eval:sqrt(n);a6}}$.",
+					"On repère le chiffre des centièmes : ${{c}}$. On regarde le chiffre **suivant**, celui des millièmes : ${{s}}$. {{if:h==1|${{s}}\\geqslant 5$ : on **augmente de 1** le chiffre des centièmes.|${{s}}<5$ : on **garde** le chiffre des centièmes.}}",
+					"$\\sqrt{ {{n}} }\\approx \\textcolor{{{color:primary.0}}}{ {{eval:sqrt(n);a2}} }$."
+				]
+			},
+			"hint": "Calcule $\\sqrt{ {{n}} }$ à la calculatrice, puis regarde le chiffre des millièmes pour savoir s'il faut augmenter le chiffre des centièmes."
+		},
+		{
+			"statement": "À l'aide de la calculatrice, donne l'arrondi au dixième de $\\dfrac{ {{p}} }{ {{q}} }$.\n\n$\\dfrac{ {{p}} }{ {{q}} }\\approx ?$",
+			"variables": [
+				{
+					"name": "q",
+					"expression": "3|7|9|11|13"
+				},
+				{
+					"name": "p",
+					"expression": "10..60"
+				},
+				{
+					"name": "c",
+					"expression": "eval:mod(floor(10*p/q),10)"
+				},
+				{
+					"name": "s",
+					"expression": "eval:mod(floor(100*p/q),10)"
+				},
+				{
+					"name": "h",
+					"expression": "eval:floor(s/5)"
+				}
+			],
+			"conditions": ["gcd(p,q) == 1", "p > q"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:p/q;a1}}",
+					"precision": {
+						"type": "decimal",
+						"digits": 1
+					},
+					"expectedErrors": [
+						{
+							"answer": "{{eval:floor(10*p/q)/10;a1}}",
+							"message": "Tu as coupé le nombre sans l'arrondir : regarde d'abord le chiffre des centièmes.",
+							"label": "Troncature au lieu d'un arrondi"
+						},
+						{
+							"answer": "{{eval:ceil(10*p/q)/10;a1}}",
+							"message": "Tu as augmenté le chiffre des dixièmes alors que le chiffre des centièmes est plus petit que 5.",
+							"label": "Augmenté à tort (chiffre suivant < 5)"
+						},
+						{
+							"answer": "{{eval:p/q;a0}}",
+							"message": "Tu as arrondi à l'unité : on te demande d'arrondir au dixième.",
+							"label": "Arrondi à l'unité au lieu du dixième"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"La calculatrice affiche $\\dfrac{ {{p}} }{ {{q}} }\\approx {{eval:p/q;a6}}$.",
+					"On repère le chiffre des dixièmes : ${{c}}$. On regarde le chiffre **suivant**, celui des centièmes : ${{s}}$. {{if:h==1|${{s}}\\geqslant 5$ : on **augmente de 1** le chiffre des dixièmes.|${{s}}<5$ : on **garde** le chiffre des dixièmes.}}",
+					"$\\dfrac{ {{p}} }{ {{q}} }\\approx \\textcolor{{{color:primary.0}}}{ {{eval:p/q;a1}} }$."
+				]
+			},
+			"hint": "Calcule le quotient à la calculatrice, puis regarde le chiffre des centièmes pour savoir s'il faut augmenter le chiffre des dixièmes."
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "12,718 à l'unité : 13",
+			"variationIndex": 0,
+			"variables": {
+				"a": "12",
+				"f": "718",
+				"h": "1",
+				"s": "7"
+			},
+			"answers": ["13"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : troncature 12",
+			"variationIndex": 0,
+			"variables": {
+				"a": "12",
+				"f": "718",
+				"h": "1",
+				"s": "7"
+			},
+			"answers": ["12"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as coupé le nombre sans l'arrondir : regarde d'abord le chiffre des dixièmes."
+			}
+		},
+		{
+			"description": "45,302 à l'unité : 45",
+			"variationIndex": 0,
+			"variables": {
+				"a": "45",
+				"f": "302",
+				"h": "0",
+				"s": "3"
+			},
+			"answers": ["45"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : arrondi au-dessus 46",
+			"variationIndex": 0,
+			"variables": {
+				"a": "45",
+				"f": "302",
+				"h": "0",
+				"s": "3"
+			},
+			"answers": ["46"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as augmenté le chiffre des unités alors que le chiffre des dixièmes est plus petit que 5."
+			}
+		},
+		{
+			"description": "3,1415 au dixième : 3,1",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3",
+				"t": "1",
+				"g": "415",
+				"h": "0",
+				"s": "4"
+			},
+			"answers": ["3{,}1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "7,2681 au dixième : 7,3",
+			"variationIndex": 1,
+			"variables": {
+				"a": "7",
+				"t": "2",
+				"g": "681",
+				"h": "1",
+				"s": "6"
+			},
+			"answers": ["7{,}3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : troncature 7,2",
+			"variationIndex": 1,
+			"variables": {
+				"a": "7",
+				"t": "2",
+				"g": "681",
+				"h": "1",
+				"s": "6"
+			},
+			"answers": ["7{,}2"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as coupé le nombre sans l'arrondir : regarde d'abord le chiffre des centièmes."
+			}
+		},
+		{
+			"description": "Trop de chiffres : 7,27 (arrondi au centième)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "7",
+				"t": "2",
+				"g": "681",
+				"h": "1",
+				"s": "6"
+			},
+			"answers": ["7{,}27"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["rounding"]
+			}
+		},
+		{
+			"description": "3,14159 au centième : 3,14",
+			"variationIndex": 2,
+			"variables": {
+				"a": "3",
+				"dd": "1",
+				"cc": "4",
+				"g": "159",
+				"h": "0",
+				"s": "1"
+			},
+			"answers": ["3{,}14"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "2,71828 au centième : 2,72",
+			"variationIndex": 2,
+			"variables": {
+				"a": "2",
+				"dd": "7",
+				"cc": "1",
+				"g": "828",
+				"h": "1",
+				"s": "8"
+			},
+			"answers": ["2{,}72"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : troncature 2,71",
+			"variationIndex": 2,
+			"variables": {
+				"a": "2",
+				"dd": "7",
+				"cc": "1",
+				"g": "828",
+				"h": "1",
+				"s": "8"
+			},
+			"answers": ["2{,}71"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as coupé le nombre sans l'arrondir : regarde d'abord le chiffre des millièmes."
+			}
+		},
+		{
+			"description": "Erreur : au dixième 2,7",
+			"variationIndex": 2,
+			"variables": {
+				"a": "2",
+				"dd": "7",
+				"cc": "1",
+				"g": "828",
+				"h": "1",
+				"s": "8"
+			},
+			"answers": ["2{,}7"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as arrondi au dixième : on te demande d'arrondir au centième."
+			}
+		},
+		{
+			"description": "Point décimal 2.72",
+			"variationIndex": 2,
+			"variables": {
+				"a": "2",
+				"dd": "7",
+				"cc": "1",
+				"g": "828",
+				"h": "1",
+				"s": "8"
+			},
+			"answers": ["2.72"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "1,41421 au millième : 1,414",
+			"variationIndex": 3,
+			"variables": {
+				"a": "1",
+				"dd": "4",
+				"cc": "1",
+				"mm": "4",
+				"g": "21",
+				"h": "0",
+				"s": "2"
+			},
+			"answers": ["1{,}414"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "0,57721 au millième : 0,577",
+			"variationIndex": 3,
+			"variables": {
+				"a": "0",
+				"dd": "5",
+				"cc": "7",
+				"mm": "7",
+				"g": "21",
+				"h": "0",
+				"s": "2"
+			},
+			"answers": ["0{,}577"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "1,73205 au millième : 1,732",
+			"variationIndex": 3,
+			"variables": {
+				"a": "1",
+				"dd": "7",
+				"cc": "3",
+				"mm": "2",
+				"g": "5",
+				"h": "0",
+				"s": "0"
+			},
+			"answers": ["1{,}732"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "1,73268 au millième : 1,733",
+			"variationIndex": 3,
+			"variables": {
+				"a": "1",
+				"dd": "7",
+				"cc": "3",
+				"mm": "2",
+				"g": "68",
+				"h": "1",
+				"s": "6"
+			},
+			"answers": ["1{,}733"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : troncature 1,732",
+			"variationIndex": 3,
+			"variables": {
+				"a": "1",
+				"dd": "7",
+				"cc": "3",
+				"mm": "2",
+				"g": "68",
+				"h": "1",
+				"s": "6"
+			},
+			"answers": ["1{,}732"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as coupé le nombre sans l'arrondir : regarde d'abord le chiffre des dix-millièmes."
+			}
+		},
+		{
+			"description": "2,996 au centième : 3,00",
+			"variationIndex": 4,
+			"variables": {
+				"a": "2",
+				"m": "6"
+			},
+			"answers": ["3{,}00"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "2,996 au centième : 3 en forme à améliorer (zéros des centièmes manquants)",
+			"variationIndex": 4,
+			"variables": {
+				"a": "2",
+				"m": "6"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["rounding"]
+			}
+		},
+		{
+			"description": "Erreur : retenue oubliée 2,90",
+			"variationIndex": 4,
+			"variables": {
+				"a": "2",
+				"m": "6"
+			},
+			"answers": ["2{,}90"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as écrit $0$ à la place du $9$ des centièmes, mais tu as oublié la retenue sur les dixièmes."
+			}
+		},
+		{
+			"description": "Erreur : troncature 2,99",
+			"variationIndex": 4,
+			"variables": {
+				"a": "2",
+				"m": "6"
+			},
+			"answers": ["2{,}99"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as coupé le nombre sans l'arrondir : regarde d'abord le chiffre des millièmes."
+			}
+		},
+		{
+			"description": "Erreur : 2,100",
+			"variationIndex": 4,
+			"variables": {
+				"a": "2",
+				"m": "6"
+			},
+			"answers": ["2{,}100"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 12,718 arrondi à la dizaine (10)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "12",
+				"f": "718",
+				"h": "1",
+				"s": "7"
+			},
+			"answers": ["10"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as arrondi à la dizaine : on te demande d'arrondir à l'unité."
+			}
+		},
+		{
+			"description": "Erreur : 3,1415 au dixième, augmenté à tort (3,2)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3",
+				"t": "1",
+				"g": "415",
+				"h": "0",
+				"s": "4"
+			},
+			"answers": ["3{,}2"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as augmenté le chiffre des dixièmes alors que le chiffre des centièmes est plus petit que 5."
+			}
+		},
+		{
+			"description": "Erreur : 7,2681 arrondi à l'unité (7)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "7",
+				"t": "2",
+				"g": "681",
+				"h": "1",
+				"s": "6"
+			},
+			"answers": ["7"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as arrondi à l'unité : on te demande d'arrondir au dixième."
+			}
+		},
+		{
+			"description": "Erreur : 3,14159 au centième, augmenté à tort (3,15)",
+			"variationIndex": 2,
+			"variables": {
+				"a": "3",
+				"dd": "1",
+				"cc": "4",
+				"g": "159",
+				"h": "0",
+				"s": "1"
+			},
+			"answers": ["3{,}15"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as augmenté le chiffre des centièmes alors que le chiffre des millièmes est plus petit que 5."
+			}
+		},
+		{
+			"description": "Erreur : 1,41421 au millième, augmenté à tort (1,415)",
+			"variationIndex": 3,
+			"variables": {
+				"a": "1",
+				"dd": "4",
+				"cc": "1",
+				"mm": "4",
+				"g": "21",
+				"h": "0",
+				"s": "2"
+			},
+			"answers": ["1{,}415"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as augmenté le chiffre des millièmes alors que le chiffre des dix-millièmes est plus petit que 5."
+			}
+		},
+		{
+			"description": "Erreur : 1,73268 arrondi au centième (1,73)",
+			"variationIndex": 3,
+			"variables": {
+				"a": "1",
+				"dd": "7",
+				"cc": "3",
+				"mm": "2",
+				"g": "68",
+				"h": "1",
+				"s": "6"
+			},
+			"answers": ["1{,}73"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as arrondi au centième : on te demande d'arrondir au millième."
+			}
+		},
+		{
+			"description": "Erreur : 2,996 donne 2,00 (retenue oubliée sur les unités)",
+			"variationIndex": 4,
+			"variables": {
+				"a": "2",
+				"m": "6"
+			},
+			"answers": ["2{,}00"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as fait passer la retenue aux dixièmes, mais pas jusqu'au chiffre des unités."
+			}
+		},
+		{
+			"description": "√7 ≈ 2,6457… au centième : 2,65",
+			"variationIndex": 5,
+			"variables": {
+				"n": "7",
+				"c": "4",
+				"s": "5",
+				"h": "1"
+			},
+			"answers": ["2{,}65"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "√7 : point décimal 2.65",
+			"variationIndex": 5,
+			"variables": {
+				"n": "7",
+				"c": "4",
+				"s": "5",
+				"h": "1"
+			},
+			"answers": ["2.65"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : √7 tronqué (2,64)",
+			"variationIndex": 5,
+			"variables": {
+				"n": "7",
+				"c": "4",
+				"s": "5",
+				"h": "1"
+			},
+			"answers": ["2{,}64"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as coupé le nombre sans l'arrondir : regarde d'abord le chiffre des millièmes."
+			}
+		},
+		{
+			"description": "Erreur : √7 au dixième (2,6)",
+			"variationIndex": 5,
+			"variables": {
+				"n": "7",
+				"c": "4",
+				"s": "5",
+				"h": "1"
+			},
+			"answers": ["2{,}6"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as arrondi au dixième : on te demande d'arrondir au centième."
+			}
+		},
+		{
+			"description": "√2 ≈ 1,4142… au centième : 1,41",
+			"variationIndex": 5,
+			"variables": {
+				"n": "2",
+				"c": "1",
+				"s": "4",
+				"h": "0"
+			},
+			"answers": ["1{,}41"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : √2 augmenté à tort (1,42)",
+			"variationIndex": 5,
+			"variables": {
+				"n": "2",
+				"c": "1",
+				"s": "4",
+				"h": "0"
+			},
+			"answers": ["1{,}42"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as augmenté le chiffre des centièmes alors que le chiffre des millièmes est plus petit que 5."
+			}
+		},
+		{
+			"description": "Trop de chiffres : √2 ≈ 1,414",
+			"variationIndex": 5,
+			"variables": {
+				"n": "2",
+				"c": "1",
+				"s": "4",
+				"h": "0"
+			},
+			"answers": ["1{,}414"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["rounding"]
+			}
+		},
+		{
+			"description": "√26 ≈ 5,0990… au centième : 5,10",
+			"variationIndex": 5,
+			"variables": {
+				"n": "26",
+				"c": "9",
+				"s": "9",
+				"h": "1"
+			},
+			"answers": ["5{,}10"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "√26 : 5,1 en forme à améliorer (zéro des centièmes manquant)",
+			"variationIndex": 5,
+			"variables": {
+				"n": "26",
+				"c": "9",
+				"s": "9",
+				"h": "1"
+			},
+			"answers": ["5{,}1"],
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["rounding"]
+			}
+		},
+		{
+			"description": "17/7 ≈ 2,428… au dixième : 2,4",
+			"variationIndex": 6,
+			"variables": {
+				"q": "7",
+				"p": "17",
+				"c": "4",
+				"s": "2",
+				"h": "0"
+			},
+			"answers": ["2{,}4"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 17/7 augmenté à tort (2,5)",
+			"variationIndex": 6,
+			"variables": {
+				"q": "7",
+				"p": "17",
+				"c": "4",
+				"s": "2",
+				"h": "0"
+			},
+			"answers": ["2{,}5"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as augmenté le chiffre des dixièmes alors que le chiffre des centièmes est plus petit que 5."
+			}
+		},
+		{
+			"description": "Erreur : 17/7 arrondi à l'unité (2)",
+			"variationIndex": 6,
+			"variables": {
+				"q": "7",
+				"p": "17",
+				"c": "4",
+				"s": "2",
+				"h": "0"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as arrondi à l'unité : on te demande d'arrondir au dixième."
+			}
+		},
+		{
+			"description": "20/7 ≈ 2,857… au dixième : 2,9",
+			"variationIndex": 6,
+			"variables": {
+				"q": "7",
+				"p": "20",
+				"c": "8",
+				"s": "5",
+				"h": "1"
+			},
+			"answers": ["2{,}9"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 20/7 tronqué (2,8)",
+			"variationIndex": 6,
+			"variables": {
+				"q": "7",
+				"p": "20",
+				"c": "8",
+				"s": "5",
+				"h": "1"
+			},
+			"answers": ["2{,}8"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as coupé le nombre sans l'arrondir : regarde d'abord le chiffre des centièmes."
+			}
+		},
+		{
+			"description": "Erreur : 7/20 (quotient inversé)",
+			"variationIndex": 6,
+			"variables": {
+				"q": "7",
+				"p": "20",
+				"c": "8",
+				"s": "5",
+				"h": "1"
+			},
+			"answers": ["0{,}4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Trop de chiffres : 20/7 ≈ 2,86",
+			"variationIndex": 6,
+			"variables": {
+				"q": "7",
+				"p": "20",
+				"c": "8",
+				"s": "5",
+				"h": "1"
+			},
+			"answers": ["2{,}86"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["rounding"]
+			}
+		}
+	]
+}

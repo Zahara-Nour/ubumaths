@@ -1,0 +1,259 @@
+{
+	"id": "45ea676f-2454-407d-a3ef-88da0d201a73",
+	"title": "Moyenne arithmétique de deux nombres",
+	"description": "Calculer la moyenne arithmétique de deux nombres, retrouver un terme d'une suite arithmétique entre deux autres",
+	"grades": ["T_TECHNO"],
+	"level": 1,
+	"delay": 30,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Calcule la moyenne arithmétique de ${{a}}$ et ${{b}}$.\n\n$?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "-20..40"
+				},
+				{
+					"name": "b",
+					"expression": "-20..40"
+				}
+			],
+			"conditions": ["a != b", "a != -b"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(a+b)/2;d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La moyenne arithmétique de deux nombres $a$ et $b$ est $\\dfrac{a+b}{2}$.",
+					"$\\dfrac{ {{a}}{{eval:b;+}} }{2}=\\dfrac{ {{eval:a+b}} }{2}=\\textcolor{{{color:primary.0}}}{{{eval:(a+b)/2;d}}}$."
+				]
+			}
+		},
+		{
+			"statement": "$(u_n)$ est une suite arithmétique telle que $u_{{k}}={{a}}$ et $u_{{k2}}={{eval:a+2*r}}$.\n\nCalcule $u_{{k1}}$.\n\n$u_{{k1}}=?$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "0..6"
+				},
+				{
+					"name": "k1",
+					"expression": "eval:k+1"
+				},
+				{
+					"name": "k2",
+					"expression": "eval:k+2"
+				},
+				{
+					"name": "a",
+					"expression": "-10..30"
+				},
+				{
+					"name": "r",
+					"expression": "-9..9"
+				}
+			],
+			"conditions": ["r != 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a+r}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Dans une suite arithmétique, chaque terme est la moyenne arithmétique du terme qui le précède et du terme qui le suit.",
+					"$u_{{k1}}=\\dfrac{u_{{k}}+u_{{k2}}}{2}=\\dfrac{ {{a}}{{eval:a+2*r;+}} }{2}=\\textcolor{{{color:primary.0}}}{{{eval:a+r}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Une commune comptait ${{a}}$ habitants en 2022 et ${{eval:a+2*r}}$ habitants en 2024. On suppose que la population a varié du même nombre d'habitants chaque année.\n\nCombien la commune comptait-elle d'habitants en 2023 ?\n\n$?$ habitants",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1500..4800"
+				},
+				{
+					"name": "r",
+					"expression": "-90..150"
+				}
+			],
+			"conditions": ["r*r >= 100"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a+r}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La population varie du même nombre chaque année : elle suit une suite arithmétique. Dans une suite arithmétique, chaque terme est la moyenne arithmétique du terme qui le précède et du terme qui le suit.",
+					"$\\dfrac{ {{a}}+{{eval:a+2*r}} }{2}=\\textcolor{{{color:primary.0}}}{{{eval:a+r}}}$ habitants en 2023."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "7 et 12 : 9,5",
+			"variationIndex": 0,
+			"variables": {
+				"a": "7",
+				"b": "12"
+			},
+			"answers": ["9,5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "7 et 12 : 19/2 → forme (décimal attendu)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "7",
+				"b": "12"
+			},
+			"answers": ["\\frac{19}{2}"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		},
+		{
+			"description": "Erreur : somme (19)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "7",
+				"b": "12"
+			},
+			"answers": ["19"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : demi-écart (2,5)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "7",
+				"b": "12"
+			},
+			"answers": ["2,5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "−8 et 14 : 3",
+			"variationIndex": 0,
+			"variables": {
+				"a": "-8",
+				"b": "14"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : signe perdu (11)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "-8",
+				"b": "14"
+			},
+			"answers": ["11"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "u₂ = 5, u₄ = 17 : u₃ = 11",
+			"variationIndex": 1,
+			"variables": {
+				"k": "2",
+				"k1": "3",
+				"k2": "4",
+				"a": "5",
+				"r": "6"
+			},
+			"answers": ["11"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : raison prise pour l'écart (12)",
+			"variationIndex": 1,
+			"variables": {
+				"k": "2",
+				"k1": "3",
+				"k2": "4",
+				"a": "5",
+				"r": "6"
+			},
+			"answers": ["12"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 5 + 12 (17)",
+			"variationIndex": 1,
+			"variables": {
+				"k": "2",
+				"k1": "3",
+				"k2": "4",
+				"a": "5",
+				"r": "6"
+			},
+			"answers": ["17"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "2 000 → 2 240 : 2 120",
+			"variationIndex": 2,
+			"variables": {
+				"a": "2000",
+				"r": "120"
+			},
+			"answers": ["2120"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 2 000 + 240",
+			"variationIndex": 2,
+			"variables": {
+				"a": "2000",
+				"r": "120"
+			},
+			"answers": ["2240"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "3 000 → 2 860 : 2 930",
+			"variationIndex": 2,
+			"variables": {
+				"a": "3000",
+				"r": "-70"
+			},
+			"answers": ["2930"],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}

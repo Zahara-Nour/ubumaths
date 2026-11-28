@@ -27,7 +27,7 @@
 
 import { describe, it, expect, vi } from 'vitest';
 import type { RequestEvent } from '@sveltejs/kit';
-import { Grade, type FSRSConfig } from '$lib/srs/types';
+import { Grade, type FSRSConfig } from '#lib/srs/types.ts';
 
 // La mémoire de révision est écrite au client SERVICE (Q171) : l'UPSERT de
 // `srs_card_stats` ne passe plus par le client de l'élève.
@@ -36,7 +36,7 @@ const serviceUpsert = vi.hoisted(() => vi.fn());
 const serviceSessionInsert = vi.hoisted(() =>
 	vi.fn(() => ({ select: async () => ({ data: [{ id: 'session-1' }], error: null }) }))
 );
-vi.mock('$lib/server/serviceRoleClient', () => ({
+vi.mock('#lib/server/serviceRoleClient.ts', () => ({
 	createServiceRoleClient: () => ({
 		from: () => ({ upsert: serviceUpsert, insert: serviceSessionInsert })
 	})
@@ -926,7 +926,7 @@ describe('POST /api/srs/review/submit - Submit Review', () => {
 				};
 			}
 			if (table === 'skill_attempts') {
-				// template card → 1 INSERT into skill_attempts (source='srs')
+				// template card → 1 INSERT into skill_attempts (student_self, lieu review)
 				return {
 					insert: vi.fn().mockResolvedValue({ error: null })
 				};

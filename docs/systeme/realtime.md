@@ -148,6 +148,9 @@ INSERT sur `student_achievements`, filtre `student_id=eq.<moi>`. Valide le paylo
 - Rendu : `src/lib/components/chat/ChatMessageList.svelte` affiche les messages en **mode
   restreint** (`src/lib/components/markdown/restricted-rendering.ts`) — chantier vivant :
   [chat-rendu-restreint](../wip/chat-rendu-restreint-progress.md).
+  Texte coloré `[…]{.orange}` ([ADR 0042](../adr/0042-texte-colore-dans-la-prose.md)) : aucune couleur
+  dans le chat, crochets retirés ; `restrictDocument` retire aussi `color` et `unknownClasses` des
+  nœuds en ligne (seconde défense, en plus de `inlineColorValue` dans les composants).
   Le même module porte aussi `provideProjectMediaOnly` (vidéos du seul stockage du projet ; depuis le
   2026-11-08, formules et blocs à commande à attributs écartés, `neutralizeUnsafeBlocks` ; depuis le 2026-11-09,
   images hors de notre stockage en lien), qui ne
@@ -222,6 +225,10 @@ Historique : [canal privé du chat](../archive/wip/realtime-chat-prive-progress.
 [canal privé du troc](../archive/wip/realtime-trade-prive-progress.md).
 
 ## Écarts connus
+
+Les écarts de cette zone sont au [registre des écarts](../ecarts/registre.md) : `pnpm ecarts`. Un écart s'écrit là-bas, jamais ici.
+
+### À savoir (voulu)
 
 - **`user_presence` n'est pas publiée** (gardé par `realtime-publication.test.ts` : la publier
   diffuserait l'UUID d'un compte supprimé). Réglé le 2026-11-03 (écart T1) : la présence des amis

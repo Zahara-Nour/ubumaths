@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { lore } from '$lib/config/lore';
-	import { GOOGLE_CLASSROOM_ENABLED } from '$lib/config/google-classroom';
+	import { lore } from '#lib/config/lore.ts';
+	import { GOOGLE_CLASSROOM_ENABLED } from '#lib/config/google-classroom.ts';
 	/**
 	 * FileDrawer - Sheet overlay for file management
 	 *
@@ -18,11 +18,11 @@
 	import { whiteboardStore } from '../stores/whiteboard.svelte';
 	import { driveSyncService, type DriveFile } from '../services/drive-sync';
 	import { generateThumbnail, exportToPdf } from '../core/pdf-export';
-	import { Button } from '$lib/components/ui/button';
-	import { Label } from '$lib/components/ui/label';
-	import * as Sheet from '$lib/components/ui/sheet';
-	import MySelect from '$lib/components/MySelect.svelte';
-	import { toaster } from '$lib/stores/toaster.svelte';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import { Label } from '#lib/components/ui/label/index.ts';
+	import * as Sheet from '#lib/components/ui/sheet/index.ts';
+	import MySelect from '#lib/components/MySelect.svelte';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
 	import {
 		Cloud,
 		CloudOff,
@@ -52,8 +52,8 @@
 	import AutosaveRecoveryDialog from './AutosaveRecoveryDialog.svelte';
 	import type { ClassForDrawer, DriveFolder } from '../types/drive';
 	import type { AutosaveInfo } from '../services/drive-sync';
-	import { findCurrentSchedule } from '$lib/utils/timeMatching';
-	import type { Class, ClassSchedule as DBClassSchedule } from '$lib/types/database-helpers';
+	import { findCurrentSchedule } from '#lib/utils/timeMatching.ts';
+	import type { Class, ClassSchedule as DBClassSchedule } from '#lib/types/database-helpers.ts';
 
 	// ==========================================================================
 	// State

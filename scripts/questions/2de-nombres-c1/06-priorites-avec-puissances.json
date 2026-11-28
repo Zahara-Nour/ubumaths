@@ -1,0 +1,359 @@
+{
+	"id": "fbb2d0da-e126-41ec-b8d1-f0e97bf4f974",
+	"title": "Priorités avec des puissances",
+	"description": "Calculer a − b × (−c)², −c² + a × b, b × (−c)³ − a (pièges : (2 − 3) × 4, −3² = 9, (b × c)³ au lieu de b × c³)",
+	"grades": ["2"],
+	"level": 9,
+	"delay": 60,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Calcule.\n\n$${{a}}-{{b}}\\times(-{{c}})^{2}=?$$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9"
+				},
+				{
+					"name": "b",
+					"expression": "2..5"
+				},
+				{
+					"name": "c",
+					"expression": "2..4"
+				},
+				{
+					"name": "q",
+					"expression": "eval:(c)^2"
+				},
+				{
+					"name": "s",
+					"expression": "eval:(b)*(c)^2"
+				},
+				{
+					"name": "r",
+					"expression": "eval:(a)-(b)*(c)^2"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{r}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:((a)-(b))*(c)^2}}",
+							"message": "Tu as soustrait trop tôt : la puissance et la multiplication passent avant la soustraction.",
+							"label": "(a − b) × c²"
+						},
+						{
+							"answer": "{{eval:(a)+(b)*(c)^2}}",
+							"message": "Le carré d'un nombre négatif n'est pas négatif : revois le signe de ta puissance.",
+							"label": "(−c)² = −c²"
+						},
+						{
+							"answer": "{{eval:(a)-((b)*(c))^2}}",
+							"message": "L'exposant ne porte que sur la parenthèse, pas sur le produit avec le nombre devant.",
+							"label": "(b × c)²"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Priorités** : on calcule d'abord les parenthèses, puis les **puissances**, puis les multiplications, enfin les additions et soustractions.",
+					"La puissance d'abord : $(-{{c}})^{2}=\\textcolor{{{color:primary.0}}}{{{q}}}$ (exposant pair : positif).",
+					"Puis la multiplication : ${{b}}\\times\\textcolor{{{color:primary.0}}}{{{q}}}=\\textcolor{{{color:primary.1}}}{{{s}}}$.",
+					"$${{a}}-{{b}}\\times(-{{c}})^{2}={{a}}-{{b}}\\times\\textcolor{{{color:primary.0}}}{{{q}}}={{a}}-\\textcolor{{{color:primary.1}}}{{{s}}}=\\textcolor{{{color:primary.2}}}{{{r}}}$$"
+				]
+			},
+			"hint": "Respecte les priorités : la puissance d'abord, puis la multiplication, enfin la soustraction."
+		},
+		{
+			"statement": "Calcule.\n\n$$-{{c}}^{2}+{{a}}\\times{{b}}=?$$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9"
+				},
+				{
+					"name": "b",
+					"expression": "2..9"
+				},
+				{
+					"name": "c",
+					"expression": "2..9"
+				},
+				{
+					"name": "q",
+					"expression": "eval:(c)^2"
+				},
+				{
+					"name": "s",
+					"expression": "eval:(a)*(b)"
+				},
+				{
+					"name": "r",
+					"expression": "eval:(a)*(b)-(c)^2"
+				}
+			],
+			"conditions": ["r != 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{r}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:(a)*(b)+(c)^2}}",
+							"message": "Sans parenthèses, l'exposant ne porte pas sur le signe « − » : revois le signe du carré.",
+							"label": "−c² = +c²"
+						},
+						{
+							"answer": "{{eval:((a)-(c)^2)*(b)}}",
+							"message": "Tu as calculé de gauche à droite : la multiplication passe avant l'addition.",
+							"label": "(−c² + a) × b"
+						},
+						{
+							"answer": "{{eval:(a)*(b)-2*(c)}}",
+							"message": "Le carré d'un nombre n'est pas son double : c'est le nombre multiplié par lui-même.",
+							"label": "c² = 2c"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Priorités** : on calcule d'abord les parenthèses, puis les **puissances**, puis les multiplications, enfin les additions et soustractions.",
+					"Dans $-{{c}}^{2}$, l'exposant ne porte que sur ${{c}}$ : $-{{c}}^{2}=-\\textcolor{{{color:primary.0}}}{{{q}}}$ (et non $+{{q}}$).",
+					"La multiplication : ${{a}}\\times{{b}}=\\textcolor{{{color:primary.1}}}{{{s}}}$.",
+					"$$-{{c}}^{2}+{{a}}\\times{{b}}=-\\textcolor{{{color:primary.0}}}{{{q}}}+\\textcolor{{{color:primary.1}}}{{{s}}}=\\textcolor{{{color:primary.2}}}{{{r}}}$$"
+				]
+			},
+			"hint": "Regarde sur quoi porte l'exposant dans $-{{c}}^{2}$, puis respecte les priorités : puissance, multiplication, addition."
+		},
+		{
+			"statement": "Calcule.\n\n$${{b}}\\times(-{{c}})^{3}-{{a}}=?$$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9"
+				},
+				{
+					"name": "b",
+					"expression": "2..4"
+				},
+				{
+					"name": "c",
+					"expression": "2..4"
+				},
+				{
+					"name": "q",
+					"expression": "eval:(-(c))^3"
+				},
+				{
+					"name": "s",
+					"expression": "eval:(b)*(-(c))^3"
+				},
+				{
+					"name": "r",
+					"expression": "eval:(b)*(-(c))^3-(a)"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{r}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:(b)*(c)^3-(a)}}",
+							"message": "Le cube d'un nombre négatif est négatif : revois le signe de ta puissance.",
+							"label": "(−c)³ positif"
+						},
+						{
+							"answer": "{{eval:(-(b)*(c))^3-(a)}}",
+							"message": "L'exposant ne porte que sur la parenthèse, pas sur le produit avec le nombre devant.",
+							"label": "(b × (−c))³"
+						},
+						{
+							"answer": "{{eval:-3*(b)*(c)-(a)}}",
+							"message": "Une puissance n'est pas un produit par l'exposant : un cube, c'est trois facteurs égaux.",
+							"label": "(−c)³ = −3c"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Priorités** : on calcule d'abord les parenthèses, puis les **puissances**, puis les multiplications, enfin les additions et soustractions.",
+					"La puissance d'abord : $(-{{c}})^{3}=\\textcolor{{{color:primary.0}}}{{{q}}}$ (exposant impair : négatif).",
+					"Puis la multiplication : ${{b}}\\times(\\textcolor{{{color:primary.0}}}{{{q}}})=\\textcolor{{{color:primary.1}}}{{{s}}}$.",
+					"$${{b}}\\times(-{{c}})^{3}-{{a}}=\\textcolor{{{color:primary.1}}}{{{s}}}-{{a}}=\\textcolor{{{color:primary.2}}}{{{r}}}$$"
+				]
+			},
+			"hint": "Commence par la puissance $(-{{c}})^{3}$ : combien de facteurs négatifs ? Puis la multiplication, enfin la soustraction."
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "2 − 3 × (−2)² = −10",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"b": "3",
+				"c": "2"
+			},
+			"answers": ["-10"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : (2 − 3) × 4 = −4",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"b": "3",
+				"c": "2"
+			},
+			"answers": ["-4"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as soustrait trop tôt : la puissance et la multiplication passent avant la soustraction."
+			}
+		},
+		{
+			"description": "Erreur : (−2)² = −4, donc 14",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"b": "3",
+				"c": "2"
+			},
+			"answers": ["14"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Le carré d'un nombre négatif n'est pas négatif : revois le signe de ta puissance."
+			}
+		},
+		{
+			"description": "Erreur : 2 − (−6)² = −34",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"b": "3",
+				"c": "2"
+			},
+			"answers": ["-34"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "L'exposant ne porte que sur la parenthèse, pas sur le produit avec le nombre devant."
+			}
+		},
+		{
+			"description": "−3² + 4 × 5 = 11",
+			"variationIndex": 1,
+			"variables": {
+				"a": "4",
+				"b": "5",
+				"c": "3"
+			},
+			"answers": ["11"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : −3² = 9, donc 29",
+			"variationIndex": 1,
+			"variables": {
+				"a": "4",
+				"b": "5",
+				"c": "3"
+			},
+			"answers": ["29"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Sans parenthèses, l'exposant ne porte pas sur le signe « − » : revois le signe du carré."
+			}
+		},
+		{
+			"description": "Erreur : (−3² + 4) × 5 = −25",
+			"variationIndex": 1,
+			"variables": {
+				"a": "4",
+				"b": "5",
+				"c": "3"
+			},
+			"answers": ["-25"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as calculé de gauche à droite : la multiplication passe avant l'addition."
+			}
+		},
+		{
+			"description": "2 × (−3)³ − 5 = −59",
+			"variationIndex": 2,
+			"variables": {
+				"a": "5",
+				"b": "2",
+				"c": "3"
+			},
+			"answers": ["-59"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : (−3)³ = 27, donc 49",
+			"variationIndex": 2,
+			"variables": {
+				"a": "5",
+				"b": "2",
+				"c": "3"
+			},
+			"answers": ["49"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Le cube d'un nombre négatif est négatif : revois le signe de ta puissance."
+			}
+		},
+		{
+			"description": "Erreur : (2 × (−3))³ − 5 = −221",
+			"variationIndex": 2,
+			"variables": {
+				"a": "5",
+				"b": "2",
+				"c": "3"
+			},
+			"answers": ["-221"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "L'exposant ne porte que sur la parenthèse, pas sur le produit avec le nombre devant."
+			}
+		},
+		{
+			"description": "Erreur prévue : c² = 2c",
+			"variationIndex": 1,
+			"variables": {
+				"a": "4",
+				"b": "5",
+				"c": "3"
+			},
+			"answers": ["14"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Le carré d'un nombre n'est pas son double : c'est le nombre multiplié par lui-même."
+			}
+		},
+		{
+			"description": "Erreur prévue : (−c)³ = −3c",
+			"variationIndex": 2,
+			"variables": {
+				"a": "5",
+				"b": "2",
+				"c": "3"
+			},
+			"answers": ["-23"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Une puissance n'est pas un produit par l'exposant : un cube, c'est trois facteurs égaux."
+			}
+		}
+	]
+}

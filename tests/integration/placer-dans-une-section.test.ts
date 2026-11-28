@@ -25,7 +25,7 @@ import {
 	cleanupAllTestData
 } from '../helpers/database/trigger-test-helpers';
 import { TestData } from '../helpers/database/test-data-factory';
-import { placeInSection } from '$lib/server/chapter-sections';
+import { placeInSection } from '#lib/server/chapter-sections.ts';
 
 const service = createServiceRoleClient();
 

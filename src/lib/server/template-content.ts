@@ -21,7 +21,7 @@
  */
 
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { Database } from '$lib/types/database';
+import type { Database } from '#lib/types/database.ts';
 import type {
 	TemplateContent,
 	TemplateDocument,
@@ -30,7 +30,7 @@ import type {
 	TemplateWorksheet,
 	TemplateSeries,
 	TemplateSection
-} from '$lib/types/chapter-templates';
+} from '#lib/types/chapter-templates.ts';
 import type { SectionContentKind } from './validation/chapter-sections';
 import {
 	CHAPTER_DOCUMENTS_BUCKET,
@@ -38,7 +38,7 @@ import {
 	ownerStoragePrefix,
 	type ContentOwner
 } from './content-owner';
-import { createServerLogger } from '$lib/utils/logger';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('server/template-content');
 

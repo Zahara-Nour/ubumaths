@@ -12,9 +12,9 @@
  * la publication dans l'appli n'est pas gardée.
  */
 
-import type { QuestionTemplate } from '$lib/questions/types';
-import { generateInstance } from '$lib/questions/generator/instance-generator';
-import { parseMarkdown } from '$lib/ubumark/parser/markdown-parser';
+import type { QuestionTemplate } from '#lib/questions/types.ts';
+import { generateInstance } from '#lib/questions/generator/instance-generator.ts';
+import { parseMarkdown } from '#lib/ubumark/parser/markdown-parser.ts';
 
 // ============================================================================
 // TYPES

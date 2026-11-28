@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { parseColorExpression, resolveColorReferences } from '../color-parser';
 import { COLOR_PALETTES } from '../../colors';
-import { createRandomSource } from '$lib/utils/random';
+import { createRandomSource } from '#lib/utils/random.ts';
 
 describe('parseColorExpression', () => {
 	it('should parse palette name only (random selection)', () => {

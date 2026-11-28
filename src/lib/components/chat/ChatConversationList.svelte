@@ -20,14 +20,14 @@
 		- Mobile: Full screen list
 -->
 <script lang="ts">
-	import { Input } from '$lib/components/ui/input';
-	import { Button } from '$lib/components/ui/button';
-	import { Badge } from '$lib/components/ui/badge';
-	import OnlineStatus from '$lib/components/OnlineStatus.svelte';
-	import UserAvatar from '$lib/components/UserAvatar.svelte';
+	import { Input } from '#lib/components/ui/input/index.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
+	import OnlineStatus from '#lib/components/OnlineStatus.svelte';
+	import UserAvatar from '#lib/components/UserAvatar.svelte';
 	import { Search, MessageSquarePlus, Users } from '@lucide/svelte';
-	import type { Conversation } from '$lib/stores/chat.svelte';
-	import { presenceManager } from '$lib/stores/presence.svelte';
+	import type { Conversation } from '#lib/stores/chat.svelte.ts';
+	import { presenceManager } from '#lib/stores/presence.svelte.ts';
 
 	// Component Props
 	interface Props {

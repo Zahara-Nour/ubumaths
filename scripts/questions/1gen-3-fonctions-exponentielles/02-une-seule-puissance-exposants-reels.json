@@ -1,0 +1,282 @@
+{
+	"id": "60971c9a-82e7-4ed5-a18a-7520b40c38b2",
+	"title": "Écrire sous la forme d'une seule puissance (exposants réels positifs)",
+	"description": "Propriétés algébriques de x ↦ aˣ : produit, quotient, puissance d'une puissance, même exposant",
+	"grades": ["1_GEN"],
+	"level": 2,
+	"delay": 45,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Écris sous la forme d'une seule puissance : ${{a}}^{ {{m}} }\\times{{a}}^{ {{p}} }$.\n\n${{a}}^{ {{m}} }\\times{{a}}^{ {{p}} }=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2|3|5|1.5"
+				},
+				{
+					"name": "m",
+					"expression": "0.5|1.5|2|2.5|3"
+				},
+				{
+					"name": "p",
+					"expression": "0.5|1.5|2|2.5|3"
+				}
+			],
+			"conditions": ["m*p != m+p"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{a}}^{ {{eval:m+p;d}} }",
+					"requiredForm": "power"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Pour $a>0$ et tous réels positifs $x$ et $y$ : $a^x\\times a^y=a^{x+y}$. On **ajoute** les exposants.",
+					"${{a}}^{ {{m}} }\\times{{a}}^{ {{p}} }={{a}}^{ {{m}}+{{p}} }=\\textcolor{{{color:primary.0}}}{{{a}}^{ {{eval:m+p;d}} }}$."
+				]
+			}
+		},
+		{
+			"statement": "Écris sous la forme d'une seule puissance : $\\dfrac{ {{a}}^{ {{m}} } }{ {{a}}^{ {{p}} } }$.\n\n$\\dfrac{ {{a}}^{ {{m}} } }{ {{a}}^{ {{p}} } }=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2|3|5|1.5"
+				},
+				{
+					"name": "m",
+					"expression": "2|2.5|3|3.5|4.5"
+				},
+				{
+					"name": "p",
+					"expression": "0.5|1|1.5|2"
+				}
+			],
+			"conditions": ["m > p", "m/p != m-p"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{a}}^{ {{eval:m-p;d}} }",
+					"requiredForm": "power"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Pour $a>0$ et des réels $x\\geqslant y\\geqslant0$ : $\\dfrac{a^x}{a^y}=a^{x-y}$. On **soustrait** les exposants.",
+					"$\\dfrac{ {{a}}^{ {{m}} } }{ {{a}}^{ {{p}} } }={{a}}^{ {{m}}-{{p}} }=\\textcolor{{{color:primary.0}}}{{{a}}^{ {{eval:m-p;d}} }}$."
+				]
+			}
+		},
+		{
+			"statement": "Écris sous la forme d'une seule puissance : $\\left({{a}}^{ {{m}} }\\right)^{ {{k}} }$.\n\n$\\left({{a}}^{ {{m}} }\\right)^{ {{k}} }=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2|3|5|1.5"
+				},
+				{
+					"name": "m",
+					"expression": "0.5|1.5|2.5|3"
+				},
+				{
+					"name": "k",
+					"expression": "2..4"
+				}
+			],
+			"conditions": ["m*k != m+k"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{a}}^{ {{eval:m*k;d}} }",
+					"requiredForm": "power"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Pour $a>0$ et tous réels positifs $x$ et $y$ : $\\left(a^x\\right)^y=a^{x\\times y}$. On **multiplie** les exposants.",
+					"$\\left({{a}}^{ {{m}} }\\right)^{ {{k}} }={{a}}^{ {{m}}\\times{{k}} }=\\textcolor{{{color:primary.0}}}{{{a}}^{ {{eval:m*k;d}} }}$."
+				]
+			}
+		},
+		{
+			"statement": "Écris sous la forme d'une seule puissance : ${{a}}^{ {{m}} }\\times{{b}}^{ {{m}} }$.\n\n${{a}}^{ {{m}} }\\times{{b}}^{ {{m}} }=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2|3|5|1.5"
+				},
+				{
+					"name": "b",
+					"expression": "2|3|4"
+				},
+				{
+					"name": "m",
+					"expression": "0.5|1.5|2.5|3"
+				}
+			],
+			"conditions": ["a != b"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a*b;d}}^{ {{m}} }",
+					"requiredForm": "power"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Pour $a>0$, $b>0$ et tout réel positif $x$ : $a^x\\times b^x=(a\\times b)^x$. Les deux puissances ont le **même exposant** : on multiplie les nombres.",
+					"${{a}}^{ {{m}} }\\times{{b}}^{ {{m}} }=({{a}}\\times{{b}})^{ {{m}} }=\\textcolor{{{color:primary.0}}}{{{eval:a*b;d}}^{ {{m}} }}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "2^1,5 × 2^2 = 2^3,5",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"m": "1.5",
+				"p": "2"
+			},
+			"answers": ["2^{3,5}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : exposants multipliés (2^3)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"m": "1.5",
+				"p": "2"
+			},
+			"answers": ["2^{3}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : base multipliée (4^3,5)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"m": "1.5",
+				"p": "2"
+			},
+			"answers": ["4^{3,5}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "3^4,5 / 3^1,5 = 3^3",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3",
+				"m": "4.5",
+				"p": "1.5"
+			},
+			"answers": ["3^{3}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Forme : 27 au lieu d'une puissance",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3",
+				"m": "4.5",
+				"p": "1.5"
+			},
+			"answers": ["27"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		},
+		{
+			"description": "Erreur : exposants divisés (3^3 ≠ … ; 2^2,5/2^0,5 → 2^5)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"m": "2.5",
+				"p": "0.5"
+			},
+			"answers": ["2^{5}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "(5^1,5)^2 = 5^3",
+			"variationIndex": 2,
+			"variables": {
+				"a": "5",
+				"m": "1.5",
+				"k": "2"
+			},
+			"answers": ["5^{3}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : exposants ajoutés (5^3,5)",
+			"variationIndex": 2,
+			"variables": {
+				"a": "5",
+				"m": "1.5",
+				"k": "2"
+			},
+			"answers": ["5^{3,5}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "2^0,5 × 3^0,5 = 6^0,5",
+			"variationIndex": 3,
+			"variables": {
+				"a": "2",
+				"b": "3",
+				"m": "0.5"
+			},
+			"answers": ["6^{0,5}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : bases ajoutées (5^0,5)",
+			"variationIndex": 3,
+			"variables": {
+				"a": "2",
+				"b": "3",
+				"m": "0.5"
+			},
+			"answers": ["5^{0,5}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : exposants ajoutés (6^1)",
+			"variationIndex": 3,
+			"variables": {
+				"a": "2",
+				"b": "3",
+				"m": "0.5"
+			},
+			"answers": ["6^{1}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

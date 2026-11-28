@@ -15,7 +15,11 @@ import {
 	markdownToTypst,
 	convertLatexToTypstMath
 } from '../typst-generator';
-import type { DocumentNode, ImageNode, ResolvedTypstTranspilerOptions } from '$lib/exercises/types';
+import type {
+	DocumentNode,
+	ImageNode,
+	ResolvedTypstTranspilerOptions
+} from '#lib/exercises/types.ts';
 
 /** Corps du document, après l’en-tête de lisibilité (règles et fonctions d’items). */
 const corps = (typst: string) => typst.split('// ubumark: fin de l’en-tête')[1] ?? typst;

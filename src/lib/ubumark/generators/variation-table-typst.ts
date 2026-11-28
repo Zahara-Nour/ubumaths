@@ -18,11 +18,12 @@ import type {
 	SignRow,
 	VariationRow,
 	VariationValue,
-	DomainPoint
+	DomainPoint,
+	LimitSide
 } from '../types/variation-table';
 import { convertLatexToTypstMath } from './typst-generator';
 import { variationRowForDisplay, withImplicitEndpoints } from '../parser/variation-table-parser';
-import { toLocaleDecimal } from '$lib/utils/french-math';
+import { toLocaleDecimal } from '#lib/utils/french-math.ts';
 
 // ============================================================================
 // CONFIGURATION
@@ -526,9 +527,49 @@ function generateHiddenVariationRow(
 			return `(${convertPositionForVartable(value.position)}, ${BLANK_CELL})`;
 		}
 		if (!value && (i === 0 || i === last)) return '(center, $$)';
+		if (value?.marker === 'asymptote' && blankKeys.has(point.expression)) {
+			return formatAsymptoteWithHiddenLimits(
+				value,
+				hiddenLimitSides(node, rowIndex, point.expression),
+				language
+			);
+		}
 		return formatPointVariation(value, language);
 	});
 	return formatTypstTuple(elements);
+}
+
+/** Côtés de la double barre dont la limite est cachée (`3: ||, ?-inf, +inf` → gauche) */
+function hiddenLimitSides(node: VariationTableNode, rowIndex: number, key: string): Set<LimitSide> {
+	const sides = new Set<LimitSide>();
+	for (const cell of node.cases ?? []) {
+		if (cell.row === rowIndex && cell.key === key && cell.side) sides.add(cell.side);
+	}
+	return sides;
+}
+
+/**
+ * Double barre de l'énoncé : chaque limite cachée devient une case vide à sa hauteur,
+ * les autres restent écrites (même tuple vartable que `formatPointVariation`)
+ */
+function formatAsymptoteWithHiddenLimits(
+	value: VariationValue,
+	hiddenSides: Set<LimitSide>,
+	language: string
+): string {
+	const shown = (expression: string, side: LimitSide) =>
+		hiddenSides.has(side) ? BLANK_CELL : `$${formatMathExpression(expression, language)}$`;
+	if (value.limits) {
+		const [left, right] = value.limits;
+		const leftPos = convertPositionForVartable(left.position);
+		const rightPos = convertPositionForVartable(right.position);
+		return `(${leftPos}, ${rightPos}, "||", ${shown(left.expression, 'left')}, ${shown(right.expression, 'right')})`;
+	}
+	if (value.limitSide) {
+		const pos = convertPositionForVartable(value.position);
+		return `(${pos}, "||", ${shown(value.expression, value.limitSide)})`;
+	}
+	return '"||"';
 }
 
 /**

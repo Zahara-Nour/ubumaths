@@ -5,12 +5,13 @@
  * Supports code validation, wrapping, and error detection.
  */
 
-import * as Blockly from 'blockly';
+import type * as Blockly from 'blockly';
 import { javascriptGenerator } from 'blockly/javascript';
 import { pythonGenerator } from 'blockly/python';
 import type { ExecutionLanguage, CodeGenerationResult } from '../types';
 import { BLOCKLY_CONFIG, ERROR_MESSAGES } from '../config';
 import {
+	installerGenerateursChiphre,
 	wrapJavaScriptCode,
 	detectInfiniteLoops as detectJsInfiniteLoops,
 	validateCodeLength as validateJsCodeLength
@@ -53,6 +54,7 @@ export function generateCode(
 	workspace: Blockly.WorkspaceSvg,
 	language: ExecutionLanguage
 ): CodeGenerationResult {
+	installerGenerateursChiphre();
 	try {
 		// Validate language
 		if (language !== 'javascript' && language !== 'python') {
@@ -96,7 +98,7 @@ export function generateCode(
 				language,
 				success: true,
 				blockCount,
-				warnings: ['Les blocs ne sont pas connectes ou ne generent pas de code']
+				warnings: ['Les blocs ne sont pas reliés ou ne génèrent pas de code']
 			};
 		}
 
@@ -125,7 +127,7 @@ export function generateCode(
 			language === 'javascript' ? detectJsInfiniteLoops(rawCode) : detectPyInfiniteLoops(rawCode);
 
 		if (hasInfiniteLoop) {
-			warnings.push('Attention : Boucle infinie potentielle detectee');
+			warnings.push('Attention : boucle peut-être infinie');
 		}
 
 		// Return successful result
@@ -150,79 +152,6 @@ export function generateCode(
 			blockCount: 0
 		};
 	}
-}
-
-// =============================================================================
-// Helper Functions
-// =============================================================================
-
-/**
- * Generate code from workspace XML string.
- * Useful for testing or when you have serialized workspace state.
- *
- * @param workspaceXml - XML string representing workspace
- * @param language - Target language
- * @returns CodeGenerationResult
- */
-export function generateCodeFromXml(
-	workspaceXml: string,
-	language: ExecutionLanguage
-): CodeGenerationResult {
-	try {
-		// Create temporary workspace
-		const workspace = new Blockly.WorkspaceSvg(new Blockly.Options({}));
-
-		// Load XML
-		const xml = Blockly.utils.xml.textToDom(workspaceXml);
-		Blockly.Xml.domToWorkspace(xml, workspace);
-
-		// Generate code
-		const result = generateCode(workspace, language);
-
-		// Clean up
-		workspace.dispose();
-
-		return result;
-	} catch (error) {
-		return {
-			code: '',
-			language,
-			success: false,
-			error:
-				error instanceof Error
-					? `Failed to parse workspace XML: ${error.message}`
-					: 'Failed to parse workspace XML',
-			blockCount: 0
-		};
-	}
-}
-
-/**
- * Get raw (unwrapped) code from workspace.
- * Useful for debugging or displaying code to users.
- *
- * @param workspace - Blockly workspace
- * @param language - Target language
- * @returns Raw generated code without wrappers
- */
-export function getRawCode(workspace: Blockly.WorkspaceSvg, language: ExecutionLanguage): string {
-	if (language === 'javascript') {
-		return javascriptGenerator.workspaceToCode(workspace);
-	} else {
-		return pythonGenerator.workspaceToCode(workspace);
-	}
-}
-
-/**
- * Count executable blocks in workspace.
- * Excludes shadow blocks and disabled blocks.
- *
- * @param workspace - Blockly workspace
- * @returns Number of executable blocks
- */
-export function countExecutableBlocks(workspace: Blockly.WorkspaceSvg): number {
-	return workspace.getAllBlocks(false).filter((block) => !block.isShadow() && block.isEnabled())
-		.length;
 }
 
 // =============================================================================

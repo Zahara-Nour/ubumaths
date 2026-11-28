@@ -16,12 +16,12 @@ import {
 	createMockRequest,
 	mockSuccess,
 	mockError
-} from '$tests/helpers';
+} from '#tests/helpers/index.ts';
 
 // Stub tag-resolution helpers so tests don't need to mock junction queries.
 // GET uses fetchResourceTagNames, PUT uses syncResourceTags + syncResourceTags
 // + fetchResourceTagNames (post-update read-back).
-vi.mock('$lib/server/resource-tags', () => ({
+vi.mock('#lib/server/resource-tags.ts', () => ({
 	syncResourceTags: vi.fn().mockResolvedValue(undefined),
 	fetchResourceTagNames: vi.fn().mockResolvedValue([]),
 	fetchTagNamesForResources: vi.fn().mockResolvedValue(new Map()),

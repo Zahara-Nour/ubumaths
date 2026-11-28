@@ -7,7 +7,8 @@
  * SECURITY:
  * - Requires teacher role
  * - Validates student_id as UUID
- * - Verifies teacher teaches the student
+ * - Vérifie les rôles (appelant prof ou admin, cible élève) ; mono-professeur :
+ *   aucune vérification de classe
  *
  * DATA LOADED:
  * - Student profile (id, firstname, lastname, email)
@@ -16,12 +17,13 @@
  */
 
 import type { PageServerLoad } from './$types';
-import { error } from '@sveltejs/kit';
+import { error, redirect } from '@sveltejs/kit';
 import { z } from 'zod';
-import { requireRole } from '$lib/server/middleware/auth';
-import { verifyTeacherStudent } from '$lib/server/middleware/student-access';
-import { isBrevoConfigured } from '$lib/server/email/brevo';
-import { createServerLogger } from '$lib/utils/logger';
+import { requireRole } from '#lib/server/middleware/auth.ts';
+import { verifyTeacherStudent } from '#lib/server/middleware/student-access.ts';
+import { isBrevoConfigured } from '#lib/server/email/brevo.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
+import { isChildAccountEmail } from '#lib/utils/child-account.ts';
 
 const logger = createServerLogger('(protected)/dashboard/teacher/welcome-email/+page.server');
 
@@ -47,7 +49,7 @@ export const load: PageServerLoad = async ({ url, locals }) => {
 
 	const { student_id } = validation.data;
 
-	// Verify teacher-student relationship
+	// Vérifier les rôles (appelant prof ou admin, cible élève)
 	const hasAccess = await verifyTeacherStudent(user.id, student_id, supabase);
 	if (!hasAccess) {
 		throw error(403, "Envoi d'emails réservé aux élèves du professeur");
@@ -63,6 +65,12 @@ export const load: PageServerLoad = async ({ url, locals }) => {
 	if (studentError || !student) {
 		logger.error('[Welcome Email] Error fetching student:', studentError);
 		throw error(404, 'Élève introuvable');
+	}
+
+	// Enfant inscrit par son parent : adresse fictive, on n'écrit qu'au parent,
+	// depuis la page des consentements.
+	if (student.email && isChildAccountEmail(student.email)) {
+		redirect(303, '/dashboard/teacher/consent');
 	}
 
 	// Check the transactional email service (Brevo) is configured. The email is sent

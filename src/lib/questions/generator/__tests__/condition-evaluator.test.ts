@@ -9,7 +9,7 @@
 import { describe, it, expect } from 'vitest';
 import { evaluateConditions, evaluateConditionStrict } from '../condition-evaluator';
 import { resolveVariableConditionals } from '../content-resolver';
-import type { ResolvedVariable } from '$lib/ubumark/types/parameterization';
+import type { ResolvedVariable } from '#lib/ubumark/types/parameterization.ts';
 
 /** Helper to create resolved variables from a name/value map */
 function makeVars(map: Record<string, number>): ResolvedVariable[] {

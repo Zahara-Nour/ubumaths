@@ -1,0 +1,118 @@
+{
+	"id": "065eea60-1d6d-4404-9015-f4624e661ab2",
+	"title": "Associer une courbe à sa fonction x ↦ a^x",
+	"description": "Trois courbes ↔ trois fonctions x ↦ aˣ : sens de variation et point (1 ; a)",
+	"grades": ["1_GEN"],
+	"level": 2,
+	"delay": 60,
+	"status": "draft",
+	"shared": {},
+	"variations": [
+		{
+			"statement": "Chaque courbe représente une fonction $x\\mapsto a^x$ sur $[0\\,;4]$.\n\nRelie chaque courbe à sa fonction.\n\n````associer\n- ```courbe\n  x: -0.5 ; 4.5\n  y: -0.5 ; 6\n  grille: 1 ; 1\n  f(x) = {{a1}}^x sur [0 ; 4]   bleu\n  points: A(1 ; {{a1}})\n  description: Courbe d'une fonction x ↦ aˣ sur [0 ; 4], passant par (0 ; 1) et par A(1 ; {{a1}}).\n  ```\n  -> $x\\mapsto{{a1}}^x$\n- ```courbe\n  x: -0.5 ; 4.5\n  y: -0.5 ; 6\n  grille: 1 ; 1\n  f(x) = {{a2}}^x sur [0 ; 4]   bleu\n  points: A(1 ; {{a2}})\n  description: Courbe d'une fonction x ↦ aˣ sur [0 ; 4], passant par (0 ; 1) et par A(1 ; {{a2}}).\n  ```\n  -> $x\\mapsto{{a2}}^x$\n- ```courbe\n  x: -0.5 ; 4.5\n  y: -0.5 ; 6\n  grille: 1 ; 1\n  f(x) = {{a3}}^x sur [0 ; 4]   bleu\n  points: A(1 ; {{a3}})\n  description: Courbe d'une fonction x ↦ aˣ sur [0 ; 4], passant par (0 ; 1) et par A(1 ; {{a3}}).\n  ```\n  -> $x\\mapsto{{a3}}^x$\n````",
+			"variables": [
+				{
+					"name": "a1",
+					"expression": "1.2|1.5"
+				},
+				{
+					"name": "a2",
+					"expression": "2|2.5"
+				},
+				{
+					"name": "a3",
+					"expression": "0.5|0.6|0.8"
+				}
+			],
+			"conditions": [],
+			"correction": {
+				"steps": [
+					"Toutes ces courbes passent par $(0\\,;1)$, car $a^0=1$. Le point d'abscisse $1$ a pour ordonnée $a^1=a$ : on lit $a$ sur ce point. Pour $a>0$, la fonction $x\\mapsto a^x$ est croissante sur $[0\\,;+\\infty[$ si $a>1$, décroissante si $0<a<1$, constante (égale à $1$) si $a=1$.",
+					"Courbe 1 : elle passe par $(1\\,;{{a1}})$, c'est $\\textcolor{{{color:primary.0}}}{x\\mapsto{{a1}}^x}$, croissante, la moins rapide.",
+					"Courbe 2 : elle passe par $(1\\,;{{a2}})$, c'est $\\textcolor{{{color:primary.0}}}{x\\mapsto{{a2}}^x}$, croissante, la plus rapide.",
+					"Courbe 3 : elle passe par $(1\\,;{{a3}})$, c'est $\\textcolor{{{color:primary.0}}}{x\\mapsto{{a3}}^x}$, décroissante."
+				]
+			}
+		},
+		{
+			"statement": "Chaque courbe représente une fonction $x\\mapsto a^x$ sur $[0\\,;4]$.\n\nRelie chaque courbe à sa fonction.\n\n````associer\n- ```courbe\n  x: -0.5 ; 4.5\n  y: -0.5 ; 6\n  grille: 1 ; 1\n  f(x) = {{a1}}^x sur [0 ; 4]   bleu\n  points: A(1 ; {{a1}})\n  description: Courbe d'une fonction x ↦ aˣ sur [0 ; 4], passant par (0 ; 1) et par A(1 ; {{a1}}).\n  ```\n  -> $x\\mapsto{{a1}}^x$\n- ```courbe\n  x: -0.5 ; 4.5\n  y: -0.5 ; 6\n  grille: 1 ; 1\n  f(x) = {{a2}}^x sur [0 ; 4]   bleu\n  points: A(1 ; {{a2}})\n  description: Courbe d'une fonction x ↦ aˣ sur [0 ; 4], passant par (0 ; 1) et par A(1 ; {{a2}}).\n  ```\n  -> $x\\mapsto{{a2}}^x$\n- ```courbe\n  x: -0.5 ; 4.5\n  y: -0.5 ; 6\n  grille: 1 ; 1\n  f(x) = {{a3}}^x sur [0 ; 4]   bleu\n  points: A(1 ; {{a3}})\n  description: Courbe d'une fonction x ↦ aˣ sur [0 ; 4], passant par (0 ; 1) et par A(1 ; {{a3}}).\n  ```\n  -> $x\\mapsto{{a3}}^x$\n````",
+			"variables": [
+				{
+					"name": "a1",
+					"expression": "1.5|2|2.5"
+				},
+				{
+					"name": "a2",
+					"expression": "1"
+				},
+				{
+					"name": "a3",
+					"expression": "0.5|0.6|0.8"
+				}
+			],
+			"conditions": [],
+			"correction": {
+				"steps": [
+					"Toutes ces courbes passent par $(0\\,;1)$, car $a^0=1$. Le point d'abscisse $1$ a pour ordonnée $a^1=a$ : on lit $a$ sur ce point. Pour $a>0$, la fonction $x\\mapsto a^x$ est croissante sur $[0\\,;+\\infty[$ si $a>1$, décroissante si $0<a<1$, constante (égale à $1$) si $a=1$.",
+					"Courbe 1 : elle passe par $(1\\,;{{a1}})$, c'est $\\textcolor{{{color:primary.0}}}{x\\mapsto{{a1}}^x}$, croissante.",
+					"Courbe 2 : elle passe par $(1\\,;{{a2}})$, c'est $\\textcolor{{{color:primary.0}}}{x\\mapsto{{a2}}^x}$, constante : la droite horizontale d'équation $y=1$.",
+					"Courbe 3 : elle passe par $(1\\,;{{a3}})$, c'est $\\textcolor{{{color:primary.0}}}{x\\mapsto{{a3}}^x}$, décroissante."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Courbes bien reliées",
+			"variationIndex": 0,
+			"variables": {
+				"a1": "1.5",
+				"a2": "2",
+				"a3": "0.5"
+			},
+			"answers": ["2", "0", "1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : courbes 1 et 2 échangées",
+			"variationIndex": 0,
+			"variables": {
+				"a1": "1.5",
+				"a2": "2",
+				"a3": "0.5"
+			},
+			"answers": ["0", "2", "1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Avec a = 1 : bien reliées",
+			"variationIndex": 1,
+			"variables": {
+				"a1": "2",
+				"a2": "1",
+				"a3": "0.8"
+			},
+			"answers": ["2", "0", "1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : courbes 2 et 3 échangées",
+			"variationIndex": 1,
+			"variables": {
+				"a1": "2",
+				"a2": "1",
+				"a3": "0.8"
+			},
+			"answers": ["2", "1", "0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

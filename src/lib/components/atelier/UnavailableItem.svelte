@@ -7,7 +7,7 @@
 	 * Comme une action indisponible (`CardActionItems`) : atteignable au clavier,
 	 * annoncé indisponible, sa raison lue avec lui ; le choisir ne fait rien.
 	 */
-	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
+	import * as DropdownMenu from '#lib/components/ui/dropdown-menu/index.ts';
 
 	interface Props {
 		label: string;

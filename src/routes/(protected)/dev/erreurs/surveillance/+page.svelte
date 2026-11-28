@@ -1,11 +1,11 @@
 <script lang="ts">
-	import { Button } from '$lib/components/ui/button';
-	import * as Card from '$lib/components/ui/card';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import * as Card from '#lib/components/ui/card/index.ts';
 	import {
 		captureError,
 		captureValidationError,
 		capturePerformance
-	} from '$lib/utils/errorMonitoring';
+	} from '#lib/utils/errorMonitoring.ts';
 
 	function testClientError() {
 		throw new Error('Erreur de test côté client');

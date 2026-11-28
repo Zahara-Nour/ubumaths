@@ -10,7 +10,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { removeAccountFiles, sweepDeletedAccountFiles } from '../deleted-account-files';
 
-vi.mock('$lib/utils/logger', () => ({
+vi.mock('#lib/utils/logger.ts', () => ({
 	createServerLogger: () => ({ info: vi.fn(), warn: vi.fn(), error: vi.fn() })
 }));
 

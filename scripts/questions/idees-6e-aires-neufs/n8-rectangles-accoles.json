@@ -1,0 +1,316 @@
+{
+	"id": "3e3c05d6-29a2-4d69-93b0-62ddde23b74e",
+	"rangement": {
+		"noeud": "Grandeurs et mesures > Aires > rectangle",
+		"point": "6-200"
+	},
+	"title": "Rectangles accolés",
+	"description": "Retrouver un côté ou une aire dans des rectangles accolés dont on connaît les aires, de proche en proche, par divisions ; pièges : soustraire, recopier l'aire, confondre les côtés",
+	"grades": ["6"],
+	"level": 6,
+	"delay": 60,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Deux rectangles sont accolés : ils ont la même hauteur. La figure n'est pas à l'échelle.\n\n```figure\nfenetre: -1.5 ; 11 ; -1.5 ; 6\ndescription: Deux rectangles accolés. Le premier a une largeur de {{w1}} cm et une aire de {{eval:w1*h}} cm carrés ; le second a une aire de {{eval:w2*h}} cm carrés et une largeur inconnue.\n---\nR1 = point(0, 0, visible=faux)\nR2 = point(4, 0, visible=faux)\nR3 = point(4, 4, visible=faux)\nR4 = point(0, 4, visible=faux)\npolygone(R1, R2, R3, R4, couleur=\"noir\", epaisseur=2, remplissage=\"bleu\", opacite_fond=0.2)\nS1 = point(4, 0, visible=faux)\nS2 = point(9.5, 0, visible=faux)\nS3 = point(9.5, 4, visible=faux)\nS4 = point(4, 4, visible=faux)\npolygone(S1, S2, S3, S4, couleur=\"noir\", epaisseur=2, remplissage=\"orange\", opacite_fond=0.2)\ntexte(2, 2, \"{{eval:w1*h}} cm²\")\ntexte(6.75, 2, \"{{eval:w2*h}} cm²\")\ntexte(2, -0.6, \"{{w1}} cm\")\ntexte(6.75, -0.6, \"?\")\n```\n\nLargeur du second rectangle : $?$",
+			"variables": [
+				{
+					"name": "h",
+					"expression": "2..9"
+				},
+				{
+					"name": "w1",
+					"expression": "2..9"
+				},
+				{
+					"name": "w2",
+					"expression": "2..9"
+				}
+			],
+			"conditions": ["w1!=w2", "w1!=h", "w2!=h"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{w2}}\\unit{cm}",
+					"unit": {
+						"expected": true
+					},
+					"expectedErrors": [
+						{
+							"answer": "{{eval:w2*h-h}}\\unit{cm}",
+							"message": "On ne soustrait pas : l'aire est un produit. On cherche le nombre qui, multiplié par le côté connu, donne l'aire.",
+							"label": "Soustraction"
+						},
+						{
+							"answer": "{{eval:w2*h}}\\unit{cm}",
+							"message": "C'est l'aire du rectangle, pas l'un de ses côtés.",
+							"label": "Aire recopiée"
+						},
+						{
+							"answer": "{{h}}\\unit{cm}",
+							"message": "Ça, c'est la hauteur commune ; on demande la largeur du second rectangle.",
+							"label": "Hauteur commune"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Hauteur commune** : ${{eval:w1*h}} \\div {{w1}} = {{h}}$ cm.",
+					"**Largeur du second** : ${{eval:w2*h}} \\div {{h}} = \\textcolor{{{color:primary.0}}}{{{w2}}~\\unit{cm}}$."
+				]
+			},
+			"hint": "Le premier rectangle te donne la hauteur commune : quel nombre multiplié par ${{w1}}$ donne ${{eval:w1*h}}$ ?"
+		},
+		{
+			"statement": "Trois rectangles sont accolés. La figure n'est pas à l'échelle.\n\n```figure\nfenetre: -2 ; 10.5 ; -1 ; 8.5\ndescription: Trois rectangles accolés en forme de L. En bas à gauche, un rectangle de hauteur {{h1}} cm et d'aire {{eval:w1*h1}} cm carrés ; au-dessus, un rectangle d'aire {{eval:w1*h2}} cm carrés ; à sa droite, un rectangle d'aire {{eval:w3*h2}} cm carrés dont la largeur est inconnue.\n---\nR1 = point(0, 0, visible=faux)\nR2 = point(4, 0, visible=faux)\nR3 = point(4, 3, visible=faux)\nR4 = point(0, 3, visible=faux)\npolygone(R1, R2, R3, R4, couleur=\"noir\", epaisseur=2, remplissage=\"bleu\", opacite_fond=0.2)\nS1 = point(0, 3, visible=faux)\nS2 = point(4, 3, visible=faux)\nS3 = point(4, 7, visible=faux)\nS4 = point(0, 7, visible=faux)\npolygone(S1, S2, S3, S4, couleur=\"noir\", epaisseur=2, remplissage=\"bleu\", opacite_fond=0.2)\nT1 = point(4, 3, visible=faux)\nT2 = point(9, 3, visible=faux)\nT3 = point(9, 7, visible=faux)\nT4 = point(4, 7, visible=faux)\npolygone(T1, T2, T3, T4, couleur=\"noir\", epaisseur=2, remplissage=\"orange\", opacite_fond=0.2)\ntexte(2, 1.5, \"{{eval:w1*h1}} cm²\")\ntexte(2, 5, \"{{eval:w1*h2}} cm²\")\ntexte(6.5, 5, \"{{eval:w3*h2}} cm²\")\ntexte(-1, 1.5, \"{{h1}} cm\")\ntexte(6.5, 7.6, \"?\")\n```\n\nLargeur du rectangle orange : $?$",
+			"variables": [
+				{
+					"name": "h1",
+					"expression": "2..9"
+				},
+				{
+					"name": "w1",
+					"expression": "2..9"
+				},
+				{
+					"name": "h2",
+					"expression": "2..9"
+				},
+				{
+					"name": "w3",
+					"expression": "2..9"
+				}
+			],
+			"conditions": ["w1!=h1", "w1!=h2", "w3!=h2", "h1!=h2"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{w3}}\\unit{cm}",
+					"unit": {
+						"expected": true
+					},
+					"expectedErrors": [
+						{
+							"answer": "{{h2}}\\unit{cm}",
+							"message": "Ça, c'est la hauteur du rectangle orange ; on demande sa largeur.",
+							"label": "Hauteur au lieu de la largeur"
+						},
+						{
+							"answer": "{{eval:w3*h2}}\\unit{cm}",
+							"message": "C'est l'aire du rectangle, pas l'un de ses côtés.",
+							"label": "Aire recopiée"
+						},
+						{
+							"answer": "{{eval:w3*h2-h2}}\\unit{cm}",
+							"message": "On ne soustrait pas : l'aire est un produit. On cherche le nombre qui, multiplié par le côté connu, donne l'aire.",
+							"label": "Soustraction"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"**En bas** : largeur ${{eval:w1*h1}} \\div {{h1}} = {{w1}}$ cm.",
+					"**Au-dessus**, même largeur : hauteur ${{eval:w1*h2}} \\div {{w1}} = {{h2}}$ cm.",
+					"**Le rectangle orange**, même hauteur : largeur ${{eval:w3*h2}} \\div {{h2}} = \\textcolor{{{color:primary.0}}}{{{w3}}~\\unit{cm}}$."
+				]
+			},
+			"hint": "Pars du rectangle du bas, dont tu connais un côté : chaque rectangle donne un côté au suivant."
+		},
+		{
+			"statement": "Quatre rectangles forment un grand rectangle. La figure n'est pas à l'échelle.\n\n```figure\nfenetre: -1.5 ; 10.5 ; -1.5 ; 8\ndescription: Un grand rectangle partagé en quatre. En bas à gauche, largeur {{a}} cm et aire {{eval:a*c}} cm carrés ; en haut à gauche, aire {{eval:a*d}} cm carrés ; en bas à droite, aire {{eval:b*c}} cm carrés ; en haut à droite, aire inconnue.\n---\nR1 = point(0, 0, visible=faux)\nR2 = point(4, 0, visible=faux)\nR3 = point(4, 3, visible=faux)\nR4 = point(0, 3, visible=faux)\npolygone(R1, R2, R3, R4, couleur=\"noir\", epaisseur=2, remplissage=\"bleu\", opacite_fond=0.2)\nS1 = point(0, 3, visible=faux)\nS2 = point(4, 3, visible=faux)\nS3 = point(4, 7, visible=faux)\nS4 = point(0, 7, visible=faux)\npolygone(S1, S2, S3, S4, couleur=\"noir\", epaisseur=2, remplissage=\"bleu\", opacite_fond=0.2)\nT1 = point(4, 0, visible=faux)\nT2 = point(9, 0, visible=faux)\nT3 = point(9, 3, visible=faux)\nT4 = point(4, 3, visible=faux)\npolygone(T1, T2, T3, T4, couleur=\"noir\", epaisseur=2, remplissage=\"bleu\", opacite_fond=0.2)\nU1 = point(4, 3, visible=faux)\nU2 = point(9, 3, visible=faux)\nU3 = point(9, 7, visible=faux)\nU4 = point(4, 7, visible=faux)\npolygone(U1, U2, U3, U4, couleur=\"noir\", epaisseur=2, remplissage=\"orange\", opacite_fond=0.2)\ntexte(2, 1.5, \"{{eval:a*c}} cm²\")\ntexte(2, 5, \"{{eval:a*d}} cm²\")\ntexte(6.5, 1.5, \"{{eval:b*c}} cm²\")\ntexte(6.5, 5, \"?\")\ntexte(2, -0.6, \"{{a}} cm\")\n```\n\nAire du rectangle orange : $?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9"
+				},
+				{
+					"name": "b",
+					"expression": "2..9"
+				},
+				{
+					"name": "c",
+					"expression": "2..9"
+				},
+				{
+					"name": "d",
+					"expression": "2..9"
+				}
+			],
+			"conditions": ["a!=b", "c!=d", "a!=c", "b!=d"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:b*d}}\\unit{cm^2}",
+					"unit": {
+						"expected": true
+					},
+					"expectedErrors": [
+						{
+							"answer": "{{eval:b*d}}\\unit{cm}",
+							"message": "Une aire s'écrit en $\\unit{cm^2}$, pas en $\\unit{cm}$.",
+							"label": "Aire en cm"
+						},
+						{
+							"answer": "{{eval:b+d}}\\unit{cm^2}",
+							"message": "L'aire n'est pas une somme : multiplie la largeur par la hauteur.",
+							"label": "Somme des côtés"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"**En bas à gauche** : hauteur ${{eval:a*c}} \\div {{a}} = {{c}}$ cm.",
+					"**En haut à gauche** : hauteur ${{eval:a*d}} \\div {{a}} = {{d}}$ cm.",
+					"**En bas à droite** : largeur ${{eval:b*c}} \\div {{c}} = {{b}}$ cm.",
+					"**Le rectangle orange** : ${{b}} \\times {{d}} = \\textcolor{{{color:primary.0}}}{{{eval:b*d}}~\\unit{cm^2}}$."
+				]
+			},
+			"hint": "Il te faut la largeur et la hauteur du rectangle orange : chacune se lit sur un voisin."
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "24 cm² ÷ 4 = 6 ; 42 ÷ 6 = 7 cm",
+			"variationIndex": 0,
+			"variables": {
+				"h": "6",
+				"w1": "4",
+				"w2": "7"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["7\\unit{cm}"]
+		},
+		{
+			"description": "Soustraction 42 − 6 = 36",
+			"variationIndex": 0,
+			"variables": {
+				"h": "6",
+				"w1": "4",
+				"w2": "7"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "On ne soustrait pas : l'aire est un produit. On cherche le nombre qui, multiplié par le côté connu, donne l'aire."
+			},
+			"answers": ["36\\unit{cm}"]
+		},
+		{
+			"description": "Aire recopiée 42 cm",
+			"variationIndex": 0,
+			"variables": {
+				"h": "6",
+				"w1": "4",
+				"w2": "7"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "C'est l'aire du rectangle, pas l'un de ses côtés."
+			},
+			"answers": ["42\\unit{cm}"]
+		},
+		{
+			"description": "Hauteur commune 6 cm",
+			"variationIndex": 0,
+			"variables": {
+				"h": "6",
+				"w1": "4",
+				"w2": "7"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Ça, c'est la hauteur commune ; on demande la largeur du second rectangle."
+			},
+			"answers": ["6\\unit{cm}"]
+		},
+		{
+			"description": "15 ÷ 3 = 5 ; 20 ÷ 5 = 4 ; 24 ÷ 4 = 6 cm",
+			"variationIndex": 1,
+			"variables": {
+				"h1": "3",
+				"w1": "5",
+				"h2": "4",
+				"w3": "6"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["6\\unit{cm}"]
+		},
+		{
+			"description": "Hauteur 4 cm",
+			"variationIndex": 1,
+			"variables": {
+				"h1": "3",
+				"w1": "5",
+				"h2": "4",
+				"w3": "6"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Ça, c'est la hauteur du rectangle orange ; on demande sa largeur."
+			},
+			"answers": ["4\\unit{cm}"]
+		},
+		{
+			"description": "Aire recopiée 24 cm",
+			"variationIndex": 1,
+			"variables": {
+				"h1": "3",
+				"w1": "5",
+				"h2": "4",
+				"w3": "6"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "C'est l'aire du rectangle, pas l'un de ses côtés."
+			},
+			"answers": ["24\\unit{cm}"]
+		},
+		{
+			"description": "5 × 7 = 35 cm²",
+			"variationIndex": 2,
+			"variables": {
+				"a": "3",
+				"b": "5",
+				"c": "4",
+				"d": "7"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["35\\unit{cm^2}"]
+		},
+		{
+			"description": "35 cm",
+			"variationIndex": 2,
+			"variables": {
+				"a": "3",
+				"b": "5",
+				"c": "4",
+				"d": "7"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Une aire s'écrit en $\\unit{cm^2}$, pas en $\\unit{cm}$."
+			},
+			"answers": ["35\\unit{cm}"]
+		},
+		{
+			"description": "5 + 7 = 12 cm²",
+			"variationIndex": 2,
+			"variables": {
+				"a": "3",
+				"b": "5",
+				"c": "4",
+				"d": "7"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "L'aire n'est pas une somme : multiplie la largeur par la hauteur."
+			},
+			"answers": ["12\\unit{cm^2}"]
+		}
+	]
+}

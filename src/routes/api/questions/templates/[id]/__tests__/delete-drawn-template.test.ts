@@ -11,13 +11,16 @@
  */
 import { describe, it, expect, vi } from 'vitest';
 
-vi.mock('$lib/server/middleware/auth', () => ({
-	requireRole: vi.fn(async () => ({ user: { id: 'admin' }, profile: { role: 'admin' } })),
+vi.mock('#lib/server/middleware/auth.ts', () => ({
+	requireAdmin: vi.fn(async (locals: { supabase: unknown }) => ({
+		supabase: locals.supabase,
+		adminUserId: 'admin'
+	})),
 	requireRoles: vi.fn()
 }));
 
 import { DELETE } from '../+server';
-import { createFakeSupabase } from '$lib/server/__tests__/helpers/fake-supabase';
+import { createFakeSupabase } from '#lib/server/__tests__/helpers/fake-supabase.ts';
 
 const ID = '22222222-2222-4222-8222-222222222222';
 

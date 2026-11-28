@@ -4,7 +4,7 @@
  * Manche 13 (2026-10-04, maths complémentaires) : X prend chacune des
  * N = b − a + 1 valeurs entières de a à b avec la probabilité 1/N.
  *
- * ⚠️ Pas d'import `$lib` dans ce module (cf. v1) : chemins relatifs.
+ * ⚠️ Pas d'import `#lib` dans ce module (cf. v1) : chemins relatifs.
  *
  * @module statistics/uniform
  */

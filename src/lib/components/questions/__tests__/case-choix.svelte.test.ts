@@ -16,12 +16,12 @@ import type { MathfieldElement } from 'mathlive';
 import QuestionCard from '../QuestionCard.svelte';
 import FlashCard from '../FlashCard.svelte';
 import CorrectionCard from '../CorrectionCard.svelte';
-import { MarkdownRenderer } from '$lib/components/markdown';
-import { generateInstance } from '$lib/questions/generator/instance-generator';
-import type { QuestionInstance, QuestionTemplate } from '$lib/questions/types';
-import type { AnswerData } from '$lib/types/question-display';
-import type { TestAnswerResult } from '$lib/types/test';
-import { templateMarkdown } from '$lib/ubumark';
+import { MarkdownRenderer } from '#lib/components/markdown/index.ts';
+import { generateInstance } from '#lib/questions/generator/instance-generator.ts';
+import type { QuestionInstance, QuestionTemplate } from '#lib/questions/types.ts';
+import type { AnswerData } from '#lib/types/question-display.ts';
+import type { TestAnswerResult } from '#lib/types/test.ts';
+import { templateMarkdown } from '#lib/ubumark/index.ts';
 
 // Fixtures
 function generate(statement: string, expected: string[], seed = 42): QuestionInstance {

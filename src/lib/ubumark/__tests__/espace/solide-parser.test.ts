@@ -2,9 +2,9 @@
  * Bloc ```solide : lecture du texte (parseur) — chantier `solides`, lot 3 (§ 8)
  */
 import { describe, expect, it } from 'vitest';
-import { parseMarkdown } from '$lib/ubumark';
-import { parseEspaceContent } from '$lib/ubumark/parser/espace-parser';
-import type { EspaceNode, SolideSpec } from '$lib/ubumark/types/espace';
+import { parseMarkdown } from '#lib/ubumark/index.ts';
+import { parseEspaceContent } from '#lib/ubumark/parser/espace-parser.ts';
+import type { EspaceNode, SolideSpec } from '#lib/ubumark/types/espace.ts';
 
 const read = (...lines: string[]) => parseEspaceContent(lines.join('\n'), 'solide');
 const spec = (...lines: string[]) => read(...lines).spec as SolideSpec | null;

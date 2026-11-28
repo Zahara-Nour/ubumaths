@@ -9,16 +9,23 @@
 	Le niveau vient du contexte « lexique » (lexicon-context.ts). La fiche
 	coupe ce contexte : ses définitions ne soulignent pas leurs propres mots.
 
+	Sur une carte de question, le soulignement est masqué tant que le bouton
+	« Mots du dictionnaire » ne l'affiche pas (R6) : à la souris, le survol le
+	révèle ; au doigt, le mot reste du texte ; au clavier, il sort de la
+	tabulation. Ailleurs (démo, structure), il reste souligné.
+
 	@see lexicon/linker.ts pour le repérage
 	@see HintReference.svelte pour le même motif bouton + popover
 -->
 <script lang="ts">
-	import type { Snippet } from 'svelte';
+	import { untrack, type Snippet } from 'svelte';
 	import { resolve } from '$app/paths';
-	import * as Popover from '$lib/components/ui/popover';
-	import { lexiconRuntime } from '$lib/lexicon/runtime-store.svelte';
+	import * as Popover from '#lib/components/ui/popover/index.ts';
+	import { lexiconRuntime } from '#lib/dictionary/runtime-store.svelte.ts';
+	import { lexiconShown } from '#lib/dictionary/visibility.svelte.ts';
+	import { canHover } from '#lib/dictionary/can-hover.svelte.ts';
 	import InlineMarkdown from '../InlineMarkdown.svelte';
-	import { provideLexicon, readLexicon } from '../lexicon-context';
+	import { provideLexicon, readLexicon, readLexiconCardTerms } from '../lexicon-context';
 	import { keepOutsideFocus } from '../outside-focus';
 
 	interface Props {
@@ -31,13 +38,25 @@
 	let { ids, children }: Props = $props();
 
 	const lexicon = readLexicon();
+	const cardTerms = readLexiconCardTerms();
 	provideLexicon(() => null);
 
 	// Le repérage a déjà chargé le dictionnaire : un mot cliquable n'existe qu'après
 	let card = $derived.by(() => {
-		const grade = lexicon();
+		const reading = lexicon();
 		const runtime = lexiconRuntime();
-		return grade && runtime ? runtime.lexiconCard(ids, grade) : [];
+		return reading && runtime ? runtime.lexiconCard(ids, reading.grade, reading.linkGrade) : [];
+	});
+
+	// Masqué (R6) : sur une carte de question, tant que le bouton ne l'affiche pas
+	let hidden = $derived(cardTerms !== null && !lexiconShown());
+	// Au doigt, un mot masqué n'ouvre pas de fiche par surprise (B4)
+	let clickable = $derived(card.length > 0 && (!hidden || canHover()));
+
+	// Le mot s'annonce à sa carte, cliquable ou non : il fait paraître le bouton (B6)
+	$effect(() => {
+		// untrack : register lit le compteur qu'il écrit
+		if (card.length > 0 && cardTerms) return untrack(() => cardTerms.register());
 	});
 
 	// Fiche annoncée comme une boîte de dialogue : nom = le mot, description = ses définitions
@@ -55,13 +74,16 @@
 	}
 </script>
 
-{#if card.length === 0}{@render children()}{:else}<Popover.Root
+{#if !clickable}{@render children()}{:else}<Popover.Root
 		><Popover.Trigger
 			>{#snippet child({ props })}<button
 					{...props}
 					type="button"
-					class="lexicon-term cursor-pointer underline decoration-foreground/60 decoration-dotted decoration-[1.5px] underline-offset-4 hover:decoration-foreground"
-					>{@render children()}</button
+					tabindex={hidden ? -1 : undefined}
+					class={[
+						'lexicon-term cursor-pointer decoration-foreground/60 decoration-dotted decoration-[1.5px] underline-offset-4',
+						hidden ? 'hover:underline' : 'underline hover:decoration-foreground'
+					]}>{@render children()}</button
 				>{/snippet}</Popover.Trigger
 		><Popover.Content
 			bind:ref={contentRef}
@@ -94,7 +116,7 @@
 				</div>
 			{/each}
 			<a
-				href="{resolve('/glossaire')}?q={encodeURIComponent(card[0].term)}"
+				href="{resolve('glossaire')}?q={encodeURIComponent(card[0].term)}"
 				target="_blank"
 				rel="noopener noreferrer"
 				class="inline-block text-sm text-primary underline">Voir dans le glossaire</a

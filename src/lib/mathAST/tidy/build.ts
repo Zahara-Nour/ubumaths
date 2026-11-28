@@ -30,6 +30,7 @@ import {
 	negRational
 } from '../normal/rational';
 import { decimalString } from './decimal';
+import { imaginaryBehindFraction } from './order';
 
 // =============================================================================
 // Parenthésage
@@ -147,6 +148,19 @@ export function buildTermMagnitude(term: TidyTerm, allowBare: boolean): MathNode
 	const needsNumeratorNumber = numeratorText !== '1' || numeratorFactors.length === 0;
 	const numeratorAtomCount = (needsNumeratorNumber ? 1 : 0) + numeratorFactors.length;
 	const denominatorAtomCount = (denominatorValue !== 1n ? 1 : 0) + denominatorFactors.length;
+
+	// V35 — la partie imaginaire sous une barre de fraction : la fraction
+	// d'abord, `i` derrière (`\dfrac{\sqrt{3}}{2} i`, jamais `\dfrac{i\sqrt{3}}{2}`)
+	if (denominatorAtomCount > 0) {
+		const parts = imaginaryBehindFraction(term);
+		if (parts !== null) {
+			return multiply(
+				buildTermMagnitude(parts.real, false),
+				buildFactor(parts.imaginaryUnit),
+				'implicit'
+			);
+		}
+	}
 
 	// Un facteur seul, sans coefficient ni dénominateur ni unité : on peut
 	// l'écrire nu. Un terme gardé tel quel (`1/(1/x)`, tidy-conditions § 4.3)

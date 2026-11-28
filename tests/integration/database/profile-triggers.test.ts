@@ -19,7 +19,7 @@ import {
 import { TestData } from '../../helpers/database/test-data-factory';
 import { getPostgresClient } from '../../helpers/database/postgres-client';
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { Database } from '$lib/types/database';
+import type { Database } from '#lib/types/database.ts';
 
 /**
  * Insert a row into auth.users directly (the Supabase JS client cannot reach the

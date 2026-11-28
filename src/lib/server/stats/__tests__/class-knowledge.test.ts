@@ -9,13 +9,17 @@ import { describe, it, expect, vi } from 'vitest';
 import {
 	getClassCurriculumPointGrid,
 	getClassTopCurriculumPointsToRemediate,
-	getStudentRetentionCurve,
-	getClassActivityHeatmap,
-	getStudentGradeHistogram
+	getStudentRetentionCurve
 } from '../class-knowledge';
 
 type QueryResult = { data: unknown; error: unknown };
-type TableHandler = () => Promise<QueryResult> | QueryResult;
+type PageRange = { from: number; to: number };
+/**
+ * Reçoit la page demandée par `.range()` (absente sans `.range()`). Un handler
+ * qui ne lit pas la page ne rend que la première : les suivantes sont vides,
+ * comme une table qui tient dans une page.
+ */
+type TableHandler = (range?: PageRange) => Promise<QueryResult> | QueryResult;
 type MockSpec = Record<string, TableHandler>;
 type InCall = { table: string; method: 'in' | 'eq'; column: string; values: unknown[] };
 
@@ -40,8 +44,15 @@ function buildMock(tableHandlers: MockSpec, inCalls: InCall[] = []) {
 		if (!handler) {
 			throw new Error(`Unexpected table in mock: ${table}`);
 		}
-		const terminalPromise = Promise.resolve().then(handler);
+		let pageRange: PageRange | undefined;
+		// La chaîne est construite d'un trait avant le `then` : la page est connue ici.
+		const terminalPromise = Promise.resolve().then(() =>
+			pageRange && pageRange.from > 0 && handler.length === 0
+				? { data: [], error: null }
+				: handler(pageRange)
+		);
 		const queryBuilder = {
+			range: vi.fn(),
 			select: vi.fn(),
 			eq: vi.fn(),
 			in: vi.fn(),
@@ -66,6 +77,10 @@ function buildMock(tableHandlers: MockSpec, inCalls: InCall[] = []) {
 		queryBuilder.is.mockReturnValue(queryBuilder);
 		queryBuilder.gte.mockReturnValue(queryBuilder);
 		queryBuilder.order.mockReturnValue(queryBuilder);
+		queryBuilder.range.mockImplementation((from: number, to: number) => {
+			pageRange = { from, to };
+			return queryBuilder;
+		});
 		queryBuilder.maybeSingle.mockImplementation(handler);
 		queryBuilder.single.mockImplementation(handler);
 		return queryBuilder;
@@ -180,6 +195,26 @@ describe('getClassCurriculumPointGrid', () => {
 		expect(grid.cells).toEqual({});
 	});
 
+	it('V123 : les essais au-delà de 1000 lignes comptent (lecture page par page)', async () => {
+		// 1000 essais sur t1, puis l'unique essai de t2 en deuxième page.
+		const tags = [tag('t1', point('cap1')), tag('t2', point('cap2', { order: 2 }))];
+		const supabase = gridFixture(tags, {
+			skill_attempts: (range) => {
+				const from = range?.from ?? 0;
+				const to = range?.to ?? 999;
+				if (to - from + 1 > 1000) throw new Error('page de plus de 1000 lignes demandée');
+				const all = [
+					...Array.from({ length: 1000 }, () => ({ student_id: 's1', template_id: 't1' })),
+					{ student_id: 's1', template_id: 't2' }
+				];
+				return { data: all.slice(from, to + 1), error: null };
+			}
+		});
+		const grid = await getClassCurriculumPointGrid(supabase, 'class-1');
+		expect(grid.points.map((p) => p.id).sort()).toEqual(['cap1', 'cap2']);
+		expect(grid.cells['s1:cap2']).toBe('acquise_en_memoire');
+	});
+
 	it('un point neuf tagué fait une colonne, étiquetée par sa notion', async () => {
 		const grid = await getClassCurriculumPointGrid(
 			gridFixture([tag('t1', point('cap1', { name: 'Additionner' }))]),
@@ -291,7 +326,7 @@ describe('getClassCurriculumPointGrid', () => {
 			srs_card_stats: () => ({
 				data: [
 					{ user_id: 's1', card_reference_id: 't1', state: 'review', next_review: future },
-					{ user_id: 's1', card_reference_id: 't2', state: 'learning', next_review: past }
+					{ user_id: 's1', card_reference_id: 't2', state: 'relearning', next_review: past }
 				],
 				error: null
 			})
@@ -414,7 +449,7 @@ describe('getClassTopCurriculumPointsToRemediate', () => {
 				data: Array.from({ length: count }, (_, i) => ({
 					user_id: 's1',
 					card_reference_id: `t${i}`,
-					state: 'learning',
+					state: 'relearning',
 					next_review: past
 				})),
 				error: null
@@ -542,268 +577,5 @@ describe('getStudentRetentionCurve', () => {
 		const points = await getStudentRetentionCurve(supabase, 'student-1', NOMBRES_6);
 		const totalReviews = points.reduce((acc, p) => acc + p.review_count, 0);
 		expect(totalReviews).toBe(2);
-	});
-});
-
-// =============================================================================
-// getClassActivityHeatmap
-// =============================================================================
-
-describe('getClassActivityHeatmap', () => {
-	it('returns empty when no class members', async () => {
-		const supabase = buildMock({
-			class_members: () => ({ data: [], error: null })
-		});
-		const heatmap = await getClassActivityHeatmap(supabase, 'class-1');
-		expect(heatmap.days).toEqual([]);
-		expect(heatmap.students).toEqual([]);
-		expect(heatmap.cells).toEqual([]);
-	});
-
-	it('builds N days × M students cells with zeros when no attempts', async () => {
-		const supabase = buildMock({
-			class_members: () => ({
-				data: [{ student_id: 's1', profiles: { id: 's1', firstname: 'A', lastname: '' } }],
-				error: null
-			}),
-			skill_attempts: () => ({ data: [], error: null })
-		});
-		const heatmap = await getClassActivityHeatmap(supabase, 'class-1', 3);
-		expect(heatmap.days.length).toBe(3);
-		expect(heatmap.students.length).toBe(1);
-		expect(heatmap.cells.length).toBe(3);
-		expect(heatmap.cells.every((c) => c.review_count === 0)).toBe(true);
-		expect(heatmap.students[0].is_alert).toBe(true);
-	});
-
-	it('flags is_alert=true when last_review > alertThresholdDays', async () => {
-		const old = new Date(Date.now() - 10 * 86400000).toISOString();
-		const supabase = buildMock({
-			class_members: () => ({
-				data: [{ student_id: 's1', profiles: { id: 's1', firstname: 'A', lastname: '' } }],
-				error: null
-			}),
-			skill_attempts: () => ({
-				data: [{ student_id: 's1', created_at: old, success: true, source: 'srs' }],
-				error: null
-			})
-		});
-		const heatmap = await getClassActivityHeatmap(supabase, 'class-1', 30, 5);
-		expect(heatmap.students[0].is_alert).toBe(true);
-		expect(heatmap.students[0].days_since_last_review).toBeGreaterThan(5);
-	});
-
-	it('counts success_pct per cell', async () => {
-		const today = new Date().toISOString();
-		const supabase = buildMock({
-			class_members: () => ({
-				data: [{ student_id: 's1', profiles: { id: 's1', firstname: 'A', lastname: '' } }],
-				error: null
-			}),
-			skill_attempts: () => ({
-				data: [
-					{ student_id: 's1', created_at: today, success: true, source: 'srs' },
-					{ student_id: 's1', created_at: today, success: false, source: 'srs' }
-				],
-				error: null
-			})
-		});
-		const heatmap = await getClassActivityHeatmap(supabase, 'class-1', 1);
-		expect(heatmap.cells[0].review_count).toBe(2);
-		expect(heatmap.cells[0].success_pct).toBe(50);
-	});
-
-	// Décision B1 de David (2026-09-28) : une carte de cours compte comme
-	// ACTIVITÉ (pas d'alerte d'inactivité) mais pas dans le taux de réussite
-	// (l'élève s'est noté lui-même) — qu'elle vienne de l'entraînement libre
-	// (`student_self`) ou d'un paquet de révision (`srs`).
-	it('carte de cours : comptée comme activité, hors taux de réussite', async () => {
-		const today = new Date().toISOString();
-		const card = { type: 'course_card' };
-		const supabase = buildMock({
-			class_members: () => ({
-				data: [{ student_id: 's1', profiles: { id: 's1', firstname: 'A', lastname: '' } }],
-				error: null
-			}),
-			skill_attempts: () => ({
-				data: [
-					{
-						student_id: 's1',
-						created_at: today,
-						success: true,
-						source: 'srs',
-						question_templates: { type: 'fill_in_blanks' }
-					},
-					{
-						student_id: 's1',
-						created_at: today,
-						success: false,
-						source: 'srs',
-						question_templates: { type: 'fill_in_blanks' }
-					},
-					{
-						student_id: 's1',
-						created_at: today,
-						success: true,
-						source: 'student_self',
-						question_templates: card
-					},
-					{
-						student_id: 's1',
-						created_at: today,
-						success: true,
-						source: 'srs',
-						question_templates: card
-					}
-				],
-				error: null
-			})
-		});
-		const heatmap = await getClassActivityHeatmap(supabase, 'class-1', 1);
-		expect(heatmap.cells[0].review_count).toBe(4);
-		expect(heatmap.cells[0].success_pct).toBe(50);
-	});
-
-	it('journée de cartes seulement : active, sans taux de réussite', async () => {
-		const today = new Date().toISOString();
-		const supabase = buildMock({
-			class_members: () => ({
-				data: [{ student_id: 's1', profiles: { id: 's1', firstname: 'A', lastname: '' } }],
-				error: null
-			}),
-			skill_attempts: () => ({
-				data: [
-					{
-						student_id: 's1',
-						created_at: today,
-						success: false,
-						source: 'srs',
-						question_templates: { type: 'course_card' }
-					}
-				],
-				error: null
-			})
-		});
-		const heatmap = await getClassActivityHeatmap(supabase, 'class-1', 1, 5);
-		expect(heatmap.cells[0].review_count).toBe(1);
-		expect(heatmap.cells[0].success_pct).toBeNull();
-		expect(heatmap.students[0].is_alert).toBe(false);
-	});
-});
-
-// =============================================================================
-// getStudentGradeHistogram
-// =============================================================================
-
-describe('getStudentGradeHistogram', () => {
-	it('returns 4 buckets with zeros when no attempts', async () => {
-		const supabase = buildMock({
-			skill_attempts: () => ({ data: [], error: null })
-		});
-		const buckets = await getStudentGradeHistogram(supabase, 'student-1');
-		expect(buckets.length).toBe(4);
-		expect(buckets.map((b) => b.grade)).toEqual([1, 2, 3, 4]);
-		expect(buckets.every((b) => b.count === 0)).toBe(true);
-	});
-
-	it('counts grades correctly per bucket', async () => {
-		const today = new Date().toISOString();
-		const supabase = buildMock({
-			skill_attempts: () => ({
-				data: [
-					{ grade: 1, created_at: today, template_id: 't1' },
-					{ grade: 1, created_at: today, template_id: 't1' },
-					{ grade: 3, created_at: today, template_id: 't1' },
-					{ grade: 4, created_at: today, template_id: 't2' }
-				],
-				error: null
-			}),
-			srs_card_stats: () => ({
-				data: [
-					{ card_reference_id: 't1', stability: 5 },
-					{ card_reference_id: 't2', stability: 10 }
-				],
-				error: null
-			})
-		});
-		const buckets = await getStudentGradeHistogram(supabase, 'student-1');
-		expect(buckets[0].count).toBe(2); // grade 1
-		expect(buckets[1].count).toBe(0); // grade 2
-		expect(buckets[2].count).toBe(1); // grade 3
-		expect(buckets[3].count).toBe(1); // grade 4
-	});
-
-	// Décision A1 de David (2026-09-28) : une carte de cours ne mesure pas un
-	// point du programme — ses notes (auto-évaluation) restent hors de l'histogramme.
-	it('ignore les notes des cartes de cours', async () => {
-		const today = new Date().toISOString();
-		const supabase = buildMock({
-			skill_attempts: () => ({
-				data: [
-					{
-						grade: 3,
-						created_at: today,
-						template_id: 't1',
-						question_templates: { type: 'fill_in_blanks' }
-					},
-					{
-						grade: 4,
-						created_at: today,
-						template_id: 'c1',
-						question_templates: { type: 'course_card' }
-					},
-					{
-						grade: 4,
-						created_at: today,
-						template_id: 'c1',
-						question_templates: { type: 'course_card' }
-					}
-				],
-				error: null
-			}),
-			srs_card_stats: () => ({ data: [{ card_reference_id: 't1', stability: 5 }], error: null })
-		});
-		const buckets = await getStudentGradeHistogram(supabase, 'student-1');
-		expect(buckets[2].count).toBe(1); // grade 3
-		expect(buckets[3].count).toBe(0); // grade 4 : cartes exclues
-	});
-
-	it('computes avg_stability_after using current stability as proxy', async () => {
-		const today = new Date().toISOString();
-		const supabase = buildMock({
-			skill_attempts: () => ({
-				data: [
-					{ grade: 4, created_at: today, template_id: 't1' },
-					{ grade: 4, created_at: today, template_id: 't2' }
-				],
-				error: null
-			}),
-			srs_card_stats: () => ({
-				data: [
-					{ card_reference_id: 't1', stability: 4 },
-					{ card_reference_id: 't2', stability: 6 }
-				],
-				error: null
-			})
-		});
-		const buckets = await getStudentGradeHistogram(supabase, 'student-1');
-		expect(buckets[3].avg_stability_after).toBe(5); // (4+6)/2
-	});
-
-	it('ignores grades outside {1,2,3,4}', async () => {
-		const today = new Date().toISOString();
-		const supabase = buildMock({
-			skill_attempts: () => ({
-				data: [
-					{ grade: 0, created_at: today, template_id: 't1' },
-					{ grade: 5, created_at: today, template_id: 't1' },
-					{ grade: null, created_at: today, template_id: 't1' }
-				],
-				error: null
-			}),
-			srs_card_stats: () => ({ data: [], error: null })
-		});
-		const buckets = await getStudentGradeHistogram(supabase, 'student-1');
-		expect(buckets.every((b) => b.count === 0)).toBe(true);
 	});
 });

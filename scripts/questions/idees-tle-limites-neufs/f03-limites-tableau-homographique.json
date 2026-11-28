@@ -1,0 +1,400 @@
+{
+	"id": "d6eaa761-e8ff-4c08-a8c8-c3de1c4bbd83",
+	"rangement": {
+		"noeud": "Fonctions > Limites de fonctions > limite en un point",
+		"point": "TSPE-415"
+	},
+	"title": "Compléter les limites dans le tableau de variations d'une fonction homographique",
+	"description": "Les quatre limites de k/(x − α) ou de (ax + b)/(cx + d) dans son tableau de variations : en ±∞ et de part et d'autre de la valeur interdite (pièges : borne recopiée, termes constants, signe du dénominateur, ∞ sans signe)",
+	"grades": ["T_SPE"],
+	"level": 2,
+	"delay": 60,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true
+	},
+	"variations": [
+		{
+			"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}\\setminus\\left\\{ {{al}} \\right\\}$ par $f(x)={{if:k>0|\\dfrac{ {{k}} }|-\\dfrac{ {{eval:abs(k)}} }}}{x{{eval:-al;+}}}$. Voici son tableau de variations, sans ses limites.\n\n```variation\nvariable: x\ndomain: -inf, {{al}}, +inf\nvariation: f(x)\n  -inf: ?0, {{if:k>0|top|bottom}}\n  {{al}}: ||, {{if:k>0|?-inf, ?+inf|?+inf, ?-inf}}\n  +inf: ?0, {{if:k>0|bottom|top}}\n```\n\nComplète le tableau avec les limites de $f$ aux bornes de son ensemble de définition.",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..6;±"
+				},
+				{
+					"name": "al",
+					"expression": "-4..4"
+				}
+			],
+			"conditions": ["al != 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "",
+					"expectedErrors": [
+						{
+							"answer": "-\\infty",
+							"message": "Tu as recopié la borne : en $-\\infty$, le numérateur reste égal à ${{k}}$ et le dénominateur devient très grand, donc le quotient se rapproche de $0$.",
+							"label": "Borne recopiée"
+						},
+						{
+							"answer": "{{k}}",
+							"message": "Le numérateur vaut ${{k}}$, mais il est divisé par un dénominateur qui tend vers l'infini.",
+							"label": "Numérateur recopié"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "",
+					"expectedErrors": [
+						{
+							"answer": "{{if:k>0|+\\infty|-\\infty}}",
+							"message": "Regarde le signe du dénominateur juste à gauche de ${{al}}$ : pour $x<{{al}}$, $x{{eval:-al;+}}$ est négatif.",
+							"label": "Signe à gauche"
+						},
+						{
+							"answer": "inf",
+							"message": "Une limite infinie a toujours un signe : écris $+\\infty$ ou $-\\infty$.",
+							"label": "Infini sans signe"
+						},
+						{
+							"answer": "0",
+							"message": "Le dénominateur tend vers $0$, le numérateur non : le quotient devient très grand en valeur absolue, il ne tend pas vers $0$.",
+							"label": "Quotient par 0 pris pour 0"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "",
+					"expectedErrors": [
+						{
+							"answer": "{{if:k>0|-\\infty|+\\infty}}",
+							"message": "Regarde le signe du dénominateur juste à droite de ${{al}}$ : pour $x>{{al}}$, $x{{eval:-al;+}}$ est positif.",
+							"label": "Signe à droite"
+						},
+						{
+							"answer": "inf",
+							"message": "Une limite infinie a toujours un signe : écris $+\\infty$ ou $-\\infty$.",
+							"label": "Infini sans signe"
+						},
+						{
+							"answer": "0",
+							"message": "Le dénominateur tend vers $0$, le numérateur non : le quotient devient très grand en valeur absolue, il ne tend pas vers $0$.",
+							"label": "Quotient par 0 pris pour 0"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "",
+					"expectedErrors": [
+						{
+							"answer": "+\\infty",
+							"message": "Tu as recopié la borne : en $+\\infty$, le numérateur reste égal à ${{k}}$ et le dénominateur devient très grand, donc le quotient se rapproche de $0$.",
+							"label": "Borne recopiée"
+						},
+						{
+							"answer": "{{k}}",
+							"message": "Le numérateur vaut ${{k}}$, mais il est divisé par un dénominateur qui tend vers l'infini.",
+							"label": "Numérateur recopié"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"En $-\\infty$ et en $+\\infty$, le numérateur vaut ${{k}}$ et le dénominateur tend vers l'infini : $\\displaystyle\\lim_{x\\to -\\infty}f(x)=\\displaystyle\\lim_{x\\to +\\infty}f(x)=\\textcolor{{{color:primary.0}}}{0}$.",
+					"En ${{al}}$, le numérateur vaut ${{k}}$ et le dénominateur tend vers $0$ : négatif à gauche de ${{al}}$, positif à droite.",
+					"Le numérateur est {{if:k>0|positif|négatif}} : à gauche de ${{al}}$ (pour $x<{{al}}$), $f(x)$ tend vers $\\textcolor{{{color:primary.0}}}{ {{if:k>0|-|+}}\\infty }$ ; à droite (pour $x>{{al}}$), vers $\\textcolor{{{color:primary.0}}}{ {{if:k>0|+|-}}\\infty }$.",
+					"```variation\nvariable: x\ndomain: -inf, {{al}}, +inf\nvariation: f(x)\n  -inf: 0, {{if:k>0|top|bottom}}\n  {{al}}: ||, {{if:k>0|-inf, +inf|+inf, -inf}}\n  +inf: 0, {{if:k>0|bottom|top}}\n```"
+				]
+			},
+			"hint": "En $\\pm\\infty$ : que devient un nombre fixe divisé par un nombre de plus en plus grand ? En ${{al}}$ : cherche le signe de $x{{eval:-al;+}}$ juste à gauche et juste à droite."
+		},
+		{
+			"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}\\setminus\\left\\{ {{al}} \\right\\}$ par $f(x)=\\dfrac{{{if:a==1||{{if:a==-1|-|{{a}}}}}}x{{b;+}}}{ {{if:c==2|2}}x{{d;+}}}$. Voici son tableau de variations, sans ses limites.\n\n```variation\nvariable: x\ndomain: -inf, {{al}}, +inf\nvariation: f(x)\n  -inf: ?{{if:c==1|{{a}}|{{if:a<0|-}}\\frac{ {{eval:abs(a)}} }{2}}}, {{if:S>0|top|bottom}}\n  {{al}}: ||, {{if:S>0|?-inf, ?+inf|?+inf, ?-inf}}\n  +inf: ?{{if:c==1|{{a}}|{{if:a<0|-}}\\frac{ {{eval:abs(a)}} }{2}}}, {{if:S>0|bottom|top}}\n```\n\nComplète le tableau avec les limites de $f$ aux bornes de son ensemble de définition.",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "1|2"
+				},
+				{
+					"name": "a",
+					"expression": "1..7;±"
+				},
+				{
+					"name": "al",
+					"expression": "-4..4"
+				},
+				{
+					"name": "b",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "d",
+					"expression": "eval:-c*al"
+				},
+				{
+					"name": "S",
+					"expression": "eval:a*al+b"
+				}
+			],
+			"conditions": ["al != 0", "gcd(a,c)==1", "S != 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "",
+					"expectedErrors": [
+						{
+							"answer": "-\\infty",
+							"message": "Le numérateur et le dénominateur tendent tous deux vers l'infini : c'est une forme indéterminée, factorise par $x$ avant de conclure.",
+							"label": "Forme indéterminée"
+						},
+						{
+							"answer": "\\frac{ {{b}} }{ {{d}} }",
+							"message": "Tu as divisé les termes constants : en l'infini, ce sont les termes en $x$ qui l'emportent.",
+							"label": "Termes constants"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "",
+					"expectedErrors": [
+						{
+							"answer": "{{if:S>0|+\\infty|-\\infty}}",
+							"message": "Le numérateur tend vers ${{S}}$ ; regarde le signe du dénominateur juste à gauche de ${{al}}$ : il est négatif.",
+							"label": "Signe à gauche"
+						},
+						{
+							"answer": "inf",
+							"message": "Une limite infinie a toujours un signe : écris $+\\infty$ ou $-\\infty$.",
+							"label": "Infini sans signe"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "",
+					"expectedErrors": [
+						{
+							"answer": "{{if:S>0|-\\infty|+\\infty}}",
+							"message": "Le numérateur tend vers ${{S}}$ ; regarde le signe du dénominateur juste à droite de ${{al}}$ : il est positif.",
+							"label": "Signe à droite"
+						},
+						{
+							"answer": "inf",
+							"message": "Une limite infinie a toujours un signe : écris $+\\infty$ ou $-\\infty$.",
+							"label": "Infini sans signe"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "",
+					"expectedErrors": [
+						{
+							"answer": "+\\infty",
+							"message": "Le numérateur et le dénominateur tendent tous deux vers l'infini : c'est une forme indéterminée, factorise par $x$ avant de conclure.",
+							"label": "Forme indéterminée"
+						},
+						{
+							"answer": "\\frac{ {{b}} }{ {{d}} }",
+							"message": "Tu as divisé les termes constants : en l'infini, ce sont les termes en $x$ qui l'emportent.",
+							"label": "Termes constants"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"En $\\pm\\infty$, on factorise par $x$ : $f(x)=\\dfrac{ {{a}}{{if:b>0|+|-}}\\frac{ {{eval:abs(b)}} }{x} }{ {{c}}{{if:d>0|+|-}}\\frac{ {{eval:abs(d)}} }{x} }$, et les fractions en $\\frac{1}{x}$ tendent vers $0$. Donc $\\displaystyle\\lim_{x\\to -\\infty}f(x)=\\displaystyle\\lim_{x\\to +\\infty}f(x)=\\textcolor{{{color:primary.0}}}{{{if:c==1|{{a}}|{{if:a<0|-}}\\frac{ {{eval:abs(a)}} }{2}}}}$.",
+					"En ${{al}}$, le numérateur tend vers ${{a}}\\times{{al;()}}{{b;+}}={{S}}$ et le dénominateur tend vers $0$ : négatif à gauche de ${{al}}$, positif à droite.",
+					"Donc, à gauche de ${{al}}$ (pour $x<{{al}}$), $f(x)$ tend vers $\\textcolor{{{color:primary.0}}}{ {{if:S>0|-|+}}\\infty }$ ; à droite (pour $x>{{al}}$), vers $\\textcolor{{{color:primary.0}}}{ {{if:S>0|+|-}}\\infty }$.",
+					"```variation\nvariable: x\ndomain: -inf, {{al}}, +inf\nvariation: f(x)\n  -inf: {{if:c==1|{{a}}|{{if:a<0|-}}\\frac{ {{eval:abs(a)}} }{2}}}, {{if:S>0|top|bottom}}\n  {{al}}: ||, {{if:S>0|-inf, +inf|+inf, -inf}}\n  +inf: {{if:c==1|{{a}}|{{if:a<0|-}}\\frac{ {{eval:abs(a)}} }{2}}}, {{if:S>0|bottom|top}}\n```"
+				]
+			},
+			"hint": "En $\\pm\\infty$ : factorise le numérateur et le dénominateur par $x$. En ${{al}}$ : calcule le numérateur en ${{al}}$, puis cherche le signe du dénominateur de chaque côté."
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "a : 3/(x − 2)",
+			"variationIndex": 0,
+			"variables": {
+				"k": "3",
+				"al": "2"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0", "-\\infty", "+\\infty", "0"]
+		},
+		{
+			"description": "a : −4/(x + 1)",
+			"variationIndex": 0,
+			"variables": {
+				"k": "-4",
+				"al": "-1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0", "+\\infty", "-\\infty", "0"]
+		},
+		{
+			"description": "a : −∞ et +∞ en ∞ (bornes recopiées)",
+			"variationIndex": 0,
+			"variables": {
+				"k": "3",
+				"al": "2"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["-\\infty", "-\\infty", "+\\infty", "+\\infty"]
+		},
+		{
+			"description": "a : signes échangés en α",
+			"variationIndex": 0,
+			"variables": {
+				"k": "3",
+				"al": "2"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["0", "+\\infty", "-\\infty", "0"]
+		},
+		{
+			"description": "a : ∞ sans signe",
+			"variationIndex": 0,
+			"variables": {
+				"k": "3",
+				"al": "2"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["0", "\\infty", "+\\infty", "0"]
+		},
+		{
+			"description": "a : 0 en α",
+			"variationIndex": 0,
+			"variables": {
+				"k": "3",
+				"al": "2"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["0", "-\\infty", "0", "0"]
+		},
+		{
+			"description": "b : (3x + 1)/(2x − 4)",
+			"variationIndex": 1,
+			"variables": {
+				"c": "2",
+				"a": "3",
+				"al": "2",
+				"b": "1",
+				"d": "-4",
+				"S": "7"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["\\frac{3}{2}", "-\\infty", "+\\infty", "\\frac{3}{2}"]
+		},
+		{
+			"description": "b : 3/2 écrit 1,5",
+			"variationIndex": 1,
+			"variables": {
+				"c": "2",
+				"a": "3",
+				"al": "2",
+				"b": "1",
+				"d": "-4",
+				"S": "7"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["1.5", "-\\infty", "+\\infty", "1.5"]
+		},
+		{
+			"description": "b : (−x + 5)/(x + 3)",
+			"variationIndex": 1,
+			"variables": {
+				"c": "1",
+				"a": "-1",
+				"al": "-3",
+				"b": "5",
+				"d": "3",
+				"S": "8"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["-1", "-\\infty", "+\\infty", "-1"]
+		},
+		{
+			"description": "b : (x − 6)/(x − 1)",
+			"variationIndex": 1,
+			"variables": {
+				"c": "1",
+				"a": "1",
+				"al": "1",
+				"b": "-6",
+				"d": "-1",
+				"S": "-5"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["1", "+\\infty", "-\\infty", "1"]
+		},
+		{
+			"description": "b : termes constants",
+			"variationIndex": 1,
+			"variables": {
+				"c": "2",
+				"a": "3",
+				"al": "2",
+				"b": "1",
+				"d": "-4",
+				"S": "7"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["-\\frac{1}{4}", "-\\infty", "+\\infty", "\\frac{3}{2}"]
+		},
+		{
+			"description": "b : forme indéterminée prise pour −∞",
+			"variationIndex": 1,
+			"variables": {
+				"c": "2",
+				"a": "3",
+				"al": "2",
+				"b": "1",
+				"d": "-4",
+				"S": "7"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["-\\infty", "-\\infty", "+\\infty", "\\frac{3}{2}"]
+		},
+		{
+			"description": "b : signes échangés en α",
+			"variationIndex": 1,
+			"variables": {
+				"c": "1",
+				"a": "1",
+				"al": "1",
+				"b": "-6",
+				"d": "-1",
+				"S": "-5"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["1", "-\\infty", "+\\infty", "1"]
+		}
+	]
+}

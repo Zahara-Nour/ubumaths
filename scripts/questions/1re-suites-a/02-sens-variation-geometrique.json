@@ -1,0 +1,473 @@
+{
+	"id": "2938b16b-952e-4700-95eb-628bf1260c64",
+	"title": "Sens de variation d'une suite géométrique, quelle que soit sa raison",
+	"description": "Suite géométrique donnée par u₀ et q, par a × qⁿ ou par u(n+1) = q u(n) : raison négative (ni croissante, ni décroissante ; piège « q < 0 donc décroissante »), raison positive selon q et le signe de u₀, raison 1 (constante)",
+	"grades": ["1_SPE"],
+	"level": 4,
+	"delay": 45,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true
+	},
+	"variations": [
+		{
+			"statement": "La suite $(u_n)$ est géométrique, de premier terme $u_0={{a}}$ et de raison $q={{eval:q10/10;d}}$.\n\nQuel est son sens de variation ?\n\n```choix\nmelanger: non\n- croissante\n- décroissante\n- constante\n- ni croissante, ni décroissante\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "q10",
+					"expression": "-30|-25|-20|-15|-10|-8|-5|-4|-2"
+				},
+				{
+					"name": "sa",
+					"expression": "eval:min(max(a,0),1)"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "3"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La raison $q={{eval:q10/10;d}}$ est **négative** : multiplier par $q$ change le signe du terme à chaque rang.",
+					"Calculons les premiers termes : $u_0={{a}}$, $u_1={{eval:a*q10/10;d}}$, $u_2={{eval:a*q10^2/100;d}}$. Leurs signes alternent.",
+					"{{if:sa==1|$u_1<u_0$ mais $u_2>u_1$|$u_1>u_0$ mais $u_2<u_1$}} : la suite est $\\textcolor{{{color:primary.0}}}{\\text{ni croissante, ni décroissante}}$."
+				]
+			},
+			"hint": "Regarde d'abord le signe de la raison $q$ ; si elle est positive, compare-la à $1$ et tiens compte du signe de $u_0$."
+		},
+		{
+			"statement": "La suite $(u_n)$ est définie, pour tout entier naturel $n$, par $u_n={{a}}\\times\\left({{eval:q10/10;d}}\\right)^n$.\n\nQuel est son sens de variation ?\n\n```choix\nmelanger: non\n- croissante\n- décroissante\n- constante\n- ni croissante, ni décroissante\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9;±"
+				},
+				{
+					"name": "q10",
+					"expression": "-30|-25|-20|-15|-10|-8|-5|-4|-2"
+				},
+				{
+					"name": "sa",
+					"expression": "eval:min(max(a,0),1)"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "3"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$(u_n)$ est géométrique, de premier terme $u_0={{a}}$ et de raison $q={{eval:q10/10;d}}$, un nombre **négatif** : multiplier par $q$ change le signe du terme à chaque rang.",
+					"Calculons les premiers termes : $u_0={{a}}$, $u_1={{eval:a*q10/10;d}}$, $u_2={{eval:a*q10^2/100;d}}$. Leurs signes alternent.",
+					"{{if:sa==1|$u_1<u_0$ mais $u_2>u_1$|$u_1>u_0$ mais $u_2<u_1$}} : la suite est $\\textcolor{{{color:primary.0}}}{\\text{ni croissante, ni décroissante}}$."
+				]
+			},
+			"hint": "Regarde d'abord le signe de la raison $q$ ; si elle est positive, compare-la à $1$ et tiens compte du signe de $u_0$."
+		},
+		{
+			"statement": "La suite $(u_n)$ est définie par $u_0={{a}}$ et, pour tout entier naturel $n$, $u_{n+1}={{eval:q10/10;d}}u_n$.\n\nQuel est son sens de variation ?\n\n```choix\nmelanger: non\n- croissante\n- décroissante\n- constante\n- ni croissante, ni décroissante\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "q10",
+					"expression": "-30|-25|-20|-15|-8|-5|-4|-2"
+				},
+				{
+					"name": "sa",
+					"expression": "eval:min(max(a,0),1)"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "3"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On passe d'un terme au suivant en multipliant par ${{eval:q10/10;d}}$ : la suite est géométrique de raison $q={{eval:q10/10;d}}$, un nombre **négatif**, qui change le signe du terme à chaque rang.",
+					"Calculons les premiers termes : $u_0={{a}}$, $u_1={{eval:a*q10/10;d}}$, $u_2={{eval:a*q10^2/100;d}}$. Leurs signes alternent.",
+					"{{if:sa==1|$u_1<u_0$ mais $u_2>u_1$|$u_1>u_0$ mais $u_2<u_1$}} : la suite est $\\textcolor{{{color:primary.0}}}{\\text{ni croissante, ni décroissante}}$."
+				]
+			},
+			"hint": "Regarde d'abord le signe de la raison $q$ ; si elle est positive, compare-la à $1$ et tiens compte du signe de $u_0$."
+		},
+		{
+			"statement": "La suite $(u_n)$ est géométrique, de premier terme $u_0={{a}}$ et de raison $q={{eval:q10/10;d}}$.\n\nQuel est son sens de variation ?\n\n```choix\nmelanger: non\n- croissante\n- décroissante\n- constante\n- ni croissante, ni décroissante\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9"
+				},
+				{
+					"name": "q10",
+					"expression": "12|15|20|25|30"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La raison $q={{eval:q10/10;d}}$ est plus grande que $1$ et $u_0={{a}}>0$ : chaque terme est plus grand que le précédent ($u_{n+1}-u_n=u_n(q-1)>0$).",
+					"La suite est $\\textcolor{{{color:primary.0}}}{\\text{croissante}}$."
+				]
+			},
+			"hint": "Regarde d'abord le signe de la raison $q$ ; si elle est positive, compare-la à $1$ et tiens compte du signe de $u_0$."
+		},
+		{
+			"statement": "La suite $(u_n)$ est définie, pour tout entier naturel $n$, par $u_n=-{{a}}\\times{{eval:q10/10;d}}^n$.\n\nQuel est son sens de variation ?\n\n```choix\nmelanger: non\n- croissante\n- décroissante\n- constante\n- ni croissante, ni décroissante\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9"
+				},
+				{
+					"name": "q10",
+					"expression": "2|4|5|8|9"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$(u_n)$ est géométrique, de premier terme $u_0=-{{a}}<0$ et de raison $q={{eval:q10/10;d}}$, comprise entre $0$ et $1$.",
+					"$u_{n+1}-u_n=u_n(q-1)$ : produit de deux nombres négatifs, donc positif. La suite est $\\textcolor{{{color:primary.0}}}{\\text{croissante}}$."
+				]
+			},
+			"hint": "Regarde d'abord le signe de la raison $q$ ; si elle est positive, compare-la à $1$ et tiens compte du signe de $u_0$."
+		},
+		{
+			"statement": "La suite $(u_n)$ est définie par $u_0={{a}}$ et, pour tout entier naturel $n$, $u_{n+1}={{eval:q10/10;d}}u_n$.\n\nQuel est son sens de variation ?\n\n```choix\nmelanger: non\n- croissante\n- décroissante\n- constante\n- ni croissante, ni décroissante\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9"
+				},
+				{
+					"name": "q10",
+					"expression": "2|4|5|8|9"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "1"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On passe d'un terme au suivant en multipliant par ${{eval:q10/10;d}}$ : la suite est géométrique de raison $q={{eval:q10/10;d}}$, comprise entre $0$ et $1$, et $u_0={{a}}>0$.",
+					"$u_{n+1}-u_n=u_n(q-1)<0$ : la suite est $\\textcolor{{{color:primary.0}}}{\\text{décroissante}}$."
+				]
+			},
+			"hint": "Regarde d'abord le signe de la raison $q$ ; si elle est positive, compare-la à $1$ et tiens compte du signe de $u_0$."
+		},
+		{
+			"statement": "La suite $(u_n)$ est géométrique, de premier terme $u_0=-{{a}}$ et de raison $q={{eval:q10/10;d}}$.\n\nQuel est son sens de variation ?\n\n```choix\nmelanger: non\n- croissante\n- décroissante\n- constante\n- ni croissante, ni décroissante\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9"
+				},
+				{
+					"name": "q10",
+					"expression": "12|15|20|25|30"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "1"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La raison $q={{eval:q10/10;d}}$ est plus grande que $1$ et $u_0=-{{a}}<0$ : $u_{n+1}-u_n=u_n(q-1)$ est le produit d'un nombre négatif et d'un nombre positif.",
+					"La suite est $\\textcolor{{{color:primary.0}}}{\\text{décroissante}}$."
+				]
+			},
+			"hint": "Regarde d'abord le signe de la raison $q$ ; si elle est positive, compare-la à $1$ et tiens compte du signe de $u_0$."
+		},
+		{
+			"statement": "La suite $(u_n)$ est géométrique, de premier terme $u_0={{a}}$ et de raison $q=1$.\n\nQuel est son sens de variation ?\n\n```choix\nmelanger: non\n- croissante\n- décroissante\n- constante\n- ni croissante, ni décroissante\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9;±"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "2"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Avec $q=1$, chaque terme est égal au précédent : $u_n={{a}}$ pour tout $n$.",
+					"La suite est $\\textcolor{{{color:primary.0}}}{\\text{constante}}$."
+				]
+			},
+			"hint": "Regarde d'abord le signe de la raison $q$ ; si elle est positive, compare-la à $1$ et tiens compte du signe de $u_0$."
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "u₀ = 3, q = −2 : ni l'une ni l'autre",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"q10": "-20"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["3"]
+		},
+		{
+			"description": "Erreur : décroissante parce que q < 0",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"q10": "-20"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["1"]
+		},
+		{
+			"description": "Erreur : croissante parce que u₀ > 0",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"q10": "-20"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["0"]
+		},
+		{
+			"description": "u₀ = −4, q = −0,5 : ni l'une ni l'autre",
+			"variationIndex": 0,
+			"variables": {
+				"a": "-4",
+				"q10": "-5"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["3"]
+		},
+		{
+			"description": "u₀ = 2, q = −1 : ni l'une ni l'autre",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"q10": "-10"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["3"]
+		},
+		{
+			"description": "Erreur : constante pour q = −1",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"q10": "-10"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["2"]
+		},
+		{
+			"description": "u_n = −3 × (−0,4)ⁿ : ni l'une ni l'autre",
+			"variationIndex": 1,
+			"variables": {
+				"a": "-3",
+				"q10": "-4"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["3"]
+		},
+		{
+			"description": "Erreur : croissante (−3 < 0 et |q| < 1)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "-3",
+				"q10": "-4"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["0"]
+		},
+		{
+			"description": "u₀ = 5, u(n+1) = −2,5 u(n) : ni l'une ni l'autre",
+			"variationIndex": 2,
+			"variables": {
+				"a": "5",
+				"q10": "-25"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["3"]
+		},
+		{
+			"description": "Erreur : décroissante (−2,5 < 0)",
+			"variationIndex": 2,
+			"variables": {
+				"a": "5",
+				"q10": "-25"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["1"]
+		},
+		{
+			"description": "u₀ = 4, q = 1,5 : croissante",
+			"variationIndex": 3,
+			"variables": {
+				"a": "4",
+				"q10": "15"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0"]
+		},
+		{
+			"description": "Erreur : ni l'une ni l'autre",
+			"variationIndex": 3,
+			"variables": {
+				"a": "4",
+				"q10": "15"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["3"]
+		},
+		{
+			"description": "−3 × 0,5ⁿ : croissante",
+			"variationIndex": 4,
+			"variables": {
+				"a": "3",
+				"q10": "5"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0"]
+		},
+		{
+			"description": "Erreur : décroissante (q < 1, signe de u₀ oublié)",
+			"variationIndex": 4,
+			"variables": {
+				"a": "3",
+				"q10": "5"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["1"]
+		},
+		{
+			"description": "u₀ = 6, u(n+1) = 0,8 u(n) : décroissante",
+			"variationIndex": 5,
+			"variables": {
+				"a": "6",
+				"q10": "8"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["1"]
+		},
+		{
+			"description": "Erreur : croissante",
+			"variationIndex": 5,
+			"variables": {
+				"a": "6",
+				"q10": "8"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["0"]
+		},
+		{
+			"description": "u₀ = −2, q = 3 : décroissante",
+			"variationIndex": 6,
+			"variables": {
+				"a": "2",
+				"q10": "30"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["1"]
+		},
+		{
+			"description": "Erreur : croissante (q > 1, signe de u₀ oublié)",
+			"variationIndex": 6,
+			"variables": {
+				"a": "2",
+				"q10": "30"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["0"]
+		},
+		{
+			"description": "q = 1 : constante",
+			"variationIndex": 7,
+			"variables": {
+				"a": "5"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["2"]
+		},
+		{
+			"description": "Erreur : croissante",
+			"variationIndex": 7,
+			"variables": {
+				"a": "5"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["0"]
+		}
+	]
+}

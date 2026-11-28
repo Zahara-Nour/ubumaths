@@ -13,7 +13,7 @@ import { constructionTraces } from '../../utils/courbe-combinaison';
 import { buildCourbeScene } from '../../utils/courbe-scene';
 import { generateCourbeTypst } from '../../generators/courbe-typst';
 import { maskVectorValue } from '../../utils/masked-value';
-import { findUnmaskedAnswers, maskGestureAnswers } from '$lib/questions/masked-statement';
+import { findUnmaskedAnswers, maskGestureAnswers } from '#lib/questions/masked-statement.ts';
 import type { CourbeNode, CourbeSpec } from '../../types/courbe';
 
 const WINDOW = ['x: -6 ; 6', 'y: -6 ; 6', 'grille: 1'];
@@ -287,7 +287,9 @@ describe('tracer: vecteur u + v — pointillés de la correction', () => {
 	it('PDF corrigé : la flèche juste et les pointillés', () => {
 		const node = block(...WINDOW, POINTS, GIVEN, 'tracer: vecteur u + v depuis A');
 		expect(generateCourbeTypst(node)).not.toContain('dash');
-		const solved = generateCourbeTypst(node, { solved: true });
+		const solved = generateCourbeTypst(
+			block(...WINDOW, POINTS, GIVEN, 'tracer: vecteur u + v depuis A', 'solution: oui')
+		);
 		expect(solved).toContain('// solution vecteur');
 		expect(solved).toContain('// construction');
 		expect(solved).toMatch(/dash: "dashed"/);

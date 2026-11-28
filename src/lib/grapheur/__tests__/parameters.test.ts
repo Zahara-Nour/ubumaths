@@ -15,6 +15,7 @@ import {
 	asParametricCurve,
 	curvatureAt,
 	derivativeCurve,
+	integralRefusal,
 	integralUnder,
 	osculatingCircleAt,
 	sampleCached,
@@ -286,6 +287,14 @@ describe('tangente', () => {
  * ce que ce module ajoute, c'est le contour à colorier.
  */
 describe('aire sous la courbe', () => {
+	// E2 (2026-11-23) : un pôle entre les bornes ne laissait que « aire = — »
+	it('dit pourquoi il n’y a pas d’aire quand un pôle est entre les bornes', () => {
+		const pole = curve('\\frac{3x^2}{x^3-2}');
+		expect(integralUnder(pole, -5, 5)).toBeUndefined();
+		expect(integralRefusal(pole, -5, 5)).toMatch(/singularité en x ≈ 1,26/);
+		expect(integralRefusal(curve('x^2'), -5, 5)).toBeNull();
+	});
+
 	it('calcule l’aire d’un rectangle', () => {
 		// ∫₀² 3 dx = 6
 		expect(integralUnder(curve('3'), 0, 2)?.value).toBeCloseTo(6);

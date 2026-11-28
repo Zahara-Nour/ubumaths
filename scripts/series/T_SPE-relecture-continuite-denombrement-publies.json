@@ -1,0 +1,26 @@
+{
+	"id": "b15c9d00-6807-4855-a567-0c676932c1cd",
+	"title": "Relecture — continuité et dénombrement de Terminale, 3 modèles publiés complétés",
+	"grade": "T_SPE",
+	"description": "Relecture dans /dev/modeles des 3 modèles publiés de Tle spé auxquels le chantier idees-tle-continuite-combinatoire a ajouté 5 variations (à la fin de chaque modèle).",
+	"items": [
+		{
+			"modele": "Théorème des valeurs intermédiaires : nombre de solutions de f(x) = k",
+			"templateId": "2491dd75-f888-4b86-aff6-e969c375cb5c",
+			"quantity": 1,
+			"delay": 60
+		},
+		{
+			"modele": "Continuité lue sur une courbe : saut ou point anguleux",
+			"templateId": "10393ff9-b797-4557-a841-6e0b4e18c52b",
+			"quantity": 1,
+			"delay": 60
+		},
+		{
+			"modele": "k-uplets d'éléments distincts : codes, bureaux, places, anagrammes",
+			"templateId": "0965c56c-7808-4698-8c1f-8124d3a6505d",
+			"quantity": 1,
+			"delay": 60
+		}
+	]
+}

@@ -26,17 +26,17 @@
  * ```
  */
 
-import type { Exercise, ExerciseInstance } from '$lib/exercises/types';
-import { generateExerciseInstance } from '$lib/exercises/generator/instance-generator';
-import { generateTypst, escapeTypst } from '$lib/ubumark/generators/typst-generator';
-import { parseMarkdown } from '$lib/ubumark';
-import { detailedCorrection } from '$lib/questions/correction-detail';
-import { createLogger } from '$lib/utils/logger';
-import { genericFunctionsConfig } from '$lib/components/markdown/utils/math-utils';
-import type { CapitalPairs, GenericFunctionConfig } from '$lib/mathAST/parser/types';
-import { exerciseCapitalPairs } from '$lib/questions/capital-pairs';
+import type { Exercise, ExerciseInstance } from '#lib/exercises/types.ts';
+import { generateExerciseInstance } from '#lib/exercises/generator/instance-generator.ts';
+import { generateTypst, escapeTypst } from '#lib/ubumark/generators/typst-generator.ts';
+import { parseMarkdown } from '#lib/ubumark/index.ts';
+import { detailedCorrection } from '#lib/questions/correction-detail.ts';
+import { createLogger } from '#lib/utils/logger.ts';
+import { genericFunctionsConfig } from '#lib/components/markdown/utils/math-utils.ts';
+import type { CapitalPairs, GenericFunctionConfig } from '#lib/mathAST/parser/types.ts';
+import { exerciseCapitalPairs } from '#lib/questions/capital-pairs.ts';
 // Rendu Typst des blocs ```figure (registre : voir figure-typst-registry.ts)
-import '$lib/ubumark/generators/figure-typst-setup';
+import '#lib/ubumark/generators/figure-typst-setup.ts';
 
 const logger = createLogger('exercise-typst-generator');
 

@@ -32,7 +32,7 @@
  */
 
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { Database } from '$lib/types/database';
+import type { Database } from '#lib/types/database.ts';
 import {
 	bestGrowth,
 	isMathouStage,
@@ -40,14 +40,14 @@ import {
 	mergeMemory,
 	type MathouMemory,
 	type MathouMemoryUpdate
-} from '$lib/mathoux/collection-logic';
+} from '#lib/mathoux/collection-logic.ts';
 import {
 	isMathouCollar,
 	isMathouDecoration,
 	isMathouGlasses,
 	isMathouHat
-} from '$lib/mathoux/decorations';
-import { createServerLogger } from '$lib/utils/logger';
+} from '#lib/mathoux/decorations.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('server/mathoux/memory');
 

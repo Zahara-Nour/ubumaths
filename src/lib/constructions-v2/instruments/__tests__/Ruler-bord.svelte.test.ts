@@ -6,7 +6,7 @@
 
 import { describe, it, expect } from 'vitest';
 import { render } from 'vitest-browser-svelte';
-import InstrumentHarness from '$lib/components/geometry/__tests__/InstrumentHarness.svelte';
+import InstrumentHarness from '#lib/components/geometry/__tests__/InstrumentHarness.svelte';
 
 describe('Ruler — bord le long du trait', () => {
 	it('le contour du corps commence sous le trait (y = 100), sans le couvrir', async () => {

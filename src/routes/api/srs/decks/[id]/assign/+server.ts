@@ -20,20 +20,20 @@
  * - 90%+ reduction in database queries
  */
 
-import { error, json } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { createClient } from '@supabase/supabase-js';
-import { PUBLIC_SUPABASE_URL } from '$env/static/public';
-import { SUPABASE_SERVICE_ROLE_KEY } from '$env/static/private';
-import { assignDeckSchema, uuidParamSchema } from '$lib/server/validation/srs';
-import { requireRole } from '$lib/server/middleware/auth';
+import { PUBLIC_SUPABASE_URL } from '$app/env/public';
+import { SUPABASE_SERVICE_ROLE_KEY } from '$app/env/private';
+import { assignDeckSchema, uuidParamSchema } from '#lib/server/validation/srs.ts';
+import { requireRole } from '#lib/server/middleware/auth.ts';
 import {
 	indexCopiedSections,
 	planDeckCopies,
 	planSectionCopies,
 	resolveCardSection
-} from '$lib/server/srs/deck-copy';
-import { createServerLogger } from '$lib/utils/logger';
+} from '#lib/server/srs/deck-copy.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/srs/decks/[id]/assign/+server');
 
@@ -57,7 +57,7 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 	// ✅ SECURITY: Validate UUID parameter
 	const paramValidation = uuidParamSchema.safeParse(params);
 	if (!paramValidation.success) {
-		return json({ error: 'Identifiant de deck invalide' }, { status: 400 });
+		return Response.json({ error: 'Identifiant de deck invalide' }, { status: 400 });
 	}
 
 	const { id: deckId } = paramValidation.data;
@@ -73,7 +73,7 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 			.single();
 
 		if (deckError || !sourceDeck) {
-			return json({ error: 'Deck source introuvable' }, { status: 404 });
+			return Response.json({ error: 'Deck source introuvable' }, { status: 404 });
 		}
 
 		// ✅ SECURITY: Validate input with Zod
@@ -81,7 +81,7 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 		const validation = assignDeckSchema.safeParse(bodyRaw);
 
 		if (!validation.success) {
-			return json({ error: validation.error.issues[0].message }, { status: 400 });
+			return Response.json({ error: validation.error.issues[0].message }, { status: 400 });
 		}
 
 		const body = validation.data;
@@ -110,12 +110,15 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 
 			if (membersError) {
 				logger.error('Error fetching class members:', membersError);
-				return json({ error: 'Impossible de charger les élèves des classes' }, { status: 500 });
+				return Response.json(
+					{ error: 'Impossible de charger les élèves des classes' },
+					{ status: 500 }
+				);
 			}
 
 			if (!members || members.length === 0) {
 				logger.error('Aucun élève dans les classes choisies');
-				return json({ error: 'Aucun élève dans les classes choisies' }, { status: 400 });
+				return Response.json({ error: 'Aucun élève dans les classes choisies' }, { status: 400 });
 			}
 
 			// Remove duplicates (students in multiple classes)
@@ -125,7 +128,7 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 
 		if (studentIds.length === 0) {
 			logger.error('Aucun élève à qui assigner ce deck');
-			return json({ error: 'Aucun élève à qui assigner ce deck' }, { status: 400 });
+			return Response.json({ error: 'Aucun élève à qui assigner ce deck' }, { status: 400 });
 		}
 
 		// Get all cards from source deck
@@ -184,7 +187,7 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 
 		if (decksError || !createdDecks) {
 			logger.error('Failed to batch-create decks:', decksError);
-			return json({ error: 'Impossible de créer les copies du deck' }, { status: 500 });
+			return Response.json({ error: 'Impossible de créer les copies du deck' }, { status: 500 });
 		}
 
 		logger.info(`✓ Created ${createdDecks.length} deck copies`);
@@ -230,7 +233,10 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 						'id',
 						createdDecks.map((d) => d.id)
 					);
-				return json({ error: 'Impossible de copier les sections du deck' }, { status: 500 });
+				return Response.json(
+					{ error: 'Impossible de copier les sections du deck' },
+					{ status: 500 }
+				);
 			}
 
 			for (const [cle, id] of indexCopiedSections(sectionsCreees)) {
@@ -291,7 +297,7 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 						'id',
 						createdDecks.map((d) => d.id)
 					);
-				return json({ error: 'Impossible de copier les cartes' }, { status: 500 });
+				return Response.json({ error: 'Impossible de copier les cartes' }, { status: 500 });
 			}
 
 			logger.info(`✓ Inserted ${insertedCards.length} cards`);
@@ -328,7 +334,10 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 					'id',
 					createdDecks.map((d) => d.id)
 				);
-			return json({ error: 'Impossible d’enregistrer l’assignation du deck' }, { status: 500 });
+			return Response.json(
+				{ error: 'Impossible d’enregistrer l’assignation du deck' },
+				{ status: 500 }
+			);
 		}
 
 		logger.info(`✓ Inserted ${assignmentsToCreate.length} assignment records`);
@@ -389,13 +398,13 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 		logger.info(`✓ Successfully assigned to ${results.successCount} students`);
 		logger.info(`✗ Failed for ${results.failedStudents.length} students`);
 
-		return json({
+		return Response.json({
 			success: true,
 			message: `Deck assigné à ${results.successCount} élève(s)`,
 			results
 		});
 	} catch (error) {
 		logger.error('Unexpected error in POST /api/srs/decks/[id]/assign:', error);
-		return json({ error: 'Une erreur inattendue s’est produite' }, { status: 500 });
+		return Response.json({ error: 'Une erreur inattendue s’est produite' }, { status: 500 });
 	}
 };

@@ -1,0 +1,290 @@
+{
+	"id": "cfb4c692-04d8-4cd9-9849-3b5cb94628e5",
+	"title": "Calculer le périmètre d'un disque",
+	"description": "Calculer le périmètre d'un disque avec 3,14 pour π : 3,14 × D avec le diamètre, 2 × 3,14 × R avec le rayon",
+	"grades": ["6"],
+	"level": 3,
+	"delay": 30,
+	"status": "published",
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:314*d/100;d}}"
+				}
+			],
+			"statement": "On prend $3.14$ pour $\\pi$.\n\nCalcule le périmètre {{if:c==0|d'une roue|{{if:c==1|d'une assiette|d'un disque}}}} de diamètre ${{d}}~\\unit{cm}$.\n\n$$?~\\text{cm}$$",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "0..2"
+				},
+				{
+					"name": "d",
+					"expression": "1..20"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Périmètre d'un disque.** Avec le diamètre $D$ : $P = \\pi \\times D$. Avec le rayon $R$ (la moitié du diamètre) : $P = 2 \\times \\pi \\times R$.",
+					"$$P = 3.14 \\times {{d}} = \\textcolor{{{color:primary.0}}}{{{solution}}}$$",
+					"Le périmètre vaut environ ${{solution}}~\\unit{cm}$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:628*r/100;d}}"
+				}
+			],
+			"statement": "On prend $3.14$ pour $\\pi$.\n\nCalcule le périmètre {{if:c==0|d'une roue|{{if:c==1|d'une assiette|d'un disque}}}} de rayon ${{r}}~\\unit{cm}$.\n\n$$?~\\text{cm}$$",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "0..2"
+				},
+				{
+					"name": "r",
+					"expression": "1..10"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Périmètre d'un disque.** Avec le diamètre $D$ : $P = \\pi \\times D$. Avec le rayon $R$ (la moitié du diamètre) : $P = 2 \\times \\pi \\times R$.",
+					"$$P = 2 \\times 3.14 \\times {{r}} = 6.28 \\times {{r}} = \\textcolor{{{color:primary.0}}}{{{solution}}}$$",
+					"Le périmètre vaut environ ${{solution}}~\\unit{cm}$."
+				]
+			}
+		},
+		{
+			"statement": "On prend $3{,}14$ pour $\\pi$.\n\nCalcule le périmètre de ce disque de centre $O$.\n\n```figure\nfenetre: {{eval:-r-1}} ; {{eval:r+1}} ; {{eval:-r-1}} ; {{eval:r+1}}\ndescription: Un disque de centre O ; un segment tracé de longueur {{n}} cm {{if:g==0|va du centre au cercle|passe par le centre et joint deux points du cercle}}.\n---\nO = point(0, 0)\ncercle(O, rayon={{r}}, couleur=\"noir\", epaisseur=2, remplissage=\"bleu\", opacite_fond=0.2)\nG = point({{eval:-r*g}}, 0, visible=faux)\nH = point({{r}}, 0, visible=faux)\nsegment(G, H, couleur=\"noir\", epaisseur=2)\ntexte({{eval:r/2;d}}, 0.5, \"{{n}} cm\")\n```\n\n$$?~\\text{cm}$$",
+			"variables": [
+				{
+					"name": "g",
+					"expression": "0..1"
+				},
+				{
+					"name": "r",
+					"expression": "3..9"
+				},
+				{
+					"name": "d",
+					"expression": "eval:2*r"
+				},
+				{
+					"name": "n",
+					"expression": "eval:r*(1+g)"
+				}
+			],
+			"conditions": ["r!=4"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:314*d/100;d}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:1256*r/100;d}}",
+							"message": "Tu as pris le diamètre pour le rayon : avec le diamètre, $P = \\pi \\times D$.",
+							"label": "Diamètre pris pour le rayon"
+						},
+						{
+							"answer": "{{eval:314*r/100;d}}",
+							"message": "Tu as multiplié le rayon par $\\pi$ : c'est le diamètre qu'on multiplie par $\\pi$, soit $2 \\times \\pi \\times R$.",
+							"label": "π × R"
+						},
+						{
+							"answer": "{{eval:314*r*r/100;d}}",
+							"message": "Tu as calculé $\\pi \\times R \\times R$ : c'est l'aire du disque, pas son périmètre.",
+							"label": "Aire"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Périmètre d'un disque.** Avec le diamètre $D$ : $P = \\pi \\times D$. Avec le rayon $R$ (la moitié du diamètre) : $P = 2 \\times \\pi \\times R$.",
+					"Le segment tracé {{if:g==0|va du centre au cercle : c'est un rayon|passe par le centre : c'est un diamètre}}. Le rayon mesure ${{r}}~\\unit{cm}$, le diamètre ${{d}}~\\unit{cm}$.",
+					"$$P = 3{,}14 \\times {{d}} = \\textcolor{{{color:primary.0}}}{{{eval:314*d/100;d}}}$$",
+					"Le périmètre vaut environ ${{eval:314*d/100;d}}~\\unit{cm}$."
+				]
+			},
+			"hint": "Le segment tracé est-il un rayon ou un diamètre ? Choisis la formule qui va avec."
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["15,7"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"c": "0",
+				"d": "5"
+			},
+			"description": "Diamètre 5 : 15,7",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["78,5"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"c": "0",
+				"d": "5"
+			},
+			"description": "Erreur : 78,5 (3,14 × 5 × 5)",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["37,68"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"c": "1",
+				"d": "12"
+			},
+			"description": "Diamètre 12 : 37,68",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["18,84"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"c": "2",
+				"r": "3"
+			},
+			"description": "Rayon 3 : 18,84",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["9,42"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"c": "2",
+				"r": "3"
+			},
+			"description": "Erreur : 9,42 (rayon pris pour diamètre)",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["28,26"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"c": "2",
+				"r": "3"
+			},
+			"description": "Erreur : 28,26 (3,14 × 3 × 3)",
+			"variationIndex": 1
+		},
+		{
+			"description": "Rayon 5 tracé : 31,4",
+			"variationIndex": 2,
+			"variables": {
+				"g": "0",
+				"r": "5",
+				"d": "10",
+				"n": "5"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["31{,}4"]
+		},
+		{
+			"description": "Rayon 5 tracé : 31.4 (point) accepté",
+			"variationIndex": 2,
+			"variables": {
+				"g": "0",
+				"r": "5",
+				"d": "10",
+				"n": "5"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["31.4"]
+		},
+		{
+			"description": "Rayon 5 tracé : 15,7 (π × R)",
+			"variationIndex": 2,
+			"variables": {
+				"g": "0",
+				"r": "5",
+				"d": "10",
+				"n": "5"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as multiplié le rayon par $\\pi$ : c'est le diamètre qu'on multiplie par $\\pi$, soit $2 \\times \\pi \\times R$."
+			},
+			"answers": ["15{,}7"]
+		},
+		{
+			"description": "Rayon 5 tracé : 78,5 (aire)",
+			"variationIndex": 2,
+			"variables": {
+				"g": "0",
+				"r": "5",
+				"d": "10",
+				"n": "5"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as calculé $\\pi \\times R \\times R$ : c'est l'aire du disque, pas son périmètre."
+			},
+			"answers": ["78{,}5"]
+		},
+		{
+			"description": "Diamètre 14 tracé : 43,96",
+			"variationIndex": 2,
+			"variables": {
+				"g": "1",
+				"r": "7",
+				"d": "14",
+				"n": "14"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["43{,}96"]
+		},
+		{
+			"description": "Diamètre 14 tracé : 87,92 (2 × π × D)",
+			"variationIndex": 2,
+			"variables": {
+				"g": "1",
+				"r": "7",
+				"d": "14",
+				"n": "14"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as pris le diamètre pour le rayon : avec le diamètre, $P = \\pi \\times D$."
+			},
+			"answers": ["87{,}92"]
+		},
+		{
+			"description": "Diamètre 14 tracé : 153,86 (aire)",
+			"variationIndex": 2,
+			"variables": {
+				"g": "1",
+				"r": "7",
+				"d": "14",
+				"n": "14"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as calculé $\\pi \\times R \\times R$ : c'est l'aire du disque, pas son périmètre."
+			},
+			"answers": ["153{,}86"]
+		}
+	]
+}

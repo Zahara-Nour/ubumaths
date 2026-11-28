@@ -6,7 +6,7 @@
  * et dénominateur en `bigint` : aucun débordement, même pour V(X) sur douze
  * valeurs à dénominateurs distincts.
  *
- * ⚠️ Aucun import `$lib` : voir `statistics/describe`.
+ * ⚠️ Aucun import `#lib` : voir `statistics/describe`.
  *
  * @module statistics/fraction
  */

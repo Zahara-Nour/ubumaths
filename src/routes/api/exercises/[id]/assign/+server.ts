@@ -5,26 +5,26 @@
  * GET - List all assignments for an exercise (teacher only)
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import {
 	createExerciseAssignment,
 	createBulkAssignments,
 	getAssignmentsForExercise
-} from '$lib/server/exercise-assignments';
+} from '#lib/server/exercise-assignments.ts';
 import type {
 	CreateExerciseAssignment,
 	BulkAssignmentData,
 	TeacherAssignmentFilters
-} from '$lib/exercises/types';
+} from '#lib/exercises/types.ts';
 import {
 	validateBulkAssign,
 	validateSingleAssign,
 	validateAssignmentQuery
-} from '$lib/server/validation';
-import { requireRole } from '$lib/server/middleware/auth';
-import { validateUuidParam } from '$lib/server/validation/params';
-import { createServerLogger } from '$lib/utils/logger';
+} from '#lib/server/validation/index.ts';
+import { requireRole } from '#lib/server/middleware/auth.ts';
+import { validateUuidParam } from '#lib/server/validation/params.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/exercises/[id]/assign/+server');
 
@@ -44,10 +44,15 @@ export const POST: RequestHandler = async ({ request, params, locals }) => {
 	const exerciseId = validateUuidParam(params.id);
 	const { user } = await requireRole(locals, 'teacher');
 
-	const body = await request.json();
+	// Corps illisible ou qui n'est pas un objet : 400, jamais un plantage à l'aiguillage ci-dessous.
+	const rawBody: unknown = await request.json().catch(() => null);
+	if (typeof rawBody !== 'object' || rawBody === null || Array.isArray(rawBody)) {
+		throw error(400, 'Données invalides');
+	}
+	const body = rawBody as Record<string, unknown>;
 
-	// Check if bulk assignment (has students[] or classes[] or make_public)
-	if (body.students || body.classes || body.make_public) {
+	// Check if bulk assignment (has students[] or classes[])
+	if (body.students || body.classes) {
 		// Validate bulk assignment
 		const validation = validateBulkAssign(body);
 		if (!validation.success) {
@@ -61,7 +66,6 @@ export const POST: RequestHandler = async ({ request, params, locals }) => {
 			exercise_id: exerciseId,
 			students: validation.data.students,
 			classes: validation.data.classes,
-			make_public: validation.data.make_public,
 			optional_deadline: validation.data.optional_deadline || null,
 			notes: validation.data.notes
 		};
@@ -77,7 +81,7 @@ export const POST: RequestHandler = async ({ request, params, locals }) => {
 			throw error(400, bulkError);
 		}
 
-		return json(
+		return Response.json(
 			{
 				count,
 				message: `Affectations créées : ${count}`
@@ -115,7 +119,7 @@ export const POST: RequestHandler = async ({ request, params, locals }) => {
 		throw error(400, assignmentError);
 	}
 
-	return json(assignment, { status: 201 });
+	return Response.json(assignment, { status: 201 });
 };
 
 /**
@@ -138,7 +142,7 @@ export const GET: RequestHandler = async ({ params, url, locals }) => {
 		const errorMsg = queryValidation.error.issues
 			.map((e) => `${(e as ZodIssue).path.join('.')}: ${e.message}`)
 			.join('; ');
-		return json({ error: `Paramètres invalides : ${errorMsg}` }, { status: 400 });
+		return Response.json({ error: `Paramètres invalides : ${errorMsg}` }, { status: 400 });
 	}
 
 	const filters: TeacherAssignmentFilters = {
@@ -164,8 +168,8 @@ export const GET: RequestHandler = async ({ params, url, locals }) => {
 
 	if (fetchError) {
 		logger.error('Failed to fetch assignments:', fetchError);
-		return json({ error: 'Impossible de charger les affectations' }, { status: 500 });
+		return Response.json({ error: 'Impossible de charger les affectations' }, { status: 500 });
 	}
 
-	return json(assignments);
+	return Response.json(assignments);
 };

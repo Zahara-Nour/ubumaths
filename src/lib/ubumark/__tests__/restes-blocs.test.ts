@@ -12,7 +12,7 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { parseMarkdown, type BlockNode } from '$lib/ubumark';
+import { parseMarkdown, type BlockNode } from '#lib/ubumark/index.ts';
 
 const children = (markdown: string) => parseMarkdown(markdown).children as BlockNode[];
 const types = (markdown: string) => children(markdown).map((c) => c.type);

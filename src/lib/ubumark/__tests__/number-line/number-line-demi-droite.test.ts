@@ -5,8 +5,8 @@
  * dessinées en crochets (notation française), plus en disques.
  */
 import { describe, it, expect } from 'vitest';
-import { parseNumberLineContent } from '$lib/ubumark/parser/number-line-parser';
-import { bracketDirection, segmentLevels } from '$lib/ubumark/utils/number-line-render';
+import { parseNumberLineContent } from '#lib/ubumark/parser/number-line-parser.ts';
+import { bracketDirection, segmentLevels } from '#lib/ubumark/utils/number-line-render.ts';
 
 const WINDOW = ['start: -5', 'end: 5', 'step: 1', 'arrows: true'];
 

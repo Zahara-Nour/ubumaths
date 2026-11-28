@@ -1,0 +1,666 @@
+{
+	"id": "9414e0a3-073c-4cd2-89c4-0d769fe60825",
+	"rangement": {
+		"noeud": "Fonctions > Fonctions affines > coefficient directeur et ordonnée à l'origine",
+		"point": "3-044"
+	},
+	"title": "Lire les coefficients d'une fonction affine sur son expression",
+	"description": "Coefficient directeur et ordonnée à l'origine lus sur b + ax, ax, b, x/c + b, c(ax + b) à développer, ax + b + cx à réduire (pièges : a et b inversés, signe oublié, lecture sans développer, c pour 1/c)",
+	"grades": ["3"],
+	"level": 1,
+	"delay": 60,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "On considère la fonction affine $f$ définie par $f(x)={{b}}{{a;+}}x$.\n\nSon coefficient directeur est $a=?$ et son ordonnée à l'origine est $b=?$.",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9;±"
+				},
+				{
+					"name": "b",
+					"expression": "2..9;±"
+				}
+			],
+			"conditions": ["abs(a)!=abs(b)"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{a}}",
+					"expectedErrors": [
+						{
+							"answer": "{{b}}",
+							"message": "Tu as donné l'ordonnée à l'origine : le coefficient directeur est le nombre qui multiplie $x$.",
+							"label": "a et b inversés"
+						},
+						{
+							"answer": "{{eval:abs(a)}}",
+							"message": "Le signe placé devant $x$ fait partie du coefficient directeur.",
+							"label": "Signe de a oublié (b − ax)"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{b}}",
+					"expectedErrors": [
+						{
+							"answer": "{{a}}",
+							"message": "Tu as donné le coefficient directeur : l'ordonnée à l'origine est le terme sans $x$.",
+							"label": "a et b inversés"
+						},
+						{
+							"answer": "{{eval:abs(b)}}",
+							"message": "Le signe placé devant le terme sans $x$ fait partie de l'ordonnée à l'origine.",
+							"label": "Signe de b oublié"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"Une fonction affine s'écrit $f(x)=ax+b$ : le **coefficient directeur** $a$ est le nombre qui multiplie $x$, l'**ordonnée à l'origine** $b$ est le terme sans $x$.",
+					"L'ordre des termes ne change rien : $f(x)={{b}}{{a;+}}x={{a}}x{{b;+}}$, donc $a=\\textcolor{{{color:primary.0}}}{{{a}}}$ et $b=\\textcolor{{{color:primary.0}}}{{{b}}}$."
+				]
+			},
+			"hint": "Écris d'abord $f(x)$ sous la forme $ax+b$ : $a$ est le nombre qui multiplie $x$, $b$ le terme sans $x$."
+		},
+		{
+			"statement": "On considère la fonction affine $f$ définie par $f(x)={{a}}x$.\n\nSon coefficient directeur est $a=?$ et son ordonnée à l'origine est $b=?$.",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9;±"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{a}}",
+					"expectedErrors": [
+						{
+							"answer": "0",
+							"message": "Tu as donné l'ordonnée à l'origine : le coefficient directeur est le nombre qui multiplie $x$.",
+							"label": "a et b inversés"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "0",
+					"expectedErrors": [
+						{
+							"answer": "{{a}}",
+							"message": "Tu as donné le coefficient directeur : l'ordonnée à l'origine est le terme sans $x$.",
+							"label": "a et b inversés"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"Une fonction affine s'écrit $f(x)=ax+b$ : le **coefficient directeur** $a$ est le nombre qui multiplie $x$, l'**ordonnée à l'origine** $b$ est le terme sans $x$.",
+					"$f(x)={{a}}x={{a}}x+0$ : $a=\\textcolor{{{color:primary.0}}}{{{a}}}$ et $b=\\textcolor{{{color:primary.0}}}{0}$ (la fonction est linéaire)."
+				]
+			},
+			"hint": "Écris d'abord $f(x)$ sous la forme $ax+b$ : $a$ est le nombre qui multiplie $x$, $b$ le terme sans $x$."
+		},
+		{
+			"statement": "On considère la fonction affine $f$ définie par $f(x)={{b}}$.\n\nSon coefficient directeur est $a=?$ et son ordonnée à l'origine est $b=?$.",
+			"variables": [
+				{
+					"name": "b",
+					"expression": "2..9;±"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0",
+					"expectedErrors": [
+						{
+							"answer": "{{b}}",
+							"message": "Tu as donné l'ordonnée à l'origine : le coefficient directeur est le nombre qui multiplie $x$.",
+							"label": "a et b inversés"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{b}}",
+					"expectedErrors": [
+						{
+							"answer": "0",
+							"message": "Tu as donné le coefficient directeur : l'ordonnée à l'origine est le terme sans $x$.",
+							"label": "a et b inversés"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"Une fonction affine s'écrit $f(x)=ax+b$ : le **coefficient directeur** $a$ est le nombre qui multiplie $x$, l'**ordonnée à l'origine** $b$ est le terme sans $x$.",
+					"$f(x)={{b}}=0x{{b;+}}$ : $a=\\textcolor{{{color:primary.0}}}{0}$ et $b=\\textcolor{{{color:primary.0}}}{{{b}}}$ (la fonction est constante)."
+				]
+			},
+			"hint": "Écris $f(x)$ sous la forme $ax+b$ : combien de fois $x$ y a-t-il dans l'expression ?"
+		},
+		{
+			"statement": "On considère la fonction affine $f$ définie par $f(x)=\\dfrac{x}{ {{c}} }{{b;+}}$.\n\nSon coefficient directeur est $a=?$ et son ordonnée à l'origine est $b=?$.",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "2..9"
+				},
+				{
+					"name": "b",
+					"expression": "2..9;±"
+				}
+			],
+			"conditions": ["b!=c"],
+			"blanks": [
+				{
+					"expectedAnswer": "\\frac{1}{ {{c}} }",
+					"acceptDecimal": true,
+					"expectedErrors": [
+						{
+							"answer": "{{c}}",
+							"message": "Diviser $x$ par un nombre, c'est le multiplier par l'inverse de ce nombre.",
+							"label": "c pour 1/c"
+						},
+						{
+							"answer": "{{b}}",
+							"message": "Tu as donné l'ordonnée à l'origine : le coefficient directeur est le nombre qui multiplie $x$.",
+							"label": "a et b inversés"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{b}}",
+					"expectedErrors": [
+						{
+							"answer": "\\frac{1}{ {{c}} }",
+							"message": "Tu as donné le coefficient directeur : l'ordonnée à l'origine est le terme sans $x$.",
+							"label": "a et b inversés"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"Une fonction affine s'écrit $f(x)=ax+b$ : le **coefficient directeur** $a$ est le nombre qui multiplie $x$, l'**ordonnée à l'origine** $b$ est le terme sans $x$.",
+					"Diviser par ${{c}}$, c'est multiplier par $\\dfrac{1}{ {{c}} }$ : $f(x)=\\dfrac{1}{ {{c}} }x{{b;+}}$, donc $a=\\textcolor{{{color:primary.0}}}{\\dfrac{1}{ {{c}} }}$ et $b=\\textcolor{{{color:primary.0}}}{{{b}}}$."
+				]
+			},
+			"hint": "Diviser $x$ par un nombre, c'est le multiplier par l'inverse de ce nombre."
+		},
+		{
+			"statement": "On considère la fonction affine $f$ définie par $f(x)={{c}}({{a}}x{{b;+}})$.\n\nSon coefficient directeur est $a=?$ et son ordonnée à l'origine est $b=?$.",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "2..9;±"
+				},
+				{
+					"name": "a",
+					"expression": "2..9;±"
+				},
+				{
+					"name": "b",
+					"expression": "2..9;±"
+				}
+			],
+			"conditions": ["a!=c*b", "b!=c*a", "a!=b"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:c*a}}",
+					"expectedErrors": [
+						{
+							"answer": "{{a}}",
+							"message": "Développe d'abord l'expression : le nombre devant la parenthèse multiplie chacun de ses termes.",
+							"label": "Lu sans développer"
+						},
+						{
+							"answer": "{{eval:c*b}}",
+							"message": "Tu as donné l'ordonnée à l'origine : le coefficient directeur est le nombre qui multiplie $x$.",
+							"label": "a et b inversés"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{eval:c*b}}",
+					"expectedErrors": [
+						{
+							"answer": "{{b}}",
+							"message": "Développe d'abord l'expression : le nombre devant la parenthèse multiplie chacun de ses termes.",
+							"label": "Lu sans développer"
+						},
+						{
+							"answer": "{{eval:c*a}}",
+							"message": "Tu as donné le coefficient directeur : l'ordonnée à l'origine est le terme sans $x$.",
+							"label": "a et b inversés"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"Une fonction affine s'écrit $f(x)=ax+b$ : le **coefficient directeur** $a$ est le nombre qui multiplie $x$, l'**ordonnée à l'origine** $b$ est le terme sans $x$.",
+					"On développe : $f(x)={{c}}\\times{{eval:a;()}}x{{c;+}}\\times{{eval:b;()}}={{eval:c*a}}x{{eval:c*b;+}}$.",
+					"Donc $a=\\textcolor{{{color:primary.0}}}{{{eval:c*a}}}$ et $b=\\textcolor{{{color:primary.0}}}{{{eval:c*b}}}$."
+				]
+			},
+			"hint": "Écris d'abord $f(x)$ sous la forme $ax+b$ : $a$ est le nombre qui multiplie $x$, $b$ le terme sans $x$."
+		},
+		{
+			"statement": "On considère la fonction affine $f$ définie par $f(x)={{a}}x{{b;+}}{{c;+}}x$.\n\nSon coefficient directeur est $a=?$ et son ordonnée à l'origine est $b=?$.",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9;±"
+				},
+				{
+					"name": "b",
+					"expression": "2..9;±"
+				},
+				{
+					"name": "c",
+					"expression": "2..9;±"
+				}
+			],
+			"conditions": ["a+c!=0", "abs(a+c)!=1", "a!=b", "b!=a+c"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a+c}}",
+					"expectedErrors": [
+						{
+							"answer": "{{a}}",
+							"message": "Réduis d'abord l'expression : elle contient deux termes en $x$.",
+							"label": "Terme cx oublié"
+						},
+						{
+							"answer": "{{b}}",
+							"message": "Tu as donné l'ordonnée à l'origine : le coefficient directeur est le nombre qui multiplie $x$.",
+							"label": "a et b inversés"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{b}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:a+c}}",
+							"message": "Tu as donné le coefficient directeur : l'ordonnée à l'origine est le terme sans $x$.",
+							"label": "a et b inversés"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"Une fonction affine s'écrit $f(x)=ax+b$ : le **coefficient directeur** $a$ est le nombre qui multiplie $x$, l'**ordonnée à l'origine** $b$ est le terme sans $x$.",
+					"On réduit : $f(x)={{a}}x{{c;+}}x{{b;+}}={{eval:a+c}}x{{b;+}}$.",
+					"Donc $a=\\textcolor{{{color:primary.0}}}{{{eval:a+c}}}$ et $b=\\textcolor{{{color:primary.0}}}{{{b}}}$."
+				]
+			},
+			"hint": "Écris d'abord $f(x)$ sous la forme $ax+b$ : $a$ est le nombre qui multiplie $x$, $b$ le terme sans $x$."
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "v0 : f(x) = 5 − 3x",
+			"variationIndex": 0,
+			"variables": {
+				"a": "-3",
+				"b": "5"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["-3", "5"]
+		},
+		{
+			"description": "v0 : les deux faux",
+			"variationIndex": 0,
+			"variables": {
+				"a": "-3",
+				"b": "5"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["2", "1"]
+		},
+		{
+			"description": "v0 : a et b inversés",
+			"variationIndex": 0,
+			"variables": {
+				"a": "-3",
+				"b": "5"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as donné l'ordonnée à l'origine : le coefficient directeur est le nombre qui multiplie $x$."
+			},
+			"answers": ["5", "5"]
+		},
+		{
+			"description": "v0 : signe de a",
+			"variationIndex": 0,
+			"variables": {
+				"a": "-3",
+				"b": "5"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Le signe placé devant $x$ fait partie du coefficient directeur."
+			},
+			"answers": ["3", "5"]
+		},
+		{
+			"description": "v0 : a et b inversés",
+			"variationIndex": 0,
+			"variables": {
+				"a": "-3",
+				"b": "5"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as donné le coefficient directeur : l'ordonnée à l'origine est le terme sans $x$."
+			},
+			"answers": ["-3", "-3"]
+		},
+		{
+			"description": "v0 : f(x) = −7 + 4x",
+			"variationIndex": 0,
+			"variables": {
+				"a": "4",
+				"b": "-7"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["4", "-7"]
+		},
+		{
+			"description": "v0 : signe de b",
+			"variationIndex": 0,
+			"variables": {
+				"a": "4",
+				"b": "-7"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Le signe placé devant le terme sans $x$ fait partie de l'ordonnée à l'origine."
+			},
+			"answers": ["4", "7"]
+		},
+		{
+			"description": "v1 : f(x) = −6x",
+			"variationIndex": 1,
+			"variables": {
+				"a": "-6"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["-6", "0"]
+		},
+		{
+			"description": "v1 : inversés",
+			"variationIndex": 1,
+			"variables": {
+				"a": "-6"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as donné l'ordonnée à l'origine : le coefficient directeur est le nombre qui multiplie $x$."
+			},
+			"answers": ["0", "0"]
+		},
+		{
+			"description": "v1 : inversés",
+			"variationIndex": 1,
+			"variables": {
+				"a": "-6"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as donné le coefficient directeur : l'ordonnée à l'origine est le terme sans $x$."
+			},
+			"answers": ["-6", "-6"]
+		},
+		{
+			"description": "v2 : f(x) = 8",
+			"variationIndex": 2,
+			"variables": {
+				"b": "8"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0", "8"]
+		},
+		{
+			"description": "v2 : inversés",
+			"variationIndex": 2,
+			"variables": {
+				"b": "8"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as donné l'ordonnée à l'origine : le coefficient directeur est le nombre qui multiplie $x$."
+			},
+			"answers": ["8", "8"]
+		},
+		{
+			"description": "v2 : inversés",
+			"variationIndex": 2,
+			"variables": {
+				"b": "8"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as donné le coefficient directeur : l'ordonnée à l'origine est le terme sans $x$."
+			},
+			"answers": ["0", "0"]
+		},
+		{
+			"description": "v3 : f(x) = x/4 − 3",
+			"variationIndex": 3,
+			"variables": {
+				"c": "4",
+				"b": "-3"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["\\frac{1}{4}", "-3"]
+		},
+		{
+			"description": "v3 : 0,25 accepté",
+			"variationIndex": 3,
+			"variables": {
+				"c": "4",
+				"b": "-3"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0{,}25", "-3"]
+		},
+		{
+			"description": "v3 : c pour 1/c",
+			"variationIndex": 3,
+			"variables": {
+				"c": "4",
+				"b": "-3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Diviser $x$ par un nombre, c'est le multiplier par l'inverse de ce nombre."
+			},
+			"answers": ["4", "-3"]
+		},
+		{
+			"description": "v3 : inversés",
+			"variationIndex": 3,
+			"variables": {
+				"c": "4",
+				"b": "-3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as donné l'ordonnée à l'origine : le coefficient directeur est le nombre qui multiplie $x$."
+			},
+			"answers": ["-3", "-3"]
+		},
+		{
+			"description": "v3 : inversés",
+			"variationIndex": 3,
+			"variables": {
+				"c": "4",
+				"b": "-3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as donné le coefficient directeur : l'ordonnée à l'origine est le terme sans $x$."
+			},
+			"answers": ["\\frac{1}{4}", "\\frac{1}{4}"]
+		},
+		{
+			"description": "v4 : f(x) = −2(3x − 5)",
+			"variationIndex": 4,
+			"variables": {
+				"c": "-2",
+				"a": "3",
+				"b": "-5"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["-6", "10"]
+		},
+		{
+			"description": "v4 : sans développer",
+			"variationIndex": 4,
+			"variables": {
+				"c": "-2",
+				"a": "3",
+				"b": "-5"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Développe d'abord l'expression : le nombre devant la parenthèse multiplie chacun de ses termes."
+			},
+			"answers": ["3", "10"]
+		},
+		{
+			"description": "v4 : inversés",
+			"variationIndex": 4,
+			"variables": {
+				"c": "-2",
+				"a": "3",
+				"b": "-5"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as donné l'ordonnée à l'origine : le coefficient directeur est le nombre qui multiplie $x$."
+			},
+			"answers": ["10", "10"]
+		},
+		{
+			"description": "v4 : sans développer",
+			"variationIndex": 4,
+			"variables": {
+				"c": "-2",
+				"a": "3",
+				"b": "-5"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Développe d'abord l'expression : le nombre devant la parenthèse multiplie chacun de ses termes."
+			},
+			"answers": ["-6", "-5"]
+		},
+		{
+			"description": "v4 : inversés",
+			"variationIndex": 4,
+			"variables": {
+				"c": "-2",
+				"a": "3",
+				"b": "-5"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as donné le coefficient directeur : l'ordonnée à l'origine est le terme sans $x$."
+			},
+			"answers": ["-6", "-6"]
+		},
+		{
+			"description": "v5 : f(x) = 4x − 3 + 5x",
+			"variationIndex": 5,
+			"variables": {
+				"a": "4",
+				"b": "-3",
+				"c": "5"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["9", "-3"]
+		},
+		{
+			"description": "v5 : cx oublié",
+			"variationIndex": 5,
+			"variables": {
+				"a": "4",
+				"b": "-3",
+				"c": "5"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Réduis d'abord l'expression : elle contient deux termes en $x$."
+			},
+			"answers": ["4", "-3"]
+		},
+		{
+			"description": "v5 : inversés",
+			"variationIndex": 5,
+			"variables": {
+				"a": "4",
+				"b": "-3",
+				"c": "5"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as donné l'ordonnée à l'origine : le coefficient directeur est le nombre qui multiplie $x$."
+			},
+			"answers": ["-3", "-3"]
+		},
+		{
+			"description": "v5 : inversés",
+			"variationIndex": 5,
+			"variables": {
+				"a": "4",
+				"b": "-3",
+				"c": "5"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as donné le coefficient directeur : l'ordonnée à l'origine est le terme sans $x$."
+			},
+			"answers": ["9", "9"]
+		},
+		{
+			"description": "v5 : f(x) = −7x + 2 + 3x",
+			"variationIndex": 5,
+			"variables": {
+				"a": "-7",
+				"b": "2",
+				"c": "3"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["-4", "2"]
+		}
+	]
+}

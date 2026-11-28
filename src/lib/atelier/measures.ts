@@ -17,9 +17,9 @@
  */
 
 import type { Atelier } from './atelier.svelte';
-import type { MathNode } from '$lib/mathAST/types';
-import type { GeoPoint } from '$lib/geometry-core/types/primitives';
-import { numeric, exact, isExact, type GeoValue } from '$lib/geometry-core/types/geo-value';
+import type { MathNode } from '#lib/mathAST/types.ts';
+import type { GeoPoint } from '#lib/geometry-core/types/primitives.ts';
+import { numeric, exact, isExact, type GeoValue } from '#lib/geometry-core/types/geo-value.ts';
 import {
 	geoAdd,
 	geoDiv,
@@ -28,9 +28,9 @@ import {
 	geoOpposite,
 	geoSub,
 	simplifyExact
-} from '$lib/geometry-core/compute/geo-arithmetic';
-import { geoEqual, geoIsZero } from '$lib/geometry-core/compute/compare';
-import { geoToNumber } from '$lib/geometry-core/compute/to-number';
+} from '#lib/geometry-core/compute/geo-arithmetic.ts';
+import { geoEqual, geoIsZero } from '#lib/geometry-core/compute/compare.ts';
+import { geoToNumber } from '#lib/geometry-core/compute/to-number.ts';
 import {
 	divide,
 	multiply,
@@ -38,15 +38,15 @@ import {
 	opposite,
 	piConstant,
 	sqrt
-} from '$lib/mathAST/factory';
+} from '#lib/mathAST/factory.ts';
 import type { AngleUnit } from './angle-unit';
-import { isUnit } from '$lib/mathAST/guards';
-import { transformAST } from '$lib/mathAST/visitor';
-import { parentheses } from '$lib/mathAST/factory';
+import { isUnit } from '#lib/mathAST/guards.ts';
+import { transformAST } from '#lib/mathAST/visitor.ts';
+import { parentheses } from '#lib/mathAST/factory.ts';
 import { astOf } from './parse';
-import { format as formatUnit } from '$lib/mathAST/units';
-import { toCustom } from '$lib/mathAST/custom-generator';
-import { toLatex } from '$lib/mathAST/latex-generator';
+import { format as formatUnit } from '#lib/mathAST/units/index.ts';
+import { toCustom } from '#lib/mathAST/custom-generator.ts';
+import { toLatex } from '#lib/mathAST/latex-generator.ts';
 import {
 	readArguments,
 	readConstruction,

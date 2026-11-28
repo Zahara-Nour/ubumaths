@@ -1,17 +1,17 @@
 <script lang="ts">
-	import { lore } from '$lib/config/lore';
+	import { lore } from '#lib/config/lore.ts';
 	import type { PageData } from './$types';
 	import { enhance } from '$app/forms';
-	import { invalidateAll } from '$app/navigation';
-	import { Button } from '$lib/components/ui/button';
-	import { Input } from '$lib/components/ui/input';
-	import * as Card from '$lib/components/ui/card';
-	import * as Alert from '$lib/components/ui/alert';
-	import UserAvatar from '$lib/components/UserAvatar.svelte';
-	import * as Tabs from '$lib/components/ui/tabs';
-	import { Badge } from '$lib/components/ui/badge';
-	import { toaster } from '$lib/stores/toaster.svelte';
-	import { describeAgeDeclaration } from '$lib/utils/age-declaration';
+	import { refreshAll } from '$app/navigation';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import { Input } from '#lib/components/ui/input/index.ts';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import * as Alert from '#lib/components/ui/alert/index.ts';
+	import UserAvatar from '#lib/components/UserAvatar.svelte';
+	import * as Tabs from '#lib/components/ui/tabs/index.ts';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
+	import { describeAgeDeclaration } from '#lib/utils/age-declaration.ts';
 	import {
 		ShieldCheck,
 		AlertTriangle,
@@ -107,7 +107,7 @@
 			}
 
 			toaster.success('Email de consentement envoyé !');
-			await invalidateAll();
+			await refreshAll();
 		} catch (err) {
 			console.error('[Consent Page] Send error:', err);
 			toaster.error(err instanceof Error ? err.message : "Erreur lors de l'envoi");
@@ -280,7 +280,7 @@
 																		toaster.success(
 																			'Déclaration annulée : la question sera reposée'
 																		);
-																		await invalidateAll();
+																		await refreshAll();
 																	} else if (result.type === 'failure') {
 																		toaster.error(String(result.data?.error || 'Erreur'));
 																	} else if (result.type === 'error') {
@@ -335,7 +335,7 @@
 															if (result.type === 'success') {
 																toaster.success('Email mis à jour');
 																cancelEditing(student.id);
-																await invalidateAll();
+																await refreshAll();
 															} else if (result.type === 'failure') {
 																toaster.error(String(result.data?.error || 'Erreur'));
 															}

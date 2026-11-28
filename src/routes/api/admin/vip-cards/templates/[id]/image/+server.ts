@@ -8,13 +8,13 @@
  * Security: Admin only
  */
 
-import { error, json } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import sharp from 'sharp';
 import type { RequestHandler } from './$types';
-import { requireAdmin } from '$lib/server/middleware/auth';
-import type { UploadImageResponse } from '$lib/types/vip-card-admin';
-import { validateSlugParam } from '$lib/server/validation/params';
-import { createServerLogger } from '$lib/utils/logger';
+import { requireAdmin } from '#lib/server/middleware/auth.ts';
+import type { UploadImageResponse } from '#lib/types/vip-card-admin.ts';
+import { validateSlugParam } from '#lib/server/validation/params.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/admin/vip-cards/templates/[id]/image/+server');
 
@@ -151,7 +151,7 @@ export const POST: RequestHandler = async ({ request, locals, params }) => {
 			imagePath
 		};
 
-		return json(response);
+		return Response.json(response);
 	} catch (err) {
 		logger.error('Error in POST /api/admin/vip-cards/templates/[id]/image:', err);
 

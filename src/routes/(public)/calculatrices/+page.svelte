@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { resolve } from '$app/paths';
-	import SeoHead from '$lib/seo/SeoHead.svelte';
-	import { Badge } from '$lib/components/ui/badge';
+	import SeoHead from '#lib/seo/SeoHead.svelte';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();

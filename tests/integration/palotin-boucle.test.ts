@@ -17,8 +17,8 @@
  *   payé qu'une fois ;
  * - Constance Royale hebdomadaire (PR 4) : le 3e jour travaillé de la semaine
  *   (Entraînement ou forfait de révision) tient la semaine, +30 une seule fois ;
- *   une semaine finie à 2 jours remet la Constance à 0 au chargement suivant du
- *   tableau de bord (avec la réplique). Les dates passées sont posées sur la
+ *   une semaine finie à 2 jours remet la Constance à 0 à la lecture de présence
+ *   suivante (`GET /api/student/buddy/presence`, avec la réplique). Les dates passées sont posées sur la
  *   ligne `student_buddies` au client service.
  *
  * @vitest-environment node
@@ -32,26 +32,26 @@ import {
 } from '../helpers/database/trigger-test-helpers';
 import { DEFAULT_TEST_PASSWORD } from '../helpers/database/supabase-client';
 import { TestData } from '../helpers/database/test-data-factory';
-import type { Database } from '$lib/types/database';
+import type { Database } from '#lib/types/database.ts';
 import {
 	REVIEW_REWARD_CARDS_ANY_DECK,
 	REVIEW_REWARD_CARDS_EMPTIED_DECK,
 	XP_SOURCES
-} from '$lib/utils/buddy-xp';
+} from '#lib/utils/buddy-xp.ts';
 
 // `add_buddy_xp` et la lecture des cartes de cours partent au client service :
 // le brancher sur la base LOCALE.
-vi.mock('$lib/server/serviceRoleClient', async () => {
+vi.mock('#lib/server/serviceRoleClient.ts', async () => {
 	const helpers = await import('../helpers/database/trigger-test-helpers');
 	return { createServiceRoleClient: helpers.createServiceRoleClient };
 });
 
 import { POST as testsSaveRoute } from '../../src/routes/api/tests/save/+server';
 import { POST as reviewSubmitRoute } from '../../src/routes/api/srs/review/submit/+server';
-import { addExploredThemes } from '$lib/server/buddy-queries';
-import { addBuddyXpFromTest } from '$lib/server/buddy-xp-service';
-import { load as studentLayoutLoad } from '../../src/routes/(protected)/dashboard/student/+layout.server';
-import { utcDay, weekStartOf } from '$lib/utils/buddy-constance';
+import { addExploredThemes } from '#lib/server/buddy-queries.ts';
+import { addBuddyXpFromTest } from '#lib/server/buddy-xp-service.ts';
+import { GET as presenceRoute } from '../../src/routes/api/student/buddy/presence/+server';
+import { utcDay, weekStartOf } from '#lib/utils/buddy-constance.ts';
 
 // Types
 type Person = { id: string; client: SupabaseClient<Database> };
@@ -99,6 +99,18 @@ function buildLocals(p: Person): App.Locals {
 		user,
 		requestId: crypto.randomUUID()
 	} as unknown as App.Locals;
+}
+
+/** Lecture de présence du Palotin (première page d'une zone du Palotin) */
+async function readPresence(
+	locals: App.Locals
+): Promise<{ buddy: { current_streak: number } | null; returnAfterPause: boolean }> {
+	const response = await presenceRoute({ locals } as never);
+	expect(response.status, 'statut de /api/student/buddy/presence').toBe(200);
+	return (await response.json()) as {
+		buddy: { current_streak: number } | null;
+		returnAfterPause: boolean;
+	};
 }
 
 function postRequest(body: unknown): Request {
@@ -207,8 +219,8 @@ async function save(p: Person, mode: 'interactive' | 'flash') {
 		locals: buildLocals(p),
 		request: postRequest(saveBody(mode))
 	} as never);
-	expect(response.status, 'statut de /api/tests/save').toBe(201);
-	return (await response.json()) as { sessionId: string; buddy_xp: unknown };
+	expect(response.status, 'statut de /api/tests/save').toBe(200);
+	return (await response.json()) as { buddy_xp: unknown };
 }
 
 async function review(p: Person, deckId: string, cardId: string) {
@@ -299,6 +311,14 @@ async function removeDecor() {
 		.in('parent_id', branchIds);
 	const notionIds = (notions ?? []).map((n) => n.id);
 	if (notionIds.length > 0) {
+		// Supprimer un point travaillé ou couvert est refusé (L112) : son travail d'abord
+		const { data: points } = await service
+			.from('curriculum_points')
+			.select('id')
+			.in('node_id', notionIds);
+		const pointIds = (points ?? []).map((p) => p.id);
+		await service.from('journal_entry_points').delete().in('point_id', pointIds);
+		await service.from('student_point_state').delete().in('point_id', pointIds);
 		await service.from('curriculum_points').delete().in('node_id', notionIds);
 		await service.from('classification_nodes').delete().in('id', notionIds);
 	}
@@ -383,17 +403,17 @@ describe('la boucle du Palotin tourne', () => {
 		expect((await buddyOf(withBuddy))?.xp).toBe(before?.xp);
 	});
 
-	it('élève sans Palotin : séance enregistrée, aucune ligne Palotin créée', async () => {
+	// Fin de série = gain seulement (chantier `formes-de-serie`, PR 4) : plus de séance libre
+	it('élève sans Palotin : aucun gain, aucune séance libre, aucune ligne Palotin créée', async () => {
 		const body = await save(withoutBuddy, 'interactive');
 		expect(body.buddy_xp).toBeNull();
 
-		const { data: session, error } = await service
+		const { data: sessions, error } = await service
 			.from('test_sessions')
-			.select('id, user_id')
-			.eq('id', body.sessionId)
-			.single();
+			.select('id')
+			.eq('user_id', withoutBuddy.id);
 		expect(error).toBeNull();
-		expect(session?.user_id).toBe(withoutBuddy.id);
+		expect(sessions).toEqual([]);
 		expect(await buddyOf(withoutBuddy)).toBeNull();
 	});
 
@@ -565,7 +585,7 @@ describe('la boucle du Palotin tourne', () => {
 			});
 		});
 
-		it('semaine finie à 2 jours : Constance à 0 au chargement suivant du tableau de bord', async () => {
+		it('semaine finie à 2 jours : Constance à 0 à la lecture de présence suivante', async () => {
 			const p = await studentWithBuddy();
 			await setConstance(p, {
 				current_streak: 3,
@@ -581,16 +601,15 @@ describe('la boucle du Palotin tourne', () => {
 				.single();
 			expect(error).toBeNull();
 
-			const data = (await studentLayoutLoad({
-				locals: { ...buildLocals(p), profile }
-			} as never)) as { buddy: { current_streak: number } | null; streakLost: boolean };
+			const data = await readPresence({ ...buildLocals(p), profile } as App.Locals);
 
-			expect(data.streakLost).toBe(true);
+			// Remise à zéro en silence (R1, 2026-11-12) : aucune réplique à demander
+			expect(data).not.toHaveProperty('streakLost');
 			expect(data.buddy?.current_streak).toBe(0);
 			expect(await constanceOf(p)).toMatchObject({ current_streak: 0, longest_streak: 5 });
 		});
 
-		it('semaine d’avant tenue, semaine en cours pas finie : rien ne casse au chargement', async () => {
+		it('semaine d’avant tenue, semaine en cours pas finie : rien ne casse à la lecture de présence', async () => {
 			const p = await studentWithBuddy();
 			await setConstance(p, {
 				current_streak: 3,
@@ -601,11 +620,8 @@ describe('la boucle du Palotin tourne', () => {
 			});
 			const { data: profile } = await service.from('profiles').select('*').eq('id', p.id).single();
 
-			const data = (await studentLayoutLoad({
-				locals: { ...buildLocals(p), profile }
-			} as never)) as { buddy: { current_streak: number } | null; streakLost: boolean };
+			const data = await readPresence({ ...buildLocals(p), profile } as App.Locals);
 
-			expect(data.streakLost).toBe(false);
 			expect(data.buddy?.current_streak).toBe(3);
 			expect((await constanceOf(p))?.current_streak).toBe(3);
 		});

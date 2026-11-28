@@ -8,7 +8,7 @@
  *
  * @example
  * ```typescript
- * import { getTypstService, PRIORITY } from '$lib/typst/service';
+ * import { getTypstService, PRIORITY } from '#lib/typst/service/index.ts';
  *
  * const service = getTypstService();
  * await service.initialize();

@@ -76,12 +76,12 @@
  * }
  */
 
-import { json, error } from '@sveltejs/kit';
-import { assertGoogleClassroomEnabled } from '$lib/server/google/feature-guard';
+import { error } from '@sveltejs/kit';
+import { assertGoogleClassroomEnabled } from '#lib/server/google/feature-guard.ts';
 import type { RequestHandler } from './$types';
-import { requireRole } from '$lib/server/middleware/auth';
-import { courseIdParamSchema } from '$lib/server/validation';
-import { createServerLogger } from '$lib/utils/logger';
+import { requireRole } from '#lib/server/middleware/auth.ts';
+import { courseIdParamSchema } from '#lib/server/validation/index.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/google/courses/[courseId]/+server');
 
@@ -397,7 +397,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 			};
 		});
 
-		return json({
+		return Response.json({
 			course: transformedCourse,
 			coursework: enrichedCoursework,
 			topics: transformedTopics,

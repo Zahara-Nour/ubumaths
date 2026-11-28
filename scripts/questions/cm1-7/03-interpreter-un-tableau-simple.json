@@ -1,0 +1,303 @@
+{
+	"id": "40dcbbcc-c71e-46e4-9d33-4b15f126f6da",
+	"title": "Que dit le tableau des villes ?",
+	"description": "Villes inventées : la plus peuplée, la moins peuplée (case choix), combien d'habitants de plus qu'une autre ville",
+	"grades": ["CM1"],
+	"level": 5,
+	"delay": 90,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"spacesFromFourDigits": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Ce tableau donne le nombre d'habitants de cinq villes.\n\n| Ville | Nombre d'habitants |\n|---|---|\n| Brumeval | ${{p1}}$ |\n| Castelroc | ${{p2}}$ |\n| Pontaval | ${{p3}}$ |\n| Mirelande | ${{p4}}$ |\n| Sablonnière | ${{p5}}$ |\n\nQuelle ville est la plus peuplée ?\n\n```choix\nmelanger: non\n- Brumeval\n- Castelroc\n- Pontaval\n- Mirelande\n- Sablonnière\n```",
+			"variables": [
+				{
+					"name": "b1",
+					"expression": "10000..799999"
+				},
+				{
+					"name": "b2",
+					"expression": "10000..799999"
+				},
+				{
+					"name": "b3",
+					"expression": "10000..799999"
+				},
+				{
+					"name": "b4",
+					"expression": "10000..799999"
+				},
+				{
+					"name": "b5",
+					"expression": "10000..799999"
+				},
+				{
+					"name": "c",
+					"expression": "800000..999999"
+				},
+				{
+					"name": "k",
+					"expression": "0..4"
+				},
+				{
+					"name": "p1",
+					"expression": "eval:b1+(c-b1)*((k-1)*(k-2)*(k-3)*(k-4))/(24)"
+				},
+				{
+					"name": "p2",
+					"expression": "eval:b2+(c-b2)*((k-0)*(k-2)*(k-3)*(k-4))/(-6)"
+				},
+				{
+					"name": "p3",
+					"expression": "eval:b3+(c-b3)*((k-0)*(k-1)*(k-3)*(k-4))/(4)"
+				},
+				{
+					"name": "p4",
+					"expression": "eval:b4+(c-b4)*((k-0)*(k-1)*(k-2)*(k-4))/(-6)"
+				},
+				{
+					"name": "p5",
+					"expression": "eval:b5+(c-b5)*((k-0)*(k-1)*(k-2)*(k-3))/(24)"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{k}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La plus peuplée a le plus grand nombre d'habitants : on compare les nombres, d'abord leur nombre de chiffres, puis chiffre par chiffre depuis la gauche.",
+					"Le plus grand : ${{c}}$, c'est {{if:k==0|Brumeval|{{if:k==1|Castelroc|{{if:k==2|Pontaval|{{if:k==3|Mirelande|Sablonnière}}}}}}}}."
+				]
+			}
+		},
+		{
+			"statement": "Ce tableau donne le nombre d'habitants de cinq villes.\n\n| Ville | Nombre d'habitants |\n|---|---|\n| Brumeval | ${{p1}}$ |\n| Castelroc | ${{p2}}$ |\n| Pontaval | ${{p3}}$ |\n| Mirelande | ${{p4}}$ |\n| Sablonnière | ${{p5}}$ |\n\nQuelle ville est la moins peuplée ?\n\n```choix\nmelanger: non\n- Brumeval\n- Castelroc\n- Pontaval\n- Mirelande\n- Sablonnière\n```",
+			"variables": [
+				{
+					"name": "b1",
+					"expression": "200000..999999"
+				},
+				{
+					"name": "b2",
+					"expression": "200000..999999"
+				},
+				{
+					"name": "b3",
+					"expression": "200000..999999"
+				},
+				{
+					"name": "b4",
+					"expression": "200000..999999"
+				},
+				{
+					"name": "b5",
+					"expression": "200000..999999"
+				},
+				{
+					"name": "c",
+					"expression": "10000..99999"
+				},
+				{
+					"name": "k",
+					"expression": "0..4"
+				},
+				{
+					"name": "p1",
+					"expression": "eval:b1+(c-b1)*((k-1)*(k-2)*(k-3)*(k-4))/(24)"
+				},
+				{
+					"name": "p2",
+					"expression": "eval:b2+(c-b2)*((k-0)*(k-2)*(k-3)*(k-4))/(-6)"
+				},
+				{
+					"name": "p3",
+					"expression": "eval:b3+(c-b3)*((k-0)*(k-1)*(k-3)*(k-4))/(4)"
+				},
+				{
+					"name": "p4",
+					"expression": "eval:b4+(c-b4)*((k-0)*(k-1)*(k-2)*(k-4))/(-6)"
+				},
+				{
+					"name": "p5",
+					"expression": "eval:b5+(c-b5)*((k-0)*(k-1)*(k-2)*(k-3))/(24)"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{k}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La moins peuplée a le plus petit nombre d'habitants : un nombre de 5 chiffres est plus petit qu'un nombre de 6 chiffres.",
+					"Le plus petit : ${{c}}$, c'est {{if:k==0|Brumeval|{{if:k==1|Castelroc|{{if:k==2|Pontaval|{{if:k==3|Mirelande|Sablonnière}}}}}}}}."
+				]
+			}
+		},
+		{
+			"statement": "Ce tableau donne le nombre d'habitants de cinq villes.\n\n| Ville | Nombre d'habitants |\n|---|---|\n| Brumeval | ${{p1}}$ |\n| Castelroc | ${{p2}}$ |\n| Pontaval | ${{p3}}$ |\n| Mirelande | ${{p4}}$ |\n| Sablonnière | ${{p5}}$ |\n\nCombien {{if:k==0|Brumeval|{{if:k==1|Castelroc|{{if:k==2|Pontaval|{{if:k==3|Mirelande|Sablonnière}}}}}}}} a-t-elle d'habitants de plus que {{if:k==0|Castelroc|{{if:k==1|Pontaval|{{if:k==2|Mirelande|{{if:k==3|Sablonnière|Brumeval}}}}}}}} ?\n\n$?$ habitants",
+			"variables": [
+				{
+					"name": "p1",
+					"expression": "10000..999999"
+				},
+				{
+					"name": "p2",
+					"expression": "10000..999999"
+				},
+				{
+					"name": "p3",
+					"expression": "10000..999999"
+				},
+				{
+					"name": "p4",
+					"expression": "10000..999999"
+				},
+				{
+					"name": "p5",
+					"expression": "10000..999999"
+				},
+				{
+					"name": "k",
+					"expression": "0..4"
+				},
+				{
+					"name": "x",
+					"expression": "eval:(p1)*((k-1)*(k-2)*(k-3)*(k-4))/(24)+(p2)*((k-0)*(k-2)*(k-3)*(k-4))/(-6)+(p3)*((k-0)*(k-1)*(k-3)*(k-4))/(4)+(p4)*((k-0)*(k-1)*(k-2)*(k-4))/(-6)+(p5)*((k-0)*(k-1)*(k-2)*(k-3))/(24)"
+				},
+				{
+					"name": "y",
+					"expression": "eval:(p2)*((k-1)*(k-2)*(k-3)*(k-4))/(24)+(p3)*((k-0)*(k-2)*(k-3)*(k-4))/(-6)+(p4)*((k-0)*(k-1)*(k-3)*(k-4))/(4)+(p5)*((k-0)*(k-1)*(k-2)*(k-4))/(-6)+(p1)*((k-0)*(k-1)*(k-2)*(k-3))/(24)"
+				},
+				{
+					"name": "d",
+					"expression": "eval:x-y"
+				}
+			],
+			"conditions": ["x > y"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On lit les deux nombres : {{if:k==0|Brumeval|{{if:k==1|Castelroc|{{if:k==2|Pontaval|{{if:k==3|Mirelande|Sablonnière}}}}}}}} ${{x}}$, {{if:k==0|Castelroc|{{if:k==1|Pontaval|{{if:k==2|Mirelande|{{if:k==3|Sablonnière|Brumeval}}}}}}}} ${{y}}$.",
+					"« Combien de plus » : on calcule l'écart, ${{x}} - {{y}} = \\textcolor{{{color:primary.0}}}{{{d}}}$ habitants."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "La plus peuplée : Mirelande (rang 3)",
+			"variationIndex": 0,
+			"variables": {
+				"b1": "245318",
+				"b2": "87650",
+				"b3": "512004",
+				"b4": "31872",
+				"b5": "698120",
+				"c": "905400",
+				"k": "3",
+				"p1": "245318",
+				"p2": "87650",
+				"p3": "512004",
+				"p4": "905400",
+				"p5": "698120"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : la dernière ligne",
+			"variationIndex": 0,
+			"variables": {
+				"b1": "245318",
+				"b2": "87650",
+				"b3": "512004",
+				"b4": "31872",
+				"b5": "698120",
+				"c": "905400",
+				"k": "3",
+				"p1": "245318",
+				"p2": "87650",
+				"p3": "512004",
+				"p4": "905400",
+				"p5": "698120"
+			},
+			"answers": ["4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "La moins peuplée : Brumeval",
+			"variationIndex": 1,
+			"variables": {
+				"b1": "245318",
+				"b2": "870650",
+				"b3": "512004",
+				"b4": "310872",
+				"b5": "698120",
+				"c": "45200",
+				"k": "0",
+				"p1": "45200",
+				"p2": "870650",
+				"p3": "512004",
+				"p4": "310872",
+				"p5": "698120"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Pontaval − Mirelande : 512 004 − 31 872 = 480 132",
+			"variationIndex": 2,
+			"variables": {
+				"p1": "245318",
+				"p2": "87650",
+				"p3": "512004",
+				"p4": "31872",
+				"p5": "698120",
+				"k": "2",
+				"x": "512004",
+				"y": "31872",
+				"d": "480132"
+			},
+			"answers": ["480 132"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : la somme",
+			"variationIndex": 2,
+			"variables": {
+				"p1": "245318",
+				"p2": "87650",
+				"p3": "512004",
+				"p4": "31872",
+				"p5": "698120",
+				"k": "2",
+				"x": "512004",
+				"y": "31872",
+				"d": "480132"
+			},
+			"answers": ["543 876"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

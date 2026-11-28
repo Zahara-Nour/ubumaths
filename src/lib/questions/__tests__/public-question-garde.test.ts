@@ -9,7 +9,7 @@
 import { describe, it, expect, vi } from 'vitest';
 import { generateInstance } from '../generator/instance-generator';
 import type { QuestionTemplate } from '../types';
-import { templateMarkdown } from '$lib/ubumark';
+import { templateMarkdown } from '#lib/ubumark/index.ts';
 
 vi.mock('../masked-statement', async (importOriginal) => ({
 	...(await importOriginal<typeof import('../masked-statement')>()),

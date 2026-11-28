@@ -5,13 +5,14 @@
  * DELETE - Remove/deactivate an assignment (teacher only)
  */
 
-import { json } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { updateAssignment, deleteAssignment } from '$lib/server/exercise-assignments';
-import type { ExerciseAssignment } from '$lib/exercises/types';
-import { validateUpdateAssignment } from '$lib/server/validation';
-import { requireRole } from '$lib/server/middleware/auth';
-import { createServerLogger } from '$lib/utils/logger';
+import { updateAssignment, deleteAssignment } from '#lib/server/exercise-assignments.ts';
+import type { ExerciseAssignment } from '#lib/exercises/types.ts';
+import { validateUpdateAssignment } from '#lib/server/validation/index.ts';
+import { requireRole } from '#lib/server/middleware/auth.ts';
+import { validateUuidParam } from '#lib/server/validation/params.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/exercises/assignments/[assignmentId]/+server');
 
@@ -28,8 +29,13 @@ const logger = createServerLogger('api/exercises/assignments/[assignmentId]/+ser
 export const PATCH: RequestHandler = async ({ request, params, locals }) => {
 	const { user } = await requireRole(locals, 'teacher');
 
-	const assignmentId = params.assignmentId;
-	const body = await request.json();
+	const assignmentId = validateUuidParam(params.assignmentId, 'assignmentId');
+
+	// Corps illisible : 400, jamais un plantage (le schéma refuse ensuite ce qui n'est pas un objet).
+	const body: unknown = await request.json().catch(() => undefined);
+	if (body === undefined) {
+		throw error(400, 'Données invalides');
+	}
 
 	// Validate update body
 	const validation = validateUpdateAssignment(body);
@@ -37,7 +43,7 @@ export const PATCH: RequestHandler = async ({ request, params, locals }) => {
 		const errorMsg = validation.error.issues
 			.map((e) => `${e.path.join('.')}: ${e.message}`)
 			.join('; ');
-		return json({ error: `Données invalides : ${errorMsg}` }, { status: 400 });
+		return Response.json({ error: `Données invalides : ${errorMsg}` }, { status: 400 });
 	}
 
 	const updates: Partial<Pick<ExerciseAssignment, 'optional_deadline' | 'notes' | 'is_active'>> =
@@ -56,13 +62,13 @@ export const PATCH: RequestHandler = async ({ request, params, locals }) => {
 
 		// Check if it's an authorization error
 		if (updateError.includes('not authorized') || updateError.includes('not found')) {
-			return json({ error: updateError }, { status: 403 });
+			return Response.json({ error: updateError }, { status: 403 });
 		}
 
-		return json({ error: updateError }, { status: 400 });
+		return Response.json({ error: updateError }, { status: 400 });
 	}
 
-	return json(updated);
+	return Response.json(updated);
 };
 
 /**
@@ -78,7 +84,7 @@ export const PATCH: RequestHandler = async ({ request, params, locals }) => {
 export const DELETE: RequestHandler = async ({ params, url, locals }) => {
 	const { user } = await requireRole(locals, 'teacher');
 
-	const assignmentId = params.assignmentId;
+	const assignmentId = validateUuidParam(params.assignmentId, 'assignmentId');
 	const hardDelete = url.searchParams.get('hard') === 'true';
 
 	// Delete assignment
@@ -94,13 +100,13 @@ export const DELETE: RequestHandler = async ({ params, url, locals }) => {
 
 		// Check if it's an authorization error
 		if (deleteError.includes('not authorized') || deleteError.includes('not found')) {
-			return json({ error: deleteError }, { status: 403 });
+			return Response.json({ error: deleteError }, { status: 403 });
 		}
 
-		return json({ error: deleteError }, { status: 400 });
+		return Response.json({ error: deleteError }, { status: 400 });
 	}
 
-	return json(
+	return Response.json(
 		{
 			success,
 			message: hardDelete ? 'Affectation supprimée définitivement' : 'Affectation désactivée'

@@ -5,7 +5,7 @@
  * be duplicated across components.
  */
 
-import { clearWorkData } from '$lib/utils/work-data';
+import { clearWorkData } from '#lib/utils/work-data.ts';
 
 /**
  * Submits a hidden POST form to /auth/logout. The server-side handler clears

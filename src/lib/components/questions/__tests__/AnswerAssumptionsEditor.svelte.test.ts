@@ -3,7 +3,7 @@ import { render } from 'vitest-browser-svelte';
 import { userEvent } from 'vitest/browser';
 import AnswerAssumptionsEditor from '../AnswerAssumptionsEditor.svelte';
 import AnswerAssumptionsNotice from '../AnswerAssumptionsNotice.svelte';
-import type { AnswerAssumptionRow } from '$lib/questions/answer-assumptions';
+import type { AnswerAssumptionRow } from '#lib/questions/answer-assumptions.ts';
 
 /**
  * Éditeur des hypothèses de l'énoncé (ADR 0012) : lignes variable + hypothèse,

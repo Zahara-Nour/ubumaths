@@ -15,10 +15,10 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { buddyRow, createFakeBuddyDb, type FakeBuddyDb } from './helpers/fake-buddy-db';
 import { called, type RecordedQuery } from './helpers/fake-supabase';
-import { weekStartOf } from '$lib/utils/buddy-constance';
+import { weekStartOf } from '#lib/utils/buddy-constance.ts';
 
 const service = vi.hoisted(() => ({ current: null as unknown }));
-vi.mock('$lib/server/serviceRoleClient', () => ({
+vi.mock('#lib/server/serviceRoleClient.ts', () => ({
 	createServiceRoleClient: () => service.current
 }));
 

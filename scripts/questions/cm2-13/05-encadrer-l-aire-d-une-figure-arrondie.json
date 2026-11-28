@@ -1,0 +1,277 @@
+{
+	"id": "678a72a7-2a8d-4240-819f-03d5283540ed",
+	"title": "Encadrer l'aire d'une figure arrondie",
+	"description": "Figure à bord arrondi (disque, ovale) sur un quadrillage : encadrer son aire entre les carreaux entièrement dedans et les carreaux touchés",
+	"grades": ["CM2"],
+	"level": 1,
+	"delay": 150,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"spacesFromFourDigits": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "L'unité d'aire est le carreau. On ne peut pas compter exactement les carreaux de cette figure : encadre son aire.\n\n```figure\nfenetre: 0 ; 10 ; 0 ; 8\ngrille: 1\ndescription: Une figure à bord arrondi (un disque) coloriée sur un quadrillage.\n---\nO = point(5, 4, visible=faux)\ncercle(O, rayon=2.6, couleur=\"noir\", epaisseur=2, remplissage=\"vert\", opacite_fond=0.35)\nQV0a = point(0, 0, visible=faux)\nQV0b = point(0, 8, visible=faux)\nsegment(QV0a, QV0b, couleur=\"gris\", epaisseur=1)\nQV1a = point(1, 0, visible=faux)\nQV1b = point(1, 8, visible=faux)\nsegment(QV1a, QV1b, couleur=\"gris\", epaisseur=1)\nQV2a = point(2, 0, visible=faux)\nQV2b = point(2, 8, visible=faux)\nsegment(QV2a, QV2b, couleur=\"gris\", epaisseur=1)\nQV3a = point(3, 0, visible=faux)\nQV3b = point(3, 8, visible=faux)\nsegment(QV3a, QV3b, couleur=\"gris\", epaisseur=1)\nQV4a = point(4, 0, visible=faux)\nQV4b = point(4, 8, visible=faux)\nsegment(QV4a, QV4b, couleur=\"gris\", epaisseur=1)\nQV5a = point(5, 0, visible=faux)\nQV5b = point(5, 8, visible=faux)\nsegment(QV5a, QV5b, couleur=\"gris\", epaisseur=1)\nQV6a = point(6, 0, visible=faux)\nQV6b = point(6, 8, visible=faux)\nsegment(QV6a, QV6b, couleur=\"gris\", epaisseur=1)\nQV7a = point(7, 0, visible=faux)\nQV7b = point(7, 8, visible=faux)\nsegment(QV7a, QV7b, couleur=\"gris\", epaisseur=1)\nQV8a = point(8, 0, visible=faux)\nQV8b = point(8, 8, visible=faux)\nsegment(QV8a, QV8b, couleur=\"gris\", epaisseur=1)\nQV9a = point(9, 0, visible=faux)\nQV9b = point(9, 8, visible=faux)\nsegment(QV9a, QV9b, couleur=\"gris\", epaisseur=1)\nQV10a = point(10, 0, visible=faux)\nQV10b = point(10, 8, visible=faux)\nsegment(QV10a, QV10b, couleur=\"gris\", epaisseur=1)\nQH0a = point(0, 0, visible=faux)\nQH0b = point(10, 0, visible=faux)\nsegment(QH0a, QH0b, couleur=\"gris\", epaisseur=1)\nQH1a = point(0, 1, visible=faux)\nQH1b = point(10, 1, visible=faux)\nsegment(QH1a, QH1b, couleur=\"gris\", epaisseur=1)\nQH2a = point(0, 2, visible=faux)\nQH2b = point(10, 2, visible=faux)\nsegment(QH2a, QH2b, couleur=\"gris\", epaisseur=1)\nQH3a = point(0, 3, visible=faux)\nQH3b = point(10, 3, visible=faux)\nsegment(QH3a, QH3b, couleur=\"gris\", epaisseur=1)\nQH4a = point(0, 4, visible=faux)\nQH4b = point(10, 4, visible=faux)\nsegment(QH4a, QH4b, couleur=\"gris\", epaisseur=1)\nQH5a = point(0, 5, visible=faux)\nQH5b = point(10, 5, visible=faux)\nsegment(QH5a, QH5b, couleur=\"gris\", epaisseur=1)\nQH6a = point(0, 6, visible=faux)\nQH6b = point(10, 6, visible=faux)\nsegment(QH6a, QH6b, couleur=\"gris\", epaisseur=1)\nQH7a = point(0, 7, visible=faux)\nQH7b = point(10, 7, visible=faux)\nsegment(QH7a, QH7b, couleur=\"gris\", epaisseur=1)\nQH8a = point(0, 8, visible=faux)\nQH8b = point(10, 8, visible=faux)\nsegment(QH8a, QH8b, couleur=\"gris\", epaisseur=1)\n```\n\nAu moins $?$ carreaux (les carreaux **entièrement** dans la figure).\n\nAu plus $?$ carreaux (les carreaux que la figure **touche**, même un peu).",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "12"
+				},
+				{
+					"expectedAnswer": "32"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Au moins.** Les carreaux entièrement coloriés sont tous dans la figure : il y en a $\\textcolor{{{color:primary.0}}}{12}$. L'aire de la figure est donc plus grande que $12$ carreaux.",
+					"**Au plus.** La figure tient dans les carreaux qu'elle touche : il y en a $\\textcolor{{{color:primary.0}}}{32}$. L'aire de la figure est donc plus petite que $32$ carreaux.",
+					"L'aire est comprise entre $12$ et $32$ carreaux."
+				]
+			}
+		},
+		{
+			"statement": "L'unité d'aire est le carreau. On ne peut pas compter exactement les carreaux de cette figure : encadre son aire.\n\n```figure\nfenetre: 0 ; 10 ; 0 ; 8\ngrille: 1\ndescription: Une figure à bord arrondi (un disque) coloriée sur un quadrillage.\n---\nO = point(4.5, 4.5, visible=faux)\ncercle(O, rayon=3.1, couleur=\"noir\", epaisseur=2, remplissage=\"vert\", opacite_fond=0.35)\nQV0a = point(0, 0, visible=faux)\nQV0b = point(0, 8, visible=faux)\nsegment(QV0a, QV0b, couleur=\"gris\", epaisseur=1)\nQV1a = point(1, 0, visible=faux)\nQV1b = point(1, 8, visible=faux)\nsegment(QV1a, QV1b, couleur=\"gris\", epaisseur=1)\nQV2a = point(2, 0, visible=faux)\nQV2b = point(2, 8, visible=faux)\nsegment(QV2a, QV2b, couleur=\"gris\", epaisseur=1)\nQV3a = point(3, 0, visible=faux)\nQV3b = point(3, 8, visible=faux)\nsegment(QV3a, QV3b, couleur=\"gris\", epaisseur=1)\nQV4a = point(4, 0, visible=faux)\nQV4b = point(4, 8, visible=faux)\nsegment(QV4a, QV4b, couleur=\"gris\", epaisseur=1)\nQV5a = point(5, 0, visible=faux)\nQV5b = point(5, 8, visible=faux)\nsegment(QV5a, QV5b, couleur=\"gris\", epaisseur=1)\nQV6a = point(6, 0, visible=faux)\nQV6b = point(6, 8, visible=faux)\nsegment(QV6a, QV6b, couleur=\"gris\", epaisseur=1)\nQV7a = point(7, 0, visible=faux)\nQV7b = point(7, 8, visible=faux)\nsegment(QV7a, QV7b, couleur=\"gris\", epaisseur=1)\nQV8a = point(8, 0, visible=faux)\nQV8b = point(8, 8, visible=faux)\nsegment(QV8a, QV8b, couleur=\"gris\", epaisseur=1)\nQV9a = point(9, 0, visible=faux)\nQV9b = point(9, 8, visible=faux)\nsegment(QV9a, QV9b, couleur=\"gris\", epaisseur=1)\nQV10a = point(10, 0, visible=faux)\nQV10b = point(10, 8, visible=faux)\nsegment(QV10a, QV10b, couleur=\"gris\", epaisseur=1)\nQH0a = point(0, 0, visible=faux)\nQH0b = point(10, 0, visible=faux)\nsegment(QH0a, QH0b, couleur=\"gris\", epaisseur=1)\nQH1a = point(0, 1, visible=faux)\nQH1b = point(10, 1, visible=faux)\nsegment(QH1a, QH1b, couleur=\"gris\", epaisseur=1)\nQH2a = point(0, 2, visible=faux)\nQH2b = point(10, 2, visible=faux)\nsegment(QH2a, QH2b, couleur=\"gris\", epaisseur=1)\nQH3a = point(0, 3, visible=faux)\nQH3b = point(10, 3, visible=faux)\nsegment(QH3a, QH3b, couleur=\"gris\", epaisseur=1)\nQH4a = point(0, 4, visible=faux)\nQH4b = point(10, 4, visible=faux)\nsegment(QH4a, QH4b, couleur=\"gris\", epaisseur=1)\nQH5a = point(0, 5, visible=faux)\nQH5b = point(10, 5, visible=faux)\nsegment(QH5a, QH5b, couleur=\"gris\", epaisseur=1)\nQH6a = point(0, 6, visible=faux)\nQH6b = point(10, 6, visible=faux)\nsegment(QH6a, QH6b, couleur=\"gris\", epaisseur=1)\nQH7a = point(0, 7, visible=faux)\nQH7b = point(10, 7, visible=faux)\nsegment(QH7a, QH7b, couleur=\"gris\", epaisseur=1)\nQH8a = point(0, 8, visible=faux)\nQH8b = point(10, 8, visible=faux)\nsegment(QH8a, QH8b, couleur=\"gris\", epaisseur=1)\n```\n\nAu moins $?$ carreaux (les carreaux **entièrement** dans la figure).\n\nAu plus $?$ carreaux (les carreaux que la figure **touche**, même un peu).",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "21"
+				},
+				{
+					"expectedAnswer": "45"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Au moins.** Les carreaux entièrement coloriés sont tous dans la figure : il y en a $\\textcolor{{{color:primary.0}}}{21}$. L'aire de la figure est donc plus grande que $21$ carreaux.",
+					"**Au plus.** La figure tient dans les carreaux qu'elle touche : il y en a $\\textcolor{{{color:primary.0}}}{45}$. L'aire de la figure est donc plus petite que $45$ carreaux.",
+					"L'aire est comprise entre $21$ et $45$ carreaux."
+				]
+			}
+		},
+		{
+			"statement": "L'unité d'aire est le carreau. On ne peut pas compter exactement les carreaux de cette figure : encadre son aire.\n\n```figure\nfenetre: 0 ; 10 ; 0 ; 8\ngrille: 1\ndescription: Une figure à bord arrondi (un disque) coloriée sur un quadrillage.\n---\nO = point(5.5, 4, visible=faux)\ncercle(O, rayon=2.3, couleur=\"noir\", epaisseur=2, remplissage=\"vert\", opacite_fond=0.35)\nQV0a = point(0, 0, visible=faux)\nQV0b = point(0, 8, visible=faux)\nsegment(QV0a, QV0b, couleur=\"gris\", epaisseur=1)\nQV1a = point(1, 0, visible=faux)\nQV1b = point(1, 8, visible=faux)\nsegment(QV1a, QV1b, couleur=\"gris\", epaisseur=1)\nQV2a = point(2, 0, visible=faux)\nQV2b = point(2, 8, visible=faux)\nsegment(QV2a, QV2b, couleur=\"gris\", epaisseur=1)\nQV3a = point(3, 0, visible=faux)\nQV3b = point(3, 8, visible=faux)\nsegment(QV3a, QV3b, couleur=\"gris\", epaisseur=1)\nQV4a = point(4, 0, visible=faux)\nQV4b = point(4, 8, visible=faux)\nsegment(QV4a, QV4b, couleur=\"gris\", epaisseur=1)\nQV5a = point(5, 0, visible=faux)\nQV5b = point(5, 8, visible=faux)\nsegment(QV5a, QV5b, couleur=\"gris\", epaisseur=1)\nQV6a = point(6, 0, visible=faux)\nQV6b = point(6, 8, visible=faux)\nsegment(QV6a, QV6b, couleur=\"gris\", epaisseur=1)\nQV7a = point(7, 0, visible=faux)\nQV7b = point(7, 8, visible=faux)\nsegment(QV7a, QV7b, couleur=\"gris\", epaisseur=1)\nQV8a = point(8, 0, visible=faux)\nQV8b = point(8, 8, visible=faux)\nsegment(QV8a, QV8b, couleur=\"gris\", epaisseur=1)\nQV9a = point(9, 0, visible=faux)\nQV9b = point(9, 8, visible=faux)\nsegment(QV9a, QV9b, couleur=\"gris\", epaisseur=1)\nQV10a = point(10, 0, visible=faux)\nQV10b = point(10, 8, visible=faux)\nsegment(QV10a, QV10b, couleur=\"gris\", epaisseur=1)\nQH0a = point(0, 0, visible=faux)\nQH0b = point(10, 0, visible=faux)\nsegment(QH0a, QH0b, couleur=\"gris\", epaisseur=1)\nQH1a = point(0, 1, visible=faux)\nQH1b = point(10, 1, visible=faux)\nsegment(QH1a, QH1b, couleur=\"gris\", epaisseur=1)\nQH2a = point(0, 2, visible=faux)\nQH2b = point(10, 2, visible=faux)\nsegment(QH2a, QH2b, couleur=\"gris\", epaisseur=1)\nQH3a = point(0, 3, visible=faux)\nQH3b = point(10, 3, visible=faux)\nsegment(QH3a, QH3b, couleur=\"gris\", epaisseur=1)\nQH4a = point(0, 4, visible=faux)\nQH4b = point(10, 4, visible=faux)\nsegment(QH4a, QH4b, couleur=\"gris\", epaisseur=1)\nQH5a = point(0, 5, visible=faux)\nQH5b = point(10, 5, visible=faux)\nsegment(QH5a, QH5b, couleur=\"gris\", epaisseur=1)\nQH6a = point(0, 6, visible=faux)\nQH6b = point(10, 6, visible=faux)\nsegment(QH6a, QH6b, couleur=\"gris\", epaisseur=1)\nQH7a = point(0, 7, visible=faux)\nQH7b = point(10, 7, visible=faux)\nsegment(QH7a, QH7b, couleur=\"gris\", epaisseur=1)\nQH8a = point(0, 8, visible=faux)\nQH8b = point(10, 8, visible=faux)\nsegment(QH8a, QH8b, couleur=\"gris\", epaisseur=1)\n```\n\nAu moins $?$ carreaux (les carreaux **entièrement** dans la figure).\n\nAu plus $?$ carreaux (les carreaux que la figure **touche**, même un peu).",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "8"
+				},
+				{
+					"expectedAnswer": "26"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Au moins.** Les carreaux entièrement coloriés sont tous dans la figure : il y en a $\\textcolor{{{color:primary.0}}}{8}$. L'aire de la figure est donc plus grande que $8$ carreaux.",
+					"**Au plus.** La figure tient dans les carreaux qu'elle touche : il y en a $\\textcolor{{{color:primary.0}}}{26}$. L'aire de la figure est donc plus petite que $26$ carreaux.",
+					"L'aire est comprise entre $8$ et $26$ carreaux."
+				]
+			}
+		},
+		{
+			"statement": "L'unité d'aire est le carreau. On ne peut pas compter exactement les carreaux de cette figure : encadre son aire.\n\n```figure\nfenetre: 0 ; 10 ; 0 ; 8\ngrille: 1\ndescription: Une figure à bord arrondi (un disque) coloriée sur un quadrillage.\n---\nO = point(5, 3.5, visible=faux)\ncercle(O, rayon=2.85, couleur=\"noir\", epaisseur=2, remplissage=\"vert\", opacite_fond=0.35)\nQV0a = point(0, 0, visible=faux)\nQV0b = point(0, 8, visible=faux)\nsegment(QV0a, QV0b, couleur=\"gris\", epaisseur=1)\nQV1a = point(1, 0, visible=faux)\nQV1b = point(1, 8, visible=faux)\nsegment(QV1a, QV1b, couleur=\"gris\", epaisseur=1)\nQV2a = point(2, 0, visible=faux)\nQV2b = point(2, 8, visible=faux)\nsegment(QV2a, QV2b, couleur=\"gris\", epaisseur=1)\nQV3a = point(3, 0, visible=faux)\nQV3b = point(3, 8, visible=faux)\nsegment(QV3a, QV3b, couleur=\"gris\", epaisseur=1)\nQV4a = point(4, 0, visible=faux)\nQV4b = point(4, 8, visible=faux)\nsegment(QV4a, QV4b, couleur=\"gris\", epaisseur=1)\nQV5a = point(5, 0, visible=faux)\nQV5b = point(5, 8, visible=faux)\nsegment(QV5a, QV5b, couleur=\"gris\", epaisseur=1)\nQV6a = point(6, 0, visible=faux)\nQV6b = point(6, 8, visible=faux)\nsegment(QV6a, QV6b, couleur=\"gris\", epaisseur=1)\nQV7a = point(7, 0, visible=faux)\nQV7b = point(7, 8, visible=faux)\nsegment(QV7a, QV7b, couleur=\"gris\", epaisseur=1)\nQV8a = point(8, 0, visible=faux)\nQV8b = point(8, 8, visible=faux)\nsegment(QV8a, QV8b, couleur=\"gris\", epaisseur=1)\nQV9a = point(9, 0, visible=faux)\nQV9b = point(9, 8, visible=faux)\nsegment(QV9a, QV9b, couleur=\"gris\", epaisseur=1)\nQV10a = point(10, 0, visible=faux)\nQV10b = point(10, 8, visible=faux)\nsegment(QV10a, QV10b, couleur=\"gris\", epaisseur=1)\nQH0a = point(0, 0, visible=faux)\nQH0b = point(10, 0, visible=faux)\nsegment(QH0a, QH0b, couleur=\"gris\", epaisseur=1)\nQH1a = point(0, 1, visible=faux)\nQH1b = point(10, 1, visible=faux)\nsegment(QH1a, QH1b, couleur=\"gris\", epaisseur=1)\nQH2a = point(0, 2, visible=faux)\nQH2b = point(10, 2, visible=faux)\nsegment(QH2a, QH2b, couleur=\"gris\", epaisseur=1)\nQH3a = point(0, 3, visible=faux)\nQH3b = point(10, 3, visible=faux)\nsegment(QH3a, QH3b, couleur=\"gris\", epaisseur=1)\nQH4a = point(0, 4, visible=faux)\nQH4b = point(10, 4, visible=faux)\nsegment(QH4a, QH4b, couleur=\"gris\", epaisseur=1)\nQH5a = point(0, 5, visible=faux)\nQH5b = point(10, 5, visible=faux)\nsegment(QH5a, QH5b, couleur=\"gris\", epaisseur=1)\nQH6a = point(0, 6, visible=faux)\nQH6b = point(10, 6, visible=faux)\nsegment(QH6a, QH6b, couleur=\"gris\", epaisseur=1)\nQH7a = point(0, 7, visible=faux)\nQH7b = point(10, 7, visible=faux)\nsegment(QH7a, QH7b, couleur=\"gris\", epaisseur=1)\nQH8a = point(0, 8, visible=faux)\nQH8b = point(10, 8, visible=faux)\nsegment(QH8a, QH8b, couleur=\"gris\", epaisseur=1)\n```\n\nAu moins $?$ carreaux (les carreaux **entièrement** dans la figure).\n\nAu plus $?$ carreaux (les carreaux que la figure **touche**, même un peu).",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "16"
+				},
+				{
+					"expectedAnswer": "38"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Au moins.** Les carreaux entièrement coloriés sont tous dans la figure : il y en a $\\textcolor{{{color:primary.0}}}{16}$. L'aire de la figure est donc plus grande que $16$ carreaux.",
+					"**Au plus.** La figure tient dans les carreaux qu'elle touche : il y en a $\\textcolor{{{color:primary.0}}}{38}$. L'aire de la figure est donc plus petite que $38$ carreaux.",
+					"L'aire est comprise entre $16$ et $38$ carreaux."
+				]
+			}
+		},
+		{
+			"statement": "L'unité d'aire est le carreau. On ne peut pas compter exactement les carreaux de cette figure : encadre son aire.\n\n```figure\nfenetre: 0 ; 10 ; 0 ; 8\ngrille: 1\ndescription: Une figure à bord arrondi (un ovale) coloriée sur un quadrillage.\n---\nP0 = point(8.4, 4.0, visible=faux)\nP1 = point(8.371, 4.209, visible=faux)\nP2 = point(8.284, 4.414, visible=faux)\nP3 = point(8.141, 4.612, visible=faux)\nP4 = point(7.944, 4.8, visible=faux)\nP5 = point(7.697, 4.974, visible=faux)\nP6 = point(7.404, 5.131, visible=faux)\nP7 = point(7.07, 5.269, visible=faux)\nP8 = point(6.7, 5.386, visible=faux)\nP9 = point(6.301, 5.478, visible=faux)\nP10 = point(5.88, 5.545, visible=faux)\nP11 = point(5.444, 5.586, visible=faux)\nP12 = point(5.0, 5.6, visible=faux)\nP13 = point(4.556, 5.586, visible=faux)\nP14 = point(4.12, 5.545, visible=faux)\nP15 = point(3.699, 5.478, visible=faux)\nP16 = point(3.3, 5.386, visible=faux)\nP17 = point(2.93, 5.269, visible=faux)\nP18 = point(2.596, 5.131, visible=faux)\nP19 = point(2.303, 4.974, visible=faux)\nP20 = point(2.056, 4.8, visible=faux)\nP21 = point(1.859, 4.612, visible=faux)\nP22 = point(1.716, 4.414, visible=faux)\nP23 = point(1.629, 4.209, visible=faux)\nP24 = point(1.6, 4.0, visible=faux)\nP25 = point(1.629, 3.791, visible=faux)\nP26 = point(1.716, 3.586, visible=faux)\nP27 = point(1.859, 3.388, visible=faux)\nP28 = point(2.056, 3.2, visible=faux)\nP29 = point(2.303, 3.026, visible=faux)\nP30 = point(2.596, 2.869, visible=faux)\nP31 = point(2.93, 2.731, visible=faux)\nP32 = point(3.3, 2.614, visible=faux)\nP33 = point(3.699, 2.522, visible=faux)\nP34 = point(4.12, 2.455, visible=faux)\nP35 = point(4.556, 2.414, visible=faux)\nP36 = point(5.0, 2.4, visible=faux)\nP37 = point(5.444, 2.414, visible=faux)\nP38 = point(5.88, 2.455, visible=faux)\nP39 = point(6.301, 2.522, visible=faux)\nP40 = point(6.7, 2.614, visible=faux)\nP41 = point(7.07, 2.731, visible=faux)\nP42 = point(7.404, 2.869, visible=faux)\nP43 = point(7.697, 3.026, visible=faux)\nP44 = point(7.944, 3.2, visible=faux)\nP45 = point(8.141, 3.388, visible=faux)\nP46 = point(8.284, 3.586, visible=faux)\nP47 = point(8.371, 3.791, visible=faux)\npolygone(P0, P1, P2, P3, P4, P5, P6, P7, P8, P9, P10, P11, P12, P13, P14, P15, P16, P17, P18, P19, P20, P21, P22, P23, P24, P25, P26, P27, P28, P29, P30, P31, P32, P33, P34, P35, P36, P37, P38, P39, P40, P41, P42, P43, P44, P45, P46, P47, couleur=\"noir\", epaisseur=2, remplissage=\"vert\", opacite_fond=0.35)\nQV0a = point(0, 0, visible=faux)\nQV0b = point(0, 8, visible=faux)\nsegment(QV0a, QV0b, couleur=\"gris\", epaisseur=1)\nQV1a = point(1, 0, visible=faux)\nQV1b = point(1, 8, visible=faux)\nsegment(QV1a, QV1b, couleur=\"gris\", epaisseur=1)\nQV2a = point(2, 0, visible=faux)\nQV2b = point(2, 8, visible=faux)\nsegment(QV2a, QV2b, couleur=\"gris\", epaisseur=1)\nQV3a = point(3, 0, visible=faux)\nQV3b = point(3, 8, visible=faux)\nsegment(QV3a, QV3b, couleur=\"gris\", epaisseur=1)\nQV4a = point(4, 0, visible=faux)\nQV4b = point(4, 8, visible=faux)\nsegment(QV4a, QV4b, couleur=\"gris\", epaisseur=1)\nQV5a = point(5, 0, visible=faux)\nQV5b = point(5, 8, visible=faux)\nsegment(QV5a, QV5b, couleur=\"gris\", epaisseur=1)\nQV6a = point(6, 0, visible=faux)\nQV6b = point(6, 8, visible=faux)\nsegment(QV6a, QV6b, couleur=\"gris\", epaisseur=1)\nQV7a = point(7, 0, visible=faux)\nQV7b = point(7, 8, visible=faux)\nsegment(QV7a, QV7b, couleur=\"gris\", epaisseur=1)\nQV8a = point(8, 0, visible=faux)\nQV8b = point(8, 8, visible=faux)\nsegment(QV8a, QV8b, couleur=\"gris\", epaisseur=1)\nQV9a = point(9, 0, visible=faux)\nQV9b = point(9, 8, visible=faux)\nsegment(QV9a, QV9b, couleur=\"gris\", epaisseur=1)\nQV10a = point(10, 0, visible=faux)\nQV10b = point(10, 8, visible=faux)\nsegment(QV10a, QV10b, couleur=\"gris\", epaisseur=1)\nQH0a = point(0, 0, visible=faux)\nQH0b = point(10, 0, visible=faux)\nsegment(QH0a, QH0b, couleur=\"gris\", epaisseur=1)\nQH1a = point(0, 1, visible=faux)\nQH1b = point(10, 1, visible=faux)\nsegment(QH1a, QH1b, couleur=\"gris\", epaisseur=1)\nQH2a = point(0, 2, visible=faux)\nQH2b = point(10, 2, visible=faux)\nsegment(QH2a, QH2b, couleur=\"gris\", epaisseur=1)\nQH3a = point(0, 3, visible=faux)\nQH3b = point(10, 3, visible=faux)\nsegment(QH3a, QH3b, couleur=\"gris\", epaisseur=1)\nQH4a = point(0, 4, visible=faux)\nQH4b = point(10, 4, visible=faux)\nsegment(QH4a, QH4b, couleur=\"gris\", epaisseur=1)\nQH5a = point(0, 5, visible=faux)\nQH5b = point(10, 5, visible=faux)\nsegment(QH5a, QH5b, couleur=\"gris\", epaisseur=1)\nQH6a = point(0, 6, visible=faux)\nQH6b = point(10, 6, visible=faux)\nsegment(QH6a, QH6b, couleur=\"gris\", epaisseur=1)\nQH7a = point(0, 7, visible=faux)\nQH7b = point(10, 7, visible=faux)\nsegment(QH7a, QH7b, couleur=\"gris\", epaisseur=1)\nQH8a = point(0, 8, visible=faux)\nQH8b = point(10, 8, visible=faux)\nsegment(QH8a, QH8b, couleur=\"gris\", epaisseur=1)\n```\n\nAu moins $?$ carreaux (les carreaux **entièrement** dans la figure).\n\nAu plus $?$ carreaux (les carreaux que la figure **touche**, même un peu).",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "8"
+				},
+				{
+					"expectedAnswer": "28"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Au moins.** Les carreaux entièrement coloriés sont tous dans la figure : il y en a $\\textcolor{{{color:primary.0}}}{8}$. L'aire de la figure est donc plus grande que $8$ carreaux.",
+					"**Au plus.** La figure tient dans les carreaux qu'elle touche : il y en a $\\textcolor{{{color:primary.0}}}{28}$. L'aire de la figure est donc plus petite que $28$ carreaux.",
+					"L'aire est comprise entre $8$ et $28$ carreaux."
+				]
+			}
+		},
+		{
+			"statement": "L'unité d'aire est le carreau. On ne peut pas compter exactement les carreaux de cette figure : encadre son aire.\n\n```figure\nfenetre: 0 ; 10 ; 0 ; 8\ngrille: 1\ndescription: Une figure à bord arrondi (un ovale) coloriée sur un quadrillage.\n---\nP0 = point(6.7, 4.0, visible=faux)\nP1 = point(6.681, 4.444, visible=faux)\nP2 = point(6.625, 4.88, visible=faux)\nP3 = point(6.533, 5.301, visible=faux)\nP4 = point(6.405, 5.7, visible=faux)\nP5 = point(6.245, 6.07, visible=faux)\nP6 = point(6.056, 6.404, visible=faux)\nP7 = point(5.839, 6.697, visible=faux)\nP8 = point(5.6, 6.944, visible=faux)\nP9 = point(5.342, 7.141, visible=faux)\nP10 = point(5.069, 7.284, visible=faux)\nP11 = point(4.787, 7.371, visible=faux)\nP12 = point(4.5, 7.4, visible=faux)\nP13 = point(4.213, 7.371, visible=faux)\nP14 = point(3.931, 7.284, visible=faux)\nP15 = point(3.658, 7.141, visible=faux)\nP16 = point(3.4, 6.944, visible=faux)\nP17 = point(3.161, 6.697, visible=faux)\nP18 = point(2.944, 6.404, visible=faux)\nP19 = point(2.755, 6.07, visible=faux)\nP20 = point(2.595, 5.7, visible=faux)\nP21 = point(2.467, 5.301, visible=faux)\nP22 = point(2.375, 4.88, visible=faux)\nP23 = point(2.319, 4.444, visible=faux)\nP24 = point(2.3, 4.0, visible=faux)\nP25 = point(2.319, 3.556, visible=faux)\nP26 = point(2.375, 3.12, visible=faux)\nP27 = point(2.467, 2.699, visible=faux)\nP28 = point(2.595, 2.3, visible=faux)\nP29 = point(2.755, 1.93, visible=faux)\nP30 = point(2.944, 1.596, visible=faux)\nP31 = point(3.161, 1.303, visible=faux)\nP32 = point(3.4, 1.056, visible=faux)\nP33 = point(3.658, 0.859, visible=faux)\nP34 = point(3.931, 0.716, visible=faux)\nP35 = point(4.213, 0.629, visible=faux)\nP36 = point(4.5, 0.6, visible=faux)\nP37 = point(4.787, 0.629, visible=faux)\nP38 = point(5.069, 0.716, visible=faux)\nP39 = point(5.342, 0.859, visible=faux)\nP40 = point(5.6, 1.056, visible=faux)\nP41 = point(5.839, 1.303, visible=faux)\nP42 = point(6.056, 1.596, visible=faux)\nP43 = point(6.245, 1.93, visible=faux)\nP44 = point(6.405, 2.3, visible=faux)\nP45 = point(6.533, 2.699, visible=faux)\nP46 = point(6.625, 3.12, visible=faux)\nP47 = point(6.681, 3.556, visible=faux)\npolygone(P0, P1, P2, P3, P4, P5, P6, P7, P8, P9, P10, P11, P12, P13, P14, P15, P16, P17, P18, P19, P20, P21, P22, P23, P24, P25, P26, P27, P28, P29, P30, P31, P32, P33, P34, P35, P36, P37, P38, P39, P40, P41, P42, P43, P44, P45, P46, P47, couleur=\"noir\", epaisseur=2, remplissage=\"vert\", opacite_fond=0.35)\nQV0a = point(0, 0, visible=faux)\nQV0b = point(0, 8, visible=faux)\nsegment(QV0a, QV0b, couleur=\"gris\", epaisseur=1)\nQV1a = point(1, 0, visible=faux)\nQV1b = point(1, 8, visible=faux)\nsegment(QV1a, QV1b, couleur=\"gris\", epaisseur=1)\nQV2a = point(2, 0, visible=faux)\nQV2b = point(2, 8, visible=faux)\nsegment(QV2a, QV2b, couleur=\"gris\", epaisseur=1)\nQV3a = point(3, 0, visible=faux)\nQV3b = point(3, 8, visible=faux)\nsegment(QV3a, QV3b, couleur=\"gris\", epaisseur=1)\nQV4a = point(4, 0, visible=faux)\nQV4b = point(4, 8, visible=faux)\nsegment(QV4a, QV4b, couleur=\"gris\", epaisseur=1)\nQV5a = point(5, 0, visible=faux)\nQV5b = point(5, 8, visible=faux)\nsegment(QV5a, QV5b, couleur=\"gris\", epaisseur=1)\nQV6a = point(6, 0, visible=faux)\nQV6b = point(6, 8, visible=faux)\nsegment(QV6a, QV6b, couleur=\"gris\", epaisseur=1)\nQV7a = point(7, 0, visible=faux)\nQV7b = point(7, 8, visible=faux)\nsegment(QV7a, QV7b, couleur=\"gris\", epaisseur=1)\nQV8a = point(8, 0, visible=faux)\nQV8b = point(8, 8, visible=faux)\nsegment(QV8a, QV8b, couleur=\"gris\", epaisseur=1)\nQV9a = point(9, 0, visible=faux)\nQV9b = point(9, 8, visible=faux)\nsegment(QV9a, QV9b, couleur=\"gris\", epaisseur=1)\nQV10a = point(10, 0, visible=faux)\nQV10b = point(10, 8, visible=faux)\nsegment(QV10a, QV10b, couleur=\"gris\", epaisseur=1)\nQH0a = point(0, 0, visible=faux)\nQH0b = point(10, 0, visible=faux)\nsegment(QH0a, QH0b, couleur=\"gris\", epaisseur=1)\nQH1a = point(0, 1, visible=faux)\nQH1b = point(10, 1, visible=faux)\nsegment(QH1a, QH1b, couleur=\"gris\", epaisseur=1)\nQH2a = point(0, 2, visible=faux)\nQH2b = point(10, 2, visible=faux)\nsegment(QH2a, QH2b, couleur=\"gris\", epaisseur=1)\nQH3a = point(0, 3, visible=faux)\nQH3b = point(10, 3, visible=faux)\nsegment(QH3a, QH3b, couleur=\"gris\", epaisseur=1)\nQH4a = point(0, 4, visible=faux)\nQH4b = point(10, 4, visible=faux)\nsegment(QH4a, QH4b, couleur=\"gris\", epaisseur=1)\nQH5a = point(0, 5, visible=faux)\nQH5b = point(10, 5, visible=faux)\nsegment(QH5a, QH5b, couleur=\"gris\", epaisseur=1)\nQH6a = point(0, 6, visible=faux)\nQH6b = point(10, 6, visible=faux)\nsegment(QH6a, QH6b, couleur=\"gris\", epaisseur=1)\nQH7a = point(0, 7, visible=faux)\nQH7b = point(10, 7, visible=faux)\nsegment(QH7a, QH7b, couleur=\"gris\", epaisseur=1)\nQH8a = point(0, 8, visible=faux)\nQH8b = point(10, 8, visible=faux)\nsegment(QH8a, QH8b, couleur=\"gris\", epaisseur=1)\n```\n\nAu moins $?$ carreaux (les carreaux **entièrement** dans la figure).\n\nAu plus $?$ carreaux (les carreaux que la figure **touche**, même un peu).",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "14"
+				},
+				{
+					"expectedAnswer": "36"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Au moins.** Les carreaux entièrement coloriés sont tous dans la figure : il y en a $\\textcolor{{{color:primary.0}}}{14}$. L'aire de la figure est donc plus grande que $14$ carreaux.",
+					"**Au plus.** La figure tient dans les carreaux qu'elle touche : il y en a $\\textcolor{{{color:primary.0}}}{36}$. L'aire de la figure est donc plus petite que $36$ carreaux.",
+					"L'aire est comprise entre $14$ et $36$ carreaux."
+				]
+			}
+		},
+		{
+			"statement": "L'unité d'aire est le carreau. On ne peut pas compter exactement les carreaux de cette figure : encadre son aire.\n\n```figure\nfenetre: 0 ; 10 ; 0 ; 8\ngrille: 1\ndescription: Une figure à bord arrondi (un ovale) coloriée sur un quadrillage.\n---\nP0 = point(8.4, 4.5, visible=faux)\nP1 = point(8.371, 4.787, visible=faux)\nP2 = point(8.284, 5.069, visible=faux)\nP3 = point(8.141, 5.342, visible=faux)\nP4 = point(7.944, 5.6, visible=faux)\nP5 = point(7.697, 5.839, visible=faux)\nP6 = point(7.404, 6.056, visible=faux)\nP7 = point(7.07, 6.245, visible=faux)\nP8 = point(6.7, 6.405, visible=faux)\nP9 = point(6.301, 6.533, visible=faux)\nP10 = point(5.88, 6.625, visible=faux)\nP11 = point(5.444, 6.681, visible=faux)\nP12 = point(5.0, 6.7, visible=faux)\nP13 = point(4.556, 6.681, visible=faux)\nP14 = point(4.12, 6.625, visible=faux)\nP15 = point(3.699, 6.533, visible=faux)\nP16 = point(3.3, 6.405, visible=faux)\nP17 = point(2.93, 6.245, visible=faux)\nP18 = point(2.596, 6.056, visible=faux)\nP19 = point(2.303, 5.839, visible=faux)\nP20 = point(2.056, 5.6, visible=faux)\nP21 = point(1.859, 5.342, visible=faux)\nP22 = point(1.716, 5.069, visible=faux)\nP23 = point(1.629, 4.787, visible=faux)\nP24 = point(1.6, 4.5, visible=faux)\nP25 = point(1.629, 4.213, visible=faux)\nP26 = point(1.716, 3.931, visible=faux)\nP27 = point(1.859, 3.658, visible=faux)\nP28 = point(2.056, 3.4, visible=faux)\nP29 = point(2.303, 3.161, visible=faux)\nP30 = point(2.596, 2.944, visible=faux)\nP31 = point(2.93, 2.755, visible=faux)\nP32 = point(3.3, 2.595, visible=faux)\nP33 = point(3.699, 2.467, visible=faux)\nP34 = point(4.12, 2.375, visible=faux)\nP35 = point(4.556, 2.319, visible=faux)\nP36 = point(5.0, 2.3, visible=faux)\nP37 = point(5.444, 2.319, visible=faux)\nP38 = point(5.88, 2.375, visible=faux)\nP39 = point(6.301, 2.467, visible=faux)\nP40 = point(6.7, 2.595, visible=faux)\nP41 = point(7.07, 2.755, visible=faux)\nP42 = point(7.404, 2.944, visible=faux)\nP43 = point(7.697, 3.161, visible=faux)\nP44 = point(7.944, 3.4, visible=faux)\nP45 = point(8.141, 3.658, visible=faux)\nP46 = point(8.284, 3.931, visible=faux)\nP47 = point(8.371, 4.213, visible=faux)\npolygone(P0, P1, P2, P3, P4, P5, P6, P7, P8, P9, P10, P11, P12, P13, P14, P15, P16, P17, P18, P19, P20, P21, P22, P23, P24, P25, P26, P27, P28, P29, P30, P31, P32, P33, P34, P35, P36, P37, P38, P39, P40, P41, P42, P43, P44, P45, P46, P47, couleur=\"noir\", epaisseur=2, remplissage=\"vert\", opacite_fond=0.35)\nQV0a = point(0, 0, visible=faux)\nQV0b = point(0, 8, visible=faux)\nsegment(QV0a, QV0b, couleur=\"gris\", epaisseur=1)\nQV1a = point(1, 0, visible=faux)\nQV1b = point(1, 8, visible=faux)\nsegment(QV1a, QV1b, couleur=\"gris\", epaisseur=1)\nQV2a = point(2, 0, visible=faux)\nQV2b = point(2, 8, visible=faux)\nsegment(QV2a, QV2b, couleur=\"gris\", epaisseur=1)\nQV3a = point(3, 0, visible=faux)\nQV3b = point(3, 8, visible=faux)\nsegment(QV3a, QV3b, couleur=\"gris\", epaisseur=1)\nQV4a = point(4, 0, visible=faux)\nQV4b = point(4, 8, visible=faux)\nsegment(QV4a, QV4b, couleur=\"gris\", epaisseur=1)\nQV5a = point(5, 0, visible=faux)\nQV5b = point(5, 8, visible=faux)\nsegment(QV5a, QV5b, couleur=\"gris\", epaisseur=1)\nQV6a = point(6, 0, visible=faux)\nQV6b = point(6, 8, visible=faux)\nsegment(QV6a, QV6b, couleur=\"gris\", epaisseur=1)\nQV7a = point(7, 0, visible=faux)\nQV7b = point(7, 8, visible=faux)\nsegment(QV7a, QV7b, couleur=\"gris\", epaisseur=1)\nQV8a = point(8, 0, visible=faux)\nQV8b = point(8, 8, visible=faux)\nsegment(QV8a, QV8b, couleur=\"gris\", epaisseur=1)\nQV9a = point(9, 0, visible=faux)\nQV9b = point(9, 8, visible=faux)\nsegment(QV9a, QV9b, couleur=\"gris\", epaisseur=1)\nQV10a = point(10, 0, visible=faux)\nQV10b = point(10, 8, visible=faux)\nsegment(QV10a, QV10b, couleur=\"gris\", epaisseur=1)\nQH0a = point(0, 0, visible=faux)\nQH0b = point(10, 0, visible=faux)\nsegment(QH0a, QH0b, couleur=\"gris\", epaisseur=1)\nQH1a = point(0, 1, visible=faux)\nQH1b = point(10, 1, visible=faux)\nsegment(QH1a, QH1b, couleur=\"gris\", epaisseur=1)\nQH2a = point(0, 2, visible=faux)\nQH2b = point(10, 2, visible=faux)\nsegment(QH2a, QH2b, couleur=\"gris\", epaisseur=1)\nQH3a = point(0, 3, visible=faux)\nQH3b = point(10, 3, visible=faux)\nsegment(QH3a, QH3b, couleur=\"gris\", epaisseur=1)\nQH4a = point(0, 4, visible=faux)\nQH4b = point(10, 4, visible=faux)\nsegment(QH4a, QH4b, couleur=\"gris\", epaisseur=1)\nQH5a = point(0, 5, visible=faux)\nQH5b = point(10, 5, visible=faux)\nsegment(QH5a, QH5b, couleur=\"gris\", epaisseur=1)\nQH6a = point(0, 6, visible=faux)\nQH6b = point(10, 6, visible=faux)\nsegment(QH6a, QH6b, couleur=\"gris\", epaisseur=1)\nQH7a = point(0, 7, visible=faux)\nQH7b = point(10, 7, visible=faux)\nsegment(QH7a, QH7b, couleur=\"gris\", epaisseur=1)\nQH8a = point(0, 8, visible=faux)\nQH8b = point(10, 8, visible=faux)\nsegment(QH8a, QH8b, couleur=\"gris\", epaisseur=1)\n```\n\nAu moins $?$ carreaux (les carreaux **entièrement** dans la figure).\n\nAu plus $?$ carreaux (les carreaux que la figure **touche**, même un peu).",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "14"
+				},
+				{
+					"expectedAnswer": "36"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Au moins.** Les carreaux entièrement coloriés sont tous dans la figure : il y en a $\\textcolor{{{color:primary.0}}}{14}$. L'aire de la figure est donc plus grande que $14$ carreaux.",
+					"**Au plus.** La figure tient dans les carreaux qu'elle touche : il y en a $\\textcolor{{{color:primary.0}}}{36}$. L'aire de la figure est donc plus petite que $36$ carreaux.",
+					"L'aire est comprise entre $14$ et $36$ carreaux."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "un disque (5, 4, 2.6) : 12 et 32",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["12", "32"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : cases inversées",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["32", "12"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "un disque (4.5, 4.5, 3.1) : 21 et 45",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["21", "45"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : cases inversées",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["45", "21"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "un disque (5.5, 4, 2.3) : 8 et 26",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["8", "26"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : cases inversées",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["26", "8"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "un disque (5, 3.5, 2.85) : 16 et 38",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["16", "38"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : cases inversées",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["38", "16"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "un ovale (5, 4, 3.4, 1.6) : 8 et 28",
+			"variationIndex": 4,
+			"variables": {},
+			"answers": ["8", "28"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : cases inversées",
+			"variationIndex": 4,
+			"variables": {},
+			"answers": ["28", "8"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "un ovale (4.5, 4, 2.2, 3.4) : 14 et 36",
+			"variationIndex": 5,
+			"variables": {},
+			"answers": ["14", "36"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : cases inversées",
+			"variationIndex": 5,
+			"variables": {},
+			"answers": ["36", "14"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "un ovale (5, 4.5, 3.4, 2.2) : 14 et 36",
+			"variationIndex": 6,
+			"variables": {},
+			"answers": ["14", "36"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : cases inversées",
+			"variationIndex": 6,
+			"variables": {},
+			"answers": ["36", "14"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

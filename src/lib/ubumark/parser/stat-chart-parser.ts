@@ -37,7 +37,7 @@
 
 import { unnestedLine } from './nested-line';
 import { bodyOpensParagraph } from './block-closure';
-import { groupNumberText } from '$lib/mathAST/digit-grouping';
+import { groupNumberText } from '#lib/mathAST/digit-grouping.ts';
 import {
 	CLASS_CHART_KINDS,
 	CROSS_TABLE_DISPLAYS,
@@ -81,25 +81,25 @@ import {
 	type QueryInterval
 } from '../types/stat-chart';
 import { COURBE_COLORS, COURBE_SIZES, type CourbeColor, type CourbeSize } from '../types/courbe';
-import { resolveNamedColor } from '$lib/theme/named-colors';
-import { summarizeClasses } from '$lib/statistics/classes';
-import { describeList } from '$lib/statistics/describe';
-import { crossTable } from '$lib/statistics/cross-table';
-import { Fraction } from '$lib/statistics/fraction';
-import { randomVariable } from '$lib/statistics/random-variable';
-import { readListValue } from '$lib/statistics/read-value';
-import { invalidValueReason, readExactValue } from '$lib/statistics/bivariate';
+import { resolveNamedColor } from '#lib/theme/named-colors.ts';
+import { summarizeClasses } from '#lib/statistics/classes.ts';
+import { describeList } from '#lib/statistics/describe.ts';
+import { crossTable } from '#lib/statistics/cross-table.ts';
+import { Fraction } from '#lib/statistics/fraction.ts';
+import { randomVariable } from '#lib/statistics/random-variable.ts';
+import { readListValue } from '#lib/statistics/read-value.ts';
+import { invalidValueReason, readExactValue } from '#lib/statistics/bivariate.ts';
 import {
 	changeDomainProblem,
 	readVariableChange,
 	VARIABLE_CHANGE_LIST,
 	type VariableChange
-} from '$lib/statistics/variable-change';
-import { BINOMIAL_MAX_N } from '$lib/statistics/binomial';
-import { GEOMETRIC_MAX_K } from '$lib/statistics/geometric';
-import { UNIFORM_MAX_VALUES } from '$lib/statistics/uniform';
+} from '#lib/statistics/variable-change.ts';
+import { BINOMIAL_MAX_N } from '#lib/statistics/binomial.ts';
+import { GEOMETRIC_MAX_K } from '#lib/statistics/geometric.ts';
+import { UNIFORM_MAX_VALUES } from '#lib/statistics/uniform.ts';
 import { carreauGrid, usesCarreaux } from '../utils/stat-chart-carreaux';
-import { SCALE_STEPS, scaleAxis } from '../utils/barres-placer';
+import { SCALE_STEPS, adaptedScale, scaleAxis } from '../utils/barres-placer';
 import { isMaskedValue } from '../utils/masked-value';
 import { isOnGraduation } from '../utils/boxplot-placer';
 
@@ -165,6 +165,8 @@ interface Options {
 	placer: string[] | 'toutes' | null;
 	/** Numéro de la première case (`case: N`, posé par le générateur) */
 	caseIndex: number | undefined;
+	/** Barres : `solution: oui`, les barres à construire dessinées (corrigé d'une série, V109) */
+	solution: boolean;
 }
 
 /** Une série nommée (`données Garçons: …`), lue ligne par ligne */
@@ -262,7 +264,8 @@ const OPTION_KEYS = [
 	'aire',
 	'axe',
 	'placer',
-	'case'
+	'case',
+	'solution'
 ] as const;
 type OptionKey = (typeof OPTION_KEYS)[number];
 
@@ -313,7 +316,8 @@ const OPTION_KINDS: Partial<Record<OptionKey, readonly StatChartKind[]>> = {
 	// Diagramme en barres à construire (chantier « réponses à placer », § 17-18)
 	axe: ['barres'],
 	placer: ['barres'],
-	case: ['barres']
+	case: ['barres'],
+	solution: ['barres']
 };
 
 /** Options dont l'auteur écrit l'accent */
@@ -539,10 +543,14 @@ const CHOOSE_SCALE = 'à choisir';
 /** Ligne `placer:` (ligne rognée) d'un diagramme à construire : barres, boîte à moustaches */
 export const PLACER_LINE_REGEX = /^placer\s*:/i;
 
+/** `solution: oui` (ligne rognée) : la réponse du diagramme dessinée, rien à construire */
+const SOLVED_LINE_REGEX = /^solution\s*:\s*oui\s*$/i;
+
 /**
  * Les diagrammes en barres à construire (`placer:`) d'un énoncé, délimités comme
  * le parseur : corps sans clôtures, fermeture, et `nested` pour un bloc en retrait
- * ou cité (l'élève ne pourrait pas y répondre : ses cases ne sont pas créées)
+ * ou cité (l'élève ne pourrait pas y répondre : ses cases ne sont pas créées).
+ * Un diagramme `solution: oui` n'en est pas un : ses barres sont dessinées.
  */
 export function findBarsToPlace(markdown: string): StatChartToPlace[] {
 	return findStatChartsToPlace(markdown, 'barres');
@@ -576,7 +584,11 @@ function findStatChartsToPlace(markdown: string, kind: StatChartKind): StatChart
 				nested: lines[block.startIndex] !== plain[block.startIndex]
 			};
 		})
-		.filter((block) => block.body.some((line) => PLACER_LINE_REGEX.test(line.trim())));
+		.filter(
+			(block) =>
+				block.body.some((line) => PLACER_LINE_REGEX.test(line.trim())) &&
+				!block.body.some((line) => SOLVED_LINE_REGEX.test(line.trim()))
+		);
 }
 
 /** L'énoncé a-t-il un diagramme à construire (barres, boîte à moustaches) ? */
@@ -900,6 +912,14 @@ function applyOption(kind: StatChartKind, key: OptionKey, value: string, options
 			}
 			options.caseIndex = Number(value.trim());
 			return;
+		case 'solution': {
+			const answer = value.trim().toLowerCase();
+			if (answer !== 'oui' && answer !== 'non') {
+				throw new LineError(`solution « ${value.trim()} » : oui ou non`);
+			}
+			options.solution = answer === 'oui';
+			return;
+		}
 		case 'masquer':
 			// Tableau d'effectifs (Q130) : résolu une fois les valeurs connues
 			if (kind === 'effectifs') {
@@ -3026,6 +3046,23 @@ function boxNumber(raw: string): number {
 	return value;
 }
 
+/**
+ * Une des cinq valeurs d'une boîte : un nombre, ou une fraction d'entiers (`1/2`),
+ * comme dans `données:` (écart L90 : les deux écritures répondent pareil)
+ */
+function boxValue(raw: string): number {
+	const fraction = RAW_FRACTION.exec(raw.replaceAll('−', '-'));
+	if (!fraction) return boxNumber(raw);
+	const value = rawNumber(raw);
+	if (value === null || !Number.isFinite(value)) {
+		throw new LineError(`« ${raw.trim()} » n’est pas un nombre (écrire par exemple 12 ou 12,5)`);
+	}
+	if (Math.abs(value) > STAT_CHART_LIMITS.maxValue) {
+		throw new LineError('nombre trop grand (au plus 10^9 en valeur absolue)');
+	}
+	return value;
+}
+
 /** `axe: 25 à 60, de 5 en 5` : départ quelconque, décimaux permis, au plus 40 graduations */
 function parseBoxAxis(raw: string): NonNullable<BoxPlotData['axis']> {
 	const match = AXIS_REGEX.exec(raw.trim());
@@ -3066,7 +3103,7 @@ function parseBoxValues(raw: string): BoxPlotBox['values'] | null {
 	const masked = texts.filter(isMaskedValue).length;
 	if (masked === 5) return null;
 	if (masked > 0) throw new LineError('« ? » : les cinq valeurs, ou aucune');
-	const values = texts.map(boxNumber) as BoxPlotBox['values'];
+	const values = texts.map(boxValue) as BoxPlotBox['values'];
 	for (let i = 0; i < 4; i++) {
 		if (values[i] > values[i + 1]) {
 			const [a, b] = [BOX_PLOT_VALUE_NAMES[i], BOX_PLOT_VALUE_NAMES[i + 1]];
@@ -3449,7 +3486,8 @@ export function parseStatChartContent(kind: StatChartKind, source: string): Stat
 		axis: null,
 		chooseScale: false,
 		placer: null,
-		caseIndex: undefined
+		caseIndex: undefined,
+		solution: false
 	};
 	let lawVariable = null as ({ name: string } & LawLine) | null;
 	// `X ~ B(n ; p)` (manche 11) : la loi binomiale remplace `X =` / `P =`
@@ -4040,6 +4078,31 @@ export function parseStatChartContent(kind: StatChartKind, source: string): Stat
 		else toPlace = checked.toPlace;
 	}
 
+	// `solution: oui` (V109) : le diagramme juste, les barres à construire dessinées
+	// (en vert) ; échelle à choisir : la juste, la plus petite où tout rentre
+	let axis = options.axis;
+	let chooseScale = options.chooseScale;
+	let solvedBars: number[] | undefined;
+	if (errors.length === 0 && options.solution) {
+		const line = optionLines.solution ?? 0;
+		if (toPlace === null) {
+			errors.push({ message: `Ligne ${line} : solution : s’emploie avec placer:`, line });
+		} else if (options.caseIndex !== undefined) {
+			errors.push({
+				message: `Ligne ${line} : solution : pas avec case: (le corrigé ne se remplit pas)`,
+				line
+			});
+		} else {
+			if (chooseScale) {
+				const scale = adaptedScale(data.map((d) => d.value));
+				if (scale !== null) axis = scaleAxis(scale);
+				chooseScale = false;
+			}
+			solvedBars = toPlace;
+			toPlace = null;
+		}
+	}
+
 	const spec: StatChartSpec | null =
 		errors.length === 0
 			? {
@@ -4065,9 +4128,10 @@ export function parseStatChartContent(kind: StatChartKind, source: string): Stat
 					series,
 					twoSeries,
 					scatter: null,
-					axis: options.axis,
+					axis,
 					toPlace,
-					chooseScale: options.chooseScale
+					chooseScale,
+					...(solvedBars !== undefined && { solvedBars })
 				}
 			: null;
 

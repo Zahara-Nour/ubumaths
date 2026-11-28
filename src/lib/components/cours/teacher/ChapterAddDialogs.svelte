@@ -15,20 +15,20 @@
 	@module components/cours/teacher/ChapterAddDialogs
 -->
 <script lang="ts">
-	import { lore } from '$lib/config/lore';
+	import { lore } from '#lib/config/lore.ts';
 	import { enhance } from '$app/forms';
 	import { resolve } from '$app/paths';
-	import { Button } from '$lib/components/ui/button';
-	import * as Dialog from '$lib/components/ui/dialog';
-	import { Label } from '$lib/components/ui/label';
-	import { Input } from '$lib/components/ui/input';
-	import { Textarea } from '$lib/components/ui/textarea';
-	import MySelect from '$lib/components/MySelect.svelte';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import * as Dialog from '#lib/components/ui/dialog/index.ts';
+	import { Label } from '#lib/components/ui/label/index.ts';
+	import { Input } from '#lib/components/ui/input/index.ts';
+	import { Textarea } from '#lib/components/ui/textarea/index.ts';
+	import MySelect from '#lib/components/MySelect.svelte';
 	import DocumentUpload from './DocumentUpload.svelte';
-	import type { SectionContentKind } from '$lib/server/validation/chapter-sections';
-	import type { SubmitFunction } from '@sveltejs/kit';
+	import type { SectionContentKind } from '#lib/server/validation/chapter-sections.ts';
+	import type { SubmitFunction } from '$app/forms';
 	import type { SupabaseClient } from '@supabase/supabase-js';
-	import type { Database } from '$lib/types/database';
+	import type { Database } from '#lib/types/database.ts';
 
 	// Types
 	/** Le propriétaire du plan : un chapitre OU un modèle, jamais les deux. */
@@ -65,7 +65,7 @@
 	// Constantes
 	const seriesFormItems = [
 		{ value: 'flash', label: 'Flash-cards' },
-		{ value: 'interactive', label: 'Entraînement' }
+		{ value: 'interactive', label: 'Contrôle blanc' }
 	];
 
 	// Variables
@@ -291,12 +291,12 @@
 					<p class="text-sm text-muted-foreground">Aucune série enregistrée pour l’instant.</p>
 				{/if}
 				<a
-					href={resolve('/automaths/panier')}
+					href={resolve('automaths/panier')}
 					target="_blank"
 					rel="noopener noreferrer"
 					class="text-sm text-primary underline-offset-4 hover:underline"
 				>
-					Composer une nouvelle série au panier
+					Composer une nouvelle série dans Automaths
 				</a>
 			</div>
 

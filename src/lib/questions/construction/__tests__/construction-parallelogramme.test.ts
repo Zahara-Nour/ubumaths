@@ -16,7 +16,7 @@ import { intersectTraits, perpendicularThrough, traitOf, type Trait } from '../i
 import { serializeConstructionAnswer, type DrawnObject } from '../answer';
 import { solutionPoints } from '../drawing';
 import type { Position } from '../judge';
-import { readConstructionHeader } from '$lib/ubumark/parser/construction-parser';
+import { readConstructionHeader } from '#lib/ubumark/parser/construction-parser.ts';
 
 function checksOf(source: string) {
 	const { spec, errors } = readConstructionHeader(source);

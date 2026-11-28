@@ -1,6 +1,6 @@
 """Écrit les 6 modèles du lot 5b du CM2 (fractions : calculs) dans scripts/questions/cm2-5b/.
 
-Phase 0 du 2026-11-01 (§ 10 du journal `docs/wip/questions-cm2-progress.md`, modèles 6 à 11),
+Phase 0 du 2026-11-01 (§ 10 du journal `docs/archive/wip/questions-cm2-progress.md`, modèles 6 à 11),
 recommandations suivies par David : CM2-021 → modèle neuf à côté de `e320755f` / `8fa3108c`,
 corrigé par l'addition itérée ; toute fraction égale acceptée (`reducedFractions: off`).
 Bornes : `cycle3.json`, CM2 (dénominateurs au plus 60 ; 3/2 + 7/8, 5/6 − 1/12, 11/40 − 1/8 :

@@ -1,27 +1,27 @@
 <script lang="ts">
-	import { lore } from '$lib/config/lore';
+	import { lore } from '#lib/config/lore.ts';
 	import {
 		Card,
 		CardContent,
 		CardDescription,
 		CardHeader,
 		CardTitle
-	} from '$lib/components/ui/card';
-	import { Button } from '$lib/components/ui/button';
-	import { Input } from '$lib/components/ui/input';
-	import { Label } from '$lib/components/ui/label';
-	import { Badge } from '$lib/components/ui/badge';
-	import MyCheckbox from '$lib/components/MyCheckbox.svelte';
-	import { toaster } from '$lib/stores/toaster.svelte';
+	} from '#lib/components/ui/card/index.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import { Input } from '#lib/components/ui/input/index.ts';
+	import { Label } from '#lib/components/ui/label/index.ts';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
+	import MyCheckbox from '#lib/components/MyCheckbox.svelte';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
 	import { Settings, ShoppingBag, AlertCircle, Info, Check, X } from '@lucide/svelte';
-	import { marketplaceSettingsSchema } from '$lib/validation/marketplace';
+	import { marketplaceSettingsSchema } from '#lib/validation/marketplace.ts';
 	// La configuration est celle de la table `marketplace_config`. Le composant en
 	// redéclarait une version locale avec un champ `is_enabled` qui n'existe nulle
 	// part : à l'ouverture, l'interrupteur repartait donc toujours de « désactivé »
 	// même sur un marché ouvert, et « Réinitialiser » l'y renvoyait. L'activation
 	// côté classe se lit sur `enabled_for_class`, la colonne que l'enregistrement
 	// écrit déjà.
-	import type { MarketplaceConfig } from '$lib/types/marketplace';
+	import type { MarketplaceConfig } from '#lib/types/marketplace.ts';
 
 	/** Valeurs par défaut, alignées sur les bornes du schéma de validation. */
 	const DEFAULT_MAX_LISTINGS = 5;

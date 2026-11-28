@@ -1,0 +1,356 @@
+{
+	"id": "210bffdd-3584-494f-893d-2daa9ab51c34",
+	"rangement": {
+		"noeud": "Géométrie > Théorème de Thalès > calcul de longueurs",
+		"point": "3-060"
+	},
+	"title": "Résoudre un problème avec Thalès",
+	"description": "Problèmes en deux temps : parallélisme déduit de deux perpendiculaires à une même droite, rectangle et parallèle à sa diagonale (ND = AD − AN), MB à déduire de AB",
+	"grades": ["3"],
+	"level": 2,
+	"delay": 180,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Les points $A$, $E$, $D$ sont alignés, ainsi que $A$, $B$, $C$. Les droites $(EB)$ et $(DC)$ sont perpendiculaires à la droite $(AD)$. On donne $AE = {{ae}}~\\unit{cm}$, $AD = {{ad}}~\\unit{cm}$ et $EB = {{eb}}~\\unit{cm}$. Calcule $DC$.\n\n```figure\nfenetre: 0 ; 10 ; 0 ; 6.6\ndescription: Triangle ADC rectangle en D, E sur [AD], B sur [AC], (EB) perpendiculaire à (AD).\n---\nA = point(1, 1, etiquette=\"gauche\")\nD = point(9, 1, etiquette=\"bas\")\nC = point(9, 5.6, etiquette=\"haut\")\nE = point(1 + 8*{{ae}}/{{ad}}, 1, etiquette=\"bas\")\nB = point(1 + 8*{{ae}}/{{ad}}, 1 + 4.6*{{ae}}/{{ad}}, etiquette=\"haut-gauche\")\nsegment(A, D)\nsegment(A, C)\nsegment(E, B)\nsegment(D, C)\nangle(A, E, B, marque=\"carre\")\nangle(A, D, C, marque=\"carre\")\n```\n\n$DC = ?~\\unit{cm}$",
+			"variables": [
+				{
+					"name": "ae",
+					"expression": "2..8"
+				},
+				{
+					"name": "ad",
+					"expression": "4..12"
+				},
+				{
+					"name": "eb",
+					"expression": "2..10"
+				}
+			],
+			"conditions": [
+				"ae < ad",
+				"round(10*(eb*ad/ae)) == 10*(eb*ad/ae)",
+				"round(100*(eb*ad/ae)) != round(100*(eb*ae/ad))",
+				"round(100*(eb*ad/ae)) != round(100*(eb+ad-ae))",
+				"round(100*(eb*ad/ae)) != round(100*(eb*ad))",
+				"round(100*(eb*ae/ad)) != round(100*(eb+ad-ae))",
+				"round(100*(eb*ae/ad)) != round(100*(eb*ad))",
+				"round(100*(eb+ad-ae)) != round(100*(eb*ad))"
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:eb*ad/ae;d}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:round(100*(eb*ae/ad))/100;d}}",
+							"message": "Tu as renversé le rapport : DC est un côté du grand triangle, il est plus long que EB.",
+							"label": "Rapport renversé"
+						},
+						{
+							"answer": "{{eval:round(100*(eb+ad-ae))/100;d}}",
+							"message": "Dans une configuration de Thalès, les longueurs sont proportionnelles : on les multiplie par un même rapport, on n'ajoute pas la même différence.",
+							"label": "Même différence ajoutée"
+						},
+						{
+							"answer": "{{eval:round(100*(eb*ad))/100;d}}",
+							"message": "Tu as oublié de diviser par AE : on multiplie EB par AD, puis on divise par AE.",
+							"label": "Division oubliée"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"Les droites $(EB)$ et $(DC)$ sont toutes les deux perpendiculaires à la droite $(AD)$. Deux droites perpendiculaires à une même droite sont **parallèles** : $(EB) \\parallel (DC)$.",
+					"Les points $A$, $E$, $D$ sont alignés, ainsi que $A$, $B$, $C$, et $(EB) \\parallel (DC)$. D'après le **théorème de Thalès** : $$\\dfrac{AE}{AD} = \\dfrac{AB}{AC} = \\dfrac{EB}{DC}$$",
+					"On garde les deux rapports utiles : $$\\dfrac{ {{ae}} }{ {{ad}} } = \\dfrac{ {{eb}} }{DC} \\quad\\text{donc}\\quad DC = \\dfrac{ {{eb}} \\times {{ad}} }{ {{ae}} } = \\textcolor{{{color:primary.0}}}{{{eval:eb*ad/ae;d}}~\\unit{cm}}$$"
+				]
+			},
+			"hint": "Que peux-tu dire de deux droites perpendiculaires à une même droite ? Cherche ensuite les deux triangles de la configuration de Thalès."
+		},
+		{
+			"statement": "$ABCD$ est un rectangle tel que $AB = {{ab}}~\\unit{cm}$ et $BC = {{bc}}~\\unit{cm}$. $M$ est le point du segment $[AB]$ tel que $AM = {{am}}~\\unit{cm}$, et $N$ est le point du segment $[AD]$ tel que les droites $(MN)$ et $(BD)$ sont parallèles. Calcule $ND$.\n\n```figure\nfenetre: 0 ; 10 ; 0 ; {{eval:round(10*(2+8*bc/ab))/10;d}}\ndescription: Rectangle ABCD, diagonale [BD], M sur [AB], N sur [AD], segment [MN].\n---\nA = point(1, 1, etiquette=\"bas-gauche\")\nB = point(9, 1, etiquette=\"bas-droite\")\nC = point(9, 1 + 8*{{bc}}/{{ab}}, etiquette=\"haut-droite\")\nD = point(1, 1 + 8*{{bc}}/{{ab}}, etiquette=\"haut-gauche\")\nM = point(1 + 8*{{am}}/{{ab}}, 1, etiquette=\"bas\")\nN = point(1, 1 + 8*{{bc}}/{{ab}}*{{am}}/{{ab}}, etiquette=\"gauche\")\nsegment(A, B)\nsegment(B, C)\nsegment(C, D)\nsegment(D, A)\nsegment(B, D)\nsegment(M, N)\nangle(B, A, D, marque=\"carre\")\n```\n\n$ND = ?~\\unit{cm}$",
+			"variables": [
+				{
+					"name": "ab",
+					"expression": "5..12"
+				},
+				{
+					"name": "bc",
+					"expression": "3..11"
+				},
+				{
+					"name": "am",
+					"expression": "2..11"
+				}
+			],
+			"conditions": [
+				"bc < ab",
+				"am < ab",
+				"round(10*(am*bc/ab)) == 10*(am*bc/ab)",
+				"round(100*(bc-am*bc/ab)) != round(100*(am*bc/ab))",
+				"round(100*(bc-am*bc/ab)) != round(100*(ab-am*bc/ab))",
+				"round(100*(bc-am*bc/ab)) != round(100*(bc-am*ab/bc))",
+				"round(100*(am*bc/ab)) != round(100*(ab-am*bc/ab))",
+				"round(100*(am*bc/ab)) != round(100*(bc-am*ab/bc))",
+				"round(100*(ab-am*bc/ab)) != round(100*(bc-am*ab/bc))"
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:bc-am*bc/ab;d}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:round(100*(am*bc/ab))/100;d}}",
+							"message": "Tu as calculé AN : la longueur demandée est ND = AD − AN.",
+							"label": "AN au lieu de ND"
+						},
+						{
+							"answer": "{{eval:round(100*(ab-am*bc/ab))/100;d}}",
+							"message": "Le côté [AD] du rectangle mesure BC, pas AB : ND = AD − AN avec AD = BC.",
+							"label": "AB au lieu de AD"
+						},
+						{
+							"answer": "{{eval:round(100*(bc-am*ab/bc))/100;d}}",
+							"message": "Tu as mélangé les rapports : chaque rapport compare deux longueurs portées par la même droite, AM/AB = AN/AD.",
+							"label": "Rapports mélangés"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"$ABCD$ est un rectangle : ses côtés opposés ont la même longueur, donc $AD = BC = {{bc}}~\\unit{cm}$.",
+					"Dans le triangle $ABD$ : $M$ est sur $[AB]$, $N$ sur $[AD]$, et $(MN) \\parallel (BD)$. D'après le **théorème de Thalès** : $$\\dfrac{AM}{AB} = \\dfrac{AN}{AD} = \\dfrac{MN}{BD}$$",
+					"$$\\dfrac{ {{am}} }{ {{ab}} } = \\dfrac{AN}{ {{bc}} } \\quad\\text{donc}\\quad AN = \\dfrac{ {{am}} \\times {{bc}} }{ {{ab}} } = {{eval:am*bc/ab;d}}~\\unit{cm}$$",
+					"$N$ est sur le segment $[AD]$ : $$ND = AD - AN = {{bc}} - {{eval:am*bc/ab;d}} = \\textcolor{{{color:primary.0}}}{{{eval:bc-am*bc/ab;d}}~\\unit{cm}}$$"
+				]
+			},
+			"hint": "Repère le triangle qui contient la configuration de Thalès. La longueur du côté $[AD]$ n'est pas donnée : que dit le rectangle sur ses côtés ?"
+		},
+		{
+			"statement": "Les points $A$, $M$, $B$ sont alignés, ainsi que $A$, $N$, $C$, et les droites $(MN)$ et $(BC)$ sont parallèles. On donne $AM = {{am}}~\\unit{cm}$, $AN = {{an}}~\\unit{cm}$ et $NC = {{nc}}~\\unit{cm}$. Calcule $MB$.\n\n```figure\nfenetre: 0 ; 10 ; 0 ; 6.6\ndescription: Triangle ABC, M sur [AB], N sur [AC], segment [MN].\n---\nA = point(1, 1, etiquette=\"gauche\")\nB = point(9, 1.6, etiquette=\"droite\")\nC = point(6.2, 5.6, etiquette=\"haut\")\nM = point(A.x + ({{an}}/({{an}}+{{nc}}))*(B.x - A.x), A.y + ({{an}}/({{an}}+{{nc}}))*(B.y - A.y), etiquette=\"bas\")\nN = point(A.x + ({{an}}/({{an}}+{{nc}}))*(C.x - A.x), A.y + ({{an}}/({{an}}+{{nc}}))*(C.y - A.y), etiquette=\"haut-gauche\")\nsegment(A, B)\nsegment(A, C)\nsegment(B, C)\nsegment(M, N)\n```\n\n$MB = ?~\\unit{cm}$",
+			"variables": [
+				{
+					"name": "am",
+					"expression": "2..8"
+				},
+				{
+					"name": "an",
+					"expression": "2..8"
+				},
+				{
+					"name": "nc",
+					"expression": "2..10"
+				}
+			],
+			"conditions": [
+				"am != an",
+				"round(10*(am*nc/an)) == 10*(am*nc/an)",
+				"round(100*(am*nc/an)) != round(100*(am*(an+nc)/an))",
+				"round(100*(am*nc/an)) != round(100*(nc))",
+				"round(100*(am*nc/an)) != round(100*(an*nc/am))",
+				"round(100*(am*(an+nc)/an)) != round(100*(nc))",
+				"round(100*(am*(an+nc)/an)) != round(100*(an*nc/am))",
+				"round(100*(nc)) != round(100*(an*nc/am))"
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:am*nc/an;d}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:round(100*(am*(an+nc)/an))/100;d}}",
+							"message": "Tu as calculé AB : la longueur demandée est MB = AB − AM.",
+							"label": "AB au lieu de MB"
+						},
+						{
+							"answer": "{{eval:round(100*(nc))/100;d}}",
+							"message": "MB n'est pas égale à NC : les longueurs sont proportionnelles, elles ne diffèrent pas d'une même quantité.",
+							"label": "MB = NC"
+						},
+						{
+							"answer": "{{eval:round(100*(an*nc/am))/100;d}}",
+							"message": "Tu as renversé un rapport : écris AM/AB = AN/AC, avec AC = AN + NC, avant de remplacer.",
+							"label": "Rapport renversé"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"$N$ est sur le segment $[AC]$ : $AC = AN + NC = {{an}} + {{nc}} = {{eval:an+nc}}~\\unit{cm}$.",
+					"Les points $A$, $M$, $B$ sont alignés, ainsi que $A$, $N$, $C$, et $(MN) \\parallel (BC)$. D'après le **théorème de Thalès** : $$\\dfrac{AM}{AB} = \\dfrac{AN}{AC} = \\dfrac{MN}{BC}$$",
+					"$$\\dfrac{ {{am}} }{AB} = \\dfrac{ {{an}} }{ {{eval:an+nc}} } \\quad\\text{donc}\\quad AB = \\dfrac{ {{am}} \\times {{eval:an+nc}} }{ {{an}} } = {{eval:am*(an+nc)/an;d}}~\\unit{cm}$$",
+					"$M$ est sur le segment $[AB]$ : $$MB = AB - AM = {{eval:am*(an+nc)/an;d}} - {{am}} = \\textcolor{{{color:primary.0}}}{{{eval:am*nc/an;d}}~\\unit{cm}}$$"
+				]
+			},
+			"hint": "Le théorème de Thalès donne d'abord un côté du grand triangle ; la longueur demandée s'en déduit ensuite."
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "v0 AE = 4, AD = 10, EB = 3 : 7,5",
+			"variationIndex": 0,
+			"variables": {
+				"ae": "4",
+				"ad": "10",
+				"eb": "3"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["7{,}5"]
+		},
+		{
+			"description": "v0 : Rapport renversé (1,2)",
+			"variationIndex": 0,
+			"variables": {
+				"ae": "4",
+				"ad": "10",
+				"eb": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as renversé le rapport : DC est un côté du grand triangle, il est plus long que EB."
+			},
+			"answers": ["1{,}2"]
+		},
+		{
+			"description": "v0 : Même différence ajoutée (9)",
+			"variationIndex": 0,
+			"variables": {
+				"ae": "4",
+				"ad": "10",
+				"eb": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Dans une configuration de Thalès, les longueurs sont proportionnelles : on les multiplie par un même rapport, on n'ajoute pas la même différence."
+			},
+			"answers": ["9"]
+		},
+		{
+			"description": "v0 : Division oubliée (30)",
+			"variationIndex": 0,
+			"variables": {
+				"ae": "4",
+				"ad": "10",
+				"eb": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as oublié de diviser par AE : on multiplie EB par AD, puis on divise par AE."
+			},
+			"answers": ["30"]
+		},
+		{
+			"description": "v1 AB = 10, BC = 6, AM = 3 : 4,2",
+			"variationIndex": 1,
+			"variables": {
+				"ab": "10",
+				"bc": "6",
+				"am": "3"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["4{,}2"]
+		},
+		{
+			"description": "v1 : AN au lieu de ND (1,8)",
+			"variationIndex": 1,
+			"variables": {
+				"ab": "10",
+				"bc": "6",
+				"am": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as calculé AN : la longueur demandée est ND = AD − AN."
+			},
+			"answers": ["1{,}8"]
+		},
+		{
+			"description": "v1 : AB au lieu de AD (8,2)",
+			"variationIndex": 1,
+			"variables": {
+				"ab": "10",
+				"bc": "6",
+				"am": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Le côté [AD] du rectangle mesure BC, pas AB : ND = AD − AN avec AD = BC."
+			},
+			"answers": ["8{,}2"]
+		},
+		{
+			"description": "v1 : Rapports mélangés (1)",
+			"variationIndex": 1,
+			"variables": {
+				"ab": "10",
+				"bc": "6",
+				"am": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as mélangé les rapports : chaque rapport compare deux longueurs portées par la même droite, AM/AB = AN/AD."
+			},
+			"answers": ["1"]
+		},
+		{
+			"description": "v2 AM = 3, AN = 4, NC = 6 : 4,5",
+			"variationIndex": 2,
+			"variables": {
+				"am": "3",
+				"an": "4",
+				"nc": "6"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["4{,}5"]
+		},
+		{
+			"description": "v2 : AB au lieu de MB (7,5)",
+			"variationIndex": 2,
+			"variables": {
+				"am": "3",
+				"an": "4",
+				"nc": "6"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as calculé AB : la longueur demandée est MB = AB − AM."
+			},
+			"answers": ["7{,}5"]
+		},
+		{
+			"description": "v2 : MB = NC (6)",
+			"variationIndex": 2,
+			"variables": {
+				"am": "3",
+				"an": "4",
+				"nc": "6"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "MB n'est pas égale à NC : les longueurs sont proportionnelles, elles ne diffèrent pas d'une même quantité."
+			},
+			"answers": ["6"]
+		},
+		{
+			"description": "v2 : Rapport renversé (8)",
+			"variationIndex": 2,
+			"variables": {
+				"am": "3",
+				"an": "4",
+				"nc": "6"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as renversé un rapport : écris AM/AB = AN/AC, avec AC = AN + NC, avant de remplacer."
+			},
+			"answers": ["8"]
+		}
+	]
+}

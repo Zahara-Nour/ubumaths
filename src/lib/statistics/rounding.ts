@@ -8,7 +8,7 @@
  * module pour les fractions exactes (`roundExact`, `roundFraction`) et pour les
  * flottants des indicateurs (`roundNumber`).
  *
- * ⚠️ Aucun import `$lib` : voir `statistics/describe`.
+ * ⚠️ Aucun import `#lib` : voir `statistics/describe`.
  *
  * @module statistics/rounding
  */

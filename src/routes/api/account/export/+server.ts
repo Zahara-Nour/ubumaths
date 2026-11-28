@@ -17,14 +17,43 @@
  * - Includes metadata (export date, data categories)
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireAuth } from '$lib/server/middleware/auth';
-import { rateLimit } from '$lib/server/middleware/rateLimit';
-import { createServiceRoleClient } from '$lib/server/serviceRoleClient';
-import { createServerLogger } from '$lib/utils/logger';
+import { requireAuth } from '#lib/server/middleware/auth.ts';
+import { rateLimit } from '#lib/server/middleware/rateLimit.ts';
+import { createServiceRoleClient } from '#lib/server/serviceRoleClient.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/account/export');
+
+/** Plafond `max_rows` de PostgREST (supabase/config.toml) : taille d'une page. */
+const PAGE_SIZE = 1000;
+
+/** Colonnes des Bêtes exportées (La Descente de la Vistule). */
+const BEAST_COLUMNS =
+	'beast_key, kind, province, point_id, max_hp, hp, appeared_at, leaves_at, defeated_at, rewarded_gidouilles';
+
+/**
+ * Toutes les lignes d'une lecture, page par page : le plafond de 1 000 lignes de
+ * PostgREST tronquerait l'export en silence. `fetchPage` doit trier de façon stable.
+ * Les Bêtes (environ trois par jour de jeu) le dépassent en un an ; les coups gagnés
+ * n'ont aucune borne en base.
+ */
+async function readAllPages<Row>(
+	fetchPage: (
+		from: number,
+		to: number
+	) => PromiseLike<{ data: Row[] | null; error: { message: string } | null }>
+): Promise<{ data: Row[]; error: { message: string } | null }> {
+	const rows: Row[] = [];
+	for (let from = 0; ; from += PAGE_SIZE) {
+		const { data, error: readError } = await fetchPage(from, from + PAGE_SIZE - 1);
+		if (readError) return { data: [], error: readError };
+		const page = data ?? [];
+		rows.push(...page);
+		if (page.length < PAGE_SIZE) return { data: rows, error: null };
+	}
+}
 
 // Rate limit: 1 export per hour per user
 const RATE_LIMIT_MAX = 1;
@@ -63,6 +92,9 @@ export const GET: RequestHandler = async ({ locals }) => {
 			tutorConversationsResult,
 			mathouxResult,
 			mathouDecorationsResult,
+			avatarsResult,
+			beastsResult,
+			combatMovesResult,
 			buddyResult,
 			lastVisitResult
 		] = await Promise.all([
@@ -85,11 +117,12 @@ export const GET: RequestHandler = async ({ locals }) => {
 				)
 				.eq('student_id', userId),
 
-			// Évaluation — tentatives évaluées (couche brute commune aux deux référentiels)
+			// Évaluation — traces (couche brute commune aux deux référentiels), avec lieu,
+			// durées, graine, réponse tapée et verdict par case (ADR 0038, N15)
 			supabase
 				.from('skill_attempts')
 				.select(
-					'observable_id, success, with_help, phase_blocage, grade, template_id, task_id, source, created_at'
+					'observable_id, success, with_help, phase_blocage, grade, template_id, task_id, source, created_at, place, response_ms, allotted_ms, end_reason, seed, answer_parts, part_verdicts, answered_as_choice'
 				)
 				.eq('student_id', userId)
 				.order('created_at', { ascending: false })
@@ -209,6 +242,34 @@ export const GET: RequestHandler = async ({ locals }) => {
 				.select('decoration, price_paid, purchased_at')
 				.eq('student_id', userId),
 
+			// Jeux — avatars achetés dans la boutique d'avatars (lisibles par l'élève seul)
+			supabase
+				.from('student_avatars')
+				.select('avatar_key, price_paid, purchased_at')
+				.eq('student_id', userId),
+
+			// Jeux — La Descente de la Vistule : Bêtes de l'élève (vivantes, reparties,
+			// vaincues : le carnet), lisibles par lui seul
+			readAllPages((from, to) =>
+				supabase
+					.from('student_beasts')
+					.select(BEAST_COLUMNS)
+					.eq('student_id', userId)
+					.order('appeared_at')
+					.order('id')
+					.range(from, to)
+			),
+
+			// Jeux — La Descente : coups et sorts gagnés, lus par pages eux aussi
+			readAllPages((from, to) =>
+				supabase
+					.from('student_combat_moves')
+					.select('move_key, notion_id, earned_at, announced_at')
+					.eq('student_id', userId)
+					.order('move_key')
+					.range(from, to)
+			),
+
 			// Jeux — le Palotin de l'élève (une ligne par élève ; décision de David, 2026-10-18)
 			supabase
 				.from('student_buddies')
@@ -223,7 +284,7 @@ export const GET: RequestHandler = async ({ locals }) => {
 			// service, filtrés sur l'identité de la SESSION.
 			createServiceRoleClient()
 				.from('student_last_visits')
-				.select('last_visit_date, welcome_back_on')
+				.select('last_visit_date, welcome_back_on, week_celebrated_on')
 				.eq('student_id', userId)
 				.maybeSingle()
 		]);
@@ -250,6 +311,18 @@ export const GET: RequestHandler = async ({ locals }) => {
 			);
 		}
 
+		if (avatarsResult.error) {
+			throw new Error(`student_avatars illisible : ${avatarsResult.error.message}`);
+		}
+
+		if (beastsResult.error) {
+			throw new Error(`student_beasts illisible : ${beastsResult.error.message}`);
+		}
+
+		if (combatMovesResult.error) {
+			throw new Error(`student_combat_moves illisible : ${combatMovesResult.error.message}`);
+		}
+
 		if (buddyResult.error) {
 			throw new Error(`student_buddies illisible : ${buddyResult.error.message}`);
 		}
@@ -271,6 +344,9 @@ export const GET: RequestHandler = async ({ locals }) => {
 			firstname: profile.firstname,
 			lastname: profile.lastname,
 			avatar_url: profile.avatar_url,
+			// Boutique d'avatars : avatar porté (clé du catalogue) et photo Google gardée
+			worn_avatar: profile.worn_avatar,
+			google_avatar_url: profile.google_avatar_url,
 			role: profile.role,
 			grade: profile.grade,
 			gidouilles: profile.gidouilles,
@@ -342,9 +418,15 @@ export const GET: RequestHandler = async ({ locals }) => {
 				player_stats: gamePlayerResult.data || null,
 				mathoux: mathouxResult.data || [],
 				mathou_decorations: mathouDecorationsResult.data || [],
+				avatars: avatarsResult.data || [],
+				descente: {
+					beasts: beastsResult.data,
+					combat_moves: combatMovesResult.data
+				},
 				palotin: buddyResult.data || null,
 				dernier_passage: lastVisitResult.data?.last_visit_date ?? null,
-				retour_a_feter: lastVisitResult.data?.welcome_back_on ?? null
+				retour_a_feter: lastVisitResult.data?.welcome_back_on ?? null,
+				semaine_fetee: lastVisitResult.data?.week_celebrated_on ?? null
 			},
 
 			// Rewards & Economy
@@ -372,7 +454,7 @@ export const GET: RequestHandler = async ({ locals }) => {
 		});
 
 		// Return with appropriate headers for download
-		return json(exportData, {
+		return Response.json(exportData, {
 			headers: {
 				'Content-Disposition': `attachment; filename="chiphre-export-${userId.slice(0, 8)}-${new Date().toISOString().split('T')[0]}.json"`,
 				'Cache-Control': 'no-store, no-cache, must-revalidate'

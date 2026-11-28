@@ -1,11 +1,12 @@
 <script lang="ts">
-	import { lore } from '$lib/config/lore';
-	import { browser } from '$app/environment';
-	import * as Dialog from '$lib/components/ui/dialog';
-	import * as Tabs from '$lib/components/ui/tabs';
-	import { Button } from '$lib/components/ui/button';
-	import ConsentButton from '$lib/components/ConsentButton.svelte';
-	import { Badge } from '$lib/components/ui/badge';
+	import { lore } from '#lib/config/lore.ts';
+	import InlineMarkdown from '#lib/components/markdown/InlineMarkdown.svelte';
+	import { browser } from '$app/env';
+	import * as Dialog from '#lib/components/ui/dialog/index.ts';
+	import * as Tabs from '#lib/components/ui/tabs/index.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import ConsentButton from '#lib/components/ConsentButton.svelte';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
 	import {
 		ChevronLeft,
 		ChevronRight,
@@ -16,17 +17,17 @@
 		X,
 		Loader2
 	} from '@lucide/svelte';
-	import MarkdownRenderer from '$lib/components/markdown/MarkdownRenderer.svelte';
-	import { genericFunctionsConfig } from '$lib/components/markdown/utils/math-utils';
-	import ReportErrorButton from '$lib/components/worksheets/ReportErrorButton.svelte';
-	import TutorChat from '$lib/components/tutor/TutorChat.svelte';
+	import MarkdownRenderer from '#lib/components/markdown/MarkdownRenderer.svelte';
+	import { genericFunctionsConfig } from '#lib/components/markdown/utils/math-utils.ts';
+	import ReportErrorButton from '#lib/components/worksheets/ReportErrorButton.svelte';
+	import TutorChat from '#lib/components/tutor/TutorChat.svelte';
 	import TutorFAB from './TutorFAB.svelte';
 	import TutorDrawer from './TutorDrawer.svelte';
-	import type { StudentExerciseView, StudentErrorReportView } from '$lib/types/worksheets';
-	import type { MasteryStatus } from '$lib/types/exercise-mastery';
-	import { MASTERY_LABELS } from '$lib/types/exercise-mastery';
-	import { detailedCorrection } from '$lib/questions/correction-detail';
-	import { provideCapitalPairs } from '$lib/components/markdown/content-capital-pairs';
+	import type { StudentExerciseView, StudentErrorReportView } from '#lib/types/worksheets.ts';
+	import type { MasteryStatus } from '#lib/types/exercise-mastery.ts';
+	import { MASTERY_LABELS } from '#lib/types/exercise-mastery.ts';
+	import { detailedCorrection } from '#lib/questions/correction-detail.ts';
+	import { provideCapitalPairs } from '#lib/components/markdown/content-capital-pairs.ts';
 
 	interface Props {
 		exercises: StudentExerciseView[];
@@ -155,7 +156,9 @@
 					<div class="flex items-center gap-3">
 						<Dialog.Title class="flex items-center gap-3 text-xl font-semibold">
 							{lore.learning.exercise}
-							{currentIndex + 1}{#if exercise?.title}&nbsp;: {exercise.title}{/if}
+							{currentIndex + 1}{#if exercise?.title}&nbsp;: <InlineMarkdown
+									content={exercise.title}
+								/>{/if}
 							{#if pointsLabel}
 								<Badge variant="outline" class="font-normal">
 									{pointsLabel}
@@ -198,7 +201,7 @@
 						{#if hasCorrection}
 							<Tabs.Root value="statement" class="w-full">
 								<Tabs.List class="grid w-full grid-cols-2">
-									<Tabs.Trigger value="statement">Enonce</Tabs.Trigger>
+									<Tabs.Trigger value="statement">Énoncé</Tabs.Trigger>
 									<Tabs.Trigger value="correction">Correction</Tabs.Trigger>
 								</Tabs.List>
 								<Tabs.Content value="statement" class="mt-4">
@@ -341,7 +344,9 @@
 				<div class="flex items-center gap-2">
 					<Dialog.Title class="flex items-center gap-2 text-lg font-semibold">
 						{lore.learning.exercise}
-						{currentIndex + 1}{#if exercise?.title}&nbsp;: {exercise.title}{/if}
+						{currentIndex + 1}{#if exercise?.title}&nbsp;: <InlineMarkdown
+								content={exercise.title}
+							/>{/if}
 						{#if pointsLabel}
 							<Badge variant="outline" class="text-xs font-normal">
 								{pointsLabel}
@@ -384,7 +389,7 @@
 					{#if hasCorrection}
 						<Tabs.Root value="statement" class="w-full">
 							<Tabs.List class="grid w-full grid-cols-2">
-								<Tabs.Trigger value="statement">Enonce</Tabs.Trigger>
+								<Tabs.Trigger value="statement">Énoncé</Tabs.Trigger>
 								<Tabs.Trigger value="correction">Correction</Tabs.Trigger>
 							</Tabs.List>
 							<Tabs.Content value="statement" class="mt-4">

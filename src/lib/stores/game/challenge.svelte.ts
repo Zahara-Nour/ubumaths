@@ -2,7 +2,7 @@
 // Author: Claude Code
 // Date: 2025-10-15
 
-import type { GameChallenge, ChallengeInstance } from '$lib/types/game';
+import type { GameChallenge, ChallengeInstance } from '#lib/types/game.ts';
 
 class ChallengeStore {
 	private _currentChallenge = $state<GameChallenge | null>(null);

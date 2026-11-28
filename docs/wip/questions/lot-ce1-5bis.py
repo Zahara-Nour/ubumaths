@@ -1,6 +1,6 @@
 """Écrit les 9 modèles du lot 5 bis du CE1 (masses, monnaie, durées) dans scripts/questions/ce1-5bis/.
 
-Phase 0 validée par David le 2026-10-30 (§ 11 du journal `docs/wip/questions-ce1-progress.md`).
+Phase 0 validée par David le 2026-10-30 (§ 11 du journal `docs/archive/wip/questions-ce1-progress.md`).
 Bornes `cycle2.json`, CE1-049 à 053, 058, 061, 062, 085 ; BO CE1 p.28-29 : g, kg ; 1 kg = 1 000 g ;
 paquet de sucre 1 kg, sachet de levure 10 g ; ordonner « 1 kg et 300 g ; 1 000 g ; 50 kg ; 2 kg et
 100 g » ; 100 centimes = 1 € ; 345 centimes = 3 € + 45 centimes ; 2,17 € ; 2,05 € et 2,50 € ;

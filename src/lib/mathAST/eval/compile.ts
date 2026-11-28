@@ -39,6 +39,7 @@ import {
 import { flattenRelationChain } from '../flatten';
 import { inverseNotationAsFunction } from '../common/function-power';
 import { oddDenominatorExponent, realNthRoot, realRationalPower } from './real-root';
+import { MAX_ROUNDING_DIGITS, roundFloatToDecimalPlaces } from './decimal-rounding';
 
 export type CompiledFn = (vars: Record<string, number>) => number;
 
@@ -66,7 +67,14 @@ const MATH_FUNCTIONS: Record<string, (...args: number[]) => number> = {
 	abs: Math.abs,
 	floor: Math.floor,
 	ceil: Math.ceil,
-	round: Math.round,
+	// `round(x, n)` : même arrondi exact que `;aN` (2,675 → 2,68) ; `round(x)` inchangé
+	// n hors de 0…15 ou non entier : NaN (un calcul compilé ne lève pas)
+	round: (x: number, places?: number) =>
+		places === undefined
+			? Math.round(x)
+			: Number.isInteger(places) && places >= 0 && places <= MAX_ROUNDING_DIGITS
+				? roundFloatToDecimalPlaces(x, places)
+				: NaN,
 	min: Math.min,
 	max: Math.max
 };

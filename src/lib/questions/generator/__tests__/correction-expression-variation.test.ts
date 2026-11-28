@@ -11,7 +11,7 @@
 import { describe, it, expect } from 'vitest';
 import { generateInstanceWithFixedVariables } from '../test-instance-builder';
 import type { QuestionTemplate } from '../../types';
-import { templateMarkdown } from '$lib/ubumark';
+import { templateMarkdown } from '#lib/ubumark/index.ts';
 
 describe('{{expression}} en correction', () => {
 	it('trouve expression2 dans la 2e variation', () => {

@@ -1,8 +1,8 @@
 <script lang="ts">
-	import SeoHead from '$lib/seo/SeoHead.svelte';
+	import SeoHead from '#lib/seo/SeoHead.svelte';
 	import { resolve } from '$app/paths';
-	import InlineMarkdown from '$lib/components/markdown/InlineMarkdown.svelte';
-	import MarkdownRenderer from '$lib/components/markdown/MarkdownRenderer.svelte';
+	import InlineMarkdown from '#lib/components/markdown/InlineMarkdown.svelte';
+	import MarkdownRenderer from '#lib/components/markdown/MarkdownRenderer.svelte';
 	import ShtamFooter from './ShtamFooter.svelte';
 	import ShtamFullArticle from './ShtamFullArticle.svelte';
 	import type { PageProps } from './$types';
@@ -18,7 +18,7 @@
 </script>
 
 <SeoHead
-	title={data.page === 1 ? 'Le Shtam — Chiphre' : `Le Shtam, page ${data.page} — Chiphre`}
+	title={data.page === 1 ? 'Le Shtam | Chiphre' : `Le Shtam, page ${data.page} | Chiphre`}
 	description="Le Shtam, gazette parodique du Royaume : les fausses nouvelles des Mathres, chacune suivie de son vrai du faux."
 	noindex={data.page > 1}
 />
@@ -51,7 +51,7 @@
 			<article class="flex flex-col gap-4" data-testid="shtam-une">
 				<h2 class="serif titre-une text-center font-bold text-balance">
 					<a
-						href="{resolve('/shtam')}{pageQuery(data.une.page)}#{data.une.slug}"
+						href="{resolve('shtam')}{pageQuery(data.une.page)}#{data.une.slug}"
 						class="rounded-sm underline-offset-4 hover:underline focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
 					>
 						{data.une.title}
@@ -79,7 +79,7 @@
 					</div>
 				{/if}
 				<a
-					href="{resolve('/shtam')}{pageQuery(data.une.page)}#{data.une.slug}"
+					href="{resolve('shtam')}{pageQuery(data.une.page)}#{data.une.slug}"
 					class="serif self-end rounded-sm font-semibold underline-offset-4 hover:underline focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
 				>
 					Lire la suite, page {data.une.page} →
@@ -96,7 +96,7 @@
 							<div class="eyebrow text-xs text-muted-foreground">{teaser.almanachDate}</div>
 							<h3 class="serif text-xl leading-snug font-semibold">
 								<a
-									href="{resolve('/shtam')}{pageQuery(teaser.page)}#{teaser.slug}"
+									href="{resolve('shtam')}{pageQuery(teaser.page)}#{teaser.slug}"
 									class="rounded-sm underline-offset-4 hover:underline focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
 								>
 									{teaser.title}
@@ -120,7 +120,7 @@
 		>
 			<h1 class="serif text-3xl font-bold">
 				<a
-					href={resolve('/shtam')}
+					href={resolve('shtam')}
 					class="rounded-sm underline-offset-4 hover:underline focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
 				>
 					Le Shtam
@@ -149,7 +149,7 @@
 		>
 			{#if data.page > 1}
 				<a
-					href="{resolve('/shtam')}{pageQuery(data.page - 1)}"
+					href="{resolve('shtam')}{pageQuery(data.page - 1)}"
 					class="rounded-sm font-semibold underline-offset-4 hover:underline focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
 				>
 					← {pageLabel(data.page - 1)}
@@ -160,7 +160,7 @@
 			<span class="text-sm text-muted-foreground">Page {data.page} sur {data.pageCount}</span>
 			{#if data.page < data.pageCount}
 				<a
-					href="{resolve('/shtam')}{pageQuery(data.page + 1)}"
+					href="{resolve('shtam')}{pageQuery(data.page + 1)}"
 					class="rounded-sm font-semibold underline-offset-4 hover:underline focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
 				>
 					{pageLabel(data.page + 1)} →

@@ -13,16 +13,16 @@
 	 * @component
 	 */
 
-	import { useGrapheurStore } from '$lib/stores/grapheur-context';
+	import { useGrapheurStore } from '#lib/stores/grapheur-context.ts';
 
 	// L'instance de l'atelier qui nous contient, ou celle par défaut.
 	const grapheurStore = useGrapheurStore();
-	import type { CoordinateTransformer } from '$lib/grapheur/viewport';
-	import type { Root, Extremum, FunctionAnalysis, SnappedPointType } from '$lib/grapheur/types';
-	import { analyzeAllFunctions, toAnalysisInputs } from '$lib/grapheur/analysis';
-	import { toCustom } from '$lib/mathAST/custom-generator';
-	import type { MathNode } from '$lib/mathAST/types';
-	import { curveColorValue } from '$lib/grapheur/colors';
+	import type { CoordinateTransformer } from '#lib/grapheur/viewport.ts';
+	import type { Root, Extremum, FunctionAnalysis, SnappedPointType } from '#lib/grapheur/types.ts';
+	import { analyzeAllFunctions, toAnalysisInputs } from '#lib/grapheur/analysis.ts';
+	import { toCustom } from '#lib/mathAST/custom-generator.ts';
+	import type { MathNode } from '#lib/mathAST/types.ts';
+	import { curveColorValue } from '#lib/grapheur/colors.ts';
 
 	// Props
 	let {

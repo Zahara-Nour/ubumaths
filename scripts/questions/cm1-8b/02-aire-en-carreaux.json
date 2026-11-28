@@ -1,0 +1,195 @@
+{
+	"id": "31d64c00-144e-4c0f-887f-475be9ac001e",
+	"title": "Aire en carreaux",
+	"description": "Compter les carreaux d'une figure sur quadrillage : carreaux entiers ; avec des demi-carreaux ; dans une unité fournie de deux carreaux",
+	"grades": ["CM1", "CM2"],
+	"level": 2,
+	"delay": 90,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Quelle est l'aire de la figure, en carreaux ?\n\n```figure\nfenetre: 0 ; 9 ; 0 ; 7\ngrille: 1\ndescription: Une figure coloriée sur un quadrillage.\n---\n{{if:j==1|a1 = point(1, 1, visible=faux)\na2 = point(5, 1, visible=faux)\na3 = point(5, 4, visible=faux)\na4 = point(1, 4, visible=faux)\npolygone(a1, a2, a3, a4, couleur=\"noir\", epaisseur=2, remplissage=\"bleu\", opacite_fond=0.35)|{{if:j==2|a1 = point(1, 1, visible=faux)\na2 = point(6, 1, visible=faux)\na3 = point(6, 3, visible=faux)\na4 = point(3, 3, visible=faux)\na5 = point(3, 5, visible=faux)\na6 = point(1, 5, visible=faux)\npolygone(a1, a2, a3, a4, a5, a6, couleur=\"noir\", epaisseur=2, remplissage=\"bleu\", opacite_fond=0.35)|{{if:j==3|a1 = point(1, 1, visible=faux)\na2 = point(5, 1, visible=faux)\na3 = point(5, 4, visible=faux)\na4 = point(4, 4, visible=faux)\na5 = point(4, 3, visible=faux)\na6 = point(2, 3, visible=faux)\na7 = point(2, 4, visible=faux)\na8 = point(1, 4, visible=faux)\npolygone(a1, a2, a3, a4, a5, a6, a7, a8, couleur=\"noir\", epaisseur=2, remplissage=\"bleu\", opacite_fond=0.35)|{{if:j==4|a1 = point(1, 1, visible=faux)\na2 = point(5, 1, visible=faux)\na3 = point(5, 2, visible=faux)\na4 = point(4, 2, visible=faux)\na5 = point(4, 3, visible=faux)\na6 = point(3, 3, visible=faux)\na7 = point(3, 4, visible=faux)\na8 = point(2, 4, visible=faux)\na9 = point(2, 5, visible=faux)\na10 = point(1, 5, visible=faux)\npolygone(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, couleur=\"noir\", epaisseur=2, remplissage=\"bleu\", opacite_fond=0.35)|{{if:j==5|a1 = point(2, 1, visible=faux)\na2 = point(4, 1, visible=faux)\na3 = point(4, 2, visible=faux)\na4 = point(5, 2, visible=faux)\na5 = point(5, 4, visible=faux)\na6 = point(4, 4, visible=faux)\na7 = point(4, 5, visible=faux)\na8 = point(2, 5, visible=faux)\na9 = point(2, 4, visible=faux)\na10 = point(1, 4, visible=faux)\na11 = point(1, 2, visible=faux)\na12 = point(2, 2, visible=faux)\npolygone(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, couleur=\"noir\", epaisseur=2, remplissage=\"bleu\", opacite_fond=0.35)|{{if:j==6|a1 = point(1, 3, visible=faux)\na2 = point(3, 3, visible=faux)\na3 = point(3, 1, visible=faux)\na4 = point(6, 1, visible=faux)\na5 = point(6, 3, visible=faux)\na6 = point(4, 3, visible=faux)\na7 = point(4, 5, visible=faux)\na8 = point(1, 5, visible=faux)\npolygone(a1, a2, a3, a4, a5, a6, a7, a8, couleur=\"noir\", epaisseur=2, remplissage=\"bleu\", opacite_fond=0.35)|{{if:j==7|a1 = point(1, 1, visible=faux)\na2 = point(6, 1, visible=faux)\na3 = point(6, 2, visible=faux)\na4 = point(5, 2, visible=faux)\na5 = point(5, 3, visible=faux)\na6 = point(4, 3, visible=faux)\na7 = point(4, 4, visible=faux)\na8 = point(3, 4, visible=faux)\na9 = point(3, 5, visible=faux)\na10 = point(2, 5, visible=faux)\na11 = point(2, 6, visible=faux)\na12 = point(1, 6, visible=faux)\npolygone(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, couleur=\"noir\", epaisseur=2, remplissage=\"bleu\", opacite_fond=0.35)|{{if:j==8|a1 = point(1, 1, visible=faux)\na2 = point(3, 1, visible=faux)\na3 = point(3, 3, visible=faux)\na4 = point(5, 3, visible=faux)\na5 = point(5, 4, visible=faux)\na6 = point(3, 4, visible=faux)\na7 = point(3, 5, visible=faux)\na8 = point(6, 5, visible=faux)\na9 = point(6, 6, visible=faux)\na10 = point(1, 6, visible=faux)\npolygone(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, couleur=\"noir\", epaisseur=2, remplissage=\"bleu\", opacite_fond=0.35)|{{if:j==9|a1 = point(1, 3, visible=faux)\na2 = point(3, 3, visible=faux)\na3 = point(3, 1, visible=faux)\na4 = point(4, 1, visible=faux)\na5 = point(4, 3, visible=faux)\na6 = point(6, 3, visible=faux)\na7 = point(6, 4, visible=faux)\na8 = point(1, 4, visible=faux)\npolygone(a1, a2, a3, a4, a5, a6, a7, a8, couleur=\"noir\", epaisseur=2, remplissage=\"bleu\", opacite_fond=0.35)|a1 = point(1, 1, visible=faux)\na2 = point(6, 1, visible=faux)\na3 = point(6, 5, visible=faux)\na4 = point(5, 5, visible=faux)\na5 = point(5, 3, visible=faux)\na6 = point(2, 3, visible=faux)\na7 = point(2, 5, visible=faux)\na8 = point(1, 5, visible=faux)\npolygone(a1, a2, a3, a4, a5, a6, a7, a8, couleur=\"noir\", epaisseur=2, remplissage=\"bleu\", opacite_fond=0.35)}}}}}}}}}}}}}}}}}}\n```\n\nL'aire de la figure est de $?$ carreaux.",
+			"variables": [
+				{
+					"name": "j",
+					"expression": "1..10"
+				},
+				{
+					"name": "n",
+					"expression": "eval:(1-min(abs(j-1),1))*12+(1-min(abs(j-2),1))*14+(1-min(abs(j-3),1))*10+(1-min(abs(j-4),1))*10+(1-min(abs(j-5),1))*12+(1-min(abs(j-6),1))*12+(1-min(abs(j-7),1))*15+(1-min(abs(j-8),1))*15+(1-min(abs(j-9),1))*7+(1-min(abs(j-10),1))*14"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{n}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"L'unité est le carreau : on compte les carreaux recouverts par la figure.",
+					"Ligne par ligne, du bas vers le haut : ${{if:j==1|4 + 4 + 4|{{if:j==2|5 + 5 + 2 + 2|{{if:j==3|4 + 4 + 2|{{if:j==4|4 + 3 + 2 + 1|{{if:j==5|2 + 4 + 4 + 2|{{if:j==6|3 + 3 + 3 + 3|{{if:j==7|5 + 4 + 3 + 2 + 1|{{if:j==8|2 + 2 + 4 + 2 + 5|{{if:j==9|1 + 1 + 5|5 + 5 + 2 + 2}}}}}}}}}}}}}}}}}} = \\textcolor{{{color:primary.0}}}{{{if:j==1|12|{{if:j==2|14|{{if:j==3|10|{{if:j==4|10|{{if:j==5|12|{{if:j==6|12|{{if:j==7|15|{{if:j==8|15|{{if:j==9|7|14}}}}}}}}}}}}}}}}}}}$ carreaux."
+				]
+			}
+		},
+		{
+			"statement": "Quelle est l'aire de la figure, en carreaux ?\n\n```figure\nfenetre: 0 ; 9 ; 0 ; 7\ngrille: 1\ndescription: Une figure coloriée sur un quadrillage, avec des carreaux entiers et des demi-carreaux.\n---\n{{if:j==1|a1 = point(1, 1, visible=faux)\na2 = point(5, 1, visible=faux)\na3 = point(5, 3, visible=faux)\na4 = point(3, 5, visible=faux)\na5 = point(1, 3, visible=faux)\npolygone(a1, a2, a3, a4, a5, couleur=\"noir\", epaisseur=2, remplissage=\"vert\", opacite_fond=0.35)|{{if:j==2|a1 = point(1, 1, visible=faux)\na2 = point(5, 1, visible=faux)\na3 = point(7, 3, visible=faux)\na4 = point(3, 3, visible=faux)\npolygone(a1, a2, a3, a4, couleur=\"noir\", epaisseur=2, remplissage=\"vert\", opacite_fond=0.35)|{{if:j==3|a1 = point(1, 1, visible=faux)\na2 = point(7, 1, visible=faux)\na3 = point(5, 3, visible=faux)\na4 = point(3, 3, visible=faux)\npolygone(a1, a2, a3, a4, couleur=\"noir\", epaisseur=2, remplissage=\"vert\", opacite_fond=0.35)|{{if:j==4|a1 = point(1, 1, visible=faux)\na2 = point(5, 1, visible=faux)\na3 = point(1, 5, visible=faux)\npolygone(a1, a2, a3, couleur=\"noir\", epaisseur=2, remplissage=\"vert\", opacite_fond=0.35)|{{if:j==5|a1 = point(3, 1, visible=faux)\na2 = point(5, 3, visible=faux)\na3 = point(3, 5, visible=faux)\na4 = point(1, 3, visible=faux)\npolygone(a1, a2, a3, a4, couleur=\"noir\", epaisseur=2, remplissage=\"vert\", opacite_fond=0.35)|{{if:j==6|a1 = point(1, 2, visible=faux)\na2 = point(4, 2, visible=faux)\na3 = point(4, 1, visible=faux)\na4 = point(6, 3, visible=faux)\na5 = point(4, 5, visible=faux)\na6 = point(4, 4, visible=faux)\na7 = point(1, 4, visible=faux)\npolygone(a1, a2, a3, a4, a5, a6, a7, couleur=\"noir\", epaisseur=2, remplissage=\"vert\", opacite_fond=0.35)|a1 = point(1, 1, visible=faux)\na2 = point(7, 1, visible=faux)\na3 = point(7, 3, visible=faux)\na4 = point(5, 5, visible=faux)\na5 = point(3, 5, visible=faux)\na6 = point(1, 3, visible=faux)\npolygone(a1, a2, a3, a4, a5, a6, couleur=\"noir\", epaisseur=2, remplissage=\"vert\", opacite_fond=0.35)}}}}}}}}}}}}\n```\n\nL'aire de la figure est de $?$ carreaux.",
+			"variables": [
+				{
+					"name": "j",
+					"expression": "1..7"
+				},
+				{
+					"name": "n",
+					"expression": "eval:(1-min(abs(j-1),1))*12+(1-min(abs(j-2),1))*8+(1-min(abs(j-3),1))*8+(1-min(abs(j-4),1))*8+(1-min(abs(j-5),1))*8+(1-min(abs(j-6),1))*10+(1-min(abs(j-7),1))*20"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{n}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On compte d'abord les carreaux entiers : ${{if:j==1|10|{{if:j==2|6|{{if:j==3|6|{{if:j==4|6|{{if:j==5|4|{{if:j==6|8|18}}}}}}}}}}}}$.",
+					"Puis les demi-carreaux : ${{if:j==1|4|{{if:j==2|4|{{if:j==3|4|{{if:j==4|4|{{if:j==5|8|{{if:j==6|4|4}}}}}}}}}}}}$. Deux demi-carreaux font un carreau entier : ${{if:j==1|4|{{if:j==2|4|{{if:j==3|4|{{if:j==4|4|{{if:j==5|8|{{if:j==6|4|4}}}}}}}}}}}}$ demi-carreaux font ${{if:j==1|2|{{if:j==2|2|{{if:j==3|2|{{if:j==4|2|{{if:j==5|4|{{if:j==6|2|2}}}}}}}}}}}}$ carreaux.",
+					"Aire : ${{if:j==1|10|{{if:j==2|6|{{if:j==3|6|{{if:j==4|6|{{if:j==5|4|{{if:j==6|8|18}}}}}}}}}}}} + {{if:j==1|2|{{if:j==2|2|{{if:j==3|2|{{if:j==4|2|{{if:j==5|4|{{if:j==6|2|2}}}}}}}}}}}} = \\textcolor{{{color:primary.0}}}{{{if:j==1|12|{{if:j==2|8|{{if:j==3|8|{{if:j==4|8|{{if:j==5|8|{{if:j==6|10|20}}}}}}}}}}}}}$ carreaux."
+				]
+			}
+		},
+		{
+			"statement": "L'unité d'aire est le rectangle orange **u**. Quelle est l'aire de la figure bleue, en unités **u** ?\n\n```figure\nfenetre: 0 ; 13 ; 0 ; 7\ngrille: 1\ndescription: Une figure bleue sur un quadrillage, et à côté un rectangle orange de deux carreaux, l'unité u.\n---\n{{if:j==1|a1 = point(1, 1, visible=faux)\na2 = point(5, 1, visible=faux)\na3 = point(5, 4, visible=faux)\na4 = point(1, 4, visible=faux)\npolygone(a1, a2, a3, a4, couleur=\"noir\", epaisseur=2, remplissage=\"bleu\", opacite_fond=0.35)\nu1 = point(10, 1, visible=faux)\nu2 = point(12, 1, visible=faux)\nu3 = point(12, 2, visible=faux)\nu4 = point(10, 2, visible=faux)\npolygone(u1, u2, u3, u4, couleur=\"noir\", epaisseur=2, remplissage=\"orange\", opacite_fond=0.6)\ntexte(11, 2.6, \"u\")|{{if:j==2|a1 = point(1, 1, visible=faux)\na2 = point(6, 1, visible=faux)\na3 = point(6, 3, visible=faux)\na4 = point(3, 3, visible=faux)\na5 = point(3, 5, visible=faux)\na6 = point(1, 5, visible=faux)\npolygone(a1, a2, a3, a4, a5, a6, couleur=\"noir\", epaisseur=2, remplissage=\"bleu\", opacite_fond=0.35)\nu1 = point(10, 1, visible=faux)\nu2 = point(12, 1, visible=faux)\nu3 = point(12, 2, visible=faux)\nu4 = point(10, 2, visible=faux)\npolygone(u1, u2, u3, u4, couleur=\"noir\", epaisseur=2, remplissage=\"orange\", opacite_fond=0.6)\ntexte(11, 2.6, \"u\")|{{if:j==3|a1 = point(1, 1, visible=faux)\na2 = point(5, 1, visible=faux)\na3 = point(5, 4, visible=faux)\na4 = point(4, 4, visible=faux)\na5 = point(4, 3, visible=faux)\na6 = point(2, 3, visible=faux)\na7 = point(2, 4, visible=faux)\na8 = point(1, 4, visible=faux)\npolygone(a1, a2, a3, a4, a5, a6, a7, a8, couleur=\"noir\", epaisseur=2, remplissage=\"bleu\", opacite_fond=0.35)\nu1 = point(10, 1, visible=faux)\nu2 = point(12, 1, visible=faux)\nu3 = point(12, 2, visible=faux)\nu4 = point(10, 2, visible=faux)\npolygone(u1, u2, u3, u4, couleur=\"noir\", epaisseur=2, remplissage=\"orange\", opacite_fond=0.6)\ntexte(11, 2.6, \"u\")|{{if:j==4|a1 = point(1, 1, visible=faux)\na2 = point(5, 1, visible=faux)\na3 = point(5, 2, visible=faux)\na4 = point(4, 2, visible=faux)\na5 = point(4, 3, visible=faux)\na6 = point(3, 3, visible=faux)\na7 = point(3, 4, visible=faux)\na8 = point(2, 4, visible=faux)\na9 = point(2, 5, visible=faux)\na10 = point(1, 5, visible=faux)\npolygone(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, couleur=\"noir\", epaisseur=2, remplissage=\"bleu\", opacite_fond=0.35)\nu1 = point(10, 1, visible=faux)\nu2 = point(12, 1, visible=faux)\nu3 = point(12, 2, visible=faux)\nu4 = point(10, 2, visible=faux)\npolygone(u1, u2, u3, u4, couleur=\"noir\", epaisseur=2, remplissage=\"orange\", opacite_fond=0.6)\ntexte(11, 2.6, \"u\")|{{if:j==5|a1 = point(2, 1, visible=faux)\na2 = point(4, 1, visible=faux)\na3 = point(4, 2, visible=faux)\na4 = point(5, 2, visible=faux)\na5 = point(5, 4, visible=faux)\na6 = point(4, 4, visible=faux)\na7 = point(4, 5, visible=faux)\na8 = point(2, 5, visible=faux)\na9 = point(2, 4, visible=faux)\na10 = point(1, 4, visible=faux)\na11 = point(1, 2, visible=faux)\na12 = point(2, 2, visible=faux)\npolygone(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, couleur=\"noir\", epaisseur=2, remplissage=\"bleu\", opacite_fond=0.35)\nu1 = point(10, 1, visible=faux)\nu2 = point(12, 1, visible=faux)\nu3 = point(12, 2, visible=faux)\nu4 = point(10, 2, visible=faux)\npolygone(u1, u2, u3, u4, couleur=\"noir\", epaisseur=2, remplissage=\"orange\", opacite_fond=0.6)\ntexte(11, 2.6, \"u\")|{{if:j==6|a1 = point(1, 3, visible=faux)\na2 = point(3, 3, visible=faux)\na3 = point(3, 1, visible=faux)\na4 = point(6, 1, visible=faux)\na5 = point(6, 3, visible=faux)\na6 = point(4, 3, visible=faux)\na7 = point(4, 5, visible=faux)\na8 = point(1, 5, visible=faux)\npolygone(a1, a2, a3, a4, a5, a6, a7, a8, couleur=\"noir\", epaisseur=2, remplissage=\"bleu\", opacite_fond=0.35)\nu1 = point(10, 1, visible=faux)\nu2 = point(12, 1, visible=faux)\nu3 = point(12, 2, visible=faux)\nu4 = point(10, 2, visible=faux)\npolygone(u1, u2, u3, u4, couleur=\"noir\", epaisseur=2, remplissage=\"orange\", opacite_fond=0.6)\ntexte(11, 2.6, \"u\")|a1 = point(1, 1, visible=faux)\na2 = point(6, 1, visible=faux)\na3 = point(6, 5, visible=faux)\na4 = point(5, 5, visible=faux)\na5 = point(5, 3, visible=faux)\na6 = point(2, 3, visible=faux)\na7 = point(2, 5, visible=faux)\na8 = point(1, 5, visible=faux)\npolygone(a1, a2, a3, a4, a5, a6, a7, a8, couleur=\"noir\", epaisseur=2, remplissage=\"bleu\", opacite_fond=0.35)\nu1 = point(10, 1, visible=faux)\nu2 = point(12, 1, visible=faux)\nu3 = point(12, 2, visible=faux)\nu4 = point(10, 2, visible=faux)\npolygone(u1, u2, u3, u4, couleur=\"noir\", epaisseur=2, remplissage=\"orange\", opacite_fond=0.6)\ntexte(11, 2.6, \"u\")}}}}}}}}}}}}\n```\n\nL'aire de la figure est de $?$ unités **u**.",
+			"variables": [
+				{
+					"name": "j",
+					"expression": "1..7"
+				},
+				{
+					"name": "n",
+					"expression": "eval:(1-min(abs(j-1),1))*6+(1-min(abs(j-2),1))*7+(1-min(abs(j-3),1))*5+(1-min(abs(j-4),1))*5+(1-min(abs(j-5),1))*6+(1-min(abs(j-6),1))*6+(1-min(abs(j-7),1))*7"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{n}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"L'unité **u** recouvre $2$ carreaux.",
+					"La figure recouvre ${{if:j==1|12|{{if:j==2|14|{{if:j==3|10|{{if:j==4|10|{{if:j==5|12|{{if:j==6|12|14}}}}}}}}}}}}$ carreaux.",
+					"En unités **u** : ${{if:j==1|12|{{if:j==2|14|{{if:j==3|10|{{if:j==4|10|{{if:j==5|12|{{if:j==6|12|14}}}}}}}}}}}} \\div 2 = \\textcolor{{{color:primary.0}}}{{{if:j==1|6|{{if:j==2|7|{{if:j==3|5|{{if:j==4|5|{{if:j==5|6|{{if:j==6|6|7}}}}}}}}}}}}}$ unités **u**."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Rectangle 4 × 3 : 12",
+			"variationIndex": 0,
+			"variables": {
+				"j": "1",
+				"n": "12"
+			},
+			"answers": ["12"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : le tour compté (14)",
+			"variationIndex": 0,
+			"variables": {
+				"j": "1",
+				"n": "12"
+			},
+			"answers": ["14"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "L : 5 + 5 + 2 + 2 = 14",
+			"variationIndex": 0,
+			"variables": {
+				"j": "2",
+				"n": "14"
+			},
+			"answers": ["14"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Maison : 8 entiers + 4 demis = 12",
+			"variationIndex": 1,
+			"variables": {
+				"j": "1",
+				"n": "12"
+			},
+			"answers": ["12"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : demi-carreaux comptés entiers (14)",
+			"variationIndex": 1,
+			"variables": {
+				"j": "1",
+				"n": "12"
+			},
+			"answers": ["14"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Triangle : 6 entiers + 4 demis = 8",
+			"variationIndex": 1,
+			"variables": {
+				"j": "4",
+				"n": "8"
+			},
+			"answers": ["8"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : triangle, demis oubliés (6)",
+			"variationIndex": 1,
+			"variables": {
+				"j": "4",
+				"n": "8"
+			},
+			"answers": ["6"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Rectangle 4 × 3 en dominos : 6 u",
+			"variationIndex": 2,
+			"variables": {
+				"j": "1",
+				"n": "6"
+			},
+			"answers": ["6"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : carreaux comptés (12)",
+			"variationIndex": 2,
+			"variables": {
+				"j": "1",
+				"n": "6"
+			},
+			"answers": ["12"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

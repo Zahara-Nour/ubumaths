@@ -13,9 +13,9 @@ import { describe, it, expect } from 'vitest';
 import { parseStatChartContent } from '../../parser/stat-chart-parser';
 import { buildStatChartScene, type LawScene } from '../../utils/stat-chart-scene';
 import { generateStatChartTypst } from '../../generators/stat-chart-typst';
-import { geometricThreshold } from '$lib/statistics/geometric';
-import { binomialDistribution, binomialThreshold } from '$lib/statistics/binomial';
-import { Fraction } from '$lib/statistics/fraction';
+import { geometricThreshold } from '#lib/statistics/geometric.ts';
+import { binomialDistribution, binomialThreshold } from '#lib/statistics/binomial.ts';
+import { Fraction } from '#lib/statistics/fraction.ts';
 
 // =============================================================================
 // Helpers

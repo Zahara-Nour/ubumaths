@@ -1,5 +1,5 @@
 <script lang="ts">
-	import GroupedRouteLayout from '$lib/components/navigation/GroupedRouteLayout.svelte';
+	import GroupedRouteLayout from '#lib/components/navigation/GroupedRouteLayout.svelte';
 	import { AlertTriangle, ShieldAlert } from '@lucide/svelte';
 	import type { LayoutData } from './$types';
 	import type { Component, Snippet } from 'svelte';
@@ -17,7 +17,14 @@
 			href: '/dashboard/teacher/moderation/gestion',
 			label: 'Gestion',
 			icon: ShieldAlert as unknown as Component,
-			badge: data.pendingReportsCount > 0 ? data.pendingReportsCount : undefined
+			// Compteur illisible : « ? », jamais rien (rien = zéro signalement, écart L123)
+			badge:
+				data.pendingReportsCount === null
+					? ('?' as const)
+					: data.pendingReportsCount > 0
+						? data.pendingReportsCount
+						: undefined,
+			badgeLabel: data.pendingReportsCount === null ? 'Nombre de signalements inconnu' : undefined
 		}
 	]);
 </script>

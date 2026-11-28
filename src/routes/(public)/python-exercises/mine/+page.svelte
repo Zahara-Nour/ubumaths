@@ -1,11 +1,11 @@
 <script lang="ts">
-	import { lore } from '$lib/config/lore';
-	import { invalidateAll } from '$app/navigation';
-	import { Button } from '$lib/components/ui/button';
-	import { Badge } from '$lib/components/ui/badge';
-	import { ConfirmDialog } from '$lib/components/ui/confirm-dialog';
+	import { lore } from '#lib/config/lore.ts';
+	import { refreshAll } from '$app/navigation';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
+	import { ConfirmDialog } from '#lib/components/ui/confirm-dialog/index.ts';
 	import { ExternalLink, Trash2, Plus, Copy, Pencil } from '@lucide/svelte';
-	import { toaster } from '$lib/stores/toaster.svelte';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
 
 	let { data } = $props();
 	const exercises = $derived(data.exercises);
@@ -45,7 +45,7 @@
 			}
 			toaster.success(`${lore.learning.exercise} supprimée`);
 			confirmingDelete = null;
-			await invalidateAll();
+			await refreshAll();
 		} catch (e) {
 			toaster.error(e instanceof Error ? e.message : 'Erreur lors de la suppression');
 		} finally {

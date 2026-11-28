@@ -20,12 +20,12 @@
 	@module components/markdown/nodes/FigureBlock
 -->
 <script lang="ts">
-	import type { FigureNode } from '$lib/ubumark/types/figure';
-	import { FIGURE_AXES_MARGIN_PX, FIGURE_PIXEL_WIDTH } from '$lib/ubumark/types/figure';
+	import type { FigureNode } from '#lib/ubumark/types/figure.ts';
+	import { FIGURE_AXES_MARGIN_PX, FIGURE_PIXEL_WIDTH } from '#lib/ubumark/types/figure.ts';
 	import { readAuthoringErrors } from '../authoring-errors';
 	import { OVER_BUDGET_MESSAGE, readRenderBudget } from '../render-budget';
 	import FigureErrors from './FigureErrors.svelte';
-	import type { ConstructionAnswerInput } from '$lib/questions/construction/drawing';
+	import type { ConstructionAnswerInput } from '#lib/questions/construction/drawing.ts';
 
 	interface Props {
 		node: FigureNode;

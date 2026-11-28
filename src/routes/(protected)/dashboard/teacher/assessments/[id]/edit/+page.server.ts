@@ -5,10 +5,10 @@
 
 import { error, fail, redirect } from '@sveltejs/kit';
 import type { Actions, PageServerLoad } from './$types';
-import { requireRoles } from '$lib/server/middleware/auth';
-import { validateUuidParam } from '$lib/server/validation/params';
-import { updateEvaluationFormSchema } from '$lib/server/validation/evaluations';
-import { EvaluationError, getEvaluation, updateEvaluation } from '$lib/server/evaluations';
+import { requireRoles } from '#lib/server/middleware/auth.ts';
+import { validateUuidParam } from '#lib/server/validation/params.ts';
+import { updateEvaluationFormSchema } from '#lib/server/validation/evaluations.ts';
+import { EvaluationError, getEvaluation, updateEvaluation } from '#lib/server/evaluations.ts';
 
 export const load: PageServerLoad = async ({ params, locals }) => {
 	const { user, profile } = await requireRoles(locals, ['teacher', 'admin']);

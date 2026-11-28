@@ -4,6 +4,7 @@ couvre:
   - 'src/lib/server/srs/**'
   - 'src/lib/server/anti-fraud/**'
   - src/lib/server/course-card-attempts.ts
+  - src/lib/server/skill-attempts/record-attempt.ts
   - 'src/lib/server/validation/{srs,skill-attempts,anti-fraud}.ts'
   - 'src/lib/components/srs/**'
   - 'src/lib/components/teacher/anti-fraud/**'
@@ -14,20 +15,24 @@ couvre:
   - 'src/routes/api/skill-attempts/**'
   - 'src/routes/api/admin/anti-fraud/**'
   - 'src/routes/api/teacher/classes/*/anti-fraud/**'
+  - 'scripts/srs/**'
 ---
 
 # Révisions espacées (SRS / FSRS)
 
 > Remplace les sept fichiers de [`srs/`](../archive/systeme-2026-06/srs/README.md) (juin 2026, archivés), écrits au temps de la
 > « famille A » du référentiel, abandonnée ([ADR 0008](../adr/0008-referentiel-famille-a-abandonne.md)).
-> Vérifié contre le code le 2026-10-11 ; badge de mémoire des notions (PR D) le 2026-10-21 ; nom des cartes de modèle (ADR 0035) le 2026-11-04 ; composition relue sans ancienne forme (lot 4a) le 2026-11-04.
+> Vérifié contre le code le 2026-10-11 ; badge de mémoire des notions (PR D) le 2026-10-21 ; nom des cartes de modèle (ADR 0035) le 2026-11-04 ; composition relue sans ancienne forme (lot 4a) le 2026-11-04 ; contenu d'une trace de `api/skill-attempts` (ADR 0038) le 2026-11-11 ; notion des cartes dues (réactions du Palotin) le 2026-11-11 ; lieu `flash_cards` « déclaré » et traces par question des séries libres le 2026-11-11 ; algorithme FSRS-6 (chantier `fsrs`) le 2026-11-15 ; cœur commun `recordStudentAttempt` et réponses en combat de la Descente le 2026-11-18.
 
 ## À quoi ça sert
 
 Faire revenir une question au moment où l'élève est sur le point de l'oublier. Chaque
 **modèle de question** répondu par un élève a une **mémoire de révision** (difficulté,
 stabilité, prochaine échéance) calculée par l'algorithme **FSRS-6**. Les révisions se font par
-**paquets** (decks) de cartes, notées Again / Hard / Good / Easy (1 à 4).
+**paquets** (decks) de cartes. L'élève retourne la carte et répond par deux boutons, « Pas réussi » /
+« Réussi » (raccourcis 1 / 2), que FSRS reçoit comme Again (1) / Good (3) ; les mêmes boutons
+(`SelfAssessButtons.svelte`) servent en Flash-cards et sur les cartes de cours (chantier
+`formes-de-serie`, 2026-11-11 ; avant : quatre notes Again / Hard / Good / Easy).
 
 Termes ([CONTEXT.md](../../CONTEXT.md)) : **SRS / révision**, **Deck** (paquet), **Auto-évaluation**,
 **Question de cours**, **Carte de cours**, **Flash-cards**, **Tentative**, **Point du programme**.
@@ -56,22 +61,23 @@ Quatre sortes de paquets :
 
 ### Serveur — `src/lib/server/srs/`
 
-| Fichier                     | Rôle                                                                                                                                                                |
-| --------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `fsrs-actions.ts`           | **Seul écrivain de la mémoire** : `applyFsrsReview` (lit → `reviewCard` → écrit), `loadOrInitCardStats`, `upsertCardStats` (client service).                        |
-| `best-of-day.ts`            | `reviewBestOfDay` : auto-évaluation, un seul résultat par jour et par question, le meilleur ([ADR 0016](../adr/0016-auto-evaluation-meilleur-resultat-du-jour.md)). |
-| `srs-attempt.ts`            | `recordSrsReviewAttempt` : la trace `skill_attempts` (source `srs`) d'une révision de modèle.                                                                       |
-| `record-series-reviews.ts`  | `recordSeriesReviews` : FSRS + Programme pour une séance de série (`/api/tests/save`) ou une évaluation (`evaluation-attempts.ts`).                                 |
-| `programme-deck.ts`         | `ensureProgrammeDeck`, `ensureProgrammeDeckCard` : crée le paquet Programme et y ajoute une carte, au client service, idempotent (23505 = déjà là).                 |
-| `programme-deck-rule.ts`    | `entersProgrammeDeck` : la règle unique d'entrée au Programme (modèle publié, jamais une question de cours — décision Q113).                                        |
-| `chapter-deck.ts`           | Paquet calculé d'un chapitre : `loadChapterDeck`, `loadChapterDecks`, `selectChapterSession`, `summarizeChapterDecks`, `CHAPTER_SESSION_NEW_LIMIT` (10).            |
-| `deck-copy.ts`              | Copie d'un paquet assigné : `planDeckCopies`, `planSectionCopies`, `resolveCardSection`, `findAssignedDeckCopy` (par `source_deck_id`, jamais par le nom).          |
-| `curriculum-point-badge.ts` | Badge de mémoire d'un point du programme : `templateToBadge`, `worstBadge`, `aggregateBadge` (purs), `computePointBadges` (lit la base).                            |
+| Fichier                               | Rôle                                                                                                                                                                                                                                              |
+| ------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `fsrs-actions.ts`                     | **Seul écrivain de la mémoire** : `applyFsrsReview` (lit → `reviewCard` → écrit), `loadOrInitCardStats`, `upsertCardStats` (client service).                                                                                                      |
+| `best-of-day.ts`                      | `reviewBestOfDay` : auto-évaluation, un seul résultat par jour et par question, le meilleur ([ADR 0016](../adr/0016-auto-evaluation-meilleur-resultat-du-jour.md)).                                                                               |
+| `srs-attempt.ts`                      | `recordSrsReviewAttempt` : la trace `skill_attempts` (`student_self`, lieu `review`) d'une révision de modèle.                                                                                                                                    |
+| `../skill-attempts/record-attempt.ts` | `recordStudentAttempt` : cœur de `api/skill-attempts` et des réponses en combat de la Descente — modèle lu au client service, FSRS **puis** trace, puis Programme ; `insertClient` = client qui écrit la trace (service pour le lieu `descente`). |
+| `record-series-reviews.ts`            | `recordSeriesReviews` : FSRS + traces + Programme pour l'envoi d'une évaluation (`evaluation-attempts.ts`) ; une série libre passe par `api/skill-attempts`, question par question.                                                               |
+| `programme-deck.ts`                   | `ensureProgrammeDeck`, `ensureProgrammeDeckCard` : crée le paquet Programme et y ajoute une carte, au client service, idempotent (23505 = déjà là).                                                                                               |
+| `programme-deck-rule.ts`              | `entersProgrammeDeck` : la règle unique d'entrée au Programme (modèle publié, jamais une question de cours — décision Q113).                                                                                                                      |
+| `chapter-deck.ts`                     | Paquet calculé d'un chapitre : `loadChapterDeck`, `loadChapterDecks`, `selectChapterSession`, `summarizeChapterDecks`, `CHAPTER_SESSION_NEW_LIMIT` (10).                                                                                          |
+| `deck-copy.ts`                        | Copie d'un paquet assigné : `planDeckCopies`, `planSectionCopies`, `resolveCardSection`, `findAssignedDeckCopy` (par `source_deck_id`, jamais par le nom).                                                                                        |
+| `curriculum-point-badge.ts`           | Badge de mémoire d'un point du programme : `templateToBadge`, `worstBadge`, `aggregateBadge` (purs), `computePointBadges` (lit la base).                                                                                                          |
 
 Hors du dossier, `src/lib/server/course-card-attempts.ts` dit si une tentative porte sur une carte
 de cours, en lisant la base (`question_templates.options`), jamais l'instance envoyée par le
 client : `attemptSourceForTemplate` (source `student_self` ou `auto`, `api/skill-attempts`) ;
-`fetchCourseCardTemplateIds` (`api/tests/save`, au client service : la RLS cacherait à l'élève une
+`fetchCourseCardTemplateIds` (`api/tests/save`, pour l'XP de fin de série, au client service : la RLS cacherait à l'élève une
 carte repassée en brouillon) réessaie deux fois (150 puis 400 ms), puis lève
 `CourseCardLookupError` et la route répond 503 avant toute écriture ; `schoolDay` donne le jour
 civil à Paris, celui de `best-of-day.ts`.
@@ -81,7 +87,8 @@ Validation Zod : `src/lib/server/validation/srs.ts` (paquets, cartes, sections, 
 
 ### Composants — `src/lib/components/srs/`
 
-`ReviewSession.svelte` (la séance, pour toute `ReviewSource`) · `FSRSButtons.svelte` (les 4 notes) ·
+`ReviewSession.svelte` (la séance, pour toute `ReviewSource` ; boutons « Pas réussi / Réussi » de
+`src/lib/components/questions/SelfAssessButtons.svelte`) ·
 `CustomFlashCard.svelte` / `CustomCardEditor.svelte` (cartes libres recto/verso) ·
 `TemplateSelector.svelte` (ajouter un modèle à un paquet) · `DeckCard.svelte` (liste des paquets) ·
 `CurriculumPointFsrsBadge.svelte` (badge de mémoire, utilisé par `NotionsPanel.svelte` et
@@ -91,17 +98,17 @@ sinon son nom reste sans lien.
 
 ### Routes API
 
-| Route                                          | Méthodes                     | Rôle                                                                                                                   |
-| ---------------------------------------------- | ---------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
-| `api/skill-attempts`                           | POST                         | Réponse à une question interactive : FSRS **puis** trace (`auto` ou `student_self`), puis Programme.                   |
-| `api/srs/review/due`                           | GET                          | Cartes dues d'un paquet (RPC `get_due_cards_for_deck`), filtres `states` et `all` (révision forcée).                   |
-| `api/srs/review/submit`                        | POST                         | Révision d'une carte de paquet : FSRS, trace `srs`, Programme, statistiques `srs_review_sessions`, forfait du Palotin. |
-| `api/srs/chapters/[chapterId]/due`             | GET                          | Séance du paquet calculé d'un chapitre (élève seul).                                                                   |
-| `api/srs/chapters/[chapterId]/submit`          | POST                         | Réponse dans ce paquet : recalcul du paquet (modèle hors paquet → 403), FSRS meilleur-du-jour, trace.                  |
-| `api/srs/decks`, `api/srs/decks/[id]`          | GET, POST / GET, PUT, DELETE | Paquets ; un paquet assigné ne se modifie ni ne se supprime. Statistiques par RPC `get_deck_stats`.                    |
-| `api/srs/decks/[id]/assign`                    | POST                         | Prof : copie le paquet pour chaque élève (cartes, sections, mémoire), au client service.                               |
-| `api/srs/decks/[id]/sections`, `…/[sectionId]` | GET, POST / PATCH, DELETE    | Sections manuelles d'un paquet personnel.                                                                              |
-| `api/srs/cards`, `api/srs/cards/[id]`          | GET, POST / GET, PUT, DELETE | Cartes ; 403 sur un paquet assigné (création et modification : aussi sur le Programme).                                |
+| Route                                          | Méthodes                     | Rôle                                                                                                                                                                                                                                    |
+| ---------------------------------------------- | ---------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `api/skill-attempts`                           | POST                         | Trace d'une question de série libre (Flash-cards, Saisie, Contrôle blanc, Course), envoyée dès la réponse (`series-trace.ts`, seule voie : `FlashCard` n'envoie rien) : FSRS **puis** trace (`auto` ou `student_self`), puis Programme. |
+| `api/srs/review/due`                           | GET                          | Cartes dues d'un paquet (RPC `get_due_cards_for_deck`), filtres `states` et `all` (révision forcée).                                                                                                                                    |
+| `api/srs/review/submit`                        | POST                         | Révision d'une carte de paquet : FSRS, trace « déclaré » (lieu `review`), Programme, statistiques `srs_review_sessions`, forfait du Palotin.                                                                                            |
+| `api/srs/chapters/[chapterId]/due`             | GET                          | Séance du paquet calculé d'un chapitre (élève seul).                                                                                                                                                                                    |
+| `api/srs/chapters/[chapterId]/submit`          | POST                         | Réponse dans ce paquet : recalcul du paquet (modèle hors paquet → 403), FSRS meilleur-du-jour, trace.                                                                                                                                   |
+| `api/srs/decks`, `api/srs/decks/[id]`          | GET, POST / GET, PUT, DELETE | Paquets ; un paquet assigné ne se modifie ni ne se supprime. Statistiques par RPC `get_deck_stats` (« En cours » = `learning` + `relearning`).                                                                                          |
+| `api/srs/decks/[id]/assign`                    | POST                         | Prof : copie le paquet pour chaque élève (cartes, sections, mémoire), au client service.                                                                                                                                                |
+| `api/srs/decks/[id]/sections`, `…/[sectionId]` | GET, POST / PATCH, DELETE    | Sections manuelles d'un paquet personnel.                                                                                                                                                                                               |
+| `api/srs/cards`, `api/srs/cards/[id]`          | GET, POST / GET, PUT, DELETE | Cartes ; 403 sur un paquet assigné (création et modification : aussi sur le Programme).                                                                                                                                                 |
 
 ### Pages
 
@@ -136,6 +143,30 @@ s'affichait « toutes capacités ».
   entre tous les paquets** (Programme, paquet assigné, paquet du chapitre — décision Q165) :
   réviser une question dans un paquet avance son échéance partout.
 - Première révision : `loadOrInitCardStats` part de `FSRS.initCard()` (stabilité 0).
+- **Algorithme** (`fsrs.ts`) : FSRS-6 tel que publié, avec ses 21 paramètres par défaut, vérifié contre
+  l'implémentation de référence `ts-fsrs` (devDependency, **tests seulement** :
+  `src/lib/srs/__tests__/fsrs-reference.test.ts`). Fiche neuve : stabilité `w[note − 1]`, difficulté
+  `w[4] − e^(w[5]·(note − 1)) + 1`. Courbe d'oubli `R = (1 + f·t/S)^(−w[20])`, `f` choisi pour que R = 0,9
+  quand t = S : à la rétention 0,9, **l'intervalle vaut la stabilité** (arrondie, entre 1 et 36 500 j).
+  L'écart `t` se compte en **jours civils à Paris** ; `t = 0` (même jour) → formule court terme
+  (`w[17..19]`). Bien ×5 à chaque échéance : 2 · 11 · 46 · 163 · 497 j. `reviewCard` prend un `now`
+  facultatif (tests).
+- **États** : échec → `relearning` ; fiche neuve réussie → `learning` ; toute autre réussite → `review`.
+  `learning` et `relearning` ne durent donc qu'une révision (avant le 2026-11-15, `learning` restait
+  `learning` à chaque réussite). Le badge ne lit que `relearning` comme « à remédier » : une fiche
+  réussie une fois (`learning`), due, est « à renforcer » (chantier `fsrs`, Q6).
+- **Fiches écrites par l'ancien algorithme** (avant le 2026-11-15 : difficulté bloquée à 10, stabilité
+  0 après un premier échec) : `pnpm srs:rejouer-fiches --cible prod` (simulation) puis `--publier` (sur demande de
+  David), puis à nouveau la simulation, qui doit dire « 0 à rejouer » (l'appli écrit sans condition :
+  une révision pendant l'écriture peut réécraser une fiche rejouée). Chaque lancement écrit une
+  sauvegarde neuve des lignes lues dans `~/Downloads/chiphre-sauvegardes/` (hors du dépôt, mode 600,
+  jamais réécrite) : **la supprimer après vérification, sous 30 jours** ; ne pas coller la sortie dans
+  le dépôt. Fiches `template` seulement. Chaque fiche repart de
+  zéro et rejoue son `review_history` (mêmes dates, notes, temps) ; écriture sous condition
+  `updated_at` inchangé ; une fiche sans historique, ou à l'historique illisible (note hors 1-4,
+  désordre, `before`), n'est pas touchée ; relancer ne change rien. Calcul pur et testé :
+  `scripts/srs/rejouer-fiches-calcul.ts`. `difficulty` et `stability` sont des colonnes `real`
+  (32 bits) que PostgREST rend à 6 chiffres significatifs : on compare à 1e-5 près (relatif).
 - `review_history` (JSONB) garde chaque révision ; pour une auto-évaluation, l'entrée porte
   aussi `before`, l'état de la fiche juste avant (ce qui permet de la remplacer dans la journée).
 - Tous les chemins instancient `new FSRS()` : paramètres et rétention **par défaut**
@@ -146,12 +177,56 @@ s'affichait « toutes capacités ».
 
 ### Note ↔ réussite
 
-| Chemin                                      | Note FSRS                                                   | Trace `skill_attempts`                 |
-| ------------------------------------------- | ----------------------------------------------------------- | -------------------------------------- |
-| Question interactive (`api/skill-attempts`) | juste → Good (3), faux → Again (1)                          | `success`, source `auto`               |
-| Carte de cours (même route)                 | idem, **meilleur du jour**                                  | source `student_self` (toutes gardées) |
-| Révision d'un paquet / d'un chapitre        | note choisie (1-4)                                          | `success = note ≥ 2`, source `srs`     |
-| Série, évaluation (`recordSeriesReviews`)   | juste → Good, faux → Again ; flash-cards = meilleur du jour | `auto` ou `student_self`               |
+| Chemin                                          | Note FSRS                                                 | Trace `skill_attempts`                 |
+| ----------------------------------------------- | --------------------------------------------------------- | -------------------------------------- |
+| Question interactive (`api/skill-attempts`)     | juste → Good (3), faux → Again (1) (⁴) (⁵)                | `success`, source `auto`               |
+| Carte de cours, lieu `flash_cards` (même route) | idem, **meilleur du jour**                                | source `student_self` (toutes gardées) |
+| Révision d'un paquet / d'un chapitre            | Réussi → Good (3), Pas réussi → Again (1) (⁵)             | `student_self`, lieu `review` (¹)      |
+| Évaluation (`recordSeriesReviews`)              | juste → Good, faux → Again ; carte = meilleur du jour (⁴) | `auto`, lieu `evaluation` (²)          |
+| Combat de la Descente (`recordCombatAnswer`)    | juste → Good (3), faux → Again (1)                        | `auto`, lieu `descente` (³)            |
+
+(¹) `success = note ≥ 2`, note gardée dans `grade` (`recordSrsReviewAttempt`). Avant l'ADR 0038, la
+révision écrivait la source `srs` ; ces anciennes traces se lisent « déclaré », sans réécriture.
+L'API accepte encore les notes 2 et 4 (onglet ouvert avant la mise en prod) ; l'écran n'envoie plus
+que 1 ou 3. La heatmap d'activité et l'anti-triche (`srs_vs_quiz_gap`) traitent `student_self` au lieu
+`review` comme une ancienne trace `srs`.
+
+(²) Écrite au client service (`attemptsClient`) : la policy élève refuse le lieu `evaluation`. Durées
+et fin calculées par `evaluationTraceOf` ([evaluations.md](evaluations.md), envoi d'une copie).
+
+(³) Même cœur que `api/skill-attempts` (`recordStudentAttempt`), trace écrite au client service
+(la policy élève refuse `descente`) ; graine, réponse et verdict par case, sans durée
+([descente.md](descente.md), combat).
+
+(⁴) Question posée **en QCM** depuis ses erreurs prévues (chantier `idees-format`, idée 4,
+[questions.md](questions.md)) : juste → **Hard (2)**, demi-réussite, la question revient plus tôt ;
+faux → Again (1). `answerGrade` (`src/lib/server/srs/answer-grade.ts`), commun aux deux chemins ; la
+trace porte `answered_as_choice` (CHECK : source `auto`, lieux `typing`, `mock_test`, `number_race`,
+`evaluation`). En série libre, le navigateur le déclare (même limite que « Réussi » en Flash-cards) ;
+en contrôle, le serveur le lit sur la copie figée. `success` reste vrai : le suivi des points du
+programme compte la réussite (décision Q1 du 2026-11-22).
+
+(⁵) **Coup de pouce** ouvert (chantier `idees-format`, idée 5, [questions.md](questions.md)) : la
+trace porte `with_help` (colonne prévue en juin, jamais écrite à vrai avant ; décision 58 : marqueur
+sans effet sur l'acquisition). En série (`api/skill-attempts`, Saisie et Flash-cards seulement : le
+Zod refuse `with_help` en `mock_test` et `number_race`, qui n'ont pas de bouton), réussite → **Hard
+(2)** (`answerGrade(success, enQcm || avecIndice)`), Flash-cards comprises (« Réussi » après
+l'indice). En révision (`api/srs/review/submit`, `api/srs/chapters/[id]/submit`, champ `withHelp`,
+défaut faux), la note choisie passe par `helpedGrade` : 3 ou 4 → 2, 1 reste 1 ; trace `with_help`
+(`recordSrsReviewAttempt`). Les statistiques de séance de révision comptent la note choisie par
+l'élève (« Réussi » reste réussi). Le navigateur le déclare, même limite que « Réussi ».
+
+**Contenu d'une trace posée par `api/skill-attempts`** (ADR 0038) : le **lieu** est exigé
+(`flash_cards`, `typing` = Saisie, `mock_test` = Contrôle blanc, `number_race` = Course aux nombres ;
+jamais `evaluation`, `review` ni `descente` — combat de la Descente de la Vistule —, écrits par le
+serveur ; la policy d'insertion de l'élève refuse `evaluation` et `descente`), la **graine** est facultative ; durée de
+réponse, durée allouée et fin (`validated` / `timeout`) seulement en formes chronométrées
+(`mock_test`, `number_race`) ; réponse case par case (`answer_parts`) et verdict par case
+(`part_verdicts`) seulement là où l'on tape (`typing`, `mock_test`, `number_race`), autant de verdicts
+que de cases, aucune case → NULL ; « répondu en QCM » (`answered_as_choice`, défaut faux) aux mêmes lieux
+seulement ; « avec indice » (`with_help`, défaut faux) en `typing` et `flash_cards` seulement (⁵). Le Zod (`skillAttemptInputSchema`) reprend les CHECK de la base
+(50 cases, 2 000 caractères par case, 10 000 en tout) : un corps hors règle rend 400, pas 500.
+`answer_parts` est du texte libre de mineur, toujours affiché échappé.
 
 Le trigger `skill_attempts_after_insert` recalcule ensuite `student_point_state` pour chaque
 point tagué du modèle (`question_template_points`) via `update_student_point_state`. Il ne
@@ -162,19 +237,20 @@ touche jamais `srs_card_stats` : **FSRS n'existe qu'en TypeScript**.
 Créé à la première réponse sur un modèle tagué à un point du programme ; nom « Programme » ;
 un par élève (index unique `uq_srs_decks_one_programme_per_owner`). Une carte y entre si le modèle
 est tagué **et** `entersProgrammeDeck` (publié, pas une question de cours). Trois portes
-d'entrée, une seule règle : `api/skill-attempts`, `api/srs/review/submit`, `recordSeriesReviews`.
+d'entrée, une seule règle : `recordStudentAttempt` (`api/skill-attempts` et combats de la Descente),
+`api/srs/review/submit`, `recordSeriesReviews`.
 Le paquet d'un chapitre n'ajoute **rien** au Programme.
 
 La page `decks/programme` range les cartes en 4 sections calculées à la lecture
 (`templateToBadge`) et affiche sous chaque carte la **notion** de l'arbre où se range son point
 (niveau de l'élève d'abord, `keepLinksOfGrade` ; points lisibles seuls, le plus petit code s'il y en a
 plusieurs) ; « À remédier » et « À renforcer » lancent une séance filtrée
-(`?states=learning,relearning`, `?states=review`) :
+(`?states=relearning`, `?states=learning,review`) :
 
 | Badge                | Règle (par carte)                                |
 | -------------------- | ------------------------------------------------ |
-| `a_remedier`         | échue, état `learning` ou `relearning`           |
-| `a_renforcer`        | échue, état `review`                             |
+| `a_remedier`         | échue, état `relearning` (un échec)              |
+| `a_renforcer`        | échue, état `learning` ou `review`               |
 | `en_apprentissage`   | état `new`, ou `learning`/`relearning` non échue |
 | `acquise_en_memoire` | état `review` non échue                          |
 
@@ -225,7 +301,7 @@ fois par jour, si (a) l'élève a révisé au moins 10 cartes aujourd'hui, tous 
 le paquet n'a plus aucune carte due (`get_due_cards_for_deck`, échéance respectée) et il a révisé au
 moins 3 cartes aujourd'hui (`REVIEW_REWARD_CARDS_ANY_DECK`, `REVIEW_REWARD_CARDS_EMPTIED_DECK`). Le
 compte du jour = cartes distinctes dont `srs_card_stats.last_review` tombe aujourd'hui (table écrite
-par le serveur seul, Q171 ; elle inclut aussi les réponses d'Entraînement et de flash, qui passent par
+par le serveur seul, Q171 ; elle inclut aussi les réponses de Contrôle blanc, de Course et de flash, qui passent par
 FSRS). Une révision forcée d'un paquet sans carte due rapporte donc le forfait dès la 3e carte.
 
 **Gidouilles de la séance** (décision de David, 2026-10-24) : la même séance terminée rapporte **+2
@@ -253,6 +329,12 @@ En fin de séance, une fois la dernière carte enregistrée, `ReviewSession` dem
 la Chatterie (`fetchMathouNews`) et les affiche sous le gain du Palotin (`MathouNewsCard`) : voir
 [mathoux.md](mathoux.md#annonce-des-nouveautés-en-fin-de-séance-v12).
 
+Pendant la séance, le Palotin peut réagir une fois (5 réussites d'affilée, note ≥ 3 ; 3 erreurs sur
+une même notion) : la carte suivante attend son départ. Pour cela, les deux `due` joignent à chaque
+carte de modèle la notion du modèle (`notionId`, `classification_node_id`), lue par
+`toSessionPayload` (absente ou mal formée : `null`). Voir
+[buddy-palotins.md § Réactions en séance](buddy-palotins.md#reactions-en-seance-2026-11-11).
+
 « Quitter », en tête de séance (`BackLink kind="quit"`, [composants-ui.md § BackLink](../pratiques/composants-ui.md#backlink--bouton-retour-obligatoire)), ramène là
 où elle a commencé : la page du paquet, ou le Programme si elle en part (`?depuis=programme`, posé par
 `studySessionHref` et relu par `studySessionReturnHref`, `src/lib/navigation/return-links.ts`). Une
@@ -271,7 +353,7 @@ Ce qu'il détecte (passif : un drapeau pour le prof, aucun effet côté élève)
 
 | Signal            | Déclenche si                                    | Gravité | Score | Échantillon min.  |
 | ----------------- | ----------------------------------------------- | ------- | ----- | ----------------- |
-| `high_easy_ratio` | > 90 % de Easy                                  | 2       | 0,5   | 20 révisions      |
+| `high_easy_ratio` | > 90 % de Easy (muet : plus de bouton Easy)     | 2       | 0,5   | 20 révisions      |
 | `no_again`        | ≥ 30 révisions consécutives sans Again          | 3       | 0,7   | 30                |
 | `fast_timeSpent`  | médiane du temps < 2 s                          | 3       | 0,7   | 10 avec temps     |
 | `burst`           | > 15 révisions en 60 s                          | 4       | 0,85  | 16                |
@@ -325,17 +407,17 @@ saute un drapeau identique non résolu de moins de 7 jours, écrit dans `srs_ant
 
 ## Tests
 
-| Où                                                                                                                                                                        | Quoi                                                                                                                                                                                                                                                                                                                       |
-| ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `src/lib/srs/__tests__/` (`fsrs`, `config`, `generator`, `review-source`)                                                                                                 | algorithme FSRS-6, constantes, instances, traduction des réponses de séance                                                                                                                                                                                                                                                |
-| `src/lib/server/srs/__tests__/`                                                                                                                                           | `best-of-day`, `curriculum-point-badge`, `chapter-deck`, `deck-copy`, `fsrs-actions`, `programme-deck`, `programme-deck-rule`                                                                                                                                                                                              |
-| `src/lib/server/anti-fraud/__tests__/` (`detectors`, `runner`)                                                                                                            | seuils des 5 signaux, composite, runner (base simulée)                                                                                                                                                                                                                                                                     |
-| `src/lib/server/validation/__tests__/` (`srs`, `srs-chantier`, `anti-fraud`)                                                                                              | schémas Zod                                                                                                                                                                                                                                                                                                                |
-| `src/lib/components/srs/__tests__/`, `src/lib/components/teacher/anti-fraud/__tests__/`                                                                                   | `ReviewSession`, `CurriculumPointFsrsBadge`, liste / filtres / détail des drapeaux                                                                                                                                                                                                                                         |
-| `src/routes/api/srs/__tests__/api-routes.test.ts`, `…/review/submit/__tests__/questions-de-cours.test.ts`                                                                 | routes SRS ; question de cours hors Programme                                                                                                                                                                                                                                                                              |
-| `src/routes/api/skill-attempts/__tests__/`, `src/routes/api/tests/save/__tests__/fsrs-sur-evaluation.test.ts`, `src/lib/server/__tests__/evaluation-attempts-srs.test.ts` | FSRS depuis les réponses, séries et évaluations                                                                                                                                                                                                                                                                            |
-| `src/routes/(protected)/dashboard/revisions/decks/programme/__tests__/`                                                                                                   | sections du Programme                                                                                                                                                                                                                                                                                                      |
-| `tests/integration/` (Supabase local, `pnpm test:integration`)                                                                                                            | `skill-attempts-endpoint`, `srs-memoire-serveur`, `srs-paquets-crees-par-le-serveur`, `paquet-programme-rempli-par-le-serveur`, `paquet-revision-chapitre`, `chapter-decks`, `copie-sections-deck-assigne`, `revision-forcee-deck`, `srs-stats-echanges-delai`, `carnets-srs-acces`, `archived-member-exercise-srs-access` |
+| Où                                                                                                                                                         | Quoi                                                                                                                                                                                                                                                                                                                       |
+| ---------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `src/lib/srs/__tests__/` (`fsrs`, `config`, `generator`, `review-source`)                                                                                  | algorithme FSRS-6, constantes, instances, traduction des réponses de séance                                                                                                                                                                                                                                                |
+| `src/lib/server/srs/__tests__/`                                                                                                                            | `best-of-day`, `curriculum-point-badge`, `chapter-deck`, `deck-copy`, `fsrs-actions`, `programme-deck`, `programme-deck-rule`                                                                                                                                                                                              |
+| `src/lib/server/anti-fraud/__tests__/` (`detectors`, `runner`)                                                                                             | seuils des 5 signaux, composite, runner (base simulée)                                                                                                                                                                                                                                                                     |
+| `src/lib/server/validation/__tests__/` (`srs`, `srs-chantier`, `anti-fraud`)                                                                               | schémas Zod                                                                                                                                                                                                                                                                                                                |
+| `src/lib/components/srs/__tests__/`, `src/lib/components/teacher/anti-fraud/__tests__/`                                                                    | `ReviewSession`, `CurriculumPointFsrsBadge`, liste / filtres / détail des drapeaux                                                                                                                                                                                                                                         |
+| `src/routes/api/srs/__tests__/api-routes.test.ts`, `…/review/submit/__tests__/questions-de-cours.test.ts`                                                  | routes SRS ; question de cours hors Programme                                                                                                                                                                                                                                                                              |
+| `src/routes/api/skill-attempts/__tests__/`, `src/lib/questions/__tests__/series-trace.test.ts`, `src/lib/server/__tests__/evaluation-attempts-srs.test.ts` | FSRS depuis les réponses, séries et évaluations                                                                                                                                                                                                                                                                            |
+| `src/routes/(protected)/dashboard/revisions/decks/programme/__tests__/`                                                                                    | sections du Programme                                                                                                                                                                                                                                                                                                      |
+| `tests/integration/` (Supabase local, `pnpm test:integration`)                                                                                             | `skill-attempts-endpoint`, `srs-memoire-serveur`, `srs-paquets-crees-par-le-serveur`, `paquet-programme-rempli-par-le-serveur`, `paquet-revision-chapitre`, `chapter-decks`, `copie-sections-deck-assigne`, `revision-forcee-deck`, `srs-stats-echanges-delai`, `carnets-srs-acces`, `archived-member-exercise-srs-access` |
 
 ## Tables
 
@@ -366,7 +448,10 @@ Colonnes et policies : [base-de-donnees-tables.md](base-de-donnees-tables.md) et
 
 ## Écarts connus
 
-- **Anti-triche cassé** (voir plus haut) : à réparer avant tout rallumage.
+Les écarts de cette zone sont au [registre des écarts](../ecarts/registre.md) : `pnpm ecarts`. Un écart s'écrit là-bas, jamais ici.
+
+### À savoir (voulu)
+
 - **Paquets de chapitre et révision forcée : en sommeil, pas morts** (décision de David,
   2026-10-12). Construits exprès le 2026-09-14 : `chapter_decks` rattache un paquet SOURCE à un
   chapitre (modes `algorithme` / `force`, publié comme le reste du contenu), et `all=true` sur
@@ -374,16 +459,6 @@ Colonnes et policies : [base-de-donnees-tables.md](base-de-donnees-tables.md) et
   contrôle »). Serveur, policies et tests d'intégration sont en place ; manquent les écrans
   (rattacher un paquet côté prof, bouton « Tout réviser » côté élève). À construire le jour où un
   contrôle se prépare avec un paquet de chapitre ; ne pas les supprimer comme code mort.
-- ✅ **Suppressions sans `.select()`** (corrigé le 2026-10-10, E20) : les trois `DELETE` vérifient
-  désormais les lignes supprimées et répondent 403 quand la RLS refuse en silence (paquet assigné
-  ou géré automatiquement — Programme, chapitre). Test :
-  `src/routes/api/srs/__tests__/suppressions-silencieuses.test.ts`.
-- **La note ignorée après la 1re révision** (trouvé le 2026-10-25, chantier demo-debug) :
-  `calculateNewStability` (`src/lib/srs/fsrs.ts`) ne lit `grade` que pour une carte neuve
-  (stabilité 0) ; ensuite Difficile, Bien et Facile donnent la même stabilité, donc le même
-  intervalle (22 j dans l'essai). Futur chantier `fsrs`.
-- `reviewedToday` (`src/lib/server/course-card-attempts.ts`) n'a aucun appelant hors de ses tests
-  (relevé du 2026-10-12).
 
 ---
 

@@ -3,7 +3,7 @@ import { analyzeAllFunctions, toAnalysisInputs } from '../analysis';
 import { createEvaluator, parseFunction } from '../evaluator';
 import type { ExplicitFunction, Plottable, SequencePlottable, Viewport } from '../types';
 import { DEFAULT_FIRST_TERM_MAX, DEFAULT_FIRST_TERM_MIN, parseSequence } from '../sequence';
-import { toLatex } from '$lib/mathAST/latex-generator';
+import { toLatex } from '#lib/mathAST/latex-generator.ts';
 
 const viewport: Viewport = { xMin: -10, xMax: 10, yMin: -10, yMax: 10 };
 

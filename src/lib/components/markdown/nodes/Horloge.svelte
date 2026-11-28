@@ -4,7 +4,8 @@
 
 	Cadran à aiguilles (CP-046, CP-047, puis les minutes au CE1 / CE2 ; phase 0 :
 	`docs/wip/horloge-progress.md`). Dessiné depuis `buildHorlogeScene`, la même
-	scène que le PDF. Horloge à placer (`placer:`) : `HorlogePlacer.svelte`.
+	scène que le PDF. Horloge à placer (`placer:`) : `HorlogePlacer.svelte` ;
+	au corrigé (`solution: oui`, V109), le cadran dessiné ici, aiguilles en vert.
 
 	- Une seule couleur d'accent (la petite aiguille) ; les aiguilles se
 	  distinguent aussi par leur forme (trotteuse fine à contrepoids, dessinée
@@ -20,15 +21,16 @@
 <script lang="ts">
 	import {
 		HORLOGE_ARIA_LABEL,
+		HORLOGE_SIZE_CM,
 		HORLOGE_UNAVAILABLE,
 		type HorlogeNode
-	} from '$lib/ubumark/types/horloge';
+	} from '#lib/ubumark/types/horloge.ts';
 	import {
 		buildHorlogeScene,
 		HORLOGE_FONT,
 		HORLOGE_STROKE,
 		HORLOGE_VIEW
-	} from '$lib/ubumark/utils/horloge-scene';
+	} from '#lib/ubumark/utils/horloge-scene.ts';
 	import { readAuthoringErrors } from '../authoring-errors';
 	import HorlogePlacer from './HorlogePlacer.svelte';
 
@@ -46,17 +48,29 @@
 	const authoring = readAuthoringErrors();
 	let errorsVisible = $derived(showErrors ?? authoring());
 
+	/** Corrigé d'une horloge à placer (`solution: oui`) : les aiguilles attendues, en vert */
+	let solved = $derived(node.spec?.placer !== undefined && node.spec?.solution === true);
+
 	let clocks = $derived(
 		node.spec === null
 			? []
-			: node.spec.times.map((time, i) => ({
+			: (solved && node.spec.placer ? [node.spec.placer] : node.spec.times).map((time, i) => ({
 					scene: buildHorlogeScene(node.spec!, time),
 					caption: node.spec!.captions?.[i] ?? null
 				}))
 	);
 
-	/** Taille donnée par l'auteur : prioritaire sur celle du contexte (choix de QCM) */
-	let size = $derived(node.spec?.sizeCm == null ? undefined : `${node.spec.sizeCm}cm`);
+	/**
+	 * Taille donnée par l'auteur : prioritaire sur celle du contexte (choix de QCM) ;
+	 * corrigé d'une horloge à placer : la taille du cadran à régler, comme au PDF
+	 */
+	let size = $derived(
+		node.spec?.sizeCm != null
+			? `${node.spec.sizeCm}cm`
+			: solved
+				? `${HORLOGE_SIZE_CM.placer}cm`
+				: undefined
+	);
 </script>
 
 {#if node.spec === null || node.errors.length > 0}
@@ -78,7 +92,7 @@
 			{HORLOGE_UNAVAILABLE}
 		</div>
 	{/if}
-{:else if node.spec.placer}
+{:else if node.spec.placer && !solved}
 	<!-- Horloge à placer hors question (aperçu, cours) : le geste, rien de jugé -->
 	<HorlogePlacer {node} class={className} />
 {:else}
@@ -91,6 +105,7 @@
 					role="img"
 					aria-label={HORLOGE_ARIA_LABEL}
 					class="horloge-cadran"
+					class:horloge-solution={solved}
 					style:--horloge-taille={size}
 				>
 					<circle class="horloge-fond" r={HORLOGE_VIEW.radius} stroke-width={HORLOGE_VIEW.rim} />
@@ -199,7 +214,8 @@
 
 	/* La seule couleur d'accent : la petite aiguille */
 	.horloge-aiguille-heures {
-		stroke: var(--color-primary);
+		/* Orange foncé en clair : le jaune-orange de l'accent n'a que 2,2 de contraste sur le cadran */
+		stroke: light-dark(var(--color-fig-orange), var(--color-primary));
 	}
 
 	/* Trotteuse : reconnue à sa forme, pas à une couleur de plus */
@@ -209,5 +225,10 @@
 
 	.horloge-axe {
 		fill: var(--color-foreground);
+	}
+
+	/* Corrigé (`solution: oui`) : les trois aiguilles dans le vert des corrections */
+	.horloge-solution .horloge-aiguille {
+		stroke: var(--color-fig-vert);
 	}
 </style>

@@ -1,5 +1,5 @@
 /**
- * Fonctions déclarées par l'exercice (`exercises.generic_functions`) dans le PDF.
+ * Fonctions déclarées par l'exercice (`exercise_versions.generic_functions`) dans le PDF.
  *
  * À l'écran, `C'(x)` s'affiche « C′(x) » quand l'exercice déclare `C` comme
  * fonction. Le PDF ne recevait pas cette déclaration : le parseur voyait `C`
@@ -9,8 +9,8 @@
 
 import { describe, it, expect } from 'vitest';
 import { generateTypst } from '../typst-generator';
-import { parseMarkdown } from '$lib/ubumark';
-import { genericFunctionsConfig } from '$lib/components/markdown/utils/math-utils';
+import { parseMarkdown } from '#lib/ubumark/index.ts';
+import { genericFunctionsConfig } from '#lib/components/markdown/utils/math-utils.ts';
 
 const C_DECLARED = { names: ['C'], allowDerivatives: true, allowInverse: true };
 

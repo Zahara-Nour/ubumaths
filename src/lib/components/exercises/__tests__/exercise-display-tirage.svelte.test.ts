@@ -11,7 +11,7 @@
 import { describe, it, expect } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import ExerciseDisplay from '../ExerciseDisplay.svelte';
-import type { Exercise } from '$lib/exercises/types';
+import type { Exercise } from '#lib/exercises/types.ts';
 
 const VARIABLES = [{ name: 'a', expression: '{{1..9}}' }];
 

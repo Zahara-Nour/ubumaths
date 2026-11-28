@@ -21,14 +21,14 @@ import {
 	EMPTY_SET,
 	UNIVERSAL_SET
 } from './factory';
-import { numericNode } from '$lib/mathAST/common/numeric';
+import { numericNode } from '#lib/mathAST/common/numeric.ts';
 import {
 	endpointToNumber,
 	isNegativeInfinityEndpoint,
 	isPositiveInfinityEndpoint
 } from './endpoint';
 import { normalizeIntervals } from './normalize';
-import type { MathNode } from '$lib/mathAST/types';
+import type { MathNode } from '#lib/mathAST/types.ts';
 import {
 	add as addNode,
 	subtract as subtractNode,
@@ -38,8 +38,8 @@ import {
 	infinity,
 	number as numberNode,
 	power as powerNode
-} from '$lib/mathAST/factory';
-import { compareNumericNodes } from '$lib/mathAST/eval/compare-numeric';
+} from '#lib/mathAST/factory.ts';
+import { compareNumericNodes } from '#lib/mathAST/eval/compare-numeric.ts';
 
 // =============================================================================
 // Helper Functions

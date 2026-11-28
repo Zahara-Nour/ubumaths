@@ -243,6 +243,20 @@ export function qrSvg(qr: QrMatrix, title: string, pixels?: number): string {
 	);
 }
 
+/**
+ * La gidouille seule en SVG autonome (même spirale qu'au centre du QR), orange
+ * primaire, sans fond : devant « chiph.re » au bas des fiches imprimées.
+ */
+export function gidouilleSvg(): string {
+	const { path, width } = spiral(5, 4.4);
+	return (
+		`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 10">` +
+		`<title>Gidouille</title>` +
+		`<path d="${path}" fill="none" stroke="${QR_COLORS.gidouille}" stroke-width="${width}" stroke-linecap="round" stroke-linejoin="round"/>` +
+		`</svg>`
+	);
+}
+
 /** Un nom de fichier parlant : `qr-aire-du-disque.png`. */
 export function qrFileName(resource: string, extension: 'png' | 'svg'): string {
 	const slug = resource

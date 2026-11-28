@@ -8,20 +8,20 @@
  *
  * Le numéro est celui que l'élève LIT sur sa fiche — un ordinal continu calculé
  * à travers les sections, pas `worksheet_exercises.position` qui redémarre à 1
- * dans chacune. La règle vit dans `$lib/worksheets/exercise-numbering`, partagée
+ * dans chacune. La règle vit dans `#lib/worksheets/exercise-numbering.ts`, partagée
  * avec la page élève et le générateur PDF.
  *
  * AUTH : prof/admin. C'est un outil d'écriture du cahier de texte ; la RLS de
  * `worksheet_exercises` filtre de toute façon ce que l'appelant peut lire.
  */
 
-import { error, json } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import { z } from 'zod';
 import type { RequestHandler } from './$types';
-import { requireRoles } from '$lib/server/middleware/auth';
-import { validateUuidParam } from '$lib/server/validation/params';
-import { orderExercisesForDisplay } from '$lib/worksheets/exercise-numbering';
-import { createServerLogger } from '$lib/utils/logger';
+import { requireRoles } from '#lib/server/middleware/auth.ts';
+import { validateUuidParam } from '#lib/server/validation/params.ts';
+import { orderExercisesForDisplay } from '#lib/worksheets/exercise-numbering.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/worksheets/[id]/exercise-number/[number]/+server');
 
@@ -64,7 +64,7 @@ export const GET: RequestHandler = async ({ params, locals }) => {
 		throw error(404, `Cette fiche n’a pas d’exercice ${parsedNumber.data}`);
 	}
 
-	return json({
+	return Response.json({
 		worksheet_exercise_id: match.exercise.id,
 		number: match.number,
 		total: ordered.length

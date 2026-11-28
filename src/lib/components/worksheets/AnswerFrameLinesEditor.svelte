@@ -15,25 +15,25 @@
 -->
 <script lang="ts">
 	import { onDestroy } from 'svelte';
-	import { Button } from '$lib/components/ui/button';
-	import { toaster } from '$lib/stores/toaster.svelte';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
 	import { Minus, Plus, RotateCcw, TriangleAlert } from '@lucide/svelte';
 	import {
 		ANSWER_FRAME_MAX_LINES,
 		type AnswerFrameLines,
 		type AnswerFrameMode,
 		type WorksheetExerciseWithExercise
-	} from '$lib/types/worksheets';
-	import type { ContentLocale } from '$lib/types/locale';
-	import { estimateAnswerFrames } from '$lib/worksheets/document/answer-frames';
+	} from '#lib/types/worksheets.ts';
+	import type { ContentLocale } from '#lib/types/locale.ts';
+	import { estimateAnswerFrames } from '#lib/worksheets/document/answer-frames.ts';
 	import {
 		answerFrameRows,
 		setExerciseLines,
 		setQuestionLines,
 		toAnswerFrameLines
-	} from '$lib/worksheets/document/answer-frame-lines';
-	import { resolveWorksheetExerciseCopy } from '$lib/worksheets/worksheet-copy';
-	import { DEFAULT_GUIDANCE_LEVEL } from '$lib/worksheets/student-copy';
+	} from '#lib/worksheets/document/answer-frame-lines.ts';
+	import { resolveWorksheetExerciseCopy } from '#lib/worksheets/worksheet-copy.ts';
+	import { DEFAULT_GUIDANCE_LEVEL } from '#lib/worksheets/student-copy.ts';
 
 	interface Props {
 		worksheetId: string;

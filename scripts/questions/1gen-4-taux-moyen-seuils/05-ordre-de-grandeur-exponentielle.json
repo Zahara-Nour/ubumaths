@@ -1,0 +1,191 @@
+{
+	"id": "33098914-4128-4c9d-8ef8-36b2eef5c61e",
+	"title": "Ordre de grandeur d'une évolution exponentielle",
+	"description": "Doublements et demi-vies : 2¹⁰ ≈ 10³, donc 2²⁰ ≈ 10⁶ et 2³⁰ ≈ 10⁹",
+	"grades": ["1_GEN"],
+	"level": 2,
+	"delay": 40,
+	"status": "draft",
+	"shared": {},
+	"variations": [
+		{
+			"statement": "Une population de bactéries double toutes les heures.\n\nPar environ combien est-elle multipliée au bout de ${{n}}$ heures ?\n\n```choix\nmelanger: non\n- $10$\n- $10^2$\n- $10^3$\n- $10^6$\n- $10^9$\n```",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "10|20|30"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:n/10+1}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Au bout de ${{n}}$ heures, la population a doublé ${{n}}$ fois : elle est multipliée par $2^{ {{n}} }$.",
+					"$2^{10}=1\\,024\\approx10^3$. Donc $2^{20}=\\left(2^{10}\\right)^2\\approx10^6$ et $2^{30}=\\left(2^{10}\\right)^3\\approx10^9$.",
+					"Elle est multipliée par environ $\\textcolor{{{color:primary.0}}}{10^{ {{eval:3*n/10}} }}$ (et non par $2\\times{{n}}={{eval:2*n}}$ : les doublements se multiplient)."
+				]
+			}
+		},
+		{
+			"statement": "La demi-vie d'un élément radioactif est la durée au bout de laquelle la moitié de ses noyaux se sont désintégrés.\n\nAu bout de ${{n}}$ demi-vies, le nombre de noyaux restants est divisé par environ…\n\n```choix\nmelanger: non\n- $10$\n- $10^2$\n- $10^3$\n- $10^6$\n- $10^9$\n```",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "10|20|30"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:n/10+1}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"À chaque demi-vie, le nombre de noyaux est divisé par $2$ : au bout de ${{n}}$ demi-vies, il est divisé par $2^{ {{n}} }$.",
+					"$2^{10}=1\\,024\\approx10^3$. Donc $2^{20}=\\left(2^{10}\\right)^2\\approx10^6$ et $2^{30}=\\left(2^{10}\\right)^3\\approx10^9$.",
+					"Il est divisé par environ $\\textcolor{{{color:primary.0}}}{10^{ {{eval:3*n/10}} }}$ : il en reste environ un sur $10^{ {{eval:3*n/10}} }$."
+				]
+			}
+		},
+		{
+			"statement": "Le nombre de personnes ayant vu une vidéo double toutes les ${{m}}$ minutes.\n\nPar environ combien ce nombre est-il multiplié en ${{h}}$ heure{{if:h>1|s}} ?\n\n```choix\nmelanger: non\n- $10$\n- $10^2$\n- $10^3$\n- $10^6$\n- $10^9$\n```",
+			"variables": [
+				{
+					"name": "m",
+					"expression": "6|12|18|30"
+				},
+				{
+					"name": "k",
+					"expression": "1..3"
+				},
+				{
+					"name": "h",
+					"expression": "eval:k*m/6"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:k+1}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"En ${{h}}$ heure{{if:h>1|s}}, soit ${{eval:60*h}}$ minutes, le nombre double $\\dfrac{ {{eval:60*h}} }{ {{m}} }={{eval:10*k}}$ fois : il est multiplié par $2^{ {{eval:10*k}} }$.",
+					"$2^{10}=1\\,024\\approx10^3$. Donc $2^{20}=\\left(2^{10}\\right)^2\\approx10^6$ et $2^{30}=\\left(2^{10}\\right)^3\\approx10^9$.",
+					"Il est multiplié par environ $\\textcolor{{{color:primary.0}}}{10^{ {{eval:3*k}} }}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "2^10 ≈ 10³",
+			"variationIndex": 0,
+			"variables": {
+				"n": "10"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 2 × 10 = 20 ≈ 10",
+			"variationIndex": 0,
+			"variables": {
+				"n": "10"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 10²",
+			"variationIndex": 0,
+			"variables": {
+				"n": "10"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "2^20 ≈ 10⁶",
+			"variationIndex": 0,
+			"variables": {
+				"n": "20"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 2^20 pris pour 10³ × 2",
+			"variationIndex": 0,
+			"variables": {
+				"n": "20"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "2^30 ≈ 10⁹",
+			"variationIndex": 1,
+			"variables": {
+				"n": "30"
+			},
+			"answers": ["4"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 10⁶ pour 30 demi-vies",
+			"variationIndex": 1,
+			"variables": {
+				"n": "30"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "12 min, 4 h : 20 doublements, 10⁶",
+			"variationIndex": 2,
+			"variables": {
+				"m": "12",
+				"k": "2",
+				"h": "4"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 4 h comptées comme 4 doublements… (10)",
+			"variationIndex": 2,
+			"variables": {
+				"m": "12",
+				"k": "2",
+				"h": "4"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

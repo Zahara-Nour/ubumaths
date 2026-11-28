@@ -8,11 +8,11 @@
  * Security: Admin only
  */
 
-import { error, json } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireAdmin } from '$lib/server/middleware/auth';
-import { getBackupStats } from '$lib/server/admin/exercise-backup';
-import { createServerLogger } from '$lib/utils/logger';
+import { requireAdmin } from '#lib/server/middleware/auth.ts';
+import { getBackupStats } from '#lib/server/admin/exercise-backup.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/admin/exercises/backup-stats/+server');
 
@@ -36,7 +36,7 @@ export const GET: RequestHandler = async ({ locals }) => {
 
 	try {
 		const stats = await getBackupStats(supabase);
-		return json(stats);
+		return Response.json(stats);
 	} catch (err) {
 		logger.error('Error fetching backup stats:', err);
 		throw error(500, 'Impossible de charger les statistiques');

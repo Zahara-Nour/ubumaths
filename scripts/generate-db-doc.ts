@@ -2,7 +2,7 @@
  * Génère la liste des tables de la base, rangées par domaine
  * ==========================================================
  *
- * Source : src/lib/types/database.ts, lui-même généré depuis la PRODUCTION par
+ * Source : src/lib/types/database.ts, lui-même généré depuis les migrations du dépôt par
  * `pnpm db:types`. Sortie : docs/systeme/base-de-donnees-tables.md. La doc ne
  * peut donc pas se périmer : `pnpm db:types` la régénère.
  *
@@ -78,6 +78,13 @@ export const DOMAINS: Domain[] = [
 			'friendships',
 			'student_warnings',
 			'parental_consents',
+			'private_lesson_invitations',
+			'parent_contacts',
+			'parent_carnet_links',
+			'parent_notifications',
+			'parent_exception_episodes',
+			'class_carnet_settings',
+			'student_carnet_opt_outs',
 			'terms_acceptances',
 			'account_deletion_audit',
 			'welcome_emails_sent'
@@ -106,8 +113,6 @@ export const DOMAINS: Domain[] = [
 			'question_',
 			'exercise_',
 			'exercises',
-			'template_',
-			'user_favorite_templates',
 			'student_exercise_mastery',
 			'series',
 			'migration_'
@@ -156,7 +161,11 @@ export const DOMAINS: Domain[] = [
 			'student_buddies',
 			'student_mathoux',
 			'student_mathou_decorations',
-			'student_last_visits'
+			'student_last_visits',
+			'avatar_catalog',
+			'student_avatars',
+			'student_beasts',
+			'student_combat_moves'
 		]
 	},
 	{
@@ -186,7 +195,8 @@ export const DOMAINS: Domain[] = [
 			'rate_limits',
 			'server_cache',
 			'orphaned_documents',
-			'daily_summaries'
+			'daily_summaries',
+			'web_vital_samples'
 		]
 	}
 ];
@@ -208,41 +218,46 @@ export function domainOf(table: string): string | null {
 
 /** Le texte d'une section (`Tables: {` … `}`) au niveau de `public`. */
 function section(source: string, name: string): string {
-	const start = source.indexOf(`\n    ${name}: {`);
+	const start = source.indexOf(`\n\t\t${name}: {`);
 	if (start === -1) return '';
-	const end = source.indexOf('\n    }', start + 1);
+	const end = source.indexOf('\n\t\t}', start + 1);
 	return source.slice(start, end);
 }
 
-/** Noms d'entrée d'une section (indentation 6), surcharges `nom:\n | {…}` comprises. */
+/** Noms d'entrée d'une section (trois tabulations), surcharges `nom:\n | {…}` comprises. */
 function entryNames(text: string): string[] {
-	return [...text.matchAll(/^ {6}([a-z_0-9]+):/gm)].map((m) => m[1]);
+	return [...text.matchAll(/^\t{3}([a-z_0-9]+):/gm)].map((m) => m[1]);
 }
 
-/** Lit database.ts (format de `supabase gen types`). */
+/**
+ * Lit database.ts, tel que `pnpm db:types` l'écrit : sortie de `supabase gen types` mise en forme
+ * par prettier (tabulations, points-virgules, guillemets simples).
+ */
 export function parseDatabaseTypes(source: string): SchemaModel {
 	const tablesText = section(source, 'Tables');
 	const tableNames = new Set(entryNames(tablesText));
 	const tables: Table[] = [];
-	const starts = [...tablesText.matchAll(/^ {6}([a-z_0-9]+): \{$/gm)];
+	const starts = [...tablesText.matchAll(/^\t{3}([a-z_0-9]+): \{$/gm)];
 	starts.forEach((m, i) => {
 		const body = tablesText.slice(m.index, starts[i + 1]?.index ?? tablesText.length);
-		const row = body.match(/ {8}Row: \{\n([\s\S]*?)\n {8}\}/)?.[1] ?? '';
-		const columns = [...row.matchAll(/^ {10}([a-z_0-9]+): (.+)$/gm)].map(([, name, raw]) => {
+		const row = body.match(/\t{4}Row: \{\n([\s\S]*?)\n\t{4}\}/)?.[1] ?? '';
+		// Un type trop long passe à la ligne (`nom:` seul, puis ses variantes) : on lit jusqu'au `;`.
+		const columns = [...row.matchAll(/^\t{5}([a-z_0-9]+):\s+([^;]+);$/gm)].map(([, name, brut]) => {
+			const raw = brut.replace(/\s+/g, ' ').replace(/^\| /, '');
 			const nullable = raw.endsWith(' | null');
 			return { name, type: raw.replace(/ \| null$/, ''), nullable };
 		});
 		const foreignKeys = [
 			...body.matchAll(
-				/columns: \[([^\]]*)\][\s\S]*?referencedRelation: "([a-z_0-9]+)"\s*referencedColumns: \[([^\]]*)\]/g
+				/columns: \[([^\]]*)\][\s\S]*?referencedRelation: '([a-z_0-9]+)';\s*referencedColumns: \[([^\]]*)\]/g
 			)
 		]
 			// Supabase déclare aussi la clé à travers chaque vue qui expose la table : bruit.
 			.filter(([, , table]) => tableNames.has(table))
 			.map(([, cols, table, refs]) => ({
-				columns: [...cols.matchAll(/"([^"]+)"/g)].map((c) => c[1]),
+				columns: [...cols.matchAll(/'([^']+)'/g)].map((c) => c[1]),
 				table,
-				referencedColumns: [...refs.matchAll(/"([^"]+)"/g)].map((c) => c[1])
+				referencedColumns: [...refs.matchAll(/'([^']+)'/g)].map((c) => c[1])
 			}));
 		tables.push({ name: m[1], columns, foreignKeys });
 	});
@@ -267,7 +282,7 @@ export function renderSchemaDoc(model: SchemaModel): string {
 		'# Base de données — tables par domaine (généré)',
 		'',
 		'> ⚠️ **Fichier généré** par `scripts/generate-db-doc.ts` depuis `src/lib/types/database.ts`',
-		'> (`pnpm db:types` régénère les deux, depuis la **production**). Ne pas éditer à la main :',
+		'> (`pnpm db:types` régénère les deux, depuis les **migrations du dépôt**). Ne pas éditer à la main :',
 		'> le texte explicatif vit dans [base-de-donnees.md](base-de-donnees.md).',
 		'',
 		`${model.tables.length} tables · ${model.views.length} vues · ${model.functions.length} fonctions. Colonne suivie de \`?\` : peut être nulle.`,

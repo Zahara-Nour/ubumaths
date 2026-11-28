@@ -1,16 +1,19 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import type { ActionResult } from '@sveltejs/kit';
+import type { ActionResult } from '$app/forms';
+
+// Kit 3 : succès et échec portent le chemin de l'action (sans `?/nom`).
+const LOCATION = '/dashboard/teacher/cahier-texte';
 
 // `deserialize` décode le `data` encodé en devalue. Le mock le remplace par un
 // JSON.parse : le test porte sur la lecture du VERDICT, pas sur l'encodage.
-const invalidateAllMock = vi.fn();
+const refreshAllMock = vi.fn();
 const toasterWarning = vi.fn();
 
 vi.mock('$app/navigation', () => ({
-	invalidateAll: () => invalidateAllMock()
+	refreshAll: () => refreshAllMock()
 }));
 
-vi.mock('$lib/stores/toaster.svelte', () => ({
+vi.mock('#lib/stores/toaster.svelte.ts', () => ({
 	toaster: { warning: (m: string) => toasterWarning(m) }
 }));
 
@@ -70,7 +73,12 @@ describe('submitAction', () => {
 
 	it('rend un succès quand l’action réussit', async () => {
 		fetchMock.mockResolvedValue(
-			actionResponse({ type: 'success', status: 200, data: { message: 'Créneau créé' } })
+			actionResponse({
+				type: 'success',
+				status: 200,
+				data: { message: 'Créneau créé' },
+				location: LOCATION
+			})
 		);
 
 		const outcome = await submitAction('?/createScheduleEntry', new FormData());
@@ -85,7 +93,8 @@ describe('submitAction', () => {
 			actionResponse({
 				type: 'failure',
 				status: 400,
-				data: { errors: { day_of_week: ['Number must be less than or equal to 4'] } }
+				data: { errors: { day_of_week: ['Number must be less than or equal to 4'] } },
+				location: LOCATION
 			})
 		);
 
@@ -99,7 +108,12 @@ describe('submitAction', () => {
 
 	it('préfère le message de l’action à ses erreurs de champ', async () => {
 		fetchMock.mockResolvedValue(
-			actionResponse({ type: 'failure', status: 404, data: { message: 'Class not found' } })
+			actionResponse({
+				type: 'failure',
+				status: 404,
+				data: { message: 'Class not found' },
+				location: LOCATION
+			})
 		);
 
 		const outcome = await submitAction('?/createScheduleEntry', new FormData());
@@ -109,7 +123,7 @@ describe('submitAction', () => {
 
 	it('rend un échec sur une erreur inattendue de l’action', async () => {
 		fetchMock.mockResolvedValue(
-			actionResponse({ type: 'error', error: { message: 'Internal Error' } }, 500)
+			actionResponse({ type: 'error', error: { status: 500, message: 'Internal Error' } }, 500)
 		);
 
 		const outcome = await submitAction('?/createScheduleEntry', new FormData());
@@ -185,7 +199,9 @@ describe('submitAction', () => {
 	});
 
 	it('poste en form action SvelteKit', async () => {
-		fetchMock.mockResolvedValue(actionResponse({ type: 'success', status: 204 }));
+		fetchMock.mockResolvedValue(
+			actionResponse({ type: 'success', status: 204, location: LOCATION })
+		);
 		const body = new FormData();
 		body.append('class_id', 'abc');
 
@@ -201,23 +217,23 @@ describe('submitAction', () => {
 
 describe('refreshPageData', () => {
 	beforeEach(() => {
-		invalidateAllMock.mockReset();
+		refreshAllMock.mockReset();
 		toasterWarning.mockReset();
 	});
 
 	it('recharge les données de la page', async () => {
-		invalidateAllMock.mockResolvedValue(undefined);
+		refreshAllMock.mockResolvedValue(undefined);
 
 		await refreshPageData();
 
-		expect(invalidateAllMock).toHaveBeenCalledOnce();
+		expect(refreshAllMock).toHaveBeenCalledOnce();
 	});
 
 	// L'écriture a réussi ; c'est le rechargement qui tombe. Laissé nu, ce rejet
 	// sautait le message de succès et la fermeture de la modale : l'écran se
 	// figeait sans rien dire.
 	it('avertit sans jeter quand le rechargement échoue', async () => {
-		invalidateAllMock.mockRejectedValue(new Error('Failed to fetch'));
+		refreshAllMock.mockRejectedValue(new Error('Failed to fetch'));
 
 		await expect(refreshPageData()).resolves.toBeUndefined();
 		expect(toasterWarning).toHaveBeenCalledWith(

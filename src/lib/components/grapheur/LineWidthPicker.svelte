@@ -12,8 +12,8 @@ Displays a visual preview of each width option.
 -->
 
 <script lang="ts">
-	import { LINE_WIDTHS } from '$lib/grapheur/types';
-	import * as Popover from '$lib/components/ui/popover';
+	import { LINE_WIDTHS } from '#lib/grapheur/types.ts';
+	import * as Popover from '#lib/components/ui/popover/index.ts';
 
 	let { value, onchange }: { value: number; onchange: (width: number) => void } = $props();
 

@@ -13,12 +13,12 @@
 		Code,
 		type DeckConfig,
 		type SlideChangedEvent
-	} from '$lib/slides';
-	import type { QuestionInstance } from '$lib/questions/types';
-	import type { AnswerData } from '$lib/types/question-display';
-	import type { Page } from '$lib/whiteboard/types/document';
-	import { resolvedMarkdown } from '$lib/ubumark';
-	import FlashCard from '$lib/components/questions/FlashCard.svelte';
+	} from '#lib/slides/index.ts';
+	import type { QuestionInstance } from '#lib/questions/types.ts';
+	import type { AnswerData } from '#lib/types/question-display.ts';
+	import type { Page } from '#lib/whiteboard/types/document.ts';
+	import { resolvedMarkdown } from '#lib/ubumark/index.ts';
+	import FlashCard from '#lib/components/questions/FlashCard.svelte';
 
 	let { config = {} }: { config?: Partial<DeckConfig> } = $props();
 

@@ -20,17 +20,17 @@
 
 import { error } from '@sveltejs/kit';
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { Database } from '$lib/types/database';
-import type { QuestionTemplate } from '$lib/questions/types';
-import { toQuestionTemplate, type QuestionTemplateRow } from '$lib/types/question-template';
-import { templatePublicationErrors } from '$lib/server/template-publication';
+import type { Database } from '#lib/types/database.ts';
+import type { QuestionTemplate } from '#lib/questions/types.ts';
+import { toQuestionTemplate, type QuestionTemplateRow } from '#lib/types/question-template.ts';
+import { templatePublicationErrors } from '#lib/server/template-publication.ts';
 import type {
 	BulkPublishResult,
 	BulkTemplateEntry,
 	BulkTemplateRefusal,
 	BulkUnpublishResult
-} from '$lib/questions/bulk-status';
-import { createServerLogger } from '$lib/utils/logger';
+} from '#lib/questions/bulk-status.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('server/questions-bulk-status');
 

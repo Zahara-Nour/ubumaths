@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { CombatTurn } from '$lib/types/game';
+	import type { CombatTurn } from '#lib/types/game.ts';
 
 	interface Props {
 		turns: CombatTurn[];

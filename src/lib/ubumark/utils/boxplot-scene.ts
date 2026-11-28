@@ -16,7 +16,7 @@
  */
 
 import type { StatChartSpec } from '../types/stat-chart';
-import type { ContentLocale } from '$lib/types/locale';
+import type { ContentLocale } from '#lib/types/locale.ts';
 import { COURBE_PIXEL_WIDTH } from './courbe-scene';
 import { STAT_TEXT } from './stat-chart-text';
 // ⚠️ Import circulaire (stat-chart-scene appelle `buildBoxPlotScene`) : sans
@@ -87,10 +87,15 @@ function valueRows(xs: readonly number[], labels: readonly string[]): number[] {
 	});
 }
 
-export function buildBoxPlotScene(spec: StatChartSpec, locale: ContentLocale): BoxPlotScene {
+/** `plotWidth` : largeur du cadre dessiné à l'écran quand la place manque (écart E46) */
+export function buildBoxPlotScene(
+	spec: StatChartSpec,
+	locale: ContentLocale,
+	plotWidth?: number
+): BoxPlotScene {
 	// Le parseur ne rend une spec de ce genre qu'avec ses boîtes
 	const plot = spec.boxPlot!;
-	const width = COURBE_PIXEL_WIDTH[spec.size];
+	const width = plotWidth ?? COURBE_PIXEL_WIDTH[spec.size];
 	const text = STAT_TEXT[locale].boxPlot;
 	const axis =
 		plot.axis !== null

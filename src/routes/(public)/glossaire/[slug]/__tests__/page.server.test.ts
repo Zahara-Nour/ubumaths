@@ -4,8 +4,8 @@
  * qui a sa définition → sa page, avec le lien vers le terme cité.
  */
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import type { MathTerm } from '$lib/dictionary/model';
-import type { Glossary } from '$lib/server/dictionary/load';
+import type { MathTerm } from '#lib/dictionary/model.ts';
+import type { Glossary } from '#lib/server/dictionary/load.ts';
 
 const ENTRIES: MathTerm[] = [
 	{
@@ -48,7 +48,7 @@ const glossary: Glossary = {
 };
 
 const loadGlossary = vi.fn(async () => glossary);
-vi.mock('$lib/server/dictionary/load', () => ({
+vi.mock('#lib/server/dictionary/load.ts', () => ({
 	loadGlossary: (...args: unknown[]) => loadGlossary(...(args as [])),
 	isDictionaryAdmin: () => false
 }));

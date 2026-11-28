@@ -7,16 +7,16 @@
  * @module components/markdown/utils/math-utils
  */
 
-import { parseCustomSafe } from '$lib/mathAST/parser/custom';
-import { toLatex, parseLatexSafe } from '$lib/mathAST';
-import { toLocaleDecimal } from '$lib/utils/french-math';
-import { displayUnitsInLatex } from '$lib/mathAST/units/display';
-import type { MathNode } from '$lib/mathAST/types';
-import type { CapitalPairs, GenericFunctionConfig } from '$lib/mathAST/parser/types';
+import { parseCustomSafe } from '#lib/mathAST/parser/custom/index.ts';
+import { toLatex, parseLatexSafe } from '#lib/mathAST/index.ts';
+import { toLocaleDecimal } from '#lib/utils/french-math.ts';
+import { displayUnitsInLatex } from '#lib/mathAST/units/display.ts';
+import type { MathNode } from '#lib/mathAST/types.ts';
+import type { CapitalPairs, GenericFunctionConfig } from '#lib/mathAST/parser/types.ts';
 
 /**
  * Configuration du parseur à partir des fonctions déclarées par un exercice
- * (colonne `exercises.generic_functions`).
+ * (colonne `exercise_versions.generic_functions`).
  *
  * - `undefined` / `null` : l'exercice ne déclare rien → `undefined`, donc les
  *   défauts du parseur (f, g, h, u, v, w, F, G, H).

@@ -19,7 +19,7 @@
 	@see ExerciseDisplay.svelte for rendering context
 -->
 <script lang="ts">
-	import '$lib/utils/mathlive-styles';
+	import '#lib/utils/mathlive-styles.ts';
 	import 'mathlive';
 	import { expressionToLatex } from '../utils/math-utils';
 	import { readContentLocale } from '../content-locale';
@@ -31,8 +31,8 @@
 		readProjectMediaOnly,
 		readRestrictedRendering
 	} from '../restricted-rendering';
-	import { normaliserCalcul } from '$lib/extensions/calcul-aligne';
-	import type { GenericFunctionConfig } from '$lib/mathAST/parser/types';
+	import { normaliserCalcul } from '#lib/extensions/calcul-aligne.ts';
+	import type { GenericFunctionConfig } from '#lib/mathAST/parser/types.ts';
 
 	interface Props {
 		expression: string;
@@ -86,7 +86,10 @@
 		<code class="restricted-math">$${expression}$$</code>
 	{:else}
 		{#key latex}
-			<math-div class="math-block-static">{latex}</math-div>
+			<!-- `lang` : la lecture à voix haute suit la langue du contenu (formula-speech/install.ts) -->
+			<math-div class="math-block-static" lang={contentLocale() === 'en' ? 'en' : undefined}
+				>{latex}</math-div
+			>
 		{/key}
 	{/if}
 </div>

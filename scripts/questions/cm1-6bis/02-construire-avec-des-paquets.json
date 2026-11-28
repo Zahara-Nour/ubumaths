@@ -1,0 +1,220 @@
+{
+	"id": "0e392697-75f1-4e5e-a346-27e7974fd9b3",
+	"title": "Construire une quantité avec des paquets",
+	"description": "Construire au matériel un nombre à zéro intercalé ; ranger en carnets de 1 000, 100 et 10 avec le moins de carnets ; nombre de carnets de 100",
+	"grades": ["CM1"],
+	"level": 16,
+	"delay": 120,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"spacesFromFourDigits": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Construis ${{m}}\\,{{c}}{{d}}{{u}}$ avec le matériel.\n\n```collection\nconstruire: {{n}}\n```",
+			"variables": [
+				{
+					"name": "m",
+					"expression": "1..9"
+				},
+				{
+					"name": "t",
+					"expression": "0..1"
+				},
+				{
+					"name": "x",
+					"expression": "1..9"
+				},
+				{
+					"name": "u",
+					"expression": "1..9"
+				},
+				{
+					"name": "c",
+					"expression": "eval:t*x"
+				},
+				{
+					"name": "d",
+					"expression": "eval:(1-t)*x"
+				},
+				{
+					"name": "n",
+					"expression": "eval:1000*m+100*c+10*d+u"
+				}
+			],
+			"correction": {
+				"steps": [
+					"${{m}}\\,{{c}}{{d}}{{u}}$, c'est ${{m}}$ {{if:m<=1|millier|milliers}}, ${{c}}$ centaine{{if:c>1|s|}}, ${{d}}$ dizaine{{if:d>1|s|}} et ${{u}}$ {{if:u<=1|unité|unités}} : le zéro dit qu'il n'y a **rien** à ce rang.",
+					"On pose ${{m}}$ {{if:m<=1|gros cube|gros cubes}}, ${{c}}$ plaque{{if:c>1|s|}}, ${{d}}$ barre{{if:d>1|s|}} et ${{u}}$ {{if:u<=1|petit cube|petits cubes}}."
+				]
+			}
+		},
+		{
+			"statement": "On veut ranger ${{n}}$ timbres en carnets de $1\\,000$, de $100$ et de $10$ timbres, avec le moins de carnets possible.\n\nIl faut $?$ carnets de $1\\,000$, $?$ carnets de $100$ et $?$ carnets de $10$.",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "11..99"
+				},
+				{
+					"name": "c",
+					"expression": "0..9"
+				},
+				{
+					"name": "d",
+					"expression": "1..9"
+				},
+				{
+					"name": "n",
+					"expression": "eval:1000*a+100*c+10*d"
+				}
+			],
+			"conditions": ["mod(a,10)!=0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{a}}"
+				},
+				{
+					"expectedAnswer": "{{c}}"
+				},
+				{
+					"expectedAnswer": "{{d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le moins de carnets possible : on prend d'abord le plus de carnets de $1\\,000$.",
+					"$${{n}}=\\textcolor{{{color:primary.0}}}{{{a}}}\\times 1\\,000+\\textcolor{{{color:primary.0}}}{{{c}}}\\times 100+\\textcolor{{{color:primary.0}}}{{{d}}}\\times 10$$",
+					"Dans ${{n}}$, il y a ${{a}}$ milliers, pas seulement ${{eval:mod(a,10)}}$ : le chiffre des milliers ne suffit pas."
+				]
+			}
+		},
+		{
+			"statement": "Combien faut-il de carnets de $100$ timbres pour avoir ${{n}}$ timbres ?\n\nIl faut $?$ carnets.",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "101..2999"
+				},
+				{
+					"name": "n",
+					"expression": "eval:100*k"
+				}
+			],
+			"conditions": ["mod(k,10)!=0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{k}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On cherche le **nombre de centaines** de ${{n}}$, pas le chiffre des centaines.",
+					"$${{n}}=\\textcolor{{{color:primary.0}}}{{{k}}}\\times 100$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "3 045 construit",
+			"variationIndex": 0,
+			"variables": {
+				"m": "3",
+				"t": "0",
+				"x": "4",
+				"u": "5",
+				"c": "0",
+				"d": "4",
+				"n": "3045"
+			},
+			"answers": ["3045"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 3 450 construit (zéro mal placé)",
+			"variationIndex": 0,
+			"variables": {
+				"m": "3",
+				"t": "0",
+				"x": "4",
+				"u": "5",
+				"c": "0",
+				"d": "4",
+				"n": "3045"
+			},
+			"answers": ["3450"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "34 560 : 34, 5, 6",
+			"variationIndex": 1,
+			"variables": {
+				"a": "34",
+				"c": "5",
+				"d": "6",
+				"n": "34560"
+			},
+			"answers": ["34", "5", "6"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 4 carnets de 1 000 (le chiffre des milliers)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "34",
+				"c": "5",
+				"d": "6",
+				"n": "34560"
+			},
+			"answers": ["4", "5", "6"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "34 500 : 345 carnets",
+			"variationIndex": 2,
+			"variables": {
+				"k": "345",
+				"n": "34500"
+			},
+			"answers": ["345"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 5 (le chiffre des centaines)",
+			"variationIndex": 2,
+			"variables": {
+				"k": "345",
+				"n": "34500"
+			},
+			"answers": ["5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "2 345 carnets, avec espace",
+			"variationIndex": 2,
+			"variables": {
+				"k": "2345",
+				"n": "234500"
+			},
+			"answers": ["2\\,345"],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}

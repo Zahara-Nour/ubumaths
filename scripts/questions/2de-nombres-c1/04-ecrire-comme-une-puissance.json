@@ -1,0 +1,322 @@
+{
+	"id": "747d5773-0e0d-4094-9c3b-11daef5e2463",
+	"title": "Écrire un nombre comme une puissance",
+	"description": "Trouver l'exposant ou la base : 64 = 2⁶, 0,04 = 0,2², 1/8 = 2⁻³ (pièges : 64 = 2³², 0,04 = 0,02², 1/8 = 2³)",
+	"grades": ["2"],
+	"level": 7,
+	"delay": 45,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Complète.\n\n$${{N}}={{a}}^{?}$$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2|3|5"
+				},
+				{
+					"name": "n",
+					"expression": "3..9"
+				},
+				{
+					"name": "N",
+					"expression": "eval:(a)^(n)"
+				}
+			],
+			"conditions": ["(a)^(n) <= 999"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{n}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:(N)/(a)}}",
+							"message": "Tu as divisé une seule fois : une puissance est un produit de facteurs tous égaux à la base.",
+							"label": "N ÷ a (produit au lieu de puissance)"
+						},
+						{
+							"answer": "{{eval:(n)-1}}",
+							"message": "Il te manque un facteur : recompte combien de fois tu multiplies la base.",
+							"label": "Un facteur de moins"
+						},
+						{
+							"answer": "{{eval:(n)+1}}",
+							"message": "Tu as un facteur de trop : recompte combien de fois tu multiplies la base.",
+							"label": "Un facteur de trop"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"On divise ${{N}}$ par ${{a}}$ autant de fois que possible, ou on calcule les puissances successives de ${{a}}$ jusqu'à trouver ${{N}}$.",
+					"${{if:n==3|{{a}}\\times {{a}}\\times {{a}}|{{if:n==4|{{a}}\\times {{a}}\\times {{a}}\\times {{a}}|{{if:n==5|{{a}}\\times {{a}}\\times {{a}}\\times {{a}}\\times {{a}}|{{if:n==6|{{a}}\\times {{a}}\\times {{a}}\\times {{a}}\\times {{a}}\\times {{a}}|{{if:n==7|{{a}}\\times {{a}}\\times {{a}}\\times {{a}}\\times {{a}}\\times {{a}}\\times {{a}}|{{if:n==8|{{a}}\\times {{a}}\\times {{a}}\\times {{a}}\\times {{a}}\\times {{a}}\\times {{a}}\\times {{a}}|{{a}}\\times {{a}}\\times {{a}}\\times {{a}}\\times {{a}}\\times {{a}}\\times {{a}}\\times {{a}}\\times {{a}}}}}}}}}}}}}}={{N}}$ : il y a ${{n}}$ facteurs.",
+					"$${{N}}=\\textcolor{{{color:primary.0}}}{{{a}}^{ {{n}} }}$$"
+				]
+			},
+			"hint": "Calcule les puissances successives de ${{a}}$ : ${{a}}^{2}$, ${{a}}^{3}$… jusqu'à tomber sur ${{N}}$."
+		},
+		{
+			"statement": "Complète par un nombre positif.\n\n$${{eval:(d)^(n)/10^(n);d}}=?^{ {{n}} }$$",
+			"variables": [
+				{
+					"name": "d",
+					"expression": "2..9"
+				},
+				{
+					"name": "n",
+					"expression": "2..3"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(d)/10;d}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:(d)/10^(n);d}}",
+							"message": "Tu as mis trop de zéros : compte les chiffres après la virgule dans le produit de tes facteurs.",
+							"label": "Trop de chiffres après la virgule"
+						},
+						{
+							"answer": "{{d}}",
+							"message": "Tu as oublié la virgule : ta réponse élevée à la puissance donne un nombre plus grand que 1.",
+							"label": "Virgule oubliée"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"On cherche le nombre positif dont la puissance ${{n}}$ vaut ${{eval:(d)^(n)/10^(n);d}}$ : un produit de ${{n}}$ facteurs égaux à ce nombre.",
+					"${{d}}^{ {{n}} }={{eval:(d)^(n)}}$, et ${{eval:(d)^(n)/10^(n);d}}$ a ${{n}}$ chiffres après la virgule : la base a $1$ chiffre après la virgule.",
+					"$${{if:n==2|{{eval:(d)/10;d}}\\times {{eval:(d)/10;d}}|{{eval:(d)/10;d}}\\times {{eval:(d)/10;d}}\\times {{eval:(d)/10;d}}}}={{eval:(d)^(n)/10^(n);d}}\\quad\\text{donc}\\quad{{eval:(d)^(n)/10^(n);d}}=\\textcolor{{{color:primary.0}}}{{{eval:(d)/10;d}}}^{ {{n}} }$$"
+				]
+			},
+			"hint": "Cherche d'abord un entier dont la puissance ${{n}}$ s'écrit avec les mêmes chiffres, puis place la virgule : chaque facteur a autant de chiffres après la virgule."
+		},
+		{
+			"statement": "Complète.\n\n$$\\dfrac{1}{ {{N}} }={{a}}^{?}$$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2|3|5"
+				},
+				{
+					"name": "n",
+					"expression": "2..6"
+				},
+				{
+					"name": "N",
+					"expression": "eval:(a)^(n)"
+				}
+			],
+			"conditions": ["(a)^(n) <= 999"],
+			"blanks": [
+				{
+					"expectedAnswer": "-{{n}}",
+					"expectedErrors": [
+						{
+							"answer": "{{n}}",
+							"message": "Ton exposant donne un nombre plus grand que 1 : ici, le nombre est un inverse.",
+							"label": "Signe oublié"
+						},
+						{
+							"answer": "-{{N}}",
+							"message": "Tu as recopié le dénominateur : l'exposant compte les facteurs, il ne vaut pas le nombre lui-même.",
+							"label": "Exposant = −N"
+						},
+						{
+							"answer": "{{eval:1-(n)}}",
+							"message": "Il te manque un facteur : recompte combien de fois tu multiplies la base.",
+							"label": "Un facteur de moins"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"On écrit d'abord le dénominateur comme une puissance de ${{a}}$, puis on utilise $\\dfrac{1}{a^n}=a^{-n}$.",
+					"${{N}}={{a}}^{ {{n}} }$, donc $\\dfrac{1}{ {{N}} }=\\dfrac{1}{ {{a}}^{ {{n}} } }=\\textcolor{{{color:primary.0}}}{{{a}}^{-{{n}} }}$."
+				]
+			},
+			"hint": "Écris d'abord ${{N}}$ comme une puissance de ${{a}}$, puis pense à l'écriture de l'inverse d'une puissance."
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "64 = 2⁶",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"n": "6"
+			},
+			"answers": ["6"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 64 = 2³² (64 ÷ 2)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"n": "6"
+			},
+			"answers": ["32"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as divisé une seule fois : une puissance est un produit de facteurs tous égaux à la base."
+			}
+		},
+		{
+			"description": "Erreur : 64 = 2⁸ (8 × 8)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"n": "6"
+			},
+			"answers": ["8"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "243 = 3⁵",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"n": "5"
+			},
+			"answers": ["5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "0,04 = 0,2²",
+			"variationIndex": 1,
+			"variables": {
+				"d": "2",
+				"n": "2"
+			},
+			"answers": ["0,2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 0,04 = 0,02²",
+			"variationIndex": 1,
+			"variables": {
+				"d": "2",
+				"n": "2"
+			},
+			"answers": ["0,02"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as mis trop de zéros : compte les chiffres après la virgule dans le produit de tes facteurs."
+			}
+		},
+		{
+			"description": "Erreur : 0,04 = 2²",
+			"variationIndex": 1,
+			"variables": {
+				"d": "2",
+				"n": "2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as oublié la virgule : ta réponse élevée à la puissance donne un nombre plus grand que 1."
+			}
+		},
+		{
+			"description": "0,027 = 0,3³",
+			"variationIndex": 1,
+			"variables": {
+				"d": "3",
+				"n": "3"
+			},
+			"answers": ["0,3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "1/8 = 2⁻³",
+			"variationIndex": 2,
+			"variables": {
+				"a": "2",
+				"n": "3"
+			},
+			"answers": ["-3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 1/8 = 2³",
+			"variationIndex": 2,
+			"variables": {
+				"a": "2",
+				"n": "3"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Ton exposant donne un nombre plus grand que 1 : ici, le nombre est un inverse."
+			}
+		},
+		{
+			"description": "Erreur : 1/8 = 2⁻⁸",
+			"variationIndex": 2,
+			"variables": {
+				"a": "2",
+				"n": "3"
+			},
+			"answers": ["-8"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as recopié le dénominateur : l'exposant compte les facteurs, il ne vaut pas le nombre lui-même."
+			}
+		},
+		{
+			"description": "Erreur prévue : Un facteur de moins",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"n": "6"
+			},
+			"answers": ["5"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Il te manque un facteur : recompte combien de fois tu multiplies la base."
+			}
+		},
+		{
+			"description": "Erreur prévue : Un facteur de trop",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"n": "6"
+			},
+			"answers": ["7"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as un facteur de trop : recompte combien de fois tu multiplies la base."
+			}
+		},
+		{
+			"description": "Erreur prévue : Un facteur de moins",
+			"variationIndex": 2,
+			"variables": {
+				"a": "2",
+				"n": "3"
+			},
+			"answers": ["-2"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Il te manque un facteur : recompte combien de fois tu multiplies la base."
+			}
+		}
+	]
+}

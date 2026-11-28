@@ -18,8 +18,8 @@
  * @module atelier/completion
  */
 
-import { SHOWN_FUNCTIONS } from '$lib/mathAST/parser/custom/tokenizer';
-import { GREEK_LETTERS } from '$lib/mathAST/types';
+import { SHOWN_FUNCTIONS } from '#lib/mathAST/parser/custom/tokenizer.ts';
+import { GREEK_LETTERS } from '#lib/mathAST/types.ts';
 
 // =============================================================================
 // Types

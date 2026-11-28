@@ -21,7 +21,7 @@
 
 import { describe, test, expect, beforeEach, afterEach, vi } from 'vitest';
 import { notificationStore } from '../notifications.svelte';
-import type { NotificationWithDetails } from '$lib/types/notification';
+import type { NotificationWithDetails } from '#lib/types/notification.ts';
 
 // Helper to flush all pending promises (for testing fire-and-forget async operations)
 const flushPromises = () => new Promise((resolve) => setTimeout(resolve, 0));

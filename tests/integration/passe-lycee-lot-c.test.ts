@@ -10,6 +10,8 @@
  * Méthode (copies de la prod, rejeu du fichier, rollback) : tests/helpers/database/lot-2bis-migration.ts.
  *
  * @vitest-environment node
+ *
+ * @migration-de-donnees : hors des PR, rejoué la nuit (scripts/ci-integration-exclusions.sh)
  */
 import { decrireLotModifier } from '../helpers/database/lot-2bis-migration';
 

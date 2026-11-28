@@ -1,12 +1,12 @@
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import {
 	inboxMessagesResponseSchema,
 	inboxMessagesQuerySchema
-} from '$lib/server/validation/messages';
-import { validateJsonResponse } from '$lib/server/validation/response-utils';
-import { requireAuth } from '$lib/server/middleware/auth';
-import { createServerLogger } from '$lib/utils/logger';
+} from '#lib/server/validation/messages.ts';
+import { validateJsonResponse } from '#lib/server/validation/response-utils.ts';
+import { requireAuth } from '#lib/server/middleware/auth.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/messages/inbox/+server');
 
@@ -19,11 +19,13 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 
 	try {
 		// ✅ SECURITY: Validate query parameters with Zod
+		// Paramètre absent : `get` rend null, que le schéma refuse ; undefined
+		// laisse jouer ses défauts (boîte de réception, 50 messages, tous dossiers).
 		const validation = inboxMessagesQuerySchema.safeParse({
-			status: url.searchParams.get('status'),
-			folderId: url.searchParams.get('folderId'),
-			limit: url.searchParams.get('limit'),
-			offset: url.searchParams.get('offset')
+			status: url.searchParams.get('status') ?? undefined,
+			folderId: url.searchParams.get('folderId') ?? undefined,
+			limit: url.searchParams.get('limit') ?? undefined,
+			offset: url.searchParams.get('offset') ?? undefined
 		});
 
 		if (!validation.success) {
@@ -55,7 +57,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 			'GET /api/messages/inbox'
 		);
 
-		return json(validated);
+		return Response.json(validated);
 	} catch (err) {
 		logger.error('Error in inbox API:', err);
 		if (err && typeof err === 'object' && 'status' in err) {

@@ -1,5 +1,5 @@
 import type { PageServerLoad } from './$types';
-import { getAllTemplates } from '$lib/server/vip-card-queries';
+import { getAllTemplates } from '#lib/server/vip-card-queries.ts';
 
 export const prerender = false; // Disable prerendering (requires DB connection)
 

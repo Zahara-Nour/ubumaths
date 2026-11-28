@@ -26,8 +26,8 @@
  */
 
 import { getContext, hasContext, setContext } from 'svelte';
-import type { ASTNode, BlockNode, DocumentNode } from '$lib/ubumark';
-import { exceedsMathNestingLimits } from '$lib/questions/student-answer-safety';
+import type { ASTNode, BlockNode, DocumentNode } from '#lib/ubumark/index.ts';
+import { exceedsMathNestingLimits } from '#lib/questions/student-answer-safety.ts';
 
 const RESTRICTED_RENDERING_KEY = Symbol('markdown-restricted-rendering');
 
@@ -160,6 +160,37 @@ export const REVIEWED_SAFE_MATH_COMMANDS = [
 	'smash'
 ] as const;
 
+/**
+ * Macros par défaut de MathLive (0.111.4) dont le DÉVELOPPEMENT contient une commande
+ * interdite, EXAMINÉES et sûres : les valeurs y sont fixes (`\enclose{actuarial}`,
+ * `\enclose{phasorangle}`, `\mkern-1.2mu`, `\rule` et `\raise` de dimensions fixes) ;
+ * `#1` n'est que le contenu de la formule, jamais un style ni un attribut. Le filtre
+ * lit le texte écrit, pas le développement : une macro nouvelle à valeur libre
+ * passerait sous son nom. Un seul niveau de développement est regardé : chaque macro
+ * listée doit être sûre quel que soit son argument (une macro qui en appelle une autre
+ * de la liste l'est aussi). Garde : `restricted-rendering-macros.test.ts` échoue si
+ * MathLive ajoute une telle macro absente de cette liste (ancien écart T26).
+ */
+export const REVIEWED_SAFE_MATHLIVE_MACROS = [
+	'strut',
+	'phase',
+	'angl',
+	'angln',
+	'anglr',
+	'anglk',
+	'colondash',
+	'Colondash',
+	'dashcolon',
+	'Dashcolon',
+	'simcolon',
+	'Simcolon',
+	'simcoloncolon',
+	'approxcolon',
+	'Approxcolon',
+	'approxcoloncolon',
+	'tripledash'
+] as const;
+
 // `\nom` suivi d'autre chose qu'une lettre (`\displaystyle` ≠ `\style`)
 // Les noms peuvent contenir `*` (`hspace*`) : échappés pour la regex
 const escapeRegex = (name: string): string => name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
@@ -255,7 +286,26 @@ export const RESTRICTED_BLOCK_PLACEHOLDER = '[bloc non affiché dans la discussi
  * conteneurs de blocs sont parcourus.
  */
 export function restrictDocument(doc: DocumentNode): DocumentNode {
-	return { ...doc, children: doc.children.map(restrictBlock) };
+	return withoutInlineColor({ ...doc, children: doc.children.map(restrictBlock) });
+}
+
+/**
+ * Texte coloré `[…]{.orange}` (ADR 0042) : le chat n'affiche aucune couleur.
+ * Les composants l'ignorent déjà en rendu restreint ; on la retire aussi de
+ * l'arbre (seconde défense, audit de #2933). Copie : l'entrée n'est pas modifiée.
+ */
+function withoutInlineColor<T>(value: T): T {
+	if (Array.isArray(value)) return value.map(withoutInlineColor) as T;
+	if (value === null || typeof value !== 'object') return value;
+	const copy: Record<string, unknown> = {};
+	for (const [key, child] of Object.entries(value)) {
+		if (key === 'color' || key === 'unknownClasses') {
+			const type = (value as { type?: unknown }).type;
+			if (type === 'text' || type === 'math-inline') continue;
+		}
+		copy[key] = withoutInlineColor(child);
+	}
+	return copy as T;
 }
 
 function restrictBlock(node: BlockNode): BlockNode {

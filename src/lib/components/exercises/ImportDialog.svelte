@@ -1,11 +1,11 @@
 <script lang="ts">
-	import { lore } from '$lib/config/lore';
-	import { Button } from '$lib/components/ui/button';
-	import * as Dialog from '$lib/components/ui/dialog';
-	import { Label } from '$lib/components/ui/label';
-	import { toaster } from '$lib/stores/toaster.svelte';
-	import { invalidateAll } from '$app/navigation';
-	import type { ImportResult } from '$lib/exercises/types';
+	import { lore } from '#lib/config/lore.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import * as Dialog from '#lib/components/ui/dialog/index.ts';
+	import { Label } from '#lib/components/ui/label/index.ts';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
+	import { refreshAll } from '$app/navigation';
+	import type { ImportResult } from '#lib/exercises/types.ts';
 
 	interface Props {
 		open?: boolean;
@@ -131,7 +131,7 @@
 				}
 
 				// Refresh exercise list
-				await invalidateAll();
+				await refreshAll();
 
 				// Call success callback
 				if (onSuccess) onSuccess();

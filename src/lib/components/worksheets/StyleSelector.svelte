@@ -13,19 +13,19 @@
 	```
 -->
 <script lang="ts">
-	import { Button } from '$lib/components/ui/button';
-	import { Badge } from '$lib/components/ui/badge';
-	import * as Dialog from '$lib/components/ui/dialog';
-	import * as Card from '$lib/components/ui/card';
-	import MySelect from '$lib/components/MySelect.svelte';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
+	import * as Dialog from '#lib/components/ui/dialog/index.ts';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import MySelect from '#lib/components/MySelect.svelte';
 	import { FileText, Eye, Sparkles } from '@lucide/svelte';
-	import { renderTemplate, SAMPLE_PREVIEW_DATA } from '$lib/typst/templates';
+	import { renderTemplate, SAMPLE_PREVIEW_DATA } from '#lib/typst/templates/index.ts';
 	import {
 		DEFAULT_STYLE_ID,
 		isBuiltInStyle,
 		resolveTemplate,
 		type StyleOption
-	} from '$lib/typst/templates/styles';
+	} from '#lib/typst/templates/styles.ts';
 
 	// Props
 	interface Props {

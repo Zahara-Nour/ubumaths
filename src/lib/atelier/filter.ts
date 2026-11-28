@@ -20,7 +20,7 @@ import { isList, isQualitative, type ListObject } from './types';
 import { nextName } from './names';
 import { individualEntries, readListValue } from './parse';
 import { holeMessage } from './cross';
-import { formatStatNumber } from '$lib/statistics/format';
+import { formatStatNumber } from '#lib/statistics/format.ts';
 
 // =============================================================================
 // Types

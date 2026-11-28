@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Badge } from '$lib/components/ui/badge';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
 
 	type LeaderboardEntry = {
 		// La fonction de classement rend une table : `student_id` y est nullable.

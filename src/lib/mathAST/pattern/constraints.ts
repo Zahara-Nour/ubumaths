@@ -11,7 +11,7 @@ import type { MathNode, MathNodeType } from '../types';
 import type { TypeContext } from '../numtype/types';
 import { isNumber, isVariable } from '../guards';
 import { inferType, isSubtype } from '../numtype';
-import { containsValue } from '$lib/math/intervals';
+import { containsValue } from '#lib/math/intervals/index.ts';
 import { containsVariable } from '../common/contains-variable';
 import { literalNumberValue } from '../common/numeric';
 

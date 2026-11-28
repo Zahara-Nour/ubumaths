@@ -18,11 +18,11 @@
 		isSequenceCategory,
 		validateAssumptionRows,
 		type AnswerAssumptionRow
-	} from '$lib/questions/answer-assumptions';
-	import type { AnswerAssumptionKind } from '$lib/math';
-	import * as Card from '$lib/components/ui/card';
-	import { Button } from '$lib/components/ui/button';
-	import { Input } from '$lib/components/ui/input';
+	} from '#lib/questions/answer-assumptions.ts';
+	import type { AnswerAssumptionKind } from '#lib/math/index.ts';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import { Input } from '#lib/components/ui/input/index.ts';
 	import MySelect from '../MySelect.svelte';
 	import { Plus, Trash2 } from '@lucide/svelte';
 

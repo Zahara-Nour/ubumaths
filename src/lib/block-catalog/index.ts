@@ -14,14 +14,24 @@ import { horlogeEntry } from './horloge';
 import { monnaieEntry } from './monnaie';
 import { numberLineEntry } from './number-line';
 import { partageEntry } from './partage';
+import { schemaBarresEntry } from './schema-barres';
 import { cubesEntry } from './cubes';
 import { solideEntry } from './solide';
 import { patronEntry } from './patron';
 import { operationEntry } from './operation';
 import { probtreeEntry } from './probtree';
 import { qrEntry } from './qr';
+import { engrenagesEntry } from './engrenages';
 import { scratchEntry } from './scratch';
 import { rangerEntry } from './ranger';
+import { associerEntry } from './associer';
+import { trousEntry } from './trous';
+import { tortueEntry } from './tortue';
+import { calculEntry } from './calcul';
+import { robotEntry } from './robot';
+import { labyrintheEntry } from './labyrinthe';
+import { yohakuEntry } from './yohaku';
+import { pythonAEcrireEntry } from './python-a-ecrire';
 import { boxPlotEntry, statChartEntry } from './stat-chart';
 import { trigEntry } from './trig';
 import { variationEntry } from './variation';
@@ -44,13 +54,23 @@ export const BLOCK_CATALOG: BlockCatalogEntry[] = [
 	collectionEntry,
 	monnaieEntry,
 	partageEntry,
+	schemaBarresEntry,
 	cubesEntry,
 	solideEntry,
 	patronEntry,
 	rangerEntry,
+	associerEntry,
+	trousEntry,
 	operationEntry,
 	trigEntry,
-	scratchEntry
+	scratchEntry,
+	tortueEntry,
+	calculEntry,
+	robotEntry,
+	labyrintheEntry,
+	yohakuEntry,
+	pythonAEcrireEntry,
+	engrenagesEntry
 ];
 
 /** Fiche d'un bloc par son segment d'adresse */

@@ -14,9 +14,9 @@
  */
 
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { Database, Json } from '$lib/types/database';
-import type { CapturedError, SlowRequest } from '$lib/types/bug-reports';
-import { createServerLogger } from '$lib/utils/logger';
+import type { Database, Json } from '#lib/types/database.ts';
+import type { CapturedError, SlowRequest } from '#lib/types/bug-reports.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('lib/server/bug-report-errors');
 

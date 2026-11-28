@@ -5,12 +5,12 @@
 -->
 
 <script lang="ts">
-	import { lore } from '$lib/config/lore';
+	import { lore } from '#lib/config/lore.ts';
 	import type { PageData } from './$types';
-	import * as Card from '$lib/components/ui/card';
-	import UserAvatar from '$lib/components/UserAvatar.svelte';
-	import { Button } from '$lib/components/ui/button';
-	import MySelect from '$lib/components/MySelect.svelte';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import UserAvatar from '#lib/components/UserAvatar.svelte';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import MySelect from '#lib/components/MySelect.svelte';
 	import {
 		BarChart3,
 		MessageSquare,

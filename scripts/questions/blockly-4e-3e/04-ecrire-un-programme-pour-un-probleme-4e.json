@@ -1,0 +1,207 @@
+{
+	"id": "f91149f2-27c0-45c0-80aa-737e317e9d67",
+	"title": "Écrire un programme pour résoudre un problème (4e)",
+	"description": "Écrire en blocs le programme d'une situation : photocopies, livraison, somme des entiers.",
+	"grades": ["4"],
+	"level": 2,
+	"delay": 300,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Un magasin fait des photocopies : chacune des ${{s}}$ premières coûte ${{p}}$ centimes ; les suivantes ne coûtent que ${{q}}$ centimes chacune.\n\nLe nombre choisi est le nombre de photocopies. Écris un programme qui affiche le prix à payer, en centimes.\n\n```calcul\nniveau: 4e\nattendu: si nombre ≤ {{s}} alors [ afficher nombre × {{p}} ] sinon [ afficher {{s}} × {{p}} + (nombre − {{s}}) × {{q}} ]\nessais: 1 ; 5 ; {{s}} ; {{t}} ; 100\n```",
+			"variables": [
+				{
+					"name": "s",
+					"expression": "10..30"
+				},
+				{
+					"name": "p",
+					"expression": "15..25"
+				},
+				{
+					"name": "d",
+					"expression": "5..10"
+				},
+				{
+					"name": "q",
+					"expression": "eval:p-d"
+				},
+				{
+					"name": "t",
+					"expression": "eval:s+1"
+				}
+			],
+			"conditions": [],
+			"blanks": [],
+			"correction": {
+				"steps": [
+					"Jusqu'à ${{s}}$ photocopies, toutes coûtent ${{p}}$ centimes : nombre $\\times {{p}}$.",
+					"Au-delà, les ${{s}}$ premières coûtent ${{s}} \\times {{p}}$ centimes, et les nombre $-\\ {{s}}$ suivantes ${{q}}$ centimes chacune.",
+					"Programme : si nombre $\\leq {{s}}$, afficher nombre $\\times {{p}}$ ; sinon, afficher ${{s}} \\times {{p}} + ($nombre $-\\ {{s}}) \\times {{q}}$."
+				]
+			}
+		},
+		{
+			"statement": "Sur un site, la livraison coûte ${{f}}$ € pour une commande de moins de ${{s}}$ € ; elle est gratuite à partir de ${{s}}$ €.\n\nLe nombre choisi est le montant de la commande, en euros. Écris un programme qui affiche le prix total à payer.\n\n```calcul\nniveau: 4e\nattendu: si nombre < {{s}} alors [ afficher nombre + {{f}} ] sinon [ afficher nombre ]\nessais: 10 ; {{t}} ; {{s}} ; 100\n```",
+			"variables": [
+				{
+					"name": "f",
+					"expression": "3..8"
+				},
+				{
+					"name": "s",
+					"expression": "30..60"
+				},
+				{
+					"name": "t",
+					"expression": "eval:s-1"
+				}
+			],
+			"conditions": [],
+			"blanks": [],
+			"correction": {
+				"steps": [
+					"Moins de ${{s}}$ € : on paie la commande **et** la livraison, nombre $+\\ {{f}}$.",
+					"À partir de ${{s}}$ € : on ne paie que la commande.",
+					"Condition : nombre $< {{s}}$, avec un bloc « si … alors … sinon »."
+				]
+			}
+		},
+		{
+			"statement": "Écris un programme qui affiche la somme de tous les entiers de $1$ jusqu'au nombre choisi : pour $4$, il affiche $1 + 2 + 3 + 4 = 10$.\n\n```calcul\nniveau: 4e\nattendu: mettre somme à 0 ; mettre k à 0 ; répéter nombre [ ajouter 1 à k ; ajouter k à somme ] ; afficher somme\nessais: 1 ; 2 ; 4 ; 10 ; 20\n```",
+			"variables": [],
+			"conditions": [],
+			"blanks": [],
+			"correction": {
+				"steps": [
+					"Une variable **somme** vaut $0$ au départ ; une variable **k** compte $1$, $2$, $3$…",
+					"À chaque tour : on ajoute $1$ à k, puis on ajoute k à somme.",
+					"On répète « nombre choisi » fois, puis on affiche somme."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Copies : référence",
+			"variationIndex": 0,
+			"variables": {
+				"s": "20",
+				"p": "20",
+				"d": "8",
+				"q": "12",
+				"t": "21"
+			},
+			"answers": [
+				"si nombre ≤ 20 alors [ afficher nombre × 20 ] sinon [ afficher 20 × 20 + (nombre − 20) × 12 ]"
+			],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Copies : avec une variable",
+			"variationIndex": 0,
+			"variables": {
+				"s": "20",
+				"p": "20",
+				"d": "8",
+				"q": "12",
+				"t": "21"
+			},
+			"answers": [
+				"mettre prix à nombre × 20 ; si nombre > 20 alors [ mettre prix à 400 + (nombre − 20) × 12 ] ; afficher prix"
+			],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : toutes les copies au tarif réduit",
+			"variationIndex": 0,
+			"variables": {
+				"s": "20",
+				"p": "20",
+				"d": "8",
+				"q": "12",
+				"t": "21"
+			},
+			"answers": ["si nombre ≤ 20 alors [ afficher nombre × 20 ] sinon [ afficher nombre × 12 ]"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Livraison : référence",
+			"variationIndex": 1,
+			"variables": {
+				"f": "5",
+				"s": "40",
+				"t": "39"
+			},
+			"answers": ["si nombre < 40 alors [ afficher nombre + 5 ] sinon [ afficher nombre ]"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Livraison : avec une variable",
+			"variationIndex": 1,
+			"variables": {
+				"f": "5",
+				"s": "40",
+				"t": "39"
+			},
+			"answers": [
+				"mettre total à nombre ; si nombre < 40 alors [ ajouter 5 à total ] ; afficher total"
+			],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : livraison offerte au-dessus de 40 seulement",
+			"variationIndex": 1,
+			"variables": {
+				"f": "5",
+				"s": "40",
+				"t": "39"
+			},
+			"answers": ["si nombre ≤ 40 alors [ afficher nombre + 5 ] sinon [ afficher nombre ]"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Somme : référence",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": [
+				"mettre somme à 0 ; mettre k à 0 ; répéter nombre [ ajouter 1 à k ; ajouter k à somme ] ; afficher somme"
+			],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Somme : formule",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["afficher nombre × (nombre + 1) ÷ 2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : ajoute k avant de l'augmenter (oublie le dernier)",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": [
+				"mettre somme à 0 ; mettre k à 0 ; répéter nombre [ ajouter k à somme ; ajouter 1 à k ] ; afficher somme"
+			],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

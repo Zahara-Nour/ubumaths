@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { resolveExpression } from '../../generator/content-resolver';
 import { COLOR_PALETTES } from '../../colors';
-import { createRandomSource } from '$lib/utils/random';
+import { createRandomSource } from '#lib/utils/random.ts';
 
 describe('Color Template System - End to End', () => {
 	it('should resolve color references to actual colors', () => {

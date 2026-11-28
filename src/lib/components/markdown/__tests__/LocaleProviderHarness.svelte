@@ -5,7 +5,7 @@
 <script lang="ts">
 	import MarkdownRenderer from '../MarkdownRenderer.svelte';
 	import { provideContentLocale } from '../content-locale';
-	import type { ContentLocale } from '$lib/types/locale';
+	import type { ContentLocale } from '#lib/types/locale.ts';
 
 	interface Props {
 		content: string;

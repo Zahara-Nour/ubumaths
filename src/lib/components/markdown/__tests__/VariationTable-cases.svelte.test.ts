@@ -10,8 +10,8 @@
 import { describe, it, expect } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import VariationTable from '../nodes/VariationTable.svelte';
-import { parseVariationTableContent } from '$lib/ubumark/parser/variation-table-parser';
-import type { VariationTableNode } from '$lib/ubumark/types/variation-table';
+import { parseVariationTableContent } from '#lib/ubumark/parser/variation-table-parser.ts';
+import type { VariationTableNode } from '#lib/ubumark/types/variation-table.ts';
 
 // Constantes
 const PRODUIT = [

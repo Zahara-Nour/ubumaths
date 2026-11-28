@@ -15,7 +15,7 @@
  *   `heap`) are skipped.
  */
 
-import type { DebugStackFrame, HeapObject } from '$lib/shared/python/debug/types';
+import type { DebugStackFrame, HeapObject } from '#lib/shared/python/debug/types.ts';
 import { parseVariableValue, isHeapRef, isEntryRef } from './heap-utils';
 
 export const FRAME_NODE_PREFIX = 'frame:';

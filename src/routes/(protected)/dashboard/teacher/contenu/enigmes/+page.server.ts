@@ -1,9 +1,9 @@
 import type { PageServerLoad, Actions } from './$types';
-import { RIDDLE_COLUMNS, toDbRiddle } from '$lib/types/riddle';
-import { fetchRiddleSolutions } from '$lib/server/riddle-solutions';
+import { RIDDLE_COLUMNS, toDbRiddle } from '#lib/types/riddle.ts';
+import { fetchRiddleSolutions } from '#lib/server/riddle-solutions.ts';
 import { error, redirect, fail } from '@sveltejs/kit';
-import { requireRoles } from '$lib/server/middleware/auth';
-import { createServerLogger } from '$lib/utils/logger';
+import { requireRoles } from '#lib/server/middleware/auth.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('(protected)/dashboard/teacher/contenu/enigmes/+page.server');
 

@@ -118,7 +118,7 @@ export function remettreAuRang<T>(liste: T[], index: number, element: T): T[] {
  * ⚠️ Cette empreinte arbitre un conflit réel : pendant un glisser, l'état local
  * doit rester la source de vérité, sinon le geste saccade ; mais tout ce que le
  * professeur change depuis le plan — publier, corriger un objectif — revient
- * par les props après `invalidateAll()`, et doit s'afficher.
+ * par les props après `refreshAll()`, et doit s'afficher.
  *
  * D'où la règle : on retient CE QUI EXISTE ET CE QUI S'AFFICHE, jamais le
  * rangement. `section_id` et `section_order` en sont volontairement absents,

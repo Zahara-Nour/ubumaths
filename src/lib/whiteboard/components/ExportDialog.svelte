@@ -6,11 +6,11 @@
 	 */
 
 	import { whiteboardStore } from '../stores/whiteboard.svelte';
-	import * as Dialog from '$lib/components/ui/dialog';
-	import { Button } from '$lib/components/ui/button';
-	import { Label } from '$lib/components/ui/label';
-	import MySelect from '$lib/components/MySelect.svelte';
-	import MyCheckbox from '$lib/components/MyCheckbox.svelte';
+	import * as Dialog from '#lib/components/ui/dialog/index.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import { Label } from '#lib/components/ui/label/index.ts';
+	import MySelect from '#lib/components/MySelect.svelte';
+	import MyCheckbox from '#lib/components/MyCheckbox.svelte';
 	import {
 		EXPORT_FORMATS,
 		PNG_RESOLUTIONS,
@@ -24,7 +24,7 @@
 		type ExportOptions
 	} from '../core/pdf-export';
 	import { Download, FileImage, FileCode, FileText, Loader2 } from '@lucide/svelte';
-	import { toaster } from '$lib/stores/toaster.svelte';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
 
 	// ==========================================================================
 	// Props

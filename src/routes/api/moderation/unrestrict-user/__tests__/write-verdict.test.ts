@@ -13,11 +13,11 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import {
 	createWriteVerdictSupabase,
 	expectHttpStatus
-} from '$tests/helpers/write-verdict-supabase';
+} from '#tests/helpers/write-verdict-supabase.ts';
 
 // Garde commune : session/profil lus dans `locals` (cf. helper)
-vi.mock('$lib/server/middleware/auth', async (importActual) =>
-	(await import('$tests/helpers/garde-auth-locals')).gardeAuthDepuisLocals(importActual)
+vi.mock('#lib/server/middleware/auth.ts', async (importActual) =>
+	(await import('#tests/helpers/garde-auth-locals.ts')).gardeAuthDepuisLocals(importActual)
 );
 
 const TEACHER_ID = '550e8400-e29b-41d4-a716-446655440001';

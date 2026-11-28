@@ -10,16 +10,16 @@
 
 import { error, redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
-import { isDictionaryAdmin, loadGlossary } from '$lib/server/dictionary/load';
-import { findPrincipal } from '$lib/lexicon/card';
+import { isDictionaryAdmin, loadGlossary } from '#lib/server/dictionary/load.ts';
+import { findPrincipal } from '#lib/dictionary/card.ts';
 import {
 	glossaryDescription,
 	glossaryPath,
 	isBareRedirect,
 	redirectTargetOf,
 	termKey
-} from '$lib/dictionary/glossary-page';
-import { createServerLogger } from '$lib/utils/logger';
+} from '#lib/dictionary/glossary-page.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('(public)/glossaire/[slug]/+page.server');
 

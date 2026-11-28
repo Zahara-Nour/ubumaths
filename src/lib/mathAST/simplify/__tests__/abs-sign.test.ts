@@ -23,10 +23,10 @@ import {
 import { toLatex } from '../../latex-generator';
 import { inferType } from '../../numtype/infer';
 import type { TypeContext } from '../../numtype/types';
-import type { IntervalDomain, EndpointType } from '$lib/math/intervals/types';
-import { intervalSet, interval } from '$lib/math/intervals';
-import { infinity } from '$lib/mathAST/factory';
-import { numericNode } from '$lib/mathAST/common/numeric';
+import type { IntervalDomain, EndpointType } from '#lib/math/intervals/types.ts';
+import { intervalSet, interval } from '#lib/math/intervals/index.ts';
+import { infinity } from '#lib/mathAST/factory.ts';
+import { numericNode } from '#lib/mathAST/common/numeric.ts';
 
 // =============================================================================
 // Helpers

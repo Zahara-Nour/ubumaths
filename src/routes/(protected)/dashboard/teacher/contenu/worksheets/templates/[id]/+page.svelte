@@ -1,17 +1,17 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
-	import { Button } from '$lib/components/ui/button';
-	import BackLink from '$lib/components/navigation/BackLink.svelte';
-	import { Input } from '$lib/components/ui/input';
-	import { Textarea } from '$lib/components/ui/textarea';
-	import { Label } from '$lib/components/ui/label';
-	import * as Card from '$lib/components/ui/card';
-	import { toaster } from '$lib/stores/toaster.svelte';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import BackLink from '#lib/components/navigation/BackLink.svelte';
+	import { Input } from '#lib/components/ui/input/index.ts';
+	import { Textarea } from '#lib/components/ui/textarea/index.ts';
+	import { Label } from '#lib/components/ui/label/index.ts';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
 	import { Save, Loader2 } from '@lucide/svelte';
 	import type { PageData, ActionData } from './$types';
-	import TypstEditor from '$lib/components/worksheets/TypstEditor.svelte';
-	import { COMMON_PLACEHOLDERS, STANDARD_TEMPLATE } from '$lib/typst/templates';
-	import { asTemplatePlaceholders } from '$lib/types/worksheets';
+	import TypstEditor from '#lib/components/worksheets/TypstEditor.svelte';
+	import { COMMON_PLACEHOLDERS, STANDARD_TEMPLATE } from '#lib/typst/templates/index.ts';
+	import { asTemplatePlaceholders } from '#lib/types/worksheets.ts';
 
 	let { data, form }: { data: PageData; form: ActionData } = $props();
 

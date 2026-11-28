@@ -3,7 +3,7 @@
 Une étape d'un guide calculatrice : du texte où les touches `[[id]]` sont dessinées.
 -->
 <script lang="ts">
-	import { parseStep } from '$lib/calculatrices/guide';
+	import { parseStep } from '#lib/calculatrices/guide.ts';
 	import CalculatorKey from './CalculatorKey.svelte';
 
 	let { step, keys }: { step: string; keys: Readonly<Record<string, string>> } = $props();

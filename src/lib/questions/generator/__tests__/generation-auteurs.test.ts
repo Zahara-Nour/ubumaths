@@ -9,11 +9,11 @@ import { describe, it, expect } from 'vitest';
 import { generateInstance } from '../instance-generator';
 import { evaluateConditions } from '../condition-evaluator';
 import type { QuestionTemplate, QuestionVariation, ResolvedVariable } from '../../types';
-import { templateMarkdown } from '$lib/ubumark';
+import { templateMarkdown } from '#lib/ubumark/index.ts';
 import { checkRequiredForm } from '../../required-form-validator';
 import { templateGenericFunctions } from '../../generic-functions';
 import { cleanCoefficientsCustom } from '../../clean-coefficients';
-import { areEquivalent, parseCustom } from '$lib/mathAST';
+import { areEquivalent, parseCustom } from '#lib/mathAST/index.ts';
 
 function makeTemplate(
 	variation: Partial<QuestionVariation>,

@@ -4,8 +4,8 @@ import { exact, numeric, isExact, isNumeric } from '../../types/geo-value';
 import { geoToNumber } from '../../compute/to-number';
 import { geoEqual } from '../../compute/compare';
 import { geoFromNumber, geoFromFraction } from '../../compute/geo-arithmetic';
-import { number, sqrt } from '$lib/mathAST';
-import { numericNode } from '$lib/mathAST/common/numeric';
+import { number, sqrt } from '#lib/mathAST/index.ts';
+import { numericNode } from '#lib/mathAST/common/numeric.ts';
 
 function point(x: number, y: number) {
 	return { x: exact(numericNode(x)), y: exact(numericNode(y)) };

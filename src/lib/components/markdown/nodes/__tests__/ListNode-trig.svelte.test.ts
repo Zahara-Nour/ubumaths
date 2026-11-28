@@ -8,7 +8,7 @@
 import { describe, it, expect } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import ListNode from '../ListNode.svelte';
-import { parseMarkdown, type ListNode as ListAst } from '$lib/ubumark';
+import { parseMarkdown, type ListNode as ListAst } from '#lib/ubumark/index.ts';
 
 const markdown = `
 1. Sur le cercle :

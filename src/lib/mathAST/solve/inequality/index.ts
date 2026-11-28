@@ -35,7 +35,7 @@ import { canonicalForm } from '../../normal';
 import { getVariables } from '../../eval/substitute';
 import { isEmpty as isDomainEmpty, union, difference, intersect } from '../../domain/algebra';
 import { computeDomain, normalizeExcludedPoints } from '../../domain/compute';
-import { endpointToNumber } from '$lib/math/intervals/endpoint';
+import { endpointToNumber } from '#lib/math/intervals/endpoint.ts';
 import { emptyDomain, intervalSet } from '../../domain/factory';
 
 const INEQUALITY_OPS: ReadonlySet<InequalityOp> = new Set(['<', '>', '<=', '>=', '!=']);

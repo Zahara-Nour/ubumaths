@@ -5,7 +5,7 @@
 
 import { describe, it, expect } from 'vitest';
 import { updateSchoolConfigSchema, weekConfigSchema } from '../school-config';
-import { DEFAULT_WEEK_CONFIG } from '$lib/utils/week-config';
+import { DEFAULT_WEEK_CONFIG } from '#lib/utils/week-config.ts';
 
 describe('weekConfigSchema', () => {
 	// ============================================================

@@ -1,0 +1,6 @@
+# Sorties de `pnpm fiche:verifier` (régénérables) : seules les sources sont versionnées
+/*/*.typ
+/*/*.pdf
+/*/fiche-*.png
+/*/corrige-*.png
+/*/virtual/

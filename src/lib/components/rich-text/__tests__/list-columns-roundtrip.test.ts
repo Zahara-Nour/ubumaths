@@ -10,7 +10,7 @@
 import { describe, it, expect } from 'vitest';
 import { getSchema, type JSONContent } from '@tiptap/core';
 import { Node as PMNode } from '@tiptap/pm/model';
-import { parseMarkdown, type ListNode } from '$lib/ubumark';
+import { parseMarkdown, type ListNode } from '#lib/ubumark/index.ts';
 import { tipTapToMarkdown } from '../markdown-export';
 import { markdownToTipTap } from '../markdown-import';
 import { createEditorExtensions } from '../editor-config';

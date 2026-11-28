@@ -8,12 +8,12 @@
  */
 import { describe, it, expect } from 'vitest';
 import { generateStudentWorksheetTypst } from '../student-worksheet-typst';
-import { hasCorrectionFonts, withoutCorrectionFonts } from '$lib/typst/correction-fonts';
+import { hasCorrectionFonts, withoutCorrectionFonts } from '#lib/typst/correction-fonts.ts';
 import {
 	correctionFontBlocks,
 	outsideCorrectionFontBlocks
-} from '$lib/typst/__tests__/correction-font-blocks';
-import type { StudentWorksheetView } from '$lib/types/worksheets';
+} from '#lib/typst/__tests__/correction-font-blocks.ts';
+import type { StudentWorksheetView } from '#lib/types/worksheets.ts';
 
 function exercise(id: string, visible: boolean, answers: string | null) {
 	return {

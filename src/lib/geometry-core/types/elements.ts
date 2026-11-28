@@ -9,9 +9,9 @@
 
 import type { GeoValue, ScalarParam } from './geo-value';
 import type { GeoPoint } from './primitives';
-import type { MathNode } from '$lib/mathAST/types';
-import type { CompiledFn } from '$lib/mathAST/eval/compile';
-import type { EndpointType } from '$lib/math/intervals/types';
+import type { MathNode } from '#lib/mathAST/types.ts';
+import type { CompiledFn } from '#lib/mathAST/eval/compile.ts';
+import type { EndpointType } from '#lib/math/intervals/types.ts';
 
 // =============================================================================
 // Style
@@ -626,7 +626,10 @@ export interface GeoScalar extends GeoElementBase {
 		| 'coordinate'
 		| 'arcLength'
 		| 'curvature';
-	/** Display unit ('rad' | 'deg') for angle_measure / vectors_angle_measure kinds. Default: 'rad'. */
+	/**
+	 * Display unit ('rad' | 'deg') for angle_measure / vectors_angle_measure kinds. Default: 'rad'.
+	 * Pour polar_angle : défaut 'deg' (figures enregistrées avant l'unité, bissectrice).
+	 */
 	readonly unite?: 'rad' | 'deg';
 	/** Target element IDs for primitive kinds (points for distance/angle/area, vector for norme). */
 	readonly targetIds: readonly string[];

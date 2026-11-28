@@ -11,7 +11,7 @@ import { geoToNumber } from '../compute/to-number';
 import { isPointElement, isVector } from '../types/elements';
 import type { Viewport } from '../viewport/types';
 import type { ConicParams, GeoElement } from '../types/elements';
-import type { CompiledFn } from '$lib/mathAST/eval/compile';
+import type { CompiledFn } from '#lib/mathAST/eval/compile.ts';
 
 /**
  * Find the closest point (free or dependent) near the given math coordinates.

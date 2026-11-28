@@ -9,8 +9,8 @@
 import { describe, it, expect, afterEach, beforeEach, vi } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import AtelierContainer from '../AtelierContainer.svelte';
-import { Atelier } from '$lib/atelier/atelier.svelte';
-import { CALC_HISTORY_STORAGE_KEY } from '$lib/atelier/history-storage';
+import { Atelier } from '#lib/atelier/atelier.svelte.ts';
+import { CALC_HISTORY_STORAGE_KEY } from '#lib/atelier/history-storage.ts';
 
 // =============================================================================
 // Décor

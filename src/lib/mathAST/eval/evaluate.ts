@@ -8,7 +8,7 @@
 import type { MathNode, FunctionNode } from '../types';
 import type { EvalOptions, EvalResult } from './types';
 import type { Rational } from '../normal/types';
-import type { PrecisionType } from '$lib/questions/types';
+import type { PrecisionType } from '#lib/questions/types.ts';
 import { DEFAULT_EVAL_OPTIONS } from './types';
 import { getVariables } from './substitute';
 import {
@@ -72,6 +72,7 @@ import { getActiveAbortChecker } from '../common/abort';
 import { rewriteFunctionPower } from '../common/function-power';
 import { compareNumericNodes } from './compare-numeric';
 import { oddDenominatorExponent, realNthRoot } from './real-root';
+import { MAX_ROUNDING_DIGITS, roundToDecimalPlaces } from './decimal-rounding';
 
 /** Indice maximal d'une racine entière exacte. */
 const MAX_EXACT_ROOT_INDEX = 1000n;
@@ -365,6 +366,16 @@ function parseNumberToRational(value: string): Rational {
  */
 const MAX_EXACT_INTEGER = BigInt(Number.MAX_SAFE_INTEGER);
 
+/** Nombre de décimales de `round(x, n)` : un entier de 0 à MAX_ROUNDING_DIGITS */
+function roundingPlaces(value: Rational): number {
+	if (!isIntegerRational(value) || value.n < 0n || value.n > BigInt(MAX_ROUNDING_DIGITS)) {
+		throw new Error(
+			`round(x, n) : n doit être un entier entre 0 et ${MAX_ROUNDING_DIGITS} (nombre de décimales)`
+		);
+	}
+	return Number(value.n);
+}
+
 /** Argument entier naturel de `factorial` / `binom` (premier argument) */
 function naturalArgument(value: Rational, name: string): bigint {
 	if (!isIntegerRational(value)) throw new Error(`${name} requires integer arguments`);
@@ -584,7 +595,11 @@ function evaluateFunctionToRational(
 			result = Math.ceil(numArgs[0]);
 			break;
 		case 'round':
-			if (numArgs.length !== 1) throw new Error('round requires exactly 1 argument');
+			// `round(x, n)` : arrondi EXACT à n décimales, comme `;aN` (2,675 → 2,68)
+			if (numArgs.length === 2) {
+				return roundToDecimalPlaces(rationalArgs[0], roundingPlaces(rationalArgs[1]));
+			}
+			if (numArgs.length !== 1) throw new Error('round requires 1 or 2 arguments');
 			result = Math.round(numArgs[0]);
 			break;
 		case 'min':
@@ -1179,6 +1194,17 @@ function evaluateRoundingFunctions(node: MathNode): MathNode {
 		const funcName = n.name.toLowerCase();
 		if (!['floor', 'ceil', 'round', 'abs'].includes(funcName)) {
 			return n;
+		}
+
+		// `round(x, n)` : arrondi exact à n décimales, valeur exacte (`\\dfrac{67}{25}`)
+		if (funcName === 'round' && n.args.length === 2) {
+			try {
+				const value = evaluateToRational(evaluateRoundingFunctions(n.args[0]), 0);
+				const places = roundingPlaces(evaluateToRational(n.args[1], 0));
+				return rationalToNode(roundToDecimalPlaces(value, places));
+			} catch {
+				return n;
+			}
 		}
 
 		if (n.args.length !== 1) {

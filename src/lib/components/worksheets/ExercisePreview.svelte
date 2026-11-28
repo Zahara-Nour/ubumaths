@@ -20,16 +20,16 @@
 	```
 -->
 <script lang="ts">
-	import { lore } from '$lib/config/lore';
-	import { Badge } from '$lib/components/ui/badge';
-	import { Button } from '$lib/components/ui/button';
-	import { Separator } from '$lib/components/ui/separator';
+	import { lore } from '#lib/config/lore.ts';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import { Separator } from '#lib/components/ui/separator/index.ts';
 	import { Variable, Eye, EyeOff, GraduationCap, Tag } from '@lucide/svelte';
-	import { formatGradeShort } from '$lib/utils/grades';
-	import type { GradeCode } from '$lib/types/grades';
-	import ExerciseDisplay from '$lib/components/exercises/ExerciseDisplay.svelte';
-	import type { Exercise, ExerciseCategory } from '$lib/exercises/types';
-	import { getExerciseContentSafe, EXERCISE_CATEGORIES } from '$lib/exercises/types';
+	import { formatGradeShort } from '#lib/utils/grades.ts';
+	import type { GradeCode } from '#lib/types/grades.ts';
+	import ExerciseDisplay from '#lib/components/exercises/ExerciseDisplay.svelte';
+	import type { Exercise, ExerciseCategory } from '#lib/exercises/types.ts';
+	import { getExerciseContentSafe, EXERCISE_CATEGORIES } from '#lib/exercises/types.ts';
 
 	// Props
 	interface Props {

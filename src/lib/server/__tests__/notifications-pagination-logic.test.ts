@@ -23,8 +23,8 @@
 import { describe, test, expect, beforeEach, vi } from 'vitest';
 import { getUnreadNotifications } from '../notifications';
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { Database } from '$lib/types/database';
-import type { NotificationWithDetails } from '$lib/types/notification';
+import type { Database } from '#lib/types/database.ts';
+import type { NotificationWithDetails } from '#lib/types/notification.ts';
 
 // ============================================================================
 // TEST SETUP & MOCKS

@@ -10,7 +10,7 @@
 
 import { describe, it, expect } from 'vitest';
 import { render } from 'vitest-browser-svelte';
-import type { ChapterSection, ChapterSeries } from '$lib/types/chapters';
+import type { ChapterSection, ChapterSeries } from '#lib/types/chapters.ts';
 import ChapterSectionsEditor from '../ChapterSectionsEditor.svelte';
 
 const CHAPITRE = '11111111-1111-4111-8111-111111111111';
@@ -95,7 +95,7 @@ describe('ChapterSectionsEditor — séries de chapitre', () => {
 	it('forme interactive : bascule vers flash', async () => {
 		const racine = await rendre([serie({ form: 'interactive' })]);
 		const form = formulaire(racine, '?/setSeriesForm');
-		expect(form?.textContent).toContain('Entraînement');
+		expect(form?.textContent).toContain('Contrôle blanc');
 		expect(champ(form, 'form')).toBe('flash');
 	});
 

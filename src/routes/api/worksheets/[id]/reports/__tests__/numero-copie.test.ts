@@ -7,11 +7,11 @@
  * position, qui redémarre à chaque section et ignore le mélange.
  */
 import { describe, expect, it, vi } from 'vitest';
-import { tableMock } from '$lib/server/worksheets/__tests__/table-mock';
-import { assignmentCopyScope, copyDisplayNumbers } from '$lib/worksheets/worksheet-copy';
+import { tableMock } from '#lib/server/worksheets/__tests__/table-mock.ts';
+import { assignmentCopyScope, copyDisplayNumbers } from '#lib/worksheets/worksheet-copy.ts';
 
 const TEACHER = '550e8400-e29b-41d4-a716-446655440001';
-vi.mock('$lib/server/middleware/auth', () => ({
+vi.mock('#lib/server/middleware/auth.ts', () => ({
 	requireRoles: async () => ({ user: { id: TEACHER }, profile: { role: 'teacher' } })
 }));
 

@@ -13,8 +13,8 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { parseCustom } from '$lib/mathAST';
-import { literalNumberValue } from '$lib/mathAST/common/numeric';
+import { parseCustom } from '#lib/mathAST/index.ts';
+import { literalNumberValue } from '#lib/mathAST/common/numeric.ts';
 import { analyzeRangeContinuity, type RangeDiscontinuity } from '../singularity-warn';
 
 // =============================================================================

@@ -22,20 +22,20 @@
  * - Google integration with drive.file scope required
  */
 
-import { json, error } from '@sveltejs/kit';
-import { assertGoogleClassroomEnabled } from '$lib/server/google/feature-guard';
+import { error } from '@sveltejs/kit';
+import { assertGoogleClassroomEnabled } from '#lib/server/google/feature-guard.ts';
 import type { RequestHandler } from './$types';
 import {
 	GoogleNotConnectedError,
 	GoogleTokenExpiredError,
 	GoogleInsufficientPermissionsError
-} from '$lib/server/google/errors';
+} from '#lib/server/google/errors.ts';
 import { z } from 'zod';
-import { requireRole } from '$lib/server/middleware/auth';
-import { GoogleDriveClient } from '$lib/server/google/drive-api';
-import { GoogleClassroomClient } from '$lib/server/google/classroom-api';
-import { getTeacherAccessToken } from '$lib/server/google/sync';
-import { createServerLogger } from '$lib/utils/logger';
+import { requireRole } from '#lib/server/middleware/auth.ts';
+import { GoogleDriveClient } from '#lib/server/google/drive-api.ts';
+import { GoogleClassroomClient } from '#lib/server/google/classroom-api.ts';
+import { getTeacherAccessToken } from '#lib/server/google/sync.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/whiteboard/export-to-classroom/+server');
 
@@ -253,7 +253,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			`[Export to Classroom] Created material ${material.id} in course ${courseData.google_course_id} for class ${classData.name}`
 		);
 
-		return json({
+		return Response.json({
 			success: true,
 			materialId: material.id,
 			alternateLink: material.alternateLink,

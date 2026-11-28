@@ -11,13 +11,13 @@
  * `/dashboard/admin/cron` (POST). AUTH : `Bearer CRON_SECRET` seulement.
  * Journal : `background_job_runs` (job `deleted_account_files`).
  */
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { verifyCronAuth } from '$lib/server/auth/cron';
-import { createServiceRoleClient } from '$lib/server/serviceRoleClient';
-import { sweepDeletedAccountFiles } from '$lib/server/deleted-account-files';
-import { sweepOrphanMessageAttachments } from '$lib/server/message-attachments';
-import { createServerLogger } from '$lib/utils/logger';
+import { verifyCronAuth } from '#lib/server/auth/cron.ts';
+import { createServiceRoleClient } from '#lib/server/serviceRoleClient.ts';
+import { sweepDeletedAccountFiles } from '#lib/server/deleted-account-files.ts';
+import { sweepOrphanMessageAttachments } from '#lib/server/message-attachments.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/cron/deleted-account-files/+server');
 
@@ -55,7 +55,7 @@ const handler: RequestHandler = async ({ request }) => {
 				p_metadata: { ...result, orphan_files: orphanFiles }
 			});
 		}
-		return json({ success, ...result, orphan_files: orphanFiles });
+		return Response.json({ success, ...result, orphan_files: orphanFiles });
 	} catch (err) {
 		const message = err instanceof Error ? err.message : 'Erreur inconnue';
 		if (runId) {

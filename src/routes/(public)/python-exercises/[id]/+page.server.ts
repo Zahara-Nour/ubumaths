@@ -1,7 +1,10 @@
 import { error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
-import type { PythonExerciseStudentView, PythonMasteryStatus } from '$lib/types/python-exercises';
-import { createServerLogger } from '$lib/utils/logger';
+import type {
+	PythonExerciseStudentView,
+	PythonMasteryStatus
+} from '#lib/types/python-exercises.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('(public)/python-exercises/[id]/+page.server');
 

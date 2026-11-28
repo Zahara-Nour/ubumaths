@@ -1,12 +1,13 @@
 ---
 couvre:
-  - 'src/routes/api/{errors,bug-reports,search,openapi.json}/**'
+  - 'src/routes/api/{errors,bug-reports,search,openapi.json,web-vitals}/**'
   - 'src/routes/(protected)/dashboard/admin/{errors,bug-reports,docs,debug,integrite-donnees}/**'
   - 'src/routes/(protected)/dev/{session,rls,avatar,roue,champ-math,apercu-question,correction-generee,pdf-typst,pdf-latex,latex-vers-ubumark}/**'
   - 'src/routes/(protected)/dev/erreurs/surveillance/**'
   - 'src/routes/(protected)/dashboard/bug-reports/**'
   - 'src/lib/components/bug-reports/**'
-  - 'src/lib/utils/{errorMonitoring,freezeDetection,errors,version,web-vitals-visibilite}.ts'
+  - 'src/lib/utils/{errorMonitoring,freezeDetection,errors,version,web-vitals-visibilite,web-vitals-mesures,inp-tracker,analytics-redact}.ts'
+  - 'src/lib/server/web-vitals/**'
   - src/lib/stores/bugReportsConfig.svelte.ts
   - src/lib/types/bug-reports.ts
   - 'src/lib/server/{errorMonitoring,healthStats,bug-report-errors,bug-report-export,bug-report-screenshots,docs-scanner,markdown-parser,search}.ts'
@@ -51,7 +52,9 @@ Trois boucles distinctes :
 - `src/hooks.client.ts` appelle `initErrorMonitoring()`, `initWebVitals()` et
   `initFreezeDetection()` au chargement. Son `handleError` envoie lui-même un `fetch`
   vers `/api/errors/log` pour les erreurs que SvelteKit intercepte (rendu, `$effect`,
-  `load`). Une 404 de navigation part en `warning`, le reste en `error`.
+  `load`). SvelteKit 3 lui passe toutes les erreurs avec un `kind` : une 404 de
+  navigation (`framework`) part en `warning`, une exception (`unknown`) en `error`, une
+  erreur voulue (`app`, levée par `error(...)`) n'est pas journalisée.
 - `src/lib/utils/errorMonitoring.ts` :
   - écoute `error` et `unhandledrejection` sur `window` ;
   - API manuelle : `captureError`, `captureValidationError`, `capturePerformance`,
@@ -62,6 +65,20 @@ Trois boucles distinctes :
     `code` remplacés par `[REDACTED]`) ; un FCP ou un LCP mesuré après le premier passage
     de la page en arrière-plan est écarté (`web-vitals-visibilite.ts`, même règle que
     `web-vitals` : un onglet ouvert en arrière-plan donnait des « LCP » de plusieurs heures) ;
+    INP et CLS partent au passage en arrière-plan, mais seulement s'ils ont grandi depuis
+    le dernier envoi (avant, un onglet ouvert des jours renvoyait le même INP dès la fin
+    de la fenêtre anti-doublon de 5 minutes : jusqu'à 28 fois la même valeur) ;
+  - **mesures gardées chez nous** (depuis novembre 2026, cf. ci-dessous) : `initWebVitals`
+    remet aussi **toutes** les mesures, bonnes comprises, à `createSampleCollector`
+    (`web-vitals-mesures.ts`), qui les envoie à `/api/web-vitals` au passage en arrière-plan ;
+  - INP (`inp-tracker.ts`) : seuls les événements d'une interaction comptent
+    (`interactionId` non nul ; survol, défilement exclus) ; une interaction vaut son
+    événement le plus lent ; la plus lente par tranche de 50 interactions est écartée
+    (`performance.interactionCount`, à défaut les interactions observées). L'URL envoyée est
+    celle de la page où l'interaction a commencé (relevée au `pointerdown` / `keydown`), pas
+    celle du passage en arrière-plan. `context` reçoit `event_name` (`pointerup`, `keydown`…)
+    et `target` : balise, `id`, `role` — **jamais d'`aria-label`** (certains portent le nom
+    d'un élève) ni de texte saisi ;
   - garde-fous (objet `CONFIG`) : 10 erreurs par minute au plus, file envoyée toutes
     les 10 s ou dès 5 erreurs. « Lot » ne veut dire que regroupement dans le temps :
     chaque erreur part dans son propre `POST` ;
@@ -70,7 +87,7 @@ Trois boucles distinctes :
 - Autres émetteurs directs de `/api/errors/log` : `src/lib/stores/minesweeper.svelte.ts`.
 - `src/lib/utils/errors.ts` sert à **afficher** une erreur, pas à la remonter :
   - `readApiErrorMessage(response)` lit le message d'une réponse d'API en échec :
-    `{ message }` (erreur SvelteKit) ou `{ error }` (`json({ error })`), sinon
+    `{ message }` (erreur SvelteKit) ou `{ error }` (`Response.json({ error })`), sinon
     « Erreur <statut> ». Jamais le corps brut. Sans appelant depuis le
     retrait de `VariantPreview.svelte` (testée seule) ;
   - `formatUserError(error)` : message lisible d'une exception (champ `details` de
@@ -79,12 +96,59 @@ Trois boucles distinctes :
 
 ### Erreurs côté serveur
 
+- **Mesures de performance gardées chez nous** (`web_vital_samples`, chantier `amelioration`,
+  novembre 2026 : Vercel a rendu payant le détail de Speed Insights). Le journal des erreurs ne
+  reçoit que les mauvaises mesures, donc pas de quoi calculer un p75 ; cette table reçoit tout.
+  - **Navigateur** (`web-vitals-mesures.ts`, branché dans `initWebVitals`) : TTFB, FCP et LCP
+    sont rattachés à la page d'arrivée (le dernier LCP observé), le CLS (pire rafale de
+    décalages, définition de Google) à la page courante, l'INP à la page où l'interaction a
+    commencé. **Tout part une seule fois, au premier passage de la page
+    en arrière-plan** : une ligne par visite et par indicateur (la table est anonyme, rien ne
+    relierait deux envois d'une même visite) ; ce qui se passe après le retour sur l'onglet
+    n'est pas mesuré ici. Le TTFB envoyé ici
+    est compté depuis le début de la navigation (définition de Google), pas depuis l'envoi de
+    la requête comme celui du journal des erreurs. Sans prise en charge de `layout-shift`
+    (Safari), aucun CLS ne part. Rien n'est envoyé en développement. Limites à connaître pour
+    lire le relevé : un FCP ou un LCP arrivé après l'envoi est perdu ; le CLS est celui
+    de toute la visite, rattaché à la page affichée au moment de l'envoi, pas à celle où le
+    décalage a eu lieu ; une arrivée sur une page sans route (404) n'envoie pas son chargement.
+  - **Page = identifiant de route SvelteKit** (`/(public)/cours/[token]`), noté par le layout
+    racine (`afterNavigate` → `noteWebVitalsRoute`). Jamais `url.pathname` : l'adresse réelle
+    peut porter un jeton.
+  - **Pages comptées** (`isMeasuredRoute`) : toutes, sauf l'admin et `/dev`.
+  - **Serveur** (`POST /api/web-vitals`, `src/lib/server/web-vitals/reception.ts`) : route
+    ouverte, sans compte, qui **ne se sert pas de la session** (les hooks la lisent comme pour
+    toute requête). Elle n'écrit qu'en prod (`VERCEL_ENV=production`), limite à 30 envois par
+    minute et par adresse (préfixe /64 en IPv6 ; la clé du compteur est une empreinte de
+    l'adresse, un pseudonyme gardé dans `rate_limits` jusqu'à la purge quotidienne) et à 2 000
+    envois par heure pour tout le site (clé `web-vitals:global`), valide l'enveloppe (400 sinon),
+    puis écarte une à une les mesures hors bornes (durée > 10 min, CLS > 100) ou dont la route
+    n'est pas une **page du site** (`KNOWN_ROUTES`, tirée des fichiers `+page.svelte`). C'est
+    cette liste, pas la contrainte de la table, qui garantit qu'aucun jeton n'est écrit. Le
+    serveur n'insère que `route`, `metric`, `value`, `device_type` : la base fixe la date
+    (arrondie à l'heure) et l'identifiant.
+  - **Risque résiduel** : l'heure est arrondie, mais qui lit la base (admin, serveur) peut
+    retrouver l'ordre d'écriture des lignes (ordre physique, numéro de transaction) et les
+    situer entre deux lignes horodatées d'une autre table. Les deux limites de débit échouent
+    ouvertes (panne du compteur = pas de limite).
+  - Lecture des lignes : admin seul ; purge à 90 jours.
+  - **Relevé** (`GET /api/web-vitals/releve?days=28`, `src/lib/server/web-vitals/releve.ts`) :
+    pour le relevé mensuel de GitHub. Jeton dédié `WEB_VITALS_RELEVE_TOKEN` en
+    `Authorization: Bearer` (comparé en temps constant ; variable absente ou de moins de 32 caractères = 503), 10 appels par
+    minute et par adresse comptés avant le jeton, `days` de 1 à 90 (400 sinon). La route ne se
+    sert pas de la session et ne rend que des résultats calculés : nombre de mesures par
+    indicateur, pour tout le site et par page, et p75 à partir de 5 mesures ; ni ligne, ni date,
+    ni type d'appareil. Période en jours entiers (UTC), journée en cours exclue : interroger la
+    route en boucle ne défait pas l'arrondi à l'heure de `created_at`. Elle lit la table avec le
+    client service, par pages de 1 000 dans l'ordre des identifiants (tirés au hasard, jamais
+    l'ordre d'arrivée), 100 000 lignes au plus (`truncated` au-delà). Usage :
+    [core-web-vitals.md](../pratiques/core-web-vitals.md).
 - `src/lib/server/errorMonitoring.ts` est le seul écrivain de `error_logs` :
   - `logError` nettoie (`sanitizeErrorData`), tronque (message 1 000, pile 5 000, URL
     500 caractères), puis insère avec le **client service** (la RLS n'autorise
     l'insertion qu'à l'admin). Une erreur `critical` déclenche `notifyCriticalError` :
-    notification urgente à tous les admins (`createSystemNotification`), message et URL
-    échappés (`escapeHtml`) : ils s'affichent comme du texte ;
+    notification urgente à tous les admins (`createSystemNotification`, événement
+    `error_critical`), message et URL échappés (`escapeHtml`) : ils s'affichent comme du texte ;
   - `getUserContext` ajoute `user_id` et `user_role` ;
   - lecture : `getErrorStats` (RPC `get_error_stats`),
     `getErrorOccurrences`, `getErrorLog` ;
@@ -104,12 +168,17 @@ Trois boucles distinctes :
 | Route                              | Qui                             | Rôle                                                                                                                          |
 | ---------------------------------- | ------------------------------- | ----------------------------------------------------------------------------------------------------------------------------- |
 | `POST /api/errors/log`             | tout le monde, même sans compte | écrit une erreur ; 20 par minute et par IP ; sans compte approuvé, `critical` devient `error` ; `context` ≤ 10 000 caractères |
-| `POST /api/errors/bulk-resolve`    | admin                           | résout par empreinte tout ce qui correspond aux filtres                                                                       |
-| `POST /api/errors/delete-resolved` | admin                           | supprime toutes les erreurs résolues (client service)                                                                         |
+| `POST /api/errors/bulk-resolve`    | admin (ou prof élevé)           | résout par empreinte tout ce qui correspond aux filtres                                                                       |
+| `POST /api/errors/delete-resolved` | admin (ou prof élevé)           | supprime toutes les erreurs résolues (client service)                                                                         |
+
+Les deux routes admin se gardent par `requireAdmin` (vrai compte admin, ou prof en mode
+administration : [auth.md](auth.md) § Élévation admin) ; `bulk-resolve` écrit avec le client rendu.
 
 Pages admin : `/dashboard/admin/errors` (statistiques 24 h et occurrences, filtres
-`type`, `severity`, `resolved`, `search` dans l'adresse), `/dashboard/admin/errors/[id]`
-(détail, action `resolve`), `/dev/erreurs/surveillance` (ex-`/dashboard/admin/errors/test`,
+`type`, `severity`, `resolved`, `search` dans l'adresse, validés par `adminErrorsFiltersSchema` :
+vide = pas de filtre, valeur inconnue ou recherche de plus de 200 caractères = 400),
+`/dashboard/admin/errors/[id]` (détail, action `resolve`, note de 2 000 caractères au plus,
+`resolveErrorFormSchema`), `/dev/erreurs/surveillance` (ex-`/dashboard/admin/errors/test`,
 admin seul, textes en français : boutons qui provoquent des erreurs de test).
 
 ### Détection de gel
@@ -118,6 +187,9 @@ admin seul, textes en français : boutons qui provoquent des erreurs de test).
 
 - **Long Task Observer** : tâche de plus de 100 ms notée, de plus de 500 ms envoyée par
   `capturePerformance` ;
+- rien n'est envoyé à la surveillance (ni tâche longue, ni gel) quand « Détection des freezes »
+  est coupée dans la configuration (`bugReportsConfigStore.freezeDetectionEnabled`) ; avant
+  le chargement de la configuration, la valeur par défaut (activée) s'applique ;
 - **battement** toutes les 2 s : un retard est un gel seulement s'il est corroboré par des
   longues tâches, onglet visible et utilisateur pas inactif (le commentaire d'en-tête liste
   les faux positifs écartés : onglet en arrière-plan, veille, mode économie…) ;
@@ -131,7 +203,8 @@ admin seul, textes en français : boutons qui provoquent des erreurs de test).
   tout, appelée par `clearWorkData` (déconnexion, suppression du compte, autre compte sur
   l'appareil) et par un onglet qui voit le compte changer ailleurs, avant de se recharger
   (voir [RGPD](conformite/rgpd.md)) ;
-- `getFreezeDetectionContext()` rend gels, actions et Web Vitals pour un signalement.
+- `getFreezeDetectionContext()` rend gels et actions pour un signalement (les mesures de
+  performance n'y figurent pas : elles vont à la table des mesures, M47).
 
 Les rappels sont branchés dans `src/routes/(protected)/dashboard/+layout.svelte`
 (`setFreezePromptCallback`, `setAutoReportCallback`). Ils consultent la configuration
@@ -155,7 +228,10 @@ Les rappels sont branchés dans `src/routes/(protected)/dashboard/+layout.svelte
   `/dashboard/admin/bug-reports` (une seule lecture pour la liste) et par l'export. Rien n'est
   enregistré : un signalement de plus de 30 jours n'a plus d'erreurs (purge du journal).
 - **`/api/bug-reports/[reportId]`** : `GET` ; `PATCH` (l'auteur modifie titre et
-  description tant que le statut vaut `pending` ; l'admin change statut et notes) ;
+  description tant que le statut vaut `pending` ; l'admin change statut et notes) ; un statut
+  résolu (`resolved`, `wont_fix`, `duplicate`) note l'admin et la date (`resolved_by`,
+  `resolved_at`), tout autre statut les remet à vide : un rapport rouvert ne garde pas le nom de
+  son ancien résolveur (même règle dans le lot) ;
   `DELETE` (admin).
 - **`/api/bug-reports/batch`** : `PATCH` et `DELETE` en lot, admin, 100 rapports au plus.
   Chaque écriture vérifie ses lignes : un rapport intact (inconnu, refus de la RLS) va dans
@@ -163,9 +239,15 @@ Les rappels sont branchés dans `src/routes/(protected)/dashboard/+layout.svelte
 - **`/api/bug-reports/[reportId]/screenshot`** : `POST`, l'auteur seul. Taille plafonnée
   par `MAX_IMAGE_SIZE_BYTES`, signature binaire vérifiée (`validateFileSignature`).
   Chemin `<id utilisateur>/<id du rapport>/<horodatage>.<ext>` dans le bucket
-  `bug-report-screenshots` ; l'ancienne capture est retirée. Si la mise à jour du rapport ne
-  touche aucune ligne (rapport plus `pending`, refus de la RLS), le fichier envoyé est retiré
-  et la route rend 403.
+  `bug-report-screenshots` ; l'extension vient du type vérifié (`jpg`, `png`, `gif`, `webp`),
+  jamais du nom du fichier. L'ancienne capture n'est retirée qu'une fois la nouvelle rattachée
+  au rapport ; un effacement en erreur ou qui ne rend aucun fichier (refus silencieux du
+  stockage) laisse un avertissement au journal du serveur. Si la mise à jour du rapport ne touche aucune ligne (rapport plus `pending`, refus
+  de la RLS), le fichier envoyé est retiré, l'ancienne capture reste, et la route rend 403.
+- **Suppression d'un rapport** (`DELETE` seul ou en lot, admin) : `deleteBugReportWithScreenshot`
+  retire d'abord la capture du bucket, puis la ligne. Capture impossible à effacer → la ligne
+  est gardée (500 « Suppression impossible : la capture n'a pas pu être effacée », ou une
+  ligne `failed` dans le lot).
 - **`src/lib/server/bug-report-screenshots.ts`** : le bucket est privé ; `bug_reports.screenshot_url`
   est recalculé à chaque lecture depuis `screenshot_path` en URL signée
   (`DISPLAY_SIGNED_URL_TTL` = 1 h ; `EXPORT_SIGNED_URL_TTL` = 7 jours). Échec de signature
@@ -174,7 +256,9 @@ Les rappels sont branchés dans `src/routes/(protected)/dashboard/+layout.svelte
   (`src/lib/server/bug-report-export.ts`) : Markdown avec auteur, contexte, erreurs,
   fichiers déduits des piles et de l'URL, capture. Bouton : `ExportClaudeCodeButton`.
 - **Pages** : `/dashboard/bug-reports` (« Mes Signalements », dans le menu élève) et
-  `/dashboard/admin/bug-reports` (`BugReportList`, `BugReportCard`, `BugReportStatusBadge`).
+  `/dashboard/admin/bug-reports` (`BugReportList`, `BugReportCard`, `BugReportStatusBadge`) ;
+  ses filtres `status`, `category`, `severity` dans l'adresse sont validés par
+  `adminBugReportsFiltersSchema` (vide = pas de filtre, valeur inconnue = 400).
 - **Types et libellés** : `src/lib/types/bug-reports.ts` ; schémas Zod :
   `src/lib/server/validation/bug-reports.ts`.
 
@@ -182,7 +266,8 @@ Les rappels sont branchés dans `src/routes/(protected)/dashboard/+layout.svelte
 
 Table singleton `bug_reports_config` (`singleton_key = 'global'`), quatre drapeaux :
 `fab_enabled`, `freeze_detection_enabled`, `freeze_prompt_enabled`, `auto_report_enabled`.
-`/api/bug-reports/config` : `GET` pour tout compte connecté, `PATCH` admin. Côté client,
+`/api/bug-reports/config` : `GET` pour tout compte connecté, `PATCH` admin (`requireAdmin` : le prof en
+mode administration passe aussi, [auth.md](auth.md)). Côté client,
 `bugReportsConfigStore` (`src/lib/stores/bugReportsConfig.svelte.ts`), valeurs par
 défaut `DEFAULT_BUG_REPORTS_CONFIG` (tout à `true`). Réglage : `BugReportsConfigCard`, sur
 `/dashboard/admin/bug-reports` et `/dashboard/admin/settings`.
@@ -206,7 +291,10 @@ défaut `DEFAULT_BUG_REPORTS_CONFIG` (tout à `true`). Réglage : `BugReportsCon
 - `/dashboard/admin/docs` et `/dashboard/admin/docs/[...path]` : lisent `docs/` sur le
   disque au moment de la requête (`src/lib/server/docs-scanner.ts`) et rendent le
   Markdown en HTML (`src/lib/server/markdown-parser.ts`, `marked`). `getDocumentContent`
-  refuse un chemin qui sort de `docs/` (`..`).
+  refuse un chemin qui sort de `docs/` (`..`). Rubriques = dossiers de `docs/`, dans l'ordre
+  systeme, pratiques, adr, wip, archive, puis les autres. La recherche (`?q=`, Zod, 100 caractères
+  au plus) garde les docs dont le titre ou le chemin contient le texte, sans tenir compte des
+  accents (`filterDocCategories`).
 - `/dev/*` (admin seul, hors du tableau de bord) : pages d'essai (session, RLS, avatar, roue,
   PDF Typst et LaTeX, MathField, carte question, éditeur riche…), listées par `/dev`. Plus rien
   sous `/dashboard/admin/debug/`. Les anciennes adresses sont redirigées en 308 ([auth.md](auth.md)).
@@ -217,7 +305,8 @@ défaut `DEFAULT_BUG_REPORTS_CONFIG` (tout à `true`). Réglage : `BugReportsCon
   (`latexcgi`) pour la page `/dev/pdf-latex`, son seul appelant. Compte exigé
   (`requireAuth`, l'ancien relais ouvert du finding H13) ; Zod `compileLatexSchema`
   (`src/lib/server/validation/latex.ts` : 50 000 caractères au plus, `svg` / `png` / `pdf`,
-  corps 8 à 72). La réponse de texlive.net est renvoyée telle quelle, avec son `Content-Type`.
+  corps 8 à 72) : un refus rend 400 avec son message, jamais 500 (L111). La réponse de
+  texlive.net est renvoyée telle quelle, avec son `Content-Type`.
 - `src/lib/utils/version.ts` : `getVersion()` / `getRawVersion()`, lisent
   `__APP_VERSION__` injecté par `vite.config.ts`. Affichés par `InfoPanel.svelte` et la
   page admin des réglages.
@@ -225,7 +314,7 @@ défaut `DEFAULT_BUG_REPORTS_CONFIG` (tout à `true`). Réglage : `BugReportsCon
 ### OpenAPI et la page Swagger
 
 - `src/lib/server/openapi/generator.ts` : `generateOpenAPISpec()` écrit **à la main** une
-  spécification OpenAPI 3.1 de 11 chemins.
+  spécification OpenAPI 3.1 de 7 chemins.
 - `GET /api/openapi.json` : admin seul, `Cache-Control: private, no-store`.
 - `/dev/api` (ex-`/dashboard/admin/debug/api-docs` ; admin seul : garde de `/dev` et `requireAdmin`
   dans `+page.server.ts` ; `ssr = false`, entrée « API (Swagger) » de `/dev`) :
@@ -244,11 +333,15 @@ défaut `DEFAULT_BUG_REPORTS_CONFIG` (tout à `true`). Réglage : `BugReportsCon
   `requireRole(locals, 'admin')`.
 - `bug_reports` : l'auteur voit les siens et modifie les siens **tant qu'ils sont
   `pending`** ; l'admin voit, modifie et supprime tout. Les routes recopient ces règles
-  (403 si ce n'est ni l'auteur ni l'admin).
+  (403 si ce n'est ni l'auteur ni l'admin). L'auteur n'écrit que le titre, la description et
+  la capture, et un rapport naît toujours `pending`, sans capture ni résolution : deux gardes
+  en base (`20261126060048`) refusent le reste, même par l'API de la base →
+  [base-de-donnees.md](base-de-donnees.md#exploitation-journaux-configuration-cache).
 - `bug_reports_config` : lisible par tout compte connecté, modifiable par l'admin.
 - Captures : bucket privé ; l'auteur lit son propre dossier (premier segment = son id),
-  l'admin tout. Les policies du storage ne sont pas dans `supabase/migrations/` : elles
-  datent d'avant le baseline (`supabase/migrations_archive/20260614101541_bug_report_screenshots_private.sql`).
+  l'admin tout. Les policies du storage sont dans
+  `supabase/migrations/20261126060050_captures_rapports_de_bug_regles_de_stockage.sql`
+  (recopie de celles de la prod) ; le bucket lui-même est créé par `supabase/seed.sql`.
 
 ### Données d'élèves mineurs
 
@@ -257,6 +350,15 @@ défaut `DEFAULT_BUG_REPORTS_CONFIG` (tout à `true`). Réglage : `BugReportsCon
   adresses mail dans le message, la pile, l'URL **et toutes les valeurs texte** des en-têtes, du
   corps et du contexte, quel que soit le nom de la clé (depuis le 2026-10-13). Aucun appelant
   ne range plus `user_email` dans le contexte : `user_id` suffit.
+- Le jeton d'un lien du carnet de liaison (ADR 0040) est dans le CHEMIN (`/carnet/<jeton>`,
+  `/carnet/confirmer/<jeton>`), que `sanitizeUrl` ne voit pas : `logError` le remplace par
+  `[token]` dans l'URL et le message (`redactSecretUrl`, `src/lib/utils/analytics-redact.ts`,
+  depuis le 2026-11-16) ; de même le jeton d'une invitation de cours particulier
+  (`/auth/register/invitation/<jeton>`, depuis le 2026-11-25). Toutes les sources y passent : navigateur (`/api/errors/log`), requête
+  lente et exception de `hooks.server.ts`.
+- Les valeurs texte du `context` passent aussi par `redactSecretUrl` (`redactValue` dans
+  `sanitizeObject`, depuis le 2026-11-25) : `freezeDetection` y range l'URL de la page
+  (`context.url` d'une tâche longue ou d'un gel), que le masquage de `url` ne voyait pas.
 - Une erreur porte `user_id` et `user_role` si l'utilisateur est connecté.
 - Un signalement porte l'URL, le user-agent, les sélecteurs des dernières actions. Les
   erreurs récentes de l'auteur n'y sont **pas** enregistrées : son auteur peut le relire, et
@@ -318,9 +420,11 @@ rapport en UUID. Exceptions : voir Écarts.
 - `src/routes/api/bug-reports/__tests__/write-verdict.test.ts` : zéro ligne touchée n'est pas
   un succès — `DELETE` d'un rapport → 404 ; dans un lot, chaque rapport intact passe dans
   `failed` et `success` vaut `false` ; capture non rattachée au rapport → 403 et fichier retiré
-  du bucket.
+  du bucket ; rapport supprimé → sa capture retirée du bucket avant la ligne, et ligne gardée
+  si le bucket refuse.
 - `src/lib/server/__tests__/errorMonitoring-journal.test.ts` : adresses masquées dans le
-  contexte et l'URL, message de l'alerte critique échappé.
+  contexte et l'URL, jeton du carnet masqué dans l'URL et le message, message de l'alerte
+  critique échappé.
 - `src/routes/api/errors/log/__tests__/log.test.ts` : `critical` ramené à `error` sans compte approuvé,
   taille du contexte bornée.
 - `tests/integration/database/error-monitoring-triggers.test.ts` : empreinte SHA-256 et
@@ -335,8 +439,10 @@ rapport en UUID. Exceptions : voir Écarts.
   partent à la déconnexion, quand un autre compte prend l'onglet ou un autre onglet, restent pour
   le même compte ; une navigation est retenue sans ses paramètres.
 
-Rien d'autre ne teste `freezeDetection.ts` (ni les gels, ni le battement), les pages admin, ni
-`docs-scanner.ts`.
+- `src/lib/server/__tests__/docs-scanner.test.ts` : ordre et noms des rubriques de la doc
+  admin, filtre de la recherche (V116).
+
+Rien d'autre ne teste `freezeDetection.ts` (ni les gels, ni le battement) ni les pages admin.
 
 ## Décisions
 
@@ -352,32 +458,9 @@ Rien d'autre ne teste `freezeDetection.ts` (ni les gels, ni le battement), les p
 
 ## Écarts connus
 
-Constatés le 2026-10-13, non corrigés.
+Les écarts de cette zone sont au [registre des écarts](../ecarts/registre.md) : `pnpm ecarts`. Un écart s'écrit là-bas, jamais ici.
 
-- **Notification critique** : `system_event_type: 'assessment_graded'` faute de valeur
-  adaptée (commentaire dans le code).
-- **Supprimer un rapport ne supprime pas sa capture** : ni `DELETE` ni le lot ne touchent
-  au storage.
-- **Zod manquant** : la page `/dashboard/admin/errors` passe les filtres de l'adresse sans
-  validation ; l'action `resolve` de `/dashboard/admin/errors/[id]` lit `notes` sans borne ;
-  `/dashboard/admin/bug-reports` passe `status`, `category`, `severity` tels quels.
-- **Configuration** : le commentaire de `bugReportsConfigStore.load` dit « seuls les admins
-  peuvent charger la config » ; faux, `GET /api/bug-reports/config` ne demande qu'un compte
-  et la table est lisible par tous. La détection de gel tourne et envoie ses erreurs
-  même si `freeze_detection_enabled` vaut `false` : le drapeau ne coupe que la proposition et
-  l'envoi automatique d'un signalement.
-- **Web Vitals jamais dans le contexte de gel** : `reportWebVital` de `freezeDetection.ts`
-  dit être appelée par `errorMonitoring.ts`, qui ne l'importe pas. `webVitals` reste vide
-  dans les signalements.
-- **Doc admin** : la recherche (`?q=`) s'affiche mais ne cherche rien (aucune fonction
-  de recherche depuis le 2026-10-13) ; `CATEGORY_CONFIG` nomme des dossiers
-  (`features`, `architecture`, `guides`…) qui n'existent plus dans `docs/`. Lecture
-  de `docs/` sur le disque au moment de la requête : non vérifié que ces fichiers sont
-  présents dans le déploiement Vercel.
-- **OpenAPI** : 11 chemins sur environ 380 routes, dont 4 qui n'existent plus en tant que
-  route (`/api/messages`, `/api/questions`, `/api/notifications`, `/api/rewards/award`).
-- **Commentaire périmé** : l'en-tête de `healthStats.ts` dit que `server_cache`,
-  `background_job_runs` et les vues `admin_*` manquent dans `database.ts` ; elles y sont.
-- **`/api/latex/compile` répond 500 à une entrée invalide** : le `throw error(400, …)` de la
-  validation (et l'erreur d'un texlive.net en panne) est rattrapé par le `catch` global, qui
-  relance un 500 « Compilation failed: Unknown error » (`HttpError` n'étend pas `Error`).
+### Points non vérifiés
+
+- Doc admin : lecture de `docs/` sur le disque au moment de la requête ; non vérifié que ces
+  fichiers sont présents dans le déploiement Vercel.

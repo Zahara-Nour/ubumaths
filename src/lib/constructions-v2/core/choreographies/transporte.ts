@@ -20,9 +20,9 @@
  */
 
 import type { Voie, ChoreographyCtx, ChoreographyResult, SubStep, TraceTag } from './types';
-import { isAngle, isPointElement } from '$lib/geometry-core/types/elements';
-import { geoToNumber } from '$lib/geometry-core/compute/to-number';
-import { numeric } from '$lib/geometry-core/types/geo-value';
+import { isAngle, isPointElement } from '#lib/geometry-core/types/elements.ts';
+import { geoToNumber } from '#lib/geometry-core/compute/to-number.ts';
+import { numeric } from '#lib/geometry-core/types/geo-value.ts';
 import { de, en, labelAux, role } from './names';
 
 const SEGMENT_TRACE_LENGTH_DEFAULT = 15;

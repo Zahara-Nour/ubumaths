@@ -8,8 +8,8 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { parseLatex } from '$lib/mathAST/parser';
-import { evaluate } from '$lib/mathAST/eval/evaluate';
+import { parseLatex } from '#lib/mathAST/parser/index.ts';
+import { evaluate } from '#lib/mathAST/eval/evaluate.ts';
 import {
 	approximateDigitsOf,
 	approximateLatexOf,
@@ -17,7 +17,7 @@ import {
 	isWrittenNumber
 } from '../approximation';
 import { WebReplEngine } from '../web/web-repl-engine';
-import type { MathNode } from '$lib/mathAST/types';
+import type { MathNode } from '#lib/mathAST/types.ts';
 
 // Même composition que la Web REPL (`web-repl-engine.ts`) : rien pour un nombre déjà écrit
 function approximationOf(node: MathNode): string | null {

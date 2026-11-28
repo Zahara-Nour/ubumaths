@@ -24,13 +24,13 @@
  * - Status 500: Server error
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireRole } from '$lib/server/middleware/auth';
-import { verifyTeacherStudentWithRole } from '$lib/server/middleware/student-access';
-import { studentIdSchema, achievementIdSchema } from '$lib/server/validation/achievements';
-import { getStudentProgress, AchievementServiceError } from '$lib/server/achievements/service';
-import { createServerLogger } from '$lib/utils/logger';
+import { requireRole } from '#lib/server/middleware/auth.ts';
+import { verifyTeacherStudentWithRole } from '#lib/server/middleware/student-access.ts';
+import { studentIdSchema, achievementIdSchema } from '#lib/server/validation/achievements.ts';
+import { getStudentProgress, AchievementServiceError } from '#lib/server/achievements/service.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger(
 	'api/achievements/student/[studentId]/progress/[achievementId]/+server'
@@ -76,7 +76,7 @@ export const GET: RequestHandler = async ({ params, locals }) => {
 			}
 		} else {
 			// Unknown role
-			throw error(403, 'Not authorized');
+			throw error(403, 'Accès refusé');
 		}
 
 		// Fetch progress
@@ -86,7 +86,7 @@ export const GET: RequestHandler = async ({ params, locals }) => {
 			throw error(404, 'Progress not found for this achievement');
 		}
 
-		return json({
+		return Response.json({
 			success: true,
 			progress
 		});

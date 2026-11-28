@@ -3,9 +3,9 @@
 	 * Compte rendu d'une publication (ou d'un retour en brouillon) par lot :
 	 * combien de modèles ont changé, et pour chaque refus, ses raisons.
 	 */
-	import type { BulkStatusSummary } from '$lib/questions/bulk-status';
-	import * as Card from '$lib/components/ui/card';
-	import { Button } from '$lib/components/ui/button';
+	import type { BulkStatusSummary } from '#lib/questions/bulk-status.ts';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
 	import { X } from '@lucide/svelte';
 
 	let {

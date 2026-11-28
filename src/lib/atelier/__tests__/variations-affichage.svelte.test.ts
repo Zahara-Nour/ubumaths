@@ -10,7 +10,7 @@ import { describe, it, expect, afterEach } from 'vitest';
 import { mount, unmount } from 'svelte';
 import { Atelier } from '../atelier.svelte';
 import { CalcDesk } from '../desk.svelte';
-import CalculView from '$lib/components/atelier/CalculView.svelte';
+import CalculView from '#lib/components/atelier/CalculView.svelte';
 
 let monte: Record<string, unknown> | null = null;
 let cible: HTMLDivElement | null = null;

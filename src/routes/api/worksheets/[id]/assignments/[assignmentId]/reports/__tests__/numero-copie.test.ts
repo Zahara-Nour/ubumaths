@@ -8,11 +8,15 @@
  * copie (`copyDisplayNumbers`), pas l'ordre des positions.
  */
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { tableMock, type TableMock } from '$lib/server/worksheets/__tests__/table-mock';
-import { assignmentCopyScope, copyDisplayNumbers } from '$lib/worksheets/worksheet-copy';
+import {
+	tableMock,
+	versionedLine,
+	type TableMock
+} from '#lib/server/worksheets/__tests__/table-mock.ts';
+import { assignmentCopyScope, copyDisplayNumbers } from '#lib/worksheets/worksheet-copy.ts';
 
 const notified = vi.hoisted(() => ({ calls: [] as Array<Record<string, unknown>> }));
-vi.mock('$lib/server/auto-notifications', () => ({
+vi.mock('#lib/server/auto-notifications.ts', () => ({
 	notifyErrorReportValidated: async (data: Record<string, unknown>) => {
 		notified.calls.push({ kind: 'validated', ...data });
 	},
@@ -22,7 +26,7 @@ vi.mock('$lib/server/auto-notifications', () => ({
 }));
 
 const TEACHER = '550e8400-e29b-41d4-a716-446655440001';
-vi.mock('$lib/server/middleware/auth', () => ({
+vi.mock('#lib/server/middleware/auth.ts', () => ({
 	requireRoles: async () => ({ user: { id: TEACHER }, profile: { role: 'teacher' } })
 }));
 
@@ -44,6 +48,24 @@ const ROWS = [1, 2, 3, 4, 5, 6].map((n) => ({
 	position: n
 }));
 const REPORTED = ROWS[0];
+const VERSION_ID = '550e8400-e29b-41d4-a716-4466554403f1';
+const GUIDED = [{ label: 'guided', statement_md: 'Dériver', solution_md: 'x' }];
+
+/** La ligne de fiche signalée, contenu sur sa version ; l'exercice garde un ancien contenu */
+function reportedLine() {
+	return versionedLine(
+		{ id: REPORTED.id, position: REPORTED.position, exercise_id: EXERCISE_ID },
+		{
+			id: EXERCISE_ID,
+			slug: 'derivee',
+			shared: null,
+			variations: GUIDED,
+			generic_functions: null,
+			topic: null
+		},
+		{ variations: [{ label: 'guided', statement_md: 'PERIME', solution_md: 'PERIME' }] }
+	);
+}
 
 const ASSIGNMENT = {
 	id: ASSIGNMENT_ID,
@@ -86,7 +108,7 @@ function report(studentId: string, weId = REPORTED.id) {
 
 function supabase(
 	reports: object,
-	worksheetExercisesSingle: object = REPORTED,
+	worksheetExercisesSingle: object = { ...REPORTED, exercise_version_id: VERSION_ID },
 	overrides: Record<string, object> = {}
 ): TableMock {
 	return tableMock(
@@ -110,6 +132,20 @@ function supabase(
 			worksheet_assignment_classes: { data: [], error: null },
 			worksheet_assignment_students: { data: { id: 'was-1' }, error: null },
 			exercises: { data: null, error: null },
+			// Version de la ligne signalée : celle que la correction du prof modifie
+			exercise_versions: {
+				data: [
+					{
+						id: VERSION_ID,
+						number: 1,
+						exercise_id: EXERCISE_ID,
+						variations: GUIDED,
+						shared: null,
+						generic_functions: null
+					}
+				],
+				error: null
+			},
 			...overrides
 		},
 		{ update_student_bonus: { data: null, error: null } }
@@ -157,49 +193,28 @@ describe('page d’un signalement', () => {
 		const { GET } = await import('../[reportId]/+server');
 		const detail = {
 			...report(STUDENT),
-			worksheet_exercise: {
-				id: REPORTED.id,
-				position: REPORTED.position,
-				exercise_id: EXERCISE_ID,
-				exercise: {
-					id: EXERCISE_ID,
-					slug: 'derivee',
-					shared: null,
-					variations: [{ label: 'guided', statement_md: 'Dériver', solution_md: 'x' }],
-					generic_functions: null,
-					topic: null
-				}
-			}
+			worksheet_exercise: reportedLine()
 		};
 		const response = await GET({ locals: locals(supabase(detail)), params: PARAMS } as never);
 		const body = (await response.json()) as {
 			report: { exercise_position: number };
 			context: { exercise_position: number };
-			exercise: { id: string };
+			exercise: { id: string; variations: unknown };
 		};
 		expect(body.report.exercise_position).toBe(copyNumber(STUDENT));
 		expect(body.context.exercise_position).toBe(copyNumber(STUDENT));
 		// L'identifiant de l'exercice d'origine, pour le lien « Corriger l'exercice »
 		expect(body.exercise.id).toBe(EXERCISE_ID);
+		// Le contenu montré est celui de la VERSION de la fiche, pas l'ancien contenu de l'exercice
+		expect(body.exercise.variations).toEqual(GUIDED);
+		expect(JSON.stringify(body)).not.toContain('PERIME');
 	});
 
 	it('l’élève est-il encore destinataire ? (lien « Voir la copie » proposé ou non)', async () => {
 		const { GET } = await import('../[reportId]/+server');
 		const detail = {
 			...report(STUDENT),
-			worksheet_exercise: {
-				id: REPORTED.id,
-				position: REPORTED.position,
-				exercise_id: EXERCISE_ID,
-				exercise: {
-					id: EXERCISE_ID,
-					slug: 'derivee',
-					shared: null,
-					variations: [{ label: 'guided', statement_md: 'Dériver', solution_md: 'x' }],
-					generic_functions: null,
-					topic: null
-				}
-			}
+			worksheet_exercise: reportedLine()
 		};
 		const read = async (overrides: Record<string, object>) => {
 			const response = await GET({
@@ -247,6 +262,30 @@ describe('traitement d’un signalement : la notification de l’élève', () =>
 			});
 		}
 	);
+
+	it('corrigé : le contenu est écrit dans la VERSION de la ligne signalée, pas dans `exercises`', async () => {
+		const mock = supabase(report(STUDENT));
+		const response = await review('fixed', mock);
+		expect(response.status).toBeLessThan(300);
+		const updates = mock.writes.filter((w) => w.kind === 'update');
+		expect(updates.map((w) => w.table)).toContain('exercise_versions');
+		expect(updates.map((w) => w.table)).not.toContain('exercises');
+		const versionUpdate = updates.find((w) => w.table === 'exercise_versions')?.values as {
+			variations: Array<{ statement_md: string }>;
+		};
+		expect(versionUpdate.variations[0].statement_md).toBe('Corrigé');
+		// Cible : la version de la ligne (pas la dernière), au nom de CET exercice
+		expect(mock.eqs).toContainEqual({
+			table: 'exercise_versions',
+			column: 'id',
+			value: VERSION_ID
+		});
+		expect(mock.eqs).toContainEqual({
+			table: 'exercise_versions',
+			column: 'exercise_id',
+			value: EXERCISE_ID
+		});
+	});
 
 	it('fiche illisible : aucun numéro cité (pas l’ordre des positions)', async () => {
 		await review(

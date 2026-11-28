@@ -11,8 +11,8 @@
  * client service (élève), et c'est lui qui figure dans `ALLOWED_SERVICE_ROLE_PATHS`.
  */
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { Database, Json } from '$lib/types/database';
-import type { RiddleSolution } from '$lib/types/riddle';
+import type { Database, Json } from '#lib/types/database.ts';
+import type { RiddleSolution } from '#lib/types/riddle.ts';
 
 // ============================================================================
 // TYPES

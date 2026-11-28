@@ -5,7 +5,7 @@
  * `email`) : un compte Google seul resterait bloqué sur l'ancien mot de passe demandé.
  */
 import type { PageServerLoad } from './$types';
-import { hasPasswordLogin } from '$lib/server/child-password';
+import { hasPasswordLogin } from '#lib/server/child-password.ts';
 
 export const load: PageServerLoad = async ({ locals }) => {
 	return { canChangePassword: !!locals.user && hasPasswordLogin(locals.user) };

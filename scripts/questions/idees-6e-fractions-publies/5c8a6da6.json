@@ -1,0 +1,228 @@
+{
+	"id": "5c8a6da6-f99b-4d61-94cc-7147605ec7c6",
+	"title": "Exprimer une proportion en pourcentage (tout multiple de 100)",
+	"description": "Écrire la partie sur le tout, puis la simplifier en une fraction sur 100 : 120 élèves sur 400, c'est 30/100, soit 30 % (le tout vaut 200, 300, 400 ou 500)",
+	"grades": ["6"],
+	"level": 2,
+	"delay": 30,
+	"status": "published",
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{p}}"
+				}
+			],
+			"statement": "{{if:c==0|Un collège compte ${{d}}$ élèves ; ${{a}}$ d'entre eux viennent en bus.|Un festival a accueilli ${{d}}$ spectateurs ; ${{a}}$ d'entre eux avaient moins de $18$ ans.}}\n\n{{if:c==0|Quel pourcentage des élèves viennent en bus ?|Quel pourcentage des spectateurs avaient moins de $18$ ans ?}}\n\n$$?\\,\\%$$",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "0..1"
+				},
+				{
+					"name": "d",
+					"expression": "200|300|400|500"
+				},
+				{
+					"name": "m",
+					"expression": "eval:d/100"
+				},
+				{
+					"name": "p",
+					"expression": "1..99"
+				},
+				{
+					"name": "a",
+					"expression": "eval:p*m"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Proportion en pourcentage.** On écrit la proportion (la partie sur le tout) sous forme d'une fraction, puis on cherche la fraction égale de dénominateur $100$.",
+					"$$\\frac{{{a}}}{{{d}}} = \\frac{{{a}} \\div {{m}}}{{{d}} \\div {{m}}} = \\frac{{{p}}}{100}$$",
+					"$\\textcolor{{{color:primary.0}}}{{{solution}}\\,\\%}$ {{if:c==0|des élèves viennent en bus|des spectateurs avaient moins de $18$ ans}}."
+				]
+			}
+		},
+		{
+			"statement": "{{if:c==0|Sur $1\\,000$ graines semées, ${{a}}$ ont germé.|Une enquête a interrogé $1\\,000$ personnes ; ${{a}}$ d'entre elles ont un chien.}}\n\n{{if:c==0|Quel pourcentage des graines ont germé ?|Quel pourcentage des personnes interrogées ont un chien ?}}\n\n$$?\\,\\%$$",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "0..1"
+				},
+				{
+					"name": "p",
+					"expression": "1..99"
+				},
+				{
+					"name": "a",
+					"expression": "eval:10*p"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{p}}",
+					"expectedErrors": [
+						{
+							"answer": "{{a}}",
+							"message": "${{a}}$ est la partie : le pourcentage dit combien il y en a sur $100$, pas sur $1\\,000$.",
+							"label": "Partie recopiée"
+						},
+						{
+							"answer": "{{eval:p/100;d}}",
+							"message": "Le pourcentage se lit sur $100$ : $\\frac{{{p}}}{100}$, c'est ${{p}}\\,\\%$.",
+							"label": "Proportion en écriture décimale"
+						},
+						{
+							"answer": "{{eval:p/10;d}}",
+							"message": "On divise $1\\,000$ par $10$ pour arriver à $100$ : divise aussi ${{a}}$ par $10$, pas par $100$.",
+							"label": "Mauvais diviseur"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Proportion en pourcentage.** On écrit la proportion (la partie sur le tout), puis la fraction égale de dénominateur $100$.",
+					"$$\\frac{{{a}}}{1\\,000} = \\frac{{{a}} \\div 10}{1\\,000 \\div 10} = \\frac{{{p}}}{100}$$",
+					"$\\textcolor{{{color:primary.0}}}{{{solution}}\\,\\%}$ {{if:c==0|des graines ont germé|des personnes interrogées ont un chien}}."
+				]
+			},
+			"hint": "Écris la fraction partie sur tout, puis cherche la fraction égale de dénominateur $100$."
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["30"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "120",
+				"c": "0",
+				"d": "400",
+				"m": "4",
+				"p": "30"
+			},
+			"description": "120 sur 400 : 30 %",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["120"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "120",
+				"c": "0",
+				"d": "400",
+				"m": "4",
+				"p": "30"
+			},
+			"description": "Erreur : 120 (la partie)",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["0,3"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "120",
+				"c": "0",
+				"d": "400",
+				"m": "4",
+				"p": "30"
+			},
+			"description": "Erreur : 0,3",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "120",
+				"c": "0",
+				"d": "400",
+				"m": "4",
+				"p": "30"
+			},
+			"description": "Erreur : 3 (400 ÷ 120 arrondi)",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["37"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "111",
+				"c": "1",
+				"d": "300",
+				"m": "3",
+				"p": "37"
+			},
+			"description": "111 sur 300 : 37 %",
+			"variationIndex": 0
+		},
+		{
+			"description": "F12 : 370 sur 1 000 = 37 %",
+			"variationIndex": 1,
+			"variables": {
+				"c": "0",
+				"p": "37",
+				"a": "370"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["37"]
+		},
+		{
+			"description": "F12 : partie recopiée (370)",
+			"variationIndex": 1,
+			"variables": {
+				"c": "0",
+				"p": "37",
+				"a": "370"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "$370$ est la partie : le pourcentage dit combien il y en a sur $100$, pas sur $1\\,000$."
+			},
+			"answers": ["370"]
+		},
+		{
+			"description": "F12 : écriture décimale (0,37)",
+			"variationIndex": 1,
+			"variables": {
+				"c": "0",
+				"p": "37",
+				"a": "370"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Le pourcentage se lit sur $100$ : $\\frac{37}{100}$, c'est $37\\,\\%$."
+			},
+			"answers": ["0{,}37"]
+		},
+		{
+			"description": "F12 : mauvais diviseur (3,7)",
+			"variationIndex": 1,
+			"variables": {
+				"c": "0",
+				"p": "37",
+				"a": "370"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "On divise $1\\,000$ par $10$ pour arriver à $100$ : divise aussi $370$ par $10$, pas par $100$."
+			},
+			"answers": ["3{,}7"]
+		}
+	]
+}

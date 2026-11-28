@@ -7,7 +7,7 @@ import { CORRECTION_FONT_RULES } from '../correction-fonts';
 
 const calls = vi.hoisted(() => ({ service: [] as string[], fonts: [] as string[] }));
 
-vi.mock('$lib/typst/service', () => ({
+vi.mock('#lib/typst/service/index.ts', () => ({
 	PRIORITY: { URGENT: 0 },
 	getTypstService: () => ({
 		initialize: async () => true,
@@ -19,7 +19,7 @@ vi.mock('$lib/typst/service', () => ({
 		}
 	})
 }));
-vi.mock('$lib/typst/compiler/correction-fonts-compiler', () => ({
+vi.mock('#lib/typst/compiler/correction-fonts-compiler.ts', () => ({
 	compileTypstDocument: async (typst: string) => {
 		calls.fonts.push(typst);
 		return {

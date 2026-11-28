@@ -12,7 +12,7 @@ import type {
 	ConversionContext,
 	ConverterFn
 } from '../types';
-import { groupDecimalDigits, groupIntegerDigits } from '$lib/mathAST/digit-grouping';
+import { groupDecimalDigits, groupIntegerDigits } from '#lib/mathAST/digit-grouping.ts';
 
 // ===========================
 // Math Converters (Trivial - Pass-through)

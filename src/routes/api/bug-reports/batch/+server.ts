@@ -8,14 +8,15 @@
  * AUTH: admin only
  */
 
-import { error, json } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
+import { deleteBugReportWithScreenshot } from '#lib/server/bug-report-screenshots.ts';
 import type { RequestHandler } from './$types';
-import { requireAuth } from '$lib/server/middleware/auth';
-import type { TablesUpdate } from '$lib/types/database';
+import { requireAuth } from '#lib/server/middleware/auth.ts';
+import type { TablesUpdate } from '#lib/types/database.ts';
 import {
 	batchUpdateBugReportsSchema,
 	batchDeleteBugReportsSchema
-} from '$lib/server/validation/bug-reports';
+} from '#lib/server/validation/bug-reports.ts';
 
 // =============================================================================
 // PATCH /api/bug-reports/batch - Batch update status
@@ -52,9 +53,13 @@ export const PATCH: RequestHandler = async ({ request, locals }) => {
 		try {
 			const updateData: TablesUpdate<'bug_reports'> = { status };
 
+			// Rouvert (statut non résolu) : la résolution passée s'efface (écart L125).
 			if (needsResolvedBy) {
 				updateData.resolved_by = user.id;
 				updateData.resolved_at = new Date().toISOString();
+			} else {
+				updateData.resolved_by = null;
+				updateData.resolved_at = null;
 			}
 
 			// Zéro ligne touchée (rapport inconnu ou refus de la RLS) est un échec
@@ -78,7 +83,7 @@ export const PATCH: RequestHandler = async ({ request, locals }) => {
 	}
 
 	// `success` n'est vrai que si TOUS les rapports demandés ont été modifiés.
-	return json({
+	return Response.json({
 		success: failed.length === 0,
 		updated: updated.length,
 		failed
@@ -114,19 +119,18 @@ export const DELETE: RequestHandler = async ({ request, locals }) => {
 
 	for (const reportId of reportIds) {
 		try {
-			// Même règle que pour la mise à jour : zéro ligne = échec pour cet identifiant.
-			const { data: deletedRows, error: deleteError } = await locals.supabase
-				.from('bug_reports')
-				.delete()
-				.eq('id', reportId)
-				.select('id');
+			// Même règle que pour la mise à jour : zéro ligne = échec pour cet
+			// identifiant. La capture d'écran part avec le rapport (écart T25).
+			const outcome = await deleteBugReportWithScreenshot(locals.supabase, reportId);
 
-			if (deleteError) {
-				failed.push({ id: reportId, reason: 'Erreur de suppression' });
-			} else if (!deletedRows || deletedRows.length === 0) {
+			if (outcome === 'deleted') {
+				deleted.push(reportId);
+			} else if (outcome === 'screenshot_failed') {
+				failed.push({ id: reportId, reason: 'La capture n’a pas pu être effacée' });
+			} else if (outcome === 'not_found') {
 				failed.push({ id: reportId, reason: 'Rapport introuvable ou non supprimable' });
 			} else {
-				deleted.push(reportId);
+				failed.push({ id: reportId, reason: 'Erreur de suppression' });
 			}
 		} catch {
 			failed.push({ id: reportId, reason: 'Erreur inattendue' });
@@ -134,7 +138,7 @@ export const DELETE: RequestHandler = async ({ request, locals }) => {
 	}
 
 	// `success` n'est vrai que si TOUS les rapports demandés ont été supprimés.
-	return json({
+	return Response.json({
 		success: failed.length === 0,
 		deleted: deleted.length,
 		failed

@@ -1,17 +1,17 @@
 <!-- Admin CRON Monitoring Page -->
 <script lang="ts">
-	import { invalidateAll, goto } from '$app/navigation';
-	import { Button } from '$lib/components/ui/button';
-	import * as Card from '$lib/components/ui/card';
-	import { Badge } from '$lib/components/ui/badge';
-	import { Label } from '$lib/components/ui/label';
-	import MySelect from '$lib/components/MySelect.svelte';
-	import * as Dialog from '$lib/components/ui/dialog';
-	import * as Switch from '$lib/components/ui/switch';
-	import { toaster } from '$lib/stores/toaster.svelte';
-	import TypedConfirmDialog from '$lib/components/admin/TypedConfirmDialog.svelte';
-	import { MetricCard } from '$lib/components/admin/widgets';
-	import { cn } from '$lib/utils';
+	import { refreshAll, goto } from '$app/navigation';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
+	import { Label } from '#lib/components/ui/label/index.ts';
+	import MySelect from '#lib/components/MySelect.svelte';
+	import * as Dialog from '#lib/components/ui/dialog/index.ts';
+	import * as Switch from '#lib/components/ui/switch/index.ts';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
+	import TypedConfirmDialog from '#lib/components/admin/TypedConfirmDialog.svelte';
+	import { MetricCard } from '#lib/components/admin/widgets/index.ts';
+	import { cn } from '#lib/utils.ts';
 	import {
 		RefreshCw,
 		Clock,
@@ -22,7 +22,7 @@
 		Timer,
 		Activity
 	} from '@lucide/svelte';
-	import type { CronJobRun } from '$lib/server/validation/cron';
+	import type { CronJobRun } from '#lib/server/validation/cron.ts';
 
 	let { data } = $props();
 
@@ -160,6 +160,8 @@
 		const pathMap: Record<string, string> = {
 			auto_select_daily_riddle: '/api/cron/riddle-of-the-day',
 			deleted_account_files: '/api/cron/deleted-account-files',
+			carnet_de_liaison: '/api/cron/carnet-de-liaison',
+			private_lesson_invitations_purge: '/api/cron/invitations-cours-particulier',
 			// pg_cron jobs (triggered via RPC, not HTTP)
 			cleanup_all: 'rpc:run_cleanup_all',
 			cleanup_stale_trades: 'rpc:cleanup_stale_trades',
@@ -195,7 +197,7 @@
 
 	async function refresh() {
 		loading = true;
-		await invalidateAll();
+		await refreshAll();
 		loading = false;
 	}
 

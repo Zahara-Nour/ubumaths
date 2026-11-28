@@ -4,15 +4,16 @@
  *
  * - plus de décimales (resp. de chiffres significatifs) que demandé → faux,
  *   avec un message qui dit quoi faire (« Arrondis au centième. ») ;
- * - moins de décimales → accepté si la valeur est exactement l'arrondi
- *   (3,1 pour 3,10).
+ * - moins de décimales, valeur exactement l'arrondi (3,1 pour « au centième »
+ *   de 3,10) → juste en valeur, mais perfectible : l'arrondi fait écrire ses
+ *   zéros (règle renversée le 2026-11-26, cf. answer-validator-zeros-utiles).
  */
 
 import { describe, it, expect } from 'vitest';
 import { blankStatuses, validateAnswer, validateAnswerDetailed } from '../answer-validator';
-import { roundToPrecision } from '$lib/questions/rounding';
-import type { InstanceBlank, PrecisionType, QuestionInstance } from '$lib/questions/types';
-import type { ResolvedMarkdown } from '$lib/ubumark';
+import { roundToPrecision } from '#lib/questions/rounding.ts';
+import type { InstanceBlank, PrecisionType, QuestionInstance } from '#lib/questions/types.ts';
+import type { ResolvedMarkdown } from '#lib/ubumark/index.ts';
 
 function check(answer: string, expectedAnswer: string, precision: PrecisionType) {
 	const blank: InstanceBlank = { expectedAnswer, type: 'math', precision };
@@ -190,10 +191,11 @@ describe('Trop de chiffres : mauvaise forme si l’arrondi de la réponse redonn
 		expect(result.status).toBe('correct');
 	});
 
-	it('décimal : moins de chiffres (3,1 pour 3,10) → correct, inchangé', () => {
+	it('décimal : moins de chiffres (3,1 pour 3,10) → perfectible, il manque le zéro', () => {
 		const result = check('3{,}1', '3.1', HUNDREDTH);
 		expect(result.isCorrect).toBe(true);
-		expect(result.status).toBe('correct');
+		expect(result.status).toBe('unoptimal_form');
+		expect(result.constraintViolations?.map((v) => v.constraint)).toEqual(['rounding']);
 	});
 
 	const THREE: PrecisionType = { type: 'significant', digits: 3 };
@@ -219,16 +221,17 @@ describe('Trop de chiffres : mauvaise forme si l’arrondi de la réponse redonn
 		expect(result.feedback).toBe('Donne 3 chiffres significatifs.');
 	});
 
-	it('significatif : nombre exact (1,23) → correct ; moins (1,2 pour 1,20) → correct', () => {
+	it('significatif : nombre exact (1,23) → correct ; moins (1,2 pour 1,20) → perfectible', () => {
 		expect(check('1{,}23', '1.23456', THREE).status).toBe('correct');
-		expect(check('1{,}2', '1.2', THREE).status).toBe('correct');
+		expect(check('1{,}20', '1.2', THREE).status).toBe('correct');
+		expect(check('1{,}2', '1.2', THREE).status).toBe('unoptimal_form');
 	});
 });
 
 // Même décision en `orderIndependent` : une réponse trop précise mais juste est
 // appariée à sa case (après les réponses exactes), puis jugée de mauvaise forme.
 describe('orderIndependent : trop de chiffres mais bon arrondi → mauvaise forme', () => {
-	/** Deux cases sans ordre, au centième : 2,50 et 1,14 */
+	/** Deux cases sans ordre, au centième : 2,50 et 1,14 (2,50 s'écrit avec ses deux décimales) */
 	function unordered(): QuestionInstance {
 		return {
 			templateId: 'test-rounding-unordered',
@@ -244,8 +247,8 @@ describe('orderIndependent : trop de chiffres mais bon arrondi → mauvaise form
 		};
 	}
 
-	it('1,136 et 2,5 dans l’autre ordre → bad_form, violation rounding, message', () => {
-		const answers = ['1{,}136', '2{,}5'];
+	it('1,136 et 2,50 dans l’autre ordre → bad_form, violation rounding, message', () => {
+		const answers = ['1{,}136', '2{,}50'];
 		const result = validateAnswer(answers, unordered(), answers);
 		expect(result.isCorrect).toBe(false);
 		expect(result.status).toBe('bad_form');
@@ -260,22 +263,22 @@ describe('orderIndependent : trop de chiffres mais bon arrondi → mauvaise form
 		expect(detailed.blanks.map((b) => b.remarks)).toEqual([['Arrondis au centième.'], []]);
 	});
 
-	it('troncature 1,13 (et 2,5) → incorrect', () => {
-		const answers = ['1{,}13', '2{,}5'];
+	it('troncature 1,13 (et 2,50) → incorrect', () => {
+		const answers = ['1{,}13', '2{,}50'];
 		const result = validateAnswer(answers, unordered(), answers);
 		expect(result.isCorrect).toBe(false);
 		expect(result.status ?? 'incorrect').toBe('incorrect');
 		expect(blankStatuses(answers, unordered(), answers)).toEqual(['incorrect', 'correct']);
 	});
 
-	it('réponses exactes dans le désordre (1,14 et 2,5) → correct (forme : un nombre simple, pas l’écriture de l’attendu 1,136)', () => {
-		const answers = ['1{,}14', '2{,}5'];
+	it('réponses exactes dans le désordre (1,14 et 2,50) → correct (forme : un nombre simple, pas l’écriture de l’attendu 1,136)', () => {
+		const answers = ['1{,}14', '2{,}50'];
 		const result = validateAnswer(answers, unordered(), answers);
 		expect(result.isCorrect).toBe(true);
 		expect(blankStatuses(answers, unordered(), answers)).toEqual(['correct', 'correct']);
 	});
 
-	it('grandeurs : 1,136 m et 2,5 m dans l’autre ordre → bad_form, violation rounding', () => {
+	it('grandeurs : 1,136 m et 2,50 m dans l’autre ordre → bad_form, violation rounding', () => {
 		const instance = unordered();
 		instance.blanks = [
 			{
@@ -291,7 +294,7 @@ describe('orderIndependent : trop de chiffres mais bon arrondi → mauvaise form
 				unit: { expected: true }
 			}
 		];
-		const answers = ['1{,}136\\unit{m}', '2{,}5\\unit{m}'];
+		const answers = ['1{,}136\\unit{m}', '2{,}50\\unit{m}'];
 		const result = validateAnswer(answers, instance, answers);
 		expect(result.status).toBe('bad_form');
 		expect(result.constraintViolations?.map((v) => v.constraint)).toEqual(['rounding']);

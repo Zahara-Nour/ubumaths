@@ -6,9 +6,9 @@
  * programme » le refuserait.
  */
 import { describe, it, expect, vi } from 'vitest';
-import { createFakeSupabase } from '$lib/server/__tests__/helpers/fake-supabase';
+import { createFakeSupabase } from '#lib/server/__tests__/helpers/fake-supabase.ts';
 
-vi.mock('$lib/server/middleware/auth', () => ({ requireRoles: async () => ({}) }));
+vi.mock('#lib/server/middleware/auth.ts', () => ({ requireRoles: async () => ({}) }));
 
 import { DELETE } from '../+server';
 

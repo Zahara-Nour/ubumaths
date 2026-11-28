@@ -7,7 +7,7 @@
 
 import { describe, it, expect } from 'vitest';
 import { generateExerciseTypst } from '../exercise-typst-generator';
-import type { Exercise } from '$lib/exercises/types';
+import type { Exercise } from '#lib/exercises/types.ts';
 
 function exerciseWith(genericFunctions: string[] | undefined): Exercise {
 	return {

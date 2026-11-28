@@ -11,10 +11,10 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import { page } from 'vitest/browser';
-import type { WorksheetAssignmentRow } from '$lib/types/worksheets';
+import type { WorksheetAssignmentRow } from '#lib/types/worksheets.ts';
 
 const compiled = vi.hoisted(() => ({ sources: [] as string[] }));
-vi.mock('$lib/typst/compiler/correction-fonts-compiler', () => ({
+vi.mock('#lib/typst/compiler/correction-fonts-compiler.ts', () => ({
 	compileTypstDocument: async (source: string) => {
 		compiled.sources.push(source);
 		return { data: { pdf: new Uint8Array([1]) } };

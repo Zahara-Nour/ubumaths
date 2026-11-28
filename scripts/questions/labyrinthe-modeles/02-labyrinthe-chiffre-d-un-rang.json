@@ -1,0 +1,227 @@
+{
+	"id": "9e3a862a-56a6-44fa-bac4-2aa83388bb7f",
+	"title": "Le labyrinthe du chiffre d’un rang",
+	"description": "Tracer le chemin qui ne passe que par les nombres dont le chiffre d’un rang donné est fixé : entiers (unités à unités de mille), décimaux (dixièmes à millièmes), puis tous les rangs",
+	"grades": ["6"],
+	"level": 4,
+	"delay": 120,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Va de l’entrée à une sortie en ne passant que par les nombres dont le chiffre des {{if:r==0|dix-millièmes|{{if:r==1|millièmes|{{if:r==2|centièmes|{{if:r==3|dixièmes|{{if:r==4|unités|{{if:r==5|dizaines|{{if:r==6|centaines|{{if:r==7|unités de mille|dizaines de mille}}}}}}}}}}}}}}}} est ${{c}}$. Touche les cases une à une.\n\n```labyrinthe\ngrille: 5 x 4\nrègle: chiffre des {{if:r==0|dix-millièmes|{{if:r==1|millièmes|{{if:r==2|centièmes|{{if:r==3|dixièmes|{{if:r==4|unités|{{if:r==5|dizaines|{{if:r==6|centaines|{{if:r==7|unités de mille|dizaines de mille}}}}}}}}}}}}}}}} = {{c}}\nparcourir: oui\n```",
+			"variables": [
+				{
+					"name": "r",
+					"expression": "4..7"
+				},
+				{
+					"name": "c",
+					"expression": "1..9"
+				}
+			],
+			"conditions": [],
+			"correction": {
+				"steps": [
+					"**Lire le rang.** Dans chaque nombre, on repère d’abord le chiffre des unités (juste avant la virgule, ou le dernier chiffre d’un entier), puis on compte les rangs : dizaines, centaines, unités de mille vers la gauche ; dixièmes, centièmes, millièmes, dix-millièmes vers la droite.",
+					"**Les pièges.** Chaque intrus contient un ${{c}}$, mais à un autre rang : on ne garde une case que si son ${{c}}$ est au rang des {{if:r==0|dix-millièmes|{{if:r==1|millièmes|{{if:r==2|centièmes|{{if:r==3|dixièmes|{{if:r==4|unités|{{if:r==5|dizaines|{{if:r==6|centaines|{{if:r==7|unités de mille|dizaines de mille}}}}}}}}}}}}}}}}.",
+					"**Le chemin.** De l’entrée, on avance de case en case (haut, bas, gauche, droite) : un seul chemin mène à une sortie, celui teinté sur la grille."
+				]
+			},
+			"hint": "Repère d’abord le chiffre des unités (juste avant la virgule, ou le dernier chiffre d’un entier), puis compte les rangs à partir de lui."
+		},
+		{
+			"statement": "Va de l’entrée à une sortie en ne passant que par les nombres dont le chiffre des {{if:r==0|dix-millièmes|{{if:r==1|millièmes|{{if:r==2|centièmes|{{if:r==3|dixièmes|{{if:r==4|unités|{{if:r==5|dizaines|{{if:r==6|centaines|{{if:r==7|unités de mille|dizaines de mille}}}}}}}}}}}}}}}} est ${{c}}$. Touche les cases une à une.\n\n```labyrinthe\ngrille: 5 x 4\nrègle: chiffre des {{if:r==0|dix-millièmes|{{if:r==1|millièmes|{{if:r==2|centièmes|{{if:r==3|dixièmes|{{if:r==4|unités|{{if:r==5|dizaines|{{if:r==6|centaines|{{if:r==7|unités de mille|dizaines de mille}}}}}}}}}}}}}}}} = {{c}}\nparcourir: oui\n```",
+			"variables": [
+				{
+					"name": "r",
+					"expression": "1..3"
+				},
+				{
+					"name": "c",
+					"expression": "1..9"
+				}
+			],
+			"conditions": [],
+			"correction": {
+				"steps": [
+					"**Lire le rang.** Dans chaque nombre, on repère d’abord le chiffre des unités (juste avant la virgule, ou le dernier chiffre d’un entier), puis on compte les rangs : dizaines, centaines, unités de mille vers la gauche ; dixièmes, centièmes, millièmes, dix-millièmes vers la droite.",
+					"**Les pièges.** Chaque intrus contient un ${{c}}$, mais à un autre rang : on ne garde une case que si son ${{c}}$ est au rang des {{if:r==0|dix-millièmes|{{if:r==1|millièmes|{{if:r==2|centièmes|{{if:r==3|dixièmes|{{if:r==4|unités|{{if:r==5|dizaines|{{if:r==6|centaines|{{if:r==7|unités de mille|dizaines de mille}}}}}}}}}}}}}}}}.",
+					"**Le chemin.** De l’entrée, on avance de case en case (haut, bas, gauche, droite) : un seul chemin mène à une sortie, celui teinté sur la grille."
+				]
+			},
+			"hint": "Repère d’abord le chiffre des unités (juste avant la virgule, ou le dernier chiffre d’un entier), puis compte les rangs à partir de lui."
+		},
+		{
+			"statement": "Va de l’entrée à une sortie en ne passant que par les nombres dont le chiffre des {{if:r==0|dix-millièmes|{{if:r==1|millièmes|{{if:r==2|centièmes|{{if:r==3|dixièmes|{{if:r==4|unités|{{if:r==5|dizaines|{{if:r==6|centaines|{{if:r==7|unités de mille|dizaines de mille}}}}}}}}}}}}}}}} est ${{c}}$. Touche les cases une à une.\n\n```labyrinthe\ngrille: 4 x 5\nrègle: chiffre des {{if:r==0|dix-millièmes|{{if:r==1|millièmes|{{if:r==2|centièmes|{{if:r==3|dixièmes|{{if:r==4|unités|{{if:r==5|dizaines|{{if:r==6|centaines|{{if:r==7|unités de mille|dizaines de mille}}}}}}}}}}}}}}}} = {{c}}\nparcourir: oui\n```",
+			"variables": [
+				{
+					"name": "r",
+					"expression": "0..8"
+				},
+				{
+					"name": "c",
+					"expression": "1..9"
+				}
+			],
+			"conditions": [],
+			"correction": {
+				"steps": [
+					"**Lire le rang.** Dans chaque nombre, on repère d’abord le chiffre des unités (juste avant la virgule, ou le dernier chiffre d’un entier), puis on compte les rangs : dizaines, centaines, unités de mille vers la gauche ; dixièmes, centièmes, millièmes, dix-millièmes vers la droite.",
+					"**Les pièges.** Chaque intrus contient un ${{c}}$, mais à un autre rang : on ne garde une case que si son ${{c}}$ est au rang des {{if:r==0|dix-millièmes|{{if:r==1|millièmes|{{if:r==2|centièmes|{{if:r==3|dixièmes|{{if:r==4|unités|{{if:r==5|dizaines|{{if:r==6|centaines|{{if:r==7|unités de mille|dizaines de mille}}}}}}}}}}}}}}}}.",
+					"**Le chemin.** De l’entrée, on avance de case en case (haut, bas, gauche, droite) : un seul chemin mène à une sortie, celui teinté sur la grille."
+				]
+			},
+			"hint": "Repère d’abord le chiffre des unités (juste avant la virgule, ou le dernier chiffre d’un entier), puis compte les rangs à partir de lui."
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Entiers, dizaines = 4 : le bon chemin",
+			"variationIndex": 0,
+			"variables": {
+				"r": "5",
+				"c": "4"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["2,1 2,2 3,2 4,2 4,3 4,4 3,4 2,4 1,4 1,5"]
+		},
+		{
+			"description": "Entiers, dizaines = 4 : arrêté avant la sortie",
+			"variationIndex": 0,
+			"variables": {
+				"r": "5",
+				"c": "4"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["2,1 2,2 3,2 4,2 4,3 4,4 3,4 2,4 1,4"]
+		},
+		{
+			"description": "Entiers, dizaines = 4 : ne part pas de l’entrée",
+			"variationIndex": 0,
+			"variables": {
+				"r": "5",
+				"c": "4"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["2,2 3,2 4,2 4,3 4,4 3,4 2,4 1,4 1,5"]
+		},
+		{
+			"description": "Décimaux, centièmes = 7 : le bon chemin",
+			"variationIndex": 1,
+			"variables": {
+				"r": "2",
+				"c": "7"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["2,1 2,2 3,2 4,2 4,3 4,4 3,4 2,4 1,4 1,5"]
+		},
+		{
+			"description": "Décimaux, centièmes = 7 : arrêté avant la sortie",
+			"variationIndex": 1,
+			"variables": {
+				"r": "2",
+				"c": "7"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["2,1 2,2 3,2 4,2 4,3 4,4 3,4 2,4 1,4"]
+		},
+		{
+			"description": "Décimaux, centièmes = 7 : ne part pas de l’entrée",
+			"variationIndex": 1,
+			"variables": {
+				"r": "2",
+				"c": "7"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["2,2 3,2 4,2 4,3 4,4 3,4 2,4 1,4 1,5"]
+		},
+		{
+			"description": "Mélange, dix-millièmes = 3 : le bon chemin",
+			"variationIndex": 2,
+			"variables": {
+				"r": "0",
+				"c": "3"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["2,1 1,1 1,2 1,3 2,3 3,3 3,2 4,2 5,2 5,3 5,4"]
+		},
+		{
+			"description": "Mélange, dix-millièmes = 3 : arrêté avant la sortie",
+			"variationIndex": 2,
+			"variables": {
+				"r": "0",
+				"c": "3"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["2,1 1,1 1,2 1,3 2,3 3,3 3,2 4,2 5,2 5,3"]
+		},
+		{
+			"description": "Mélange, dix-millièmes = 3 : ne part pas de l’entrée",
+			"variationIndex": 2,
+			"variables": {
+				"r": "0",
+				"c": "3"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["1,1 1,2 1,3 2,3 3,3 3,2 4,2 5,2 5,3 5,4"]
+		},
+		{
+			"description": "Mélange, dizaines de mille = 6 : le bon chemin",
+			"variationIndex": 2,
+			"variables": {
+				"r": "8",
+				"c": "6"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["2,1 1,1 1,2 1,3 2,3 3,3 3,2 4,2 5,2 5,3 5,4"]
+		},
+		{
+			"description": "Mélange, dizaines de mille = 6 : arrêté avant la sortie",
+			"variationIndex": 2,
+			"variables": {
+				"r": "8",
+				"c": "6"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["2,1 1,1 1,2 1,3 2,3 3,3 3,2 4,2 5,2 5,3"]
+		},
+		{
+			"description": "Mélange, dizaines de mille = 6 : ne part pas de l’entrée",
+			"variationIndex": 2,
+			"variables": {
+				"r": "8",
+				"c": "6"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["1,1 1,2 1,3 2,3 3,3 3,2 4,2 5,2 5,3 5,4"]
+		}
+	],
+	"rangement": {
+		"noeud": "Nombres et calculs > Entiers : numération > décomposition",
+		"point": "6-101"
+	}
+}

@@ -19,17 +19,17 @@
 		- Toast notifications
 -->
 <script lang="ts">
-	import { lore } from '$lib/config/lore';
-	import * as Dialog from '$lib/components/ui/dialog';
-	import * as RadioGroup from '$lib/components/ui/radio-group';
-	import { Label } from '$lib/components/ui/label';
-	import { Textarea } from '$lib/components/ui/textarea';
-	import { Button } from '$lib/components/ui/button';
-	import MyCheckbox from '$lib/components/MyCheckbox.svelte';
-	import { Badge } from '$lib/components/ui/badge';
+	import { lore } from '#lib/config/lore.ts';
+	import * as Dialog from '#lib/components/ui/dialog/index.ts';
+	import * as RadioGroup from '#lib/components/ui/radio-group/index.ts';
+	import { Label } from '#lib/components/ui/label/index.ts';
+	import { Textarea } from '#lib/components/ui/textarea/index.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import MyCheckbox from '#lib/components/MyCheckbox.svelte';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
 	import RestrictUserDialog from './RestrictUserDialog.svelte';
 	import { CheckCircle, XCircle, AlertTriangle, Loader2, Trash2, UserX } from '@lucide/svelte';
-	import { toaster } from '$lib/stores/toaster.svelte';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
 	import { formatDistanceToNow, format } from 'date-fns';
 	import { fr } from 'date-fns/locale';
 

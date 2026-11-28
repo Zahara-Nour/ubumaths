@@ -8,8 +8,8 @@
 -->
 
 <script lang="ts">
-	import type { PalotinType } from '$lib/config/buddy-messages';
-	import type { BuddyExpression } from '$lib/types/buddy';
+	import type { PalotinType } from '#lib/config/buddy-messages.ts';
+	import type { BuddyExpression } from '#lib/types/buddy.ts';
 
 	// Extension des images des Palotins : SVG animés, produits par scripts/palotins-svg/
 	const IMAGE_EXTENSION = 'svg';

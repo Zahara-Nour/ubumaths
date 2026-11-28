@@ -12,20 +12,20 @@
 
 	Flow:
 	  submit → POST /api/admin/elevate { password }
-	    200 → invalidateAll() (re-runs layout loads so adminElevation is live)
+	    200 → refreshAll() (re-runs layout loads so adminElevation is live)
 	         → goto(data.redirect) (server-validated, open-redirect-safe target)
 	    error → toaster with the server message; the form stays so the user can
 	            retry. The submit button is disabled while the request is in flight.
 -->
 
 <script lang="ts">
-	import { goto, invalidateAll } from '$app/navigation';
+	import { goto, refreshAll } from '$app/navigation';
 	import { ShieldCheck } from '@lucide/svelte';
-	import MyPasswordInput from '$lib/components/MyPasswordInput.svelte';
-	import { Button } from '$lib/components/ui/button';
-	import { Label } from '$lib/components/ui/label';
-	import * as Card from '$lib/components/ui/card';
-	import { toaster } from '$lib/stores/toaster.svelte';
+	import MyPasswordInput from '#lib/components/MyPasswordInput.svelte';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import { Label } from '#lib/components/ui/label/index.ts';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
 	import type { PageData } from './$types';
 
 	let { data }: { data: PageData } = $props();
@@ -50,7 +50,7 @@
 				// Re-run server loads so locals.adminElevation is reflected in page
 				// data (the admin layout guard now lets us through), then land on the
 				// validated target.
-				await invalidateAll();
+				await refreshAll();
 				await goto(data.redirect);
 				return;
 			}

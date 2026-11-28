@@ -1,0 +1,46 @@
+[
+	{
+		"id": "452b9a91-4670-464e-b59e-f587f1150a15",
+		"noeudAvant": null,
+		"noeudApres": "Géométrie > Symétrie axiale",
+		"gradesAvant": ["CM1"],
+		"gradesApres": ["CM1"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["CM1§CM1-108"]
+	},
+	{
+		"id": "6452c31c-e990-4e7d-b4a2-26b44bd98222",
+		"noeudAvant": null,
+		"noeudApres": "Géométrie > Figures planes > perpendiculaires et parallèles",
+		"gradesAvant": ["CM1", "CM2"],
+		"gradesApres": ["CM1", "CM2"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["CM1§CM1-168", "CM2§CM2-155"]
+	},
+	{
+		"id": "66b4d4ed-f238-4075-b339-5c09c1e89592",
+		"noeudAvant": null,
+		"noeudApres": "Géométrie > Figures planes > perpendiculaires et parallèles",
+		"gradesAvant": ["CM1", "CM2"],
+		"gradesApres": ["CM1", "CM2"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["CM1§CM1-167", "CM2§CM2-154"]
+	},
+	{
+		"id": "74e6d19d-8d55-44b6-a3d0-48735a25f2bf",
+		"noeudAvant": null,
+		"noeudApres": "Géométrie > Symétrie axiale",
+		"gradesAvant": ["CM1"],
+		"gradesApres": ["CM1"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["CM1§CM1-107"]
+	}
+]

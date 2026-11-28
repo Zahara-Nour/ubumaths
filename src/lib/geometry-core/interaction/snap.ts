@@ -9,7 +9,7 @@ import type { Figure } from '../graph/figure';
 import type { GeoPoint } from '../types/primitives';
 import { exact } from '../types/geo-value';
 import { geoToNumber } from '../compute/to-number';
-import { numericNode } from '$lib/mathAST/common/numeric';
+import { numericNode } from '#lib/mathAST/common/numeric.ts';
 
 /**
  * Snap coordinates to the nearest grid position.

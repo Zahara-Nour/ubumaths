@@ -10,12 +10,12 @@
  * validation, debit, and logging atomically.
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { z } from 'zod';
-import { requireRole } from '$lib/server/middleware/auth';
-import { requireConsent } from '$lib/server/middleware/consent';
-import { createServerLogger } from '$lib/utils/logger';
+import { requireRole } from '#lib/server/middleware/auth.ts';
+import { requireConsent } from '#lib/server/middleware/consent.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/games/mathemo/use-power/+server');
 
@@ -48,5 +48,5 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		throw error(500, 'Erreur lors du debit des gidouilles');
 	}
 
-	return json(data);
+	return Response.json(data);
 };

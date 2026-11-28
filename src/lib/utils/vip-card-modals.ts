@@ -4,13 +4,13 @@
  * Helper functions for opening VIP card-related modals
  */
 
-import { modalStack } from '$lib/stores/modalStack.svelte';
-import VipCardsModal from '$lib/components/VipCardsModal.svelte';
-import VipCardDrawModal from '$lib/components/rewards/VipCardDrawModal.svelte';
-import VipCardExchangeModal from '$lib/components/rewards/VipCardExchangeModal.svelte';
-import VipCardChooseModal from '$lib/components/rewards/VipCardChooseModal.svelte';
-import RemoveWarningsModal from '$lib/components/rewards/RemoveWarningsModal.svelte';
-import type { ExchangeCardAction, VipCardRarity } from '$lib/types/vip-card';
+import { modalStack } from '#lib/stores/modalStack.svelte.ts';
+import VipCardsModal from '#lib/components/VipCardsModal.svelte';
+import VipCardDrawModal from '#lib/components/rewards/VipCardDrawModal.svelte';
+import VipCardExchangeModal from '#lib/components/rewards/VipCardExchangeModal.svelte';
+import VipCardChooseModal from '#lib/components/rewards/VipCardChooseModal.svelte';
+import RemoveWarningsModal from '#lib/components/rewards/RemoveWarningsModal.svelte';
+import type { ExchangeCardAction, VipCardRarity } from '#lib/types/vip-card.ts';
 
 /**
  * Options for opening a VIP cards modal
@@ -70,7 +70,7 @@ interface DrawCardsOptions {
 	usedCardInstanceId?: string; // Card instance that was consumed (for cache removal)
 	studentName?: string;
 	classId?: string; // Optional: for cache optimistic updates
-	filters?: import('$lib/types/vip-card').DrawCardsFilters; // Optional: filters for draw_cards action
+	filters?: import('#lib/types/vip-card.ts').DrawCardsFilters; // Optional: filters for draw_cards action
 	onComplete?: () => void; // Called when returning to caller modal
 }
 

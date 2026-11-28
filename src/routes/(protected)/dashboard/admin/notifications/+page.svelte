@@ -1,14 +1,14 @@
 <script lang="ts">
-	import { lore } from '$lib/config/lore';
+	import { lore } from '#lib/config/lore.ts';
 	import type { PageData } from './$types';
 	import { enhance } from '$app/forms';
-	import { Button } from '$lib/components/ui/button';
-	import { Input } from '$lib/components/ui/input';
-	import { Label } from '$lib/components/ui/label';
-	import MySelect from '$lib/components/MySelect.svelte';
-	import * as Card from '$lib/components/ui/card';
-	import { Separator } from '$lib/components/ui/separator';
-	import { toaster } from '$lib/stores/toaster.svelte';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import { Input } from '#lib/components/ui/input/index.ts';
+	import { Label } from '#lib/components/ui/label/index.ts';
+	import MySelect from '#lib/components/MySelect.svelte';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import { Separator } from '#lib/components/ui/separator/index.ts';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
 	import { Plus, Trash2, Send } from '@lucide/svelte';
 	import {
 		NOTIFICATION_TYPE_LABELS,
@@ -16,7 +16,7 @@
 		type NotificationType,
 		type NotificationPriority,
 		type NotificationTargetType
-	} from '$lib/types/notification';
+	} from '#lib/types/notification.ts';
 
 	let { data }: { data: PageData } = $props();
 

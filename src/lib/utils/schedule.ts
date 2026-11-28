@@ -1,4 +1,4 @@
-import type { Database } from '$lib/types/database';
+import type { Database } from '#lib/types/database.ts';
 
 type ClassSchedule = Database['public']['Tables']['class_schedules']['Row'];
 

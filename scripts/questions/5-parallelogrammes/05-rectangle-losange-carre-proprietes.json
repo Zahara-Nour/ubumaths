@@ -1,0 +1,224 @@
+{
+	"id": "bd4bc904-6299-4c72-9a1f-08c839bdde0a",
+	"title": "Rectangle, losange, carré : propriétés",
+	"description": "Reconnaître un rectangle, un losange ou un carré à ses diagonales ; propriétés des diagonales",
+	"grades": ["5"],
+	"level": 5,
+	"delay": 60,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "$ABCD$ est un **parallélogramme** ; ses diagonales se coupent en $O$. On ne se fie qu'aux **codages**, jamais à l'œil.\n\n```figure\nfenetre: -2 ; 8.4 ; -2.6 ; 5.6\ndescription: Un parallélogramme ABCD et ses diagonales, codées.\n---\n{{if:k==1|A = point(0, 0, etiquette=\"bas-gauche\")\nB = point(5, 1, etiquette=\"bas-droite\")\nC = point(4.4, 4, etiquette=\"haut-droite\")\nD = point(-0.6, 3, etiquette=\"haut-gauche\")\npolygone(A, B, C, D)\nsegment(A, C)\nsegment(B, D)\nO = point(2.2, 2, etiquette=\"haut\")\nmarque_segment(A, O)\nmarque_segment(O, C)\nmarque_segment(B, O)\nmarque_segment(O, D)|{{if:k==2|A = point(0, 0, etiquette=\"gauche\")\nB = point(2.5, -1.6, etiquette=\"bas\")\nC = point(5, 0, etiquette=\"droite\")\nD = point(2.5, 1.6, etiquette=\"haut\")\npolygone(A, B, C, D)\nsegment(A, C)\nsegment(B, D)\nO = point(2.5, 0, etiquette=\"haut\")\nmarque_segment(A, O)\nmarque_segment(O, C)\nmarque_segment(B, O, traits=2)\nmarque_segment(O, D, traits=2)\nangle(A, O, B, marque=\"carre\")|{{if:k==3|A = point(0, 0, etiquette=\"bas-gauche\")\nB = point(3.6, 1, etiquette=\"bas-droite\")\nC = point(2.6, 4.6, etiquette=\"haut-droite\")\nD = point(-1, 3.6, etiquette=\"haut-gauche\")\npolygone(A, B, C, D)\nsegment(A, C)\nsegment(B, D)\nO = point(1.3, 2.3, etiquette=\"haut\")\nmarque_segment(A, O)\nmarque_segment(O, C)\nmarque_segment(B, O)\nmarque_segment(O, D)\nangle(A, O, B, marque=\"carre\")|A = point(0, 0, etiquette=\"bas-gauche\")\nB = point(5.2, -0.6, etiquette=\"bas-droite\")\nC = point(7.4, 2.8, etiquette=\"haut-droite\")\nD = point(2.2, 3.4, etiquette=\"haut-gauche\")\npolygone(A, B, C, D)\nsegment(A, C)\nsegment(B, D)\nO = point(3.7, 1.4, etiquette=\"haut\")\nmarque_segment(A, O)\nmarque_segment(O, C)\nmarque_segment(B, O, traits=2)\nmarque_segment(O, D, traits=2)}}}}}}\n```\n\nQuelle est la nature la plus précise de $ABCD$ ?\n\n```choix\n- un rectangle\n- un losange\n- un carré\n- on ne peut pas savoir s'il est rectangle, losange ou carré\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..4"
+				},
+				{
+					"name": "j",
+					"expression": "eval:k-1"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{j}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"{{if:k==1|Les codages disent $OA = OB = OC = OD$ : les diagonales ont la **même longueur**.|{{if:k==2|Les diagonales se coupent en leur milieu et sont **perpendiculaires** (angle droit en $O$).|{{if:k==3|Les diagonales ont la **même longueur** et sont **perpendiculaires**.|Les diagonales se coupent en leur milieu, c'est tout : ni même longueur, ni angle droit codé.}}}}}}",
+					"**Propriétés.** Un parallélogramme dont les diagonales ont la même longueur est un rectangle ; dont les diagonales sont perpendiculaires, un losange ; les deux, un carré.",
+					"{{if:k==1|$ABCD$ est $\\textcolor{{{color:primary.0}}}{\\text{un rectangle}}$.|{{if:k==2|$ABCD$ est $\\textcolor{{{color:primary.0}}}{\\text{un losange}}$.|{{if:k==3|$ABCD$ est $\\textcolor{{{color:primary.0}}}{\\text{un carré}}$.|$ABCD$ est un parallélogramme, et $\\textcolor{{{color:primary.0}}}{\\text{on ne peut pas savoir}}$ s'il est rectangle, losange ou carré.}}}}}}"
+				]
+			}
+		},
+		{
+			"statement": "$ABCD$ est un **{{if:k==1|losange|rectangle}}**. Ses diagonales :\n\n```choix\n- sont perpendiculaires\n- ont la même longueur\n- ne se coupent pas en leur milieu\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..2"
+				},
+				{
+					"name": "j",
+					"expression": "eval:k-1"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{j}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Un {{if:k==1|losange|rectangle}} est un parallélogramme : ses diagonales se coupent en leur milieu.",
+					"{{if:k==1|De plus, les diagonales d'un losange $\\textcolor{{{color:primary.0}}}{\\text{sont perpendiculaires}}$.|De plus, les diagonales d'un rectangle $\\textcolor{{{color:primary.0}}}{\\text{ont la même longueur}}$.}}"
+				]
+			}
+		},
+		{
+			"statement": "$ABCD$ est un **rectangle** avec $AC = {{c}}$ cm.\n\n```figure\nfenetre: -1.6 ; 6 ; -1 ; 5\ndescription: Un rectangle ABCD et ses diagonales.\n---\nA = point(0, 0, etiquette=\"bas-gauche\")\nB = point(5, 1, etiquette=\"bas-droite\")\nC = point(4.4, 4, etiquette=\"haut-droite\")\nD = point(-0.6, 3, etiquette=\"haut-gauche\")\npolygone(A, B, C, D)\nsegment(A, C)\nsegment(B, D)\nangle(D, A, B, marque=\"carre\")\n```\n\nCombien mesure $BD$ ?\n\n$BD = ?$ cm",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "4..12"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{c}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Propriété.** Les diagonales d'un rectangle ont la **même longueur**.",
+					"$BD = AC = \\textcolor{{{color:primary.0}}}{{{c}}}$ cm."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Diagonales égales : rectangle",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1",
+				"j": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : losange au lieu de rectangle",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1",
+				"j": "0"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Diagonales perpendiculaires : losange",
+			"variationIndex": 0,
+			"variables": {
+				"k": "2",
+				"j": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Les deux : carré",
+			"variationIndex": 0,
+			"variables": {
+				"k": "3",
+				"j": "2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : carré → rectangle seulement",
+			"variationIndex": 0,
+			"variables": {
+				"k": "3",
+				"j": "2"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Milieu seulement : on ne peut pas savoir",
+			"variationIndex": 0,
+			"variables": {
+				"k": "4",
+				"j": "3"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : rectangle à l'œil",
+			"variationIndex": 0,
+			"variables": {
+				"k": "4",
+				"j": "3"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Losange : perpendiculaires",
+			"variationIndex": 1,
+			"variables": {
+				"k": "1",
+				"j": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : losange, même longueur",
+			"variationIndex": 1,
+			"variables": {
+				"k": "1",
+				"j": "0"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Rectangle : même longueur",
+			"variationIndex": 1,
+			"variables": {
+				"k": "2",
+				"j": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "BD = AC = 9",
+			"variationIndex": 2,
+			"variables": {
+				"c": "9"
+			},
+			"answers": ["9"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : BD = AC / 2",
+			"variationIndex": 2,
+			"variables": {
+				"c": "9"
+			},
+			"answers": ["4.5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

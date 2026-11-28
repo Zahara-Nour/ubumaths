@@ -1,4 +1,5 @@
 {
+	"id": "ec11ca90-97a1-43b3-b36f-65a0e2f17fc8",
 	"title": "Le cercle circonscrit à un triangle",
 	"description": "Le cercle circonscrit passe par les trois sommets ; son centre est le point de concours des médiatrices, à la même distance des trois sommets",
 	"grades": ["6"],

@@ -25,24 +25,24 @@
 -->
 
 <script lang="ts">
-	import { lore } from '$lib/config/lore';
-	import { Button } from '$lib/components/ui/button';
+	import { lore } from '#lib/config/lore.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
 	import { X } from '@lucide/svelte';
-	import VipCard from '$lib/components/VipCard.svelte';
-	import { modalStack } from '$lib/stores/modalStack.svelte';
-	import { teacherCache } from '$lib/stores/teacherDashboardCache.svelte';
-	import { toaster } from '$lib/stores/toaster.svelte';
-	import { syncVipCards } from '$lib/utils/cache-sync';
-	import type { CacheContext } from '$lib/types/cache-context';
-	import { getRarityPoints } from '$lib/types/vip-card';
-	import type { VipCardRarity, StudentVipCards } from '$lib/types/vip-card';
+	import VipCard from '#lib/components/VipCard.svelte';
+	import { modalStack } from '#lib/stores/modalStack.svelte.ts';
+	import { teacherCache } from '#lib/stores/teacherDashboardCache.svelte.ts';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
+	import { syncVipCards } from '#lib/utils/cache-sync.ts';
+	import type { CacheContext } from '#lib/types/cache-context.ts';
+	import { getRarityPoints } from '#lib/types/vip-card.ts';
+	import type { VipCardRarity, StudentVipCards } from '#lib/types/vip-card.ts';
 	import {
 		vipCardTemplates,
 		getEnabledTemplates,
 		getTemplateById,
 		templateToVipCard
-	} from '$lib/stores/vipCardTemplates.svelte';
-	import { cn } from '$lib/utils';
+	} from '#lib/stores/vipCardTemplates.svelte.ts';
+	import { cn } from '#lib/utils.ts';
 
 	interface Props {
 		studentId: string;

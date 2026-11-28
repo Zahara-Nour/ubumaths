@@ -8,9 +8,9 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import type { RequestEvent as _RequestEvent } from '@sveltejs/kit';
 import { GET, PUT } from '../+server';
-import { DEFAULT_WEEK_CONFIG } from '$lib/utils/week-config';
-import { DEFAULT_TIMEZONE } from '$lib/utils/timezones';
-import { createMockSupabase } from '$tests/helpers';
+import { DEFAULT_WEEK_CONFIG } from '#lib/utils/week-config.ts';
+import { DEFAULT_TIMEZONE } from '#lib/utils/timezones.ts';
+import { createMockSupabase } from '#tests/helpers/index.ts';
 
 // Helper to create request context - simplified to match actual RequestEvent structure
 type RouteParams = { schoolId: string };

@@ -6,16 +6,16 @@
 -->
 
 <script lang="ts">
-	import type { PalotinType } from '$lib/config/buddy-messages';
-	import type { BuddyQuizAnswer } from '$lib/types/buddy';
-	import { QUIZ_QUESTIONS } from '$lib/config/buddy-quiz';
-	import { scoreQuiz } from '$lib/utils/buddy-xp';
-	import { studentCache } from '$lib/stores/studentDashboardCache.svelte';
+	import type { PalotinType } from '#lib/config/buddy-messages.ts';
+	import type { BuddyQuizAnswer } from '#lib/types/buddy.ts';
+	import { QUIZ_QUESTIONS } from '#lib/config/buddy-quiz.ts';
+	import { scoreQuiz } from '#lib/utils/buddy-xp.ts';
+	import { studentCache } from '#lib/stores/studentDashboardCache.svelte.ts';
 	import PalotinQuizQuestion from './PalotinQuizQuestion.svelte';
 	import PalotinResult from './PalotinResult.svelte';
 	import BuddyAvatar from './BuddyAvatar.svelte';
-	import { Button } from '$lib/components/ui/button';
-	import { toaster } from '$lib/stores/toaster.svelte';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
 	import { fade } from 'svelte/transition';
 
 	interface Props {

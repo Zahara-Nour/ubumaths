@@ -11,7 +11,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 const insertMock = vi.fn();
 const createSystemNotificationMock = vi.fn();
 
-vi.mock('$lib/server/serviceRoleClient', () => ({
+vi.mock('#lib/server/serviceRoleClient.ts', () => ({
 	createServiceRoleClient: () => ({
 		from: () => ({
 			insert: (row: Record<string, unknown>) => {
@@ -28,7 +28,7 @@ vi.mock('$lib/server/serviceRoleClient', () => ({
 		})
 	})
 }));
-vi.mock('$lib/server/notifications', () => ({
+vi.mock('#lib/server/notifications.ts', () => ({
 	createSystemNotification: (...args: unknown[]) => createSystemNotificationMock(...args)
 }));
 
@@ -63,6 +63,41 @@ describe('logError — journal des erreurs', () => {
 		const serialized = JSON.stringify(insertedRow().context);
 		expect(serialized).not.toMatch(/@example\.com|@college\.fr|x@y\.org/);
 		expect(serialized).toContain('[email]@[domain]');
+	});
+
+	it('masque le jeton d’un lien personnel dans les valeurs du contexte (url d’un gel)', async () => {
+		const jeton = 'AbCdEfGhJkMnPqRsTuVwXyZ0123456789_-abcdefg';
+		await logError(unusedClient, {
+			error_type: 'client_js',
+			severity: 'warning',
+			message: 'Gel de la page',
+			url: '/auth/register/invitation/[token]',
+			context: {
+				drift: 1200,
+				url: `https://chiph.re/auth/register/invitation/${jeton}`,
+				pages: [`https://chiph.re/carnet/${jeton}`]
+			}
+		});
+
+		const serialized = JSON.stringify(insertedRow().context);
+		expect(serialized).not.toContain(jeton);
+		expect(serialized).toContain('/auth/register/invitation/[token]');
+		expect(serialized).toContain('/carnet/[token]');
+	});
+
+	it('masque le jeton du carnet de liaison dans l’URL et le message (ADR 0040)', async () => {
+		const jeton = 'AbCdEfGhJkMnPqRsTuVwXyZ0123456789_-abcdefg';
+		await logError(unusedClient, {
+			error_type: 'client_js',
+			severity: 'error',
+			message: `Échec de https://chiph.re/carnet/confirmer/${jeton}?/confirm`,
+			url: `https://chiph.re/carnet/${jeton}?bienvenue`
+		});
+
+		const ligne = JSON.stringify(insertedRow());
+		expect(ligne).not.toContain(jeton);
+		expect(insertedRow().url).toBe('https://chiph.re/carnet/[token]?bienvenue');
+		expect(insertedRow().message).toContain('/carnet/confirmer/[token]?/confirm');
 	});
 
 	it('masque une adresse courriel dans l’URL', async () => {

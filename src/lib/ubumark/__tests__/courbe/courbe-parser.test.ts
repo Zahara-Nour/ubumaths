@@ -3,9 +3,9 @@
  */
 import { describe, it, expect } from 'vitest';
 import { parseCourbeContent, findCourbeBlocks } from '../../parser/courbe-parser';
-import { createSafeEvaluator } from '$lib/mathAST/eval/compile';
-import { resolveMarkdownContent } from '$lib/questions/generator/content-resolver';
-import { templateMarkdown } from '$lib/ubumark';
+import { createSafeEvaluator } from '#lib/mathAST/eval/compile.ts';
+import { resolveMarkdownContent } from '#lib/questions/generator/content-resolver.ts';
+import { templateMarkdown } from '#lib/ubumark/index.ts';
 import type { CourbeNode } from '../../types/courbe';
 
 function spec(node: CourbeNode) {

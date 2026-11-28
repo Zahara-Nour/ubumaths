@@ -1,6 +1,6 @@
 """Écrit les 9 modèles du lot 8 du CE2 (figures planes et symétrie) dans scripts/questions/ce2-8/.
 
-Phase 0 validée par David le 2026-11-05 (§ 14 du journal `docs/wip/questions-ce2-progress.md`,
+Phase 0 validée par David le 2026-11-05 (§ 14 du journal `docs/archive/wip/questions-ce2-progress.md`,
 « je te suis »). Bornes `cycle2.json` : CE2-067 (vocabulaire : polygone, quadrilatère, pentagone,
 hexagone, losange, diagonale, rayon, diamètre, longueur et largeur du rectangle), CE2-068 et 095
 (carré, rectangle, triangle, triangle rectangle, losange), CE2-069 (carrés, rectangles, losanges :

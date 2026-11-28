@@ -5,11 +5,11 @@
   Uses a modal dialog that logs out the user when clicking outside.
 -->
 <script lang="ts">
-	import { goto, invalidateAll } from '$app/navigation';
-	import { Button } from '$lib/components/ui/button';
-	import * as Dialog from '$lib/components/ui/dialog';
+	import { goto, refreshAll } from '$app/navigation';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import * as Dialog from '#lib/components/ui/dialog/index.ts';
 	import { Clock } from '@lucide/svelte';
-	import { clearWorkData } from '$lib/utils/work-data';
+	import { clearWorkData } from '#lib/utils/work-data.ts';
 
 	let isLoggingOut = $state(false);
 	let dialogOpen = $state(true);
@@ -25,7 +25,7 @@
 				console.error('Données de travail non effacées :', e);
 			}
 			await fetch('/auth/logout', { method: 'POST' });
-			await invalidateAll();
+			await refreshAll();
 			await goto('/');
 		} catch (error) {
 			console.error('Logout failed:', error);

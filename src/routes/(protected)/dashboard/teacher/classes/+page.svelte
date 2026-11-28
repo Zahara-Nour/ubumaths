@@ -36,36 +36,39 @@
 -->
 
 <script lang="ts">
-	import { studentJournalHref } from '$lib/navigation/return-links';
-	import { lore } from '$lib/config/lore';
-	import { GOOGLE_CLASSROOM_ENABLED } from '$lib/config/google-classroom';
+	import { studentFollowUpHref, studentJournalHref } from '#lib/navigation/return-links.ts';
+	import { lore } from '#lib/config/lore.ts';
+	import { welcomeEmailState } from '#lib/utils/welcome-email-state.ts';
+	import { GOOGLE_CLASSROOM_ENABLED } from '#lib/config/google-classroom.ts';
 	import type { PageData } from './$types';
-	import type { Tables } from '$lib/types/database';
-	import type { SchoolPeriod } from '$lib/utils/timetable';
-	import { getOrderedSchoolDays, type WeekConfig } from '$lib/utils/week-config';
-	import type { ScheduleFormData } from '$lib/components/ScheduleEntryModal.svelte';
+	import type { Tables } from '#lib/types/database.ts';
+	import type { SchoolPeriod } from '#lib/utils/timetable.ts';
+	import { getOrderedSchoolDays, type WeekConfig } from '#lib/utils/week-config.ts';
+	import type { ScheduleFormData } from '#lib/components/ScheduleEntryModal.svelte';
 
 	type ClassSchedule = Tables<'class_schedules'>;
 	import type { StudentWithEmailStatus } from './+page.server';
-	import * as Tabs from '$lib/components/ui/tabs';
-	import * as Card from '$lib/components/ui/card';
-	import UserAvatar from '$lib/components/UserAvatar.svelte';
-	import { Button } from '$lib/components/ui/button';
-	import { Badge } from '$lib/components/ui/badge';
-	import { Label } from '$lib/components/ui/label';
-	import ClassStatsCard from '$lib/components/ClassStatsCard.svelte';
-	import ClassScheduleGrid from '$lib/components/ClassScheduleGrid.svelte';
-	import ScheduleEntryModal from '$lib/components/ScheduleEntryModal.svelte';
-	import MySelect from '$lib/components/MySelect.svelte';
-	import { toaster } from '$lib/stores/toaster.svelte';
+	import * as Tabs from '#lib/components/ui/tabs/index.ts';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import UserAvatar from '#lib/components/UserAvatar.svelte';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
+	import { Label } from '#lib/components/ui/label/index.ts';
+	import ClassStatsCard from '#lib/components/ClassStatsCard.svelte';
+	import ClassScheduleGrid from '#lib/components/ClassScheduleGrid.svelte';
+	import ScheduleEntryModal from '#lib/components/ScheduleEntryModal.svelte';
+	import MySelect from '#lib/components/MySelect.svelte';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
 	import { enhance } from '$app/forms';
-	import { submitAction, refreshPageData } from '$lib/utils/form-action';
-	import { teacherCache } from '$lib/stores/teacherDashboardCache.svelte';
+	import { submitAction, refreshPageData } from '#lib/utils/form-action.ts';
+	import { teacherCache } from '#lib/stores/teacherDashboardCache.svelte.ts';
 	import {
 		Mail,
 		CheckCircle2,
+		ShieldCheck,
 		BookOpen,
 		Gauge,
+		BookHeart,
 		GraduationCap,
 		Loader2,
 		ScrollText,
@@ -97,7 +100,7 @@
 
 	/**
 	 * Hydrate cache with fresh data from server load function
-	 * Populates Cache 3 (class info) and Cache 4 (school info)
+	 * Populates Cache 3 (class info)
 	 */
 	$effect(() => {
 		// Hydrate class info cache (Cache 3) for each class
@@ -118,15 +121,6 @@
 				schedules: classItem.schedules as never
 			};
 			teacherCache.hydrateClassInfo(classItem.id, classInfo);
-		}
-
-		// Hydrate school info cache (Cache 4) if available
-		if (data.school) {
-			teacherCache.hydrateSchoolInfo(
-				data.school as never,
-				// @ts-expect-error current_period doesn't exist in schema type but exists at runtime
-				data.school.current_period || null
-			);
 		}
 	});
 
@@ -482,11 +476,17 @@
 
 <div class="space-y-6">
 	<!-- Page Header -->
-	<div>
-		<h1 class="text-3xl font-bold text-foreground">Mes {lore.entities.class}s</h1>
-		<p class="mt-2 text-muted-foreground">
-			Gérez vos {lore.entities.class}s et leurs emplois du temps
-		</p>
+	<div class="flex flex-wrap items-start justify-between gap-4">
+		<div>
+			<h1 class="text-3xl font-bold text-foreground">Mes {lore.entities.class}s</h1>
+			<p class="mt-2 text-muted-foreground">
+				Gérez vos {lore.entities.class}s et leurs emplois du temps
+			</p>
+		</div>
+		<Button variant="outline" href="/dashboard/teacher/consent">
+			<ShieldCheck class="mr-2 h-4 w-4" />
+			Consentements parentaux
+		</Button>
 	</div>
 
 	<!-- Warning if no timetable configured -->
@@ -612,6 +612,10 @@
 									<Gauge class="mr-2 h-4 w-4" />
 									Acquisition
 								</Button>
+								<Button variant="outline" href="/dashboard/teacher/classes/{classItem.id}/carnet">
+									<BookHeart class="mr-2 h-4 w-4" />
+									Carnet de liaison
+								</Button>
 							</div>
 						</div>
 					</div>
@@ -694,6 +698,7 @@
 							{:else}
 								<div class="divide-y divide-border">
 									{#each students as student (student.id)}
+										{@const emailState = welcomeEmailState(student)}
 										<div class="flex items-center justify-between py-3">
 											<div class="flex items-center gap-3">
 												<UserAvatar
@@ -705,9 +710,19 @@
 												/>
 												<div>
 													<p class="font-medium text-foreground">
-														{getStudentDisplayName(student)}
+														<a
+															class="underline-offset-4 hover:underline"
+															href={studentFollowUpHref(student.id)}
+															title="Voir le suivi du {lore.entities.student}"
+														>
+															{getStudentDisplayName(student)}
+														</a>
 													</p>
-													{#if student.email}
+													{#if emailState.kind === 'parent-link'}
+														<p class="text-sm text-muted-foreground">
+															Identifiant : {emailState.loginId}
+														</p>
+													{:else if student.email}
 														<p class="text-sm text-muted-foreground">{student.email}</p>
 													{:else}
 														<p class="text-sm text-muted-foreground italic">Pas d'email</p>
@@ -723,12 +738,22 @@
 												>
 													<ScrollText class="h-4 w-4" />
 												</Button>
-												{#if student.welcomeEmailSentAt}
+												{#if emailState.kind === 'parent-link'}
+													<Button
+														variant="outline"
+														size="sm"
+														href="/dashboard/teacher/consent"
+														title="Compte créé par le parent : le contact passe par lui"
+													>
+														<ShieldCheck class="mr-2 h-4 w-4" />
+														Lien au parent
+													</Button>
+												{:else if emailState.kind === 'sent'}
 													<Badge variant="outline" class="gap-1 text-green-600">
 														<CheckCircle2 class="h-3 w-3" />
-														Envoyé le {formatDate(student.welcomeEmailSentAt)}
+														Envoyé le {formatDate(emailState.sentAt)}
 													</Badge>
-												{:else if student.email}
+												{:else if emailState.kind === 'send'}
 													<Button
 														variant="outline"
 														size="sm"
@@ -791,7 +816,13 @@
 									class="size-8"
 								/>
 								<p class="font-medium text-foreground">
-									{student.firstname}{student.lastname ? ` ${student.lastname}` : ''}
+									<a
+										class="underline-offset-4 hover:underline"
+										href={studentFollowUpHref(student.id)}
+										title="Voir le suivi du {lore.entities.student}"
+									>
+										{student.firstname}{student.lastname ? ` ${student.lastname}` : ''}
+									</a>
 								</p>
 							</div>
 							<Button

@@ -1,10 +1,10 @@
 <script lang="ts">
-	import BackLink from '$lib/components/navigation/BackLink.svelte';
-	import { lore } from '$lib/config/lore';
+	import BackLink from '#lib/components/navigation/BackLink.svelte';
+	import { lore } from '#lib/config/lore.ts';
 	import { goto } from '$app/navigation';
-	import ExerciseForm from '$lib/components/exercises/ExerciseForm.svelte';
-	import { toaster } from '$lib/stores/toaster.svelte';
-	import type { Database } from '$lib/types/database';
+	import ExerciseForm from '#lib/components/exercises/ExerciseForm.svelte';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
+	import type { Database } from '#lib/types/database.ts';
 	import type { PageData } from './$types';
 
 	type ExerciseInsert = Database['public']['Tables']['exercises']['Insert'];

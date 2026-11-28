@@ -1,0 +1,353 @@
+{
+	"id": "97f2374b-6491-4d5d-b07e-be6e2640427d",
+	"title": "Comparer des angles",
+	"description": "Comparer deux angles sans mesure (le plus ouvert a les côtés les plus courts) ; comparer à l'angle droit ; ranger trois angles",
+	"grades": ["CM1", "CM2"],
+	"level": 1,
+	"delay": 120,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Quel angle est le plus grand ?\n\n```figure\nfenetre: -4.5 ; 5 ; -0.8 ; 10.5\ngrille: non\ndescription: Un angle bleu en haut et un angle rouge en bas, aux côtés de longueurs différentes.\n---\nb0 = point(0, 6, visible=faux)\nb1 = point(b0, longueur={{lb}}, angle={{tb}}, visible=faux)\nb2 = point(b0, longueur={{lb}}, angle={{eval:tb+ab}}, visible=faux)\nsegment(b0, b1, epaisseur=2, couleur=\"bleu\")\nsegment(b0, b2, epaisseur=2, couleur=\"bleu\")\nangle(b1, b0, b2, couleur=\"bleu\", arcRadiusPx=30)\nr0 = point(0, 0, visible=faux)\nr1 = point(r0, longueur={{lr}}, angle={{tr}}, visible=faux)\nr2 = point(r0, longueur={{lr}}, angle={{eval:tr+ar}}, visible=faux)\nsegment(r0, r1, epaisseur=2, couleur=\"rouge\")\nsegment(r0, r2, epaisseur=2, couleur=\"rouge\")\nangle(r1, r0, r2, couleur=\"rouge\", arcRadiusPx=30)\n```\n\n```choix\nmelanger: non\n- L'angle bleu est le plus grand.\n- L'angle rouge est le plus grand.\n- Les deux angles sont égaux.\n```",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "0..2"
+				},
+				{
+					"name": "p",
+					"expression": "30..60"
+				},
+				{
+					"name": "g",
+					"expression": "25..45"
+				},
+				{
+					"name": "zb",
+					"expression": "eval:1-min(c,1)"
+				},
+				{
+					"name": "zr",
+					"expression": "eval:1-min(abs(c-1),1)"
+				},
+				{
+					"name": "ab",
+					"expression": "eval:p+g*zb"
+				},
+				{
+					"name": "ar",
+					"expression": "eval:p+g*zr"
+				},
+				{
+					"name": "lb",
+					"expression": "eval:2+2*(1-zb)"
+				},
+				{
+					"name": "lr",
+					"expression": "eval:2+2*zb"
+				},
+				{
+					"name": "tb",
+					"expression": "0..40"
+				},
+				{
+					"name": "tr",
+					"expression": "0..40"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{c}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Un angle est plus grand quand il est plus **ouvert** : la longueur des côtés ne compte pas.",
+					"On décalque un angle et on pose le calque sur l'autre, sommet sur sommet, un côté sur un côté.",
+					"{{if:c==2|Les deux autres côtés se superposent : $\\textcolor{{{color:primary.0}}}{\\text{les angles sont égaux}}$, même si leurs côtés n'ont pas la même longueur.|L'angle $\\textcolor{{{color:primary.0}}}{{{if:c==0|\\text{bleu}|\\text{rouge}}}}$ est le plus ouvert : c'est le plus grand, même si ses côtés sont plus courts.}}"
+				]
+			}
+		},
+		{
+			"statement": "Voici un angle droit (en noir) et un angle rouge. Compare l'angle rouge à l'angle droit.\n\n```figure\nfenetre: -4.5 ; 5 ; -0.8 ; 10.5\ngrille: non\ndescription: En haut, un angle droit noir codé par un petit carré ; en bas, un angle rouge.\n---\nq0 = point(0, 6, visible=faux)\nq1 = point(3, 6, visible=faux)\nq2 = point(0, 9, visible=faux)\nsegment(q0, q1, epaisseur=2)\nsegment(q0, q2, epaisseur=2)\nangle(q1, q0, q2, marque=\"carre\", couleur=\"noir\")\nr0 = point(0, 0, visible=faux)\nr1 = point(r0, longueur={{l}}, angle={{t}}, visible=faux)\nr2 = point(r0, longueur={{l}}, angle={{eval:t+a}}, visible=faux)\nsegment(r0, r1, epaisseur=2, couleur=\"rouge\")\nsegment(r0, r2, epaisseur=2, couleur=\"rouge\")\nangle(r1, r0, r2, couleur=\"rouge\", arcRadiusPx=30)\n```\n\n```choix\nmelanger: non\n- L'angle rouge est plus petit que l'angle droit.\n- L'angle rouge est aussi grand que l'angle droit.\n- L'angle rouge est plus grand que l'angle droit.\n```",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "0..2"
+				},
+				{
+					"name": "d",
+					"expression": "20..45"
+				},
+				{
+					"name": "a",
+					"expression": "eval:90+(c-1)*d"
+				},
+				{
+					"name": "t",
+					"expression": "0..40"
+				},
+				{
+					"name": "l",
+					"expression": "3..4"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{c}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On compare avec un gabarit de l'angle droit, par exemple le coin de l'équerre, posé sur le sommet de l'angle rouge, un bord le long d'un côté.",
+					"L'angle rouge est $\\textcolor{{{color:primary.0}}}{{{if:c==0|\\text{plus petit}|{{if:c==1|\\text{aussi grand}|\\text{plus grand}}}}}}$ que l'angle droit{{if:c==0| : il est aigu.|{{if:c==1| : c'est un angle droit.| : il est obtus.}}}}"
+				]
+			}
+		},
+		{
+			"statement": "Range les trois angles du plus petit au plus grand.\n\n```figure\nfenetre: -3 ; 4 ; -0.8 ; 11.5\ngrille: non\ndescription: Trois angles, bleu, rouge et vert, l'un au-dessus de l'autre.\n---\na0 = point(0, 8, visible=faux)\na1 = point(a0, longueur={{l0}}, angle={{t0}}, visible=faux)\na2 = point(a0, longueur={{l0}}, angle={{eval:t0+a0}}, visible=faux)\nsegment(a0, a1, epaisseur=2, couleur=\"bleu\")\nsegment(a0, a2, epaisseur=2, couleur=\"bleu\")\nangle(a1, a0, a2, couleur=\"bleu\", arcRadiusPx=30)\nb0 = point(0, 4, visible=faux)\nb1 = point(b0, longueur={{l1}}, angle={{t1}}, visible=faux)\nb2 = point(b0, longueur={{l1}}, angle={{eval:t1+a1}}, visible=faux)\nsegment(b0, b1, epaisseur=2, couleur=\"rouge\")\nsegment(b0, b2, epaisseur=2, couleur=\"rouge\")\nangle(b1, b0, b2, couleur=\"rouge\", arcRadiusPx=30)\nc0 = point(0, 0, visible=faux)\nc1 = point(c0, longueur={{l2}}, angle={{t2}}, visible=faux)\nc2 = point(c0, longueur={{l2}}, angle={{eval:t2+a2}}, visible=faux)\nsegment(c0, c1, epaisseur=2, couleur=\"vert\")\nsegment(c0, c2, epaisseur=2, couleur=\"vert\")\nangle(c1, c0, c2, couleur=\"vert\", arcRadiusPx=30)\n```\n\n```choix\nmelanger: non\n- bleu < rouge < vert\n- bleu < vert < rouge\n- rouge < bleu < vert\n- rouge < vert < bleu\n- vert < bleu < rouge\n- vert < rouge < bleu\n```",
+			"variables": [
+				{
+					"name": "w",
+					"expression": "0..5"
+				},
+				{
+					"name": "o0",
+					"expression": "25..40"
+				},
+				{
+					"name": "o1",
+					"expression": "eval:o0+30"
+				},
+				{
+					"name": "o2",
+					"expression": "eval:o1+30"
+				},
+				{
+					"name": "l0",
+					"expression": "2..3"
+				},
+				{
+					"name": "l1",
+					"expression": "2..3"
+				},
+				{
+					"name": "l2",
+					"expression": "2..3"
+				},
+				{
+					"name": "t0",
+					"expression": "0..30"
+				},
+				{
+					"name": "t1",
+					"expression": "0..30"
+				},
+				{
+					"name": "t2",
+					"expression": "0..30"
+				},
+				{
+					"name": "a0",
+					"expression": "eval:(1-min(abs(w-0),1))*o0+(1-min(abs(w-1),1))*o0+(1-min(abs(w-2),1))*o1+(1-min(abs(w-3),1))*o2+(1-min(abs(w-4),1))*o1+(1-min(abs(w-5),1))*o2"
+				},
+				{
+					"name": "a1",
+					"expression": "eval:(1-min(abs(w-0),1))*o1+(1-min(abs(w-1),1))*o2+(1-min(abs(w-2),1))*o0+(1-min(abs(w-3),1))*o0+(1-min(abs(w-4),1))*o2+(1-min(abs(w-5),1))*o1"
+				},
+				{
+					"name": "a2",
+					"expression": "eval:(1-min(abs(w-0),1))*o2+(1-min(abs(w-1),1))*o1+(1-min(abs(w-2),1))*o2+(1-min(abs(w-3),1))*o1+(1-min(abs(w-4),1))*o0+(1-min(abs(w-5),1))*o0"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{w}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On compare les ouvertures deux à deux, avec un calque ou un gabarit : la longueur des côtés ne compte pas.",
+					"Du plus petit au plus grand : $\\textcolor{{{color:primary.0}}}{{{if:w==0|\\text{bleu < rouge < vert}|{{if:w==1|\\text{bleu < vert < rouge}|{{if:w==2|\\text{rouge < bleu < vert}|{{if:w==3|\\text{rouge < vert < bleu}|{{if:w==4|\\text{vert < bleu < rouge}|\\text{vert < rouge < bleu}}}}}}}}}}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Bleu plus grand, côtés courts",
+			"variationIndex": 0,
+			"variables": {
+				"c": "0",
+				"p": "40",
+				"g": "35",
+				"zb": "1",
+				"zr": "0",
+				"ab": "75",
+				"ar": "40",
+				"lb": "2",
+				"lr": "4",
+				"tb": "10",
+				"tr": "20"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : le rouge, aux côtés longs",
+			"variationIndex": 0,
+			"variables": {
+				"c": "0",
+				"p": "40",
+				"g": "35",
+				"zb": "1",
+				"zr": "0",
+				"ab": "75",
+				"ar": "40",
+				"lb": "2",
+				"lr": "4",
+				"tb": "10",
+				"tr": "20"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Égaux, côtés différents",
+			"variationIndex": 0,
+			"variables": {
+				"c": "2",
+				"p": "50",
+				"g": "30",
+				"zb": "0",
+				"zr": "0",
+				"ab": "50",
+				"ar": "50",
+				"lb": "4",
+				"lr": "2",
+				"tb": "0",
+				"tr": "30"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : égaux dits différents",
+			"variationIndex": 0,
+			"variables": {
+				"c": "2",
+				"p": "50",
+				"g": "30",
+				"zb": "0",
+				"zr": "0",
+				"ab": "50",
+				"ar": "50",
+				"lb": "4",
+				"lr": "2",
+				"tb": "0",
+				"tr": "30"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Rouge plus grand qu'un droit",
+			"variationIndex": 1,
+			"variables": {
+				"c": "2",
+				"d": "30",
+				"a": "120",
+				"t": "10",
+				"l": "4"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Rouge droit",
+			"variationIndex": 1,
+			"variables": {
+				"c": "1",
+				"d": "30",
+				"a": "90",
+				"t": "25",
+				"l": "3"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : aigu dit plus grand",
+			"variationIndex": 1,
+			"variables": {
+				"c": "0",
+				"d": "30",
+				"a": "60",
+				"t": "10",
+				"l": "4"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Ordre rouge < bleu < vert",
+			"variationIndex": 2,
+			"variables": {
+				"w": "2",
+				"o0": "30",
+				"o1": "60",
+				"o2": "90",
+				"l0": "2",
+				"l1": "3",
+				"l2": "2",
+				"t0": "0",
+				"t1": "10",
+				"t2": "20",
+				"a0": "60",
+				"a1": "30",
+				"a2": "90"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : ordre inverse",
+			"variationIndex": 2,
+			"variables": {
+				"w": "2",
+				"o0": "30",
+				"o1": "60",
+				"o2": "90",
+				"l0": "2",
+				"l1": "3",
+				"l2": "2",
+				"t0": "0",
+				"t1": "10",
+				"t2": "20",
+				"a0": "60",
+				"a1": "30",
+				"a2": "90"
+			},
+			"answers": ["4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

@@ -11,12 +11,12 @@
  * @module utils/french-math
  */
 
-import type { ContentLocale } from '$lib/types/locale';
+import type { ContentLocale } from '#lib/types/locale.ts';
 import {
 	groupDecimalDigits,
 	groupIntegerDigits,
 	MIN_DIGITS_FOR_GROUPING
-} from '$lib/mathAST/digit-grouping';
+} from '#lib/mathAST/digit-grouping.ts';
 
 // =============================================================================
 // Types

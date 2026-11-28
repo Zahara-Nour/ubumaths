@@ -6,11 +6,12 @@
 
 import { error, fail, redirect } from '@sveltejs/kit';
 import type { Actions, PageServerLoad } from './$types';
-import { requireRoles } from '$lib/server/middleware/auth';
-import { uuidSchema } from '$lib/server/validation/common';
-import { createEvaluationFormSchema } from '$lib/server/validation/evaluations';
-import { getSeries, SeriesError } from '$lib/server/series';
-import { createEvaluation, EvaluationError } from '$lib/server/evaluations';
+import { requireRoles } from '#lib/server/middleware/auth.ts';
+import { uuidSchema } from '#lib/server/validation/common.ts';
+import { createEvaluationFormSchema } from '#lib/server/validation/evaluations.ts';
+import { getSeries, SeriesError } from '#lib/server/series.ts';
+import { createEvaluation, EvaluationError } from '#lib/server/evaluations.ts';
+import { pythonTemplateTitles } from '#lib/server/series-python-cases.ts';
 
 export const load: PageServerLoad = async ({ locals, url }) => {
 	await requireRoles(locals, ['teacher', 'admin']);
@@ -24,7 +25,9 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 	try {
 		const series = await getSeries(locals.supabase, seriesId.data);
 		if (!series) throw error(404, 'Série introuvable');
-		return { series };
+		// Modèles à case Python : jamais dans un contrôle (corrigé par le serveur), dit au prof
+		const pythonTitles = await pythonTemplateTitles(locals.supabase, series.items);
+		return { series, pythonTitles };
 	} catch (e) {
 		if (e instanceof SeriesError) throw error(e.status, e.message);
 		throw e;

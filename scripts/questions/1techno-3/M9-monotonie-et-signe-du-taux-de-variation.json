@@ -1,0 +1,184 @@
+{
+	"id": "936b7e76-74eb-4c82-a3b8-bdccb3682cfc",
+	"title": "Fonction monotone et signe du taux de variation",
+	"description": "Croissante : taux positif ou nul entre deux réels de I ; deux images ne suffisent pas",
+	"grades": ["1_TECHNO"],
+	"level": 1,
+	"delay": 30,
+	"status": "draft",
+	"options": {
+		"courseQuestion": true
+	},
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		},
+		"cleanCoefficients": true
+	},
+	"variations": [
+		{
+			"statement": "Une fonction $f$ est croissante sur un intervalle $I$. Pour deux réels $a\\neq b$ de $I$, le taux de variation $\\dfrac{f(b)-f(a)}{b-a}$ est…\n\n```choix\n- positif ou nul\n- négatif ou nul\n- égal à $0$\n- de signe quelconque\n```",
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"variables": [],
+			"correction": {
+				"steps": [
+					"$f$ croissante sur $I$ : $f(a)$ et $f(b)$ sont rangés dans le même ordre que $a$ et $b$, donc $f(b)-f(a)$ et $b-a$ ont le même signe.",
+					"Le taux de variation est **positif ou nul** ; il est négatif ou nul pour une fonction décroissante."
+				]
+			}
+		},
+		{
+			"statement": "On sait que $f$ est monotone sur $[0\\,;10]$, avec $f({{a}})={{fa}}$ et $f({{b}})={{fb}}$. Sur $[0\\,;10]$, $f$ est…\n\n```choix\nmelanger: non\n- croissante\n- décroissante\n- on ne peut pas savoir\n```",
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:fb>fa|0|1}}"
+				}
+			],
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..4"
+				},
+				{
+					"name": "b",
+					"expression": "5..9"
+				},
+				{
+					"name": "fa",
+					"expression": "-9..9"
+				},
+				{
+					"name": "fb",
+					"expression": "-9..9"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le taux de variation entre ${{a}}$ et ${{b}}$ vaut $\\dfrac{ {{fb}}-{{fa;()}} }{ {{b}}-{{a}} }=\\dfrac{ {{eval:fb-fa}} }{ {{eval:b-a}} }$, {{if:fb>fa|positif|négatif}}.",
+					"$f$ étant monotone, elle est {{if:fb>fa|croissante|décroissante}} sur $[0\\,;10]$."
+				]
+			},
+			"conditions": ["fa != fb", "fb - fa != b - a", "fb - fa != a - b"]
+		},
+		{
+			"statement": "On ne sait rien de $f$, sauf que $f(0)={{fa}}$ et $f(4)={{fb}}$. Sur $[0\\,;4]$, $f$ est…\n\n```choix\nmelanger: non\n- croissante\n- décroissante\n- on ne peut pas savoir\n```",
+			"blanks": [
+				{
+					"expectedAnswer": "2"
+				}
+			],
+			"variables": [
+				{
+					"name": "fa",
+					"expression": "-5..3"
+				},
+				{
+					"name": "d",
+					"expression": "2..8"
+				},
+				{
+					"name": "fb",
+					"expression": "eval:fa+d"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Deux images ne suffisent pas : entre $0$ et $4$, $f$ peut monter puis descendre.",
+					"Il faudrait savoir que $f$ est monotone sur $[0\\,;4]$ pour conclure : **on ne peut pas savoir**."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Positif ou nul",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : négatif",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "f(2) = 7, f(5) = 1 : décroissante",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"b": "5",
+				"fa": "7",
+				"fb": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : croissante",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"b": "5",
+				"fa": "7",
+				"fb": "1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "f(1) = -3, f(6) = 4 : croissante",
+			"variationIndex": 1,
+			"variables": {
+				"a": "1",
+				"b": "6",
+				"fa": "-3",
+				"fb": "4"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Sans monotonie : on ne sait pas",
+			"variationIndex": 2,
+			"variables": {
+				"fa": "1",
+				"d": "8",
+				"fb": "9"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : croissante",
+			"variationIndex": 2,
+			"variables": {
+				"fa": "1",
+				"d": "8",
+				"fb": "9"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

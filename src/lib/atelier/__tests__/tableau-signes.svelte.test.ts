@@ -10,7 +10,7 @@
 import { describe, it, expect, afterEach } from 'vitest';
 import { mount, unmount } from 'svelte';
 import { solveSteps } from '../solve-steps';
-import GeneratedStepsCorrection from '$lib/components/questions/GeneratedStepsCorrection.svelte';
+import GeneratedStepsCorrection from '#lib/components/questions/GeneratedStepsCorrection.svelte';
 
 /** Le marqueur que MathLive pose sur ce qu'il n'a pas su composer. */
 const ERROR_MARKER = 'ML__error';

@@ -10,7 +10,7 @@
 import { describe, expect, it } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import BuddyAvatar from '../BuddyAvatar.svelte';
-import type { BuddyExpression } from '$lib/types/buddy';
+import type { BuddyExpression } from '#lib/types/buddy.ts';
 
 // Constantes
 const REACTIONS = ['reaction-bond', 'reaction-tressaut', 'reaction-affaisse'];

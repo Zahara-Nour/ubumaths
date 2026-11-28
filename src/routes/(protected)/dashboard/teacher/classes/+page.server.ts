@@ -19,9 +19,9 @@
 
 import { error, fail } from '@sveltejs/kit';
 import type { PageServerLoad, Actions } from './$types';
-import type { Database } from '$lib/types/database';
-import { getTeacherClassesWithCounts, getUnassignedStudents } from '$lib/server/students';
-import { getTeacherTestMode } from '$lib/server/test-mode';
+import type { Database } from '#lib/types/database.ts';
+import { getTeacherClassesWithCounts, getUnassignedStudents } from '#lib/server/students.ts';
+import { getTeacherTestMode } from '#lib/server/test-mode.ts';
 
 type School = Database['public']['Tables']['schools']['Row'];
 
@@ -41,11 +41,11 @@ import {
 	createScheduleEntrySchema,
 	updateScheduleEntrySchema,
 	deleteScheduleEntrySchema
-} from '$lib/server/validation';
-import { requireRole, requireRoles } from '$lib/server/middleware/auth';
+} from '#lib/server/validation/index.ts';
+import { requireRole, requireRoles } from '#lib/server/middleware/auth.ts';
 import { z } from 'zod';
-import { formDataTransforms } from '$lib/server/validation/common';
-import { createServerLogger } from '$lib/utils/logger';
+import { formDataTransforms } from '#lib/server/validation/common.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('(protected)/dashboard/teacher/classes/+page.server');
 
@@ -292,7 +292,7 @@ export const actions: Actions = {
 	 *
 	 * SECURITY:
 	 * - Verifies user is authenticated
-	 * - Validates day_of_week is 0-4 (Sunday-Thursday)
+	 * - Validates day_of_week is 0-6 (Sunday-Saturday)
 	 * - Requires the teacher role (mono-teacher: classes have no per-teacher owner; RLS scopes the write)
 	 *
 	 * PROCESS:
@@ -360,7 +360,7 @@ export const actions: Actions = {
 	 *
 	 * SECURITY:
 	 * - Verifies user is authenticated
-	 * - Validates day_of_week is 0-4 (Sunday-Thursday)
+	 * - Validates day_of_week is 0-6 (Sunday-Saturday)
 	 * - Requires the teacher role; RLS scopes the write (mono-teacher: no per-teacher owner)
 	 *
 	 * PROCESS:

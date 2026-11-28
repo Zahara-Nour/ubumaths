@@ -20,8 +20,8 @@
 -->
 
 <script lang="ts">
-	import TutorChat from '$lib/components/tutor/TutorChat.svelte';
-	import { Card, CardContent, CardHeader, CardTitle } from '$lib/components/ui/card';
+	import TutorChat from '#lib/components/tutor/TutorChat.svelte';
+	import { Card, CardContent, CardHeader, CardTitle } from '#lib/components/ui/card/index.ts';
 	import type { PageData } from './$types';
 
 	let { data }: { data: PageData } = $props();

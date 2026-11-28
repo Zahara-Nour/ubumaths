@@ -1,15 +1,15 @@
 <script lang="ts">
-	import { lore } from '$lib/config/lore';
-	import { Button } from '$lib/components/ui/button';
-	import { Input } from '$lib/components/ui/input';
-	import { Label } from '$lib/components/ui/label';
-	import { Textarea } from '$lib/components/ui/textarea';
-	import MySelect from '$lib/components/MySelect.svelte';
-	import MyCheckbox from '$lib/components/MyCheckbox.svelte';
-	import VipCardActionEditor from '$lib/components/vip-cards/VipCardActionEditor.svelte';
-	import { toaster } from '$lib/stores/toaster.svelte';
-	import type { VipCardTemplate } from '$lib/stores/vipCardTemplates.svelte';
-	import type { VipCardAction } from '$lib/types/vip-card';
+	import { lore } from '#lib/config/lore.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import { Input } from '#lib/components/ui/input/index.ts';
+	import { Label } from '#lib/components/ui/label/index.ts';
+	import { Textarea } from '#lib/components/ui/textarea/index.ts';
+	import MySelect from '#lib/components/MySelect.svelte';
+	import MyCheckbox from '#lib/components/MyCheckbox.svelte';
+	import VipCardActionEditor from '#lib/components/vip-cards/VipCardActionEditor.svelte';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
+	import type { VipCardTemplate } from '#lib/stores/vipCardTemplates.svelte.ts';
+	import type { VipCardAction } from '#lib/types/vip-card.ts';
 
 	interface Props {
 		card?: VipCardTemplate;

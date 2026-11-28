@@ -6,13 +6,13 @@
 import { describe, it, expect, afterEach } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import Courbe from '../Courbe.svelte';
-import FillBlanksInput from '$lib/components/question-inputs/FillBlanksInput.svelte';
-import BuildAnswer from '$lib/components/questions/BuildAnswer.svelte';
-import { generateInstance } from '$lib/questions/generator/instance-generator';
-import type { QuestionTemplate } from '$lib/questions/types';
-import { templateMarkdown } from '$lib/ubumark';
-import { parseCourbeContent } from '$lib/ubumark/parser/courbe-parser';
-import { COURBE_PAD, courbeFrame } from '$lib/ubumark/utils/courbe-scene';
+import FillBlanksInput from '#lib/components/question-inputs/FillBlanksInput.svelte';
+import BuildAnswer from '#lib/components/questions/BuildAnswer.svelte';
+import { generateInstance } from '#lib/questions/generator/instance-generator.ts';
+import type { QuestionTemplate } from '#lib/questions/types.ts';
+import { templateMarkdown } from '#lib/ubumark/index.ts';
+import { parseCourbeContent } from '#lib/ubumark/parser/courbe-parser.ts';
+import { COURBE_PAD, courbeFrame } from '#lib/ubumark/utils/courbe-scene.ts';
 
 let mains: HTMLElement[] = [];
 function mainElement(): HTMLElement {

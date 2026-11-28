@@ -9,7 +9,7 @@
  */
 import { describe, it, expect } from 'vitest';
 import { load } from '../+layout.server';
-import { safeElevationRedirect } from '$lib/server/elevation-redirect';
+import { safeElevationRedirect } from '#lib/server/elevation-redirect.ts';
 
 type LoadEvent = Parameters<typeof load>[0];
 

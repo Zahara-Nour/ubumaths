@@ -4,7 +4,7 @@
  * s'exécuter.
  */
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import type { Challenge } from '$lib/types/game';
+import type { Challenge } from '#lib/types/game.ts';
 import { generateChallengeVariables } from '../challenge-variables';
 
 function withExpression(expression: string): Challenge {

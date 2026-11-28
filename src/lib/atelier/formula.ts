@@ -19,7 +19,7 @@
 
 import type { Atelier } from './atelier.svelte';
 import type { AtelierObject } from './types';
-import type { MathNode } from '$lib/mathAST/types';
+import type { MathNode } from '#lib/mathAST/types.ts';
 import { astOf, variablesOf } from './parse';
 import {
 	cellName,
@@ -31,22 +31,22 @@ import {
 } from './grid';
 import type { AtelierState } from './persistence';
 import { gridContext, termsOf, type GridContext } from './engine';
-import { evaluate } from '$lib/mathAST/eval/evaluate';
-import { transformAST, visitAST } from '$lib/mathAST/visitor';
-import { toCustom } from '$lib/mathAST/custom-generator';
+import { evaluate } from '#lib/mathAST/eval/evaluate.ts';
+import { transformAST, visitAST } from '#lib/mathAST/visitor.ts';
+import { toCustom } from '#lib/mathAST/custom-generator.ts';
 import { tidyTerms } from './tidy-terms';
 import { decimalCommaLatex, decimalCommaText } from './decimal-comma';
-import { toLatex } from '$lib/mathAST/latex-generator';
-import { isUnit } from '$lib/mathAST/guards';
-import { format as formatUnit } from '$lib/mathAST/units';
-import { findNodes } from '$lib/mathAST/transforms';
-import { divide, multiply, number as mathNumber, piConstant } from '$lib/mathAST/factory';
-import { simplifyExact } from '$lib/geometry-core/compute/geo-arithmetic';
-import { readListValue } from '$lib/statistics/read-value';
+import { toLatex } from '#lib/mathAST/latex-generator.ts';
+import { isUnit } from '#lib/mathAST/guards.ts';
+import { format as formatUnit } from '#lib/mathAST/units/index.ts';
+import { findNodes } from '#lib/mathAST/transforms.ts';
+import { divide, multiply, number as mathNumber, piConstant } from '#lib/mathAST/factory.ts';
+import { simplifyExact } from '#lib/geometry-core/compute/geo-arithmetic.ts';
+import { readListValue } from '#lib/statistics/read-value.ts';
 import { intervalDomainOf, outsideIntervalMessage } from './interval';
-import { containsValue } from '$lib/mathAST/domain/algebra';
+import { containsValue } from '#lib/mathAST/domain/algebra.ts';
 import { displayName } from './names';
-import { PI_IN_LETTERS, PI_IN_LETTERS_MESSAGE } from '$lib/mathAST/cli/core/typed-line';
+import { PI_IN_LETTERS, PI_IN_LETTERS_MESSAGE } from '#lib/mathAST/cli/core/typed-line.ts';
 import {
 	cellsOf,
 	columnRangeOf,
@@ -88,7 +88,7 @@ import {
 	logicAloneMessage,
 	type LogicFunction
 } from './grid-functions';
-import { findUnknownFunctionCall, SHOWN_FUNCTIONS } from '$lib/mathAST/parser/custom/tokenizer';
+import { findUnknownFunctionCall, SHOWN_FUNCTIONS } from '#lib/mathAST/parser/custom/tokenizer.ts';
 
 // =============================================================================
 // Types
@@ -965,6 +965,7 @@ function objectMark(o: AtelierObject): string {
 		o.status,
 		'interval' in o ? o.interval : null,
 		'inheritedInterval' in o ? o.inheritedInterval : null,
+		'parameterInterval' in o ? o.parameterInterval : null,
 		'reciprocalOn' in o ? o.reciprocalOn : null,
 		o.kind === 'sequence' ? [o.mode, o.firstIndex, o.firstTerm] : null
 	]);

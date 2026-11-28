@@ -28,8 +28,13 @@ jobs:
     timeout-minutes: 10
 
     steps:
+      # La liste des chemins vient de `sitemap-pages.ts` : on la lit dans la
+      # branche `production`, celle qui est en ligne. Lue sur `main`, elle
+      # signale en 404 toute page publique mergée mais pas encore déployée.
       - name: Checkout code
         uses: actions/checkout@v7
+        with:
+          ref: production
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v6

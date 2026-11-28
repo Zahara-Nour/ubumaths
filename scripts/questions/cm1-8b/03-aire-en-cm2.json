@@ -1,0 +1,162 @@
+{
+	"id": "614048c9-0e96-4577-9bd4-ce4fe1467559",
+	"title": "Aire en centimètres carrés",
+	"description": "Aire d'une figure sur un quadrillage de carreaux de 1 cm, en cm² : carreaux entiers ; avec des demi-carreaux ; écart entre les aires de deux figures",
+	"grades": ["CM1"],
+	"level": 1,
+	"delay": 90,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Chaque carreau du quadrillage est un carré de $1~\\unit{cm}$ de côté. Quelle est l'aire de la figure ?\n\n```figure\nfenetre: 0 ; 9 ; 0 ; 7\ngrille: 1\ndescription: Une figure coloriée sur un quadrillage de carreaux de 1 cm.\n---\n{{if:j==1|a1 = point(1, 1, visible=faux)\na2 = point(6, 1, visible=faux)\na3 = point(6, 4, visible=faux)\na4 = point(1, 4, visible=faux)\npolygone(a1, a2, a3, a4, couleur=\"noir\", epaisseur=2, remplissage=\"bleu\", opacite_fond=0.35)|{{if:j==2|a1 = point(1, 1, visible=faux)\na2 = point(4, 1, visible=faux)\na3 = point(4, 4, visible=faux)\na4 = point(1, 4, visible=faux)\npolygone(a1, a2, a3, a4, couleur=\"noir\", epaisseur=2, remplissage=\"bleu\", opacite_fond=0.35)|{{if:j==3|a1 = point(1, 1, visible=faux)\na2 = point(7, 1, visible=faux)\na3 = point(7, 3, visible=faux)\na4 = point(4, 3, visible=faux)\na5 = point(4, 6, visible=faux)\na6 = point(1, 6, visible=faux)\npolygone(a1, a2, a3, a4, a5, a6, couleur=\"noir\", epaisseur=2, remplissage=\"bleu\", opacite_fond=0.35)|{{if:j==4|a1 = point(1, 1, visible=faux)\na2 = point(5, 1, visible=faux)\na3 = point(5, 2, visible=faux)\na4 = point(4, 2, visible=faux)\na5 = point(4, 3, visible=faux)\na6 = point(3, 3, visible=faux)\na7 = point(3, 4, visible=faux)\na8 = point(2, 4, visible=faux)\na9 = point(2, 5, visible=faux)\na10 = point(1, 5, visible=faux)\npolygone(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, couleur=\"noir\", epaisseur=2, remplissage=\"bleu\", opacite_fond=0.35)|{{if:j==5|a1 = point(2, 1, visible=faux)\na2 = point(4, 1, visible=faux)\na3 = point(4, 2, visible=faux)\na4 = point(5, 2, visible=faux)\na5 = point(5, 4, visible=faux)\na6 = point(4, 4, visible=faux)\na7 = point(4, 5, visible=faux)\na8 = point(2, 5, visible=faux)\na9 = point(2, 4, visible=faux)\na10 = point(1, 4, visible=faux)\na11 = point(1, 2, visible=faux)\na12 = point(2, 2, visible=faux)\npolygone(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, couleur=\"noir\", epaisseur=2, remplissage=\"bleu\", opacite_fond=0.35)|{{if:j==6|a1 = point(1, 1, visible=faux)\na2 = point(6, 1, visible=faux)\na3 = point(6, 5, visible=faux)\na4 = point(5, 5, visible=faux)\na5 = point(5, 3, visible=faux)\na6 = point(2, 3, visible=faux)\na7 = point(2, 5, visible=faux)\na8 = point(1, 5, visible=faux)\npolygone(a1, a2, a3, a4, a5, a6, a7, a8, couleur=\"noir\", epaisseur=2, remplissage=\"bleu\", opacite_fond=0.35)|{{if:j==7|a1 = point(1, 3, visible=faux)\na2 = point(3, 3, visible=faux)\na3 = point(3, 1, visible=faux)\na4 = point(6, 1, visible=faux)\na5 = point(6, 3, visible=faux)\na6 = point(4, 3, visible=faux)\na7 = point(4, 5, visible=faux)\na8 = point(1, 5, visible=faux)\npolygone(a1, a2, a3, a4, a5, a6, a7, a8, couleur=\"noir\", epaisseur=2, remplissage=\"bleu\", opacite_fond=0.35)|a1 = point(1, 1, visible=faux)\na2 = point(3, 1, visible=faux)\na3 = point(3, 3, visible=faux)\na4 = point(5, 3, visible=faux)\na5 = point(5, 4, visible=faux)\na6 = point(3, 4, visible=faux)\na7 = point(3, 5, visible=faux)\na8 = point(6, 5, visible=faux)\na9 = point(6, 6, visible=faux)\na10 = point(1, 6, visible=faux)\npolygone(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, couleur=\"noir\", epaisseur=2, remplissage=\"bleu\", opacite_fond=0.35)}}}}}}}}}}}}}}\n```\n\n$\\text{Aire} = ?~\\unit{cm^2}$",
+			"variables": [
+				{
+					"name": "j",
+					"expression": "1..8"
+				},
+				{
+					"name": "n",
+					"expression": "eval:(1-min(abs(j-1),1))*15+(1-min(abs(j-2),1))*9+(1-min(abs(j-3),1))*21+(1-min(abs(j-4),1))*10+(1-min(abs(j-5),1))*12+(1-min(abs(j-6),1))*14+(1-min(abs(j-7),1))*12+(1-min(abs(j-8),1))*15"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{n}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Un carré de $1~\\unit{cm}$ de côté a une aire de $1~\\unit{cm^2}$ (un centimètre carré) : chaque carreau vaut $1~\\unit{cm^2}$.",
+					"Ligne par ligne : ${{if:j==1|5 + 5 + 5|{{if:j==2|3 + 3 + 3|{{if:j==3|6 + 6 + 3 + 3 + 3|{{if:j==4|4 + 3 + 2 + 1|{{if:j==5|2 + 4 + 4 + 2|{{if:j==6|5 + 5 + 2 + 2|{{if:j==7|3 + 3 + 3 + 3|2 + 2 + 4 + 2 + 5}}}}}}}}}}}}}} = {{if:j==1|15|{{if:j==2|9|{{if:j==3|21|{{if:j==4|10|{{if:j==5|12|{{if:j==6|14|{{if:j==7|12|15}}}}}}}}}}}}}}$ carreaux.",
+					"Aire : $\\textcolor{{{color:primary.0}}}{{{if:j==1|15|{{if:j==2|9|{{if:j==3|21|{{if:j==4|10|{{if:j==5|12|{{if:j==6|14|{{if:j==7|12|15}}}}}}}}}}}}}}~\\unit{cm^2}}$."
+				]
+			}
+		},
+		{
+			"statement": "Chaque carreau du quadrillage est un carré de $1~\\unit{cm}$ de côté. Quelle est l'aire de la figure ?\n\n```figure\nfenetre: 0 ; 9 ; 0 ; 7\ngrille: 1\ndescription: Une figure coloriée sur un quadrillage de carreaux de 1 cm, avec des carreaux entiers et des demi-carreaux.\n---\n{{if:j==1|a1 = point(1, 1, visible=faux)\na2 = point(5, 1, visible=faux)\na3 = point(1, 5, visible=faux)\npolygone(a1, a2, a3, couleur=\"noir\", epaisseur=2, remplissage=\"vert\", opacite_fond=0.35)|{{if:j==2|a1 = point(1, 1, visible=faux)\na2 = point(5, 1, visible=faux)\na3 = point(7, 3, visible=faux)\na4 = point(3, 3, visible=faux)\npolygone(a1, a2, a3, a4, couleur=\"noir\", epaisseur=2, remplissage=\"vert\", opacite_fond=0.35)|{{if:j==3|a1 = point(3, 1, visible=faux)\na2 = point(5, 3, visible=faux)\na3 = point(3, 5, visible=faux)\na4 = point(1, 3, visible=faux)\npolygone(a1, a2, a3, a4, couleur=\"noir\", epaisseur=2, remplissage=\"vert\", opacite_fond=0.35)|{{if:j==4|a1 = point(1, 1, visible=faux)\na2 = point(5, 1, visible=faux)\na3 = point(5, 3, visible=faux)\na4 = point(3, 5, visible=faux)\na5 = point(1, 3, visible=faux)\npolygone(a1, a2, a3, a4, a5, couleur=\"noir\", epaisseur=2, remplissage=\"vert\", opacite_fond=0.35)|{{if:j==5|a1 = point(1, 2, visible=faux)\na2 = point(4, 2, visible=faux)\na3 = point(4, 1, visible=faux)\na4 = point(6, 3, visible=faux)\na5 = point(4, 5, visible=faux)\na6 = point(4, 4, visible=faux)\na7 = point(1, 4, visible=faux)\npolygone(a1, a2, a3, a4, a5, a6, a7, couleur=\"noir\", epaisseur=2, remplissage=\"vert\", opacite_fond=0.35)|a1 = point(1, 1, visible=faux)\na2 = point(7, 1, visible=faux)\na3 = point(5, 3, visible=faux)\na4 = point(3, 3, visible=faux)\npolygone(a1, a2, a3, a4, couleur=\"noir\", epaisseur=2, remplissage=\"vert\", opacite_fond=0.35)}}}}}}}}}}\n```\n\n$\\text{Aire} = ?~\\unit{cm^2}$",
+			"variables": [
+				{
+					"name": "j",
+					"expression": "1..6"
+				},
+				{
+					"name": "n",
+					"expression": "eval:(1-min(abs(j-1),1))*8+(1-min(abs(j-2),1))*8+(1-min(abs(j-3),1))*8+(1-min(abs(j-4),1))*12+(1-min(abs(j-5),1))*10+(1-min(abs(j-6),1))*8"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{n}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Un carré de $1~\\unit{cm}$ de côté a une aire de $1~\\unit{cm^2}$ (un centimètre carré) : chaque carreau vaut $1~\\unit{cm^2}$.",
+					"On compte d'abord les carreaux entiers : ${{if:j==1|6|{{if:j==2|6|{{if:j==3|4|{{if:j==4|10|{{if:j==5|8|6}}}}}}}}}}$.",
+					"Puis les demi-carreaux : ${{if:j==1|4|{{if:j==2|4|{{if:j==3|8|{{if:j==4|4|{{if:j==5|4|4}}}}}}}}}}$. Deux demi-carreaux font un carreau entier : ${{if:j==1|4|{{if:j==2|4|{{if:j==3|8|{{if:j==4|4|{{if:j==5|4|4}}}}}}}}}}$ demi-carreaux font ${{if:j==1|2|{{if:j==2|2|{{if:j==3|4|{{if:j==4|2|{{if:j==5|2|2}}}}}}}}}}$ carreaux.",
+					"Aire : ${{if:j==1|6|{{if:j==2|6|{{if:j==3|4|{{if:j==4|10|{{if:j==5|8|6}}}}}}}}}} + {{if:j==1|2|{{if:j==2|2|{{if:j==3|4|{{if:j==4|2|{{if:j==5|2|2}}}}}}}}}} = \\textcolor{{{color:primary.0}}}{{{if:j==1|8|{{if:j==2|8|{{if:j==3|8|{{if:j==4|12|{{if:j==5|10|8}}}}}}}}}}}$ carreaux.",
+					"Aire : $\\textcolor{{{color:primary.0}}}{{{if:j==1|8|{{if:j==2|8|{{if:j==3|8|{{if:j==4|12|{{if:j==5|10|8}}}}}}}}}}~\\unit{cm^2}}$."
+				]
+			}
+		},
+		{
+			"statement": "Chaque carreau du quadrillage est un carré de $1~\\unit{cm}$ de côté. De combien de centimètres carrés l'aire de la figure A dépasse-t-elle celle de la figure B ?\n\n```figure\nfenetre: 0 ; 10 ; 0 ; 14.5\ngrille: 1\ndescription: Deux figures coloriées sur un quadrillage de carreaux de 1 cm : A en haut, B en bas.\n---\n{{if:j==1|a1 = point(1, 8, visible=faux)\na2 = point(5, 8, visible=faux)\na3 = point(5, 12, visible=faux)\na4 = point(1, 12, visible=faux)\npolygone(a1, a2, a3, a4, couleur=\"noir\", epaisseur=2, remplissage=\"bleu\", opacite_fond=0.35)\nb1 = point(1, 1, visible=faux)\nb2 = point(6, 1, visible=faux)\nb3 = point(6, 2, visible=faux)\nb4 = point(2, 2, visible=faux)\nb5 = point(2, 6, visible=faux)\nb6 = point(1, 6, visible=faux)\npolygone(b1, b2, b3, b4, b5, b6, couleur=\"noir\", epaisseur=2, remplissage=\"rouge\", opacite_fond=0.35)\ntexte(0.5, 10.0, \"A\")\ntexte(0.5, 3.5, \"B\")|{{if:j==2|a1 = point(1, 8, visible=faux)\na2 = point(6, 8, visible=faux)\na3 = point(6, 12, visible=faux)\na4 = point(5, 12, visible=faux)\na5 = point(5, 10, visible=faux)\na6 = point(2, 10, visible=faux)\na7 = point(2, 12, visible=faux)\na8 = point(1, 12, visible=faux)\npolygone(a1, a2, a3, a4, a5, a6, a7, a8, couleur=\"noir\", epaisseur=2, remplissage=\"bleu\", opacite_fond=0.35)\nb1 = point(1, 1, visible=faux)\nb2 = point(3, 1, visible=faux)\nb3 = point(3, 5, visible=faux)\nb4 = point(1, 5, visible=faux)\npolygone(b1, b2, b3, b4, couleur=\"noir\", epaisseur=2, remplissage=\"rouge\", opacite_fond=0.35)\ntexte(0.5, 10.0, \"A\")\ntexte(0.5, 3.0, \"B\")|{{if:j==3|a1 = point(1, 8, visible=faux)\na2 = point(6, 8, visible=faux)\na3 = point(6, 9, visible=faux)\na4 = point(5, 9, visible=faux)\na5 = point(5, 10, visible=faux)\na6 = point(4, 10, visible=faux)\na7 = point(4, 11, visible=faux)\na8 = point(3, 11, visible=faux)\na9 = point(3, 12, visible=faux)\na10 = point(2, 12, visible=faux)\na11 = point(2, 13, visible=faux)\na12 = point(1, 13, visible=faux)\npolygone(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, couleur=\"noir\", epaisseur=2, remplissage=\"bleu\", opacite_fond=0.35)\nb1 = point(1, 3, visible=faux)\nb2 = point(3, 3, visible=faux)\nb3 = point(3, 1, visible=faux)\nb4 = point(4, 1, visible=faux)\nb5 = point(4, 3, visible=faux)\nb6 = point(6, 3, visible=faux)\nb7 = point(6, 4, visible=faux)\nb8 = point(1, 4, visible=faux)\npolygone(b1, b2, b3, b4, b5, b6, b7, b8, couleur=\"noir\", epaisseur=2, remplissage=\"rouge\", opacite_fond=0.35)\ntexte(0.5, 10.5, \"A\")\ntexte(0.5, 2.5, \"B\")|{{if:j==4|a1 = point(2, 8, visible=faux)\na2 = point(4, 8, visible=faux)\na3 = point(4, 9, visible=faux)\na4 = point(5, 9, visible=faux)\na5 = point(5, 11, visible=faux)\na6 = point(4, 11, visible=faux)\na7 = point(4, 12, visible=faux)\na8 = point(2, 12, visible=faux)\na9 = point(2, 11, visible=faux)\na10 = point(1, 11, visible=faux)\na11 = point(1, 9, visible=faux)\na12 = point(2, 9, visible=faux)\npolygone(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, couleur=\"noir\", epaisseur=2, remplissage=\"bleu\", opacite_fond=0.35)\nb1 = point(1, 1, visible=faux)\nb2 = point(5, 1, visible=faux)\nb3 = point(5, 2, visible=faux)\nb4 = point(6, 2, visible=faux)\nb5 = point(6, 3, visible=faux)\nb6 = point(2, 3, visible=faux)\nb7 = point(2, 2, visible=faux)\nb8 = point(1, 2, visible=faux)\npolygone(b1, b2, b3, b4, b5, b6, b7, b8, couleur=\"noir\", epaisseur=2, remplissage=\"rouge\", opacite_fond=0.35)\ntexte(0.5, 10.0, \"A\")\ntexte(0.5, 2.0, \"B\")|a1 = point(1, 8, visible=faux)\na2 = point(6, 8, visible=faux)\na3 = point(6, 10, visible=faux)\na4 = point(3, 10, visible=faux)\na5 = point(3, 12, visible=faux)\na6 = point(1, 12, visible=faux)\npolygone(a1, a2, a3, a4, a5, a6, couleur=\"noir\", epaisseur=2, remplissage=\"bleu\", opacite_fond=0.35)\nb1 = point(1, 1, visible=faux)\nb2 = point(5, 1, visible=faux)\nb3 = point(5, 4, visible=faux)\nb4 = point(4, 4, visible=faux)\nb5 = point(4, 3, visible=faux)\nb6 = point(2, 3, visible=faux)\nb7 = point(2, 4, visible=faux)\nb8 = point(1, 4, visible=faux)\npolygone(b1, b2, b3, b4, b5, b6, b7, b8, couleur=\"noir\", epaisseur=2, remplissage=\"rouge\", opacite_fond=0.35)\ntexte(0.5, 10.0, \"A\")\ntexte(0.5, 2.5, \"B\")}}}}}}}}\n```\n\nL'aire de A dépasse celle de B de $?~\\unit{cm^2}$.",
+			"variables": [
+				{
+					"name": "j",
+					"expression": "1..5"
+				},
+				{
+					"name": "n",
+					"expression": "eval:(1-min(abs(j-1),1))*7+(1-min(abs(j-2),1))*6+(1-min(abs(j-3),1))*8+(1-min(abs(j-4),1))*4+(1-min(abs(j-5),1))*4"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{n}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Un carré de $1~\\unit{cm}$ de côté a une aire de $1~\\unit{cm^2}$ (un centimètre carré) : chaque carreau vaut $1~\\unit{cm^2}$.",
+					"Aire de A : ${{if:j==1|16|{{if:j==2|14|{{if:j==3|15|{{if:j==4|12|14}}}}}}}}~\\unit{cm^2}$ ; aire de B : ${{if:j==1|9|{{if:j==2|8|{{if:j==3|7|{{if:j==4|8|10}}}}}}}}~\\unit{cm^2}$.",
+					"Écart : ${{if:j==1|16 - 9|{{if:j==2|14 - 8|{{if:j==3|15 - 7|{{if:j==4|12 - 8|14 - 10}}}}}}}} = \\textcolor{{{color:primary.0}}}{{{if:j==1|7|{{if:j==2|6|{{if:j==3|8|{{if:j==4|4|4}}}}}}}}~\\unit{cm^2}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Rectangle 5 × 3 : 15 cm²",
+			"variationIndex": 0,
+			"variables": {
+				"j": "1",
+				"n": "15"
+			},
+			"answers": ["15"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : le tour (16)",
+			"variationIndex": 0,
+			"variables": {
+				"j": "1",
+				"n": "15"
+			},
+			"answers": ["16"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Triangle : 6 + 2 = 8 cm²",
+			"variationIndex": 1,
+			"variables": {
+				"j": "1",
+				"n": "8"
+			},
+			"answers": ["8"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : demis comptés entiers (10)",
+			"variationIndex": 1,
+			"variables": {
+				"j": "1",
+				"n": "8"
+			},
+			"answers": ["10"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "16 − 9 = 7 cm²",
+			"variationIndex": 2,
+			"variables": {
+				"j": "1",
+				"n": "7"
+			},
+			"answers": ["7"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : aire de A seule (16)",
+			"variationIndex": 2,
+			"variables": {
+				"j": "1",
+				"n": "7"
+			},
+			"answers": ["16"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

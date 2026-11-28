@@ -14,18 +14,18 @@
 
 import type { Atelier } from './atelier.svelte';
 import type { AtelierObject, CurveDisplay, SequenceDisplay, SequenceMode } from './types';
-import type { GrapheurStore } from '$lib/stores/grapheur.svelte';
+import type { GrapheurStore } from '#lib/stores/grapheur.svelte.ts';
 import {
 	isExplicitFunction,
 	isScatter,
 	type CurveReading,
 	type ExplicitFunction
-} from '$lib/grapheur/types';
+} from '#lib/grapheur/types.ts';
 import { firstTermValue, graphLatexOf } from './engine';
 import { plainDisplay } from './display';
 import { isFunction, isList, isSequence } from './types';
 import { allowedDisplay, plotRestrictionOf } from './interval';
-import { sameRestriction, type Restriction } from '$lib/grapheur/restriction';
+import { sameRestriction, type Restriction } from '#lib/grapheur/restriction.ts';
 import { displayName, reciprocalOf } from './names';
 import { commonRows, valuesOn } from './pairs';
 

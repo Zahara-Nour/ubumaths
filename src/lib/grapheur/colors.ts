@@ -2,7 +2,7 @@
  * Re-exports from geometry-core/rendering/colors.
  *
  * This file maintains backward compatibility — all existing imports
- * from '$lib/grapheur/colors' continue to work.
+ * from '#lib/grapheur/colors.ts' continue to work.
  */
 
 export {
@@ -14,6 +14,6 @@ export {
 	isCurveColor,
 	isValidColor,
 	normalizeColor
-} from '$lib/geometry-core/rendering/colors';
+} from '#lib/geometry-core/rendering/colors.ts';
 
-export type { CurveColor, CurveSlot } from '$lib/geometry-core/rendering/colors';
+export type { CurveColor, CurveSlot } from '#lib/geometry-core/rendering/colors.ts';

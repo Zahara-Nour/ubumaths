@@ -7,11 +7,11 @@
 	cohérence sont vérifiées par le serveur à chaque enregistrement.
 -->
 <script lang="ts">
-	import { Input } from '$lib/components/ui/input';
-	import { Button } from '$lib/components/ui/button';
-	import { Badge } from '$lib/components/ui/badge';
-	import { searchRows, type AdminDictionaryRow } from '$lib/dictionary/admin-draft';
-	import { GRADES, type GradeCode } from '$lib/types/grades';
+	import { Input } from '#lib/components/ui/input/index.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
+	import { searchRows, type AdminDictionaryRow } from '#lib/dictionary/admin-draft.ts';
+	import { GRADES, type GradeCode } from '#lib/types/grades.ts';
 	import { Plus, Search } from '@lucide/svelte';
 	import EntryEditor from './EntryEditor.svelte';
 	import type { PageProps } from './$types';

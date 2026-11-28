@@ -9,7 +9,7 @@
  */
 
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { Database } from '$lib/types/database';
+import type { Database } from '#lib/types/database.ts';
 
 export interface Call {
 	method: string;
@@ -37,8 +37,10 @@ const CHAIN_METHODS = [
 	'upsert',
 	'eq',
 	'neq',
+	'gt',
 	'gte',
 	'lt',
+	'lte',
 	'in',
 	'is',
 	'not',

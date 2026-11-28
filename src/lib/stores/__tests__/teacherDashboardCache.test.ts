@@ -9,7 +9,6 @@
  * 2. Cache 2A: Student Rewards (10min TTL + optimistic)
  * 3. Cache 2B: Student Warnings (10min TTL + optimistic, per period)
  * 4. Cache 3: Class Info (24h TTL)
- * 5. Cache 4: School Info (24h TTL)
  * 6. Optimistic UI Updates
  * 7. Cache Invalidation
  * 8. Statistics & Monitoring
@@ -29,10 +28,9 @@ import type {
 	BasicStudent,
 	StudentRewards,
 	StudentWarningCounts,
-	ClassInfo,
-	SchoolInfo
-} from '$lib/types/teacher-cache';
-import type { StudentVipCards } from '$lib/types/vip-card';
+	ClassInfo
+} from '#lib/types/teacher-cache.ts';
+import type { StudentVipCards } from '#lib/types/vip-card.ts';
 
 // ============================================================================
 // TEST SETUP
@@ -128,53 +126,6 @@ function createMockClassInfo(): ClassInfo {
 				subject: 'Math',
 				room: '101',
 				notes: null,
-				created_at: new Date().toISOString(),
-				updated_at: new Date().toISOString()
-			}
-		]
-	};
-}
-
-function createMockSchoolInfo(): SchoolInfo {
-	return {
-		school: {
-			id: 'school-1',
-			name: 'Test School',
-			city: 'Paris',
-			country: 'France',
-			address: null,
-			logo_url: null,
-			timetable: null,
-			timezone: 'Europe/Paris',
-			uai: null,
-			is_active: true,
-			created_at: new Date().toISOString(),
-			updated_at: new Date().toISOString()
-		},
-		current_period: {
-			id: 'period-1',
-			school_year_id: 'year-1',
-			name: 'Fall 2025',
-			start_date: '2025-09-01',
-			end_date: '2025-12-20',
-			type: 'trimester',
-			period_order: 1,
-			color: '#0000ff',
-			metadata: {},
-			created_at: new Date().toISOString(),
-			updated_at: new Date().toISOString()
-		},
-		all_periods: [
-			{
-				id: 'period-1',
-				school_year_id: 'year-1',
-				name: 'Fall 2025',
-				start_date: '2025-09-01',
-				end_date: '2025-12-20',
-				type: 'trimester',
-				period_order: 1,
-				color: '#0000ff',
-				metadata: {},
 				created_at: new Date().toISOString(),
 				updated_at: new Date().toISOString()
 			}
@@ -1021,14 +972,6 @@ describe('Cache 3: Class Info', () => {
 		restoreTime();
 	});
 
-	describe('Fetch Behavior', () => {
-		it('should throw error when trying to fetch (endpoint not implemented)', async () => {
-			await expect(cache.getClassInfo(classId)).rejects.toThrow(
-				'Chargement des informations de classe non disponible : utiliser hydrateClassInfo()'
-			);
-		});
-	});
-
 	describe('Hydration', () => {
 		it('should populate cache via hydration', () => {
 			cache.hydrateClassInfo(classId, mockClassInfo);
@@ -1037,25 +980,22 @@ describe('Cache 3: Class Info', () => {
 			expect(stats.classes).toBe(1);
 		});
 
-		it('should return hydrated data', async () => {
+		it('should return hydrated data', () => {
 			cache.hydrateClassInfo(classId, mockClassInfo);
 
-			const classInfo = await cache.getClassInfo(classId);
-
-			expect(classInfo).toEqual(mockClassInfo);
+			expect(cache.getAllClassesSync()).toEqual([mockClassInfo]);
 		});
 
-		it('should respect TTL for hydrated data (24 hours)', async () => {
+		it('should respect TTL for hydrated data (24 hours)', () => {
 			cache.hydrateClassInfo(classId, mockClassInfo);
 
 			// Within TTL
 			advanceTime(23 * 60 * 60 * 1000);
-			const info1 = await cache.getClassInfo(classId);
-			expect(info1).toEqual(mockClassInfo);
+			expect(cache.getAllClassesSync()).toEqual([mockClassInfo]);
 
-			// Past TTL - should throw (no fetch implementation)
+			// Past TTL - expired entries are skipped
 			advanceTime(2 * 60 * 60 * 1000);
-			await expect(cache.getClassInfo(classId)).rejects.toThrow();
+			expect(cache.getAllClassesSync()).toEqual([]);
 		});
 
 		it('should cache multiple classes independently', () => {
@@ -1083,79 +1023,6 @@ describe('Cache 3: Class Info', () => {
 			cache.hydrateClassInfo(classId, nullFields);
 
 			expect(cache.getStats().classes).toBe(1);
-		});
-	});
-});
-
-// ============================================================================
-// CACHE 4: SCHOOL INFO (24h TTL)
-// ============================================================================
-
-describe('Cache 4: School Info', () => {
-	let cache: TeacherDashboardCache;
-	const schoolId = 'school-1';
-	const mockSchoolInfo = createMockSchoolInfo();
-
-	beforeEach(() => {
-		cache = createCache();
-		mockDateNow(Date.now());
-	});
-
-	afterEach(() => {
-		restoreTime();
-	});
-
-	describe('Fetch Behavior', () => {
-		it('should throw error when trying to fetch (endpoint not implemented)', async () => {
-			await expect(cache.getSchoolInfo(schoolId)).rejects.toThrow(
-				'Chargement des informations d’établissement non disponible : utiliser hydrateSchoolInfo()'
-			);
-		});
-	});
-
-	describe('Hydration', () => {
-		it('should populate cache via hydration', () => {
-			cache.hydrateSchoolInfo(schoolId, mockSchoolInfo);
-
-			const stats = cache.getStats();
-			expect(stats.school).toBe(1);
-		});
-
-		it('should return hydrated data', async () => {
-			cache.hydrateSchoolInfo(schoolId, mockSchoolInfo);
-
-			const schoolInfo = await cache.getSchoolInfo(schoolId);
-
-			expect(schoolInfo).toEqual(mockSchoolInfo);
-		});
-
-		it('should respect TTL for hydrated data (24 hours)', async () => {
-			cache.hydrateSchoolInfo(schoolId, mockSchoolInfo);
-
-			// Within TTL
-			advanceTime(20 * 60 * 60 * 1000);
-			const info1 = await cache.getSchoolInfo(schoolId);
-			expect(info1).toEqual(mockSchoolInfo);
-
-			// Past TTL
-			advanceTime(5 * 60 * 60 * 1000);
-			await expect(cache.getSchoolInfo(schoolId)).rejects.toThrow();
-		});
-
-		it('should handle school info with null current period', () => {
-			const noPeriod = { ...mockSchoolInfo, current_period: null };
-
-			cache.hydrateSchoolInfo(schoolId, noPeriod);
-
-			expect(cache.getStats().school).toBe(1);
-		});
-
-		it('should handle school info with empty periods array', () => {
-			const noPeriods = { ...mockSchoolInfo, all_periods: [] };
-
-			cache.hydrateSchoolInfo(schoolId, noPeriods);
-
-			expect(cache.getStats().school).toBe(1);
 		});
 	});
 });
@@ -1227,15 +1094,6 @@ describe('Cache Invalidation', () => {
 
 			expect(cache.getStats().classes).toBe(0);
 		});
-
-		it('should invalidate school info cache', () => {
-			cache.hydrateSchoolInfo('school-1', createMockSchoolInfo());
-			expect(cache.getStats().school).toBe(1);
-
-			cache.invalidateSchool('school-1');
-
-			expect(cache.getStats().school).toBe(0);
-		});
 	});
 
 	describe('Invalidate All Warnings for Class', () => {
@@ -1292,7 +1150,6 @@ describe('Cache Invalidation', () => {
 			await cache.getStudentRewards(classId);
 			await cache.getStudentWarnings(classId, periodId);
 			cache.hydrateClassInfo(classId, createMockClassInfo());
-			cache.hydrateSchoolInfo('school-1', createMockSchoolInfo());
 
 			const statsBefore = cache.getStats();
 			expect(statsBefore.totalEntries).toBeGreaterThan(0);
@@ -1305,7 +1162,6 @@ describe('Cache Invalidation', () => {
 			expect(statsAfter.rewards).toBe(0);
 			expect(statsAfter.warnings).toBe(0);
 			expect(statsAfter.classes).toBe(0);
-			expect(statsAfter.school).toBe(0);
 		});
 
 		it('should allow repopulating caches after invalidateAll', async () => {
@@ -1383,7 +1239,6 @@ describe('Statistics & Monitoring', () => {
 			expect(stats.rewards).toBe(0);
 			expect(stats.warnings).toBe(0);
 			expect(stats.classes).toBe(0);
-			expect(stats.school).toBe(0);
 			expect(stats.totalEntries).toBe(0);
 		});
 
@@ -1393,7 +1248,6 @@ describe('Statistics & Monitoring', () => {
 			cache.hydrateWarnings('class-1', 'period-1', new Map());
 			cache.hydrateWarnings('class-1', 'period-2', new Map());
 			cache.hydrateClassInfo('class-1', createMockClassInfo());
-			cache.hydrateSchoolInfo('school-1', createMockSchoolInfo());
 
 			const stats = cache.getStats();
 
@@ -1401,8 +1255,7 @@ describe('Statistics & Monitoring', () => {
 			expect(stats.rewards).toBe(1);
 			expect(stats.warnings).toBe(2);
 			expect(stats.classes).toBe(1);
-			expect(stats.school).toBe(1);
-			expect(stats.totalEntries).toBe(6);
+			expect(stats.totalEntries).toBe(5);
 		});
 
 		it('should estimate memory usage in KB for small cache', () => {

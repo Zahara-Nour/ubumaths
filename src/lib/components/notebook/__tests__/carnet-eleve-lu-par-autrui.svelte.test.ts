@@ -18,12 +18,12 @@ import NotebookCell from '../NotebookCell.svelte';
 import NotebookToolbar from '../NotebookToolbar.svelte';
 import NotebookCodeSlide from '../presentation/NotebookCodeSlide.svelte';
 import NotebookCheckpointSlide from '../presentation/NotebookCheckpointSlide.svelte';
-import { NotebookStore } from '$lib/stores/notebookStore.svelte';
+import { NotebookStore } from '#lib/stores/notebookStore.svelte.ts';
 import type {
 	CellOutput,
 	CheckpointCell as CheckpointCellType,
 	NotebookCell as NotebookCellType
-} from '$lib/types/notebook';
+} from '#lib/types/notebook.ts';
 
 const HOTE = 'exemple.invalid';
 

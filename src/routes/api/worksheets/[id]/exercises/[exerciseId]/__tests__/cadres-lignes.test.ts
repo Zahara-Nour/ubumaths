@@ -17,7 +17,7 @@ const TEACHER_ID = '550e8400-e29b-41d4-a716-446655440001';
 const WORKSHEET_ID = '550e8400-e29b-41d4-a716-446655440011';
 const WE_ID = '550e8400-e29b-41d4-a716-446655440012';
 
-vi.mock('$lib/server/middleware/auth', () => ({
+vi.mock('#lib/server/middleware/auth.ts', () => ({
 	requireRoles: async () => ({
 		user: { id: TEACHER_ID },
 		profile: { role: 'teacher', school_id: null }

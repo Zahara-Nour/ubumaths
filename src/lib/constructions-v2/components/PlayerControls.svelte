@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Button } from '$lib/components/ui/button';
+	import { Button } from '#lib/components/ui/button/index.ts';
 	import { RotateCcw, SkipBack, Play, Pause, SkipForward, StepForward } from '@lucide/svelte';
 	import type { TimelineState } from '../core/timeline.svelte';
 

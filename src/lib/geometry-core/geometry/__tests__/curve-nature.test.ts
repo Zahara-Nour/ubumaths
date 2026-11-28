@@ -9,8 +9,8 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { parseCustom } from '$lib/mathAST';
-import type { MathNode } from '$lib/mathAST';
+import { parseCustom } from '#lib/mathAST/index.ts';
+import type { MathNode } from '#lib/mathAST/index.ts';
 import { curveNatureOf, curveShapeOf, equationExpression } from '../curve-nature';
 import { degenerateConicKind } from '../conic-classify';
 

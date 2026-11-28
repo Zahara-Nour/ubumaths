@@ -1,6 +1,6 @@
 import { error } from '@sveltejs/kit';
-import type { Handle } from '@sveltejs/kit';
-import { dev } from '$app/environment';
+import type { Handle } from '@sveltejs/kit/hooks';
+import { dev } from '$app/env';
 
 /**
  * CSRF Protection Handle
@@ -36,9 +36,7 @@ export const csrfHandle: Handle = async ({ event, resolve }) => {
 			return resolve(event);
 		}
 
-		throw error(403, {
-			message: 'Requête refusée : origine ou hôte absent'
-		});
+		throw error(403, 'Requête refusée : origine ou hôte absent');
 	}
 
 	// L'analyse de l'URL seule dans le `try` : un refus levé dedans serait rattrapé
@@ -47,14 +45,10 @@ export const csrfHandle: Handle = async ({ event, resolve }) => {
 	try {
 		originHost = new URL(origin).host;
 	} catch {
-		throw error(403, {
-			message: 'Requête refusée : origine illisible'
-		});
+		throw error(403, 'Requête refusée : origine illisible');
 	}
 	if (originHost !== host) {
-		throw error(403, {
-			message: 'Requête refusée : origine différente du site'
-		});
+		throw error(403, 'Requête refusée : origine différente du site');
 	}
 
 	return resolve(event);

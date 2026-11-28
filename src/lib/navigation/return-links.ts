@@ -6,25 +6,45 @@
  * le dit dans son adresse, par `?depuis=`. La valeur vient de l'URL : seule une
  * origine connue est retenue, sinon la page parente par défaut.
  */
-import { lore } from '$lib/config/lore';
-import { exerciseAnchorHash } from '$lib/worksheets/exercise-anchor';
+import { lore } from '#lib/config/lore.ts';
+import { exerciseAnchorHash } from '#lib/worksheets/exercise-anchor.ts';
+import type { ReadonlyURLSearchParams } from '$app/state';
 
 export const FROM_PARAM = 'depuis';
 
 export type ReturnLink = { href: string; label: string };
 
+const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
 // ============================================================================
-// JOURNAL D'UN ÉLÈVE (prof) — ouvert depuis les classes ou depuis l'accueil
+// JOURNAL D'UN ÉLÈVE (prof) — ouvert depuis les classes, l'accueil ou le suivi
 // ============================================================================
 
-export function studentJournalHref(studentId: string, from?: 'accueil'): string {
+export function studentJournalHref(studentId: string, from?: 'accueil' | 'suivi'): string {
 	const href = `/dashboard/teacher/students/${studentId}/journal`;
 	return from ? `${href}?${FROM_PARAM}=${from}` : href;
 }
 
-export function studentJournalReturn(searchParams: URLSearchParams): ReturnLink {
-	if (searchParams.get(FROM_PARAM) === 'accueil') {
+/**
+ * Suivi d'un élève (prof) : ouvert depuis la liste des classes, ou depuis
+ * l'analytique d'une classe (grille A) : il y revient alors.
+ */
+export function studentFollowUpHref(studentId: string, fromClassId?: string): string {
+	const href = `/dashboard/teacher/students/${studentId}`;
+	if (!fromClassId) return href;
+	return `${href}?${FROM_PARAM}=analytique&${CLASS_PARAM}=${encodeURIComponent(fromClassId)}`;
+}
+
+export function studentJournalReturn(
+	studentId: string,
+	searchParams: ReadonlyURLSearchParams
+): ReturnLink {
+	const from = searchParams.get(FROM_PARAM);
+	if (from === 'accueil') {
 		return { href: '/dashboard', label: "Retour à l'accueil" };
+	}
+	if (from === 'suivi') {
+		return { href: studentFollowUpHref(studentId), label: 'Retour au suivi' };
 	}
 	return { href: '/dashboard/teacher/classes', label: `Retour aux ${lore.entities.class}s` };
 }
@@ -39,7 +59,7 @@ export function notionHref(notionId: string, from?: 'programme'): string {
 	return from ? `${href}?${FROM_PARAM}=${from}` : href;
 }
 
-export function notionReturn(searchParams: URLSearchParams): ReturnLink {
+export function notionReturn(searchParams: ReadonlyURLSearchParams): ReturnLink {
 	if (searchParams.get(FROM_PARAM) === 'programme') {
 		return { href: '/dashboard/revisions/decks/programme', label: 'Retour au Programme' };
 	}
@@ -47,6 +67,27 @@ export function notionReturn(searchParams: URLSearchParams): ReturnLink {
 		href: '/dashboard/student/progression?onglet=objectifs',
 		label: 'Retour à ma progression'
 	};
+}
+
+// ============================================================================
+// EXERCICE HORS FICHE (élève) — ouvert depuis « Mon travail » ou depuis un
+// chapitre de cours
+// ============================================================================
+
+const CHAPTER_PARAM = 'chapitre';
+
+export function studentExerciseHref(exerciseId: string, fromChapterId?: string): string {
+	const href = `/dashboard/student/exercises/${exerciseId}`;
+	if (!fromChapterId) return href;
+	return `${href}?${FROM_PARAM}=cours&${CHAPTER_PARAM}=${encodeURIComponent(fromChapterId)}`;
+}
+
+export function studentExerciseReturnHref(searchParams: ReadonlyURLSearchParams): string {
+	const chapterId = searchParams.get(CHAPTER_PARAM);
+	if (searchParams.get(FROM_PARAM) === 'cours' && chapterId && UUID_PATTERN.test(chapterId)) {
+		return `/dashboard/student/cours/${chapterId}`;
+	}
+	return '/dashboard/student/work';
 }
 
 // ============================================================================
@@ -64,7 +105,10 @@ export function studySessionHref(
 	return `/dashboard/revisions/decks/${deckId}/study${search ? `?${search}` : ''}`;
 }
 
-export function studySessionReturnHref(deckId: string, searchParams: URLSearchParams): string {
+export function studySessionReturnHref(
+	deckId: string,
+	searchParams: ReadonlyURLSearchParams
+): string {
 	return searchParams.get(FROM_PARAM) === 'programme'
 		? '/dashboard/revisions/decks/programme'
 		: `/dashboard/revisions/decks/${deckId}`;
@@ -76,7 +120,6 @@ export function studySessionReturnHref(deckId: string, searchParams: URLSearchPa
 // ============================================================================
 
 const REPORT_PARAM = 'signalement';
-const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 function assignmentBase(worksheetId: string, assignmentId: string): string {
 	return `/dashboard/teacher/contenu/worksheets/${worksheetId}/assignments/${assignmentId}`;
@@ -117,7 +160,7 @@ export function assignmentCopiesHref(
 export function assignmentCopiesReturn(
 	worksheetId: string,
 	assignmentId: string,
-	searchParams: URLSearchParams
+	searchParams: ReadonlyURLSearchParams
 ): ReturnLink {
 	if (searchParams.get(FROM_PARAM) === PREVIEW_PARAM) {
 		return {
@@ -134,7 +177,7 @@ export function assignmentCopiesReturn(
 export function assignmentPreviewReturn(
 	worksheetId: string,
 	assignmentId: string,
-	searchParams: URLSearchParams
+	searchParams: ReadonlyURLSearchParams
 ): ReturnLink {
 	const reportId = searchParams.get(REPORT_PARAM);
 	if (searchParams.get(FROM_PARAM) === REPORT_PARAM && reportId && UUID_PATTERN.test(reportId)) {
@@ -179,4 +222,38 @@ export function automathsQuitLink(options: {
 		href: '/dashboard/student/assessments',
 		confirmLeave: `${consequence} Quitter quand même ?`
 	};
+}
+
+// ============================================================================
+// SUIVI D'UN ÉLÈVE (prof) — ouvert depuis les classes ou depuis l'analytique
+// d'une classe ; RÉSULTATS D'UN CONTRÔLE — ouverts depuis la liste des
+// contrôles ou depuis le suivi d'un élève
+// ============================================================================
+
+const CLASS_PARAM = 'classe';
+const STUDENT_PARAM = 'eleve';
+
+export function studentFollowUpReturn(searchParams: ReadonlyURLSearchParams): ReturnLink {
+	const classId = searchParams.get(CLASS_PARAM);
+	if (searchParams.get(FROM_PARAM) === 'analytique' && classId && UUID_PATTERN.test(classId)) {
+		return {
+			href: `/dashboard/teacher/classes/${classId}/analytics`,
+			label: "Retour à l'analytique"
+		};
+	}
+	return { href: '/dashboard/teacher/classes', label: `Retour aux ${lore.entities.class}s` };
+}
+
+export function evaluationResultsHref(evaluationId: string, fromStudentId?: string): string {
+	const href = `/dashboard/teacher/assessments/${evaluationId}/results`;
+	if (!fromStudentId) return href;
+	return `${href}?${FROM_PARAM}=suivi&${STUDENT_PARAM}=${encodeURIComponent(fromStudentId)}`;
+}
+
+export function evaluationResultsReturn(searchParams: ReadonlyURLSearchParams): ReturnLink {
+	const studentId = searchParams.get(STUDENT_PARAM);
+	if (searchParams.get(FROM_PARAM) === 'suivi' && studentId && UUID_PATTERN.test(studentId)) {
+		return { href: studentFollowUpHref(studentId), label: 'Retour au suivi' };
+	}
+	return { href: '/dashboard/teacher/assessments', label: 'Retour aux contrôles' };
 }

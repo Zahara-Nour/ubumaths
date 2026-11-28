@@ -22,7 +22,7 @@ import { integrate } from '../integration';
 import { MINUS_ONE } from '../analysis/coefficient-utils';
 import { unitInterval } from '../domain/factory';
 import type { IntervalSet } from '../domain/types';
-import type { Interval } from '$lib/math/intervals/types';
+import type { Interval } from '#lib/math/intervals/types.ts';
 
 // =============================================================================
 // Helper: collect all NumberNode with a negative value string in an AST

@@ -1,0 +1,221 @@
+{
+	"id": "55615796-d445-4f2d-8cdf-aec271a303f1",
+	"title": "Prévoir la valeur d'une expression",
+	"description": "Prévoir, sans l'exécuter, la valeur d'une expression en blocs Scratch imbriqués : parenthèses données par l'imbrication, variable réutilisée, résultat intermédiaire négatif.",
+	"grades": ["5"],
+	"level": 1,
+	"delay": 90,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Voici un programme.\n\n```scratch\nquand le drapeau vert pressé\nmettre [x v] à ({{n}})\ndire (((x) + ({{a}})) * ({{b}}))\n```\n\nSans lancer le programme, prévois le nombre que dit le lutin.\n\n$?$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "2..12"
+				},
+				{
+					"name": "a",
+					"expression": "1..9"
+				},
+				{
+					"name": "b",
+					"expression": "2..6"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(n+a)*b}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Le bloc le plus intérieur se calcule en premier** : un bloc vert ne donne sa valeur qu'une fois connues celles des blocs posés dedans.",
+					"Le bloc intérieur : $x + {{a}} = {{n}} + {{a}} = {{eval:n+a}}$.",
+					"Puis le bloc extérieur : ${{eval:n+a}} \\times {{b}} = \\textcolor{{{color:primary.0}}}{{{eval:(n+a)*b}}}$ : le lutin dit $\\textcolor{{{color:primary.0}}}{{{eval:(n+a)*b}}}$.",
+					"Écrite en une ligne, l'expression est $(x + {{a}}) \\times {{b}}$ : les parenthèses viennent du bloc posé dedans."
+				]
+			}
+		},
+		{
+			"statement": "Voici un programme.\n\n```scratch\nquand le drapeau vert pressé\nmettre [x v] à ({{n}})\ndire ((x) + ((x) * ({{a}})))\n```\n\nSans lancer le programme, prévois le nombre que dit le lutin.\n\n$?$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "2..12"
+				},
+				{
+					"name": "a",
+					"expression": "2..9"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:n+n*a}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Le bloc le plus intérieur se calcule en premier** : un bloc vert ne donne sa valeur qu'une fois connues celles des blocs posés dedans.",
+					"Le bloc intérieur : $x \\times {{a}} = {{n}} \\times {{a}} = {{eval:n*a}}$.",
+					"Puis le bloc extérieur : $x + {{eval:n*a}} = {{n}} + {{eval:n*a}} = \\textcolor{{{color:primary.0}}}{{{eval:n+n*a}}}$ : le lutin dit $\\textcolor{{{color:primary.0}}}{{{eval:n+n*a}}}$.",
+					"Écrite en une ligne, l'expression est $x + x \\times {{a}}$ : la multiplication passe avant l'addition, comme en calcul."
+				]
+			}
+		},
+		{
+			"statement": "Voici un programme.\n\n```scratch\nquand le drapeau vert pressé\nmettre [x v] à ({{n}})\ndire (((x) - ({{a}})) + ({{b}}))\n```\n\nSans lancer le programme, prévois le nombre que dit le lutin.\n\n$?$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "2..9"
+				},
+				{
+					"name": "da",
+					"expression": "1..8"
+				},
+				{
+					"name": "a",
+					"expression": "eval:n+da"
+				},
+				{
+					"name": "b",
+					"expression": "1..12"
+				}
+			],
+			"conditions": ["b!=da"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:n-a+b}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Le bloc le plus intérieur se calcule en premier** : un bloc vert ne donne sa valeur qu'une fois connues celles des blocs posés dedans.",
+					"Le bloc intérieur : $x - {{a}} = {{n}} - {{a}} = {{eval:n-a}}$ (on retire plus que $x$ : le résultat est négatif).",
+					"Puis le bloc extérieur : ${{eval:n-a}} + {{b}} = \\textcolor{{{color:primary.0}}}{{{eval:n-a+b}}}$ : le lutin dit $\\textcolor{{{color:primary.0}}}{{{eval:n-a+b}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "(5 + 3) × 4 = 32",
+			"variationIndex": 0,
+			"variables": {
+				"n": "5",
+				"a": "3",
+				"b": "4"
+			},
+			"answers": ["32"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 5 + 3 × 4 = 17 (imbrication ignorée)",
+			"variationIndex": 0,
+			"variables": {
+				"n": "5",
+				"a": "3",
+				"b": "4"
+			},
+			"answers": ["17"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "6 + 6 × 3 = 24",
+			"variationIndex": 1,
+			"variables": {
+				"n": "6",
+				"a": "3"
+			},
+			"answers": ["24"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : (6 + 6) × 3 = 36",
+			"variationIndex": 1,
+			"variables": {
+				"n": "6",
+				"a": "3"
+			},
+			"answers": ["36"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 6 × 3 = 18 (x oublié)",
+			"variationIndex": 1,
+			"variables": {
+				"n": "6",
+				"a": "3"
+			},
+			"answers": ["18"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "4 − 9 + 2 = −3",
+			"variationIndex": 2,
+			"variables": {
+				"n": "4",
+				"da": "5",
+				"a": "9",
+				"b": "2"
+			},
+			"answers": ["-3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : signe perdu (3)",
+			"variationIndex": 2,
+			"variables": {
+				"n": "4",
+				"da": "5",
+				"a": "9",
+				"b": "2"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 9 − 4 + 2 = 7 (soustraction à l'envers)",
+			"variationIndex": 2,
+			"variables": {
+				"n": "4",
+				"da": "5",
+				"a": "9",
+				"b": "2"
+			},
+			"answers": ["7"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "3 − 5 + 8 = 6",
+			"variationIndex": 2,
+			"variables": {
+				"n": "3",
+				"da": "2",
+				"a": "5",
+				"b": "8"
+			},
+			"answers": ["6"],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}

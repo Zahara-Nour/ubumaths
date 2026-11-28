@@ -11,9 +11,9 @@ import { render } from 'vitest-browser-svelte';
 import QuestionCard from '../QuestionCard.svelte';
 import CorrectionView from '../CorrectionView.svelte';
 import CourseCardView from '../CourseCardView.svelte';
-import type { QuestionInstance } from '$lib/questions/types';
-import { templateGenericFunctions } from '$lib/questions/generic-functions';
-import { resolvedMarkdown } from '$lib/ubumark';
+import type { QuestionInstance } from '#lib/questions/types.ts';
+import { templateGenericFunctions } from '#lib/questions/generic-functions.ts';
+import { resolvedMarkdown } from '#lib/ubumark/index.ts';
 
 const STATEMENT = "Le nombre dérivé ~P'(2)~ vaut :";
 

@@ -7,7 +7,7 @@
  *
  * @module block-catalog/patron
  */
-import { CUBE_NETS, FALSE_CUBE_NETS } from '$lib/ubumark/utils/espace-patrons';
+import { CUBE_NETS, FALSE_CUBE_NETS } from '#lib/ubumark/utils/espace-patrons.ts';
 import { fence } from './fence';
 import type { BlockCatalogEntry, BlockExample } from './types';
 

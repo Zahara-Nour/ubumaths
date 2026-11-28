@@ -5,7 +5,7 @@
 
 import { describe, it, expect } from 'vitest';
 import { buildChatRequestBody } from '../chat-request';
-import { chatRequestSchema } from '$lib/server/validation/chat';
+import { chatRequestSchema } from '#lib/server/validation/chat.ts';
 
 describe('buildChatRequestBody', () => {
 	it('passe le schéma du serveur', () => {

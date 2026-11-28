@@ -1,0 +1,415 @@
+{
+	"id": "b342c534-4dfd-4a37-ba06-0c48e7d50ae2",
+	"title": "Calculer P(X = a) et P(X ⩽ a)",
+	"description": "P(X = a), P(X ⩽ a) et P(X > a) par le contraire, d'après le tableau de la loi ou un énoncé (urne, dé)",
+	"grades": ["1_TECHNO"],
+	"level": 2,
+	"delay": 60,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "La loi de probabilité d'une variable aléatoire $X$ est donnée dans le tableau ci-dessous.\n\n| $x_k$ | ${{u}}$ | ${{eval:u+s}}$ | ${{eval:u+s+t}}$ | ${{eval:u+s+t+w}}$ |\n|---|---|---|---|---|\n| $P(X=x_k)$ | ${{eval:a/20;d}}$ | ${{eval:b/20;d}}$ | ${{eval:c/20;d}}$ | ${{eval:d/20;d}}$ |\n\nRéponds par une fraction irréductible ou par un nombre décimal exact.\n\n$P(X={{eval:u+s+t}})=?$\n\n$P(X\\leqslant {{eval:u+s}})=?$",
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:c/20}}"
+				},
+				{
+					"expectedAnswer": "{{eval:(a+b)/20}}"
+				}
+			],
+			"variables": [
+				{
+					"name": "u",
+					"expression": "-3..2"
+				},
+				{
+					"name": "s",
+					"expression": "1..3"
+				},
+				{
+					"name": "t",
+					"expression": "1..3"
+				},
+				{
+					"name": "w",
+					"expression": "1..3"
+				},
+				{
+					"name": "a",
+					"expression": "1..8"
+				},
+				{
+					"name": "b",
+					"expression": "1..8"
+				},
+				{
+					"name": "c",
+					"expression": "1..8"
+				},
+				{
+					"name": "d",
+					"expression": "eval:20-a-b-c"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$P(X={{eval:u+s+t}})$ se lit sous la valeur ${{eval:u+s+t}}$ : $P(X={{eval:u+s+t}})=\\textcolor{{{color:primary.0}}}{{{eval:c/20;d}}}$.",
+					"$\\{X\\leqslant {{eval:u+s}}\\}$ regroupe les valeurs ${{u}}$ et ${{eval:u+s}}$ : $P(X\\leqslant {{eval:u+s}})={{eval:a/20;d}}+{{eval:b/20;d}}=\\textcolor{{{color:primary.0}}}{{{eval:(a+b)/20;d}}}$."
+				]
+			},
+			"conditions": ["d >= 1"]
+		},
+		{
+			"statement": "La loi de probabilité d'une variable aléatoire $X$ est donnée dans le tableau ci-dessous.\n\n| $x_k$ | ${{u}}$ | ${{eval:u+s}}$ | ${{eval:u+s+t}}$ | ${{eval:u+s+t+w}}$ |\n|---|---|---|---|---|\n| $P(X=x_k)$ | ${{eval:a/20;d}}$ | ${{eval:b/20;d}}$ | ${{eval:c/20;d}}$ | ${{eval:d/20;d}}$ |\n\nRéponds par une fraction irréductible ou par un nombre décimal exact.\n\n$P(X\\leqslant {{eval:u+s+t}})=?$\n\n$P(X>{{eval:u+s+t}})=?$",
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(a+b+c)/20}}"
+				},
+				{
+					"expectedAnswer": "{{eval:d/20}}"
+				}
+			],
+			"variables": [
+				{
+					"name": "u",
+					"expression": "-3..2"
+				},
+				{
+					"name": "s",
+					"expression": "1..3"
+				},
+				{
+					"name": "t",
+					"expression": "1..3"
+				},
+				{
+					"name": "w",
+					"expression": "1..3"
+				},
+				{
+					"name": "a",
+					"expression": "1..8"
+				},
+				{
+					"name": "b",
+					"expression": "1..8"
+				},
+				{
+					"name": "c",
+					"expression": "1..8"
+				},
+				{
+					"name": "d",
+					"expression": "eval:20-a-b-c"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$P(X\\leqslant {{eval:u+s+t}})={{eval:a/20;d}}+{{eval:b/20;d}}+{{eval:c/20;d}}=\\textcolor{{{color:primary.0}}}{{{eval:(a+b+c)/20;d}}}$.",
+					"$\\{X>{{eval:u+s+t}}\\}$ est l'évènement **contraire** de $\\{X\\leqslant {{eval:u+s+t}}\\}$ : $P(X>{{eval:u+s+t}})=1-{{eval:(a+b+c)/20;d}}=\\textcolor{{{color:primary.0}}}{{{eval:d/20;d}}}$."
+				]
+			},
+			"conditions": ["d >= 1"]
+		},
+		{
+			"statement": "La loi de probabilité d'une variable aléatoire $X$ est donnée dans le tableau ci-dessous.\n\n| $x_k$ | ${{u}}$ | ${{eval:u+s}}$ | ${{eval:u+s+t}}$ | ${{eval:u+s+t+w}}$ |\n|---|---|---|---|---|\n| $P(X=x_k)$ | ${{eval:a/20;d}}$ | ${{eval:b/20;d}}$ | ${{eval:c/20;d}}$ | ${{eval:d/20;d}}$ |\n\nRéponds par une fraction irréductible ou par un nombre décimal exact.\n\n$P(X>{{u}})=?$",
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(b+c+d)/20}}"
+				}
+			],
+			"variables": [
+				{
+					"name": "u",
+					"expression": "-3..2"
+				},
+				{
+					"name": "s",
+					"expression": "1..3"
+				},
+				{
+					"name": "t",
+					"expression": "1..3"
+				},
+				{
+					"name": "w",
+					"expression": "1..3"
+				},
+				{
+					"name": "a",
+					"expression": "1..8"
+				},
+				{
+					"name": "b",
+					"expression": "1..8"
+				},
+				{
+					"name": "c",
+					"expression": "1..8"
+				},
+				{
+					"name": "d",
+					"expression": "eval:20-a-b-c"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\{X>{{u}}\\}$ est l'évènement **contraire** de $\\{X\\leqslant {{u}}\\}=\\{X={{u}}\\}$.",
+					"$P(X>{{u}})=1-P(X={{u}})=1-{{eval:a/20;d}}=\\textcolor{{{color:primary.0}}}{{{eval:(b+c+d)/20;d}}}$."
+				]
+			},
+			"conditions": ["d >= 1"]
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:n/(r+q+n)}}"
+				},
+				{
+					"expectedAnswer": "{{eval:(r+q)/(r+q+n)}}"
+				}
+			],
+			"statement": "Une urne contient ${{r}}$ boules rouges, ${{q}}$ boules bleues et ${{n}}$ boules vertes, indiscernables au toucher. Un joueur tire une boule au hasard. Il gagne ${{g}}$ euros si elle est rouge, ${{h}}$ euros si elle est bleue, et il perd ${{m}}$ euros si elle est verte. On note $X$ le gain algébrique du joueur, en euros.\n\nRéponds par une fraction irréductible ou par un nombre décimal exact.\n\n$P(X=-{{m}})=?$\n\n$P(X>0)=?$",
+			"variables": [
+				{
+					"name": "r",
+					"expression": "2..8"
+				},
+				{
+					"name": "q",
+					"expression": "2..8"
+				},
+				{
+					"name": "n",
+					"expression": "2..8"
+				},
+				{
+					"name": "g",
+					"expression": "2..10"
+				},
+				{
+					"name": "h",
+					"expression": "1..5"
+				},
+				{
+					"name": "m",
+					"expression": "2..6"
+				}
+			],
+			"conditions": ["g > h", "r != q"],
+			"correction": {
+				"steps": [
+					"L'urne contient ${{r}}+{{q}}+{{n}}={{eval:r+q+n}}$ boules, toutes ont la même probabilité d'être tirées.",
+					"$\\{X=-{{m}}\\}$ : le joueur perd ${{m}}$ euros, donc la boule est verte. $P(X=-{{m}})={{if:gcd(n,r+q+n) > 1|\\dfrac{ {{n}} }{ {{eval:r+q+n}} }=}}\\textcolor{{{color:primary.0}}}{ {{eval:n/(r+q+n)}} }$.",
+					"$\\{X>0\\}$ : le joueur gagne de l'argent, donc la boule est rouge ou bleue. $P(X>0)=P(X={{g}})+P(X={{h}})=\\dfrac{ {{r}} }{ {{eval:r+q+n}} }+\\dfrac{ {{q}} }{ {{eval:r+q+n}} }=\\textcolor{{{color:primary.0}}}{ {{eval:(r+q)/(r+q+n)}} }$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:k/f}}"
+				},
+				{
+					"expectedAnswer": "{{eval:(f-k)/f}}"
+				}
+			],
+			"statement": "On lance un dé équilibré à ${{f}}$ faces, numérotées de $1$ à ${{f}}$. Si le numéro obtenu est inférieur ou égal à ${{k}}$, on gagne ${{g}}$ euros ; sinon, on perd ${{m}}$ euros. On note $X$ le gain algébrique, en euros.\n\nRéponds par une fraction irréductible ou par un nombre décimal exact.\n\n$P(X={{g}})=?$\n\n$P(X=-{{m}})=?$",
+			"variables": [
+				{
+					"name": "f",
+					"expression": "8|10|12|20"
+				},
+				{
+					"name": "k",
+					"expression": "2..18"
+				},
+				{
+					"name": "g",
+					"expression": "2..10"
+				},
+				{
+					"name": "m",
+					"expression": "2..5"
+				}
+			],
+			"conditions": ["k <= f-2", "2*k != f"],
+			"correction": {
+				"steps": [
+					"Le dé est équilibré : chacune des ${{f}}$ faces a la probabilité $\\dfrac{1}{ {{f}} }$ d'apparaître.",
+					"$\\{X={{g}}\\}$ : le numéro est l'un des ${{k}}$ numéros de $1$ à ${{k}}$. $P(X={{g}})={{if:gcd(k,f) > 1|\\dfrac{ {{k}} }{ {{f}} }=}}\\textcolor{{{color:primary.0}}}{ {{eval:k/f}} }$.",
+					"$\\{X=-{{m}}\\}$ : le numéro est l'un des ${{f}}-{{k}}={{eval:f-k}}$ autres. $P(X=-{{m}})={{if:gcd(f-k,f) > 1|\\dfrac{ {{eval:f-k}} }{ {{f}} }=}}\\textcolor{{{color:primary.0}}}{ {{eval:(f-k)/f}} }$ (ou $1-P(X={{g}})$)."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "P(X = x3), P(X ⩽ x2)",
+			"variationIndex": 0,
+			"variables": {
+				"u": "0",
+				"s": "1",
+				"t": "1",
+				"w": "1",
+				"a": "4",
+				"b": "5",
+				"c": "5"
+			},
+			"answers": ["0,25", "0,45"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : P(X ⩽ x2) = P(X = x2)",
+			"variationIndex": 0,
+			"variables": {
+				"u": "0",
+				"s": "1",
+				"t": "1",
+				"w": "1",
+				"a": "4",
+				"b": "5",
+				"c": "5"
+			},
+			"answers": ["0,25", "0,25"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "P(X ⩽ x3), P(X > x3)",
+			"variationIndex": 1,
+			"variables": {
+				"u": "1",
+				"s": "2",
+				"t": "1",
+				"w": "3",
+				"a": "3",
+				"b": "6",
+				"c": "5"
+			},
+			"answers": ["0,7", "0,3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : P(X > x3) oublie la dernière",
+			"variationIndex": 1,
+			"variables": {
+				"u": "1",
+				"s": "2",
+				"t": "1",
+				"w": "3",
+				"a": "3",
+				"b": "6",
+				"c": "5"
+			},
+			"answers": ["0,7", "0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Contraire",
+			"variationIndex": 2,
+			"variables": {
+				"u": "-2",
+				"s": "1",
+				"t": "2",
+				"w": "1",
+				"a": "3",
+				"b": "6",
+				"c": "5"
+			},
+			"answers": ["0,85"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : P(X = u)",
+			"variationIndex": 2,
+			"variables": {
+				"u": "-2",
+				"s": "1",
+				"t": "2",
+				"w": "1",
+				"a": "3",
+				"b": "6",
+				"c": "5"
+			},
+			"answers": ["0,15"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Urne",
+			"variationIndex": 3,
+			"variables": {
+				"r": "4",
+				"q": "2",
+				"n": "2",
+				"g": "5",
+				"h": "2",
+				"m": "3"
+			},
+			"answers": ["\\frac{1}{4}", "\\frac{3}{4}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur urne",
+			"variationIndex": 3,
+			"variables": {
+				"r": "4",
+				"q": "2",
+				"n": "2",
+				"g": "5",
+				"h": "2",
+				"m": "3"
+			},
+			"answers": ["\\frac{1}{2}", "\\frac{3}{4}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Dé",
+			"variationIndex": 4,
+			"variables": {
+				"f": "10",
+				"k": "3",
+				"g": "4",
+				"m": "2"
+			},
+			"answers": ["0,3", "0,7"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur dé",
+			"variationIndex": 4,
+			"variables": {
+				"f": "10",
+				"k": "3",
+				"g": "4",
+				"m": "2"
+			},
+			"answers": ["0,7", "0,3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

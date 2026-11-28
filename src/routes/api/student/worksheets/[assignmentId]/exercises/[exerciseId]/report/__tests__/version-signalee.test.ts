@@ -14,13 +14,14 @@ import {
 	selectedColumns,
 	tableMock,
 	twoLevelExercise,
+	versionedLine,
 	type TableMock
-} from '$lib/server/worksheets/__tests__/table-mock';
-import { copySeed } from '$lib/worksheets/student-copy';
+} from '#lib/server/worksheets/__tests__/table-mock.ts';
+import { copySeed } from '#lib/worksheets/student-copy.ts';
 
 const STUDENT = '550e8400-e29b-41d4-a716-446655440021';
 
-vi.mock('$lib/server/middleware/auth', () => ({
+vi.mock('#lib/server/middleware/auth.ts', () => ({
 	requireRole: async () => ({ user: { id: '550e8400-e29b-41d4-a716-446655440021' } })
 }));
 
@@ -62,7 +63,11 @@ function supabase(guidanceLevel: string, individualized: boolean): TableMock {
 				data: [{ id: WE_ID, section_id: null, position: 1 }],
 				error: null,
 				single: {
-					data: { id: WE_ID, position: 1, variation_index: null, exercise: EXERCISE },
+					// Contenu sur la version de la ligne ; l'exercice garde un ancien contenu dont les
+					// niveaux sont dans l'ordre inverse : s'il était lu, les index seraient faux
+					data: versionedLine({ id: WE_ID, position: 1, variation_index: null }, EXERCISE, {
+						variations: [...EXERCISE.variations].reverse()
+					}),
 					error: null
 				}
 			},

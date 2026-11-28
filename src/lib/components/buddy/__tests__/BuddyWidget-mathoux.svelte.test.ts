@@ -13,9 +13,9 @@ import { render } from 'vitest-browser-svelte';
 import { page } from 'vitest/browser';
 import BuddyWidget from '../BuddyWidget.svelte';
 import { LINK_BUBBLE_DURATION } from '../buddy-timing';
-import { studentCache } from '$lib/stores/studentDashboardCache.svelte';
-import type { BuddyState } from '$lib/types/buddy';
-import { NO_NEWS, type MathouNews } from '$lib/mathoux/news';
+import { studentCache } from '#lib/stores/studentDashboardCache.svelte.ts';
+import type { BuddyState } from '#lib/types/buddy.ts';
+import { NO_NEWS, type MathouNews } from '#lib/mathoux/news.ts';
 
 // Page courante simulée : modifiable test par test
 const pageState = vi.hoisted(() => ({ url: new URL('http://localhost:5175/dashboard') }));

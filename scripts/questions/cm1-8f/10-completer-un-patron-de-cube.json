@@ -1,0 +1,371 @@
+{
+	"id": "9fe0fee6-5e3b-4fa2-9594-a245d6688ff6",
+	"title": "Compléter un patron de cube",
+	"description": "Poser une, puis deux faces manquantes d'un patron de cube ; toute pose qui se plie en cube est juste",
+	"grades": ["CM1", "CM2"],
+	"level": 6,
+	"delay": 90,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Il manque **une face** à ce patron de cube. Pose-la pour que l'assemblage se plie en cube.\n\n```patron\nsolide: cube\nforme: {{if:q==1|1|{{if:q==2|1|{{if:q==3|1|{{if:q==4|1|{{if:q==5|2|{{if:q==6|2|{{if:q==7|2|{{if:q==8|3|{{if:q==9|3|{{if:q==10|3|{{if:q==11|4|{{if:q==12|4|{{if:q==13|4|{{if:q==14|5|{{if:q==15|5|{{if:q==16|6|{{if:q==17|6|{{if:q==18|6|{{if:q==19|6|{{if:q==20|7|{{if:q==21|7|{{if:q==22|7|{{if:q==23|8|{{if:q==24|8|{{if:q==25|8|{{if:q==26|9|{{if:q==27|9|{{if:q==28|10|{{if:q==29|10|{{if:q==30|11|11}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}\ncompleter: {{if:q==1|1|{{if:q==2|2|{{if:q==3|5|{{if:q==4|6|{{if:q==5|1|{{if:q==6|5|{{if:q==7|6|{{if:q==8|1|{{if:q==9|5|{{if:q==10|6|{{if:q==11|1|{{if:q==12|5|{{if:q==13|6|{{if:q==14|1|{{if:q==15|6|{{if:q==16|1|{{if:q==17|2|{{if:q==18|5|{{if:q==19|6|{{if:q==20|1|{{if:q==21|5|{{if:q==22|6|{{if:q==23|1|{{if:q==24|5|{{if:q==25|6|{{if:q==26|1|{{if:q==27|6|{{if:q==28|1|{{if:q==29|6|{{if:q==30|1|6}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}\ntourner: {{eval:90*t}}\nretourner: {{if:r==1|oui|non}}\n```",
+			"variables": [
+				{
+					"name": "q",
+					"expression": "1..31"
+				},
+				{
+					"name": "t",
+					"expression": "0..3"
+				},
+				{
+					"name": "r",
+					"expression": "0..1"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On imagine le cube plié : chaque face posée doit boucher un trou, sans tomber sur une face déjà là.",
+					"Plusieurs places peuvent être justes : toute pose qui se plie en cube est juste."
+				]
+			}
+		},
+		{
+			"statement": "Il manque **deux faces** à ce patron de cube. Pose-les pour que l'assemblage se plie en cube.\n\n```patron\nsolide: cube\nforme: {{if:q==1|1|{{if:q==2|1|{{if:q==3|1|{{if:q==4|1|{{if:q==5|1|{{if:q==6|1|{{if:q==7|1|{{if:q==8|2|{{if:q==9|2|{{if:q==10|2|{{if:q==11|2|{{if:q==12|3|{{if:q==13|3|{{if:q==14|3|{{if:q==15|3|{{if:q==16|3|{{if:q==17|4|{{if:q==18|4|{{if:q==19|4|{{if:q==20|4|{{if:q==21|5|{{if:q==22|5|{{if:q==23|5|{{if:q==24|6|{{if:q==25|6|{{if:q==26|6|{{if:q==27|6|{{if:q==28|6|{{if:q==29|6|{{if:q==30|7|{{if:q==31|7|{{if:q==32|7|{{if:q==33|7|{{if:q==34|7|{{if:q==35|8|{{if:q==36|8|{{if:q==37|8|{{if:q==38|8|{{if:q==39|9|{{if:q==40|9|{{if:q==41|9|{{if:q==42|10|{{if:q==43|10|{{if:q==44|10|{{if:q==45|11|{{if:q==46|11|11}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}\ncompleter: {{if:q==1|1 2|{{if:q==2|1 5|{{if:q==3|1 6|{{if:q==4|2 5|{{if:q==5|2 6|{{if:q==6|4 5|{{if:q==7|5 6|{{if:q==8|1 5|{{if:q==9|1 6|{{if:q==10|4 5|{{if:q==11|5 6|{{if:q==12|1 2|{{if:q==13|1 5|{{if:q==14|1 6|{{if:q==15|4 5|{{if:q==16|5 6|{{if:q==17|1 2|{{if:q==18|1 5|{{if:q==19|1 6|{{if:q==20|5 6|{{if:q==21|1 2|{{if:q==22|1 6|{{if:q==23|5 6|{{if:q==24|1 2|{{if:q==25|1 5|{{if:q==26|1 6|{{if:q==27|2 5|{{if:q==28|2 6|{{if:q==29|5 6|{{if:q==30|1 2|{{if:q==31|1 5|{{if:q==32|1 6|{{if:q==33|4 5|{{if:q==34|5 6|{{if:q==35|1 2|{{if:q==36|1 5|{{if:q==37|1 6|{{if:q==38|5 6|{{if:q==39|1 2|{{if:q==40|1 6|{{if:q==41|5 6|{{if:q==42|1 2|{{if:q==43|1 6|{{if:q==44|5 6|{{if:q==45|1 2|{{if:q==46|1 6|5 6}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}\ntourner: {{eval:90*t}}\nretourner: {{if:r==1|oui|non}}\n```",
+			"variables": [
+				{
+					"name": "q",
+					"expression": "1..47"
+				},
+				{
+					"name": "t",
+					"expression": "0..3"
+				},
+				{
+					"name": "r",
+					"expression": "0..1"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On imagine le cube plié : chaque face posée doit boucher un trou, sans tomber sur une face déjà là.",
+					"Plusieurs places peuvent être justes : toute pose qui se plie en cube est juste."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Patron 1, faces 1 reposées à leur place",
+			"variationIndex": 0,
+			"variables": {
+				"q": "1",
+				"t": "0",
+				"r": "0"
+			},
+			"answers": ["002000/011110/001000/000000"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Patron 1 : une autre pose qui se plie",
+			"variationIndex": 0,
+			"variables": {
+				"q": "1",
+				"t": "0",
+				"r": "0"
+			},
+			"answers": ["020000/011110/001000/000000"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : patron 1, une face posée sur une face déjà là en pliant",
+			"variationIndex": 0,
+			"variables": {
+				"q": "1",
+				"t": "0",
+				"r": "0"
+			},
+			"answers": ["000000/211110/001000/000000"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Patron 1, faces 2 reposées à leur place",
+			"variationIndex": 0,
+			"variables": {
+				"q": "2",
+				"t": "0",
+				"r": "0"
+			},
+			"answers": ["00000/01000/21110/01000/00000"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Patron 1 : une autre pose qui se plie",
+			"variationIndex": 0,
+			"variables": {
+				"q": "2",
+				"t": "0",
+				"r": "0"
+			},
+			"answers": ["00000/21000/01110/01000/00000"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : patron 1, une face posée sur une face déjà là en pliant",
+			"variationIndex": 0,
+			"variables": {
+				"q": "2",
+				"t": "0",
+				"r": "0"
+			},
+			"answers": ["02000/01000/01110/01000/00000"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Patron 7, faces 1 reposées à leur place",
+			"variationIndex": 0,
+			"variables": {
+				"q": "20",
+				"t": "0",
+				"r": "0"
+			},
+			"answers": ["00000/21000/01110/01000/00000"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Patron 7 : une autre pose qui se plie",
+			"variationIndex": 0,
+			"variables": {
+				"q": "20",
+				"t": "0",
+				"r": "0"
+			},
+			"answers": ["00000/01000/21110/01000/00000"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : patron 7, une face posée sur une face déjà là en pliant",
+			"variationIndex": 0,
+			"variables": {
+				"q": "20",
+				"t": "0",
+				"r": "0"
+			},
+			"answers": ["02000/01000/01110/01000/00000"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Patron 11, faces 6 reposées à leur place",
+			"variationIndex": 0,
+			"variables": {
+				"q": "31",
+				"t": "0",
+				"r": "0"
+			},
+			"answers": ["000000/011100/000112/000000"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Patron 11 : une autre pose qui se plie",
+			"variationIndex": 0,
+			"variables": {
+				"q": "31",
+				"t": "0",
+				"r": "0"
+			},
+			"answers": ["020000/011100/000110/000000"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : patron 11, une face posée sur une face déjà là en pliant",
+			"variationIndex": 0,
+			"variables": {
+				"q": "31",
+				"t": "0",
+				"r": "0"
+			},
+			"answers": ["000000/211100/000110/000000"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Patron 1, faces 1 2 reposées à leur place",
+			"variationIndex": 1,
+			"variables": {
+				"q": "1",
+				"t": "0",
+				"r": "0"
+			},
+			"answers": ["0000000/0020000/0211100/0010000/0000000/0000000"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Patron 1 : une autre pose qui se plie",
+			"variationIndex": 1,
+			"variables": {
+				"q": "1",
+				"t": "0",
+				"r": "0"
+			},
+			"answers": ["0000000/0002000/0011120/0010000/0000000/0000000"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : patron 1, une face posée sur une face déjà là en pliant",
+			"variationIndex": 1,
+			"variables": {
+				"q": "1",
+				"t": "0",
+				"r": "0"
+			},
+			"answers": ["0000000/0002200/0011100/0010000/0000000/0000000"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Patron 1, faces 2 5 reposées à leur place",
+			"variationIndex": 1,
+			"variables": {
+				"q": "4",
+				"t": "0",
+				"r": "0"
+			},
+			"answers": ["000000/000000/001000/021120/001000/000000/000000"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Patron 1 : une autre pose qui se plie",
+			"variationIndex": 1,
+			"variables": {
+				"q": "4",
+				"t": "0",
+				"r": "0"
+			},
+			"answers": ["000000/002000/021000/001100/001000/000000/000000"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : patron 1, une face posée sur une face déjà là en pliant",
+			"variationIndex": 1,
+			"variables": {
+				"q": "4",
+				"t": "0",
+				"r": "0"
+			},
+			"answers": ["000000/002000/001200/001100/001000/000000/000000"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Patron 7, faces 1 2 reposées à leur place",
+			"variationIndex": 1,
+			"variables": {
+				"q": "30",
+				"t": "0",
+				"r": "0"
+			},
+			"answers": ["0000000/0220000/0011100/0010000/0000000/0000000"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Patron 7 : une autre pose qui se plie",
+			"variationIndex": 1,
+			"variables": {
+				"q": "30",
+				"t": "0",
+				"r": "0"
+			},
+			"answers": ["0000000/0002000/0211100/0010000/0000000/0000000"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : patron 7, une face posée sur une face déjà là en pliant",
+			"variationIndex": 1,
+			"variables": {
+				"q": "30",
+				"t": "0",
+				"r": "0"
+			},
+			"answers": ["0000000/0002200/0011100/0010000/0000000/0000000"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Patron 11, faces 5 6 reposées à leur place",
+			"variationIndex": 1,
+			"variables": {
+				"q": "47",
+				"t": "0",
+				"r": "0"
+			},
+			"answers": ["0000000/0000000/0011100/0000122/0000000/0000000"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Patron 11 : une autre pose qui se plie",
+			"variationIndex": 1,
+			"variables": {
+				"q": "47",
+				"t": "0",
+				"r": "0"
+			},
+			"answers": ["0000000/0020000/0211100/0000100/0000000/0000000"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : patron 11, une face posée sur une face déjà là en pliant",
+			"variationIndex": 1,
+			"variables": {
+				"q": "47",
+				"t": "0",
+				"r": "0"
+			},
+			"answers": ["0000000/0022000/0011100/0000100/0000000/0000000"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

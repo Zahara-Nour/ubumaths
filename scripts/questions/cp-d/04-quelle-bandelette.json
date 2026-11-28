@@ -1,0 +1,324 @@
+{
+	"id": "6fc49a88-ae90-4e4d-b099-4b66519a1274",
+	"title": "Quelle bandelette est la plus longue ?",
+	"description": "Comparer des bandelettes alignées à gauche, sans aucun doute (2 carreaux d'écart au moins) : la plus longue ou la plus courte, parmi 3 puis 4",
+	"grades": ["CP"],
+	"level": 1,
+	"delay": 45,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Quelle bandelette est la plus {{if:t==1|longue|courte}} ?\n\n```figure\nfenetre: 0 ; 13 ; 0 ; 4.0\ndescription: 3 bandelettes de couleur nommées A, B et C, l'une sous l'autre, alignées à gauche.\n---\nP0a = point(1, 2.9, visible=faux)\nP0b = point({{x0}}, 2.9, visible=faux)\nP0c = point({{x0}}, 3.5, visible=faux)\nP0d = point(1, 3.5, visible=faux)\npolygone(P0a, P0b, P0c, P0d, couleur=\"noir\", remplissage=\"bleu\", opacite_fond=1)\ntexte(0.4, 3.2, \"A\")\nP1a = point(1, 1.7, visible=faux)\nP1b = point({{x1}}, 1.7, visible=faux)\nP1c = point({{x1}}, 2.3, visible=faux)\nP1d = point(1, 2.3, visible=faux)\npolygone(P1a, P1b, P1c, P1d, couleur=\"noir\", remplissage=\"rouge\", opacite_fond=1)\ntexte(0.4, 2.0, \"B\")\nP2a = point(1, 0.5, visible=faux)\nP2b = point({{x2}}, 0.5, visible=faux)\nP2c = point({{x2}}, 1.1, visible=faux)\nP2d = point(1, 1.1, visible=faux)\npolygone(P2a, P2b, P2c, P2d, couleur=\"noir\", remplissage=\"vert\", opacite_fond=1)\ntexte(0.4, 0.8, \"C\")\n```\n\n```choix\nmelanger: non\n- La bandelette A\n- La bandelette B\n- La bandelette C\n```",
+			"variables": [
+				{
+					"name": "t",
+					"expression": "0..1"
+				},
+				{
+					"name": "s",
+					"expression": "3..5"
+				},
+				{
+					"name": "g",
+					"expression": "2..3"
+				},
+				{
+					"name": "q",
+					"expression": "0..5"
+				},
+				{
+					"name": "l0",
+					"expression": "eval:s+g*((0)*(q-1)*(q-2)*(q-3)*(q-4)*(q-5)/(-120)+(0)*(q-0)*(q-2)*(q-3)*(q-4)*(q-5)/(24)+(1)*(q-0)*(q-1)*(q-3)*(q-4)*(q-5)/(-12)+(1)*(q-0)*(q-1)*(q-2)*(q-4)*(q-5)/(12)+(2)*(q-0)*(q-1)*(q-2)*(q-3)*(q-5)/(-24)+(2)*(q-0)*(q-1)*(q-2)*(q-3)*(q-4)/(120))"
+				},
+				{
+					"name": "x0",
+					"expression": "eval:1+l0"
+				},
+				{
+					"name": "l1",
+					"expression": "eval:s+g*((1)*(q-1)*(q-2)*(q-3)*(q-4)*(q-5)/(-120)+(2)*(q-0)*(q-2)*(q-3)*(q-4)*(q-5)/(24)+(0)*(q-0)*(q-1)*(q-3)*(q-4)*(q-5)/(-12)+(2)*(q-0)*(q-1)*(q-2)*(q-4)*(q-5)/(12)+(0)*(q-0)*(q-1)*(q-2)*(q-3)*(q-5)/(-24)+(1)*(q-0)*(q-1)*(q-2)*(q-3)*(q-4)/(120))"
+				},
+				{
+					"name": "x1",
+					"expression": "eval:1+l1"
+				},
+				{
+					"name": "l2",
+					"expression": "eval:s+g*((2)*(q-1)*(q-2)*(q-3)*(q-4)*(q-5)/(-120)+(1)*(q-0)*(q-2)*(q-3)*(q-4)*(q-5)/(24)+(2)*(q-0)*(q-1)*(q-3)*(q-4)*(q-5)/(-12)+(0)*(q-0)*(q-1)*(q-2)*(q-4)*(q-5)/(12)+(1)*(q-0)*(q-1)*(q-2)*(q-3)*(q-5)/(-24)+(0)*(q-0)*(q-1)*(q-2)*(q-3)*(q-4)/(120))"
+				},
+				{
+					"name": "x2",
+					"expression": "eval:1+l2"
+				},
+				{
+					"name": "lg",
+					"expression": "eval:((2)*(q-1)*(q-2)*(q-3)*(q-4)*(q-5)/(-120)+(1)*(q-0)*(q-2)*(q-3)*(q-4)*(q-5)/(24)+(2)*(q-0)*(q-1)*(q-3)*(q-4)*(q-5)/(-12)+(1)*(q-0)*(q-1)*(q-2)*(q-4)*(q-5)/(12)+(0)*(q-0)*(q-1)*(q-2)*(q-3)*(q-5)/(-24)+(0)*(q-0)*(q-1)*(q-2)*(q-3)*(q-4)/(120))"
+				},
+				{
+					"name": "lc",
+					"expression": "eval:((0)*(q-1)*(q-2)*(q-3)*(q-4)*(q-5)/(-120)+(0)*(q-0)*(q-2)*(q-3)*(q-4)*(q-5)/(24)+(1)*(q-0)*(q-1)*(q-3)*(q-4)*(q-5)/(-12)+(2)*(q-0)*(q-1)*(q-2)*(q-4)*(q-5)/(12)+(1)*(q-0)*(q-1)*(q-2)*(q-3)*(q-5)/(-24)+(2)*(q-0)*(q-1)*(q-2)*(q-3)*(q-4)/(120))"
+				},
+				{
+					"name": "r",
+					"expression": "eval:t*lg+(1-t)*lc"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{r}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Les bandelettes partent toutes du même bord, à gauche : on regarde où elles s'arrêtent.",
+					"La plus {{if:t==1|longue|courte}} est celle qui s'arrête le plus {{if:t==1|loin|tôt}} : la bandelette $\\textcolor{{{color:primary.0}}}{\\text{{{if:r==0|A|{{if:r==1|B|C}}}}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Quelle bandelette est la plus {{if:t==1|longue|courte}} ?\n\n```figure\nfenetre: 0 ; 16 ; 0 ; 5.2\ndescription: 4 bandelettes de couleur nommées A, B, C et D, l'une sous l'autre, alignées à gauche.\n---\nP0a = point(1, 4.1, visible=faux)\nP0b = point({{x0}}, 4.1, visible=faux)\nP0c = point({{x0}}, 4.7, visible=faux)\nP0d = point(1, 4.7, visible=faux)\npolygone(P0a, P0b, P0c, P0d, couleur=\"noir\", remplissage=\"bleu\", opacite_fond=1)\ntexte(0.4, 4.4, \"A\")\nP1a = point(1, 2.9, visible=faux)\nP1b = point({{x1}}, 2.9, visible=faux)\nP1c = point({{x1}}, 3.5, visible=faux)\nP1d = point(1, 3.5, visible=faux)\npolygone(P1a, P1b, P1c, P1d, couleur=\"noir\", remplissage=\"rouge\", opacite_fond=1)\ntexte(0.4, 3.2, \"B\")\nP2a = point(1, 1.7, visible=faux)\nP2b = point({{x2}}, 1.7, visible=faux)\nP2c = point({{x2}}, 2.3, visible=faux)\nP2d = point(1, 2.3, visible=faux)\npolygone(P2a, P2b, P2c, P2d, couleur=\"noir\", remplissage=\"vert\", opacite_fond=1)\ntexte(0.4, 2.0, \"C\")\nP3a = point(1, 0.5, visible=faux)\nP3b = point({{x3}}, 0.5, visible=faux)\nP3c = point({{x3}}, 1.1, visible=faux)\nP3d = point(1, 1.1, visible=faux)\npolygone(P3a, P3b, P3c, P3d, couleur=\"noir\", remplissage=\"orange\", opacite_fond=1)\ntexte(0.4, 0.8, \"D\")\n```\n\n```choix\nmelanger: non\n- La bandelette A\n- La bandelette B\n- La bandelette C\n- La bandelette D\n```",
+			"variables": [
+				{
+					"name": "t",
+					"expression": "0..1"
+				},
+				{
+					"name": "s",
+					"expression": "3..5"
+				},
+				{
+					"name": "g",
+					"expression": "2..3"
+				},
+				{
+					"name": "q",
+					"expression": "0..5"
+				},
+				{
+					"name": "l0",
+					"expression": "eval:s+g*((1)*(q-1)*(q-2)*(q-3)*(q-4)*(q-5)/(-120)+(2)*(q-0)*(q-2)*(q-3)*(q-4)*(q-5)/(24)+(3)*(q-0)*(q-1)*(q-3)*(q-4)*(q-5)/(-12)+(0)*(q-0)*(q-1)*(q-2)*(q-4)*(q-5)/(12)+(2)*(q-0)*(q-1)*(q-2)*(q-3)*(q-5)/(-24)+(1)*(q-0)*(q-1)*(q-2)*(q-3)*(q-4)/(120))"
+				},
+				{
+					"name": "x0",
+					"expression": "eval:1+l0"
+				},
+				{
+					"name": "l1",
+					"expression": "eval:s+g*((3)*(q-1)*(q-2)*(q-3)*(q-4)*(q-5)/(-120)+(0)*(q-0)*(q-2)*(q-3)*(q-4)*(q-5)/(24)+(1)*(q-0)*(q-1)*(q-3)*(q-4)*(q-5)/(-12)+(2)*(q-0)*(q-1)*(q-2)*(q-4)*(q-5)/(12)+(3)*(q-0)*(q-1)*(q-2)*(q-3)*(q-5)/(-24)+(0)*(q-0)*(q-1)*(q-2)*(q-3)*(q-4)/(120))"
+				},
+				{
+					"name": "x1",
+					"expression": "eval:1+l1"
+				},
+				{
+					"name": "l2",
+					"expression": "eval:s+g*((0)*(q-1)*(q-2)*(q-3)*(q-4)*(q-5)/(-120)+(3)*(q-0)*(q-2)*(q-3)*(q-4)*(q-5)/(24)+(2)*(q-0)*(q-1)*(q-3)*(q-4)*(q-5)/(-12)+(1)*(q-0)*(q-1)*(q-2)*(q-4)*(q-5)/(12)+(1)*(q-0)*(q-1)*(q-2)*(q-3)*(q-5)/(-24)+(3)*(q-0)*(q-1)*(q-2)*(q-3)*(q-4)/(120))"
+				},
+				{
+					"name": "x2",
+					"expression": "eval:1+l2"
+				},
+				{
+					"name": "l3",
+					"expression": "eval:s+g*((2)*(q-1)*(q-2)*(q-3)*(q-4)*(q-5)/(-120)+(1)*(q-0)*(q-2)*(q-3)*(q-4)*(q-5)/(24)+(0)*(q-0)*(q-1)*(q-3)*(q-4)*(q-5)/(-12)+(3)*(q-0)*(q-1)*(q-2)*(q-4)*(q-5)/(12)+(0)*(q-0)*(q-1)*(q-2)*(q-3)*(q-5)/(-24)+(2)*(q-0)*(q-1)*(q-2)*(q-3)*(q-4)/(120))"
+				},
+				{
+					"name": "x3",
+					"expression": "eval:1+l3"
+				},
+				{
+					"name": "lg",
+					"expression": "eval:((1)*(q-1)*(q-2)*(q-3)*(q-4)*(q-5)/(-120)+(2)*(q-0)*(q-2)*(q-3)*(q-4)*(q-5)/(24)+(0)*(q-0)*(q-1)*(q-3)*(q-4)*(q-5)/(-12)+(3)*(q-0)*(q-1)*(q-2)*(q-4)*(q-5)/(12)+(1)*(q-0)*(q-1)*(q-2)*(q-3)*(q-5)/(-24)+(2)*(q-0)*(q-1)*(q-2)*(q-3)*(q-4)/(120))"
+				},
+				{
+					"name": "lc",
+					"expression": "eval:((2)*(q-1)*(q-2)*(q-3)*(q-4)*(q-5)/(-120)+(1)*(q-0)*(q-2)*(q-3)*(q-4)*(q-5)/(24)+(3)*(q-0)*(q-1)*(q-3)*(q-4)*(q-5)/(-12)+(0)*(q-0)*(q-1)*(q-2)*(q-4)*(q-5)/(12)+(3)*(q-0)*(q-1)*(q-2)*(q-3)*(q-5)/(-24)+(1)*(q-0)*(q-1)*(q-2)*(q-3)*(q-4)/(120))"
+				},
+				{
+					"name": "r",
+					"expression": "eval:t*lg+(1-t)*lc"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{r}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Les bandelettes partent toutes du même bord, à gauche : on regarde où elles s'arrêtent.",
+					"La plus {{if:t==1|longue|courte}} est celle qui s'arrête le plus {{if:t==1|loin|tôt}} : la bandelette $\\textcolor{{{color:primary.0}}}{\\text{{{if:r==0|A|{{if:r==1|B|{{if:r==2|C|D}}}}}}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "La plus longue : C",
+			"variationIndex": 0,
+			"variables": {
+				"t": "1",
+				"s": "3",
+				"g": "2",
+				"q": "0",
+				"l0": "3",
+				"x0": "4",
+				"l1": "5",
+				"x1": "6",
+				"l2": "7",
+				"x2": "8",
+				"lg": "2",
+				"lc": "0",
+				"r": "2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : A (la plus courte)",
+			"variationIndex": 0,
+			"variables": {
+				"t": "1",
+				"s": "3",
+				"g": "2",
+				"q": "0",
+				"l0": "3",
+				"x0": "4",
+				"l1": "5",
+				"x1": "6",
+				"l2": "7",
+				"x2": "8",
+				"lg": "2",
+				"lc": "0",
+				"r": "2"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "La plus courte : C",
+			"variationIndex": 0,
+			"variables": {
+				"t": "0",
+				"s": "3",
+				"g": "2",
+				"q": "3",
+				"l0": "5",
+				"x0": "6",
+				"l1": "7",
+				"x1": "8",
+				"l2": "3",
+				"x2": "4",
+				"lg": "1",
+				"lc": "2",
+				"r": "2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : B (la plus longue)",
+			"variationIndex": 0,
+			"variables": {
+				"t": "0",
+				"s": "3",
+				"g": "2",
+				"q": "3",
+				"l0": "5",
+				"x0": "6",
+				"l1": "7",
+				"x1": "8",
+				"l2": "3",
+				"x2": "4",
+				"lg": "1",
+				"lc": "2",
+				"r": "2"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "4 bandelettes, la plus longue : B",
+			"variationIndex": 1,
+			"variables": {
+				"t": "1",
+				"s": "4",
+				"g": "3",
+				"q": "0",
+				"l0": "7",
+				"x0": "8",
+				"l1": "13",
+				"x1": "14",
+				"l2": "4",
+				"x2": "5",
+				"l3": "10",
+				"x3": "11",
+				"lg": "1",
+				"lc": "2",
+				"r": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : D (la dernière)",
+			"variationIndex": 1,
+			"variables": {
+				"t": "1",
+				"s": "4",
+				"g": "3",
+				"q": "0",
+				"l0": "7",
+				"x0": "8",
+				"l1": "13",
+				"x1": "14",
+				"l2": "4",
+				"x2": "5",
+				"l3": "10",
+				"x3": "11",
+				"lg": "1",
+				"lc": "2",
+				"r": "1"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "4 bandelettes, la plus courte : C",
+			"variationIndex": 1,
+			"variables": {
+				"t": "0",
+				"s": "3",
+				"g": "2",
+				"q": "0",
+				"l0": "5",
+				"x0": "6",
+				"l1": "9",
+				"x1": "10",
+				"l2": "3",
+				"x2": "4",
+				"l3": "7",
+				"x3": "8",
+				"lg": "1",
+				"lc": "2",
+				"r": "2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}

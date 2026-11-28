@@ -1,0 +1,317 @@
+{
+	"id": "cdec9199-5aa5-41bd-a571-1e94a08f7dba",
+	"title": "Quelle durée est la plus longue ? (à la minute)",
+	"description": "Comparer deux durées lues sur quatre horloges, en heures et minutes, à quelques minutes près",
+	"grades": ["CM1"],
+	"level": 8,
+	"delay": 120,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"zeros": "off"
+		}
+	},
+	"variations": [
+		{
+			"statement": "Tom a regardé un film, puis un match.\n\n```horloge\nheure: {{if:mod(t0,60)==0|{{eval:floor(t0/60)}} h|{{eval:floor(t0/60)}} h {{eval:mod(t0,60)}}}} ; {{if:mod(t1,60)==0|{{eval:floor(t1/60)}} h|{{eval:floor(t1/60)}} h {{eval:mod(t1,60)}}}} ; {{if:mod(t2,60)==0|{{eval:floor(t2/60)}} h|{{eval:floor(t2/60)}} h {{eval:mod(t2,60)}}}} ; {{if:mod(t3,60)==0|{{eval:floor(t3/60)}} h|{{eval:floor(t3/60)}} h {{eval:mod(t3,60)}}}}\nchiffres: tous\ngraduations: minutes\nlégendes: Début du film ; Fin du film ; Début du match ; Fin du match\n```\n\nLequel a duré le plus longtemps ?\n\n```choix\nmelanger: non\n- Le film\n- Le match\n- Ils ont duré autant.\n```",
+			"variables": [
+				{
+					"name": "u",
+					"expression": "1..9"
+				},
+				{
+					"name": "sg",
+					"expression": "0..1"
+				},
+				{
+					"name": "s",
+					"expression": "eval:(2*sg-1)*u"
+				},
+				{
+					"name": "h1",
+					"expression": "8..10"
+				},
+				{
+					"name": "p",
+					"expression": "0..59"
+				},
+				{
+					"name": "f",
+					"expression": "65..140"
+				},
+				{
+					"name": "t0",
+					"expression": "eval:60*h1+p"
+				},
+				{
+					"name": "t1",
+					"expression": "eval:t0+f"
+				},
+				{
+					"name": "q",
+					"expression": "0..59"
+				},
+				{
+					"name": "t2",
+					"expression": "eval:60*(floor(t1/60)+1)+q"
+				},
+				{
+					"name": "g",
+					"expression": "eval:f+s"
+				},
+				{
+					"name": "t3",
+					"expression": "eval:t2+g"
+				},
+				{
+					"name": "r",
+					"expression": "{{if:s<0|0|{{if:s>0|1|2}}}}"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{r}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le film : de {{if:mod(t0,60)==0|${{eval:floor(t0/60)}}~\\text{h}$|${{eval:floor(t0/60)}}~\\text{h}~{{if:mod(t0,60)<10|0{{eval:mod(t0,60)}}|{{eval:mod(t0,60)}}}}$}} à {{if:mod(t1,60)==0|${{eval:floor(t1/60)}}~\\text{h}$|${{eval:floor(t1/60)}}~\\text{h}~{{if:mod(t1,60)<10|0{{eval:mod(t1,60)}}|{{eval:mod(t1,60)}}}}$}}. Il a duré {{if:floor(f/60)==0|${{eval:mod(f,60)}}~\\text{min}$|{{if:mod(f,60)==0|${{eval:floor(f/60)}}~\\text{h}$|${{eval:floor(f/60)}}~\\text{h}~{{eval:mod(f,60)}}~\\text{min}$}}}} (${{eval:f}}$ minutes).",
+					"Le match : de {{if:mod(t2,60)==0|${{eval:floor(t2/60)}}~\\text{h}$|${{eval:floor(t2/60)}}~\\text{h}~{{if:mod(t2,60)<10|0{{eval:mod(t2,60)}}|{{eval:mod(t2,60)}}}}$}} à {{if:mod(t3,60)==0|${{eval:floor(t3/60)}}~\\text{h}$|${{eval:floor(t3/60)}}~\\text{h}~{{if:mod(t3,60)<10|0{{eval:mod(t3,60)}}|{{eval:mod(t3,60)}}}}$}}. Il a duré {{if:floor(g/60)==0|${{eval:mod(g,60)}}~\\text{min}$|{{if:mod(g,60)==0|${{eval:floor(g/60)}}~\\text{h}$|${{eval:floor(g/60)}}~\\text{h}~{{eval:mod(g,60)}}~\\text{min}$}}}} (${{eval:g}}$ minutes).",
+					"{{if:s<0|Le **film** a duré le plus longtemps, de ${{eval:-s}}$ minute{{if:s<-1|s|}}.|{{if:s>0|Le **match** a duré le plus longtemps, de ${{s}}$ minute{{if:s>1|s|}}.|Ils ont duré **autant**.}}}}"
+				]
+			}
+		},
+		{
+			"statement": "Tom a regardé un film, puis un match.\n\n```horloge\nheure: {{if:mod(t0,60)==0|{{eval:floor(t0/60)}} h|{{eval:floor(t0/60)}} h {{eval:mod(t0,60)}}}} ; {{if:mod(t1,60)==0|{{eval:floor(t1/60)}} h|{{eval:floor(t1/60)}} h {{eval:mod(t1,60)}}}} ; {{if:mod(t2,60)==0|{{eval:floor(t2/60)}} h|{{eval:floor(t2/60)}} h {{eval:mod(t2,60)}}}} ; {{if:mod(t3,60)==0|{{eval:floor(t3/60)}} h|{{eval:floor(t3/60)}} h {{eval:mod(t3,60)}}}}\nchiffres: tous\ngraduations: minutes\nlégendes: Début du film ; Fin du film ; Début du match ; Fin du match\n```\n\nLequel a duré le plus longtemps ?\n\n```choix\nmelanger: non\n- Le film\n- Le match\n- Ils ont duré autant.\n```",
+			"variables": [
+				{
+					"name": "u",
+					"expression": "0..3"
+				},
+				{
+					"name": "sg",
+					"expression": "0..1"
+				},
+				{
+					"name": "s",
+					"expression": "eval:(2*sg-1)*u"
+				},
+				{
+					"name": "h1",
+					"expression": "8..10"
+				},
+				{
+					"name": "p",
+					"expression": "0..59"
+				},
+				{
+					"name": "f",
+					"expression": "65..140"
+				},
+				{
+					"name": "t0",
+					"expression": "eval:60*h1+p"
+				},
+				{
+					"name": "t1",
+					"expression": "eval:t0+f"
+				},
+				{
+					"name": "q",
+					"expression": "0..59"
+				},
+				{
+					"name": "t2",
+					"expression": "eval:60*(floor(t1/60)+1)+q"
+				},
+				{
+					"name": "g",
+					"expression": "eval:f+s"
+				},
+				{
+					"name": "t3",
+					"expression": "eval:t2+g"
+				},
+				{
+					"name": "r",
+					"expression": "{{if:s<0|0|{{if:s>0|1|2}}}}"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{r}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le film : de {{if:mod(t0,60)==0|${{eval:floor(t0/60)}}~\\text{h}$|${{eval:floor(t0/60)}}~\\text{h}~{{if:mod(t0,60)<10|0{{eval:mod(t0,60)}}|{{eval:mod(t0,60)}}}}$}} à {{if:mod(t1,60)==0|${{eval:floor(t1/60)}}~\\text{h}$|${{eval:floor(t1/60)}}~\\text{h}~{{if:mod(t1,60)<10|0{{eval:mod(t1,60)}}|{{eval:mod(t1,60)}}}}$}}. Il a duré {{if:floor(f/60)==0|${{eval:mod(f,60)}}~\\text{min}$|{{if:mod(f,60)==0|${{eval:floor(f/60)}}~\\text{h}$|${{eval:floor(f/60)}}~\\text{h}~{{eval:mod(f,60)}}~\\text{min}$}}}} (${{eval:f}}$ minutes).",
+					"Le match : de {{if:mod(t2,60)==0|${{eval:floor(t2/60)}}~\\text{h}$|${{eval:floor(t2/60)}}~\\text{h}~{{if:mod(t2,60)<10|0{{eval:mod(t2,60)}}|{{eval:mod(t2,60)}}}}$}} à {{if:mod(t3,60)==0|${{eval:floor(t3/60)}}~\\text{h}$|${{eval:floor(t3/60)}}~\\text{h}~{{if:mod(t3,60)<10|0{{eval:mod(t3,60)}}|{{eval:mod(t3,60)}}}}$}}. Il a duré {{if:floor(g/60)==0|${{eval:mod(g,60)}}~\\text{min}$|{{if:mod(g,60)==0|${{eval:floor(g/60)}}~\\text{h}$|${{eval:floor(g/60)}}~\\text{h}~{{eval:mod(g,60)}}~\\text{min}$}}}} (${{eval:g}}$ minutes).",
+					"{{if:s<0|Le **film** a duré le plus longtemps, de ${{eval:-s}}$ minute{{if:s<-1|s|}}.|{{if:s>0|Le **match** a duré le plus longtemps, de ${{s}}$ minute{{if:s>1|s|}}.|Ils ont duré **autant**.}}}}"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Film 1 h 47 (8 h 52 → 10 h 39), match 1 h 42 : le film",
+			"variationIndex": 0,
+			"variables": {
+				"u": "5",
+				"sg": "0",
+				"s": "-5",
+				"h1": "8",
+				"p": "52",
+				"f": "107",
+				"t0": "532",
+				"t1": "639",
+				"q": "15",
+				"t2": "675",
+				"g": "102",
+				"t3": "777",
+				"r": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : le match (il finit plus tard)",
+			"variationIndex": 0,
+			"variables": {
+				"u": "5",
+				"sg": "0",
+				"s": "-5",
+				"h1": "8",
+				"p": "52",
+				"f": "107",
+				"t0": "532",
+				"t1": "639",
+				"q": "15",
+				"t2": "675",
+				"g": "102",
+				"t3": "777",
+				"r": "0"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Match plus long de 3 min : le match",
+			"variationIndex": 0,
+			"variables": {
+				"u": "3",
+				"sg": "1",
+				"s": "3",
+				"h1": "9",
+				"p": "38",
+				"f": "95",
+				"t0": "578",
+				"t1": "673",
+				"q": "4",
+				"t2": "724",
+				"g": "98",
+				"t3": "822",
+				"r": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : match plus long, le film",
+			"variationIndex": 0,
+			"variables": {
+				"u": "3",
+				"sg": "1",
+				"s": "3",
+				"h1": "9",
+				"p": "38",
+				"f": "95",
+				"t0": "578",
+				"t1": "673",
+				"q": "4",
+				"t2": "724",
+				"g": "98",
+				"t3": "822",
+				"r": "1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Même durée : autant",
+			"variationIndex": 1,
+			"variables": {
+				"u": "0",
+				"sg": "0",
+				"s": "0",
+				"h1": "10",
+				"p": "47",
+				"f": "80",
+				"t0": "647",
+				"t1": "727",
+				"q": "21",
+				"t2": "801",
+				"g": "80",
+				"t3": "881",
+				"r": "2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : même durée, le film",
+			"variationIndex": 1,
+			"variables": {
+				"u": "0",
+				"sg": "0",
+				"s": "0",
+				"h1": "10",
+				"p": "47",
+				"f": "80",
+				"t0": "647",
+				"t1": "727",
+				"q": "21",
+				"t2": "801",
+				"g": "80",
+				"t3": "881",
+				"r": "2"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Écart de 1 min : le film",
+			"variationIndex": 1,
+			"variables": {
+				"u": "1",
+				"sg": "0",
+				"s": "-1",
+				"h1": "8",
+				"p": "5",
+				"f": "120",
+				"t0": "485",
+				"t1": "605",
+				"q": "50",
+				"t2": "710",
+				"g": "119",
+				"t3": "829",
+				"r": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}

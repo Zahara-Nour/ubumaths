@@ -40,8 +40,8 @@
 
 import { createClient } from '@supabase/supabase-js';
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { Database } from '$lib/types/database';
-import { createServerLogger } from '$lib/utils/logger';
+import type { Database } from '#lib/types/database.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 import { config } from 'dotenv';
 
 // Charger les variables d'environnement
@@ -169,7 +169,7 @@ import {
 	TUTOR_MAX_PER_EXERCISE,
 	TUTOR_MAX_PER_HOUR,
 	TUTOR_MAX_PER_DAY
-} from '$lib/config/tutor-limits';
+} from '#lib/config/tutor-limits.ts';
 
 export const TUTOR_RATE_LIMITS: TutorRateLimitConfig = {
 	perExercise: { max: TUTOR_MAX_PER_EXERCISE },

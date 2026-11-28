@@ -29,14 +29,14 @@
 		NumberLinePoint,
 		NumberLineTarget,
 		NumberLineValue
-	} from '$lib/ubumark/types/number-line';
-	import { parseCustom } from '$lib/mathAST/parser/custom';
+	} from '#lib/ubumark/types/number-line.ts';
+	import { parseCustom } from '#lib/mathAST/parser/custom/index.ts';
 	import {
 		numVal,
 		phoneGapWarning,
 		valueToX,
 		xToValue
-	} from '$lib/ubumark/utils/number-line-render';
+	} from '#lib/ubumark/utils/number-line-render.ts';
 	import {
 		decimalString,
 		graduationCount,
@@ -46,7 +46,7 @@
 		nearestIndex,
 		placerAnswer,
 		placerText
-	} from '$lib/ubumark/utils/number-line-placer';
+	} from '#lib/ubumark/utils/number-line-placer.ts';
 	import NumberLine from './NumberLine.svelte';
 	import { readAuthoringAdvice, readAuthoringErrors } from '../authoring-errors';
 	import type { BuildCase } from './CollectionConstruire.svelte';

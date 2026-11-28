@@ -12,7 +12,7 @@ Props :
 - onselect : appelé avec l'identifiant du lieu cliqué
 -->
 <script lang="ts">
-	import { CITY_MAP_SIZE, type City, type MapLabel } from '$lib/kingdom-tour/cities';
+	import { CITY_MAP_SIZE, type City, type MapLabel } from '#lib/kingdom-tour/cities.ts';
 
 	// Constantes
 

@@ -14,10 +14,10 @@
 -->
 <script lang="ts">
 	import { enhance } from '$app/forms';
-	import { Button } from '$lib/components/ui/button';
-	import * as Card from '$lib/components/ui/card';
-	import QrCodeButton from '$lib/components/qr/QrCodeButton.svelte';
-	import { toaster } from '$lib/stores/toaster.svelte';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import QrCodeButton from '#lib/components/qr/QrCodeButton.svelte';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
 	import { Check, Copy, Link2 } from '@lucide/svelte';
 
 	interface Props {

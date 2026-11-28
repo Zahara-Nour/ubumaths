@@ -13,7 +13,7 @@ import {
 	MATHOU_DECORATIONS,
 	MATHOU_GLASSES,
 	MATHOU_HATS
-} from '$lib/mathoux/decorations';
+} from '#lib/mathoux/decorations.ts';
 
 describe('MathouDecorationsShowcase', () => {
 	it('les six décorations dessinées, nom et prix, dans l’ordre du catalogue', async () => {

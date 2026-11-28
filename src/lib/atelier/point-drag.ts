@@ -24,8 +24,8 @@ import type { Atelier } from './atelier.svelte';
 import { constantOf } from './constant';
 import { isConstruction, positionSliderFor, positionTextOf } from './construction';
 import { GeometryFailure, pointOn, type Support } from './construction-intersect';
-import { geoFromNumber } from '$lib/geometry-core/compute/geo-arithmetic';
-import { geoToNumber } from '$lib/geometry-core/compute/to-number';
+import { geoFromNumber } from '#lib/geometry-core/compute/geo-arithmetic.ts';
+import { geoToNumber } from '#lib/geometry-core/compute/to-number.ts';
 import { displayName } from './names';
 import { pointCoordinatesOf } from './parse';
 

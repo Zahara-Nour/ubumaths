@@ -10,9 +10,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { createMockSupabase } from '$tests/helpers/supabase/mock-client';
-import { createMockLocals } from '$tests/helpers/supabase/mock-locals';
-import { createMockRequest } from '$tests/helpers/supabase/mock-request';
+import { createMockSupabase } from '#tests/helpers/supabase/mock-client.ts';
+import { createMockLocals } from '#tests/helpers/supabase/mock-locals.ts';
+import { createMockRequest } from '#tests/helpers/supabase/mock-request.ts';
 
 const TEST_IDS = {
 	student: '550e8400-e29b-41d4-a716-446655440001',

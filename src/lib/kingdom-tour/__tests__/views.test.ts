@@ -13,6 +13,7 @@ import {
 	PARENT_VIEW,
 	STUDENT_VIEW,
 	TEACHER_VIEW,
+	faqJsonLd,
 	type AudienceView
 } from '../views';
 
@@ -34,6 +35,7 @@ function links(view: AudienceView): string[] {
 	return [
 		...view.blocks.flatMap((b) => (b.items ?? []).flatMap((i) => (i.href ? [i.href] : []))),
 		...view.blocks.flatMap((b) => (b.links ?? []).map((l) => l.href)),
+		...(view.faq ?? []).flatMap((f) => (f.links ?? []).map((l) => l.href)),
 		...view.calls.map((c) => c.href)
 	];
 }
@@ -50,7 +52,8 @@ function text(view: AudienceView): string {
 			b.text ?? '',
 			...(b.facts ?? []),
 			...(b.items ?? []).flatMap((i) => [i.title, i.text])
-		])
+		]),
+		...(view.faq ?? []).flatMap((f) => [f.question, f.answer])
 	].join('\n');
 }
 
@@ -125,13 +128,106 @@ describe('l’argent : ce qui restera vrai', () => {
 		);
 	});
 
-	it('le suivi des parents est dit franchement : pas de compte parent', () => {
-		expect(text(PARENT_VIEW)).toMatch(/pas de compte parent/i);
+	it('le suivi des parents : le carnet de liaison, sans compte, sans les notes', () => {
+		expect(text(PARENT_VIEW)).toMatch(/carnet de liaison/);
+		expect(text(PARENT_VIEW)).toMatch(/sans compte/);
+		expect(text(PARENT_VIEW)).toMatch(/sans les notes/);
 		expect(text(PARENT_VIEW)).toMatch(/cahier de textes/);
 	});
 
 	it('le tuteur hors d’Europe est dit aux parents (pas de « tout reste en Europe »)', () => {
-		expect(text(PARENT_VIEW)).toMatch(/États-Unis/);
+		expect(text(PARENT_VIEW)).toMatch(/États-Unis \(Groq\)/);
 		expect(text(PARENT_VIEW)).not.toMatch(/tout reste en Europe/i);
+	});
+});
+
+// Revue de /parents point par point (chantier presentation-parents, décisions de David du
+// 2026-11-15 au 2026-11-17)
+describe('la page des parents', () => {
+	it('titre et chapô : un monde fantaisiste, une phrase sur l’enfant', () => {
+		expect(PARENT_VIEW.title).toBe('Des maths sérieuses, dans un monde fantaisiste');
+		expect(PARENT_VIEW.lede).toBe(
+			'Votre enfant s’entraîne, se trompe, comprend pourquoi, et recommence. Du CM1 à la Terminale, selon les programmes de l’Éducation nationale.'
+		);
+	});
+
+	it('quatre blocs, dans l’ordre ; plus de démonstration « La forme compte »', () => {
+		expect(PARENT_VIEW.blocks.map((b) => b.id)).toEqual(['qui', 'travail', 'suivi', 'prix']);
+		expect(PARENT_VIEW.blocks.some((b) => b.demo)).toBe(false);
+	});
+
+	it('qui est derrière : le professeur, sans ses passions', () => {
+		const qui = PARENT_VIEW.blocks.find((b) => b.id === 'qui');
+		expect(qui?.text).toBe(
+			'Chiphre est conçu par un professeur de mathématiques qui s’en sert chaque jour avec ses élèves. Agrégé de mathématiques, il est aussi ingénieur en informatique.'
+		);
+	});
+
+	it('ce que votre enfant y fait : un paragraphe, plus de cartes', () => {
+		const travail = PARENT_VIEW.blocks.find((b) => b.id === 'travail');
+		expect(travail?.items).toBeUndefined();
+		expect(travail?.text).toMatch(/^Quand il se trompe, la correction lui montre d’abord/);
+		expect(travail?.text).toMatch(/Père Ubu, le tuteur, l’aide à trouver sans lui donner/);
+	});
+
+	it('les liens : le carnet perdu, l’inscription par le parent, nous écrire', () => {
+		expect(links(PARENT_VIEW)).toEqual(
+			expect.arrayContaining([
+				'/carnet/lien-perdu',
+				'/auth/register/parent',
+				'mailto:contact@chiph.re'
+			])
+		);
+	});
+
+	it('l’inscription : avec le code de classe du professeur ; cours particuliers : nous écrire', () => {
+		const prix = PARENT_VIEW.blocks.find((b) => b.id === 'prix');
+		expect(prix?.title).toBe('L’inscrire, et combien ça coûte');
+		expect(prix?.text).toMatch(/code de classe/);
+		expect(prix?.text).toMatch(/Sans publicité\./);
+		expect(prix?.text).toMatch(/Pour des cours particuliers, écrivez-nous\./);
+	});
+
+	it('la FAQ : quatre questions, dans l’ordre', () => {
+		expect((PARENT_VIEW.faq ?? []).map((f) => f.question)).toEqual([
+			'À qui mon enfant peut-il parler ?',
+			'Le tuteur est une intelligence artificielle : que reçoit-elle ?',
+			'Que deviennent ses données ?',
+			'Les jeux ne vont-ils pas le distraire ?'
+		]);
+	});
+
+	it('des questions toutes différentes, et des liens distincts dans chaque réponse (clés du rendu)', () => {
+		const questions = (PARENT_VIEW.faq ?? []).map((f) => f.question);
+		expect(new Set(questions).size).toBe(questions.length);
+		for (const entry of PARENT_VIEW.faq ?? []) {
+			const hrefs = (entry.links ?? []).map((l) => l.href);
+			expect(new Set(hrefs).size, entry.question).toBe(hrefs.length);
+		}
+	});
+
+	it('les gidouilles ne s’achètent pas avec de l’argent réel', () => {
+		expect(text(PARENT_VIEW)).toMatch(/Les gidouilles ne s’achètent pas avec de l’argent réel\./);
+	});
+
+	it('les autres publics n’ont pas de FAQ', () => {
+		expect(STUDENT_VIEW.faq).toBeUndefined();
+		expect(TEACHER_VIEW.faq).toBeUndefined();
+	});
+});
+
+describe('faqJsonLd', () => {
+	it('une FAQPage schema.org, une question par entrée, la réponse en texte', () => {
+		const faq = PARENT_VIEW.faq ?? [];
+		const data = faqJsonLd(faq);
+		expect(data['@context']).toBe('https://schema.org');
+		expect(data['@type']).toBe('FAQPage');
+		expect(data.mainEntity).toEqual(
+			faq.map((f) => ({
+				'@type': 'Question',
+				name: f.question,
+				acceptedAnswer: { '@type': 'Answer', text: f.answer }
+			}))
+		);
 	});
 });

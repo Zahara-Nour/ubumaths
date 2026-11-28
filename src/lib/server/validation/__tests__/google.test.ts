@@ -4,7 +4,7 @@ import {
 	unshareMaterialSchema,
 	listStudentSharedMaterialsSchema,
 	materialIdParamSchema
-} from '$lib/server/validation/google';
+} from '#lib/server/validation/google.ts';
 
 describe('Google Classroom Materials Validation Schemas', () => {
 	const validUuid = '550e8400-e29b-41d4-a716-446655440000';

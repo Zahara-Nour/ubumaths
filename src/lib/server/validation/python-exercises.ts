@@ -4,7 +4,7 @@
  */
 
 import { z } from 'zod';
-import { parseTemplate } from '$lib/utils/locked-zones';
+import { parseTemplate } from '#lib/utils/locked-zones.ts';
 
 // Constants for validation bounds
 const TIMEOUT_MIN = 100;

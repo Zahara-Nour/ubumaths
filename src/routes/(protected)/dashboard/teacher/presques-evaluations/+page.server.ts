@@ -8,8 +8,8 @@
 
 import type { PageServerLoad, Actions } from './$types';
 import { fail } from '@sveltejs/kit';
-import { requireRole } from '$lib/server/middleware/auth';
-import { fetchTagNamesForResources, syncResourceTags } from '$lib/server/resource-tags';
+import { requireRole } from '#lib/server/middleware/auth.ts';
+import { fetchTagNamesForResources, syncResourceTags } from '#lib/server/resource-tags.ts';
 import {
 	uploadEvaluationMetadataSchema,
 	updateEvaluationSchema,
@@ -17,8 +17,9 @@ import {
 	parseJsonArrayField,
 	MAX_FILE_SIZE_BYTES,
 	ALLOWED_MIME_TYPE
-} from '$lib/server/validation/parody-evaluations';
-import { createServerLogger } from '$lib/utils/logger';
+} from '#lib/server/validation/parody-evaluations.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
+import { toBrowserAddress } from '#lib/utils/supabase-address.ts';
 
 const logger = createServerLogger(
 	'(protected)/dashboard/teacher/presques-evaluations/+page.server'
@@ -71,7 +72,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 		return {
 			...evaluation,
 			tags: tagsByEvaluation.get(evaluation.id) ?? [],
-			publicUrl: urlData?.publicUrl ?? null
+			publicUrl: urlData?.publicUrl ? toBrowserAddress(urlData.publicUrl) : null
 		};
 	});
 

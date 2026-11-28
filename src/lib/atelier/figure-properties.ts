@@ -15,9 +15,9 @@
  */
 
 import type { Atelier } from './atelier.svelte';
-import type { MathNode } from '$lib/mathAST/types';
-import type { GeoPoint } from '$lib/geometry-core/types/primitives';
-import { exact, isExact, type GeoValue } from '$lib/geometry-core/types/geo-value';
+import type { MathNode } from '#lib/mathAST/types.ts';
+import type { GeoPoint } from '#lib/geometry-core/types/primitives.ts';
+import { exact, isExact, type GeoValue } from '#lib/geometry-core/types/geo-value.ts';
 import {
 	geoAdd,
 	geoDiv,
@@ -27,17 +27,17 @@ import {
 	geoSqrt,
 	geoSub,
 	simplifyExact
-} from '$lib/geometry-core/compute/geo-arithmetic';
-import { geoEqual, geoIsZero } from '$lib/geometry-core/compute/compare';
-import { geoToNumber } from '$lib/geometry-core/compute/to-number';
+} from '#lib/geometry-core/compute/geo-arithmetic.ts';
+import { geoEqual, geoIsZero } from '#lib/geometry-core/compute/compare.ts';
+import { geoToNumber } from '#lib/geometry-core/compute/to-number.ts';
 import {
 	conicCoefficientNodes,
 	equationExpression,
 	expandedEquation,
 	quadraticOrImplicit
-} from '$lib/geometry-core/geometry/curve-nature';
-import { divide, equals, multiply, piConstant, variable } from '$lib/mathAST/factory';
-import { numericNode } from '$lib/mathAST/common/numeric';
+} from '#lib/geometry-core/geometry/curve-nature.ts';
+import { divide, equals, multiply, piConstant, variable } from '#lib/mathAST/factory.ts';
+import { numericNode } from '#lib/mathAST/common/numeric.ts';
 import {
 	approximatePoint,
 	approximateText,

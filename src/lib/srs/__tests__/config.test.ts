@@ -39,9 +39,9 @@ describe('Configuration Constants', () => {
 		expect(DEFAULT_MAXIMUM_INTERVAL).toBe(36500);
 	});
 
-	it('should have decay parameter of -0.5', async () => {
+	it('should have decay parameter of -w[20] (FSRS-6)', async () => {
 		const { DECAY_PARAMETER } = await import('../config');
-		expect(DECAY_PARAMETER).toBe(-0.5);
+		expect(DECAY_PARAMETER).toBe(-0.1542);
 	});
 });
 
@@ -250,7 +250,7 @@ describe('Educational Configuration', () => {
 		expect(EDUCATIONAL_CONFIG.parameters).toEqual(DEFAULT_FSRS_PARAMS);
 		expect(EDUCATIONAL_CONFIG.desiredRetention).toBe(DEFAULT_DESIRED_RETENTION);
 		expect(EDUCATIONAL_CONFIG.maximumInterval).toBe(DEFAULT_MAXIMUM_INTERVAL);
-		expect(EDUCATIONAL_CONFIG.decay).toBe(-0.5);
+		expect(EDUCATIONAL_CONFIG.decay).toBe(-0.1542);
 		expect(EDUCATIONAL_CONFIG.learningSteps).toBeDefined();
 		expect(EDUCATIONAL_CONFIG.relearningSteps).toBeDefined();
 	});

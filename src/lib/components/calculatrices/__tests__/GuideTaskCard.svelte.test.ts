@@ -5,8 +5,8 @@ import { page } from 'vitest/browser';
 import { describe, expect, it } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import GuideTaskCard from '../GuideTaskCard.svelte';
-import type { GuideEntry } from '$lib/calculatrices/guide';
-import type { CalculatorTask, TaskSequence } from '$lib/calculatrices/types';
+import type { GuideEntry } from '#lib/calculatrices/guide.ts';
+import type { CalculatorTask, TaskSequence } from '#lib/calculatrices/types.ts';
 
 const KEYS = { shift: 'shift', del: '⌫' };
 

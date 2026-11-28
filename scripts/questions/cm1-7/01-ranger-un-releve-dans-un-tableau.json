@@ -1,0 +1,475 @@
+{
+	"id": "1e1e0342-0768-4529-af21-a4650fb8bbc9",
+	"title": "Range un relevé dans un tableau",
+	"description": "Compter un relevé de 28 réponses (5 sports) et remplir les effectifs avec le total ; ou un relevé de deux caractères (filles / garçons, 3 activités) et remplir un tableau à double entrée",
+	"grades": ["CM1"],
+	"level": 4,
+	"delay": 240,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"spacesFromFourDigits": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "On a demandé aux $28$ élèves de la classe leur sport préféré.\n\nLéa : {{if:s1==1|football|{{if:s1==2|danse|{{if:s1==3|natation|{{if:s1==4|judo|basket}}}}}}}} · Tom : {{if:s2==1|football|{{if:s2==2|danse|{{if:s2==3|natation|{{if:s2==4|judo|basket}}}}}}}} · Inès : {{if:s3==1|football|{{if:s3==2|danse|{{if:s3==3|natation|{{if:s3==4|judo|basket}}}}}}}} · Noah : {{if:s4==1|football|{{if:s4==2|danse|{{if:s4==3|natation|{{if:s4==4|judo|basket}}}}}}}} · Jade : {{if:s5==1|football|{{if:s5==2|danse|{{if:s5==3|natation|{{if:s5==4|judo|basket}}}}}}}} · Adam : {{if:s6==1|football|{{if:s6==2|danse|{{if:s6==3|natation|{{if:s6==4|judo|basket}}}}}}}} · Lina : {{if:s7==1|football|{{if:s7==2|danse|{{if:s7==3|natation|{{if:s7==4|judo|basket}}}}}}}} · Hugo : {{if:s8==1|football|{{if:s8==2|danse|{{if:s8==3|natation|{{if:s8==4|judo|basket}}}}}}}} · Zoé : {{if:s9==1|football|{{if:s9==2|danse|{{if:s9==3|natation|{{if:s9==4|judo|basket}}}}}}}} · Rayan : {{if:s10==1|football|{{if:s10==2|danse|{{if:s10==3|natation|{{if:s10==4|judo|basket}}}}}}}} · Emma : {{if:s11==1|football|{{if:s11==2|danse|{{if:s11==3|natation|{{if:s11==4|judo|basket}}}}}}}} · Sacha : {{if:s12==1|football|{{if:s12==2|danse|{{if:s12==3|natation|{{if:s12==4|judo|basket}}}}}}}} · Mila : {{if:s13==1|football|{{if:s13==2|danse|{{if:s13==3|natation|{{if:s13==4|judo|basket}}}}}}}} · Nolan : {{if:s14==1|football|{{if:s14==2|danse|{{if:s14==3|natation|{{if:s14==4|judo|basket}}}}}}}} · Chloé : {{if:s15==1|football|{{if:s15==2|danse|{{if:s15==3|natation|{{if:s15==4|judo|basket}}}}}}}} · Malo : {{if:s16==1|football|{{if:s16==2|danse|{{if:s16==3|natation|{{if:s16==4|judo|basket}}}}}}}} · Louna : {{if:s17==1|football|{{if:s17==2|danse|{{if:s17==3|natation|{{if:s17==4|judo|basket}}}}}}}} · Yanis : {{if:s18==1|football|{{if:s18==2|danse|{{if:s18==3|natation|{{if:s18==4|judo|basket}}}}}}}} · Rose : {{if:s19==1|football|{{if:s19==2|danse|{{if:s19==3|natation|{{if:s19==4|judo|basket}}}}}}}} · Ilyes : {{if:s20==1|football|{{if:s20==2|danse|{{if:s20==3|natation|{{if:s20==4|judo|basket}}}}}}}} · Anna : {{if:s21==1|football|{{if:s21==2|danse|{{if:s21==3|natation|{{if:s21==4|judo|basket}}}}}}}} · Gabin : {{if:s22==1|football|{{if:s22==2|danse|{{if:s22==3|natation|{{if:s22==4|judo|basket}}}}}}}} · Alice : {{if:s23==1|football|{{if:s23==2|danse|{{if:s23==3|natation|{{if:s23==4|judo|basket}}}}}}}} · Timéo : {{if:s24==1|football|{{if:s24==2|danse|{{if:s24==3|natation|{{if:s24==4|judo|basket}}}}}}}} · Nina : {{if:s25==1|football|{{if:s25==2|danse|{{if:s25==3|natation|{{if:s25==4|judo|basket}}}}}}}} · Liam : {{if:s26==1|football|{{if:s26==2|danse|{{if:s26==3|natation|{{if:s26==4|judo|basket}}}}}}}} · Elsa : {{if:s27==1|football|{{if:s27==2|danse|{{if:s27==3|natation|{{if:s27==4|judo|basket}}}}}}}} · Axel : {{if:s28==1|football|{{if:s28==2|danse|{{if:s28==3|natation|{{if:s28==4|judo|basket}}}}}}}}\n\nCompte, puis complète le tableau.\n\n| Sport préféré | Nombre d'élèves |\n|---|---|\n| Football | $?$ |\n| Danse | $?$ |\n| Natation | $?$ |\n| Judo | $?$ |\n| Basket | $?$ |\n| **Total** | $?$ |",
+			"variables": [
+				{
+					"name": "s1",
+					"expression": "1..5"
+				},
+				{
+					"name": "s2",
+					"expression": "1..5"
+				},
+				{
+					"name": "s3",
+					"expression": "1..5"
+				},
+				{
+					"name": "s4",
+					"expression": "1..5"
+				},
+				{
+					"name": "s5",
+					"expression": "1..5"
+				},
+				{
+					"name": "s6",
+					"expression": "1..5"
+				},
+				{
+					"name": "s7",
+					"expression": "1..5"
+				},
+				{
+					"name": "s8",
+					"expression": "1..5"
+				},
+				{
+					"name": "s9",
+					"expression": "1..5"
+				},
+				{
+					"name": "s10",
+					"expression": "1..5"
+				},
+				{
+					"name": "s11",
+					"expression": "1..5"
+				},
+				{
+					"name": "s12",
+					"expression": "1..5"
+				},
+				{
+					"name": "s13",
+					"expression": "1..5"
+				},
+				{
+					"name": "s14",
+					"expression": "1..5"
+				},
+				{
+					"name": "s15",
+					"expression": "1..5"
+				},
+				{
+					"name": "s16",
+					"expression": "1..5"
+				},
+				{
+					"name": "s17",
+					"expression": "1..5"
+				},
+				{
+					"name": "s18",
+					"expression": "1..5"
+				},
+				{
+					"name": "s19",
+					"expression": "1..5"
+				},
+				{
+					"name": "s20",
+					"expression": "1..5"
+				},
+				{
+					"name": "s21",
+					"expression": "1..5"
+				},
+				{
+					"name": "s22",
+					"expression": "1..5"
+				},
+				{
+					"name": "s23",
+					"expression": "1..5"
+				},
+				{
+					"name": "s24",
+					"expression": "1..5"
+				},
+				{
+					"name": "s25",
+					"expression": "1..5"
+				},
+				{
+					"name": "s26",
+					"expression": "1..5"
+				},
+				{
+					"name": "s27",
+					"expression": "1..5"
+				},
+				{
+					"name": "s28",
+					"expression": "1..5"
+				},
+				{
+					"name": "n1",
+					"expression": "eval:(s1-2)*(s1-3)*(s1-4)*(s1-5)/(24)+(s2-2)*(s2-3)*(s2-4)*(s2-5)/(24)+(s3-2)*(s3-3)*(s3-4)*(s3-5)/(24)+(s4-2)*(s4-3)*(s4-4)*(s4-5)/(24)+(s5-2)*(s5-3)*(s5-4)*(s5-5)/(24)+(s6-2)*(s6-3)*(s6-4)*(s6-5)/(24)+(s7-2)*(s7-3)*(s7-4)*(s7-5)/(24)+(s8-2)*(s8-3)*(s8-4)*(s8-5)/(24)+(s9-2)*(s9-3)*(s9-4)*(s9-5)/(24)+(s10-2)*(s10-3)*(s10-4)*(s10-5)/(24)+(s11-2)*(s11-3)*(s11-4)*(s11-5)/(24)+(s12-2)*(s12-3)*(s12-4)*(s12-5)/(24)+(s13-2)*(s13-3)*(s13-4)*(s13-5)/(24)+(s14-2)*(s14-3)*(s14-4)*(s14-5)/(24)+(s15-2)*(s15-3)*(s15-4)*(s15-5)/(24)+(s16-2)*(s16-3)*(s16-4)*(s16-5)/(24)+(s17-2)*(s17-3)*(s17-4)*(s17-5)/(24)+(s18-2)*(s18-3)*(s18-4)*(s18-5)/(24)+(s19-2)*(s19-3)*(s19-4)*(s19-5)/(24)+(s20-2)*(s20-3)*(s20-4)*(s20-5)/(24)+(s21-2)*(s21-3)*(s21-4)*(s21-5)/(24)+(s22-2)*(s22-3)*(s22-4)*(s22-5)/(24)+(s23-2)*(s23-3)*(s23-4)*(s23-5)/(24)+(s24-2)*(s24-3)*(s24-4)*(s24-5)/(24)+(s25-2)*(s25-3)*(s25-4)*(s25-5)/(24)+(s26-2)*(s26-3)*(s26-4)*(s26-5)/(24)+(s27-2)*(s27-3)*(s27-4)*(s27-5)/(24)+(s28-2)*(s28-3)*(s28-4)*(s28-5)/(24)"
+				},
+				{
+					"name": "n2",
+					"expression": "eval:(s1-1)*(s1-3)*(s1-4)*(s1-5)/(-6)+(s2-1)*(s2-3)*(s2-4)*(s2-5)/(-6)+(s3-1)*(s3-3)*(s3-4)*(s3-5)/(-6)+(s4-1)*(s4-3)*(s4-4)*(s4-5)/(-6)+(s5-1)*(s5-3)*(s5-4)*(s5-5)/(-6)+(s6-1)*(s6-3)*(s6-4)*(s6-5)/(-6)+(s7-1)*(s7-3)*(s7-4)*(s7-5)/(-6)+(s8-1)*(s8-3)*(s8-4)*(s8-5)/(-6)+(s9-1)*(s9-3)*(s9-4)*(s9-5)/(-6)+(s10-1)*(s10-3)*(s10-4)*(s10-5)/(-6)+(s11-1)*(s11-3)*(s11-4)*(s11-5)/(-6)+(s12-1)*(s12-3)*(s12-4)*(s12-5)/(-6)+(s13-1)*(s13-3)*(s13-4)*(s13-5)/(-6)+(s14-1)*(s14-3)*(s14-4)*(s14-5)/(-6)+(s15-1)*(s15-3)*(s15-4)*(s15-5)/(-6)+(s16-1)*(s16-3)*(s16-4)*(s16-5)/(-6)+(s17-1)*(s17-3)*(s17-4)*(s17-5)/(-6)+(s18-1)*(s18-3)*(s18-4)*(s18-5)/(-6)+(s19-1)*(s19-3)*(s19-4)*(s19-5)/(-6)+(s20-1)*(s20-3)*(s20-4)*(s20-5)/(-6)+(s21-1)*(s21-3)*(s21-4)*(s21-5)/(-6)+(s22-1)*(s22-3)*(s22-4)*(s22-5)/(-6)+(s23-1)*(s23-3)*(s23-4)*(s23-5)/(-6)+(s24-1)*(s24-3)*(s24-4)*(s24-5)/(-6)+(s25-1)*(s25-3)*(s25-4)*(s25-5)/(-6)+(s26-1)*(s26-3)*(s26-4)*(s26-5)/(-6)+(s27-1)*(s27-3)*(s27-4)*(s27-5)/(-6)+(s28-1)*(s28-3)*(s28-4)*(s28-5)/(-6)"
+				},
+				{
+					"name": "n3",
+					"expression": "eval:(s1-1)*(s1-2)*(s1-4)*(s1-5)/(4)+(s2-1)*(s2-2)*(s2-4)*(s2-5)/(4)+(s3-1)*(s3-2)*(s3-4)*(s3-5)/(4)+(s4-1)*(s4-2)*(s4-4)*(s4-5)/(4)+(s5-1)*(s5-2)*(s5-4)*(s5-5)/(4)+(s6-1)*(s6-2)*(s6-4)*(s6-5)/(4)+(s7-1)*(s7-2)*(s7-4)*(s7-5)/(4)+(s8-1)*(s8-2)*(s8-4)*(s8-5)/(4)+(s9-1)*(s9-2)*(s9-4)*(s9-5)/(4)+(s10-1)*(s10-2)*(s10-4)*(s10-5)/(4)+(s11-1)*(s11-2)*(s11-4)*(s11-5)/(4)+(s12-1)*(s12-2)*(s12-4)*(s12-5)/(4)+(s13-1)*(s13-2)*(s13-4)*(s13-5)/(4)+(s14-1)*(s14-2)*(s14-4)*(s14-5)/(4)+(s15-1)*(s15-2)*(s15-4)*(s15-5)/(4)+(s16-1)*(s16-2)*(s16-4)*(s16-5)/(4)+(s17-1)*(s17-2)*(s17-4)*(s17-5)/(4)+(s18-1)*(s18-2)*(s18-4)*(s18-5)/(4)+(s19-1)*(s19-2)*(s19-4)*(s19-5)/(4)+(s20-1)*(s20-2)*(s20-4)*(s20-5)/(4)+(s21-1)*(s21-2)*(s21-4)*(s21-5)/(4)+(s22-1)*(s22-2)*(s22-4)*(s22-5)/(4)+(s23-1)*(s23-2)*(s23-4)*(s23-5)/(4)+(s24-1)*(s24-2)*(s24-4)*(s24-5)/(4)+(s25-1)*(s25-2)*(s25-4)*(s25-5)/(4)+(s26-1)*(s26-2)*(s26-4)*(s26-5)/(4)+(s27-1)*(s27-2)*(s27-4)*(s27-5)/(4)+(s28-1)*(s28-2)*(s28-4)*(s28-5)/(4)"
+				},
+				{
+					"name": "n4",
+					"expression": "eval:(s1-1)*(s1-2)*(s1-3)*(s1-5)/(-6)+(s2-1)*(s2-2)*(s2-3)*(s2-5)/(-6)+(s3-1)*(s3-2)*(s3-3)*(s3-5)/(-6)+(s4-1)*(s4-2)*(s4-3)*(s4-5)/(-6)+(s5-1)*(s5-2)*(s5-3)*(s5-5)/(-6)+(s6-1)*(s6-2)*(s6-3)*(s6-5)/(-6)+(s7-1)*(s7-2)*(s7-3)*(s7-5)/(-6)+(s8-1)*(s8-2)*(s8-3)*(s8-5)/(-6)+(s9-1)*(s9-2)*(s9-3)*(s9-5)/(-6)+(s10-1)*(s10-2)*(s10-3)*(s10-5)/(-6)+(s11-1)*(s11-2)*(s11-3)*(s11-5)/(-6)+(s12-1)*(s12-2)*(s12-3)*(s12-5)/(-6)+(s13-1)*(s13-2)*(s13-3)*(s13-5)/(-6)+(s14-1)*(s14-2)*(s14-3)*(s14-5)/(-6)+(s15-1)*(s15-2)*(s15-3)*(s15-5)/(-6)+(s16-1)*(s16-2)*(s16-3)*(s16-5)/(-6)+(s17-1)*(s17-2)*(s17-3)*(s17-5)/(-6)+(s18-1)*(s18-2)*(s18-3)*(s18-5)/(-6)+(s19-1)*(s19-2)*(s19-3)*(s19-5)/(-6)+(s20-1)*(s20-2)*(s20-3)*(s20-5)/(-6)+(s21-1)*(s21-2)*(s21-3)*(s21-5)/(-6)+(s22-1)*(s22-2)*(s22-3)*(s22-5)/(-6)+(s23-1)*(s23-2)*(s23-3)*(s23-5)/(-6)+(s24-1)*(s24-2)*(s24-3)*(s24-5)/(-6)+(s25-1)*(s25-2)*(s25-3)*(s25-5)/(-6)+(s26-1)*(s26-2)*(s26-3)*(s26-5)/(-6)+(s27-1)*(s27-2)*(s27-3)*(s27-5)/(-6)+(s28-1)*(s28-2)*(s28-3)*(s28-5)/(-6)"
+				},
+				{
+					"name": "n5",
+					"expression": "eval:(s1-1)*(s1-2)*(s1-3)*(s1-4)/(24)+(s2-1)*(s2-2)*(s2-3)*(s2-4)/(24)+(s3-1)*(s3-2)*(s3-3)*(s3-4)/(24)+(s4-1)*(s4-2)*(s4-3)*(s4-4)/(24)+(s5-1)*(s5-2)*(s5-3)*(s5-4)/(24)+(s6-1)*(s6-2)*(s6-3)*(s6-4)/(24)+(s7-1)*(s7-2)*(s7-3)*(s7-4)/(24)+(s8-1)*(s8-2)*(s8-3)*(s8-4)/(24)+(s9-1)*(s9-2)*(s9-3)*(s9-4)/(24)+(s10-1)*(s10-2)*(s10-3)*(s10-4)/(24)+(s11-1)*(s11-2)*(s11-3)*(s11-4)/(24)+(s12-1)*(s12-2)*(s12-3)*(s12-4)/(24)+(s13-1)*(s13-2)*(s13-3)*(s13-4)/(24)+(s14-1)*(s14-2)*(s14-3)*(s14-4)/(24)+(s15-1)*(s15-2)*(s15-3)*(s15-4)/(24)+(s16-1)*(s16-2)*(s16-3)*(s16-4)/(24)+(s17-1)*(s17-2)*(s17-3)*(s17-4)/(24)+(s18-1)*(s18-2)*(s18-3)*(s18-4)/(24)+(s19-1)*(s19-2)*(s19-3)*(s19-4)/(24)+(s20-1)*(s20-2)*(s20-3)*(s20-4)/(24)+(s21-1)*(s21-2)*(s21-3)*(s21-4)/(24)+(s22-1)*(s22-2)*(s22-3)*(s22-4)/(24)+(s23-1)*(s23-2)*(s23-3)*(s23-4)/(24)+(s24-1)*(s24-2)*(s24-3)*(s24-4)/(24)+(s25-1)*(s25-2)*(s25-3)*(s25-4)/(24)+(s26-1)*(s26-2)*(s26-3)*(s26-4)/(24)+(s27-1)*(s27-2)*(s27-3)*(s27-4)/(24)+(s28-1)*(s28-2)*(s28-3)*(s28-4)/(24)"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{n1}}"
+				},
+				{
+					"expectedAnswer": "{{n2}}"
+				},
+				{
+					"expectedAnswer": "{{n3}}"
+				},
+				{
+					"expectedAnswer": "{{n4}}"
+				},
+				{
+					"expectedAnswer": "{{n5}}"
+				},
+				{
+					"expectedAnswer": "28"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On compte chaque sport, en barrant les prénoms déjà comptés : football ${{n1}}$ ; danse ${{n2}}$ ; natation ${{n3}}$ ; judo ${{n4}}$ ; basket ${{n5}}$.",
+					"Le total : ${{n1}} + {{n2}} + {{n3}} + {{n4}} + {{n5}} = \\textcolor{{{color:primary.0}}}{28}$, autant que d'élèves : aucun prénom n'est oublié ni compté deux fois."
+				]
+			}
+		},
+		{
+			"statement": "Dix filles et dix garçons ont choisi une activité pour le mercredi.\n\nFilles : Léa : {{if:f1==1|danse|{{if:f1==2|football|natation}}}} · Inès : {{if:f2==1|danse|{{if:f2==2|football|natation}}}} · Jade : {{if:f3==1|danse|{{if:f3==2|football|natation}}}} · Lina : {{if:f4==1|danse|{{if:f4==2|football|natation}}}} · Zoé : {{if:f5==1|danse|{{if:f5==2|football|natation}}}} · Emma : {{if:f6==1|danse|{{if:f6==2|football|natation}}}} · Mila : {{if:f7==1|danse|{{if:f7==2|football|natation}}}} · Chloé : {{if:f8==1|danse|{{if:f8==2|football|natation}}}} · Louna : {{if:f9==1|danse|{{if:f9==2|football|natation}}}} · Rose : {{if:f10==1|danse|{{if:f10==2|football|natation}}}}\n\nGarçons : Tom : {{if:g1==1|danse|{{if:g1==2|football|natation}}}} · Noah : {{if:g2==1|danse|{{if:g2==2|football|natation}}}} · Adam : {{if:g3==1|danse|{{if:g3==2|football|natation}}}} · Hugo : {{if:g4==1|danse|{{if:g4==2|football|natation}}}} · Rayan : {{if:g5==1|danse|{{if:g5==2|football|natation}}}} · Sacha : {{if:g6==1|danse|{{if:g6==2|football|natation}}}} · Nolan : {{if:g7==1|danse|{{if:g7==2|football|natation}}}} · Malo : {{if:g8==1|danse|{{if:g8==2|football|natation}}}} · Yanis : {{if:g9==1|danse|{{if:g9==2|football|natation}}}} · Ilyes : {{if:g10==1|danse|{{if:g10==2|football|natation}}}}\n\nCompte, puis complète le tableau à double entrée.\n\n| Activité | Filles | Garçons |\n|---|---|---|\n| Danse | $?$ | $?$ |\n| Football | $?$ | $?$ |\n| Natation | $?$ | $?$ |",
+			"variables": [
+				{
+					"name": "f1",
+					"expression": "1..3"
+				},
+				{
+					"name": "f2",
+					"expression": "1..3"
+				},
+				{
+					"name": "f3",
+					"expression": "1..3"
+				},
+				{
+					"name": "f4",
+					"expression": "1..3"
+				},
+				{
+					"name": "f5",
+					"expression": "1..3"
+				},
+				{
+					"name": "f6",
+					"expression": "1..3"
+				},
+				{
+					"name": "f7",
+					"expression": "1..3"
+				},
+				{
+					"name": "f8",
+					"expression": "1..3"
+				},
+				{
+					"name": "f9",
+					"expression": "1..3"
+				},
+				{
+					"name": "f10",
+					"expression": "1..3"
+				},
+				{
+					"name": "g1",
+					"expression": "1..3"
+				},
+				{
+					"name": "g2",
+					"expression": "1..3"
+				},
+				{
+					"name": "g3",
+					"expression": "1..3"
+				},
+				{
+					"name": "g4",
+					"expression": "1..3"
+				},
+				{
+					"name": "g5",
+					"expression": "1..3"
+				},
+				{
+					"name": "g6",
+					"expression": "1..3"
+				},
+				{
+					"name": "g7",
+					"expression": "1..3"
+				},
+				{
+					"name": "g8",
+					"expression": "1..3"
+				},
+				{
+					"name": "g9",
+					"expression": "1..3"
+				},
+				{
+					"name": "g10",
+					"expression": "1..3"
+				},
+				{
+					"name": "nf1",
+					"expression": "eval:(f1-2)*(f1-3)/(2)+(f2-2)*(f2-3)/(2)+(f3-2)*(f3-3)/(2)+(f4-2)*(f4-3)/(2)+(f5-2)*(f5-3)/(2)+(f6-2)*(f6-3)/(2)+(f7-2)*(f7-3)/(2)+(f8-2)*(f8-3)/(2)+(f9-2)*(f9-3)/(2)+(f10-2)*(f10-3)/(2)"
+				},
+				{
+					"name": "nf2",
+					"expression": "eval:(f1-1)*(f1-3)/(-1)+(f2-1)*(f2-3)/(-1)+(f3-1)*(f3-3)/(-1)+(f4-1)*(f4-3)/(-1)+(f5-1)*(f5-3)/(-1)+(f6-1)*(f6-3)/(-1)+(f7-1)*(f7-3)/(-1)+(f8-1)*(f8-3)/(-1)+(f9-1)*(f9-3)/(-1)+(f10-1)*(f10-3)/(-1)"
+				},
+				{
+					"name": "nf3",
+					"expression": "eval:(f1-1)*(f1-2)/(2)+(f2-1)*(f2-2)/(2)+(f3-1)*(f3-2)/(2)+(f4-1)*(f4-2)/(2)+(f5-1)*(f5-2)/(2)+(f6-1)*(f6-2)/(2)+(f7-1)*(f7-2)/(2)+(f8-1)*(f8-2)/(2)+(f9-1)*(f9-2)/(2)+(f10-1)*(f10-2)/(2)"
+				},
+				{
+					"name": "ng1",
+					"expression": "eval:(g1-2)*(g1-3)/(2)+(g2-2)*(g2-3)/(2)+(g3-2)*(g3-3)/(2)+(g4-2)*(g4-3)/(2)+(g5-2)*(g5-3)/(2)+(g6-2)*(g6-3)/(2)+(g7-2)*(g7-3)/(2)+(g8-2)*(g8-3)/(2)+(g9-2)*(g9-3)/(2)+(g10-2)*(g10-3)/(2)"
+				},
+				{
+					"name": "ng2",
+					"expression": "eval:(g1-1)*(g1-3)/(-1)+(g2-1)*(g2-3)/(-1)+(g3-1)*(g3-3)/(-1)+(g4-1)*(g4-3)/(-1)+(g5-1)*(g5-3)/(-1)+(g6-1)*(g6-3)/(-1)+(g7-1)*(g7-3)/(-1)+(g8-1)*(g8-3)/(-1)+(g9-1)*(g9-3)/(-1)+(g10-1)*(g10-3)/(-1)"
+				},
+				{
+					"name": "ng3",
+					"expression": "eval:(g1-1)*(g1-2)/(2)+(g2-1)*(g2-2)/(2)+(g3-1)*(g3-2)/(2)+(g4-1)*(g4-2)/(2)+(g5-1)*(g5-2)/(2)+(g6-1)*(g6-2)/(2)+(g7-1)*(g7-2)/(2)+(g8-1)*(g8-2)/(2)+(g9-1)*(g9-2)/(2)+(g10-1)*(g10-2)/(2)"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{nf1}}"
+				},
+				{
+					"expectedAnswer": "{{ng1}}"
+				},
+				{
+					"expectedAnswer": "{{nf2}}"
+				},
+				{
+					"expectedAnswer": "{{ng2}}"
+				},
+				{
+					"expectedAnswer": "{{nf3}}"
+				},
+				{
+					"expectedAnswer": "{{ng3}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Une case = une activité (la ligne) et un groupe (la colonne) : on compte les filles qui ont choisi chaque activité, puis les garçons.",
+					"Filles : danse ${{nf1}}$, football ${{nf2}}$, natation ${{nf3}}$ ; garçons : danse ${{ng1}}$, football ${{ng2}}$, natation ${{ng3}}$.",
+					"On vérifie : ${{nf1}} + {{nf2}} + {{nf3}} = 10$ filles et ${{ng1}} + {{ng2}} + {{ng3}} = 10$ garçons."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "28 réponses : 10, 7, 4, 4, 3, total 28",
+			"variationIndex": 0,
+			"variables": {
+				"s1": "1",
+				"s2": "2",
+				"s3": "1",
+				"s4": "3",
+				"s5": "5",
+				"s6": "1",
+				"s7": "2",
+				"s8": "4",
+				"s9": "1",
+				"s10": "3",
+				"s11": "2",
+				"s12": "1",
+				"s13": "5",
+				"s14": "4",
+				"s15": "2",
+				"s16": "1",
+				"s17": "3",
+				"s18": "1",
+				"s19": "2",
+				"s20": "4",
+				"s21": "1",
+				"s22": "5",
+				"s23": "2",
+				"s24": "3",
+				"s25": "1",
+				"s26": "4",
+				"s27": "2",
+				"s28": "1",
+				"n1": "10",
+				"n2": "7",
+				"n3": "4",
+				"n4": "4",
+				"n5": "3"
+			},
+			"answers": ["10", "7", "4", "4", "3", "28"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : un football oublié",
+			"variationIndex": 0,
+			"variables": {
+				"s1": "1",
+				"s2": "2",
+				"s3": "1",
+				"s4": "3",
+				"s5": "5",
+				"s6": "1",
+				"s7": "2",
+				"s8": "4",
+				"s9": "1",
+				"s10": "3",
+				"s11": "2",
+				"s12": "1",
+				"s13": "5",
+				"s14": "4",
+				"s15": "2",
+				"s16": "1",
+				"s17": "3",
+				"s18": "1",
+				"s19": "2",
+				"s20": "4",
+				"s21": "1",
+				"s22": "5",
+				"s23": "2",
+				"s24": "3",
+				"s25": "1",
+				"s26": "4",
+				"s27": "2",
+				"s28": "1",
+				"n1": "10",
+				"n2": "7",
+				"n3": "4",
+				"n4": "4",
+				"n5": "3"
+			},
+			"answers": ["9", "7", "4", "4", "3", "28"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Double entrée : 5, 2, 2, 6, 3, 2",
+			"variationIndex": 1,
+			"variables": {
+				"f1": "1",
+				"f2": "1",
+				"f3": "3",
+				"f4": "2",
+				"f5": "1",
+				"f6": "3",
+				"f7": "1",
+				"f8": "2",
+				"f9": "3",
+				"f10": "1",
+				"g1": "2",
+				"g2": "2",
+				"g3": "3",
+				"g4": "1",
+				"g5": "2",
+				"g6": "2",
+				"g7": "3",
+				"g8": "2",
+				"g9": "1",
+				"g10": "2",
+				"nf1": "5",
+				"nf2": "2",
+				"nf3": "3",
+				"ng1": "2",
+				"ng2": "6",
+				"ng3": "2"
+			},
+			"answers": ["5", "2", "2", "6", "3", "2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : filles et garçons inversés",
+			"variationIndex": 1,
+			"variables": {
+				"f1": "1",
+				"f2": "1",
+				"f3": "3",
+				"f4": "2",
+				"f5": "1",
+				"f6": "3",
+				"f7": "1",
+				"f8": "2",
+				"f9": "3",
+				"f10": "1",
+				"g1": "2",
+				"g2": "2",
+				"g3": "3",
+				"g4": "1",
+				"g5": "2",
+				"g6": "2",
+				"g7": "3",
+				"g8": "2",
+				"g9": "1",
+				"g10": "2",
+				"nf1": "5",
+				"nf2": "2",
+				"nf3": "3",
+				"ng1": "2",
+				"ng2": "6",
+				"ng3": "2"
+			},
+			"answers": ["2", "5", "6", "2", "2", "3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

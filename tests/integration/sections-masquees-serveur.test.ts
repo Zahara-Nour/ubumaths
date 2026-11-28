@@ -16,15 +16,15 @@
  */
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { Database } from '$lib/types/database';
+import type { Database } from '#lib/types/database.ts';
 import {
 	createServiceRoleClient,
 	cleanupAllTestData
 } from '../helpers/database/trigger-test-helpers';
 import { createAuthenticatedClient } from '../helpers/database/supabase-client';
 import { TestData } from '../helpers/database/test-data-factory';
-import { assignToSection, placeInSection } from '$lib/server/chapter-sections';
-import { setLinkedElementHidden } from '$lib/server/chapters-publication';
+import { assignToSection, placeInSection } from '#lib/server/chapter-sections.ts';
+import { setLinkedElementHidden } from '#lib/server/chapters-publication.ts';
 
 /** Sans le schéma généré pour les insertions de décor. */
 const service = createServiceRoleClient() as unknown as SupabaseClient;

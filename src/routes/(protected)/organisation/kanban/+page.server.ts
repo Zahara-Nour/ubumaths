@@ -13,10 +13,10 @@
  */
 
 import type { PageServerLoad } from './$types';
-import { requireAuth } from '$lib/server/middleware/auth';
-import { getAccessibleBoards } from '$lib/server/kanban';
-import type { KanbanBoardWithCounts } from '$lib/types/database-helpers';
-import { createServerLogger } from '$lib/utils/logger';
+import { requireAuth } from '#lib/server/middleware/auth.ts';
+import { getAccessibleBoards } from '#lib/server/kanban.ts';
+import type { KanbanBoardWithCounts } from '#lib/types/database-helpers.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('(protected)/organisation/kanban/+page.server');
 

@@ -21,29 +21,33 @@ import Superscript from '@tiptap/extension-superscript';
 import TaskList from '@tiptap/extension-task-list';
 import TaskItem from '@tiptap/extension-task-item';
 import { TableRow } from '@tiptap/extension-table';
-import { CustomTable, CustomTableHeader, CustomTableCell } from '$lib/extensions/table-extension';
-import { CustomImage } from '$lib/extensions/image-extension';
-import { CustomLink } from '$lib/extensions/link-extension';
-import { Video } from '$lib/extensions/video-extension';
-import { MathInline, MathBlock } from '$lib/extensions/math-extension';
+import {
+	CustomTable,
+	CustomTableHeader,
+	CustomTableCell
+} from '#lib/extensions/table-extension.ts';
+import { CustomImage } from '#lib/extensions/image-extension.ts';
+import { CustomLink } from '#lib/extensions/link-extension.ts';
+import { Video } from '#lib/extensions/video-extension.ts';
+import { MathInline, MathBlock } from '#lib/extensions/math-extension.ts';
 import {
 	TemplateVariable,
 	TemplateRandom,
 	TemplateEval
-} from '$lib/extensions/template-extensions';
-import { BlankField } from '$lib/extensions/blank-extension';
-import { Hashtag } from '$lib/extensions/hashtag-extension';
-import { ResourceLink } from '$lib/extensions/resource-link-extension';
-import { Mention } from '$lib/extensions/mention-extension';
+} from '#lib/extensions/template-extensions.ts';
+import { BlankField } from '#lib/extensions/blank-extension.ts';
+import { Hashtag } from '#lib/extensions/hashtag-extension.ts';
+import { ResourceLink } from '#lib/extensions/resource-link-extension.ts';
+import { Mention } from '#lib/extensions/mention-extension.ts';
 import { MarkdownPaste } from './markdown-paste-extension';
-import { CustomCode, CustomCodeBlock } from '$lib/extensions/code-extension';
-import { CustomStrike } from '$lib/extensions/strike-extension';
-import { VariationTableExtension } from '$lib/extensions/variation-table-extension';
-import { NumberLineExtension } from '$lib/extensions/number-line-extension';
-import { ProbabilityTreeExtension } from '$lib/extensions/probability-tree-extension';
-import { TrigCircleExtension } from '$lib/extensions/trig-circle-extension';
-import { CustomListItem } from '$lib/extensions/list-item-extension';
-import { ListColumns } from '$lib/extensions/list-columns-extension';
+import { CustomCode, CustomCodeBlock } from '#lib/extensions/code-extension.ts';
+import { CustomStrike } from '#lib/extensions/strike-extension.ts';
+import { VariationTableExtension } from '#lib/extensions/variation-table-extension.ts';
+import { NumberLineExtension } from '#lib/extensions/number-line-extension.ts';
+import { ProbabilityTreeExtension } from '#lib/extensions/probability-tree-extension.ts';
+import { TrigCircleExtension } from '#lib/extensions/trig-circle-extension.ts';
+import { CustomListItem } from '#lib/extensions/list-item-extension.ts';
+import { ListColumns } from '#lib/extensions/list-columns-extension.ts';
 
 // Note: Underline is included in StarterKit v3
 // Link is disabled in StarterKit and replaced with CustomLink to preserve title attribute

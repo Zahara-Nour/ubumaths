@@ -11,9 +11,31 @@ import { questionTemplatesCache } from '../questionTemplates.svelte';
 const API = '/api/questions/templates/all';
 
 const NODES = [{ id: 'b1', kind: 'branch', name: 'Nombres', parent_id: null, position: 0 }];
+const POINTS = [
+	{
+		id: 'p1',
+		name: 'Utiliser la double distributivité',
+		grade: '3',
+		rubrique: 'Nombres > Calcul littéral',
+		display_order: 1,
+		node_id: 'n1'
+	},
+	{
+		id: 'p2',
+		name: 'Réduire une expression',
+		grade: '3',
+		rubrique: 'Nombres > Calcul littéral',
+		display_order: 2,
+		node_id: 'n1'
+	}
+];
+const TEMPLATE_POINTS = { m1: ['p1', 'p2'], m2: ['inconnu'] };
 
 function reponse(templates: Array<{ id: string }>, ok = true) {
-	return { ok, json: async () => ({ templates, nodes: NODES }) } as Response;
+	return {
+		ok,
+		json: async () => ({ templates, nodes: NODES, points: POINTS, templatePoints: TEMPLATE_POINTS })
+	} as Response;
 }
 
 describe('questionTemplatesCache', () => {
@@ -45,6 +67,56 @@ describe('questionTemplatesCache', () => {
 
 		questionTemplatesCache.clear();
 		expect(questionTemplatesCache.nodes).toEqual([]);
+	});
+
+	it('garde le programme reçu avec les modèles ; clear() l’oublie', async () => {
+		await questionTemplatesCache.fetchTemplates();
+		expect(questionTemplatesCache.points).toEqual(POINTS);
+		expect(questionTemplatesCache.templatePoints).toEqual(TEMPLATE_POINTS);
+
+		questionTemplatesCache.clear();
+		expect(questionTemplatesCache.points).toEqual([]);
+		expect(questionTemplatesCache.templatePoints).toEqual({});
+	});
+
+	it('intitulés des points de chaque modèle (recherche), tirés du programme ; point inconnu ignoré', async () => {
+		await questionTemplatesCache.fetchTemplates();
+
+		expect(questionTemplatesCache.pointNames).toEqual({
+			m1: ['Utiliser la double distributivité', 'Réduire une expression']
+		});
+		questionTemplatesCache.clear();
+		expect(questionTemplatesCache.pointNames).toEqual({});
+	});
+
+	it('réponse d’avant le déploiement (intitulés, sans programme) : intitulés gardés, programme vide', async () => {
+		const pointNames = { m1: ['Utiliser la double distributivité'] };
+		fetchMock.mockImplementationOnce(
+			async () =>
+				({
+					ok: true,
+					json: async () => ({ templates: [{ id: 'm1' }], nodes: NODES, pointNames })
+				}) as Response
+		);
+
+		await questionTemplatesCache.fetchTemplates();
+
+		expect(fetchMock).toHaveBeenCalledTimes(1);
+		expect(questionTemplatesCache.pointNames).toEqual(pointNames);
+		expect(questionTemplatesCache.points).toEqual([]);
+	});
+
+	it('réponse sans programme ni intitulés : aucun, sans relecture', async () => {
+		fetchMock.mockImplementationOnce(
+			async () =>
+				({ ok: true, json: async () => ({ templates: [{ id: 'm1' }], nodes: NODES }) }) as Response
+		);
+
+		await questionTemplatesCache.fetchTemplates();
+
+		expect(fetchMock).toHaveBeenCalledTimes(1);
+		expect(questionTemplatesCache.pointNames).toEqual({});
+		expect(questionTemplatesCache.points).toEqual([]);
 	});
 
 	it('réponse sans arbre (cache de Vercel d’avant le déploiement) : relue une fois en contournant le cache', async () => {
@@ -116,5 +188,18 @@ describe('questionTemplatesCache', () => {
 
 		expect(questionTemplatesCache.error).not.toBeNull();
 		expect(questionTemplatesCache.isLoaded).toBe(false);
+	});
+
+	it('le type de la liste refuse de lire les cas de test, sous leurs deux noms', async () => {
+		await questionTemplatesCache.fetchTemplates();
+		const modele = questionTemplatesCache.templates[0];
+		expect(modele).toBeDefined();
+
+		// La vraie protection est côté API (colonnes listées) ; le type empêche
+		// seulement un lecteur du cache de compter sur ces champs.
+		// @ts-expect-error — nom de l'éditeur, absent de `CatalogueTemplate`
+		void modele?.testSpecs;
+		// @ts-expect-error — nom de la colonne (lignes brutes), absent aussi
+		void modele?.test_specs;
 	});
 });

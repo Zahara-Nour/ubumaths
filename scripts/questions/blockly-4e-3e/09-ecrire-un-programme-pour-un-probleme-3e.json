@@ -1,0 +1,176 @@
+{
+	"id": "6e99d291-aa1e-4abe-8813-f8f0e8deac32",
+	"title": "Écrire un programme pour résoudre un problème (3e)",
+	"description": "Écrire en blocs un programme avec boucle conditionnelle : chiffres, moitiés, épargne.",
+	"grades": ["3"],
+	"level": 3,
+	"delay": 600,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Écris un programme qui affiche le **nombre de chiffres** du nombre choisi (un entier positif) : pour $2026$, il affiche $4$.\n\n```calcul\nniveau: 3e\nattendu: mettre x à nombre ; mettre chiffres à 1 ; répéter jusqu’à x < 10 [ mettre x à (x − reste de x par 10) ÷ 10 ; ajouter 1 à chiffres ] ; afficher chiffres\nessais: 0 ; 7 ; 10 ; 99 ; 100 ; 2026 ; 12345\n```",
+			"variables": [],
+			"conditions": [],
+			"blanks": [],
+			"correction": {
+				"steps": [
+					"Retirer le dernier chiffre d'un nombre, c'est lui retirer son chiffre des unités (le reste de sa division par $10$) puis diviser par $10$ : $2026 \\to 202$.",
+					"On compte les chiffres dans une variable qui vaut $1$ au départ, et on retire un chiffre **jusqu'à ce qu'**il n'en reste qu'un (x $< 10$).",
+					"Pour $2026$ : $2026 \\to 202 \\to 20 \\to 2$, trois chiffres retirés, plus le dernier : $4$."
+				]
+			}
+		},
+		{
+			"statement": "Écris un programme qui affiche combien de fois on peut diviser le nombre choisi (un entier positif non nul) par $2$ en obtenant à chaque fois un **nombre entier** : pour $12$, il affiche $2$ ($12 \\to 6 \\to 3$).\n\n```calcul\nniveau: 3e\nattendu: mettre x à nombre ; mettre fois à 0 ; répéter jusqu’à reste de x par 2 ≠ 0 [ mettre x à x ÷ 2 ; ajouter 1 à fois ] ; afficher fois\nessais: 1 ; 6 ; 7 ; 8 ; 12 ; 40 ; 96\n```",
+			"variables": [],
+			"conditions": [],
+			"blanks": [],
+			"correction": {
+				"steps": [
+					"On peut diviser par $2$ en restant entier tant que le nombre est **pair**.",
+					"On divise donc par $2$ **jusqu'à ce que** le nombre soit impair (reste par $2$ $\\neq 0$), en comptant les divisions.",
+					"Pour un nombre impair, la boucle ne tourne pas : le programme affiche $0$."
+				]
+			}
+		},
+		{
+			"statement": "Une tirelire contient ${{d}}$ € ; chaque mois, on y ajoute ${{m}}$ €.\n\nLe nombre choisi est un montant en euros. Écris un programme qui affiche au bout de **combien de mois** la tirelire contiendra au moins ce montant.\n\n```calcul\nniveau: 3e\nattendu: mettre tirelire à {{d}} ; mettre mois à 0 ; répéter jusqu’à tirelire ≥ nombre [ ajouter {{m}} à tirelire ; ajouter 1 à mois ] ; afficher mois\nessais: 5 ; {{d}} ; {{f}} ; 100 ; 250\n```",
+			"variables": [
+				{
+					"name": "d",
+					"expression": "10..50"
+				},
+				{
+					"name": "m",
+					"expression": "5..20"
+				},
+				{
+					"name": "f",
+					"expression": "eval:d+m"
+				}
+			],
+			"conditions": [],
+			"blanks": [],
+			"correction": {
+				"steps": [
+					"Deux variables : **tirelire** (${{d}}$ € au départ) et **mois** ($0$ au départ).",
+					"Chaque mois : ajouter ${{m}}$ à tirelire et $1$ à mois.",
+					"On répète **jusqu'à ce que** tirelire $\\geq$ nombre, puis on affiche mois."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Chiffres : référence",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": [
+				"mettre x à nombre ; mettre chiffres à 1 ; répéter jusqu’à x < 10 [ mettre x à (x − reste de x par 10) ÷ 10 ; ajouter 1 à chiffres ] ; afficher chiffres"
+			],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Chiffres : en divisant par 10 sans arrondir",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": [
+				"mettre x à nombre ; mettre chiffres à 1 ; répéter jusqu’à x < 10 [ mettre x à x ÷ 10 ; ajouter 1 à chiffres ] ; afficher chiffres"
+			],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : compteur à 0 au départ",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": [
+				"mettre x à nombre ; mettre chiffres à 0 ; répéter jusqu’à x < 10 [ mettre x à x ÷ 10 ; ajouter 1 à chiffres ] ; afficher chiffres"
+			],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Moitiés : référence",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": [
+				"mettre x à nombre ; mettre fois à 0 ; répéter jusqu’à reste de x par 2 ≠ 0 [ mettre x à x ÷ 2 ; ajouter 1 à fois ] ; afficher fois"
+			],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Moitiés : jusqu'à reste = 1",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": [
+				"mettre x à nombre ; mettre fois à 0 ; répéter jusqu’à reste de x par 2 = 1 [ mettre x à x ÷ 2 ; ajouter 1 à fois ] ; afficher fois"
+			],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : affiche x",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": [
+				"mettre x à nombre ; mettre fois à 0 ; répéter jusqu’à reste de x par 2 ≠ 0 [ mettre x à x ÷ 2 ; ajouter 1 à fois ] ; afficher x"
+			],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Épargne : référence",
+			"variationIndex": 2,
+			"variables": {
+				"d": "20",
+				"m": "15",
+				"f": "35"
+			},
+			"answers": [
+				"mettre tirelire à 20 ; mettre mois à 0 ; répéter jusqu’à tirelire ≥ nombre [ ajouter 15 à tirelire ; ajouter 1 à mois ] ; afficher mois"
+			],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : strictement plus que le montant",
+			"variationIndex": 2,
+			"variables": {
+				"d": "20",
+				"m": "15",
+				"f": "35"
+			},
+			"answers": [
+				"mettre tirelire à 20 ; mettre mois à 0 ; répéter jusqu’à tirelire > nombre [ ajouter 15 à tirelire ; ajouter 1 à mois ] ; afficher mois"
+			],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : tirelire vide au départ",
+			"variationIndex": 2,
+			"variables": {
+				"d": "20",
+				"m": "15",
+				"f": "35"
+			},
+			"answers": [
+				"mettre tirelire à 0 ; mettre mois à 0 ; répéter jusqu’à tirelire ≥ nombre [ ajouter 15 à tirelire ; ajouter 1 à mois ] ; afficher mois"
+			],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

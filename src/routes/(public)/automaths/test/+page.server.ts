@@ -1,5 +1,5 @@
 import { redirect } from '@sveltejs/kit';
-import { resolveTestLaunch } from '$lib/utils/test-launch';
+import { resolveTestLaunch } from '#lib/utils/test-launch.ts';
 import type { PageServerLoad } from './$types';
 
 /**

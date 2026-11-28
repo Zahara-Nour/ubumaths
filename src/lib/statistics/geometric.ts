@@ -6,7 +6,7 @@
  * P(X > k) = q^k, donc P(low ⩽ X ⩽ high) = q^(low − 1) − q^high : un calcul en
  * fractions (BigInt), arrondi une seule fois à l'affichage (`roundExact`).
  *
- * ⚠️ Pas d'import `$lib` dans ce module (cf. v1) : chemins relatifs.
+ * ⚠️ Pas d'import `#lib` dans ce module (cf. v1) : chemins relatifs.
  *
  * @module statistics/geometric
  */

@@ -1,24 +1,24 @@
-import '$lib/zod-locale';
-import { accountStatusHandle } from '$lib/server/accountStatusHandle';
-import { passwordChangeHandle } from '$lib/server/passwordChangeHandle';
-import { studentPresenceHandle } from '$lib/server/studentPresenceHandle';
-import { PUBLIC_SUPABASE_URL } from '$env/static/public';
-import { supabaseConnectSources, supabaseCspSource } from '$lib/server/csp';
-import { handle as supabaseHandle } from '$lib/server/supabase';
-import { maintenanceHandle } from '$lib/server/maintenance';
-import { adminElevationHandle } from '$lib/server/adminElevation';
-import { redirectHandle } from '$lib/server/redirectHandle';
-import { reservedAreasHandle } from '$lib/server/reservedAreasHandle';
+import '#lib/zod-locale.ts';
+import { accountStatusHandle } from '#lib/server/accountStatusHandle.ts';
+import { passwordChangeHandle } from '#lib/server/passwordChangeHandle.ts';
+import { studentPresenceHandle } from '#lib/server/studentPresenceHandle.ts';
+import { PUBLIC_SUPABASE_URL } from '$app/env/public';
+import { supabaseConnectSources, supabaseCspSource } from '#lib/server/csp.ts';
+import { handle as supabaseHandle } from '#lib/server/supabase.ts';
+import { maintenanceHandle } from '#lib/server/maintenance.ts';
+import { adminElevationHandle } from '#lib/server/adminElevation.ts';
+import { redirectHandle } from '#lib/server/redirectHandle.ts';
+import { reservedAreasHandle } from '#lib/server/reservedAreasHandle.ts';
 import { sequence } from '@sveltejs/kit/hooks';
-import type { Handle } from '@sveltejs/kit';
-import { logError, getUserContext } from '$lib/server/errorMonitoring';
-import { dev } from '$app/environment';
+import type { Handle } from '@sveltejs/kit/hooks';
+import { logError, getUserContext } from '#lib/server/errorMonitoring.ts';
+import { dev } from '$app/env';
 import { redirect } from '@sveltejs/kit';
-import { initEnv } from '$lib/server/env';
-import { getUserProfile } from '$lib/server/auth';
-import { mustStayPrivate, PRIVATE_NO_STORE } from '$lib/server/private-response';
-import { csrfHandle } from '$lib/server/csrfHandle';
-import { createServerLogger } from '$lib/utils/logger';
+import { initEnv } from '#lib/server/env.ts';
+import { getUserProfile } from '#lib/server/auth.ts';
+import { enforcePrivacy } from '#lib/server/private-response.ts';
+import { csrfHandle } from '#lib/server/csrfHandle.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('hooks.server');
 
@@ -379,10 +379,9 @@ const securityHeadersHandle: Handle = async ({ event, resolve }) => {
 
 	// SECURITY (finding H2) : une page d'utilisateur connecté, ou toute réponse qui
 	// pose un cookie (session rafraîchie), porte des jetons : aucun cache partagé
-	// ne doit la garder, même si la route l'a déclarée publique.
-	if (mustStayPrivate(response.headers, Boolean(event.locals.user))) {
-		response.headers.set('Cache-Control', PRIVATE_NO_STORE);
-	}
+	// ne doit la garder, même si la route l'a déclarée publique (consignes des
+	// caches de CDN comprises : `Vercel-CDN-Cache-Control` passe avant).
+	enforcePrivacy(response.headers, Boolean(event.locals.user));
 
 	return response;
 };

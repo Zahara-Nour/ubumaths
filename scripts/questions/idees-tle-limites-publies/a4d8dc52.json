@@ -1,0 +1,707 @@
+{
+	"id": "a4d8dc52-30c4-4414-b9d7-b1a0d13f6ae9",
+	"title": "Asymptote parallèle à un axe : équation à partir d'une limite",
+	"description": "Lien limite ↔ asymptote : limite finie en ±∞ → y = b ; limite infinie en a → x = a ; lecture sur f(x) = b + k/(x−a) (pièges : x et y échangés, limite de la fraction seule)",
+	"grades": ["T_SPE", "T_COMP"],
+	"level": 1,
+	"delay": 60,
+	"status": "published",
+	"shared": {
+		"cleanCoefficients": true
+	},
+	"variations": [
+		{
+			"blanks": [
+				{
+					"answerKind": "equation",
+					"expectedAnswer": "y={{b}}"
+				}
+			],
+			"statement": "Soit $f$ une fonction définie sur $\\mathbb{R}$, de courbe $\\mathcal{C}_f$, telle que $\\displaystyle\\lim_{x\\to {{s}}\\infty}f(x)={{b}}$.\n\nDonne une équation de l'asymptote à $\\mathcal{C}_f$ que l'on en déduit.\n\n$?$",
+			"variables": [
+				{
+					"name": "s",
+					"expression": "+|-"
+				},
+				{
+					"name": "b",
+					"expression": "-9..9"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Une limite **finie** ${{b}}$ en ${{s}}\\infty$ donne une asymptote **horizontale** en ${{s}}\\infty$.",
+					"Son équation est $\\textcolor{{{color:primary.0}}}{y={{b}}}$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"answerKind": "equation",
+					"expectedAnswer": "x={{a}}"
+				}
+			],
+			"statement": "Soit $f$ une fonction définie sur $\\left]{{a}}\\,;+\\infty\\right[$, de courbe $\\mathcal{C}_f$, telle que $\\displaystyle\\lim_{x\\to {{a}}}f(x)={{s}}\\infty$.\n\nDonne une équation de l'asymptote à $\\mathcal{C}_f$ que l'on en déduit.\n\n$?$",
+			"variables": [
+				{
+					"name": "s",
+					"expression": "+|-"
+				},
+				{
+					"name": "a",
+					"expression": "-9..9"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Une limite **infinie** en un réel ${{a}}$ donne une asymptote **verticale**.",
+					"Son équation est $\\textcolor{{{color:primary.0}}}{x={{a}}}$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"answerKind": "equation",
+					"expectedAnswer": "y={{b}}"
+				}
+			],
+			"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}\\setminus\\left\\{ {{a}} \\right\\}$ par $f(x)={{b}}+\\dfrac{ {{k}} }{x{{eval:-a;+}}}$, de courbe $\\mathcal{C}_f$.\n\nDonne une équation de l'asymptote **horizontale** à $\\mathcal{C}_f$ en $+\\infty$.\n\n$?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "-6..6"
+				},
+				{
+					"name": "b",
+					"expression": "-6..6"
+				},
+				{
+					"name": "k",
+					"expression": "1..9"
+				}
+			],
+			"conditions": ["a != 0", "b != 0", "a != b"],
+			"correction": {
+				"steps": [
+					"$\\displaystyle\\lim_{x\\to+\\infty}\\dfrac{ {{k}} }{x{{eval:-a;+}}}=0$, donc $\\displaystyle\\lim_{x\\to+\\infty}f(x)={{b}}$.",
+					"L'asymptote horizontale a pour équation $\\textcolor{{{color:primary.0}}}{y={{b}}}$ (et $x={{a}}$ est l'asymptote verticale)."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"answerKind": "equation",
+					"expectedAnswer": "x={{a}}"
+				}
+			],
+			"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}\\setminus\\left\\{ {{a}} \\right\\}$ par $f(x)={{b}}+\\dfrac{ {{k}} }{x{{eval:-a;+}}}$, de courbe $\\mathcal{C}_f$.\n\nDonne une équation de l'asymptote **verticale** à $\\mathcal{C}_f$.\n\n$?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "-6..6"
+				},
+				{
+					"name": "b",
+					"expression": "-6..6"
+				},
+				{
+					"name": "k",
+					"expression": "1..9"
+				}
+			],
+			"conditions": ["a != 0", "b != 0", "a != b"],
+			"correction": {
+				"steps": [
+					"Le dénominateur s'annule en ${{a}}$ et le numérateur ${{k}}$ ne s'annule pas : $f$ a une limite infinie en ${{a}}$ (à gauche et à droite).",
+					"L'asymptote verticale a pour équation $\\textcolor{{{color:primary.0}}}{x={{a}}}$ (et $y={{b}}$ est l'asymptote horizontale)."
+				]
+			}
+		},
+		{
+			"statement": "Voici le tableau de variations d'une fonction $f$ définie sur $\\mathbb{R}$, de courbe $\\mathcal{C}_f$.\n\n```variation\nvariable: x\ndomain: -inf, {{c}}, +inf\n\nvariation: f(x)\n  -inf: {{if:sg>0|-inf|{{b}}}}, bottom\n  {{c}}: {{eval:b+h}}, top\n  +inf: {{if:sg>0|{{b}}|-inf}}, bottom\n```\n\nDonne une équation de l'asymptote à $\\mathcal{C}_f$ que l'on peut lire dans ce tableau.\n\n$?$",
+			"variables": [
+				{
+					"name": "b",
+					"expression": "-5..5"
+				},
+				{
+					"name": "c",
+					"expression": "-4..4"
+				},
+				{
+					"name": "h",
+					"expression": "1..4"
+				},
+				{
+					"name": "sg",
+					"expression": "1|-1"
+				}
+			],
+			"conditions": ["c != b"],
+			"blanks": [
+				{
+					"expectedAnswer": "y={{b}}",
+					"answerKind": "equation",
+					"expectedErrors": [
+						{
+							"answer": "x={{b}}",
+							"message": "Une limite finie en ${{if:sg>0|+|-}}\\infty$ donne une asymptote horizontale : son équation commence par $y =$.",
+							"label": "x et y échangés"
+						},
+						{
+							"answer": "y={{eval:b+h}}",
+							"message": "Tu as lu le maximum de $f$ : l'asymptote vient de la limite écrite au bout du tableau.",
+							"label": "Maximum lu"
+						},
+						{
+							"answer": "x={{c}}",
+							"message": "Tu as donné l'abscisse du maximum : l'asymptote vient de la limite écrite au bout du tableau.",
+							"label": "Abscisse du maximum"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le tableau donne $\\displaystyle\\lim_{x\\to{{if:sg>0|+|-}}\\infty}f(x)={{b}}$ : une limite **finie** en ${{if:sg>0|+|-}}\\infty$.",
+					"La droite d'équation $\\textcolor{{{color:primary.0}}}{y={{b}}}$ est asymptote horizontale à $\\mathcal{C}_f$ en ${{if:sg>0|+|-}}\\infty$."
+				]
+			},
+			"hint": "Cherche dans le tableau une limite finie en $+\\infty$ ou en $-\\infty$, ou une limite infinie en un réel."
+		},
+		{
+			"statement": "Voici le tableau de variations d'une fonction $f$ définie sur $\\left]{{a}}\\,;+\\infty\\right[$, de courbe $\\mathcal{C}_f$.\n\n```variation\nvariable: x\ndomain: {{a}}, {{eval:a+h}}, +inf\n\nvariation: f(x)\n  {{a}}: ||, right, {{if:sg>0|+inf, top|-inf, bottom}}\n  {{eval:a+h}}: {{N}}, {{if:sg>0|bottom|top}}\n  +inf: {{if:sg>0|+inf, top|-inf, bottom}}\n```\n\nDonne une équation de l'asymptote à $\\mathcal{C}_f$ que l'on peut lire dans ce tableau.\n\n$?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "-5..5"
+				},
+				{
+					"name": "h",
+					"expression": "1..3"
+				},
+				{
+					"name": "N",
+					"expression": "-5..5"
+				},
+				{
+					"name": "sg",
+					"expression": "1|-1"
+				}
+			],
+			"conditions": ["N != a", "N != a+h"],
+			"blanks": [
+				{
+					"expectedAnswer": "x={{a}}",
+					"answerKind": "equation",
+					"expectedErrors": [
+						{
+							"answer": "y={{a}}",
+							"message": "Une limite infinie en ${{a}}$ donne une asymptote verticale : son équation commence par $x =$.",
+							"label": "x et y échangés"
+						},
+						{
+							"answer": "x={{eval:a+h}}",
+							"message": "Tu as donné l'abscisse {{if:sg>0|du minimum|du maximum}} : l'asymptote vient de la limite infinie en ${{a}}$, sous la double barre.",
+							"label": "Abscisse de l'extremum"
+						},
+						{
+							"answer": "y={{N}}",
+							"message": "Tu as lu {{if:sg>0|le minimum|le maximum}} de $f$ : l'asymptote vient de la limite infinie en ${{a}}$, sous la double barre.",
+							"label": "Extremum lu"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le tableau donne $\\displaystyle\\lim_{x\\to {{a}}}f(x)={{if:sg>0|+|-}}\\infty$ (à droite de ${{a}}$) : une limite **infinie** en un réel.",
+					"La droite d'équation $\\textcolor{{{color:primary.0}}}{x={{a}}}$ est asymptote verticale à $\\mathcal{C}_f$. En $+\\infty$, la limite est infinie : pas d'asymptote horizontale."
+				]
+			},
+			"hint": "Cherche dans le tableau une limite finie en $+\\infty$ ou en $-\\infty$, ou une limite infinie en un réel."
+		},
+		{
+			"statement": "Soit $f$ une fonction, de courbe $\\mathcal{C}_f$, telle que $\\displaystyle\\lim_{x\\to{{if:t<2|{{s}}\\infty|{{a}}}}}f(x)={{if:t==1|{{s2}}\\infty|{{if:t==2|{{s2}}\\infty|{{b}}}}}}$.\n\nQue peut-on en déduire ?\n\n```choix\n- $\\mathcal{C}_f$ admet l'asymptote horizontale d'équation $y={{b}}$.\n- $\\mathcal{C}_f$ admet l'asymptote verticale d'équation $x={{b}}$.\n- $\\mathcal{C}_f$ admet l'asymptote verticale d'équation $x={{a}}$.\n- Cette limite ne donne pas d'asymptote parallèle à un axe.\n```",
+			"variables": [
+				{
+					"name": "t",
+					"expression": "0..3"
+				},
+				{
+					"name": "a",
+					"expression": "-6..6"
+				},
+				{
+					"name": "b",
+					"expression": "-6..6"
+				},
+				{
+					"name": "s",
+					"expression": "+|-"
+				},
+				{
+					"name": "s2",
+					"expression": "+|-"
+				}
+			],
+			"conditions": ["a != b", "a != 0", "b != 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:t==0|0|{{if:t==2|2|3}}}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Une asymptote **horizontale** vient d'une limite **finie** en $+\\infty$ ou en $-\\infty$ ; une asymptote **verticale**, d'une limite **infinie** en un réel.",
+					"{{if:t==0|Ici, la limite est finie en ${{s}}\\infty$ : $\\textcolor{{{color:primary.0}}}{y={{b}}}$ est asymptote horizontale.|{{if:t==2|Ici, la limite est infinie en ${{a}}$ : $\\textcolor{{{color:primary.0}}}{x={{a}}}$ est asymptote verticale.|{{if:t==1|Ici, la limite est infinie en ${{s}}\\infty$|Ici, la limite est finie en ${{a}}$}} : $\\textcolor{{{color:primary.0}}}{\\text{pas d'asymptote}}$ parallèle à un axe.}}}}"
+				]
+			},
+			"hint": "Une asymptote horizontale vient d'une limite finie en $+\\infty$ ou en $-\\infty$ ; une asymptote verticale, d'une limite infinie en un réel."
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["y=3"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"b": "3",
+				"s": "+"
+			},
+			"description": "v0 : lim en +∞ = 3 → y = 3",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["y-3=0"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"b": "3",
+				"s": "+"
+			},
+			"description": "v0 : y − 3 = 0 (même droite)",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["x=3"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"b": "3",
+				"s": "+"
+			},
+			"description": "v0 : x = 3 (asymptote verticale à tort)",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"b": "3",
+				"s": "+"
+			},
+			"description": "v0 : nombre seul 3",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["x=2"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "2",
+				"s": "+"
+			},
+			"description": "v1 : lim en 2 = +∞ → x = 2",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["y=2"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "2",
+				"s": "+"
+			},
+			"description": "v1 : y = 2 (horizontale à tort)",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["x=-4"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "-4",
+				"s": "-"
+			},
+			"description": "v1 : a = −4 → x = −4",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["x=4"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "-4",
+				"s": "-"
+			},
+			"description": "v1 : signe de a changé (x = 4)",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["y=2"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "1",
+				"b": "2",
+				"k": "3"
+			},
+			"description": "v2 : 2 + 3/(x−1) → y = 2",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["x=1"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "1",
+				"b": "2",
+				"k": "3"
+			},
+			"description": "v2 : verticale donnée (x = 1)",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["y=0"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "1",
+				"b": "2",
+				"k": "3"
+			},
+			"description": "v2 : y = 0 (limite de la fraction seule)",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["x=-2"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "-2",
+				"b": "-1",
+				"k": "5"
+			},
+			"description": "v3 : −1 + 5/(x+2) → x = −2",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["x=2"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "-2",
+				"b": "-1",
+				"k": "5"
+			},
+			"description": "v3 : x = 2 (racine mal lue)",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["y=-1"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "-2",
+				"b": "-1",
+				"k": "5"
+			},
+			"description": "v3 : horizontale donnée (y = −1)",
+			"variationIndex": 3
+		},
+		{
+			"description": "F4a : tableau, lim en +∞ = 2",
+			"variationIndex": 4,
+			"variables": {
+				"b": "2",
+				"c": "-1",
+				"h": "3",
+				"sg": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["y=2"]
+		},
+		{
+			"description": "F4a : y − 2 = 0",
+			"variationIndex": 4,
+			"variables": {
+				"b": "2",
+				"c": "-1",
+				"h": "3",
+				"sg": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["y-2=0"]
+		},
+		{
+			"description": "F4a : x et y échangés",
+			"variationIndex": 4,
+			"variables": {
+				"b": "2",
+				"c": "-1",
+				"h": "3",
+				"sg": "1"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Une limite finie en $+\\infty$ donne une asymptote horizontale : son équation commence par $y =$."
+			},
+			"answers": ["x=2"]
+		},
+		{
+			"description": "F4a : maximum lu",
+			"variationIndex": 4,
+			"variables": {
+				"b": "2",
+				"c": "-1",
+				"h": "3",
+				"sg": "1"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as lu le maximum de $f$ : l'asymptote vient de la limite écrite au bout du tableau."
+			},
+			"answers": ["y=5"]
+		},
+		{
+			"description": "F4a : abscisse du maximum",
+			"variationIndex": 4,
+			"variables": {
+				"b": "2",
+				"c": "-1",
+				"h": "3",
+				"sg": "1"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as donné l'abscisse du maximum : l'asymptote vient de la limite écrite au bout du tableau."
+			},
+			"answers": ["x=-1"]
+		},
+		{
+			"description": "F4a : lim en −∞ = −3",
+			"variationIndex": 4,
+			"variables": {
+				"b": "-3",
+				"c": "2",
+				"h": "1",
+				"sg": "-1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["y=-3"]
+		},
+		{
+			"description": "F4b : verticale x = 1",
+			"variationIndex": 5,
+			"variables": {
+				"a": "1",
+				"h": "2",
+				"N": "-2",
+				"sg": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["x=1"]
+		},
+		{
+			"description": "F4b : x et y échangés",
+			"variationIndex": 5,
+			"variables": {
+				"a": "1",
+				"h": "2",
+				"N": "-2",
+				"sg": "1"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Une limite infinie en $1$ donne une asymptote verticale : son équation commence par $x =$."
+			},
+			"answers": ["y=1"]
+		},
+		{
+			"description": "F4b : abscisse de l'extremum",
+			"variationIndex": 5,
+			"variables": {
+				"a": "1",
+				"h": "2",
+				"N": "-2",
+				"sg": "1"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as donné l'abscisse du minimum : l'asymptote vient de la limite infinie en $1$, sous la double barre."
+			},
+			"answers": ["x=3"]
+		},
+		{
+			"description": "F4b : extremum lu",
+			"variationIndex": 5,
+			"variables": {
+				"a": "1",
+				"h": "2",
+				"N": "-2",
+				"sg": "1"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as lu le minimum de $f$ : l'asymptote vient de la limite infinie en $1$, sous la double barre."
+			},
+			"answers": ["y=-2"]
+		},
+		{
+			"description": "F4b : vers −∞, x = −4",
+			"variationIndex": 5,
+			"variables": {
+				"a": "-4",
+				"h": "1",
+				"N": "2",
+				"sg": "-1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["x=-4"]
+		},
+		{
+			"description": "F5 : limite finie en +∞",
+			"variationIndex": 6,
+			"variables": {
+				"t": "0",
+				"a": "2",
+				"b": "-3",
+				"s": "+",
+				"s2": "+"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0"]
+		},
+		{
+			"description": "F5 : limite finie en +∞, verticale à tort",
+			"variationIndex": 6,
+			"variables": {
+				"t": "0",
+				"a": "2",
+				"b": "-3",
+				"s": "+",
+				"s2": "+"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["1"]
+		},
+		{
+			"description": "F5 : limite infinie en +∞, pas d'asymptote",
+			"variationIndex": 6,
+			"variables": {
+				"t": "1",
+				"a": "2",
+				"b": "-3",
+				"s": "+",
+				"s2": "-"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["3"]
+		},
+		{
+			"description": "F5 : limite infinie en +∞, horizontale à tort",
+			"variationIndex": 6,
+			"variables": {
+				"t": "1",
+				"a": "2",
+				"b": "-3",
+				"s": "+",
+				"s2": "-"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["0"]
+		},
+		{
+			"description": "F5 : limite infinie en a",
+			"variationIndex": 6,
+			"variables": {
+				"t": "2",
+				"a": "2",
+				"b": "-3",
+				"s": "+",
+				"s2": "+"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["2"]
+		},
+		{
+			"description": "F5 : limite finie en a, pas d'asymptote",
+			"variationIndex": 6,
+			"variables": {
+				"t": "3",
+				"a": "2",
+				"b": "-3",
+				"s": "+",
+				"s2": "+"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["3"]
+		},
+		{
+			"description": "F5 : limite finie en a, verticale à tort",
+			"variationIndex": 6,
+			"variables": {
+				"t": "3",
+				"a": "2",
+				"b": "-3",
+				"s": "+",
+				"s2": "+"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["2"]
+		}
+	]
+}

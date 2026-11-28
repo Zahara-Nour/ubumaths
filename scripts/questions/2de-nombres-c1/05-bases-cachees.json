@@ -1,0 +1,653 @@
+{
+	"id": "fa0dd978-a74e-4488-bcfd-026aef0288cc",
+	"title": "Puissances : bases cachées",
+	"description": "Écrire 8² × 4³ / 2⁵ ou 9⁴ / 27² comme une puissance de 2, 3 ou 5 en repérant 8 = 2³, 4 = 2² (pièges : exposants ajoutés sans convertir les bases, exposants additionnés au lieu de multipliés)",
+	"grades": ["2"],
+	"level": 8,
+	"delay": 90,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Écris sous la forme d'une puissance de ${{b}}$.\n\n$$\\dfrac{ {{A}}^{ {{m}} }\\times {{B}}^{ {{n}} } }{ {{b}}^{ {{r}} } }={{b}}^{?}$$",
+			"variables": [
+				{
+					"name": "b",
+					"expression": "2|3|5"
+				},
+				{
+					"name": "A",
+					"expression": "eval:(b)^3"
+				},
+				{
+					"name": "B",
+					"expression": "eval:(b)^2"
+				},
+				{
+					"name": "m",
+					"expression": "2..4"
+				},
+				{
+					"name": "n",
+					"expression": "2..4"
+				},
+				{
+					"name": "r",
+					"expression": "1..9"
+				},
+				{
+					"name": "x",
+					"expression": "eval:3*(m)"
+				},
+				{
+					"name": "y",
+					"expression": "eval:2*(n)"
+				},
+				{
+					"name": "k",
+					"expression": "eval:3*(m)+2*(n)-(r)"
+				}
+			],
+			"conditions": ["k >= 2"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{k}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:(m)+(n)-(r)}}",
+							"message": "Tu as utilisé les exposants sans écrire d'abord chaque nombre comme une puissance de la même base.",
+							"label": "Bases non converties"
+						},
+						{
+							"answer": "{{eval:(m)+(n)+5-(r)}}",
+							"message": "Pour une puissance de puissance, les exposants se multiplient, ils ne s'additionnent pas.",
+							"label": "(aᵖ)ᵐ = aᵖ⁺ᵐ"
+						},
+						{
+							"answer": "{{eval:3*(m)+2*(n)+(r)}}",
+							"message": "Diviser par une puissance, c'est soustraire son exposant, pas l'ajouter.",
+							"label": "Exposant du dénominateur ajouté"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Règles** : $a^m\\times a^n=a^{m+n}$ ; $\\dfrac{a^m}{a^n}=a^{m-n}$ ; $(a^m)^n=a^{m\\times n}$. Elles ne s'appliquent qu'à des puissances **d'un même nombre**.",
+					"On écrit chaque nombre comme une puissance de ${{b}}$ : ${{A}}=\\textcolor{{{color:primary.0}}}{{{b}}^{3}}$ et ${{B}}=\\textcolor{{{color:primary.1}}}{{{b}}^{2}}$.",
+					"$${{A}}^{ {{m}} }=\\left(\\textcolor{{{color:primary.0}}}{{{b}}^{3}}\\right)^{ {{m}} }={{b}}^{3\\times{{m}}}={{b}}^{ {{x}} }\\quad\\text{et}\\quad{{B}}^{ {{n}} }=\\left(\\textcolor{{{color:primary.1}}}{{{b}}^{2}}\\right)^{ {{n}} }={{b}}^{2\\times{{n}}}={{b}}^{ {{y}} }$$",
+					"$$\\dfrac{ {{b}}^{ {{x}} }\\times{{b}}^{ {{y}} } }{ {{b}}^{ {{r}} } }={{b}}^{ {{x}}+{{y}}-{{r}} }=\\textcolor{{{color:primary.2}}}{{{b}}^{ {{k}} }}$$"
+				]
+			},
+			"hint": "Écris ${{A}}$ et ${{B}}$ comme des puissances de ${{b}}$, puis utilise les règles sur les exposants."
+		},
+		{
+			"statement": "Écris sous la forme d'une puissance de ${{b}}$.\n\n$$\\dfrac{ {{B}}^{ {{m}} } }{ {{A}}^{ {{n}} } }={{b}}^{?}$$",
+			"variables": [
+				{
+					"name": "b",
+					"expression": "2|3|5"
+				},
+				{
+					"name": "A",
+					"expression": "eval:(b)^3"
+				},
+				{
+					"name": "B",
+					"expression": "eval:(b)^2"
+				},
+				{
+					"name": "m",
+					"expression": "2..5"
+				},
+				{
+					"name": "n",
+					"expression": "2..3"
+				},
+				{
+					"name": "x",
+					"expression": "eval:2*(m)"
+				},
+				{
+					"name": "y",
+					"expression": "eval:3*(n)"
+				},
+				{
+					"name": "k",
+					"expression": "eval:2*(m)-3*(n)"
+				}
+			],
+			"conditions": ["k != 0", "k != 1"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{k}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:3*(n)-2*(m)}}",
+							"message": "Ton signe n'est pas le bon : compare l'exposant du numérateur à celui du dénominateur.",
+							"label": "Signe de l'exposant"
+						},
+						{
+							"answer": "{{eval:(m)-(n)}}",
+							"message": "Tu as utilisé les exposants sans écrire d'abord chaque nombre comme une puissance de la même base.",
+							"label": "Bases non converties"
+						},
+						{
+							"answer": "{{eval:(m)-(n)-1}}",
+							"message": "Pour une puissance de puissance, les exposants se multiplient, ils ne s'additionnent pas.",
+							"label": "(aᵖ)ᵐ = aᵖ⁺ᵐ"
+						},
+						{
+							"answer": "{{eval:2*(m)+3*(n)}}",
+							"message": "Diviser par une puissance, c'est soustraire son exposant, pas l'ajouter.",
+							"label": "Exposant du dénominateur ajouté"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Règles** : $a^m\\times a^n=a^{m+n}$ ; $\\dfrac{a^m}{a^n}=a^{m-n}$ ; $(a^m)^n=a^{m\\times n}$. Elles ne s'appliquent qu'à des puissances **d'un même nombre**.",
+					"On écrit chaque nombre comme une puissance de ${{b}}$ : ${{B}}=\\textcolor{{{color:primary.0}}}{{{b}}^{2}}$ et ${{A}}=\\textcolor{{{color:primary.1}}}{{{b}}^{3}}$.",
+					"$${{B}}^{ {{m}} }=\\left(\\textcolor{{{color:primary.0}}}{{{b}}^{2}}\\right)^{ {{m}} }={{b}}^{ {{x}} }\\quad\\text{et}\\quad{{A}}^{ {{n}} }=\\left(\\textcolor{{{color:primary.1}}}{{{b}}^{3}}\\right)^{ {{n}} }={{b}}^{ {{y}} }$$",
+					"$$\\dfrac{ {{b}}^{ {{x}} } }{ {{b}}^{ {{y}} } }={{b}}^{ {{x}}-{{y}} }=\\textcolor{{{color:primary.2}}}{{{b}}^{ {{k}} }}$$"
+				]
+			},
+			"hint": "Écris ${{B}}$ et ${{A}}$ comme des puissances de ${{b}}$, puis utilise les règles sur les exposants."
+		},
+		{
+			"statement": "Écris sous la forme d'une seule puissance de $2$.\n\n$$2^{ {{p}} }+2^{ {{p}} }=?$$",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "12..40"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "2^{ {{eval:(p)+1}} }",
+					"expectedErrors": [
+						{
+							"answer": "2^{ {{eval:2*(p)}} }",
+							"message": "Additionner deux puissances, ce n'est ni additionner les exposants ni additionner les bases : $2^{ {{p}} }+2^{ {{p}} }$, c'est deux fois $2^{ {{p}} }$.",
+							"label": "2ᵖ + 2ᵖ = 2²ᵖ (ou 4ᵖ)"
+						},
+						{
+							"answer": "4^{ {{eval:2*(p)}} }",
+							"message": "Tu as additionné les bases et les exposants : $2^{ {{p}} }+2^{ {{p}} }$, c'est deux fois $2^{ {{p}} }$.",
+							"label": "2ᵖ + 2ᵖ = 4²ᵖ"
+						},
+						{
+							"answer": "2^{ {{p}} }",
+							"message": "Tu as gardé un seul des deux termes : la somme de deux nombres égaux vaut le double de ce nombre.",
+							"label": "Un seul terme gardé"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Règle** : $a^m\\times a^n=a^{m+n}$. Il n'y a pas de règle pour une somme de puissances, mais ici les deux termes sont égaux.",
+					"$$2^{ {{p}} }+2^{ {{p}} }=2\\times2^{ {{p}} }=\\textcolor{{{color:primary.0}}}{2^{1}}\\times2^{ {{p}} }=2^{1+{{p}}}=\\textcolor{{{color:primary.1}}}{2^{ {{eval:(p)+1}} }}$$",
+					"Attention : $2^{ {{p}} }+2^{ {{p}} }$ n'est ni $2^{ {{eval:2*(p)}} }$ ni $4^{ {{p}} }$ (ces deux nombres sont égaux, et bien plus grands)."
+				]
+			},
+			"hint": "Une somme de deux nombres égaux, c'est le double de ce nombre ; puis écris $2$ comme une puissance de $2$."
+		},
+		{
+			"statement": "En écrivant les deux nombres avec le même exposant ${{w}}$, compare ${{a}}^{ {{X}} }$ et ${{c}}^{ {{Y}} }$.\n\n$${{a}}^{ {{X}} }=?^{ {{w}} }\\qquad\\qquad {{c}}^{ {{Y}} }=?^{ {{w}} }$$\n\nLe plus grand des deux nombres est :\n\n```choix\nmelanger: non\n- ${{a}}^{ {{X}} }$\n- ${{c}}^{ {{Y}} }$\n- aucun, ils sont égaux\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "0..3"
+				},
+				{
+					"name": "a",
+					"expression": "eval:(3)*(1-min(abs((k)-(0)),1))+(2)*(1-min(abs((k)-(1)),1))+(5)*(1-min(abs((k)-(2)),1))+(2)*(1-min(abs((k)-(3)),1))"
+				},
+				{
+					"name": "p",
+					"expression": "eval:(2)*(1-min(abs((k)-(0)),1))+(3)*(1-min(abs((k)-(1)),1))+(2)*(1-min(abs((k)-(2)),1))+(7)*(1-min(abs((k)-(3)),1))"
+				},
+				{
+					"name": "c",
+					"expression": "eval:(2)*(1-min(abs((k)-(0)),1))+(3)*(1-min(abs((k)-(1)),1))+(2)*(1-min(abs((k)-(2)),1))+(5)*(1-min(abs((k)-(3)),1))"
+				},
+				{
+					"name": "q",
+					"expression": "eval:(3)*(1-min(abs((k)-(0)),1))+(2)*(1-min(abs((k)-(1)),1))+(5)*(1-min(abs((k)-(2)),1))+(3)*(1-min(abs((k)-(3)),1))"
+				},
+				{
+					"name": "w",
+					"expression": "10..30"
+				},
+				{
+					"name": "X",
+					"expression": "eval:(p)*(w)"
+				},
+				{
+					"name": "Y",
+					"expression": "eval:(q)*(w)"
+				},
+				{
+					"name": "A",
+					"expression": "eval:(a)^(p)"
+				},
+				{
+					"name": "C",
+					"expression": "eval:(c)^(q)"
+				},
+				{
+					"name": "r",
+					"expression": "eval:(0)*(1-min(abs((k)-(0)),1))+(1)*(1-min(abs((k)-(1)),1))+(1)*(1-min(abs((k)-(2)),1))+(0)*(1-min(abs((k)-(3)),1))"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{A}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:(a)*(p)}}",
+							"message": "Tu as multiplié ${{a}}$ par ${{p}}$ : $\\left({{a}}^{ {{p}} }\\right)^{ {{w}} }={{a}}^{ {{X}} }$, la nouvelle base est ${{a}}^{ {{p}} }$.",
+							"label": "a × p au lieu de aᵖ"
+						},
+						{
+							"answer": "{{p}}",
+							"message": "Tu as donné le quotient des exposants : on cherche la base, le nombre qu'on élève à la puissance ${{w}}$.",
+							"label": "Quotient des exposants"
+						},
+						{
+							"answer": "{{a}}",
+							"message": "Avec un exposant plus petit, la base doit être plus grande : ${{a}}^{ {{w}} }$ est bien plus petit que ${{a}}^{ {{X}} }$.",
+							"label": "Base inchangée"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{C}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:(c)*(q)}}",
+							"message": "Tu as multiplié ${{c}}$ par ${{q}}$ : $\\left({{c}}^{ {{q}} }\\right)^{ {{w}} }={{c}}^{ {{Y}} }$, la nouvelle base est ${{c}}^{ {{q}} }$.",
+							"label": "c × q au lieu de cᵠ"
+						},
+						{
+							"answer": "{{q}}",
+							"message": "Tu as donné le quotient des exposants : on cherche la base, le nombre qu'on élève à la puissance ${{w}}$.",
+							"label": "Quotient des exposants"
+						},
+						{
+							"answer": "{{c}}",
+							"message": "Avec un exposant plus petit, la base doit être plus grande : ${{c}}^{ {{w}} }$ est bien plus petit que ${{c}}^{ {{Y}} }$.",
+							"label": "Base inchangée"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{r}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Règle** : $(a^m)^n=a^{m\\times n}$. Deux puissances de **même exposant** (positif) sont rangées comme leurs bases.",
+					"$${{a}}^{ {{X}} }={{a}}^{ {{p}}\\times{{w}} }=\\left({{a}}^{ {{p}} }\\right)^{ {{w}} }=\\textcolor{{{color:primary.0}}}{{{A}}}^{ {{w}} }\\qquad {{c}}^{ {{Y}} }={{c}}^{ {{q}}\\times{{w}} }=\\left({{c}}^{ {{q}} }\\right)^{ {{w}} }=\\textcolor{{{color:primary.1}}}{{{C}}}^{ {{w}} }$$",
+					"{{if:r==0|${{A}}>{{C}}$, donc ${{A}}^{ {{w}} }>{{C}}^{ {{w}} }$ : le plus grand est $\\textcolor{{{color:primary.2}}}{{{a}}^{ {{X}} }}$.|${{A}}<{{C}}$, donc ${{A}}^{ {{w}} }<{{C}}^{ {{w}} }$ : le plus grand est $\\textcolor{{{color:primary.2}}}{{{c}}^{ {{Y}} }}$.}}"
+				]
+			},
+			"hint": "Écris chaque exposant comme un produit par ${{w}}$, puis utilise $(a^m)^n=a^{m\\times n}$ ; il reste à comparer les deux bases."
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "8² × 4³ / 2⁵ = 2⁷",
+			"variationIndex": 0,
+			"variables": {
+				"b": "2",
+				"m": "2",
+				"n": "3",
+				"r": "5"
+			},
+			"answers": ["7"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : bases non converties (2 + 3 − 5 = 0)",
+			"variationIndex": 0,
+			"variables": {
+				"b": "2",
+				"m": "2",
+				"n": "3",
+				"r": "5"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as utilisé les exposants sans écrire d'abord chaque nombre comme une puissance de la même base."
+			}
+		},
+		{
+			"description": "Erreur : (2³)² = 2⁵, exposants additionnés",
+			"variationIndex": 0,
+			"variables": {
+				"b": "2",
+				"m": "2",
+				"n": "3",
+				"r": "5"
+			},
+			"answers": ["5"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Pour une puissance de puissance, les exposants se multiplient, ils ne s'additionnent pas."
+			}
+		},
+		{
+			"description": "27³ × 9² / 3⁴ = 3⁹",
+			"variationIndex": 0,
+			"variables": {
+				"b": "3",
+				"m": "3",
+				"n": "2",
+				"r": "4"
+			},
+			"answers": ["9"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "25⁴ / 125² = 5²",
+			"variationIndex": 1,
+			"variables": {
+				"b": "5",
+				"m": "4",
+				"n": "2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "9² / 27³ = 3⁻⁵",
+			"variationIndex": 1,
+			"variables": {
+				"b": "3",
+				"m": "2",
+				"n": "3"
+			},
+			"answers": ["-5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : signe perdu (3⁵)",
+			"variationIndex": 1,
+			"variables": {
+				"b": "3",
+				"m": "2",
+				"n": "3"
+			},
+			"answers": ["5"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Ton signe n'est pas le bon : compare l'exposant du numérateur à celui du dénominateur."
+			}
+		},
+		{
+			"description": "Erreur : bases non converties (2 − 3 = −1)",
+			"variationIndex": 1,
+			"variables": {
+				"b": "3",
+				"m": "2",
+				"n": "3"
+			},
+			"answers": ["-1"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as utilisé les exposants sans écrire d'abord chaque nombre comme une puissance de la même base."
+			}
+		},
+		{
+			"description": "Erreur prévue : Exposant du dénominateur ajouté",
+			"variationIndex": 0,
+			"variables": {
+				"b": "2",
+				"m": "2",
+				"n": "3",
+				"r": "5"
+			},
+			"answers": ["17"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Diviser par une puissance, c'est soustraire son exposant, pas l'ajouter."
+			}
+		},
+		{
+			"description": "Erreur prévue : (aᵖ)ᵐ = aᵖ⁺ᵐ",
+			"variationIndex": 1,
+			"variables": {
+				"b": "3",
+				"m": "2",
+				"n": "3"
+			},
+			"answers": ["-2"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Pour une puissance de puissance, les exposants se multiplient, ils ne s'additionnent pas."
+			}
+		},
+		{
+			"description": "Erreur prévue : Exposant du dénominateur ajouté",
+			"variationIndex": 1,
+			"variables": {
+				"b": "3",
+				"m": "2",
+				"n": "3"
+			},
+			"answers": ["13"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Diviser par une puissance, c'est soustraire son exposant, pas l'ajouter."
+			}
+		},
+		{
+			"description": "2³⁰ + 2³⁰ = 2³¹",
+			"variationIndex": 2,
+			"variables": {
+				"p": "30"
+			},
+			"answers": ["2^{31}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Forme : 2 × 2³⁰ (pas une seule puissance)",
+			"variationIndex": 2,
+			"variables": {
+				"p": "30"
+			},
+			"answers": ["2\\times2^{30}"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		},
+		{
+			"description": "Erreur prévue : exposants additionnés (2⁶⁰)",
+			"variationIndex": 2,
+			"variables": {
+				"p": "30"
+			},
+			"answers": ["2^{60}"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Additionner deux puissances, ce n'est ni additionner les exposants ni additionner les bases : $2^{30} + 2^{30}$, c'est deux fois $2^{30}$."
+			}
+		},
+		{
+			"description": "Erreur prévue : bases additionnées (4³⁰, même valeur que 2⁶⁰)",
+			"variationIndex": 2,
+			"variables": {
+				"p": "30"
+			},
+			"answers": ["4^{30}"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Additionner deux puissances, ce n'est ni additionner les exposants ni additionner les bases : $2^{30} + 2^{30}$, c'est deux fois $2^{30}$."
+			}
+		},
+		{
+			"description": "Erreur prévue : bases et exposants additionnés (4⁶⁰)",
+			"variationIndex": 2,
+			"variables": {
+				"p": "30"
+			},
+			"answers": ["4^{60}"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as additionné les bases et les exposants : $2^{30} + 2^{30}$, c'est deux fois $2^{30}$."
+			}
+		},
+		{
+			"description": "Erreur prévue : un seul terme gardé (2³⁰)",
+			"variationIndex": 2,
+			"variables": {
+				"p": "30"
+			},
+			"answers": ["2^{30}"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as gardé un seul des deux termes : la somme de deux nombres égaux vaut le double de ce nombre."
+			}
+		},
+		{
+			"description": "3⁴⁰ = 9²⁰, 2⁶⁰ = 8²⁰ : 3⁴⁰ le plus grand",
+			"variationIndex": 3,
+			"variables": {
+				"k": "0",
+				"w": "20"
+			},
+			"answers": ["9", "8", "0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 2⁶⁰ dit le plus grand (exposant plus grand)",
+			"variationIndex": 3,
+			"variables": {
+				"k": "0",
+				"w": "20"
+			},
+			"answers": ["9", "8", "1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur prévue : 3 × 2 au lieu de 3²",
+			"variationIndex": 3,
+			"variables": {
+				"k": "0",
+				"w": "20"
+			},
+			"answers": ["6", "8", "0"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as multiplié $3$ par $2$ : $\\left(3^{ 2 }\\right)^{ 20 }=3^{ 40 }$, la nouvelle base est $3^2$."
+			}
+		},
+		{
+			"description": "Erreur prévue : quotient des exposants (2)",
+			"variationIndex": 3,
+			"variables": {
+				"k": "0",
+				"w": "20"
+			},
+			"answers": ["2", "8", "0"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as donné le quotient des exposants : on cherche la base, le nombre qu'on élève à la puissance $20$."
+			}
+		},
+		{
+			"description": "Erreur prévue : base inchangée (3)",
+			"variationIndex": 3,
+			"variables": {
+				"k": "0",
+				"w": "20"
+			},
+			"answers": ["3", "8", "0"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Avec un exposant plus petit, la base doit être plus grande : $3^{20}$ est bien plus petit que $3^{40}$."
+			}
+		},
+		{
+			"description": "Erreur prévue : 2 × 3 au lieu de 2³",
+			"variationIndex": 3,
+			"variables": {
+				"k": "0",
+				"w": "20"
+			},
+			"answers": ["9", "6", "0"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as multiplié $2$ par $3$ : $\\left(2^{ 3 }\\right)^{ 20 }=2^{ 60 }$, la nouvelle base est $2^3$."
+			}
+		},
+		{
+			"description": "Erreur prévue : quotient des exposants (3)",
+			"variationIndex": 3,
+			"variables": {
+				"k": "0",
+				"w": "20"
+			},
+			"answers": ["9", "3", "0"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as donné le quotient des exposants : on cherche la base, le nombre qu'on élève à la puissance $20$."
+			}
+		},
+		{
+			"description": "Erreur prévue : base inchangée (2)",
+			"variationIndex": 3,
+			"variables": {
+				"k": "0",
+				"w": "20"
+			},
+			"answers": ["9", "2", "0"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Avec un exposant plus petit, la base doit être plus grande : $2^{20}$ est bien plus petit que $2^{60}$."
+			}
+		},
+		{
+			"description": "5²⁰ = 25¹⁰, 2⁵⁰ = 32¹⁰ : 2⁵⁰ le plus grand",
+			"variationIndex": 3,
+			"variables": {
+				"k": "2",
+				"w": "10"
+			},
+			"answers": ["25", "32", "1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 5²⁰ dit le plus grand (base plus grande)",
+			"variationIndex": 3,
+			"variables": {
+				"k": "2",
+				"w": "10"
+			},
+			"answers": ["25", "32", "0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

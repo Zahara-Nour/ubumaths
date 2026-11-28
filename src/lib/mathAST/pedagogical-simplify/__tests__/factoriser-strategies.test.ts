@@ -24,7 +24,7 @@ import { parseLatex } from '../../parser';
 import type { SchoolLevel } from '../../common/step-renderer-base';
 import { generatePedagogicalSimplifySteps } from '../pipeline';
 import { PedagogicalSimplifyRenderer } from '../renderer';
-import { factorSteps } from '$lib/atelier/factor-steps';
+import { factorSteps } from '#lib/atelier/factor-steps.ts';
 
 type Level = Extract<SchoolLevel, 'college' | 'lycee'>;
 

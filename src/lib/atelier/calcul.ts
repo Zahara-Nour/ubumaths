@@ -13,13 +13,13 @@
 import type { Atelier, Created, Refused } from './atelier.svelte';
 import type { AtelierObject, ObjectKind } from './types';
 import { dependsOnMessage, isList, isQualitative, parametersOf } from './types';
-import type { MathNode } from '$lib/mathAST/types';
+import type { MathNode } from '#lib/mathAST/types.ts';
 import type { Provenance } from './parse';
-import { RELATION_UNDECIDABLE, WebReplEngine } from '$lib/mathAST/cli/web/web-repl-engine';
-import type { ReplExecutionResult } from '$lib/mathAST/cli/web/types';
-import { displayUnitsInLatex } from '$lib/mathAST/units/display';
-import { getVariables, substitute } from '$lib/mathAST/eval/substitute';
-import { numericNode } from '$lib/mathAST/common/numeric';
+import { RELATION_UNDECIDABLE, WebReplEngine } from '#lib/mathAST/cli/web/web-repl-engine.ts';
+import type { ReplExecutionResult } from '#lib/mathAST/cli/web/types.ts';
+import { displayUnitsInLatex } from '#lib/mathAST/units/display.ts';
+import { getVariables, substitute } from '#lib/mathAST/eval/substitute.ts';
+import { numericNode } from '#lib/mathAST/common/numeric.ts';
 import {
 	citedReciprocalInterval,
 	citesReciprocal,
@@ -85,27 +85,27 @@ import {
 	intersect,
 	isEmpty,
 	isUniversal
-} from '$lib/mathAST/domain/algebra';
-import { closedInterval, intervalSet } from '$lib/mathAST/domain/factory';
-import { expandExcludedPoints } from '$lib/mathAST/domain/validation/compare-domains';
-import { add, divide, number, opposite } from '$lib/mathAST/factory';
-import { compile } from '$lib/mathAST/eval/compile';
-import { computeDomain } from '$lib/mathAST/domain/compute';
-import { formatInterval } from '$lib/mathAST/domain/format';
-import type { Domain } from '$lib/mathAST/domain/types';
-import { parseStudentDomain } from '$lib/mathAST/domain/validation/parse-student-domain';
-import { UNREADABLE_STUDY_DOMAIN } from '$lib/mathAST/domain/study';
-import { MAX_SEQUENCE_TERMS } from '$lib/grapheur/sequence';
-import { toCustom } from '$lib/mathAST/custom-generator';
-import { simplify } from '$lib/mathAST/simplify/simplify';
-import { tidy } from '$lib/mathAST/tidy';
+} from '#lib/mathAST/domain/algebra.ts';
+import { closedInterval, intervalSet } from '#lib/mathAST/domain/factory.ts';
+import { expandExcludedPoints } from '#lib/mathAST/domain/validation/compare-domains.ts';
+import { add, divide, number, opposite } from '#lib/mathAST/factory.ts';
+import { compile } from '#lib/mathAST/eval/compile.ts';
+import { computeDomain } from '#lib/mathAST/domain/compute.ts';
+import { formatInterval } from '#lib/mathAST/domain/format.ts';
+import type { Domain } from '#lib/mathAST/domain/types.ts';
+import { parseStudentDomain } from '#lib/mathAST/domain/validation/parse-student-domain.ts';
+import { UNREADABLE_STUDY_DOMAIN } from '#lib/mathAST/domain/study.ts';
+import { MAX_SEQUENCE_TERMS } from '#lib/grapheur/sequence.ts';
+import { toCustom } from '#lib/mathAST/custom-generator.ts';
+import { simplify } from '#lib/mathAST/simplify/simplify.ts';
+import { tidy } from '#lib/mathAST/tidy/index.ts';
 import {
 	withUniformCoefficients,
 	withValueInRegister
-} from '$lib/mathAST/integration/coefficient-register';
-import { getPolynomialDegree } from '$lib/mathAST/analysis/expression-classify';
-import { findNodes, mapNode } from '$lib/mathAST/transforms';
-import { parse as parseUnit } from '$lib/mathAST/units/parser';
+} from '#lib/mathAST/integration/coefficient-register.ts';
+import { getPolynomialDegree } from '#lib/mathAST/analysis/expression-classify.ts';
+import { findNodes, mapNode } from '#lib/mathAST/transforms.ts';
+import { parse as parseUnit } from '#lib/mathAST/units/parser.ts';
 import {
 	resolveCommand,
 	suggestFor,
@@ -135,8 +135,8 @@ import {
 	pairNames,
 	withoutMeasureCalls
 } from './measures';
-import { evaluate } from '$lib/mathAST/eval';
-import { format as formatUnit } from '$lib/mathAST/units';
+import { evaluate } from '#lib/mathAST/eval/index.ts';
+import { format as formatUnit } from '#lib/mathAST/units/index.ts';
 import {
 	bareLineShortcut,
 	constructionWordIn,
@@ -166,7 +166,7 @@ import {
 	PI_IN_LETTERS,
 	PI_IN_LETTERS_MESSAGE,
 	withPiCommand
-} from '$lib/mathAST/cli/core/typed-line';
+} from '#lib/mathAST/cli/core/typed-line.ts';
 import { crossCommand } from './cross';
 import { compareCommand } from './compare';
 import { binomialCommand } from './binomial';
@@ -179,28 +179,28 @@ import {
 	uniformCommand
 } from './law-commands';
 import { filterCommand } from './filter';
-import type { StatChartScene } from '$lib/ubumark/utils/stat-chart-scene';
+import type { StatChartScene } from '#lib/ubumark/utils/stat-chart-scene.ts';
 import { solveSteps, type SolvedSteps } from './solve-steps';
 import { readNaturalQuantities, singleLetterHint, type NaturalReading } from './natural-quantities';
 import {
 	degreeSignWritten,
 	strayDegreeRefusal,
 	withDegreeUnits
-} from '$lib/mathAST/cli/core/degrees';
+} from '#lib/mathAST/cli/core/degrees.ts';
 import { radiansInLatex, radiansInText } from './angle-radians';
-import { quantityProblem } from '$lib/mathAST/cli/quantities';
+import { quantityProblem } from '#lib/mathAST/cli/quantities.ts';
 import {
 	EQUATION_UNSOLVED,
 	INEQUALITY_UNSOLVED,
 	PARAMETER_DEPENDS
-} from '$lib/mathAST/cli/commands/solve.command';
-import { VALUE_FORBIDDEN, typedValueLatex } from '$lib/mathAST/cli/commands/eval.command';
-import { isBoolean, isNumber, isOpposite, isRelation, isUnit } from '$lib/mathAST/guards';
+} from '#lib/mathAST/cli/commands/solve.command.ts';
+import { VALUE_FORBIDDEN, typedValueLatex } from '#lib/mathAST/cli/commands/eval.command.ts';
+import { isBoolean, isNumber, isOpposite, isRelation, isUnit } from '#lib/mathAST/guards.ts';
 import { deriveSteps } from './derive-steps';
 import { variationsRendering } from './variations-steps';
 import { simplifySteps } from './simplify-steps';
 import { factorSteps } from './factor-steps';
-import { writtenKeepingDomain } from '$lib/mathAST/pedagogical-simplify/keep-domain';
+import { writtenKeepingDomain } from '#lib/mathAST/pedagogical-simplify/keep-domain.ts';
 import { guardedAnswer, tidyFurther, type DomainFacts } from './domain-guard';
 import {
 	conditionsText,
@@ -219,9 +219,9 @@ import { integrateRefusalSteps, integrateSteps } from './integrate-steps';
 import { calculationSteps, evaluateSteps } from './evaluate-steps';
 import { domainLine } from './domain-steps';
 import { limitCommand } from './limit';
-import { collapseLnAbs } from '$lib/mathAST/pedagogical-integration/latex';
-import type { RenderedStep } from '$lib/mathAST/common/step-renderer-base';
-import { toLatex } from '$lib/mathAST/latex-generator';
+import { collapseLnAbs } from '#lib/mathAST/pedagogical-integration/latex.ts';
+import type { RenderedStep } from '#lib/mathAST/common/step-renderer-base.ts';
+import { toLatex } from '#lib/mathAST/latex-generator.ts';
 import {
 	DEFAULT_VARIABLE,
 	bareFunctionRefusal,
@@ -230,13 +230,13 @@ import {
 	readCommandArguments,
 	writeCommandArguments,
 	type CommandArguments
-} from '$lib/mathAST/cli/core/variable-argument';
-import { parse as parseCommandExpression } from '$lib/mathAST/cli/core/pipeline';
+} from '#lib/mathAST/cli/core/variable-argument.ts';
+import { parse as parseCommandExpression } from '#lib/mathAST/cli/core/pipeline.ts';
 import {
 	findUnknownFunctionCall,
 	unknownFunctionMessage
-} from '$lib/mathAST/parser/custom/tokenizer';
-import type { VariationTableNode } from '$lib/ubumark/types/variation-table';
+} from '#lib/mathAST/parser/custom/tokenizer.ts';
+import type { VariationTableNode } from '#lib/ubumark/types/variation-table.ts';
 import {
 	decimalCommaDeep,
 	decimalCommaInput,
@@ -251,7 +251,7 @@ import { listCitedMessage } from './list-cited';
 import { cellCitedIn, cellInCalculMessage } from './grid';
 import { functionsListing, valuesListing } from './listing';
 import { commonRows, droppedNote, noCommonRowsMessage, valuesOn } from './pairs';
-import { groupNumberText } from '$lib/mathAST/digit-grouping';
+import { groupNumberText } from '#lib/mathAST/digit-grouping.ts';
 
 // =============================================================================
 // Types
@@ -285,6 +285,12 @@ export interface Alternative {
 	readonly summary?: readonly RenderedStep[];
 	/** Une simplification qui change le domaine (tidy-conditions) : sa réponse et ses conditions. */
 	readonly domain?: DomainFacts;
+	/**
+	 * La phrase de la note que l'autre écriture rend caduque, retirée quand elle
+	 * est montrée : « On peut simplifier davantage pour x ≠ −1… » ne se lit plus
+	 * sous `x − 1, pour x ≠ −1` (E9 du chantier ecarts-verifs).
+	 */
+	readonly outdatedNote?: string;
 }
 
 /** Ce qu'une saisie a produit. */
@@ -3781,12 +3787,11 @@ function withDomainMode(result: CalcResult, mode: DomainMode, assumed: boolean):
 	// dit, dans les deux modes (tidy-conditions § 5, L1)
 	if (assumed) return result;
 	if (mode === 'keep') {
+		const further = simplifyFurtherNote(facts.conditions, facts.narrows ? facts.ast : undefined);
 		return {
 			...result,
-			note: joinedNote(
-				result.note,
-				simplifyFurtherNote(facts.conditions, facts.narrows ? facts.ast : undefined)
-			)
+			note: joinedNote(result.note, further),
+			alternative: { ...alternative, outdatedNote: further }
 		};
 	}
 	// Sans écriture mathématique de départ (« rien à factoriser »), rien à basculer
@@ -4035,7 +4040,17 @@ function alternativeWithDecimalComma(alternative: Alternative | undefined): {
 } {
 	return alternative === undefined
 		? {}
-		: { alternative: { ...alternative, latex: decimalCommaLatex(alternative.latex) } };
+		: {
+				alternative: {
+					...alternative,
+					latex: decimalCommaLatex(alternative.latex),
+					// La note passe à la virgule (`decimalCommaProse`) : la phrase à
+					// retirer aussi, sinon elle ne s'y retrouve plus (revue de E9)
+					...(alternative.outdatedNote !== undefined && {
+						outdatedNote: decimalCommaProse(alternative.outdatedNote)
+					})
+				}
+			};
 }
 
 /**

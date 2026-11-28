@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { createServerLogger } from '$lib/utils/logger';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('server/env');
 
@@ -10,6 +10,13 @@ const logger = createServerLogger('server/env');
  * This ensures the application fails fast with clear error messages
  * if critical configuration is missing or invalid.
  */
+/**
+ * Jeton du relevé des mesures de performance. Une valeur vide ou trop courte vaut
+ * « absente » (la route répond 503) au lieu de faire échouer toute la validation : une
+ * faute de saisie sur Vercel ne doit pas arrêter le site au démarrage.
+ */
+export const releveTokenEnvSchema = z.string().min(32).optional().catch(undefined);
+
 const envSchema = z
 	.object({
 		// ====================================================================
@@ -129,6 +136,10 @@ const envSchema = z
 
 		// Cron job authentication
 		CRON_SECRET: z.string().min(16, 'Cron secret must be at least 16 characters').optional(),
+
+		// Relevé des mesures de performance (GET /api/web-vitals/releve) : jeton dédié,
+		// le seul secret que reçoit le workflow GitHub `web-vitals.yml`.
+		WEB_VITALS_RELEVE_TOKEN: releveTokenEnvSchema,
 
 		// ====================================================================
 		// File Uploads Configuration
@@ -296,7 +307,7 @@ export function initEnv(): Env {
  *
  * @example
  * ```typescript
- * import { getEnv } from '$lib/server/env';
+ * import { getEnv } from '#lib/server/env.ts';
  *
  * const env = getEnv();
  * console.log(env.GROQ_API_KEY); // Type-safe, guaranteed to exist if required

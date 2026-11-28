@@ -14,9 +14,9 @@
  * @module worksheets/document/types
  */
 
-import type { ContentLocale } from '$lib/types/locale';
-import type { CapitalPairs } from '$lib/mathAST/parser/types';
-import type { AnswerFrameMode, PrintedAnswerFrames, WorksheetType } from '$lib/types/worksheets';
+import type { ContentLocale } from '#lib/types/locale.ts';
+import type { CapitalPairs } from '#lib/mathAST/parser/types.ts';
+import type { AnswerFrameMode, PrintedAnswerFrames, WorksheetType } from '#lib/types/worksheets.ts';
 
 /**
  * Ce que contient le PDF (vocabulaire de l'ADR 0028) :

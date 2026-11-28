@@ -4,7 +4,7 @@
  * Centralized styling and labels for VIP card rarity display.
  */
 
-import type { VipCardRarity } from '$lib/types/vip-card';
+import type { VipCardRarity } from '#lib/types/vip-card.ts';
 
 /**
  * Border and background colors for card containers by rarity

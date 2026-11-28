@@ -12,7 +12,7 @@
  */
 import { describe, expect, it } from 'vitest';
 import { render } from 'vitest-browser-svelte';
-import type { InstantiationWithStatus } from '$lib/types/chapter-templates';
+import type { InstantiationWithStatus } from '#lib/types/chapter-templates.ts';
 import ChapterTemplateIndicator from '../ChapterTemplateIndicator.svelte';
 
 const QUAND = '2026-09-14T05:36:02.215Z';

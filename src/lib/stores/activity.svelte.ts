@@ -14,7 +14,7 @@
  *
  * USAGE:
  * ```typescript
- * import { activityStore } from '$lib/stores/activity.svelte';
+ * import { activityStore } from '#lib/stores/activity.svelte.ts';
  *
  * // Fetch initial data on dashboard load
  * activityStore.refresh();

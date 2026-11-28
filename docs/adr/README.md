@@ -45,6 +45,15 @@ contourner en silence.
 | 0034 | [Solides : trois blocs, un nœud, une scène cavalière](0034-solides-trois-blocs-un-noeud-une-scene-cavaliere.md)                          | 2026-10-30 |
 | 0035 | [Une série enregistre des modèles, plus des catégories](0035-une-serie-enregistre-des-modeles.md)                                        | 2026-11-04 |
 | 0036 | [Le centimètre d'une figure à compléter est celui de la figure](0036-le-cm-de-la-figure.md)                                              | 2026-11-08 |
+| 0037 | [Cinq formes de série, deux boutons d'auto-évaluation](0037-cinq-formes-de-serie-deux-boutons.md)                                        | 2026-11-11 |
+| 0038 | [Le contenu d'une trace : la graine, la réponse par case, les temps](0038-contenu-d-une-trace.md)                                        | 2026-11-11 |
+| 0039 | [Les blocs tortue et calcul sont interprétés par Chiphre, jamais évalués en JavaScript](0039-blocs-interpretes-par-chiphre.md)           | 2026-11-14 |
+| 0040 | [Le carnet de liaison : un lien par parent, des courriels sur exception](0040-carnet-de-liaison-lien-par-parent.md)                      | 2026-11-16 |
+| 0041 | [Catégorie et notions d'une fiche](0041-categorie-et-notions-d-une-fiche.md)                                                             | 2026-11-19 |
+| 0042 | [Texte coloré dans la prose : `[texte]{.nom}`, les 12 noms de la palette](0042-texte-colore-dans-la-prose.md)                            | 2026-11-20 |
+| 0043 | [Noms anglais des nœuds de l'arbre](0043-noms-anglais-des-noeuds-de-l-arbre.md)                                                          | 2026-11-23 |
+| 0044 | [Versions d'un exercice : un historique, la fiche choisit la sienne](0044-versions-d-un-exercice.md)                                     | 2026-11-25 |
+| 0045 | [Figures de l'espace qui tournent : moteur maison en SVG, cavalière au repos](0045-figures-de-l-espace-qui-tournent.md)                  | 2026-11-26 |
 
 ## Écrire un ADR
 

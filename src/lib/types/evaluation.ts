@@ -7,20 +7,20 @@
  *   nombres), avec ses réglages, son statut et ses destinataires.
  */
 
-import type { SeriesItem } from '$lib/validation/series';
-import { isDeadlinePassed as isDeadlinePassedUtil } from '$lib/utils/dates';
+import type { SeriesItem } from '#lib/validation/series.ts';
+import { isDeadlinePassed as isDeadlinePassedUtil } from '#lib/utils/dates.ts';
 
 // ===========================================================================
 // FORMES, STATUTS, BORNES
 // ===========================================================================
 
-/** Forme d'une évaluation : `interactive` = Entraînement, `course` = Course aux nombres */
+/** Forme d'une évaluation : `interactive` = Contrôle blanc, `course` = Course aux nombres */
 export type EvaluationForm = 'interactive' | 'course';
 
 export const EVALUATION_FORMS: readonly EvaluationForm[] = ['interactive', 'course'];
 
 export const EVALUATION_FORM_LABELS: Record<EvaluationForm, string> = {
-	interactive: 'Entraînement',
+	interactive: 'Contrôle blanc',
 	course: 'Course aux nombres'
 };
 
@@ -161,19 +161,6 @@ export const DEFAULT_EVALUATION_SETTINGS: EvaluationSettingsInput = {
 	deadline: null,
 	shuffle_questions: true
 };
-
-// ===========================================================================
-// TENTATIVES
-// ===========================================================================
-
-/** Un élève peut-il commencer une tentative ? */
-export interface AttemptValidation {
-	can_attempt: boolean;
-	reason?: string;
-	attempts_remaining: number | null;
-	deadline_passed: boolean;
-	current_attempts: number;
-}
 
 // ===========================================================================
 // STATISTIQUES

@@ -1,9 +1,9 @@
 import { describe, it, expect, vi, beforeEach, type Mock } from 'vitest';
 import type { RequestEvent } from '@sveltejs/kit';
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { Database } from '$lib/types/database';
+import type { Database } from '#lib/types/database.ts';
 import { GET } from '../+server';
-import * as authModule from '$lib/server/middleware/auth';
+import * as authModule from '#lib/server/middleware/auth.ts';
 
 /**
  * API Endpoint Tests: GET /api/student/shared-materials
@@ -18,7 +18,7 @@ import * as authModule from '$lib/server/middleware/auth';
  */
 
 // Mock middleware
-vi.mock('$lib/server/middleware/auth', () => ({
+vi.mock('#lib/server/middleware/auth.ts', () => ({
 	requireRole: vi.fn()
 }));
 
@@ -26,7 +26,7 @@ vi.mock('$lib/server/middleware/auth', () => ({
 // short-circuits with 403 when off). Force it on here so the real pagination /
 // validation / RLS logic is exercised — the plumbing must keep working for when
 // the feature is re-enabled.
-vi.mock('$lib/config/google-classroom', () => ({
+vi.mock('#lib/config/google-classroom.ts', () => ({
 	GOOGLE_CLASSROOM_ENABLED: true
 }));
 

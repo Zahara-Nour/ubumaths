@@ -14,9 +14,9 @@
 	import type { Attachment } from 'svelte/attachments';
 	import { SvelteSet } from 'svelte/reactivity';
 	import { untrack } from 'svelte';
-	import MyCheckbox from '$lib/components/MyCheckbox.svelte';
-	import InlineMarkdown from '$lib/components/markdown/InlineMarkdown.svelte';
-	import { Button } from '$lib/components/ui/button';
+	import MyCheckbox from '#lib/components/MyCheckbox.svelte';
+	import InlineMarkdown from '#lib/components/markdown/InlineMarkdown.svelte';
+	import { Button } from '#lib/components/ui/button/index.ts';
 	import {
 		branchColor,
 		countsLabel,
@@ -28,7 +28,7 @@
 		pointHolderIds,
 		type MapBranch,
 		type MapPoint
-	} from '$lib/utils/programme-map';
+	} from '#lib/utils/programme-map.ts';
 
 	let { map }: { map: MapBranch[] } = $props();
 

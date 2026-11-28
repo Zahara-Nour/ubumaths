@@ -19,7 +19,7 @@ import { readdirSync, readFileSync, statSync } from 'node:fs';
 import { join, relative } from 'node:path';
 import { describe, it, expect } from 'vitest';
 import { checkTemplate } from '../check-template';
-import { generateInstance } from '$lib/questions/generator/instance-generator';
+import { generateInstance } from '#lib/questions/generator/instance-generator.ts';
 import { draftTemplate, parseReviewFile } from '../review-file';
 
 // Une question lourde (#626 : 42 variations, 2100 tirages) prend quelques secondes

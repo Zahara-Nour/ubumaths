@@ -18,8 +18,8 @@ import { plotRestrictionOf, intervalLabelOf } from '../interval';
 import { typedLetterOf } from '../letter';
 import { mergeInto } from '../merge';
 import { loadAtelier, saveAtelier } from '../persistence';
-import { computeNumericValueOrInfinity } from '$lib/mathAST/eval/numeric-value';
-import { substitute } from '$lib/mathAST/eval/substitute';
+import { computeNumericValueOrInfinity } from '#lib/mathAST/eval/numeric-value.ts';
+import { substitute } from '#lib/mathAST/eval/substitute.ts';
 
 // =============================================================================
 // Décor

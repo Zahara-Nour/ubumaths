@@ -1,99 +1,62 @@
 <!--
-	Teacher Dashboard Component
-	============================
+	Tableau de bord du prof
+	=======================
 
-	This component is rendered when a user with role='teacher' accesses /dashboard.
-	It displays teacher-specific information and management tools.
+	Rendu par +page.svelte quand data.profile.role === 'teacher'.
 
-	TEACHER ROLE CAPABILITIES:
-	--------------------------
-	Teachers can:
-	- Select and manage their classes via dropdown
-	- Find their current class based on schedule (auto-detection)
-	- View quick stats: total classes, students, assignments, pending reviews
-	- Create and manage classes
-	- Add students to their classes
-	- Create custom exercises for their students
-	- Create assignments from existing exercises
-	- Review student submissions
-	- Track student progress across all their classes
-	- Generate class performance reports
+	CE QU'IL AFFICHE :
+	- sélecteur de classe (choix gardé dans localStorage, selectedClass) et de période
+	- bouton « Trouver ma classe » : jour et heure courants face aux emplois du temps,
+	  jours chômés selon le `week_config` de l'école
+	- tirage au sort d'un élève (Wheel), carte VIP, actions rapides par élève
+	  (StudentQuickActionsTable), lien vers les decks de révision, dialogues de jeux
 
-	NEW FEATURES (Class Selection):
-	--------------------------------
-	1. **Class Selector Dropdown**:
-	   - Displays all teacher's classes
-	   - Selection persists to localStorage
-	   - Auto-selects first class on initial load
-	   - Shows selected class info with student count
-
-	2. **"Find Current Class" Button**:
-	   - Matches current day (Sunday-Thursday) and time against schedules
-	   - Auto-selects matching class in dropdown
-	   - Shows success toast with schedule details
-	   - Handles edge cases: weekends, no classes, no schedules
-
-	RENDERED BY:
-	------------
-	+page.svelte when data.profile.role === 'teacher'
-
-	RECEIVED DATA:
-	--------------
-	- data.profile: User's profile with { id, email, full_name, role }
-	- data.teacherClasses: Array of teacher's classes with:
-	  - Class info (id, name, description, join_code, etc.)
-	  - student_count: Number of enrolled students
-	  - schedules: Array of ClassSchedule entries
-
-	FUTURE ENHANCEMENTS:
-	--------------------
-	- Replace hardcoded stats with real database queries
-	- Show active assignments (where is_published = true)
-	- List recent submissions needing review
-	- Add quick action buttons that navigate to creation pages
-	- Display class performance analytics and charts
-	- Use selected class for filtering dashboard data
+	DONNÉES :
+	- classes : teacherCache (cache d'abord, sinon /api/teacher/classes)
+	- périodes : data.academicPeriods, sinon teacherCache / /api/teacher/periods
+	- data.profile, data.weekConfig, data.students
 -->
 
 <script lang="ts">
-	import { lore } from '$lib/config/lore';
+	import { lore } from '#lib/config/lore.ts';
 	// ============================================================================
 	// IMPORTS
 	// ============================================================================
 
 	// Types
 	import type { PageData } from './$types';
-	import type { ClassWithData } from '$lib/server/students';
-	import type { Database } from '$lib/types/database';
-	import type { Class, ClassSchedule } from '$lib/types/database-helpers';
+	import type { ClassWithData } from '#lib/server/students.ts';
+	import type { Database } from '#lib/types/database.ts';
+	import type { Class, ClassSchedule } from '#lib/types/database-helpers.ts';
 
 	type AcademicPeriod = Database['public']['Tables']['academic_periods']['Row'];
 
 	// UI Components
-	import { Button } from '$lib/components/ui/button';
-	import { Badge } from '$lib/components/ui/badge';
-	import * as Dialog from '$lib/components/ui/dialog';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
+	import * as Dialog from '#lib/components/ui/dialog/index.ts';
 	import { Calendar, Clock, Target, BookOpen, Users } from '@lucide/svelte';
-	import Wheel from '$lib/components/Wheel.svelte';
-	import StudentQuickActionsTable from '$lib/components/teacher/StudentQuickActionsTable.svelte';
-	import VipCardUseDialog from '$lib/components/teacher/VipCardUseDialog.svelte';
+	import Wheel from '#lib/components/Wheel.svelte';
+	import StudentQuickActionsTable from '#lib/components/teacher/StudentQuickActionsTable.svelte';
+	import VipCardUseDialog from '#lib/components/teacher/VipCardUseDialog.svelte';
 
 	// Stores & Utilities
-	import { toaster } from '$lib/stores/toaster.svelte';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
 	import {
 		getSelectedClassId,
 		setSelectedClass,
-		clearSelectedClass
-	} from '$lib/stores/selectedClass.svelte';
-	import { getSelectedPeriodId, setSelectedPeriod } from '$lib/stores/selectedPeriod.svelte';
+		clearSelectedClass,
+		reconcileSelectedClass
+	} from '#lib/stores/selectedClass.svelte.ts';
+	import { getSelectedPeriodId, setSelectedPeriod } from '#lib/stores/selectedPeriod.svelte.ts';
 	import {
 		findCurrentSchedule,
 		formatScheduleMatch,
 		getNoClassMessage,
 		isWeekend
-	} from '$lib/utils/timeMatching';
-	import { findCurrentPeriod, getPeriodName } from '$lib/utils/academic-period';
-	import { teacherCache } from '$lib/stores/teacherDashboardCache.svelte';
+	} from '#lib/utils/timeMatching.ts';
+	import { findCurrentPeriod, getPeriodName } from '#lib/utils/academic-period.ts';
+	import { teacherCache } from '#lib/stores/teacherDashboardCache.svelte.ts';
 
 	// ============================================================================
 	// COMPONENT STATE
@@ -188,14 +151,18 @@
 	let isLoadingStudents = $state(false);
 
 	/**
-	 * Loading state while fetching classes
+	 * Les classes ont déjà été demandées au serveur depuis l'ouverture de la page.
+	 *
+	 * Volontairement PAS un `$state`, et jamais remis à faux : `loadClasses()` est appelée par un
+	 * `$effect`, qui relance tout ce qu'il lit. Un drapeau réactif remis à faux après un échec, ou un
+	 * cache resté vide (prof sans classe), faisait repartir la demande en boucle (E83).
 	 */
-	let isLoadingClasses = $state(false);
+	let classesRequested = false;
 
 	/**
-	 * Loading state while fetching periods
+	 * Les périodes ont déjà été demandées au serveur depuis l'ouverture de la page (même règle, E83)
 	 */
-	let isLoadingPeriods = $state(false);
+	let periodsRequested = false;
 
 	// ============================================================================
 	// VIP CARD MODAL STATE
@@ -227,10 +194,10 @@
 		}
 
 		// STEP 2: Cache miss - fetch from API
-		if (isLoadingClasses) return; // Prevent duplicate requests
+		if (classesRequested) return; // Un seul essai par ouverture de la page (E83)
 
 		console.log('[TeacherDashboard] ⚠️  Cache MISS: Fetching from API...');
-		isLoadingClasses = true;
+		classesRequested = true;
 
 		try {
 			const response = await fetch('/api/teacher/classes', {
@@ -241,35 +208,31 @@
 				throw new Error(`HTTP ${response.status}: ${response.statusText}`);
 			}
 
-			const { classes: fetchedClasses } = await response.json();
+			const { classes: fetchedClasses } = (await response.json()) as { classes: ClassWithData[] };
 
 			// STEP 3: Hydrate cache
 			teacherCache.hydrateAllClasses(fetchedClasses);
 
 			console.log(`[TeacherDashboard] ✅ API SUCCESS: Loaded ${fetchedClasses.length} classes`);
-			initializeSelectedClass();
+			initializeSelectedClass(fetchedClasses.map((c) => c.id));
 		} catch (err) {
 			console.error('[TeacherDashboard] ❌ Failed to load classes:', err);
 			toaster.error(`Erreur lors du chargement des ${lore.entities.class}s`);
-		} finally {
-			isLoadingClasses = false;
 		}
 	}
 
 	/**
-	 * Initialize selectedClassId if not already set
-	 * Auto-selects first class if no selection exists
+	 * Confronte la classe retenue à la liste lue (écart L47)
+	 *
+	 * L'identifiant gardé dans localStorage peut désigner une classe supprimée ou
+	 * désactivée : il est remplacé par la première classe, ou vidé sans classe.
+	 * La copie locale suit le store, sinon le sélecteur garderait l'ancienne.
+	 *
+	 * @param classIds - Identifiants de la liste COMPLÈTE lue au serveur
 	 */
-	function initializeSelectedClass() {
-		const currentSelectedId = getSelectedClassId();
-		const classes = teacherCache.getAllClassesSync();
-
-		if (!currentSelectedId && classes.length > 0) {
-			// No class selected - auto-select first class
-			const firstClassId = classes[0].id;
-			setSelectedClass(firstClassId);
-			console.log(`[TeacherDashboard] 🎯 Auto-selected first class: ${classes[0].name}`);
-		}
+	function initializeSelectedClass(classIds: readonly string[]) {
+		reconcileSelectedClass(classIds);
+		selectedClassId = getSelectedClassId();
 	}
 
 	/**
@@ -307,10 +270,10 @@
 		}
 
 		// STEP 2: Cache miss - fetch from API
-		if (isLoadingPeriods) return; // Prevent duplicate requests
+		if (periodsRequested) return; // Un seul essai par ouverture de la page (E83)
 
 		console.log('[TeacherDashboard] ⚠️  Cache MISS: Fetching periods from API...');
-		isLoadingPeriods = true;
+		periodsRequested = true;
 
 		try {
 			const response = await fetch('/api/teacher/periods', {
@@ -331,8 +294,6 @@
 		} catch (err) {
 			console.error('[TeacherDashboard] ❌ Failed to load periods:', err);
 			toaster.error('Erreur lors du chargement des périodes');
-		} finally {
-			isLoadingPeriods = false;
 		}
 	}
 

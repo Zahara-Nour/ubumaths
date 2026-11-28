@@ -15,10 +15,10 @@
  */
 
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { Database } from '$lib/types/database';
-import { insertSystemNotification } from '$lib/server/notifications';
-import { escapeHtml } from '$lib/utils/html-escape';
-import { createServerLogger } from '$lib/utils/logger';
+import type { Database } from '#lib/types/database.ts';
+import { insertSystemNotification } from '#lib/server/notifications.ts';
+import { escapeHtml } from '#lib/utils/html-escape.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('server/marketplace/notifications');
 

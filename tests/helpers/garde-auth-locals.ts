@@ -1,5 +1,5 @@
 /**
- * Doublure de la garde commune `$lib/server/middleware/auth` pour les tests
+ * Doublure de la garde commune `#lib/server/middleware/auth.ts` pour les tests
  * unitaires d'endpoints dont les `locals` fournissent `user` (et parfois `profile`).
  *
  * Contrat de la vraie garde conservé : 401 sans session, 403 sans profil ou avec
@@ -9,12 +9,11 @@
  * ⚠️ Quand `locals.profile` est fourni, la doublure ne relit pas `profiles` : les
  * chemins « profil introuvable → 403 » et « panne de lecture → 500 » de la vraie garde
  * ne sont pas couverts par les tests qui l'utilisent. Ils le sont par les tests qui
- * passent par la vraie garde (`api/teacher/classes/__tests__/garde.test.ts`,
- * `api/messages/templates/[id]/approve/__tests__/garde.test.ts`).
+ * passent par la vraie garde (`api/teacher/classes/__tests__/garde.test.ts`).
  *
  * Usage :
- *   vi.mock('$lib/server/middleware/auth', async (importActual) =>
- *     (await import('$tests/helpers/garde-auth-locals')).gardeAuthDepuisLocals(importActual)
+ *   vi.mock('#lib/server/middleware/auth.ts', async (importActual) =>
+ *     (await import('#tests/helpers/garde-auth-locals.ts')).gardeAuthDepuisLocals(importActual)
  *   );
  */
 import { error } from '@sveltejs/kit';

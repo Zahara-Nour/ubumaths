@@ -1,0 +1,637 @@
+{
+	"id": "87140df3-ed7a-4afc-98d9-dcd4d43e65bb",
+	"title": "Déterminer la forme canonique.",
+	"description": "Graphiquement",
+	"grades": ["1_SPE"],
+	"level": 9,
+	"delay": 40,
+	"status": "published",
+	"variations": [
+		{
+			"blanks": [
+				{
+					"requiredForm": {
+						"pattern": "u*($x+v)^2+w",
+						"acceptable": "u*($x-(-v))^2+w"
+					},
+					"expectedAnswer": "{{eval:s*n/4}}(x{{eval:-u;+}})^2{{eval:v;+}}"
+				}
+			],
+			"statement": "Détermine la forme canonique du polynôme représenté par cette parabole, qui passe par le point $A$.\n\n```courbe\nx: -6 ; 6\ny: -7 ; 7\ngrille: 1 ; 1\nf(x) = {{s}}*{{n}}/4*(x-{{u}})^2+{{v}}   bleu   nom=C_f\npoints: A({{c}} ; {{d}})\ntaille: moyenne\ndescription: Parabole représentant un polynôme du second degré, tracée dans un repère pour x de −6 à 6.\n```\n\nLa forme canonique est $?$.",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "s",
+					"expression": "-1|1"
+				},
+				{
+					"name": "n",
+					"expression": "1|2"
+				},
+				{
+					"name": "u",
+					"expression": "-3..3"
+				},
+				{
+					"name": "v",
+					"expression": "-3..3"
+				},
+				{
+					"name": "t",
+					"expression": "-1|1"
+				},
+				{
+					"name": "c",
+					"expression": "eval:u+2*t"
+				},
+				{
+					"name": "d",
+					"expression": "eval:v+s*n"
+				}
+			],
+			"conditions": ["u != 0", "v != 0"],
+			"correction": {
+				"steps": [
+					"Le sommet de la parabole est $S({{u}}\\,;\\,{{v}})$ : la forme canonique s'écrit $a(x{{eval:-u;+}})^2{{eval:v;+}}$, et on lit $a$ grâce à un autre point de la parabole.",
+					"Pour trouver $a$, on lit les coordonnées du point $A$ : $A({{c}}\\,;\\,{{d}})$. Or $f({{c}})=a({{c}}{{eval:-u;+}})^2{{eval:v;+}}=4a{{eval:v;+}}$, donc $4a{{eval:v;+}}={{d}}$ et $a={{eval:s*n/4}}$.",
+					"```courbe\nx: -6 ; 6\ny: -7 ; 7\ngrille: 1 ; 1\nf(x) = {{s}}*{{n}}/4*(x-{{u}})^2+{{v}}   bleu   nom=C_f\npoints: S({{u}} ; {{v}}), A({{c}} ; {{d}})\ntaille: moyenne\ndescription: Parabole représentant un polynôme du second degré, tracée dans un repère pour x de −6 à 6.\n```",
+					"La forme canonique est ${{eval:s*n/4}}(x{{eval:-u;+}})^2{{eval:v;+}}$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"requiredForm": {
+						"pattern": "u*($x+v)^2+w",
+						"acceptable": "u*($x-(-v))^2+w"
+					},
+					"expectedAnswer": "{{eval:s*m*(x-u)^2+v}}"
+				}
+			],
+			"statement": "Détermine la forme canonique du polynôme représenté par cette parabole, qui passe par le point $A$.\n\n```courbe\nx: -6 ; 6\ny: -7 ; 7\ngrille: 1 ; 1\nf(x) = {{s}}*{{m}}*(x-{{u}})^2+{{v}}   bleu   nom=C_f\npoints: A({{c}} ; {{d}})\ntaille: moyenne\ndescription: Parabole représentant un polynôme du second degré, tracée dans un repère pour x de −6 à 6.\n```\n\nLa forme canonique est $?$.",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "s",
+					"expression": "-1|1"
+				},
+				{
+					"name": "m",
+					"expression": "1|2|3"
+				},
+				{
+					"name": "u",
+					"expression": "-3..3"
+				},
+				{
+					"name": "v",
+					"expression": "-3..3"
+				},
+				{
+					"name": "t",
+					"expression": "-1|1"
+				},
+				{
+					"name": "c",
+					"expression": "eval:u+t"
+				},
+				{
+					"name": "d",
+					"expression": "eval:v+s*m"
+				}
+			],
+			"conditions": ["u != 0", "v != 0"],
+			"correction": {
+				"steps": [
+					"Le sommet de la parabole est $S({{u}}\\,;\\,{{v}})$ : la forme canonique s'écrit $a(x{{eval:-u;+}})^2{{eval:v;+}}$, et on lit $a$ grâce à un autre point de la parabole.",
+					"Pour trouver $a$, on lit les coordonnées du point $A$ : $A({{c}}\\,;\\,{{d}})$. Or $f({{c}})=a({{c}}{{eval:-u;+}})^2{{eval:v;+}}=a{{eval:v;+}}$, donc $a{{eval:v;+}}={{d}}$ et $a={{eval:s*m}}$.",
+					"```courbe\nx: -6 ; 6\ny: -7 ; 7\ngrille: 1 ; 1\nf(x) = {{s}}*{{m}}*(x-{{u}})^2+{{v}}   bleu   nom=C_f\npoints: S({{u}} ; {{v}}), A({{c}} ; {{d}})\ntaille: moyenne\ndescription: Parabole représentant un polynôme du second degré, tracée dans un repère pour x de −6 à 6.\n```",
+					"La forme canonique est ${{eval:s*m*(x-u)^2+v}}$."
+				]
+			}
+		},
+		{
+			"statement": "Une parabole a pour sommet $S({{al}}\\,;{{be}})$ et passe par le point $A({{eval:al+d}}\\,;{{eval:be+a*d^2}})$.\n\nDétermine la forme canonique du polynôme qu'elle représente.\n\nLa forme canonique est $?$.",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "a",
+					"expression": "1..3;±"
+				},
+				{
+					"name": "al",
+					"expression": "-4..4"
+				},
+				{
+					"name": "be",
+					"expression": "-6..6"
+				},
+				{
+					"name": "d",
+					"expression": "1..3;±"
+				}
+			],
+			"conditions": ["al != 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a*(x-al)^2+be}}",
+					"requiredForm": {
+						"pattern": "u*($x+v)^2+w",
+						"acceptable": "u*($x-(-v))^2+w"
+					},
+					"expectedErrors": [
+						{
+							"answer": "{{eval:a*(x+al)^2+be}}",
+							"message": "Le sommet $S({{al}}\\,;{{be}})$ donne le facteur $(x{{eval:-al;+}})^2$ : attention au signe.",
+							"label": "Signe de α"
+						},
+						{
+							"answer": "{{eval:(x-al)^2+be}}",
+							"message": "Il faut trouver $a$ avec le point $A$ : $a\\times{{eval:d;()}}^2+{{eval:be;()}}={{eval:be+a*d^2}}$.",
+							"label": "Coefficient a non cherché"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le sommet donne $f(x)=a(x{{eval:-al;+}})^2{{eval:be;+}}$.",
+					"Le point $A$ donne $a\\times{{eval:d;()}}^2{{eval:be;+}}={{eval:be+a*d^2}}$, donc $a={{a}}$.",
+					"La forme canonique est $\\textcolor{{{color:primary.0}}}{ {{eval:a*(x-al)^2+be}} }$."
+				]
+			},
+			"hint": "Le sommet donne $\\alpha$ et $\\beta$ ; il reste $a$, que le point $A$ permet de trouver."
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["-\\frac{1}{2}(x+2)^2-1"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"n": "2",
+				"s": "-1",
+				"t": "1",
+				"u": "-2",
+				"v": "-1"
+			},
+			"description": "a=-1/2 : forme canonique juste",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["-\\frac{1}{2}x^2-2x-3"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			},
+			"variables": {
+				"n": "2",
+				"s": "-1",
+				"t": "1",
+				"u": "-2",
+				"v": "-1"
+			},
+			"description": "a=-1/2 : forme développée refusée",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["-\\frac{1}{2}(x-2)^2-1"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"n": "2",
+				"s": "-1",
+				"t": "1",
+				"u": "-2",
+				"v": "-1"
+			},
+			"description": "a=-1/2 : autre sommet (signe de alpha inversé)",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["\\frac{1}{2}(x+2)^2-1"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"n": "2",
+				"s": "-1",
+				"t": "1",
+				"u": "-2",
+				"v": "-1"
+			},
+			"description": "a=-1/2 : signe de a inversé",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["-2(x+2)^2-1"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"n": "2",
+				"s": "-1",
+				"t": "1",
+				"u": "-2",
+				"v": "-1"
+			},
+			"description": "a=-1/2 : a calculé sans diviser par 4",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["-0.5(x+2)^2-1"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"n": "2",
+				"s": "-1",
+				"t": "1",
+				"u": "-2",
+				"v": "-1"
+			},
+			"description": "a=-1/2 : coefficient décimal accepté",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["-1-\\frac{1}{2}(x+2)^2"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"n": "2",
+				"s": "-1",
+				"t": "1",
+				"u": "-2",
+				"v": "-1"
+			},
+			"description": "a=-1/2 : ordre des termes inversé accepté",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["-\\frac{1}{2}(-x-2)^2-1"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			},
+			"variables": {
+				"n": "2",
+				"s": "-1",
+				"t": "1",
+				"u": "-2",
+				"v": "-1"
+			},
+			"description": "a=-1/2 : (-x-2)^2 n'est pas une forme canonique",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["-\\frac{(x+2)^2}{2}-1"],
+			"expected": {
+				"status": "correct",
+				"constraintViolations": []
+			},
+			"variables": {
+				"n": "2",
+				"s": "-1",
+				"t": "1",
+				"u": "-2",
+				"v": "-1"
+			},
+			"description": "a=-1/2 : carré divisé par 2 : juste (coefficient sous la fraction, décision de David)",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["-\\frac{1}{2}(x-(-2))^2-1"],
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["signs", "form"]
+			},
+			"variables": {
+				"n": "2",
+				"s": "-1",
+				"t": "1",
+				"u": "-2",
+				"v": "-1"
+			},
+			"description": "a=-1/2 : α négatif écrit x-(-2) : juste, perfectible",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["\\frac{1}{4}(x-1)^2-3"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"n": "1",
+				"s": "1",
+				"t": "-1",
+				"u": "1",
+				"v": "-3"
+			},
+			"description": "a=1/4 : forme canonique juste",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["0.25(x-1)^2-3"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"n": "1",
+				"s": "1",
+				"t": "-1",
+				"u": "1",
+				"v": "-3"
+			},
+			"description": "a=1/4 : coefficient décimal accepté",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["\\frac{1}{4}x^2-\\frac{1}{2}x-\\frac{11}{4}"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			},
+			"variables": {
+				"n": "1",
+				"s": "1",
+				"t": "-1",
+				"u": "1",
+				"v": "-3"
+			},
+			"description": "a=1/4 : forme développée refusée",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["(x-1)^2-3"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"n": "1",
+				"s": "1",
+				"t": "-1",
+				"u": "1",
+				"v": "-3"
+			},
+			"description": "a=1/4 : a lu comme 1 (point A ignoré)",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["(x-1)^2-3"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"m": "1",
+				"s": "1",
+				"t": "1",
+				"u": "1",
+				"v": "-3"
+			},
+			"description": "a=1 : forme canonique juste",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["-3+(x-1)^2"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"m": "1",
+				"s": "1",
+				"t": "1",
+				"u": "1",
+				"v": "-3"
+			},
+			"description": "a=1 : ordre des termes inversé accepté",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["1(x-1)^2-3"],
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["factorOne"]
+			},
+			"variables": {
+				"m": "1",
+				"s": "1",
+				"t": "1",
+				"u": "1",
+				"v": "-3"
+			},
+			"description": "a=1 : coefficient 1 écrit : perfectible",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["x^2-2x-2"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			},
+			"variables": {
+				"m": "1",
+				"s": "1",
+				"t": "1",
+				"u": "1",
+				"v": "-3"
+			},
+			"description": "a=1 : forme développée refusée",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["(x-1-\\sqrt{3})(x-1+\\sqrt{3})"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			},
+			"variables": {
+				"m": "1",
+				"s": "1",
+				"t": "1",
+				"u": "1",
+				"v": "-3"
+			},
+			"description": "a=1 : (x-1-\\sqrt{3})(x-1+\\sqrt{3}) refusée",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["(x+1)^2-3"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"m": "1",
+				"s": "1",
+				"t": "1",
+				"u": "1",
+				"v": "-3"
+			},
+			"description": "a=1 : autre sommet (signe de alpha inversé)",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["-(x+1)^2+3"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"m": "1",
+				"s": "-1",
+				"t": "1",
+				"u": "-1",
+				"v": "3"
+			},
+			"description": "a=-1 : coefficient implicite -1",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["(x+1)^2+3"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"m": "1",
+				"s": "-1",
+				"t": "1",
+				"u": "-1",
+				"v": "3"
+			},
+			"description": "a=-1 : signe de a oublié",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["3(x+1)^2-2"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"m": "3",
+				"s": "1",
+				"t": "1",
+				"u": "-1",
+				"v": "-2"
+			},
+			"description": "a=3 : forme canonique juste",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["3x^2+6x+1"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			},
+			"variables": {
+				"m": "3",
+				"s": "1",
+				"t": "1",
+				"u": "-1",
+				"v": "-2"
+			},
+			"description": "a=3 : forme développée refusée",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["3(x-1)^2-2"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"m": "3",
+				"s": "1",
+				"t": "1",
+				"u": "-1",
+				"v": "-2"
+			},
+			"description": "a=3 : autre sommet (signe de alpha inversé)",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["2x(x-2)"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			},
+			"variables": {
+				"m": "2",
+				"s": "1",
+				"t": "-1",
+				"u": "1",
+				"v": "-2"
+			},
+			"description": "a=2 : forme factorisée 2x(x-2) refusée",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["2(x-1)^2-2"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"m": "2",
+				"s": "1",
+				"t": "-1",
+				"u": "1",
+				"v": "-2"
+			},
+			"description": "a=2 : forme canonique juste",
+			"variationIndex": 1
+		},
+		{
+			"description": "S(1 ; −3), A(3 ; 5)",
+			"variationIndex": 2,
+			"variables": {
+				"a": "2",
+				"al": "1",
+				"be": "-3",
+				"d": "2"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["2(x-1)^2-3"]
+		},
+		{
+			"description": "Signe",
+			"variationIndex": 2,
+			"variables": {
+				"a": "2",
+				"al": "1",
+				"be": "-3",
+				"d": "2"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Le sommet $S(1\\,;-3)$ donne le facteur $\\left( x - 1 \\right)^2$ : attention au signe."
+			},
+			"answers": ["2(x+1)^2-3"]
+		},
+		{
+			"description": "a oublié",
+			"variationIndex": 2,
+			"variables": {
+				"a": "2",
+				"al": "1",
+				"be": "-3",
+				"d": "2"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Il faut trouver $a$ avec le point $A$ : $a\\times2^2+(-3)=5$."
+			},
+			"answers": ["(x-1)^2-3"]
+		}
+	]
+}

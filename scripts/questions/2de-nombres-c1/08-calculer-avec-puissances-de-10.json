@@ -1,0 +1,780 @@
+{
+	"id": "0369c9ac-5e72-4175-b40b-a23617f23615",
+	"title": "Calculer avec des puissances de 10",
+	"description": "Calculer 10³ + 10², 10⁵ × 10⁻³ / 10², 4,57 × 10³, et trouver un exposant manquant (pièges : 10³ + 10² = 10⁵, signe d'un exposant négatif, exposants multipliés)",
+	"grades": ["2"],
+	"level": 11,
+	"delay": 45,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Calcule.\n\n$$10^{ {{a}} }+10^{ {{b}} }=?$$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..4"
+				},
+				{
+					"name": "b",
+					"expression": "1..3"
+				},
+				{
+					"name": "A",
+					"expression": "eval:10^(a)"
+				},
+				{
+					"name": "B",
+					"expression": "eval:10^(b)"
+				},
+				{
+					"name": "r",
+					"expression": "eval:10^(a)+10^(b)"
+				}
+			],
+			"conditions": ["b < a"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{r}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:10^((a)+(b))}}",
+							"message": "Il n'y a pas de règle pour additionner des puissances : les exposants ne s'ajoutent que pour un produit.",
+							"label": "10ᵃ + 10ᵇ = 10ᵃ⁺ᵇ"
+						},
+						{
+							"answer": "{{eval:10*(a)+10*(b)}}",
+							"message": "$10^n$ n'est pas $10\\times n$ : c'est un produit de $n$ facteurs égaux à $10$.",
+							"label": "10ⁿ = 10 × n"
+						},
+						{
+							"answer": "{{eval:10^((a)*(b))}}",
+							"message": "Il n'y a pas de règle pour additionner des puissances : calcule chaque puissance séparément.",
+							"label": "Exposants multipliés"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Puissances de 10** : $10^{n}=1\\underbrace{0\\cdots0}_{n}$ ; $10^{m}\\times10^{n}=10^{m+n}$ ; $\\dfrac{10^{m}}{10^{n}}=10^{m-n}$ ; $10^{0}=1$. Il n'y a **pas** de règle pour une somme : on calcule chaque puissance.",
+					"$10^{ {{a}} }=\\textcolor{{{color:primary.0}}}{{{A}}}$ et $10^{ {{b}} }=\\textcolor{{{color:primary.1}}}{{{B}}}$.",
+					"$$10^{ {{a}} }+10^{ {{b}} }=\\textcolor{{{color:primary.0}}}{{{A}}}+\\textcolor{{{color:primary.1}}}{{{B}}}=\\textcolor{{{color:primary.2}}}{{{r}}}$$"
+				]
+			},
+			"hint": "Il n'y a pas de règle pour une somme de puissances : calcule chaque puissance de $10$ séparément."
+		},
+		{
+			"statement": "Écris sous la forme d'une puissance de $10$.\n\n$$\\dfrac{10^{ {{a}} }\\times10^{ {{b}} } }{10^{ {{c}} } }=10^{?}$$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..7"
+				},
+				{
+					"name": "b",
+					"expression": "-6..-1"
+				},
+				{
+					"name": "c",
+					"expression": "-4..5"
+				},
+				{
+					"name": "k",
+					"expression": "eval:(a)+(b)-(c)"
+				}
+			],
+			"conditions": ["c != 0", "c != 1"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{k}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:(a)-(b)-(c)}}",
+							"message": "Tu as perdu le signe d'un exposant négatif : garde chaque exposant avec son signe.",
+							"label": "Signe perdu"
+						},
+						{
+							"answer": "{{eval:(a)+(b)+(c)}}",
+							"message": "Diviser par une puissance de $10$, c'est soustraire son exposant, pas l'ajouter.",
+							"label": "Exposant du dénominateur ajouté"
+						},
+						{
+							"answer": "{{eval:(a)*(b)-(c)}}",
+							"message": "Pour un produit de puissances de $10$, les exposants s'additionnent, ils ne se multiplient pas.",
+							"label": "Exposants multipliés"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Puissances de 10** : $10^{n}=1\\underbrace{0\\cdots0}_{n}$ ; $10^{m}\\times10^{n}=10^{m+n}$ ; $\\dfrac{10^{m}}{10^{n}}=10^{m-n}$ ; $10^{0}=1$.",
+					"Au numérateur : $10^{ {{a}} }\\times10^{ {{b}} }=10^{ {{a}}+({{b}})}=10^{ {{eval:(a)+(b)}} }$.",
+					"$$\\dfrac{10^{ {{eval:(a)+(b)}} } }{10^{ {{c}} } }=10^{ {{eval:(a)+(b)}}-{{if:c<0|({{c}})|{{c}}}} }=\\textcolor{{{color:primary.0}}}{10^{ {{k}} }}{{if:k==0|=1|}}$$"
+				]
+			},
+			"hint": "Commence par le numérateur avec la règle du produit, puis divise avec la règle du quotient ; garde chaque exposant avec son signe."
+		},
+		{
+			"statement": "Donne l'écriture décimale de ce nombre.\n\n$${{eval:(M)/100;d}}\\times10^{ {{p}} }=?$$",
+			"variables": [
+				{
+					"name": "M",
+					"expression": "101..999!m(10)"
+				},
+				{
+					"name": "p",
+					"expression": "2..4"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(M)*10^((p)-2);d}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:(M)*10^((p)-1);d}}",
+							"message": "Tu as déplacé la virgule d'un rang de trop : compte les rangs à partir de sa place de départ.",
+							"label": "Un rang de trop"
+						},
+						{
+							"answer": "{{eval:(M)*10^((p)-3);d}}",
+							"message": "Tu n'as pas déplacé la virgule d'assez de rangs : l'exposant dit de combien de rangs la décaler.",
+							"label": "Un rang de moins"
+						},
+						{
+							"answer": "{{eval:(M)/100;d}}",
+							"message": "Ajouter des zéros après la virgule ne change pas la valeur du nombre : il faut déplacer la virgule.",
+							"label": "Zéros ajoutés après la virgule"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"Multiplier par $10^{ {{p}} }$, c'est multiplier par ${{eval:10^(p)}}$ : la virgule avance de ${{p}}$ rangs vers la droite, on complète par des zéros si besoin.",
+					"$${{eval:(M)/100;d}}\\times10^{ {{p}} }=\\textcolor{{{color:primary.0}}}{{{eval:(M)*10^((p)-2);d}}}$$"
+				]
+			},
+			"hint": "Multiplier par $10^{ {{p}} }$, c'est déplacer la virgule de ${{p}}$ rangs : dans quel sens ?"
+		},
+		{
+			"statement": "Complète.\n\n$$10^{ {{a}} }\\times10^{?}=10^{ {{c}} }$$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "-5..7"
+				},
+				{
+					"name": "c",
+					"expression": "-6..8"
+				},
+				{
+					"name": "k",
+					"expression": "eval:(c)-(a)"
+				}
+			],
+			"conditions": [
+				"a != 0",
+				"a != 1",
+				"c != 0",
+				"c != 1",
+				"k != 0",
+				"k != 1",
+				"a < 0 or c < 0 or k < 0"
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{k}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:(a)-(c)}}",
+							"message": "Ton exposant a le mauvais signe : vérifie en l'ajoutant à l'exposant de départ.",
+							"label": "Signe inversé"
+						},
+						{
+							"answer": "{{eval:(c)+(a)}}",
+							"message": "Tu as additionné les deux exposants : on cherche ce qu'il faut ajouter au premier pour obtenir le second.",
+							"label": "Exposants additionnés"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Puissances de 10** : $10^{n}=1\\underbrace{0\\cdots0}_{n}$ ; $10^{m}\\times10^{n}=10^{m+n}$ ; $\\dfrac{10^{m}}{10^{n}}=10^{m-n}$ ; $10^{0}=1$.",
+					"Les exposants s'additionnent : ${{a}}+?={{c}}$, donc $?={{c}}-{{if:a<0|({{a}})|{{a}}}}$.",
+					"$$10^{ {{a}} }\\times10^{\\textcolor{{{color:primary.0}}}{{{k}}}}=10^{ {{c}} }$$"
+				]
+			},
+			"hint": "Pour un produit de puissances de $10$, les exposants s'additionnent : que faut-il ajouter à ${{a}}$ pour obtenir ${{c}}$ ?"
+		},
+		{
+			"statement": "Donne le résultat en écriture scientifique.\n\n$${{if:t==0|({{a}}\\times10^{ {{m}} })\\times({{b}}\\times10^{ {{n}} })|\\dfrac{ {{eval:(b)*(c)/10;d}}\\times10^{ {{m}} } }{ {{b}}\\times10^{ {{n}} } }}}=?$$",
+			"variables": [
+				{
+					"name": "t",
+					"expression": "0|1"
+				},
+				{
+					"name": "a",
+					"expression": "2..9"
+				},
+				{
+					"name": "b",
+					"expression": "2..9"
+				},
+				{
+					"name": "c",
+					"expression": "1..9"
+				},
+				{
+					"name": "m",
+					"expression": "2..6"
+				},
+				{
+					"name": "n",
+					"expression": "-5..-1"
+				},
+				{
+					"name": "A",
+					"expression": "eval:(b)*(c)/10"
+				},
+				{
+					"name": "P",
+					"expression": "eval:(a)*(b)"
+				},
+				{
+					"name": "E",
+					"expression": "eval:(m)+(n)+1"
+				},
+				{
+					"name": "F",
+					"expression": "eval:(m)-(n)-1"
+				}
+			],
+			"conditions": [
+				"t == 1 or P >= 10",
+				"t == 1 or P - 10*floor(P/10) != 0",
+				"t == 1 or E != 0",
+				"t == 0 or b*c >= 10",
+				"t == 0 or b*c - 10*floor(b*c/10) != 0"
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:t==0|{{eval:(P)/10;d}}\\times10^{ {{E}} }|{{c}}\\times10^{ {{F}} }}}",
+					"expectedErrors": [
+						{
+							"answer": "{{if:t==0|{{eval:(P)/10;d}}\\times10^{ {{eval:(E)-1}} }|{{c}}\\times10^{ {{eval:(F)+1}} }}}",
+							"message": "Ton exposant est décalé d'un rang : en déplaçant la virgule de ton premier nombre pour l'amener entre $1$ et $10$, il faut compenser sur l'exposant.",
+							"label": "Décalage de la virgule non reporté"
+						},
+						{
+							"answer": "{{if:t==0|{{eval:(P)/10;d}}\\times10^{ {{eval:(m)*(n)+1}} }|{{c}}\\times10^{ {{eval:(m)+(n)-1}} }}}",
+							"message": "{{if:t==0|Pour un produit de puissances de $10$, les exposants s'additionnent, ils ne se multiplient pas.|Pour un quotient de puissances de $10$, on soustrait l'exposant du dénominateur, on ne l'ajoute pas.}}",
+							"label": "Règle des exposants"
+						},
+						{
+							"answer": "{{if:t==0|{{eval:(a)+(b)}}\\times10^{ {{eval:(m)+(n)}} }|{{c}}\\times10^{ {{eval:(n)-(m)-1}} }}}",
+							"message": "{{if:t==0|Tu as additionné ${{a}}$ et ${{b}}$ : dans un produit, on multiplie ces deux nombres.|Tu as soustrait les exposants dans le mauvais ordre : c'est l'exposant du numérateur moins celui du dénominateur.}}",
+							"label": "Nombres additionnés (produit) / ordre de la soustraction (quotient)"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Puissances de 10** : $10^{m}\\times10^{n}=10^{m+n}$ ; $\\dfrac{10^{m}}{10^{n}}=10^{m-n}$. **Écriture scientifique** : $a\\times10^{n}$ avec $1\\leqslant a<10$.",
+					"{{if:t==0|On regroupe : $({{a}}\\times{{b}})\\times10^{ {{m}}+({{n}})}={{P}}\\times10^{ {{eval:(m)+(n)}} }$.|On sépare : $\\dfrac{ {{eval:(b)*(c)/10;d}} }{ {{b}} }\\times10^{ {{m}}-({{n}})}={{eval:(c)/10;d}}\\times10^{ {{eval:(m)-(n)}} }$.}}",
+					"{{if:t==0|${{P}}$ n'est pas entre $1$ et $10$ : ${{P}}={{eval:(P)/10;d}}\\times10^{1}$, donc ${{P}}\\times10^{ {{eval:(m)+(n)}} }={{eval:(P)/10;d}}\\times10^{1+({{eval:(m)+(n)}})}$.|${{eval:(c)/10;d}}$ n'est pas entre $1$ et $10$ : ${{eval:(c)/10;d}}={{c}}\\times10^{-1}$, donc ${{eval:(c)/10;d}}\\times10^{ {{eval:(m)-(n)}} }={{c}}\\times10^{ {{eval:(m)-(n)}}-1}$.}}",
+					"$$\\text{Résultat : }\\textcolor{{{color:primary.0}}}{{{if:t==0|{{eval:(P)/10;d}}\\times10^{ {{E}} }|{{c}}\\times10^{ {{F}} }}}}$$"
+				]
+			},
+			"hint": "Regroupe d'un côté les deux nombres, de l'autre les puissances de $10$ ; vérifie ensuite que ton premier nombre est bien entre $1$ et $10$."
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "10³ + 10² = 1 100",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "2"
+			},
+			"answers": ["1\\,100"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "10³ + 10² = 1100 (sans espace, 4 chiffres)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "2"
+			},
+			"answers": ["1100"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 10³ + 10² = 10⁵ = 100 000",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "2"
+			},
+			"answers": ["100\\,000"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Il n'y a pas de règle pour additionner des puissances : les exposants ne s'ajoutent que pour un produit."
+			}
+		},
+		{
+			"description": "Erreur : 10³ + 10² = 10⁵",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "2"
+			},
+			"answers": ["10^5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "10⁴ + 10³ = 11 000",
+			"variationIndex": 0,
+			"variables": {
+				"a": "4",
+				"b": "3"
+			},
+			"answers": ["11\\,000"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "10⁵ × 10⁻³ / 10² = 10⁰",
+			"variationIndex": 1,
+			"variables": {
+				"a": "5",
+				"b": "-3",
+				"c": "2"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : signe perdu (5 + 3 − 2 = 6)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "5",
+				"b": "-3",
+				"c": "2"
+			},
+			"answers": ["6"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as perdu le signe d'un exposant négatif : garde chaque exposant avec son signe."
+			}
+		},
+		{
+			"description": "Erreur : exposants multipliés (5 × (−3) × 2)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "5",
+				"b": "-3",
+				"c": "2"
+			},
+			"answers": ["-30"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "10⁴ × 10⁻² / 10⁻³ = 10⁵",
+			"variationIndex": 1,
+			"variables": {
+				"a": "4",
+				"b": "-2",
+				"c": "-3"
+			},
+			"answers": ["5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 4 − 2 − 3 = −1",
+			"variationIndex": 1,
+			"variables": {
+				"a": "4",
+				"b": "-2",
+				"c": "-3"
+			},
+			"answers": ["-1"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Diviser par une puissance de $10$, c'est soustraire son exposant, pas l'ajouter."
+			}
+		},
+		{
+			"description": "4,5 × 10³ = 4 500",
+			"variationIndex": 2,
+			"variables": {
+				"M": "450",
+				"p": "3"
+			},
+			"answers": ["4\\,500"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 4,5 × 10³ = 4,5000",
+			"variationIndex": 2,
+			"variables": {
+				"M": "450",
+				"p": "3"
+			},
+			"answers": ["4,5000"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Ajouter des zéros après la virgule ne change pas la valeur du nombre : il faut déplacer la virgule."
+			}
+		},
+		{
+			"description": "Erreur : 4,5 × 10³ = 45 000",
+			"variationIndex": 2,
+			"variables": {
+				"M": "450",
+				"p": "3"
+			},
+			"answers": ["45\\,000"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as déplacé la virgule d'un rang de trop : compte les rangs à partir de sa place de départ."
+			}
+		},
+		{
+			"description": "3,27 × 10² = 327",
+			"variationIndex": 2,
+			"variables": {
+				"M": "327",
+				"p": "2"
+			},
+			"answers": ["327"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "10³ × 10^? = 10⁻² : ? = −5",
+			"variationIndex": 3,
+			"variables": {
+				"a": "3",
+				"c": "-2"
+			},
+			"answers": ["-5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 10³ × 10^? = 10⁻² : ? = 5",
+			"variationIndex": 3,
+			"variables": {
+				"a": "3",
+				"c": "-2"
+			},
+			"answers": ["5"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Ton exposant a le mauvais signe : vérifie en l'ajoutant à l'exposant de départ."
+			}
+		},
+		{
+			"description": "Erreur : −2 + 3 au lieu de −2 − 3 (? = 1)",
+			"variationIndex": 3,
+			"variables": {
+				"a": "3",
+				"c": "-2"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as additionné les deux exposants : on cherche ce qu'il faut ajouter au premier pour obtenir le second."
+			}
+		},
+		{
+			"description": "Erreur prévue : 10ⁿ = 10 × n",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "2"
+			},
+			"answers": ["50"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "$10^n$ n'est pas $10\\times n$ : c'est un produit de $n$ facteurs égaux à $10$."
+			}
+		},
+		{
+			"description": "Erreur prévue : Exposants multipliés",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "2"
+			},
+			"answers": ["1\\,000\\,000"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Il n'y a pas de règle pour additionner des puissances : calcule chaque puissance séparément."
+			}
+		},
+		{
+			"description": "Erreur prévue : Exposants multipliés",
+			"variationIndex": 1,
+			"variables": {
+				"a": "5",
+				"b": "-3",
+				"c": "2"
+			},
+			"answers": ["-17"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Pour un produit de puissances de $10$, les exposants s'additionnent, ils ne se multiplient pas."
+			}
+		},
+		{
+			"description": "Erreur prévue : Un rang de moins",
+			"variationIndex": 2,
+			"variables": {
+				"M": "450",
+				"p": "3"
+			},
+			"answers": ["450"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu n'as pas déplacé la virgule d'assez de rangs : l'exposant dit de combien de rangs la décaler."
+			}
+		},
+		{
+			"description": "10⁴ + 10³ = 11000 sans espace (espaces non exigées)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "4",
+				"b": "3"
+			},
+			"answers": ["11000"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "5,27 × 10⁴ = 52700 sans espace (espaces non exigées)",
+			"variationIndex": 2,
+			"variables": {
+				"M": "527",
+				"p": "4"
+			},
+			"answers": ["52700"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "(3 × 10⁴) × (5 × 10⁻²) = 1,5 × 10³",
+			"variationIndex": 4,
+			"variables": {
+				"t": "0",
+				"a": "3",
+				"b": "5",
+				"c": "1",
+				"m": "4",
+				"n": "-2"
+			},
+			"answers": ["1,5\\times10^{3}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Forme : 15 × 10² (pas scientifique)",
+			"variationIndex": 4,
+			"variables": {
+				"t": "0",
+				"a": "3",
+				"b": "5",
+				"c": "1",
+				"m": "4",
+				"n": "-2"
+			},
+			"answers": ["15\\times10^{2}"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		},
+		{
+			"description": "Forme : 1 500 (écriture décimale)",
+			"variationIndex": 4,
+			"variables": {
+				"t": "0",
+				"a": "3",
+				"b": "5",
+				"c": "1",
+				"m": "4",
+				"n": "-2"
+			},
+			"answers": ["1\\,500"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		},
+		{
+			"description": "Erreur prévue : 1,5 × 10² (10 de 15 non reporté)",
+			"variationIndex": 4,
+			"variables": {
+				"t": "0",
+				"a": "3",
+				"b": "5",
+				"c": "1",
+				"m": "4",
+				"n": "-2"
+			},
+			"answers": ["1,5\\times10^{2}"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Ton exposant est décalé d'un rang : en déplaçant la virgule de ton premier nombre pour l'amener entre $1$ et $10$, il faut compenser sur l'exposant."
+			}
+		},
+		{
+			"description": "Erreur prévue : exposants multipliés",
+			"variationIndex": 4,
+			"variables": {
+				"t": "0",
+				"a": "3",
+				"b": "5",
+				"c": "1",
+				"m": "4",
+				"n": "-2"
+			},
+			"answers": ["1,5\\times10^{-7}"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Pour un produit de puissances de $10$, les exposants s'additionnent, ils ne se multiplient pas."
+			}
+		},
+		{
+			"description": "Erreur prévue : 3 + 5 au lieu de 3 × 5",
+			"variationIndex": 4,
+			"variables": {
+				"t": "0",
+				"a": "3",
+				"b": "5",
+				"c": "1",
+				"m": "4",
+				"n": "-2"
+			},
+			"answers": ["8\\times10^{2}"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as additionné $3$ et $5$ : dans un produit, on multiplie ces deux nombres."
+			}
+		},
+		{
+			"description": "(1,2 × 10⁵) / (4 × 10⁻³) = 3 × 10⁷",
+			"variationIndex": 4,
+			"variables": {
+				"t": "1",
+				"a": "2",
+				"b": "4",
+				"c": "3",
+				"m": "5",
+				"n": "-3"
+			},
+			"answers": ["3\\times10^{7}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Forme : 0,3 × 10⁸ (pas scientifique)",
+			"variationIndex": 4,
+			"variables": {
+				"t": "1",
+				"a": "2",
+				"b": "4",
+				"c": "3",
+				"m": "5",
+				"n": "-3"
+			},
+			"answers": ["0,3\\times10^{8}"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		},
+		{
+			"description": "Erreur prévue : 3 × 10⁸ (décalage non reporté)",
+			"variationIndex": 4,
+			"variables": {
+				"t": "1",
+				"a": "2",
+				"b": "4",
+				"c": "3",
+				"m": "5",
+				"n": "-3"
+			},
+			"answers": ["3\\times10^{8}"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Ton exposant est décalé d'un rang : en déplaçant la virgule de ton premier nombre pour l'amener entre $1$ et $10$, il faut compenser sur l'exposant."
+			}
+		},
+		{
+			"description": "Erreur prévue : exposant du dénominateur ajouté",
+			"variationIndex": 4,
+			"variables": {
+				"t": "1",
+				"a": "2",
+				"b": "4",
+				"c": "3",
+				"m": "5",
+				"n": "-3"
+			},
+			"answers": ["3\\times10^{1}"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Pour un quotient de puissances de $10$, on soustrait l'exposant du dénominateur, on ne l'ajoute pas."
+			}
+		},
+		{
+			"description": "Erreur prévue : soustraction dans le mauvais ordre",
+			"variationIndex": 4,
+			"variables": {
+				"t": "1",
+				"a": "2",
+				"b": "4",
+				"c": "3",
+				"m": "5",
+				"n": "-3"
+			},
+			"answers": ["3\\times10^{-9}"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as soustrait les exposants dans le mauvais ordre : c'est l'exposant du numérateur moins celui du dénominateur."
+			}
+		}
+	],
+	"options": {
+		"constraints": {
+			"spaces": "off"
+		}
+	}
+}

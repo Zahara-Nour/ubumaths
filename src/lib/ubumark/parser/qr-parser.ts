@@ -24,7 +24,7 @@
  */
 
 import { z } from 'zod';
-import { normalizeQrTarget } from '$lib/qr/qr-target';
+import { normalizeQrTarget } from '#lib/qr/qr-target.ts';
 import { specialBlockEnd } from './unclosed-block';
 import { QR_CAPTION_MAX, QR_SIZE_CM } from '../types/qr';
 import type { QrBlockRange, QrIssue, QrNode } from '../types/qr';

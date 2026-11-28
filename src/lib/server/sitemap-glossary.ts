@@ -9,10 +9,10 @@
  * @module lib/server/sitemap-glossary
  */
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { Database } from '$lib/types/database';
-import { loadGlossary } from '$lib/server/dictionary/load';
-import { glossaryPath, isBareRedirect, termKey } from '$lib/dictionary/glossary-page';
-import { createServerLogger } from '$lib/utils/logger';
+import type { Database } from '#lib/types/database.ts';
+import { loadGlossary } from '#lib/server/dictionary/load.ts';
+import { glossaryPath, isBareRedirect, termKey } from '#lib/dictionary/glossary-page.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('server/sitemap-glossary');
 

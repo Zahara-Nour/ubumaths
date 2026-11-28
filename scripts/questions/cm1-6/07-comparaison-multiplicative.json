@@ -1,0 +1,293 @@
+{
+	"id": "edb36f84-112f-4586-b2b7-b436ccdc2029",
+	"title": "Comparaison multiplicative",
+	"description": "« k fois plus » et « k fois moins » : un poney 8 fois plus lourd qu'un chien de 25 kg ; une console 6 fois plus chère ; le plus petit quand l'énoncé dit « fois plus » ; en deux étapes, combien en tout, combien de plus ; schéma en barres dans le corrigé",
+	"grades": ["CM1"],
+	"level": 5,
+	"delay": 90,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"spacesFromFourDigits": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Le chien de Malo pèse ${{c}}~\\unit{kg}$. Son poney est ${{k}}$ fois plus lourd que le chien.\n\nCombien pèse le poney ?\n\nLe poney pèse $?~\\text{kg}$.",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "2..10"
+				},
+				{
+					"name": "c",
+					"expression": "6..40"
+				}
+			],
+			"conditions": ["k * c <= 400"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:k*c}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"« ${{k}}$ fois plus lourd » : le poney pèse ${{k}}$ fois le poids du chien. On multiplie (ce n'est pas « de plus », qui ajouterait un écart).\n\n```schema-barres\nChien : {{c}}\nPoney : {{c}} ; {{c}}{{if:k>2| ; {{c}}|}}{{if:k>3| ; {{c}}|}}{{if:k>4| ; {{c}}|}}{{if:k>5| ; {{c}}|}}{{if:k>6| ; {{c}}|}}{{if:k>7| ; {{c}}|}}{{if:k>8| ; {{c}}|}}{{if:k>9| ; {{c}}|}} = ?\n```",
+					"$${{k}} \\times {{c}} = \\textcolor{{{color:primary.0}}}{{{eval:k*c}}}$$",
+					"Le poney pèse ${{eval:k*c}}~\\unit{kg}$.",
+					"Le poney est bien plus lourd que le chien, et ${{eval:k*c}} \\div {{k}} = {{c}}$."
+				]
+			}
+		},
+		{
+			"statement": "Une console coûte ${{eval:k*c}}~\\unit{€}$. Un jeu coûte ${{k}}$ fois moins cher que la console.\n\nCombien coûte le jeu ?\n\nLe jeu coûte $?~\\text{€}$.",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "2..10"
+				},
+				{
+					"name": "c",
+					"expression": "8..90"
+				}
+			],
+			"conditions": ["k * c <= 900"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:c}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"« ${{k}}$ fois moins cher » : la console coûte ${{k}}$ fois le prix du jeu. On partage le prix de la console en ${{k}}$ parts égales : on divise.\n\n```schema-barres\nConsole : ? ; ?{{if:k>2| ; ?|}}{{if:k>3| ; ?|}}{{if:k>4| ; ?|}}{{if:k>5| ; ?|}}{{if:k>6| ; ?|}}{{if:k>7| ; ?|}}{{if:k>8| ; ?|}}{{if:k>9| ; ?|}} = {{eval:k*c}} €\nJeu : ?\n```",
+					"$${{eval:k*c}} \\div {{k}} = \\textcolor{{{color:primary.0}}}{{{c}}}$$",
+					"Le jeu coûte ${{c}}~\\unit{€}$.",
+					"On vérifie : ${{k}} \\times {{c}} = {{eval:k*c}}$ ; le jeu coûte bien moins cher que la console."
+				]
+			}
+		},
+		{
+			"statement": "Le livre de Zoé a ${{eval:k*c}}$ pages. Il a ${{k}}$ fois plus de pages que le livre de Hugo.\n\nCombien de pages le livre de Hugo a-t-il ?\n\nLe livre de Hugo a $?$ pages.",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "2..10"
+				},
+				{
+					"name": "c",
+					"expression": "20..99"
+				}
+			],
+			"conditions": ["k * c <= 999"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:c}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le livre de Zoé a ${{k}}$ fois plus de pages : c'est celui de **Hugo** qui en a ${{k}}$ fois moins. On divise, même si l'énoncé dit « fois plus ».\n\n```schema-barres\nZoé : ? ; ?{{if:k>2| ; ?|}}{{if:k>3| ; ?|}}{{if:k>4| ; ?|}}{{if:k>5| ; ?|}}{{if:k>6| ; ?|}}{{if:k>7| ; ?|}}{{if:k>8| ; ?|}}{{if:k>9| ; ?|}} = {{eval:k*c}}\nHugo : ?\n```",
+					"$${{eval:k*c}} \\div {{k}} = \\textcolor{{{color:primary.0}}}{{{c}}}$$",
+					"Le livre de Hugo a ${{c}}$ pages.",
+					"On vérifie : ${{k}} \\times {{c}} = {{eval:k*c}}$ ; le livre de Hugo est le plus court, c'est cohérent."
+				]
+			}
+		},
+		{
+			"statement": "Nour a ${{c}}$ images. Sacha en a ${{k}}$ fois plus que Nour.\n\n{{if:t==0|Combien d'images ont-ils à eux deux ?|Combien d'images Sacha a-t-il de plus que Nour ?}}\n\n{{if:t==0|À eux deux, ils ont|Sacha a}} $?$ images{{if:t==0|.| de plus que Nour.}}",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "2..10"
+				},
+				{
+					"name": "c",
+					"expression": "3..90"
+				},
+				{
+					"name": "t",
+					"expression": "0..1"
+				}
+			],
+			"conditions": ["(k + 1) * c <= 999"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(k+1-2*t)*c}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On calcule en deux étapes : d'abord les images de Sacha (${{k}}$ fois celles de Nour), puis {{if:t==0|le total|l'écart}}.\n\n```schema-barres\nNour : {{c}}\nSacha : {{c}} ; {{c}}{{if:k>2| ; {{c}}|}}{{if:k>3| ; {{c}}|}}{{if:k>4| ; {{c}}|}}{{if:k>5| ; {{c}}|}}{{if:k>6| ; {{c}}|}}{{if:k>7| ; {{c}}|}}{{if:k>8| ; {{c}}|}}{{if:k>9| ; {{c}}|}}\n```",
+					"$${{k}} \\times {{c}} = {{eval:k*c}}$$",
+					"$${{if:t==0|{{c}} + {{eval:k*c}}|{{eval:k*c}} - {{c}}}} = \\textcolor{{{color:primary.0}}}{{{eval:(k+1-2*t)*c}}}$$",
+					"{{if:t==0|Nour et Sacha ont|Sacha a}} ${{eval:(k+1-2*t)*c}}$ images{{if:t==0| à eux deux.| de plus que Nour.}}",
+					"On vérifie avec les parts : Nour a $1$ part, Sacha en a ${{k}}$ ; {{if:t==0|en tout, cela fait|l'écart est de}} ${{eval:k+1-2*t}}$ parts, et ${{eval:k+1-2*t}} \\times {{c}} = {{eval:(k+1-2*t)*c}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "fois plus : 8 × 25 = 200 kg",
+			"variationIndex": 0,
+			"variables": {
+				"k": "8",
+				"c": "25"
+			},
+			"answers": ["200"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : « fois plus » lu addition (33)",
+			"variationIndex": 0,
+			"variables": {
+				"k": "8",
+				"c": "25"
+			},
+			"answers": ["33"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "fois moins : 360 € ÷ 6 = 60 €",
+			"variationIndex": 1,
+			"variables": {
+				"k": "6",
+				"c": "60"
+			},
+			"answers": ["60"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : « fois moins » lu multiplication (2 160)",
+			"variationIndex": 1,
+			"variables": {
+				"k": "6",
+				"c": "60"
+			},
+			"answers": ["2\\,160"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : « fois moins » lu soustraction (354)",
+			"variationIndex": 1,
+			"variables": {
+				"k": "6",
+				"c": "60"
+			},
+			"answers": ["354"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "piège : 252 pages, 4 fois plus → 63",
+			"variationIndex": 2,
+			"variables": {
+				"k": "4",
+				"c": "63"
+			},
+			"answers": ["63"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : piège, « fois plus » lu multiplication (1 008)",
+			"variationIndex": 2,
+			"variables": {
+				"k": "4",
+				"c": "63"
+			},
+			"answers": ["1\\,008"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "deux étapes, en tout : 12 + 4 × 12 = 60",
+			"variationIndex": 3,
+			"variables": {
+				"k": "4",
+				"c": "12",
+				"t": "0"
+			},
+			"answers": ["60"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : en tout, une seule étape (48)",
+			"variationIndex": 3,
+			"variables": {
+				"k": "4",
+				"c": "12",
+				"t": "0"
+			},
+			"answers": ["48"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : en tout, 12 + 4 (16)",
+			"variationIndex": 3,
+			"variables": {
+				"k": "4",
+				"c": "12",
+				"t": "0"
+			},
+			"answers": ["16"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "deux étapes, de plus : 4 × 12 − 12 = 36",
+			"variationIndex": 3,
+			"variables": {
+				"k": "4",
+				"c": "12",
+				"t": "1"
+			},
+			"answers": ["36"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : de plus, les images de Sacha (48)",
+			"variationIndex": 3,
+			"variables": {
+				"k": "4",
+				"c": "12",
+				"t": "1"
+			},
+			"answers": ["48"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : de plus, le total (60)",
+			"variationIndex": 3,
+			"variables": {
+				"k": "4",
+				"c": "12",
+				"t": "1"
+			},
+			"answers": ["60"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

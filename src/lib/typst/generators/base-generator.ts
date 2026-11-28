@@ -25,7 +25,7 @@
 
 import type { GeneratorConfig, GeneratorContext, GenerateResult } from '../types';
 import { DEFAULT_GENERATOR_CONFIG } from '../types';
-import { escapeTypst } from '$lib/ubumark/generators';
+import { escapeTypst } from '#lib/ubumark/generators/index.ts';
 import { formatNumber, formatDateFR } from '../utils';
 
 /**

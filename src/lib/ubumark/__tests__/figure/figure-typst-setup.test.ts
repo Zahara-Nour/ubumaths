@@ -33,12 +33,12 @@ describe('figure → Typst : rendu inscrit par les producteurs de PDF', () => {
 	});
 
 	it('un import renommé est repéré', () => {
-		expect(IMPORTS_GENERATE.test("import { generateTypst as gen } from '$lib/ubumark';")).toBe(
-			true
-		);
+		expect(
+			IMPORTS_GENERATE.test("import { generateTypst as gen } from '#lib/ubumark/index.ts';")
+		).toBe(true);
 		expect(
 			IMPORTS_GENERATE.test(
-				"import {\n\tescapeTypst,\n\tgenerateTypst as g\n} from '$lib/ubumark';"
+				"import {\n\tescapeTypst,\n\tgenerateTypst as g\n} from '#lib/ubumark/index.ts';"
 			)
 		).toBe(true);
 	});
@@ -51,11 +51,13 @@ describe('figure → Typst : rendu inscrit par les producteurs de PDF', () => {
 
 	it.each(callers.map((f) => [f.replace(SRC, 'src')]))('%s importe figure-typst-setup', (rel) => {
 		const source = readFileSync(join(process.cwd(), rel), 'utf8');
-		expect(source).toContain("import '$lib/ubumark/generators/figure-typst-setup';");
+		expect(source).toContain("import '#lib/ubumark/generators/figure-typst-setup.ts';");
 	});
 
 	it('le générateur Typst du baril n’importe PAS le rendu lourd', () => {
 		const source = readFileSync(join(SRC, 'lib/ubumark/generators/typst-generator.ts'), 'utf8');
-		expect(source).not.toMatch(/^import .*(\/figure-typst'|figure-typst-setup|geometry-core)/m);
+		expect(source).not.toMatch(
+			/^import .*(\/figure-typst(\.ts)?'|figure-typst-setup|geometry-core)/m
+		);
 	});
 });

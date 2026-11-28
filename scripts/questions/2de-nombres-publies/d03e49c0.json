@@ -1,0 +1,220 @@
+{
+	"id": "d03e49c0-ba65-4e1b-80ef-c595bba65d10",
+	"title": "Calculer la valeur d'une valeur absolue",
+	"description": "D'une expression dont il faut étudier le signe : |√b − a|, |π − a|",
+	"grades": ["2"],
+	"level": 7,
+	"delay": 20,
+	"status": "published",
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:abs(sqrt(a)-b)}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:-abs(sqrt(a)-b)}}",
+							"message": "Une valeur absolue est toujours positive : étudie le signe de ce qu'il y a entre les barres.",
+							"label": "Réponse négative (signe non étudié)"
+						},
+						{
+							"answer": "\\sqrt{ {{a}} }+{{b}}",
+							"message": "Une valeur absolue ne change pas un moins en plus au milieu de l'expression : elle change le signe de toute l'expression, si elle est négative.",
+							"label": "Moins changé en plus"
+						}
+					]
+				}
+			],
+			"statement": "Calcule.\n\n$${{expression1}}$$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2|3|5|7"
+				},
+				{
+					"name": "b",
+					"expression": "1..3"
+				},
+				{
+					"name": "expression1",
+					"expression": "abs(sqrt(a)-b)"
+				}
+			],
+			"correction": {
+				"steps": [
+					"{{if:{{a}}>{{b}}^2|$\\sqrt{{{a}}} \\gt {{b}}$ donc $\\sqrt{{{a}}}-{{b}} \\gt 0$ et $\\left\\lvert \\sqrt{{{a}}}-{{b}} \\right\\rvert=\\sqrt{{{a}}}-{{b}}$|$\\sqrt{{{a}}} \\lt {{b}}$ donc $\\sqrt{{{a}}}-{{b}} \\lt 0$ et $\\left\\lvert \\sqrt{{{a}}}-{{b}} \\right\\rvert={{b}}-\\sqrt{{{a}}}$}}"
+				]
+			},
+			"hint": "Compare d'abord $\\sqrt{ {{a}} }$ et ${{b}}$, par exemple avec leurs carrés : le signe de $\\sqrt{ {{a}} }-{{b}}$ décide de la réponse."
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:b>3|{{b}}-\\pi|\\pi-{{b}}}}",
+					"expectedErrors": [
+						{
+							"answer": "{{if:b>3|\\pi-{{b}}|{{b}}-\\pi}}",
+							"message": "Une valeur absolue est toujours positive : étudie le signe de ce qu'il y a entre les barres.",
+							"label": "Réponse négative (signe non étudié)"
+						},
+						{
+							"answer": "\\pi+{{b}}",
+							"message": "Une valeur absolue ne change pas un moins en plus au milieu de l'expression : elle change le signe de toute l'expression, si elle est négative.",
+							"label": "Moins changé en plus"
+						}
+					]
+				}
+			],
+			"statement": "Calcule.\n\n$$\\left\\lvert \\pi-{{b}} \\right\\rvert=?$$",
+			"variables": [
+				{
+					"name": "b",
+					"expression": "1..6"
+				}
+			],
+			"correction": {
+				"steps": [
+					"{{if:b>3|$\\pi\\approx3{,}14 \\lt {{b}}$ donc $\\pi-{{b}} \\lt 0$ et $\\left\\lvert \\pi-{{b}} \\right\\rvert=\\textcolor{{{color:primary.0}}}{{{b}}-\\pi}$|$\\pi\\approx3{,}14 \\gt {{b}}$ donc $\\pi-{{b}} \\gt 0$ et $\\left\\lvert \\pi-{{b}} \\right\\rvert=\\textcolor{{{color:primary.0}}}{\\pi-{{b}}}$}}"
+				]
+			},
+			"hint": "$\\pi\\approx3{,}14$ : $\\pi-{{b}}$ est-il positif ou négatif ? Une valeur absolue est toujours positive."
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["3-\\sqrt{5}"],
+			"expected": {
+				"status": "correct",
+				"constraintViolations": []
+			},
+			"variables": {
+				"a": "5",
+				"b": "3"
+			},
+			"description": "|√5-3| = 3-√5",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["-\\sqrt{5}+3"],
+			"expected": {
+				"status": "correct",
+				"constraintViolations": []
+			},
+			"variables": {
+				"a": "5",
+				"b": "3"
+			},
+			"description": "|√5-3| : ordre libre -√5+3",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["\\sqrt{5}-3"],
+			"expected": {
+				"status": "incorrect",
+				"constraintViolations": [],
+				"expectedErrorMessage": "Une valeur absolue est toujours positive : étudie le signe de ce qu'il y a entre les barres."
+			},
+			"variables": {
+				"a": "5",
+				"b": "3"
+			},
+			"description": "|√5-3| : √5-3 (signe non étudié) refusé",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["\\sqrt{7}-1"],
+			"expected": {
+				"status": "correct",
+				"constraintViolations": []
+			},
+			"variables": {
+				"a": "7",
+				"b": "1"
+			},
+			"description": "|√7-1| = √7-1",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["\\sqrt{7}+1"],
+			"expected": {
+				"status": "incorrect",
+				"constraintViolations": [],
+				"expectedErrorMessage": "Une valeur absolue ne change pas un moins en plus au milieu de l'expression : elle change le signe de toute l'expression, si elle est négative."
+			},
+			"variables": {
+				"a": "7",
+				"b": "1"
+			},
+			"description": "|√7-1| : √7+1 refusé",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["4-\\pi"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"b": "4"
+			},
+			"description": "|π − 4| = 4 − π",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["-\\pi+4"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"b": "4"
+			},
+			"description": "|π − 4| : ordre libre −π + 4",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["\\pi-4"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Une valeur absolue est toujours positive : étudie le signe de ce qu'il y a entre les barres."
+			},
+			"variables": {
+				"b": "4"
+			},
+			"description": "|π − 4| : π − 4 (signe non étudié)",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["\\pi+4"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Une valeur absolue ne change pas un moins en plus au milieu de l'expression : elle change le signe de toute l'expression, si elle est négative."
+			},
+			"variables": {
+				"b": "4"
+			},
+			"description": "|π − 4| : π + 4 refusé",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["\\pi-3"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"b": "3"
+			},
+			"description": "|π − 3| = π − 3",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["3-\\pi"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"b": "3"
+			},
+			"description": "|π − 3| : 3 − π refusé",
+			"variationIndex": 1
+		}
+	]
+}

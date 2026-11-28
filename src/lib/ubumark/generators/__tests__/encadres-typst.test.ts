@@ -8,7 +8,7 @@
  * titre et le bord portent l'information).
  */
 import { describe, it, expect } from 'vitest';
-import { parseMarkdown } from '$lib/ubumark';
+import { parseMarkdown } from '#lib/ubumark/index.ts';
 import { generateTypst } from '../typst-generator';
 
 const typst = (md: string, language?: string) =>

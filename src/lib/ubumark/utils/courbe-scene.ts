@@ -27,11 +27,11 @@ import type {
 	CourbeWindow
 } from '../types/courbe';
 import { COURBE_LIMITS, courbeRangeProblem } from '../types/courbe';
-import type { ContentLocale } from '$lib/types/locale';
-import { createSafeEvaluator } from '$lib/mathAST/eval/compile';
-import { sampleFunction } from '$lib/geometry-core/viewport/sampler';
-import { computeGridStep } from '$lib/geometry-core/viewport/grid';
-import { computeCobwebPath, createRecurrenceFunctionEvaluator } from '$lib/grapheur/sequence';
+import type { ContentLocale } from '#lib/types/locale.ts';
+import { createSafeEvaluator } from '#lib/mathAST/eval/compile.ts';
+import { sampleFunction } from '#lib/geometry-core/viewport/sampler.ts';
+import { computeGridStep } from '#lib/geometry-core/viewport/grid.ts';
+import { computeCobwebPath, createRecurrenceFunctionEvaluator } from '#lib/grapheur/sequence.ts';
 
 // ============================================================================
 // TYPES
@@ -70,6 +70,8 @@ export interface SceneStaircase {
 	guides: { from: ScenePoint; to: ScenePoint }[];
 	/** Option `termes` : étiquettes u_k sous l'axe, sans chevauchement */
 	termLabels: { n: number; x: number }[];
+	/** Escalier à construire (`construire N`) : u₀ marqué sur l'axe, d'où l'élève part */
+	start?: ScenePoint;
 }
 
 /** Suite : un disque par terme visible (n ; u_n), points non reliés — ou un escalier */
@@ -453,7 +455,8 @@ function staircaseOf(
 	size: CourbeSize,
 	withDiagonal: boolean,
 	relationColor: CourbeColor,
-	inside: (x: number, y: number) => boolean
+	inside: (x: number, y: number) => boolean,
+	building: boolean
 ): { staircase: SceneStaircase; clipped: boolean } {
 	const relation = seq.staircase!.relation;
 	// Le chemin du grapheur part de (u0 ; 0) : ici, de l'axe tel qu'il est dessiné
@@ -495,7 +498,8 @@ function staircaseOf(
 			diagonal,
 			steps: clipPolyline(path, w),
 			guides,
-			termLabels
+			termLabels,
+			...(building && path.length > 0 && { start: path[0] })
 		},
 		clipped: path.some((p) => !inside(p.x, p.y))
 	};
@@ -707,7 +711,8 @@ export function buildCourbeScene(input: CourbeSpec, options: CourbeSceneOptions 
 				input.size,
 				withDiagonal,
 				severalStaircases ? seq.color : 'noir',
-				inside
+				inside,
+				seq.staircase.build === true
 			);
 			if (staircase.curve.length === 0) {
 				warnings.push({

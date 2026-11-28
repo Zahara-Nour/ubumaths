@@ -27,16 +27,16 @@ import {
 } from '../helpers/database/trigger-test-helpers';
 import { createAuthenticatedClient } from '../helpers/database/supabase-client';
 import { TestData } from '../helpers/database/test-data-factory';
-import type { Database } from '$lib/types/database';
-import type { MarketplaceTrade } from '$lib/types/marketplace';
+import type { Database } from '#lib/types/database.ts';
+import type { MarketplaceTrade } from '#lib/types/marketplace.ts';
 
 // ============================================================================
 // TYPES
 // ============================================================================
 
 type Client = SupabaseClient<Database>;
-type TradeModule = typeof import('$lib/stores/tradeRealtime.svelte');
-type RealtimeModule = typeof import('$lib/stores/supabaseRealtime.svelte');
+type TradeModule = typeof import('#lib/stores/tradeRealtime.svelte.ts');
+type RealtimeModule = typeof import('#lib/stores/supabaseRealtime.svelte.ts');
 
 interface Session {
 	client: Client;
@@ -48,7 +48,7 @@ interface Session {
 // CONSTANTS
 // ============================================================================
 
-vi.mock('$app/environment', () => ({ browser: true, building: false, dev: true, version: '1' }));
+vi.mock('$app/env', () => ({ browser: true, building: false, dev: true, version: '1' }));
 
 const service = createServiceRoleClient();
 
@@ -76,8 +76,8 @@ function stubDocument(): void {
 async function openSession(email: string, userId: string): Promise<Session> {
 	const client = await createAuthenticatedClient(email);
 	vi.resetModules();
-	const { tradeRealtimeStore } = await import('$lib/stores/tradeRealtime.svelte');
-	const { supabaseRealtimeManager } = await import('$lib/stores/supabaseRealtime.svelte');
+	const { tradeRealtimeStore } = await import('#lib/stores/tradeRealtime.svelte.ts');
+	const { supabaseRealtimeManager } = await import('#lib/stores/supabaseRealtime.svelte.ts');
 	supabaseRealtimeManager.init(client, userId);
 	return { client, store: tradeRealtimeStore, realtime: supabaseRealtimeManager };
 }

@@ -4,8 +4,8 @@
 
 import type { LayoutServerLoad } from './$types';
 import { error } from '@sveltejs/kit';
-import { toGameSpell, toGamePlayer } from '$lib/types/game';
-import { createServerLogger } from '$lib/utils/logger';
+import { toGameSpell, toGamePlayer } from '#lib/types/game.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('(protected)/dashboard/navadra/+layout.server');
 

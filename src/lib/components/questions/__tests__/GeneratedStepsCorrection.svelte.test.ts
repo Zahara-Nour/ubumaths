@@ -6,13 +6,13 @@
 import { describe, it, expect } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import GeneratedStepsCorrection from '../GeneratedStepsCorrection.svelte';
-import type { RenderedStep } from '$lib/mathAST/common/step-renderer-base';
-import { parseLatex } from '$lib/mathAST/parser';
+import type { RenderedStep } from '#lib/mathAST/common/step-renderer-base.ts';
+import { parseLatex } from '#lib/mathAST/parser/index.ts';
 import {
 	generatePedagogicalIntegrationSteps,
 	PedagogicalIntegrationRenderer
-} from '$lib/mathAST/pedagogical-integration';
-import { explainExpansion } from '$lib/mathAST/pedagogical-simplify/expand-explained';
+} from '#lib/mathAST/pedagogical-integration/index.ts';
+import { explainExpansion } from '#lib/mathAST/pedagogical-simplify/expand-explained.ts';
 
 const steps: RenderedStep[] = [
 	{

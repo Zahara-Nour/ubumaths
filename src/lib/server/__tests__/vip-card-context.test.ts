@@ -9,7 +9,7 @@
 import { describe, it, expect, vi } from 'vitest';
 import { validateActivationContext } from '../vip-card-context';
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { Database } from '$lib/types/database';
+import type { Database } from '#lib/types/database.ts';
 
 /** Create a mock Supabase client with configurable query results */
 function createMockSupabase(queryResult: { data: unknown[] | null; error: unknown | null }) {

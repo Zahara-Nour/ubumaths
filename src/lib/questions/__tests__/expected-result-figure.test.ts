@@ -4,17 +4,17 @@
  *
  * Verso de la carte flash et copie corrigée : la figure elle-même (tracés de
  * l'élève, bonne droite), jamais la chaîne `droite(…)` en texte
- * (`docs/wip/geometrie-validation-progress.md` § 5, décision 3).
+ * (`docs/archive/wip/geometrie-validation-progress.md` § 5, décision 3).
  */
 import { describe, it, expect } from 'vitest';
-import '$lib/questions/construction/positions-setup';
+import '#lib/questions/construction/positions-setup.ts';
 import { buildExpectedResult, showsInstructionOnly } from '../expected-result';
 import { instructionOf } from '../correction-card-verdict';
 import { gradeQuestion } from '../grading';
-import { validateBlanks } from '$lib/utils/answer-validator';
+import { validateBlanks } from '#lib/utils/answer-validator.ts';
 import { generateInstance } from '../generator/instance-generator';
 import type { QuestionInstance, QuestionTemplate } from '../types';
-import { templateMarkdown } from '$lib/ubumark';
+import { templateMarkdown } from '#lib/ubumark/index.ts';
 
 const STATEMENT = [
 	'Trace la droite qui passe par les points A et B.',

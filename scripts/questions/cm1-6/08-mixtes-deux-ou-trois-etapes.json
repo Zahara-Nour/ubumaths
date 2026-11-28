@@ -1,0 +1,335 @@
+{
+	"id": "30c6f9d4-1485-437d-ba3e-ae400a7d7156",
+	"title": "Problèmes mixtes : les quatre opérations",
+	"description": "Les quatre opérations enchaînées : 12 tables de 8 et 9 tables de 6 ; 4 cahiers à 2,35 € sur un billet de 20 € ; un cinéma, ses places réservées et vendues ; un partage puis une addition",
+	"grades": ["CM1"],
+	"level": 11,
+	"delay": 120,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"spacesFromFourDigits": true,
+			"zeros": "off"
+		}
+	},
+	"variations": [
+		{
+			"statement": "Pour la fête de l'école, on installe ${{g}}$ tables de ${{n}}$ places et ${{h}}$ tables de ${{m}}$ places.\n\nCombien de personnes peuvent s'asseoir ?\n\n$?$ personnes peuvent s'asseoir.",
+			"variables": [
+				{
+					"name": "g",
+					"expression": "3..25"
+				},
+				{
+					"name": "n",
+					"expression": "4..12"
+				},
+				{
+					"name": "h",
+					"expression": "3..25"
+				},
+				{
+					"name": "m",
+					"expression": "4..12"
+				}
+			],
+			"conditions": ["g * n + h * m <= 999", "n != m", "g != h"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:g*n+h*m}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On calcule en trois étapes : les places des tables de ${{n}}$, celles des tables de ${{m}}$, puis on ajoute.",
+					"$${{g}} \\times {{n}} = {{eval:g*n}}$$",
+					"$${{h}} \\times {{m}} = {{eval:h*m}}$$",
+					"$${{eval:g*n}} + {{eval:h*m}} = \\textcolor{{{color:primary.0}}}{{{eval:g*n+h*m}}}$$",
+					"${{eval:g*n+h*m}}$ personnes peuvent s'asseoir.",
+					"Ordre de grandeur : il y a ${{eval:g+h}}$ tables de ${{n}}$ ou ${{m}}$ places, donc entre ${{eval:(g+h)*min(n,m)}}$ et ${{eval:(g+h)*max(n,m)}}$ places : c'est vraisemblable."
+				]
+			}
+		},
+		{
+			"statement": "Zoé achète ${{g}}$ cahiers à ${{eval:floor((p)/100)}}.{{eval:floor(mod(p,100)/10)}}{{eval:mod(p,10)}}~\\unit{€}$ l'un. Elle paie avec un billet de ${{B}}~\\unit{€}$.\n\nCombien le vendeur doit-il lui rendre ?\n\nIl rend $?~\\text{€}$.",
+			"variables": [
+				{
+					"name": "g",
+					"expression": "2..9"
+				},
+				{
+					"name": "B",
+					"expression": "20|50"
+				},
+				{
+					"name": "pE",
+					"expression": "1..9"
+				},
+				{
+					"name": "pC",
+					"expression": "1..99"
+				},
+				{
+					"name": "p",
+					"expression": "eval:100*pE+pC"
+				}
+			],
+			"conditions": ["g * p <= 100 * B - 100", "mod(pC,10) != 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(100*B-g*p)/100;d}}",
+					"requiredForm": {
+						"pattern": "a:number"
+					}
+				}
+			],
+			"correction": {
+				"steps": [
+					"On calcule en deux étapes : d'abord le prix des ${{g}}$ cahiers (${{g}}$ fois le même prix : on multiplie), puis la monnaie (on enlève).",
+					"$${{g}} \\times {{eval:floor((p)/100)}}.{{eval:floor(mod(p,100)/10)}}{{eval:mod(p,10)}} = {{eval:floor((g*p)/100)}}.{{eval:floor(mod(g*p,100)/10)}}{{eval:mod(g*p,10)}}$$",
+					"$${{B}} - {{eval:floor((g*p)/100)}}.{{eval:floor(mod(g*p,100)/10)}}{{eval:mod(g*p,10)}} = \\textcolor{{{color:primary.0}}}{{{eval:floor((100*B-g*p)/100)}}.{{eval:floor(mod(100*B-g*p,100)/10)}}{{eval:mod(100*B-g*p,10)}}}$$",
+					"Le vendeur rend ${{eval:floor((100*B-g*p)/100)}}.{{eval:floor(mod(100*B-g*p,100)/10)}}{{eval:mod(100*B-g*p,10)}}~\\unit{€}$ à Zoé.",
+					"On vérifie : ${{eval:floor((g*p)/100)}}.{{eval:floor(mod(g*p,100)/10)}}{{eval:mod(g*p,10)}} + {{eval:floor((100*B-g*p)/100)}}.{{eval:floor(mod(100*B-g*p,100)/10)}}{{eval:mod(100*B-g*p,10)}} = {{B}}$, on retrouve le billet."
+				]
+			}
+		},
+		{
+			"statement": "Un cinéma a ${{g}}$ rangées de ${{n}}$ places. Pour la séance du soir, ${{r}}$ places sont réservées sur Internet et ${{s}}$ places sont vendues au guichet.\n\nCombien de places restent libres ?\n\nIl reste $?$ places libres.",
+			"variables": [
+				{
+					"name": "g",
+					"expression": "8..25"
+				},
+				{
+					"name": "n",
+					"expression": "10..30"
+				},
+				{
+					"name": "r",
+					"expression": "20..200"
+				},
+				{
+					"name": "s",
+					"expression": "20..200"
+				}
+			],
+			"conditions": ["g * n <= 750", "g * n - r - s >= 10"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:g*n-r-s}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On calcule en trois étapes : toutes les places (on multiplie), les places prises (on ajoute), puis les places libres (on enlève).",
+					"$${{g}} \\times {{n}} = {{eval:g*n}}$$",
+					"$${{r}} + {{s}} = {{eval:r+s}}$$",
+					"$${{eval:g*n}} - {{eval:r+s}} = \\textcolor{{{color:primary.0}}}{{{eval:g*n-r-s}}}$$",
+					"Il reste ${{eval:g*n-r-s}}$ places libres.",
+					"On vérifie : ${{eval:g*n-r-s}} + {{eval:r+s}} = {{eval:g*n}}$, toutes les places du cinéma."
+				]
+			}
+		},
+		{
+			"statement": "Madame Roux partage ${{eval:g*p}}~\\unit{€}$ en parts égales entre ses ${{g}}$ petits-enfants. Lila, l'une d'eux, avait déjà ${{a}}~\\unit{€}$ dans sa tirelire.\n\nCombien Lila a-t-elle maintenant ?\n\nLila a $?~\\text{€}$.",
+			"variables": [
+				{
+					"name": "g",
+					"expression": "2..9"
+				},
+				{
+					"name": "p",
+					"expression": "10..90"
+				},
+				{
+					"name": "a",
+					"expression": "5..60"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:p+a}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On calcule en deux étapes : d'abord la part de Lila (on partage, on divise), puis ce qu'elle a en tout (on ajoute).",
+					"$${{eval:g*p}} \\div {{g}} = {{p}}$$",
+					"$${{p}} + {{a}} = \\textcolor{{{color:primary.0}}}{{{eval:p+a}}}$$",
+					"Lila a maintenant ${{eval:p+a}}~\\unit{€}$.",
+					"On vérifie : ${{g}} \\times {{p}} = {{eval:g*p}}$ ; Lila a plus qu'avant, mais moins que toute la somme partagée."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "tables : 12 × 8 + 9 × 6 = 150",
+			"variationIndex": 0,
+			"variables": {
+				"g": "12",
+				"n": "8",
+				"h": "9",
+				"m": "6"
+			},
+			"answers": ["150"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : tables comptées (21)",
+			"variationIndex": 0,
+			"variables": {
+				"g": "12",
+				"n": "8",
+				"h": "9",
+				"m": "6"
+			},
+			"answers": ["21"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : une seule sorte de tables (96)",
+			"variationIndex": 0,
+			"variables": {
+				"g": "12",
+				"n": "8",
+				"h": "9",
+				"m": "6"
+			},
+			"answers": ["96"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "cahiers : 20 − 4 × 2,35 = 10,60 €",
+			"variationIndex": 1,
+			"variables": {
+				"g": "4",
+				"B": "20",
+				"pE": "2",
+				"pC": "35",
+				"p": "235"
+			},
+			"answers": ["10,6"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : cahiers, un seul retiré (17,65 €)",
+			"variationIndex": 1,
+			"variables": {
+				"g": "4",
+				"B": "20",
+				"pE": "2",
+				"pC": "35",
+				"p": "235"
+			},
+			"answers": ["17,65"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : cahiers, le prix payé (9,40 €)",
+			"variationIndex": 1,
+			"variables": {
+				"g": "4",
+				"B": "20",
+				"pE": "2",
+				"pC": "35",
+				"p": "235"
+			},
+			"answers": ["9,4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "cinéma : 15 × 24 − 85 − 120 = 155",
+			"variationIndex": 2,
+			"variables": {
+				"g": "15",
+				"n": "24",
+				"r": "85",
+				"s": "120"
+			},
+			"answers": ["155"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : cinéma, le guichet oublié (275)",
+			"variationIndex": 2,
+			"variables": {
+				"g": "15",
+				"n": "24",
+				"r": "85",
+				"s": "120"
+			},
+			"answers": ["275"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : cinéma, rien retiré (360)",
+			"variationIndex": 2,
+			"variables": {
+				"g": "15",
+				"n": "24",
+				"r": "85",
+				"s": "120"
+			},
+			"answers": ["360"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "partage : 180 € entre 6, plus 25 € = 55 €",
+			"variationIndex": 3,
+			"variables": {
+				"g": "6",
+				"p": "30",
+				"a": "25"
+			},
+			"answers": ["55"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : partage, la part seule (30)",
+			"variationIndex": 3,
+			"variables": {
+				"g": "6",
+				"p": "30",
+				"a": "25"
+			},
+			"answers": ["30"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : partage oublié (205)",
+			"variationIndex": 3,
+			"variables": {
+				"g": "6",
+				"p": "30",
+				"a": "25"
+			},
+			"answers": ["205"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

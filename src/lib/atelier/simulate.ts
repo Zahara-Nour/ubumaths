@@ -16,14 +16,21 @@ import type { Atelier } from './atelier.svelte';
 import { isList, type ListObject } from './types';
 import { readListValue } from './parse';
 import { nextName } from './names';
-import { Fraction } from '$lib/statistics/fraction';
-import { formatFraction, formatStatNumber } from '$lib/statistics/format';
-import { roundNumber } from '$lib/statistics/rounding';
-import { simulateCounts, simulateRunningMean, simulateSamples } from '$lib/statistics/simulation';
-import { createRandomSource } from '$lib/utils/random';
-import { groupNumberText } from '$lib/mathAST/digit-grouping';
-import type { StatChartScene } from '$lib/ubumark/utils/stat-chart-scene';
-import { buildRunningMeanScene, buildSampleMeansScene } from '$lib/ubumark/utils/simulation-scene';
+import { Fraction } from '#lib/statistics/fraction.ts';
+import { formatFraction, formatStatNumber } from '#lib/statistics/format.ts';
+import { roundNumber } from '#lib/statistics/rounding.ts';
+import {
+	simulateCounts,
+	simulateRunningMean,
+	simulateSamples
+} from '#lib/statistics/simulation.ts';
+import { createRandomSource } from '#lib/utils/random.ts';
+import { groupNumberText } from '#lib/mathAST/digit-grouping.ts';
+import type { StatChartScene } from '#lib/ubumark/utils/stat-chart-scene.ts';
+import {
+	buildRunningMeanScene,
+	buildSampleMeansScene
+} from '#lib/ubumark/utils/simulation-scene.ts';
 import { lawMismatchMessage } from './pairs';
 
 // =============================================================================

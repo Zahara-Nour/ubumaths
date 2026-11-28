@@ -8,12 +8,12 @@
  */
 
 import { describe, expect, it } from 'vitest';
-import { parseCollectionContent } from '$lib/ubumark/parser/collection-parser';
+import { parseCollectionContent } from '#lib/ubumark/parser/collection-parser.ts';
 import {
 	buildCollectionScene,
 	type CollectionItem,
 	type CollectionScene
-} from '$lib/ubumark/utils/collection-scene';
+} from '#lib/ubumark/utils/collection-scene.ts';
 
 // ============================================================================
 // CONSTANTES

@@ -24,7 +24,7 @@ import {
 } from '../helpers/database/trigger-test-helpers';
 import { getPostgresClient } from '../helpers/database/postgres-client';
 import { TestData } from '../helpers/database/test-data-factory';
-import type { Database } from '$lib/types/database';
+import type { Database } from '#lib/types/database.ts';
 
 // ============================================================================
 // HELPERS

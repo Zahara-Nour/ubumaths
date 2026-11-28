@@ -7,10 +7,10 @@ import { describe, it, expect, afterEach } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import Horloge from '../Horloge.svelte';
 import MarkdownRenderer from '../../MarkdownRenderer.svelte';
-import MultipleChoiceInput from '$lib/components/question-inputs/MultipleChoiceInput.svelte';
-import { parseHorlogeContent } from '$lib/ubumark/parser/horloge-parser';
-import { HORLOGE_ARIA_LABEL, HORLOGE_UNAVAILABLE } from '$lib/ubumark/types/horloge';
-import type { ResolvedMarkdown } from '$lib/ubumark';
+import MultipleChoiceInput from '#lib/components/question-inputs/MultipleChoiceInput.svelte';
+import { parseHorlogeContent } from '#lib/ubumark/parser/horloge-parser.ts';
+import { HORLOGE_ARIA_LABEL, HORLOGE_UNAVAILABLE } from '#lib/ubumark/types/horloge.ts';
+import type { ResolvedMarkdown } from '#lib/ubumark/index.ts';
 
 let mains: HTMLElement[] = [];
 function mainElement(): HTMLElement {
@@ -63,7 +63,7 @@ describe('Horloge — cadran', () => {
 		expect(screen.container.querySelectorAll('.horloge-aiguille')).toHaveLength(1);
 	});
 
-	it('couleurs du thème : aucune écrite en dur, la petite aiguille en couleur d’accent', async () => {
+	it('couleurs du thème : aucune écrite en dur, la petite aiguille en orange foncé en clair, l’accent en sombre (E44)', async () => {
 		const target = mainElement();
 		const screen = await render(Horloge, { target, props: { node: node('heure: 9 h 35') } });
 		const svg = screen.container.querySelector('svg')!;
@@ -71,15 +71,20 @@ describe('Horloge — cadran', () => {
 			expect(el.hasAttribute('fill'), el.tagName).toBe(false);
 			expect(el.hasAttribute('stroke'), el.tagName).toBe(false);
 		}
-		const token = (name: string) => {
+		const colorOf = (css: string) => {
 			const probe = target.appendChild(document.createElement('span'));
-			probe.style.color = `var(${name})`;
+			probe.style.color = css;
 			const color = getComputedStyle(probe).color;
 			probe.remove();
 			return color;
 		};
+		const token = (name: string) => colorOf(`var(${name})`);
 		const stroke = (selector: string) => getComputedStyle(svg.querySelector(selector)!).stroke;
-		expect(stroke('.horloge-aiguille-heures')).toBe(token('--color-primary'));
+		// L'accent seul n'a que 2,2 de contraste sur le cadran clair (E44)
+		expect(stroke('.horloge-aiguille-heures')).toBe(
+			colorOf('light-dark(var(--color-fig-orange), var(--color-primary))')
+		);
+		expect(stroke('.horloge-aiguille-heures')).not.toBe(token('--color-foreground'));
 		expect(stroke('.horloge-aiguille-minutes')).toBe(token('--color-foreground'));
 		expect(token('--color-primary')).not.toBe(token('--color-foreground'));
 	});

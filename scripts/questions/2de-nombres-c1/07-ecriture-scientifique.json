@@ -1,0 +1,467 @@
+{
+	"id": "a80f1a52-d7ad-414e-ad42-6f0f2fe4e761",
+	"title": "Écriture scientifique",
+	"description": "Passer de l'écriture décimale à l'écriture scientifique et inversement ; reconnaître la bonne (pièges : 52 × 10⁻⁵ refusé, signe de l'exposant, décalage d'un rang)",
+	"grades": ["2"],
+	"level": 10,
+	"delay": 60,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Donne l'écriture scientifique de ce nombre.\n\n$${{eval:(M)*10^((p)-1);d}}=?$$",
+			"variables": [
+				{
+					"name": "M",
+					"expression": "11..99!m(10)"
+				},
+				{
+					"name": "p",
+					"expression": "-6|-5|-4|-3|-2|3|4|5|6|7"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(M)/10;d}}\\times10^{ {{p}} }",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:(M)/10;d}}\\times10^{ {{eval:-(p)}} }",
+							"message": "Le signe de ton exposant n'est pas le bon : regarde si le nombre est plus grand ou plus petit que 1.",
+							"label": "Signe de l'exposant"
+						},
+						{
+							"answer": "{{eval:(M)/10;d}}\\times10^{ {{eval:(p)+1}} }",
+							"message": "Tu t'es décalé d'un rang : compte de combien de rangs la virgule se déplace.",
+							"label": "Exposant décalé d'un rang (+1)"
+						},
+						{
+							"answer": "{{eval:(M)/10;d}}\\times10^{ {{eval:(p)-1}} }",
+							"message": "Tu t'es décalé d'un rang : compte de combien de rangs la virgule se déplace.",
+							"label": "Exposant décalé d'un rang (−1)"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Écriture scientifique** : $a\\times10^{n}$ avec $1\\leqslant a<10$ (un seul chiffre, non nul, avant la virgule) et $n$ entier relatif.",
+					"On place la virgule juste après le premier chiffre non nul : $a=\\textcolor{{{color:primary.0}}}{{{eval:(M)/10;d}}}$.",
+					"{{if:p<0|Pour passer de ${{eval:(M)/10;d}}$ à ${{eval:(M)*10^((p)-1);d}}$, la virgule recule de ${{eval:-(p)}}$ rangs vers la gauche : on divise par $10^{ {{eval:-(p)}} }$, l'exposant est négatif.|Pour passer de ${{eval:(M)/10;d}}$ à ${{eval:(M)*10^((p)-1);d}}$, la virgule avance de ${{p}}$ rangs vers la droite : on multiplie par $10^{ {{p}} }$.}}",
+					"$${{eval:(M)*10^((p)-1);d}}=\\textcolor{{{color:primary.0}}}{{{eval:(M)/10;d}}}\\times10^{\\textcolor{{{color:primary.1}}}{{{p}}}}$$",
+					"${{M}}\\times10^{ {{eval:(p)-1}} }$ a la même valeur, mais n'est pas une écriture scientifique : ${{M}}$ n'est pas compris entre $1$ et $10$."
+				]
+			},
+			"hint": "Place la virgule juste après le premier chiffre non nul, puis compte de combien de rangs elle s'est déplacée, et dans quel sens."
+		},
+		{
+			"statement": "Donne l'écriture décimale de ce nombre.\n\n$${{eval:(M)/10;d}}\\times10^{ {{p}} }=?$$",
+			"variables": [
+				{
+					"name": "M",
+					"expression": "11..99!m(10)"
+				},
+				{
+					"name": "p",
+					"expression": "-4|-3|-2|2|3|4|5"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(M)*10^((p)-1);d}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:(M)*10^(p);d}}",
+							"message": "Tu t'es décalé d'un rang : compte de combien de rangs la virgule se déplace.",
+							"label": "Virgule décalée d'un rang de trop"
+						},
+						{
+							"answer": "{{eval:(M)*10^((p)-2);d}}",
+							"message": "Tu t'es décalé d'un rang : compte de combien de rangs la virgule se déplace.",
+							"label": "Virgule décalée d'un rang de moins"
+						},
+						{
+							"answer": "{{eval:(M)*10^(-(p)-1);d}}",
+							"message": "Tu as déplacé la virgule dans le mauvais sens : regarde le signe de l'exposant.",
+							"label": "Virgule déplacée dans le mauvais sens"
+						},
+						{
+							"answer": "{{eval:(M)/10;d}}",
+							"message": "Ajouter des zéros après la virgule ne change pas la valeur du nombre : il faut déplacer la virgule.",
+							"label": "Zéros ajoutés après la virgule"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"Multiplier par $10^{n}$ ($n>0$), c'est décaler la virgule de $n$ rangs vers la droite ; multiplier par $10^{-n}$, c'est la décaler de $n$ rangs vers la gauche.",
+					"{{if:p<0|L'exposant vaut ${{p}}$ : la virgule de ${{eval:(M)/10;d}}$ recule de ${{eval:-(p)}}$ rangs vers la gauche, on complète par des zéros.|L'exposant vaut ${{p}}$ : la virgule de ${{eval:(M)/10;d}}$ avance de ${{p}}$ rangs vers la droite, on complète par des zéros.}}",
+					"$${{eval:(M)/10;d}}\\times10^{ {{p}} }=\\textcolor{{{color:primary.0}}}{{{eval:(M)*10^((p)-1);d}}}$$"
+				]
+			},
+			"hint": "Le signe de l'exposant dit dans quel sens déplacer la virgule, et l'exposant dit de combien de rangs."
+		},
+		{
+			"statement": "Quelle est l'écriture scientifique de ${{eval:(M)*10^((p)-1);d}}$ ?\n\n```choix\n- ${{eval:(M)/10;d}}\\times10^{ {{p}} }$\n- ${{M}}\\times10^{ {{eval:(p)-1}} }$\n- ${{eval:(M)/10;d}}\\times10^{ {{eval:-(p)}} }$\n- ${{eval:(M)/10;d}}\\times10^{ {{eval:(p)+1}} }$\n```",
+			"variables": [
+				{
+					"name": "M",
+					"expression": "11..99!m(10)"
+				},
+				{
+					"name": "p",
+					"expression": "-5|-4|-3|-2|3|4|5|6"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Écriture scientifique** : $a\\times10^{n}$ avec $1\\leqslant a<10$ (un seul chiffre, non nul, avant la virgule) et $n$ entier relatif.",
+					"$${{eval:(M)*10^((p)-1);d}}=\\textcolor{{{color:primary.0}}}{{{eval:(M)/10;d}}\\times10^{ {{p}} }}$$",
+					"${{M}}\\times10^{ {{eval:(p)-1}} }$ a la même valeur mais ${{M}}\\geqslant10$ : ce n'est pas une écriture scientifique. Les deux autres n'ont pas la bonne valeur."
+				]
+			},
+			"hint": "Une écriture scientifique a un seul chiffre non nul avant la virgule ; vérifie aussi qu'elle a la même valeur que le nombre."
+		},
+		{
+			"statement": "Associe chaque nombre à son écriture scientifique. Une étiquette est en trop.\n\n````associer\n- ${{eval:(M)*10^((e1)-1);d}}$ -> ${{eval:(M)/10;d}}\\times10^{ {{e1}} }$\n- ${{eval:(M)*10^((e2)-1);d}}$ -> ${{eval:(M)/10;d}}\\times10^{ {{e2}} }$\n- ${{eval:(M)*10^((e3)-1);d}}$ -> ${{eval:(M)/10;d}}\\times10^{ {{e3}} }$\n- ${{eval:(M)*10^((e4)-1);d}}$ -> ${{eval:(M)/10;d}}\\times10^{ {{e4}} }$\n- -> ${{eval:(M)/10;d}}\\times10^{ {{e5}} }$\n````",
+			"variables": [
+				{
+					"name": "M",
+					"expression": "11..99!m(10)"
+				},
+				{
+					"name": "q",
+					"expression": "2..4"
+				},
+				{
+					"name": "e1",
+					"expression": "eval:-(q)"
+				},
+				{
+					"name": "e2",
+					"expression": "eval:q"
+				},
+				{
+					"name": "e3",
+					"expression": "eval:(q)+1"
+				},
+				{
+					"name": "e4",
+					"expression": "eval:-((q)-1)"
+				},
+				{
+					"name": "e5",
+					"expression": "eval:-((q)+1)"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Écriture scientifique** : $a\\times10^{n}$ avec $1\\leqslant a<10$ ; l'exposant $n$ dit de combien de rangs se déplace la virgule de $a$ : vers la droite si $n>0$, vers la gauche si $n<0$.",
+					"Un nombre plus grand que $10$ a un exposant positif, un nombre plus petit que $1$ un exposant négatif.",
+					"${{eval:(M)*10^((e1)-1);d}}=\\textcolor{{{color:primary.0}}}{{{eval:(M)/10;d}}\\times10^{ {{e1}} }}$ ; ${{eval:(M)*10^((e4)-1);d}}=\\textcolor{{{color:primary.0}}}{{{eval:(M)/10;d}}\\times10^{ {{e4}} }}$.",
+					"${{eval:(M)*10^((e2)-1);d}}=\\textcolor{{{color:primary.0}}}{{{eval:(M)/10;d}}\\times10^{ {{e2}} }}$ ; ${{eval:(M)*10^((e3)-1);d}}=\\textcolor{{{color:primary.0}}}{{{eval:(M)/10;d}}\\times10^{ {{e3}} }}$.",
+					"${{eval:(M)/10;d}}\\times10^{ {{e5}} }={{eval:(M)*10^((e5)-1);d}}$ ne correspond à aucun des nombres."
+				]
+			},
+			"hint": "Regarde d'abord si le nombre est plus grand que $10$ ou plus petit que $1$ (signe de l'exposant), puis compte de combien de rangs la virgule se déplace."
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "0,000 52 = 5,2 × 10⁻⁴",
+			"variationIndex": 0,
+			"variables": {
+				"M": "52",
+				"p": "-4"
+			},
+			"answers": ["5,2\\times10^{-4}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Forme : 52 × 10⁻⁵ (pas scientifique)",
+			"variationIndex": 0,
+			"variables": {
+				"M": "52",
+				"p": "-4"
+			},
+			"answers": ["52\\times10^{-5}"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		},
+		{
+			"description": "Forme : 0,52 × 10⁻³ (pas scientifique)",
+			"variationIndex": 0,
+			"variables": {
+				"M": "52",
+				"p": "-4"
+			},
+			"answers": ["0,52\\times10^{-3}"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		},
+		{
+			"description": "Erreur : signe de l'exposant (5,2 × 10⁴)",
+			"variationIndex": 0,
+			"variables": {
+				"M": "52",
+				"p": "-4"
+			},
+			"answers": ["5,2\\times10^{4}"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Le signe de ton exposant n'est pas le bon : regarde si le nombre est plus grand ou plus petit que 1."
+			}
+		},
+		{
+			"description": "Erreur : décalage d'un rang (5,2 × 10⁻³)",
+			"variationIndex": 0,
+			"variables": {
+				"M": "52",
+				"p": "-4"
+			},
+			"answers": ["5,2\\times10^{-3}"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu t'es décalé d'un rang : compte de combien de rangs la virgule se déplace."
+			}
+		},
+		{
+			"description": "31 000 = 3,1 × 10⁴",
+			"variationIndex": 0,
+			"variables": {
+				"M": "31",
+				"p": "4"
+			},
+			"answers": ["3,1\\times10^{4}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Forme : 12 × 10³ pour 12 000",
+			"variationIndex": 0,
+			"variables": {
+				"M": "12",
+				"p": "4"
+			},
+			"answers": ["12\\times10^{3}"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		},
+		{
+			"description": "Forme : 31 000 recopié",
+			"variationIndex": 0,
+			"variables": {
+				"M": "31",
+				"p": "4"
+			},
+			"answers": ["31\\,000"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		},
+		{
+			"description": "3,1 × 10⁴ = 31 000",
+			"variationIndex": 1,
+			"variables": {
+				"M": "31",
+				"p": "4"
+			},
+			"answers": ["31\\,000"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 3,1 × 10⁴ = 310 000",
+			"variationIndex": 1,
+			"variables": {
+				"M": "31",
+				"p": "4"
+			},
+			"answers": ["310\\,000"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu t'es décalé d'un rang : compte de combien de rangs la virgule se déplace."
+			}
+		},
+		{
+			"description": "Erreur : 3,1 × 10⁴ = 3,100 00",
+			"variationIndex": 1,
+			"variables": {
+				"M": "31",
+				"p": "4"
+			},
+			"answers": ["3,10000"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Ajouter des zéros après la virgule ne change pas la valeur du nombre : il faut déplacer la virgule."
+			}
+		},
+		{
+			"description": "5,2 × 10⁻⁴ = 0,000 52",
+			"variationIndex": 1,
+			"variables": {
+				"M": "52",
+				"p": "-4"
+			},
+			"answers": ["0,000\\,52"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 5,2 × 10⁻⁴ = 0,0052",
+			"variationIndex": 1,
+			"variables": {
+				"M": "52",
+				"p": "-4"
+			},
+			"answers": ["0,0052"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Choix : 0,000 52 = 5,2 × 10⁻⁴",
+			"variationIndex": 2,
+			"variables": {
+				"M": "52",
+				"p": "-4"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Choix, erreur : 52 × 10⁻⁵ (pas scientifique)",
+			"variationIndex": 2,
+			"variables": {
+				"M": "52",
+				"p": "-4"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Choix, erreur : signe de l'exposant",
+			"variationIndex": 2,
+			"variables": {
+				"M": "52",
+				"p": "-4"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur prévue : Exposant décalé d'un rang (−1)",
+			"variationIndex": 0,
+			"variables": {
+				"M": "31",
+				"p": "4"
+			},
+			"answers": ["3,1\\times10^{3}"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu t'es décalé d'un rang : compte de combien de rangs la virgule se déplace."
+			}
+		},
+		{
+			"description": "Erreur prévue : Virgule décalée d'un rang de moins",
+			"variationIndex": 1,
+			"variables": {
+				"M": "31",
+				"p": "4"
+			},
+			"answers": ["3\\,100"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu t'es décalé d'un rang : compte de combien de rangs la virgule se déplace."
+			}
+		},
+		{
+			"description": "Erreur prévue : Virgule déplacée dans le mauvais sens",
+			"variationIndex": 1,
+			"variables": {
+				"M": "31",
+				"p": "4"
+			},
+			"answers": ["0,000\\,31"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as déplacé la virgule dans le mauvais sens : regarde le signe de l'exposant."
+			}
+		},
+		{
+			"description": "5,2 × 10⁵ = 520000 sans espace (espaces non exigées)",
+			"variationIndex": 1,
+			"variables": {
+				"M": "52",
+				"p": "5"
+			},
+			"answers": ["520000"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "5,2 × 10⁵ = 520 000",
+			"variationIndex": 1,
+			"variables": {
+				"M": "52",
+				"p": "5"
+			},
+			"answers": ["520\\,000"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Toutes bien associées",
+			"variationIndex": 3,
+			"variables": {
+				"M": "52",
+				"q": "3"
+			},
+			"answers": ["4", "0", "1", "2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 0,0052 et 0,52 échangés",
+			"variationIndex": 3,
+			"variables": {
+				"M": "52",
+				"q": "3"
+			},
+			"answers": ["2", "0", "1", "4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	],
+	"options": {
+		"constraints": {
+			"spaces": "off"
+		}
+	}
+}

@@ -13,7 +13,7 @@ import { solveInequality, InequalityNotSolvable } from '../index';
 import { parseLatex } from '../../../parser';
 import { formatInterval } from '../../../domain/format';
 import { closedEndpoint, interval, intervalSet } from '../../../domain/factory';
-import { posInfinityEndpoint } from '$lib/math/intervals/factory';
+import { posInfinityEndpoint } from '#lib/math/intervals/factory.ts';
 import { number, opposite } from '../../../factory';
 import { WebReplEngine } from '../../../cli/web/web-repl-engine';
 import { INEQUALITY_UNSOLVED_MESSAGE } from '../../../cli/commands/solve.command';

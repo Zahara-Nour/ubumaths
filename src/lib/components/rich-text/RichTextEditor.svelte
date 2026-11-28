@@ -21,15 +21,15 @@
 	</script>
 -->
 <script lang="ts">
-	import '$lib/utils/mathlive-styles';
-	import { lore } from '$lib/config/lore';
-	import { onMount } from 'svelte';
+	import '#lib/utils/mathlive-styles.ts';
+	import { lore } from '#lib/config/lore.ts';
+	import { onMount, untrack } from 'svelte';
 	import { Editor } from '@tiptap/core';
-	import { Button } from '$lib/components/ui/button';
-	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
-	import { getListColumns } from '$lib/extensions/list-columns-extension';
-	import * as Tabs from '$lib/components/ui/tabs';
-	import { Input } from '$lib/components/ui/input';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import * as DropdownMenu from '#lib/components/ui/dropdown-menu/index.ts';
+	import { getListColumns } from '#lib/extensions/list-columns-extension.ts';
+	import * as Tabs from '#lib/components/ui/tabs/index.ts';
+	import { Input } from '#lib/components/ui/input/index.ts';
 	import {
 		Bold,
 		Italic,
@@ -78,14 +78,14 @@
 		LoaderCircle,
 		QrCode
 	} from '@lucide/svelte';
-	import { QR_TEMPLATE } from '$lib/ubumark/parser/qr-parser';
-	import * as Dialog from '$lib/components/ui/dialog';
-	import ImageAttributePanel from '$lib/components/exercises/ImageAttributePanel.svelte';
+	import { QR_TEMPLATE } from '#lib/ubumark/parser/qr-parser.ts';
+	import * as Dialog from '#lib/components/ui/dialog/index.ts';
+	import ImageAttributePanel from '#lib/components/exercises/ImageAttributePanel.svelte';
 	import ImageGalleryModal from './ImageGalleryModal.svelte';
 	import type { GalleryImageInfo } from './types';
-	import { parseMarkdown } from '$lib/ubumark/parser';
-	import { toaster } from '$lib/stores/toaster.svelte';
-	import { browser } from '$app/environment';
+	import { parseMarkdown } from '#lib/ubumark/parser/index.ts';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
+	import { browser } from '$app/env';
 	// Import NU : côté serveur, `mathlive` résout vers `mathlive-ssr`, qui n'exporte pas
 	// `MathfieldElement` — un import nommé casserait le rendu serveur en build (garde :
 	// `__tests__/mathlive-imports-ssr.test.ts`). La classe est prise dans `onMount`.
@@ -103,9 +103,9 @@
 	import { createEditorExtensions, getEditorProps } from './editor-config';
 	import { tipTapToMarkdown } from './markdown-export';
 	import { markdownToTipTap } from './markdown-import';
-	import MarkdownRenderer from '$lib/components/markdown/MarkdownRenderer.svelte';
-	import MarkdownCodeEditor from './MarkdownCodeEditor.svelte';
-	import type { MarkdownDisplayMode } from '$lib/components/markdown/types';
+	import MarkdownRenderer from '#lib/components/markdown/MarkdownRenderer.svelte';
+	import CodeEditor from '#lib/components/CodeEditor.svelte';
+	import type { MarkdownDisplayMode } from '#lib/components/markdown/types.ts';
 	import type {
 		RichTextMode,
 		MathTemplateLevel,
@@ -113,7 +113,7 @@
 		EditorPreset,
 		ImageUploadConfig
 	} from './types';
-	import type { GenericFunctionConfig } from '$lib/mathAST/parser/types';
+	import type { GenericFunctionConfig } from '#lib/mathAST/parser/types.ts';
 
 	// Component Props
 	interface Props {
@@ -551,10 +551,11 @@
 					content: initialContent,
 					editorProps,
 					editable: !disabled,
-					onCreate: () => {
+					onCreate: ({ editor: ed }) => {
 						// TipTap signals it's fully initialized - now safe to track user changes
 						hasInitialized = true;
 						isUpdatingFromProp = false;
+						syncJsonFromHtml(ed);
 						updateFormattingState();
 					},
 					onUpdate: ({ editor: ed }) => {
@@ -617,8 +618,21 @@
 			isUpdatingFromProp = true;
 			editor.commands.setContent(htmlValue);
 			isUpdatingFromProp = false;
+			const ed = editor;
+			untrack(() => syncJsonFromHtml(ed));
 		}
 	});
+
+	/**
+	 * Contenu posé depuis `htmlValue` (brouillon repris) : aucun événement d'édition
+	 * ne suit, donc `jsonValue` resterait vide tant que personne ne tape. Si la page
+	 * le lie (valeur `null`, pas `undefined`), on lui donne le document de l'éditeur.
+	 */
+	function syncJsonFromHtml(ed: Editor): void {
+		if (mode === 'form' && jsonValue === null && htmlValue) {
+			jsonValue = ed.getJSON();
+		}
+	}
 
 	/**
 	 * Sync external jsonValue changes (form mode only)
@@ -2054,9 +2068,11 @@
 				<!-- CodeMirror markdown editor - shown only in markdown mode -->
 				{#if isMarkdownEditMode}
 					<div class="h-full pt-10">
-						<MarkdownCodeEditor
+						<CodeEditor
 							bind:value={rawMarkdownContent}
 							{disabled}
+							language="markdown"
+							ariaLabel="Éditeur Markdown"
 							placeholder="Entrez votre markdown ici..."
 						/>
 					</div>

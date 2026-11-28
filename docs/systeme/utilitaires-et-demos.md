@@ -46,23 +46,20 @@ couvre:
   - 'src/routes/(protected)/dev/polices/+page.svelte'
   - 'src/routes/(protected)/dev/polices/exercices-demo.json'
   - 'src/routes/(protected)/dev/polices/shantell-pdf.ts'
+  - 'src/routes/(protected)/dev/polices/luciole/+page.svelte'
+  - 'src/routes/(protected)/dev/polices/luciole/luciole-pdf.ts'
   - 'src/routes/(public)/upsilon/+page.svelte'
-  - src/lib/stores/listNumbering.svelte.ts
   - src/lib/styles/list-numbering.css
   - src/lib/types/list-numbering.ts
   - src/lib/components/ClassStatsCard.svelte
   - src/lib/components/CodeViewer.svelte
   - src/lib/components/DynamicMathField.svelte
-  - src/lib/components/JsonViewer.svelte
-  - src/lib/components/LaTeXEditor.svelte
+  - src/lib/components/CodeEditor.svelte
   - src/lib/components/LoggerDemo.svelte
   - src/lib/components/MathField.svelte
   - src/lib/components/ToastDemo.svelte
   - src/lib/components/teacher/StudentQuickActionsTable.svelte
   - src/lib/constants/deadlines.ts
-  - src/lib/index.ts
-  - src/lib/supabase-test.ts
-  - src/lib/supabaseClient.ts
   - src/lib/transitions/slide-transition.ts
   - src/lib/utils.ts
   - src/lib/utils/auth.ts
@@ -86,9 +83,9 @@ couvre:
 
 # Utilitaires, composants isolés et pages de démo
 
-> Vérifié contre le code le 2026-10-12 (commit 4ab55c5e8) ; `french-math.ts` le 2026-10-23 ; pages de
+> Vérifié contre le code le 2026-10-12 (commit 4ab55c5e8) ; fiche du bloc yohaku le 2026-11-28 ; fiche du bloc python-a-ecrire le 2026-11-28 ; fiche du bloc engrenages le 2026-11-28 ; `french-math.ts` le 2026-10-23 ; pages de
 > démo et de mise au point le 2026-10-24 ; vitrine `/demo` et clôture du chantier demo-debug le 2026-10-25 ;
-> fiche du bloc patron (gestes) le 2026-10-30 ; fiche de la boîte à moustaches le 2026-11-01, construire la boîte le 2026-11-01 ; cases à compléter des variations (`?`, `?flèche`, `??n` à ne pas écrire), étiquette indicée de l'arbre (`G_1`), fiches collection et monnaie le 2026-11-09.
+> fiche du bloc patron (gestes) le 2026-10-30 ; fiche de la boîte à moustaches le 2026-11-01, construire la boîte le 2026-11-01 ; cases à compléter des variations (`?`, `?flèche`, `??n` à ne pas écrire), étiquette indicée de l'arbre (`G_1`), fiches collection et monnaie le 2026-11-09 ; fiche du programme tortue le 2026-11-14, `blocs:` le 2026-11-15, `niveau:` (4e / 3e) le 2026-11-17 ; fiche du programme de calcul le 2026-11-14, `niveau:` (4e / 3e) le 2026-11-16 ; fiche du robot le 2026-11-15 ; fiche du labyrinthe le 2026-11-24, grille trop large pour un téléphone (réglage `grille:` et exemple d’erreur) le 2026-11-24 ; fiche du repère : construire l'escalier (``courbe, `construire N`, outil 48) le 2026-11-28.
 > Ce fichier **recense** : il dit ce que fait chaque fichier, qui l'appelle, et s'il est mort.
 > Chaque fichier de l'index est dans le `couvre:` : une PR qui le modifie relit sa ligne.
 > Il ne remplace pas la doc du domaine qui l'utilise ; quand elle existe, elle est citée.
@@ -101,7 +98,7 @@ Trois familles de fichiers sans domaine propre :
 
 1. les **pages de démo et de mise au point** (`/demo/**`, `/dev/**`) et deux pages publiques
    isolées (`/a-propos`, `/upsilon`) ;
-2. la **numérotation des listes** à l'affichage (store, CSS, types) ;
+2. la **numérotation des listes** à l'affichage (CSS, types) ;
 3. les **utilitaires** de `src/lib/utils/` et les composants isolés, en index.
 
 Un appelant compté ici est un import réel (`git grep "<chemin d'import>" -- src`), tests exclus.
@@ -133,7 +130,7 @@ journal dans `docs/archive/wip/demo-debug-progress.md`) :
   carrefour de la vitrine (plus bas).
 - **Plus rien sous `/dashboard/admin/debug/`**. Seule la page de contrôle de la base y est restée,
   devenue `/dashboard/admin/integrite-donnees` (« Intégrité des données »).
-- **Anciennes adresses** (`/test-*`, `/geometry-demo/…`, `/slides/…`, `/blockly/playground`,
+- **Anciennes adresses** (`/test-*`, `/geometry-demo/…`, `/slides/…`,
   `/construction-demo`, `/dashboard/admin/debug/…`, anciennes `/demo/…`) : redirigées en 308 par
   `redirectHandle` (table `MOVED_PAGES`, [auth.md](auth.md#la-chaîne-de-handles)), sous-pages et
   query string comprises ; une ancienne adresse publique mène donc le visiteur à la connexion.
@@ -168,34 +165,35 @@ Les pages de mise au point restent hors du sitemap (`/dev` est protégé, donc a
 aux robots par `static/robots.txt` (`/test-`, `/dev`, `/aide-ecriture`) ; `/a-propos` et `/upsilon`
 sont de vraies pages.
 
-| Page                          | Servie à                                   | Liens entrants                                         | Contenu                                                                                                                                                              | Statut                |
-| ----------------------------- | ------------------------------------------ | ------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------- |
-| `/a-propos`                   | tous                                       | `InfoPanel`, tour du Royaume, vue « parents », sitemap | « Chiphre, c'est quoi ? » : le manifeste pour les parents (`docs/Chiphres/lore-pataphysique.md`, section I)                                                          | **Vraie page**        |
-| `/upsilon`                    | tous                                       | `Header`, `Sidebar`, tour du Royaume, sitemap          | Simulateur de la calculatrice Upsilon dans une `iframe`                                                                                                              | **Vraie page**        |
-| `/demo`                       | tous (prérendue : `+page.ts`, `prerender`) | vues des publics, `InfoPanel`, sitemap                 | Accueil de la vitrine : une carte par vitrine, dans l'ordre de `DEMO_PAGES` (`src/lib/seo/demo-pages.ts`)                                                            | Vitrine               |
-| `/dev/bancs-essai`            | admin (`/dev`)                             | `/dev`                                                 | Champ MathLive (`MathField`, `DynamicMathField`), cartes retournables, journal (`LoggerDemo`), toasts (`ToastDemo`)                                                  | Mise au point         |
-| `/dev/modeles`                | admin (`/dev`)                             | `/dev`                                                 | Revue de tous les modèles en base par programme, branche, notion : fiches, aperçus des variations, verdicts (voir [questions.md](questions.md))                      | Mise au point         |
-| `/dev/carte-question`         | admin (`/dev`)                             | `/dev`                                                 | `FlashCard` sur 11 questions d'exemple (dont les cases « figure » CP-058, 059, 060) : réglages (`MySelect`, `MyCheckbox`), journaux des événements, instance en JSON | Mise au point         |
-| `/dev/editeur-riche`          | admin (`/dev`)                             | `/dev`                                                 | `RichTextEditor` : modes chat et form, import et export Markdown, onglet « Messagerie » (`Messagerie.svelte`)                                                        | Mise au point         |
-| `/dev/theme`                  | admin (`/dev`)                             | `/dev`                                                 | « Référence des composants Shadcn » dans les deux thèmes (1 094 lignes) ; ex-`/demo/theme-test`, carte retirée de `/demo`                                            | Démo                  |
-| `/aide-ecriture/cercle-trigo` | prof (`/aide-ecriture`)                    | `/aide-ecriture`, `/aide-ecriture/blocs`               | Fiche du bloc `trig` (cercle trigonométrique) du catalogue des blocs, à son adresse d'origine                                                                        | Aide à l'écriture     |
-| `/aide-ecriture/blocs`        | prof (`/aide-ecriture`)                    | `/aide-ecriture`                                       | Catalogue des blocs spéciaux d'ubumark : une carte par bloc (`BLOCK_CATALOG`)                                                                                        | Aide à l'écriture     |
-| `/aide-ecriture/blocs/<bloc>` | prof (`/aide-ecriture`)                    | `/aide-ecriture/blocs`                                 | Fiche d'un bloc : réglages, exemples à copier, erreurs fréquentes, zone « Essayer »                                                                                  | Aide à l'écriture     |
-| `/dev/cadres`                 | admin (`/dev`)                             | `/dev`                                                 | Cadres arrondis autour d'une formule : `\htmlStyle` (`colorLatex`) contre `\enclose{roundedbox}`                                                                     | Mise au point, gardée |
-| `/dev/polices`                | admin (`/dev`)                             | `/dev`                                                 | Bascule des polices de formules KaTeX ↔ Shantell (`mathlive-fonts.ts`)                                                                                               | Mise au point, gardée |
-| `/dev/structure`              | admin (`/dev`)                             | `/dev`                                                 | « Structure d'une expression » au survol (`$lib/mathAST/structure`)                                                                                                  | **Chantier vivant**   |
-| `/demo/structure`             | tous                                       | `/demo`, sitemap                                       | Vitrine : la formule de `/dev/structure` seule, 6 exemples, réglages par défaut                                                                                      | Vitrine               |
-| `/demo/cercle-trigo`          | tous                                       | `/demo`, sitemap                                       | Vitrine : 4 exemples du bloc `trig` (exploration, π/6, cos x = 1/2, cos x > 1/2), sans le texte du bloc                                                              | Vitrine               |
-| `/demo/blocs`                 | tous                                       | `/demo`, sitemap                                       | Vitrine : 9 blocs du catalogue rangés par niveau (primaire, collège, lycée), texte du prof replié                                                                    | Vitrine               |
-| `/demo/cartes`                | tous                                       | `/demo`, sitemap                                       | Vitrine : 4 cartes VIP écrites dans le code, une par rareté, avec leur effet holographique                                                                           | Vitrine               |
-| `/demo/lexique`               | tous                                       | `/demo`, sitemap                                       | Vitrine : mots du dictionnaire soulignés dans une question et 5 phrases, sélecteur de niveau                                                                         | Vitrine               |
-| `/demo/corriges`              | tous                                       | `/demo`, sitemap                                       | Vitrine : une page de Corrigé de fiche (écriture manuscrite) en image fixe, `static/demo/corriges/`                                                                  | Vitrine               |
-| `/demo/geometrie`             | tous                                       | `/demo`, sitemap                                       | Vitrine : 10 figures manipulables (collège, lycée, pour le plaisir), script replié, réduites à la largeur de l'écran                                                 | Vitrine               |
-| `/demo/constructions`         | tous                                       | `/demo`, sitemap                                       | Vitrine : 3 constructions à la règle et au compas, lecteur seul ouvert sur la figure finie, script replié                                                            | Vitrine               |
-| `/demo/questions`             | tous                                       | `/demo`, sitemap                                       | Vitrine : une série de 4 questions sous ses 5 formes en onglets, révisions espacées simulées, rien d'enregistré                                                      | Vitrine               |
-| `/demo/editeur`               | tous                                       | `/demo`, sitemap                                       | Vitrine : une phrase écrite dans l'éditeur, vue dans 3 usages (message, cahier de texte, énoncé), rien d'enregistré                                                  | Vitrine               |
-| `/demo/diaporama`             | tous                                       | `/demo`, sitemap                                       | Vitrine : 13 diapositives (navigation, fragments, formules, Python, cercle trigo, figure, minuteur, annotation, tableau blanc)                                       | Vitrine               |
-| `/dev/saisie-naturelle`       | admin (`/dev`)                             | `/dev`                                                 | Saisie naturelle de Calcul, sans point, avec le panneau « sous le capot » ; le champ (`NaturalField.svelte`) sert aussi l'atelier, réglage « Écriture mathématique » | Prototype jetable     |
+| Page                          | Servie à                                   | Liens entrants                                         | Contenu                                                                                                                                                                                                                                                                                                      | Statut                |
+| ----------------------------- | ------------------------------------------ | ------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | --------------------- |
+| `/a-propos`                   | tous                                       | `InfoPanel`, tour du Royaume, vue « parents », sitemap | « Chiphre, c'est quoi ? » : le manifeste pour les parents (`docs/Chiphres/lore-pataphysique.md`, section I), puis le crédit des polices                                                                                                                                                                      | **Vraie page**        |
+| `/upsilon`                    | tous                                       | `Header`, `Sidebar`, tour du Royaume, sitemap          | Simulateur de la calculatrice Upsilon dans une `iframe`                                                                                                                                                                                                                                                      | **Vraie page**        |
+| `/demo`                       | tous (prérendue : `+page.ts`, `prerender`) | vues des publics, `InfoPanel`, sitemap                 | Accueil de la vitrine : une carte par vitrine, dans l'ordre de `DEMO_PAGES` (`src/lib/seo/demo-pages.ts`)                                                                                                                                                                                                    | Vitrine               |
+| `/dev/bancs-essai`            | admin (`/dev`)                             | `/dev`                                                 | Champ MathLive (`MathField`, `DynamicMathField`), cartes retournables, journal (`LoggerDemo`), toasts (`ToastDemo`)                                                                                                                                                                                          | Mise au point         |
+| `/dev/modeles`                | admin (`/dev`)                             | `/dev`                                                 | Revue de tous les modèles en base par programme, branche, notion : fiches, aperçus des variations, verdicts (voir [questions.md](questions.md))                                                                                                                                                              | Mise au point         |
+| `/dev/carte-question`         | admin (`/dev`)                             | `/dev`                                                 | `FlashCard` sur 13 questions d'exemple (dont les cases « figure » CP-058, 059, 060, la case « résolution » et la case « droite paramétrique » ; `?question=resolution` ou `?question=droite_parametrique` l'ouvre d'emblée) : réglages (`MySelect`, `MyCheckbox`), journaux des événements, instance en JSON | Mise au point         |
+| `/dev/editeur-riche`          | admin (`/dev`)                             | `/dev`                                                 | `RichTextEditor` : modes chat et form, import et export Markdown, onglet « Messagerie » (`Messagerie.svelte`)                                                                                                                                                                                                | Mise au point         |
+| `/dev/theme`                  | admin (`/dev`)                             | `/dev`                                                 | « Référence des composants Shadcn » dans les deux thèmes (1 094 lignes) ; ex-`/demo/theme-test`, carte retirée de `/demo`                                                                                                                                                                                    | Démo                  |
+| `/aide-ecriture/cercle-trigo` | prof (`/aide-ecriture`)                    | `/aide-ecriture`, `/aide-ecriture/blocs`               | Fiche du bloc `trig` (cercle trigonométrique) du catalogue des blocs, à son adresse d'origine                                                                                                                                                                                                                | Aide à l'écriture     |
+| `/aide-ecriture/blocs`        | prof (`/aide-ecriture`)                    | `/aide-ecriture`                                       | Catalogue des blocs spéciaux d'ubumark : une carte par bloc (`BLOCK_CATALOG`)                                                                                                                                                                                                                                | Aide à l'écriture     |
+| `/aide-ecriture/blocs/<bloc>` | prof (`/aide-ecriture`)                    | `/aide-ecriture/blocs`                                 | Fiche d'un bloc : réglages, exemples à copier, erreurs fréquentes, zone « Essayer »                                                                                                                                                                                                                          | Aide à l'écriture     |
+| `/dev/cadres`                 | admin (`/dev`)                             | `/dev`                                                 | Cadres arrondis autour d'une formule : `\htmlStyle` (`colorLatex`) contre `\enclose{roundedbox}`                                                                                                                                                                                                             | Mise au point, gardée |
+| `/dev/polices`                | admin (`/dev`)                             | `/dev`                                                 | Bascule des polices de formules KaTeX ↔ Shantell ↔ Luciole Math (`mathlive-fonts.ts`)                                                                                                                                                                                                                        | Mise au point, gardée |
+| `/dev/polices/luciole`        | admin (`/dev`)                             | `/dev`, `/dev/polices`                                 | Essai « Lecture facilitée » : consignes en Luciole, formules en Luciole Math (écran en MathML, PDF Typst)                                                                                                                                                                                                    | **Chantier vivant**   |
+| `/dev/structure`              | admin (`/dev`)                             | `/dev`                                                 | « Structure d'une expression » au survol (`#lib/mathAST/structure/index.ts`)                                                                                                                                                                                                                                 | **Chantier vivant**   |
+| `/demo/structure`             | tous                                       | `/demo`, sitemap                                       | Vitrine : la formule de `/dev/structure` seule, 6 exemples, réglages par défaut                                                                                                                                                                                                                              | Vitrine               |
+| `/demo/cercle-trigo`          | tous                                       | `/demo`, sitemap                                       | Vitrine : 4 exemples du bloc `trig` (exploration, π/6, cos x = 1/2, cos x > 1/2), sans le texte du bloc                                                                                                                                                                                                      | Vitrine               |
+| `/demo/blocs`                 | tous                                       | `/demo`, sitemap                                       | Vitrine : 10 blocs du catalogue rangés par niveau (primaire, collège, lycée), texte du prof replié                                                                                                                                                                                                           | Vitrine               |
+| `/demo/cartes`                | tous                                       | `/demo`, sitemap                                       | Vitrine : 4 cartes VIP écrites dans le code, une par rareté, avec leur effet holographique                                                                                                                                                                                                                   | Vitrine               |
+| `/demo/lexique`               | tous                                       | `/demo`, sitemap                                       | Vitrine : mots du dictionnaire soulignés dans une question et 5 phrases, sélecteur de niveau                                                                                                                                                                                                                 | Vitrine               |
+| `/demo/corriges`              | tous                                       | `/demo`, sitemap                                       | Vitrine : une page de Corrigé de fiche (écriture manuscrite) en image fixe, `static/demo/corriges/`                                                                                                                                                                                                          | Vitrine               |
+| `/demo/geometrie`             | tous                                       | `/demo`, sitemap                                       | Vitrine : 10 figures manipulables (collège, lycée, pour le plaisir), script replié, réduites à la largeur de l'écran                                                                                                                                                                                         | Vitrine               |
+| `/demo/constructions`         | tous                                       | `/demo`, sitemap                                       | Vitrine : 3 constructions à la règle et au compas, lecteur seul ouvert sur la figure finie, script replié                                                                                                                                                                                                    | Vitrine               |
+| `/demo/questions`             | tous                                       | `/demo`, sitemap                                       | Vitrine : une série de 4 questions sous ses 5 formes en onglets, révisions espacées simulées, rien d'enregistré                                                                                                                                                                                              | Vitrine               |
+| `/demo/editeur`               | tous                                       | `/demo`, sitemap                                       | Vitrine : une phrase écrite dans l'éditeur, vue dans 3 usages (message, cahier de texte, énoncé), rien d'enregistré                                                                                                                                                                                          | Vitrine               |
+| `/demo/diaporama`             | tous                                       | `/demo`, sitemap                                       | Vitrine : 13 diapositives (navigation, fragments, formules, Python, cercle trigo, figure, minuteur, annotation, tableau blanc)                                                                                                                                                                               | Vitrine               |
+| `/dev/saisie-naturelle`       | admin (`/dev`)                             | `/dev`                                                 | Saisie naturelle de Calcul, sans point, avec le panneau « sous le capot » ; le champ (`NaturalField.svelte`) sert aussi l'atelier, réglage « Écriture mathématique »                                                                                                                                         | Prototype jetable     |
 
 Précisions :
 
@@ -204,12 +202,12 @@ Précisions :
   `{ type: 'ubumaths-theme', dark }`, origine du site) à chaque changement ; `simulator.html`
   l'écoute. Plein écran par bouton, sortie par Échap. Licence affichée : CC BY-NC-SA 4.0.
 - **`/dev/structure`** (ex-`/test-structure`) : une seule formule, le **champ de formule** `StructureField`
-  (`$lib/components/structure/`, réglages structure, lecture et déplacer tous allumés) : on la
+  (`#lib/components/structure/`, réglages structure, lecture et déplacer tous allumés) : on la
   survole (encadré de la sous-expression, lecture en français, mots du dictionnaire cliquables,
   message « 6e ou avant »), on l'écrit d'un clic court, on déplace un terme, un facteur ou un
   membre d'égalité par appui puis mouvement, « Annuler » revient en arrière. Dans la route :
   `StructureFormula.svelte` (formules du corpus, survol seul) ; à côté du champ,
-  `$lib/components/structure/structure-lexicon.svelte.ts` (fiches du dictionnaire au niveau de
+  `#lib/components/structure/structure-lexicon.svelte.ts` (fiches du dictionnaire au niveau de
   l'élève, 5e pour un visiteur), partagé avec la vitrine. Spécification et
   décisions : [mathast/structure-expression.md](mathast/structure-expression.md). Le moteur est
   décrit dans [mathast/README.md](mathast/README.md). Deux majuscules collées se lisent comme une
@@ -222,20 +220,22 @@ Précisions :
   l'ouverture, l'expression de l'article Sésamath.
 - **Catalogue des blocs** (`/aide-ecriture/blocs`, chantier
   [catalogue-blocs](../archive/wip/catalogue-blocs-progress.md)) : une fiche par bloc spécial d'ubumark
-  (variations — avec un `?` devant une case d'une question, le tableau de signes ou de variations à compléter, valeur, signe, marque ou flèche (`?flèche`) ; `??1` dit « à ne pas écrire », jeton de l'énoncé d'une évaluation notée —, arbre — événements indicés `G_1` —, droite graduée — avec `placer:` d'une question, un ou plusieurs points ; avec `representer:`, l'intervalle que l'élève dessine —, courbe, figure — en-tête seulement, renvoi vers
+  (variations — avec un `?` devant une case d'une question, le tableau de signes ou de variations à compléter, valeur, signe, marque ou flèche (`?flèche`) ; `??1` dit « à ne pas écrire », jeton de l'énoncé d'une évaluation notée —, arbre — événements indicés `G_1` —, droite graduée — avec `placer:` d'une question, un ou plusieurs points ; avec `representer:`, l'intervalle que l'élève dessine ; avec `zoom:`, les droites agrandies l'une sous l'autre —, courbe, figure — en-tête seulement, renvoi vers
   `/aide-ecriture/geometrie` —, figure à compléter — case « figure » d'une question, rendue ici en
-  figure de départ —, figure de travail — même rendu, jamais notée —, statistiques — 9 genres sur une page, avec `axe:` et `placer:` d’une question, le diagramme en barres que l’élève construit, `axe: à choisir` où il choisit d’abord l’échelle —, boîte à moustaches (``boite-a-moustaches, sa fiche à part dans `stat-chart.ts`, `boxPlotEntry` : boîtes nommées, `données:`, `valeurs: oui` — avec `placer:` d’une question, la boîte dont l’élève pose les cinq traits —), QR code, horloge — la trotteuse quand les secondes sont écrites ; avec `placer:` d’une question, le cadran où l’élève pose les aiguilles, trotteuse comprise —, collection d’objets (``collection : barres de dix, cubes, jetons, plaques de cent et gros cubes de mille — avec `construire:` d’une question, la collection que l’élève pose, jusqu’à 9 999 —), pièces et billets (``monnaie : `billets:`, `pièces:`, `montant:` — avec `construire:` et `réserve:` d’une question, la somme que l’élève pose —), étiquettes à ranger — le geste de l’élève, glisser ou toucher ; avec `signe: aucun`, les étapes d’une démonstration en colonne numérotée —, figure partagée en parts égales (``partage, `gris:` — avec `colorier:` d’une question, la figure où l’élève colorie les parts, en touchant ou en glissant ; avec `unites:`, plusieurs figures pour une fraction plus grande que 1 —), assemblage de cubes (``cubes — avec `dessiner:` d’une question, le quadrillage où l’élève colorie une vue ; avec `retrouver:`, la vue de dessus où il écrit les hauteurs d’après les vues —), solide en perspective cavalière (``solide : arêtes cachées en tirets, sommets nommés, `marquer:`, `cotes:`, `section:` — pavé, cylindre ou boule coupé par un plan, section teintée —, `points:` — milieux et centres nommés — et `vecteurs:` — flèches entre points nommés, nom sous une petite flèche — ; avec `tracer:` d’une question, les points que l’élève touche pour l’origine et l’extrémité du vecteur, une combinaison à coefficients en fractions (dénominateur 2, 3 ou 4) écrite avec des points ou des vecteurs nommés de `vecteurs:` —), patron d’un solide (``patron : les 11 patrons et 8 faux patrons du cube dessinés, grille pliée, noms du solide répétés — avec `designer:` d’une question, les faces que l’élève touche ; avec `completer:`, les emplacements où il pose la face manquante —), opération posée,
-cercle trigo — avec `placer:` d’une question, le cercle gradué tous les π/12 où l’élève pose ses points —, programme Scratch — ``scratch, page « Instructions » au lieu de « Réglages » —). Contenu écrit une fois dans `src/lib/block-catalog/<bloc>.ts`
-  (`BlockCatalogEntry` : réglages avec clé, valeurs, défaut ; exemples ; erreurs fréquentes ; texte
-  de la zone « Essayer »), liste ordonnée `BLOCK_CATALOG`. Page commune
-  `src/lib/components/block-catalog/BlockHelpPage.svelte`, rendus avec `showAuthoringErrors` (le prof
-  voit les messages situés). La route `/aide-ecriture/blocs/[bloc]` sert chaque fiche ; le cercle
-  trigo garde son adresse (`href` de la fiche) et n'a pas de double sous `/blocs` (404). Garde :
-  `src/lib/block-catalog/__tests__/catalogue.test.ts` passe chaque exemple par `parseMarkdown`
-  (aucune erreur, bon type de nœud) et vérifie le message de chaque erreur fréquente ; pour ``scratch,
-il y ajoute la vérification des instructions (`checkScratchProgram`), faite hors du parseur.
-`settingsKind: 'instructions'` (``scratch) : colonnes « Instruction », « Ce qu’on y écrit »,
-  « Effet », sans « Par défaut ». Les blocs
+  figure de départ —, figure de travail — même rendu, jamais notée —, statistiques — 9 genres sur une page, avec `axe:` et `placer:` d’une question, le diagramme en barres que l’élève construit, `axe: à choisir` où il choisit d’abord l’échelle —, boîte à moustaches (``boite-a-moustaches, sa fiche à part dans `stat-chart.ts`, `boxPlotEntry` : boîtes nommées, `données:`, `valeurs: oui` — avec `placer:` d’une question, la boîte dont l’élève pose les cinq traits —), QR code, horloge — la trotteuse quand les secondes sont écrites ; avec `placer:` d’une question, le cadran où l’élève pose les aiguilles, trotteuse comprise —, collection d’objets (``collection : barres de dix, cubes, jetons, plaques de cent et gros cubes de mille — avec `construire:` d’une question, la collection que l’élève pose, jusqu’à 9 999 —), pièces et billets (``monnaie : `billets:`, `pièces:`, `montant:` — avec `construire:` et `réserve:` d’une question, la somme que l’élève pose —), étiquettes à ranger — le geste de l’élève, glisser ou toucher ; avec `signe: aucun`, les étapes d’une démonstration en colonne numérotée —, associer deux colonnes — `- élément -> étiquette`, intrus `- -> …`, une étiquette pour plusieurs éléments, une courbe dans un élément (````associer, ```courbe en retrait) — repère à escalier à construire — ``courbe, groupe « construire l’escalier » (`construire N`, exemple à 3 termes, texte à trous à étiquettes — ``trous, `[étiquette]` dans le texte, `intrus: a ; b` en dernière ligne —, programme tortue — ``tortue, `attendu:`, `montrer:`, `comparer:`, `blocs:` (au plus N blocs), `niveau:` (variables en 4e, conditions en 3e ; exemples polygone à n côtés et spirale à compléter), fiche `tortue.ts`, l’éditeur de blocs dans l’essai —, programme de calcul — ``calcul, `attendu:`, `essais:`, `départ:`, `niveau:` (blocs de 5e, 4e ou 3e ; exemples « si » et « répéter jusqu’à »), fiche `calcul.ts`, l’éditeur de blocs et « Essayer avec » dans l’essai —, robot sur un quadrillage — ``robot, `quadrillage:`, `codage:` (flèches ou avance-pivote), `départ:`, `arrivée:`, `interdites:`, `produire:`, fiche `robot.ts` ; avec `produire:` d’une question, les cartes que l’élève pose pour composer le code —, labyrinthe de nombres — bloc labyrinthe, `grille:`, `règle:` (premier, multiple de n, chiffre des <rang> = c), `parcourir:`, `solution:`, fiche `labyrinthe.ts` ; avec `parcourir:` d’une question, la grille où l’élève trace le chemin case par case —, grille yohaku — bloc yohaku, `opération:`, deux `ligne:` (cases entre crochets à remplir), `solution:`, fiche `yohaku.ts` ; dans une question, la grille où l’élève remplit les cases dans des champs de formule, jugée par ses totaux —, engrenages — bloc engrenages, `roues:` (2 ou 3, de 6 à 60 dents), `légendes:`, `taille:`, fiche `engrenages.ts` ; écrit dans une correction, les roues tournent jusqu’au retour des repères —, programme Python à écrire — bloc python-a-ecrire, `fonction:`, `solution:`, `essais:`, `depart:`, `exiger:`, fiche `python-a-ecrire.ts` en dernier ; dans une question, l’éditeur de code où l’élève écrit sa fonction, jugée dans le navigateur sur les essais —, figure partagée en parts égales (``partage, `gris:` — avec `colorier:` d’une question, la figure où l’élève colorie les parts, en touchant ou en glissant ; avec `unites:`, plusieurs figures pour une fraction plus grande que 1 —), assemblage de cubes (``cubes — avec `dessiner:` d’une question, le quadrillage où l’élève colorie une vue ; avec `retrouver:`, la vue de dessus où il écrit les hauteurs d’après les vues —), solide en perspective cavalière (``solide : arêtes cachées en tirets, sommets nommés, `marquer:`, `cotes:`, `section:` — pavé, cylindre ou boule coupé par un plan, section teintée —, `points:` — milieux et centres nommés, point au tiers d’une arête (`M tel que AM = 1/3 AB`) — et `vecteurs:` — flèches entre points nommés, nom sous une petite flèche —, `segments:` et `angles-droits:` — segments entre points nommés et petit carré d’angle droit, en bleu, exemples de la diagonale du cube et de la demi-diagonale d’une pyramide —, `graduer:` — petits traits qui partagent une arête en parts égales, exemple du point au tiers —, `tourner: oui` — solide que l’élève fait tourner à l’écran, polyèdre, cylindre, cône ou boule, coupé ou coté compris (les longueurs ne se voient qu’à la vue de départ), figure à geste `tracer:` comprise (toucher pose, glisser tourne) — ; avec `tracer:` d’une question, les points que l’élève touche pour l’origine et l’extrémité du vecteur, une combinaison à coefficients en fractions (dénominateur 2, 3 ou 4) écrite avec des points ou des vecteurs nommés de `vecteurs:` —), patron d’un solide (``patron : les 11 patrons et 8 faux patrons du cube dessinés, grille pliée, noms du solide répétés — avec `designer:` d’une question, les faces que l’élève touche ; avec `completer:`, les emplacements où il pose la face manquante —), opération posée,
+  cercle trigo — avec `placer:` d’une question, le cercle gradué tous les π/12 où l’élève pose ses points —, programme Scratch — ``scratch, page « Instructions » au lieu de « Réglages » —). Contenu écrit une fois dans `src/lib/block-catalog/<bloc>.ts`
+(`BlockCatalogEntry` : réglages avec clé, valeurs, défaut ; exemples ; erreurs fréquentes ; texte
+de la zone « Essayer »), liste ordonnée `BLOCK_CATALOG`. Page commune
+`src/lib/components/block-catalog/BlockHelpPage.svelte`, rendus avec `showAuthoringErrors` (le prof
+voit les messages situés). La route `/aide-ecriture/blocs/[bloc]` sert chaque fiche ; le cercle
+trigo garde son adresse (`href` de la fiche) et n'a pas de double sous `/blocs` (404). Garde :
+`src/lib/block-catalog/__tests__/catalogue.test.ts` passe chaque exemple par `parseMarkdown`
+(aucune erreur, bon type de nœud) et vérifie le message de chaque erreur fréquente ; pour ``scratch,
+  il y ajoute la vérification des instructions (`checkScratchProgram`), faite hors du parseur.
+  `settingsKind: 'instructions'` (``scratch) : colonnes « Instruction », « Ce qu’on y écrit »,
+  sans « Par défaut ». Tableau des réglages : deux lignes par réglage — la clé, ses valeurs, son
+  défaut ; puis la description **dessous**, sur toute la largeur (plus de colonne « Effet », trop
+  étroite pour les longues descriptions). Les blocs
   variation, arbre et droite graduée n'ont pas de message : un bloc invalide s'y affiche en texte
   brut, ce que dit l'explication de l'erreur.
 - **`/demo/cercle-trigo`** (vitrine, PR 6b) : 4 exemples du bloc `trig` rendus par
@@ -243,9 +243,9 @@ il y ajoute la vérification des instructions (`checkScratchProgram`), faite hor
   `preset: custom` sans angle), π/6 seul avec projections et tableau, cos x = 1/2, cos x > 1/2 en
   arc. Le catalogue complet et la syntaxe restent sur `/aide-ecriture/cercle-trigo`, dont un test
   vérifie que chaque exemple se dessine.
-- **`/demo/blocs`** (vitrine, chantier catalogue-blocs, PR 2) : 9 exemples du catalogue des blocs,
+- **`/demo/blocs`** (vitrine, chantier catalogue-blocs, PR 2 ; schéma en barres ajouté le 2026-11-12) : 10 exemples du catalogue des blocs,
   rangés par niveau : horloge, opération posée, droite graduée (primaire) ; barres, circulaire,
-  nuage de points (collège) ; variations, arbre, courbe (lycée). Le texte n’est pas recopié :
+  nuage de points, schéma en barres (collège) ; variations, arbre, courbe (lycée). Le texte n’est pas recopié :
   `src/lib/block-catalog/showcase.ts` renvoie à un exemple d’une fiche (slug + titre), un renvoi
   cassé fait échouer `showcase.test.ts`. Rendu sans `showAuthoringErrors` ; le texte du prof est
   replié sous « Voir ce qu’écrit le prof », comme « Voir le script » de `/demo/geometrie`.
@@ -274,7 +274,7 @@ il y ajoute la vérification des instructions (`checkScratchProgram`), faite hor
   Au lycée, Pour le plaisir), titre, texte et script replié sous « Voir le script ». Scripts dans
   `figures.ts`, repris des pages d'aide `/aide-ecriture/geometrie/…`, sauf l'épicycloïde, écrite
   pour la vitrine (courbe paramétrée jusqu'au curseur t, petit cercle qui roule) ; le flocon de
-  Koch vient de `$lib/components/geometry/koch-dsl.ts`, partagé avec l'aide. Un test construit
+  Koch vient de `#lib/components/geometry/koch-dsl.ts`, partagé avec l'aide. Un test construit
   chaque figure. Textes rendus par le serveur, figures montées dans le navigateur
   (`DemoFigureCard.svelte`) et réduites à la largeur disponible, l'échelle suivant (la toile de
   `GeometryCanvas` a une largeur fixe).
@@ -288,12 +288,12 @@ il y ajoute la vérification des instructions (`checkScratchProgram`), faite hor
   taille. L'éditeur reste au prof, sur `/constructions/essais`
   ([constructions.md](geometrie/constructions.md)).
 - **`/demo/questions`** (vitrine, PR 6g) : la même série de 4 questions (écrites dans
-  `questions.ts`, sans base) sous ses cinq formes, en onglets, avec une phrase « qui, quand » par
-  forme : En classe, Entraînement, Flash-cards et Course aux nombres sont les vrais composants
-  d'Automaths (`$lib/components/test/`) ; les révisions espacées sont simulées
-  (`SpacedReviewDemo.svelte` : carte, 4 notes et la prochaine date d'une carte neuve, calculée
-  par `$lib/srs/fsrs`). Rien n'est enregistré : la fin de série n'appelle rien, et le bandeau
-  « Connecte-toi… » d'Entraînement et Flash-cards est coupé par `loginNote={false}`. Les boutons
+  `questions.ts`, sans base) sous ses six formes, en onglets, avec une phrase « qui, quand » par
+  forme : En classe, Contrôle blanc, Flash-cards, Saisie et Course aux nombres sont les vrais composants
+  d'Automaths (`#lib/components/test/`) ; les révisions espacées sont simulées
+  (`SpacedReviewDemo.svelte` : carte, deux boutons « Pas réussi / Réussi » et la prochaine date d'une carte neuve, calculée
+  par `#lib/srs/fsrs.ts`). Rien n'est enregistré : la fin de série n'appelle rien, et le bandeau
+  « Connecte-toi… » du Contrôle blanc, des Flash-cards et de la Saisie est coupé par `loginNote={false}`. Les boutons
   « Retour au panier » mènent à `/automaths/panier`.
 - **`/demo/editeur`** (vitrine, PR 6h) : un seul `RichTextEditor` (`preset="standard"`) dont le
   JSON alimente trois cartes, chacune par le vrai moteur de son usage : message privé au prof
@@ -314,7 +314,8 @@ il y ajoute la vérification des instructions (`checkScratchProgram`), faite hor
   (`app.css`) : la page le règle selon la largeur du cadre (requêtes de conteneur), cellules de
   tableau et code compris. Le banc d'essai complet reste `/dev/diaporama`.
 - **`/dev/polices`** (ex-`/test-font`) : outil de comparaison des polices de rendu ; décision de ne rien changer à
-  KaTeX. Seul appelant de `src/lib/utils/mathlive-fonts.ts`. L'éditeur s'ouvre sur une
+  KaTeX. Appelant de `src/lib/utils/mathlive-fonts.ts`, avec le réglage « Lecture facilitée »
+  (`easyReading.svelte.ts`, jeu Luciole Math, cf. [coquille-et-caches.md](coquille-et-caches.md)). L'éditeur s'ouvre sur une
   expression (`\begin{gathered}`, une famille de symboles par ligne) qui réunit tous les symboles
   de la police, petits et grands (ponctuation, opérateurs, logique, ensembles, flèches, vecteurs,
   géométrie, symboles courants, lettres calligraphiques, délimiteurs empilés, racines, ∑ ∫,
@@ -326,23 +327,56 @@ il y ajoute la vérification des instructions (`checkScratchProgram`), faite hor
   police OpenType MATH construite depuis le jeu KaTeX par
   `tools/chiphre-math/src/build_typst_math_font.py`), et pose les mêmes règles de police
   (`withCorrectionFonts`). Le compilateur partagé des fiches n'est pas touché.
+  Le 3e bouton, **Luciole Math** (chantier `lecture-facilitee`), passe les formules au jeu
+  `luciole` et le texte des sections « Texte mixte » et « Exercices » en Luciole : jeu
+  `static/fonts/luciole-math/` (les 20 `KaTeX_*.woff2`) construit par
+  `tools/chiphre-math/src/build_luciole_katex.py` depuis `static/fonts/luciole/`, sans effet
+  manuscrit, et surcharge `static/mathlive-fonts-luciole.css` (mode texte de MathLive en Luciole).
+- **`/dev/polices/luciole`** (chantier `lecture-facilitee`) : les mêmes consignes de collège en trois
+  versions : police habituelle ; texte en Luciole, formules de MathLive ; texte en Luciole et
+  formules en **Luciole Math**. MathLive ne lit pas une police de maths OpenType : la 3e version
+  convertit les formules en MathML (`convertLatexToMathMl`, plus deux retouches : virgule décimale,
+  lettres calligraphiques Unicode) et laisse le navigateur les mettre en page. Ce n'est qu'un aperçu
+  (espace parasite après une racine dans Chrome, absent du PDF). En bas, PDF Typst des exercices de
+  `../exercices-demo.json` : `luciole-pdf.ts`, compilateur à part (`createFontsCompiler`), règles
+  passées à `withCorrectionFonts`. Polices : `static/fonts/luciole/` (paquet CTAN `luciole`,
+  Luciole 2.001 en CC-BY 4.0, Luciole-Math 0.76 en SIL OFL 1.1), `.ttf`/`.otf` pour Typst, `.woff2`
+  pour l'écran.
 - **`/dev/cadres`** (ex-`/test-cadres`) : garde la trace du choix `\htmlStyle` pour le cadre des solutions
   (`\bbox` perd sa bordure en MathLive 0.111.1, `roundedbox` est décalé).
 
 ### Pièges
 
 - **`/dev/structure` lit un fichier de test** :
-  `$lib/mathAST/structure/__tests__/fixtures/corpus-saisies.txt?raw`. Modifier ce corpus change
+  `#lib/mathAST/structure/__tests__/fixtures/corpus-saisies.txt?raw`. Modifier ce corpus change
   la page ; le supprimer casse le build.
-- **`/dev/polices` ne rétablit pas les polices en partant.** `switchMathFonts('shantell')` pose un
-  `<link>` dans `<head>` et change `MathfieldElement.fontsDirectory` ; la page n'a ni `onDestroy`
-  ni retour à `katex`. Après une visite, une navigation côté client garde Shantell partout
-  jusqu'au rechargement.
+- **Jeu Luciole : un code privé de KaTeX n'est jamais cherché tel quel dans Luciole-Math.** Elle
+  range d'autres signes aux mêmes points de code (E000 = zéro barré, alors que MathLive empile la
+  grande racine avec E001, E000, ⎷) : `build_luciole_katex.py` désigne les glyphes par leur nom
+  (`GLYPH_ALIASES`) et laisse les autres codes privés à KaTeX. Les morceaux d'un délimiteur
+  empilé gardent la position horizontale de Luciole (`Source.parts`) : calés chacun sur le
+  bord gauche de leur boîte KaTeX, ils se décalaient (crans). Ils ont aussi tous la même
+  avance : dans une formule centrée (`gathered`, la vitrine), MathLive centre chaque morceau,
+  et un milieu plus étroit se décalait. La barre de racine part au bout
+  du dessin du √ (`RADICALS`), et `mathlive-fonts.ts` la pose sans la remontée de 0,04 em de
+  MathLive. Après une reconstruction, le
+  navigateur garde les anciens `.woff2` en cache : recharger les fichiers (`fetch(…, {cache:
+'reload'})`) avant de juger.
+- **`/dev/polices` rétablit en partant le jeu du réglage « Lecture facilitée »** (`onDestroy` →
+  `switchMathFonts(easyReading.mathFontSet)` : KaTeX, ou Luciole Math réglage allumé).
+  Un jeu pose un `<link>` dans `<head>`, change `MathfieldElement.fontsDirectory` et ajoute ses
+  règles aux feuilles de MathLive : sans ce retour, une navigation côté client garderait le jeu
+  partout jusqu'au rechargement (avec Luciole, toutes les formules grossies de 1/0,9).
+- **La surcharge reste la dernière feuille du `<head>`** (`keepOverrideLast`, un
+  `MutationObserver`) : `mathlive/static.css` arrive avec le chunk des pages à maths ; jeu posé
+  sur une page sans maths puis navigation côté client, il passerait après la surcharge et ses
+  `@font-face` KaTeX l'emporteraient. `switchMathFonts` note le jeu avant l'import de MathLive :
+  de deux bascules rapprochées, la dernière gagne.
 - **Navigateur en français : minuscules grecques droites.** MathLive choisit `letterShapeStyle`
   d'après la langue du navigateur (« french » si elle commence par `fr`) et écrit alors α, π…
   droits, pris dans KaTeX_Main-Regular. KaTeX n'y a pas de minuscules grecques : le navigateur
-  prend une police du système (le jeu `katex` fait pareil). Le jeu Shantell les ajoute à
-  Main-Regular. Une capture Playwright sans `locale: 'fr-FR'` ne montre pas ce cas.
+  prend une police du système (le jeu `katex` fait pareil). Les jeux Shantell et Luciole les
+  ajoutent à Main-Regular. Une capture Playwright sans `locale: 'fr-FR'` ne montre pas ce cas.
 - **MathLive n'écrit pas toujours le caractère ni la police de KaTeX.** `\perp` donne `⟂`
   (U+27C2, absent de KaTeX), `\lnot` est pris dans AMS (qui n'a pas de `¬`), les accents de
   `\hat` et `\tilde` sont `^` et `~`. Redessiner le glyphe attendu ne change alors rien à
@@ -359,37 +393,26 @@ il y ajoute la vérification des instructions (`checkScratchProgram`), faite hor
 
 ### Écarts connus
 
-Notés pendant le rangement (chantier demo-debug), pas traités :
+Les écarts de cette zone sont au [registre des écarts](../ecarts/registre.md) : `pnpm ecarts`. Un écart s'écrit là-bas, jamais ici.
 
-- **Contenu pédagogique encore géré par l'admin** : catalogue des cartes VIP
-  (`/dashboard/admin/vip-cards`, `api/admin/vip-cards/`, privilèges de classe) et lexique
-  (`/dashboard/admin/dictionnaire`, `api/admin/dictionnaire/`). Règle : au prof. David : « on le
-  fera plus tard ».
-- **`/dev/saisie-naturelle`** : prototype jetable dont le travail est fait (#1355), candidat à la
-  suppression ; à trancher par David.
-- **`/dev/blockly`** : deviendra une vraie fonctionnalité (algorithmique par blocs, cycle 4,
-  relais vers Python ; décidé par David le 2026-10-24) ; phase 0 à ouvrir. Ne pas le supprimer.
-- **Scripts d'essai de constructions et brouillons de `/constructions`** : doublon possible, à
-  revoir.
-- **Images de 4 cartes VIP de Mathémo** (Voyelles Révélées, Multiplicateur x1.5, Lettre Bonus,
-  Retour en Arrière) : en prod, `image_path` en `/images/vip-cards/…`, dossier absent de
-  `static/` ; sans doute cassées, pas vérifié dans le navigateur.
-- **`angle_polaire` rend des degrés même en mode radians** (cos(3θ) faux dès qu'on combine les
-  deux) ; `dsl-builtins.md` dit « en radians », faux en mode degrés. Les courbes trigonométriques
-  de l'aide à l'écriture déclarent `unite_angle("radians")`, gardé par
-  `courbes-trigo-radians.test.ts`.
-- **Révisions espacées** : `calculateNewStability` (`src/lib/srs/fsrs.ts`) ignore la note après
-  la 1re révision ([srs.md](srs.md), futur chantier `fsrs`) ; `/demo/questions` n'affiche que la
-  1re, non touchée.
+### À savoir (voulu)
+
+- **`/dev/saisie-naturelle`** : prototype jetable dont le travail est fait (#1355), qui garde le
+  panneau « sous le capot » du champ qui sert l'Atelier ; sa suppression est à trancher par David.
+- **Scripts d'essai de constructions et brouillons de `/constructions`** : deux rôles distincts
+  (scripts DSL du prof seul pour `constructions/essais`, brouillons JSON/DSL enregistrés pour
+  `/constructions`).
+
+### Points non vérifiés
+
 - **Sur téléphone**, les flèches du `Deck` chevauchent parfois le bas d'une diapositive de
-  `/demo/diaporama` (comportement du Deck).
+  `/demo/diaporama` (comportement du Deck). Rendu non vérifié par l'audit du 2026-11-24.
 
 ---
 
 ## 2. Numérotation des listes à l'affichage
 
-Fichiers : `src/lib/types/list-numbering.ts`, `src/lib/stores/listNumbering.svelte.ts`,
-`src/lib/styles/list-numbering.css` (importé par `src/app.css`).
+Fichiers : `src/lib/types/list-numbering.ts`, `src/lib/styles/list-numbering.css` (importé par `src/app.css`).
 
 - **Schémas** (`NUMBERING_SCHEMES`) : `1-a-i`, `a-1-i`, `a-i`, `1.a.i`, `I.A.1`, `decimal`
   (1. 1.1. 1.1.1.). L'`id` devient une classe CSS `scheme-<id>` posée sur les `<ol>`, avec
@@ -397,10 +420,11 @@ Fichiers : `src/lib/types/list-numbering.ts`, `src/lib/stores/listNumbering.svel
 - **Réglage** (`ListNumberingConfig`) : `scheme` (`'auto'` ou un schéma), `schemeWithNesting`,
   `schemeWithoutNesting`. Par défaut : `auto`, `1-a-i` avec ou sans imbrication (même hiérarchie que
   le PDF, `typst-generator.ts` ; une liste plate est numérotée 1) 2) 3), choix de David du
-  2026-10-18). Un réglage enregistré par l'admin (localStorage) garde son choix.
-- **Calcul** : `MarkdownRenderer.svelte` (`effectiveListScheme`) prend le store, fusionne la prop
-  `listNumberingOverride`, et en mode `auto` choisit selon la profondeur maximale des listes de
-  l'AST. `ListNode.svelte` applique la classe.
+  2026-10-18). Ce réglage est le même pour tous : `MarkdownRenderer` lit `DEFAULT_CONFIG`. Il n'y a
+  plus de réglage dans la page admin (il ne valait que pour le navigateur de l'admin, retiré par
+  V120, 2026-11-28).
+- **Calcul** : `MarkdownRenderer.svelte` (`effectiveListScheme`) prend le réglage du store et, en
+  mode `auto`, choisit selon la profondeur maximale des listes de l'AST. `ListNode.svelte` applique la classe.
 - **Interface** : carte « Numérotation des listes » de `/dashboard/admin/settings`.
 
 Cette partie appartient au rendu ubumark ([ubumark.md](ubumark.md)) ; elle est décrite ici
@@ -408,10 +432,7 @@ faute d'y être.
 
 ### Écarts connus
 
-- **Le réglage admin ne s'applique qu'au navigateur de l'admin.** Le store se range dans
-  `localStorage` (clé `listNumberingConfig`), rien en base. Élèves et profs voient toujours
-  `DEFAULT_CONFIG`. La page de réglages ne le dit pas.
-- La prop `listNumberingOverride` de `MarkdownRenderer` n'a aucun appelant.
+Les écarts de cette zone sont au [registre des écarts](../ecarts/registre.md) : `pnpm ecarts`. Un écart s'écrit là-bas, jamais ici.
 
 ---
 
@@ -419,36 +440,33 @@ faute d'y être.
 
 ### `src/lib/utils/`
 
-| Fichier                   | Ce qu'il fait                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     | Appelants                                                          | Doc du domaine                                                         |
-| ------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------ | ---------------------------------------------------------------------- |
-| `auth.ts`                 | `submitLogoutForm()` : efface les données de travail de l'élève du navigateur (`work-data.ts`, T17), puis POST d'un formulaire caché vers `/auth/logout`                                                                                                                                                                                                                                                                                                                                          | `Header`, layout du dashboard, profil                              | [auth.md](auth.md)                                                     |
-| `avatar.ts`               | Image par défaut selon le rôle, initiales                                                                                                                                                                                                                                                                                                                                                                                                                                                         | `UserAvatar.svelte`                                                | [composants-ui.md](../pratiques/composants-ui.md)                      |
-| `dates.ts`                | Échéances : passée, proche (`DEADLINE_WARNING_DAYS`), formats compact / complet (date-fns, `fr`)                                                                                                                                                                                                                                                                                                                                                                                                  | évaluations, séries de chapitre, exercices élève, affectation      | [evaluations.md](evaluations.md)                                       |
-| `file-upload.ts`          | Pièces jointes du chat (`chat-attachments`, 1 Mo) et de la messagerie (`message-attachments`, privé : lien d'envoi demandé au serveur, règles dans `message-attachment-rules.ts`, [messagerie-et-moderation.md](messagerie-et-moderation.md))                                                                                                                                                                                                                                                     | `ChatWindow`, `/messages/compose`                                  | —                                                                      |
-| `filename.ts`             | Nom de fichier : version slug, version stockage, nom unique, extension                                                                                                                                                                                                                                                                                                                                                                                                                            | `exercises/markdown-frontmatter.ts`, `file-upload.ts`              | —                                                                      |
-| `footer.ts`               | `showsInfoButton(pathname)` : bouton « Infos et confidentialité » sur `/` seulement                                                                                                                                                                                                                                                                                                                                                                                                               | `src/routes/+layout.svelte`                                        | [carte-des-fonctionnalites.md](carte-des-fonctionnalites.md)           |
-| `format.ts`               | `formatDuration(secondes)`, `formatNumber`                                                                                                                                                                                                                                                                                                                                                                                                                                                        | 3 modales du démineur                                              | [jeux-et-economie.md](jeux-et-economie.md)                             |
-| `fractional-indexing.ts`  | `getPositionBetween(avant, après)` : position d'insertion sans renuméroter                                                                                                                                                                                                                                                                                                                                                                                                                        | kanban (`/organisation/kanban/[boardId]`)                          | — (organisation)                                                       |
-| `french-math.ts`          | Nombres d'un LaTeX à la française (`{,}`, espaces fines dès 5 chiffres, option `minDigits`) ; `toLocaleDecimal` garde le point en anglais ; `withDigitGrouping` pose les espaces sans toucher au séparateur                                                                                                                                                                                                                                                                                       | questions, saisie à trous, rendu markdown, générateurs LaTeX/Typst | [ubumark.md](ubumark.md)                                               |
-| `latex-syntax-adapter.ts` | `$$…$$` sur une ligne → `$…$` (ancienne syntaxe MathDisplay)                                                                                                                                                                                                                                                                                                                                                                                                                                      | `ChatBot`, `TutorChat`, `QuestionPreviewCard`, `OrderingInput`     | —                                                                      |
-| `markdown.ts`             | `addHeaderIds(html)` : `id` unique sur les `<h2>`…`<h6>`                                                                                                                                                                                                                                                                                                                                                                                                                                          | `/dashboard/admin/docs`, `server/markdown-parser.ts`               | —                                                                      |
-| `mathlive-fonts.ts`       | Bascule KaTeX ↔ Shantell (feuille de surcharge, `fontsDirectory`) ; en Shantell, barres de fraction et de racine au trait des lettres (0,068 em, bouts arrondis), la racine dépasse et se referme par un petit trait : règles ajoutées à la feuille partagée des champs MathLive ; le mode texte (`\text`, `\textbf`) passe en Shantell Sans Light/Bold, la police de texte des PDF (`--text-font-family` posée par `static/mathlive-fonts-shantell.css`, sinon MathLive prend la police système) | `/dev/polices` seulement                                           | § 1                                                                    |
-| `search.ts`               | Nettoie et valide une recherche (longueur minimale 2)                                                                                                                                                                                                                                                                                                                                                                                                                                             | `server/exercise-assignments.ts`                                   | —                                                                      |
-| `skeleton-detector.ts`    | Squelette de chargement selon la route (`dashboard`, `list`, `form`, `default`)                                                                                                                                                                                                                                                                                                                                                                                                                   | layout racine, layout du dashboard                                 | [tableaux-de-bord-et-navigation.md](tableaux-de-bord-et-navigation.md) |
-| `storage.ts`              | `storageUrl(bucket, path)` : URL publique Supabase Storage depuis `PUBLIC_SUPABASE_URL`                                                                                                                                                                                                                                                                                                                                                                                                           | démineur, 2048                                                     | —                                                                      |
-| `string.ts`               | `slugify` (accents retirés)                                                                                                                                                                                                                                                                                                                                                                                                                                                                       | `markdown.ts`, `server/markdown-parser.ts`                         | —                                                                      |
-| `worksheet-constants.ts`  | Libellés, icônes, variantes de statut des fiches ; `formatDuration(minutes)`                                                                                                                                                                                                                                                                                                                                                                                                                      | liste, détail et création de fiches, `MetadataCards`               | [fiches-et-pdf.md](fiches-et-pdf.md)                                   |
+| Fichier                   | Ce qu'il fait                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        | Appelants                                                          | Doc du domaine                                                         |
+| ------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------ | ---------------------------------------------------------------------- |
+| `auth.ts`                 | `submitLogoutForm()` : efface les données de travail de l'élève du navigateur (`work-data.ts`, T17), puis POST d'un formulaire caché vers `/auth/logout`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             | `Header`, layout du dashboard, profil                              | [auth.md](auth.md)                                                     |
+| `avatar.ts`               | Image par défaut selon le rôle, initiales                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            | `UserAvatar.svelte`                                                | [composants-ui.md](../pratiques/composants-ui.md)                      |
+| `dates.ts`                | Échéances : passée, proche (`DEADLINE_WARNING_DAYS`), formats compact / complet (date-fns, `fr`)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     | évaluations, séries de chapitre, exercices élève, affectation      | [evaluations.md](evaluations.md)                                       |
+| `file-upload.ts`          | Pièces jointes du chat (`chat-attachments`, 1 Mo) et de la messagerie (`message-attachments`, privé : lien d'envoi demandé au serveur, règles dans `message-attachment-rules.ts`, [messagerie-et-moderation.md](messagerie-et-moderation.md))                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        | `ChatWindow`, `/messages/compose`                                  | —                                                                      |
+| `filename.ts`             | Nom de fichier : version slug, version stockage, nom unique, extension                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               | `exercises/markdown-frontmatter.ts`, `file-upload.ts`              | —                                                                      |
+| `footer.ts`               | `showsInfoButton(pathname)` : bouton « Infos et confidentialité » sur `/` seulement                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  | `src/routes/+layout.svelte`                                        | [carte-des-fonctionnalites.md](carte-des-fonctionnalites.md)           |
+| `format.ts`               | `formatDuration(secondes)`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           | 3 modales du démineur                                              | [jeux-et-economie.md](jeux-et-economie.md)                             |
+| `fractional-indexing.ts`  | `getPositionBetween(avant, après)` : position d'insertion sans renuméroter                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           | kanban (`/organisation/kanban/[boardId]`)                          | — (organisation)                                                       |
+| `french-math.ts`          | Nombres d'un LaTeX à la française (`{,}`, espaces fines dès 5 chiffres, option `minDigits`) ; `toLocaleDecimal` garde le point en anglais ; `withDigitGrouping` pose les espaces sans toucher au séparateur                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          | questions, saisie à trous, rendu markdown, générateurs LaTeX/Typst | [ubumark.md](ubumark.md)                                               |
+| `latex-syntax-adapter.ts` | `$$…$$` sur une ligne → `$…$` (ancienne syntaxe MathDisplay)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         | `ChatBot`, `TutorChat`, `QuestionPreviewCard`, `OrderingInput`     | —                                                                      |
+| `markdown.ts`             | `addHeaderIds(html)` : `id` unique sur les `<h2>`…`<h6>`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             | `/dashboard/admin/docs`, `server/markdown-parser.ts`               | —                                                                      |
+| `mathlive-fonts.ts`       | Bascule KaTeX ↔ Shantell ↔ Luciole (feuille de surcharge, `fontsDirectory`) ; en Luciole, barres à 0,1 em et formules grossies de 1/0,9 (`.ML__latex`), parce que les glyphes du jeu sont réduits à 0,9 : Luciole est ~10 % plus haute que les hauteurs de KaTeX avec lesquelles MathLive place racines et exposants ; en Shantell, barres de fraction et de racine au trait des lettres (0,068 em, bouts arrondis), la racine dépasse et se referme par un petit trait : règles ajoutées à la feuille partagée des champs MathLive ; le mode texte (`\text`, `\textbf`) passe en Shantell Sans Light/Bold, la police de texte des PDF (`--text-font-family` posée par `static/mathlive-fonts-shantell.css`, sinon MathLive prend la police système) | `/dev/polices` et réglage « Lecture facilitée » (Luciole)          | § 1                                                                    |
+| `search.ts`               | Nettoie et valide une recherche (longueur minimale 2)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                | `server/exercise-assignments.ts`                                   | —                                                                      |
+| `skeleton-detector.ts`    | Squelette de chargement selon la route (`dashboard`, `list`, `form`, `default`)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      | layout racine, layout du dashboard                                 | [tableaux-de-bord-et-navigation.md](tableaux-de-bord-et-navigation.md) |
+| `storage.ts`              | `storageUrl(bucket, path)` : URL publique Supabase Storage depuis `PUBLIC_SUPABASE_URL`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              | démineur, 2048                                                     | —                                                                      |
+| `string.ts`               | `slugify` (accents retirés)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          | `markdown.ts`, `server/markdown-parser.ts`                         | —                                                                      |
+| `worksheet-constants.ts`  | Libellés, icônes, variantes de statut des fiches ; `formatMinutes(minutes)`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          | `MetadataCards`                                                    | [fiches-et-pdf.md](fiches-et-pdf.md)                                   |
 
 ### Racine de `src/lib/` et dossiers isolés
 
-| Fichier                                   | Ce qu'il fait                                                                    | Appelants                                       |
-| ----------------------------------------- | -------------------------------------------------------------------------------- | ----------------------------------------------- |
-| `src/lib/utils.ts`                        | `cn()` (clsx + tailwind-merge), types `With…` de shadcn, `fixUrl`, `flyAndScale` | `cn` : 219 fichiers ; `fixUrl` : 3 pages Google |
-| `src/lib/index.ts`                        | Fichier du gabarit SvelteKit, un commentaire seul                                | aucun (`from '$lib'` : 0)                       |
-| `src/lib/supabaseClient.ts`               | Client Supabase singleton, **déprécié** (non SSR) selon son en-tête              | `supabase-test.ts` seulement                    |
-| `src/lib/supabase-test.ts`                | `testSupabaseConnection()` : trois requêtes de diagnostic dans le journal        | aucun                                           |
-| `src/lib/constants/deadlines.ts`          | Constantes d'échéance et de pagination                                           | `DEADLINE_WARNING_DAYS` : `dates.ts`            |
-| `src/lib/transitions/slide-transition.ts` | `slideFromRight`, `slideToLeft` : glissé + fondu entre deux questions            | `components/test/TestInteractive.svelte`        |
+| Fichier                                   | Ce qu'il fait                                                         | Appelants                                       |
+| ----------------------------------------- | --------------------------------------------------------------------- | ----------------------------------------------- |
+| `src/lib/utils.ts`                        | `cn()` (clsx + tailwind-merge), types `With…` de shadcn, `fixUrl`     | `cn` : 219 fichiers ; `fixUrl` : 3 pages Google |
+| `src/lib/constants/deadlines.ts`          | `DEADLINE_WARNING_DAYS` (échéance proche)                             | `dates.ts`                                      |
+| `src/lib/transitions/slide-transition.ts` | `slideFromRight`, `slideToLeft` : glissé + fondu entre deux questions | `components/test/TestInteractive.svelte`        |
 
 ### Composants isolés
 
@@ -457,48 +475,22 @@ faute d'y être.
 | `MathField.svelte`                        | Enveloppe `<math-field>` MathLive : `bind:value`, `bind:element`, attributs transmis                                                                         | atelier, CAS, grapheur, `MathInput`, `TestSpecEditor`, démos |
 | `DynamicMathField.svelte`                 | `<math-field>` créé en JS après import dynamique de MathLive                                                                                                 | `/dev/bancs-essai` seulement                                 |
 | `CodeViewer.svelte`                       | CodeMirror 6 en lecture seule (JSON, Python), chargé à la demande                                                                                            | `PdfPreview`, détail d'un exercice (prof)                    |
-| `LaTeXEditor.svelte`                      | CodeMirror 6 pour du LaTeX, chargé à la demande                                                                                                              | `/dev/latex-vers-ubumark`                                    |
-| `JsonViewer.svelte`                       | JSON indenté dans une carte, bouton copier                                                                                                                   | **aucun**                                                    |
+| `CodeEditor.svelte`                       | CodeMirror 6 modifiable, chargé à la demande ; `language="markdown"` pour le markdown                                                                        | `/dev/latex-vers-ubumark`, mode markdown de `RichTextEditor` |
 | `LoggerDemo.svelte`, `ToastDemo.svelte`   | Démonstrations du journal et des toasts                                                                                                                      | `/dev/bancs-essai` seulement                                 |
 | `ClassStatsCard.svelte`                   | Nombre d'élèves d'une classe et bouton « emploi du temps »                                                                                                   | `/dashboard/teacher/classes`                                 |
 | `teacher/StudentQuickActionsTable.svelte` | Tableau d'élèves du tableau de bord prof : +1 gidouille, +1 bonus, cartes VIP, avertissement en trois temps ; mise à jour optimiste, appels groupés (500 ms) | `TeacherDashboard.svelte`                                    |
 
 ### Pièges
 
-- **Deux `formatDuration` d'unités différentes** : `utils/format.ts` attend des **secondes**
-  (`2m 05s`), `utils/worksheet-constants.ts` des **minutes** (`1h 30min`). Même nom, même type
-  `number` : TypeScript ne voit pas l'erreur d'import.
+- **Durées : secondes ou minutes** : `formatDuration` (`utils/format.ts`) attend des **secondes**
+  (`2m 05s`), `formatMinutes` (`utils/worksheet-constants.ts`) des **minutes** (`1h 30min`).
 - **`MathField` n'efface pas le champ** : l'effet fait `if (value) node.value = value`. Remettre
   `value` à `''` ne vide pas le `<math-field>` ; passer par `element.value = ''`.
-- `supabaseClient.ts` crée un client au chargement du module, sans cookies : ne pas l'importer
-  dans du code de l'application ([auth.md](auth.md)).
 
 ### Écarts connus
 
-Exports sans appelant hors tests (`git grep -lw <nom> -- src`, `__tests__` exclus) :
+Les écarts de cette zone sont au [registre des écarts](../ecarts/registre.md) : `pnpm ecarts`. Un écart s'écrit là-bas, jamais ici.
 
-- `utils.ts` : `flyAndScale` ;
-- `format.ts` : `formatNumber` ;
-- `worksheet-constants.ts` : `formatDate` ;
-- `file-upload.ts` : `deleteChatAttachment`, `validateFileType`, `getFileIcon` (quatre fichiers
-  redéfinissent leur propre `getFileIcon`) ;
-- `filename.ts` : `getFilenameWithoutExtension` ;
-- `mathlive-fonts.ts` : `initMathFonts`, `preloadAllFonts` ;
-- `search.ts` : `sanitizeSearchQuery` (appelée seulement par `validateSearchQuery`, son export
-  ne sert pas) ;
-- `constants/deadlines.ts` : `MS_PER_DAY`, `RECENT_EXERCISES_LIMIT`, `MAX_SEARCH_LENGTH`,
-  `DEFAULT_PAGE_SIZE`, `MAX_PAGE_SIZE` (`almanach/calendar.ts`, `utils/class-sessions.ts` et
-  `/dashboard/student/materials` redéfinissent les leurs).
+### Points non vérifiés
 
-Fichiers morts : `JsonViewer.svelte`, `supabase-test.ts` (et donc `supabaseClient.ts`, son seul
-appelant), `src/lib/index.ts` (vide). `DynamicMathField`, `LoggerDemo`, `ToastDemo` ne vivent que
-pour `/dev/bancs-essai`.
-
-Doublons :
-
-- **`formatDate` défini 81 fois** (`git grep -n "function formatDate" -- src`, tests exclus) :
-  des copies locales dans les pages et composants, plus l'exemplaire exporté et inutilisé de
-  `worksheet-constants.ts` et celui de `templates/templateEngine.ts`.
-- `slugify` : `utils/string.ts` et une copie privée dans `exercises/slug-generator.ts`.
-- Trois enveloppes CodeMirror chargées à la demande, presque identiques : `CodeViewer`,
-  `LaTeXEditor`, `rich-text/MarkdownCodeEditor` (plus `constructions/components/JsonEditor`).
+- `DynamicMathField`, `LoggerDemo` et `ToastDemo` ne vivent que pour `/dev/bancs-essai`.

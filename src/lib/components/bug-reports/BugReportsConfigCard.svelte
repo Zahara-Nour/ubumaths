@@ -6,15 +6,15 @@
 	 * Used in both admin bug-reports page and admin settings page.
 	 */
 	import { onMount } from 'svelte';
-	import * as Card from '$lib/components/ui/card';
-	import MyCheckbox from '$lib/components/MyCheckbox.svelte';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import MyCheckbox from '#lib/components/MyCheckbox.svelte';
 	import { Loader2, Settings2 } from '@lucide/svelte';
-	import { bugReportsConfigStore } from '$lib/stores/bugReportsConfig.svelte';
+	import { bugReportsConfigStore } from '#lib/stores/bugReportsConfig.svelte.ts';
 	import {
 		BUG_REPORTS_CONFIG_LABELS,
 		BUG_REPORTS_CONFIG_DESCRIPTIONS
-	} from '$lib/types/bug-reports';
-	import { toaster } from '$lib/stores/toaster.svelte';
+	} from '#lib/types/bug-reports.ts';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
 
 	interface Props {
 		/** Show compact version (less padding, smaller text) */

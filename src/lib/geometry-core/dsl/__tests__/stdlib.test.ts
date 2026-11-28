@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { runDsl } from '../index';
 import { geoToNumber } from '../../compute/to-number';
+import { numeric } from '../../types/geo-value';
 
 function pos(
 	figure: ReturnType<typeof runDsl>['figure'],
@@ -41,6 +42,39 @@ describe('stdlib — mediatrice', () => {
 			['A = point(0, 0)', 'B = point(4, 0)', 'd = mediatrice(A, B)'].join('\n')
 		);
 		expect(symbols.get('d')!.type).toBe('droite');
+	});
+
+	it('mediatrice(s) sur un segment = mediatrice(A, B), et suit le déplacement de B (L57)', () => {
+		const { figure, symbols } = runDsl(
+			['A = point(0, 0)', 'B = point(4, 2)', 's = segment(A, B)', 'd = mediatrice(s)'].join('\n')
+		);
+		expect(symbols.get('d')!.type).toBe('droite');
+		const line = figure.getElementById(idOf(symbols, 'd'));
+		if (!line || line.type !== 'line') throw new Error('d doit être une droite');
+		const carriers = () =>
+			[line.point1Id, line.point2Id].map((id) => {
+				const p = figure.getPosition(id)!;
+				return { x: geoToNumber(p.x), y: geoToNumber(p.y) };
+			});
+		const check = () => {
+			const a = pos(figure, symbols, 'A');
+			const b = pos(figure, symbols, 'B');
+			const [p, q] = carriers();
+			expect(dist(p, q)).toBeGreaterThan(0.1);
+			for (const c of [p, q]) expect(dist(c, a)).toBeCloseTo(dist(c, b), 9);
+		};
+		check();
+		figure.movePoint(idOf(symbols, 'B'), numeric(6), numeric(-1));
+		figure.recompute();
+		check();
+	});
+
+	it('mediatrice(x) sur un objet qui n’est ni un segment ni deux points : erreur', () => {
+		expect(() =>
+			runDsl(
+				['A = point(0, 0)', 'B = point(4, 2)', 'd = droite(A, B)', 'm = mediatrice(d)'].join('\n')
+			)
+		).toThrow(/segment/);
 	});
 });
 

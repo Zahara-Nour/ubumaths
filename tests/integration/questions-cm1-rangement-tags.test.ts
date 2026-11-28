@@ -5,7 +5,7 @@
  * Migration `20261028100100_questions_cm1_rangement_tags` : 12 modèles du CM1 passent au CM2 avec
  * le tag de leur point (les 3 égalités à trous, CM2-065, sur le nœud de leur point) ; 4 passent en
  * 6e (6-198, 6-114) ; 8 sans point du CP à la 6e repassent en brouillon, niveau CM1 gardé. Décisions
- * de David du 2026-10-28 (journal docs/wip/questions-cm1-progress.md § 5).
+ * de David du 2026-10-28 (journal docs/archive/wip/questions-cm1-progress.md § 5).
  *
  * Les modèles n'existent qu'en production. Le test fabrique donc l'état de la prod — des copies
  * minimales portant les VRAIS identifiants, à leur nœud, à leurs niveaux, à leur statut et avec
@@ -15,6 +15,8 @@
  * migration, depuis le relevé de la prod du 2026-10-28.
  *
  * @vitest-environment node
+ *
+ * @migration-de-donnees : hors des PR, rejoué la nuit (scripts/ci-integration-exclusions.sh)
  */
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 import { readFileSync } from 'node:fs';

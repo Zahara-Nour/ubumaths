@@ -9,7 +9,7 @@
  */
 
 import type { ConstraintId } from './types';
-import { bySuperfluRule } from '$lib/mathAST/superflu/rules';
+import { bySuperfluRule } from '#lib/mathAST/superflu/rules.ts';
 
 /**
  * Feedback messages for each constraint type
@@ -49,6 +49,14 @@ export const CONSTRAINT_FEEDBACK: Record<ConstraintId, { single: string; multipl
 
 /** Pourcentage attendu, réponse fausse qui en est la valeur sans le symbole (`20` pour `20 %`) */
 export const FORGOTTEN_PERCENT_SIGN = "N'oublie pas le symbole %.";
+
+/**
+ * Nombre collé derrière un facteur (`(n+2)4^n`, `x2`), écriture que le parseur refuse
+ * (`mathAST/parser/number-after-factor.ts`) : la réponse reste fausse, la carte dit quoi écrire.
+ */
+export function numberAfterFactorFeedback(num: string): string {
+	return `Nombre « ${num} » écrit après un facteur : écris le nombre devant, ou mets un signe × entre les deux.`;
+}
 
 /** QCM à plusieurs réponses coché en partie, sans erreur (½ point, V3) */
 export const MISSING_CHOICES_FEEDBACK = 'Il manque des réponses.';

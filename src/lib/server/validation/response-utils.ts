@@ -13,7 +13,7 @@
 
 import { z } from 'zod';
 import { error } from '@sveltejs/kit';
-import { createServerLogger } from '$lib/utils/logger';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('server/validation/response-utils');
 
@@ -45,10 +45,15 @@ export function validateResponse<T>(schema: z.ZodSchema<T>, data: unknown, endpo
 	const validation = schema.safeParse(data);
 
 	if (!validation.success) {
-		// Log detailed error for debugging (never expose to client)
+		// ⚠️ Ne journaliser que les champs fautifs (chemin, code, message de Zod),
+		// jamais `data` : la réponse refusée peut porter des données d'élèves
+		// (contenu de messages privés…) qui n'ont rien à faire dans les journaux.
 		logger.error(`[RESPONSE VALIDATION ERROR] ${endpoint}:`, {
-			issues: validation.error.issues,
-			data: JSON.stringify(data, null, 2)
+			issues: validation.error.issues.map((issue) => ({
+				path: issue.path.join('.'),
+				code: issue.code,
+				message: issue.message
+			}))
 		});
 
 		// Throw generic 500 error (don't expose internal structure)

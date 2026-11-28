@@ -1,11 +1,11 @@
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import { z } from 'zod';
 import type { RequestHandler } from './$types';
-import { requireAuth } from '$lib/server/middleware/auth';
+import { requireAuth } from '#lib/server/middleware/auth.ts';
 // Supabase client is now accessed via locals.supabase
-import { createListingSchema, listingsQuerySchema } from '$lib/server/marketplace/validation';
-import { getHiddenMarketplaceCreators } from '$lib/server/marketplace/hidden-creators';
-import { recordListingViewsSchema } from '$lib/server/validation/marketplace-rpc';
+import { createListingSchema, listingsQuerySchema } from '#lib/server/marketplace/validation.ts';
+import { getHiddenMarketplaceCreators } from '#lib/server/marketplace/hidden-creators.ts';
+import { recordListingViewsSchema } from '#lib/server/validation/marketplace-rpc.ts';
 import {
 	validateCardOwnership,
 	lockCardsForEntity,
@@ -14,12 +14,12 @@ import {
 	getStudentSchoolId,
 	enrichListingsWithCardData,
 	enrichWithParticipants
-} from '$lib/server/marketplace/helpers';
-import { createServerLogger } from '$lib/utils/logger';
+} from '#lib/server/marketplace/helpers.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/marketplace/listings/+server');
 // TODO: Add cache invalidation when cache-manager is properly implemented
-// import { invalidateListingCaches } from '$lib/server/marketplace/cache-manager';
+// import { invalidateListingCaches } from '#lib/server/marketplace/cache-manager';
 
 /**
  * GET /api/marketplace/listings
@@ -184,7 +184,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 		await enrichListingsWithCardData(supabase, listings || [])
 	);
 
-	return json({
+	return Response.json({
 		listings: enrichedListings,
 		pagination: {
 			page,
@@ -304,5 +304,5 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	const [enrichedListing] = await enrichListingsWithCardData(supabase, [listing]);
 
 	const [avecParticipant] = await enrichWithParticipants(supabase, [enrichedListing]);
-	return json(avecParticipant, { status: 201 });
+	return Response.json(avecParticipant, { status: 201 });
 };

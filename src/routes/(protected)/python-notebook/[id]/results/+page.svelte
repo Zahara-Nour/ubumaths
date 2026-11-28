@@ -1,13 +1,13 @@
 <script lang="ts">
-	import BackLink from '$lib/components/navigation/BackLink.svelte';
-	import { lore } from '$lib/config/lore';
-	import * as Card from '$lib/components/ui/card';
-	import * as Table from '$lib/components/ui/table';
-	import MySelect from '$lib/components/MySelect.svelte';
-	import MyCheckbox from '$lib/components/MyCheckbox.svelte';
+	import BackLink from '#lib/components/navigation/BackLink.svelte';
+	import { lore } from '#lib/config/lore.ts';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import * as Table from '#lib/components/ui/table/index.ts';
+	import MySelect from '#lib/components/MySelect.svelte';
+	import MyCheckbox from '#lib/components/MyCheckbox.svelte';
 	import { Users, CheckCircle2, XCircle, CircleDashed, Sparkles, Lightbulb } from '@lucide/svelte';
 	import type { PageData } from './$types';
-	import type { CheckpointDetail } from '$lib/types/database-helpers';
+	import type { CheckpointDetail } from '#lib/types/database-helpers.ts';
 
 	let { data }: { data: PageData } = $props();
 

@@ -9,7 +9,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { describe, it, expect, vi } from 'vitest';
-import { createMockSupabase, mockSuccess } from '$tests/helpers';
+import { createMockSupabase, mockSuccess } from '#tests/helpers/index.ts';
 
 const NOTEBOOK_ID = '550e8400-e29b-41d4-a716-446655440100';
 const AUTHOR_ID = '550e8400-e29b-41d4-a716-446655440001';

@@ -14,8 +14,8 @@
  */
 
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { Database } from '$lib/types/database';
-import { SHORT_LINK_CODE, shortLinkTargetSchema } from '$lib/validation/short-link';
+import type { Database } from '#lib/types/database.ts';
+import { SHORT_LINK_CODE, shortLinkTargetSchema } from '#lib/validation/short-link.ts';
 
 // ============================================================================
 // TYPES

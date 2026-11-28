@@ -3,7 +3,7 @@
  */
 
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { lore } from '$lib/config/lore';
+import { lore } from '#lib/config/lore.ts';
 import { render } from 'vitest-browser-svelte';
 import { page } from 'vitest/browser';
 import TopObservablesToConsolidate from '../TopObservablesToConsolidate.svelte';

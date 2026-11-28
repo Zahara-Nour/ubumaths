@@ -11,12 +11,12 @@
  * @param cardId - ID of the card type to remove (e.g., "bonus", "captain")
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { z } from 'zod';
-import { requireAuth } from '$lib/server/middleware/auth';
-import { verifyTeacherStudentWithRole } from '$lib/server/middleware/student-access';
-import { createServerLogger } from '$lib/utils/logger';
+import { requireAuth } from '#lib/server/middleware/auth.ts';
+import { verifyTeacherStudentWithRole } from '#lib/server/middleware/student-access.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/vip-cards/remove/+server');
 
@@ -71,7 +71,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		throw error(400, rpcResult.error || 'Impossible de retirer la carte VIP');
 	}
 
-	return json({
+	return Response.json({
 		success: true,
 		message: 'Carte VIP retirée',
 		cardName: rpcResult.cardName,

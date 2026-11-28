@@ -10,8 +10,8 @@ const { requireTeacherOfClass, getStudentRetentionCurve } = vi.hoisted(() => ({
 	getStudentRetentionCurve: vi.fn()
 }));
 
-vi.mock('$lib/server/stats/teacher-class-auth', () => ({ requireTeacherOfClass }));
-vi.mock('$lib/server/stats', () => ({ getStudentRetentionCurve }));
+vi.mock('#lib/server/stats/teacher-class-auth.ts', () => ({ requireTeacherOfClass }));
+vi.mock('#lib/server/stats/index.ts', () => ({ getStudentRetentionCurve }));
 
 import { GET } from '../+server';
 

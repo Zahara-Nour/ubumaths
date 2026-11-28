@@ -4,26 +4,39 @@
 
 	Vue globale de tous les modèles en base : à gauche l'arbre programme > branche > notion >
 	sous-notion et ses comptes de verdicts ; en haut les totaux et les filtres ; au centre les
-	fiches du nœud choisi (ou de tout ce que les filtres retiennent), chacune avec l'aperçu de
-	ses variations et son verdict « validé / à revoir » + commentaire.
-	Chantier revue-modeles : docs/wip/revue-modeles-progress.md.
+	fiches de la série choisie (dans son ordre), du nœud choisi, ou de tout ce que les filtres
+	retiennent (titre, point, verdict, statut, alertes), chacune avec l'aperçu de ses variations et
+	son verdict « validé / à revoir » + commentaire.
+	Série choisie : affichage « Parcours » par défaut (une rangée de cartes élèves par modèle, puis
+	les modèles et points des mêmes notions), « Fiches » sur demande (`?vue=fiches`).
+	Chantiers revue-modeles et parcours-serie (docs/wip/).
 -->
 <script lang="ts">
 	// Imports
+	import { browser } from '$app/env';
 	import { goto } from '$app/navigation';
 	import { resolve } from '$app/paths';
 	import { SvelteURLSearchParams } from 'svelte/reactivity';
 	import { page } from '$app/state';
 	import type { PageData } from './$types';
-	import BackLink from '$lib/components/navigation/BackLink.svelte';
-	import MySelect from '$lib/components/MySelect.svelte';
-	import MyCheckbox from '$lib/components/MyCheckbox.svelte';
-	import { Button } from '$lib/components/ui/button';
-	import ReviewTree from '$lib/components/dev/ReviewTree.svelte';
-	import TemplateReviewSheet from '$lib/components/dev/TemplateReviewSheet.svelte';
+	import BackLink from '#lib/components/navigation/BackLink.svelte';
+	import MySelect from '#lib/components/MySelect.svelte';
+	import MyCheckbox from '#lib/components/MyCheckbox.svelte';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import { Input } from '#lib/components/ui/input/index.ts';
+	import {
+		MAX_POINT_INPUT,
+		MAX_TITLE_SEARCH,
+		parsePointCode
+	} from '#lib/questions/template-review.ts';
+	import ReviewTree from '#lib/components/dev/ReviewTree.svelte';
+	import TemplateReviewSheet from '#lib/components/dev/TemplateReviewSheet.svelte';
+	import SeriesParcours from '#lib/components/dev/SeriesParcours.svelte';
+	import { PanelLeftClose, PanelLeftOpen } from '@lucide/svelte';
 
 	// Constantes
 	const MAX_UNFOLD = 20;
+	const TREE_KEY = 'dev-modeles-arbre';
 	const VERDICT_ITEMS = [
 		{ value: 'tous', label: 'Tous les verdicts' },
 		{ value: 'a_revoir', label: '🔶 À revoir' },
@@ -41,17 +54,27 @@
 	let { data }: { data: PageData } = $props();
 
 	let openSheets = $state<Record<string, boolean>>({});
+	// Code de point mal formé : aide sous la case, sans quitter la page (le serveur le refuserait)
+	let pointHelp = $state<string | null>(null);
+	// Arbre des programmes replié : préférence de ce navigateur seulement (rien de grave si perdue)
+	let treeOpen = $state(readTreeOpen());
 
 	const totals = $derived(data.totals);
 	const openKeys = $derived(new Set(data.path.map((p) => p.key)));
+	const seriesItems = $derived([{ value: 'tous', label: 'Aucune série' }, ...data.seriesItems]);
 	const hasFilter = $derived(
-		data.filters.verdict !== 'tous' || data.filters.status !== 'tous' || data.filters.alertsOnly
+		data.filters.verdict !== 'tous' ||
+			data.filters.status !== 'tous' ||
+			data.filters.alertsOnly ||
+			data.filters.title !== '' ||
+			data.filters.point !== null
 	);
+	const showParcours = $derived(data.view === 'parcours' && data.parcours !== null);
 
 	// Functions
 	/** La recherche de l'adresse actuelle, modifiée (`tous`, vide ou null retirent la clé) */
 	function queryWith(changes: Record<string, string | null>): string {
-		const params = new SvelteURLSearchParams(page.url.searchParams);
+		const params = new SvelteURLSearchParams(page.url.search);
 		for (const [k, v] of Object.entries(changes)) {
 			if (v === null || v === '' || v === 'tous') params.delete(k);
 			else params.set(k, v);
@@ -62,14 +85,41 @@
 
 	function setFilter(key: string, value: string | null) {
 		goto(`${resolve('/(protected)/dev/modeles')}${queryWith({ [key]: value })}`, {
-			keepFocus: true,
-			noScroll: true
+			reset: false
 		});
+	}
+
+	function setPoint(raw: string) {
+		const value = raw.trim();
+		if (value !== '' && parsePointCode(value) === null) {
+			pointHelp = `« ${value} » n'est pas un code de point (forme attendue : 1SPE-213)`;
+			return;
+		}
+		pointHelp = null;
+		setFilter('point', value);
+	}
+
+	function readTreeOpen(): boolean {
+		if (!browser) return true;
+		try {
+			return localStorage.getItem(TREE_KEY) !== 'replie';
+		} catch {
+			return true;
+		}
+	}
+
+	function toggleTree() {
+		treeOpen = !treeOpen;
+		try {
+			localStorage.setItem(TREE_KEY, treeOpen ? 'ouvert' : 'replie');
+		} catch {
+			// Stockage indisponible (navigation privée) : le choix vaut pour cette page seulement
+		}
 	}
 
 	function setAllSheets(open: boolean) {
 		// Chaque fiche ouverte tire ses aperçus dans le navigateur : on n'en déplie que les premières
-		openSheets = Object.fromEntries(data.sheets.map((s, i) => [s.row.id, open && i < MAX_UNFOLD]));
+		openSheets = Object.fromEntries(data.sheets.map((s, i) => [s.key, open && i < MAX_UNFOLD]));
 	}
 </script>
 
@@ -115,23 +165,117 @@
 			onchange={(c) => setFilter('alertes', c ? '1' : null)}
 			label="Avec alerte seulement"
 		/>
-		{#if hasFilter || data.nodeKey}
+		<Input
+			class="w-56"
+			placeholder="Chercher dans le titre"
+			aria-label="Chercher dans le titre (Entrée pour filtrer)"
+			maxlength={MAX_TITLE_SEARCH}
+			value={data.filters.title}
+			onchange={(e) => setFilter('titre', e.currentTarget.value.trim())}
+		/>
+		<Input
+			class="w-36"
+			placeholder="Point (1SPE-213)"
+			aria-label="Code du point du programme (Entrée pour filtrer)"
+			maxlength={MAX_POINT_INPUT}
+			value={data.filters.point ?? ''}
+			aria-invalid={pointHelp !== null}
+			aria-describedby={pointHelp ? 'point-help' : undefined}
+			onchange={(e) => setPoint(e.currentTarget.value)}
+		/>
+		{#if data.seriesItems.length > 0}
+			<MySelect
+				items={seriesItems}
+				value={data.seriesId ?? 'tous'}
+				onValueChange={(v: string) => setFilter('serie', v)}
+				triggerAriaLabel="Série : {seriesItems.find((i) => i.value === (data.seriesId ?? 'tous'))
+					?.label}"
+				fitContent
+			/>
+		{/if}
+		{#if hasFilter || data.nodeKey || data.seriesId}
 			<a class="text-sm underline" href={resolve('/(protected)/dev/modeles')}>Tout effacer</a>
 		{/if}
 	</div>
+	{#if pointHelp}
+		<p id="point-help" class="text-sm text-destructive">{pointHelp}</p>
+	{/if}
 
-	<div class="grid gap-4 md:grid-cols-[minmax(16rem,22rem)_1fr]">
-		<nav aria-label="Arbre des modèles" class="max-h-[80vh] overflow-y-auto rounded-lg border p-2">
-			<ReviewTree
-				nodes={data.tree}
-				{openKeys}
-				selectedKey={data.nodeKey}
-				queryFor={(key) => queryWith({ noeud: key })}
-			/>
-		</nav>
+	<div class={treeOpen ? 'grid gap-4 md:grid-cols-[minmax(16rem,22rem)_1fr]' : 'space-y-4'}>
+		<div class="space-y-2">
+			<Button
+				variant="outline"
+				size="sm"
+				aria-expanded={treeOpen}
+				aria-controls="arbre-modeles"
+				onclick={toggleTree}
+			>
+				{#if treeOpen}
+					<PanelLeftClose class="mr-1 h-4 w-4" aria-hidden="true" />
+					Replier les programmes
+				{:else}
+					<PanelLeftOpen class="mr-1 h-4 w-4" aria-hidden="true" />
+					Programmes
+				{/if}
+			</Button>
+			<nav
+				id="arbre-modeles"
+				hidden={!treeOpen}
+				aria-label="Arbre des modèles"
+				class="max-h-[80vh] overflow-y-auto rounded-lg border p-2"
+			>
+				<ReviewTree
+					nodes={data.tree}
+					{openKeys}
+					selectedKey={data.nodeKey}
+					queryFor={(key) => queryWith({ noeud: key })}
+				/>
+			</nav>
+		</div>
 
 		<main class="min-w-0 space-y-3">
-			{#if !data.nodeFound}
+			{#if data.pointUnknown}
+				<p class="rounded bg-warning/10 p-2 text-sm">
+					Point inconnu : {data.filters.point} n'est pas un point du programme en base.
+				</p>
+			{/if}
+			{#if data.seriesId}
+				{#if !data.series}
+					<p class="text-sm text-destructive">Cette série n'existe plus : en choisir une autre.</p>
+				{:else if !data.series.readable}
+					<p class="text-sm text-destructive">
+						La composition de la série « {data.series.title} » est illisible.
+					</p>
+				{:else}
+					<div
+						class="flex flex-wrap items-center gap-2"
+						role="group"
+						aria-label="Affichage de la série"
+					>
+						<Button
+							size="sm"
+							variant={data.view === 'parcours' ? 'default' : 'outline'}
+							aria-current={data.view === 'parcours' ? 'page' : undefined}
+							href="{resolve('/(protected)/dev/modeles')}{queryWith({ vue: null })}"
+							>Parcours</Button
+						>
+						<Button
+							size="sm"
+							variant={data.view === 'fiches' ? 'default' : 'outline'}
+							aria-current={data.view === 'fiches' ? 'page' : undefined}
+							href="{resolve('/(protected)/dev/modeles')}{queryWith({ vue: 'fiches' })}"
+							>Fiches</Button
+						>
+					</div>
+					{#if !showParcours}
+						<p class="text-sm">
+							Série « {data.series.title} » — {data.selectedCount} modèle(s){hasFilter
+								? ' retenus par les filtres'
+								: ''}
+						</p>
+					{/if}
+				{/if}
+			{:else if !data.nodeFound}
 				<p class="text-sm text-destructive">Ce nœud n'existe plus : choisir dans l'arbre.</p>
 			{:else if data.path.length > 0}
 				<p class="text-sm">
@@ -156,6 +300,14 @@
 				</p>
 			{/if}
 
+			{#if !showParcours && data.selectedCount === 0 && (hasFilter || data.nodeKey || data.series?.readable)}
+				<p class="text-sm text-muted-foreground">
+					{data.filters.point && !data.pointUnknown
+						? `Aucun modèle sur le point ${data.filters.point}${data.nodeKey || data.seriesId ? ' ici' : ''}.`
+						: 'Aucun modèle ne correspond.'}
+				</p>
+			{/if}
+
 			{#if data.tooMany}
 				<p class="rounded bg-warning/10 p-2 text-sm">
 					{data.selectedCount} modèles : seuls les {data.maxSheets} premiers sont affichés. Choisir une
@@ -172,7 +324,16 @@
 				<p class="rounded bg-destructive/10 p-2 text-sm text-destructive">{data.sheetsError}</p>
 			{/if}
 
-			{#if data.sheets.length > 0}
+			{#if showParcours && data.parcours && data.series}
+				<SeriesParcours
+					title={data.series.title}
+					parcours={data.parcours}
+					entries={data.sheets}
+					neighbours={data.neighbourSheets}
+					filtered={hasFilter}
+					sheetsError={data.sheetsError !== null}
+				/>
+			{:else if data.sheets.length > 0}
 				<div class="flex gap-2">
 					<Button variant="outline" size="sm" onclick={() => setAllSheets(true)}
 						>{data.sheets.length > MAX_UNFOLD
@@ -184,15 +345,24 @@
 					>
 				</div>
 			{/if}
-			{#each data.sheets as sheet (sheet.row.id)}
-				<TemplateReviewSheet
-					row={sheet.row}
-					points={sheet.points}
-					review={sheet.review}
-					alerts={sheet.alerts}
-					nodePath={sheet.nodePath}
-					bind:open={() => openSheets[sheet.row.id] ?? false, (v) => (openSheets[sheet.row.id] = v)}
-				/>
+			{#each showParcours ? [] : data.sheets as entry (entry.key)}
+				{#if entry.sheet}
+					<TemplateReviewSheet
+						row={entry.sheet.row}
+						points={entry.sheet.points}
+						review={entry.sheet.review}
+						alerts={entry.sheet.alerts}
+						nodePath={entry.sheet.nodePath}
+						seriesLine={entry.seriesLine}
+						bind:open={() => openSheets[entry.key] ?? false, (v) => (openSheets[entry.key] = v)}
+					/>
+				{:else if !data.sheetsError}
+					<p class="rounded-lg border border-dashed p-3 text-sm text-destructive">
+						Modèle introuvable ({entry.templateId.slice(0, 8)}…){entry.seriesLine
+							? ` — × ${entry.seriesLine.quantity} · ${entry.seriesLine.delay} s`
+							: ''}
+					</p>
+				{/if}
 			{/each}
 		</main>
 	</div>

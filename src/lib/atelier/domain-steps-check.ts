@@ -30,11 +30,11 @@
  * @module atelier/domain-steps-check
  */
 
-import type { MathNode } from '$lib/mathAST/types';
-import type { Domain } from '$lib/mathAST/domain/types';
-import { containsValue } from '$lib/mathAST/domain/algebra';
-import { endpointToNumber } from '$lib/math/intervals/endpoint';
-import { computeNumericValue } from '$lib/mathAST/eval/numeric-value';
+import type { MathNode } from '#lib/mathAST/types.ts';
+import type { Domain } from '#lib/mathAST/domain/types.ts';
+import { containsValue } from '#lib/mathAST/domain/algebra.ts';
+import { endpointToNumber } from '#lib/math/intervals/endpoint.ts';
+import { computeNumericValue } from '#lib/mathAST/eval/numeric-value.ts';
 
 // =============================================================================
 // Constantes

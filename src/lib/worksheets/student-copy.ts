@@ -20,10 +20,10 @@
  * @module worksheets/student-copy
  */
 
-import type { ContentLocale } from '$lib/types/locale';
-import type { Exercise, ExerciseHint, GuidanceLabel } from '$lib/exercises/types';
-import { getExerciseContentSafe } from '$lib/exercises/types';
-import { generateExerciseInstance } from '$lib/exercises/generator/instance-generator';
+import type { ContentLocale } from '#lib/types/locale.ts';
+import type { Exercise, ExerciseHint, GuidanceLabel } from '#lib/exercises/types.ts';
+import { getExerciseContentSafe } from '#lib/exercises/types.ts';
+import { generateExerciseInstance } from '#lib/exercises/generator/instance-generator.ts';
 
 // ============================================================================
 // TYPES

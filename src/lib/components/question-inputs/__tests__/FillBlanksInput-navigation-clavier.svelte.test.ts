@@ -16,8 +16,8 @@ import { userEvent } from 'vitest/browser';
 import { render } from 'vitest-browser-svelte';
 import type { MathfieldElement } from 'mathlive';
 import FillBlanksInput from '../FillBlanksInput.svelte';
-import type { ResolvedMarkdown } from '$lib/ubumark';
-import type { InstanceBlank } from '$lib/questions/types';
+import type { ResolvedMarkdown } from '#lib/ubumark/index.ts';
+import type { InstanceBlank } from '#lib/questions/types.ts';
 
 let mains: HTMLElement[] = [];
 function mainElement(): HTMLElement {

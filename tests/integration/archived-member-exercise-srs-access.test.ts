@@ -26,7 +26,7 @@ import {
 } from '../helpers/database/trigger-test-helpers';
 import { DEFAULT_TEST_PASSWORD } from '../helpers/database/supabase-client';
 import { TestData } from '../helpers/database/test-data-factory';
-import type { Database } from '$lib/types/database';
+import type { Database } from '#lib/types/database.ts';
 
 const SUPABASE_URL = process.env.SUPABASE_TEST_URL || 'http://localhost:54321';
 const ANON_KEY =
@@ -179,17 +179,21 @@ describe('élève archivé — exercices distribués hors fiche', () => {
 	});
 
 	it('la liste « mes exercices » ne contient plus celui de la classe', async () => {
-		const { data, error } = await archivedStudent.rpc('get_my_exercise_assignments' as never);
+		const { data, error } = await archivedStudent.rpc('get_student_exercises', {
+			p_student_id: archivedStudentId
+		});
 		expect(error).toBeNull();
-		const ids = ((data ?? []) as { exercise_id: string }[]).map((r) => r.exercise_id);
+		const ids = (data ?? []).filter((r) => r.assignment_id !== null).map((r) => r.exercise_id);
 		expect(ids).not.toContain(classExerciseId);
 		expect(ids).toContain(namedExerciseId);
 	});
 
 	it('mais la liste de l’élève ACTIF le contient toujours', async () => {
-		const { data, error } = await activeStudent.rpc('get_my_exercise_assignments' as never);
+		const { data, error } = await activeStudent.rpc('get_student_exercises', {
+			p_student_id: activeStudentId
+		});
 		expect(error).toBeNull();
-		const ids = ((data ?? []) as { exercise_id: string }[]).map((r) => r.exercise_id);
+		const ids = (data ?? []).filter((r) => r.assignment_id !== null).map((r) => r.exercise_id);
 		expect(ids).toContain(classExerciseId);
 	});
 

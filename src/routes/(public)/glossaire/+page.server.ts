@@ -6,9 +6,9 @@
 
 import { error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
-import { isDictionaryAdmin, loadGlossary } from '$lib/server/dictionary/load';
-import type { GlossarySlugs } from '$lib/dictionary/glossary-page';
-import { createServerLogger } from '$lib/utils/logger';
+import { isDictionaryAdmin, loadGlossary } from '#lib/server/dictionary/load.ts';
+import type { GlossarySlugs } from '#lib/dictionary/glossary-page.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('(public)/glossaire/+page.server');
 

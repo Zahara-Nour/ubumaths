@@ -7,7 +7,7 @@
  * dans le store, pas seulement dans les boutons.
  */
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import type { PythonNotebook } from '$lib/types/notebook';
+import type { PythonNotebook } from '#lib/types/notebook.ts';
 
 const created: Array<{
 	execute: ReturnType<typeof vi.fn>;
@@ -15,7 +15,7 @@ const created: Array<{
 	validateExercise: ReturnType<typeof vi.fn>;
 }> = [];
 
-vi.mock('$lib/shared/python', () => {
+vi.mock('#lib/shared/python/index.ts', () => {
 	class FakeNotebookExecutor {
 		isReady = true;
 		isExecuting = false;
@@ -42,7 +42,7 @@ vi.mock('$lib/shared/python', () => {
 	return { NotebookExecutor: FakeNotebookExecutor };
 });
 
-const { NotebookStore } = await import('$lib/stores/notebookStore.svelte');
+const { NotebookStore } = await import('#lib/stores/notebookStore.svelte.ts');
 
 function makeNotebook(): PythonNotebook {
 	return {

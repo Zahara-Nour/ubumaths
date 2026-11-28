@@ -9,8 +9,8 @@
  */
 
 import { describe, it, expect, vi } from 'vitest';
-import { createWriteVerdictSupabase } from '$tests/helpers/write-verdict-supabase';
-vi.mock('$lib/server/middleware/auth', () => ({
+import { createWriteVerdictSupabase } from '#tests/helpers/write-verdict-supabase.ts';
+vi.mock('#lib/server/middleware/auth.ts', () => ({
 	requireAuth: vi.fn().mockResolvedValue({
 		user: { id: '550e8400-e29b-41d4-a716-446655440001' },
 		profile: { id: '550e8400-e29b-41d4-a716-446655440001', role: 'admin' }

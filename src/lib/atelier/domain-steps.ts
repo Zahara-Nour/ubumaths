@@ -22,18 +22,18 @@
  * @module atelier/domain-steps
  */
 
-import type { RenderedStep } from '$lib/mathAST/common/step-renderer-base';
-import type { MathNode } from '$lib/mathAST/types';
-import type { Domain, IntervalSet } from '$lib/mathAST/domain/types';
-import { computeDomain } from '$lib/mathAST/domain/compute';
-import { formatDomainInterval } from '$lib/mathAST/domain/format';
-import { compile } from '$lib/mathAST/eval/compile';
-import { findNodes } from '$lib/mathAST/transforms';
+import type { RenderedStep } from '#lib/mathAST/common/step-renderer-base.ts';
+import type { MathNode } from '#lib/mathAST/types.ts';
+import type { Domain, IntervalSet } from '#lib/mathAST/domain/types.ts';
+import { computeDomain } from '#lib/mathAST/domain/compute.ts';
+import { formatDomainInterval } from '#lib/mathAST/domain/format.ts';
+import { compile } from '#lib/mathAST/eval/compile.ts';
+import { findNodes } from '#lib/mathAST/transforms.ts';
 import {
 	generatePedagogicalDomainSteps,
 	PedagogicalDomainRenderer
-} from '$lib/mathAST/pedagogical-domain';
-import { domainToLatex } from '$lib/mathAST/pedagogical-domain/renderer';
+} from '#lib/mathAST/pedagogical-domain/index.ts';
+import { domainToLatex } from '#lib/mathAST/pedagogical-domain/renderer.ts';
 import { summaryOf } from './steps-summary';
 import { sameDomainByValue } from './domain-steps-check';
 

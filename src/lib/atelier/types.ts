@@ -10,9 +10,9 @@
  */
 
 import type { Provenance } from './parse';
-import type { CurveColor } from '$lib/grapheur/colors';
-import type { LineStyle } from '$lib/grapheur/types';
-import type { Domain } from '$lib/mathAST/domain/types';
+import type { CurveColor } from '#lib/grapheur/colors.ts';
+import type { LineStyle } from '#lib/grapheur/types.ts';
+import type { Domain } from '#lib/mathAST/domain/types.ts';
 
 // =============================================================================
 // Types
@@ -174,6 +174,13 @@ export interface FunctionObject extends AtelierObjectBase {
 	 * intersection avec `interval` (`intervalDomainOf`).
 	 */
 	readonly inheritedInterval?: Domain;
+	/**
+	 * L'ensemble `interval` LU avec les valeurs du moment quand ses bornes citent
+	 * des valeurs (`[k;5]` avec k = 2 → [2 ; 5], chantier fonctions-morceaux) :
+	 * recalculé à chaque passage, jamais sauvegardé. Absent sans paramètre, ou
+	 * quand une valeur manque (la fonction attend).
+	 */
+	readonly parameterInterval?: Domain;
 	/**
 	 * Les conditions des composées qui ont donné `inheritedInterval`
 	 * (`g(x) = f(2x)` → « 2x doit être dans [0 ; +∞[ », chantier composees,
@@ -425,4 +432,4 @@ export function parametersOf(object: AtelierObject): readonly string[] | null {
 }
 
 // Descendus dans le registre (registre-reference, PR 2c) : le refus V57 y vit
-export { dependsOnMessage, lettersText } from '$lib/mathAST/cli/core/parameter-refusal';
+export { dependsOnMessage, lettersText } from '#lib/mathAST/cli/core/parameter-refusal.ts';

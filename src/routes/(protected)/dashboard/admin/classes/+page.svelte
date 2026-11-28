@@ -1,17 +1,17 @@
 <script lang="ts">
-	import { lore } from '$lib/config/lore';
+	import { lore } from '#lib/config/lore.ts';
 	import type { PageData } from './$types';
 	import { enhance } from '$app/forms';
-	import { Button } from '$lib/components/ui/button';
-	import { Input } from '$lib/components/ui/input';
-	import { Textarea } from '$lib/components/ui/textarea';
-	import { Badge } from '$lib/components/ui/badge';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import { Input } from '#lib/components/ui/input/index.ts';
+	import { Textarea } from '#lib/components/ui/textarea/index.ts';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
 	import { Copy, Check, Loader2, Pencil, PowerOff, Power } from '@lucide/svelte';
-	import { Switch } from '$lib/components/ui/switch';
-	import { toaster } from '$lib/stores/toaster.svelte';
-	import ConfirmDialog from '$lib/components/ui/confirm-dialog/ConfirmDialog.svelte';
-	import MySelect from '$lib/components/MySelect.svelte';
-	import { GRADES, type GradeCode, GRADE_CODES } from '$lib/types/grades';
+	import { Switch } from '#lib/components/ui/switch/index.ts';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
+	import ConfirmDialog from '#lib/components/ui/confirm-dialog/ConfirmDialog.svelte';
+	import MySelect from '#lib/components/MySelect.svelte';
+	import { GRADES, type GradeCode, GRADE_CODES } from '#lib/types/grades.ts';
 
 	let { data }: { data: PageData } = $props();
 
@@ -416,6 +416,8 @@
 									toaster.success(`${lore.entities.class} mis à jour avec succès`);
 								} else {
 									toaster.success(`${lore.entities.class} créé avec succès`);
+									const warning = (result.data as { warning?: string } | undefined)?.warning;
+									if (warning) toaster.warning(warning);
 								}
 							} else if (result.type === 'failure') {
 								const message =

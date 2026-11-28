@@ -23,8 +23,8 @@
  * @module questions/construction/symmetry
  */
 
-import type { SymetriqueCheck } from '$lib/ubumark/types/construction';
-import type { FigureStep, FigureWindow } from '$lib/ubumark/types/figure';
+import type { ConstructionTool, SymetriqueCheck } from '#lib/ubumark/types/construction.ts';
+import type { FigureStep, FigureWindow } from '#lib/ubumark/types/figure.ts';
 import type { DrawnLine } from './answer';
 import { isInFrame, lineCrossesFrame, type Trait } from './instruments';
 import type { ConstructionVerdict, Position } from './judge';
@@ -83,6 +83,11 @@ export interface FigureShapes {
 	readonly visiblePoints: ReadonlySet<string>;
 	readonly grid: FigureStep | null;
 	readonly window: FigureWindow | null;
+	/**
+	 * Palette de l'auteur (`outils:`), lue du même bloc (outil n° 38 : la règle
+	 * graduée marque le milieu seulement si elle y est) ; absente : inconnue
+	 */
+	readonly tools?: readonly ConstructionTool[];
 }
 
 /** Erreur de l'AUTEUR, levée sous le nom de la classe du juge par l'appelant */

@@ -7,21 +7,21 @@
 	 * tel quel dans le panneau « Propriétés » (`ObjectProperties`, 2026-10-23).
 	 * Sans couleur réglée, rien n'est coché : l'objet garde celle de la figure.
 	 */
-	import { useAtelier } from '$lib/atelier/context';
+	import { useAtelier } from '#lib/atelier/context.ts';
 	import {
 		POINT_SIZES,
 		isPoint,
 		type CurveObject,
 		type PointObject,
 		type PointSize
-	} from '$lib/atelier/types';
-	import { CURVE_COLORS, CURVE_COLOR_LABELS, curveColorValue } from '$lib/grapheur/colors';
+	} from '#lib/atelier/types.ts';
+	import { CURVE_COLORS, CURVE_COLOR_LABELS, curveColorValue } from '#lib/grapheur/colors.ts';
 	import {
 		LINE_STYLES,
 		LINE_STYLE_DASHARRAY,
 		LINE_WIDTHS,
 		type LineStyle
-	} from '$lib/grapheur/types';
+	} from '#lib/grapheur/types.ts';
 	import { rovingRadioGroup } from './roving-radio-group';
 
 	interface Props {

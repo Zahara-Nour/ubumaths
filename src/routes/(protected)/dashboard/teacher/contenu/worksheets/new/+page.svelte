@@ -1,25 +1,25 @@
 <script lang="ts">
-	import { WORKSHEET_TYPE_OPTIONS } from '$lib/utils/worksheet-constants';
-	import { lore } from '$lib/config/lore';
+	import { WORKSHEET_TYPE_OPTIONS } from '#lib/utils/worksheet-constants.ts';
+	import { lore } from '#lib/config/lore.ts';
 	import { goto } from '$app/navigation';
-	import { Button } from '$lib/components/ui/button';
-	import BackLink from '$lib/components/navigation/BackLink.svelte';
-	import { Input } from '$lib/components/ui/input';
-	import { Textarea } from '$lib/components/ui/textarea';
-	import { Label } from '$lib/components/ui/label';
-	import * as Card from '$lib/components/ui/card';
-	import MySelect from '$lib/components/MySelect.svelte';
-	import WorksheetTypeOptions from '$lib/components/worksheets/WorksheetTypeOptions.svelte';
-	import GradeBadgeSelector from '$lib/components/GradeBadgeSelector.svelte';
-	import TagBadgeSelector from '$lib/components/TagBadgeSelector.svelte';
-	import StyleSelector from '$lib/components/worksheets/StyleSelector.svelte';
-	import { DEFAULT_STYLE_ID } from '$lib/typst/templates/styles';
-	import { configForType, type WorksheetOptionKey } from '$lib/worksheets/worksheet-header';
-	import { toaster } from '$lib/stores/toaster.svelte';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import BackLink from '#lib/components/navigation/BackLink.svelte';
+	import { Input } from '#lib/components/ui/input/index.ts';
+	import { Textarea } from '#lib/components/ui/textarea/index.ts';
+	import { Label } from '#lib/components/ui/label/index.ts';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import MySelect from '#lib/components/MySelect.svelte';
+	import WorksheetTypeOptions from '#lib/components/worksheets/WorksheetTypeOptions.svelte';
+	import GradeBadgeSelector from '#lib/components/GradeBadgeSelector.svelte';
+	import TagBadgeSelector from '#lib/components/TagBadgeSelector.svelte';
+	import StyleSelector from '#lib/components/worksheets/StyleSelector.svelte';
+	import { DEFAULT_STYLE_ID } from '#lib/typst/templates/styles.ts';
+	import { configForType, type WorksheetOptionKey } from '#lib/worksheets/worksheet-header.ts';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
 	import { Loader2, Save, FileText } from '@lucide/svelte';
 	import type { PageData } from './$types';
-	import type { WorksheetType, WorksheetConfig } from '$lib/types/worksheets';
-	import type { GradeCode } from '$lib/types/grades';
+	import type { WorksheetType, WorksheetConfig } from '#lib/types/worksheets.ts';
+	import type { GradeCode } from '#lib/types/grades.ts';
 
 	let { data }: { data: PageData } = $props();
 

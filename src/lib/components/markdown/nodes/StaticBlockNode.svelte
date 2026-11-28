@@ -14,7 +14,7 @@
 	@module components/markdown/nodes/StaticBlockNode
 -->
 <script lang="ts">
-	import type { BlockNode } from '$lib/ubumark';
+	import type { BlockNode } from '#lib/ubumark/index.ts';
 	import HorizontalRule from './HorizontalRule.svelte';
 	import ListNode from './ListNode.svelte';
 	import TableNode from './TableNode.svelte';
@@ -29,6 +29,7 @@
 	import StatChart from './StatChart.svelte';
 	import FigureBlock from './FigureBlock.svelte';
 	import QrBlock from './QrBlock.svelte';
+	import Engrenages from './Engrenages.svelte';
 	import ScratchBlock from './ScratchBlock.svelte';
 	import Horloge from './Horloge.svelte';
 	import Partage from './Partage.svelte';
@@ -36,8 +37,17 @@
 	import Operation from './Operation.svelte';
 	import Collection from './Collection.svelte';
 	import Monnaie from './Monnaie.svelte';
+	import SchemaBarres from './SchemaBarres.svelte';
 	import ChoiceBlock from './ChoiceBlock.svelte';
 	import RangerPlacer from './RangerPlacer.svelte';
+	import AssocierPlacer from './AssocierPlacer.svelte';
+	import TrousEtiquettes from './TrousEtiquettes.svelte';
+	import TortueProgramme from './TortueProgramme.svelte';
+	import RobotCode from './RobotCode.svelte';
+	import Labyrinthe from './Labyrinthe.svelte';
+	import Yohaku from './Yohaku.svelte';
+	import PythonAEcrire from './PythonAEcrire.svelte';
+	import CalculProgramme from './CalculProgramme.svelte';
 
 	interface Props {
 		node: BlockNode;
@@ -92,6 +102,8 @@
 	<StatChart {node} />
 {:else if node.type === 'qr'}
 	<QrBlock {node} />
+{:else if node.type === 'engrenages'}
+	<Engrenages {node} />
 {:else if node.type === 'scratch'}
 	<ScratchBlock {node} />
 {:else if node.type === 'horloge'}
@@ -106,8 +118,26 @@
 	<Collection {node} />
 {:else if node.type === 'monnaie'}
 	<Monnaie {node} />
+{:else if node.type === 'schema-barres'}
+	<SchemaBarres {node} />
 {:else if node.type === 'choice'}
 	<ChoiceBlock {node} />
 {:else if node.type === 'ranger'}
 	<RangerPlacer {node} />
+{:else if node.type === 'associer'}
+	<AssocierPlacer {node} />
+{:else if node.type === 'trous'}
+	<TrousEtiquettes {node} />
+{:else if node.type === 'tortue'}
+	<TortueProgramme {node} />
+{:else if node.type === 'calcul'}
+	<CalculProgramme {node} />
+{:else if node.type === 'robot'}
+	<RobotCode {node} />
+{:else if node.type === 'labyrinthe'}
+	<Labyrinthe {node} />
+{:else if node.type === 'yohaku'}
+	<Yohaku {node} />
+{:else if node.type === 'python-a-ecrire'}
+	<PythonAEcrire {node} />
 {/if}

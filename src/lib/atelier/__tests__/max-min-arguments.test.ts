@@ -11,11 +11,11 @@
 
 import { describe, it, expect } from 'vitest';
 import { Atelier } from '../atelier.svelte';
-import { WebReplEngine } from '$lib/mathAST/cli/web/web-repl-engine';
+import { WebReplEngine } from '#lib/mathAST/cli/web/web-repl-engine.ts';
 import { runInput, type CalcSession } from '../calcul';
 import { fieldLatexOf, definitionFromField } from '../mathfield';
 import { astOf } from '../parse';
-import { toLatex } from '$lib/mathAST/latex-generator';
+import { toLatex } from '#lib/mathAST/latex-generator.ts';
 
 function session(): CalcSession {
 	return { atelier: new Atelier(), engine: new WebReplEngine() };

@@ -5,7 +5,7 @@
  * The hash uniquely identifies the expression's normal form.
  */
 
-import chalk from 'chalk';
+import { colors } from '../core/terminal-colors';
 import { BaseCommand } from './base-command';
 import type { CommandContext, CommandResult } from '../types';
 import { normalize, hashNormalForm } from '../../normal';
@@ -46,7 +46,7 @@ export class HashCommand extends BaseCommand {
 			const normalForm = normalize(ctx.ast);
 			const hash = hashNormalForm(normalForm);
 
-			const output = chalk.dim('Hash:') + ' ' + chalk.cyan(hash);
+			const output = colors.dim('Hash:') + ' ' + colors.cyan(hash);
 
 			return {
 				success: true,

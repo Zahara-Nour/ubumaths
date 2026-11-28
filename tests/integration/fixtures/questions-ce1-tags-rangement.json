@@ -1,0 +1,24 @@
+[
+	{
+		"id": "27bf3101-faf4-4d55-8233-ef8bb3548179",
+		"noeudAvant": "Nombres et calculs > Entiers : addition et soustraction > calcul astucieux",
+		"noeudApres": "Nombres et calculs > Entiers : addition et soustraction > calcul astucieux",
+		"gradesAvant": ["CE1"],
+		"gradesApres": ["CE1"],
+		"statutAvant": "published",
+		"statutApres": "published",
+		"tagsAvant": [],
+		"tagsApres": ["CE1§CE1-033"]
+	},
+	{
+		"id": "3d6def48-eefd-4015-9090-ec2396ec3483",
+		"noeudAvant": "Nombres et calculs > Entiers : addition et soustraction > calcul astucieux",
+		"noeudApres": "Nombres et calculs > Entiers : addition et soustraction > calcul astucieux",
+		"gradesAvant": ["CE1"],
+		"gradesApres": ["CE1"],
+		"statutAvant": "published",
+		"statutApres": "published",
+		"tagsAvant": [],
+		"tagsApres": ["CE1§CE1-103"]
+	}
+]

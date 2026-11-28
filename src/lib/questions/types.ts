@@ -29,28 +29,28 @@ import type {
 	DisplayOptions,
 	TemplateMarkdown,
 	ResolvedMarkdown
-} from '$lib/ubumark';
-import type { AnswerAssumptions } from '$lib/math';
+} from '#lib/ubumark/index.ts';
+import type { AnswerAssumptions } from '#lib/math/index.ts';
 
 // Re-export shared types for convenience
 export type NumberOrVariable = SharedNumberOrVariable;
 export type Exclusion = SharedExclusion;
-export type { DisplayOptions } from '$lib/ubumark';
+export type { DisplayOptions } from '#lib/ubumark/index.ts';
 
 // ============================================================================
 // GRADE LEVELS (re-exported from unified system)
 // ============================================================================
 
 // Import from unified grade system - single source of truth
-import { type GradeCode } from '$lib/types/grades';
-export { GRADE_CODES, GRADES, type GradeCode } from '$lib/types/grades';
+import { type GradeCode } from '#lib/types/grades.ts';
+export { GRADE_CODES, GRADES, type GradeCode } from '#lib/types/grades.ts';
 
 // Import from mathAST pedagogical layer (used by Mode B `generatedSteps`)
-import type { RenderedStep, SchoolLevel } from '$lib/mathAST/common/step-renderer-base';
-import type { CapitalPairs } from '$lib/mathAST/parser/types';
-import type { SuperfluRuleId } from '$lib/mathAST/superflu/rules';
-import type { ConstructionCheck } from '$lib/ubumark/types/construction';
-import type { HiddenCellKind } from '$lib/ubumark/types/variation-table';
+import type { RenderedStep, SchoolLevel } from '#lib/mathAST/common/step-renderer-base.ts';
+import type { CapitalPairs } from '#lib/mathAST/parser/types.ts';
+import type { SuperfluRuleId } from '#lib/mathAST/superflu/rules.ts';
+import type { ConstructionCheck } from '#lib/ubumark/types/construction.ts';
+import type { HiddenCellKind } from '#lib/ubumark/types/variation-table.ts';
 
 /**
  * French educational grade levels
@@ -201,7 +201,14 @@ export type QuestionVariable = SharedVariable;
 
 /** Nature d'une réponse qui n'est pas une expression (voir `TemplateBlank.answerKind`) */
 export type AnswerKind =
-	'intervalles' | 'equation' | 'vecteur' | 'matrice' | 'primitive' | 'solution-ed';
+	| 'intervalles'
+	| 'equation'
+	| 'vecteur'
+	| 'matrice'
+	| 'primitive'
+	| 'solution-ed'
+	| 'resolution'
+	| 'droite-parametrique';
 
 /** Valeurs de `AnswerKind` (schémas Zod, éditeur) */
 export const ANSWER_KINDS = [
@@ -210,7 +217,9 @@ export const ANSWER_KINDS = [
 	'vecteur',
 	'matrice',
 	'primitive',
-	'solution-ed'
+	'solution-ed',
+	'resolution',
+	'droite-parametrique'
 ] as const satisfies readonly AnswerKind[];
 
 /**
@@ -230,11 +239,14 @@ export const SOLUTION_MODES = ['generale', 'une'] as const satisfies readonly So
 export interface CalculusBlankFields {
 	/** Case `primitive` : fonction dont on cherche une primitive (`3x^2`) */
 	integrand?: string;
-	/** Cases `primitive` et `solution-ed` : variable (défaut `x`) */
+	/** Cases `primitive`, `solution-ed` et `resolution` : variable (défaut `x`) */
 	variable?: string;
 	/** Case `primitive` : intervalle d'étude facultatif (`]0;+\infty[`) */
 	interval?: string;
-	/** Case `solution-ed` : équation différentielle du 1er ordre (`y'=2y-6`) */
+	/**
+	 * Case `solution-ed` : équation différentielle du 1er ordre (`y'=2y-6`) ;
+	 * case `resolution` : équation de l'énoncé (`{{a}}x+{{b}}={{c}}`)
+	 */
 	equation?: string;
 	/** Case `solution-ed` : voir `SolutionMode` */
 	solutionMode?: SolutionMode;
@@ -242,6 +254,11 @@ export interface CalculusBlankFields {
 	function?: string;
 	/** Case `solution-ed`, mode `une` : condition initiale facultative (`y(0)=4`) */
 	initial?: string;
+	/**
+	 * Case `resolution` : nombre de lignes exigé (défaut 1 : `x = 4` seul est juste ;
+	 * 2 = au moins une étape avant la conclusion)
+	 */
+	minLines?: number;
 }
 
 /**
@@ -270,6 +287,8 @@ export interface BlankDefaults extends CalculusBlankFields {
 	acceptCombinatorialNotation?: boolean;
 	/** Voir `TemplateBlank.answerKind` */
 	answerKind?: AnswerKind;
+	/** Voir `TemplateBlank.impossibleLabel` */
+	impossibleLabel?: string;
 	/** Voir `TemplateBlank.vectorMode` */
 	vectorMode?: VectorMode;
 	/** Voir `TemplateBlank.openableBounds` */
@@ -282,6 +301,32 @@ export interface BlankDefaults extends CalculusBlankFields {
 		/** Imposed unit (e.g., "m"). If absent → any compatible unit */
 		required?: string;
 	};
+}
+
+/**
+ * Erreur prévue d'une case, écrite par l'auteur (chantier `idees-format`, idée 3).
+ *
+ * L'élève dont la réponse a la MÊME VALEUR que `answer` (quelle que soit son
+ * écriture : `8/6` pour `4/3`) lit `message` à la correction, à la place du type
+ * d'erreur deviné. La note ne change pas : faux reste faux.
+ */
+export interface ExpectedError {
+	/** Réponse fausse, écrite comme une réponse attendue (variables permises : `{{eval:a-b}}`) */
+	answer: string;
+	/** Message à l'élève (variables et `$…$` permis) */
+	message: string;
+	/** Nom court pour le prof (panneaux d'erreurs) ; absent → le message */
+	label?: string;
+}
+
+/** Erreur prévue d'un tirage : réponse et message résolus */
+export interface InstanceExpectedError {
+	/** Réponse fausse résolue, même écriture que `InstanceBlank.expectedAnswer` */
+	answer: string;
+	/** Son LaTeX (affichage, rejeu de publication) */
+	answerLatex: string;
+	message: string;
+	label?: string;
 }
 
 /**
@@ -346,8 +391,28 @@ export interface TemplateBlank extends CalculusBlankFields {
 	 * facultatif. `'solution-ed'` = une solution de `equation` (1er ordre),
 	 * vérifiée par substitution ; voir `solutionMode`. Jugées par
 	 * `questions/calculus/`.
+	 * `'resolution'` = une équation résolue ligne par ligne (case posée seule dans
+	 * `$$\placeholder[N]{}$$`) : chaque ligne a les mêmes solutions que la
+	 * précédente (la première que `equation`), la dernière est « x = valeur », sa
+	 * valeur jugée comme une case ordinaire ; voir `minLines`. Jugée par
+	 * `questions/resolution/resolution-answer.ts`.
+	 * `'droite-parametrique'` = une représentation paramétrique d'une droite de
+	 * l'espace (case posée seule dans `$$\placeholder[N]{}$$`, trois lignes
+	 * `x =`, `y =`, `z =`), attendue `x=1+2t\\y=2\\z=-1+3t` : juste pour toute
+	 * représentation de la même droite (point sur la droite, vecteur colinéaire),
+	 * quelle que soit la lettre du paramètre. Jugée par
+	 * `questions/parametric/parametric-line-answer.ts`.
 	 */
 	answerKind?: AnswerKind;
+	/**
+	 * Case ordinaire (sans `answerKind`) seulement : texte d'un bouton posé à côté de la case
+	 * (« pas factorisable », « pas de solution » ; « impossible » par défaut dans le formulaire),
+	 * que l'élève clique quand la réponse n'existe pas. Présent = bouton affiché sur TOUS les
+	 * tirages (sinon il donnerait la réponse). La réponse attendue vaut alors `impossible`
+	 * (`IMPOSSIBLE_EXPECTED`) sur les tirages sans réponse, souvent par `{{if:…}}`. Voir
+	 * `questions/impossible-answer.ts` (chantier `reponse-impossible`, outil n° 51).
+	 */
+	impossibleLabel?: string;
 	/**
 	 * Case `answerKind: 'vecteur'` seulement (ignoré sinon) : `'exact'` (défaut) =
 	 * mêmes coordonnées que l'attendue ; `'colineaire'` = tout vecteur colinéaire
@@ -369,6 +434,17 @@ export interface TemplateBlank extends CalculusBlankFields {
 	 * simplifier perfectible, calcul non fait `\frac{\pi}{4}+2\pi` de mauvaise forme).
 	 */
 	angleModulo?: AngleModulo;
+	/**
+	 * Erreurs prévues (chantier `idees-format`, idée 3) : « si l'élève répond
+	 * `{{eval:a-b}}`, lui écrire : “Tu as soustrait au lieu d'additionner.” ».
+	 * Case à écriture mathématique ordinaire seulement. Voir `ExpectedError`.
+	 */
+	expectedErrors?: ExpectedError[];
+	/**
+	 * Veto de l'auteur (chantier `idees-format`, idée 4) : cette case ne se répond
+	 * jamais en QCM, même si le prof coche « en QCM » sur la ligne de série.
+	 */
+	neverChoice?: boolean;
 
 	/** Unit config (overrides blankDefaults.unit) */
 	unit?: {
@@ -435,6 +511,15 @@ export interface QuestionVariation {
 	 * @example { requiredForm: 'fraction' } // Answer must be a/b
 	 */
 	requiredForm?: RequiredForm;
+
+	/**
+	 * Coup de pouce (idée 5) : indice que l'élève ouvre s'il est bloqué, jamais en
+	 * évaluation. Gabarit comme une étape de correction, sans `{{solution}}` (cf. `hint.ts`).
+	 */
+	hint?: TemplateMarkdown;
+
+	/** Coup de pouce = première étape de la correction (exclusif de `hint`) */
+	hintFromFirstStep?: boolean;
 }
 
 /**
@@ -637,6 +722,21 @@ export interface QuestionTemplate {
 }
 
 /**
+ * Modèle de la liste publique `/api/questions/templates/all`
+ * (`questionTemplatesCache` : catalogue Automaths, panier, test).
+ *
+ * La liste n'envoie pas les cas de test (colonnes listées dans son
+ * `+server.ts` : c'est là qu'est la vraie protection) ; seul l'éditeur les lit,
+ * et il charge le modèle complet par son id. Le type refuse de les lire sous
+ * leurs deux noms : `testSpecs` (retiré ici) et `test_specs` (jamais déclaré).
+ *
+ * Le cache passe chaque ligne par `mapDbTemplateToForm` : les noms de
+ * l'éditeur (`exerciseInstruction`, `defaultDisplayOptions`) s'ajoutent à
+ * ceux de la base, que le catalogue lit encore (`classification_node_id`).
+ */
+export type CatalogueTemplate = Omit<QuestionTemplate, 'testSpecs'>;
+
+/**
  * Map a raw Supabase question_templates row (snake_case) to QuestionTemplate (camelCase).
  *
  * Supabase returns column names as-is (snake_case), but our TypeScript
@@ -678,7 +778,8 @@ export type ResolvedVariable = SharedResolvedVariable;
 /**
  * Genre d'un bloc qui porte sa case et dont la réponse est sa valeur : à construire
  * (```collection, ```monnaie, `construire:`) ou à placer (```line, ```horloge,
- * ```barres, ```boite-a-moustaches, `placer:`), des étiquettes à ranger (```ranger), ou une figure à colorier
+ * ```barres, ```boite-a-moustaches, `placer:`), des étiquettes à ranger (```ranger), des
+ * éléments à associer (```associer), un texte à trous (```trous), ou une figure à colorier
  * (```partage, `colorier:`), ou un assemblage de cubes à geste (```cubes, `dessiner:` / `retrouver:`),
  * ou un patron à geste (```patron, `designer:` / `completer:`), ou des points à placer
  * dans un repère (```courbe, `placer:`) ou sur le cercle trigonométrique (```trig, `placer:`),
@@ -692,12 +793,20 @@ export type BuildKind =
 	| 'barres'
 	| 'boite-a-moustaches'
 	| 'ranger'
+	| 'associer'
+	| 'trous'
 	| 'partage'
 	| 'cubes'
 	| 'patron'
 	| 'courbe'
 	| 'trig'
-	| 'solide';
+	| 'solide'
+	| 'tortue'
+	| 'calcul'
+	| 'robot'
+	| 'labyrinthe'
+	| 'yohaku'
+	| 'python';
 
 /** Nom du bloc pour les messages au prof : « bloc collection », « droite graduée », « horloge » */
 export function buildKindName(kind: BuildKind): string {
@@ -705,12 +814,20 @@ export function buildKindName(kind: BuildKind): string {
 	if (kind === 'barres') return 'diagramme en barres';
 	if (kind === 'boite-a-moustaches') return 'boîte à moustaches';
 	if (kind === 'ranger') return 'étiquettes à ranger';
+	if (kind === 'associer') return 'éléments à associer';
+	if (kind === 'trous') return 'texte à trous';
 	if (kind === 'partage') return 'figure à colorier';
 	if (kind === 'cubes') return 'assemblage de cubes';
 	if (kind === 'patron') return 'patron à geste';
 	if (kind === 'solide') return 'solide à geste';
 	if (kind === 'courbe') return 'repère';
 	if (kind === 'trig') return 'cercle trigonométrique';
+	if (kind === 'tortue') return 'programme tortue';
+	if (kind === 'calcul') return 'programme de calcul';
+	if (kind === 'robot') return 'robot à produire';
+	if (kind === 'labyrinthe') return 'labyrinthe à parcourir';
+	if (kind === 'yohaku') return 'grille à remplir';
+	if (kind === 'python') return 'programme Python';
 	return kind === 'horloge' ? 'horloge' : `bloc ${kind}`;
 }
 
@@ -770,6 +887,9 @@ export interface InstanceBlank extends CalculusBlankFields {
 	 * solide (```solide, `tracer: vecteur AB + AD depuis A`) : réponse attendue = les
 	 * couples justes (`A/C`, ou `A/C|E/G` quand l'origine est libre), l'élève touche
 	 * deux points (`A/C`), juge à part (`isSolideAnswerCorrect`) : l'un des couples.
+	 * Programme Python (```python-a-ecrire) : réponse attendue = fonction, solution, essais et
+	 * exigences (`expectedPythonAnswer`) ; la valeur porte le code ET le verdict calculé dans
+	 * le navigateur avant la validation (`pythonAnswerVerdict`), jamais cru par le serveur.
 	 */
 	construire?: BuildKind;
 	/**
@@ -833,12 +953,26 @@ export interface InstanceBlank extends CalculusBlankFields {
 	acceptCombinatorialNotation?: boolean;
 	/** Voir `TemplateBlank.answerKind` (fusionné avec blankDefaults) */
 	answerKind?: AnswerKind;
+	/** Voir `TemplateBlank.impossibleLabel` (fusionné avec blankDefaults, case ordinaire seulement) */
+	impossibleLabel?: string;
 	/** Voir `TemplateBlank.vectorMode` (fusionné avec blankDefaults) */
 	vectorMode?: VectorMode;
 	/** Voir `TemplateBlank.openableBounds` (fusionné avec blankDefaults, case intervalles seulement) */
 	openableBounds?: boolean;
 	/** Voir `TemplateBlank.angleModulo` (fusionné avec blankDefaults, case ordinaire seulement) */
 	angleModulo?: AngleModulo;
+	/**
+	 * Erreurs prévues résolues pour ce tirage (`TemplateBlank.expectedErrors`).
+	 * Retirées de l'énoncé envoyé à l'élève en évaluation notée, comme l'attendu.
+	 */
+	expectedErrors?: InstanceExpectedError[];
+	/** Voir `TemplateBlank.neverChoice` (posé seulement quand vrai) */
+	neverChoice?: true;
+	/**
+	 * Case choix venue des erreurs prévues (idée 4) : la question est répondue en
+	 * QCM (`isAnsweredAsChoice`). Posé seulement par `asChoiceInstance`.
+	 */
+	fromExpectedErrors?: true;
 
 	/** Unit config (merged) */
 	unit?: {
@@ -923,6 +1057,9 @@ export interface QuestionInstance {
 	 * All placeholders are resolved to final values.
 	 */
 	correction?: ResolvedCorrection;
+
+	/** Coup de pouce résolu (valeurs du tirage) ; absent si la variation n'en a pas */
+	hint?: ResolvedMarkdown;
 
 	// ---- Fill-in-blanks (resolved) ----
 
@@ -1212,6 +1349,11 @@ export const COMPLEX_FORMS = [
 export interface TestSpecExpected {
 	status: ValidationStatus;
 	constraintViolations?: ConstraintId[];
+	/**
+	 * Message d'une erreur prévue que la réponse doit déclencher (tel que résolu
+	 * pour les variables de la spec) ; une case au moins doit le porter
+	 */
+	expectedErrorMessage?: string;
 }
 
 /**

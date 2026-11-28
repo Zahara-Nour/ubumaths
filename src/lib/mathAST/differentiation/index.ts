@@ -9,8 +9,8 @@
  *
  * @example
  * ```typescript
- * import { differentiate, differentiateN } from '$lib/mathAST/differentiation';
- * import { parseLatex, toLatex } from '$lib/mathAST';
+ * import { differentiate, differentiateN } from '#lib/mathAST/differentiation/index.ts';
+ * import { parseLatex, toLatex } from '#lib/mathAST/index.ts';
  *
  * // d/dx(x^2) = 2x
  * const expr = parseLatex('x^2');

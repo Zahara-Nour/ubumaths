@@ -6,7 +6,7 @@
  *
  * USAGE:
  * ```typescript
- * import { useCardSchema, purchaseVipCardSchema } from '$lib/server/validation/vip-cards';
+ * import { useCardSchema, purchaseVipCardSchema } from '#lib/server/validation/vip-cards.ts';
  *
  * const validation = useCardSchema.safeParse(body);
  * if (!validation.success) {

@@ -1,0 +1,132 @@
+{
+	"id": "dfb52584-0f74-460e-acd3-7a6c6c6007f7",
+	"title": "Poser une division décimale : dividende entier",
+	"description": "Division posée d'un entier de 3 à 5 chiffres par 2, 4, 5, 6 ou 8, quotient décimal qui s'arrête au dixième (9 855 ÷ 6) ou au centième (785 ÷ 4)",
+	"grades": ["CM2"],
+	"level": 9,
+	"delay": 240,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Pose et effectue la division. Continue après la virgule jusqu'à ce que le reste soit nul.\n\n```operation\ncalcul: {{N}} ÷ {{d}}\nquotient: décimal\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..5"
+				},
+				{
+					"name": "d",
+					"expression": "{{if:k==1|2|{{if:k==2|4|{{if:k==3|5|{{if:k==4|6|8}}}}}}}}"
+				},
+				{
+					"name": "N",
+					"expression": "100..99999"
+				}
+			],
+			"conditions": ["mod(N,d) != 0", "mod(10*N,d) == 0"],
+			"blanks": [],
+			"correction": {
+				"steps": [
+					"Arrivé au chiffre des unités, il reste ${{eval:mod(N,d)}}$ : on écrit la virgule au quotient, puis un zéro après la virgule du dividende (${{N}} = {{N}}{,}0$), et on continue.",
+					"Le reste devient nul au chiffre des dixièmes.",
+					"$${{N}} \\div {{d}} = \\textcolor{{{color:primary.0}}}{{{eval:N/d;d}}}$$",
+					"On vérifie : ${{d}} \\times {{eval:N/d;d}} = {{N}}$."
+				]
+			}
+		},
+		{
+			"statement": "Pose et effectue la division. Continue après la virgule jusqu'à ce que le reste soit nul.\n\n```operation\ncalcul: {{N}} ÷ {{d}}\nquotient: décimal\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..2"
+				},
+				{
+					"name": "d",
+					"expression": "{{if:k==1|4|8}}"
+				},
+				{
+					"name": "N",
+					"expression": "100..9999"
+				}
+			],
+			"conditions": ["mod(10*N,d) != 0", "mod(100*N,d) == 0"],
+			"blanks": [],
+			"correction": {
+				"steps": [
+					"Arrivé au chiffre des unités, il reste ${{eval:mod(N,d)}}$ : on écrit la virgule au quotient, puis des zéros après la virgule du dividende (${{N}} = {{N}}{,}00$), et on continue.",
+					"Le reste devient nul au chiffre des centièmes.",
+					"$${{N}} \\div {{d}} = \\textcolor{{{color:primary.0}}}{{{eval:N/d;d}}}$$",
+					"On vérifie : ${{d}} \\times {{eval:N/d;d}} = {{N}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "BO : 9 855 ÷ 6 = 1 642,5",
+			"variationIndex": 0,
+			"variables": {
+				"k": "4",
+				"d": "6",
+				"N": "9855"
+			},
+			"answers": ["1 642,5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : arrêtée au reste, 1 642",
+			"variationIndex": 0,
+			"variables": {
+				"k": "4",
+				"d": "6",
+				"N": "9855"
+			},
+			"answers": ["1 642"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : virgule oubliée, 16 425",
+			"variationIndex": 0,
+			"variables": {
+				"k": "4",
+				"d": "6",
+				"N": "9855"
+			},
+			"answers": ["16 425"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "BO : 785 ÷ 4 = 196,25",
+			"variationIndex": 1,
+			"variables": {
+				"k": "1",
+				"d": "4",
+				"N": "785"
+			},
+			"answers": ["196,25"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : arrêtée au dixième, 196,2",
+			"variationIndex": 1,
+			"variables": {
+				"k": "1",
+				"d": "4",
+				"N": "785"
+			},
+			"answers": ["196,2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

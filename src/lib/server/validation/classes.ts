@@ -104,3 +104,10 @@ export const getClassWarningsSchema = z.object({
 export const getClassGidouillesSchema = z.object({
 	classId: z.string().uuid('Invalid class ID format')
 });
+
+/**
+ * Élèves d'une classe : valide le paramètre `classId` de la route
+ */
+export const getClassStudentsSchema = z.object({
+	classId: z.string().uuid('Invalid class ID format')
+});

@@ -1,0 +1,555 @@
+{
+	"id": "2c0bc696-a8ad-4fd0-be34-b61637a6b620",
+	"rangement": {
+		"noeud": "Probabilités > Expériences aléatoires > événements",
+		"point": "3-033"
+	},
+	"title": "Probabilités dans un tableau d'effectifs",
+	"description": "Lire dans un tableau d'effectifs la probabilité de « A et B », de « A ou B », de « A ou B, mais pas les deux ».",
+	"grades": ["3"],
+	"level": 2,
+	"delay": 180,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"options": {
+		"constraints": {
+			"reducedFractions": "off"
+		}
+	},
+	"variations": [
+		{
+			"statement": "Dans une volière, on a compté les oiseaux selon leur espèce et leur sexe.\n\n```tableau-croise\nlignes: Perruches ; Canaris\ncolonnes: Mâles ; Femelles\nPerruches = {{a}} ; {{b}}\nCanaris = {{c}} ; {{d}}\n```\n\nOn choisit un oiseau de la volière au hasard. Quelle est la probabilité que ce soit une perruche **et** un mâle ? Donne le résultat sous la forme d'une fraction ou d'un nombre décimal.\n\n$$?$$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "3..15"
+				},
+				{
+					"name": "b",
+					"expression": "3..15"
+				},
+				{
+					"name": "c",
+					"expression": "3..15"
+				},
+				{
+					"name": "d",
+					"expression": "3..15"
+				}
+			],
+			"conditions": ["b != c", "a*(a+b+c+d) != (a+b)*(a+b)", "a*(a+b+c+d) != (a+c)*(a+b)"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(a)/(a+b+c+d)}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:a/(a+b)}}",
+							"message": "Tu as divisé par le nombre de perruches : on choisit un oiseau parmi **tous** les oiseaux de la volière.",
+							"label": "Case sur le total de sa ligne"
+						},
+						{
+							"answer": "{{eval:a/(a+c)}}",
+							"message": "Tu as divisé par le nombre de mâles : on choisit un oiseau parmi **tous** les oiseaux de la volière.",
+							"label": "Case sur le total de sa colonne"
+						},
+						{
+							"answer": "{{eval:(a+b)/(a+b+c+d)}}",
+							"message": "Tu as compté toutes les perruches : il faut aussi que l'oiseau soit un mâle, c'est la case « Perruches / Mâles ».",
+							"label": "Total de la ligne au lieu de la case"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"Les ${{eval:(a+b+c+d)}}$ oiseaux ont la même chance d'être choisis : $P=\\dfrac{\\text{nombre d'issues favorables}}{\\text{nombre d'issues}}$.",
+					"Les perruches mâles sont dans la case « Perruches / Mâles » : il y en a ${{a}}$.",
+					"$P=\\dfrac{ {{eval:a}} }{ {{eval:(a+b+c+d)}} }=\\textcolor{{{color:primary.0}}}{ {{solution}} }$."
+				]
+			},
+			"hint": "Compte les oiseaux qui ont **les deux** caractères à la fois, puis divise par le nombre total d'oiseaux."
+		},
+		{
+			"statement": "Un fleuriste a composé un bouquet de roses et de tulipes, rouges ou blanches.\n\n```tableau-croise\nlignes: Roses ; Tulipes\ncolonnes: Rouges ; Blanches\nRoses = {{a}} ; {{b}}\nTulipes = {{c}} ; {{d}}\n```\n\nOn tire une fleur du bouquet au hasard. Quelle est la probabilité que ce soit une rose **ou** une fleur rouge ? Donne le résultat sous la forme d'une fraction ou d'un nombre décimal.\n\n$$?$$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "3..15"
+				},
+				{
+					"name": "b",
+					"expression": "3..15"
+				},
+				{
+					"name": "c",
+					"expression": "3..15"
+				},
+				{
+					"name": "d",
+					"expression": "3..15"
+				}
+			],
+			"conditions": ["2*a+b+c <= (a+b+c+d)"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(a+b+c)/(a+b+c+d)}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:(2*a+b+c)/(a+b+c+d)}}",
+							"message": "Tu as additionné les roses et les fleurs rouges : les roses rouges sont comptées deux fois. $P(A \\text{ ou } B)=P(A)+P(B)-P(A \\text{ et } B)$.",
+							"label": "P(A) + P(B) sans retirer P(A et B)"
+						},
+						{
+							"answer": "{{eval:(a)/(a+b+c+d)}}",
+							"message": "Tu as compté les roses rouges seulement : « une rose **ou** une fleur rouge » compte aussi les roses blanches et les tulipes rouges.",
+							"label": "« et » au lieu de « ou »"
+						},
+						{
+							"answer": "{{eval:(b+c)/(a+b+c+d)}}",
+							"message": "Tu as oublié les roses rouges : une rose rouge est une rose, elle compte dans « une rose ou une fleur rouge ».",
+							"label": "« ou » exclusif"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"Il y a ${{eval:a+b}}$ roses, ${{eval:a+c}}$ fleurs rouges, et ${{a}}$ roses rouges, qui sont à la fois des roses et des fleurs rouges.",
+					"$P(A \\text{ ou } B)=P(A)+P(B)-P(A \\text{ et } B)=\\dfrac{ {{eval:a+b}} }{ {{eval:(a+b+c+d)}} }+\\dfrac{ {{eval:a+c}} }{ {{eval:(a+b+c+d)}} }-\\dfrac{ {{eval:a}} }{ {{eval:(a+b+c+d)}} }$.",
+					"$P=\\dfrac{ {{eval:a+b+c}} }{ {{eval:(a+b+c+d)}} }=\\textcolor{{{color:primary.0}}}{ {{solution}} }$."
+				]
+			},
+			"hint": "« $A$ ou $B$ » : au moins l'un des deux. $P(A \\text{ ou } B)=P(A)+P(B)-P(A \\text{ et } B)$."
+		},
+		{
+			"statement": "Un garage a relevé le moteur et l'état des voitures de son parc.\n\n```tableau-croise\nlignes: Électriques ; Essence\ncolonnes: Neuves ; Occasion\nÉlectriques = {{a}} ; {{b}}\nEssence = {{c}} ; {{d}}\n```\n\nOn choisit une voiture du parc au hasard. Quelle est la probabilité qu'elle soit électrique ou neuve, **mais pas les deux** ? Donne le résultat sous la forme d'une fraction ou d'un nombre décimal.\n\n$$?$$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "100..240"
+				},
+				{
+					"name": "b",
+					"expression": "100..240"
+				},
+				{
+					"name": "c",
+					"expression": "100..240"
+				},
+				{
+					"name": "d",
+					"expression": "100..240"
+				}
+			],
+			"conditions": ["2*a+b+c <= (a+b+c+d)", "a != b+c"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(b+c)/(a+b+c+d)}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:(a+b+c)/(a+b+c+d)}}",
+							"message": "Tu as compté aussi les voitures électriques neuves : elles sont électriques **et** neuves, l'énoncé les exclut.",
+							"label": "« ou » inclusif"
+						},
+						{
+							"answer": "{{eval:(a)/(a+b+c+d)}}",
+							"message": "Tu as compté les voitures électriques neuves : ce sont celles qui ont les deux caractères.",
+							"label": "« et » au lieu de « pas les deux »"
+						},
+						{
+							"answer": "{{eval:(2*a+b+c)/(a+b+c+d)}}",
+							"message": "Tu as additionné les voitures électriques et les voitures neuves : les électriques neuves sont comptées deux fois, alors qu'elles sont exclues.",
+							"label": "P(A) + P(B)"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"Une voiture « électrique ou neuve, mais pas les deux » est électrique d'occasion, ou neuve à essence.",
+					"Il y en a ${{b}}+{{c}}={{eval:b+c}}$ sur ${{eval:(a+b+c+d)}}$.",
+					"$P=\\dfrac{ {{eval:b+c}} }{ {{eval:(a+b+c+d)}} }=\\textcolor{{{color:primary.0}}}{ {{solution}} }$."
+				]
+			},
+			"hint": "« L'un ou l'autre, mais pas les deux » : compte les cases où **un seul** des deux caractères est présent."
+		},
+		{
+			"statement": "Une cité scolaire réunit un collège et un lycée. On a relevé le régime de ses élèves ; une case du tableau est masquée.\n\n```tableau-croise\nlignes: Collégiens ; Lycéens\ncolonnes: Demi-pensionnaires ; Externes\nCollégiens = {{a}} ; {{b}}\nLycéens = {{c}} ; {{d}}\nmasquer: Lycéens/Demi-pensionnaires\n```\n\nOn choisit un élève de la cité scolaire au hasard. Quelle est la probabilité que ce soit un collégien **ou** un demi-pensionnaire ? Donne le résultat sous la forme d'une fraction ou d'un nombre décimal.\n\n$$?$$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "100..240"
+				},
+				{
+					"name": "b",
+					"expression": "100..240"
+				},
+				{
+					"name": "c",
+					"expression": "100..240"
+				},
+				{
+					"name": "d",
+					"expression": "100..240"
+				}
+			],
+			"conditions": ["2*a+b+c <= (a+b+c+d)"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(a+b+c)/(a+b+c+d)}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:(a+b)/(a+b+c+d)}}",
+							"message": "Tu as oublié les lycéens demi-pensionnaires : la case est masquée, mais ils sont demi-pensionnaires. Retrouve-les avec le total de la colonne.",
+							"label": "Case masquée oubliée"
+						},
+						{
+							"answer": "{{eval:(2*a+b+c)/(a+b+c+d)}}",
+							"message": "Tu as additionné les collégiens et les demi-pensionnaires : les collégiens demi-pensionnaires sont comptés deux fois.",
+							"label": "P(A) + P(B) sans retirer P(A et B)"
+						},
+						{
+							"answer": "{{eval:(a)/(a+b+c+d)}}",
+							"message": "Tu as compté les collégiens demi-pensionnaires seulement : « collégien **ou** demi-pensionnaire » compte aussi les collégiens externes et les lycéens demi-pensionnaires.",
+							"label": "« et » au lieu de « ou »"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"La case masquée se retrouve avec le total de sa colonne : il y a ${{eval:a+c}}-{{a}}={{c}}$ lycéens demi-pensionnaires.",
+					"Un collégien ou un demi-pensionnaire : collégiens demi-pensionnaires, collégiens externes, lycéens demi-pensionnaires, soit ${{a}}+{{b}}+{{c}}={{eval:a+b+c}}$ élèves.",
+					"$P=\\dfrac{ {{eval:a+b+c}} }{ {{eval:(a+b+c+d)}} }=\\textcolor{{{color:primary.0}}}{ {{solution}} }$."
+				]
+			},
+			"hint": "Commence par retrouver l'effectif de la case masquée avec le total de sa colonne."
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Volière : 6/20",
+			"variationIndex": 0,
+			"variables": {
+				"a": "6",
+				"b": "4",
+				"c": "3",
+				"d": "7"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["\\frac{6}{20}"]
+		},
+		{
+			"description": "Volière : réduite 3/10",
+			"variationIndex": 0,
+			"variables": {
+				"a": "6",
+				"b": "4",
+				"c": "3",
+				"d": "7"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["\\frac{3}{10}"]
+		},
+		{
+			"description": "Volière : décimal 0,3",
+			"variationIndex": 0,
+			"variables": {
+				"a": "6",
+				"b": "4",
+				"c": "3",
+				"d": "7"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0{,}3"]
+		},
+		{
+			"description": "Volière : sur sa ligne",
+			"variationIndex": 0,
+			"variables": {
+				"a": "6",
+				"b": "4",
+				"c": "3",
+				"d": "7"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as divisé par le nombre de perruches : on choisit un oiseau parmi **tous** les oiseaux de la volière."
+			},
+			"answers": ["\\frac{6}{10}"]
+		},
+		{
+			"description": "Volière : sur sa colonne",
+			"variationIndex": 0,
+			"variables": {
+				"a": "6",
+				"b": "4",
+				"c": "3",
+				"d": "7"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as divisé par le nombre de mâles : on choisit un oiseau parmi **tous** les oiseaux de la volière."
+			},
+			"answers": ["\\frac{6}{9}"]
+		},
+		{
+			"description": "Volière : total de ligne",
+			"variationIndex": 0,
+			"variables": {
+				"a": "6",
+				"b": "4",
+				"c": "3",
+				"d": "7"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as compté toutes les perruches : il faut aussi que l'oiseau soit un mâle, c'est la case « Perruches / Mâles »."
+			},
+			"answers": ["\\frac{10}{20}"]
+		},
+		{
+			"description": "Bouquet : 12/20",
+			"variationIndex": 1,
+			"variables": {
+				"a": "5",
+				"b": "4",
+				"c": "3",
+				"d": "8"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["\\frac{12}{20}"]
+		},
+		{
+			"description": "Bouquet : réduite 3/5",
+			"variationIndex": 1,
+			"variables": {
+				"a": "5",
+				"b": "4",
+				"c": "3",
+				"d": "8"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["\\frac{3}{5}"]
+		},
+		{
+			"description": "Bouquet : décimal 0,6",
+			"variationIndex": 1,
+			"variables": {
+				"a": "5",
+				"b": "4",
+				"c": "3",
+				"d": "8"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0{,}6"]
+		},
+		{
+			"description": "Bouquet : roses rouges comptées deux fois",
+			"variationIndex": 1,
+			"variables": {
+				"a": "5",
+				"b": "4",
+				"c": "3",
+				"d": "8"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as additionné les roses et les fleurs rouges : les roses rouges sont comptées deux fois. $P(A \\text{ ou } B)=P(A)+P(B)-P(A \\text{ et } B)$."
+			},
+			"answers": ["\\frac{17}{20}"]
+		},
+		{
+			"description": "Bouquet : « et »",
+			"variationIndex": 1,
+			"variables": {
+				"a": "5",
+				"b": "4",
+				"c": "3",
+				"d": "8"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as compté les roses rouges seulement : « une rose **ou** une fleur rouge » compte aussi les roses blanches et les tulipes rouges."
+			},
+			"answers": ["\\frac{5}{20}"]
+		},
+		{
+			"description": "Bouquet : exclusif",
+			"variationIndex": 1,
+			"variables": {
+				"a": "5",
+				"b": "4",
+				"c": "3",
+				"d": "8"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as oublié les roses rouges : une rose rouge est une rose, elle compte dans « une rose ou une fleur rouge »."
+			},
+			"answers": ["\\frac{7}{20}"]
+		},
+		{
+			"description": "Garage : 380/700",
+			"variationIndex": 2,
+			"variables": {
+				"a": "120",
+				"b": "230",
+				"c": "150",
+				"d": "200"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["\\frac{380}{700}"]
+		},
+		{
+			"description": "Garage : réduite 19/35",
+			"variationIndex": 2,
+			"variables": {
+				"a": "120",
+				"b": "230",
+				"c": "150",
+				"d": "200"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["\\frac{19}{35}"]
+		},
+		{
+			"description": "Garage : inclusif",
+			"variationIndex": 2,
+			"variables": {
+				"a": "120",
+				"b": "230",
+				"c": "150",
+				"d": "200"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as compté aussi les voitures électriques neuves : elles sont électriques **et** neuves, l'énoncé les exclut."
+			},
+			"answers": ["\\frac{500}{700}"]
+		},
+		{
+			"description": "Garage : « et »",
+			"variationIndex": 2,
+			"variables": {
+				"a": "120",
+				"b": "230",
+				"c": "150",
+				"d": "200"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as compté les voitures électriques neuves : ce sont celles qui ont les deux caractères."
+			},
+			"answers": ["\\frac{120}{700}"]
+		},
+		{
+			"description": "Garage : P(A) + P(B)",
+			"variationIndex": 2,
+			"variables": {
+				"a": "120",
+				"b": "230",
+				"c": "150",
+				"d": "200"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as additionné les voitures électriques et les voitures neuves : les électriques neuves sont comptées deux fois, alors qu'elles sont exclues."
+			},
+			"answers": ["\\frac{620}{700}"]
+		},
+		{
+			"description": "Cité : 470/700",
+			"variationIndex": 3,
+			"variables": {
+				"a": "150",
+				"b": "200",
+				"c": "120",
+				"d": "230"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["\\frac{470}{700}"]
+		},
+		{
+			"description": "Cité : réduite 47/70",
+			"variationIndex": 3,
+			"variables": {
+				"a": "150",
+				"b": "200",
+				"c": "120",
+				"d": "230"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["\\frac{47}{70}"]
+		},
+		{
+			"description": "Cité : case masquée oubliée",
+			"variationIndex": 3,
+			"variables": {
+				"a": "150",
+				"b": "200",
+				"c": "120",
+				"d": "230"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as oublié les lycéens demi-pensionnaires : la case est masquée, mais ils sont demi-pensionnaires. Retrouve-les avec le total de la colonne."
+			},
+			"answers": ["\\frac{350}{700}"]
+		},
+		{
+			"description": "Cité : comptés deux fois",
+			"variationIndex": 3,
+			"variables": {
+				"a": "150",
+				"b": "200",
+				"c": "120",
+				"d": "230"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as additionné les collégiens et les demi-pensionnaires : les collégiens demi-pensionnaires sont comptés deux fois."
+			},
+			"answers": ["\\frac{620}{700}"]
+		},
+		{
+			"description": "Cité : « et »",
+			"variationIndex": 3,
+			"variables": {
+				"a": "150",
+				"b": "200",
+				"c": "120",
+				"d": "230"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as compté les collégiens demi-pensionnaires seulement : « collégien **ou** demi-pensionnaire » compte aussi les collégiens externes et les lycéens demi-pensionnaires."
+			},
+			"answers": ["\\frac{150}{700}"]
+		}
+	]
+}

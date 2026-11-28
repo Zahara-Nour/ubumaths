@@ -25,8 +25,8 @@
 import type { Voie, ChoreographyFn, ChoreographyResult, SubStep, TraceTag } from './types';
 import { droite, en, labelAux, nom, role, shownName } from './names';
 import { hasVisibleSegment, measureSegment, rulerStartsAtA } from './milieu';
-import type { Figure } from '$lib/geometry-core/graph/figure';
-import { isMidpoint } from '$lib/geometry-core/types/elements';
+import type { Figure } from '#lib/geometry-core/graph/figure.ts';
+import { isMidpoint } from '#lib/geometry-core/types/elements.ts';
 
 /**
  * Length of the segment-trace (math units). Matches the default `Ruler`
@@ -674,7 +674,7 @@ function buildRegleEquerre(ctx: Parameters<ChoreographyFn>[0]): ChoreographyResu
 	const subSteps: SubStep[] = [
 		...measureSteps,
 		{
-			kind: 'compass-measure',
+			kind: 'instrument-move',
 			instrument: 'setSquare',
 			instrumentTarget: squareTarget,
 			compassRadius: 0,
@@ -696,7 +696,7 @@ function buildRegleEquerre(ctx: Parameters<ChoreographyFn>[0]): ChoreographyResu
 			instruction: `Le long du bord de l'équerre, on trace la perpendiculaire à ${nom(d)} en ${nI}`
 		},
 		{
-			kind: 'compass-measure',
+			kind: 'instrument-move',
 			instrument: 'ruler',
 			instrumentTarget: rulerTarget,
 			compassRadius: 0,

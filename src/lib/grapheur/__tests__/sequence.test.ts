@@ -17,8 +17,8 @@ import {
 	nextSequenceName,
 	parseSequence,
 	sequenceValidationError
-} from '$lib/grapheur/sequence';
-import type { MathNode } from '$lib/mathAST/types';
+} from '#lib/grapheur/sequence.ts';
+import type { MathNode } from '#lib/mathAST/types.ts';
 
 // =============================================================================
 // Helpers

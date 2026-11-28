@@ -17,15 +17,21 @@
 -->
 
 <script lang="ts">
-	import * as Card from '$lib/components/ui/card';
-	import { Badge } from '$lib/components/ui/badge';
-	import { Button } from '$lib/components/ui/button';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
 	import { BookOpen, Clock, Sparkles, Lock } from '@lucide/svelte';
-	import { cn } from '$lib/utils';
-	import type { Deck } from '$lib/srs/types';
+	import { cn } from '#lib/utils.ts';
 
 	interface Props {
-		deck: Deck & {
+		// Seulement ce que la carte affiche : elle reçoit aussi bien un `Deck` complet
+		// qu'une ligne de paquet rendue par un `load` (description `null`, type en texte).
+		deck: {
+			id: string;
+			name: string;
+			description?: string | null;
+			deckType: string;
+			isAssigned: boolean;
 			stats?: {
 				due_count: number;
 				total_cards: number;
@@ -58,6 +64,7 @@
 		deck.isAssigned && 'bg-muted/30'
 	)}
 	{onclick}
+	data-testid="deck-card-{deck.id}"
 >
 	<Card.Header>
 		<div class="flex items-start justify-between gap-3">
@@ -108,6 +115,7 @@
 					<span class="text-sm">À réviser</span>
 				</div>
 				<p
+					data-testid="deck-due"
 					class={cn(
 						'mt-1 text-2xl font-bold',
 						hasDueCards && 'text-primary',
@@ -123,7 +131,9 @@
 				<div class="flex items-center gap-2 text-muted-foreground">
 					<span class="text-sm">Nouvelles</span>
 				</div>
-				<p class="mt-1 text-2xl font-bold text-blue-600 dark:text-blue-400">{newCount}</p>
+				<p data-testid="deck-new" class="mt-1 text-2xl font-bold text-blue-600 dark:text-blue-400">
+					{newCount}
+				</p>
 			</div>
 
 			<!-- Learning Cards -->
@@ -131,7 +141,10 @@
 				<div class="flex items-center gap-2 text-muted-foreground">
 					<span class="text-sm">En cours</span>
 				</div>
-				<p class="mt-1 text-2xl font-bold text-orange-600 dark:text-orange-400">
+				<p
+					data-testid="deck-learning"
+					class="mt-1 text-2xl font-bold text-orange-600 dark:text-orange-400"
+				>
 					{learningCount}
 				</p>
 			</div>

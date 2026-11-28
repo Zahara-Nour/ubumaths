@@ -9,14 +9,14 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { areEquivalent } from '$lib/math';
-import { parseLatex, simplify, toLatex } from '$lib/mathAST';
-import { evaluateNodeToApproximatedNumber } from '$lib/mathAST/eval/evaluate';
-import { inferType } from '$lib/mathAST/numtype/infer';
-import { isNonNegativeType, isPositiveType } from '$lib/mathAST/numtype/predicates';
-import { evaluateLimit } from '$lib/mathAST/limits/evaluate';
-import { isInDomain } from '$lib/mathAST/domain/validate';
-import { evaluateAtPoint } from '$lib/mathAST/pedagogical-limits/helpers';
+import { areEquivalent } from '#lib/math/index.ts';
+import { parseLatex, simplify, toLatex } from '#lib/mathAST/index.ts';
+import { evaluateNodeToApproximatedNumber } from '#lib/mathAST/eval/evaluate.ts';
+import { inferType } from '#lib/mathAST/numtype/infer.ts';
+import { isNonNegativeType, isPositiveType } from '#lib/mathAST/numtype/predicates.ts';
+import { evaluateLimit } from '#lib/mathAST/limits/evaluate.ts';
+import { isInDomain } from '#lib/mathAST/domain/validate.ts';
+import { evaluateAtPoint } from '#lib/mathAST/pedagogical-limits/helpers.ts';
 
 describe('|log_b(a)| : la valeur absolue ne tombe que si le signe est connu', () => {
 	it.each([

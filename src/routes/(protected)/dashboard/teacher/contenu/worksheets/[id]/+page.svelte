@@ -1,20 +1,20 @@
 <script lang="ts">
-	import { lore } from '$lib/config/lore';
-	import { invalidateAll } from '$app/navigation';
-	import { Button } from '$lib/components/ui/button';
-	import BackLink from '$lib/components/navigation/BackLink.svelte';
-	import * as Card from '$lib/components/ui/card';
-	import * as Tabs from '$lib/components/ui/tabs';
-	import { Badge } from '$lib/components/ui/badge';
-	import { toaster } from '$lib/stores/toaster.svelte';
-	import ExerciseSelector from '$lib/components/worksheets/ExerciseSelector.svelte';
-	import ExerciseList from '$lib/components/worksheets/ExerciseList.svelte';
-	import ExerciseConfigModal from '$lib/components/worksheets/ExerciseConfigModal.svelte';
-	import PdfPreview from '$lib/components/worksheets/PdfPreview.svelte';
-	import CorrectionManager from '$lib/components/worksheets/CorrectionManager.svelte';
-	import WorksheetAssignmentForm from '$lib/components/worksheets/WorksheetAssignmentForm.svelte';
-	import MetadataCards from '$lib/components/worksheets/MetadataCards.svelte';
-	import ErrorReportsPanel from '$lib/components/worksheets/teacher/ErrorReportsPanel.svelte';
+	import { lore } from '#lib/config/lore.ts';
+	import { refreshAll } from '$app/navigation';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import BackLink from '#lib/components/navigation/BackLink.svelte';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import * as Tabs from '#lib/components/ui/tabs/index.ts';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
+	import ExerciseSelector from '#lib/components/worksheets/ExerciseSelector.svelte';
+	import ExerciseList from '#lib/components/worksheets/ExerciseList.svelte';
+	import ExerciseConfigModal from '#lib/components/worksheets/ExerciseConfigModal.svelte';
+	import PdfPreview from '#lib/components/worksheets/PdfPreview.svelte';
+	import CorrectionManager from '#lib/components/worksheets/CorrectionManager.svelte';
+	import WorksheetAssignmentForm from '#lib/components/worksheets/WorksheetAssignmentForm.svelte';
+	import MetadataCards from '#lib/components/worksheets/MetadataCards.svelte';
+	import ErrorReportsPanel from '#lib/components/worksheets/teacher/ErrorReportsPanel.svelte';
 	import {
 		ArrowLeft,
 		Send,
@@ -39,20 +39,22 @@
 		WorksheetSectionRow,
 		WorksheetExerciseWithExercise,
 		WorksheetAssignmentWithRelations
-	} from '$lib/types/worksheets';
+	} from '#lib/types/worksheets.ts';
 	import {
 		WORKSHEET_TYPE_ICONS,
 		WORKSHEET_TYPE_LABELS,
 		WORKSHEET_STATUS_VARIANTS,
 		WORKSHEET_STATUS_LABELS,
 		ASSIGNMENT_STATUS_LABELS
-	} from '$lib/utils/worksheet-constants';
-	import type { Exercise } from '$lib/exercises/types';
-	import { worksheetLocale } from '$lib/types/worksheets';
-	import { worksheetHeader } from '$lib/worksheets/worksheet-header';
-	import { assignmentCopiesHref } from '$lib/navigation/return-links';
-	import UntranslatedExercisesNotice from '$lib/components/worksheets/UntranslatedExercisesNotice.svelte';
-	import WorksheetCitationsNotice from '$lib/components/worksheets/WorksheetCitationsNotice.svelte';
+	} from '#lib/utils/worksheet-constants.ts';
+	import type { Exercise } from '#lib/exercises/types.ts';
+	import { worksheetLocale } from '#lib/types/worksheets.ts';
+	import { worksheetHeader } from '#lib/worksheets/worksheet-header.ts';
+	import { assignmentCopiesHref } from '#lib/navigation/return-links.ts';
+	import { fetchBatchStudents } from '#lib/worksheets/batch-students.ts';
+	import type { CopyRecipient } from '#lib/worksheets/student-copies.ts';
+	import UntranslatedExercisesNotice from '#lib/components/worksheets/UntranslatedExercisesNotice.svelte';
+	import WorksheetCitationsNotice from '#lib/components/worksheets/WorksheetCitationsNotice.svelte';
 
 	let { data }: { data: PageData } = $props();
 
@@ -82,6 +84,9 @@
 	let editingAssignment = $state<AssignmentWithExtras | null>(null);
 	let selectedAssignment = $state<AssignmentWithExtras | null>(null);
 	let classes = $state<{ id: string; name: string }[]>([]);
+	// Les élèves de l'onglet « Lot » de l'aperçu PDF : ceux des affectations de la fiche
+	let batchStudents = $state<CopyRecipient[]>([]);
+	let batchStudentsSeq = 0;
 
 	// Type-safe worksheet access with local state for updates.
 	// Snapshot intentional: $effect below resets it on data changes.
@@ -91,7 +96,7 @@
 	// Pending changes for metadata editing (single source of truth for edits)
 	let pendingChanges = $state<Partial<WorksheetWithRelations>>({});
 
-	// Update local state when data changes (e.g., after invalidateAll)
+	// Update local state when data changes (e.g., after refreshAll)
 	$effect(() => {
 		worksheetData = data.worksheet as WorksheetWithRelations;
 		pendingChanges = {}; // Reset pending changes when server data changes
@@ -181,7 +186,7 @@
 			}
 
 			toaster.success(config.success);
-			await invalidateAll();
+			await refreshAll();
 		} catch (error) {
 			console.error('Status change error:', error);
 			toaster.error(error instanceof Error ? error.message : config.error);
@@ -226,7 +231,7 @@
 			if (addedCount > 0) {
 				toaster.success(`${addedCount} ${lore.learning.exercise}(s) ajoutée(s)`);
 				// Refresh the page data to show new exercises
-				await invalidateAll();
+				await refreshAll();
 			}
 
 			if (addedCount < exercises.length) {
@@ -282,18 +287,43 @@
 	/**
 	 * Load assignments for the worksheet
 	 */
-	async function loadAssignments() {
+	async function loadAssignments(): Promise<boolean> {
 		assignmentsLoading = true;
 		try {
 			const response = await fetch(`/api/worksheets/${worksheet.id}/assignments`);
 			const data = await response.json();
 			if (response.ok) {
 				assignments = data.assignments || [];
+				return true;
 			}
 		} catch (err) {
 			console.error('Error loading assignments:', err);
 		} finally {
 			assignmentsLoading = false;
+		}
+		return false;
+	}
+
+	/**
+	 * Les élèves du lot de PDF : ceux de toutes les affectations de la fiche
+	 * (classes visées et élèves visés nommément), relus à chaque ouverture de
+	 * l'onglet PDF
+	 */
+	async function loadBatchStudents() {
+		// Deux ouvertures rapprochées de l'onglet : seule la dernière lecture compte
+		const seq = ++batchStudentsSeq;
+		const assignmentsRead = await loadAssignments();
+		const result = await fetchBatchStudents(
+			fetch,
+			assignments.map((assignment) => assignment.id)
+		);
+		if (seq !== batchStudentsSeq) return;
+		batchStudents = result.students;
+		// Affectations illisibles : sans ce message, le lot dirait « aucun élève » à tort
+		if (!assignmentsRead) {
+			toaster.error('Élèves du lot : les affectations de la fiche n’ont pas pu être lues');
+		} else if (result.failedAssignments > 0) {
+			toaster.error('Élèves du lot incomplets : une affectation n’a pas pu être lue');
 		}
 	}
 
@@ -302,7 +332,7 @@
 	 */
 	async function loadClasses() {
 		try {
-			const response = await fetch('/api/classes');
+			const response = await fetch('/api/teacher/classes');
 			const data = await response.json();
 			if (response.ok) {
 				classes = data.classes || [];
@@ -350,10 +380,16 @@
 	async function handleSaveChanges(): Promise<void> {
 		if (!hasPendingChanges) return;
 
+		// Les notions partent en identifiants, dans l'ordre (ADR 0041) ; le serveur
+		// relit leurs noms et compose le titre
+		const { classifications, ...fields } = pendingChanges;
+		const body = classifications
+			? { ...fields, notions: classifications.map((n) => n.node_id) }
+			: fields;
 		const response = await fetch(`/api/worksheets/${worksheet.id}`, {
 			method: 'PUT',
 			headers: { 'Content-Type': 'application/json' },
-			body: JSON.stringify(pendingChanges)
+			body: JSON.stringify(body)
 		});
 
 		if (!response.ok) {
@@ -370,7 +406,7 @@
 		pendingChanges = {};
 
 		// Nouveau style : la fiche d'un style du prof se relit pour le PDF
-		if (styleChanged) await invalidateAll();
+		if (styleChanged) await refreshAll();
 
 		toaster.success('Modifications enregistrees');
 	}
@@ -482,6 +518,7 @@
 		<MetadataCards
 			worksheet={effectiveWorksheet}
 			styles={data.styles}
+			nodes={data.nodes}
 			{hasPendingChanges}
 			onFieldChange={isDraft ? handleFieldChange : undefined}
 			onSave={isDraft ? handleSaveChanges : undefined}
@@ -496,6 +533,9 @@
 				if (value === 'assignments') {
 					loadAssignments();
 					loadClasses();
+				}
+				if (value === 'pdf') {
+					loadBatchStudents();
 				}
 			}}
 		>
@@ -540,6 +580,9 @@
 						{answersOnSheet}
 						answerFrameMode={worksheet.config.answer_frames ?? 'question'}
 						language={worksheetLocale(worksheet.config)}
+						versionChoices={data.versionChoices}
+						versionsLocked={worksheet.status === 'archived'}
+						onVersionChange={refreshAll}
 					>
 						{#snippet actions()}
 							{#if isDraft}
@@ -841,12 +884,8 @@
 
 			<!-- PDF Tab -->
 			<Tabs.Content value="pdf" class="space-y-6">
-				<UntranslatedExercisesNotice
-					exercises={worksheet.exercises ?? []}
-					config={worksheet.config}
-					class="mb-4"
-				/>
-				<PdfPreview {worksheet} />
+				<!-- L'avertissement des exercices non traduits est dans l'aperçu : il suit la langue d'impression -->
+				<PdfPreview {worksheet} students={batchStudents} />
 			</Tabs.Content>
 		</Tabs.Root>
 	</div>

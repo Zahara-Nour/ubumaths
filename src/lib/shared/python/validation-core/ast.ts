@@ -6,7 +6,7 @@
  * browser Web Worker and in a Node serverless function.
  */
 
-import type { PyodideInterface, PyProxy, ASTRequirement } from '$lib/shared/python';
+import type { PyodideInterface, PyProxy, ASTRequirement } from '#lib/shared/python/index.ts';
 
 /**
  * Detect a Python SyntaxError without raising. Returns the formatted error

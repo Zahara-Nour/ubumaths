@@ -1,12 +1,12 @@
 <script lang="ts">
-	import { marketplaceStore } from '$lib/stores/marketplace.svelte';
-	import type { MarketplaceTrade } from '$lib/types/marketplace';
-	import * as Card from '$lib/components/ui/card';
-	import * as Tabs from '$lib/components/ui/tabs';
-	import { Button } from '$lib/components/ui/button';
-	import { Badge } from '$lib/components/ui/badge';
-	import SkeletonList from '$lib/components/skeleton/SkeletonList.svelte';
-	import UserAvatar from '$lib/components/UserAvatar.svelte';
+	import { marketplaceStore } from '#lib/stores/marketplace.svelte.ts';
+	import type { MarketplaceTrade } from '#lib/types/marketplace.ts';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import * as Tabs from '#lib/components/ui/tabs/index.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
+	import SkeletonList from '#lib/components/skeleton/SkeletonList.svelte';
+	import UserAvatar from '#lib/components/UserAvatar.svelte';
 	import {
 		ArrowLeftRight,
 		Clock,
@@ -20,14 +20,14 @@
 	import { formatDistanceToNow } from 'date-fns';
 	import { fr } from 'date-fns/locale';
 	import StartFriendTradeModal from './StartFriendTradeModal.svelte';
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 	import { goto } from '$app/navigation';
 
 	// Get supabase client from page data
-	let supabase = $derived($page.data.supabase);
+	let supabase = $derived(page.data.supabase);
 
 	// Get current user ID
-	let userId = $derived($page.data.user?.id);
+	let userId = $derived(page.data.user?.id);
 
 	// State
 	let selectedTab = $state<'active' | 'completed'>('active');

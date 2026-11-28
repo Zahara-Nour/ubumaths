@@ -12,7 +12,7 @@ import {
 import { exact, numeric, isExact, isNumeric, type GeoValue } from '../../types/geo-value';
 import { geoToNumber } from '../to-number';
 import { geoEqual } from '../compare';
-import { number, opposite, sqrt, fraction } from '$lib/mathAST';
+import { number, opposite, sqrt, fraction } from '#lib/mathAST/index.ts';
 
 // =============================================================================
 // Exact propagation rule: exact op exact = exact

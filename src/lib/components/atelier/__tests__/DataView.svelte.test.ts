@@ -11,8 +11,8 @@ import { render } from 'vitest-browser-svelte';
 import { page, userEvent } from 'vitest/browser';
 import { tick } from 'svelte';
 import AtelierContainer from '../AtelierContainer.svelte';
-import { Atelier } from '$lib/atelier/atelier.svelte';
-import { isList } from '$lib/atelier/types';
+import { Atelier } from '#lib/atelier/atelier.svelte.ts';
+import { isList } from '#lib/atelier/types.ts';
 import { chooseObjectAction } from './harness/function-card';
 import { onDesktopScreen } from './harness/desktop-screen';
 
@@ -1226,5 +1226,60 @@ describe('nuage avec une partenaire', () => {
 		await settle();
 
 		expect(container.querySelector('[aria-current="page"]')?.textContent?.trim()).toBe('Graphe');
+	});
+});
+
+// #1469 sous Firefox : un clic change la barre de mise en forme, la grille monte
+// sous la souris encore appuyée, et Firefox envoie `pointerenter` sans que le
+// pointeur ait bougé. Ce n'est pas un glisser.
+describe('sélectionner à la souris', () => {
+	const press = (cell: HTMLElement, x: number, y: number) =>
+		cell.dispatchEvent(
+			new PointerEvent('pointerdown', {
+				bubbles: true,
+				button: 0,
+				buttons: 1,
+				clientX: x,
+				clientY: y
+			})
+		);
+	const enter = (cell: HTMLElement, x: number, y: number) =>
+		cell.dispatchEvent(new PointerEvent('pointerenter', { buttons: 1, clientX: x, clientY: y }));
+
+	it('la grille qui bouge sous le pointeur immobile ne sélectionne pas une zone', async () => {
+		const { container } = await openData();
+
+		press(cellAt(container, 'A2')!, 100, 100);
+		enter(cellAt(container, 'A3')!, 100, 100);
+		window.dispatchEvent(new PointerEvent('pointerup', { bubbles: true }));
+		await settle();
+
+		expect(cellAt(container, 'A2')?.getAttribute('aria-selected')).toBe('true');
+		expect(cellAt(container, 'A3')?.getAttribute('aria-selected')).toBe('false');
+	});
+
+	it('le pointeur glissé jusqu’à une autre case sélectionne la zone', async () => {
+		const { container } = await openData();
+
+		press(cellAt(container, 'A2')!, 100, 100);
+		enter(cellAt(container, 'A3')!, 100, 130);
+		window.dispatchEvent(new PointerEvent('pointerup', { bubbles: true }));
+		await settle();
+
+		expect(cellAt(container, 'A2')?.getAttribute('aria-selected')).toBe('true');
+		expect(cellAt(container, 'A3')?.getAttribute('aria-selected')).toBe('true');
+	});
+
+	it('le glisser revenu sur la case de départ ne garde qu’elle', async () => {
+		const { container } = await openData();
+
+		press(cellAt(container, 'A2')!, 100, 100);
+		enter(cellAt(container, 'A3')!, 100, 130);
+		enter(cellAt(container, 'A2')!, 100, 101);
+		window.dispatchEvent(new PointerEvent('pointerup', { bubbles: true }));
+		await settle();
+
+		expect(cellAt(container, 'A2')?.getAttribute('aria-selected')).toBe('true');
+		expect(cellAt(container, 'A3')?.getAttribute('aria-selected')).toBe('false');
 	});
 });

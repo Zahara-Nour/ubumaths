@@ -168,12 +168,154 @@ describe('dessinerBlocs', () => {
 		expect(cachees.markdown).toContain('h-heures');
 	});
 
+	it('schema-barres : le SVG de la scène de l’appli, manquants en pointillés, sans alerte', () => {
+		const r = dessinerBlocs(
+			'```schema-barres\nTom : ? (2)\nLéa : ? (2) ; 12 (1)\nBen : ? (2) ; -5 (1)\ntotal : 84\n```'
+		);
+		expect(r.nonDessines).toEqual([]);
+		expect(r.markdown).toMatch(new RegExp(`^${HTML}<svg class="sb-schema"`));
+		expect(r.markdown.match(/<rect class="sb-segment/g)).toHaveLength(5);
+		expect(r.markdown.match(/sb-manquant/g)).toHaveLength(1);
+		expect(r.markdown).toContain('>84</text>');
+		expect(r.markdown).toContain('aria-label="Schéma en barres');
+		expect(r.markdown).toContain('stroke-dasharray="5 4"');
+		const echappe = dessinerBlocs('```schema-barres\nR&D : <b> (2)\n```');
+		expect(echappe.markdown).toContain('R&amp;D');
+		expect(echappe.markdown).toContain('&lt;b>');
+		expect(echappe.markdown).not.toContain('<b>');
+	});
+
 	it('figure : le SVG de figureToSvg', () => {
 		const r = dessinerBlocs(
 			'```figure\nfenetre: 0 ; 10 ; 0 ; 7\ndescription: Un segment.\n---\nA = point(1, 1)\nB = point(8, 1)\ns = segment(A, B)\n```'
 		);
 		expect(r.markdown).toMatch(new RegExp(`^${HTML}<svg class="fig"`));
 		expect(r.markdown).toContain('<line ');
+	});
+
+	/** Les traits verts d'une solution, en coordonnées d'écran */
+	const traitsVerts = (svg: string) =>
+		[
+			...svg.matchAll(
+				/<line class="fig-solution" x1="([\d.-]+)" y1="([\d.-]+)" x2="([\d.-]+)" y2="([\d.-]+)"/g
+			)
+		].map((m) => m.slice(1).map(Number));
+	/** Les traits de la figure (sans classe : ni quadrillage, ni solution), en coordonnées d'écran */
+	const traitsDeLaFigure = (svg: string) =>
+		[
+			...svg.matchAll(
+				/<line x1="([\d.-]+)" y1="([\d.-]+)" x2="([\d.-]+)" y2="([\d.-]+)" style="stroke:/g
+			)
+		].map((m) => m.slice(1).map(Number));
+	/** Le premier point visible de la figure (A), en coordonnées d'écran */
+	const pointDeLaFigure = (svg: string) => {
+		const m = svg.match(/<circle cx="([\d.-]+)" cy="([\d.-]+)" r="[\d.]+" style="fill:/);
+		if (!m) throw new Error('aucun point dans la figure');
+		return [Number(m[1]), Number(m[2])];
+	};
+	/** L'axe vertical d (x constant) parmi les traits de la figure */
+	const axeVertical = (svg: string) => {
+		const axe = traitsDeLaFigure(svg).find(([x1, , x2]) => Math.abs(x1 - x2) < 0.01);
+		if (!axe) throw new Error('aucun axe vertical');
+		return axe[0];
+	};
+
+	it('figure-a-completer, perpendiculaire : la figure de départ, et la bonne droite en vert à part', () => {
+		const r = dessinerBlocs(
+			'```figure-a-completer\nfenetre: 0 ; 14 ; 0 ; 10\ngrille: 1\noutils: droite, equerre\nverifier: droite p = perpendiculaire(A, d)\n---\nm = point(0, 3, visible=faux)\nn = point(14, 3, visible=faux)\nd = droite(m, n)\nA = point(6, 7)\n```'
+		);
+		expect(r.nonDessines).toEqual([]);
+		expect(r.avertissements).toEqual([]);
+		expect(surUneLigne(r.markdown)).toBe(true);
+		expect(r.markdown).toMatch(new RegExp(`^${HTML}<svg class="fig"`));
+		expect(r.markdown).not.toContain('fig-solution');
+		expect(r.solutions).toHaveLength(1);
+		// d horizontale : la perpendiculaire est verticale, et passe par A (même repère d'écran)
+		const [ax] = pointDeLaFigure(r.solutions[0]);
+		const traits = traitsVerts(r.solutions[0]);
+		expect(traits).toHaveLength(1);
+		const [x1, y1, x2, y2] = traits[0];
+		expect(x1).toBeCloseTo(ax, 1);
+		expect(x2).toBeCloseTo(ax, 1);
+		expect(Math.abs(y2 - y1)).toBeGreaterThan(0);
+	});
+
+	it('figure-a-completer, parallèle : la bonne droite a la direction de d et passe par A', () => {
+		const r = dessinerBlocs(
+			'```figure-a-completer\nfenetre: 0 ; 14 ; 0 ; 10\ngrille: 1\noutils: droite, equerre\nverifier: droite q = parallele(A, d)\n---\nm = point(0, 0, visible=faux)\nn = point(10, 10, visible=faux)\nd = droite(m, n)\nA = point(4, 7)\n```'
+		);
+		expect(r.nonDessines).toEqual([]);
+		expect(r.solutions).toHaveLength(1);
+		const traits = traitsVerts(r.solutions[0]);
+		expect(traits).toHaveLength(1);
+		const [x1, y1, x2, y2] = traits[0];
+		// d en diagonale montante : à l'écran (y vers le bas), la pente vaut -1
+		expect((y2 - y1) / (x2 - x1)).toBeCloseTo(-1);
+		// A est sur la droite verte (produit vectoriel nul, à l'arrondi du centième près)
+		const [ax, ay] = pointDeLaFigure(r.solutions[0]);
+		const croix = (x2 - x1) * (ay - y1) - (y2 - y1) * (ax - x1);
+		expect(Math.abs(croix) / Math.hypot(x2 - x1, y2 - y1)).toBeLessThan(0.1);
+	});
+
+	it('figure-a-completer, symétrique par d : chaque trait vert est l’image d’un côté par d', () => {
+		const r = dessinerBlocs(
+			'```figure-a-completer\nfenetre: 0 ; 12 ; 0 ; 8\ngrille: 1\nverifier: symetrique par d\n---\nm = point(6, 0, visible=faux)\nn = point(6, 8, visible=faux)\nd = droite(m, n)\nA = point(6, 1, visible=faux)\nB = point(3, 2, visible=faux)\nC = point(6, 6, visible=faux)\ns1 = segment(A, B)\ns2 = segment(B, C)\n```'
+		);
+		expect(r.nonDessines).toEqual([]);
+		expect(r.avertissements).toEqual([]);
+		expect(r.solutions).toHaveLength(1);
+		const axe = axeVertical(r.solutions[0]);
+		const cotes = traitsDeLaFigure(r.solutions[0]).filter(([x1, , x2]) => Math.abs(x1 - x2) > 0.01);
+		expect(cotes).toHaveLength(2);
+		const verts = traitsVerts(r.solutions[0]);
+		expect(verts).toHaveLength(2);
+		// Image d'un trait par l'axe vertical : x → 2·axe − x, y inchangé (bouts dans un ordre ou l'autre)
+		const memeTrait = (a: number[], b: number[]) =>
+			[
+				[0, 1, 2, 3],
+				[2, 3, 0, 1]
+			].some((o) => o.every((k, i) => Math.abs(a[i] - b[k]) < 0.1));
+		for (const v of verts) {
+			const image = [2 * axe - v[0], v[1], 2 * axe - v[2], v[3]];
+			expect(cotes.some((c) => memeTrait(image, c))).toBe(true);
+		}
+	});
+
+	it('figure-a-completer, point symétrique : le point attendu en vert, à sa place, avec son nom', () => {
+		const r = dessinerBlocs(
+			"```figure-a-completer\nfenetre: 0 ; 12 ; 0 ; 8\ngrille: 1\noutils: point\nverifier: point A' = symetrie(A, axe=d)\n---\nm = point(6, 0, visible=faux)\nn = point(6, 8, visible=faux)\nd = droite(m, n)\nA = point(2, 3)\n```"
+		);
+		expect(r.nonDessines).toEqual([]);
+		expect(r.solutions).toHaveLength(1);
+		const vert = r.solutions[0].match(
+			/<circle class="fig-solution-point" cx="([\d.-]+)" cy="([\d.-]+)"/
+		);
+		expect(vert).not.toBeNull();
+		const [ax, ay] = pointDeLaFigure(r.solutions[0]);
+		const axe = axeVertical(r.solutions[0]);
+		expect(Number(vert?.[1])).toBeCloseTo(2 * axe - ax, 1);
+		expect(Number(vert?.[2])).toBeCloseTo(ay, 1);
+		expect(r.solutions[0]).toMatch(/>A(?:'|&#39;|’)</);
+	});
+
+	it('figure-a-completer, autre vérification : la figure de départ, la solution signalée', () => {
+		const r = dessinerBlocs(
+			'```figure-a-completer\nfenetre: 0 ; 10 ; 0 ; 8\ngrille: 1\nverifier: droite_par A ; B\n---\nA = point(1, 1)\nB = point(8, 6)\n```'
+		);
+		expect(r.nonDessines).toEqual([]);
+		expect(r.markdown).toMatch(new RegExp(`^${HTML}<svg class="fig"`));
+		expect(r.solutions).toEqual([]);
+		expect(r.avertissements).toEqual([
+			'bloc figure-a-completer : solution de « droite_par » non dessinée, la voir dans l’aperçu'
+		]);
+	});
+
+	it('figure-a-completer en erreur : la page s’arrête', () => {
+		expect(() =>
+			dessinerBlocs(
+				'```figure-a-completer\nfenetre: 0 ; 10 ; 0 ; 8\nverifier: rien du tout\n---\nA = point(1, 1)\n```'
+			)
+		).toThrow(/bloc figure-a-completer en erreur/);
 	});
 
 	it('courbe : le SVG de la scène de Courbe.svelte (termes d’une suite, escalier)', () => {

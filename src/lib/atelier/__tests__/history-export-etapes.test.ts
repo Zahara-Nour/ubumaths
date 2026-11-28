@@ -7,7 +7,7 @@
 import { describe, it, expect } from 'vitest';
 import type { Entry } from '../desk.svelte';
 import { historyToUbumark } from '../history-export';
-import { parseMarkdown } from '$lib/ubumark';
+import { parseMarkdown } from '#lib/ubumark/index.ts';
 
 const now = new Date('2026-10-12T10:00:00Z');
 

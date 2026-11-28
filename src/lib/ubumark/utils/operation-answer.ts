@@ -18,7 +18,7 @@
  * @module ubumark/utils/operation-answer
  */
 
-import { toFrenchDecimal, type FrenchDecimalOptions } from '$lib/utils/french-math';
+import { toFrenchDecimal, type FrenchDecimalOptions } from '#lib/utils/french-math.ts';
 import type { OperationSpec } from '../types/operation';
 import { operationResult, type OperationScene } from './operation-scene';
 

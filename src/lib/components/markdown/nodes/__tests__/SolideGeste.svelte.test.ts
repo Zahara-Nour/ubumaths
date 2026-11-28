@@ -13,12 +13,12 @@ import { render } from 'vitest-browser-svelte';
 import { userEvent } from 'vitest/browser';
 import SolideGeste from '../SolideGeste.svelte';
 import MarkdownRenderer from '../../MarkdownRenderer.svelte';
-import FillBlanksInput from '$lib/components/question-inputs/FillBlanksInput.svelte';
-import BuildAnswer from '$lib/components/questions/BuildAnswer.svelte';
-import { parseEspaceContent } from '$lib/ubumark/parser/espace-parser';
-import { generateInstance } from '$lib/questions/generator/instance-generator';
-import { templateMarkdown, type ResolvedMarkdown } from '$lib/ubumark';
-import type { QuestionTemplate } from '$lib/questions/types';
+import FillBlanksInput from '#lib/components/question-inputs/FillBlanksInput.svelte';
+import BuildAnswer from '#lib/components/questions/BuildAnswer.svelte';
+import { parseEspaceContent } from '#lib/ubumark/parser/espace-parser.ts';
+import { generateInstance } from '#lib/questions/generator/instance-generator.ts';
+import { templateMarkdown, type ResolvedMarkdown } from '#lib/ubumark/index.ts';
+import type { QuestionTemplate } from '#lib/questions/types.ts';
 
 let mains: HTMLElement[] = [];
 function mainElement(): HTMLElement {
@@ -108,6 +108,17 @@ describe('SolideGeste — points cliquables', () => {
 		expect(labels).toHaveLength(8);
 		expect(labels[0]).toBe('Point B');
 		expect(labels[7]).toBe('Point I');
+	});
+
+	it('dessine les graduations (graduer:) dans la figure à geste (outil n° 65)', async () => {
+		const screen = await render(SolideGeste, {
+			target: mainElement(),
+			props: {
+				node: node(...CUBE, 'points: M tel que AM = 1/3 AB', 'graduer: AB 3', 'tracer: vecteur AM'),
+				answer: answerProbe().answer()
+			}
+		});
+		expect(screen.container.querySelectorAll('.solide-graduation')).toHaveLength(2);
 	});
 });
 

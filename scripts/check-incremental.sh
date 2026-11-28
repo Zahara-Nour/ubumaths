@@ -86,12 +86,14 @@ last_status="$state_dir/last-status"
 #   - src/ : fichiers ET dossiers. Un dossier change de date quand on y crée,
 #     supprime ou renomme un fichier — une suppression ne laisse aucun fichier
 #     « plus récent » ;
+#   - scripts/nuit/ : seul dossier de scripts/ lu par le tsconfig (défaut 5 du
+#     chantier `verifs-auto`) ;
 #   - la racine : toute config .ts/.js/.json importable par vite.config.ts,
 #     les tsconfig, package.json, le lockfile (dépendances mises à jour sans
 #     toucher package.json) et les .env (types de `$env`).
 # Voir scripts/__tests__/check-incremental-garde.test.ts.
 something_newer_than_marker() {
-	find src -newer "$marker" -print 2>/dev/null | head -1
+	find src scripts/nuit -newer "$marker" -print 2>/dev/null | head -1
 	find . -maxdepth 1 -type f \( -name '*.ts' -o -name '*.js' -o -name '*.mjs' -o -name '*.cjs' \
 		-o -name '*.json' -o -name 'pnpm-lock.yaml' -o -name '.env*' \) \
 		-newer "$marker" -print 2>/dev/null | head -1
@@ -109,6 +111,8 @@ fi
 # Timestamped BEFORE the run, so a file edited *during* the run still counts as
 # newer than the marker and is not silently swallowed by guard 3.
 touch "$state_dir/run-started"
+# Début du vrai passage, pour `pnpm durees` : un rejeu (garde 3) n'est pas une mesure.
+debut_durees=$(date +%s)
 
 # FRESH=1 → drop svelte-check's transpile cache (cures ghosts) and force a sync.
 if [ "${FRESH:-0}" = "1" ]; then
@@ -120,18 +124,31 @@ fi
 # svelte-check's incremental cache. On the old 8 GB laptop that cost ~2x time and
 # memory (72s/1.6GB vs 37s/0.8GB); on the Mac mini (2026-09-29) it is marginal:
 # 47 s vs 44 s, both at 2.9 GB RSS. Syncing is still skipped when useless: only sync when routes / svelte config / env actually changed
-# since the last sync, detected against a file the sync ALWAYS rewrites
-# (.svelte-kit/tsconfig.json). Editing lib/component code needs no sync → fast path.
+# since the last sync, detected against a sentinel touched right after each sync
+# (SvelteKit 3 no longer writes .svelte-kit/tsconfig.json, and its own files are
+# written only when they change). Editing lib/component code needs no sync → fast path.
+# Watched: routes, the SvelteKit config (plugin options in vite.config.ts), the
+# env declarations (src/env.ts → types of $app/env/*) and the .env files.
 # Blind spot: route DELETIONS/renames leave no "newer" file → use FRESH=1 then.
-sentinel=.svelte-kit/tsconfig.json
+sentinel=.svelte-kit/.sync-sentinel
 shopt -s nullglob
-watch=(src/routes svelte.config.* .env .env.*)
+watch=(src/routes vite.config.ts src/env.ts .env .env.*)
 shopt -u nullglob
+# Kit 3 écrit aussi node_modules/$app/tsconfig.json (étendu par tsconfig.json) :
+# après un `pnpm install` qui l'a effacé, la sentinelle seule ne verrait rien.
 if [ "${need_sync:-0}" = "1" ] || [ ! -f "$sentinel" ] || \
+	[ ! -f "node_modules/\$app/tsconfig.json" ] || \
 	[ -n "$(find "${watch[@]}" -type f -newer "$sentinel" 2>/dev/null | head -1)" ]; then
 	# Dire pourquoi un sync a lieu : il invalide le cache incrémental.
 	echo "ℹ️  Routes ou config modifiées → svelte-kit sync : cache invalidé."
-	npx svelte-kit sync >/dev/null 2>&1
+	# Un sync raté (ex. variable obligatoire de src/env.ts absente) ne pose pas la
+	# sentinelle, sinon les lancements suivants le sauteraient : on l'affiche et on s'arrête.
+	if ! sync_out=$(npx svelte-kit sync 2>&1); then
+		echo "$sync_out" >&2
+		echo "⛔ svelte-kit sync a échoué (ci-dessus)." >&2
+		exit 1
+	fi
+	mkdir -p .svelte-kit && touch "$sentinel"
 fi
 
 # Heap cap = 4096 MiB. `--max-old-space-size` caps the V8 HEAP, not the process.
@@ -209,4 +226,8 @@ printf '%s\n' "$report"
 printf '%s\n' "$report" >"$last_output"
 echo "$status" >"$last_status"
 mv -f "$state_dir/run-started" "$marker"
+# Durée d'un passage vert, pour `pnpm durees` (ne peut pas faire échouer : cf. noter.sh).
+if [ "$status" -eq 0 ]; then
+	bash "$(dirname "${BASH_SOURCE[0]}")/durees/noter.sh" check-incremental "$debut_durees"
+fi
 exit "$status"

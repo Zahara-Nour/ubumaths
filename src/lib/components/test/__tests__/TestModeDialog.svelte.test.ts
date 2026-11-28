@@ -9,7 +9,7 @@ import { describe, it, expect, vi } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import { flushSync, tick } from 'svelte';
 import TestModeDialog from '../TestModeDialog.svelte';
-import type { TestMode } from '$lib/types/test';
+import type { TestMode } from '#lib/types/test.ts';
 
 function findButton(label: string): HTMLButtonElement | undefined {
 	return [...document.body.querySelectorAll<HTMLButtonElement>('button')].find((candidate) =>
@@ -51,8 +51,9 @@ describe('TestModeDialog — forme Flash-cards', () => {
 describe('TestModeDialog — un clic sur une carte lance la série', () => {
 	it.each([
 		['En classe', 'display'],
-		['Entraînement', 'interactive'],
-		['Flash-cards', 'flash']
+		['Contrôle blanc', 'interactive'],
+		['Flash-cards', 'flash'],
+		['Saisie', 'typing']
 	] as const)('« %s » lance « %s » aussitôt', async (label, mode) => {
 		const onSelect = vi.fn<(mode: TestMode, timeLimit?: number) => void>();
 		await render(TestModeDialog, { open: true, onSelect });

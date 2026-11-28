@@ -11,9 +11,9 @@
  */
 
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { Database } from '$lib/types/database';
-import { isCourseCard } from '$lib/questions/types';
-import { createServerLogger } from '$lib/utils/logger';
+import type { Database } from '#lib/types/database.ts';
+import { isCourseCard } from '#lib/questions/types.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('server/course-card-attempts');
 
@@ -74,7 +74,8 @@ export async function fetchCourseCardTemplateIds(
 }
 
 // ============================================================================
-// GARDE-FOU FSRS : une mise à jour de la fiche par carte et par jour
+// JOUR DE L'ÉLÈVE : le garde-fou « une mise à jour par carte et par jour »
+// vit dans `srs/best-of-day.ts`
 // ============================================================================
 
 const SCHOOL_TIME_ZONE = 'Europe/Paris';
@@ -88,12 +89,4 @@ export function schoolDay(date: Date): string {
 		month: '2-digit',
 		day: '2-digit'
 	}).format(date);
-}
-
-/** La fiche a-t-elle déjà été mise à jour le même jour que `now` ? */
-export function reviewedToday(lastReview: string | null | undefined, now: Date): boolean {
-	if (!lastReview) return false;
-	const last = new Date(lastReview);
-	if (Number.isNaN(last.getTime())) return false;
-	return schoolDay(last) === schoolDay(now);
 }

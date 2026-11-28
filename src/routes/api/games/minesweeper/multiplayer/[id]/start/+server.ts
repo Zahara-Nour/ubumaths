@@ -5,11 +5,10 @@
  * POST: Transition match from 'countdown' to 'in_progress'
  */
 
-import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireRole } from '$lib/server/middleware/auth';
-import { sanitizeRPCError } from '$lib/server/utils/error-handler';
-import { validateUuidParam } from '$lib/server/validation/params';
+import { requireRole } from '#lib/server/middleware/auth.ts';
+import { sanitizeRPCError } from '#lib/server/utils/error-handler.ts';
+import { validateUuidParam } from '#lib/server/validation/params.ts';
 
 /**
  * POST /api/games/minesweeper/multiplayer/[id]/start
@@ -44,5 +43,5 @@ export const POST: RequestHandler = async ({ params, locals }) => {
 		sanitizeRPCError(rpcError, 'start_match');
 	}
 
-	return json(data);
+	return Response.json(data);
 };

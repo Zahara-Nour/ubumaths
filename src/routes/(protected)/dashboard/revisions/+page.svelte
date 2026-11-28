@@ -13,60 +13,37 @@
 -->
 
 <script lang="ts">
-	import { lore } from '$lib/config/lore';
+	import { lore } from '#lib/config/lore.ts';
 	import { goto } from '$app/navigation';
-	import DeckCard from '$lib/components/srs/DeckCard.svelte';
-	import { ChapterRevisionButton } from '$lib/components/cours';
-	import { Button } from '$lib/components/ui/button';
-	import * as Card from '$lib/components/ui/card';
-	import { Tabs, TabsContent, TabsList, TabsTrigger } from '$lib/components/ui/tabs';
+	import DeckCard from '#lib/components/srs/DeckCard.svelte';
+	import { ChapterRevisionButton } from '#lib/components/cours/index.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import { Tabs, TabsContent, TabsList, TabsTrigger } from '#lib/components/ui/tabs/index.ts';
 	import { Plus, BookOpen, Trophy, Target } from '@lucide/svelte';
-	import { cn } from '$lib/utils';
-	import type { Deck } from '$lib/srs/types';
+	import { cn } from '#lib/utils.ts';
+	import type { PageData } from './$types';
 
-	interface Props {
-		data: {
-			decks: (Deck & {
-				isAutoManaged?: boolean;
-				stats: { total_cards: number; due_cards: number; new_cards: number };
-			})[];
-			/** Élève : un paquet calculé par chapitre visible ayant des séries */
-			chapterDecks: { chapterId: string; title: string; deckSize: number; toReview: number }[];
-			chapterDecksUnavailable: boolean;
-		};
-	}
-
-	let { data }: Props = $props();
-
-	// Transform decks to match DeckCard expected format
-	const transformedDecks = $derived(
-		data.decks.map((deck) => ({
-			...deck,
-			stats: {
-				due_count: deck.stats.due_cards,
-				total_cards: deck.stats.total_cards,
-				new_count: deck.stats.new_cards,
-				learning_count: 0 // Not available in old format
-			}
-		}))
-	);
+	// Le type vient du serveur (`PageData`) : une clé renommée d'un côté seulement
+	// ne compile plus. Les compteurs sont ceux de `get_deck_stats`, tels quels.
+	let { data }: { data: PageData } = $props();
 
 	// Derived state
-	const assignedDecks = $derived(transformedDecks.filter((d) => d.isAssigned));
-	const personalDecks = $derived(transformedDecks.filter((d) => !d.isAssigned));
+	const assignedDecks = $derived(data.decks.filter((d) => d.isAssigned));
+	const personalDecks = $derived(data.decks.filter((d) => !d.isAssigned));
 
 	const totalDueCards = $derived(
-		transformedDecks.reduce((sum, deck) => sum + (deck.stats?.due_count || 0), 0)
+		data.decks.reduce((sum, deck) => sum + (deck.stats?.due_count || 0), 0)
 	);
 
 	const totalCards = $derived(
-		transformedDecks.reduce((sum, deck) => sum + (deck.stats?.total_cards || 0), 0)
+		data.decks.reduce((sum, deck) => sum + (deck.stats?.total_cards || 0), 0)
 	);
 
 	/**
 	 * Navigate to deck (detail page for personal/assigned, dedicated view for Programme).
 	 */
-	function openDeck(deck: (typeof transformedDecks)[number]) {
+	function openDeck(deck: PageData['decks'][number]) {
 		const target = deck.isAutoManaged
 			? '/dashboard/revisions/decks/programme'
 			: `/dashboard/revisions/decks/${deck.id}`;
@@ -137,7 +114,10 @@
 				<Trophy class="h-4 w-4 text-muted-foreground" />
 			</Card.Header>
 			<Card.Content>
-				<div class={cn('text-2xl font-bold', totalDueCards > 0 && 'text-primary')}>
+				<div
+					data-testid="total-due"
+					class={cn('text-2xl font-bold', totalDueCards > 0 && 'text-primary')}
+				>
 					{totalDueCards}
 				</div>
 				<p class="text-xs text-muted-foreground">
@@ -207,7 +187,7 @@
 				</Card.Root>
 			{:else}
 				<div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-					{#each transformedDecks as deck (deck.id)}
+					{#each data.decks as deck (deck.id)}
 						<DeckCard {deck} onclick={() => openDeck(deck)} />
 					{/each}
 				</div>

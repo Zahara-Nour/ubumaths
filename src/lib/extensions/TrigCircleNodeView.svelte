@@ -7,8 +7,8 @@
 -->
 <script lang="ts">
 	import FencedDslNodeView from './FencedDslNodeView.svelte';
-	import TrigCircleRender from '$lib/components/markdown/nodes/TrigCircle.svelte';
-	import { parseTrigCircleContent } from '$lib/ubumark/parser/trig-circle-parser';
+	import TrigCircleRender from '#lib/components/markdown/nodes/TrigCircle.svelte';
+	import { parseTrigCircleContent } from '#lib/ubumark/parser/trig-circle-parser.ts';
 
 	// TipTap fournit six props ; on ne déclare QUE celles utilisées — `editor`,
 	// `getPos` et `nodeSize` sont inutiles ici, et les déclarer sans s'en servir

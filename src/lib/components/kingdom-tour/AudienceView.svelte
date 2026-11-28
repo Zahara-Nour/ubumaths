@@ -2,17 +2,20 @@
 	/**
 	 * Une vue de présentation (élèves, parents ou professeurs) : Père Ubu et un titre, puis
 	 * des blocs courts, une démonstration en direct, les portes d'entrée. Le contenu vit dans
-	 * `$lib/kingdom-tour/views`.
+	 * `#lib/kingdom-tour/views.ts`.
 	 *
 	 * Lisible sans JavaScript : la roue des publics s'y ajoute en bas à droite, et les mêmes
-	 * choix restent en liens ordinaires au pied de la page.
+	 * choix restent en liens ordinaires au pied de la page. Les questions fréquentes (parents)
+	 * sont des `<details>` natifs : repliées, mais leurs réponses restent dans la page, et
+	 * reprises en données structurées FAQPage.
 	 */
-	import { resolve } from '$app/paths';
+	import { resolvePath } from '#lib/navigation/resolve-path.ts';
 	import {
 		BookOpen,
 		Calculator,
 		CalendarDays,
 		Check,
+		ChevronDown,
 		Crown,
 		FlaskConical,
 		Gamepad2,
@@ -28,14 +31,15 @@
 		Terminal,
 		Trophy
 	} from '@lucide/svelte';
-	import type { MonthPalette } from '$lib/almanach/palettes';
-	import AudienceWheel from '$lib/components/kingdom-tour/AudienceWheel.svelte';
-	import CipherDemo from '$lib/components/kingdom-tour/CipherDemo.svelte';
-	import FormDemo from '$lib/components/kingdom-tour/FormDemo.svelte';
-	import PereUbuFigure from '$lib/components/kingdom-tour/PereUbuFigure.svelte';
-	import { AUDIENCES } from '$lib/kingdom-tour/audiences';
-	import type { AudienceView, ViewIcon } from '$lib/kingdom-tour/views';
-	import SeoHead from '$lib/seo/SeoHead.svelte';
+	import type { MonthPalette } from '#lib/almanach/palettes.ts';
+	import AudienceWheel from '#lib/components/kingdom-tour/AudienceWheel.svelte';
+	import CipherDemo from '#lib/components/kingdom-tour/CipherDemo.svelte';
+	import FormDemo from '#lib/components/kingdom-tour/FormDemo.svelte';
+	import PereUbuFigure from '#lib/components/kingdom-tour/PereUbuFigure.svelte';
+	import { AUDIENCES } from '#lib/kingdom-tour/audiences.ts';
+	import { faqJsonLd, type AudienceView, type ViewIcon } from '#lib/kingdom-tour/views.ts';
+	import JsonLd from '#lib/seo/JsonLd.svelte';
+	import SeoHead from '#lib/seo/SeoHead.svelte';
 
 	// Types
 
@@ -73,6 +77,9 @@
 </script>
 
 <SeoHead title={view.seoTitle} description={view.seoDescription} />
+{#if view.faq}
+	<JsonLd data={faqJsonLd(view.faq)} />
+{/if}
 
 <div class="view">
 	<section class="hero" aria-labelledby="view-title">
@@ -147,6 +154,39 @@
 		</section>
 	{/each}
 
+	{#if view.faq}
+		<section
+			id="faq"
+			class="section"
+			class:alt={view.blocks.length % 2 === 0}
+			aria-labelledby="faq-title"
+		>
+			<div class="wrap">
+				<h2 id="faq-title">Questions fréquentes</h2>
+				<div class="faq">
+					{#each view.faq as entry (entry.question)}
+						<details class="faq-entry">
+							<summary>
+								<span>{entry.question}</span>
+								<ChevronDown size={20} aria-hidden="true" class="chevron" />
+							</summary>
+							<div class="faq-answer">
+								<p>{entry.answer}</p>
+								{#if entry.links}
+									<p class="links">
+										{#each entry.links as link (link.href)}
+											<a href={link.href}>{link.label}</a>
+										{/each}
+									</p>
+								{/if}
+							</div>
+						</details>
+					{/each}
+				</div>
+			</div>
+		</section>
+	{/if}
+
 	<section class="section final" aria-label="Entrer">
 		<div class="wrap narrow final-body">
 			<div class="calls">
@@ -158,7 +198,7 @@
 			<nav class="others" aria-label="Les autres visites">
 				<span>Vous êtes plutôt :</span>
 				{#each others as audience (audience.id)}
-					<a href={resolve(audience.href)}>{audience.label}</a>
+					<a href={resolvePath(audience.href)}>{audience.label}</a>
 				{/each}
 			</nav>
 		</div>
@@ -295,6 +335,38 @@
 		@apply inline-flex min-h-11 items-center rounded-sm font-medium underline decoration-primary decoration-2 underline-offset-4 focus-visible:ring-2 focus-visible:ring-foreground focus-visible:outline-none;
 	}
 
+	/* Questions fréquentes : <details> natifs, toute la ligne de la question est cliquable */
+	.faq {
+		@apply mt-6 flex max-w-3xl flex-col gap-3;
+	}
+	.faq-entry {
+		@apply rounded-2xl border border-border bg-card shadow-sm;
+	}
+	.faq-entry summary {
+		@apply flex min-h-11 cursor-pointer list-none items-center justify-between gap-4 rounded-2xl px-5 py-4 font-semibold focus-visible:ring-2 focus-visible:ring-foreground focus-visible:outline-none;
+		font-size: calc(1.0625rem * var(--font-scale, 1));
+	}
+	.faq-entry summary::-webkit-details-marker {
+		display: none;
+	}
+	.faq-entry :global(.chevron) {
+		@apply shrink-0 transition-transform;
+		color: var(--accent-text);
+	}
+	.faq-entry[open] :global(.chevron) {
+		@apply rotate-180;
+	}
+	.faq-answer {
+		@apply px-5 pb-5 text-foreground/80;
+	}
+	.faq-answer p {
+		font-size: calc(1rem * var(--font-scale, 1)) !important;
+		line-height: 1.6 !important;
+	}
+	.faq-answer .links {
+		@apply mt-2;
+	}
+
 	.final-body {
 		@apply flex flex-col items-center gap-8 text-center;
 	}
@@ -315,6 +387,9 @@
 		.item.link,
 		.call {
 			@apply transition-none hover:translate-y-0;
+		}
+		.faq-entry :global(.chevron) {
+			@apply transition-none;
 		}
 	}
 </style>

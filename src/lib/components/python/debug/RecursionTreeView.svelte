@@ -9,8 +9,8 @@
 	import { tick, onMount } from 'svelte';
 	import { flip } from 'svelte/animate';
 	import { fade } from 'svelte/transition';
-	import type { DebugSnapshot } from '$lib/shared/python/debug/types';
-	import { cn } from '$lib/utils';
+	import type { DebugSnapshot } from '#lib/shared/python/debug/types.ts';
+	import { cn } from '#lib/utils.ts';
 	import {
 		parseVariableValue,
 		isHeapRef,

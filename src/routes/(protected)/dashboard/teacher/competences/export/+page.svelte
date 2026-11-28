@@ -6,20 +6,20 @@
 	Visuels de niveau cohérents avec ClassCompetenceGrid (◯/🟠/🟢/✨).
 -->
 <script lang="ts">
-	import { lore } from '$lib/config/lore';
+	import { lore } from '#lib/config/lore.ts';
 	import { goto } from '$app/navigation';
-	import * as Card from '$lib/components/ui/card';
-	import { Button } from '$lib/components/ui/button';
-	import { Badge } from '$lib/components/ui/badge';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
 	import { Download, Info } from '@lucide/svelte';
-	import MySelect from '$lib/components/MySelect.svelte';
-	import MyCheckbox from '$lib/components/MyCheckbox.svelte';
-	import { formatNiveau, type NiveauFormat } from '$lib/competences/niveau-format';
+	import MySelect from '#lib/components/MySelect.svelte';
+	import MyCheckbox from '#lib/components/MyCheckbox.svelte';
+	import { formatNiveau, type NiveauFormat } from '#lib/competences/niveau-format.ts';
 	import {
 		formatMathCompetenceLevel,
 		getMathCompetenceLevelVisual,
 		type MathCompetenceLevel
-	} from '$lib/types/skills';
+	} from '#lib/types/skills.ts';
 	import type { PageData } from './$types';
 	import type { CompetencesExportPageData } from './+page.server';
 
@@ -63,7 +63,7 @@
 
 	function handleClassChange(value: string) {
 		// Navigation reloads the server `load`, which updates `selectedClassId`.
-		goto(`?class=${value}`, { keepFocus: true, noScroll: true });
+		goto(`?class=${value}`, { reset: false });
 	}
 
 	function levelOf(row: (typeof data.rows)[number], code: string): MathCompetenceLevel | null {

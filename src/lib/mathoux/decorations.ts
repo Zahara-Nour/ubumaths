@@ -19,7 +19,7 @@
  * débite. Des tests d'intégration (`tests/integration/mathoux-decorations.test.ts`,
  * `mathoux-colliers.test.ts`, `mathoux-lunettes-chapeaux.test.ts`) vérifient
  * l'égalité des deux.
- * Les dessins : `$lib/components/mathoux/mathou-decorations.ts` (panse),
+ * Les dessins : `#lib/components/mathoux/mathou-decorations.ts` (panse),
  * `mathou-colliers.ts` (cou) et `mathou-chapeaux-lunettes.ts` (yeux et tête).
  */
 

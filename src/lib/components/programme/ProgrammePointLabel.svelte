@@ -4,9 +4,9 @@
 	 * texte, avancement, tags d'un exercice) : son nom, la sous-notion où il est
 	 * posé, et « archivé » s'il l'est (il n'apparaît alors que déjà coché).
 	 */
-	import { Badge } from '$lib/components/ui/badge';
-	import InlineMarkdown from '$lib/components/markdown/InlineMarkdown.svelte';
-	import type { ProgrammePointView } from '$lib/utils/programme-tree';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
+	import InlineMarkdown from '#lib/components/markdown/InlineMarkdown.svelte';
+	import type { ProgrammePointView } from '#lib/utils/programme-tree.ts';
 
 	let { point }: { point: ProgrammePointView } = $props();
 </script>

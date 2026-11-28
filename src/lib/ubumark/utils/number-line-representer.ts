@@ -18,7 +18,7 @@
  * @module ubumark/utils/number-line-representer
  */
 
-import type { InstanceBlank } from '$lib/questions/types';
+import type { InstanceBlank } from '#lib/questions/types.ts';
 import type { NumberLineConfig, NumberLineSegment } from '../types/number-line';
 import { numVal } from './number-line-render';
 import { graduationCount, indexOfValue, placerText } from './number-line-placer';

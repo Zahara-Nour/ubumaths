@@ -1,24 +1,27 @@
 /**
- * Catalogue Automaths : un aperçu n'est calculé que pour la rubrique dépliée
- * =========================================================================
+ * Catalogue Automaths : un aperçu n'est calculé qu'à l'approche de sa section
+ * ===========================================================================
  *
  * Avant (novembre 2026), le serveur calculait les 1 912 aperçus à chaque visite.
- * Piège : l'accordéon et les onglets de bits-ui gardent le contenu fermé dans
- * le DOM (attribut `hidden`) — la galerie ne doit être montée qu'ouverte.
+ * Depuis la PR 3a, les sous-notions sont toutes dépliées : la galerie d'une
+ * section n'est montée que quand elle approche de l'écran (IntersectionObserver,
+ * simulé ici pour décider de l'approche), ou quand une pastille vise une
+ * section plus bas (les sections du dessus sont alors calculées aussi).
  */
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import { page } from 'vitest/browser';
 
 const templatePreview = vi.hoisted(() => vi.fn());
-vi.mock('$lib/questions/catalogue', async (importOriginal) => {
-	const original = await importOriginal<typeof import('$lib/questions/catalogue')>();
+vi.mock('#lib/questions/catalogue.ts', async (importOriginal) => {
+	const original = await importOriginal<typeof import('#lib/questions/catalogue.ts')>();
 	templatePreview.mockImplementation(original.templatePreview);
 	return { ...original, templatePreview };
 });
 
 import Page from '../+page.svelte';
-import { questionTemplatesCache } from '$lib/stores/questionTemplates.svelte';
+import { notionButton, useWideScreen } from './catalogue-helpers.ts';
+import { questionTemplatesCache } from '#lib/stores/questionTemplates.svelte.ts';
 
 function modele(id: string, nodeId: string) {
 	return {
@@ -63,40 +66,94 @@ function calledIds(): string[] {
 	return templatePreview.mock.calls.map(([t]) => (t as { id: string }).id);
 }
 
+// Observateurs simulés : chaque réserve de galerie observée, et son rappel
+const observed: { target: Element; callback: IntersectionObserverCallback }[] = [];
+
+class FakeIntersectionObserver {
+	constructor(private readonly callback: IntersectionObserverCallback) {}
+	observe(target: Element) {
+		observed.push({ target, callback: this.callback });
+	}
+	unobserve() {}
+	disconnect() {}
+	takeRecords() {
+		return [];
+	}
+}
+
+/** La section de cette sous-notion approche de l'écran */
+function approach(sectionName: string) {
+	const section = page.getByRole('region', { name: new RegExp(`^${sectionName}`) }).element();
+	const placeholder = section.querySelector('[data-gallery-placeholder]');
+	const entry = observed.find((o) => o.target === placeholder);
+	if (!entry) throw new Error(`section « ${sectionName} » non observée`);
+	entry.callback(
+		[{ isIntersecting: true, target: entry.target } as IntersectionObserverEntry],
+		{} as IntersectionObserver
+	);
+}
+
 describe('Catalogue Automaths — aperçus à la demande', () => {
 	beforeEach(async () => {
+		await useWideScreen();
+		// Le catalogue reprend la dernière adresse de la visite : chaque test part de zéro
+		sessionStorage.clear();
 		templatePreview.mockClear();
 		await seedTemplatesCache();
+		observed.length = 0;
+		vi.stubGlobal('IntersectionObserver', FakeIntersectionObserver);
 	});
 
-	it('à l’arrivée, toutes rubriques fermées : aucun aperçu calculé', async () => {
+	afterEach(() => {
+		vi.unstubAllGlobals();
+		vi.restoreAllMocks();
+	});
+
+	it('à l’arrivée, sous-notions dépliées mais aucune n’a approché : aucun aperçu calculé', async () => {
 		await render(Page);
 
-		await expect.element(page.getByRole('button', { name: 'Somme' })).toBeVisible();
+		await expect.element(page.getByRole('heading', { name: /^Somme/ })).toBeVisible();
 		// Laisse passer le calcul différé (setTimeout) d'une galerie montée par erreur
 		await new Promise((resolve) => setTimeout(resolve, 50));
 		expect(calledIds()).toEqual([]);
 	});
 
-	it('déplier une rubrique : ses aperçus seulement, pas ceux des autres rubriques ni notions', async () => {
+	it('une section approche : ses aperçus seulement, pas ceux des autres sections ni notions', async () => {
 		await render(Page);
+		await expect.element(page.getByRole('heading', { name: /^Somme/ })).toBeVisible();
 
-		await page.getByRole('button', { name: 'Somme' }).click();
+		approach('Somme');
 
 		await vi.waitFor(() => expect(calledIds()).toContain('a'));
 		await new Promise((resolve) => setTimeout(resolve, 50));
 		expect(new Set(calledIds())).toEqual(new Set(['a']));
 	});
 
-	it('rangé selon l’arbre : notions en onglets, « Général » en tête des rubriques', async () => {
+	it('pastille d’une section plus bas : les sections jusqu’à elle sont calculées, puis la page y descend', async () => {
+		const scrollIntoView = vi.spyOn(Element.prototype, 'scrollIntoView');
 		await render(Page);
 
-		await expect.element(page.getByRole('tab', { name: 'Addition' })).toBeVisible();
-		await expect.element(page.getByRole('tab', { name: 'Multiplication' })).toBeVisible();
+		await page
+			.getByRole('navigation', { name: 'Sous-notions' })
+			.getByRole('button', { name: /^Différence\s*,/ })
+			.click();
+
+		await vi.waitFor(() => expect(scrollIntoView).toHaveBeenCalled());
+		expect(new Set(calledIds())).toEqual(new Set(['d', 'a', 'b']));
+		expect(scrollIntoView.mock.contexts.at(-1)).toBe(
+			page.getByRole('region', { name: /^Différence/ }).element()
+		);
+	});
+
+	it('rangé selon l’arbre : notions dans la liste, « Général » en tête des sections', async () => {
+		await render(Page);
+
+		await expect.element(notionButton('Addition')).toBeVisible();
+		await expect.element(notionButton('Multiplication')).toBeVisible();
 		const rubriques = page
 			.getByRole('heading', { level: 3 })
 			.elements()
-			.map((e) => e.textContent?.trim());
+			.map((e) => e.textContent?.split('·')[0].trim());
 		expect(rubriques).toEqual(['Général', 'Somme', 'Différence']);
 	});
 
@@ -112,6 +169,7 @@ describe('Catalogue Automaths — aperçus à la demande', () => {
 		);
 		await questionTemplatesCache.fetchTemplates();
 		vi.unstubAllGlobals();
+		vi.stubGlobal('IntersectionObserver', FakeIntersectionObserver);
 		templatePreview.mockClear();
 
 		await render(Page);

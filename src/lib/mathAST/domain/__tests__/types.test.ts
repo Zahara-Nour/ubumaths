@@ -17,8 +17,8 @@ import type {
 	Domain
 } from '../types';
 import { bound } from '../factory';
-import { number, opposite } from '$lib/mathAST/factory';
-import { isNumber, isPositiveInfinity, isNegativeInfinity } from '$lib/mathAST/guards';
+import { number, opposite } from '#lib/mathAST/factory.ts';
+import { isNumber, isPositiveInfinity, isNegativeInfinity } from '#lib/mathAST/guards.ts';
 
 describe('Domain Types', () => {
 	describe('Endpoint', () => {

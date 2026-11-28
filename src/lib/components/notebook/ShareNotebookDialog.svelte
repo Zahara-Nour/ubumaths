@@ -20,14 +20,14 @@
 		- French UI text
 -->
 <script lang="ts">
-	import { lore } from '$lib/config/lore';
-	import * as Dialog from '$lib/components/ui/dialog';
-	import { Button } from '$lib/components/ui/button';
-	import MyCheckbox from '$lib/components/MyCheckbox.svelte';
-	import { toaster } from '$lib/stores/toaster.svelte';
+	import { lore } from '#lib/config/lore.ts';
+	import * as Dialog from '#lib/components/ui/dialog/index.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import MyCheckbox from '#lib/components/MyCheckbox.svelte';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
 	import { Share2, Users, Lock, Unlock } from '@lucide/svelte';
-	import type { ClassWithData } from '$lib/server/students';
-	import { teacherCache } from '$lib/stores/teacherDashboardCache.svelte';
+	import type { ClassWithData } from '#lib/server/students.ts';
+	import { teacherCache } from '#lib/stores/teacherDashboardCache.svelte.ts';
 	import { SvelteSet } from 'svelte/reactivity';
 
 	// Component Props
@@ -77,7 +77,7 @@
 				await processClasses(cachedClasses);
 			} else {
 				// Fetch from API if cache is empty
-				const response = await fetch('/api/classes');
+				const response = await fetch('/api/teacher/classes');
 
 				if (!response.ok) {
 					throw new Error(`Erreur lors du chargement des ${lore.entities.class}s`);

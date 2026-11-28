@@ -31,17 +31,17 @@ import {
 } from '../helpers/database/trigger-test-helpers';
 import { DEFAULT_TEST_PASSWORD } from '../helpers/database/supabase-client';
 import { TestData } from '../helpers/database/test-data-factory';
-import type { Database } from '$lib/types/database';
+import type { Database } from '#lib/types/database.ts';
 
 // L'écriture de la mémoire part au client service : le brancher sur la base LOCALE.
-vi.mock('$lib/server/serviceRoleClient', async () => {
+vi.mock('#lib/server/serviceRoleClient.ts', async () => {
 	const helpers = await import('../helpers/database/trigger-test-helpers');
 	return { createServiceRoleClient: helpers.createServiceRoleClient };
 });
 
 import { POST as reviewSubmitRoute } from '../../src/routes/api/srs/review/submit/+server';
 import { POST as skillAttemptsRoute } from '../../src/routes/api/skill-attempts/+server';
-import { recordSeriesReviews } from '$lib/server/srs/record-series-reviews';
+import { recordSeriesReviews } from '#lib/server/srs/record-series-reviews.ts';
 
 // Types
 type Person = { id: string; client: SupabaseClient<Database> };
@@ -338,10 +338,18 @@ describe('mémoire de révision écrite par le serveur seul (Q171)', () => {
 	it('POST /api/skill-attempts écrit la fiche', async () => {
 		const response = await skillAttemptsRoute({
 			locals: buildLocals(student),
-			request: postRequest({ template_id: T.skill, success: true })
+			request: postRequest({ template_id: T.skill, success: true, place: 'flash_cards' })
 		} as never);
 		expect(response.status).toBe(200);
 		expect((await memory('template', T.skill))?.total_reviews).toBe(1);
+		// Flash-cards : trace « déclarée » acceptée par la RLS de l'élève (ADR 0038)
+		const { data: traces, error } = await service
+			.from('skill_attempts')
+			.select('source, place')
+			.eq('student_id', student.id)
+			.eq('template_id', T.skill);
+		expect(error).toBeNull();
+		expect(traces).toEqual([{ source: 'student_self', place: 'flash_cards' }]);
 	});
 
 	it('recordSeriesReviews (séries et évaluations) écrit les fiches, auto-évaluation comprise', async () => {

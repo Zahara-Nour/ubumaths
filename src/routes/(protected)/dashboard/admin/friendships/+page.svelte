@@ -1,12 +1,12 @@
 <script lang="ts">
-	import { lore } from '$lib/config/lore';
+	import { lore } from '#lib/config/lore.ts';
 	import { enhance } from '$app/forms';
-	import { invalidateAll } from '$app/navigation';
-	import { toaster } from '$lib/stores/toaster.svelte';
-	import UserAvatar from '$lib/components/UserAvatar.svelte';
-	import MySelect from '$lib/components/MySelect.svelte';
-	import { Button } from '$lib/components/ui/button';
-	import { Input } from '$lib/components/ui/input';
+	import { refreshAll } from '$app/navigation';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
+	import UserAvatar from '#lib/components/UserAvatar.svelte';
+	import MySelect from '#lib/components/MySelect.svelte';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import { Input } from '#lib/components/ui/input/index.ts';
 	import { Trash2, Search, Users, AlertTriangle } from '@lucide/svelte';
 	import type { PageData } from './$types';
 
@@ -232,7 +232,7 @@
 							return async ({ result }) => {
 								if (result.type === 'success') {
 									toaster.success('Amitié supprimée');
-									await invalidateAll();
+									await refreshAll();
 								} else {
 									toaster.error("Impossible de supprimer l'amitié");
 								}

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import '$lib/utils/mathlive-styles';
+	import '#lib/utils/mathlive-styles.ts';
 	import 'mathlive';
 	import type { MathfieldElement, MathfieldElementAttributes } from 'mathlive';
 	import { on } from 'svelte/events';
@@ -15,9 +15,11 @@
 	const init = (node: MathfieldElement) => {
 		element = node;
 
-		//reacts
+		// Le champ suit la valeur liée, vidée comprise (L116) ; rien à écrire
+		// quand elle revient de la saisie même (le curseur ne bouge pas).
 		$effect(() => {
-			if (value) node.value = value;
+			const next = value ?? '';
+			if (node.value !== next) node.value = next;
 		});
 
 		//reacts to

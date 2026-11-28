@@ -1,10 +1,10 @@
 <script lang="ts">
 	import { tick } from 'svelte';
-	import SeoHead from '$lib/seo/SeoHead.svelte';
-	import BackLink from '$lib/components/navigation/BackLink.svelte';
-	import CityMap from '$lib/components/kingdom-tour/CityMap.svelte';
-	import { capitalTitle } from '$lib/kingdom-tour/cities';
-	import { PROVINCES } from '$lib/kingdom-tour/tour';
+	import SeoHead from '#lib/seo/SeoHead.svelte';
+	import BackLink from '#lib/components/navigation/BackLink.svelte';
+	import CityMap from '#lib/components/kingdom-tour/CityMap.svelte';
+	import { capitalTitle } from '#lib/kingdom-tour/cities.ts';
+	import { PROVINCES } from '#lib/kingdom-tour/tour.ts';
 	import type { PageProps } from './$types';
 
 	// Variables

@@ -1,29 +1,29 @@
 <script lang="ts">
-	import { lore } from '$lib/config/lore';
-	import WorksheetHeader from '$lib/components/student/worksheets/WorksheetHeader.svelte';
-	import ExerciseListItem from '$lib/components/student/worksheets/ExerciseListItem.svelte';
-	import ExerciseModal from '$lib/components/student/worksheets/ExerciseModal.svelte';
-	import StudentReportsPanel from '$lib/components/worksheets/student/StudentReportsPanel.svelte';
-	import * as Card from '$lib/components/ui/card';
-	import * as Tabs from '$lib/components/ui/tabs';
-	import { toaster } from '$lib/stores/toaster.svelte';
+	import { lore } from '#lib/config/lore.ts';
+	import WorksheetHeader from '#lib/components/student/worksheets/WorksheetHeader.svelte';
+	import ExerciseListItem from '#lib/components/student/worksheets/ExerciseListItem.svelte';
+	import ExerciseModal from '#lib/components/student/worksheets/ExerciseModal.svelte';
+	import StudentReportsPanel from '#lib/components/worksheets/student/StudentReportsPanel.svelte';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import * as Tabs from '#lib/components/ui/tabs/index.ts';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
 	import { FileText, AlertTriangle, Star, Archive } from '@lucide/svelte';
 	import type { PageData } from './$types';
-	import type { MasteryStatus, ExerciseMasteryListResponse } from '$lib/types/exercise-mastery';
+	import type { MasteryStatus, ExerciseMasteryListResponse } from '#lib/types/exercise-mastery.ts';
 	import type {
 		StudentErrorReportView,
 		StudentExerciseView,
 		StudentSectionView
-	} from '$lib/types/worksheets';
-	import { groupExercisesForDisplay } from '$lib/worksheets/exercise-numbering';
+	} from '#lib/types/worksheets.ts';
+	import { groupExercisesForDisplay } from '#lib/worksheets/exercise-numbering.ts';
 	import { page } from '$app/state';
 	import {
 		ANCHOR_HIGHLIGHT_MS,
 		exerciseAnchorId,
 		scrollToAnchoredExercise
-	} from '$lib/worksheets/exercise-anchor';
-	import { provideContentLocale } from '$lib/components/markdown/content-locale';
-	import { isContentLocale } from '$lib/types/locale';
+	} from '#lib/worksheets/exercise-anchor.ts';
+	import { provideContentLocale } from '#lib/components/markdown/content-locale.ts';
+	import { isContentLocale } from '#lib/types/locale.ts';
 
 	interface Props {
 		data: PageData;
@@ -49,7 +49,7 @@
 	 */
 	let readOnly = $derived(worksheet.read_only === true);
 
-	// Groupement et numérotation : `$lib/worksheets/exercise-numbering`, la même
+	// Groupement et numérotation : `#lib/worksheets/exercise-numbering.ts`, la même
 	// règle que le générateur PDF. Elle était réécrite ici, et une troisième
 	// copie avait déjà divergé — d'où le module partagé.
 	// Fiche mélangée : l'ordre de la copie, servi par l'API, prime sur `position`
@@ -235,7 +235,7 @@
 	<!-- Breadcrumb -->
 
 	<!-- Header -->
-	<WorksheetHeader {worksheet} textSize={data.textSize} />
+	<WorksheetHeader {worksheet} textSize={data.textSize} easyReading={data.easyReading} />
 
 	{#if readOnly}
 		<!-- Le dire franchement : sans ce bandeau, l'élève constaterait

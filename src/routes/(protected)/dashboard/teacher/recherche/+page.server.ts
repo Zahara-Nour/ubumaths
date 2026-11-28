@@ -10,9 +10,9 @@
  */
 
 import type { PageServerLoad } from './$types';
-import { requireRole } from '$lib/server/middleware/auth';
-import { searchResources, type ResourceSearchRow } from '$lib/server/search';
-import { RESOURCE_KINDS, isResourceKind, type ResourceKind } from '$lib/resources/kinds';
+import { requireRole } from '#lib/server/middleware/auth.ts';
+import { searchResources, type ResourceSearchRow } from '#lib/server/search.ts';
+import { RESOURCE_KINDS, isResourceKind, type ResourceKind } from '#lib/resources/kinds.ts';
 
 /** Same floor as the SQL function: below this, the search says nothing. */
 const MIN_QUERY_LENGTH = 2;

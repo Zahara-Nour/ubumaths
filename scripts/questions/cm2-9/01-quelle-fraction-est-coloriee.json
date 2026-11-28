@@ -1,0 +1,305 @@
+{
+	"id": "46b9aa11-a3c5-4645-9389-1379b6e3e9c5",
+	"title": "Quelle fraction de la figure est coloriée ?",
+	"description": "Lire une fraction sur une grille partagée en 15 à 60 parts égales (parts d'affilée ou éparpillées) ; au-delà de 1, sur 2 ou 3 bandes ou disques (11/4)",
+	"grades": ["CM2"],
+	"level": 12,
+	"delay": 45,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"reducedFractions": "off"
+		}
+	},
+	"variations": [
+		{
+			"statement": "Quelle fraction de la figure est coloriée ?\n\n```partage\nforme: grille {{l}}×{{c}}\ngris: {{g}}\n```\n\n$$?$$",
+			"variables": [
+				{
+					"name": "j",
+					"expression": "0..12"
+				},
+				{
+					"name": "l",
+					"expression": "{{if:j==0|3|{{if:j==1|4|{{if:j==2|3|{{if:j==3|4|{{if:j==4|3|{{if:j==5|4|{{if:j==6|5|{{if:j==7|3|{{if:j==8|4|{{if:j==9|4|{{if:j==10|5|{{if:j==11|5|6}}}}}}}}}}}}}}}}}}}}}}}}"
+				},
+				{
+					"name": "c",
+					"expression": "{{if:j==0|5|{{if:j==1|4|{{if:j==2|6|{{if:j==3|5|{{if:j==4|8|{{if:j==5|6|{{if:j==6|5|{{if:j==7|10|{{if:j==8|8|{{if:j==9|10|{{if:j==10|8|{{if:j==11|10|10}}}}}}}}}}}}}}}}}}}}}}}}"
+				},
+				{
+					"name": "N",
+					"expression": "eval:l*c"
+				},
+				{
+					"name": "g",
+					"expression": "1..{{eval:N-1}}"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "\\frac{{{g}}}{{{N}}}",
+					"requiredForm": "fraction"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**La grille est partagée en ${{l}} \\times {{c}} = {{N}}$ parts égales** : une part, c'est $\\frac{1}{{{N}}}$ de la figure.",
+					"{{if:c==10|On compte les lignes entières de $10$ parts, puis les parts qui restent. |}}${{g}}$ part{{if:g>1|s sont coloriées|est coloriée}} : $\\textcolor{{{color:primary.0}}}{\\frac{{{g}}}{{{N}}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Quelle fraction de la figure est coloriée ?\n\n```partage\nforme: grille {{l}}×{{c}}\ngris: {{if:g==2|{{eval:mod(s+0*p,N)+1}}, {{eval:mod(s+1*p,N)+1}}|{{if:g==3|{{eval:mod(s+0*p,N)+1}}, {{eval:mod(s+1*p,N)+1}}, {{eval:mod(s+2*p,N)+1}}|{{if:g==4|{{eval:mod(s+0*p,N)+1}}, {{eval:mod(s+1*p,N)+1}}, {{eval:mod(s+2*p,N)+1}}, {{eval:mod(s+3*p,N)+1}}|{{if:g==5|{{eval:mod(s+0*p,N)+1}}, {{eval:mod(s+1*p,N)+1}}, {{eval:mod(s+2*p,N)+1}}, {{eval:mod(s+3*p,N)+1}}, {{eval:mod(s+4*p,N)+1}}|{{if:g==6|{{eval:mod(s+0*p,N)+1}}, {{eval:mod(s+1*p,N)+1}}, {{eval:mod(s+2*p,N)+1}}, {{eval:mod(s+3*p,N)+1}}, {{eval:mod(s+4*p,N)+1}}, {{eval:mod(s+5*p,N)+1}}|{{if:g==7|{{eval:mod(s+0*p,N)+1}}, {{eval:mod(s+1*p,N)+1}}, {{eval:mod(s+2*p,N)+1}}, {{eval:mod(s+3*p,N)+1}}, {{eval:mod(s+4*p,N)+1}}, {{eval:mod(s+5*p,N)+1}}, {{eval:mod(s+6*p,N)+1}}|{{if:g==8|{{eval:mod(s+0*p,N)+1}}, {{eval:mod(s+1*p,N)+1}}, {{eval:mod(s+2*p,N)+1}}, {{eval:mod(s+3*p,N)+1}}, {{eval:mod(s+4*p,N)+1}}, {{eval:mod(s+5*p,N)+1}}, {{eval:mod(s+6*p,N)+1}}, {{eval:mod(s+7*p,N)+1}}|{{if:g==9|{{eval:mod(s+0*p,N)+1}}, {{eval:mod(s+1*p,N)+1}}, {{eval:mod(s+2*p,N)+1}}, {{eval:mod(s+3*p,N)+1}}, {{eval:mod(s+4*p,N)+1}}, {{eval:mod(s+5*p,N)+1}}, {{eval:mod(s+6*p,N)+1}}, {{eval:mod(s+7*p,N)+1}}, {{eval:mod(s+8*p,N)+1}}|{{if:g==10|{{eval:mod(s+0*p,N)+1}}, {{eval:mod(s+1*p,N)+1}}, {{eval:mod(s+2*p,N)+1}}, {{eval:mod(s+3*p,N)+1}}, {{eval:mod(s+4*p,N)+1}}, {{eval:mod(s+5*p,N)+1}}, {{eval:mod(s+6*p,N)+1}}, {{eval:mod(s+7*p,N)+1}}, {{eval:mod(s+8*p,N)+1}}, {{eval:mod(s+9*p,N)+1}}|{{if:g==11|{{eval:mod(s+0*p,N)+1}}, {{eval:mod(s+1*p,N)+1}}, {{eval:mod(s+2*p,N)+1}}, {{eval:mod(s+3*p,N)+1}}, {{eval:mod(s+4*p,N)+1}}, {{eval:mod(s+5*p,N)+1}}, {{eval:mod(s+6*p,N)+1}}, {{eval:mod(s+7*p,N)+1}}, {{eval:mod(s+8*p,N)+1}}, {{eval:mod(s+9*p,N)+1}}, {{eval:mod(s+10*p,N)+1}}|{{eval:mod(s+0*p,N)+1}}, {{eval:mod(s+1*p,N)+1}}, {{eval:mod(s+2*p,N)+1}}, {{eval:mod(s+3*p,N)+1}}, {{eval:mod(s+4*p,N)+1}}, {{eval:mod(s+5*p,N)+1}}, {{eval:mod(s+6*p,N)+1}}, {{eval:mod(s+7*p,N)+1}}, {{eval:mod(s+8*p,N)+1}}, {{eval:mod(s+9*p,N)+1}}, {{eval:mod(s+10*p,N)+1}}, {{eval:mod(s+11*p,N)+1}}}}}}}}}}}}}}}}}}}}}}\n```\n\n$$?$$",
+			"variables": [
+				{
+					"name": "j",
+					"expression": "0..12"
+				},
+				{
+					"name": "l",
+					"expression": "{{if:j==0|3|{{if:j==1|4|{{if:j==2|3|{{if:j==3|4|{{if:j==4|3|{{if:j==5|4|{{if:j==6|5|{{if:j==7|3|{{if:j==8|4|{{if:j==9|4|{{if:j==10|5|{{if:j==11|5|6}}}}}}}}}}}}}}}}}}}}}}}}"
+				},
+				{
+					"name": "c",
+					"expression": "{{if:j==0|5|{{if:j==1|4|{{if:j==2|6|{{if:j==3|5|{{if:j==4|8|{{if:j==5|6|{{if:j==6|5|{{if:j==7|10|{{if:j==8|8|{{if:j==9|10|{{if:j==10|8|{{if:j==11|10|10}}}}}}}}}}}}}}}}}}}}}}}}"
+				},
+				{
+					"name": "N",
+					"expression": "eval:l*c"
+				},
+				{
+					"name": "g",
+					"expression": "2..12"
+				},
+				{
+					"name": "p",
+					"expression": "2..{{eval:N-2}}"
+				},
+				{
+					"name": "s",
+					"expression": "0..{{eval:N-1}}"
+				}
+			],
+			"conditions": ["gcd(p,N)==1"],
+			"blanks": [
+				{
+					"expectedAnswer": "\\frac{{{g}}}{{{N}}}",
+					"requiredForm": "fraction"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**La grille est partagée en ${{l}} \\times {{c}} = {{N}}$ parts égales** : une part, c'est $\\frac{1}{{{N}}}$ de la figure.",
+					"Les parts coloriées ne se suivent pas : on les compte une par une. Il y en a ${{g}}$ : $\\textcolor{{{color:primary.0}}}{\\frac{{{g}}}{{{N}}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Chaque figure est une unité. Quelle fraction de l'unité est coloriée ?\n\n```partage\nforme: {{if:k==0|bande|disque}} {{d}}\nunites: {{u}}\ngris: {{g}}\n```\n\n$$?$$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "0..1"
+				},
+				{
+					"name": "d",
+					"expression": "3..12"
+				},
+				{
+					"name": "u",
+					"expression": "2..3"
+				},
+				{
+					"name": "g",
+					"expression": "{{eval:d+1}}..{{eval:u*d-1}}"
+				}
+			],
+			"conditions": ["mod(g,d)!=0"],
+			"blanks": [
+				{
+					"expectedAnswer": "\\frac{{{g}}}{{{d}}}",
+					"requiredForm": "fraction"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Chaque figure est partagée en ${{d}}$ parts égales** : une part, c'est $\\frac{1}{{{d}}}$ de l'unité.",
+					"On compte toutes les parts coloriées, sur toutes les figures : il y en a ${{g}}$.",
+					"$$\\textcolor{{{color:primary.0}}}{\\frac{{{g}}}{{{d}}}}$$",
+					"La fraction est plus grande que $1$ : plus d'une figure est coloriée."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "17 parts sur 24 : 17/24",
+			"variationIndex": 0,
+			"variables": {
+				"j": "5",
+				"l": "4",
+				"c": "6",
+				"N": "24",
+				"g": "17"
+			},
+			"answers": ["\\frac{17}{24}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 17/7 (coloriées sur non coloriées)",
+			"variationIndex": 0,
+			"variables": {
+				"j": "5",
+				"l": "4",
+				"c": "6",
+				"N": "24",
+				"g": "17"
+			},
+			"answers": ["\\frac{17}{7}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 17/10 (lignes plus colonnes)",
+			"variationIndex": 0,
+			"variables": {
+				"j": "5",
+				"l": "4",
+				"c": "6",
+				"N": "24",
+				"g": "17"
+			},
+			"answers": ["\\frac{17}{10}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "30 parts sur 60 : 30/60",
+			"variationIndex": 0,
+			"variables": {
+				"j": "12",
+				"l": "6",
+				"c": "10",
+				"N": "60",
+				"g": "30"
+			},
+			"answers": ["\\frac{30}{60}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "1/2 : même fraction, juste",
+			"variationIndex": 0,
+			"variables": {
+				"j": "12",
+				"l": "6",
+				"c": "10",
+				"N": "60",
+				"g": "30"
+			},
+			"answers": ["\\frac{1}{2}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Forme : 0,5 (écriture à virgule)",
+			"variationIndex": 0,
+			"variables": {
+				"j": "12",
+				"l": "6",
+				"c": "10",
+				"N": "60",
+				"g": "30"
+			},
+			"answers": ["0.5"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		},
+		{
+			"description": "Éparpillées, 5 parts sur 24 : 5/24",
+			"variationIndex": 1,
+			"variables": {
+				"j": "5",
+				"l": "4",
+				"c": "6",
+				"N": "24",
+				"g": "5",
+				"p": "5",
+				"s": "0"
+			},
+			"answers": ["\\frac{5}{24}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 1/24 (un seul bloc compté)",
+			"variationIndex": 1,
+			"variables": {
+				"j": "5",
+				"l": "4",
+				"c": "6",
+				"N": "24",
+				"g": "5",
+				"p": "5",
+				"s": "0"
+			},
+			"answers": ["\\frac{1}{24}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Trois bandes de 4, 11 parts : 11/4",
+			"variationIndex": 2,
+			"variables": {
+				"k": "0",
+				"d": "4",
+				"u": "3",
+				"g": "11"
+			},
+			"answers": ["\\frac{11}{4}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 11/12 (les trois bandes prises pour l'unité)",
+			"variationIndex": 2,
+			"variables": {
+				"k": "0",
+				"d": "4",
+				"u": "3",
+				"g": "11"
+			},
+			"answers": ["\\frac{11}{12}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Forme : 2 + 3/4 refusé",
+			"variationIndex": 2,
+			"variables": {
+				"k": "0",
+				"d": "4",
+				"u": "3",
+				"g": "11"
+			},
+			"answers": ["2+\\frac{3}{4}"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		}
+	]
+}

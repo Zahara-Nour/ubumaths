@@ -1,6 +1,6 @@
 <script lang="ts">
-	import type { GameMonster } from '$lib/types/game';
-	import { getMonsterImageUrl } from '$lib/utils/game/assets';
+	import type { GameMonster } from '#lib/types/game.ts';
+	import { getMonsterImageUrl } from '#lib/utils/game/assets.ts';
 
 	interface Props {
 		monster: GameMonster;

@@ -8,9 +8,9 @@
 	 * to it.
 	 */
 
-	import type { HeapObject, HeapEntry } from '$lib/shared/python/debug/types';
-	import { cn } from '$lib/utils';
-	import type { InlineValue, TruncatedValue } from '$lib/shared/python/debug/types';
+	import type { HeapObject, HeapEntry } from '#lib/shared/python/debug/types.ts';
+	import { cn } from '#lib/utils.ts';
+	import type { InlineValue, TruncatedValue } from '#lib/shared/python/debug/types.ts';
 	import {
 		shortHeapId,
 		colorForHeapId,

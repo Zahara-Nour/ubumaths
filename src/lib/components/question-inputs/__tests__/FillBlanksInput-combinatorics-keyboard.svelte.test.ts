@@ -13,8 +13,8 @@ import { describe, it, expect, beforeAll, afterEach } from 'vitest';
 import { userEvent } from 'vitest/browser';
 import { render } from 'vitest-browser-svelte';
 import FillBlanksInput from '../FillBlanksInput.svelte';
-import type { ResolvedMarkdown } from '$lib/ubumark';
-import type { GradeLevel, InstanceBlank } from '$lib/questions/types';
+import type { ResolvedMarkdown } from '#lib/ubumark/index.ts';
+import type { GradeLevel, InstanceBlank } from '#lib/questions/types.ts';
 import type { MathfieldElement } from 'mathlive';
 
 const statement = 'Nombre de tirages : $\\placeholder[0]{}$' as ResolvedMarkdown;

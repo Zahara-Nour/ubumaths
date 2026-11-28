@@ -1,0 +1,269 @@
+{
+	"id": "b80d1619-1738-4a0e-ba1a-4d13fc9f2507",
+	"title": "Nommer un solide, prisme droit compris",
+	"description": "Sept noms : prisme droit debout ou couché, pyramide à base triangle (piège), boule, cône, pyramide, cylindre ; lequel est un prisme droit parmi quatre solides",
+	"grades": ["CM1", "CM2"],
+	"level": 14,
+	"delay": 30,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Comment s'appelle ce solide ?\n\n```solide\nforme: prisme {{if:o==1|triangle 3 2.5 4|{{if:o==2|triangle-rectangle 3 2 4.5|triangle 4 2 3}}}}\n```\n\n```choix\n- C'est un cube.\n- C'est un pavé.\n- C'est une boule.\n- C'est un cône.\n- C'est une pyramide.\n- C'est un cylindre.\n- C'est un prisme droit.\n```",
+			"variables": [
+				{
+					"name": "o",
+					"expression": "1..3"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "6"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Il a deux faces pareilles, face à face : ce sont des triangles, ses $\\textcolor{{{color:primary.0}}}{\\text{bases}}$. Ses autres faces, les faces latérales, sont des rectangles.",
+					"C'est $\\textcolor{{{color:primary.0}}}{\\text{un prisme droit}}$."
+				]
+			}
+		},
+		{
+			"statement": "Comment s'appelle ce solide ?\n\n```solide\nforme: pyramide triangle {{if:o==1|3.5 3.5|{{if:o==2|4 3|3 4}}}}\n```\n\n```choix\n- C'est un cube.\n- C'est un pavé.\n- C'est une boule.\n- C'est un cône.\n- C'est une pyramide.\n- C'est un cylindre.\n- C'est un prisme droit.\n```",
+			"variables": [
+				{
+					"name": "o",
+					"expression": "1..3"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "4"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Toutes ses faces sont des triangles, et trois d'entre eux se rejoignent en un même sommet, en haut.",
+					"Un prisme droit aurait deux triangles face à face, reliés par des rectangles.",
+					"C'est $\\textcolor{{{color:primary.0}}}{\\text{une pyramide}}$."
+				]
+			}
+		},
+		{
+			"statement": "Comment s'appelle ce solide ?\n\n```solide\nforme: {{if:s==1|boule 2|{{if:s==2|cone 1.5 3.5|{{if:s==3|pyramide carree 3 3.5|{{if:s==4|pyramide rectangle 4 2.5 3.5|cylindre 1.5 3}}}}}}}}\n```\n\n```choix\n- C'est un cube.\n- C'est un pavé.\n- C'est une boule.\n- C'est un cône.\n- C'est une pyramide.\n- C'est un cylindre.\n- C'est un prisme droit.\n```",
+			"variables": [
+				{
+					"name": "s",
+					"expression": "1..5"
+				},
+				{
+					"name": "r",
+					"expression": "{{if:s==1|2|{{if:s==2|3|{{if:s==3|4|{{if:s==4|4|5}}}}}}}}"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{r}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"{{if:s==1|Elle est toute ronde : ni face plane, ni sommet, ni arête. C'est $\\textcolor{{{color:primary.0}}}{\\text{une boule}}$.|{{if:s==2|Une base ronde, un disque, et une face courbe qui finit en pointe : c'est $\\textcolor{{{color:primary.0}}}{\\text{un cône}}$.|{{if:s==3|Une base carrée et quatre triangles qui se rejoignent en un sommet : c'est $\\textcolor{{{color:primary.0}}}{\\text{une pyramide}}$.|{{if:s==4|Une base rectangle et quatre triangles qui se rejoignent en un sommet : c'est $\\textcolor{{{color:primary.0}}}{\\text{une pyramide}}$.|Deux disques face à face, reliés par une face courbe. Ses bases ne sont pas des polygones : ce n'est pas un prisme droit, c'est $\\textcolor{{{color:primary.0}}}{\\text{un cylindre}}$.}}}}}}}}"
+				]
+			}
+		},
+		{
+			"statement": "Lequel de ces solides est un prisme droit ?\n\n````choix\n- ```solide\n  forme: prisme {{if:o==1|triangle 3 2.5 4|{{if:o==2|triangle-rectangle 3 2 4.5|triangle 4 2 3}}}}\n  ```\n- ```solide\n  forme: pyramide triangle 3.5 3.5\n  ```\n- ```solide\n  forme: cylindre 1.5 3\n  ```\n- ```solide\n  forme: cone 1.5 3.5\n  ```\n````",
+			"variables": [
+				{
+					"name": "o",
+					"expression": "1..3"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Un prisme droit a deux bases pareilles, des polygones, face à face, reliées par des rectangles.",
+					"La pyramide finit en pointe ; le cylindre et le cône ont des bases rondes.",
+					"C'est $\\textcolor{{{color:primary.0}}}{\\text{le solide aux deux triangles face à face}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Prisme à base isocèle",
+			"variationIndex": 0,
+			"variables": {
+				"o": "1"
+			},
+			"answers": ["6"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Prisme couché, base triangle rectangle",
+			"variationIndex": 0,
+			"variables": {
+				"o": "2"
+			},
+			"answers": ["6"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : prisme pris pour une pyramide",
+			"variationIndex": 0,
+			"variables": {
+				"o": "1"
+			},
+			"answers": ["4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : prisme pris pour un pavé",
+			"variationIndex": 0,
+			"variables": {
+				"o": "3"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Pyramide à base triangle",
+			"variationIndex": 1,
+			"variables": {
+				"o": "1"
+			},
+			"answers": ["4"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : pyramide à base triangle prise pour un prisme",
+			"variationIndex": 1,
+			"variables": {
+				"o": "2"
+			},
+			"answers": ["6"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Boule",
+			"variationIndex": 2,
+			"variables": {
+				"s": "1",
+				"r": "2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Cône",
+			"variationIndex": 2,
+			"variables": {
+				"s": "2",
+				"r": "3"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Pyramide à base rectangle",
+			"variationIndex": 2,
+			"variables": {
+				"s": "4",
+				"r": "4"
+			},
+			"answers": ["4"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Cylindre",
+			"variationIndex": 2,
+			"variables": {
+				"s": "5",
+				"r": "5"
+			},
+			"answers": ["5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : cylindre pris pour un prisme droit",
+			"variationIndex": 2,
+			"variables": {
+				"s": "5",
+				"r": "5"
+			},
+			"answers": ["6"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : cône pris pour une pyramide",
+			"variationIndex": 2,
+			"variables": {
+				"s": "2",
+				"r": "3"
+			},
+			"answers": ["4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Le prisme parmi quatre solides",
+			"variationIndex": 3,
+			"variables": {
+				"o": "1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : la pyramide à base triangle",
+			"variationIndex": 3,
+			"variables": {
+				"o": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : le cylindre",
+			"variationIndex": 3,
+			"variables": {
+				"o": "2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

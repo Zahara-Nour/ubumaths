@@ -1,0 +1,308 @@
+{
+	"id": "2a9c316a-ee3d-44dc-89be-8b3b5c00ac2c",
+	"title": "Sens de variation de la fonction x ↦ a^x",
+	"description": "a > 1, 0 < a < 1, a = 1 ; comparer deux images sans calcul ; quantité qui diminue",
+	"grades": ["1_GEN"],
+	"level": 1,
+	"delay": 20,
+	"status": "draft",
+	"shared": {},
+	"variations": [
+		{
+			"statement": "On considère la fonction $f$ définie sur $[0\\,;+\\infty[$ par $f(x)={{a}}^x$.\n\nQuel est le sens de variation de $f$ sur $[0\\,;+\\infty[$ ?\n\n```choix\nmelanger: non\n- croissante\n- décroissante\n- constante\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1.2|1.5|2|3"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Pour $a>0$, la fonction $x\\mapsto a^x$ est croissante sur $[0\\,;+\\infty[$ si $a>1$, décroissante si $0<a<1$, constante (égale à $1$) si $a=1$.",
+					"Ici $a=\\textcolor{{{color:primary.0}}}{{{a}}}>1$ : $f$ est **croissante**."
+				]
+			}
+		},
+		{
+			"statement": "On considère la fonction $f$ définie sur $[0\\,;+\\infty[$ par $f(x)={{a}}^x$.\n\nQuel est le sens de variation de $f$ sur $[0\\,;+\\infty[$ ?\n\n```choix\nmelanger: non\n- croissante\n- décroissante\n- constante\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "0.2|0.5|0.8|0.9"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "1"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Pour $a>0$, la fonction $x\\mapsto a^x$ est croissante sur $[0\\,;+\\infty[$ si $a>1$, décroissante si $0<a<1$, constante (égale à $1$) si $a=1$.",
+					"Ici $0<a=\\textcolor{{{color:primary.0}}}{{{a}}}<1$ : $f$ est **décroissante**."
+				]
+			}
+		},
+		{
+			"statement": "On considère la fonction $f$ définie sur $[0\\,;+\\infty[$ par $f(x)=1^x$.\n\nQuel est le sens de variation de $f$ sur $[0\\,;+\\infty[$ ?\n\n```choix\nmelanger: non\n- croissante\n- décroissante\n- constante\n```",
+			"variables": [],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "2"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Pour $a>0$, la fonction $x\\mapsto a^x$ est croissante sur $[0\\,;+\\infty[$ si $a>1$, décroissante si $0<a<1$, constante (égale à $1$) si $a=1$.",
+					"Ici $a=\\textcolor{{{color:primary.0}}}{1}$ : pour tout $x\\geqslant0$, $1^x=1$, $f$ est **constante**."
+				]
+			}
+		},
+		{
+			"statement": "On considère la fonction $f$ définie sur $[0\\,;+\\infty[$ par $f(x)={{a}}^x$.\n\nSans calculer, compare $f({{x1}})$ et $f({{x2}})$.\n\n```choix\nmelanger: non\n- $f({{x1}})<f({{x2}})$\n- $f({{x1}})>f({{x2}})$\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "0.5|0.8|1.5|2|3"
+				},
+				{
+					"name": "x1",
+					"expression": "0.5|1|1.5|2"
+				},
+				{
+					"name": "x2",
+					"expression": "2.5|3|3.5|4"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:1-min(floor(a),1)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Pour $a>0$, la fonction $x\\mapsto a^x$ est croissante sur $[0\\,;+\\infty[$ si $a>1$, décroissante si $0<a<1$, constante (égale à $1$) si $a=1$.",
+					"Ici $a={{a}}$ {{if:a>1|est supérieur à $1$ : $f$ est croissante|est compris entre $0$ et $1$ : $f$ est décroissante}}.",
+					"${{x1}}<{{x2}}$, donc $\\textcolor{{{color:primary.0}}}{f({{x1}}){{if:a>1|<|>}}f({{x2}})}$."
+				]
+			}
+		},
+		{
+			"statement": "Un médicament est éliminé par l'organisme : sa quantité dans le sang diminue de ${{p}}~\\%$ par heure. On la modélise par $Q(x)={{q}}\\times{{eval:1-p/100;d}}^x$, en mg, où $x$ est le temps en heures.\n\nQuel est le sens de variation de $Q$ sur $[0\\,;+\\infty[$ ?\n\n```choix\nmelanger: non\n- croissante\n- décroissante\n- constante\n```",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "10|15|20|25"
+				},
+				{
+					"name": "q",
+					"expression": "50|100|200"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "1"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Diminuer de ${{p}}~\\%$, c'est multiplier par $1-\\dfrac{ {{p}} }{100}={{eval:1-p/100;d}}$.",
+					"$x\\mapsto{{eval:1-p/100;d}}^x$ est décroissante, car $0<{{eval:1-p/100;d}}<1$ ; multipliée par ${{q}}>0$, elle le reste : $Q$ est **décroissante**, comme la suite géométrique de même raison."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "variation 0 : bonne réponse",
+			"variationIndex": 0,
+			"variables": {
+				"a": "1.5"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "variation 0 : « décroissante » refusé",
+			"variationIndex": 0,
+			"variables": {
+				"a": "1.5"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 0 : « constante » refusé",
+			"variationIndex": 0,
+			"variables": {
+				"a": "1.5"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 1 : bonne réponse",
+			"variationIndex": 1,
+			"variables": {
+				"a": "0.8"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "variation 1 : « croissante » refusé",
+			"variationIndex": 1,
+			"variables": {
+				"a": "0.8"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 1 : « constante » refusé",
+			"variationIndex": 1,
+			"variables": {
+				"a": "0.8"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 2 : bonne réponse",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "variation 2 : « croissante » refusé",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 2 : « décroissante » refusé",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 4 : bonne réponse",
+			"variationIndex": 4,
+			"variables": {
+				"p": "20",
+				"q": "100"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "variation 4 : « croissante » refusé",
+			"variationIndex": 4,
+			"variables": {
+				"p": "20",
+				"q": "100"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 4 : « constante » refusé",
+			"variationIndex": 4,
+			"variables": {
+				"p": "20",
+				"q": "100"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "a = 2 : f(1) < f(3)",
+			"variationIndex": 3,
+			"variables": {
+				"a": "2",
+				"x1": "1",
+				"x2": "3"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : a = 2, f(1) > f(3)",
+			"variationIndex": 3,
+			"variables": {
+				"a": "2",
+				"x1": "1",
+				"x2": "3"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "a = 0,5 : f(1) > f(3)",
+			"variationIndex": 3,
+			"variables": {
+				"a": "0.5",
+				"x1": "1",
+				"x2": "3"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : a = 0,5, f(1) < f(3)",
+			"variationIndex": 3,
+			"variables": {
+				"a": "0.5",
+				"x1": "1",
+				"x2": "3"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

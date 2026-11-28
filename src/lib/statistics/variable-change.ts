@@ -7,7 +7,7 @@
  * arrondis affichés (décision de David). Calcul en décimal : ln et √ sont
  * irrationnels (Q172) ; affichage arrondi une fois.
  *
- * ⚠️ Aucun import `$lib` : voir `statistics/describe`.
+ * ⚠️ Aucun import `#lib` : voir `statistics/describe`.
  *
  * @module statistics/variable-change
  */

@@ -115,7 +115,7 @@ describe('evaluationSettingsSchema (B13, Q30)', () => {
 		}
 	});
 
-	it('Entraînement : aucun temps limite', () => {
+	it('Contrôle blanc : aucun temps limite', () => {
 		const ok = evaluationSettingsSchema.safeParse({ form: 'interactive' });
 		expect(ok.success).toBe(true);
 		if (ok.success) expect(ok.data.time_limit).toBeNull();
@@ -123,7 +123,7 @@ describe('evaluationSettingsSchema (B13, Q30)', () => {
 		const ko = evaluationSettingsSchema.safeParse({ form: 'interactive', time_limit_minutes: 5 });
 		expect(ko.success).toBe(false);
 		if (!ko.success)
-			expect(ko.error.issues[0].message).toBe("Un Entraînement n'a pas de temps limite");
+			expect(ko.error.issues[0].message).toBe("Un Contrôle blanc n'a pas de temps limite");
 	});
 
 	it('forme inconnue (flash) : refusée', () => {

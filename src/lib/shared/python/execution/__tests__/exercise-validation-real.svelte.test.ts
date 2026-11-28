@@ -13,14 +13,14 @@
  * Pyodide is loaded once in beforeAll (~5-15s on first run, cached afterwards).
  * All tests share a single executor; cleanup via destroy() in afterAll.
  *
- * Imported through the $lib/shared/python barrel to avoid the TDZ that hits
+ * Imported through the #lib/shared/python barrel to avoid the TDZ that hits
  * when base-executor's barrel import triggers playground-executor before
  * BasePythonExecutor has finished evaluating (same workaround as
  * base-executor.svelte.test.ts).
  */
 
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
-import { BasePythonExecutor, type ExerciseValidationConfig } from '$lib/shared/python';
+import { BasePythonExecutor, type ExerciseValidationConfig } from '#lib/shared/python/index.ts';
 
 // =============================================================================
 // Test harness

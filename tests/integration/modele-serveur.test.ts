@@ -16,7 +16,7 @@
  */
 import { describe, it, expect, beforeAll, afterAll, vi } from 'vitest';
 import type { SupabaseClient, User } from '@supabase/supabase-js';
-import type { Database } from '$lib/types/database';
+import type { Database } from '#lib/types/database.ts';
 import {
 	createServiceRoleClient,
 	cleanupAllTestData
@@ -29,8 +29,8 @@ import {
 	listSections,
 	renameSection,
 	placeInSection
-} from '$lib/server/chapter-sections';
-import { listTemplateContent, retireTemplateElement } from '$lib/server/template-content';
+} from '#lib/server/chapter-sections.ts';
+import { listTemplateContent, retireTemplateElement } from '#lib/server/template-content.ts';
 import {
 	createTemplateFromChapter,
 	deleteChapterTemplate,
@@ -38,16 +38,15 @@ import {
 	instantiateTemplate,
 	TemplateInUseError,
 	TemplateUnusableError
-} from '$lib/server/chapter-templates';
+} from '#lib/server/chapter-templates.ts';
 import { POST as templateUploadUrl } from '../../src/routes/api/teacher/chapter-templates/[id]/document-upload-url/+server';
 import { POST as templateDocuments } from '../../src/routes/api/teacher/chapter-templates/[id]/documents/+server';
 import { GET as serveDocument } from '../../src/routes/api/documents/[id]/+server';
-import { DELETE as deleteChapterDocumentApi } from '../../src/routes/api/teacher/chapters/[id]/documents/[docId]/+server';
 import { actions as chapterActions } from '../../src/routes/(protected)/dashboard/teacher/cours/[classId]/[chapterId]/+page.server';
 
 // Le client service des modules serveur lit process.env (qui peut viser la prod
 // via .env) : on le branche explicitement sur la base LOCALE de test.
-vi.mock('$lib/server/serviceRoleClient', async () => {
+vi.mock('#lib/server/serviceRoleClient.ts', async () => {
 	const helpers = await import('../helpers/database/trigger-test-helpers');
 	return { createServiceRoleClient: helpers.createServiceRoleClient };
 });
@@ -497,14 +496,6 @@ describe('ADR 0029, étape 3b — le serveur du modèle', () => {
 			} as never)) as { status?: number; data?: { error?: string } };
 			expect(viaPage.status).toBe(409);
 			expect(viaPage.data?.error).toMatch(/masquez/i);
-
-			const viaApi = await statusOf(() =>
-				deleteChapterDocumentApi({
-					locals: localsProf,
-					params: { id: chapA, docId: a.id }
-				} as never)
-			);
-			expect(viaApi).toBe(409);
 
 			expect(await lienDocument(chapA, docCours)).not.toBeNull();
 			expect(await existe(cheminCours())).toBe(true);

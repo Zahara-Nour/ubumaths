@@ -2,10 +2,10 @@
  * Output Formatter
  *
  * Formats CLI output with colors and structured error messages.
- * Uses chalk for terminal colors.
+ * Couleurs par la palette de `terminal-colors` (texte brut hors du terminal).
  */
 
-import chalk from 'chalk';
+import { colors } from './terminal-colors';
 import type { PipelineError, CommandResult, CommandError } from '../types';
 
 // =============================================================================
@@ -35,19 +35,19 @@ import type { PipelineError, CommandResult, CommandError } from '../types';
  * ```
  */
 export function formatError(error: PipelineError | CommandError): string {
-	const header = chalk.red(`Error [${error.code}]:`);
-	const message = chalk.white(error.message);
+	const header = colors.red(`Error [${error.code}]:`);
+	const message = colors.white(error.message);
 
 	let output = `${header} ${message}`;
 
 	// Add position information for pipeline errors
 	if ('position' in error && error.position !== undefined) {
-		output += chalk.gray(` (position ${error.position})`);
+		output += colors.gray(` (position ${error.position})`);
 	}
 
 	// Add suggestion if available
 	if ('suggestion' in error && error.suggestion) {
-		output += `\n${chalk.yellow('Hint:')} ${error.suggestion}`;
+		output += `\n${colors.yellow('Hint:')} ${error.suggestion}`;
 	}
 
 	return output;
@@ -73,8 +73,8 @@ export function formatError(error: PipelineError | CommandError): string {
  * ```
  */
 export function formatInputError(input: string, position: number, message: string): string {
-	const pointer = ' '.repeat(position) + chalk.red('^');
-	return [chalk.red(`Parse error: ${message}`), '', `  ${input}`, `  ${pointer}`].join('\n');
+	const pointer = ' '.repeat(position) + colors.red('^');
+	return [colors.red(`Parse error: ${message}`), '', `  ${input}`, `  ${pointer}`].join('\n');
 }
 
 // =============================================================================
@@ -97,7 +97,7 @@ export function formatInputError(input: string, position: number, message: strin
  */
 export function formatSuccess(output: string, label?: string): string {
 	if (label) {
-		return `${chalk.green(label)}\n${output}`;
+		return `${colors.green(label)}\n${output}`;
 	}
 	return output;
 }

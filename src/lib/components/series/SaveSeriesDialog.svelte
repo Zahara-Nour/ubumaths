@@ -5,15 +5,15 @@
 	viennent du panier ; le serveur les valide (POST /api/series).
 -->
 <script lang="ts">
-	import * as Dialog from '$lib/components/ui/dialog';
-	import { Button } from '$lib/components/ui/button';
-	import { Input } from '$lib/components/ui/input';
-	import { Label } from '$lib/components/ui/label';
-	import { Textarea } from '$lib/components/ui/textarea';
-	import MySelect from '$lib/components/MySelect.svelte';
-	import { toaster } from '$lib/stores/toaster.svelte';
-	import { getGradeSelectItems } from '$lib/utils/grades';
-	import type { SeriesItem } from '$lib/validation/series';
+	import * as Dialog from '#lib/components/ui/dialog/index.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import { Input } from '#lib/components/ui/input/index.ts';
+	import { Label } from '#lib/components/ui/label/index.ts';
+	import { Textarea } from '#lib/components/ui/textarea/index.ts';
+	import MySelect from '#lib/components/MySelect.svelte';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
+	import { getGradeSelectItems } from '#lib/utils/grades.ts';
+	import type { SeriesItem } from '#lib/validation/series.ts';
 
 	interface Props {
 		open: boolean;
@@ -87,8 +87,8 @@
 		<Dialog.Header>
 			<Dialog.Title>Enregistrer comme série</Dialog.Title>
 			<Dialog.Description>
-				La série garde les {items.length} modèle{items.length > 1 ? 's' : ''} du panier. Tu pourras ensuite
-				en faire un contrôle.
+				La série garde les {items.length} modèle{items.length > 1 ? 's' : ''} de « Ma série ». Tu pourras
+				ensuite en faire un contrôle.
 			</Dialog.Description>
 		</Dialog.Header>
 

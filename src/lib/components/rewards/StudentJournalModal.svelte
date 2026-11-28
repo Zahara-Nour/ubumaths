@@ -15,14 +15,14 @@
 
 <script lang="ts">
 	import { onMount, onDestroy } from 'svelte';
-	import { rewardJournalStore } from '$lib/stores/rewardJournal.svelte';
-	import RewardEventCard from '$lib/components/rewards/RewardEventCard.svelte';
-	import { Button } from '$lib/components/ui/button';
-	import { Skeleton } from '$lib/components/ui/skeleton';
-	import * as Card from '$lib/components/ui/card';
+	import { rewardJournalStore } from '#lib/stores/rewardJournal.svelte.ts';
+	import RewardEventCard from '#lib/components/rewards/RewardEventCard.svelte';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import { Skeleton } from '#lib/components/ui/skeleton/index.ts';
+	import * as Card from '#lib/components/ui/card/index.ts';
 	import { X, RefreshCw, ChevronDown, Inbox } from '@lucide/svelte';
-	import { modalStack } from '$lib/stores/modalStack.svelte';
-	import type { RewardType } from '$lib/types/reward-journal';
+	import { modalStack } from '#lib/stores/modalStack.svelte.ts';
+	import type { RewardType } from '#lib/types/reward-journal.ts';
 	import type { Snippet } from 'svelte';
 
 	interface Props {

@@ -11,10 +11,10 @@
 	- Review dialog with approve/reject actions
 -->
 <script lang="ts">
-	import BackLink from '$lib/components/navigation/BackLink.svelte';
-	import { lore } from '$lib/config/lore';
+	import BackLink from '#lib/components/navigation/BackLink.svelte';
+	import { lore } from '#lib/config/lore.ts';
 	import type { PageData } from './$types';
-	import ErrorReportsPanel from '$lib/components/worksheets/teacher/ErrorReportsPanel.svelte';
+	import ErrorReportsPanel from '#lib/components/worksheets/teacher/ErrorReportsPanel.svelte';
 
 	let { data }: { data: PageData } = $props();
 

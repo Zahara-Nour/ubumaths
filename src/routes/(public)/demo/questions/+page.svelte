@@ -2,27 +2,28 @@
 	Vitrine : les questions (`/demo/questions`)
 	===========================================
 
-	Une même série de 4 questions sous ses cinq formes, en onglets : les vrais
+	Une même série de 4 questions sous ses six formes, en onglets : les vrais
 	composants d'Automaths, avec des questions écrites dans la page. Rien n'est
 	enregistré ; les révisions espacées sont simulées (chantier demo-debug, PR 6g).
 -->
 <script lang="ts">
-	import { demoSeo } from '$lib/seo/demo-pages';
-	import SeoHead from '$lib/seo/SeoHead.svelte';
+	import { demoSeo } from '#lib/seo/demo-pages.ts';
+	import SeoHead from '#lib/seo/SeoHead.svelte';
 	import { goto } from '$app/navigation';
 	import { resolve } from '$app/paths';
-	import BackLink from '$lib/components/navigation/BackLink.svelte';
-	import * as Tabs from '$lib/components/ui/tabs';
-	import ClassroomSeries from '$lib/components/test/ClassroomSeries.svelte';
-	import TestInteractive from '$lib/components/test/TestInteractive.svelte';
-	import FlashSeries from '$lib/components/test/FlashSeries.svelte';
-	import TestCourse from '$lib/components/test/TestCourse.svelte';
-	import type { TestSession } from '$lib/types/test';
+	import BackLink from '#lib/components/navigation/BackLink.svelte';
+	import * as Tabs from '#lib/components/ui/tabs/index.ts';
+	import ClassroomSeries from '#lib/components/test/ClassroomSeries.svelte';
+	import TestInteractive from '#lib/components/test/TestInteractive.svelte';
+	import FlashSeries from '#lib/components/test/FlashSeries.svelte';
+	import TypingSeries from '#lib/components/test/TypingSeries.svelte';
+	import TestCourse from '#lib/components/test/TestCourse.svelte';
+	import type { TestSession } from '#lib/types/test.ts';
 	import SpacedReviewDemo from './SpacedReviewDemo.svelte';
 	import { COURSE_TIME_LIMIT_SECONDS, demoClassroomItems, demoInstances } from './questions';
 
 	// Types
-	type Form = 'classroom' | 'interactive' | 'flash' | 'course' | 'review';
+	type Form = 'classroom' | 'interactive' | 'flash' | 'typing' | 'course' | 'review';
 
 	interface FormTab {
 		value: Form;
@@ -39,13 +40,18 @@
 		},
 		{
 			value: 'interactive',
-			label: 'Entraînement',
-			who: 'L’élève, seul, répond question par question ; la correction et le score arrivent à la fin.'
+			label: 'Contrôle blanc',
+			who: 'L’élève, seul, prépare un contrôle : il répond question par question ; la correction et la note arrivent à la fin.'
 		},
 		{
 			value: 'flash',
 			label: 'Flash-cards',
 			who: 'L’élève, seul, retourne chaque carte et dit s’il avait trouvé. Pas de chrono : on revoit ensuite celles qui ont résisté.'
+		},
+		{
+			value: 'typing',
+			label: 'Saisie',
+			who: 'L’élève, seul, tape sa réponse ; la carte se retourne aussitôt : sa réponse face à la bonne, puis la correction. Pas de chrono.'
 		},
 		{
 			value: 'course',
@@ -65,6 +71,7 @@
 		classroom: 0,
 		interactive: 0,
 		flash: 0,
+		typing: 0,
 		course: 0,
 		review: 0
 	});
@@ -91,7 +98,7 @@
 
 	// Les boutons « Retour au panier » des formes mènent au vrai panier
 	function toCart() {
-		goto(resolve('/automaths/panier'));
+		goto(resolve('automaths/panier'));
 	}
 
 	// Rien n'est enregistré sur la vitrine : la forme affiche son résultat elle-même
@@ -104,11 +111,12 @@
 	<BackLink href="/demo" label="Retour aux démonstrations" />
 
 	<header class="space-y-2">
-		<h1 class="text-2xl font-bold">Une série, cinq formes</h1>
+		<h1 class="text-2xl font-bold">Une série, six formes</h1>
 		<div class="text-muted-foreground">
-			Dans Chiphre, une série de questions se joue de cinq façons, selon le moment : projetée en
-			classe, en entraînement, en flash-cards, en course aux nombres ou en révisions espacées. Voici
-			la même série de 4 questions sous chacune de ces formes. Rien n'est enregistré sur cette page.
+			Dans Chiphre, une série de questions se joue de six façons, selon le moment : projetée en
+			classe, en contrôle blanc, en flash-cards, en saisie, en course aux nombres ou en révisions
+			espacées. Voici la même série de 4 questions sous chacune de ces formes. Rien n'est enregistré
+			sur cette page.
 		</div>
 	</header>
 
@@ -148,6 +156,15 @@
 							onRestart={() => restart('flash')}
 							onBack={toCart}
 						/>
+					{:else if form.value === 'typing'}
+						<TypingSeries
+							instances={demoInstances()}
+							isLoggedIn={false}
+							loginNote={false}
+							onComplete={ignoreResult}
+							onRestart={() => restart('typing')}
+							onBack={toCart}
+						/>
 					{:else if form.value === 'course'}
 						<TestCourse session={courseSession} onComplete={ignoreResult} onBack={toCart} />
 					{:else}
@@ -159,7 +176,7 @@
 	</Tabs.Root>
 
 	<p>
-		<a href={resolve('/automaths')} class="font-medium text-primary underline underline-offset-4">
+		<a href={resolve('automaths')} class="font-medium text-primary underline underline-offset-4">
 			Composer sa propre série dans Automaths
 		</a>
 	</p>

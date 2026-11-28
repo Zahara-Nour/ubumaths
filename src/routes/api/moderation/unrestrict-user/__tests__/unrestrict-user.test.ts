@@ -17,11 +17,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { createMockSupabase, createMockLocals, createMockRequest } from '$tests/helpers';
+import { createMockSupabase, createMockLocals, createMockRequest } from '#tests/helpers/index.ts';
 
 // Garde commune : session/profil lus dans `locals` (cf. helper)
-vi.mock('$lib/server/middleware/auth', async (importActual) =>
-	(await import('$tests/helpers/garde-auth-locals')).gardeAuthDepuisLocals(importActual)
+vi.mock('#lib/server/middleware/auth.ts', async (importActual) =>
+	(await import('#tests/helpers/garde-auth-locals.ts')).gardeAuthDepuisLocals(importActual)
 );
 
 // ============================================================================
@@ -261,7 +261,7 @@ describe('DELETE /api/moderation/unrestrict-user - Input Validation', () => {
 		} catch (err: unknown) {
 			const error = err as { status: number; body: { message: string } };
 			expect(error.status).toBe(400);
-			expect(error.body.message).toBe('Invalid JSON');
+			expect(error.body.message).toBe('Corps de requête JSON invalide');
 		}
 	});
 

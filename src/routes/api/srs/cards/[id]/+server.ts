@@ -10,12 +10,12 @@
  * - DELETE /api/srs/cards/[id] - Delete card (non-assigned deck only)
  */
 
-import { error, json } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { updateCardSchema, uuidParamSchema } from '$lib/server/validation/srs';
-import { requireAuth } from '$lib/server/middleware/auth';
-import type { TablesUpdate } from '$lib/types/database';
-import { createServerLogger } from '$lib/utils/logger';
+import { updateCardSchema, uuidParamSchema } from '#lib/server/validation/srs.ts';
+import { requireAuth } from '#lib/server/middleware/auth.ts';
+import type { TablesUpdate } from '#lib/types/database.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/srs/cards/[id]/+server');
 
@@ -33,7 +33,7 @@ export const GET: RequestHandler = async ({ params, locals }) => {
 	// ✅ SECURITY: Validate UUID parameter
 	const paramValidation = uuidParamSchema.safeParse(params);
 	if (!paramValidation.success) {
-		return json({ error: 'Identifiant de carte invalide' }, { status: 400 });
+		return Response.json({ error: 'Identifiant de carte invalide' }, { status: 400 });
 	}
 
 	const { id } = paramValidation.data;
@@ -47,7 +47,7 @@ export const GET: RequestHandler = async ({ params, locals }) => {
 			.single();
 
 		if (cardError || !card) {
-			return json({ error: 'Carte de révision introuvable' }, { status: 404 });
+			return Response.json({ error: 'Carte de révision introuvable' }, { status: 404 });
 		}
 
 		// Verify user owns the deck this card belongs to
@@ -66,13 +66,13 @@ export const GET: RequestHandler = async ({ params, locals }) => {
 		}
 
 		if (!deck) {
-			return json({ error: 'Accès refusé' }, { status: 403 });
+			return Response.json({ error: 'Accès refusé' }, { status: 403 });
 		}
 
-		return json({ card });
+		return Response.json({ card });
 	} catch (error) {
 		logger.error('Unexpected error in GET /api/srs/cards/[id]:', error);
-		return json({ error: 'Une erreur inattendue s’est produite' }, { status: 500 });
+		return Response.json({ error: 'Une erreur inattendue s’est produite' }, { status: 500 });
 	}
 };
 
@@ -101,7 +101,7 @@ export const PUT: RequestHandler = async ({ params, request, locals }) => {
 
 	const paramValidation = uuidParamSchema.safeParse(params);
 	if (!paramValidation.success) {
-		return json({ error: 'Identifiant de carte invalide' }, { status: 400 });
+		return Response.json({ error: 'Identifiant de carte invalide' }, { status: 400 });
 	}
 
 	const { id } = paramValidation.data;
@@ -114,7 +114,7 @@ export const PUT: RequestHandler = async ({ params, request, locals }) => {
 			.single();
 
 		if (cardError || !card) {
-			return json({ error: 'Carte de révision introuvable' }, { status: 404 });
+			return Response.json({ error: 'Carte de révision introuvable' }, { status: 404 });
 		}
 
 		const { data: deck, error: deckError } = await supabase
@@ -125,11 +125,11 @@ export const PUT: RequestHandler = async ({ params, request, locals }) => {
 			.single();
 
 		if (deckError || !deck) {
-			return json({ error: 'Deck introuvable ou accès refusé' }, { status: 404 });
+			return Response.json({ error: 'Deck introuvable ou accès refusé' }, { status: 404 });
 		}
 
 		if (deck.is_assigned) {
-			return json(
+			return Response.json(
 				{ error: 'Impossible de modifier les cartes d’un deck assigné : il est en lecture seule.' },
 				{ status: 403 }
 			);
@@ -139,7 +139,7 @@ export const PUT: RequestHandler = async ({ params, request, locals }) => {
 		// refuse TOUTE modification côté app, peu importe le payload. RLS bloque
 		// déjà côté DB, mais le check applicatif rend l'erreur explicite.
 		if (deck.is_auto_managed) {
-			return json(
+			return Response.json(
 				{
 					error:
 						'Impossible de modifier les cartes du deck Programme : il est géré automatiquement.'
@@ -152,7 +152,7 @@ export const PUT: RequestHandler = async ({ params, request, locals }) => {
 		const validation = updateCardSchema.safeParse(bodyRaw);
 
 		if (!validation.success) {
-			return json({ error: validation.error.issues[0].message }, { status: 400 });
+			return Response.json({ error: validation.error.issues[0].message }, { status: 400 });
 		}
 
 		const body = validation.data;
@@ -161,7 +161,7 @@ export const PUT: RequestHandler = async ({ params, request, locals }) => {
 		// Front/back content : carte custom uniquement
 		if (body.frontContent !== undefined || body.backContent !== undefined) {
 			if (card.card_type !== 'custom') {
-				return json(
+				return Response.json(
 					{ error: 'Seul le contenu d’une carte personnalisée peut être modifié.' },
 					{ status: 403 }
 				);
@@ -188,14 +188,17 @@ export const PUT: RequestHandler = async ({ params, request, locals }) => {
 					return error(500, 'Impossible de vérifier l’accès');
 				}
 				if (!section) {
-					return json({ error: 'Cette section n’appartient pas à ce deck.' }, { status: 400 });
+					return Response.json(
+						{ error: 'Cette section n’appartient pas à ce deck.' },
+						{ status: 400 }
+					);
 				}
 			}
 			updates.section_id = body.section_id;
 		}
 
 		if (Object.keys(updates).length === 0) {
-			return json({ error: 'Aucune modification demandée' }, { status: 400 });
+			return Response.json({ error: 'Aucune modification demandée' }, { status: 400 });
 		}
 
 		const { data: updatedCard, error: updateError } = await supabase
@@ -207,13 +210,16 @@ export const PUT: RequestHandler = async ({ params, request, locals }) => {
 
 		if (updateError) {
 			logger.error('Error updating card:', updateError);
-			return json({ error: 'Impossible de modifier la carte de révision' }, { status: 500 });
+			return Response.json(
+				{ error: 'Impossible de modifier la carte de révision' },
+				{ status: 500 }
+			);
 		}
 
-		return json({ card: updatedCard });
+		return Response.json({ card: updatedCard });
 	} catch (error) {
 		logger.error('Unexpected error in PUT /api/srs/cards/[id]:', error);
-		return json({ error: 'Une erreur inattendue s’est produite' }, { status: 500 });
+		return Response.json({ error: 'Une erreur inattendue s’est produite' }, { status: 500 });
 	}
 };
 
@@ -232,7 +238,7 @@ export const DELETE: RequestHandler = async ({ params, locals }) => {
 	// ✅ SECURITY: Validate UUID parameter
 	const paramValidation = uuidParamSchema.safeParse(params);
 	if (!paramValidation.success) {
-		return json({ error: 'Identifiant de carte invalide' }, { status: 400 });
+		return Response.json({ error: 'Identifiant de carte invalide' }, { status: 400 });
 	}
 
 	const { id } = paramValidation.data;
@@ -246,7 +252,7 @@ export const DELETE: RequestHandler = async ({ params, locals }) => {
 			.single();
 
 		if (cardError || !card) {
-			return json({ error: 'Carte de révision introuvable' }, { status: 404 });
+			return Response.json({ error: 'Carte de révision introuvable' }, { status: 404 });
 		}
 
 		// Verify user owns deck
@@ -258,12 +264,12 @@ export const DELETE: RequestHandler = async ({ params, locals }) => {
 			.single();
 
 		if (deckError || !deck) {
-			return json({ error: 'Deck introuvable ou accès refusé' }, { status: 404 });
+			return Response.json({ error: 'Deck introuvable ou accès refusé' }, { status: 404 });
 		}
 
 		// Check if deck is assigned (cannot delete)
 		if (deck.is_assigned) {
-			return json(
+			return Response.json(
 				{
 					error: 'Impossible de supprimer les cartes d’un deck assigné : il est en lecture seule.'
 				},
@@ -280,19 +286,22 @@ export const DELETE: RequestHandler = async ({ params, locals }) => {
 
 		if (deleteError) {
 			logger.error('Error deleting card:', deleteError);
-			return json({ error: 'Impossible de supprimer la carte de révision' }, { status: 500 });
+			return Response.json(
+				{ error: 'Impossible de supprimer la carte de révision' },
+				{ status: 500 }
+			);
 		}
 
 		// La RLS refuse EN SILENCE (0 ligne, aucune erreur) : paquet assigné ou géré
 		// automatiquement (paquet de chapitre). Sans ce contrôle, la route annonçait
 		// « supprimé » (constat E20, 2026-10-10).
 		if (!deletedCards || deletedCards.length === 0) {
-			return json({ error: 'Cette carte ne peut pas être supprimée.' }, { status: 403 });
+			return Response.json({ error: 'Cette carte ne peut pas être supprimée.' }, { status: 403 });
 		}
 
-		return json({ success: true, message: 'Carte de révision supprimée' });
+		return Response.json({ success: true, message: 'Carte de révision supprimée' });
 	} catch (error) {
 		logger.error('Unexpected error in DELETE /api/srs/cards/[id]:', error);
-		return json({ error: 'Une erreur inattendue s’est produite' }, { status: 500 });
+		return Response.json({ error: 'Une erreur inattendue s’est produite' }, { status: 500 });
 	}
 };

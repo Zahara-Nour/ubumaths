@@ -14,8 +14,8 @@
  * @module dictionary/glossary-page
  */
 
-import { findPrincipal } from '$lib/lexicon/card';
-import { toPlainText } from '$lib/seo/site';
+import { findPrincipal } from '#lib/dictionary/card.ts';
+import { toPlainText } from '#lib/seo/site.ts';
 import type { MathTerm } from './model';
 
 // ---------------------------------------------------------------------------

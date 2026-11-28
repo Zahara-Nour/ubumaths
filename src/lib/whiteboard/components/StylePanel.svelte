@@ -15,7 +15,7 @@
 	 */
 
 	import { whiteboardStore } from '../stores/whiteboard.svelte';
-	import { Slider } from '$lib/components/ui/slider';
+	import { Slider } from '#lib/components/ui/slider/index.ts';
 	import ColorPicker from './toolbar/ColorPicker.svelte';
 	import StyleSection from './toolbar/StyleSection.svelte';
 	import DraggablePanel from './DraggablePanel.svelte';

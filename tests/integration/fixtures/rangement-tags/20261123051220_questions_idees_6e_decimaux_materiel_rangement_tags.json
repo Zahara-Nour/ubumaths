@@ -1,0 +1,15 @@
+{
+	"migration": "supabase/migrations/20261123051220_questions_idees_6e_decimaux_materiel_rangement_tags.sql",
+	"ranges": [
+		{
+			"id": "111ba9c5-8069-4416-8699-7de77939ae77",
+			"title": "Lire un nombre décimal sur le matériel",
+			"fichier": "b2-lire-un-decimal-sur-le-materiel.json",
+			"branche": "Nombres et calculs",
+			"notion": "Décimaux : numération",
+			"sousNotion": "décomposition",
+			"point": "6-102"
+		}
+	],
+	"niveaux": []
+}

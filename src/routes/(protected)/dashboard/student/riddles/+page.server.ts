@@ -1,10 +1,15 @@
 import type { PageServerLoad } from './$types';
-import type { DbRiddleAttempt, StudentRiddle } from '$lib/types/riddle';
-import { RIDDLE_COLUMNS, toDbRiddle, toDbRiddleAttempt, toStudentRiddle } from '$lib/types/riddle';
+import type { DbRiddleAttempt, StudentRiddle } from '#lib/types/riddle.ts';
+import {
+	RIDDLE_COLUMNS,
+	toDbRiddle,
+	toDbRiddleAttempt,
+	toStudentRiddle
+} from '#lib/types/riddle.ts';
 import { error, redirect } from '@sveltejs/kit';
-import { fetchRiddleSolutions } from '$lib/server/riddle-solutions';
-import { createServiceRoleClient } from '$lib/server/serviceRoleClient';
-import { createServerLogger } from '$lib/utils/logger';
+import { fetchRiddleSolutions } from '#lib/server/riddle-solutions.ts';
+import { createServiceRoleClient } from '#lib/server/serviceRoleClient.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('(protected)/dashboard/student/riddles/+page.server');
 

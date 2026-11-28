@@ -2,7 +2,7 @@
 couvre:
   - 'src/lib/mathAST/structure/**'
   - 'src/lib/components/structure/**'
-  - src/lib/lexicon/parentheses-advice-grade.ts
+  - src/lib/dictionary/parentheses-advice-grade.ts
 ---
 
 # Structure d'une expression
@@ -133,7 +133,7 @@ Page **`/dev/structure`** (ex-`/test-structure`), réservée à l'admin depuis l
 de démo (chantier demo-debug, 2026-10-24) ; la formule seule (`StructureField`, sans corpus ni
 réglages) est publique dans la vitrine **`/demo/structure`** (PR 6a). Rien n'est enregistré ; niveau
 lu par `readReaderGrade()` (`profiles.grade`). Les fiches du dictionnaire suivent ce niveau, 5e pour
-un visiteur (`$lib/components/structure/structure-lexicon.svelte.ts`, partagé par les deux pages).
+un visiteur (`#lib/components/structure/structure-lexicon.svelte.ts`, partagé par les deux pages).
 
 Points proposés par Claude et acceptés : « x puissance 4 » (B9) ; survol de « sin » = la fonction
 appliquée (A8) ; cadres englobants en pointillés gris (A10).
@@ -163,7 +163,7 @@ appliquée (A8) ; cadres englobants en pointillés gris (A10).
   `image (fonction)`…), passée telle quelle à `LexiconTerm`.
 - **Message « 6e ou avant »** : `parenthesesAdvice` (un message à la fois, première
   sous-expression en ordre préfixe, « − » en tête avant la suite), appelé seulement si
-  `needsParenthesesAdvice(readReaderGrade()())` (`src/lib/lexicon/parentheses-advice-grade.ts` :
+  `needsParenthesesAdvice(readReaderGrade()())` (`src/lib/dictionary/parentheses-advice-grade.ts` :
   élève de 6e ou avant ; visiteur ou niveau inconnu : jamais).
 - **Longueurs** : deux majuscules collées se lisent comme une longueur (« la longueur AB »,
   `capitalPairs: 'length'`), voir [convention-equivalence.md](convention-equivalence.md).
@@ -183,7 +183,7 @@ appliquée (A8) ; cadres englobants en pointillés gris (A10).
 
 ## Le champ de formule (glisser-déposer, lot 2, 2026-10-14)
 
-`$lib/components/structure/StructureField.svelte` : une seule formule, qu'on écrit et qu'on
+`#lib/components/structure/StructureField.svelte` : une seule formule, qu'on écrit et qu'on
 manipule, réutilisable (l'outil `/dev/structure` d'abord, l'Atelier ensuite). Spécification F
 et décisions G1-G11 : [structure-glisser-deposer-progress.md](../../wip/structure-glisser-deposer-progress.md).
 
@@ -207,7 +207,11 @@ et décisions G1-G11 : [structure-glisser-deposer-progress.md](../../wip/structu
 - **Rendu** : MathLive dans la page (`convertLatexToMarkup`), redessiné à chaque image pendant un
   déplacement (`expressionLatex` avec espaces `\hspace` animés) ; mesures hors écran.
 - **Tactile** (`any-pointer: coarse`, ou `touch`) : cadres des parties toujours visibles,
-  bordures larges, formule écartée autour des parties (seulement si `move`).
+  bordures larges, formule écartée autour des parties (seulement si `move`). Dessinés au rendu,
+  ils se recalent quand la formule change de taille (`ResizeObserver` sur la formule : police
+  KaTeX des grandes parenthèses chargée après coup, écart E26) ; pas pendant un déplacement.
+- **Téléphone** (< 640 px) : formule en 1,75rem au lieu de 2,75rem (une fraction dépassait de
+  l'écran, E26).
 - **6e ou avant** : message C1 → formule affichée et modifiable, sans cadres ni déplacement ;
   sinon somme avec soustraction figée, × toujours écrit.
 

@@ -34,12 +34,12 @@
 
 import { redirect, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { createServerLogger } from '$lib/utils/logger';
-import { notifyAdminsOfPendingUser } from '$lib/server/notifications';
-import { createServiceRoleClient } from '$lib/server/serviceRoleClient';
-import { validateRedirectUrl } from '$lib/server/validateRedirectUrl';
-import { googlePhotoUrl } from '$lib/server/google-photo';
-import { GOOGLE_LOGIN_ENABLED } from '$lib/config/google-login';
+import { createServerLogger } from '#lib/utils/logger.ts';
+import { notifyAdminsOfPendingUser } from '#lib/server/notifications.ts';
+import { createServiceRoleClient } from '#lib/server/serviceRoleClient.ts';
+import { validateRedirectUrl } from '#lib/server/validateRedirectUrl.ts';
+import { googlePhotoUrl } from '#lib/server/google-photo.ts';
+import { GOOGLE_LOGIN_ENABLED } from '#lib/config/google-login.ts';
 
 const logger = createServerLogger('auth/callback');
 

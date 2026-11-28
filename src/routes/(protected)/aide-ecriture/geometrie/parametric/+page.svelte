@@ -1,5 +1,5 @@
 <script lang="ts">
-	import BackLink from '$lib/components/navigation/BackLink.svelte';
+	import BackLink from '#lib/components/navigation/BackLink.svelte';
 	import DslDemo from '../DslDemo.svelte';
 
 	// Note: \\pi and e (Euler) are now first-class DSL constants thanks to the

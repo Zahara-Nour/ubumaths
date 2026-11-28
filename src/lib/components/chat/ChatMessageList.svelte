@@ -26,16 +26,16 @@
 -->
 <script lang="ts">
 	import { onMount, tick } from 'svelte'; // onMount for future scroll handling
-	import { MarkdownRenderer } from '$lib/components/markdown';
-	import { Button } from '$lib/components/ui/button';
-	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
-	import UserAvatar from '$lib/components/UserAvatar.svelte';
+	import { MarkdownRenderer } from '#lib/components/markdown/index.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import * as DropdownMenu from '#lib/components/ui/dropdown-menu/index.ts';
+	import UserAvatar from '#lib/components/UserAvatar.svelte';
 	import { MoreVertical, Flag, Download, Trash2 } from '@lucide/svelte';
-	import DeleteMessageDialog from '$lib/components/moderation/DeleteMessageDialog.svelte';
-	import type { Message } from '$lib/stores/chat.svelte';
-	import { chatStore } from '$lib/stores/chat.svelte';
-	import { toaster } from '$lib/stores/toaster.svelte';
-	import { tipTapToMarkdown } from '$lib/components/rich-text/markdown-export';
+	import DeleteMessageDialog from '#lib/components/moderation/DeleteMessageDialog.svelte';
+	import type { Message } from '#lib/stores/chat.svelte.ts';
+	import { chatStore } from '#lib/stores/chat.svelte.ts';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
+	import { tipTapToMarkdown } from '#lib/components/rich-text/markdown-export.ts';
 	import type { JSONContent } from '@tiptap/core';
 
 	// Component Props

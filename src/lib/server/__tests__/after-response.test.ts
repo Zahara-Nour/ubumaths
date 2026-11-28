@@ -9,7 +9,7 @@ const { waitUntil, loggerError } = vi.hoisted(() => ({
 }));
 
 vi.mock('@vercel/functions', () => ({ waitUntil }));
-vi.mock('$lib/utils/logger', () => ({
+vi.mock('#lib/utils/logger.ts', () => ({
 	createServerLogger: () => ({ error: loggerError, info: vi.fn(), warn: vi.fn() })
 }));
 

@@ -14,12 +14,12 @@ import { generateInstance } from '../instance-generator';
 import { assignBlankIndices } from '../assign-blank-indices';
 import { validateTemplate } from '../../validators/template-validator';
 import type { QuestionInstance, QuestionTemplate, QuestionVariation } from '../../types';
-import { templateMarkdown } from '$lib/ubumark';
-import { parseMarkdown } from '$lib/ubumark';
-import { validateAnswer } from '$lib/utils/answer-validator';
+import { templateMarkdown } from '#lib/ubumark/index.ts';
+import { parseMarkdown } from '#lib/ubumark/index.ts';
+import { validateAnswer } from '#lib/utils/answer-validator.ts';
 import { buildExpectedResult } from '../../expected-result';
 import { toPublicQuestion } from '../../public-question';
-import type { RangerNode } from '$lib/ubumark/types/ranger';
+import type { RangerNode } from '#lib/ubumark/types/ranger.ts';
 
 function template(
 	variation: Omit<QuestionVariation, 'statement'> & { statement: string },

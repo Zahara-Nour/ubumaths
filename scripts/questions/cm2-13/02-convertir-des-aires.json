@@ -1,0 +1,183 @@
+{
+	"id": "302c7dcd-0a6e-4e9f-bc98-5abe4166c19d",
+	"title": "Convertir des aires",
+	"description": "Convertir entre m² et dm², ou entre dm² et cm² (× 100 ou : 100), un nombre entier ou décimal",
+	"grades": ["CM2"],
+	"level": 1,
+	"delay": 90,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"spacesFromFourDigits": true,
+			"zeros": "off"
+		}
+	},
+	"variations": [
+		{
+			"statement": "Convertis.\n\n$${{a}}~\\unit{{{if:j==1|m^2|dm^2}}} = ?~\\unit{{{if:j==1|dm^2|cm^2}}}$$",
+			"variables": [
+				{
+					"name": "j",
+					"expression": "1..2"
+				},
+				{
+					"name": "a",
+					"expression": "2..99"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a*100}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$1~\\unit{{{if:j==1|m^2|dm^2}}} = 100~\\unit{{{if:j==1|dm^2|cm^2}}}$ : un carré de $1~\\unit{{{if:j==1|m|dm}}}$ de côté contient $10$ rangées de $10$ carrés de $1~\\unit{{{if:j==1|dm|cm}}}$ de côté. Vers l'unité plus petite, on **multiplie par $100$**.",
+					"$${{a}} \\times 100 = \\textcolor{{{color:primary.0}}}{{{eval:a*100}}}$$",
+					"${{a}}~\\unit{{{if:j==1|m^2|dm^2}}} = \\textcolor{{{color:primary.0}}}{{{eval:a*100}}}~\\unit{{{if:j==1|dm^2|cm^2}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Convertis.\n\n$${{eval:a}}~\\unit{{{if:j==1|dm^2|cm^2}}} = ?~\\unit{{{if:j==1|m^2|dm^2}}}$$",
+			"variables": [
+				{
+					"name": "j",
+					"expression": "1..2"
+				},
+				{
+					"name": "a",
+					"expression": "120..9999"
+				}
+			],
+			"conditions": ["mod(a,10) != 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a/100;d}}",
+					"requiredForm": {
+						"pattern": "a:number"
+					}
+				}
+			],
+			"correction": {
+				"steps": [
+					"$1~\\unit{{{if:j==1|m^2|dm^2}}} = 100~\\unit{{{if:j==1|dm^2|cm^2}}}$ : un carré de $1~\\unit{{{if:j==1|m|dm}}}$ de côté contient $10$ rangées de $10$ carrés de $1~\\unit{{{if:j==1|dm|cm}}}$ de côté. Vers l'unité plus grande, on **divise par $100$**.",
+					"$${{eval:a}} \\div 100 = \\textcolor{{{color:primary.0}}}{{{eval:a/100;d}}}$$",
+					"${{eval:a}}~\\unit{{{if:j==1|dm^2|cm^2}}} = \\textcolor{{{color:primary.0}}}{{{eval:a/100;d}}}~\\unit{{{if:j==1|m^2|dm^2}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Convertis.\n\n$${{eval:d/10;d}}~\\unit{{{if:j==1|m^2|dm^2}}} = ?~\\unit{{{if:j==1|dm^2|cm^2}}}$$",
+			"variables": [
+				{
+					"name": "j",
+					"expression": "1..2"
+				},
+				{
+					"name": "d",
+					"expression": "11..99"
+				}
+			],
+			"conditions": ["mod(d,10) != 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:d*10}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$1~\\unit{{{if:j==1|m^2|dm^2}}} = 100~\\unit{{{if:j==1|dm^2|cm^2}}}$ : un carré de $1~\\unit{{{if:j==1|m|dm}}}$ de côté contient $10$ rangées de $10$ carrés de $1~\\unit{{{if:j==1|dm|cm}}}$ de côté. Vers l'unité plus petite, on **multiplie par $100$**.",
+					"$${{eval:d/10;d}} \\times 100 = \\textcolor{{{color:primary.0}}}{{{eval:d*10}}}$$",
+					"${{eval:d/10;d}}~\\unit{{{if:j==1|m^2|dm^2}}} = \\textcolor{{{color:primary.0}}}{{{eval:d*10}}}~\\unit{{{if:j==1|dm^2|cm^2}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "7 m² = 700 dm²",
+			"variationIndex": 0,
+			"variables": {
+				"j": "1",
+				"a": "7"
+			},
+			"answers": ["700"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : × 10 (70)",
+			"variationIndex": 0,
+			"variables": {
+				"j": "1",
+				"a": "7"
+			},
+			"answers": ["70"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "2 345 cm² = 23,45 dm²",
+			"variationIndex": 1,
+			"variables": {
+				"j": "2",
+				"a": "2345"
+			},
+			"answers": ["23,45"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : : 10 (234,5)",
+			"variationIndex": 1,
+			"variables": {
+				"j": "2",
+				"a": "2345"
+			},
+			"answers": ["234,5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : × 100 (234 500)",
+			"variationIndex": 1,
+			"variables": {
+				"j": "2",
+				"a": "2345"
+			},
+			"answers": ["234\\,500"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "3,7 dm² = 370 cm²",
+			"variationIndex": 2,
+			"variables": {
+				"j": "2",
+				"d": "37"
+			},
+			"answers": ["370"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : × 10 (37)",
+			"variationIndex": 2,
+			"variables": {
+				"j": "2",
+				"d": "37"
+			},
+			"answers": ["37"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

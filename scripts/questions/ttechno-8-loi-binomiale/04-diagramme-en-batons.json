@@ -1,0 +1,243 @@
+{
+	"id": "bacd052e-9780-4f1d-9f6a-2e97733168a9",
+	"title": "Diagramme en bâtons d'une loi binomiale",
+	"description": "Lire la valeur la plus probable sur le diagramme en bâtons de B(10 ; p) ; retrouver p d'après la forme du diagramme ; ligne Python qui calcule la hauteur d'un bâton",
+	"grades": ["T_TECHNO"],
+	"level": 2,
+	"delay": 60,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "La variable aléatoire $X$ suit la loi binomiale $\\mathcal{B}(10\\,;{{p}})$. Voici le diagramme en bâtons de sa loi de probabilité (probabilités en pourcentage).\n\n```barres\ntitre: Loi de X\naxes: k ; P(X = k) en %\n0 = {{eval:round(1000*binom(10,0)*p^0*(1-p)^10)/10;d}} %\n1 = {{eval:round(1000*binom(10,1)*p^1*(1-p)^9)/10;d}} %\n2 = {{eval:round(1000*binom(10,2)*p^2*(1-p)^8)/10;d}} %\n3 = {{eval:round(1000*binom(10,3)*p^3*(1-p)^7)/10;d}} %\n4 = {{eval:round(1000*binom(10,4)*p^4*(1-p)^6)/10;d}} %\n5 = {{eval:round(1000*binom(10,5)*p^5*(1-p)^5)/10;d}} %\n6 = {{eval:round(1000*binom(10,6)*p^6*(1-p)^4)/10;d}} %\n7 = {{eval:round(1000*binom(10,7)*p^7*(1-p)^3)/10;d}} %\n8 = {{eval:round(1000*binom(10,8)*p^8*(1-p)^2)/10;d}} %\n9 = {{eval:round(1000*binom(10,9)*p^9*(1-p)^1)/10;d}} %\n10 = {{eval:round(1000*binom(10,10)*p^10*(1-p)^0)/10;d}} %\ntaille: petite\n```\n\nQuelle valeur de $X$ est la plus probable ?\n\n$k=?$",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "0.2|0.3|0.4|0.6|0.7"
+				},
+				{
+					"name": "m",
+					"expression": "eval:floor(11*p)"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{m}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le bâton le plus haut est celui de la valeur la plus probable.",
+					"Ici, c'est le bâton de $k=\\textcolor{{{color:primary.0}}}{{{m}}}$ : $P(X={{m}})\\approx {{eval:round(1000*binom(10,m)*p^m*(1-p)^(10-m))/10;d}}\\,\\%$.",
+					"Il est proche de l'espérance $10\\times{{p}}={{eval:10*p;d}}$ : les bâtons les plus hauts sont autour de $np$."
+				]
+			}
+		},
+		{
+			"statement": "La variable aléatoire $X$ suit la loi binomiale $\\mathcal{B}(10\\,;p)$. Voici le diagramme en bâtons de sa loi de probabilité (probabilités en pourcentage).\n\n```barres\ntitre: Loi de X\naxes: k ; P(X = k) en %\n0 = {{eval:round(1000*binom(10,0)*p^0*(1-p)^10)/10;d}} %\n1 = {{eval:round(1000*binom(10,1)*p^1*(1-p)^9)/10;d}} %\n2 = {{eval:round(1000*binom(10,2)*p^2*(1-p)^8)/10;d}} %\n3 = {{eval:round(1000*binom(10,3)*p^3*(1-p)^7)/10;d}} %\n4 = {{eval:round(1000*binom(10,4)*p^4*(1-p)^6)/10;d}} %\n5 = {{eval:round(1000*binom(10,5)*p^5*(1-p)^5)/10;d}} %\n6 = {{eval:round(1000*binom(10,6)*p^6*(1-p)^4)/10;d}} %\n7 = {{eval:round(1000*binom(10,7)*p^7*(1-p)^3)/10;d}} %\n8 = {{eval:round(1000*binom(10,8)*p^8*(1-p)^2)/10;d}} %\n9 = {{eval:round(1000*binom(10,9)*p^9*(1-p)^1)/10;d}} %\n10 = {{eval:round(1000*binom(10,10)*p^10*(1-p)^0)/10;d}} %\ntaille: petite\n```\n\nQuelle est la valeur de $p$ ?\n\n```choix\nmelanger: non\n- $p=0{,}2$\n- $p=0{,}5$\n- $p=0{,}8$\n```",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "0.2|0.5|0.8"
+				},
+				{
+					"name": "r",
+					"expression": "eval:round(p*10/3-2/3)"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{r}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Les bâtons les plus hauts sont autour de l'espérance $10p$.",
+					"Le bâton le plus haut est celui de $k={{eval:round(10*p)}}$, donc $10p\\approx{{eval:round(10*p)}}$ et $\\textcolor{{{color:primary.0}}}{p={{p}}}$.",
+					"Pour $p=0{,}5$, le diagramme est symétrique autour de $5$ ; pour $p=0{,}2$, les bâtons hauts sont à gauche ; pour $p=0{,}8$, à droite."
+				]
+			}
+		},
+		{
+			"statement": "On veut tracer en Python le diagramme en bâtons de la loi $\\mathcal{B}(10\\,;p)$. La liste `C` contient la ligne $10$ du triangle de Pascal.\n\n```python\nimport matplotlib.pyplot as plt\n\nC = [1, 10, 45, 120, 210, 252, 210, 120, 45, 10, 1]\np = 0.3\nL = []\nfor k in range(11):\n    L.append(...)\nplt.bar(range(11), L)\nplt.show()\n```\n\nQue faut-il écrire à la place des points de suspension ?\n\n```choix\nmelanger: non\n- `C[k] * p**k * (1-p)**k`\n- `p**k * (1-p)**(10-k)`\n- `C[k] * p**k * (1-p)**(10-k)`\n- `C[k] * k**p * (1-p)**(10-k)`\n```",
+			"variables": [],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "2"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La hauteur du bâton $k$ est $P(X=k)=\\binom{10}{k}p^k(1-p)^{10-k}$ : le nombre de chemins à $k$ succès, fois la probabilité d'un tel chemin.",
+					"En Python : `C[k] * p**k * (1-p)**(10-k)`, la $\\textcolor{{{color:primary.0}}}{\\text{troisième}}$ proposition.",
+					"Sans `C[k]`, on n'aurait que la probabilité d'un seul chemin ; un chemin à $k$ succès a $10-k$ échecs, pas $k$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "p = 0,3 : k = 3",
+			"variationIndex": 0,
+			"variables": {
+				"p": "0.3",
+				"m": "3"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : p = 0,3, k = 2",
+			"variationIndex": 0,
+			"variables": {
+				"p": "0.3",
+				"m": "3"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "p = 0,7 : k = 7",
+			"variationIndex": 0,
+			"variables": {
+				"p": "0.7",
+				"m": "7"
+			},
+			"answers": ["7"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "p = 0,2 : k = 2",
+			"variationIndex": 0,
+			"variables": {
+				"p": "0.2",
+				"m": "2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "choix : bonne réponse 0",
+			"variationIndex": 1,
+			"variables": {
+				"p": "0.2",
+				"r": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : symétrique",
+			"variationIndex": 1,
+			"variables": {
+				"p": "0.2",
+				"r": "0"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : à droite",
+			"variationIndex": 1,
+			"variables": {
+				"p": "0.2",
+				"r": "0"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "choix : bonne réponse 2",
+			"variationIndex": 1,
+			"variables": {
+				"p": "0.8",
+				"r": "2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : à gauche",
+			"variationIndex": 1,
+			"variables": {
+				"p": "0.8",
+				"r": "2"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : symétrique",
+			"variationIndex": 1,
+			"variables": {
+				"p": "0.8",
+				"r": "2"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "choix : bonne réponse 2",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : échecs",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : sans le coefficient",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : k puissance p",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

@@ -4,8 +4,8 @@
  */
 
 import { z } from 'zod';
-import { isCourseCard } from '$lib/questions/types';
-import { seriesItemsSchema } from '$lib/validation/series';
+import { isCourseCard } from '#lib/questions/types.ts';
+import { seriesItemsSchema } from '#lib/validation/series.ts';
 import { uuidSchema } from './common';
 
 // ============================================================================
@@ -30,7 +30,7 @@ const MAX_ANSWER_PARTS = 50;
 
 /**
  * Instance de question, forme RÉELLE produite par `generateInstance`
- * (`QuestionInstance`, `$lib/questions/types.ts`).
+ * (`QuestionInstance`, `#lib/questions/types.ts`).
  *
  * Ne retient que ce que la route exploite : `templateId` (référentiel, FSRS,
  * paquet Programme) et ce qu'elle archive dans `test_answers.question_instance`
@@ -73,7 +73,7 @@ const answerValueSchema = z.union([
 ]);
 
 /**
- * Réponse de l'élève, forme `AnswerData` (`$lib/types/question-display.ts`)
+ * Réponse de l'élève, forme `AnswerData` (`#lib/types/question-display.ts`)
  * émise par `QuestionCard`.
  *
  * - `value` absente : QCM validé sans choix (`selectedChoices[0]` indéfini,
@@ -116,7 +116,8 @@ const testAnswerResultSchema = z.object({
 const testResultSchema = z.object({
 	sessionId: uuidSchema.optional(),
 	// `flash` : forme « Flash-cards », score auto-évalué par l'élève (2026-09-30)
-	mode: z.enum(['display', 'interactive', 'course', 'flash']),
+	// `typing` : forme « Saisie », réponses corrigées par l'appli, sans chrono (2026-11-11)
+	mode: z.enum(['display', 'interactive', 'course', 'flash', 'typing']),
 	score: z.number().min(0).max(10, 'Score must be between 0 and 10'),
 	scorePercentage: z.number().min(0).max(100, 'Score percentage must be between 0 and 100'),
 	totalQuestions: z.number().int().positive('Total questions must be positive').max(500),
@@ -134,14 +135,24 @@ const testResultSchema = z.object({
 // ============================================================================
 
 /**
- * Schema for saving test results (POST /api/tests/save)
+ * Schema for the end of a free series (POST /api/tests/save : gain du Palotin)
  * Résultat, composition jouée (`items`, ADR 0035) et assignation éventuelle.
  */
 export const saveTestSchema = z
 	.object({
 		result: testResultSchema,
 		items: seriesItemsSchema,
-		assignmentId: uuidSchema.optional()
+		assignmentId: uuidSchema.optional(),
+		// Durée de la série (ms, horloge du client) : le serveur en tire son début,
+		// sans dépendre de l'heure du client (question longtemps ratée, B3 `regularite`).
+		// Mal formée → ignorée : la fête manque, jamais le gain (pas de 400)
+		seriesElapsedMs: z
+			.number()
+			.int()
+			.min(0)
+			.max(24 * 3600 * 1000)
+			.optional()
+			.catch(undefined)
 	})
 	.refine(
 		(data) => {
@@ -166,11 +177,11 @@ export const saveTestSchema = z
 		}
 	)
 	.refine(
-		// Une séance flash est auto-évaluée : jamais rattachée à une évaluation
-		// (doublé en base par la contrainte `test_sessions_flash_sans_evaluation`)
-		(data) => !(data.result.mode === 'flash' && data.assignmentId),
+		// Flash-cards et Saisie : jamais la forme d'un contrôle
+		(data) =>
+			!((data.result.mode === 'flash' || data.result.mode === 'typing') && data.assignmentId),
 		{
-			message: 'A flash session cannot be linked to an assignment',
+			message: 'A flash or typing session cannot be linked to an assignment',
 			path: ['assignmentId']
 		}
 	);

@@ -31,7 +31,7 @@ import type {
 	PredicateRule,
 	CustomExpressionRule
 } from '../types';
-import { templateMarkdown } from '$lib/ubumark';
+import { templateMarkdown } from '#lib/ubumark/index.ts';
 
 // ============================================================================
 // TYPE INTERFACE TESTS

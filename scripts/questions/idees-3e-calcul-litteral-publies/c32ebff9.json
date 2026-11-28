@@ -1,0 +1,787 @@
+{
+	"id": "c32ebff9-7e10-400e-bc06-c376f6991ea8",
+	"title": "Enlever les parenthèses",
+	"grades": ["3"],
+	"level": 3,
+	"delay": 30,
+	"status": "published",
+	"shared": {
+		"variables": [
+			{
+				"name": "q",
+				"expression": "1..9;±"
+			},
+			{
+				"name": "k",
+				"expression": "a|b|c"
+			},
+			{
+				"name": "r",
+				"expression": "1..9;±"
+			},
+			{
+				"name": "m",
+				"expression": "a|b|c!k"
+			},
+			{
+				"name": "s",
+				"expression": "1..9;±"
+			}
+		]
+	},
+	"options": {
+		"constraints": {
+			"brackets": "strict"
+		}
+	},
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:qk+rm+s}}"
+				}
+			],
+			"statement": "Réécris l'expression en enlevant les parenthèses.\n\n$${{expression1}}$$",
+			"variables": [
+				{
+					"name": "expression1",
+					"expression": "{{eval:qk}}+({{eval:rm}}{{eval:s;+}})"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Suppression des parenthèses.** Des parenthèses précédées du signe $+$ s’enlèvent sans rien changer ; précédées du signe $-$, on les enlève en changeant le signe de chaque terme.",
+					"Les parenthèses sont précédées du signe $\\textcolor{{{color:primary.1}}}{+}$ : on les enlève sans changer les termes.",
+					"$$\\begin{align} {{eval:qk}} \\textcolor{{{color:primary.1}}}{+} \\left( \\textcolor{{{color:primary.0}}}{{{eval:rm}}}\\textcolor{{{color:primary.0}}}{{{eval:s;+}}} \\right) &= {{solution}} \\end{align}$$"
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:qk-rm-s}}"
+				}
+			],
+			"statement": "Réécris l'expression en enlevant les parenthèses.\n\n$${{expression2}}$$",
+			"variables": [
+				{
+					"name": "expression2",
+					"expression": "{{eval:qk}}-({{eval:rm}}{{eval:s;+}})"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Suppression des parenthèses.** Des parenthèses précédées du signe $+$ s’enlèvent sans rien changer ; précédées du signe $-$, on les enlève en changeant le signe de chaque terme.",
+					"Les parenthèses sont précédées du signe $\\textcolor{{{color:primary.1}}}{-}$ : $\\textcolor{{{color:primary.0}}}{{{eval:rm}}}$ devient $\\textcolor{{{color:primary.2}}}{{{eval:-(r)m}}}$ et $\\textcolor{{{color:primary.0}}}{{{eval:s;+}}}$ devient $\\textcolor{{{color:primary.2}}}{{{eval:-(s);+}}}$.",
+					"$$\\begin{align} {{eval:qk}} \\textcolor{{{color:primary.1}}}{-} \\left( \\textcolor{{{color:primary.0}}}{{{eval:rm}}}\\textcolor{{{color:primary.0}}}{{{eval:s;+}}} \\right) &= {{solution}} \\end{align}$$"
+				]
+			}
+		},
+		{
+			"statement": "Supprime les parenthèses, puis réduis l'expression.\n\n$${{eval:c*x^g}}{{if:w==0|+|-}}({{eval:a*x+(b)}})$$\n\n$?$",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "g",
+					"expression": "0..1"
+				},
+				{
+					"name": "w",
+					"expression": "0..1"
+				},
+				{
+					"name": "s",
+					"expression": "eval:1-2*w"
+				},
+				{
+					"name": "c",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "a",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "b",
+					"expression": "1..9;±"
+				}
+			],
+			"conditions": ["c*g+(s)*(a) != 0", "c*(1-g)+(s)*(b) != 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(c*g+(s)*(a))*x+(c*(1-g)+(s)*(b))}}",
+					"expectedErrors": [
+						{
+							"answer": "{{if:w==1|{{eval:(c*g-(a))*x+(c*(1-g)+(b))}}|{{eval:(c*g+(s)*(a))*x+(c*(1-g)+(s)*(b))}}}}",
+							"message": "Devant une parenthèse précédée de $-$, on change le signe de TOUS ses termes, pas seulement du premier.",
+							"label": "Seul le premier terme a changé de signe"
+						},
+						{
+							"answer": "{{if:w==1|{{eval:(c*g+(a))*x+(c*(1-g)+(b))}}|{{eval:(c*g+(s)*(a))*x+(c*(1-g)+(s)*(b))}}}}",
+							"message": "Une parenthèse précédée de $-$ s'enlève en changeant le signe de chacun de ses termes.",
+							"label": "Signes non changés derrière un −"
+						},
+						{
+							"answer": "{{if:g==0|{{eval:(c+(s)*(a))*x+(s)*(b)}}|{{eval:(c*g+(s)*(a))*x+(c*(1-g)+(s)*(b))}}}}",
+							"message": "Un nombre et un terme en $x$ ne s'additionnent pas : ce ne sont pas des termes semblables.",
+							"label": "Nombre ajouté au terme en x"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Suppression des parenthèses.** Des parenthèses précédées du signe $+$ s’enlèvent sans rien changer ; précédées du signe $-$, on les enlève en changeant le signe de chaque terme.",
+					"Les parenthèses sont précédées du signe $\\textcolor{{{color:primary.1}}}{{{if:w==0|+|-}}}$ : {{if:w==0|on les enlève sans changer les termes.|on change le signe de chacun de leurs termes.}}",
+					"$$\\begin{align} {{eval:c*x^g}}\\textcolor{{{color:primary.1}}}{{{if:w==0|+|-}}}({{eval:a*x+(b)}}) &= {{eval:c*x^g}}\\textcolor{{{color:primary.0}}}{{{eval:(s)*(a)*x;+}}{{eval:(s)*(b);+}}} \\\\ &= {{solution}} \\end{align}$$",
+					"On a regroupé les termes en $x$ entre eux et les nombres entre eux."
+				]
+			},
+			"hint": "Regarde le signe devant la parenthèse, enlève-la, puis regroupe les termes en $x$ et les nombres."
+		},
+		{
+			"statement": "Supprime les parenthèses, puis réduis l'expression.\n\n$${{if:w==1|-|}}({{eval:a*x+(b)}}){{if:w==0|-|+}}({{eval:c*x+(d)}})$$\n\n$?$",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "w",
+					"expression": "0..1"
+				},
+				{
+					"name": "s",
+					"expression": "eval:1-2*w"
+				},
+				{
+					"name": "a",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "b",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "c",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "d",
+					"expression": "1..9;±"
+				}
+			],
+			"conditions": ["a != c", "b != d"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(s)*(a-(c))*x+(s)*(b-(d))}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:(s)*(a-(c))*x+(b+(d))}}",
+							"message": "Devant une parenthèse précédée de $-$, on change le signe de TOUS ses termes, pas seulement du premier.",
+							"label": "Seul le premier terme a changé de signe"
+						},
+						{
+							"answer": "{{eval:(a+(c))*x+(b+(d))}}",
+							"message": "Une parenthèse précédée de $-$ s'enlève en changeant le signe de chacun de ses termes.",
+							"label": "Signes non changés derrière un −"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Suppression des parenthèses.** Des parenthèses précédées du signe $+$ s’enlèvent sans rien changer ; précédées du signe $-$, on les enlève en changeant le signe de chaque terme.",
+					"$$\\begin{align} {{if:w==1|-|}}({{eval:a*x+(b)}}){{if:w==0|-|+}}({{eval:c*x+(d)}}) &= {{if:w==0|{{eval:a*x+(b)}}\\textcolor{{{color:primary.0}}}{{{eval:-(c)*x;+}}{{eval:-(d);+}}}|\\textcolor{{{color:primary.0}}}{{{eval:-(a)*x}}{{eval:-(b);+}}}{{eval:c*x;+}}{{eval:d;+}}}} \\\\ &= {{solution}} \\end{align}$$",
+					"On a regroupé les termes en $x$ entre eux et les nombres entre eux."
+				]
+			},
+			"hint": "Seule la parenthèse précédée de $-$ change les signes de ses termes. Enlève les deux parenthèses, puis regroupe."
+		},
+		{
+			"statement": "Supprime les parenthèses, puis réduis l'expression.\n\n$$({{eval:a*x^2+(b)*x+(c)}})-({{eval:d*x^2+(f)*x+(g)}})$$\n\n$?$",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "a",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "b",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "c",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "d",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "f",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "g",
+					"expression": "1..9;±"
+				}
+			],
+			"conditions": ["a != d", "b != f", "c != g"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(a-(d))*x^2+(b-(f))*x+(c-(g))}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:(a-(d))*x^2+(b+(f))*x+(c+(g))}}",
+							"message": "Devant une parenthèse précédée de $-$, on change le signe de TOUS ses termes, pas seulement du premier.",
+							"label": "Seul le premier terme a changé de signe"
+						},
+						{
+							"answer": "{{eval:(a+(d))*x^2+(b+(f))*x+(c+(g))}}",
+							"message": "Une parenthèse précédée de $-$ s'enlève en changeant le signe de chacun de ses termes.",
+							"label": "Signes non changés derrière un −"
+						},
+						{
+							"answer": "{{eval:(a-(d)+b-(f))*x^2+(c-(g))}}",
+							"message": "Les termes en $x^2$ et les termes en $x$ ne sont pas semblables : ils ne se regroupent pas.",
+							"label": "Termes en x² et en x additionnés"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Suppression des parenthèses.** Des parenthèses précédées du signe $+$ s’enlèvent sans rien changer ; précédées du signe $-$, on les enlève en changeant le signe de chaque terme.",
+					"$$\\begin{align} ({{eval:a*x^2+(b)*x+(c)}})-({{eval:d*x^2+(f)*x+(g)}}) &= {{eval:a*x^2+(b)*x+(c)}}\\textcolor{{{color:primary.0}}}{{{eval:-(d)*x^2;+}}{{eval:-(f)*x;+}}{{eval:-(g);+}}} \\\\ &= {{solution}} \\end{align}$$",
+					"On a regroupé les termes en $x^2$, puis les termes en $x$, puis les nombres."
+				]
+			},
+			"hint": "Change le signe de chaque terme de la parenthèse précédée de $-$, puis regroupe les termes de même nature : $x^2$ avec $x^2$, $x$ avec $x$."
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["4c+9b-5"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"k": "c|c",
+				"m": "b|b",
+				"q": "4",
+				"r": "9",
+				"s": "-5"
+			},
+			"description": "bonne réponse",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["9b+4c-5"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"k": "c|c",
+				"m": "b|b",
+				"q": "4",
+				"r": "9",
+				"s": "-5"
+			},
+			"description": "ordre libre",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["4c+(9b-5)"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["brackets", "form"]
+			},
+			"variables": {
+				"k": "c|c",
+				"m": "b|b",
+				"q": "4",
+				"r": "9",
+				"s": "-5"
+			},
+			"description": "parenthèses gardées",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["4c+9b+5"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"k": "c|c",
+				"m": "b|b",
+				"q": "4",
+				"r": "9",
+				"s": "-5"
+			},
+			"description": "signe faux",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["3x-2y-5"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"k": "x|x",
+				"m": "y|y",
+				"q": "3",
+				"r": "-2",
+				"s": "-5"
+			},
+			"description": "bonne réponse",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["3x-2y+5"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"k": "x|x",
+				"m": "y|y",
+				"q": "3",
+				"r": "2",
+				"s": "-5"
+			},
+			"description": "bonne réponse",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["-2y+3x+5"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"k": "x|x",
+				"m": "y|y",
+				"q": "3",
+				"r": "2",
+				"s": "-5"
+			},
+			"description": "ordre libre -2y+3x+5",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["3x-(2y-5)"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			},
+			"variables": {
+				"k": "x|x",
+				"m": "y|y",
+				"q": "3",
+				"r": "2",
+				"s": "-5"
+			},
+			"description": "parenthèses gardées",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["3x-2y-5"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"k": "x|x",
+				"m": "y|y",
+				"q": "3",
+				"r": "2",
+				"s": "-5"
+			},
+			"description": "signe de -5 non changé",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["3x+2y+5"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"k": "x|x",
+				"m": "y|y",
+				"q": "3",
+				"r": "-2",
+				"s": "-5"
+			},
+			"description": "bonne réponse (termes négatifs)",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["3x+2y-5"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"k": "x|x",
+				"m": "y|y",
+				"q": "3",
+				"r": "-2",
+				"s": "-5"
+			},
+			"description": "seul le 1er terme changé",
+			"variationIndex": 1
+		},
+		{
+			"description": "F1a : 3 − (2x − 5) = −2x + 8",
+			"variationIndex": 2,
+			"variables": {
+				"g": "0",
+				"w": "1",
+				"c": "3",
+				"a": "2",
+				"b": "-5"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["-2x+8"]
+		},
+		{
+			"description": "F1a : ordre libre 8 − 2x",
+			"variationIndex": 2,
+			"variables": {
+				"g": "0",
+				"w": "1",
+				"c": "3",
+				"a": "2",
+				"b": "-5"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["8-2x"]
+		},
+		{
+			"description": "F1a : parenthèses ôtées sans réduire",
+			"variationIndex": 2,
+			"variables": {
+				"g": "0",
+				"w": "1",
+				"c": "3",
+				"a": "2",
+				"b": "-5"
+			},
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			},
+			"answers": ["3-2x+5"]
+		},
+		{
+			"description": "F1a : parenthèse gardée",
+			"variationIndex": 2,
+			"variables": {
+				"g": "0",
+				"w": "1",
+				"c": "3",
+				"a": "2",
+				"b": "-5"
+			},
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			},
+			"answers": ["3-(2x-5)"]
+		},
+		{
+			"description": "F1a : seul le premier terme changé",
+			"variationIndex": 2,
+			"variables": {
+				"g": "0",
+				"w": "1",
+				"c": "3",
+				"a": "2",
+				"b": "-5"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Devant une parenthèse précédée de $-$, on change le signe de TOUS ses termes, pas seulement du premier."
+			},
+			"answers": ["-2x-2"]
+		},
+		{
+			"description": "F1a : signes non changés",
+			"variationIndex": 2,
+			"variables": {
+				"g": "0",
+				"w": "1",
+				"c": "3",
+				"a": "2",
+				"b": "-5"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Une parenthèse précédée de $-$ s'enlève en changeant le signe de chacun de ses termes."
+			},
+			"answers": ["2x-2"]
+		},
+		{
+			"description": "F1a : nombre ajouté au terme en x",
+			"variationIndex": 2,
+			"variables": {
+				"g": "0",
+				"w": "1",
+				"c": "3",
+				"a": "2",
+				"b": "-5"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Un nombre et un terme en $x$ ne s'additionnent pas : ce ne sont pas des termes semblables."
+			},
+			"answers": ["x+5"]
+		},
+		{
+			"description": "F1a : 4x + (−x + 6) = 3x + 6",
+			"variationIndex": 2,
+			"variables": {
+				"g": "1",
+				"w": "0",
+				"c": "4",
+				"a": "-1",
+				"b": "6"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["3x+6"]
+		},
+		{
+			"description": "F1a : 6 + 3x",
+			"variationIndex": 2,
+			"variables": {
+				"g": "1",
+				"w": "0",
+				"c": "4",
+				"a": "-1",
+				"b": "6"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["6+3x"]
+		},
+		{
+			"description": "F1b : (5x + 2) − (3x − 4) = 2x + 6",
+			"variationIndex": 3,
+			"variables": {
+				"w": "0",
+				"a": "5",
+				"b": "2",
+				"c": "3",
+				"d": "-4"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["2x+6"]
+		},
+		{
+			"description": "F1b : ordre libre",
+			"variationIndex": 3,
+			"variables": {
+				"w": "0",
+				"a": "5",
+				"b": "2",
+				"c": "3",
+				"d": "-4"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["6+2x"]
+		},
+		{
+			"description": "F1b : sans réduire",
+			"variationIndex": 3,
+			"variables": {
+				"w": "0",
+				"a": "5",
+				"b": "2",
+				"c": "3",
+				"d": "-4"
+			},
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			},
+			"answers": ["5x+2-3x+4"]
+		},
+		{
+			"description": "F1b : seul le premier terme changé",
+			"variationIndex": 3,
+			"variables": {
+				"w": "0",
+				"a": "5",
+				"b": "2",
+				"c": "3",
+				"d": "-4"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Devant une parenthèse précédée de $-$, on change le signe de TOUS ses termes, pas seulement du premier."
+			},
+			"answers": ["2x-2"]
+		},
+		{
+			"description": "F1b : signes non changés",
+			"variationIndex": 3,
+			"variables": {
+				"w": "0",
+				"a": "5",
+				"b": "2",
+				"c": "3",
+				"d": "-4"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Une parenthèse précédée de $-$ s'enlève en changeant le signe de chacun de ses termes."
+			},
+			"answers": ["8x-2"]
+		},
+		{
+			"description": "F1b : −(2x + 7) + (6x + 1) = 4x − 6",
+			"variationIndex": 3,
+			"variables": {
+				"w": "1",
+				"a": "2",
+				"b": "7",
+				"c": "6",
+				"d": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["4x-6"]
+		},
+		{
+			"description": "F1b : seul le premier terme changé (−(…) devant)",
+			"variationIndex": 3,
+			"variables": {
+				"w": "1",
+				"a": "2",
+				"b": "7",
+				"c": "6",
+				"d": "1"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Devant une parenthèse précédée de $-$, on change le signe de TOUS ses termes, pas seulement du premier."
+			},
+			"answers": ["4x+8"]
+		},
+		{
+			"description": "F1c : 2x² − 6x + 8",
+			"variationIndex": 4,
+			"variables": {
+				"a": "3",
+				"b": "-2",
+				"c": "5",
+				"d": "1",
+				"f": "4",
+				"g": "-3"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["2x^2-6x+8"]
+		},
+		{
+			"description": "F1c : ordre libre",
+			"variationIndex": 4,
+			"variables": {
+				"a": "3",
+				"b": "-2",
+				"c": "5",
+				"d": "1",
+				"f": "4",
+				"g": "-3"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["8-6x+2x^2"]
+		},
+		{
+			"description": "F1c : sans réduire",
+			"variationIndex": 4,
+			"variables": {
+				"a": "3",
+				"b": "-2",
+				"c": "5",
+				"d": "1",
+				"f": "4",
+				"g": "-3"
+			},
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			},
+			"answers": ["3x^2-2x+5-x^2-4x+3"]
+		},
+		{
+			"description": "F1c : seul le premier terme changé",
+			"variationIndex": 4,
+			"variables": {
+				"a": "3",
+				"b": "-2",
+				"c": "5",
+				"d": "1",
+				"f": "4",
+				"g": "-3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Devant une parenthèse précédée de $-$, on change le signe de TOUS ses termes, pas seulement du premier."
+			},
+			"answers": ["2x^2+2x+2"]
+		},
+		{
+			"description": "F1c : signes non changés",
+			"variationIndex": 4,
+			"variables": {
+				"a": "3",
+				"b": "-2",
+				"c": "5",
+				"d": "1",
+				"f": "4",
+				"g": "-3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Une parenthèse précédée de $-$ s'enlève en changeant le signe de chacun de ses termes."
+			},
+			"answers": ["4x^2+2x+2"]
+		},
+		{
+			"description": "F1c : x² et x additionnés",
+			"variationIndex": 4,
+			"variables": {
+				"a": "3",
+				"b": "-2",
+				"c": "5",
+				"d": "1",
+				"f": "4",
+				"g": "-3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Les termes en $x^2$ et les termes en $x$ ne sont pas semblables : ils ne se regroupent pas."
+			},
+			"answers": ["-4x^2+8"]
+		}
+	]
+}

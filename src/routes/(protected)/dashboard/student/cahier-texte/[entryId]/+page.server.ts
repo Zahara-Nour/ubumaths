@@ -9,12 +9,12 @@
  * - Entry date <= today
  */
 
-import { fetchStaffDirectory, soleTeacher } from '$lib/server/staff-directory';
+import { fetchStaffDirectory, soleTeacher } from '#lib/server/staff-directory.ts';
 import type { PageServerLoad } from './$types';
 import { error } from '@sveltejs/kit';
-import { requireRole } from '$lib/server/middleware/auth';
+import { requireRole } from '#lib/server/middleware/auth.ts';
 import { z } from 'zod';
-import { createServerLogger } from '$lib/utils/logger';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger(
 	'(protected)/dashboard/student/cahier-texte/[entryId]/+page.server'

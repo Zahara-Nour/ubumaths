@@ -26,9 +26,9 @@ import {
 } from '../helpers/database/trigger-test-helpers';
 import { DEFAULT_TEST_PASSWORD } from '../helpers/database/supabase-client';
 import { TestData } from '../helpers/database/test-data-factory';
-import { getStudentWorkInbox } from '$lib/server/student-inbox';
-import { getUnreadNotifications } from '$lib/server/notifications';
-import type { Database } from '$lib/types/database';
+import { getStudentWorkInbox } from '#lib/server/student-inbox.ts';
+import { getUnreadNotifications } from '#lib/server/notifications.ts';
+import type { Database } from '#lib/types/database.ts';
 import { GET as listerFichesEleve } from '../../src/routes/api/student/worksheets/+server';
 
 const SUPABASE_URL = process.env.SUPABASE_TEST_URL || 'http://localhost:54321';

@@ -11,16 +11,17 @@
 	 *
 	 * @component
 	 */
-	import { useGrapheurStore } from '$lib/stores/grapheur-context';
-	import type { CoordinateTransformer } from '$lib/grapheur/viewport';
-	import { isExplicitFunction } from '$lib/grapheur/types';
-	import { curveColorValue } from '$lib/grapheur/colors';
+	import { useGrapheurStore } from '#lib/stores/grapheur-context.ts';
+	import type { CoordinateTransformer } from '#lib/grapheur/viewport.ts';
+	import { isExplicitFunction } from '#lib/grapheur/types.ts';
+	import { curveColorValue } from '#lib/grapheur/colors.ts';
 	import {
 		readingAt,
 		readingGeometry,
 		readingNumber,
 		type ReadingPoint
-	} from '$lib/grapheur/image-reading';
+	} from '#lib/grapheur/image-reading.ts';
+	import { labelBoxRect, labelRectsOverlap } from '#lib/grapheur/label-box.ts';
 	import GraphLabel from './GraphLabel.svelte';
 
 	let {
@@ -52,12 +53,41 @@
 			return [
 				...fromConsole,
 				...(slider === null ? [] : [{ point: slider, source: 'curseur' as const }])
-			].map((entry) => ({
-				...entry,
-				key: `${func.id}-${entry.source}-${entry.point.at}`,
-				color: curveColorValue(func.color),
-				geometry: readingGeometry(entry.point, transformer, width, height)
-			}));
+			].map((entry) => {
+				const geometry = readingGeometry(entry.point, transformer, width, height);
+				const atText = written(entry.point.at);
+				const valueText = written(entry.point.y);
+				const canvas = { width, height };
+				// E28 : f(x) proche de 0, l'étiquette de f(x) (sur l'axe des ordonnées)
+				// recouvre celle de x (au-dessus de l'axe des abscisses) : x passe dessous,
+				// sauf si dessous la recouvre aussi (f(x) juste sous l'axe : rien de mieux)
+				const valueRect = labelBoxRect(
+					geometry.horizontal.x2,
+					geometry.horizontal.y2,
+					{ text: valueText, latex: null },
+					canvas
+				);
+				const atRect = (below: boolean) =>
+					labelBoxRect(
+						geometry.vertical.x1,
+						geometry.vertical.y1,
+						{ text: atText, latex: null },
+						canvas,
+						below
+					);
+				const atBelow =
+					labelRectsOverlap(atRect(false), valueRect) &&
+					!labelRectsOverlap(atRect(true), valueRect);
+				return {
+					...entry,
+					key: `${func.id}-${entry.source}-${entry.point.at}`,
+					color: curveColorValue(func.color),
+					geometry,
+					atText,
+					valueText,
+					atBelow
+				};
+			});
 		})
 	);
 
@@ -104,15 +134,16 @@
 			<GraphLabel
 				x={vertical.x1}
 				y={vertical.y1}
-				content={{ text: written(reading.point.at), latex: null }}
+				content={{ text: reading.atText, latex: null }}
 				accent={reading.color}
+				below={reading.atBelow}
 				canvasWidth={width}
 				canvasHeight={height}
 			/>
 			<GraphLabel
 				x={horizontal.x2}
 				y={horizontal.y2}
-				content={{ text: written(reading.point.y), latex: null }}
+				content={{ text: reading.valueText, latex: null }}
 				accent={reading.color}
 				canvasWidth={width}
 				canvasHeight={height}

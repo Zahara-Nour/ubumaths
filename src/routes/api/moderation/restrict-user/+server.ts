@@ -1,8 +1,8 @@
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireRoles } from '$lib/server/middleware/auth';
-import { restrictUserSchema } from '$lib/server/validation/moderation';
-import { createServerLogger } from '$lib/utils/logger';
+import { requireRoles } from '#lib/server/middleware/auth.ts';
+import { restrictUserSchema } from '#lib/server/validation/moderation.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/moderation/restrict-user/+server');
 
@@ -41,7 +41,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	try {
 		body = await request.json();
 	} catch {
-		throw error(400, 'Invalid JSON');
+		throw error(400, 'Corps de requête JSON invalide');
 	}
 
 	const validation = restrictUserSchema.safeParse(body);
@@ -120,5 +120,5 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		// Don't fail the request if logging fails, but log the error
 	}
 
-	return json({ success: true, restrictionId: restriction.id }, { status: 201 });
+	return Response.json({ success: true, restrictionId: restriction.id }, { status: 201 });
 };

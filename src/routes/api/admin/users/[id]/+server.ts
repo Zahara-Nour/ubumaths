@@ -11,13 +11,13 @@
  * @module api/admin/users/[id]
  */
 
-import { error, json } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireAdmin } from '$lib/server/middleware/auth';
-import { updateUserFieldsSchema } from '$lib/server/validation/admin';
-import type { Database } from '$lib/types/database';
-import type { TablesUpdate } from '$lib/types/database';
-import { createServerLogger } from '$lib/utils/logger';
+import { requireAdmin } from '#lib/server/middleware/auth.ts';
+import { updateUserFieldsSchema } from '#lib/server/validation/admin.ts';
+import type { Database } from '#lib/types/database.ts';
+import type { TablesUpdate } from '#lib/types/database.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/admin/users/[id]/+server');
 
@@ -38,11 +38,11 @@ type ExtendedProfile = Profile & {
  * {
  *   firstname?: string | null,
  *   lastname?: string | null,
- *   email?: string,
  *   role?: 'admin' | 'teacher' | 'student',
  *   school_id?: string | null,  // UUID
  *   is_test?: boolean
  * }
+ * Le courriel ne se modifie pas ici : le schéma l'ignore.
  *
  * Response: 200 with updated full profile including relations
  * {
@@ -185,7 +185,7 @@ export const PATCH: RequestHandler = async ({ request, locals, params }) => {
 		};
 
 		// 6. Return success response
-		return json({
+		return Response.json({
 			success: true,
 			profile: extendedProfile
 		});

@@ -7,8 +7,8 @@ dédiée dit d'abord qu'il faut contourner (point 7) ; une fonction récente dit
 de quelle version (point 9) ; en local, une séquence non relue sur machine est signalée.
 -->
 <script lang="ts">
-	import type { GuideEntry } from '$lib/calculatrices/guide';
-	import { Badge } from '$lib/components/ui/badge';
+	import type { GuideEntry } from '#lib/calculatrices/guide.ts';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
 	import GuideStep from './GuideStep.svelte';
 
 	let {

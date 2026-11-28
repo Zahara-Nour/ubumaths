@@ -35,16 +35,21 @@
 
 import { createClient } from '@supabase/supabase-js';
 import { config } from 'dotenv';
-import { createExerciseSchema } from '$lib/server/validation/exercises';
+import { createExerciseSchema } from '#lib/server/validation/exercises.ts';
 import {
 	validateCreateWorksheet,
 	validateCreateWorksheetExercise
-} from '$lib/server/validation/worksheets';
-import { createExercise } from '$lib/server/exercises';
-import { toQuestionTemplate } from '$lib/types/question-template';
-import { buildSerie, type SerieItem } from '$lib/worksheets/serie-automatismes';
-import type { QuestionTemplate } from '$lib/questions/types';
-import type { Database } from '$lib/types/database';
+} from '#lib/server/validation/worksheets.ts';
+import { createExercise } from '#lib/server/exercises.ts';
+import { toQuestionTemplate } from '#lib/types/question-template.ts';
+import { buildSerie, type SerieItem } from '#lib/worksheets/serie-automatismes.ts';
+import {
+	CATEGORIE_AUTOMATISMES,
+	lireNotions,
+	poserNotions
+} from './fiches/automatismes-notions.ts';
+import type { QuestionTemplate } from '#lib/questions/types.ts';
+import type { Database } from '#lib/types/database.ts';
 
 config({ path: '.env' });
 
@@ -130,6 +135,12 @@ const FICHE = {
 		'Lire les graphiques, calculer et interpréter les indicateurs ; construire la boîte.',
 	translations: null
 };
+
+/** Notions de la fiche, dans l'ordre d'impression (catégorie Automatismes, ADR 0041) */
+const NOTIONS = [
+	'54b0242b-0477-4443-a9d4-f7b09a9ddbae', // Indicateurs
+	'd5f49f81-c74a-4e91-a2ec-405f6962c296' // Représenter des données
+];
 
 const CONFIG_FICHE = {
 	language: 'fr',
@@ -260,9 +271,14 @@ async function main() {
 		...FICHE,
 		type: 'worksheet',
 		config: CONFIG_FICHE,
+		category: CATEGORIE_AUTOMATISMES,
+		custom_title: true,
+		notions: NOTIONS,
 		grades: ['1_SPE']
 	});
 	if (!vf.success) throw new Error(`Fiche : Zod refuse — ${vf.error.issues[0].message}`);
+	const nomsNotions = await lireNotions(supabase, NOTIONS);
+	console.log(`  ✓ catégorie Automatismes · notions : ${nomsNotions.join(' · ')}`);
 	console.log(`  ✓ ${exercices.length} séries construites et validées`);
 
 	if (!PUBLIER) {
@@ -297,7 +313,9 @@ async function main() {
 				style_id: MODELE_FICHE_ELEVE,
 				grades: ['1_SPE'],
 				created_by: DAVID,
-				school_id: ECOLE
+				school_id: ECOLE,
+				category: CATEGORIE_AUTOMATISMES,
+				custom_title: true
 			})
 			.select('id')
 			.single();
@@ -335,6 +353,8 @@ async function main() {
 			throw new Error(
 				`Ajout refusé (${ajoutees?.length ?? 0}/${lignes.length}) : ${e4?.message ?? ''}`
 			);
+		// Notions posées dans le try : un refus défait tout (lignes supprimées avec la fiche)
+		await poserNotions(supabase, fiche.id, NOTIONS);
 		console.log(`  ✍️  ${creesExercices.length} séries créées`);
 		console.log(`  ✍️  Fiche « ${FICHE.title} » : ${fiche.id}`);
 		console.log('\n✅ Terminé.');

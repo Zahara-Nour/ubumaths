@@ -16,7 +16,7 @@ import { runInput } from '../calcul';
 import { CalcDesk } from '../desk.svelte';
 import { mergeInto } from '../merge';
 import { actionsFor } from '../actions';
-import { WebReplEngine } from '$lib/mathAST/cli/web/web-repl-engine';
+import { WebReplEngine } from '#lib/mathAST/cli/web/web-repl-engine.ts';
 
 // =============================================================================
 // Décor

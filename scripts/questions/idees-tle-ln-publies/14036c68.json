@@ -1,0 +1,519 @@
+{
+	"id": "14036c68-6854-422b-b06d-3890b3745573",
+	"title": "Résoudre une inéquation avec ln",
+	"description": "ln x < a, ln x ⩾ a, ln(ax + b) ⩽ 0 ; ensemble de solutions en intervalle (pièges : domaine x > 0 oublié, sens de l'inégalité, crochets)",
+	"grades": ["T_SPE", "T_COMP"],
+	"level": 3,
+	"delay": 90,
+	"status": "published",
+	"shared": {
+		"blankDefaults": {
+			"answerKind": "intervalles"
+		}
+	},
+	"options": {
+		"constraints": {
+			"spaces": "off"
+		}
+	},
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "]0;{{if:a==0|1|e^{ {{a}} }}}["
+				}
+			],
+			"statement": "Résous dans $\\left]0\\,;+\\infty\\right[$ l'inéquation $\\ln x<{{a}}$.\n\n$S=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "-3..4"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La fonction $\\ln$ est strictement croissante sur $\\left]0\\,;+\\infty\\right[$ : $\\ln x<{{a}}\\iff x<e^{ {{a}} }${{if:a==0| $=1$|}}.",
+					"Sans oublier $x>0$ : $S=\\textcolor{{{color:primary.0}}}{\\left]0\\,;{{if:a==0|1|e^{ {{a}} }}}\\right[}$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "[{{if:a==0|1|e^{ {{a}} }}};+\\infty["
+				}
+			],
+			"statement": "Résous dans $\\left]0\\,;+\\infty\\right[$ l'inéquation $\\ln x\\geqslant{{a}}$.\n\n$S=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "-3..4"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\ln$ est strictement croissante sur $\\left]0\\,;+\\infty\\right[$ : $\\ln x\\geqslant{{a}}\\iff x\\geqslant {{if:a==0|1|e^{ {{a}} }}}$.",
+					"$S=\\textcolor{{{color:primary.0}}}{\\left[{{if:a==0|1|e^{ {{a}} }}}\\,;+\\infty\\right[}$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "]{{eval:-b/a}};{{eval:(1-b)/a}}]"
+				}
+			],
+			"statement": "Résous l'inéquation $\\ln\\left({{a}}x{{b;+}}\\right)\\leqslant0$.\n\n$S=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..5"
+				},
+				{
+					"name": "b",
+					"expression": "1..9;±"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Domaine : ${{a}}x{{b;+}}>0\\iff x>{{eval:-b/a}}$.",
+					"$\\ln X\\leqslant0\\iff X\\leqslant1$ : ${{a}}x{{b;+}}\\leqslant1\\iff x\\leqslant{{eval:(1-b)/a}}$.",
+					"$S=\\textcolor{{{color:primary.0}}}{\\left]{{eval:-b/a}}\\,;{{eval:(1-b)/a}}\\right]}$."
+				]
+			}
+		},
+		{
+			"statement": "Résous dans $\\mathbb{R}$ l'inéquation ${{a}}^{x}{{if:s==0|<|\\geqslant}}{{b}}$.\n\n$S=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2|3|5"
+				},
+				{
+					"name": "b",
+					"expression": "3..50"
+				},
+				{
+					"name": "s",
+					"expression": "0|1"
+				},
+				{
+					"name": "r",
+					"expression": "eval:ln(b)/ln(a)"
+				}
+			],
+			"conditions": ["abs(r-round(r)) > 0.001"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:s==0|]-\\infty;\\dfrac{\\ln {{b}}}{\\ln {{a}}}[|[\\dfrac{\\ln {{b}}}{\\ln {{a}}};+\\infty[}}",
+					"expectedErrors": [
+						{
+							"answer": "{{if:s==0|]\\dfrac{\\ln {{b}}}{\\ln {{a}}};+\\infty[|]-\\infty;\\dfrac{\\ln {{b}}}{\\ln {{a}}}]}}",
+							"message": "$\\ln {{a}}>0$ : diviser par $\\ln {{a}}$ ne change pas le sens de l'inégalité.",
+							"label": "Sens changé à tort"
+						},
+						{
+							"answer": "{{if:s==0|]-\\infty;\\dfrac{\\ln {{b}}}{\\ln {{a}}}]|]\\dfrac{\\ln {{b}}}{\\ln {{a}}};+\\infty[}}",
+							"message": "L'inégalité est {{if:s==0|stricte : la borne est exclue|large : la borne est incluse}}.",
+							"label": "Crochet"
+						},
+						{
+							"answer": "{{if:s==0|]-\\infty;\\ln\\left(\\dfrac{ {{b}} }{ {{a}} }\\right)[|[\\ln\\left(\\dfrac{ {{b}} }{ {{a}} }\\right);+\\infty[}}",
+							"message": "$x\\ln {{a}}$ se divise par $\\ln {{a}}$ : la borne est $\\dfrac{\\ln {{b}}}{\\ln {{a}}}$.",
+							"label": "ln(b/a)"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\ln$ est strictement croissante : ${{a}}^{x}{{if:s==0|<|\\geqslant}}{{b}}\\iff x\\ln {{a}}{{if:s==0|<|\\geqslant}}\\ln {{b}}$.",
+					"$\\ln {{a}}>0$, le sens est conservé : $x{{if:s==0|<|\\geqslant}}\\dfrac{\\ln {{b}}}{\\ln {{a}}}$.",
+					"$S=\\textcolor{{{color:primary.0}}}{ {{if:s==0|\\left]-\\infty\\,;\\dfrac{\\ln {{b}}}{\\ln {{a}}}\\right[|\\left[\\dfrac{\\ln {{b}}}{\\ln {{a}}}\\,;+\\infty\\right[}} }$."
+				]
+			},
+			"hint": "Applique $\\ln$ aux deux membres, puis divise par $\\ln {{a}}$ : quel est son signe ?"
+		},
+		{
+			"statement": "Résous dans $\\mathbb{R}$ l'inéquation ${{eval:k/10;d}}^{x}{{if:s==0|<|\\geqslant}}{{b}}$.\n\n$S=?$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "2|5|8"
+				},
+				{
+					"name": "b",
+					"expression": "2..20"
+				},
+				{
+					"name": "s",
+					"expression": "0|1"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:s==0|]\\dfrac{\\ln {{b}}}{\\ln {{eval:k/10;d}}};+\\infty[|]-\\infty;\\dfrac{\\ln {{b}}}{\\ln {{eval:k/10;d}}}]}}",
+					"expectedErrors": [
+						{
+							"answer": "{{if:s==0|]-\\infty;\\dfrac{\\ln {{b}}}{\\ln {{eval:k/10;d}}}[|[\\dfrac{\\ln {{b}}}{\\ln {{eval:k/10;d}}};+\\infty[}}",
+							"message": "$\\ln {{eval:k/10;d}}<0$ car ${{eval:k/10;d}}<1$ : diviser par $\\ln {{eval:k/10;d}}$ change le sens de l'inégalité.",
+							"label": "Sens non changé"
+						},
+						{
+							"answer": "{{if:s==0|[\\dfrac{\\ln {{b}}}{\\ln {{eval:k/10;d}}};+\\infty[|]-\\infty;\\dfrac{\\ln {{b}}}{\\ln {{eval:k/10;d}}}[}}",
+							"message": "L'inégalité est {{if:s==0|stricte : la borne est exclue|large : la borne est incluse}}.",
+							"label": "Crochet"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\ln$ est strictement croissante : ${{eval:k/10;d}}^{x}{{if:s==0|<|\\geqslant}}{{b}}\\iff x\\ln {{eval:k/10;d}}{{if:s==0|<|\\geqslant}}\\ln {{b}}$.",
+					"Or ${{eval:k/10;d}}<1$, donc $\\ln {{eval:k/10;d}}<0$ : en divisant par $\\ln {{eval:k/10;d}}$, le sens change, $x{{if:s==0|>|\\leqslant}}\\dfrac{\\ln {{b}}}{\\ln {{eval:k/10;d}}}$.",
+					"$S=\\textcolor{{{color:primary.0}}}{ {{if:s==0|\\left]\\dfrac{\\ln {{b}}}{\\ln {{eval:k/10;d}}}\\,;+\\infty\\right[|\\left]-\\infty\\,;\\dfrac{\\ln {{b}}}{\\ln {{eval:k/10;d}}}\\right]}} }$."
+				]
+			},
+			"hint": "Applique $\\ln$ aux deux membres. Quel est le signe de $\\ln {{eval:k/10;d}}$ ?"
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["]0;e^2["],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "2"
+			},
+			"description": "v0 : ln x < 2 → ]0;e²[",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["]-\\infty;e^2["],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "2"
+			},
+			"description": "v0 : domaine oublié ]−∞;e²[",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["]0;e^2]"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "2"
+			},
+			"description": "v0 : borne fermée ]0;e²]",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["]0;1["],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "0"
+			},
+			"description": "v0 : ln x < 0 → ]0;1[",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["]0;e^0["],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "0"
+			},
+			"description": "v0 : ln x < 0, e⁰ écrit",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["[e;+\\infty["],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "1"
+			},
+			"description": "v1 : ln x ≥ 1 → [e;+∞[",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["[e^{1};+\\infty["],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "1"
+			},
+			"description": "v1 : e¹ écrit",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["]e;+\\infty["],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "1"
+			},
+			"description": "v1 : borne ouverte (inéquation large)",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["]0;e]"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "1"
+			},
+			"description": "v1 : sens inversé",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["[e^3;+\\infty["],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "3"
+			},
+			"description": "v1 : ln x ≥ 3 → [e³;+∞[",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["[\\ln 3;+\\infty["],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "3"
+			},
+			"description": "v1 : ln 3 au lieu de e³",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["]\\frac{3}{2};2]"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "2",
+				"b": "-3"
+			},
+			"description": "v2 : ln(2x−3) ≤ 0 → ]3/2;2]",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["]-\\infty;2]"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "2",
+				"b": "-3"
+			},
+			"description": "v2 : domaine oublié ]−∞;2]",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["]\\frac{3}{2};+\\infty["],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "2",
+				"b": "-3"
+			},
+			"description": "v2 : ln X ≤ 0 lu comme « X ≥ … » (sens)",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["\\left]0;\\frac{1}{e^2}\\right["],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "-2"
+			},
+			"description": "v0 : a = −2, borne 1/e² au lieu de e⁻², juste",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["\\left]0;e^{-2}\\right["],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "-2"
+			},
+			"description": "v0 : a = −2, borne e⁻², juste",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["\\left[\\frac{1}{e};+\\infty\\right["],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "-1"
+			},
+			"description": "v1 : a = −1, borne 1/e, juste",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["\\left[e;+\\infty\\right["],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "-1"
+			},
+			"description": "v1 : a = −1, borne e au lieu de 1/e, faux",
+			"variationIndex": 1
+		},
+		{
+			"description": "F4a : 2ˣ < 9",
+			"variationIndex": 3,
+			"variables": {
+				"a": "2",
+				"b": "9",
+				"s": "0",
+				"r": "3.17"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["]-\\infty;\\frac{\\ln9}{\\ln2}["]
+		},
+		{
+			"description": "F4a : sens changé à tort",
+			"variationIndex": 3,
+			"variables": {
+				"a": "2",
+				"b": "9",
+				"s": "0",
+				"r": "3.17"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["]\\frac{\\ln9}{\\ln2};+\\infty["]
+		},
+		{
+			"description": "F4a : crochet fermé",
+			"variationIndex": 3,
+			"variables": {
+				"a": "2",
+				"b": "9",
+				"s": "0",
+				"r": "3.17"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["]-\\infty;\\frac{\\ln9}{\\ln2}]"]
+		},
+		{
+			"description": "F4a : 3ˣ ⩾ 7",
+			"variationIndex": 3,
+			"variables": {
+				"a": "3",
+				"b": "7",
+				"s": "1",
+				"r": "1.77"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["[\\frac{\\ln7}{\\ln3};+\\infty["]
+		},
+		{
+			"description": "F4a : ln(b/a)",
+			"variationIndex": 3,
+			"variables": {
+				"a": "3",
+				"b": "7",
+				"s": "1",
+				"r": "1.77"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["[\\ln\\left(\\frac{7}{3}\\right);+\\infty["]
+		},
+		{
+			"description": "F4b : 0,5ˣ < 4",
+			"variationIndex": 4,
+			"variables": {
+				"k": "5",
+				"b": "4",
+				"s": "0"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["]\\frac{\\ln4}{\\ln0.5};+\\infty["]
+		},
+		{
+			"description": "F4b : écrit −2",
+			"variationIndex": 4,
+			"variables": {
+				"k": "5",
+				"b": "4",
+				"s": "0"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["]-2;+\\infty["]
+		},
+		{
+			"description": "F4b : sens non changé",
+			"variationIndex": 4,
+			"variables": {
+				"k": "5",
+				"b": "4",
+				"s": "0"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["]-\\infty;\\frac{\\ln4}{\\ln0.5}["]
+		},
+		{
+			"description": "F4b : 0,8ˣ ⩾ 3",
+			"variationIndex": 4,
+			"variables": {
+				"k": "8",
+				"b": "3",
+				"s": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["]-\\infty;\\frac{\\ln3}{\\ln0.8}]"]
+		},
+		{
+			"description": "F4b : crochet",
+			"variationIndex": 4,
+			"variables": {
+				"k": "8",
+				"b": "3",
+				"s": "1"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["]-\\infty;\\frac{\\ln3}{\\ln0.8}["]
+		}
+	]
+}

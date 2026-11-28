@@ -17,38 +17,54 @@
 	```
 -->
 <script lang="ts">
-	import * as Card from '$lib/components/ui/card';
-	import { Badge } from '$lib/components/ui/badge';
-	import { Separator } from '$lib/components/ui/separator';
-	import { Input } from '$lib/components/ui/input';
-	import { Textarea } from '$lib/components/ui/textarea';
-	import MySelect from '$lib/components/MySelect.svelte';
-	import { worksheetLocale } from '$lib/types/worksheets';
-	import WorksheetTypeOptions from '$lib/components/worksheets/WorksheetTypeOptions.svelte';
-	import GradeBadgeSelector from '$lib/components/GradeBadgeSelector.svelte';
-	import TagBadgeSelector from '$lib/components/TagBadgeSelector.svelte';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
+	import { Separator } from '#lib/components/ui/separator/index.ts';
+	import { Input } from '#lib/components/ui/input/index.ts';
+	import { Textarea } from '#lib/components/ui/textarea/index.ts';
+	import MySelect from '#lib/components/MySelect.svelte';
+	import MyCheckbox from '#lib/components/MyCheckbox.svelte';
+	import WorksheetNotionsEditor from '#lib/components/worksheets/WorksheetNotionsEditor.svelte';
+	import type { TreeNode } from '#lib/questions/classification-tree.ts';
+	import {
+		CATEGORY_LABELS,
+		branchNodeOf,
+		branchOf,
+		composedTitle,
+		englishName,
+		missingEnglishNames,
+		isWorksheetCategory,
+		WORKSHEET_CATEGORIES
+	} from '#lib/worksheets/worksheet-title.ts';
+	import type { WorksheetClassificationView } from '#lib/types/worksheets.ts';
+	import { worksheetLocale } from '#lib/types/worksheets.ts';
+	import WorksheetTypeOptions from '#lib/components/worksheets/WorksheetTypeOptions.svelte';
+	import GradeBadgeSelector from '#lib/components/GradeBadgeSelector.svelte';
+	import TagBadgeSelector from '#lib/components/TagBadgeSelector.svelte';
 	import { Loader2, Check, X, Settings } from '@lucide/svelte';
 	import {
 		WORKSHEET_TYPE_LABELS,
 		WORKSHEET_TYPE_OPTIONS,
-		formatDuration
-	} from '$lib/utils/worksheet-constants';
-	import { formatGradeShort } from '$lib/utils/grades';
-	import { toaster } from '$lib/stores/toaster.svelte';
-	import type { WorksheetWithRelations, WorksheetConfig } from '$lib/types/worksheets';
-	import type { GradeCode } from '$lib/types/grades';
+		formatMinutes
+	} from '#lib/utils/worksheet-constants.ts';
+	import { formatGradeShort } from '#lib/utils/grades.ts';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
+	import type { WorksheetWithRelations, WorksheetConfig } from '#lib/types/worksheets.ts';
+	import type { GradeCode } from '#lib/types/grades.ts';
 	import {
 		BUILT_IN_STYLE_OPTIONS,
 		DEFAULT_STYLE_ID,
 		styleIdOf,
 		type StyleOption
-	} from '$lib/typst/templates/styles';
+	} from '#lib/typst/templates/styles.ts';
 
 	// Props - controlled component pattern
 	interface Props {
 		worksheet: WorksheetWithRelations; // Already merged with pending changes
 		/** Le menu « Style » : ceux de Chiphre, puis ceux du prof */
 		styles?: StyleOption[];
+		/** L'arbre des notions (nœuds non archivés), pour les notions de la fiche */
+		nodes?: TreeNode[];
 		hasPendingChanges?: boolean;
 		onFieldChange?: (field: string, value: unknown) => void;
 		onSave?: () => Promise<void>;
@@ -58,6 +74,7 @@
 	let {
 		worksheet,
 		styles = BUILT_IN_STYLE_OPTIONS,
+		nodes = [],
 		hasPendingChanges = false,
 		onFieldChange,
 		onSave,
@@ -205,6 +222,48 @@
 	// Style options for MySelect
 	let styleOptions = $derived(styles.map((s) => ({ value: s.id, label: s.name })));
 
+	// Catégorie, notions et titre libre (ADR 0041)
+	/** Valeur de l'option « aucune » (MySelect n'accepte pas `null`) */
+	const NO_CATEGORY = '';
+	const categoryItems = [
+		{ value: NO_CATEGORY, label: 'Aucune' },
+		...WORKSHEET_CATEGORIES.map((c) => ({ value: c, label: CATEGORY_LABELS.fr[c] }))
+	];
+	let isExerciseSheet = $derived(worksheet.type === 'worksheet');
+	let category = $derived(isWorksheetCategory(worksheet.category) ? worksheet.category : null);
+	let notions = $derived<WorksheetClassificationView[]>(worksheet.classifications ?? []);
+	// Sans titre libre, une fiche d'exercices prend le titre composé (le serveur l'écrit)
+	let composed = $derived(isExerciseSheet && worksheet.custom_title === false);
+	// Branche de chaque notion lue dans l'arbre (une notion ajoutée n'a pas encore
+	// celle du serveur) : deux notions d'une même branche → la branche en titre
+	let treeById = $derived(new Map(nodes.map((node) => [node.id, node])));
+	let composedPreview = $derived(
+		composedTitle(
+			category,
+			notions.map((n) => ({ name: n.name, branch: branchOf(n.node_id, treeById) ?? n.branch }))
+		)
+	);
+
+	// Version anglaise au titre composé : les noms sans anglais (ADR 0043). Un seul
+	// suffit pour que le PDF anglais n'imprime aucune notion, la catégorie seule.
+	// Noms lus dans l'arbre (une notion ajoutée n'a pas encore ceux du serveur).
+	let missingEnglish = $derived(
+		isEnglishWorksheet && composed
+			? missingEnglishNames(
+					notions.map((n) => {
+						const node = treeById.get(n.node_id);
+						const branch = branchNodeOf(n.node_id, treeById);
+						return {
+							name: n.name,
+							nameEn: node ? englishName(node.translations) : n.name_en,
+							branch: branch?.name ?? n.branch,
+							branchEn: branch ? englishName(branch.translations) : n.branch_en
+						};
+					})
+				)
+			: []
+	);
+
 	// Le style retenu ; absent ou illisible → le style par défaut, comme le PDF
 	let chosenStyle = $derived(styles.find((s) => s.id === styleIdOf(worksheet)));
 	let defaultStyle = $derived(styles.find((s) => s.id === DEFAULT_STYLE_ID));
@@ -247,10 +306,63 @@
 			<Card.Title class="text-base">Informations</Card.Title>
 		</Card.Header>
 		<Card.Content class="space-y-3 pt-0">
+			<!-- Catégorie (fiche d'exercices) et notions, ADR 0041 -->
+			{#if isExerciseSheet}
+				<div>
+					<p class="text-xs text-muted-foreground">Catégorie</p>
+					{#if isEditable}
+						<MySelect
+							type="single"
+							value={category ?? NO_CATEGORY}
+							onchange={(v) => onFieldChange?.('category', v || null)}
+							items={categoryItems}
+							placeholder="Catégorie"
+							triggerAriaLabel="Catégorie : {category ? CATEGORY_LABELS.fr[category] : 'aucune'}"
+						/>
+					{:else}
+						<p class="text-sm font-medium">{category ? CATEGORY_LABELS.fr[category] : '-'}</p>
+					{/if}
+				</div>
+			{/if}
+
+			<div>
+				<p class="text-xs text-muted-foreground">Notions</p>
+				{#if isEditable}
+					<WorksheetNotionsEditor
+						{nodes}
+						value={notions}
+						onchange={(v) => onFieldChange?.('classifications', v)}
+					/>
+				{:else}
+					<p class="text-sm font-medium">
+						{notions.length > 0 ? notions.map((n) => n.name).join(' · ') : '-'}
+					</p>
+				{/if}
+				{#if missingEnglish.length > 0}
+					<p class="mt-1 text-xs text-muted-foreground" data-testid="notions-sans-anglais">
+						Sans nom anglais : {missingEnglish.join(', ')} — la version anglaise n’imprimera pas les notions.
+					</p>
+				{/if}
+			</div>
+
+			{#if isExerciseSheet && isEditable}
+				<MyCheckbox
+					checked={!composed}
+					onchange={(checked) => onFieldChange?.('custom_title', checked)}
+					label="Titre libre (sinon : notions et catégorie)"
+				/>
+			{/if}
+
 			<!-- Title -->
 			<div>
-				<p class="text-xs text-muted-foreground">Titre</p>
-				{#if !editingTitle}
+				<p class="text-xs text-muted-foreground">
+					{composed ? 'Titre composé' : 'Titre'}
+				</p>
+				{#if composed}
+					<p class="font-semibold">
+						{composedPreview || 'Choisis une notion ou une catégorie, ou coche « Titre libre ».'}
+					</p>
+				{:else if !editingTitle}
 					<button
 						type="button"
 						class="w-full text-left font-semibold {isEditable
@@ -332,7 +444,11 @@
 						<MySelect
 							type="single"
 							value={worksheet.type || undefined}
-							onchange={(v) => onFieldChange?.('type', v || null)}
+							onchange={(v) => {
+								onFieldChange?.('type', v || null);
+								// Seule une fiche d'exercices a une catégorie (ADR 0041)
+								if (v !== 'worksheet') onFieldChange?.('category', null);
+							}}
 							items={typeOptions}
 							placeholder="Type"
 						/>
@@ -411,7 +527,7 @@
 							onclick={() => startEdit('duration')}
 							disabled={!isEditable}
 						>
-							{formatDuration(worksheet.estimated_duration_minutes)}
+							{formatMinutes(worksheet.estimated_duration_minutes)}
 						</button>
 					{:else}
 						<div class="flex items-center gap-1">

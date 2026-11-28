@@ -1,14 +1,14 @@
 <!--
 	Page d'aide d'un bloc ubumark (`/aide-ecriture/blocs/<bloc>`, prof) :
 	réglages, exemples à copier, erreurs typiques, zone « Essayer ».
-	Contenu : une fiche de `$lib/block-catalog`.
+	Contenu : une fiche de `#lib/block-catalog/index.ts`.
 -->
 <script lang="ts">
-	import BackLink from '$lib/components/navigation/BackLink.svelte';
-	import MarkdownRenderer from '$lib/components/markdown/MarkdownRenderer.svelte';
-	import * as Table from '$lib/components/ui/table';
-	import { resolve } from '$app/paths';
-	import type { BlockCatalogEntry } from '$lib/block-catalog';
+	import BackLink from '#lib/components/navigation/BackLink.svelte';
+	import MarkdownRenderer from '#lib/components/markdown/MarkdownRenderer.svelte';
+	import * as Table from '#lib/components/ui/table/index.ts';
+	import { resolvePath } from '#lib/navigation/resolve-path.ts';
+	import type { BlockCatalogEntry } from '#lib/block-catalog/index.ts';
 	import BlockSource from './BlockSource.svelte';
 	import BlockTryIt from './BlockTryIt.svelte';
 
@@ -61,18 +61,17 @@
 							{#if entry.settingsKind === 'instructions'}
 								<Table.Head>Instruction</Table.Head>
 								<Table.Head>Ce qu’on y écrit</Table.Head>
-								<Table.Head>Effet</Table.Head>
 							{:else}
 								<Table.Head>Clé</Table.Head>
 								<Table.Head>Valeurs</Table.Head>
 								<Table.Head>Par défaut</Table.Head>
-								<Table.Head>Effet</Table.Head>
 							{/if}
 						</Table.Row>
 					</Table.Header>
 					<Table.Body>
 						{#each group.settings as setting (setting.key)}
-							<Table.Row>
+							<!-- La description sous le réglage, sur toute la largeur : une colonne « Effet » étroite s'étirait sur dix lignes -->
+							<Table.Row class="border-b-0">
 								{#if entry.settingsKind === 'instructions'}
 									<Table.Cell class="align-top whitespace-normal"
 										><code>{setting.key}</code></Table.Cell
@@ -89,7 +88,14 @@
 										{/if}
 									</Table.Cell>
 								{/if}
-								<Table.Cell class="align-top whitespace-normal">{setting.description}</Table.Cell>
+							</Table.Row>
+							<Table.Row>
+								<Table.Cell
+									colspan={entry.settingsKind === 'instructions' ? 2 : 3}
+									class="pt-0 pb-3 whitespace-normal text-muted-foreground"
+								>
+									{setting.description}
+								</Table.Cell>
 							</Table.Row>
 						{/each}
 					</Table.Body>
@@ -99,7 +105,7 @@
 		{#if entry.seeAlso}
 			<p class="mt-4">
 				Voir aussi :
-				<a href={resolve(entry.seeAlso.href as '/')} class="text-primary underline">
+				<a href={resolvePath(entry.seeAlso.href)} class="text-primary underline">
 					{entry.seeAlso.label}
 				</a>
 			</p>

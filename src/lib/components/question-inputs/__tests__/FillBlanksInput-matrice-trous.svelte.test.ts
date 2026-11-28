@@ -11,9 +11,9 @@ import { describe, it, expect, afterEach } from 'vitest';
 import { userEvent } from 'vitest/browser';
 import { render } from 'vitest-browser-svelte';
 import FillBlanksInput from '../FillBlanksInput.svelte';
-import { generateInstance } from '$lib/questions/generator/instance-generator';
-import { templateMarkdown } from '$lib/ubumark';
-import type { QuestionTemplate } from '$lib/questions/types';
+import { generateInstance } from '#lib/questions/generator/instance-generator.ts';
+import { templateMarkdown } from '#lib/ubumark/index.ts';
+import type { QuestionTemplate } from '#lib/questions/types.ts';
 import type { MathfieldElement } from 'mathlive';
 
 let mains: HTMLElement[] = [];

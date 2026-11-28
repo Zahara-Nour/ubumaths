@@ -129,7 +129,7 @@ export function ratchetReport(ratchet: ConsoleCounts, current: ConsoleCounts): s
 	if (increases.length > 0) {
 		lines.push(
 			'⛔ Nouveaux console.* dans le code serveur : utilise createServerLogger',
-			"   (import { createServerLogger } from '$lib/utils/logger'), qui masque les données personnelles."
+			"   (import { createServerLogger } from '#lib/utils/logger.ts'), qui masque les données personnelles."
 		);
 		for (const c of increases) lines.push(`   ${c.file} : ${c.before} → ${c.after}`);
 	}

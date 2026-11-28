@@ -13,8 +13,8 @@
 import { describe, it, expect } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import WithAtelier from './harness/WithAtelier.svelte';
-import { Atelier } from '$lib/atelier/atelier.svelte';
-import { convertLatexToSpeakableText } from 'mathlive';
+import { Atelier } from '#lib/atelier/atelier.svelte.ts';
+import { speakLatexInFrench } from '#lib/utils/formula-speech/french.ts';
 
 function cardFor(container: HTMLElement, name: string): HTMLElement {
 	const card = [...container.querySelectorAll('.objet')].find(
@@ -39,24 +39,25 @@ async function spokenDerivativeOf(definition: string): Promise<string> {
 
 describe('la carte f′ lit la formule de la dérivée', () => {
 	it.each([
-		['2e^(sin(x))', ['cosine', 'sine']],
-		['2ln(3)*3^(2x)', ['ln']],
-		['3\\pi x^2/4', ['pie']],
-		['3π x^2/4', ['pie']],
-		['cos(3x+\\pi/4)', ['sine', 'pie']]
+		['2e^(sin(x))', ['cosinus', 'sinus']],
+		['2ln(3)*3^(2x)', ['logarithme népérien']],
+		['3\\pi x^2/4', ['pi']],
+		['3π x^2/4', ['pi']],
+		['cos(3x+\\pi/4)', ['sinus', 'pi']]
 	])('%s', async (definition, words) => {
 		const spoken = await spokenDerivativeOf(definition);
 
 		// Rendue en mathématiques (pas le texte de repli), noms de fonctions entiers
 		expect(spoken).not.toMatch(/^\(texte\)/);
 		for (const word of words) expect(spoken).toContain(word);
-		expect(spoken).not.toMatch(/'[SCL]'/);
+		// Lue en français depuis E32 : une fonction épelée se lirait « c o s », « s i n », « l n »
+		expect(spoken).not.toMatch(/\b(c o s|s i n|l n)\b/);
 	});
 });
 
 /** Ce qu'un lecteur d'écran lirait pour ce LaTeX : la référence d'un rendu attendu. */
 function spokenOf(latex: string): string {
-	return convertLatexToSpeakableText(latex);
+	return speakLatexInFrench(latex);
 }
 
 /**

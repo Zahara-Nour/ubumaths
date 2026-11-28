@@ -12,9 +12,9 @@
  */
 import { describe, expect, it } from 'vitest';
 import { generateStudentWorksheetTypst } from '../student-worksheet-typst';
-import { DEFAULT_STYLE_ID, resolveTemplate } from '$lib/typst/templates/styles';
-import { DEFAULT_TEMPLATE_IDS } from '$lib/typst/templates/default-templates';
-import type { StudentWorksheetView, WorksheetTemplateRow } from '$lib/types/worksheets';
+import { DEFAULT_STYLE_ID, resolveTemplate } from '#lib/typst/templates/styles.ts';
+import { DEFAULT_TEMPLATE_IDS } from '#lib/typst/templates/default-templates.ts';
+import type { StudentWorksheetView, WorksheetTemplateRow } from '#lib/types/worksheets.ts';
 
 const STANDARD = DEFAULT_TEMPLATE_IDS.standard;
 const PROF_STYLE = '6f1c2a4e-0000-4000-8000-00000000abcd';

@@ -5,8 +5,8 @@
  * Note: Manual refresh only - no automatic polling (architecture simplified 2025-10-30)
  */
 
-import type { NotificationWithDetails } from '$lib/types/notification';
-import { toaster } from '$lib/stores/toaster.svelte';
+import type { NotificationWithDetails } from '#lib/types/notification.ts';
+import { toaster } from '#lib/stores/toaster.svelte.ts';
 
 /**
  * Notification store class

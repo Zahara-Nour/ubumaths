@@ -1,0 +1,239 @@
+{
+	"id": "90d6612d-948c-4dcc-8867-2928c18596a1",
+	"title": "Est-ce une situation de proportionnalité ?",
+	"description": "Dire si deux grandeurs sont proportionnelles (case « choix » Oui / Non) : situations en mots (pile de manuels identiques : oui ; âge et taille : non ; taxi avec prise en charge : non), ou deux prix au marché (« 3 fois plus de kilos, 3 fois plus cher ? »)",
+	"grades": ["CM2"],
+	"level": 1,
+	"delay": 90,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"spacesFromFourDigits": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "{{if:s==1|Des cahiers identiques sont vendus au même prix chacun. Le prix à payer est-il proportionnel au nombre de cahiers achetés ?|{{if:s==2|Des manuels sont tous identiques. La masse d'une pile de ces manuels est-elle proportionnelle au nombre de manuels ?|{{if:s==3|Pour faire une pâte à crêpes, on met toujours $250~\\unit{g}$ de farine pour $2$ œufs. La masse de farine est-elle proportionnelle au nombre d'œufs ?|{{if:s==4|Un train roule toujours à la même vitesse. La distance parcourue est-elle proportionnelle à la durée du trajet ?|{{if:s==5|Le périmètre d'un carré est-il proportionnel à la longueur de son côté ?|{{if:s==6|La taille d'une personne est-elle proportionnelle à son âge ?|{{if:s==7|Un taxi fait payer $4~\\unit{€}$ dès qu'on monte, puis $2~\\unit{€}$ par kilomètre. Le prix de la course est-il proportionnel au nombre de kilomètres ?|{{if:s==8|L'aire d'un carré est-elle proportionnelle à la longueur de son côté ?|{{if:s==9|Un magasin vend des stylos à $1~\\unit{€}$ l'un, et le lot de $10$ stylos à $7~\\unit{€}$. Le prix payé est-il proportionnel au nombre de stylos ?|Un forfait de téléphone coûte $15~\\unit{€}$ par mois, quel que soit le nombre d'appels. Le prix payé est-il proportionnel au nombre d'appels ?}}}}}}}}}}}}}}}}}}\n\n```choix\nmelanger: non\n- Oui\n- Non\n```",
+			"variables": [
+				{
+					"name": "s",
+					"expression": "1..10"
+				},
+				{
+					"name": "r",
+					"expression": "{{if:s<6|0|1}}"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{r}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Deux grandeurs sont proportionnelles quand, si l'une devient deux, trois… fois plus grande, l'autre devient aussi deux, trois… fois plus grande.",
+					"{{if:s==1|**Oui.** Les cahiers coûtent tous le même prix : si on en achète trois fois plus, on paie trois fois plus.|{{if:s==2|**Oui.** Les manuels ont tous la même masse : s'il y a trois fois plus de manuels dans la pile, elle est trois fois plus lourde.|{{if:s==3|**Oui.** Avec deux fois plus d'œufs, on met deux fois plus de farine : $4$ œufs pour $500~\\unit{g}$, $6$ œufs pour $750~\\unit{g}$.|{{if:s==4|**Oui.** À vitesse constante, en deux fois plus de temps, le train parcourt deux fois plus de distance.|{{if:s==5|**Oui.** Le périmètre, c'est quatre fois le côté : un côté trois fois plus long donne un périmètre trois fois plus long.|{{if:s==6|**Non.** À quarante ans, on n'est pas deux fois plus grand qu'à vingt ans.|{{if:s==7|**Non.** Pour $10~\\unit{km}$, on paie $4 + 20 = 24~\\unit{€}$ ; pour $20~\\unit{km}$, $4 + 40 = 44~\\unit{€}$. Deux fois plus de kilomètres, mais pas deux fois plus cher.|{{if:s==8|**Non.** Un carré de $2~\\unit{cm}$ de côté a une aire de $4~\\unit{cm^2}$ ; un carré de $4~\\unit{cm}$ de côté, $16~\\unit{cm^2}$. Le côté est deux fois plus long, l'aire quatre fois plus grande.|{{if:s==9|**Non.** Un stylo coûte $1~\\unit{€}$, mais dix stylos ne coûtent pas dix fois plus : $7~\\unit{€}$ seulement.|**Non.** Pour $10$ appels ou pour $20$ appels, on paie toujours $15~\\unit{€}$ : deux fois plus d'appels, mais pas deux fois plus cher.}}}}}}}}}}}}}}}}}}"
+				]
+			}
+		},
+		{
+			"statement": "Au marché, un marchand {{if:o==0|affiche le prix d'un kilo de pommes. Pour|vend des sacs de pommes tout prêts. Le sac de}} ${{a}}~\\unit{kg}$, {{if:o==0|on paie|il coûte}} ${{eval:floor((a*u)/100)}}.{{eval:floor(mod(a*u,100)/10)}}{{eval:mod(a*u,10)}}~\\unit{€}$ ; {{if:o==0|pour|le sac de}} ${{eval:k*a}}~\\unit{kg}$, {{if:o==0|on paie|il coûte}} ${{eval:floor((k*a*u-o*r)/100)}}.{{eval:floor(mod(k*a*u-o*r,100)/10)}}{{eval:mod(k*a*u-o*r,10)}}~\\unit{€}$.\n\nLe prix des pommes est-il proportionnel à leur masse ?\n\n```choix\nmelanger: non\n- Oui\n- Non\n```",
+			"variables": [
+				{
+					"name": "o",
+					"expression": "0..1"
+				},
+				{
+					"name": "a",
+					"expression": "1..3"
+				},
+				{
+					"name": "k",
+					"expression": "2..4"
+				},
+				{
+					"name": "x",
+					"expression": "30..90"
+				},
+				{
+					"name": "u",
+					"expression": "eval:5*x"
+				},
+				{
+					"name": "y",
+					"expression": "10..60"
+				},
+				{
+					"name": "r",
+					"expression": "eval:5*y"
+				}
+			],
+			"conditions": ["k * a * u - r > a * u"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{o}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On compare : ${{eval:k*a}}~\\unit{kg}$, c'est ${{k}}$ fois plus que ${{eval:a}}~\\unit{kg}$. Le prix est-il ${{k}}$ fois plus grand ? ${{k}} \\times {{eval:floor((a*u)/100)}}.{{eval:floor(mod(a*u,100)/10)}}{{eval:mod(a*u,10)}} = {{eval:floor((k*a*u)/100)}}.{{eval:floor(mod(k*a*u,100)/10)}}{{eval:mod(k*a*u,10)}}$.",
+					"{{if:o==0|**Oui.** On paie bien ${{k}}$ fois plus : le prix d'un kilo est le même pour toutes les masses.|**Non.** Le grand sac coûte ${{eval:floor((k*a*u-r)/100)}}.{{eval:floor(mod(k*a*u-r,100)/10)}}{{eval:mod(k*a*u-r,10)}}~\\unit{€}$, pas ${{eval:floor((k*a*u)/100)}}.{{eval:floor(mod(k*a*u,100)/10)}}{{eval:mod(k*a*u,10)}}~\\unit{€}$ : ${{k}}$ fois plus de pommes, mais pas ${{k}}$ fois plus cher.}}"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "manuels : oui",
+			"variationIndex": 0,
+			"variables": {
+				"s": "2",
+				"r": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : manuels, non",
+			"variationIndex": 0,
+			"variables": {
+				"s": "2",
+				"r": "0"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "taxi : non",
+			"variationIndex": 0,
+			"variables": {
+				"s": "7",
+				"r": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : taxi, oui (le prix augmente)",
+			"variationIndex": 0,
+			"variables": {
+				"s": "7",
+				"r": "1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "âge et taille : non",
+			"variationIndex": 0,
+			"variables": {
+				"s": "6",
+				"r": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "aire du carré : non",
+			"variationIndex": 0,
+			"variables": {
+				"s": "8",
+				"r": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "périmètre du carré : oui",
+			"variationIndex": 0,
+			"variables": {
+				"s": "5",
+				"r": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "prix au kilo : 2 kg 5,50 €, 6 kg 16,50 € → oui",
+			"variationIndex": 1,
+			"variables": {
+				"o": "0",
+				"a": "2",
+				"k": "3",
+				"x": "55",
+				"u": "275",
+				"y": "20",
+				"r": "100"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : prix au kilo, non",
+			"variationIndex": 1,
+			"variables": {
+				"o": "0",
+				"a": "2",
+				"k": "3",
+				"x": "55",
+				"u": "275",
+				"y": "20",
+				"r": "100"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "sacs : 2 kg 5,50 €, 6 kg 15,50 € → non",
+			"variationIndex": 1,
+			"variables": {
+				"o": "1",
+				"a": "2",
+				"k": "3",
+				"x": "55",
+				"u": "275",
+				"y": "20",
+				"r": "100"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : sacs, oui (le prix augmente)",
+			"variationIndex": 1,
+			"variables": {
+				"o": "1",
+				"a": "2",
+				"k": "3",
+				"x": "55",
+				"u": "275",
+				"y": "20",
+				"r": "100"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

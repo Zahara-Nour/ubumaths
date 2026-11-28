@@ -5,7 +5,11 @@
  * @vitest-environment node
  */
 import { describe, it, expect } from 'vitest';
-import { sanitizeForFileName, worksheetPdfFileName } from '$lib/worksheets/pdf-file-name';
+import {
+	sanitizeForFileName,
+	uniqueFileName,
+	worksheetPdfFileName
+} from '#lib/worksheets/pdf-file-name.ts';
 
 describe('sanitizeForFileName', () => {
 	it('retire les accents au lieu de remplacer la lettre', () => {
@@ -37,5 +41,38 @@ describe('worksheetPdfFileName : trois PDF, trois noms', () => {
 		expect(worksheetPdfFileName('Fiche 1', 'answers', 'Dupont Léa')).toBe(
 			'Fiche_1_Dupont_Lea - Réponses.pdf'
 		);
+	});
+
+	it('la version anglaise garde le titre français et finit par _EN', () => {
+		expect(worksheetPdfFileName('Équations', 'worksheet', undefined, 'en')).toBe(
+			'Equations_EN.pdf'
+		);
+		expect(worksheetPdfFileName('Équations', 'correction', 'Dupont Léa', 'en')).toBe(
+			'Equations_Dupont_Lea - Corrigé_EN.pdf'
+		);
+		expect(worksheetPdfFileName('Équations', 'worksheet', undefined, 'fr')).toBe('Equations.pdf');
+	});
+});
+
+describe('uniqueFileName — deux élèves homonymes dans un lot', () => {
+	it('un nom libre est rendu tel quel, puis noté', () => {
+		const used = new Set<string>();
+		expect(uniqueFileName('Fiche_Martin_Lea.pdf', used)).toBe('Fiche_Martin_Lea.pdf');
+		expect(used.has('Fiche_Martin_Lea.pdf')).toBe(true);
+	});
+
+	it('un nom déjà pris reçoit _2, puis _3, avant l’extension', () => {
+		const used = new Set<string>();
+		const names = [1, 2, 3].map(() => uniqueFileName('Fiche_Martin_Lea_EN.pdf', used));
+		expect(names).toEqual([
+			'Fiche_Martin_Lea_EN.pdf',
+			'Fiche_Martin_Lea_EN_2.pdf',
+			'Fiche_Martin_Lea_EN_3.pdf'
+		]);
+	});
+
+	it('sans extension, le rang va à la fin', () => {
+		const used = new Set(['Eleve']);
+		expect(uniqueFileName('Eleve', used)).toBe('Eleve_2');
 	});
 });

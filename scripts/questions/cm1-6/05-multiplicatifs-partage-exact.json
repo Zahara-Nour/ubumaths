@@ -1,0 +1,300 @@
+{
+	"id": "e55366fc-b2f5-4b37-9938-6a8a01938829",
+	"title": "Problèmes multiplicatifs : partage exact",
+	"description": "Le tout (7 boîtes de 80 trombones), la valeur d'une part (560 € entre 7), le nombre de parts (un ruban de 560 cm en morceaux de 80 cm), appuyés sur les tables",
+	"grades": ["CM1"],
+	"level": 12,
+	"delay": 90,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"spacesFromFourDigits": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Une papeterie reçoit ${{g}}$ boîtes de ${{p}}$ trombones.\n\nCombien de trombones la papeterie reçoit-elle en tout ?\n\nElle reçoit $?$ trombones.",
+			"variables": [
+				{
+					"name": "g",
+					"expression": "2..10"
+				},
+				{
+					"name": "q",
+					"expression": "2..10"
+				},
+				{
+					"name": "z",
+					"expression": "1..3"
+				},
+				{
+					"name": "m",
+					"expression": "eval:1+9*min(max(z-1,0),1)+90*min(max(z-2,0),1)"
+				},
+				{
+					"name": "p",
+					"expression": "eval:q*m"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:g*p}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"${{g}}$ boîtes de ${{p}}$ trombones, c'est ${{g}}$ fois ${{p}}$ : on multiplie.",
+					"{{if:z==1|Dans la table de ${{g}}$ : ${{g}} \\times {{q}} = {{eval:g*q}}$.|{{if:z==2|Dans la table de ${{g}}$ : ${{g}} \\times {{q}} = {{eval:g*q}}$ ; avec des dizaines : ${{g}} \\times {{p}} = {{eval:g*p}}$ ({{eval:g*q}} dizaines).|Dans la table de ${{g}}$ : ${{g}} \\times {{q}} = {{eval:g*q}}$ ; avec des centaines : ${{g}} \\times {{p}} = {{eval:g*p}}$ ({{eval:g*q}} centaines).}}}}",
+					"$${{g}} \\times {{p}} = \\textcolor{{{color:primary.0}}}{{{eval:g*p}}}$$",
+					"La papeterie reçoit ${{eval:g*p}}$ trombones.",
+					"On vérifie en partageant : ${{eval:g*p}} \\div {{g}} = {{p}}$ trombones par boîte."
+				]
+			}
+		},
+		{
+			"statement": "Madame Lemoine partage ${{eval:g*p}}~\\unit{€}$ en parts égales entre ses ${{g}}$ petits-enfants.\n\nCombien chacun reçoit-il ?\n\nChacun reçoit $?~\\text{€}$.",
+			"variables": [
+				{
+					"name": "g",
+					"expression": "2..10"
+				},
+				{
+					"name": "q",
+					"expression": "2..10"
+				},
+				{
+					"name": "z",
+					"expression": "1..3"
+				},
+				{
+					"name": "m",
+					"expression": "eval:1+9*min(max(z-1,0),1)+90*min(max(z-2,0),1)"
+				},
+				{
+					"name": "p",
+					"expression": "eval:q*m"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:p}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On partage ${{eval:g*p}}$ en ${{g}}$ parts égales : on cherche le nombre qui, ${{g}}$ fois, fait ${{eval:g*p}}$. On divise.",
+					"{{if:z==1|Dans la table de ${{g}}$ : ${{g}} \\times {{q}} = {{eval:g*q}}$.|{{if:z==2|Dans la table de ${{g}}$ : ${{g}} \\times {{q}} = {{eval:g*q}}$ ; avec des dizaines : ${{g}} \\times {{p}} = {{eval:g*p}}$ ({{eval:g*q}} dizaines).|Dans la table de ${{g}}$ : ${{g}} \\times {{q}} = {{eval:g*q}}$ ; avec des centaines : ${{g}} \\times {{p}} = {{eval:g*p}}$ ({{eval:g*q}} centaines).}}}}",
+					"$${{eval:g*p}} \\div {{g}} = \\textcolor{{{color:primary.0}}}{{{p}}}$$",
+					"Chacun reçoit ${{p}}~\\unit{€}$.",
+					"On vérifie : ${{g}} \\times {{p}} = {{eval:g*p}}$, on retrouve la somme partagée."
+				]
+			}
+		},
+		{
+			"statement": "On découpe un ruban de ${{eval:g*p}}~\\unit{cm}$ en morceaux de ${{p}}~\\unit{cm}$.\n\nCombien de morceaux obtient-on ?\n\nOn obtient $?$ morceaux.",
+			"variables": [
+				{
+					"name": "g",
+					"expression": "2..10"
+				},
+				{
+					"name": "q",
+					"expression": "2..10"
+				},
+				{
+					"name": "z",
+					"expression": "1..3"
+				},
+				{
+					"name": "m",
+					"expression": "eval:1+9*min(max(z-1,0),1)+90*min(max(z-2,0),1)"
+				},
+				{
+					"name": "p",
+					"expression": "eval:q*m"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:g}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On cherche combien de fois il y a ${{p}}~\\unit{cm}$ dans ${{eval:g*p}}~\\unit{cm}$ : on divise.",
+					"{{if:z==1|Dans la table de ${{q}}$ : ${{eval:g}} \\times {{q}} = {{eval:g*q}}$.|{{if:z==2|Dans la table de ${{q}}$ : ${{g}} \\times {{q}} = {{eval:g*q}}$ ; avec des dizaines : ${{g}} \\times {{p}} = {{eval:g*p}}$.|Dans la table de ${{q}}$ : ${{g}} \\times {{q}} = {{eval:g*q}}$ ; avec des centaines : ${{g}} \\times {{p}} = {{eval:g*p}}$.}}}}",
+					"$${{eval:g*p}} \\div {{p}} = \\textcolor{{{color:primary.0}}}{{{g}}}$$",
+					"On obtient ${{g}}$ morceaux.",
+					"On vérifie : ${{g}}$ morceaux de ${{p}}~\\unit{cm}$ font ${{g}} \\times {{p}} = {{eval:g*p}}~\\unit{cm}$, tout le ruban."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "tout : 7 boîtes de 80 = 560",
+			"variationIndex": 0,
+			"variables": {
+				"g": "7",
+				"q": "8",
+				"z": "2",
+				"m": "10",
+				"p": "80"
+			},
+			"answers": ["560"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : tout, 7 + 80 (87)",
+			"variationIndex": 0,
+			"variables": {
+				"g": "7",
+				"q": "8",
+				"z": "2",
+				"m": "10",
+				"p": "80"
+			},
+			"answers": ["87"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : tout, le zéro oublié (56)",
+			"variationIndex": 0,
+			"variables": {
+				"g": "7",
+				"q": "8",
+				"z": "2",
+				"m": "10",
+				"p": "80"
+			},
+			"answers": ["56"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "tout : 6 boîtes de 400 = 2 400",
+			"variationIndex": 0,
+			"variables": {
+				"g": "6",
+				"q": "4",
+				"z": "3",
+				"m": "100",
+				"p": "400"
+			},
+			"answers": ["2\\,400"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "part : 560 € entre 7 = 80 €",
+			"variationIndex": 1,
+			"variables": {
+				"g": "7",
+				"q": "8",
+				"z": "2",
+				"m": "10",
+				"p": "80"
+			},
+			"answers": ["80"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : part, 560 − 7 (553)",
+			"variationIndex": 1,
+			"variables": {
+				"g": "7",
+				"q": "8",
+				"z": "2",
+				"m": "10",
+				"p": "80"
+			},
+			"answers": ["553"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : part, le zéro oublié (8)",
+			"variationIndex": 1,
+			"variables": {
+				"g": "7",
+				"q": "8",
+				"z": "2",
+				"m": "10",
+				"p": "80"
+			},
+			"answers": ["8"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "part : 54 € entre 9 = 6 €",
+			"variationIndex": 1,
+			"variables": {
+				"g": "9",
+				"q": "6",
+				"z": "1",
+				"m": "1",
+				"p": "6"
+			},
+			"answers": ["6"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "parts : 560 cm en morceaux de 80 = 7",
+			"variationIndex": 2,
+			"variables": {
+				"g": "7",
+				"q": "8",
+				"z": "2",
+				"m": "10",
+				"p": "80"
+			},
+			"answers": ["7"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : parts, la longueur d'un morceau (80)",
+			"variationIndex": 2,
+			"variables": {
+				"g": "7",
+				"q": "8",
+				"z": "2",
+				"m": "10",
+				"p": "80"
+			},
+			"answers": ["80"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : parts, 560 − 80 (480)",
+			"variationIndex": 2,
+			"variables": {
+				"g": "7",
+				"q": "8",
+				"z": "2",
+				"m": "10",
+				"p": "80"
+			},
+			"answers": ["480"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

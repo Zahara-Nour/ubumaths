@@ -26,9 +26,9 @@
  * `ChoreographyError` (the parallel is (AB) itself, nothing to animate).
  */
 
-import type { Figure } from '$lib/geometry-core/graph/figure';
-import { exact, numeric } from '$lib/geometry-core/types/geo-value';
-import { numericNode } from '$lib/mathAST/common/numeric';
+import type { Figure } from '#lib/geometry-core/graph/figure.ts';
+import { exact, numeric } from '#lib/geometry-core/types/geo-value.ts';
+import { numericNode } from '#lib/mathAST/common/numeric.ts';
 import { ChoreographyError } from './types';
 import { revealHiddenUsedPoints } from './reveal-points';
 import { capitalize, de, en, labelAux, lineFormRoles, mesure, nom, type Role } from './names';
@@ -674,7 +674,7 @@ function buildEquerre(ctx: Parameters<ChoreographyFn>[0]): ChoreographyResult {
 		// glissement). Bord horizontal aligné avec (AB), bord vertical
 		// pointant vers P.
 		{
-			kind: 'compass-measure',
+			kind: 'instrument-move',
 			instrument: 'setSquare',
 			instrumentTarget: {
 				x: equerreInitialX0,
@@ -693,7 +693,7 @@ function buildEquerre(ctx: Parameters<ChoreographyFn>[0]): ChoreographyResult {
 		// servira de glissière pour le déplacement perpendiculaire.
 		// `secondaryInstrument: 'setSquare'` garde l'équerre visible.
 		{
-			kind: 'compass-measure',
+			kind: 'instrument-move',
 			instrument: 'ruler',
 			secondaryInstrument: 'setSquare',
 			instrumentTarget: {
@@ -711,7 +711,7 @@ function buildEquerre(ctx: Parameters<ChoreographyFn>[0]): ChoreographyResult {
 		// SS3 : glissement de l'équerre le long de la règle (la règle
 		// reste fixe ; `secondaryInstrument: 'ruler'` la maintient visible).
 		{
-			kind: 'compass-measure',
+			kind: 'instrument-move',
 			instrument: 'setSquare',
 			secondaryInstrument: 'ruler',
 			instrumentTarget: { x: Cfinal_x0, y: Cfinal_y0, rotation: setSquareRotation },
@@ -738,7 +738,7 @@ function buildEquerre(ctx: Parameters<ChoreographyFn>[0]): ChoreographyResult {
 		},
 		// SS5 : swap équerre → règle, alignée sur la portion tracée.
 		{
-			kind: 'compass-measure',
+			kind: 'instrument-move',
 			instrument: 'ruler',
 			instrumentTarget: { x: rulerOriginX0, y: rulerOriginY0, rotation: rulerRotationDeg },
 			compassRadius: 0,
@@ -1356,7 +1356,7 @@ function buildDoublePerpendiculaireEquerre(ctx: ChoreographyCtx): ChoreographyRe
 			instruction: lineEInstruction(N, nE)
 		},
 		{
-			kind: 'compass-measure',
+			kind: 'instrument-move',
 			instrument: 'setSquare',
 			instrumentTarget: { x: P.x, y: P.y, rotation: setSquareRotation },
 			compassRadius: 0,
@@ -1378,7 +1378,7 @@ function buildDoublePerpendiculaireEquerre(ctx: ChoreographyCtx): ChoreographyRe
 			instruction: "Le long de l'autre bord de l'équerre, on trace une portion de la parallèle"
 		},
 		{
-			kind: 'compass-measure',
+			kind: 'instrument-move',
 			instrument: 'ruler',
 			instrumentTarget: { x: rulerOrigin0.x, y: rulerOrigin0.y, rotation: rulerRotation },
 			compassRadius: 0,

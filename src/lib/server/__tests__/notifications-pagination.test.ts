@@ -19,12 +19,12 @@
  */
 
 import { describe, test, expect, beforeEach, vi } from 'vitest';
-import * as authMiddleware from '$lib/server/middleware/auth';
-import * as notificationsModule from '$lib/server/notifications';
+import * as authMiddleware from '#lib/server/middleware/auth.ts';
+import * as notificationsModule from '#lib/server/notifications.ts';
 
 // Mock dependencies
-vi.mock('$lib/server/middleware/auth');
-vi.mock('$lib/server/notifications');
+vi.mock('#lib/server/middleware/auth.ts');
+vi.mock('#lib/server/notifications.ts');
 
 // Import after mocks
 const { GET } = await import('../../../routes/api/notifications/unread/+server');

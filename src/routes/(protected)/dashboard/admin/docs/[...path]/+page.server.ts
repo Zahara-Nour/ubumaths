@@ -1,9 +1,9 @@
 import type { PageServerLoad } from './$types';
 import { error } from '@sveltejs/kit';
-import { requireAdmin } from '$lib/server/middleware/auth';
-import { scanDocumentation, getDocumentContent } from '$lib/server/docs-scanner';
-import { parseMarkdown } from '$lib/server/markdown-parser';
-import { createServerLogger } from '$lib/utils/logger';
+import { requireAdmin } from '#lib/server/middleware/auth.ts';
+import { scanDocumentation, getDocumentContent } from '#lib/server/docs-scanner.ts';
+import { parseMarkdown } from '#lib/server/markdown-parser.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('(protected)/dashboard/admin/docs/[...path]/+page.server');
 

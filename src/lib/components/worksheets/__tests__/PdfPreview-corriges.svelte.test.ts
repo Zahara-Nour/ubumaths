@@ -9,7 +9,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import { page } from 'vitest/browser';
-import type { WorksheetWithRelations } from '$lib/types/worksheets';
+import type { WorksheetWithRelations } from '#lib/types/worksheets.ts';
 import PdfPreview from '../PdfPreview.svelte';
 
 // ============================================================================
@@ -22,7 +22,7 @@ const captured = vi.hoisted(() => ({
 	warnings: [] as string[]
 }));
 
-vi.mock('$lib/typst/generators', () => ({
+vi.mock('#lib/typst/generators/index.ts', () => ({
 	generateWorksheetTypst: (options: { mode: string; inlineCorrections?: boolean }) => {
 		captured.modes.push(options.mode);
 		// Fiche + corrigé : une fiche, corrections sous les énoncés
@@ -30,7 +30,7 @@ vi.mock('$lib/typst/generators', () => ({
 	}
 }));
 
-vi.mock('$lib/typst/compiler', () => ({
+vi.mock('#lib/typst/compiler/index.ts', () => ({
 	getTypstCompiler: async () => ({
 		svg: async () => '<svg xmlns="http://www.w3.org/2000/svg"></svg>',
 		pdf: async () => new Uint8Array([37, 80, 68, 70]),
@@ -41,7 +41,7 @@ vi.mock('$lib/typst/compiler', () => ({
 	resetCompilerState: () => {}
 }));
 
-vi.mock('$lib/typst/compiler/correction-fonts-compiler', () => ({
+vi.mock('#lib/typst/compiler/correction-fonts-compiler.ts', () => ({
 	compileTypstDocument: async (typst: string) => ({
 		data: {
 			pdf: new Uint8Array([37, 80, 68, 70]),
@@ -53,7 +53,7 @@ vi.mock('$lib/typst/compiler/correction-fonts-compiler', () => ({
 	fallbackWarning: (message: string) => `Corrigé imprimé dans la police standard : ${message}`
 }));
 
-vi.mock('$lib/stores/toaster.svelte', () => ({
+vi.mock('#lib/stores/toaster.svelte.ts', () => ({
 	toaster: {
 		success: () => {},
 		error: () => {},
@@ -86,7 +86,7 @@ async function downloadedFileName(): Promise<string> {
 }
 
 async function choose(label: string) {
-	await page.getByRole('button', { name: 'PDF à générer' }).click();
+	await page.getByRole('combobox', { name: 'PDF à générer' }).click();
 	await page.getByRole('option', { name: label, exact: true }).click();
 }
 

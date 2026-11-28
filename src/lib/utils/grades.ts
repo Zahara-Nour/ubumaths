@@ -1,4 +1,4 @@
-import { GRADES, GRADE_CODES, type GradeCode, type SchoolLevel } from '$lib/types/grades';
+import { GRADES, GRADE_CODES, type GradeCode, type SchoolLevel } from '#lib/types/grades.ts';
 
 // Cache for computed hierarchies
 const accessibleCache = new Map<GradeCode, GradeCode[]>();

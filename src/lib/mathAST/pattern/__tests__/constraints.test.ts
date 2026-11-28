@@ -7,7 +7,12 @@ import { checkConstraint, containsVariable, isFreeOfVariables } from '../constra
 import { P } from '../builder';
 import type { PatternConstraint } from '../types';
 import { number, variable, add, multiply, divide, opposite, func, greek } from '../../factory';
-import { intervalSet, openInterval, closedInterval, leftClosedInterval } from '$lib/math/intervals';
+import {
+	intervalSet,
+	openInterval,
+	closedInterval,
+	leftClosedInterval
+} from '#lib/math/intervals/index.ts';
 import { parsePattern } from '../../parser/custom/pattern-parser';
 
 describe('Constraint Evaluation', () => {

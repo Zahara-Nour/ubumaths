@@ -1,10 +1,10 @@
 <script lang="ts">
-	import SeoHead from '$lib/seo/SeoHead.svelte';
-	import PythonPlayground from '$lib/components/python/PythonPlayground.svelte';
-	import { pythonStore } from '$lib/stores/pythonPlayground.svelte';
+	import SeoHead from '#lib/seo/SeoHead.svelte';
+	import PythonPlayground from '#lib/components/python/PythonPlayground.svelte';
+	import { pythonStore } from '#lib/stores/pythonPlayground.svelte.ts';
 	import { onMount } from 'svelte';
-	import { browser } from '$app/environment';
-	import { ConfirmDialog } from '$lib/components/ui/confirm-dialog';
+	import { browser } from '$app/env';
+	import { ConfirmDialog } from '#lib/components/ui/confirm-dialog/index.ts';
 
 	// Props from page server
 	let { data } = $props();
@@ -74,8 +74,8 @@
 </script>
 
 <SeoHead
-	title="Python Playground - Chiphre"
-	description="Environnement Python interactif avec NumPy et Matplotlib pour les mathématiques"
+	title="Python en ligne pour les maths : NumPy et Matplotlib | Chiphre"
+	description="Écrire et exécuter du Python dans le navigateur, sans rien installer : NumPy et Matplotlib inclus, pour les mathématiques."
 />
 
 <main class="container mx-auto p-4">

@@ -2,16 +2,17 @@
  * Worksheet API validation schemas
  *
  * Comprehensive Zod validation for all worksheet-related API endpoints.
- * Based on types from $lib/types/worksheets.ts
+ * Based on types from #lib/types/worksheets.ts
  */
 
+import { WORKSHEET_CATEGORIES } from '#lib/worksheets/worksheet-title.ts';
 import { z } from 'zod';
 import { uuidSchema } from './common';
 import { exerciseHintSchema, exerciseTranslationsSchema } from './exercises';
 import { gradeCodeSchema } from './grades';
-import { CONTENT_LOCALES } from '$lib/types/locale';
-import { capitalPairsSchema } from '$lib/questions/capital-pairs';
-import { TEXT_SIZES } from '$lib/typst/text-size';
+import { CONTENT_LOCALES } from '#lib/types/locale.ts';
+import { capitalPairsSchema } from '#lib/questions/capital-pairs.ts';
+import { TEXT_SIZES } from '#lib/typst/text-size.ts';
 import {
 	ANSWER_FRAME_MAX_LINES,
 	ANSWER_FRAME_MAX_QUESTIONS,
@@ -19,7 +20,7 @@ import {
 	CALCULATOR_RULES,
 	WORKSHEET_TYPES,
 	isIsoDate
-} from '$lib/types/worksheets';
+} from '#lib/types/worksheets.ts';
 
 // ============================================================================
 // ENUM SCHEMAS
@@ -305,7 +306,12 @@ export const updateWorksheetSchema = z.object({
 	grades: z.array(gradeCodeSchema).max(20, '20 niveaux au maximum').optional(), // No default - won't be set if not in request
 	tags: z.array(z.string().trim().min(1).max(50)).max(30, '30 mots-clés au maximum').optional(), // No default - won't be set if not in request
 	status: worksheetStatusSchema.optional(),
-	translations: rowTranslationsSchema.optional().nullable()
+	translations: rowTranslationsSchema.optional().nullable(),
+	// Catégorie, titre libre et notions (ADR 0041) : le titre composé est
+	// décidé par la route (`worksheet-classification.ts`)
+	category: z.enum(WORKSHEET_CATEGORIES).nullable().optional(),
+	custom_title: z.boolean().optional(),
+	notions: z.array(uuidSchema).max(20, '20 notions au maximum').optional()
 });
 
 /**
@@ -406,6 +412,12 @@ export const updateWorksheetExerciseSchema = createWorksheetExerciseSchema
 	})
 	// Une clé inconnue (mal orthographiée) : 400, pas un 200 qui n'écrit rien
 	.strict();
+
+/**
+ * Version d'une ligne de fiche (PUT /api/worksheets/[id]/exercises/[exerciseId]/version,
+ * ADR 0044 point 6)
+ */
+export const setLineVersionSchema = z.object({ exercise_version_id: uuidSchema }).strict();
 
 /**
  * Schema for reordering exercises (PUT /api/worksheets/[id]/exercises)
@@ -716,6 +728,15 @@ const timestampSchema = z
 	.string()
 	.refine((val) => !isNaN(Date.parse(val)), { message: 'Date invalide' });
 
+/**
+ * Traductions d'une ligne lue en base (fiche, section, exercice de la fiche).
+ * Sans cette clé, le schéma la retirait en silence : le PDF anglais de la page
+ * imprimait les titres de section en français et les éditeurs affichaient un
+ * anglais vide. Souple exprès : la base borne déjà la forme, et un écart ne doit
+ * pas rendre toute la fiche illisible.
+ */
+const storedTranslationsSchema = z.record(z.string(), z.unknown()).nullable().optional();
+
 export const worksheetResponseSchema = z.object({
 	id: z.string().uuid(),
 	title: z.string(),
@@ -732,8 +753,13 @@ export const worksheetResponseSchema = z.object({
 	total_points: z.number().nullable(),
 	grades: z.array(gradeCodeSchema),
 	tags: z.array(z.string()),
+	// Catégorie et titre libre (ADR 0041). Optionnels : une route qui choisit
+	// ses colonnes peut ne pas les lire ; sans ces clés, le schéma les retire
+	category: z.enum(WORKSHEET_CATEGORIES).nullable().optional(),
+	custom_title: z.boolean().optional(),
 	created_by: z.string().uuid(),
 	school_id: z.string().uuid().nullable(),
+	translations: storedTranslationsSchema,
 	created_at: timestampSchema,
 	updated_at: timestampSchema
 });
@@ -748,6 +774,7 @@ export const worksheetSectionResponseSchema = z.object({
 	instructions: z.string().nullable(),
 	position: z.number().int(),
 	points_total: z.number().int().nullable(),
+	translations: storedTranslationsSchema,
 	created_at: timestampSchema,
 	updated_at: timestampSchema
 });
@@ -759,12 +786,15 @@ export const worksheetExerciseResponseSchema = z.object({
 	id: z.string().uuid(),
 	worksheet_id: z.string().uuid(),
 	exercise_id: z.string().uuid(),
+	/** Version de l'exercice choisie par la fiche (ADR 0044) ; sans la clé, le schéma la retire */
+	exercise_version_id: z.string().uuid().optional(),
 	section_id: z.string().uuid().nullable(),
 	position: z.number().int(),
 	points: z.number().int().nullable(),
 	variant_mode: variantModeSchema,
 	variant_config: z.record(z.string(), z.unknown()),
 	custom_instructions: z.string().nullable(),
+	translations: storedTranslationsSchema,
 	is_essential: z.boolean(),
 	/** Lignes des cadres ; sans cette clé, le schéma la retire en silence */
 	answer_frame_lines: answerFrameLinesSchema.optional(),
@@ -791,7 +821,9 @@ export const worksheetExerciseWithDataResponseSchema = worksheetExerciseResponse
 			generic_functions: z.array(z.string()).nullable().optional(),
 			// Thème : décide du sens de `AB` dans le PDF (Q-J). Même piège que
 			// ci-dessus : sans la clé, le schéma la retire en silence.
-			topic: z.string().nullable().optional()
+			topic: z.string().nullable().optional(),
+			// Titre traduit : sans la clé, le PDF anglais imprime le titre français
+			translations: storedTranslationsSchema
 		})
 		.nullable()
 		.optional()
@@ -817,6 +849,19 @@ export const worksheetListResponseSchema = z.object({
 	})
 });
 
+/** Une notion de la fiche, avec son nom (ADR 0041) */
+export const worksheetClassificationViewSchema = z.object({
+	node_id: z.string().uuid(),
+	name: z.string(),
+	kind: z.string().optional(),
+	branch: z.string().nullable().optional(),
+	// Noms anglais (ADR 0043) : le PDF anglais les imprime ; sans ces clés, le schéma les retire
+	// 400 : la base borne à 200 caractères, Zod compte en unités UTF-16 (emoji = 2)
+	name_en: z.string().max(400).nullable().optional(),
+	branch_en: z.string().max(400).nullable().optional(),
+	position: z.number().int()
+});
+
 /**
  * Worksheet with sections, exercises and template response schema (GET /api/worksheets/[id])
  */
@@ -824,6 +869,8 @@ export const worksheetDetailResponseSchema = z.object({
 	worksheet: worksheetResponseSchema.extend({
 		sections: z.array(worksheetSectionResponseSchema).optional(),
 		exercises: z.array(worksheetExerciseWithDataResponseSchema).optional(),
+		// Notions de la fiche avec leur nom, dans l'ordre d'impression (ADR 0041)
+		classifications: z.array(worksheetClassificationViewSchema).optional(),
 		// La fiche d'un style du prof (`loadStyleTemplate`) : son Typst sert au PDF
 		template: z
 			.object({
@@ -1155,7 +1202,12 @@ export const studentWorksheetDetailResponseSchema = z.object({
 	template: z.object({ template_content: z.string() }).nullable().optional(),
 	/** Cartouche du gabarit (lot 4b) : sans ces clés, le schéma les retire */
 	total_points: z.number().nullable().optional(),
-	estimated_duration_minutes: z.number().int().nullable().optional()
+	estimated_duration_minutes: z.number().int().nullable().optional(),
+	/** Niveau, catégorie, titre libre, notions (ADR 0041) : badge et titre du PDF */
+	grades: z.array(z.string()).optional(),
+	category: z.enum(WORKSHEET_CATEGORIES).nullable().optional(),
+	custom_title: z.boolean().optional(),
+	classifications: z.array(worksheetClassificationViewSchema).optional()
 });
 
 // ============================================================================
@@ -1672,10 +1724,15 @@ export function validateStudentReportIdParam(params: Record<string, string>) {
  * PUT /api/worksheets/print-settings : la taille du texte d'un élève. L'élève
  * omet `studentId` (c'est le sien) ; le prof et l'admin le donnent.
  */
-export const printSettingsUpdateSchema = z.object({
-	studentId: uuidSchema.optional(),
-	textSize: z.enum(TEXT_SIZES)
-});
+export const printSettingsUpdateSchema = z
+	.object({
+		studentId: uuidSchema.optional(),
+		textSize: z.enum(TEXT_SIZES).optional(),
+		easyReading: z.boolean().optional()
+	})
+	.refine((body) => body.textSize !== undefined || body.easyReading !== undefined, {
+		message: 'Aucun réglage à enregistrer'
+	});
 
 /** GET /api/worksheets/print-settings?studentId= */
 export const printSettingsQuerySchema = z.object({

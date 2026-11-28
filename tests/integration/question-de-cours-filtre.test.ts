@@ -19,8 +19,8 @@ import {
 } from '../helpers/database/trigger-test-helpers';
 import { DEFAULT_TEST_PASSWORD } from '../helpers/database/supabase-client';
 import { TestData } from '../helpers/database/test-data-factory';
-import { COURSE_QUESTION_FILTER } from '$lib/questions/course-question';
-import type { Database } from '$lib/types/database';
+import { COURSE_QUESTION_FILTER } from '#lib/questions/course-question.ts';
+import type { Database } from '#lib/types/database.ts';
 
 const SUPABASE_URL = process.env.SUPABASE_TEST_URL || 'http://localhost:54321';
 const ANON_KEY =

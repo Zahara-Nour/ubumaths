@@ -51,7 +51,7 @@ test.describe('Landing Page - Basic Loading', () => {
 	test('main heading is visible', async ({ page }) => {
 		await page.goto('/');
 
-		// Verify main heading "Les maths de la chandelle verte"
+		// Verify main heading "Chiphre, les maths de la chandelle verte"
 		const heading = page.locator('h1');
 		await expect(heading).toBeVisible();
 

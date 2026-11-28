@@ -11,7 +11,7 @@ post-Schrems II), et les élèves sont en France.
 ## Décision
 
 Base Supabase en **eu-west-3 (Paris)**, projet `cnevnzsvixxpnurautls` ; fonctions Vercel en **`cdg1`**
-(`svelte.config.js`, `regions: ['cdg1']`).
+(`svelte.config.js`, `regions: ['cdg1']` ; dans `vite.config.ts` depuis SvelteKit 3).
 
 ## Écarté
 

@@ -18,7 +18,7 @@
 
 import { describe, test, expect } from 'vitest';
 import { validateQuantityAnswer } from '../validator';
-import type { PrecisionType } from '$lib/questions/types';
+import type { PrecisionType } from '#lib/questions/types.ts';
 import { checkUnit } from '../../constraint-validators';
 
 // ============================================================================

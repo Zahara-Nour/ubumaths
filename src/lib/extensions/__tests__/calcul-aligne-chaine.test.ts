@@ -6,10 +6,10 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { tipTapToMarkdown } from '$lib/components/rich-text/markdown-export';
-import { markdownToTipTap } from '$lib/components/rich-text/markdown-import';
-import { expressionToLatex } from '$lib/components/markdown/utils/math-utils';
-import { markdownToTypst } from '$lib/ubumark/generators/typst-generator';
+import { tipTapToMarkdown } from '#lib/components/rich-text/markdown-export.ts';
+import { markdownToTipTap } from '#lib/components/rich-text/markdown-import.ts';
+import { expressionToLatex } from '#lib/components/markdown/utils/math-utils.ts';
+import { markdownToTypst } from '#lib/ubumark/generators/typst-generator.ts';
 import { RACCOURCIS_MOTS } from '../calcul-aligne';
 
 const CALCUL = '\\begin{aligned}A&=3.5+4\\\\&=7.5\\end{aligned}';

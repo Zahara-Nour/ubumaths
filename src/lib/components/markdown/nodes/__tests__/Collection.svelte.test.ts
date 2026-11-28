@@ -7,11 +7,11 @@ import { describe, it, expect, afterEach } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import Collection from '../Collection.svelte';
 import MarkdownRenderer from '../../MarkdownRenderer.svelte';
-import MultipleChoiceInput from '$lib/components/question-inputs/MultipleChoiceInput.svelte';
-import { parseCollectionContent } from '$lib/ubumark/parser/collection-parser';
-import { COLLECTION_ARIA_LABEL, COLLECTION_UNAVAILABLE } from '$lib/ubumark/types/collection';
-import { buildCollectionScene, COLLECTION_VIEW } from '$lib/ubumark/utils/collection-scene';
-import type { ResolvedMarkdown } from '$lib/ubumark';
+import MultipleChoiceInput from '#lib/components/question-inputs/MultipleChoiceInput.svelte';
+import { parseCollectionContent } from '#lib/ubumark/parser/collection-parser.ts';
+import { COLLECTION_ARIA_LABEL, COLLECTION_UNAVAILABLE } from '#lib/ubumark/types/collection.ts';
+import { buildCollectionScene, COLLECTION_VIEW } from '#lib/ubumark/utils/collection-scene.ts';
+import type { ResolvedMarkdown } from '#lib/ubumark/index.ts';
 
 let mains: HTMLElement[] = [];
 function mainElement(): HTMLElement {

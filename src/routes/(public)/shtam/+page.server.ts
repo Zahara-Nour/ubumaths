@@ -1,6 +1,6 @@
 import { error, redirect } from '@sveltejs/kit';
 import { z } from 'zod';
-import { allArticles, publishedArticles } from '$lib/server/shtam/articles';
+import { allArticles, publishedArticles } from '#lib/server/shtam/articles.ts';
 import {
 	ARTICLES_PER_PAGE,
 	UNE_TEASERS,
@@ -11,7 +11,7 @@ import {
 	toFrontArticle,
 	toSummary,
 	todayIsoInParis
-} from '$lib/server/shtam/present';
+} from '#lib/server/shtam/present.ts';
 import type { PageServerLoad } from './$types';
 
 // Jamais prérendue : un article daté de demain doit paraître demain, pas au prochain build.

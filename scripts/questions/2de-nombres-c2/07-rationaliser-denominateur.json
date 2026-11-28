@@ -1,0 +1,406 @@
+{
+	"id": "96ede34c-259b-43f0-b920-d9e90003576e",
+	"title": "Rationaliser un dénominateur",
+	"description": "Écrire 3/√2, 5/(2√3) ou 1/(√5 − 2) sans racine au dénominateur (pièges : dénominateur oublié, racine laissée au dénominateur, conjuguée de mauvais signe)",
+	"grades": ["2"],
+	"level": 3,
+	"delay": 60,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Écris ce nombre sans racine carrée au dénominateur.\n\n$$\\dfrac{ {{a}} }{\\sqrt{ {{b}} }}=?$$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9"
+				},
+				{
+					"name": "b",
+					"expression": "2|3|5|6|7|10|11|13|14|15"
+				}
+			],
+			"conditions": ["gcd(a,b) == 1"],
+			"blanks": [
+				{
+					"expectedAnswer": "\\frac{{{if:a==1||{{a}}}}\\sqrt{ {{b}} }}{ {{b}} }",
+					"requiredForm": {
+						"pattern": "u/v:integer",
+						"acceptable": "u:rationalType*sqrt(w)"
+					},
+					"expectedErrors": [
+						{
+							"answer": "{{if:a==1||{{a}}}}\\sqrt{ {{b}} }",
+							"message": "Tu as oublié le dénominateur : en multipliant le numérateur par $\\sqrt{ {{b}} }$, il faut aussi multiplier le dénominateur.",
+							"label": "Dénominateur oublié"
+						},
+						{
+							"answer": "\\frac{{{if:a==1||{{a}}}}\\sqrt{ {{b}} }}{ {{eval:b^2}} }",
+							"message": "Tu as compté $\\sqrt{ {{b}} }\\times\\sqrt{ {{b}} }$ comme ${{b}}^2$.",
+							"label": "√b × √b compté b²"
+						},
+						{
+							"answer": "\\frac{ {{a}} }{ {{b}} }",
+							"message": "Tu as fait disparaître la racine du dénominateur sans multiplier le numérateur.",
+							"label": "Racine effacée"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"On multiplie le numérateur et le dénominateur par $\\sqrt{ {{b}} }$, car $\\sqrt{ {{b}} }\\times\\sqrt{ {{b}} }={{b}}$.",
+					"$\\dfrac{ {{a}} }{\\sqrt{ {{b}} }}=\\dfrac{ {{a}}\\times\\sqrt{ {{b}} }}{\\sqrt{ {{b}} }\\times\\sqrt{ {{b}} }}=\\textcolor{{{color:primary.0}}}{\\dfrac{{{if:a==1||{{a}}}}\\sqrt{ {{b}} }}{ {{b}} }}$."
+				]
+			},
+			"hintFromFirstStep": true
+		},
+		{
+			"statement": "Écris ce nombre sans racine carrée au dénominateur.\n\n$$\\dfrac{ {{a}} }{ {{c}}\\sqrt{ {{b}} }}=?$$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9"
+				},
+				{
+					"name": "c",
+					"expression": "2..5"
+				},
+				{
+					"name": "b",
+					"expression": "2|3|5|6|7|10|11|13|14|15"
+				}
+			],
+			"conditions": ["gcd(a,c*b) == 1"],
+			"blanks": [
+				{
+					"expectedAnswer": "\\frac{{{if:a==1||{{a}}}}\\sqrt{ {{b}} }}{ {{eval:c*b}} }",
+					"requiredForm": {
+						"pattern": "u/v:integer",
+						"acceptable": "u:rationalType*sqrt(w)"
+					},
+					"expectedErrors": [
+						{
+							"answer": "\\frac{{{if:a==1||{{a}}}}\\sqrt{ {{b}} }}{ {{b}} }",
+							"message": "Tu as oublié le ${{c}}$ du dénominateur.",
+							"label": "Facteur c oublié"
+						},
+						{
+							"answer": "\\frac{{{if:a==1||{{a}}}}\\sqrt{ {{b}} }}{ {{c}} }",
+							"message": "Au dénominateur, tu as fait disparaître la racine sans la remplacer par ce que vaut $\\sqrt{ {{b}} }\\times\\sqrt{ {{b}} }$.",
+							"label": "√b × √b oublié au dénominateur"
+						},
+						{
+							"answer": "\\frac{{{if:a==1||{{a}}}}\\sqrt{ {{b}} }}{ {{eval:c*b^2}} }",
+							"message": "Tu as compté $\\sqrt{ {{b}} }\\times\\sqrt{ {{b}} }$ comme ${{b}}^2$.",
+							"label": "√b × √b compté b²"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"On multiplie le numérateur et le dénominateur par $\\sqrt{ {{b}} }$, car $\\sqrt{ {{b}} }\\times\\sqrt{ {{b}} }={{b}}$.",
+					"$\\dfrac{ {{a}} }{ {{c}}\\sqrt{ {{b}} }}=\\dfrac{ {{a}}\\times\\sqrt{ {{b}} }}{ {{c}}\\times\\sqrt{ {{b}} }\\times\\sqrt{ {{b}} }}=\\dfrac{{{if:a==1||{{a}}}}\\sqrt{ {{b}} }}{ {{c}}\\times{{b}} }=\\textcolor{{{color:primary.0}}}{\\dfrac{{{if:a==1||{{a}}}}\\sqrt{ {{b}} }}{ {{eval:c*b}} }}$."
+				]
+			},
+			"hintFromFirstStep": true
+		},
+		{
+			"statement": "Écris ce nombre sans racine carrée au dénominateur.\n\n$$\\dfrac{1}{\\sqrt{ {{b}} }{{if:s==0|-|+}}{{a}}}=?$$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..4"
+				},
+				{
+					"name": "s",
+					"expression": "0|1"
+				},
+				{
+					"name": "b",
+					"expression": "eval:a^2+1"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "\\sqrt{ {{b}} }{{if:s==0|+|-}}{{a}}",
+					"expectedErrors": [
+						{
+							"answer": "\\sqrt{ {{b}} }{{if:s==0|-|+}}{{a}}",
+							"message": "Tu as gardé le même signe qu'au dénominateur : ce n'est pas la quantité conjuguée.",
+							"label": "Conjuguée de mauvais signe"
+						},
+						{
+							"answer": "\\frac{\\sqrt{ {{b}} }{{if:s==0|+|-}}{{a}}}{ {{eval:b+a^2}} }",
+							"message": "Au dénominateur, tu as additionné les carrés au lieu de les soustraire.",
+							"label": "Carrés additionnés au dénominateur"
+						},
+						{
+							"answer": "-\\sqrt{ {{b}} }{{if:s==0|-|+}}{{a}}",
+							"message": "Tu as soustrait les carrés dans le mauvais ordre : ton dénominateur a changé de signe.",
+							"label": "Dénominateur de mauvais signe"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"On multiplie le numérateur et le dénominateur par la **quantité conjuguée** $\\sqrt{ {{b}} }{{if:s==0|+|-}}{{a}}$, pour utiliser $(u-v)(u+v)=u^2-v^2$.",
+					"Dénominateur : $(\\sqrt{ {{b}} }-{{a}})(\\sqrt{ {{b}} }+{{a}})=(\\sqrt{ {{b}} })^2-{{a}}^2={{b}}-{{eval:a^2}}=1$.",
+					"$\\dfrac{1}{\\sqrt{ {{b}} }{{if:s==0|-|+}}{{a}}}=\\dfrac{\\sqrt{ {{b}} }{{if:s==0|+|-}}{{a}}}{1}=\\textcolor{{{color:primary.0}}}{\\sqrt{ {{b}} }{{if:s==0|+|-}}{{a}}}$."
+				]
+			},
+			"hint": "Multiplie le numérateur et le dénominateur par la quantité conjuguée du dénominateur, puis utilise $(u-v)(u+v)=u^2-v^2$."
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "3/√2 = 3√2/2",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "2"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["\\frac{3\\sqrt{2}}{2}"]
+		},
+		{
+			"description": "Erreur : 3/√2 recopié (racine au dénominateur)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "2"
+			},
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			},
+			"answers": ["\\frac{3}{\\sqrt{2}}"]
+		},
+		{
+			"description": "Perfectible : 3/2 × √2 (forme admise, pas celle demandée)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "2"
+			},
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["form"]
+			},
+			"answers": ["\\frac{3}{2}\\sqrt{2}"]
+		},
+		{
+			"description": "Erreur : 6/(2√2) (racine au dénominateur)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "2"
+			},
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			},
+			"answers": ["\\frac{6}{2\\sqrt{2}}"]
+		},
+		{
+			"description": "Erreur : 3/√2 = 3√2 (dénominateur oublié)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "2"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as oublié le dénominateur : en multipliant le numérateur par $\\sqrt{2}$, il faut aussi multiplier le dénominateur."
+			},
+			"answers": ["3\\sqrt{2}"]
+		},
+		{
+			"description": "Erreur : 3/√2 = 3√2/4",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "2"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as compté $\\sqrt{ 2 }\\times\\sqrt{ 2 }$ comme $2^2$."
+			},
+			"answers": ["\\frac{3\\sqrt{2}}{4}"]
+		},
+		{
+			"description": "1/√5 = √5/5",
+			"variationIndex": 0,
+			"variables": {
+				"a": "1",
+				"b": "5"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["\\frac{\\sqrt{5}}{5}"]
+		},
+		{
+			"description": "5/(2√3) = 5√3/6",
+			"variationIndex": 1,
+			"variables": {
+				"a": "5",
+				"c": "2",
+				"b": "3"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["\\frac{5\\sqrt{3}}{6}"]
+		},
+		{
+			"description": "Erreur : 5/(2√3) recopié",
+			"variationIndex": 1,
+			"variables": {
+				"a": "5",
+				"c": "2",
+				"b": "3"
+			},
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			},
+			"answers": ["\\frac{5}{2\\sqrt{3}}"]
+		},
+		{
+			"description": "Erreur : 5/(2√3) = 5√3/3",
+			"variationIndex": 1,
+			"variables": {
+				"a": "5",
+				"c": "2",
+				"b": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as oublié le $2$ du dénominateur."
+			},
+			"answers": ["\\frac{5\\sqrt{3}}{3}"]
+		},
+		{
+			"description": "1/(√2 − 1) = √2 + 1",
+			"variationIndex": 2,
+			"variables": {
+				"a": "1",
+				"s": "0"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["\\sqrt{2}+1"]
+		},
+		{
+			"description": "1/(√5 + 2) = √5 − 2",
+			"variationIndex": 2,
+			"variables": {
+				"a": "2",
+				"s": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["\\sqrt{5}-2"]
+		},
+		{
+			"description": "Erreur : 1/(√2 − 1) recopié",
+			"variationIndex": 2,
+			"variables": {
+				"a": "1",
+				"s": "0"
+			},
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			},
+			"answers": ["\\frac{1}{\\sqrt{2}-1}"]
+		},
+		{
+			"description": "Erreur : 1/(√5 + 2) = √5 + 2",
+			"variationIndex": 2,
+			"variables": {
+				"a": "2",
+				"s": "1"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as gardé le même signe qu'au dénominateur : ce n'est pas la quantité conjuguée."
+			},
+			"answers": ["\\sqrt{5}+2"]
+		},
+		{
+			"description": "Erreur : 3/√2 = 3/2 (racine effacée)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "2"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as fait disparaître la racine du dénominateur sans multiplier le numérateur."
+			},
+			"answers": ["\\frac{3}{2}"]
+		},
+		{
+			"description": "Erreur : 5/(2√3) = 5√3/2",
+			"variationIndex": 1,
+			"variables": {
+				"a": "5",
+				"c": "2",
+				"b": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Au dénominateur, tu as fait disparaître la racine sans la remplacer par ce que vaut $\\sqrt{ 3 }\\times\\sqrt{ 3 }$."
+			},
+			"answers": ["\\frac{5\\sqrt{3}}{2}"]
+		},
+		{
+			"description": "Erreur : 5/(2√3) = 5√3/18",
+			"variationIndex": 1,
+			"variables": {
+				"a": "5",
+				"c": "2",
+				"b": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as compté $\\sqrt{ 3 }\\times\\sqrt{ 3 }$ comme $3^2$."
+			},
+			"answers": ["\\frac{5\\sqrt{3}}{18}"]
+		},
+		{
+			"description": "Erreur : 1/(√2 − 1) = (√2 + 1)/3",
+			"variationIndex": 2,
+			"variables": {
+				"a": "1",
+				"s": "0"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Au dénominateur, tu as additionné les carrés au lieu de les soustraire."
+			},
+			"answers": ["\\frac{\\sqrt{2}+1}{3}"]
+		},
+		{
+			"description": "Erreur : 1/(√2 − 1) = −√2 − 1",
+			"variationIndex": 2,
+			"variables": {
+				"a": "1",
+				"s": "0"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as soustrait les carrés dans le mauvais ordre : ton dénominateur a changé de signe."
+			},
+			"answers": ["-\\sqrt{2}-1"]
+		}
+	]
+}

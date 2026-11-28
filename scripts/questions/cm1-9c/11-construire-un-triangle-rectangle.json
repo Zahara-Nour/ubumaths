@@ -1,0 +1,100 @@
+{
+	"id": "3a888b08-c7a1-495a-845b-c7540f351c74",
+	"title": "Construire un triangle rectangle de côtés donnés",
+	"description": "Construire sur papier uni un triangle rectangle dont un côté de l'angle droit est tracé : l'angle droit à l'équerre, l'autre côté à la règle graduée",
+	"grades": ["CM1", "CM2"],
+	"level": 2,
+	"delay": 180,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Le côté $[AB]$, de ${{l}}\\,\\text{cm}$, est tracé. Construis le triangle $ABC$ rectangle en $A$, tel que $AC = {{h}}\\,\\text{cm}$. Trace l'angle droit avec l'équerre et prends la longueur sur la règle graduée.\n\n```figure-a-completer\nfenetre: 0 ; 14 ; 0 ; 9\nverifier: triangle ABC : CAB = 90 ; AC = {{h}} cm\n---\nA = point(2, 1.5, etiquette=\"bas\")\nB = point({{eval:2+l}}, 1.5, etiquette=\"bas\")\ns = segment(A, B)\n```",
+			"variables": [
+				{
+					"name": "l",
+					"expression": "5..10"
+				},
+				{
+					"name": "h",
+					"expression": "3..7"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**L'angle droit en $A$** : l'équerre le long de $[AB]$, l'angle droit en $A$ ; on trace la perpendiculaire à $[AB]$ en $A$.",
+					"**La longueur** : la règle posée avec son $0$ sur $A$, le long de la perpendiculaire ; $\\textcolor{{{color:primary.0}}}{C}$ est sur la graduation ${{h}}\\,\\text{cm}$. On trace $[AC]$ et $[BC]$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "AB = 10 cm, AC = 6 cm",
+			"variationIndex": 0,
+			"variables": {
+				"l": "10",
+				"h": "6"
+			},
+			"answers": [
+				"droite(2;1.5;2;11.5)|regle(2;1.5;2;2.5;1)|segment(2;1.5;2;7.5)|segment(12;1.5;2;7.5)"
+			],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "AB = 5 cm, AC = 7 cm",
+			"variationIndex": 0,
+			"variables": {
+				"l": "5",
+				"h": "7"
+			},
+			"answers": [
+				"droite(2;1.5;2;6.5)|regle(2;1.5;2;2.5;1)|segment(2;1.5;2;8.5)|segment(7;1.5;2;8.5)"
+			],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : AC = 5,6 cm au lieu de 6 cm",
+			"variationIndex": 0,
+			"variables": {
+				"l": "10",
+				"h": "6"
+			},
+			"answers": [
+				"droite(2;1.5;2;11.5)|regle(2;1.5;2;2.5;1)|segment(2;1.5;2;7.1)|segment(12;1.5;2;7.1)"
+			],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : C placé à l'œil, sans équerre",
+			"variationIndex": 0,
+			"variables": {
+				"l": "10",
+				"h": "6"
+			},
+			"answers": ["segment(2;1.5;2.25;7.5)|segment(12;1.5;2.25;7.5)"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : angle droit en B au lieu de A",
+			"variationIndex": 0,
+			"variables": {
+				"l": "10",
+				"h": "6"
+			},
+			"answers": [
+				"droite(12;1.5;12;11.5)|regle(12;1.5;12;2.5;1)|segment(12;1.5;12;7.5)|segment(2;1.5;12;7.5)"
+			],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

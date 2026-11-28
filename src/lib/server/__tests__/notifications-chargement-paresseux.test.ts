@@ -21,7 +21,7 @@ vi.mock('isomorphic-dompurify', async (importOriginal) => {
 
 const insertMock = vi.fn().mockResolvedValue({ error: null });
 
-vi.mock('$lib/server/serviceRoleClient', () => ({
+vi.mock('#lib/server/serviceRoleClient.ts', () => ({
 	createServiceRoleClient: () => ({ from: () => ({ insert: insertMock }) })
 }));
 

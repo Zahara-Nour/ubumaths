@@ -8,13 +8,13 @@ import { render } from 'vitest-browser-svelte';
 import { userEvent } from 'vitest/browser';
 import Monnaie from '../Monnaie.svelte';
 import MarkdownRenderer from '../../MarkdownRenderer.svelte';
-import FillBlanksInput from '$lib/components/question-inputs/FillBlanksInput.svelte';
+import FillBlanksInput from '#lib/components/question-inputs/FillBlanksInput.svelte';
 import FillBlanksBoundHarness from './FillBlanksBoundHarness.svelte';
-import { parseMonnaieContent } from '$lib/ubumark/parser/monnaie-parser';
-import type { ResolvedMarkdown } from '$lib/ubumark';
-import type { InstanceBlank, QuestionTemplate } from '$lib/questions/types';
-import { generateInstance } from '$lib/questions/generator/instance-generator';
-import { templateMarkdown } from '$lib/ubumark';
+import { parseMonnaieContent } from '#lib/ubumark/parser/monnaie-parser.ts';
+import type { ResolvedMarkdown } from '#lib/ubumark/index.ts';
+import type { InstanceBlank, QuestionTemplate } from '#lib/questions/types.ts';
+import { generateInstance } from '#lib/questions/generator/instance-generator.ts';
+import { templateMarkdown } from '#lib/ubumark/index.ts';
 
 let mains: HTMLElement[] = [];
 function mainElement(): HTMLElement {

@@ -10,6 +10,7 @@ import {
 	isWorkDataKey,
 	watchWorkDataOwner
 } from '../work-data';
+import { STORAGE_KEY as POMODORO_STORAGE_KEY } from '#lib/stores/pomodoro/logic.ts';
 
 class MemoryStorage implements Storage {
 	private items = new Map<string, string>();
@@ -37,6 +38,7 @@ const OWNER = 'chiphre:work-data-owner';
 const WORK = {
 	'chiphre-python-playground': 'print("A")',
 	'chiphre-calc-history': '[1]',
+	'chiphre:palotin:dernier-passage': '1700000000000',
 	minesweeper_game: '{}',
 	game_player: '{"xp":3}',
 	'chiphre-exercise-123': 'code',
@@ -157,6 +159,11 @@ describe('isWorkDataKey', () => {
 		for (const key of Object.keys(WORK)) expect(isWorkDataKey(key)).toBe(true);
 		for (const key of Object.keys(PREFERENCES)) expect(isWorkDataKey(key)).toBe(false);
 		expect(isWorkDataKey(OWNER)).toBe(false);
+	});
+
+	// Écart L108 : l'élève suivant ne retrouve ni le minuteur ni le compteur du jour.
+	it('le minuteur Pomodoro est une donnée de travail', () => {
+		expect(isWorkDataKey(POMODORO_STORAGE_KEY)).toBe(true);
 	});
 });
 

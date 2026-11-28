@@ -4,8 +4,8 @@
  * n'étaient pas reconnus égaux, ni `e^{i\pi}` et −1.
  */
 import { describe, it, expect } from 'vitest';
-import { parseLatex } from '$lib/mathAST/parser';
-import { areEquivalent } from '$lib/mathAST/equivalence';
+import { parseLatex } from '#lib/mathAST/parser/index.ts';
+import { areEquivalent } from '#lib/mathAST/equivalence.ts';
 
 function eq(a: string, b: string): boolean {
 	return areEquivalent(parseLatex(a), parseLatex(b));

@@ -14,38 +14,38 @@
 
 import type { Atelier } from './atelier.svelte';
 import type { AtelierObject } from './types';
-import type { MathNode } from '$lib/mathAST/types';
-import type { FunctionBindings, FunctionDefinition } from '$lib/mathAST/eval/function-bindings';
-import { WebReplEngine } from '$lib/mathAST/cli/web/web-repl-engine';
+import type { MathNode } from '#lib/mathAST/types.ts';
+import type { FunctionBindings, FunctionDefinition } from '#lib/mathAST/eval/function-bindings.ts';
+import { WebReplEngine } from '#lib/mathAST/cli/web/web-repl-engine.ts';
 import {
 	setBinding,
 	createFunctionBinding,
 	clearBindings,
 	clearFunctions
-} from '$lib/mathAST/cli/core/eval-state';
-import { substitute, substituteAll } from '$lib/mathAST/eval/substitute';
-import { substituteFunction } from '$lib/mathAST/eval/function-bindings';
-import { toCustom } from '$lib/mathAST/custom-generator';
-import { toLatex } from '$lib/mathAST/latex-generator';
-import { differentiate } from '$lib/mathAST/differentiation';
+} from '#lib/mathAST/cli/core/eval-state.ts';
+import { substitute, substituteAll } from '#lib/mathAST/eval/substitute.ts';
+import { substituteFunction } from '#lib/mathAST/eval/function-bindings.ts';
+import { toCustom } from '#lib/mathAST/custom-generator.ts';
+import { toLatex } from '#lib/mathAST/latex-generator.ts';
+import { differentiate } from '#lib/mathAST/differentiation/index.ts';
 import {
 	finalDerivative,
 	finalDerivativeOf
-} from '$lib/mathAST/pedagogical-differentiation/final-form';
+} from '#lib/mathAST/pedagogical-differentiation/final-form.ts';
 import { radiansInTrigonometry } from './angle-radians';
 import { derivativeOf } from './names';
 import { INTERNAL_LETTER } from './letter';
 import { astOf, readNumber, type Provenance } from './parse';
 import { constantOf } from './constant';
 import { perfStats, perfSwitches } from './perf-switches';
-import { transformAST } from '$lib/mathAST/visitor';
-import { indexedNameOf } from '$lib/mathAST/common/indexed-names';
+import { transformAST } from '#lib/mathAST/visitor.ts';
+import { indexedNameOf } from '#lib/mathAST/common/indexed-names.ts';
 import {
 	computeSequenceTerms,
 	INDEX_VARIABLE,
 	PREV_TERM_VARIABLE,
 	type SequenceTerm
-} from '$lib/grapheur/sequence';
+} from '#lib/grapheur/sequence.ts';
 
 // =============================================================================
 // Types
@@ -108,7 +108,8 @@ function atelierMark(atelier: Atelier): string {
 			o.provenance,
 			'interval' in o ? o.interval : null,
 			'reciprocalOn' in o ? o.reciprocalOn : null,
-			'inheritedInterval' in o ? o.inheritedInterval : null
+			'inheritedInterval' in o ? o.inheritedInterval : null,
+			'parameterInterval' in o ? o.parameterInterval : null
 		])
 	]);
 }

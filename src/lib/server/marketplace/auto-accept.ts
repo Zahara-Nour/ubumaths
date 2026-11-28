@@ -10,12 +10,12 @@
  * Client service : la fonction est réservée au serveur, et le proposant n'est
  * pas le vendeur au nom duquel l'échange est accepté.
  */
-import { createServiceRoleClient } from '$lib/server/serviceRoleClient';
+import { createServiceRoleClient } from '#lib/server/serviceRoleClient.ts';
 import {
 	autoAcceptExactProposalSchema,
 	type AutoAcceptExactProposalResult
-} from '$lib/server/validation/marketplace-rpc';
-import { createServerLogger } from '$lib/utils/logger';
+} from '#lib/server/validation/marketplace-rpc.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('server/marketplace/auto-accept');
 

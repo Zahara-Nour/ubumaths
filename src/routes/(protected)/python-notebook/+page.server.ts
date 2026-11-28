@@ -4,9 +4,9 @@
  */
 
 import { error } from '@sveltejs/kit';
-import { fetchStaffDirectory, soleTeacher } from '$lib/server/staff-directory';
+import { fetchStaffDirectory, soleTeacher } from '#lib/server/staff-directory.ts';
 import type { PageServerLoad } from './$types';
-import { createServerLogger } from '$lib/utils/logger';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('(protected)/python-notebook/+page.server');
 

@@ -1,0 +1,112 @@
+[
+	{
+		"id": "40a9edf0-b946-49c6-9246-478f99060806",
+		"noeudAvant": null,
+		"noeudApres": "Proportionnalité > Situations de proportionnalité > caractérisation",
+		"gradesAvant": ["5"],
+		"gradesApres": ["5"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["5§5-099"]
+	},
+	{
+		"id": "570a6e6b-5a4c-448e-bbf2-0eff29c4e0ba",
+		"noeudAvant": null,
+		"noeudApres": "Proportionnalité > Situations de proportionnalité > caractérisation",
+		"gradesAvant": ["5"],
+		"gradesApres": ["5"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["5§5-090"]
+	},
+	{
+		"id": "5ae1954a-0113-49dd-98e2-b2078eae0264",
+		"noeudAvant": null,
+		"noeudApres": "Proportionnalité > Situations de proportionnalité",
+		"gradesAvant": ["5"],
+		"gradesApres": ["5"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["5§5-089"]
+	},
+	{
+		"id": "6191801f-cac0-4155-bcb3-98cede936c24",
+		"noeudAvant": null,
+		"noeudApres": "Proportionnalité > Situations de proportionnalité > caractérisation",
+		"gradesAvant": ["5"],
+		"gradesApres": ["5"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["5§5-091"]
+	},
+	{
+		"id": "6f3c6c5f-97ed-4a95-9c86-8410543a7216",
+		"noeudAvant": null,
+		"noeudApres": "Fonctions > Généralités sur les fonctions",
+		"gradesAvant": ["5"],
+		"gradesApres": ["5"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["5§5-096"]
+	},
+	{
+		"id": "79b46762-3fbe-4992-a365-0b1ae36c400d",
+		"noeudAvant": null,
+		"noeudApres": "Statistiques > Représenter des données > diagrammes en barres",
+		"gradesAvant": ["5"],
+		"gradesApres": ["5"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["5§5-112"]
+	},
+	{
+		"id": "832df844-77ad-49d1-812b-2eb4fea55f62",
+		"noeudAvant": null,
+		"noeudApres": "Fonctions > Généralités sur les fonctions",
+		"gradesAvant": ["5"],
+		"gradesApres": ["5"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["5§5-143"]
+	},
+	{
+		"id": "87e396e4-dd51-43a5-b209-2ba406005ff6",
+		"noeudAvant": null,
+		"noeudApres": "Fonctions > Généralités sur les fonctions",
+		"gradesAvant": ["5"],
+		"gradesApres": ["5"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["5§5-094"]
+	},
+	{
+		"id": "9567cb1d-40ab-4d89-8239-c102328c3af3",
+		"noeudAvant": null,
+		"noeudApres": "Proportionnalité > Situations de proportionnalité > caractérisation",
+		"gradesAvant": ["5"],
+		"gradesApres": ["5"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["5§5-141"]
+	},
+	{
+		"id": "c3d20985-ae60-407c-a5f6-d5da48dcf7ec",
+		"noeudAvant": null,
+		"noeudApres": "Fonctions > Généralités sur les fonctions",
+		"gradesAvant": ["5"],
+		"gradesApres": ["5"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["5§5-142"]
+	}
+]

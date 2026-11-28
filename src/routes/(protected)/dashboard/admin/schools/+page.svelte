@@ -1,13 +1,13 @@
 <script lang="ts">
 	import type { PageData } from './$types';
-	import type { Database } from '$lib/types/database';
+	import type { Database } from '#lib/types/database.ts';
 	import { enhance } from '$app/forms';
-	import { Button } from '$lib/components/ui/button';
-	import { Input } from '$lib/components/ui/input';
-	import { Textarea } from '$lib/components/ui/textarea';
-	import SchoolConfigModal from '$lib/components/admin/SchoolConfigModal.svelte';
-	import TypedConfirmDialog from '$lib/components/admin/TypedConfirmDialog.svelte';
-	import MyCheckbox from '$lib/components/MyCheckbox.svelte';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import { Input } from '#lib/components/ui/input/index.ts';
+	import { Textarea } from '#lib/components/ui/textarea/index.ts';
+	import SchoolConfigModal from '#lib/components/admin/SchoolConfigModal.svelte';
+	import TypedConfirmDialog from '#lib/components/admin/TypedConfirmDialog.svelte';
+	import MyCheckbox from '#lib/components/MyCheckbox.svelte';
 
 	let { data }: { data: PageData } = $props();
 

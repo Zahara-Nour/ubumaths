@@ -1,0 +1,185 @@
+{
+	"id": "ea370045-e86b-42c3-ac78-10843d9b847d",
+	"title": "Combien de petits cubes ?",
+	"description": "Dénombrer une collection dessinée : en vrac (6 à 20), en barres de dix et cubes (21 à 99), partiellement groupée (plus de dix cubes tout seuls, exemple du programme)",
+	"grades": ["CP"],
+	"level": 2,
+	"delay": 90,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Combien de petits cubes y a-t-il ?\n\n```collection\nunités: {{n}}\n```\n\nIl y a $?$ petits cubes.",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "6..20"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{n}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Les cubes sont en vrac : on les compte un par un, sans en oublier ni en compter deux fois.",
+					"Pour ne pas se perdre, on peut faire des paquets de $10$.",
+					"Il y a $\\textcolor{{{color:primary.0}}}{{{n}}}$ petits cubes."
+				]
+			}
+		},
+		{
+			"statement": "Combien de petits cubes y a-t-il ?\n\n```collection\ndizaines: {{d}}\nunités: {{u}}\n```\n\nIl y a $?$ petits cubes.",
+			"variables": [
+				{
+					"name": "d",
+					"expression": "2..9"
+				},
+				{
+					"name": "u",
+					"expression": "1..9"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:10*d+u}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Une barre, c'est $10$ cubes : une dizaine.",
+					"${{d}}$ barres : ${{d}}$ dizaines, c'est ${{eval:10*d}}$ cubes. Et ${{u}}$ cubes tout seuls.",
+					"${{eval:10*d}} + {{u}} = \\textcolor{{{color:primary.0}}}{{{eval:10*d+u}}}$ petits cubes."
+				]
+			}
+		},
+		{
+			"statement": "Combien de petits cubes y a-t-il ?\n\n```collection\ndizaines: {{d}}\nunités: {{u}}\n```\n\nIl y a $?$ petits cubes.",
+			"variables": [
+				{
+					"name": "d",
+					"expression": "1..7"
+				},
+				{
+					"name": "w",
+					"expression": "1..9"
+				},
+				{
+					"name": "u",
+					"expression": "eval:10+w"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:10*d+u}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Il y a ${{u}}$ cubes tout seuls : c'est plus que $10$ ! Avec $10$ d'entre eux, on fait une barre de plus.",
+					"Cela fait ${{eval:d+1}}$ barres et ${{w}}$ cubes tout seuls.",
+					"${{eval:10*d+10}} + {{w}} = \\textcolor{{{color:primary.0}}}{{{eval:10*d+u}}}$ petits cubes."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "14 cubes en vrac",
+			"variationIndex": 0,
+			"variables": {
+				"n": "14"
+			},
+			"answers": ["14"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : un cube oublié (13)",
+			"variationIndex": 0,
+			"variables": {
+				"n": "14"
+			},
+			"answers": ["13"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "4 barres et 7 cubes : 47",
+			"variationIndex": 1,
+			"variables": {
+				"d": "4",
+				"u": "7"
+			},
+			"answers": ["47"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 4 + 7 = 11 (barres comptées comme des cubes)",
+			"variationIndex": 1,
+			"variables": {
+				"d": "4",
+				"u": "7"
+			},
+			"answers": ["11"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 74 (dizaines et unités inversées)",
+			"variationIndex": 1,
+			"variables": {
+				"d": "4",
+				"u": "7"
+			},
+			"answers": ["74"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "BO : 3 barres et 15 cubes, 45",
+			"variationIndex": 2,
+			"variables": {
+				"d": "3",
+				"w": "5",
+				"u": "15"
+			},
+			"answers": ["45"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 315 (on écrit 3 puis 15)",
+			"variationIndex": 2,
+			"variables": {
+				"d": "3",
+				"w": "5",
+				"u": "15"
+			},
+			"answers": ["315"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 35 (la dizaine des cubes seuls oubliée)",
+			"variationIndex": 2,
+			"variables": {
+				"d": "3",
+				"w": "5",
+				"u": "15"
+			},
+			"answers": ["35"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

@@ -11,7 +11,7 @@
  *
  * USAGE:
  * ```ts
- * import { getTeacherTestMode } from '$lib/server/test-mode';
+ * import { getTeacherTestMode } from '#lib/server/test-mode.ts';
  *
  * const isTestMode = await getTeacherTestMode(userId, supabase);
  * // Use isTestMode to filter student queries
@@ -19,8 +19,8 @@
  */
 
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { Database } from '$lib/types/database';
-import { createServerLogger } from '$lib/utils/logger';
+import type { Database } from '#lib/types/database.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('server/test-mode');
 

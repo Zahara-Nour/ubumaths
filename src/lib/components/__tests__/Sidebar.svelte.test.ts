@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import { Home } from '@lucide/svelte';
 import Sidebar from '../Sidebar.svelte';
-import type { Tables } from '$lib/types/database';
+import type { Tables } from '#lib/types/database.ts';
 
 // Test fixture — only `role` is read by Sidebar's filter logic.
 // Other required columns of `profiles` are omitted intentionally.
@@ -20,6 +20,11 @@ describe('Sidebar (Outils libres)', () => {
 			await expect.element(page.getByText('Jeux', { exact: true })).toBeInTheDocument();
 			await expect.element(page.getByText('Upsilon', { exact: true })).toBeInTheDocument();
 			await expect.element(page.getByText('Zygomatics', { exact: true })).toBeInTheDocument();
+		});
+
+		it('affiche La Tortue sans connexion (bac à sable public)', async () => {
+			await render(Sidebar, { profile: null });
+			await expect.element(page.getByText('La Tortue', { exact: true })).toBeInTheDocument();
 		});
 	});
 

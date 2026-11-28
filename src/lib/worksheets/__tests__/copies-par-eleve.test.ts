@@ -12,6 +12,7 @@
  *
  * Noms d'élèves : tous fictifs.
  */
+import { hasEasyReading } from '#lib/typst/easy-reading.ts';
 import { describe, expect, it, vi } from 'vitest';
 import {
 	assembleStudentCopies,
@@ -23,7 +24,7 @@ import {
 	type StudentCopyView
 } from '../student-copies';
 import { generateStudentWorksheetTypst } from '../student-worksheet-typst';
-import { BUILT_IN_STYLES } from '$lib/typst/templates/styles';
+import { BUILT_IN_STYLES } from '#lib/typst/templates/styles.ts';
 
 const ONDINE: CopyRecipient = {
 	id: '550e8400-e29b-41d4-a716-446655440601',
@@ -297,5 +298,27 @@ describe('taille du texte de chaque élève', () => {
 		const large = assembled.indexOf('size: 14pt, lang:');
 		expect(normal).toBeGreaterThan(-1);
 		expect(large).toBeGreaterThan(normal);
+	});
+});
+
+// Lecture facilitée (chantier `lecture-facilitee`, D9 du 2026-11-19) : chaque
+// copie suit le réglage de son élève, sans déborder sur les autres
+describe('lecture facilitée de chaque élève', () => {
+	it('sans réglage : pas de Luciole', () => {
+		expect(hasEasyReading(studentCopyTypst(view(), ONDINE))).toBe(false);
+	});
+
+	it('élève en lecture facilitée : sa copie en Luciole', () => {
+		expect(hasEasyReading(studentCopyTypst(view(), { ...ONDINE, easy_reading: true }))).toBe(true);
+	});
+
+	it('un lot mélangé : la Luciole reste dans le bloc de son élève', () => {
+		const luciole = studentCopyTypst(view(), { ...ANOUK, easy_reading: true });
+		const assembled = assembleStudentCopies([studentCopyTypst(view(), ONDINE), luciole]);
+		const blocks = assembled.split('\n#pagebreak(weak: true)\n');
+		expect(hasEasyReading(blocks[0])).toBe(false);
+		expect(hasEasyReading(blocks[1])).toBe(true);
+		// Le bloc `#[ … ]` de la copie borne les règles
+		expect(blocks[1].indexOf('#[')).toBeLessThan(blocks[1].indexOf('// <lecture-facilitee>'));
 	});
 });

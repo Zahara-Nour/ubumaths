@@ -12,7 +12,7 @@
 	@see VariationTable.svelte for the rendering component
 -->
 <script lang="ts">
-	import { lore } from '$lib/config/lore';
+	import { lore } from '#lib/config/lore.ts';
 	import { NodeViewWrapper } from 'svelte-tiptap';
 	import type { Editor } from '@tiptap/core';
 
@@ -26,11 +26,11 @@
 		selected: boolean;
 	}
 	import { Pencil, Trash2, Check, X, AlertCircle } from '@lucide/svelte';
-	import { Button } from '$lib/components/ui/button';
-	import * as Dialog from '$lib/components/ui/dialog';
-	import VariationTable from '$lib/components/markdown/nodes/VariationTable.svelte';
-	import { parseVariationTableContent } from '$lib/ubumark/parser/variation-table-parser';
-	import type { VariationTableNode } from '$lib/ubumark/types/variation-table';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import * as Dialog from '#lib/components/ui/dialog/index.ts';
+	import VariationTable from '#lib/components/markdown/nodes/VariationTable.svelte';
+	import { parseVariationTableContent } from '#lib/ubumark/parser/variation-table-parser.ts';
+	import type { VariationTableNode } from '#lib/ubumark/types/variation-table.ts';
 	import { VARIATION_TABLE_TEMPLATE } from './variation-table-extension';
 
 	// NodeView props from TipTap

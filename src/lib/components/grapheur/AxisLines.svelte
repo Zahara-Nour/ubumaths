@@ -8,9 +8,9 @@
 	 * @component
 	 */
 
-	import type { Viewport } from '$lib/grapheur/types';
-	import type { CoordinateTransformer } from '$lib/grapheur/viewport';
-	import { computeGridStep } from '$lib/geometry-core/viewport';
+	import type { Viewport } from '#lib/grapheur/types.ts';
+	import type { CoordinateTransformer } from '#lib/grapheur/viewport.ts';
+	import { computeGridStep } from '#lib/geometry-core/viewport/index.ts';
 
 	// Props
 	let {

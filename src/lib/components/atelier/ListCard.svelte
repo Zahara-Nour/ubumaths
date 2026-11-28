@@ -11,19 +11,19 @@
 	 *   liste », une partenaire après l'autre — à la place du choix de la
 	 *   partenaire (Q46) qui vivait sur la carte.
 	 */
-	import type { ListObject } from '$lib/atelier/types';
+	import type { ListObject } from '#lib/atelier/types.ts';
 	import {
 		actionsFor,
 		partnersOf,
 		actionMovesFocus,
 		type ObjectAction
-	} from '$lib/atelier/actions';
-	import { useAtelier } from '$lib/atelier/context';
-	import { displayName } from '$lib/atelier/names';
-	import { stateLabelOf } from '$lib/atelier/card-state';
-	import { listCountLabel, listEntriesOf, listPreview } from '$lib/atelier/list-preview';
+	} from '#lib/atelier/actions.ts';
+	import { useAtelier } from '#lib/atelier/context.ts';
+	import { displayName } from '#lib/atelier/names.ts';
+	import { stateLabelOf } from '#lib/atelier/card-state.ts';
+	import { listCountLabel, listEntriesOf, listPreview } from '#lib/atelier/list-preview.ts';
 	import { EllipsisVertical } from '@lucide/svelte';
-	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
+	import * as DropdownMenu from '#lib/components/ui/dropdown-menu/index.ts';
 	import CardActionItems from './CardActionItems.svelte';
 
 	interface Props {

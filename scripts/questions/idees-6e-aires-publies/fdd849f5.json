@@ -1,0 +1,535 @@
+{
+	"id": "fdd849f5-56b8-4da5-82d8-37f819e3ceaf",
+	"title": "Calcul de l'aire d'un rectangle.",
+	"description": "A partir d'une description",
+	"grades": ["6"],
+	"level": 1,
+	"delay": 15,
+	"status": "published",
+	"shared": {
+		"statement": "Quelle est l'aire d'un **rectangle** de longueur ${{c}}$ et de largeur ${{d}}$ ?\n\nL'aire du rectangle est $?$.",
+		"conditions": ["a>b"],
+		"correction": {
+			"steps": [
+				"L'aire d'un rectangle de longueur ${{c}}$ et de largeur ${{d}}$ est ${{c}} \\times {{d}} =$ {{solution:html}}."
+			]
+		}
+	},
+	"variations": [
+		{
+			"blanks": [
+				{
+					"unit": {
+						"expected": true
+					},
+					"expectedAnswer": "{{eval:c*d;[mm^2]}}"
+				}
+			],
+			"statement": "Quelle est l'aire d'un **rectangle** de longueur ${{c}}$ et de largeur ${{d}}$ ?\n\nL'aire du rectangle est $?$.",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..11"
+				},
+				{
+					"name": "b",
+					"expression": "1..11!a"
+				},
+				{
+					"name": "c",
+					"expression": "eval:a[mm]"
+				},
+				{
+					"name": "d",
+					"expression": "eval:b[mm]"
+				}
+			]
+		},
+		{
+			"blanks": [
+				{
+					"unit": {
+						"expected": true
+					},
+					"expectedAnswer": "{{eval:c*d;[cm^2]}}"
+				}
+			],
+			"statement": "Quelle est l'aire d'un **rectangle** de longueur ${{c}}$ et de largeur ${{d}}$ ?\n\nL'aire du rectangle est $?$.",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..11"
+				},
+				{
+					"name": "b",
+					"expression": "1..11!a"
+				},
+				{
+					"name": "c",
+					"expression": "eval:a[cm]"
+				},
+				{
+					"name": "d",
+					"expression": "eval:b[cm]"
+				}
+			]
+		},
+		{
+			"blanks": [
+				{
+					"unit": {
+						"expected": true
+					},
+					"expectedAnswer": "{{eval:c*d;[dm^2]}}"
+				}
+			],
+			"statement": "Quelle est l'aire d'un **rectangle** de longueur ${{c}}$ et de largeur ${{d}}$ ?\n\nL'aire du rectangle est $?$.",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..11"
+				},
+				{
+					"name": "b",
+					"expression": "1..11!a"
+				},
+				{
+					"name": "c",
+					"expression": "eval:a[dm]"
+				},
+				{
+					"name": "d",
+					"expression": "eval:b[dm]"
+				}
+			]
+		},
+		{
+			"blanks": [
+				{
+					"unit": {
+						"expected": true
+					},
+					"expectedAnswer": "{{eval:c*d;[m^2]}}"
+				}
+			],
+			"statement": "Quelle est l'aire d'un **rectangle** de longueur ${{c}}$ et de largeur ${{d}}$ ?\n\nL'aire du rectangle est $?$.",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..11"
+				},
+				{
+					"name": "b",
+					"expression": "1..11!a"
+				},
+				{
+					"name": "c",
+					"expression": "eval:a[m]"
+				},
+				{
+					"name": "d",
+					"expression": "eval:b[m]"
+				}
+			]
+		},
+		{
+			"blanks": [
+				{
+					"unit": {
+						"expected": true
+					},
+					"expectedAnswer": "{{eval:c*d;[dam^2]}}"
+				}
+			],
+			"statement": "Quelle est l'aire d'un **rectangle** de longueur ${{c}}$ et de largeur ${{d}}$ ?\n\nL'aire du rectangle est $?$.",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..11"
+				},
+				{
+					"name": "b",
+					"expression": "1..11!a"
+				},
+				{
+					"name": "c",
+					"expression": "eval:a[dam]"
+				},
+				{
+					"name": "d",
+					"expression": "eval:b[dam]"
+				}
+			]
+		},
+		{
+			"blanks": [
+				{
+					"unit": {
+						"expected": true
+					},
+					"expectedAnswer": "{{eval:c*d;[hm^2]}}"
+				}
+			],
+			"statement": "Quelle est l'aire d'un **rectangle** de longueur ${{c}}$ et de largeur ${{d}}$ ?\n\nL'aire du rectangle est $?$.",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..11"
+				},
+				{
+					"name": "b",
+					"expression": "1..11!a"
+				},
+				{
+					"name": "c",
+					"expression": "eval:a[hm]"
+				},
+				{
+					"name": "d",
+					"expression": "eval:b[hm]"
+				}
+			]
+		},
+		{
+			"blanks": [
+				{
+					"unit": {
+						"expected": true
+					},
+					"expectedAnswer": "{{eval:c*d;[km^2]}}"
+				}
+			],
+			"statement": "Quelle est l'aire d'un **rectangle** de longueur ${{c}}$ et de largeur ${{d}}$ ?\n\nL'aire du rectangle est $?$.",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..11"
+				},
+				{
+					"name": "b",
+					"expression": "1..11!a"
+				},
+				{
+					"name": "c",
+					"expression": "eval:a[km]"
+				},
+				{
+					"name": "d",
+					"expression": "eval:b[km]"
+				}
+			]
+		},
+		{
+			"statement": "Quelle est l'aire de ce **rectangle** ?\n\n```figure\nfenetre: -1 ; {{eval:a+3}} ; -2 ; {{eval:b+1}}\ndescription: Un rectangle de {{a}} cm de longueur et {{b}} cm de largeur.\n---\nA = point(0, 0, visible=faux)\nB = point({{a}}, 0, visible=faux)\nC = point({{a}}, {{b}}, visible=faux)\nD = point(0, {{b}}, visible=faux)\npolygone(A, B, C, D, couleur=\"noir\", epaisseur=2, remplissage=\"bleu\", opacite_fond=0.2)\nM = milieu(A, B, visible=faux)\nN = milieu(B, C, visible=faux)\ntexte(M, \"{{a}} cm\", dy=-0.4, ancre=\"haut\")\ntexte(N, \"{{b}} cm\", dx=0.3, ancre=\"gauche\")\n```\n\nL'aire du rectangle est $?$.",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "3..11"
+				},
+				{
+					"name": "b",
+					"expression": "2..10"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a*b}}\\unit{cm^2}",
+					"unit": {
+						"expected": true
+					},
+					"expectedErrors": [
+						{
+							"answer": "{{eval:2*(a+b)}}\\unit{cm}",
+							"message": "Ça, c'est le périmètre (le tour) ; l'aire est la longueur multipliée par la largeur.",
+							"label": "Périmètre"
+						},
+						{
+							"answer": "{{eval:a*b}}\\unit{cm}",
+							"message": "Une aire s'écrit en $\\unit{cm^2}$, pas en $\\unit{cm}$.",
+							"label": "Aire en cm"
+						},
+						{
+							"answer": "{{eval:a+b}}\\unit{cm^2}",
+							"message": "L'aire n'est pas une somme : multiplie la longueur par la largeur.",
+							"label": "Somme"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"On lit les deux côtés sur la figure : ${{a}}$ cm et ${{b}}$ cm.",
+					"$${{a}}~\\unit{cm} \\times {{b}}~\\unit{cm} = \\textcolor{{{color:primary.0}}}{{{eval:a*b}}~\\unit{cm^2}}$$"
+				]
+			},
+			"hint": "Lis la longueur et la largeur sur la figure, puis applique la formule de l'aire."
+		},
+		{
+			"statement": "Quelle est l'aire d'un **rectangle** de longueur ${{a}}~\\unit{cm}$ et de largeur ${{eval:b+q/10;d}}~\\unit{cm}$ ?\n\nL'aire du rectangle est $?$.",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "5..9"
+				},
+				{
+					"name": "b",
+					"expression": "1..3"
+				},
+				{
+					"name": "q",
+					"expression": "1..9"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a*(10*b+q)/10;d}}\\unit{cm^2}",
+					"unit": {
+						"expected": true
+					},
+					"expectedErrors": [
+						{
+							"answer": "{{eval:2*(a+b+q/10);d}}\\unit{cm}",
+							"message": "Ça, c'est le périmètre (le tour) ; l'aire est la longueur multipliée par la largeur.",
+							"label": "Périmètre"
+						},
+						{
+							"answer": "{{eval:a*(10*b+q)/100;d}}\\unit{cm^2}",
+							"message": "La virgule est mal placée : le résultat a autant de chiffres après la virgule que la largeur, un seul.",
+							"label": "Virgule décalée"
+						},
+						{
+							"answer": "{{eval:a*b+q/10;d}}\\unit{cm^2}",
+							"message": "Il faut multiplier toute la largeur, la partie après la virgule aussi.",
+							"label": "Partie décimale oubliée dans le produit"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"$${{a}} \\times {{eval:b+q/10;d}} = \\textcolor{{{color:primary.0}}}{{{eval:a*(10*b+q)/10;d}}~\\unit{cm^2}}$$",
+					"Pour calculer : ${{a}} \\times {{eval:10*b+q}} = {{eval:a*(10*b+q)}}$, puis un chiffre après la virgule, comme dans ${{eval:b+q/10;d}}$."
+				]
+			},
+			"hint": "Calcule ${{a}} \\times {{eval:10*b+q}}$, puis place la virgule."
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["40\\unit{mm^2}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "8",
+				"b": "5"
+			},
+			"description": "8 mm × 5 mm = 40 mm²",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["26\\unit{mm}"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "8",
+				"b": "5"
+			},
+			"description": "périmètre 26 mm",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["0{,}4\\unit{cm^2}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "8",
+				"b": "5"
+			},
+			"description": "unité équivalente 0,4 cm²",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["40\\unit{cm^2}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "8",
+				"b": "5"
+			},
+			"description": "8 cm × 5 cm = 40 cm²",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["40\\unit{dm^2}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "8",
+				"b": "5"
+			},
+			"description": "8 dm × 5 dm = 40 dm²",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["40\\unit{m^2}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "8",
+				"b": "5"
+			},
+			"description": "8 m × 5 m = 40 m²",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["40\\unit{dam^2}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "8",
+				"b": "5"
+			},
+			"description": "8 dam × 5 dam = 40 dam²",
+			"variationIndex": 4
+		},
+		{
+			"answers": ["40\\unit{hm^2}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "8",
+				"b": "5"
+			},
+			"description": "8 hm × 5 hm = 40 hm²",
+			"variationIndex": 5
+		},
+		{
+			"answers": ["40\\unit{km^2}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "8",
+				"b": "5"
+			},
+			"description": "8 km × 5 km = 40 km²",
+			"variationIndex": 6
+		},
+		{
+			"description": "Figure 7 × 4 = 28 cm²",
+			"variationIndex": 7,
+			"variables": {
+				"a": "7",
+				"b": "4"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["28\\unit{cm^2}"]
+		},
+		{
+			"description": "Figure : périmètre 22 cm",
+			"variationIndex": 7,
+			"variables": {
+				"a": "7",
+				"b": "4"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Ça, c'est le périmètre (le tour) ; l'aire est la longueur multipliée par la largeur."
+			},
+			"answers": ["22\\unit{cm}"]
+		},
+		{
+			"description": "Figure : 28 cm",
+			"variationIndex": 7,
+			"variables": {
+				"a": "7",
+				"b": "4"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Une aire s'écrit en $\\unit{cm^2}$, pas en $\\unit{cm}$."
+			},
+			"answers": ["28\\unit{cm}"]
+		},
+		{
+			"description": "Figure : 11 cm²",
+			"variationIndex": 7,
+			"variables": {
+				"a": "7",
+				"b": "4"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "L'aire n'est pas une somme : multiplie la longueur par la largeur."
+			},
+			"answers": ["11\\unit{cm^2}"]
+		},
+		{
+			"description": "6 × 2,4 = 14,4 cm²",
+			"variationIndex": 8,
+			"variables": {
+				"a": "6",
+				"b": "2",
+				"q": "4"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["14{,}4\\unit{cm^2}"]
+		},
+		{
+			"description": "6 × 2,4 : 1,44 cm²",
+			"variationIndex": 8,
+			"variables": {
+				"a": "6",
+				"b": "2",
+				"q": "4"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "La virgule est mal placée : le résultat a autant de chiffres après la virgule que la largeur, un seul."
+			},
+			"answers": ["1{,}44\\unit{cm^2}"]
+		},
+		{
+			"description": "6 × 2,4 : 12,4 cm²",
+			"variationIndex": 8,
+			"variables": {
+				"a": "6",
+				"b": "2",
+				"q": "4"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Il faut multiplier toute la largeur, la partie après la virgule aussi."
+			},
+			"answers": ["12{,}4\\unit{cm^2}"]
+		},
+		{
+			"description": "6 × 2,4 : périmètre 16,8 cm",
+			"variationIndex": 8,
+			"variables": {
+				"a": "6",
+				"b": "2",
+				"q": "4"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Ça, c'est le périmètre (le tour) ; l'aire est la longueur multipliée par la largeur."
+			},
+			"answers": ["16{,}8\\unit{cm}"]
+		}
+	]
+}

@@ -3,7 +3,7 @@
  * =====================================================================
  *
  * Comportements validés par David le 2026-10-25
- * (`docs/wip/geometrie-validation-progress.md` § 5) : toucher A puis B trace la
+ * (`docs/archive/wip/geometrie-validation-progress.md` § 5) : toucher A puis B trace la
  * droite, aimantée près des points ; Effacer ; Valider grisé tant que rien n'est
  * tracé ; juste → droite verte ; faux → message du juge et bonne droite en
  * pointillés. Décor réel : la question est générée ; la saisie dans `QuestionCard`
@@ -13,11 +13,11 @@ import { describe, it, expect, afterEach } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import QuestionCard from '../QuestionCard.svelte';
 import FlashCard from '../FlashCard.svelte';
-import FigureBlock from '$lib/components/markdown/nodes/FigureBlock.svelte';
-import { generateInstance } from '$lib/questions/generator/instance-generator';
-import type { QuestionInstance, QuestionTemplate } from '$lib/questions/types';
-import { parseMarkdown, resolvedMarkdown, templateMarkdown } from '$lib/ubumark';
-import type { FigureNode } from '$lib/ubumark/types/figure';
+import FigureBlock from '#lib/components/markdown/nodes/FigureBlock.svelte';
+import { generateInstance } from '#lib/questions/generator/instance-generator.ts';
+import type { QuestionInstance, QuestionTemplate } from '#lib/questions/types.ts';
+import { parseMarkdown, resolvedMarkdown, templateMarkdown } from '#lib/ubumark/index.ts';
+import type { FigureNode } from '#lib/ubumark/types/figure.ts';
 
 const BLOCK = [
 	'```figure-a-completer',

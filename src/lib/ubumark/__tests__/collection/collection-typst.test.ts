@@ -4,12 +4,12 @@
  */
 
 import { describe, expect, it } from 'vitest';
-import { parseMarkdown } from '$lib/ubumark';
-import { generateTypst } from '$lib/ubumark/generators/typst-generator';
-import { generateCollectionTypst } from '$lib/ubumark/generators/collection-typst';
-import { parseCollectionContent } from '$lib/ubumark/parser/collection-parser';
-import { buildCollectionScene, COLLECTION_VIEW } from '$lib/ubumark/utils/collection-scene';
-import { COLLECTION_UNAVAILABLE } from '$lib/ubumark/types/collection';
+import { parseMarkdown } from '#lib/ubumark/index.ts';
+import { generateTypst } from '#lib/ubumark/generators/typst-generator.ts';
+import { generateCollectionTypst } from '#lib/ubumark/generators/collection-typst.ts';
+import { parseCollectionContent } from '#lib/ubumark/parser/collection-parser.ts';
+import { buildCollectionScene, COLLECTION_VIEW } from '#lib/ubumark/utils/collection-scene.ts';
+import { COLLECTION_UNAVAILABLE } from '#lib/ubumark/types/collection.ts';
 
 const node = (...lines: string[]) => parseCollectionContent(lines.join('\n'));
 const typst = (...lines: string[]) => generateCollectionTypst(node(...lines));

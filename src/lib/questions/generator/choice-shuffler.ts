@@ -8,8 +8,8 @@
  * @module questions/generator/choice-shuffler
  */
 
-import type { ResolvedMarkdown } from '$lib/ubumark';
-import { randomInt, type RandomSource } from '$lib/utils/random';
+import type { ResolvedMarkdown } from '#lib/ubumark/index.ts';
+import { randomInt, type RandomSource } from '#lib/utils/random.ts';
 
 /**
  * Shuffled choice with original index

@@ -1,0 +1,185 @@
+{
+	"id": "f95f05a0-4c66-409f-9ea3-0f9fcdd98759",
+	"title": "Éléments caractéristiques de ax² + bx + c en résolvant f(x) = c",
+	"description": "Résoudre f(x) = c par factorisation par x, en déduire l'axe puis le sommet",
+	"grades": ["1_GEN", "1_TECHNO"],
+	"level": 3,
+	"delay": 60,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		},
+		"cleanCoefficients": true
+	},
+	"variations": [
+		{
+			"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)={{eval:ax^2+bx+c}}$.\n\nLes solutions de l'équation $f(x)={{c}}$ sont $0$ et $?$.\n\nL'axe de symétrie de la parabole a pour équation $x=?$.\n\nLe sommet de la parabole est $S\\left(\\,?\\,;\\,?\\,\\right)$.",
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:2*al}}"
+				},
+				{
+					"expectedAnswer": "{{al}}"
+				},
+				{
+					"expectedAnswer": "{{al}}"
+				},
+				{
+					"expectedAnswer": "{{be}}"
+				}
+			],
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "a",
+					"expression": "1..2;±"
+				},
+				{
+					"name": "al",
+					"expression": "1..4;±"
+				},
+				{
+					"name": "b",
+					"expression": "eval:-2*a*al"
+				},
+				{
+					"name": "c",
+					"expression": "-6..6"
+				},
+				{
+					"name": "be",
+					"expression": "eval:c-a*al^2"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$f(x)={{c}}\\iff {{eval:ax^2+bx}}=0\\iff x({{eval:ax+b}})=0$, donc $x=0$ ou $x={{eval:2*al}}$.",
+					"Les points d'abscisses $0$ et ${{eval:2*al}}$ ont la même image ${{c}}$ : ils sont symétriques par rapport à l'axe de la parabole, qui passe par leur milieu, $x=\\dfrac{0+{{if:al<0|({{eval:2*al}})|{{eval:2*al}}}}}{2}={{al}}$.",
+					"Le sommet est sur l'axe : $f({{al}})={{be}}$, donc $S\\left({{al}}\\,;{{be}}\\right)$."
+				]
+			},
+			"conditions": ["be >= -9", "be <= 9"]
+		},
+		{
+			"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)={{eval:ax^2+bx+c}}$.\n\nEn résolvant $f(x)={{c}}$, détermine l'axe de symétrie de la parabole qui représente $f$ : $x=?$.",
+			"blanks": [
+				{
+					"expectedAnswer": "{{al}}"
+				}
+			],
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "a",
+					"expression": "1..2;±"
+				},
+				{
+					"name": "al",
+					"expression": "1..4;±"
+				},
+				{
+					"name": "b",
+					"expression": "eval:-2*a*al"
+				},
+				{
+					"name": "c",
+					"expression": "-6..6"
+				},
+				{
+					"name": "be",
+					"expression": "eval:c-a*al^2"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$f(x)={{c}}\\iff {{eval:ax^2+bx}}=0\\iff x({{eval:ax+b}})=0$, donc $x=0$ ou $x={{eval:2*al}}$.",
+					"Les points d'abscisses $0$ et ${{eval:2*al}}$ ont la même image ${{c}}$ : ils sont symétriques par rapport à l'axe de la parabole, qui passe par leur milieu, $x=\\dfrac{0+{{if:al<0|({{eval:2*al}})|{{eval:2*al}}}}}{2}={{al}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "x²-6x+4 : 6, 3, S(3 ; -5)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "1",
+				"al": "3",
+				"b": "-6",
+				"c": "4",
+				"be": "-5"
+			},
+			"answers": ["6", "3", "3", "-5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : solution -6, axe -3",
+			"variationIndex": 0,
+			"variables": {
+				"a": "1",
+				"al": "3",
+				"b": "-6",
+				"c": "4",
+				"be": "-5"
+			},
+			"answers": ["-6", "-3", "-3", "-5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : ordonnée = c",
+			"variationIndex": 0,
+			"variables": {
+				"a": "1",
+				"al": "3",
+				"b": "-6",
+				"c": "4",
+				"be": "-5"
+			},
+			"answers": ["6", "3", "3", "4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "-2x²-8x+1 : axe x = -2",
+			"variationIndex": 1,
+			"variables": {
+				"a": "-2",
+				"al": "-2",
+				"b": "-8",
+				"c": "1",
+				"be": "9"
+			},
+			"answers": ["-2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : axe = autre solution",
+			"variationIndex": 1,
+			"variables": {
+				"a": "-2",
+				"al": "-2",
+				"b": "-8",
+				"c": "1",
+				"be": "9"
+			},
+			"answers": ["-4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

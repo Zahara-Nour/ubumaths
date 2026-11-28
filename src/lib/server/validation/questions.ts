@@ -3,7 +3,7 @@
  *
  * Building block schemas (displayOptionsSchema, variableSchema, correctionSchema,
  * blankSchema, etc.) are imported from the single source of truth:
- * $lib/questions/template-schema.ts
+ * #lib/questions/template-schema.ts
  */
 
 import { z } from 'zod';
@@ -20,10 +20,11 @@ import {
 	testSpecSchema,
 	QCM_RETIRED_MESSAGE,
 	retiredQcmFieldSchema
-} from '$lib/questions/template-schema';
-import { refineAssumptionCollisions } from '$lib/questions/answer-assumptions';
-import { genericFunctionNamesSchema } from '$lib/questions/generic-functions';
-import { capitalPairsSchema } from '$lib/questions/capital-pairs';
+} from '#lib/questions/template-schema.ts';
+import { refineAssumptionCollisions } from '#lib/questions/answer-assumptions.ts';
+import { genericFunctionNamesSchema } from '#lib/questions/generic-functions.ts';
+import { capitalPairsSchema } from '#lib/questions/capital-pairs.ts';
+import { hintSchema, refineHints } from '#lib/questions/hint.ts';
 
 // Re-export building blocks for downstream consumers (index.ts)
 export {
@@ -36,7 +37,7 @@ export {
 	validationRuleSchema,
 	requiredFormSchema,
 	testSpecSchema
-} from '$lib/questions/template-schema';
+} from '#lib/questions/template-schema.ts';
 
 /**
  * Question types (le QCM est une case choix depuis l'ADR 0033 : plus de `multiple_choice`)
@@ -59,7 +60,10 @@ const variationSchema = z.object({
 	requiredForm: requiredFormSchema.optional(),
 	validationRules: z.array(validationRuleSchema).optional(),
 	answerFormats: z.record(z.string(), z.string()).optional(),
-	conditions: z.array(z.string()).optional()
+	conditions: z.array(z.string()).optional(),
+	// Coup de pouce (idée 5) : sans eux, l'objet non strict les RETIRERAIT à l'écriture
+	hint: hintSchema.optional(),
+	hintFromFirstStep: z.boolean().optional()
 });
 
 /**
@@ -157,6 +161,7 @@ function refineTemplate(
 	refineSharedCleanCoefficients(data, ctx);
 	refineSharedCapitalPairs(data, ctx);
 	refineSharedRetiredQcm(data, ctx);
+	refineHints(data, ctx);
 }
 
 /**
@@ -204,7 +209,7 @@ export const generateQuestionSchema = z.object({
 /**
  * Publication par lot : changer le statut de plusieurs modèles en une requête.
  * Le client envoie des paquets de 50 (`BULK_CLIENT_CHUNK_SIZE`, voir
- * `$lib/questions/bulk-status`) ; 100 laisse la place à un groupe de rivaux
+ * `#lib/questions/bulk-status.ts`) ; 100 laisse la place à un groupe de rivaux
  * d'une même catégorie qui déborde un paquet, jamais coupé en deux.
  */
 export const MAX_BULK_TEMPLATE_IDS = 100;

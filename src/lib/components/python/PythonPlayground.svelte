@@ -1,7 +1,7 @@
 <script lang="ts">
 	// Imports
-	import { pythonStore } from '$lib/stores/pythonPlayground.svelte';
-	import { debugStore } from '$lib/stores/pythonDebug.svelte';
+	import { pythonStore } from '#lib/stores/pythonPlayground.svelte.ts';
+	import { debugStore } from '#lib/stores/pythonDebug.svelte.ts';
 	import PythonToolbar from './PythonToolbar.svelte';
 	import PythonEditor from './PythonEditor.svelte';
 	import PythonOutput from './PythonOutput.svelte';
@@ -12,10 +12,10 @@
 	import PythonSettings from './PythonSettings.svelte';
 	import PythonToAtelier from './PythonToAtelier.svelte';
 	import { DebugToolbar, DebugPanel } from './debug';
-	import { toaster } from '$lib/stores/toaster.svelte';
-	import { browser } from '$app/environment';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
+	import { browser } from '$app/env';
 	import { onMount, onDestroy } from 'svelte';
-	import type { Database } from '$lib/types/database';
+	import type { Database } from '#lib/types/database.ts';
 
 	// Types
 	type Profile = Database['public']['Tables']['profiles']['Row'];

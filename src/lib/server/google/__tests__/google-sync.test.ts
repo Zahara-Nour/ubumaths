@@ -1,8 +1,8 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { Database } from '$lib/types/database';
-import { syncTopics, syncCourseWorkMaterials } from '$lib/server/google/sync';
-import { GoogleClassroomClient } from '$lib/server/google/classroom-api';
+import type { Database } from '#lib/types/database.ts';
+import { syncTopics, syncCourseWorkMaterials } from '#lib/server/google/sync.ts';
+import { GoogleClassroomClient } from '#lib/server/google/classroom-api.ts';
 
 // Shared holder for the mocked Google Classroom client instance.
 // The constructor mock returns this object so every `new GoogleClassroomClient()`
@@ -15,14 +15,14 @@ const classroomClientInstance: any = {
 
 // Mock the Google Classroom client
 // `function` et non flèche : vitest 4 appelle le mock avec `new`
-vi.mock('$lib/server/google/classroom-api', () => ({
+vi.mock('#lib/server/google/classroom-api.ts', () => ({
 	GoogleClassroomClient: vi.fn(function () {
 		return classroomClientInstance;
 	})
 }));
 
 // Mock encryption/decryption
-vi.mock('$lib/server/google/encryption', () => ({
+vi.mock('#lib/server/google/encryption.ts', () => ({
 	decryptToken: vi.fn((token: string) => token),
 	encryptToken: vi.fn((token: string) => token)
 }));

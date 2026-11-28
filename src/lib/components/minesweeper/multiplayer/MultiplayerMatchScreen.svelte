@@ -1,12 +1,12 @@
 <script lang="ts">
-	import { lore } from '$lib/config/lore';
+	import { lore } from '#lib/config/lore.ts';
 	import OpponentProgressIndicator from './OpponentProgressIndicator.svelte';
-	import { Button } from '$lib/components/ui/button';
-	import { Card } from '$lib/components/ui/card';
-	import { Separator } from '$lib/components/ui/separator';
-	import * as Dialog from '$lib/components/ui/dialog';
-	import { multiplayerStore } from '$lib/stores/multiplayer.svelte';
-	import { toaster } from '$lib/stores/toaster.svelte';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import { Card } from '#lib/components/ui/card/index.ts';
+	import { Separator } from '#lib/components/ui/separator/index.ts';
+	import * as Dialog from '#lib/components/ui/dialog/index.ts';
+	import { multiplayerStore } from '#lib/stores/multiplayer.svelte.ts';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
 
 	// Props
 	let {

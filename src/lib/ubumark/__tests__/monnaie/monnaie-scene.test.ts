@@ -7,15 +7,15 @@
  */
 
 import { describe, expect, it } from 'vitest';
-import { parseMonnaieContent } from '$lib/ubumark/parser/monnaie-parser';
+import { parseMonnaieContent } from '#lib/ubumark/parser/monnaie-parser.ts';
 import {
 	buildMonnaieScene,
 	findMonnaieItemAt,
 	MONNAIE_VIEW,
 	type MonnaieItem,
 	type MonnaieScene
-} from '$lib/ubumark/utils/monnaie-scene';
-import type { MonnaieSpec } from '$lib/ubumark/types/monnaie';
+} from '#lib/ubumark/utils/monnaie-scene.ts';
+import type { MonnaieSpec } from '#lib/ubumark/types/monnaie.ts';
 
 function spec(...lines: string[]): MonnaieSpec {
 	const node = parseMonnaieContent(lines.join('\n'));

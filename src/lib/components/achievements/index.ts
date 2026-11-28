@@ -13,7 +13,7 @@
  *     AchievementProgress,
  *     AchievementToast,
  *     AchievementLeaderboard
- *   } from '$lib/components/achievements';
+ *   } from '#lib/components/achievements/index.ts';
  * </script>
  * ```
  */

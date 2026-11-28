@@ -12,15 +12,15 @@
 	 * <TimezoneSelect bind:value={selectedTimezone} />
 	 */
 
-	import { Input } from '$lib/components/ui/input';
-	import { Button } from '$lib/components/ui/button';
-	import { Label } from '$lib/components/ui/label';
+	import { Input } from '#lib/components/ui/input/index.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import { Label } from '#lib/components/ui/label/index.ts';
 	import {
 		TIMEZONE_GROUPS,
 		getTimezoneLabel,
 		getTimezoneOffset,
 		DEFAULT_TIMEZONE
-	} from '$lib/utils/timezones';
+	} from '#lib/utils/timezones.ts';
 
 	let {
 		value = $bindable(DEFAULT_TIMEZONE),

@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { geoToNumber, vec2ToPoint } from '../to-number';
 import { exact, numeric } from '../../types/geo-value';
-import { number, sqrt, fraction, add, multiply, opposite, piConstant } from '$lib/mathAST';
+import { number, sqrt, fraction, add, multiply, opposite, piConstant } from '#lib/mathAST/index.ts';
 
 describe('geoToNumber - numeric values', () => {
 	it('returns the value directly', () => {

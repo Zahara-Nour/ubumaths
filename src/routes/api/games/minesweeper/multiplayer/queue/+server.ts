@@ -4,11 +4,11 @@
  * DELETE - Leave matchmaking queue
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { joinQueueSchema } from '$lib/server/validation/minesweeper-multiplayer';
-import { requireRole } from '$lib/server/middleware/auth';
-import { sanitizeRPCError } from '$lib/server/utils/error-handler';
+import { joinQueueSchema } from '#lib/server/validation/minesweeper-multiplayer.ts';
+import { requireRole } from '#lib/server/middleware/auth.ts';
+import { sanitizeRPCError } from '#lib/server/utils/error-handler.ts';
 
 /**
  * POST /api/games/minesweeper/multiplayer/queue
@@ -61,7 +61,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		sanitizeRPCError(rpcError, 'join_multiplayer_queue');
 	}
 
-	return json(data);
+	return Response.json(data);
 };
 
 /**
@@ -83,5 +83,5 @@ export const DELETE: RequestHandler = async ({ locals }) => {
 		sanitizeRPCError(rpcError, 'leave_multiplayer_queue');
 	}
 
-	return json(data);
+	return Response.json(data);
 };

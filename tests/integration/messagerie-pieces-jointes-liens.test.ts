@@ -21,8 +21,8 @@ import {
 	createAttachmentUploadUrl,
 	getAttachmentDownloadUrl,
 	sweepOrphanMessageAttachments
-} from '$lib/server/message-attachments';
-import { MESSAGE_ATTACHMENT_BUCKET } from '$lib/utils/message-attachment-rules';
+} from '#lib/server/message-attachments.ts';
+import { MESSAGE_ATTACHMENT_BUCKET } from '#lib/utils/message-attachment-rules.ts';
 
 // ============================================================================
 // CONSTANTES

@@ -2,16 +2,18 @@
  * Teacher Chapter Content Editor Server
  * ======================================
  *
- * Manages chapter content:
- * - Documents (add/remove/reorder)
- * - Checklist items (CRUD/reorder)
- * - Exercises (link/unlink/reorder)
- * - View student progress
+ * Contenu d'un chapitre :
+ * - documents (ajout, Google Drive, suppression)
+ * - points de la checklist (ajout, modification, suppression)
+ * - exercices, fiches et séries (lier, délier), modèles de chapitre
+ * - publication et masquage (chapitre, section)
+ * - progression des élèves sur la checklist
+ * Aucun réordonnancement ici.
  */
 
 import type { PageServerLoad, Actions } from './$types';
 import { error, fail } from '@sveltejs/kit';
-import { requireRole } from '$lib/server/middleware/auth';
+import { requireRole } from '#lib/server/middleware/auth.ts';
 import {
 	addChapterDocument,
 	deleteChapterDocument,
@@ -23,9 +25,9 @@ import {
 	linkWorksheet,
 	unlinkWorksheet,
 	getStudentChecklistProgress
-} from '$lib/server/chapters';
-import { uuidSchema } from '$lib/server/validation/common';
-import { placeInSection } from '$lib/server/chapter-sections';
+} from '#lib/server/chapters.ts';
+import { uuidSchema } from '#lib/server/validation/common.ts';
+import { placeInSection } from '#lib/server/chapter-sections.ts';
 import {
 	findOngoingEvaluation,
 	linkSeries,
@@ -34,42 +36,42 @@ import {
 	setSeriesForm,
 	unlinkSeries,
 	type ChapterSeriesError
-} from '$lib/server/chapter-series';
+} from '#lib/server/chapter-series.ts';
 import {
 	linkSeriesSchema,
 	setSeriesFormSchema,
 	unlinkSeriesSchema
-} from '$lib/server/validation/chapter-series';
+} from '#lib/server/validation/chapter-series.ts';
 import {
 	targetSectionFieldSchema,
 	type SectionContentKind
-} from '$lib/server/validation/chapter-sections';
+} from '#lib/server/validation/chapter-sections.ts';
 import {
 	setContentPublication,
 	setLinkedElementHidden,
 	setChapterSectionHidden,
 	listDistributedWorksheetIds,
 	CHAPTER_CONTENT_TYPES
-} from '$lib/server/chapters-publication';
+} from '#lib/server/chapters-publication.ts';
 import { z } from 'zod';
 import {
 	getInstantiationWithStatus,
 	createTemplateFromChapter,
 	detachChapterFromTemplate
-} from '$lib/server/chapter-templates';
-import { createTemplateFromChapterSchema } from '$lib/server/validation/chapter-templates';
+} from '#lib/server/chapter-templates.ts';
+import { createTemplateFromChapterSchema } from '#lib/server/validation/chapter-templates.ts';
 import {
 	createChecklistItemSchema,
 	updateChecklistItemSchema
-} from '$lib/server/validation/chapters';
+} from '#lib/server/validation/chapters.ts';
 import type {
 	ChapterSection,
 	ChapterDocument,
 	ChapterChecklistItem,
 	ChapterExercise
-} from '$lib/types/chapters';
-import type { ChapterWorksheet } from '$lib/types/chapters';
-import { createServerLogger } from '$lib/utils/logger';
+} from '#lib/types/chapters.ts';
+import type { ChapterWorksheet } from '#lib/types/chapters.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger(
 	'(protected)/dashboard/teacher/cours/[classId]/[chapterId]/+page.server'

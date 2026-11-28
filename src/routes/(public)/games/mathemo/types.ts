@@ -5,7 +5,7 @@
  * Players guess math terms appropriate to their grade level.
  */
 
-import type { GradeCode } from '$lib/types/grades';
+import type { GradeCode } from '#lib/types/grades.ts';
 
 /**
  * Feedback types for each letter in a guess

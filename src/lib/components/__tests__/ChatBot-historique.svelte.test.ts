@@ -6,7 +6,7 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import ChatBot from '../ChatBot.svelte';
-import { submitLogoutForm } from '$lib/utils/auth';
+import { submitLogoutForm } from '#lib/utils/auth.ts';
 
 const SECRET_A = 'Conversation privée de l’élève A';
 

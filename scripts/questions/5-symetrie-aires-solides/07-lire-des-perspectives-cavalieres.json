@@ -1,0 +1,196 @@
+{
+	"id": "9cc1336b-bb55-4995-884a-446e53727f16",
+	"title": "Lire des perspectives cavalières",
+	"description": "Reconnaître un prisme droit, un cylindre ; retrouver un même pavé dessiné autrement ; les arêtes cachées en pointillés",
+	"grades": ["5"],
+	"level": 2,
+	"delay": 60,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Lequel de ces solides est {{if:k==1|un **prisme droit**|un **cylindre**}} ?\n\n````choix\n- ```solide\n  forme: cube 3\n  ```\n- ```solide\n  forme: pave 4.5 2 2.5\n  ```\n- ```solide\n  forme: prisme triangle 3 2.5 4\n  ```\n- ```solide\n  forme: cylindre 1.5 3.5\n  ```\n````",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..2"
+				},
+				{
+					"name": "j",
+					"expression": "eval:k+1"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{j}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Un **prisme droit** a deux bases superposables (ici des triangles) reliées par des rectangles. Un **cylindre** a deux disques pour bases, dessinés aplatis (en ellipses) en perspective.",
+					"C'est donc {{if:k==1|$\\textcolor{{{color:primary.0}}}{\\text{le solide aux faces triangulaires}}$|$\\textcolor{{{color:primary.0}}}{\\text{le solide aux bases rondes}}$}}."
+				]
+			}
+		},
+		{
+			"statement": "Voici un pavé droit.\n\n```solide\nforme: pave {{l}} {{p}} {{h}}\ncotes: cm\n```\n\nLequel de ces dessins représente **le même pavé**, posé autrement ?\n\n````choix\n- ```solide\n  forme: pave {{h}} {{p}} {{l}}\n  cotes: cm\n  ```\n- ```solide\n  forme: pave {{l}} {{p}} {{eval:h+1}}\n  cotes: cm\n  ```\n- ```solide\n  forme: cube {{l}}\n  cotes: cm\n  ```\n````",
+			"variables": [
+				{
+					"name": "l",
+					"expression": "4..6"
+				},
+				{
+					"name": "p",
+					"expression": "2..3"
+				},
+				{
+					"name": "h",
+					"expression": "2..4"
+				}
+			],
+			"conditions": ["l!=p", "p!=h", "l!=h"],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Un même pavé posé autrement garde ses **trois dimensions** : seule leur place change.",
+					"Le pavé donné mesure ${{l}}$ cm, ${{p}}$ cm et ${{h}}$ cm.",
+					"Seul $\\textcolor{{{color:primary.0}}}{\\text{le pavé debout aux mêmes trois dimensions}}$ convient ; l'autre a une dimension changée, et le cube n'a qu'une seule dimension."
+				]
+			}
+		},
+		{
+			"statement": "Lequel de ces deux dessins est une perspective cavalière correcte ?\n\n````choix\n- ```solide\n  forme: {{if:k==1|pave 4 2 3|{{if:k==2|prisme triangle 3 2.5 4|cube 3}}}}\n  ```\n- ```solide\n  forme: {{if:k==1|pave 4 2 3|{{if:k==2|prisme triangle 3 2.5 4|cube 3}}}}\n  cachees: non\n  ```\n````",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..3"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"En perspective cavalière, les arêtes **cachées** (qu'on ne verrait pas de face) sont dessinées en **pointillés**.",
+					"Le dessin correct est donc $\\textcolor{{{color:primary.0}}}{\\text{celui aux arêtes cachées en pointillés}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Le prisme",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1",
+				"j": "2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : le pavé pour le prisme",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1",
+				"j": "2"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Le cylindre",
+			"variationIndex": 0,
+			"variables": {
+				"k": "2",
+				"j": "3"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : le prisme pour le cylindre",
+			"variationIndex": 0,
+			"variables": {
+				"k": "2",
+				"j": "3"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Même pavé debout",
+			"variationIndex": 1,
+			"variables": {
+				"l": "5",
+				"p": "2",
+				"h": "3"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : une dimension changée",
+			"variationIndex": 1,
+			"variables": {
+				"l": "5",
+				"p": "2",
+				"h": "3"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : le cube",
+			"variationIndex": 1,
+			"variables": {
+				"l": "4",
+				"p": "3",
+				"h": "2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Arêtes cachées en pointillés",
+			"variationIndex": 2,
+			"variables": {
+				"k": "1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : tout en trait plein",
+			"variationIndex": 2,
+			"variables": {
+				"k": "2"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

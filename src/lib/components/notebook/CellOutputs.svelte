@@ -1,5 +1,5 @@
 <script lang="ts">
-	import '$lib/utils/mathlive-styles';
+	import '#lib/utils/mathlive-styles.ts';
 	/**
 	 * CellOutputs Component
 	 *
@@ -7,17 +7,17 @@
 	 * Supports: stream (stdout/stderr), error, display_data (images, LaTeX, Plotly)
 	 */
 
-	import { browser } from '$app/environment';
+	import { browser } from '$app/env';
 	import { SvelteSet } from 'svelte/reactivity';
-	import type { CellOutput } from '$lib/types/notebook';
-	import { Button } from '$lib/components/ui/button';
+	import type { CellOutput } from '#lib/types/notebook.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
 	import { ChevronDown, ChevronUp } from '@lucide/svelte';
-	import { foldOutput } from '$lib/utils/output-fold';
-	import { sanitizeHtml } from '$lib/utils/sanitize';
+	import { foldOutput } from '#lib/utils/output-fold.ts';
+	import { sanitizeHtml } from '#lib/utils/sanitize.ts';
 	import {
 		isRefusedRestrictedFormula,
 		readRestrictedRendering
-	} from '$lib/components/markdown/restricted-rendering';
+	} from '#lib/components/markdown/restricted-rendering.ts';
 	import 'mathlive';
 
 	// Props

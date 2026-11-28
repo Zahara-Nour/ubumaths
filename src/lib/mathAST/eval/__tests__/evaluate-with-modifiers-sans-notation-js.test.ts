@@ -13,11 +13,11 @@
 
 import { describe, it, expect } from 'vitest';
 import { evaluateAstWithModifiers, evalResultToNumber } from '../evaluate-with-modifiers';
-import { parseCustom } from '$lib/mathAST/parser/custom';
-import { parseLatex } from '$lib/mathAST/parser';
+import { parseCustom } from '#lib/mathAST/parser/custom/index.ts';
+import { parseLatex } from '#lib/mathAST/parser/index.ts';
 import { evaluateNodeToApproximatedNumber } from '../evaluate';
-import { areEquivalent } from '$lib/math';
-import type { EvalModifiers } from '$lib/ubumark/types';
+import { areEquivalent } from '#lib/math/index.ts';
+import type { EvalModifiers } from '#lib/ubumark/types/index.ts';
 
 const JS_NOTATION = /\d[eE][+-]?\d/;
 

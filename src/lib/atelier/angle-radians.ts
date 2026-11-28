@@ -17,15 +17,15 @@
  * @module atelier/angle-radians
  */
 
-import type { MathNode } from '$lib/mathAST/types';
-import { toCustom } from '$lib/mathAST/custom-generator';
-import { toLatex } from '$lib/mathAST/latex-generator';
-import { parseLatexSafe } from '$lib/mathAST/parser';
-import { withRadiansInTrigonometry } from '$lib/mathAST/cli/core/angle-radians';
+import type { MathNode } from '#lib/mathAST/types.ts';
+import { toCustom } from '#lib/mathAST/custom-generator.ts';
+import { toLatex } from '#lib/mathAST/latex-generator.ts';
+import { parseLatexSafe } from '#lib/mathAST/parser/index.ts';
+import { withRadiansInTrigonometry } from '#lib/mathAST/cli/core/angle-radians.ts';
 import { astOf } from './parse';
 
 // La réduction sur l'arbre vit dans le registre depuis le 2026-11-03 (`registre-reference`)
-export { radiansInTrigonometry } from '$lib/mathAST/cli/core/angle-radians';
+export { radiansInTrigonometry } from '#lib/mathAST/cli/core/angle-radians.ts';
 
 /** Une unité d'angle écrite : `[°]`, `[rad]`, `\unit{°}`. */
 const ANGLE_UNIT_WRITTEN = /\[(?:°|rad)\]|\\unit\s*\{(?:°|rad)\}/;

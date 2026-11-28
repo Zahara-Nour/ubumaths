@@ -5,17 +5,17 @@
  */
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { personalities } from '$lib/config/personalities';
-import { buildChatRequestBody } from '$lib/utils/chat-request';
+import { personalities } from '#lib/config/personalities.ts';
+import { buildChatRequestBody } from '#lib/utils/chat-request.ts';
 
-vi.mock('$lib/server/middleware/auth', () => ({
+vi.mock('#lib/server/middleware/auth.ts', () => ({
 	requireAuth: async () => ({ user: { id: 'u1' }, profile: { id: 'u1', role: 'student' } })
 }));
-vi.mock('$lib/server/middleware/consent', () => ({ requireConsent: () => undefined }));
-vi.mock('$lib/server/rateLimiter', () => ({
+vi.mock('#lib/server/middleware/consent.ts', () => ({ requireConsent: () => undefined }));
+vi.mock('#lib/server/rateLimiter.ts', () => ({
 	checkChatbotRateLimit: async () => ({ allowed: true })
 }));
-vi.mock('$lib/server/env', () => ({
+vi.mock('#lib/server/env.ts', () => ({
 	getEnv: () => ({ GROQ_API_KEY: 'cle', GROQ_API_URL: 'https://groq.test/v1/chat' })
 }));
 

@@ -1,3 +1,6 @@
+import type { toolboxTortue } from '../tortue/toolbox';
+import type { toolboxCalcul } from '../calcul/toolbox';
+
 /**
  * Standard Blockly toolbox configuration for Chiphre.
  *
@@ -548,7 +551,7 @@ export const STANDARD_TOOLBOX = {
 } as const;
 
 /**
- * TypeScript type definition for the toolbox configuration.
- * Allows type-safe usage throughout the application.
+ * Boîtes à outils connues : standard (prototype), tortue ou programme de calcul (ADR 0039).
  */
-export type ToolboxDefinition = typeof STANDARD_TOOLBOX;
+export type ToolboxDefinition =
+	typeof STANDARD_TOOLBOX | ReturnType<typeof toolboxTortue> | ReturnType<typeof toolboxCalcul>;

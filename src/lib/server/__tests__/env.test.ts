@@ -1,5 +1,6 @@
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { z } from 'zod';
+import { releveTokenEnvSchema } from '../env.ts';
 
 describe('Environment validation', () => {
 	// Store original env to restore after tests
@@ -210,6 +211,22 @@ describe('Environment validation', () => {
 
 			const tooShort = schema.safeParse({ CSRF_SECRET: 'short' });
 			expect(tooShort.success).toBe(false);
+		});
+	});
+
+	describe('Jeton du relevé des mesures de performance', () => {
+		it('garde un jeton de 32 caractères ou plus', () => {
+			expect(releveTokenEnvSchema.parse('a'.repeat(32))).toBe('a'.repeat(32));
+		});
+
+		it.each([
+			['absent', undefined],
+			['vide', ''],
+			['trop court', 'a'.repeat(31)]
+		])('%s : traité comme absent, sans faire échouer la validation', (_cas, value) => {
+			const result = releveTokenEnvSchema.safeParse(value);
+			expect(result.success).toBe(true);
+			expect(result.data).toBeUndefined();
 		});
 	});
 

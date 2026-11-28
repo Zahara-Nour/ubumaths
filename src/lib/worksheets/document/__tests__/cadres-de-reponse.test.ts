@@ -8,10 +8,11 @@
  * de la même variante, découpé de la même façon.
  */
 import { describe, expect, it } from 'vitest';
-import { parseMarkdown } from '$lib/ubumark';
+import { parseMarkdown } from '#lib/ubumark/index.ts';
 import {
 	ANSWER_FRAME_HEIGHT_CM,
 	EXERCISE_FRAME_MAX_CM,
+	FIGURE_LINES,
 	answerFrameSize,
 	answerLines,
 	estimateAnswerFrames,
@@ -19,8 +20,8 @@ import {
 	questionItems
 } from '../answer-frames';
 import { resolveAnswerFrames } from '../answer-frame-lines';
-import { EXERCISE_FRAME_HEIGHTS_CM } from '$lib/types/worksheets';
-import type { ParagraphNode } from '$lib/ubumark/types';
+import { EXERCISE_FRAME_HEIGHTS_CM } from '#lib/types/worksheets.ts';
+import type { ParagraphNode } from '#lib/ubumark/types/index.ts';
 
 const PARTS = [
 	'**Partie A**',
@@ -89,6 +90,33 @@ describe('taille estimée d’après la longueur de la réponse', () => {
 	it('un long paragraphe compte plusieurs lignes', () => {
 		const paragraph = 'mot '.repeat(80);
 		expect(answerLines(parseMarkdown(paragraph).children)).toBeGreaterThan(3);
+	});
+
+	it('texte à trous : les rangées de la réserve (6 étiquettes par rangée), puis une par ligne', () => {
+		const court = ['```trous', 'A [x], B [y].', 'intrus: z', '```'].join('\n');
+		expect(answerLines(parseMarkdown(court).children)).toBe(2);
+		const long = ['```trous', 'A [a], B [b].', 'C [c].', 'intrus: d ; e ; f ; g ; h', '```'].join(
+			'\n'
+		);
+		expect(answerLines(parseMarkdown(long).children)).toBe(2 + 2);
+	});
+
+	it('éléments à associer : une ligne par rangée, une rangée à courbe compte pour une figure', () => {
+		const texte = ['```associer', '- a -> 1', '- b -> 2', '- -> 3', '```'].join('\n');
+		expect(answerLines(parseMarkdown(texte).children)).toBe(3);
+		const courbe = [
+			'````associer',
+			'- ```courbe',
+			'  x: -3 ; 3',
+			'  y: -3 ; 3',
+			'  f(x) = 2*x',
+			'  ```',
+			'  -> 1',
+			'- b -> 2',
+			'- -> 3',
+			'````'
+		].join('\n');
+		expect(answerLines(parseMarkdown(courbe).children)).toBe(2 + FIGURE_LINES);
 	});
 
 	it('une formule compte ses symboles, pas ses commandes LaTeX', () => {

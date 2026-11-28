@@ -11,7 +11,7 @@
  * tree layout and the SVG rendering.
  */
 
-import type { DebugSnapshot } from '$lib/shared/python/debug/types';
+import type { DebugSnapshot } from '#lib/shared/python/debug/types.ts';
 
 export interface CallArg {
 	name: string;

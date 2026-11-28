@@ -23,14 +23,13 @@ import {
 import { createAuthenticatedClient } from '../helpers/database/supabase-client';
 import { TestData } from '../helpers/database/test-data-factory';
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { Database } from '$lib/types/database';
+import type { Database } from '#lib/types/database.ts';
 
 // Minimal exercise row matching the ExerciseBuilder shape (see test-data-factory).
 function exerciseRow(createdBy: string, isPublic: boolean) {
 	return {
 		created_by: createdBy,
 		category: 'automatisme',
-		variations: [{ label: 'default', statement_md: 'Q?', solution_md: 'A' }],
 		is_public: isPublic
 	};
 }

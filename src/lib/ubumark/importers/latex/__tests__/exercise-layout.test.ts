@@ -10,7 +10,7 @@
 import { describe, it, expect } from 'vitest';
 import { transpileLatexToMarkdown } from '../transpiler';
 import { splitStatementAndSolution } from '../splitter';
-import { parseMarkdown } from '$lib/ubumark';
+import { parseMarkdown } from '#lib/ubumark/index.ts';
 
 function transpile(latex: string): string {
 	const split = splitStatementAndSolution(latex);

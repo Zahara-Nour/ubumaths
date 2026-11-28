@@ -5,7 +5,7 @@
 import { describe, expect, it } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import EvaluationResultsTable from '../EvaluationResultsTable.svelte';
-import type { EvaluationResult } from '$lib/types/evaluation';
+import type { EvaluationResult } from '#lib/types/evaluation.ts';
 
 function row(overrides: Partial<EvaluationResult>): EvaluationResult {
 	return {

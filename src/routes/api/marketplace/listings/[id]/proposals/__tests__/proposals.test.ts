@@ -8,14 +8,14 @@
 
 import { describe, test, expect, beforeEach, vi } from 'vitest';
 import { POST } from '../+server';
-import { createMockSupabase, type SupabaseResponse } from '$tests/helpers';
+import { createMockSupabase, type SupabaseResponse } from '#tests/helpers/index.ts';
 import {
 	createTestUser,
 	createTestListing,
 	createTestCard,
 	mockRPCFunctions,
 	simulateConcurrentOperations
-} from '$tests/helpers/fixtures';
+} from '#tests/helpers/fixtures/index.ts';
 
 // ============================================================================
 // MODULE MOCKS (hoisted - must be at top level, NOT inside beforeEach)
@@ -27,12 +27,12 @@ import {
 // the proposal handler anymore (removed in commit 8260972a3 because it queried
 // vip_cards_activity, which logs power activations rather than consumption).
 // Garde commune : session/profil lus dans `locals` (cf. helper)
-vi.mock('$lib/server/middleware/auth', async (importActual) =>
-	(await import('$tests/helpers/garde-auth-locals')).gardeAuthDepuisLocals(importActual)
+vi.mock('#lib/server/middleware/auth.ts', async (importActual) =>
+	(await import('#tests/helpers/garde-auth-locals.ts')).gardeAuthDepuisLocals(importActual)
 );
 
-vi.mock('$lib/server/marketplace/helpers', async (importActual) => {
-	const actual = await importActual<typeof import('$lib/server/marketplace/helpers')>();
+vi.mock('#lib/server/marketplace/helpers.ts', async (importActual) => {
+	const actual = await importActual<typeof import('#lib/server/marketplace/helpers.ts')>();
 	return {
 		...actual,
 		validateCardOwnership: vi.fn().mockResolvedValue(true),
@@ -47,12 +47,12 @@ vi.mock('$lib/server/marketplace/helpers', async (importActual) => {
 
 // L'auto-acceptation se décide en base (auto_accept_exact_proposal, client
 // service) : couverte par tests/integration/marche-*.test.ts. Ici, offre non exacte.
-vi.mock('$lib/server/marketplace/auto-accept', () => ({
+vi.mock('#lib/server/marketplace/auto-accept.ts', () => ({
 	autoAcceptExactProposal: vi.fn().mockResolvedValue({ success: false, reason: 'not_exact' })
 }));
 
-vi.mock('$lib/server/marketplace/notifications', async (importActual) => {
-	const actual = await importActual<typeof import('$lib/server/marketplace/notifications')>();
+vi.mock('#lib/server/marketplace/notifications.ts', async (importActual) => {
+	const actual = await importActual<typeof import('#lib/server/marketplace/notifications.ts')>();
 	return {
 		...actual,
 		notifyNewProposal: vi.fn().mockResolvedValue(undefined),
@@ -66,7 +66,7 @@ vi.mock('$lib/server/marketplace/notifications', async (importActual) => {
 // connexion réseau vers Supabase, d'où des tests qui dépassaient 5 s en CI.
 // Chaîne : chaque méthode rend la chaîne, qui est une vraie promesse (`await`
 // rend une ligne) ; `.single()` rend « aucune ligne ».
-vi.mock('$lib/server/serviceRoleClient', () => {
+vi.mock('#lib/server/serviceRoleClient.ts', () => {
 	const chain = Object.assign(Promise.resolve({ data: [{ id: 'row-1' }], error: null }), {
 		single: () => Promise.resolve({ data: null, error: null })
 	});
@@ -108,7 +108,7 @@ describe('/api/marketplace/listings/[id]/proposals', () => {
 		vi.clearAllMocks();
 
 		// Re-arm default guard implementations (clearAllMocks wipes them).
-		const helpers = await import('$lib/server/marketplace/helpers');
+		const helpers = await import('#lib/server/marketplace/helpers.ts');
 		(helpers.validateCardOwnership as unknown as ReturnType<typeof vi.fn>).mockResolvedValue(true);
 		(helpers.getStudentGidouilles as unknown as ReturnType<typeof vi.fn>).mockResolvedValue(1000);
 		(helpers.lockCardsForEntity as unknown as ReturnType<typeof vi.fn>).mockResolvedValue({
@@ -118,7 +118,7 @@ describe('/api/marketplace/listings/[id]/proposals', () => {
 		(helpers.getStudentSchoolId as unknown as ReturnType<typeof vi.fn>).mockResolvedValue(
 			'school-1'
 		);
-		const autoAccept = await import('$lib/server/marketplace/auto-accept');
+		const autoAccept = await import('#lib/server/marketplace/auto-accept.ts');
 		(autoAccept.autoAcceptExactProposal as unknown as ReturnType<typeof vi.fn>).mockResolvedValue({
 			success: false,
 			reason: 'not_exact'
@@ -381,7 +381,7 @@ describe('/api/marketplace/listings/[id]/proposals', () => {
 		});
 
 		test('validates card ownership for proposals', async () => {
-			const { validateCardOwnership } = await import('$lib/server/marketplace/helpers');
+			const { validateCardOwnership } = await import('#lib/server/marketplace/helpers.ts');
 			(validateCardOwnership as unknown as ReturnType<typeof vi.fn>).mockResolvedValue(false);
 
 			mockTableReads({ listingResult: { data: listing, error: null } });
@@ -407,7 +407,7 @@ describe('/api/marketplace/listings/[id]/proposals', () => {
 		});
 
 		test('validates gidouilles balance', async () => {
-			const { getStudentGidouilles } = await import('$lib/server/marketplace/helpers');
+			const { getStudentGidouilles } = await import('#lib/server/marketplace/helpers.ts');
 			(getStudentGidouilles as unknown as ReturnType<typeof vi.fn>).mockResolvedValue(0);
 
 			mockTableReads({ listingResult: { data: listing, error: null } });
@@ -623,7 +623,7 @@ describe('/api/marketplace/listings/[id]/proposals', () => {
 
 	describe('Notifications', () => {
 		test('sends notification to listing owner on new proposal', async () => {
-			const { notifyNewProposal } = await import('$lib/server/marketplace/notifications');
+			const { notifyNewProposal } = await import('#lib/server/marketplace/notifications.ts');
 
 			mockTableReads({
 				listingResult: { data: listing, error: null },
@@ -712,7 +712,7 @@ describe('/api/marketplace/listings/[id]/proposals', () => {
 
 		test('handles extremely large offers correctly', async () => {
 			// Buyer must hold enough gidouilles for the 10000-gidouilles offer.
-			const { getStudentGidouilles } = await import('$lib/server/marketplace/helpers');
+			const { getStudentGidouilles } = await import('#lib/server/marketplace/helpers.ts');
 			(getStudentGidouilles as unknown as ReturnType<typeof vi.fn>).mockResolvedValue(10000);
 
 			const maxCards = Array.from(

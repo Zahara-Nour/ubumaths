@@ -8,9 +8,9 @@
 
 import { describe, it, expect } from 'vitest';
 import { Atelier } from '../atelier.svelte';
-import { GrapheurStore } from '$lib/stores/grapheur.svelte';
+import { GrapheurStore } from '#lib/stores/grapheur.svelte.ts';
 import { syncPlots } from '../plot-sync';
-import { isExplicitFunction } from '$lib/grapheur/types';
+import { isExplicitFunction } from '#lib/grapheur/types.ts';
 
 /** Les expressions actuellement tracées, dans l'ordre. */
 function drawn(graph: GrapheurStore): string[] {

@@ -48,16 +48,16 @@
 -->
 
 <script lang="ts">
-	import type { Tables } from '$lib/types/database';
-	import { Button } from '$lib/components/ui/button';
-	import { Input } from '$lib/components/ui/input';
-	import { Label } from '$lib/components/ui/label';
-	import { Textarea } from '$lib/components/ui/textarea';
-	import * as Dialog from '$lib/components/ui/dialog';
-	import MySelect from '$lib/components/MySelect.svelte';
-	import { getDayName } from '$lib/utils/schedule';
-	import { getOrderedSchoolDays, type WeekConfig } from '$lib/utils/week-config';
-	import { formatPeriodDisplay, type SchoolPeriod } from '$lib/utils/timetable';
+	import type { Tables } from '#lib/types/database.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import { Input } from '#lib/components/ui/input/index.ts';
+	import { Label } from '#lib/components/ui/label/index.ts';
+	import { Textarea } from '#lib/components/ui/textarea/index.ts';
+	import * as Dialog from '#lib/components/ui/dialog/index.ts';
+	import MySelect from '#lib/components/MySelect.svelte';
+	import { getDayName } from '#lib/utils/schedule.ts';
+	import { getOrderedSchoolDays, type WeekConfig } from '#lib/utils/week-config.ts';
+	import { formatPeriodDisplay, type SchoolPeriod } from '#lib/utils/timetable.ts';
 
 	type ClassSchedule = Tables<'class_schedules'>;
 	import { Trash2 } from '@lucide/svelte';

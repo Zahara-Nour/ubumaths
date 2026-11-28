@@ -32,8 +32,8 @@ import { divide, func, number, opposite, subtract, variable } from '../factory';
 import { findNodes, mapNode } from '../transforms';
 import { isNumber } from '../guards';
 import { evaluate } from '../eval/evaluate';
-import { formatEndpointValue } from '$lib/math/intervals/format';
-import type { Interval } from '$lib/math/intervals/types';
+import { formatEndpointValue } from '#lib/math/intervals/format.ts';
+import type { Interval } from '#lib/math/intervals/types.ts';
 
 /** Une condition écrite, pour la ligne (LaTeX) et pour le texte. */
 export interface ConditionText {

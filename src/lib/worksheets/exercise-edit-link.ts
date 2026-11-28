@@ -7,6 +7,7 @@
  * l'URL : seul un UUID est accepté, jamais un chemin ni une adresse.
  */
 import { z } from 'zod';
+import type { ReadonlyURLSearchParams } from '$app/state';
 
 export const WORKSHEET_RETURN_PARAM = 'fiche';
 
@@ -18,7 +19,7 @@ export function exerciseEditHref(exerciseId: string, worksheetId: string): strin
 }
 
 /** Page d'édition de la fiche d'origine, ou null si `?fiche=` est absent ou invalide. */
-export function worksheetReturnHref(searchParams: URLSearchParams): string | null {
+export function worksheetReturnHref(searchParams: ReadonlyURLSearchParams): string | null {
 	const parsed = worksheetIdSchema.safeParse(searchParams.get(WORKSHEET_RETURN_PARAM));
 	return parsed.success ? `/dashboard/teacher/contenu/worksheets/${parsed.data}` : null;
 }

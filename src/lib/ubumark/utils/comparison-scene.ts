@@ -11,9 +11,9 @@
  * @module ubumark/utils/comparison-scene
  */
 
-import type { ContentLocale } from '$lib/types/locale';
-import type { Summary } from '$lib/statistics/describe';
-import { formatApproxValue, formatStatNumber } from '$lib/statistics/format';
+import type { ContentLocale } from '#lib/types/locale.ts';
+import type { Summary } from '#lib/statistics/describe.ts';
+import { formatApproxValue, formatStatNumber } from '#lib/statistics/format.ts';
 import type { ComparisonScene } from './stat-chart-scene';
 import { STAT_TEXT, type IndicatorRowId } from './stat-chart-text';
 

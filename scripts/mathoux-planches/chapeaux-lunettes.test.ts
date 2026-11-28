@@ -8,22 +8,22 @@
  * Ne tourne qu'à la demande : `PLANCHE=1 pnpm test:server scripts/mathoux-planches/chapeaux-lunettes.test.ts`
  * écrit `planche-chapeaux-lunettes.json` (les SVG, à mettre en page) dans le dossier donné par
  * `PLANCHE_OUT`. Les dessins retenus (catalogue du 2026-10-25) vivent dans
- * `$lib/components/mathoux/mathou-chapeaux-lunettes.ts`.
+ * `#lib/components/mathoux/mathou-chapeaux-lunettes.ts`.
  */
 
 import { describe, expect, it } from 'vitest';
 import { render } from 'svelte/server';
 import { writeFileSync } from 'node:fs';
 import { join } from 'node:path';
-import MathouAvatar from '$lib/components/mathoux/MathouAvatar.svelte';
+import MathouAvatar from '#lib/components/mathoux/MathouAvatar.svelte';
 import {
 	MATHOU_RACES,
 	CHAT_NOIR,
 	getMathouRace,
 	type MathouStage
-} from '$lib/components/mathoux/mathou-races';
-import { dressing, faceDrawing, pearGeometry } from '$lib/components/mathoux/mathou-dessin';
-import type { MathouCollarId } from '$lib/mathoux/decorations';
+} from '#lib/components/mathoux/mathou-races.ts';
+import { dressing, faceDrawing, pearGeometry } from '#lib/components/mathoux/mathou-dessin.ts';
+import type { MathouCollarId } from '#lib/mathoux/decorations.ts';
 
 // Types
 /**

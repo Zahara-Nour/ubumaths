@@ -37,13 +37,38 @@ on:
       # jeu de référence figé du dictionnaire, lu par la suite
       - 'tests/fixtures/lexique/dictionnaire-reference.ts'
       - 'tests/fixtures/lexique/mots-lecture-2026-10-11.ts'
+      - 'tests/fixtures/lexique/verbes-consigne-2026-11-16.ts'
+      - 'tests/fixtures/lexique/exemples-seo-2026-11-21.ts'
+      - 'tests/fixtures/lexique/exemples-seo-2026-11-23.ts'
       - 'vitest.integration.config.ts'
       - 'vitest.base.config.ts'
-      - 'svelte.config.js'
+      - 'vite.config.ts'
+      - 'src/env.ts'
       - '.github/workflows/nightly-integration.yml'
       - '.github/ci.env'
       - 'scripts/with-db-lock.sh'
       - 'scripts/lib/lock.py'
+      # portée d'une PR (suite complète ou tests d'une migration de données)
+      - 'scripts/ci-integration-ciblee.sh'
+      # tests touchés par une PR de code (et le calcul des imports qu'il partage avec la garde)
+      - 'scripts/ci-integration-touches.ts'
+      - 'scripts/check-integration-paths.ts'
+      - 'scripts/lib/chargements-en-lot.ts'
+      # empreinte d'un passage (passage déjà vert sur la PR : tests non relancés)
+      - 'scripts/ci-integration-empreinte.sh'
+      # tests de migration de données laissés de côté sur les PR, et leur garde
+      - 'scripts/ci-integration-exclusions.sh'
+      - 'scripts/lib/migrations-de-donnees.ts'
+      - 'scripts/check-migrations-de-donnees.ts'
+      # générateur des migrations de contenu de publiés, rejoué par la suite
+      - 'scripts/lib/migration-contenu.ts'
+      # générateur des migrations « nœud et tag », rejoué par la suite
+      - 'scripts/lib/migration-rangement.ts'
+      # mise à jour de la base locale, jouée sur une vraie base par tests/integration/db-a-jour.test.ts
+      - 'scripts/db-a-jour/**'
+      # pile de test locale : le global-setup de la suite en importe les règles
+      - 'scripts/pile-de-test/**'
+      - 'scripts/pile-de-test.sh'
       # dépendances : version de la CLI Supabase, de supabase-js, de vitest
       - 'package.json'
       - 'pnpm-lock.yaml'
@@ -51,12 +76,20 @@ on:
       # src/lib : dossiers atteints par la suite
       - 'src/lib/dictionary/**'
       - 'src/lib/math/**'
+      # Passage quotidien du carnet de liaison (courriels, forme du carnet)
+      - 'src/lib/email-templates/**'
+      - 'src/lib/validation/carnet.ts'
       - 'src/lib/mathAST/**'
       - 'src/lib/mathoux/**'
+      - 'src/lib/descente/**'
       - 'src/lib/programmes/**'
       - 'src/lib/questions/**'
       - 'src/lib/resources/**'
       - 'src/lib/server/**'
+      # Versions d'exercices (versions-exercices-lectures.test.ts) : import, slug, tuteur
+      - 'src/lib/exercises/markdown-frontmatter.ts'
+      - 'src/lib/exercises/slug-generator.ts'
+      - 'src/lib/config/personalities.ts'
       - 'src/lib/srs/**'
       - 'src/lib/statistics/**'
       - 'src/lib/theme/**'
@@ -69,12 +102,19 @@ on:
       - 'src/lib/grapheur/sequence.ts'
       # Bloc ```qr : adresse (parseur) et matrice (générateur Typst)
       - 'src/lib/qr/**'
+      # programme tortue : jugé par answer-validator (chantier blockly)
+      - 'src/lib/shared/blockly/tortue/**'
+      # programme de calcul et lecture commune des blocs : jugés par answer-validator
+      - 'src/lib/shared/blockly/calcul/**'
+      - 'src/lib/shared/blockly/lecture.ts'
+      - 'src/lib/shared/blockly/nombres.ts'
       - 'src/lib/seo/site.ts'
       - 'src/lib/utils/**'
       # src/lib : fichiers atteints ponctuellement
       # Pages du glossaire : la lecture du dictionnaire importe findPrincipal
-      - 'src/lib/lexicon/card.ts'
+      - 'src/lib/dictionary/card.ts'
       - 'src/lib/components/markdown/utils/math-utils.ts'
+      - 'src/lib/dev/supabase-relay.ts'
       - 'src/lib/constants/deadlines.ts'
       - 'src/lib/exercises/services/image-dimensions.ts'
       - 'src/lib/exercises/types.ts'
@@ -86,6 +126,9 @@ on:
       - 'src/lib/stores/toaster.svelte.ts'
       - 'src/lib/stores/tradeRealtime.svelte.ts'
       - 'src/lib/types/evaluation.ts'
+      - 'src/lib/types/evaluation-attempt.ts'
+      - 'src/lib/types/evaluation-breakdown.ts'
+      - 'src/lib/types/duration-signals.ts'
       - 'src/lib/types/question-template.ts'
       - 'src/lib/validation/series.ts'
       - 'src/lib/types/buddy.ts'
@@ -101,16 +144,29 @@ on:
       - 'src/lib/typst/text-size.ts'
       - 'src/lib/typst/templates/default-templates.ts'
       - 'src/lib/typst/templates/styles.ts'
+      - 'src/lib/typst/templates/site-mark.ts'
       - 'src/lib/typst/templates/index.ts'
       - 'src/lib/worksheets/exercise-numbering.ts'
       - 'src/lib/worksheets/exercise-anchor.ts'
       - 'src/lib/worksheets/student-copy.ts'
       - 'src/lib/worksheets/worksheet-copy.ts'
       - 'src/lib/worksheets/worksheet-header.ts'
+      - 'src/lib/worksheets/worksheet-title.ts'
       - 'src/lib/worksheets/document/answer-frames.ts'
       - 'src/lib/worksheets/document/answer-frame-lines.ts'
       - 'src/lib/exercises/generator/instance-generator.ts'
       - 'src/lib/types/worksheets.ts'
+      # Corrigé de classe (versions-exercices-lectures.test.ts) : chaîne PDF Typst
+      - 'src/lib/typst/easy-reading.ts'
+      - 'src/lib/typst/generators/**'
+      - 'src/lib/typst/types.ts'
+      - 'src/lib/typst/utils/**'
+      - 'src/lib/typst/worksheet-palette.ts'
+      - 'src/lib/worksheets/document/math-limits.ts'
+      - 'src/lib/worksheets/document/numbering.ts'
+      - 'src/lib/worksheets/document/render-exercise.ts'
+      - 'src/lib/worksheets/document/teacher-adapter.ts'
+      - 'src/lib/worksheets/pdf-file-name.ts'
       # src/routes : handlers appelés directement par les tests. Chez GitHub, `[]`
       # est une classe de caractères, et `?` / `+` portent sur le caractère
       # PRÉCÉDENT (pas « un caractère quelconque ») : un segment `[id]` ou `(groupe)`
@@ -146,10 +202,19 @@ on:
       - 'src/routes/api/tests/save/*server.ts'
       - 'src/routes/api/student/buddy/*server.ts'
       - 'src/routes/api/student/buddy/change/*server.ts'
+      - 'src/routes/api/student/buddy/presence/*server.ts'
       - 'src/routes/api/student/reports/*server.ts'
       - 'src/routes/api/student/worksheets/*server.ts'
       - 'src/routes/api/student/worksheets/*/*server.ts'
       - 'src/routes/api/worksheets/assignments/*/preview/*server.ts'
+      - 'src/routes/api/worksheets/assignments/*/correction/*server.ts'
+      # Versions d'un exercice (versions-exercices-editeur.test.ts)
+      - 'src/routes/api/exercises/*/*server.ts'
+      - 'src/routes/api/exercises/*/versions/*server.ts'
+      - 'src/routes/api/exercises/*/versions/*/*server.ts'
+      - 'src/routes/api/worksheets/*/exercises/*server.ts'
+      - 'src/routes/api/worksheets/*/exercises/*/version/*server.ts'
+      - 'src/routes/api/tutor/conversations/*server.ts'
       - 'src/routes/api/worksheets/assignments/*/students/*server.ts'
       - 'src/routes/api/teacher/curriculum/activities/*server.ts'
       - 'src/routes/api/teacher/curriculum/activities/*/*server.ts'
@@ -161,9 +226,6 @@ on:
       - 'src/routes/api/documents/*/*server.ts'
       - 'src/routes/api/teacher/chapter-templates/*/document-upload-url/*server.ts'
       - 'src/routes/api/teacher/chapter-templates/*/documents/*server.ts'
-      - 'src/routes/api/teacher/chapters/*/documents/*/*server.ts'
-      - 'src/routes/api/teacher/chapters/*/checklist/*/*server.ts'
-      - 'src/routes/api/teacher/chapters/*/exercises/*/*server.ts'
       - 'src/routes/api/worksheets/*/*server.ts'
       - 'src/routes/api/worksheets/*/assignments/*/reports/*/*server.ts'
       - 'src/routes/api/worksheets/*/duplicate/*server.ts'
@@ -204,32 +266,178 @@ jobs:
       - name: Check the paths filter against the suite's imports
         run: pnpm check:integration-paths
 
-  integration:
-    name: Integration tests (Supabase local)
+      - name: Tests marqués @migration-de-donnees (aucun ne rejoue une migration de schéma)
+        # Les tests marqués ne tournent pas sur les PR (job `portee`) : la garde refuse la
+        # mention sur un test dont la migration touche le schéma ou les règles d'accès.
+        run: pnpm check:migrations-de-donnees
+
+  portee:
+    # Portée et découpage, calculés UNE fois pour tous les morceaux.
+    name: Integration scope
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 10 # install + calcul des imports (tests touchés)
+    outputs:
+      fichiers: ${{ steps.selection.outputs.fichiers }}
+      aucun: ${{ steps.touches.outputs.aucun == 'true' && 'true' || 'false' }}
+      sauter: ${{ (steps.deja-vert.outputs.cache-hit == 'true' || steps.touches.outputs.aucun == 'true') && 'true' || 'false' }}
+      exclure: ${{ steps.exclusions.outputs.exclure }}
+      morceaux: ${{ steps.morceaux.outputs.morceaux }}
+      total: ${{ steps.morceaux.outputs.total }}
+      empreinte: ${{ steps.empreinte.outputs.empreinte }}
+      deja_vert: ${{ steps.deja-vert.outputs.cache-hit == 'true' && 'true' || 'false' }}
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v7
+        with:
+          # Le commit de merge et la base (HEAD^1) : scripts/ci-integration-ciblee.sh
+          fetch-depth: 2
 
+      - name: Portée (suite complète, ou seulement les tests d'une migration de données)
+        # PR qui ne fait qu'AJOUTER une migration avec son test (rangement d'un lot de
+        # modèles : ~19 min de suite complète pour 3 brouillons, 2026-11-20) : seuls ses
+        # tests tournent, la stack appliquant quand même toutes les migrations. Toute
+        # autre PR, le cron et workflow_dispatch : suite complète. Le cron est le filet.
+        id: portee
+        run: bash scripts/ci-integration-ciblee.sh >> "$GITHUB_OUTPUT" || echo "fichiers=" >> "$GITHUB_OUTPUT"
+
+      # Tests touchés (PR de code) : il faut les dépendances (esbuild) pour lire les imports.
       - name: Setup pnpm
+        if: github.event_name == 'pull_request' && steps.portee.outputs.fichiers == ''
         uses: pnpm/action-setup@v6
 
       - name: Setup Node.js
+        if: github.event_name == 'pull_request' && steps.portee.outputs.fichiers == ''
         uses: actions/setup-node@v7
         with:
           node-version-file: '.nvmrc'
           cache: 'pnpm'
 
       - name: Install dependencies
+        if: github.event_name == 'pull_request' && steps.portee.outputs.fichiers == ''
+        run: pnpm install --frozen-lockfile
+
+      - name: Tests touchés (PR qui ne modifie que du code, de la doc, des tests d'intégration)
+        # Seuls tournent les tests dont les imports atteignent un fichier modifié ; aucun test
+        # atteint → rien à lancer (`aucun=true`). Hors de ce cas : suite complète. Sur les PR
+        # `src/` seules mesurées, 0 à 20 tests au lieu de toute la suite (2026-11-21).
+        # Décision : docs/archive/wip/ci-integration-progress.md § 9.
+        id: touches
+        if: github.event_name == 'pull_request' && steps.portee.outputs.fichiers == ''
+        run: |
+          pnpm exec tsx scripts/ci-integration-touches.ts > touches.out || printf 'fichiers=\naucun=false\n' > touches.out
+          cat touches.out >> "$GITHUB_OUTPUT"
+
+      - name: Tests retenus
+        id: selection
+        env:
+          CIBLEE: ${{ steps.portee.outputs.fichiers }}
+          TOUCHES: ${{ steps.touches.outputs.fichiers }}
+        run: echo "fichiers=${CIBLEE:-$TOUCHES}" >> "$GITHUB_OUTPUT"
+
+      - name: Tests de migration de données laissés de côté (PR en suite complète)
+        # ~300 tests rejouent une migration qui ne fait que ranger, taguer ou corriger du
+        # contenu : ils ne prouvent quelque chose qu'avant son `db:migrate` (~5 min de suite,
+        # 2026-11-21). Sur une PR, seuls tournent ceux qu'elle touche (le test ou sa migration) ;
+        # la nuit et à la main, tous. Décision et tri : docs/archive/wip/ci-integration-progress.md § 7.
+        id: exclusions
+        if: steps.selection.outputs.fichiers == '' && steps.touches.outputs.aucun != 'true'
+        run: bash scripts/ci-integration-exclusions.sh >> "$GITHUB_OUTPUT" || echo "exclure=" >> "$GITHUB_OUTPUT"
+
+      - name: Morceaux (4 pour la suite complète ou plus de 40 tests, 1 sinon)
+        # Suite en série (un fichier à la fois, isolation par purge globale) : on ne peut
+        # pas paralléliser DANS une stack. On découpe donc en jobs, une stack chacun
+        # (2026-11-21 : 584 fichiers, ~15 min de tests en un seul job). Coût fixe d'un
+        # job ~2 min (install, images, `supabase start`) : inutile pour quelques tests.
+        id: morceaux
+        env:
+          FICHIERS: ${{ steps.selection.outputs.fichiers }}
+          AUCUN: ${{ steps.touches.outputs.aucun }}
+        run: |
+          n=$(wc -w <<<"$FICHIERS")
+          if [ "$AUCUN" = "true" ] || { [ -n "$FICHIERS" ] && [ "$n" -le 40 ]; }; then
+            echo 'morceaux=[1]' >> "$GITHUB_OUTPUT"; echo 'total=1' >> "$GITHUB_OUTPUT"
+          else
+            echo 'morceaux=[1,2,3,4]' >> "$GITHUB_OUTPUT"; echo 'total=4' >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Empreinte du passage (fichiers dont dépend la suite + portée)
+        # Sur 37 pushes de correction, 20 ne touchaient aucun fichier de la suite et relançaient
+        # 16 à 20 min pour un résultat identique (2026-11-21). Seulement sur les PR ; vide dans
+        # le doute (la suite tourne). Décision : docs/archive/wip/ci-integration-progress.md § 8.
+        id: empreinte
+        if: github.event_name == 'pull_request'
+        env:
+          FICHIERS: ${{ steps.selection.outputs.fichiers }}
+          EXCLURE: ${{ steps.exclusions.outputs.exclure }}
+          TOTAL: ${{ steps.morceaux.outputs.total }}
+        run: bash scripts/ci-integration-empreinte.sh >> "$GITHUB_OUTPUT" || echo "empreinte=" >> "$GITHUB_OUTPUT"
+
+      - name: Passage déjà vert sur cette empreinte ?
+        # Trace laissée par le job `memoriser` d'un passage entièrement vert de la même PR (le
+        # cache d'une PR n'est lu que par elle et par ses pushes suivants).
+        id: deja-vert
+        if: steps.empreinte.outputs.empreinte != ''
+        uses: actions/cache/restore@v6
+        with:
+          path: .integration-vert
+          key: integration-vert-v1-${{ steps.empreinte.outputs.empreinte }}
+
+      - name: Run d'origine
+        if: steps.deja-vert.outputs.cache-hit == 'true'
+        run: |
+          echo "Déjà vert, même empreinte : $(cat .integration-vert/run.txt)"
+
+  integration:
+    name: Integration tests (shard ${{ matrix.shard }}/${{ needs.portee.outputs.total }})
+    needs: portee
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    strategy:
+      # Un morceau rouge n'annule pas les autres : on veut tous les échecs d'un coup.
+      fail-fast: false
+      matrix:
+        shard: ${{ fromJSON(needs.portee.outputs.morceaux) }}
+
+    steps:
+      - name: Passage déjà vert sur cette PR (même empreinte)
+        # Les étapes suivantes sont sautées, le job passe : le check garde son nom et finit en
+        # ✅ plutôt qu'en « skipped ». Run d'origine : job `portee`, étape « Run d'origine ».
+        if: needs.portee.outputs.deja_vert == 'true'
+        run: |
+          echo "Déjà vert sur l'empreinte ${{ needs.portee.outputs.empreinte }} : tests non relancés."
+
+      - name: Aucun test n'atteint les fichiers modifiés
+        # PR de code qu'aucun test d'intégration n'importe : rien à lancer, même affichage.
+        if: needs.portee.outputs.aucun == 'true' && needs.portee.outputs.deja_vert != 'true'
+        run: echo "Aucun test n'atteint les fichiers modifiés (job portee, étape « Tests touchés »)."
+
+      - name: Checkout code
+        if: needs.portee.outputs.sauter != 'true'
+        uses: actions/checkout@v7
+
+      - name: Setup pnpm
+        if: needs.portee.outputs.sauter != 'true'
+        uses: pnpm/action-setup@v6
+
+      - name: Setup Node.js
+        if: needs.portee.outputs.sauter != 'true'
+        uses: actions/setup-node@v7
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        if: needs.portee.outputs.sauter != 'true'
         run: pnpm install --frozen-lockfile
 
       - name: Create CI env (placeholders)
+        if: needs.portee.outputs.sauter != 'true'
         # Needed so svelte-kit sync can generate $env/static members.
         run: cp .github/ci.env .env
 
       - name: Supabase CLI version
+        if: needs.portee.outputs.sauter != 'true'
         # Doit afficher la version exacte de la devDependency (package.json).
         # La version sert aussi de clé au cache des images Docker (étape suivante).
         id: supabase-cli
@@ -245,6 +453,7 @@ jobs:
       # sont fixées par la CLI et par `supabase/config.toml` : la clé en dépend.
       # `v1` : à incrémenter si la liste des services exclus (-x) change.
       - name: Restore Supabase Docker images
+        if: needs.portee.outputs.sauter != 'true'
         id: supabase-images
         uses: actions/cache/restore@v6
         with:
@@ -252,10 +461,11 @@ jobs:
           key: supabase-images-v1-${{ runner.os }}-${{ steps.supabase-cli.outputs.version }}-${{ hashFiles('supabase/config.toml') }}
 
       - name: Load Supabase Docker images
-        if: steps.supabase-images.outputs.cache-hit == 'true'
+        if: (steps.supabase-images.outputs.cache-hit == 'true') && needs.portee.outputs.sauter != 'true'
         run: zstd -dc /tmp/supabase-images.tar.zst | docker load
 
       - name: Start Supabase (applies migrations)
+        if: needs.portee.outputs.sauter != 'true'
         # Stack allégée : on exclut les services non requis (studio, edge, analytics,
         # mail, imgproxy). storage-api est GARDÉ : deux suites l'appellent
         # (chapter-documents-size-limit, chat-attachment-signing). Son image était
@@ -267,7 +477,8 @@ jobs:
       - name: Save Supabase Docker images
         # Seulement si le cache manquait et que la stack a démarré : les images
         # présentes sont alors exactement celles de cette version de la CLI.
-        if: steps.supabase-images.outputs.cache-hit != 'true'
+        # Un seul morceau enregistre : les autres viseraient la même clé en même temps.
+        if: (steps.supabase-images.outputs.cache-hit != 'true' && matrix.shard == 1) && needs.portee.outputs.sauter != 'true'
         run: |
           set -o pipefail
           images="$(docker images --format '{{.Repository}}:{{.Tag}}' | grep -E '(^|/)supabase/' | grep -v ':<none>$')"
@@ -277,13 +488,14 @@ jobs:
           ls -lh /tmp/supabase-images.tar.zst
 
       - name: Upload Supabase Docker images to the cache
-        if: steps.supabase-images.outputs.cache-hit != 'true'
+        if: (steps.supabase-images.outputs.cache-hit != 'true' && matrix.shard == 1) && needs.portee.outputs.sauter != 'true'
         uses: actions/cache/save@v6
         with:
           path: /tmp/supabase-images.tar.zst
           key: ${{ steps.supabase-images.outputs.cache-primary-key }}
 
       - name: Export local Supabase credentials
+        if: needs.portee.outputs.sauter != 'true'
         # The test helpers read SUPABASE_TEST_* (with localhost defaults); export the
         # actual local stack keys so they match the CLI version that just started.
         # La CLI écrit `NOM="valeur"` ; $GITHUB_ENV garde les guillemets tels quels,
@@ -309,9 +521,47 @@ jobs:
             echo "SUPABASE_SERVICE_ROLE_KEY=$SUPABASE_TEST_SERVICE_ROLE_KEY"
           } >> "$GITHUB_ENV"
 
-      - name: Run integration tests
-        run: pnpm test:integration
+      - name: Run integration tests (shard ${{ matrix.shard }}/${{ needs.portee.outputs.total }})
+        if: needs.portee.outputs.sauter != 'true'
+        env:
+          FICHIERS: ${{ needs.portee.outputs.fichiers }}
+          EXCLURE: ${{ needs.portee.outputs.exclure }}
+        # $FICHIERS vide = suite complète ; sinon la liste des tests de la PR (non citée :
+        # un argument par fichier, les chemins n'ont pas d'espace). $EXCLURE : tests de
+        # migration de données laissés de côté, un `--exclude` chacun (avant le découpage).
+        # `--shard` de vitest répartit les fichiers par nombre (empreinte du chemin), pas
+        # par durée.
+        run: |
+          exclusions=()
+          for f in $EXCLURE; do exclusions+=(--exclude "$f"); done
+          echo "Tests de migration de données laissés de côté : $(( ${#exclusions[@]} / 2 ))"
+          pnpm test:integration $FICHIERS "${exclusions[@]}" --shard=${{ matrix.shard }}/${{ needs.portee.outputs.total }}
 
       - name: Stop Supabase
-        if: always()
+        if: (always()) && needs.portee.outputs.sauter != 'true'
         run: pnpm exec supabase stop
+
+  memoriser:
+    # Passage entièrement vert d'une PR (garde du filtre, portée, tous les morceaux) : on garde
+    # son empreinte, qu'un push suivant de la même PR retrouvera (job `portee`). Pas de `if` au
+    # niveau du job : sauté, il s'afficherait « skipped » ; ses étapes le sont à la place.
+    # Un morceau rouge ou annulé : le job ne tourne pas, rien n'est gardé.
+    name: Integration green pass memo
+    needs: [paths-filter, portee, integration]
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Trace du passage vert
+        if: needs.portee.outputs.empreinte != '' && needs.portee.outputs.deja_vert != 'true'
+        run: |
+          mkdir -p .integration-vert
+          echo "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" > .integration-vert/run.txt
+          cat .integration-vert/run.txt
+
+      - name: Garder l'empreinte
+        if: needs.portee.outputs.empreinte != '' && needs.portee.outputs.deja_vert != 'true'
+        uses: actions/cache/save@v6
+        with:
+          path: .integration-vert
+          key: integration-vert-v1-${{ needs.portee.outputs.empreinte }}

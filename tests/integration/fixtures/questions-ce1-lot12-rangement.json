@@ -1,0 +1,57 @@
+[
+	{
+		"id": "37408a63-a0d4-4dae-8f28-80dbb2956286",
+		"noeudAvant": null,
+		"noeudApres": "Géométrie > Figures planes > propriétés",
+		"gradesAvant": ["CE1"],
+		"gradesApres": ["CE1"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["CE1§CE1-071"]
+	},
+	{
+		"id": "973bf62d-ee82-4f8e-830c-256aa3f281df",
+		"noeudAvant": null,
+		"noeudApres": "Géométrie > Figures planes > constructions",
+		"gradesAvant": ["CE1"],
+		"gradesApres": ["CE1"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["CE1§CE1-072"]
+	},
+	{
+		"id": "a690369b-fb5d-4333-ae34-8deecfe46864",
+		"noeudAvant": null,
+		"noeudApres": "Géométrie > Solides > propriétés",
+		"gradesAvant": ["CE1"],
+		"gradesApres": ["CE1"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["CE1§CE1-066"]
+	},
+	{
+		"id": "adbc6259-0ba3-4c2e-ada9-f0d4b5136831",
+		"noeudAvant": null,
+		"noeudApres": "Nombres et calculs > Entiers : multiplication",
+		"gradesAvant": ["CE1"],
+		"gradesApres": ["CE1"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["CE1§CE1-023"]
+	},
+	{
+		"id": "b4cc9045-0a4b-4557-a5de-c70c1e0d94ef",
+		"noeudAvant": null,
+		"noeudApres": "Géométrie > Solides > propriétés",
+		"gradesAvant": ["CE1"],
+		"gradesApres": ["CE1"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["CE1§CE1-067"]
+	}
+]

@@ -7,10 +7,10 @@
  * G(2,2,2) H(0,2,2) — AB vers la droite, AD vers le fond, AE vers le haut.
  */
 import { describe, expect, it } from 'vitest';
-import { generateEspaceTypst } from '$lib/ubumark/generators/espace-typst';
-import { parseEspaceContent } from '$lib/ubumark/parser/espace-parser';
-import type { SolideSpec } from '$lib/ubumark/types/espace';
-import { buildSolideScene, solideArrowBetween } from '$lib/ubumark/utils/espace-solides';
+import { generateEspaceTypst } from '#lib/ubumark/generators/espace-typst.ts';
+import { parseEspaceContent } from '#lib/ubumark/parser/espace-parser.ts';
+import type { SolideSpec } from '#lib/ubumark/types/espace.ts';
+import { buildSolideScene, solideArrowBetween } from '#lib/ubumark/utils/espace-solides.ts';
 import {
 	BOTH_MISSING,
 	END_MISSING,
@@ -24,9 +24,18 @@ import {
 	solideAnswer,
 	solideClickablePoints,
 	solidePointAt,
+	solidePointNearness,
 	solideSolutionVector,
+	solideTouchedPoint,
 	solideVectorMistake
-} from '$lib/ubumark/utils/solide-gestes';
+} from '#lib/ubumark/utils/solide-gestes.ts';
+import {
+	VUE_DE_DEPART,
+	VUE_DROITE_PITCH,
+	VUE_DROITE_YAW,
+	turnVue,
+	type EspaceVue
+} from '#lib/ubumark/utils/espace-vue.ts';
 
 const CUBE = ['forme: cube 2', 'sommets: A B C D E F G H'];
 
@@ -404,5 +413,90 @@ describe('D-SV2 : vecteurs nommés de vecteurs: dans tracer:', () => {
 
 	it('refusé : vecteurs: sans nom, utilisé dans tracer:', () => {
 		expect(errors(...CUBE, 'vecteurs: AB', 'tracer: vecteur u')).toMatch(/aucun vecteur de ce nom/);
+	});
+});
+
+// Chantier `solides-3d`, lot 5 (journal, § 12, comportement 48 et question (a)) : figure à geste
+// que l'on tourne — deux points au même endroit de l'écran, le toucher pose celui de devant
+describe('```solide + tracer: + tourner: — le point de devant', () => {
+	const cube = () => spec(...CUBE, 'tracer: vecteur AB + AD', 'tourner: oui');
+	/** Le cube vu bien de face : A cache D, E cache H */
+	const DE_FACE: EspaceVue = { yaw: -VUE_DROITE_YAW, pitch: -VUE_DROITE_PITCH, oblique: 0 };
+	const zones = (s: SolideSpec, vue: EspaceVue) => {
+		const scene = buildSolideScene(s, vue);
+		const nearness = solidePointNearness(s, vue);
+		return solideClickablePoints(s).map((c) => ({
+			index: c.index,
+			at: solidePointAt(scene, c.index),
+			nearness: nearness[c.index]
+		}));
+	};
+
+	it('vu de face, A (devant) est plus près de l’œil que D (au fond)', () => {
+		const near = solidePointNearness(cube(), DE_FACE);
+		expect(near).toHaveLength(8);
+		// A B E F devant (0, 1, 4, 5) ; C D G H au fond
+		for (const [front, back] of [
+			[0, 3],
+			[1, 2],
+			[4, 7],
+			[5, 6]
+		]) {
+			expect(near[front]).toBeGreaterThan(near[back]);
+		}
+	});
+
+	it('à la vue de départ (cavalière), le devant reste devant', () => {
+		const near = solidePointNearness(cube(), VUE_DE_DEPART);
+		expect(near[0]).toBeGreaterThan(near[3]);
+	});
+
+	it('un demi-tour échange le devant et le fond', () => {
+		const near = solidePointNearness(cube(), turnVue(DE_FACE, Math.PI, 0));
+		expect(near[3]).toBeGreaterThan(near[0]);
+	});
+
+	it('les points déclarés ont leur profondeur, après les sommets', () => {
+		const s = spec(...CUBE, 'points: I milieu AD', 'tracer: vecteur AB', 'tourner: oui');
+		const near = solidePointNearness(s, DE_FACE);
+		expect(near).toHaveLength(9);
+		expect(near[8]).toBeLessThan(near[0]);
+		expect(near[8]).toBeGreaterThan(near[3]);
+	});
+
+	it('A et D au même endroit : le toucher pose A, celui de devant', () => {
+		const all = zones(cube(), DE_FACE);
+		const a = all.find((z) => z.index === 0)!;
+		const d = all.find((z) => z.index === 3)!;
+		expect(Math.hypot(a.at.x - d.at.x, a.at.y - d.at.y)).toBeLessThan(1e-9);
+		expect(solideTouchedPoint(all, d.at, 0.2)).toBe(0);
+	});
+
+	it('après un demi-tour, au même endroit : D', () => {
+		const all = zones(cube(), turnVue(DE_FACE, Math.PI, 0));
+		expect(solideTouchedPoint(all, all.find((z) => z.index === 0)!.at, 0.2)).toBe(3);
+	});
+
+	it('deux zones qui se recouvrent, doigt nettement sur le point du fond : celui du fond', () => {
+		// A devant, D derrière, à 2,5 mm l'un de l'autre ; le doigt à 0,5 mm de D, à 2 mm de A
+		const all = [
+			{ index: 0, at: { x: 0, y: 0 }, nearness: 1 },
+			{ index: 3, at: { x: 0.25, y: 0 }, nearness: 0 }
+		];
+		expect(solideTouchedPoint(all, { x: 0.2, y: 0 }, 0.2)).toBe(3);
+		// Le doigt entre les deux, à 1 mm près : celui de devant
+		expect(solideTouchedPoint(all, { x: 0.15, y: 0 }, 0.2)).toBe(0);
+		expect(solideTouchedPoint(all, { x: 0.05, y: 0 }, 0.2)).toBe(0);
+	});
+
+	it('un seul point sous le doigt : lui, même au fond', () => {
+		const all = zones(cube(), VUE_DE_DEPART);
+		const d = all.find((z) => z.index === 3)!;
+		expect(solideTouchedPoint(all, d.at, 0.2)).toBe(3);
+	});
+
+	it('aucun point sous le doigt : rien', () => {
+		const all = zones(cube(), VUE_DE_DEPART);
+		expect(solideTouchedPoint(all, { x: -5, y: -5 }, 0.2)).toBeNull();
 	});
 });

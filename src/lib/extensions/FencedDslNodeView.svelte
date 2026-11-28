@@ -17,8 +17,8 @@
 	import type { Component } from 'svelte';
 	import { NodeViewWrapper } from 'svelte-tiptap';
 	import { Pencil, Trash2, AlertCircle } from '@lucide/svelte';
-	import { Button } from '$lib/components/ui/button';
-	import * as Dialog from '$lib/components/ui/dialog';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import * as Dialog from '#lib/components/ui/dialog/index.ts';
 
 	/** Ce que tout analyseur de bloc DSL renvoie. */
 	interface ParseResult {

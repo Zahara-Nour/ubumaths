@@ -16,9 +16,9 @@
 
 import { createClient } from '@supabase/supabase-js';
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { Database } from '$lib/types/database';
-import { createServerLogger } from '$lib/utils/logger';
-import { dev } from '$app/environment';
+import type { Database } from '#lib/types/database.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
+import { dev } from '$app/env';
 
 const logger = createServerLogger('server/serviceRoleClient');
 
@@ -33,6 +33,10 @@ const ALLOWED_SERVICE_ROLE_PATHS = [
 	// Server utilities that need RLS bypass
 	'rateLimiter.ts',
 	'errorMonitoring.ts',
+	// Mesures de performance : table écrite par le serveur seul, sans compte
+	'lib/server/web-vitals/reception.ts',
+	// Relevé des mesures : lecture pour le calcul du p75, derrière un jeton dédié
+	'lib/server/web-vitals/releve.ts',
 	// Notifications système : la base les refuse aux comptes connectés
 	'lib/server/notifications.ts',
 	'serviceRoleClient.ts',
@@ -48,6 +52,10 @@ const ALLOWED_SERVICE_ROLE_PATHS = [
 	// Inscription par code de classe : résolution du code par une RPC réservée à
 	// service_role, derrière les limites de débit (pas d'énumération des codes)
 	'/auth/register/+page.server',
+	// Invitation de cours particulier : lecture par le lien (RPC réservée à service_role,
+	// jeton vérifié en base) et création du compte de l'enfant, après la forme du jeton,
+	// le formulaire et la limite de débit
+	'/auth/register/invitation/[token]/+page.server',
 	// Lien du cours (ADR 0025) : chemin de stockage d'un document rendu par une RPC
 	// réservée à service_role, jeton vérifié en base, puis URL signée de 60 s
 	'/cours/[token]/document/[id]/+server',
@@ -60,9 +68,18 @@ const ALLOWED_SERVICE_ROLE_PATHS = [
 	'lib/server/chapter-templates.ts',
 	// Consentement parental : IP et navigateur relevés par le serveur, pas par le client
 	'/consent/',
+	// Carnet de liaison (ADR 0040) : fonctions à lien réservées à service_role, appelées
+	// APRÈS la forme du jeton et la limite de débit des routes ; aucune policy `anon`
+	'lib/server/carnet/',
 	// Style d'une fiche (lot 4b, D11) : l'élève destinataire reçoit la mise en page
 	// du style de l'auteur ; il n'a aucun droit sur les tables des styles
 	'lib/server/worksheets/worksheet-styles.ts',
+	// La Descente de la Vistule : le serveur seul écrit les Bêtes (aucun droit INSERT à
+	// l'élève) ; identifiant de la session vérifié par `assertSessionStudent`
+	'lib/server/descente/spawn.ts',
+	// Combat : PV de la Bête, victoire (`record_beast_victory`) et trace au lieu `descente`
+	// (refusé à l'élève) ; même garde `assertSessionStudent`
+	'lib/server/descente/combat.ts',
 	// Question d'âge en 2nde : la base refuse à l'élève l'écriture de sa réponse
 	'/api/student/age-declaration',
 	// GDPR account deletion (requires auth.admin.deleteUser)
@@ -73,8 +90,10 @@ const ALLOWED_SERVICE_ROLE_PATHS = [
 	// vérifié avec la RLS de l'utilisateur avant de signer (message-attachments.ts)
 	'/api/messages/[id]/attachments/+server',
 	'/api/messages/attachments/[attachmentId]/+server',
-	// Nature d'un modèle (carte de cours, statut) lue même en brouillon — lecture seule
-	'/api/skill-attempts',
+	// Nature d'un modèle (carte de cours, statut) lue même en brouillon — lecture seule ;
+	// trace au lieu `descente` écrite par le serveur pour l'élève de la session
+	'lib/server/skill-attempts/record-attempt.ts',
+	// Fin de série : nature « carte » lue même en brouillon (pas d'XP pour une carte)
 	'/api/tests/save',
 	// Évaluation notée (ADR 0015) : séance, graines, réponses et note écrites par le serveur
 	'/api/evaluations/',
@@ -86,6 +105,9 @@ const ALLOWED_SERVICE_ROLE_PATHS = [
 	// Modération : soft-delete d'un message, droits vérifiés par la route (la RLS du prof
 	// refusait l'écriture ou ne touchait aucune ligne, 2026-10-10)
 	'/api/moderation/messages/[id]/+server',
+	// Invitations de cours particulier : la table n'est écrite que par le serveur, APRÈS
+	// la garde `requireAdmin` de la page (aucune écriture ouverte aux comptes connectés)
+	'/dashboard/admin/cours-particuliers/+page.server',
 	// Élévation admin : e-mail du compte admin, invisible au prof par la RLS (B5)
 	'/api/admin/elevate/+server',
 	// Énigmes : la justesse d'une tentative est calculée par le serveur, jamais par l'élève
@@ -112,13 +134,21 @@ const ALLOWED_SERVICE_ROLE_PATHS = [
 	// Récompenses (lot 3, Q141) : XP du compagnon et succès réservés au serveur,
 	// appelés APRÈS le contrôle d'identité de la route
 	'lib/server/buddy-queries.ts',
+	// Semaines actives du Palotin (chantier `regularite`, B2) : élève de la session
+	// seulement ; `student_last_visits` sans policy, traces et classes filtrées par
+	// `student_id`, rien d'autre que le nom du moment ne sort
+	'lib/server/buddy-weeks.ts',
 	'lib/server/achievements/service.ts',
 	// Mémoire des Mathoux (Chatterie) : `authenticated` n'a que SELECT sur
 	// `student_mathoux` ; écrite par le serveur pour l'élève de la session, après le calcul
 	'lib/server/mathoux/collection.ts',
 	// Décorations (panse et colliers) : achat et pose réservés à `service_role`, pour l’élève de la
 	// session ; consentement vérifié avant l'achat
-	'/api/student/mathoux/decorations/'
+	'/api/student/mathoux/decorations/',
+	// Boutique d'avatars : achat et port réservés à `service_role` (buy_avatar,
+	// set_worn_avatar), pour l'élève de la session ; consentement vérifié avant l'achat
+	'/api/student/avatars/buy/',
+	'/api/student/avatars/wear/'
 ] as const;
 
 /**
@@ -203,7 +233,7 @@ let serviceRoleClientInstance: SupabaseClient<Database> | null =
  *
  * @example Job logging in cron endpoint
  * ```typescript
- * import { createServiceRoleClient } from '$lib/server/serviceRoleClient';
+ * import { createServiceRoleClient } from '#lib/server/serviceRoleClient.ts';
  *
  * export const POST: RequestHandler = async () => {
  *   const serviceClient = createServiceRoleClient();

@@ -8,7 +8,7 @@
  * Syntax: .def' f = expr  (sets f'(x) = expr)
  */
 
-import chalk from 'chalk';
+import { colors } from '../core/terminal-colors';
 import { BaseCommand } from './base-command';
 import type { CommandContext, CommandResult } from '../types';
 import { toCustom } from '../../index';
@@ -133,12 +133,12 @@ export class DefDerivCommand extends BaseCommand {
 		const paramsDisplay = funcDef.parameters.join(', ');
 		const derivStr = toCustom(parseResult.ast);
 		const output =
-			chalk.green('Set') +
+			colors.green('Set') +
 			' ' +
-			chalk.bold(`${funcName}'(${paramsDisplay})`) +
+			colors.bold(`${funcName}'(${paramsDisplay})`) +
 			' = ' +
-			chalk.cyan(derivStr) +
-			chalk.dim(' (manual override)');
+			colors.cyan(derivStr) +
+			colors.dim(' (manual override)');
 
 		return {
 			success: true,

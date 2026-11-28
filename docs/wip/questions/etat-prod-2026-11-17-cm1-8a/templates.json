@@ -1,0 +1,1992 @@
+[
+	{
+		"id": "68134013-62c4-4e4a-bea5-2e87fc4ba199",
+		"type": "fill_in_blanks",
+		"options": {
+			"constraints": {
+				"zeros": "off"
+			}
+		},
+		"precision": null,
+		"grades": ["CM1"],
+		"delay": 180,
+		"level": 5,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{hf}}"
+					},
+					{
+						"expectedAnswer": "{{mf}}"
+					}
+				],
+				"statement": "{{if:k==1|Léa|{{if:k==2|Karim|{{if:k==3|Inès|Hugo}}}}}} part à {{if:a==0|${{h}}~\\text{h}$|${{h}}~\\text{h}~{{if:a<10|0{{a}}|{{a}}}}$}}. Son trajet dure {{if:n==0|${{c}}~\\text{min}$|{{if:c==0|${{n}}~\\text{h}$|${{n}}~\\text{h}~{{c}}~\\text{min}$}}}}. À quelle heure arrive-t-{{if:k==1|elle|{{if:k==2|il|{{if:k==3|elle|il}}}}}} ?\n\n{{if:k==1|Elle|{{if:k==2|Il|{{if:k==3|Elle|Il}}}}}} arrive à $?~\\text{h}~?$.",
+				"variables": [
+					{
+						"name": "k",
+						"expression": "1..4"
+					},
+					{
+						"name": "h",
+						"expression": "6..15"
+					},
+					{
+						"name": "a",
+						"expression": "0..59"
+					},
+					{
+						"name": "n",
+						"expression": "0..2"
+					},
+					{
+						"name": "c",
+						"expression": "1..59"
+					},
+					{
+						"name": "hn",
+						"expression": "eval:h+n"
+					},
+					{
+						"name": "t1",
+						"expression": "eval:60*h+a+60*n+c"
+					},
+					{
+						"name": "hf",
+						"expression": "eval:floor(t1/60)"
+					},
+					{
+						"name": "mf",
+						"expression": "eval:mod(t1,60)"
+					},
+					{
+						"name": "m1",
+						"expression": "eval:60-a"
+					},
+					{
+						"name": "ac",
+						"expression": "eval:a+c"
+					}
+				],
+				"correction": {
+					"steps": [
+						"{{if:n>0|D'abord les heures : {{if:a==0|${{h}}~\\text{h}$|${{h}}~\\text{h}~{{if:a<10|0{{a}}|{{a}}}}$}} $+ {{n}}~\\text{h}$ → {{if:a==0|${{hn}}~\\text{h}$|${{hn}}~\\text{h}~{{if:a<10|0{{a}}|{{a}}}}$}}.|Le trajet dure moins d'une heure.}}",
+						"{{if:ac>=60|Puis les minutes, en passant par l'heure pleine : de {{if:a==0|${{hn}}~\\text{h}$|${{hn}}~\\text{h}~{{if:a<10|0{{a}}|{{a}}}}$}} à ${{eval:hn+1}}~\\text{h}$, il y a ${{m1}}$ minutes ; il en reste ${{c}} - {{m1}} = {{mf}}$.|Puis les minutes : ${{a}} + {{c}} = {{mf}}$.}}",
+						"{{if:k==1|Elle|{{if:k==2|Il|{{if:k==3|Elle|Il}}}}}} arrive à $\\textcolor{{{color:primary.0}}}{{{hf}}~\\text{h}~{{if:mf<10|0{{mf}}|{{mf}}}}}$."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{h}}"
+					},
+					{
+						"expectedAnswer": "{{a}}"
+					}
+				],
+				"statement": "{{if:k==1|Léa|{{if:k==2|Karim|{{if:k==3|Inès|Hugo}}}}}} arrive à {{if:mf==0|${{hf}}~\\text{h}$|${{hf}}~\\text{h}~{{if:mf<10|0{{mf}}|{{mf}}}}$}}. Son trajet a duré {{if:n==0|${{c}}~\\text{min}$|{{if:c==0|${{n}}~\\text{h}$|${{n}}~\\text{h}~{{c}}~\\text{min}$}}}}. À quelle heure est-{{if:k==1|elle|{{if:k==2|il|{{if:k==3|elle|il}}}}}} parti{{if:k==1|e|{{if:k==3|e|}}}} ?\n\n{{if:k==1|Elle|{{if:k==2|Il|{{if:k==3|Elle|Il}}}}}} est parti{{if:k==1|e|{{if:k==3|e|}}}} à $?~\\text{h}~?$.",
+				"variables": [
+					{
+						"name": "k",
+						"expression": "1..4"
+					},
+					{
+						"name": "h",
+						"expression": "6..15"
+					},
+					{
+						"name": "a",
+						"expression": "0..59"
+					},
+					{
+						"name": "n",
+						"expression": "0..2"
+					},
+					{
+						"name": "c",
+						"expression": "1..59"
+					},
+					{
+						"name": "hn",
+						"expression": "eval:h+n"
+					},
+					{
+						"name": "t1",
+						"expression": "eval:60*h+a+60*n+c"
+					},
+					{
+						"name": "hf",
+						"expression": "eval:floor(t1/60)"
+					},
+					{
+						"name": "mf",
+						"expression": "eval:mod(t1,60)"
+					},
+					{
+						"name": "m1",
+						"expression": "eval:60-a"
+					},
+					{
+						"name": "ac",
+						"expression": "eval:a+c"
+					},
+					{
+						"name": "hr",
+						"expression": "eval:hf-n"
+					}
+				],
+				"correction": {
+					"steps": [
+						"On part de l'arrivée et on recule.",
+						"{{if:n>0|D'abord les heures : {{if:mf==0|${{hf}}~\\text{h}$|${{hf}}~\\text{h}~{{if:mf<10|0{{mf}}|{{mf}}}}$}} $- {{n}}~\\text{h}$ → {{if:mf==0|${{hr}}~\\text{h}$|${{hr}}~\\text{h}~{{if:mf<10|0{{mf}}|{{mf}}}}$}}.|Le trajet a duré moins d'une heure.}}",
+						"{{if:ac>=60|Puis les minutes, en passant par l'heure pleine : de {{if:mf==0|${{hr}}~\\text{h}$|${{hr}}~\\text{h}~{{if:mf<10|0{{mf}}|{{mf}}}}$}} on recule de ${{mf}}$ minutes jusqu'à ${{hr}}~\\text{h}$ ; il reste ${{c}} - {{mf}} = {{eval:c-mf}}$ minutes à enlever : $60 - {{eval:c-mf}} = {{a}}$.|Puis les minutes : ${{mf}} - {{c}} = {{a}}$.}}",
+						"{{if:k==1|Elle|{{if:k==2|Il|{{if:k==3|Elle|Il}}}}}} est parti{{if:k==1|e|{{if:k==3|e|}}}} à $\\textcolor{{{color:primary.0}}}{{{h}}~\\text{h}~{{if:a<10|0{{a}}|{{a}}}}}$."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{hf}}"
+					},
+					{
+						"expectedAnswer": "{{mf}}"
+					}
+				],
+				"statement": "{{if:k==1|Léa|{{if:k==2|Karim|{{if:k==3|Inès|Hugo}}}}}} part à vélo à {{if:a==0|${{h}}~\\text{h}$|${{h}}~\\text{h}~{{if:a<10|0{{a}}|{{a}}}}$}}. {{if:k==1|Elle|{{if:k==2|Il|{{if:k==3|Elle|Il}}}}}} roule ${{c1}}$ minutes, s'arrête ${{w}}$ minutes pour goûter, puis roule encore ${{c2}}$ minutes. À quelle heure arrive-t-{{if:k==1|elle|{{if:k==2|il|{{if:k==3|elle|il}}}}}} ?\n\n{{if:k==1|Elle|{{if:k==2|Il|{{if:k==3|Elle|Il}}}}}} arrive à $?~\\text{h}~?$.",
+				"variables": [
+					{
+						"name": "k",
+						"expression": "1..4"
+					},
+					{
+						"name": "h",
+						"expression": "8..16"
+					},
+					{
+						"name": "a",
+						"expression": "0..59"
+					},
+					{
+						"name": "c1",
+						"expression": "25..55"
+					},
+					{
+						"name": "z",
+						"expression": "2..9"
+					},
+					{
+						"name": "w",
+						"expression": "eval:5*z"
+					},
+					{
+						"name": "c2",
+						"expression": "20..59"
+					},
+					{
+						"name": "t0",
+						"expression": "eval:60*h+a"
+					},
+					{
+						"name": "t1",
+						"expression": "eval:t0+c1"
+					},
+					{
+						"name": "t2",
+						"expression": "eval:t1+w"
+					},
+					{
+						"name": "t3",
+						"expression": "eval:t2+c2"
+					},
+					{
+						"name": "hf",
+						"expression": "eval:floor(t3/60)"
+					},
+					{
+						"name": "mf",
+						"expression": "eval:mod(t3,60)"
+					}
+				],
+				"correction": {
+					"steps": [
+						"On avance d'instant en instant, en passant par l'heure pleine quand il le faut.",
+						"Après ${{c1}}$ minutes de route : {{if:mod(t1,60)==0|${{eval:floor(t1/60)}}~\\text{h}$|${{eval:floor(t1/60)}}~\\text{h}~{{if:mod(t1,60)<10|0{{eval:mod(t1,60)}}|{{eval:mod(t1,60)}}}}$}}{{if:floor(t1/60)>floor(t0/60)| (${{eval:60-mod(t0,60)}}$ min jusqu'à ${{eval:floor(t1/60)}}~\\text{h}$, puis ${{eval:mod(t1,60)}}$ min)|}}.",
+						"Après ${{w}}$ minutes d'arrêt : {{if:mod(t2,60)==0|${{eval:floor(t2/60)}}~\\text{h}$|${{eval:floor(t2/60)}}~\\text{h}~{{if:mod(t2,60)<10|0{{eval:mod(t2,60)}}|{{eval:mod(t2,60)}}}}$}}{{if:floor(t2/60)>floor(t1/60)| (${{eval:60-mod(t1,60)}}$ min jusqu'à ${{eval:floor(t2/60)}}~\\text{h}$, puis ${{eval:mod(t2,60)}}$ min)|}}.",
+						"Après ${{c2}}$ minutes de route : {{if:mod(t3,60)==0|${{eval:floor(t3/60)}}~\\text{h}$|${{eval:floor(t3/60)}}~\\text{h}~{{if:mod(t3,60)<10|0{{eval:mod(t3,60)}}|{{eval:mod(t3,60)}}}}$}}{{if:floor(t3/60)>floor(t2/60)| (${{eval:60-mod(t2,60)}}$ min jusqu'à ${{eval:floor(t3/60)}}~\\text{h}$, puis ${{eval:mod(t3,60)}}$ min)|}}.",
+						"{{if:k==1|Elle|{{if:k==2|Il|{{if:k==3|Elle|Il}}}}}} arrive à $\\textcolor{{{color:primary.0}}}{{{hf}}~\\text{h}~{{if:mf<10|0{{mf}}|{{mf}}}}}$."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{hf}}"
+					},
+					{
+						"expectedAnswer": "{{mf}}"
+					},
+					{
+						"expectedAnswer": "{{jr}}"
+					}
+				],
+				"statement": "Un car part le **{{if:jd==1|lundi|{{if:jd==2|mardi|{{if:jd==3|mercredi|{{if:jd==4|jeudi|vendredi}}}}}}}}** à {{if:a==0|${{hd}}~\\text{h}$|${{hd}}~\\text{h}~{{if:a<10|0{{a}}|{{a}}}}$}}. Le voyage dure {{if:n==0|${{c}}~\\text{min}$|{{if:c==0|${{n}}~\\text{h}$|${{n}}~\\text{h}~{{c}}~\\text{min}$}}}}.\n\nÀ quelle heure arrive-t-il ?\n\nIl arrive à $?~\\text{h}~?$.\n\nQuel jour arrive-t-il ?\n\n```choix\nmelanger: non\n- le {{if:jd==1|lundi|{{if:jd==2|mardi|{{if:jd==3|mercredi|{{if:jd==4|jeudi|vendredi}}}}}}}}\n- le {{if:jd==1|mardi|{{if:jd==2|mercredi|{{if:jd==3|jeudi|{{if:jd==4|vendredi|samedi}}}}}}}}\n- le {{if:jd==1|mercredi|{{if:jd==2|jeudi|{{if:jd==3|vendredi|{{if:jd==4|samedi|dimanche}}}}}}}}\n```",
+				"variables": [
+					{
+						"name": "jd",
+						"expression": "1..5"
+					},
+					{
+						"name": "hd",
+						"expression": "14..23"
+					},
+					{
+						"name": "z",
+						"expression": "0..11"
+					},
+					{
+						"name": "a",
+						"expression": "eval:5*z"
+					},
+					{
+						"name": "n",
+						"expression": "3..14"
+					},
+					{
+						"name": "y",
+						"expression": "0..11"
+					},
+					{
+						"name": "c",
+						"expression": "eval:5*y"
+					},
+					{
+						"name": "tt",
+						"expression": "eval:60*hd+a+60*n+c"
+					},
+					{
+						"name": "th",
+						"expression": "eval:floor(tt/60)"
+					},
+					{
+						"name": "mf",
+						"expression": "eval:mod(tt,60)"
+					},
+					{
+						"name": "hf",
+						"expression": "eval:mod(th,24)"
+					},
+					{
+						"name": "jr",
+						"expression": "eval:floor(th/24)"
+					}
+				],
+				"correction": {
+					"steps": [
+						"On ajoute les heures, puis les minutes : {{if:a==0|${{hd}}~\\text{h}$|${{hd}}~\\text{h}~{{if:a<10|0{{a}}|{{a}}}}$}} + {{if:n==0|${{c}}~\\text{min}$|{{if:c==0|${{n}}~\\text{h}$|${{n}}~\\text{h}~{{c}}~\\text{min}$}}}} → {{if:mf==0|${{th}}~\\text{h}$|${{th}}~\\text{h}~{{if:mf<10|0{{mf}}|{{mf}}}}$}}.",
+						"{{if:th>=24|Un jour, c'est $24~\\text{h}$ : passé minuit, on recommence à $0~\\text{h}$. ${{th}} - 24 = {{hf}}$ : c'est le lendemain.|On ne passe pas minuit : c'est le même jour.}}",
+						"Le car arrive le {{if:jr==0|**{{if:jd==1|lundi|{{if:jd==2|mardi|{{if:jd==3|mercredi|{{if:jd==4|jeudi|vendredi}}}}}}}}**|**{{if:jd==1|mardi|{{if:jd==2|mercredi|{{if:jd==3|jeudi|{{if:jd==4|vendredi|samedi}}}}}}}}**}} à $\\textcolor{{{color:primary.0}}}{{{hf}}~\\text{h}~{{if:mf<10|0{{mf}}|{{mf}}}}}$."
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "draft",
+		"title": "Problèmes de durées",
+		"description": "Une ou deux étapes, à la minute, par instants intermédiaires : heure d'arrivée, heure de départ, trajet avec un arrêt, voyage qui passe minuit (jour et heure)",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["9", "15"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "45",
+					"c": "30",
+					"h": "7",
+					"k": "1",
+					"n": "1",
+					"ac": "75",
+					"hf": "9",
+					"hn": "8",
+					"m1": "15",
+					"mf": "15",
+					"t1": "555"
+				},
+				"description": "7 h 45 + 1 h 30 = 9 h 15",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["8", "75"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "45",
+					"c": "30",
+					"h": "7",
+					"k": "1",
+					"n": "1",
+					"ac": "75",
+					"hf": "9",
+					"hn": "8",
+					"m1": "15",
+					"mf": "15",
+					"t1": "555"
+				},
+				"description": "Erreur : 8 h 75",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["8", "15"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "45",
+					"c": "30",
+					"h": "7",
+					"k": "1",
+					"n": "1",
+					"ac": "75",
+					"hf": "9",
+					"hn": "8",
+					"m1": "15",
+					"mf": "15",
+					"t1": "555"
+				},
+				"description": "Erreur : heure pleine oubliée, 8 h 15",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["9", "35"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "10",
+					"c": "25",
+					"h": "9",
+					"k": "2",
+					"n": "0",
+					"ac": "35",
+					"hf": "9",
+					"hn": "9",
+					"m1": "50",
+					"mf": "35",
+					"t1": "575"
+				},
+				"description": "9 h 10 + 25 min = 9 h 35",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["8", "04"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "50",
+					"c": "14",
+					"h": "7",
+					"k": "4",
+					"n": "0",
+					"ac": "64",
+					"hf": "8",
+					"hn": "7",
+					"m1": "10",
+					"mf": "4",
+					"t1": "484"
+				},
+				"description": "7 h 50 + 14 min = 8 h 04, écrit « 04 »",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["8", "4"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "50",
+					"c": "14",
+					"h": "7",
+					"k": "4",
+					"n": "0",
+					"ac": "64",
+					"hf": "8",
+					"hn": "7",
+					"m1": "10",
+					"mf": "4",
+					"t1": "484"
+				},
+				"description": "7 h 50 + 14 min = 8 h 04, écrit « 4 »",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["7", "45"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "45",
+					"c": "30",
+					"h": "7",
+					"k": "1",
+					"n": "1",
+					"ac": "75",
+					"hf": "9",
+					"hn": "8",
+					"hr": "8",
+					"m1": "15",
+					"mf": "15",
+					"t1": "555"
+				},
+				"description": "Départ : 9 h 15 − 1 h 30 = 7 h 45",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["8", "45"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "45",
+					"c": "30",
+					"h": "7",
+					"k": "1",
+					"n": "1",
+					"ac": "75",
+					"hf": "9",
+					"hn": "8",
+					"hr": "8",
+					"m1": "15",
+					"mf": "15",
+					"t1": "555"
+				},
+				"description": "Erreur : 8 h 45 (heure pleine oubliée en reculant)",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["10", "45"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "45",
+					"c": "30",
+					"h": "7",
+					"k": "1",
+					"n": "1",
+					"ac": "75",
+					"hf": "9",
+					"hn": "8",
+					"hr": "8",
+					"m1": "15",
+					"mf": "15",
+					"t1": "555"
+				},
+				"description": "Erreur : addition au lieu de soustraction, 10 h 45",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["16", "25"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "50",
+					"h": "14",
+					"k": "3",
+					"w": "20",
+					"z": "4",
+					"c1": "35",
+					"c2": "40",
+					"hf": "16",
+					"mf": "25",
+					"t0": "890",
+					"t1": "925",
+					"t2": "945",
+					"t3": "985"
+				},
+				"description": "14 h 50 + 35 + 20 + 40 = 16 h 25",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["16", "5"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "50",
+					"h": "14",
+					"k": "3",
+					"w": "20",
+					"z": "4",
+					"c1": "35",
+					"c2": "40",
+					"hf": "16",
+					"mf": "25",
+					"t0": "890",
+					"t1": "925",
+					"t2": "945",
+					"t3": "985"
+				},
+				"description": "Erreur : arrêt oublié, 16 h 5",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["11", "45", "1"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "15",
+					"c": "30",
+					"n": "14",
+					"y": "6",
+					"z": "3",
+					"hd": "21",
+					"hf": "11",
+					"jd": "1",
+					"jr": "1",
+					"mf": "45",
+					"th": "35",
+					"tt": "2145"
+				},
+				"description": "Lundi 21 h 15 + 14 h 30 = mardi 11 h 45",
+				"variationIndex": 3
+			},
+			{
+				"answers": ["35", "45", "1"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "15",
+					"c": "30",
+					"n": "14",
+					"y": "6",
+					"z": "3",
+					"hd": "21",
+					"hf": "11",
+					"jd": "1",
+					"jr": "1",
+					"mf": "45",
+					"th": "35",
+					"tt": "2145"
+				},
+				"description": "Erreur : 35 h 45 (minuit non passé)",
+				"variationIndex": 3
+			},
+			{
+				"answers": ["11", "45", "0"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "15",
+					"c": "30",
+					"n": "14",
+					"y": "6",
+					"z": "3",
+					"hd": "21",
+					"hf": "11",
+					"jd": "1",
+					"jr": "1",
+					"mf": "45",
+					"th": "35",
+					"tt": "2145"
+				},
+				"description": "Erreur : bonne heure, mauvais jour (lundi)",
+				"variationIndex": 3
+			},
+			{
+				"answers": ["19", "0", "0"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "0",
+					"c": "0",
+					"n": "5",
+					"y": "0",
+					"z": "0",
+					"hd": "14",
+					"hf": "19",
+					"jd": "4",
+					"jr": "0",
+					"mf": "0",
+					"th": "19",
+					"tt": "1140"
+				},
+				"description": "Jeudi 14 h + 5 h = jeudi 19 h",
+				"variationIndex": 3
+			}
+		],
+		"classification_node_id": null
+	},
+	{
+		"id": "9e655e1a-c193-48d5-9190-64ae918e1a03",
+		"type": "fill_in_blanks",
+		"options": {
+			"constraints": {
+				"zeros": "off"
+			}
+		},
+		"precision": null,
+		"grades": ["CM1"],
+		"delay": 120,
+		"level": 6,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{h}}"
+					},
+					{
+						"expectedAnswer": "{{m}}"
+					}
+				],
+				"statement": "Quelle heure est-il ?\n\n```horloge\nheure: {{h}} h {{m}}\nchiffres: quarts\ngraduations: minutes\n```\n\nIl est $?~\\text{h}~?$.",
+				"variables": [
+					{
+						"name": "h",
+						"expression": "1..12"
+					},
+					{
+						"name": "q",
+						"expression": "0..11"
+					},
+					{
+						"name": "r",
+						"expression": "1..4"
+					},
+					{
+						"name": "m",
+						"expression": "eval:5*q+r"
+					}
+				],
+				"correction": {
+					"steps": [
+						"Seuls le $12$, le $3$, le $6$ et le $9$ sont écrits : les autres repères se retrouvent entre eux.",
+						"La petite aiguille montre les heures : elle a passé le repère du ${{h}}$ sans atteindre le suivant{{if:m>=45| (elle est presque sur le repère du ${{eval:mod(h,12)+1}}$, mais cette heure n'est pas encore passée)|}}. On compte les grands repères depuis le $12$ : l'heure est ${{h}}$.",
+						"La grande aiguille montre les minutes. On compte les grands repères de $5$ en $5$ depuis le $12$ : elle a passé le repère du {{if:q==0|$12$|${{q}}$}}, soit ${{eval:5*q}}$ minutes{{if:r>0|, puis elle avance de ${{r}}$ petite{{if:r>1|s|}} graduation{{if:r>1|s|}} : ${{eval:5*q}} + {{r}} = {{m}}$|}}.",
+						"Il est $\\textcolor{{{color:primary.0}}}{{{h}}~\\text{h}~{{if:m<10|0{{m}}|{{m}}}}}$."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{h}}"
+					},
+					{
+						"expectedAnswer": "{{m}}"
+					}
+				],
+				"statement": "Quelle heure est-il ?\n\n```horloge\nheure: {{h}} h {{m}}\nchiffres: aucun\ngraduations: minutes\n```\n\nIl est $?~\\text{h}~?$.",
+				"variables": [
+					{
+						"name": "h",
+						"expression": "1..12"
+					},
+					{
+						"name": "q",
+						"expression": "0..11"
+					},
+					{
+						"name": "r",
+						"expression": "1..4"
+					},
+					{
+						"name": "m",
+						"expression": "eval:5*q+r"
+					}
+				],
+				"correction": {
+					"steps": [
+						"Aucun chiffre n'est écrit : le $12$ est en haut, le $3$ à droite, le $6$ en bas, le $9$ à gauche.",
+						"La petite aiguille montre les heures : elle a passé le repère du ${{h}}$ sans atteindre le suivant{{if:m>=45| (elle est presque sur le repère du ${{eval:mod(h,12)+1}}$, mais cette heure n'est pas encore passée)|}}. On compte les grands repères depuis le $12$ : l'heure est ${{h}}$.",
+						"La grande aiguille montre les minutes. On compte les grands repères de $5$ en $5$ depuis le $12$ : elle a passé le repère du {{if:q==0|$12$|${{q}}$}}, soit ${{eval:5*q}}$ minutes{{if:r>0|, puis elle avance de ${{r}}$ petite{{if:r>1|s|}} graduation{{if:r>1|s|}} : ${{eval:5*q}} + {{r}} = {{m}}$|}}.",
+						"Il est $\\textcolor{{{color:primary.0}}}{{{h}}~\\text{h}~{{if:m<10|0{{m}}|{{m}}}}}$."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:h+12}}",
+						"validationRules": [
+							{
+								"type": "custom",
+								"expression": "answer != {{h}}",
+								"description": "L'après-midi, on compte après midi : {{h}} heures de l'après-midi, c'est {{eval:h+12}} h."
+							}
+						]
+					},
+					{
+						"expectedAnswer": "{{m}}"
+					}
+				],
+				"statement": "C'est l'après-midi. Quelle heure est-il ?\n\n```horloge\nheure: {{if:m==0|{{h}} h|{{h}} h {{m}}}}\nchiffres: quarts\ngraduations: minutes\n```\n\nIl est $?~\\text{h}~?$.",
+				"variables": [
+					{
+						"name": "h",
+						"expression": "1..11"
+					},
+					{
+						"name": "q",
+						"expression": "0..11"
+					},
+					{
+						"name": "r",
+						"expression": "0..4"
+					},
+					{
+						"name": "m",
+						"expression": "eval:5*q+r"
+					}
+				],
+				"correction": {
+					"steps": [
+						"Seuls le $12$, le $3$, le $6$ et le $9$ sont écrits : les autres repères se retrouvent entre eux.",
+						"La petite aiguille montre les heures : elle a passé le repère du ${{h}}$ sans atteindre le suivant{{if:m>=45| (elle est presque sur le repère du ${{eval:mod(h,12)+1}}$, mais cette heure n'est pas encore passée)|}}. On compte les grands repères depuis le $12$ : l'heure est ${{h}}$.",
+						"La grande aiguille montre les minutes. On compte les grands repères de $5$ en $5$ depuis le $12$ : elle a passé le repère du {{if:q==0|$12$|${{q}}$}}, soit ${{eval:5*q}}$ minutes{{if:r>0|, puis elle avance de ${{r}}$ petite{{if:r>1|s|}} graduation{{if:r>1|s|}} : ${{eval:5*q}} + {{r}} = {{m}}$|}}.",
+						"Le cadran montre {{if:m==0|${{h}}~\\text{h}$|${{h}}~\\text{h}~{{if:m<10|0{{m}}|{{m}}}}$}}. L'après-midi, on ajoute $12$ aux heures : ${{h}} + 12 = {{eval:h+12}}$.",
+						"Il est $\\textcolor{{{color:primary.0}}}{{{eval:h+12}}~\\text{h}~{{if:m<10|0{{m}}|{{m}}}}}$."
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "draft",
+		"title": "Quelle heure est-il ? (cadran nu)",
+		"description": "Lire l'heure à la minute près sur un cadran où seuls 12, 3, 6, 9 sont écrits, puis sans chiffre ; l'après-midi (15 h 22)",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["8", "37"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"h": "8",
+					"m": "37",
+					"q": "7",
+					"r": "2"
+				},
+				"description": "8 h 37, chiffres 12-3-6-9",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["8", "7"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"h": "8",
+					"m": "37",
+					"q": "7",
+					"r": "2"
+				},
+				"description": "Erreur : 8 h 37 lu 8 h 7 (repère compté pour 1)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["8", "35"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"h": "8",
+					"m": "37",
+					"q": "7",
+					"r": "2"
+				},
+				"description": "Erreur : 8 h 37 lu 8 h 35 (petites graduations oubliées)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["7", "40"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"h": "8",
+					"m": "37",
+					"q": "7",
+					"r": "2"
+				},
+				"description": "Erreur : aiguilles inversées, lu 7 h 40",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["8", "58"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"h": "8",
+					"m": "58",
+					"q": "11",
+					"r": "3"
+				},
+				"description": "8 h 58, petite presque sur le 9",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["9", "58"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"h": "8",
+					"m": "58",
+					"q": "11",
+					"r": "3"
+				},
+				"description": "Erreur : 8 h 58 lu 9 h 58",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["9", "26"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"h": "9",
+					"m": "26",
+					"q": "5",
+					"r": "1"
+				},
+				"description": "BO : 9 h 25… sans chiffre, 9 h 26",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["9", "5"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"h": "9",
+					"m": "26",
+					"q": "5",
+					"r": "1"
+				},
+				"description": "Erreur : sans chiffre, 9 h 26 lu 9 h 5",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["2", "4"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"h": "2",
+					"m": "4",
+					"q": "0",
+					"r": "4"
+				},
+				"description": "2 h 04 : passé le 12 de 4 graduations",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["15", "22"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"h": "3",
+					"m": "22",
+					"q": "4",
+					"r": "2"
+				},
+				"description": "BO : 15 h 22 l'après-midi",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["3", "22"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"h": "3",
+					"m": "22",
+					"q": "4",
+					"r": "2"
+				},
+				"description": "Erreur : 3 h 22 l'après-midi",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["14", "0"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"h": "2",
+					"m": "0",
+					"q": "0",
+					"r": "0"
+				},
+				"description": "Après-midi, minute 0 : 14 h",
+				"variationIndex": 2
+			}
+		],
+		"classification_node_id": null
+	},
+	{
+		"id": "cdec9199-5aa5-41bd-a571-1e94a08f7dba",
+		"type": "fill_in_blanks",
+		"options": {
+			"constraints": {
+				"zeros": "off"
+			}
+		},
+		"precision": null,
+		"grades": ["CM1"],
+		"delay": 120,
+		"level": 8,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{r}}"
+					}
+				],
+				"statement": "Tom a regardé un film, puis un match.\n\n```horloge\nheure: {{if:mod(t0,60)==0|{{eval:floor(t0/60)}} h|{{eval:floor(t0/60)}} h {{eval:mod(t0,60)}}}} ; {{if:mod(t1,60)==0|{{eval:floor(t1/60)}} h|{{eval:floor(t1/60)}} h {{eval:mod(t1,60)}}}} ; {{if:mod(t2,60)==0|{{eval:floor(t2/60)}} h|{{eval:floor(t2/60)}} h {{eval:mod(t2,60)}}}} ; {{if:mod(t3,60)==0|{{eval:floor(t3/60)}} h|{{eval:floor(t3/60)}} h {{eval:mod(t3,60)}}}}\nchiffres: tous\ngraduations: minutes\nlégendes: Début du film ; Fin du film ; Début du match ; Fin du match\n```\n\nLequel a duré le plus longtemps ?\n\n```choix\nmelanger: non\n- Le film\n- Le match\n- Ils ont duré autant.\n```",
+				"variables": [
+					{
+						"name": "u",
+						"expression": "1..9"
+					},
+					{
+						"name": "sg",
+						"expression": "0..1"
+					},
+					{
+						"name": "s",
+						"expression": "eval:(2*sg-1)*u"
+					},
+					{
+						"name": "h1",
+						"expression": "8..10"
+					},
+					{
+						"name": "p",
+						"expression": "0..59"
+					},
+					{
+						"name": "f",
+						"expression": "65..140"
+					},
+					{
+						"name": "t0",
+						"expression": "eval:60*h1+p"
+					},
+					{
+						"name": "t1",
+						"expression": "eval:t0+f"
+					},
+					{
+						"name": "q",
+						"expression": "0..59"
+					},
+					{
+						"name": "t2",
+						"expression": "eval:60*(floor(t1/60)+1)+q"
+					},
+					{
+						"name": "g",
+						"expression": "eval:f+s"
+					},
+					{
+						"name": "t3",
+						"expression": "eval:t2+g"
+					},
+					{
+						"name": "r",
+						"expression": "{{if:s<0|0|{{if:s>0|1|2}}}}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"Le film : de {{if:mod(t0,60)==0|${{eval:floor(t0/60)}}~\\text{h}$|${{eval:floor(t0/60)}}~\\text{h}~{{if:mod(t0,60)<10|0{{eval:mod(t0,60)}}|{{eval:mod(t0,60)}}}}$}} à {{if:mod(t1,60)==0|${{eval:floor(t1/60)}}~\\text{h}$|${{eval:floor(t1/60)}}~\\text{h}~{{if:mod(t1,60)<10|0{{eval:mod(t1,60)}}|{{eval:mod(t1,60)}}}}$}}. Il a duré {{if:floor(f/60)==0|${{eval:mod(f,60)}}~\\text{min}$|{{if:mod(f,60)==0|${{eval:floor(f/60)}}~\\text{h}$|${{eval:floor(f/60)}}~\\text{h}~{{eval:mod(f,60)}}~\\text{min}$}}}} (${{eval:f}}$ minutes).",
+						"Le match : de {{if:mod(t2,60)==0|${{eval:floor(t2/60)}}~\\text{h}$|${{eval:floor(t2/60)}}~\\text{h}~{{if:mod(t2,60)<10|0{{eval:mod(t2,60)}}|{{eval:mod(t2,60)}}}}$}} à {{if:mod(t3,60)==0|${{eval:floor(t3/60)}}~\\text{h}$|${{eval:floor(t3/60)}}~\\text{h}~{{if:mod(t3,60)<10|0{{eval:mod(t3,60)}}|{{eval:mod(t3,60)}}}}$}}. Il a duré {{if:floor(g/60)==0|${{eval:mod(g,60)}}~\\text{min}$|{{if:mod(g,60)==0|${{eval:floor(g/60)}}~\\text{h}$|${{eval:floor(g/60)}}~\\text{h}~{{eval:mod(g,60)}}~\\text{min}$}}}} (${{eval:g}}$ minutes).",
+						"{{if:s<0|Le **film** a duré le plus longtemps, de ${{eval:-s}}$ minute{{if:s<-1|s|}}.|{{if:s>0|Le **match** a duré le plus longtemps, de ${{s}}$ minute{{if:s>1|s|}}.|Ils ont duré **autant**.}}}}"
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{r}}"
+					}
+				],
+				"statement": "Tom a regardé un film, puis un match.\n\n```horloge\nheure: {{if:mod(t0,60)==0|{{eval:floor(t0/60)}} h|{{eval:floor(t0/60)}} h {{eval:mod(t0,60)}}}} ; {{if:mod(t1,60)==0|{{eval:floor(t1/60)}} h|{{eval:floor(t1/60)}} h {{eval:mod(t1,60)}}}} ; {{if:mod(t2,60)==0|{{eval:floor(t2/60)}} h|{{eval:floor(t2/60)}} h {{eval:mod(t2,60)}}}} ; {{if:mod(t3,60)==0|{{eval:floor(t3/60)}} h|{{eval:floor(t3/60)}} h {{eval:mod(t3,60)}}}}\nchiffres: tous\ngraduations: minutes\nlégendes: Début du film ; Fin du film ; Début du match ; Fin du match\n```\n\nLequel a duré le plus longtemps ?\n\n```choix\nmelanger: non\n- Le film\n- Le match\n- Ils ont duré autant.\n```",
+				"variables": [
+					{
+						"name": "u",
+						"expression": "0..3"
+					},
+					{
+						"name": "sg",
+						"expression": "0..1"
+					},
+					{
+						"name": "s",
+						"expression": "eval:(2*sg-1)*u"
+					},
+					{
+						"name": "h1",
+						"expression": "8..10"
+					},
+					{
+						"name": "p",
+						"expression": "0..59"
+					},
+					{
+						"name": "f",
+						"expression": "65..140"
+					},
+					{
+						"name": "t0",
+						"expression": "eval:60*h1+p"
+					},
+					{
+						"name": "t1",
+						"expression": "eval:t0+f"
+					},
+					{
+						"name": "q",
+						"expression": "0..59"
+					},
+					{
+						"name": "t2",
+						"expression": "eval:60*(floor(t1/60)+1)+q"
+					},
+					{
+						"name": "g",
+						"expression": "eval:f+s"
+					},
+					{
+						"name": "t3",
+						"expression": "eval:t2+g"
+					},
+					{
+						"name": "r",
+						"expression": "{{if:s<0|0|{{if:s>0|1|2}}}}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"Le film : de {{if:mod(t0,60)==0|${{eval:floor(t0/60)}}~\\text{h}$|${{eval:floor(t0/60)}}~\\text{h}~{{if:mod(t0,60)<10|0{{eval:mod(t0,60)}}|{{eval:mod(t0,60)}}}}$}} à {{if:mod(t1,60)==0|${{eval:floor(t1/60)}}~\\text{h}$|${{eval:floor(t1/60)}}~\\text{h}~{{if:mod(t1,60)<10|0{{eval:mod(t1,60)}}|{{eval:mod(t1,60)}}}}$}}. Il a duré {{if:floor(f/60)==0|${{eval:mod(f,60)}}~\\text{min}$|{{if:mod(f,60)==0|${{eval:floor(f/60)}}~\\text{h}$|${{eval:floor(f/60)}}~\\text{h}~{{eval:mod(f,60)}}~\\text{min}$}}}} (${{eval:f}}$ minutes).",
+						"Le match : de {{if:mod(t2,60)==0|${{eval:floor(t2/60)}}~\\text{h}$|${{eval:floor(t2/60)}}~\\text{h}~{{if:mod(t2,60)<10|0{{eval:mod(t2,60)}}|{{eval:mod(t2,60)}}}}$}} à {{if:mod(t3,60)==0|${{eval:floor(t3/60)}}~\\text{h}$|${{eval:floor(t3/60)}}~\\text{h}~{{if:mod(t3,60)<10|0{{eval:mod(t3,60)}}|{{eval:mod(t3,60)}}}}$}}. Il a duré {{if:floor(g/60)==0|${{eval:mod(g,60)}}~\\text{min}$|{{if:mod(g,60)==0|${{eval:floor(g/60)}}~\\text{h}$|${{eval:floor(g/60)}}~\\text{h}~{{eval:mod(g,60)}}~\\text{min}$}}}} (${{eval:g}}$ minutes).",
+						"{{if:s<0|Le **film** a duré le plus longtemps, de ${{eval:-s}}$ minute{{if:s<-1|s|}}.|{{if:s>0|Le **match** a duré le plus longtemps, de ${{s}}$ minute{{if:s>1|s|}}.|Ils ont duré **autant**.}}}}"
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "draft",
+		"title": "Quelle durée est la plus longue ? (à la minute)",
+		"description": "Comparer deux durées lues sur quatre horloges, en heures et minutes, à quelques minutes près",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"f": "107",
+					"g": "102",
+					"p": "52",
+					"q": "15",
+					"r": "0",
+					"s": "-5",
+					"u": "5",
+					"h1": "8",
+					"sg": "0",
+					"t0": "532",
+					"t1": "639",
+					"t2": "675",
+					"t3": "777"
+				},
+				"description": "Film 1 h 47 (8 h 52 → 10 h 39), match 1 h 42 : le film",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["1"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"f": "107",
+					"g": "102",
+					"p": "52",
+					"q": "15",
+					"r": "0",
+					"s": "-5",
+					"u": "5",
+					"h1": "8",
+					"sg": "0",
+					"t0": "532",
+					"t1": "639",
+					"t2": "675",
+					"t3": "777"
+				},
+				"description": "Erreur : le match (il finit plus tard)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["1"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"f": "95",
+					"g": "98",
+					"p": "38",
+					"q": "4",
+					"r": "1",
+					"s": "3",
+					"u": "3",
+					"h1": "9",
+					"sg": "1",
+					"t0": "578",
+					"t1": "673",
+					"t2": "724",
+					"t3": "822"
+				},
+				"description": "Match plus long de 3 min : le match",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"f": "95",
+					"g": "98",
+					"p": "38",
+					"q": "4",
+					"r": "1",
+					"s": "3",
+					"u": "3",
+					"h1": "9",
+					"sg": "1",
+					"t0": "578",
+					"t1": "673",
+					"t2": "724",
+					"t3": "822"
+				},
+				"description": "Erreur : match plus long, le film",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["2"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"f": "80",
+					"g": "80",
+					"p": "47",
+					"q": "21",
+					"r": "2",
+					"s": "0",
+					"u": "0",
+					"h1": "10",
+					"sg": "0",
+					"t0": "647",
+					"t1": "727",
+					"t2": "801",
+					"t3": "881"
+				},
+				"description": "Même durée : autant",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"f": "80",
+					"g": "80",
+					"p": "47",
+					"q": "21",
+					"r": "2",
+					"s": "0",
+					"u": "0",
+					"h1": "10",
+					"sg": "0",
+					"t0": "647",
+					"t1": "727",
+					"t2": "801",
+					"t3": "881"
+				},
+				"description": "Erreur : même durée, le film",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"f": "120",
+					"g": "119",
+					"p": "5",
+					"q": "50",
+					"r": "0",
+					"s": "-1",
+					"u": "1",
+					"h1": "8",
+					"sg": "0",
+					"t0": "485",
+					"t1": "605",
+					"t2": "710",
+					"t3": "829"
+				},
+				"description": "Écart de 1 min : le film",
+				"variationIndex": 1
+			}
+		],
+		"classification_node_id": null
+	},
+	{
+		"id": "dd81eefb-121e-4f4c-8514-1d394265f7a1",
+		"type": "fill_in_blanks",
+		"options": {
+			"constraints": {
+				"zeros": "off"
+			}
+		},
+		"precision": null,
+		"grades": ["CM1"],
+		"delay": 120,
+		"level": 8,
+		"variations": [
+			{
+				"blanks": [],
+				"statement": "Place les aiguilles : il est {{if:m==0|${{h}}~\\text{h}$|${{h}}~\\text{h}~{{if:m<10|0{{m}}|{{m}}}}$}}.\n\n```horloge\nplacer: {{h}} h {{m}}\nchiffres: quarts\ngraduations: minutes\n```",
+				"variables": [
+					{
+						"name": "h",
+						"expression": "1..12"
+					},
+					{
+						"name": "q",
+						"expression": "0..11"
+					},
+					{
+						"name": "r",
+						"expression": "1..4"
+					},
+					{
+						"name": "m",
+						"expression": "eval:5*q+r"
+					}
+				],
+				"correction": {
+					"steps": [
+						"Seuls le $12$, le $3$, le $6$ et le $9$ sont écrits : les autres repères se retrouvent entre eux.",
+						"La grande aiguille montre les minutes, la petite montre l'heure.",
+						"La grande aiguille : {{m}} minute{{if:m>1|s|}}. On compte les grands repères de $5$ en $5$ depuis le $12$ : {{if:r>0|elle passe le repère du {{if:q==0|$12$|${{q}}$}} (${{eval:5*q}}$ minutes) et avance de ${{r}}$ petite{{if:r>1|s|}} graduation{{if:r>1|s|}}.|elle va sur le repère du {{if:q==0|$12$|${{q}}$}}.}}",
+						"{{if:m==0|La petite aiguille va pile sur le repère du ${{h}}$.|La petite aiguille va entre le repère du ${{h}}$ et celui du ${{eval:mod(h,12)+1}}$ : cette heure-là n'est pas encore passée.}}"
+					]
+				}
+			},
+			{
+				"blanks": [],
+				"statement": "Place les aiguilles : il est {{if:m==0|${{hh}}~\\text{h}$|${{hh}}~\\text{h}~{{if:m<10|0{{m}}|{{m}}}}$}}.\n\n```horloge\nplacer: {{hh}} h {{m}}\nchiffres: quarts\ngraduations: minutes\n```",
+				"variables": [
+					{
+						"name": "h",
+						"expression": "1..11"
+					},
+					{
+						"name": "hh",
+						"expression": "eval:h+12"
+					},
+					{
+						"name": "q",
+						"expression": "0..11"
+					},
+					{
+						"name": "r",
+						"expression": "0..4"
+					},
+					{
+						"name": "m",
+						"expression": "eval:5*q+r"
+					}
+				],
+				"correction": {
+					"steps": [
+						"Sur le cadran, on retrouve l'heure en enlevant $12$ : ${{hh}} - 12 = {{h}}$.",
+						"La grande aiguille montre les minutes, la petite montre l'heure.",
+						"La grande aiguille : {{m}} minute{{if:m>1|s|}}. On compte les grands repères de $5$ en $5$ depuis le $12$ : {{if:r>0|elle passe le repère du {{if:q==0|$12$|${{q}}$}} (${{eval:5*q}}$ minutes) et avance de ${{r}}$ petite{{if:r>1|s|}} graduation{{if:r>1|s|}}.|elle va sur le repère du {{if:q==0|$12$|${{q}}$}}.}}",
+						"{{if:m==0|La petite aiguille va pile sur le repère du ${{h}}$.|La petite aiguille va entre le repère du ${{h}}$ et celui du ${{eval:mod(h,12)+1}}$ : cette heure-là n'est pas encore passée.}}"
+					]
+				}
+			},
+			{
+				"blanks": [],
+				"statement": "Place les aiguilles : il est {{if:m==0|${{h}}~\\text{h}$|${{h}}~\\text{h}~{{if:m<10|0{{m}}|{{m}}}}$}}.\n\n```horloge\nplacer: {{h}} h {{m}}\nchiffres: aucun\ngraduations: minutes\n```",
+				"variables": [
+					{
+						"name": "h",
+						"expression": "1..12"
+					},
+					{
+						"name": "q",
+						"expression": "0..11"
+					},
+					{
+						"name": "r",
+						"expression": "0..4"
+					},
+					{
+						"name": "m",
+						"expression": "eval:5*q+r"
+					}
+				],
+				"correction": {
+					"steps": [
+						"Aucun chiffre n'est écrit : le $12$ est en haut, le $3$ à droite, le $6$ en bas, le $9$ à gauche.",
+						"La grande aiguille montre les minutes, la petite montre l'heure.",
+						"La grande aiguille : {{m}} minute{{if:m>1|s|}}. On compte les grands repères de $5$ en $5$ depuis le $12$ : {{if:r>0|elle passe le repère du {{if:q==0|$12$|${{q}}$}} (${{eval:5*q}}$ minutes) et avance de ${{r}}$ petite{{if:r>1|s|}} graduation{{if:r>1|s|}}.|elle va sur le repère du {{if:q==0|$12$|${{q}}$}}.}}",
+						"{{if:m==0|La petite aiguille va pile sur le repère du ${{h}}$.|La petite aiguille va entre le repère du ${{h}}$ et celui du ${{eval:mod(h,12)+1}}$ : cette heure-là n'est pas encore passée.}}"
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "draft",
+		"title": "Place les aiguilles (cadran nu)",
+		"description": "Poser les aiguilles à la minute près (9 h 25 min) sur un cadran où seuls 12, 3, 6, 9 sont écrits, puis sans chiffre ; une heure de l'après-midi (15 h 37)",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["47 26"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"h": "9",
+					"m": "26",
+					"q": "5",
+					"r": "1"
+				},
+				"description": "BO : 9 h 26",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["26 45"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"h": "9",
+					"m": "26",
+					"q": "5",
+					"r": "1"
+				},
+				"description": "Erreur : 9 h 26, aiguilles inversées",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["47 25"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"h": "9",
+					"m": "26",
+					"q": "5",
+					"r": "1"
+				},
+				"description": "Erreur : 9 h 26, grande sur le 5 (25)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["50 26"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"h": "9",
+					"m": "26",
+					"q": "5",
+					"r": "1"
+				},
+				"description": "Erreur : 9 h 26, petite sur le 10",
+				"variationIndex": 0
+			},
+			{
+				"answers": [""],
+				"expected": {
+					"status": "empty"
+				},
+				"variables": {
+					"h": "9",
+					"m": "26",
+					"q": "5",
+					"r": "1"
+				},
+				"description": "Rien placé : case vide",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["18 37"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"h": "3",
+					"m": "37",
+					"q": "7",
+					"r": "2",
+					"hh": "15"
+				},
+				"description": "15 h 37",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["15 37"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"h": "3",
+					"m": "37",
+					"q": "7",
+					"r": "2",
+					"hh": "15"
+				},
+				"description": "Erreur : 15 h 37, petite pile sur le 3",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["18 15"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"h": "3",
+					"m": "37",
+					"q": "7",
+					"r": "2",
+					"hh": "15"
+				},
+				"description": "Erreur : 15 h 37, grande sur 15",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["35 0"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"h": "7",
+					"m": "0",
+					"q": "0",
+					"r": "0"
+				},
+				"description": "Sans chiffre, 7 h juste",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["24 48"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"h": "4",
+					"m": "48",
+					"q": "9",
+					"r": "3"
+				},
+				"description": "Sans chiffre, 4 h 48",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["29 48"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"h": "4",
+					"m": "48",
+					"q": "9",
+					"r": "3"
+				},
+				"description": "Erreur : 4 h 48 placé 5 h 48",
+				"variationIndex": 2
+			}
+		],
+		"classification_node_id": null
+	},
+	{
+		"id": "f3f00294-bee8-4d32-9a8b-f0218828dc76",
+		"type": "fill_in_blanks",
+		"options": {
+			"constraints": {
+				"zeros": "off"
+			}
+		},
+		"precision": null,
+		"grades": ["CM1"],
+		"delay": 120,
+		"level": 6,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{d}}"
+					}
+				],
+				"statement": "{{if:k==1|La sortie au musée|{{if:k==2|La séance de cinéma|{{if:k==3|Le match|La randonnée}}}}}} commence et finit aux heures montrées. Combien de temps a-t-{{if:k==3|il|elle}} duré ?\n\n```horloge\nheure: {{if:a==0|{{h}} h|{{h}} h {{a}}}} ; {{if:b==0|{{eval:h+1}} h|{{eval:h+1}} h {{b}}}}\nchiffres: tous\ngraduations: minutes\nlégendes: Début ; Fin\n```\n\nDurée : $?~\\text{min}$.",
+				"variables": [
+					{
+						"name": "k",
+						"expression": "1..4"
+					},
+					{
+						"name": "h",
+						"expression": "1..11"
+					},
+					{
+						"name": "a",
+						"expression": "31..59"
+					},
+					{
+						"name": "b",
+						"expression": "1..29"
+					},
+					{
+						"name": "m1",
+						"expression": "eval:60-a"
+					},
+					{
+						"name": "d",
+						"expression": "eval:60-a+b"
+					}
+				],
+				"correction": {
+					"steps": [
+						"Début : {{if:a==0|${{h}}~\\text{h}$|${{h}}~\\text{h}~{{if:a<10|0{{a}}|{{a}}}}$}}. Fin : {{if:b==0|${{eval:h+1}}~\\text{h}$|${{eval:h+1}}~\\text{h}~{{if:b<10|0{{b}}|{{b}}}}$}}.",
+						"De {{if:a==0|${{h}}~\\text{h}$|${{h}}~\\text{h}~{{if:a<10|0{{a}}|{{a}}}}$}} à ${{eval:h+1}}~\\text{h}$ : $60 - {{a}} = {{m1}}$ minutes. Puis de ${{eval:h+1}}~\\text{h}$ à {{if:b==0|${{eval:h+1}}~\\text{h}$|${{eval:h+1}}~\\text{h}~{{if:b<10|0{{b}}|{{b}}}}$}} : ${{b}}$ minutes.",
+						"${{m1}} + {{b}} = {{d}}$ : cela fait $\\textcolor{{{color:primary.0}}}{{{d}}~\\text{min}}$."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{n}}"
+					},
+					{
+						"expectedAnswer": "{{c}}"
+					}
+				],
+				"statement": "{{if:k==1|La sortie au musée|{{if:k==2|La séance de cinéma|{{if:k==3|Le match|La randonnée}}}}}} commence et finit aux heures montrées. Combien de temps a-t-{{if:k==3|il|elle}} duré ?\n\n```horloge\nheure: {{if:a==0|{{h}} h|{{h}} h {{a}}}} ; {{if:mf==0|{{hf}} h|{{hf}} h {{mf}}}}\nchiffres: tous\ngraduations: minutes\nlégendes: Début ; Fin\n```\n\nDurée : $?~\\text{h}~?~\\text{min}$.",
+				"variables": [
+					{
+						"name": "k",
+						"expression": "1..4"
+					},
+					{
+						"name": "h",
+						"expression": "7..14"
+					},
+					{
+						"name": "a",
+						"expression": "1..59"
+					},
+					{
+						"name": "n",
+						"expression": "1..3"
+					},
+					{
+						"name": "c",
+						"expression": "1..59"
+					},
+					{
+						"name": "d",
+						"expression": "eval:60*n+c"
+					},
+					{
+						"name": "t1",
+						"expression": "eval:60*h+a+d"
+					},
+					{
+						"name": "hf",
+						"expression": "eval:floor(t1/60)"
+					},
+					{
+						"name": "mf",
+						"expression": "eval:mod(t1,60)"
+					},
+					{
+						"name": "m1",
+						"expression": "eval:60-a"
+					},
+					{
+						"name": "hp",
+						"expression": "eval:hf-h-1"
+					},
+					{
+						"name": "s",
+						"expression": "eval:m1+mf"
+					},
+					{
+						"name": "dh",
+						"expression": "eval:hp+floor(s/60)"
+					},
+					{
+						"name": "dm",
+						"expression": "eval:mod(s,60)"
+					}
+				],
+				"correction": {
+					"steps": [
+						"Début : {{if:a==0|${{h}}~\\text{h}$|${{h}}~\\text{h}~{{if:a<10|0{{a}}|{{a}}}}$}}. Fin : {{if:mf==0|${{hf}}~\\text{h}$|${{hf}}~\\text{h}~{{if:mf<10|0{{mf}}|{{mf}}}}$}}.",
+						"On avance d'instant en instant, sans poser de soustraction.",
+						"De {{if:a==0|${{h}}~\\text{h}$|${{h}}~\\text{h}~{{if:a<10|0{{a}}|{{a}}}}$}} à ${{eval:h+1}}~\\text{h}$ : $60 - {{a}} = {{m1}}$ minutes.",
+						"{{if:hp>0|De ${{eval:h+1}}~\\text{h}$ à ${{hf}}~\\text{h}$ : ${{hp}}~\\text{h}$.|}}{{if:mf>0| De ${{hf}}~\\text{h}$ à {{if:mf==0|${{hf}}~\\text{h}$|${{hf}}~\\text{h}~{{if:mf<10|0{{mf}}|{{mf}}}}$}} : ${{mf}}$ minutes.|}}",
+						"{{if:s>=60|Les minutes : ${{m1}} + {{mf}} = {{s}}$, soit $1~\\text{h}~{{eval:s-60}}~\\text{min}$. |}}En tout : $\\textcolor{{{color:primary.0}}}{{{dh}}~\\text{h}~{{dm}}~\\text{min}}$."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{n}}"
+					},
+					{
+						"expectedAnswer": "{{c}}"
+					}
+				],
+				"statement": "{{if:k==1|La sortie au musée|{{if:k==2|La séance de cinéma|{{if:k==3|Le match|La randonnée}}}}}} commence et finit aux heures montrées. Combien de temps a-t-{{if:k==3|il|elle}} duré ?\n\n```horloge\nheure: {{if:a==0|{{h}} h|{{h}} h {{a}}}} ; {{if:mf==0|{{hf}} h|{{hf}} h {{mf}}}}\nchiffres: tous\ngraduations: minutes\ncadran: 24\nlégendes: Début ; Fin\n```\n\nDurée : $?~\\text{h}~?~\\text{min}$.",
+				"variables": [
+					{
+						"name": "k",
+						"expression": "1..4"
+					},
+					{
+						"name": "h",
+						"expression": "13..19"
+					},
+					{
+						"name": "a",
+						"expression": "1..59"
+					},
+					{
+						"name": "n",
+						"expression": "1..2"
+					},
+					{
+						"name": "c",
+						"expression": "1..59"
+					},
+					{
+						"name": "d",
+						"expression": "eval:60*n+c"
+					},
+					{
+						"name": "t1",
+						"expression": "eval:60*h+a+d"
+					},
+					{
+						"name": "hf",
+						"expression": "eval:floor(t1/60)"
+					},
+					{
+						"name": "mf",
+						"expression": "eval:mod(t1,60)"
+					},
+					{
+						"name": "m1",
+						"expression": "eval:60-a"
+					},
+					{
+						"name": "hp",
+						"expression": "eval:hf-h-1"
+					},
+					{
+						"name": "s",
+						"expression": "eval:m1+mf"
+					},
+					{
+						"name": "dh",
+						"expression": "eval:hp+floor(s/60)"
+					},
+					{
+						"name": "dm",
+						"expression": "eval:mod(s,60)"
+					}
+				],
+				"correction": {
+					"steps": [
+						"Début : {{if:a==0|${{h}}~\\text{h}$|${{h}}~\\text{h}~{{if:a<10|0{{a}}|{{a}}}}$}}. Fin : {{if:mf==0|${{hf}}~\\text{h}$|${{hf}}~\\text{h}~{{if:mf<10|0{{mf}}|{{mf}}}}$}}.",
+						"On avance d'instant en instant, sans poser de soustraction.",
+						"De {{if:a==0|${{h}}~\\text{h}$|${{h}}~\\text{h}~{{if:a<10|0{{a}}|{{a}}}}$}} à ${{eval:h+1}}~\\text{h}$ : $60 - {{a}} = {{m1}}$ minutes.",
+						"{{if:hp>0|De ${{eval:h+1}}~\\text{h}$ à ${{hf}}~\\text{h}$ : ${{hp}}~\\text{h}$.|}}{{if:mf>0| De ${{hf}}~\\text{h}$ à {{if:mf==0|${{hf}}~\\text{h}$|${{hf}}~\\text{h}~{{if:mf<10|0{{mf}}|{{mf}}}}$}} : ${{mf}}$ minutes.|}}",
+						"{{if:s>=60|Les minutes : ${{m1}} + {{mf}} = {{s}}$, soit $1~\\text{h}~{{eval:s-60}}~\\text{min}$. |}}En tout : $\\textcolor{{{color:primary.0}}}{{{dh}}~\\text{h}~{{dm}}~\\text{min}}$."
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "draft",
+		"title": "Combien de temps a-t-il duré ? (heures et minutes)",
+		"description": "Durée entre deux horloges à la minute près : 8 h 52 → 9 h 17 ; 8 h 52 → 11 h 37 ; l'après-midi sur un cadran de 24 h",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["25"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "52",
+					"b": "17",
+					"d": "25",
+					"h": "8",
+					"k": "1",
+					"m1": "8"
+				},
+				"description": "8 h 52 → 9 h 17 = 25 min",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["65"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "52",
+					"b": "17",
+					"d": "25",
+					"h": "8",
+					"k": "1",
+					"m1": "8"
+				},
+				"description": "Erreur : 917 − 852 = 65",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["35"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "52",
+					"b": "17",
+					"d": "25",
+					"h": "8",
+					"k": "1",
+					"m1": "8"
+				},
+				"description": "Erreur : 52 − 17 = 35",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["08"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "57",
+					"b": "5",
+					"d": "8",
+					"h": "8",
+					"k": "2",
+					"m1": "3"
+				},
+				"description": "8 h 57 → 9 h 05 = 8 min, écrit « 08 »",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["2", "45"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "52",
+					"c": "45",
+					"d": "165",
+					"h": "8",
+					"k": "2",
+					"n": "2",
+					"s": "45",
+					"dh": "2",
+					"dm": "45",
+					"hf": "11",
+					"hp": "2",
+					"m1": "8",
+					"mf": "37",
+					"t1": "697"
+				},
+				"description": "BO : 8 h 52 → 11 h 37 = 2 h 45 min",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["2", "85"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "52",
+					"c": "45",
+					"d": "165",
+					"h": "8",
+					"k": "2",
+					"n": "2",
+					"s": "45",
+					"dh": "2",
+					"dm": "45",
+					"hf": "11",
+					"hp": "2",
+					"m1": "8",
+					"mf": "37",
+					"t1": "697"
+				},
+				"description": "Erreur : soustraction décimale, 2 h 85",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["3", "15"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "52",
+					"c": "45",
+					"d": "165",
+					"h": "8",
+					"k": "2",
+					"n": "2",
+					"s": "45",
+					"dh": "2",
+					"dm": "45",
+					"hf": "11",
+					"hp": "2",
+					"m1": "8",
+					"mf": "37",
+					"t1": "697"
+				},
+				"description": "Erreur : 11 − 8 = 3 h, 52 − 37 = 15 min",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["3", "45"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "52",
+					"c": "45",
+					"d": "165",
+					"h": "8",
+					"k": "2",
+					"n": "2",
+					"s": "45",
+					"dh": "2",
+					"dm": "45",
+					"hf": "11",
+					"hp": "2",
+					"m1": "8",
+					"mf": "37",
+					"t1": "697"
+				},
+				"description": "Erreur : 3 h 45 (heure entamée comptée)",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["1", "15"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "10",
+					"c": "15",
+					"d": "75",
+					"h": "9",
+					"k": "4",
+					"n": "1",
+					"s": "75",
+					"dh": "1",
+					"dm": "15",
+					"hf": "10",
+					"hp": "0",
+					"m1": "50",
+					"mf": "25",
+					"t1": "625"
+				},
+				"description": "9 h 10 → 10 h 25 = 1 h 15 min (sans passer l'heure en minutes)",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["1", "25"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "40",
+					"c": "25",
+					"d": "85",
+					"h": "15",
+					"k": "3",
+					"n": "1",
+					"s": "25",
+					"dh": "1",
+					"dm": "25",
+					"hf": "17",
+					"hp": "1",
+					"m1": "20",
+					"mf": "5",
+					"t1": "1025"
+				},
+				"description": "Cadran de 24 h : 15 h 40 → 17 h 05 = 1 h 25 min",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["1", "65"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "40",
+					"c": "25",
+					"d": "85",
+					"h": "15",
+					"k": "3",
+					"n": "1",
+					"s": "25",
+					"dh": "1",
+					"dm": "25",
+					"hf": "17",
+					"hp": "1",
+					"m1": "20",
+					"mf": "5",
+					"t1": "1025"
+				},
+				"description": "Erreur : 1705 − 1540 = 1 h 65",
+				"variationIndex": 2
+			}
+		],
+		"classification_node_id": null
+	}
+]

@@ -21,10 +21,10 @@
  * compile pipeline simple.
  */
 
-import type { MathNode } from '$lib/mathAST/types';
-import type { PiecewisePiece } from '$lib/mathAST/types';
-import { legacyDecimalCommas } from '$lib/mathAST/parser/custom/legacy-decimal-commas';
-import { parseCustom, piecewise, logicalAnd, relation, getVariables } from '$lib/mathAST';
+import type { MathNode } from '#lib/mathAST/types.ts';
+import type { PiecewisePiece } from '#lib/mathAST/types.ts';
+import { legacyDecimalCommas } from '#lib/mathAST/parser/custom/legacy-decimal-commas.ts';
+import { parseCustom, piecewise, logicalAnd, relation, getVariables } from '#lib/mathAST/index.ts';
 import type { SymbolTable } from './symbol-table';
 import { DslRuntimeError } from './errors';
 

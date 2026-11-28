@@ -40,8 +40,8 @@ import {
 	parseConstructionAnswer,
 	serializeConstructionAnswer
 } from '../answer';
-import { readConstructionHeader } from '$lib/ubumark/parser/construction-parser';
-import type { ConstructionTool } from '$lib/ubumark/types/construction';
+import { readConstructionHeader } from '#lib/ubumark/parser/construction-parser.ts';
+import type { ConstructionTool } from '#lib/ubumark/types/construction.ts';
 
 // ============================================================================
 // FIGURES

@@ -1,6 +1,6 @@
 """Écrit les 2 modèles du lot 12 du CE2 (constructions) dans scripts/questions/ce2-12/.
 
-Phase 0 validée par David le 2026-11-06 (§ 18 du journal `docs/wip/questions-ce2-progress.md`,
+Phase 0 validée par David le 2026-11-06 (§ 18 du journal `docs/archive/wip/questions-ce2-progress.md`,
 « je suis tes recos », puis « lot 12 sans cercle »). Bornes `cycle2.json` : CE2-070 (reproduire ou
 construire carré, rectangle, triangle, triangle rectangle, cercle, sur tout support, règle graduée,
 équerre, compas). Ce que la case « figure » vérifie aujourd'hui :

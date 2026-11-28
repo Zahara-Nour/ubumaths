@@ -7,7 +7,7 @@
 import { describe, it, expect, afterEach } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import HintReference from '../HintReference.svelte';
-import type { ExerciseHint } from '$lib/exercises/types';
+import type { ExerciseHint } from '#lib/exercises/types.ts';
 
 let screens: Awaited<ReturnType<typeof render>>[] = [];
 afterEach(async () => {

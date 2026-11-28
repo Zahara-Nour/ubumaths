@@ -15,10 +15,10 @@ import {
 	endpointToNumber,
 	isPositiveInfinityEndpoint,
 	isNegativeInfinityEndpoint
-} from '$lib/math/intervals';
+} from '#lib/math/intervals/index.ts';
 import { infinity } from '../../factory';
 import { numericNode } from '../../common/numeric';
-import type { IntervalDomain, EndpointType } from '$lib/math/intervals/types';
+import type { IntervalDomain, EndpointType } from '#lib/math/intervals/types.ts';
 
 // =============================================================================
 // Helpers

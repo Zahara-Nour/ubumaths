@@ -21,7 +21,7 @@ import type {
 	PrecisionType,
 	ConstraintOptions,
 	ValidationRule
-} from '$lib/questions/types';
+} from '#lib/questions/types.ts';
 import type { SchoolLevel } from '../common/step-renderer-base';
 
 // =============================================================================

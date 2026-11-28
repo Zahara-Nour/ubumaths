@@ -16,7 +16,7 @@ import { deleteTestAuthUsers } from './database/postgres-client';
 import { TestData } from './database/test-data-factory';
 import { createAuthenticatedClient } from './database/supabase-client';
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { Database } from '$lib/types/database';
+import type { Database } from '#lib/types/database.ts';
 
 // ---------------------------------------------------------------------------
 // Type aliases for the new tables (not yet in generated database.ts)
@@ -475,8 +475,9 @@ export async function createEvaluationTask(
 export async function cleanupCompetenceTestData(): Promise<void> {
 	const service = createServiceRoleClient();
 
-	// Step 0: les points de test de getKnowledgeSkill — leurs tags d'abord (clé étrangère en
-	// RESTRICT), puis les points (leurs états d'élèves partent en cascade).
+	// Step 0: les points de test de getKnowledgeSkill — leurs tags, les états des élèves et la
+	// couverture des séances d'abord (clés en RESTRICT / NO ACTION depuis L112 : supprimer un
+	// point travaillé est refusé), puis les points.
 	const { data: testPoints } = await service
 		.from('curriculum_points')
 		.select('id')
@@ -487,6 +488,8 @@ export async function cleanupCompetenceTestData(): Promise<void> {
 			.from('question_template_points' as never)
 			.delete()
 			.in('point_id', testPointIds);
+		await service.from('student_point_state').delete().in('point_id', testPointIds);
+		await service.from('journal_entry_points').delete().in('point_id', testPointIds);
 		const { data: deleted } = await service
 			.from('curriculum_points')
 			.delete()
@@ -617,7 +620,13 @@ export type SkillAttemptsEndpointResult = {
 export async function callSkillAttemptsEndpoint(
 	supabase: SupabaseClient<Database>,
 	user: import('@supabase/supabase-js').User,
-	body: { template_id: string; success: boolean; with_help?: boolean; phase_blocage?: string }
+	body: {
+		template_id: string;
+		success: boolean;
+		with_help?: boolean;
+		phase_blocage?: string;
+		place?: string;
+	}
 ): Promise<SkillAttemptsEndpointResult> {
 	const { vi } = await import('vitest');
 	const { POST } = await import('../../src/routes/api/skill-attempts/+server');
@@ -633,7 +642,8 @@ export async function callSkillAttemptsEndpoint(
 	const request = new Request('http://localhost/api/skill-attempts', {
 		method: 'POST',
 		headers: { 'Content-Type': 'application/json' },
-		body: JSON.stringify(body)
+		// Lieu exigé par l'API (ADR 0038) : Flash-cards par défaut
+		body: JSON.stringify({ place: 'flash_cards', ...body })
 	});
 
 	try {

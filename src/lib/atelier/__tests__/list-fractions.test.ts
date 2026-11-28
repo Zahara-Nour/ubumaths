@@ -11,7 +11,7 @@ import { Atelier } from '../atelier.svelte';
 import { CalcDesk } from '../desk.svelte';
 import { isList, type ListObject } from '../types';
 import { listChart } from '../chart';
-import { buildStatChartScene, type BarScene } from '$lib/ubumark/utils/stat-chart-scene';
+import { buildStatChartScene, type BarScene } from '#lib/ubumark/utils/stat-chart-scene.ts';
 
 function listOf(definition: string): ListObject {
 	const atelier = new Atelier();

@@ -1,5 +1,13 @@
 import { expect, test, type Page } from '@playwright/test';
-import { calc, card, cardLocator, normalizeLatex, openAtelier } from './helpers/atelier';
+import {
+	calc,
+	card,
+	cardLocator,
+	normalizeLatex,
+	openAtelier,
+	showCards,
+	leavePanelAlone
+} from './helpers/atelier';
 import { openView, setConsole } from './helpers/grille';
 
 /**
@@ -21,10 +29,21 @@ test.beforeEach(async ({ page }) => {
 	await openAtelier(page);
 });
 
-/** Ouvre la Géométrie, console fermée */
+/**
+ * L'échelle de la vue, en pixels par unité, prise à l'ouverture de la Géométrie.
+ * La vue la garde quand la toile change de taille : au téléphone, « Mes objets »,
+ * ouvert tant qu'il est vide, se replie au premier objet et la toile grandit
+ * (242 → 388 px à 393 × 659) ; la vue se recentre sans changer d'échelle.
+ */
+const scaleAtOpening = new WeakMap<Page, number>();
+
+/** Ouvre la Géométrie, console fermée, et note l'échelle de la vue */
 async function openFigure(page: Page): Promise<void> {
 	await openView(page, 'Géométrie');
 	await setConsole(page, false);
+	const box = await page.locator('.figure .toile').boundingBox();
+	if (box === null) throw new Error('toile introuvable');
+	scaleAtOpening.set(page, Math.min(Math.floor(box.width), Math.floor(box.height)) / UNITS_ACROSS);
 }
 
 /** Les définitions préparées dans la console, puis la Géométrie ouverte */
@@ -34,12 +53,16 @@ async function prepare(page: Page, lines: string[]): Promise<void> {
 	await openFigure(page);
 }
 
-/** Le point de l'écran du point (x ; y) du repère : origine au centre, repère orthonormé */
+/**
+ * Le point de l'écran du point (x ; y) du repère : origine au centre de la toile
+ * d'aujourd'hui, échelle de l'ouverture (`scaleAtOpening`), repère orthonormé
+ */
 async function screenOf(page: Page, x: number, y: number): Promise<{ x: number; y: number }> {
 	const box = await page.locator('.figure .toile').boundingBox();
 	if (box === null) throw new Error('toile introuvable');
 	const [width, height] = [Math.floor(box.width), Math.floor(box.height)];
-	const pixelsPerUnit = Math.min(width, height) / UNITS_ACROSS;
+	const pixelsPerUnit = scaleAtOpening.get(page);
+	if (pixelsPerUnit === undefined) throw new Error('Géométrie pas ouverte par openFigure');
 	return { x: box.x + width / 2 + x * pixelsPerUnit, y: box.y + height / 2 - y * pixelsPerUnit };
 }
 
@@ -301,7 +324,7 @@ test('#1627 — petit point de couleur, cartes sans nature, console en bas, noms
 	const history = page.locator('ol.historique');
 	const atBottom = () =>
 		history.evaluate((list) => {
-			let box: HTMLElement | null = list;
+			let box: Element | null = list;
 			while (box !== null && box.scrollHeight <= box.clientHeight) box = box.parentElement;
 			// Une console qui ne défile pas ne prouverait rien : il faut un conteneur qui déborde
 			return box !== null && box.scrollHeight - box.scrollTop - box.clientHeight < 4;
@@ -312,6 +335,7 @@ test('#1627 — petit point de couleur, cartes sans nature, console en bas, noms
 test('#1546 — téléphone (390 px) : « Mes objets » replié, la place rendue, le compte suit', async ({
 	page
 }) => {
+	leavePanelAlone(page);
 	await page.setViewportSize({ width: 390, height: 844 });
 	// Atelier vide : panneau déplié, sans flèche
 	const panel = page.getByRole('complementary').filter({ hasText: 'Mes objets' });
@@ -338,6 +362,8 @@ test('#1546 — téléphone (390 px) : « Mes objets » replié, la place rendue
 
 	// La toile de Géométrie ; un point posé à la barre d'outils : 3 objets, toujours replié
 	await openFigure(page);
+	// Le bouton « Signaler » du serveur de dev (jamais en prod) couvre l'outil Point à 390 px
+	await page.addStyleTag({ content: 'button[aria-controls="signaler-dev"] { display: none; }' });
 	await chooseTool(page, 'Point');
 	await clickAt(page, -3, -3);
 	await expect(panel).toContainText('3 objets');
@@ -352,12 +378,17 @@ test('#1546 — téléphone (390 px) : « Mes objets » replié, la place rendue
 	await expect(f.locator('math-field')).toBeVisible();
 });
 
-test('#1546 — ordinateur : rien ne change, « Mes objets » déplié sans flèche', async ({ page }) => {
-	await calc(page, 'A = (1 ; 2)');
-	await calc(page, 'B = (3 ; 0)');
-	await page.reload();
-	const panel = page.getByRole('complementary').filter({ hasText: 'Mes objets' });
-	await expect(panel).toBeVisible();
-	await expect(cardLocator(page, 'A')).toBeVisible();
-	await expect(panel.getByRole('button', { name: 'Mes objets', exact: true })).toHaveCount(0);
-});
+test(
+	'#1546 — ordinateur : rien ne change, « Mes objets » déplié sans flèche',
+	{ tag: '@bureau' },
+	async ({ page }) => {
+		await calc(page, 'A = (1 ; 2)');
+		await calc(page, 'B = (3 ; 0)');
+		await page.reload();
+		await showCards(page, { afterLoad: true });
+		const panel = page.getByRole('complementary').filter({ hasText: 'Mes objets' });
+		await expect(panel).toBeVisible();
+		await expect(cardLocator(page, 'A')).toBeVisible();
+		await expect(panel.getByRole('button', { name: 'Mes objets', exact: true })).toHaveCount(0);
+	}
+);

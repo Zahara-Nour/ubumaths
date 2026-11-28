@@ -1,0 +1,302 @@
+{
+	"id": "776c4918-08a1-4208-a898-8af3f4cccf79",
+	"title": "A privé de B",
+	"description": "A = {1 ; 3 ; 5 ; 7}, B = {5 ; 7 ; 10 ; 12} : écrire A \\ B, B \\ A ; A ⊂ B donne A \\ B = ∅ (pièges : A \\ B et B \\ A échangés, A ∩ B à la place)",
+	"grades": ["2"],
+	"level": 2,
+	"delay": 60,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "On note $A=\\{ {{p}};{{q}};{{r}};{{s}} \\}$ et $B=\\{ {{r}};{{s}};{{u}};{{v}} \\}$.\n\nÉcris cet ensemble entre accolades, en séparant les éléments par des points-virgules (par exemple $\\{1;3;5\\}$) ; l'ensemble vide s'écrit $\\varnothing$.\n\n$$A\\setminus B=?$$",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "1..5"
+				},
+				{
+					"name": "h",
+					"expression": "1..3"
+				},
+				{
+					"name": "q",
+					"expression": "eval:(p)+(h)"
+				},
+				{
+					"name": "r",
+					"expression": "eval:(q)+(h)"
+				},
+				{
+					"name": "s",
+					"expression": "eval:(r)+(h)"
+				},
+				{
+					"name": "u",
+					"expression": "eval:(s)+(h)+1"
+				},
+				{
+					"name": "v",
+					"expression": "eval:(u)+(h)"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "\\{ {{p}};{{q}} \\}",
+					"answerKind": "intervalles"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$A\\setminus B$ se lit « $A$ **privé de** $B$ » : ce sont les éléments de $A$ qui ne sont **pas** dans $B$. Si $B\\subset A$, c'est le complémentaire de $B$ dans $A$.",
+					"${{r}}$ et ${{s}}$ sont dans $B$ : on les retire de $A$. Il reste $A\\setminus B=\\textcolor{{{color:primary.0}}}{\\{ {{p}};{{q}} \\}}$."
+				]
+			}
+		},
+		{
+			"statement": "On note $A=\\{ {{p}};{{q}};{{r}};{{s}} \\}$ et $B=\\{ {{r}};{{s}};{{u}};{{v}} \\}$.\n\nÉcris cet ensemble entre accolades, en séparant les éléments par des points-virgules (par exemple $\\{1;3;5\\}$) ; l'ensemble vide s'écrit $\\varnothing$.\n\n$$B\\setminus A=?$$",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "1..5"
+				},
+				{
+					"name": "h",
+					"expression": "1..3"
+				},
+				{
+					"name": "q",
+					"expression": "eval:(p)+(h)"
+				},
+				{
+					"name": "r",
+					"expression": "eval:(q)+(h)"
+				},
+				{
+					"name": "s",
+					"expression": "eval:(r)+(h)"
+				},
+				{
+					"name": "u",
+					"expression": "eval:(s)+(h)+1"
+				},
+				{
+					"name": "v",
+					"expression": "eval:(u)+(h)"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "\\{ {{u}};{{v}} \\}",
+					"answerKind": "intervalles"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$A\\setminus B$ se lit « $A$ **privé de** $B$ » : ce sont les éléments de $A$ qui ne sont **pas** dans $B$. Si $B\\subset A$, c'est le complémentaire de $B$ dans $A$.",
+					"Ici on part de $B$ : ${{r}}$ et ${{s}}$ sont dans $A$, on les retire de $B$. Il reste $B\\setminus A=\\textcolor{{{color:primary.0}}}{\\{ {{u}};{{v}} \\}}$."
+				]
+			}
+		},
+		{
+			"statement": "On note $A=\\{ {{r}};{{s}} \\}$ et $B=\\{ {{p}};{{r}};{{s}};{{u}} \\}$.\n\nÉcris cet ensemble entre accolades, en séparant les éléments par des points-virgules (par exemple $\\{1;3;5\\}$) ; l'ensemble vide s'écrit $\\varnothing$.\n\n$$A\\setminus B=?$$",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "1..5"
+				},
+				{
+					"name": "h",
+					"expression": "1..3"
+				},
+				{
+					"name": "q",
+					"expression": "eval:(p)+(h)"
+				},
+				{
+					"name": "r",
+					"expression": "eval:(q)+(h)"
+				},
+				{
+					"name": "s",
+					"expression": "eval:(r)+(h)"
+				},
+				{
+					"name": "u",
+					"expression": "eval:(s)+(h)+1"
+				},
+				{
+					"name": "v",
+					"expression": "eval:(u)+(h)"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "\\varnothing",
+					"answerKind": "intervalles"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$A\\setminus B$ se lit « $A$ **privé de** $B$ » : ce sont les éléments de $A$ qui ne sont **pas** dans $B$. Si $B\\subset A$, c'est le complémentaire de $B$ dans $A$.",
+					"Tous les éléments de $A$ sont dans $B$ ($A\\subset B$) : on les retire tous, il ne reste rien.",
+					"$A\\setminus B=\\textcolor{{{color:primary.0}}}{\\varnothing}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "A \\ B = {1 ; 3}",
+			"variationIndex": 0,
+			"variables": {
+				"p": "1",
+				"h": "2",
+				"q": "3",
+				"r": "5",
+				"s": "7",
+				"u": "10",
+				"v": "12"
+			},
+			"answers": ["\\{1;3\\}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Dans le désordre",
+			"variationIndex": 0,
+			"variables": {
+				"p": "1",
+				"h": "2",
+				"q": "3",
+				"r": "5",
+				"s": "7",
+				"u": "10",
+				"v": "12"
+			},
+			"answers": ["\\{3;1\\}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : B \\ A",
+			"variationIndex": 0,
+			"variables": {
+				"p": "1",
+				"h": "2",
+				"q": "3",
+				"r": "5",
+				"s": "7",
+				"u": "10",
+				"v": "12"
+			},
+			"answers": ["\\{10;12\\}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : A ∩ B",
+			"variationIndex": 0,
+			"variables": {
+				"p": "1",
+				"h": "2",
+				"q": "3",
+				"r": "5",
+				"s": "7",
+				"u": "10",
+				"v": "12"
+			},
+			"answers": ["\\{5;7\\}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "B \\ A = {10 ; 12}",
+			"variationIndex": 1,
+			"variables": {
+				"p": "1",
+				"h": "2",
+				"q": "3",
+				"r": "5",
+				"s": "7",
+				"u": "10",
+				"v": "12"
+			},
+			"answers": ["\\{10;12\\}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : A \\ B",
+			"variationIndex": 1,
+			"variables": {
+				"p": "1",
+				"h": "2",
+				"q": "3",
+				"r": "5",
+				"s": "7",
+				"u": "10",
+				"v": "12"
+			},
+			"answers": ["\\{1;3\\}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "A ⊂ B : ∅",
+			"variationIndex": 2,
+			"variables": {
+				"p": "1",
+				"h": "2",
+				"q": "3",
+				"r": "5",
+				"s": "7",
+				"u": "10",
+				"v": "12"
+			},
+			"answers": ["\\varnothing"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : B \\ A",
+			"variationIndex": 2,
+			"variables": {
+				"p": "1",
+				"h": "2",
+				"q": "3",
+				"r": "5",
+				"s": "7",
+				"u": "10",
+				"v": "12"
+			},
+			"answers": ["\\{1;10\\}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : {0}",
+			"variationIndex": 2,
+			"variables": {
+				"p": "1",
+				"h": "2",
+				"q": "3",
+				"r": "5",
+				"s": "7",
+				"u": "10",
+				"v": "12"
+			},
+			"answers": ["\\{0\\}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

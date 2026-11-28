@@ -6,14 +6,14 @@
 	réservée au prof depuis le chantier demo-debug (phase 8).
 -->
 <script lang="ts">
-	import { lore } from '$lib/config/lore';
+	import { lore } from '#lib/config/lore.ts';
 	import { onMount } from 'svelte';
 	import type { Component } from 'svelte';
 	import type { PageData } from './$types';
-	import BackLink from '$lib/components/navigation/BackLink.svelte';
-	import MySelect from '$lib/components/MySelect.svelte';
-	import { Button } from '$lib/components/ui/button';
-	import { toaster } from '$lib/stores/toaster.svelte';
+	import BackLink from '#lib/components/navigation/BackLink.svelte';
+	import MySelect from '#lib/components/MySelect.svelte';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
 
 	let { data }: { data: PageData } = $props();
 
@@ -157,7 +157,7 @@ montre(M)
 	// ─── Init ───────────────────────────────────────────────────
 
 	onMount(async () => {
-		const mod = await import('$lib/constructions-v2/components/ScriptEditor.svelte');
+		const mod = await import('#lib/constructions-v2/components/ScriptEditor.svelte');
 		EditorComponent = mod.default;
 		await loadSavedScripts();
 	});

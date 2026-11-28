@@ -1,0 +1,789 @@
+{
+	"id": "a5f9a809-4f1e-4b40-a340-13540500cf3f",
+	"title": "Calculs de fractions avec priorités",
+	"description": "Calculer en respectant les priorités : 1/2 + 3/2 × 4/9 = 7/6, produit ± produit, (1/2 + 1)/(3/4 − 1) = −6, 3/(2 − 1/4) = 12/7 (pièges : calculer de gauche à droite, oublier de simplifier)",
+	"grades": ["2"],
+	"level": 6,
+	"delay": 120,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Donne le résultat sous la forme d'une fraction irréductible.\n\n$\\dfrac{ {{a}} }{ {{b}} }{{if:s==0|+|-}}\\dfrac{ {{c}} }{ {{b}} }\\times\\dfrac{ {{d}} }{ {{f}} }=?$",
+			"variables": [
+				{
+					"name": "b",
+					"expression": "2..5"
+				},
+				{
+					"name": "a",
+					"expression": "1..7"
+				},
+				{
+					"name": "c",
+					"expression": "1..7"
+				},
+				{
+					"name": "d",
+					"expression": "2..9"
+				},
+				{
+					"name": "f",
+					"expression": "2..9"
+				},
+				{
+					"name": "s",
+					"expression": "0|1"
+				},
+				{
+					"name": "g1",
+					"expression": "eval:gcd(c*d,b*f)"
+				},
+				{
+					"name": "P1",
+					"expression": "eval:c*d/g1"
+				},
+				{
+					"name": "P2",
+					"expression": "eval:b*f/g1"
+				},
+				{
+					"name": "L",
+					"expression": "eval:b*P2/gcd(b,P2)"
+				},
+				{
+					"name": "A",
+					"expression": "eval:a*L/b"
+				},
+				{
+					"name": "B",
+					"expression": "eval:P1*L/P2"
+				},
+				{
+					"name": "X",
+					"expression": "eval:a*L/b+(1-2*s)*P1*L/P2"
+				},
+				{
+					"name": "Y",
+					"expression": "eval:L"
+				},
+				{
+					"name": "g",
+					"expression": "eval:gcd(abs(X),Y)"
+				},
+				{
+					"name": "N",
+					"expression": "eval:(X)/(g)"
+				},
+				{
+					"name": "D",
+					"expression": "eval:(Y)/(g)"
+				}
+			],
+			"conditions": ["gcd(a,b)==1", "gcd(c,b)==1", "gcd(d,f)==1", "P2!=1", "X!=0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:D==1|{{N}}|{{if:N<0|-}}\\frac{ {{eval:abs(N)}} }{ {{D}} }}}",
+					"expectedErrors": [
+						{
+							"answer": "\\frac{ {{eval:(a+(1-2*s)*c)*d}} }{ {{eval:b*f}} }",
+							"message": "Tu as calculé de gauche à droite : la multiplication passe avant l'addition et la soustraction.",
+							"label": "Calcul de gauche à droite"
+						},
+						{
+							"answer": "\\frac{ {{eval:a+(1-2*s)*c*d}} }{ {{eval:b+b*f}} }",
+							"message": "Tu as combiné les numérateurs entre eux et les dénominateurs entre eux : il faut d'abord un même dénominateur.",
+							"label": "Numérateurs et dénominateurs combinés entre eux"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"La multiplication passe **avant** l'addition et la soustraction. On calcule d'abord le produit :",
+					"$$\\dfrac{ {{c}} }{ {{b}} }\\times\\dfrac{ {{d}} }{ {{f}} }=\\dfrac{ {{c}}\\times{{d}} }{ {{b}}\\times{{f}} }=\\dfrac{ {{eval:c*d}} }{ {{eval:b*f}} }{{if:g1>1|=\\dfrac{ {{P1}} }{ {{P2}} }}}$$",
+					"Puis, au dénominateur commun ${{L}}$ :",
+					"$$\\dfrac{ {{a}} }{ {{b}} }{{if:s==0|+|-}}\\dfrac{ {{P1}} }{ {{P2}} }=\\dfrac{ {{A}} }{ {{L}} }{{if:s==0|+|-}}\\dfrac{ {{B}} }{ {{L}} }={{if:X<0|-}}\\dfrac{ {{eval:abs(X)}} }{ {{Y}} }$$",
+					"{{if:g>1|On simplifie par ${{g}}$ : ${{if:X<0|-}}\\dfrac{ {{eval:abs(X)}} }{ {{Y}} }=\\textcolor{{{color:primary.0}}}{{{if:D==1|{{N}}|{{if:N<0|-}}\\dfrac{ {{eval:abs(N)}} }{ {{D}} }}}}$.|Le résultat $\\textcolor{{{color:primary.0}}}{{{if:D==1|{{N}}|{{if:N<0|-}}\\dfrac{ {{eval:abs(N)}} }{ {{D}} }}}}$ ne se simplifie pas.}}"
+				]
+			},
+			"hint": "La multiplication passe avant l'addition et la soustraction : commence par le produit."
+		},
+		{
+			"statement": "Donne le résultat sous la forme d'une fraction irréductible.\n\n$\\dfrac{ {{a}} }{ {{b}} }\\times\\dfrac{ {{c}} }{ {{d}} }{{if:s==0|+|-}}\\dfrac{ {{m}} }{ {{n}} }\\times\\dfrac{ {{p}} }{ {{q}} }=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..5"
+				},
+				{
+					"name": "b",
+					"expression": "2..6"
+				},
+				{
+					"name": "c",
+					"expression": "1..9"
+				},
+				{
+					"name": "d",
+					"expression": "2..6"
+				},
+				{
+					"name": "m",
+					"expression": "1..5"
+				},
+				{
+					"name": "n",
+					"expression": "2..6"
+				},
+				{
+					"name": "p",
+					"expression": "1..9"
+				},
+				{
+					"name": "q",
+					"expression": "2..6"
+				},
+				{
+					"name": "s",
+					"expression": "0|1"
+				},
+				{
+					"name": "g1",
+					"expression": "eval:gcd(a*c,b*d)"
+				},
+				{
+					"name": "P1",
+					"expression": "eval:a*c/g1"
+				},
+				{
+					"name": "P2",
+					"expression": "eval:b*d/g1"
+				},
+				{
+					"name": "g2",
+					"expression": "eval:gcd(m*p,n*q)"
+				},
+				{
+					"name": "Q1",
+					"expression": "eval:m*p/g2"
+				},
+				{
+					"name": "Q2",
+					"expression": "eval:n*q/g2"
+				},
+				{
+					"name": "L",
+					"expression": "eval:P2*Q2/gcd(P2,Q2)"
+				},
+				{
+					"name": "A",
+					"expression": "eval:P1*L/P2"
+				},
+				{
+					"name": "B",
+					"expression": "eval:Q1*L/Q2"
+				},
+				{
+					"name": "X",
+					"expression": "eval:P1*L/P2+(1-2*s)*Q1*L/Q2"
+				},
+				{
+					"name": "Y",
+					"expression": "eval:L"
+				},
+				{
+					"name": "g",
+					"expression": "eval:gcd(abs(X),Y)"
+				},
+				{
+					"name": "N",
+					"expression": "eval:(X)/(g)"
+				},
+				{
+					"name": "D",
+					"expression": "eval:(Y)/(g)"
+				}
+			],
+			"conditions": [
+				"gcd(a,b)==1",
+				"gcd(c,d)==1",
+				"gcd(m,n)==1",
+				"gcd(p,q)==1",
+				"P2!=1",
+				"Q2!=1",
+				"X!=0"
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:D==1|{{N}}|{{if:N<0|-}}\\frac{ {{eval:abs(N)}} }{ {{D}} }}}",
+					"expectedErrors": [
+						{
+							"answer": "\\frac{ {{eval:(a*c*n+(1-2*s)*m*b*d)*p}} }{ {{eval:b*d*n*q}} }",
+							"message": "Tu as calculé de gauche à droite : la multiplication passe avant l'addition et la soustraction.",
+							"label": "Calcul de gauche à droite"
+						},
+						{
+							"answer": "\\frac{ {{eval:P1*Q2+Q1*P2}} }{ {{eval:P2*Q2}} }",
+							"message": "Tu as additionné les deux produits au lieu de les soustraire.",
+							"label": "Addition au lieu de soustraction"
+						},
+						{
+							"answer": "\\frac{ {{eval:P1+(1-2*s)*Q1}} }{ {{eval:P2+Q2}} }",
+							"message": "Tu as combiné les numérateurs entre eux et les dénominateurs entre eux : il faut d'abord un même dénominateur.",
+							"label": "Numérateurs et dénominateurs combinés entre eux"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"La multiplication passe **avant** l'addition et la soustraction. On calcule d'abord les deux produits :",
+					"$$\\dfrac{ {{a}} }{ {{b}} }\\times\\dfrac{ {{c}} }{ {{d}} }=\\dfrac{ {{eval:a*c}} }{ {{eval:b*d}} }{{if:g1>1|=\\dfrac{ {{P1}} }{ {{P2}} }}}\\qquad\\dfrac{ {{m}} }{ {{n}} }\\times\\dfrac{ {{p}} }{ {{q}} }=\\dfrac{ {{eval:m*p}} }{ {{eval:n*q}} }{{if:g2>1|=\\dfrac{ {{Q1}} }{ {{Q2}} }}}$$",
+					"Puis, au dénominateur commun ${{L}}$ :",
+					"$$\\dfrac{ {{P1}} }{ {{P2}} }{{if:s==0|+|-}}\\dfrac{ {{Q1}} }{ {{Q2}} }=\\dfrac{ {{A}} }{ {{L}} }{{if:s==0|+|-}}\\dfrac{ {{B}} }{ {{L}} }={{if:X<0|-}}\\dfrac{ {{eval:abs(X)}} }{ {{Y}} }$$",
+					"{{if:g>1|On simplifie par ${{g}}$ : ${{if:X<0|-}}\\dfrac{ {{eval:abs(X)}} }{ {{Y}} }=\\textcolor{{{color:primary.0}}}{{{if:D==1|{{N}}|{{if:N<0|-}}\\dfrac{ {{eval:abs(N)}} }{ {{D}} }}}}$.|Le résultat $\\textcolor{{{color:primary.0}}}{{{if:D==1|{{N}}|{{if:N<0|-}}\\dfrac{ {{eval:abs(N)}} }{ {{D}} }}}}$ ne se simplifie pas.}}"
+				]
+			},
+			"hint": "La multiplication passe avant l'addition et la soustraction : calcule d'abord les deux produits."
+		},
+		{
+			"statement": "Donne le résultat sous la forme d'une fraction irréductible.\n\n$\\dfrac{ \\dfrac{ {{a}} }{ {{b}} }+{{n}} }{ \\dfrac{ {{c}} }{ {{d}} }-{{m}} }=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..5"
+				},
+				{
+					"name": "b",
+					"expression": "2..6"
+				},
+				{
+					"name": "n",
+					"expression": "1..3"
+				},
+				{
+					"name": "c",
+					"expression": "1..9"
+				},
+				{
+					"name": "d",
+					"expression": "2..6"
+				},
+				{
+					"name": "m",
+					"expression": "1|2"
+				},
+				{
+					"name": "T1",
+					"expression": "eval:a+n*b"
+				},
+				{
+					"name": "nb",
+					"expression": "eval:n*b"
+				},
+				{
+					"name": "md",
+					"expression": "eval:m*d"
+				},
+				{
+					"name": "B1",
+					"expression": "eval:c-m*d"
+				},
+				{
+					"name": "aB",
+					"expression": "eval:abs(c-m*d)"
+				},
+				{
+					"name": "X",
+					"expression": "eval:(a+n*b)*d*sign(c-m*d)"
+				},
+				{
+					"name": "Y",
+					"expression": "eval:b*abs(c-m*d)"
+				},
+				{
+					"name": "g",
+					"expression": "eval:gcd(abs(X),Y)"
+				},
+				{
+					"name": "N",
+					"expression": "eval:(X)/(g)"
+				},
+				{
+					"name": "D",
+					"expression": "eval:(Y)/(g)"
+				}
+			],
+			"conditions": ["gcd(a,b)==1", "gcd(c,d)==1", "c!=m*d"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:D==1|{{N}}|{{if:N<0|-}}\\frac{ {{eval:abs(N)}} }{ {{D}} }}}",
+					"expectedErrors": [
+						{
+							"answer": "\\frac{ {{eval:abs(X)}} }{ {{Y}} }",
+							"message": "Ton résultat a le mauvais signe : regarde le signe du dénominateur de la grande fraction.",
+							"label": "Signe oublié"
+						},
+						{
+							"answer": "\\frac{ {{eval:T1*B1}} }{ {{eval:b*d}} }",
+							"message": "Tu as multiplié le numérateur par le dénominateur : une fraction est une division.",
+							"label": "Multiplié au lieu de divisé"
+						},
+						{
+							"answer": "\\frac{ {{eval:b*B1}} }{ {{eval:T1*d}} }",
+							"message": "Tu as divisé le dénominateur par le numérateur : c'est le numérateur qu'on divise par le dénominateur.",
+							"label": "Division renversée"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"On calcule séparément le numérateur et le dénominateur.",
+					"$$\\dfrac{ {{a}} }{ {{b}} }+{{n}}=\\dfrac{ {{a}} }{ {{b}} }+\\dfrac{ {{nb}} }{ {{b}} }=\\dfrac{ {{T1}} }{ {{b}} }\\qquad\\dfrac{ {{c}} }{ {{d}} }-{{m}}=\\dfrac{ {{c}} }{ {{d}} }-\\dfrac{ {{md}} }{ {{d}} }={{if:B1<0|-}}\\dfrac{ {{eval:abs(B1)}} }{ {{d}} }$$",
+					"Diviser par une fraction, c'est multiplier par son **inverse**. L'inverse de ${{if:B1<0|-}}\\dfrac{ {{eval:abs(B1)}} }{ {{d}} }$ est ${{if:B1<0|-}}{{if:aB==1|{{d}}|\\dfrac{ {{d}} }{ {{aB}} }}}$.",
+					"$$\\dfrac{ \\dfrac{ {{a}} }{ {{b}} }+{{n}} }{ \\dfrac{ {{c}} }{ {{d}} }-{{m}} }=\\dfrac{ {{T1}} }{ {{b}} }\\times{{if:B1<0|\\left(}}{{if:B1<0|-}}{{if:aB==1|{{d}}|\\dfrac{ {{d}} }{ {{aB}} }}}{{if:B1<0|\\right)}}={{if:X<0|-}}\\dfrac{ {{eval:abs(X)}} }{ {{Y}} }$$",
+					"{{if:g>1|On simplifie par ${{g}}$ : ${{if:X<0|-}}\\dfrac{ {{eval:abs(X)}} }{ {{Y}} }=\\textcolor{{{color:primary.0}}}{{{if:D==1|{{N}}|{{if:N<0|-}}\\dfrac{ {{eval:abs(N)}} }{ {{D}} }}}}$.|Le résultat $\\textcolor{{{color:primary.0}}}{{{if:D==1|{{N}}|{{if:N<0|-}}\\dfrac{ {{eval:abs(N)}} }{ {{D}} }}}}$ ne se simplifie pas.}}"
+				]
+			},
+			"hint": "Calcule séparément le numérateur et le dénominateur de la grande fraction, puis divise l'un par l'autre."
+		},
+		{
+			"statement": "Donne le résultat sous la forme d'une fraction irréductible.\n\n$\\dfrac{ {{n}} }{ {{m}}-\\dfrac{ {{c}} }{ {{d}} } }=?$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "1..9"
+				},
+				{
+					"name": "m",
+					"expression": "1..3"
+				},
+				{
+					"name": "c",
+					"expression": "1..9"
+				},
+				{
+					"name": "d",
+					"expression": "2..7"
+				},
+				{
+					"name": "md",
+					"expression": "eval:m*d"
+				},
+				{
+					"name": "B1",
+					"expression": "eval:m*d-c"
+				},
+				{
+					"name": "X",
+					"expression": "eval:n*d"
+				},
+				{
+					"name": "Y",
+					"expression": "eval:m*d-c"
+				},
+				{
+					"name": "g",
+					"expression": "eval:gcd(abs(X),Y)"
+				},
+				{
+					"name": "N",
+					"expression": "eval:(X)/(g)"
+				},
+				{
+					"name": "D",
+					"expression": "eval:(Y)/(g)"
+				}
+			],
+			"conditions": ["gcd(c,d)==1", "c<m*d", "B1>1"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:D==1|{{N}}|{{if:N<0|-}}\\frac{ {{eval:abs(N)}} }{ {{D}} }}}",
+					"expectedErrors": [
+						{
+							"answer": "\\frac{ {{eval:n*d-c*m}} }{ {{eval:m*d}} }",
+							"message": "Tu as divisé par le premier nombre du dénominateur seulement : calcule d'abord tout le dénominateur.",
+							"label": "Dénominateur pas calculé d'abord"
+						},
+						{
+							"answer": "\\frac{ {{eval:n*B1}} }{ {{d}} }",
+							"message": "Tu as multiplié par le dénominateur au lieu de diviser : diviser par une fraction, c'est multiplier par son inverse.",
+							"label": "Multiplié au lieu de divisé"
+						},
+						{
+							"answer": "\\frac{ {{n}} }{ {{eval:B1*d}} }",
+							"message": "Tu as divisé par les deux nombres de la fraction : diviser par une fraction, c'est multiplier par son inverse.",
+							"label": "Divisé par le numérateur et le dénominateur"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"On calcule d'abord le dénominateur :",
+					"$${{m}}-\\dfrac{ {{c}} }{ {{d}} }=\\dfrac{ {{md}} }{ {{d}} }-\\dfrac{ {{c}} }{ {{d}} }=\\dfrac{ {{B1}} }{ {{d}} }$$",
+					"Diviser par une fraction, c'est multiplier par son **inverse**. Diviser par $\\dfrac{ {{B1}} }{ {{d}} }$, c'est multiplier par $\\dfrac{ {{d}} }{ {{B1}} }$ :",
+					"$$\\dfrac{ {{n}} }{ {{m}}-\\dfrac{ {{c}} }{ {{d}} } }={{n}}\\times\\dfrac{ {{d}} }{ {{B1}} }=\\dfrac{ {{X}} }{ {{Y}} }$$",
+					"{{if:g>1|On simplifie par ${{g}}$ : ${{if:X<0|-}}\\dfrac{ {{eval:abs(X)}} }{ {{Y}} }=\\textcolor{{{color:primary.0}}}{{{if:D==1|{{N}}|{{if:N<0|-}}\\dfrac{ {{eval:abs(N)}} }{ {{D}} }}}}$.|Le résultat $\\textcolor{{{color:primary.0}}}{{{if:D==1|{{N}}|{{if:N<0|-}}\\dfrac{ {{eval:abs(N)}} }{ {{D}} }}}}$ ne se simplifie pas.}}"
+				]
+			},
+			"hint": "Calcule d'abord le dénominateur ${{m}}-\\dfrac{ {{c}} }{ {{d}} }$, puis divise ${{n}}$ par ce résultat."
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "1/2 + 3/2 × 4/9 = 7/6",
+			"variationIndex": 0,
+			"variables": {
+				"b": "2",
+				"a": "1",
+				"c": "3",
+				"d": "4",
+				"f": "9",
+				"s": "0"
+			},
+			"answers": ["\\frac{7}{6}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : de gauche à droite (8/9)",
+			"variationIndex": 0,
+			"variables": {
+				"b": "2",
+				"a": "1",
+				"c": "3",
+				"d": "4",
+				"f": "9",
+				"s": "0"
+			},
+			"answers": ["\\frac{8}{9}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Non simplifiée : 14/12",
+			"variationIndex": 0,
+			"variables": {
+				"b": "2",
+				"a": "1",
+				"c": "3",
+				"d": "4",
+				"f": "9",
+				"s": "0"
+			},
+			"answers": ["\\frac{14}{12}"],
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["reducedFractions"]
+			}
+		},
+		{
+			"description": "2/3 × 9/4 − 5/6 × 3/5 = 1",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"b": "3",
+				"c": "9",
+				"d": "4",
+				"m": "5",
+				"n": "6",
+				"p": "3",
+				"q": "5",
+				"s": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 3/2 + 1/2 = 2 (signe)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"b": "3",
+				"c": "9",
+				"d": "4",
+				"m": "5",
+				"n": "6",
+				"p": "3",
+				"q": "5",
+				"s": "1"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "(1/2 + 1)/(3/4 − 1) = −6",
+			"variationIndex": 2,
+			"variables": {
+				"a": "1",
+				"b": "2",
+				"n": "1",
+				"c": "3",
+				"d": "4",
+				"m": "1"
+			},
+			"answers": ["-6"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 6 (signe oublié)",
+			"variationIndex": 2,
+			"variables": {
+				"a": "1",
+				"b": "2",
+				"n": "1",
+				"c": "3",
+				"d": "4",
+				"m": "1"
+			},
+			"answers": ["6"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 3/2 × (−1/4) = −3/8 (multiplié au lieu de divisé)",
+			"variationIndex": 2,
+			"variables": {
+				"a": "1",
+				"b": "2",
+				"n": "1",
+				"c": "3",
+				"d": "4",
+				"m": "1"
+			},
+			"answers": ["-\\frac{3}{8}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "3/(2 − 1/4) = 12/7",
+			"variationIndex": 3,
+			"variables": {
+				"n": "3",
+				"m": "2",
+				"c": "1",
+				"d": "4"
+			},
+			"answers": ["\\frac{12}{7}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 3/2 − 1/4 = 5/4",
+			"variationIndex": 3,
+			"variables": {
+				"n": "3",
+				"m": "2",
+				"c": "1",
+				"d": "4"
+			},
+			"answers": ["\\frac{5}{4}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur prévue : (1/2 + 3/2) × 4/9 = 8/9",
+			"variationIndex": 0,
+			"variables": {
+				"b": "2",
+				"a": "1",
+				"c": "3",
+				"d": "4",
+				"f": "9",
+				"s": "0"
+			},
+			"answers": ["\\frac{8}{9}"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as calculé de gauche à droite : la multiplication passe avant l'addition et la soustraction."
+			}
+		},
+		{
+			"description": "Erreur prévue : 1/2 + 12/18 → 13/20",
+			"variationIndex": 0,
+			"variables": {
+				"b": "2",
+				"a": "1",
+				"c": "3",
+				"d": "4",
+				"f": "9",
+				"s": "0"
+			},
+			"answers": ["\\frac{13}{20}"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as combiné les numérateurs entre eux et les dénominateurs entre eux : il faut d'abord un même dénominateur."
+			}
+		},
+		{
+			"description": "Erreur prévue : (2/3 × 9/4 − 5/6) × 3/5",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"b": "3",
+				"c": "9",
+				"d": "4",
+				"m": "5",
+				"n": "6",
+				"p": "3",
+				"q": "5",
+				"s": "1"
+			},
+			"answers": ["\\frac{2}{5}"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as calculé de gauche à droite : la multiplication passe avant l'addition et la soustraction."
+			}
+		},
+		{
+			"description": "Erreur prévue : 3/2 + 1/2 = 2",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"b": "3",
+				"c": "9",
+				"d": "4",
+				"m": "5",
+				"n": "6",
+				"p": "3",
+				"q": "5",
+				"s": "1"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as additionné les deux produits au lieu de les soustraire."
+			}
+		},
+		{
+			"description": "Erreur prévue : (3 − 1)/(2 + 2)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"b": "3",
+				"c": "9",
+				"d": "4",
+				"m": "5",
+				"n": "6",
+				"p": "3",
+				"q": "5",
+				"s": "1"
+			},
+			"answers": ["\\frac{1}{2}"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as combiné les numérateurs entre eux et les dénominateurs entre eux : il faut d'abord un même dénominateur."
+			}
+		},
+		{
+			"description": "Erreur prévue : 6 au lieu de −6",
+			"variationIndex": 2,
+			"variables": {
+				"a": "1",
+				"b": "2",
+				"n": "1",
+				"c": "3",
+				"d": "4",
+				"m": "1"
+			},
+			"answers": ["6"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Ton résultat a le mauvais signe : regarde le signe du dénominateur de la grande fraction."
+			}
+		},
+		{
+			"description": "Erreur prévue : 3/2 × (−1/4) = −3/8",
+			"variationIndex": 2,
+			"variables": {
+				"a": "1",
+				"b": "2",
+				"n": "1",
+				"c": "3",
+				"d": "4",
+				"m": "1"
+			},
+			"answers": ["-\\frac{3}{8}"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as multiplié le numérateur par le dénominateur : une fraction est une division."
+			}
+		},
+		{
+			"description": "Erreur prévue : (−1/4) ÷ (3/2) = −1/6",
+			"variationIndex": 2,
+			"variables": {
+				"a": "1",
+				"b": "2",
+				"n": "1",
+				"c": "3",
+				"d": "4",
+				"m": "1"
+			},
+			"answers": ["-\\frac{1}{6}"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as divisé le dénominateur par le numérateur : c'est le numérateur qu'on divise par le dénominateur."
+			}
+		},
+		{
+			"description": "Erreur prévue : 3/2 − 1/4 = 5/4",
+			"variationIndex": 3,
+			"variables": {
+				"n": "3",
+				"m": "2",
+				"c": "1",
+				"d": "4"
+			},
+			"answers": ["\\frac{5}{4}"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as divisé par le premier nombre du dénominateur seulement : calcule d'abord tout le dénominateur."
+			}
+		},
+		{
+			"description": "Erreur prévue : 3 × 7/4 = 21/4",
+			"variationIndex": 3,
+			"variables": {
+				"n": "3",
+				"m": "2",
+				"c": "1",
+				"d": "4"
+			},
+			"answers": ["\\frac{21}{4}"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as multiplié par le dénominateur au lieu de diviser : diviser par une fraction, c'est multiplier par son inverse."
+			}
+		},
+		{
+			"description": "Erreur prévue : 3 ÷ 7 ÷ 4 = 3/28",
+			"variationIndex": 3,
+			"variables": {
+				"n": "3",
+				"m": "2",
+				"c": "1",
+				"d": "4"
+			},
+			"answers": ["\\frac{3}{28}"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as divisé par les deux nombres de la fraction : diviser par une fraction, c'est multiplier par son inverse."
+			}
+		}
+	]
+}

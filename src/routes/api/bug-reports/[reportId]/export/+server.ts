@@ -11,12 +11,15 @@
 
 import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireAuth } from '$lib/server/middleware/auth';
-import { generateClaudeCodeExport } from '$lib/server/bug-report-export';
-import { attachReportErrors } from '$lib/server/bug-report-errors';
-import { signBugReportScreenshot, EXPORT_SIGNED_URL_TTL } from '$lib/server/bug-report-screenshots';
+import { requireAuth } from '#lib/server/middleware/auth.ts';
+import { generateClaudeCodeExport } from '#lib/server/bug-report-export.ts';
+import { attachReportErrors } from '#lib/server/bug-report-errors.ts';
+import {
+	signBugReportScreenshot,
+	EXPORT_SIGNED_URL_TTL
+} from '#lib/server/bug-report-screenshots.ts';
 import { z } from 'zod';
-import { createServerLogger } from '$lib/utils/logger';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/bug-reports/[reportId]/export/+server');
 

@@ -67,6 +67,13 @@ export const SITEMAP_PAGES: SitemapPage[] = [
 		priority: 0.5,
 		changefreq: 'monthly'
 	},
+	{ path: '/tortue', title: 'La Tortue', priority: 0.7, changefreq: 'monthly' },
+	{
+		path: '/programmes-de-calcul',
+		title: 'Programmes de calcul',
+		priority: 0.7,
+		changefreq: 'monthly'
+	},
 	{ path: '/games', title: 'Jeux', priority: 0.8, changefreq: 'monthly' },
 	{ path: '/games/trio', title: 'Trio', priority: 0.6, changefreq: 'monthly' },
 	{ path: '/games/mathemo', title: 'Mathémo', priority: 0.6, changefreq: 'monthly' },
@@ -186,6 +193,18 @@ export const SITEMAP_EXCLUSIONS: SitemapExclusion[] = [
 	{ pattern: '/l/[code]', reason: 'lien court d’un QR code : redirige vers sa cible, en noindex' },
 	{ pattern: '/cahier/[token]/**', reason: 'cahier de textes ouvert par le jeton du professeur' },
 	{ pattern: '/cours/[token]/**', reason: 'cours d’une classe ouvert par le jeton du professeur' },
+	{
+		pattern: '/carnet/[token]/**',
+		reason: 'carnet de liaison d’un élève, ouvert par le lien d’un parent'
+	},
+	{
+		pattern: '/carnet/confirmer/[token]/**',
+		reason: 'confirmation de l’adresse d’un parent, ouverte par son courriel'
+	},
+	{
+		pattern: '/carnet/lien-perdu',
+		reason: 'carnet de liaison : un parent redemande son lien, en noindex'
+	},
 	{
 		pattern: '/figures/[id]',
 		reason: 'figure géométrique partagée par lien, en noindex (ADR 0027)'

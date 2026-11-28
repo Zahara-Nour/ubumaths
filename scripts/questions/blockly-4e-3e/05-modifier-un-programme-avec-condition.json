@@ -1,0 +1,183 @@
+{
+	"id": "d43fda5a-4526-4ae8-b628-293ff7292899",
+	"title": "Modifier un programme avec condition",
+	"description": "Changer le seuil ou la comparaison d'un « si », ou lui ajouter un « sinon ».",
+	"grades": ["4"],
+	"level": 2,
+	"delay": 300,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Le programme posé dans l'espace de travail affiche de combien le nombre choisi dépasse ${{p}}$ (et $0$ s'il ne le dépasse pas).\n\nModifie-le pour qu'il affiche de combien le nombre choisi dépasse ${{a}}$.\n\n```calcul\nniveau: 4e\nattendu: si nombre > {{a}} alors [ afficher nombre − {{a}} ] sinon [ afficher 0 ]\nessais: 3 ; {{p}} ; {{a}} ; {{b}} ; 30\ndépart: si nombre > {{p}} alors [ afficher nombre − {{p}} ] sinon [ afficher 0 ]\n```",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "5..8"
+				},
+				{
+					"name": "a",
+					"expression": "10..14"
+				},
+				{
+					"name": "b",
+					"expression": "eval:a+3"
+				}
+			],
+			"conditions": [],
+			"blanks": [],
+			"correction": {
+				"steps": [
+					"Le nombre ${{p}}$ apparaît **deux fois** : dans la condition et dans le calcul.",
+					"Il faut changer les deux : nombre $> {{a}}$, puis afficher nombre $-\\ {{a}}$.",
+					"Le « sinon » ne change pas : il affiche toujours $0$."
+				]
+			}
+		},
+		{
+			"statement": "Le programme posé dans l'espace de travail affiche $1$ quand le nombre choisi est **strictement** supérieur à ${{a}}$, et $0$ sinon.\n\nModifie-le pour qu'il affiche aussi $1$ quand le nombre choisi est **égal** à ${{a}}$.\n\n```calcul\nniveau: 4e\nattendu: si nombre ≥ {{a}} alors [ afficher 1 ] sinon [ afficher 0 ]\nessais: {{b}} ; {{a}} ; {{c}}\ndépart: si nombre > {{a}} alors [ afficher 1 ] sinon [ afficher 0 ]\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "5..15"
+				},
+				{
+					"name": "b",
+					"expression": "eval:a-1"
+				},
+				{
+					"name": "c",
+					"expression": "eval:a+1"
+				}
+			],
+			"conditions": [],
+			"blanks": [],
+			"correction": {
+				"steps": [
+					"Seul le cas nombre $= {{a}}$ doit changer.",
+					"On remplace la comparaison $>$ par $\\geq$ (« supérieur ou égal ») : nombre $\\geq {{a}}$.",
+					"Les deux branches, $1$ et $0$, ne changent pas."
+				]
+			}
+		},
+		{
+			"statement": "Le programme posé dans l'espace de travail affiche l'opposé du nombre choisi quand il est négatif, mais n'affiche **rien** sinon.\n\nModifie-le pour qu'il affiche le nombre lui-même quand il n'est pas négatif.\n\n```calcul\nniveau: 4e\nattendu: si nombre < 0 alors [ afficher 0 − nombre ] sinon [ afficher nombre ]\nessais: -7 ; -2 ; 0 ; 3 ; 12\ndépart: si nombre < 0 alors [ afficher 0 − nombre ]\n```",
+			"variables": [],
+			"conditions": [],
+			"blanks": [],
+			"correction": {
+				"steps": [
+					"Il manque un cas : quand la condition nombre $< 0$ est fausse.",
+					"On remplace le bloc « si … alors » par le bloc « si … alors … sinon » (on y glisse la condition et l'instruction déjà écrites).",
+					"Dans « sinon » : afficher nombre. Le programme affiche ainsi la distance du nombre à $0$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Seuil : référence",
+			"variationIndex": 0,
+			"variables": {
+				"p": "6",
+				"a": "12",
+				"b": "15"
+			},
+			"answers": ["si nombre > 12 alors [ afficher nombre − 12 ] sinon [ afficher 0 ]"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : seuil changé dans la condition seulement",
+			"variationIndex": 0,
+			"variables": {
+				"p": "6",
+				"a": "12",
+				"b": "15"
+			},
+			"answers": ["si nombre > 12 alors [ afficher nombre − 6 ] sinon [ afficher 0 ]"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : programme de départ",
+			"variationIndex": 0,
+			"variables": {
+				"p": "6",
+				"a": "12",
+				"b": "15"
+			},
+			"answers": ["si nombre > 6 alors [ afficher nombre − 6 ] sinon [ afficher 0 ]"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Égal : référence",
+			"variationIndex": 1,
+			"variables": {
+				"a": "9",
+				"b": "8",
+				"c": "10"
+			},
+			"answers": ["si nombre ≥ 9 alors [ afficher 1 ] sinon [ afficher 0 ]"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Égal : nombre > 8 (entiers)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "9",
+				"b": "8",
+				"c": "10"
+			},
+			"answers": ["si nombre > 8 alors [ afficher 1 ] sinon [ afficher 0 ]"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : = au lieu de ≥",
+			"variationIndex": 1,
+			"variables": {
+				"a": "9",
+				"b": "8",
+				"c": "10"
+			},
+			"answers": ["si nombre = 9 alors [ afficher 1 ] sinon [ afficher 0 ]"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Sinon : référence",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["si nombre < 0 alors [ afficher 0 − nombre ] sinon [ afficher nombre ]"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Sinon : autre écriture",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["si nombre ≥ 0 alors [ afficher nombre ] sinon [ afficher −1 × nombre ]"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : « sinon » qui affiche 0",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["si nombre < 0 alors [ afficher 0 − nombre ] sinon [ afficher 0 ]"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

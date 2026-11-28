@@ -1,0 +1,151 @@
+{
+	"id": "5dadd081-d6ba-4df6-be07-d42f4a27ade2",
+	"title": "Cours : arithmétique ou géométrique ? (situation)",
+	"description": "Accroissement constant ou taux constant : classer des situations en suites arithmétiques ou géométriques",
+	"grades": ["1_SPE"],
+	"level": 1,
+	"delay": 60,
+	"status": "draft",
+	"options": {
+		"courseQuestion": true
+	},
+	"shared": {},
+	"variations": [
+		{
+			"statement": "Associe chaque situation au type de suite qui la modélise.\n\n```associer\ngeste: étiquettes\n- Chaque mois, Léa ajoute ${{m}}~\\unit{€}$ dans sa tirelire. -> arithmétique\n- Un capital augmente de ${{t}}\\,\\%$ par an. -> géométrique\n- Chaque jour, un réservoir perd ${{v}}$ litres d'eau. -> arithmétique\n- Une population de bactéries double toutes les heures. -> géométrique\n- -> ni l'une ni l'autre\n```",
+			"variables": [
+				{
+					"name": "m",
+					"expression": "5..30"
+				},
+				{
+					"name": "t",
+					"expression": "2..9"
+				},
+				{
+					"name": "v",
+					"expression": "2..15"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Léa **ajoute** toujours ${{m}}~\\unit{€}$ : la suite est arithmétique de raison ${{m}}$.",
+					"Augmenter de ${{t}}\\,\\%$, c'est **multiplier** par $1+\\dfrac{ {{t}} }{100}$ : la suite est géométrique.",
+					"Le réservoir **perd** toujours ${{v}}$ litres : la suite est arithmétique de raison $-{{v}}$.",
+					"Doubler, c'est **multiplier** par $2$ : la suite est géométrique de raison $2$."
+				]
+			}
+		},
+		{
+			"statement": "Associe chaque situation au type de suite qui la modélise.\n\n```associer\ngeste: étiquettes\n- Chaque année, une voiture perd ${{r}}\\,\\%$ de sa valeur. -> géométrique\n- Chaque jour, un réservoir perd ${{v}}$ litres d'eau. -> arithmétique\n- Chaque mois, Léa ajoute ${{m}}~\\unit{€}$ dans sa tirelire. -> arithmétique\n- Un capital augmente de ${{t}}\\,\\%$ par an. -> géométrique\n- -> ni l'une ni l'autre\n```",
+			"variables": [
+				{
+					"name": "r",
+					"expression": "10..20"
+				},
+				{
+					"name": "v",
+					"expression": "2..15"
+				},
+				{
+					"name": "m",
+					"expression": "5..30"
+				},
+				{
+					"name": "t",
+					"expression": "2..9"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Baisser de ${{r}}\\,\\%$, c'est **multiplier** par $1-\\dfrac{ {{r}} }{100}$ : la suite est géométrique.",
+					"Le réservoir **perd** toujours ${{v}}$ litres : la suite est arithmétique de raison $-{{v}}$.",
+					"Léa **ajoute** toujours ${{m}}~\\unit{€}$ : la suite est arithmétique de raison ${{m}}$.",
+					"Augmenter de ${{t}}\\,\\%$, c'est **multiplier** par $1+\\dfrac{ {{t}} }{100}$ : la suite est géométrique."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Toutes les situations bien classées",
+			"variationIndex": 0,
+			"variables": {
+				"m": "10",
+				"t": "3",
+				"v": "5"
+			},
+			"answers": ["2", "0", "2", "0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : capital classé arithmétique",
+			"variationIndex": 0,
+			"variables": {
+				"m": "10",
+				"t": "3",
+				"v": "5"
+			},
+			"answers": ["2", "2", "2", "0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : arithmétique et géométrique inversées",
+			"variationIndex": 0,
+			"variables": {
+				"m": "10",
+				"t": "3",
+				"v": "5"
+			},
+			"answers": ["0", "2", "0", "2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : l'intrus partout",
+			"variationIndex": 0,
+			"variables": {
+				"m": "10",
+				"t": "3",
+				"v": "5"
+			},
+			"answers": ["1", "1", "1", "1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Toutes les situations bien classées",
+			"variationIndex": 1,
+			"variables": {
+				"m": "10",
+				"t": "3",
+				"v": "5",
+				"r": "12"
+			},
+			"answers": ["2", "0", "0", "2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : voiture classée arithmétique",
+			"variationIndex": 1,
+			"variables": {
+				"m": "10",
+				"t": "3",
+				"v": "5",
+				"r": "12"
+			},
+			"answers": ["0", "0", "0", "2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

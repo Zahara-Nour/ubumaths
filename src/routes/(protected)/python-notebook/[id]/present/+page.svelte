@@ -7,7 +7,7 @@
 	 * execution lock, decision of 2026-10-04) would leak from one notebook to
 	 * the next.
 	 */
-	import NotebookPresentation from '$lib/components/notebook/presentation/NotebookPresentation.svelte';
+	import NotebookPresentation from '#lib/components/notebook/presentation/NotebookPresentation.svelte';
 
 	let { data } = $props();
 </script>

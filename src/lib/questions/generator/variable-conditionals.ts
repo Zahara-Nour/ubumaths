@@ -16,7 +16,7 @@
 
 import type { ResolvedVariable } from '../types';
 import { ConditionSyntaxError, evaluateConditionStrict } from './condition-evaluator';
-import { AuthorExpressionError } from '$lib/ubumark/parameterization/resolver/variable-resolver';
+import { AuthorExpressionError } from '#lib/ubumark/parameterization/resolver/variable-resolver.ts';
 
 // Constantes
 

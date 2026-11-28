@@ -231,7 +231,7 @@ export interface ChapterDocument {
  *
  * Ce type traverse la frontière serveur/client (le composant de publication le
  * reçoit en prop) : il vit donc ici, d'où un composant peut importer — jamais
- * dans `$lib/server/**`, que SvelteKit interdit au code client.
+ * dans `#lib/server/**`, que SvelteKit interdit au code client.
  *
  * Ce ne sont PAS des noms de tables : la correspondance est tenue côté serveur,
  * dans une table fermée, pour qu'un formulaire ne puisse jamais désigner la

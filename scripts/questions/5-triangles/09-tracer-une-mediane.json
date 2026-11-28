@@ -1,0 +1,106 @@
+{
+	"id": "28cbee57-88e6-4180-a537-443b4963cc36",
+	"title": "Tracer une médiane d'un triangle",
+	"description": "Sur quadrillage : placer le milieu du côté opposé en comptant les carreaux, puis tracer la droite qui le joint au sommet",
+	"grades": ["5"],
+	"level": 8,
+	"delay": 240,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Trace la **médiane issue de $A$** du triangle $ABC$.\n\n```figure-a-completer\nfenetre: 0 ; 10 ; 0 ; 8\ngrille: 1\noutils: droite\nverifier: droite m = droite(A, M)\n---\n{{if:k==1|A = point(1, 6, etiquette=\"haut-gauche\")\nB = point(8, 5, etiquette=\"haut-droite\")\nC = point(2, 1, etiquette=\"bas-gauche\")\ntriangle(A, B, C)|{{if:k==2|A = point(9, 3, etiquette=\"bas-droite\")\nB = point(3, 7, etiquette=\"haut-gauche\")\nC = point(1, 1, etiquette=\"bas-gauche\")\ntriangle(A, B, C)|A = point(3, 7, etiquette=\"haut-gauche\")\nB = point(3, 1, etiquette=\"bas-gauche\")\nC = point(9, 3, etiquette=\"bas-droite\")\ntriangle(A, B, C)}}}}\nM = milieu(B, C, visible=faux)\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..3"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**La médiane issue de $A$** est la droite qui passe par $A$ et par le **milieu** $M$ du côté opposé $[BC]$.",
+					"Sur le quadrillage, on compte les carreaux de $B$ à $C$ : $M$ est à mi-chemin, en largeur comme en hauteur.",
+					"On trace la droite $(AM)$ : c'est la $\\textcolor{{{color:primary.0}}}{\\text{médiane issue de }A}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Triangle 1 : (AM)",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1"
+			},
+			"answers": ["droite(1;6;5;3)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Triangle 2 : (AM)",
+			"variationIndex": 0,
+			"variables": {
+				"k": "2"
+			},
+			"answers": ["droite(9;3;2;4)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Triangle 3 : (AM)",
+			"variationIndex": 0,
+			"variables": {
+				"k": "3"
+			},
+			"answers": ["droite(3;7;6;2)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : la hauteur issue de A",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1"
+			},
+			"answers": ["droite(1;6;3.615;2.077)"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : la médiatrice de [BC]",
+			"variationIndex": 0,
+			"variables": {
+				"k": "2"
+			},
+			"answers": ["droite(2;4;8;2)"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : la médiane issue de C",
+			"variationIndex": 0,
+			"variables": {
+				"k": "3"
+			},
+			"answers": ["droite(9;3;3;4)"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : rien de tracé",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1"
+			},
+			"answers": [""],
+			"expected": {
+				"status": "empty"
+			}
+		}
+	]
+}

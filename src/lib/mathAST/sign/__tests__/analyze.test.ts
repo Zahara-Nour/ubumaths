@@ -26,8 +26,8 @@ import {
 	closedEndpoint,
 	negInfinityEndpoint,
 	posInfinityEndpoint
-} from '$lib/math/intervals/factory';
-import { number } from '$lib/mathAST/factory';
+} from '#lib/math/intervals/factory.ts';
+import { number } from '#lib/mathAST/factory.ts';
 
 // =============================================================================
 // Helper Functions

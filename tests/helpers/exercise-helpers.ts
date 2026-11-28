@@ -11,10 +11,15 @@
  */
 
 import type { Page } from '@playwright/test';
-import type { Database } from '$lib/types/database';
+import type { Database } from '#lib/types/database.ts';
 
 type Exercise = Database['public']['Tables']['exercises']['Row'];
-type ExerciseInsert = Database['public']['Tables']['exercises']['Insert'];
+// L'API d'écriture prend la fiche d'identité ET le contenu de la version (ADR 0044)
+type ExerciseInsert = Database['public']['Tables']['exercises']['Insert'] &
+	Pick<
+		Database['public']['Tables']['exercise_versions']['Insert'],
+		'variations' | 'shared' | 'generic_functions'
+	>;
 
 // ============================================================================
 // AUTHENTICATION HELPERS

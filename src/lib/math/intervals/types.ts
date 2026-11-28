@@ -5,7 +5,7 @@
  * Supports any MathNode: numbers, rationals, radicals, pi, ln(2), etc.
  */
 
-import type { MathNode } from '$lib/mathAST/types';
+import type { MathNode } from '#lib/mathAST/types.ts';
 
 // =============================================================================
 // Endpoint Types

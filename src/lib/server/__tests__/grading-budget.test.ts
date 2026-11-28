@@ -17,9 +17,9 @@ import {
 	type GradingItem
 } from '../grading-budget';
 import { detailsWithinBudget } from '../corrected-detail';
-import { gradeOutOf20, gradeQuestion, type QuestionVerdict } from '$lib/questions/grading';
-import type { InstanceBlank, QuestionInstance } from '$lib/questions/types';
-import type { ResolvedMarkdown } from '$lib/ubumark';
+import { gradeOutOf20, gradeQuestion, type QuestionVerdict } from '#lib/questions/grading.ts';
+import type { InstanceBlank, QuestionInstance } from '#lib/questions/types.ts';
+import type { ResolvedMarkdown } from '#lib/ubumark/index.ts';
 
 // Fixtures
 function blanksInstance(blanks: InstanceBlank[]): QuestionInstance {

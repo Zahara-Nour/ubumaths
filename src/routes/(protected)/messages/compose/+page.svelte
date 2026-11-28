@@ -1,11 +1,11 @@
 <script lang="ts">
-	import { lore } from '$lib/config/lore';
-	import { privateMessages } from '$lib/stores/privateMessages.svelte';
-	import { Button } from '$lib/components/ui/button';
-	import { Input } from '$lib/components/ui/input';
-	import { Label } from '$lib/components/ui/label';
-	import RichTextEditor from '$lib/components/rich-text/RichTextEditor.svelte';
-	import MySelect from '$lib/components/MySelect.svelte';
+	import { lore } from '#lib/config/lore.ts';
+	import { privateMessages } from '#lib/stores/privateMessages.svelte.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import { Input } from '#lib/components/ui/input/index.ts';
+	import { Label } from '#lib/components/ui/label/index.ts';
+	import RichTextEditor from '#lib/components/rich-text/RichTextEditor.svelte';
+	import MySelect from '#lib/components/MySelect.svelte';
 	import {
 		Loader2,
 		Send,
@@ -20,14 +20,15 @@
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
-	import { toaster } from '$lib/stores/toaster.svelte';
-	import { uploadMultipleMessageAttachments } from '$lib/utils/file-upload';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
+	import { uploadMultipleMessageAttachments } from '#lib/utils/file-upload.ts';
 	import {
 		MESSAGE_ATTACHMENT_ACCEPT,
 		MESSAGE_ATTACHMENT_MAX_COUNT,
 		messageAttachmentRefusal
-	} from '$lib/utils/message-attachment-rules';
-	import UserAvatar from '$lib/components/UserAvatar.svelte';
+	} from '#lib/utils/message-attachment-rules.ts';
+	import UserAvatar from '#lib/components/UserAvatar.svelte';
+	import { messageRoleLabel } from '#lib/utils/message-reply.ts';
 
 	// Props
 	let { data } = $props();
@@ -49,6 +50,15 @@
 
 	const MAX_FILES = MESSAGE_ATTACHMENT_MAX_COUNT;
 
+	// Réponse : le destinataire, tel que la liste des destinataires permis le nomme.
+	// Absent de cette liste (compte de test, liste non chargée) : la réponse part
+	// quand même, le serveur décide et répond en français.
+	const replyRecipient = $derived(
+		replyToMessageId
+			? (privateMessages.recipients.find((r) => r.user_id === selectedRecipients[0]) ?? null)
+			: null
+	);
+
 	// Load recipients and draft on mount
 	onMount(() => {
 		privateMessages.loadRecipients();
@@ -69,12 +79,8 @@
 			if (replySubject) {
 				subject = replySubject;
 			}
-			// Pre-select the recipient (will be applied after recipients load)
-			setTimeout(() => {
-				if (!selectedRecipients.includes(recipientId)) {
-					selectedRecipients = [recipientId];
-				}
-			}, 100);
+			// Le destinataire d'une réponse est fixe : rien à choisir
+			selectedRecipients = [recipientId];
 		}
 
 		// Cleanup autosave timer on unmount
@@ -124,7 +130,10 @@
 			currentDraftId = draft.id;
 			subject = draft.subject || '';
 			content = draft.content || '';
-			selectedRecipients = draft.recipient_ids || [];
+			// Une réponse garde son destinataire, quel que soit le brouillon
+			if (!replyToMessageId) {
+				selectedRecipients = draft.recipient_ids || [];
+			}
 			isGroupMessage = draft.is_group_message || false;
 			selectedClassId = draft.class_id || undefined;
 		} catch (error) {
@@ -211,6 +220,12 @@
 			return;
 		}
 
+		// Le serveur attend le document de l'éditeur, jamais le HTML du brouillon
+		if (!contentJson) {
+			toaster.error('Le message n’a pas pu être préparé. Modifiez-le puis réessayez.');
+			return;
+		}
+
 		try {
 			isSending = true;
 
@@ -218,10 +233,7 @@
 			const messageId = await privateMessages.sendMessage({
 				recipientIds: isGroupMessage ? undefined : selectedRecipients,
 				subject: subject.trim(),
-				content: contentJson || {
-					type: 'doc',
-					content: [{ type: 'paragraph', content: [{ type: 'text', text: content }] }]
-				},
+				content: contentJson,
 				isGroupMessage,
 				classId: isGroupMessage ? selectedClassId! : undefined,
 				parentMessageId: replyToMessageId || undefined
@@ -537,60 +549,77 @@
 											Tout effacer
 										</Button>
 									</div>
-								{:else}
-									<span class="text-xs text-muted-foreground">
-										(Destinataire fixe pour la réponse)
-									</span>
 								{/if}
 							</div>
 
-							<div
-								class="max-h-48 overflow-y-auto rounded-md border border-border bg-card p-4"
-								class:opacity-75={replyToMessageId}
-							>
-								{#if privateMessages.recipients.length === 0}
-									<p class="py-4 text-center text-sm text-muted-foreground">
-										{#if privateMessages.userRole === 'student'}
-											Aucun {lore.entities.teacher} disponible. Vous devez être inscrit dans un {lore
-												.entities.class} pour envoyer des messages.
-										{:else if privateMessages.userRole === 'teacher'}
-											Aucun {lore.entities.student} disponible. Les {lore.entities.student}s doivent
-											être inscrits dans vos classes.
-										{:else}
-											Aucun destinataire disponible.
-										{/if}
-									</p>
-								{:else}
-									<div class="space-y-2">
-										{#each privateMessages.recipients as recipient (recipient.id)}
-											<label
-												class="flex cursor-pointer items-center gap-3 rounded p-2 transition-colors hover:bg-muted/50"
-												class:pointer-events-none={replyToMessageId}
+							{#if replyToMessageId}
+								<!-- Réponse : un seul destinataire, nommé, sans liste à parcourir -->
+								<div class="rounded-md border border-border bg-card p-4">
+									{#if replyRecipient}
+										<div class="flex items-center gap-2">
+											<UserAvatar
+												avatar_url={replyRecipient.avatar_url}
+												role={replyRecipient.role}
+												class="h-8 w-8"
+											/>
+											<span class="text-sm font-medium"
+												>{replyRecipient.full_name || 'Inconnu'}</span
 											>
-												<input
-													type="checkbox"
-													checked={selectedRecipients.includes(recipient.user_id)}
-													onchange={() => toggleRecipient(recipient.user_id)}
-													class="h-4 w-4"
-													disabled={replyToMessageId !== null}
-												/>
-												<div class="flex flex-1 items-center gap-2">
-													<UserAvatar
-														avatar_url={recipient.avatar_url}
-														role={recipient.role}
-														class="h-8 w-8"
+											<span class="text-xs text-muted-foreground"
+												>({messageRoleLabel(replyRecipient.role)})</span
+											>
+										</div>
+									{:else}
+										<p class="text-sm text-muted-foreground">L’auteur du message d’origine</p>
+									{/if}
+								</div>
+							{:else}
+								<div class="max-h-80 overflow-y-auto rounded-md border border-border bg-card p-4">
+									{#if privateMessages.recipients.length === 0}
+										<p class="py-4 text-center text-sm text-muted-foreground">
+											{#if privateMessages.userRole === 'student'}
+												Aucun {lore.entities.teacher} disponible. Vous devez être inscrit dans un {lore
+													.entities.class} pour envoyer des messages.
+											{:else if privateMessages.userRole === 'teacher'}
+												Aucun {lore.entities.student} disponible. Les {lore.entities.student}s
+												doivent être inscrits dans vos classes.
+											{:else}
+												Aucun destinataire disponible.
+											{/if}
+										</p>
+									{:else}
+										<div class="space-y-2">
+											{#each privateMessages.recipients as recipient (recipient.user_id)}
+												<label
+													class="flex cursor-pointer items-center gap-3 rounded p-2 transition-colors hover:bg-muted/50"
+												>
+													<input
+														type="checkbox"
+														checked={selectedRecipients.includes(recipient.user_id)}
+														onchange={() => toggleRecipient(recipient.user_id)}
+														class="h-4 w-4"
 													/>
-													<span class="text-sm font-medium">{recipient.full_name || 'Inconnu'}</span
-													>
-													<span class="text-xs text-muted-foreground">({recipient.role})</span>
-												</div>
-											</label>
-										{/each}
-									</div>
-								{/if}
-							</div>
+													<div class="flex flex-1 items-center gap-2">
+														<UserAvatar
+															avatar_url={recipient.avatar_url}
+															role={recipient.role}
+															class="h-8 w-8"
+														/>
+														<span class="text-sm font-medium"
+															>{recipient.full_name || 'Inconnu'}</span
+														>
+														<span class="text-xs text-muted-foreground"
+															>({messageRoleLabel(recipient.role)})</span
+														>
+													</div>
+												</label>
+											{/each}
+										</div>
+									{/if}
+								</div>
+							{/if}
 
-							{#if selectedRecipients.length > 0}
+							{#if selectedRecipients.length > 0 && !replyToMessageId}
 								<p class="text-sm text-muted-foreground">
 									{selectedRecipients.length} destinataire{selectedRecipients.length > 1 ? 's' : ''}
 									sélectionné{selectedRecipients.length > 1 ? 's' : ''}

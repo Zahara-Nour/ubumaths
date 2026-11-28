@@ -8,9 +8,9 @@
 	Google »).
 -->
 <script lang="ts">
-	import { lore } from '$lib/config/lore';
-	import MyCheckbox from '$lib/components/MyCheckbox.svelte';
-	import { ConfirmDialog } from '$lib/components/ui/confirm-dialog';
+	import { lore } from '#lib/config/lore.ts';
+	import MyCheckbox from '#lib/components/MyCheckbox.svelte';
+	import { ConfirmDialog } from '#lib/components/ui/confirm-dialog/index.ts';
 
 	// Types
 

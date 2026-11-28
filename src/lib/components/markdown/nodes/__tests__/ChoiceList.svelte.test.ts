@@ -9,7 +9,7 @@
 import { describe, it, expect } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import ChoiceList from '../ChoiceList.svelte';
-import type { ExpectedStatus } from '$lib/questions/expected-result';
+import type { ExpectedStatus } from '#lib/questions/expected-result.ts';
 
 type Item = { content: string; status?: ExpectedStatus; checked?: boolean };
 
@@ -84,5 +84,46 @@ describe('choix d’horloges (chantier horloge, décision 5)', () => {
 			expect(svg!.getBoundingClientRect().width / (96 / 2.54)).toBeCloseTo(3, 1);
 		}
 		expect(text(items[1])).toContain('coché à tort');
+	});
+});
+
+describe('choix qui ne sont qu’une formule $$…$$ (QCM « Comparer deux nombres entiers »)', () => {
+	const symboles: Item[] = [{ content: '$$<$$' }, { content: '$$=$$' }, { content: '$$>$$' }];
+
+	it('liste non cliquable (catalogue, panier) : formules rendues, jamais le code', async () => {
+		const main = document.body.appendChild(document.createElement('main'));
+		const { container } = await render(ChoiceList, { target: main, props: { items: symboles } });
+		await expect.poll(() => container.querySelectorAll('li math-div, li math-span').length).toBe(3);
+		expect(text(container)).not.toContain('$$');
+	});
+
+	it('liste corrigée : formules rendues, jamais le code', async () => {
+		const { container } = await show(
+			symboles.map((item, i) => ({
+				...item,
+				checked: i === 0,
+				status: i === 0 ? 'correct' : 'neutral'
+			})),
+			false
+		);
+		await expect.poll(() => container.querySelectorAll('li math-div, li math-span').length).toBe(3);
+		expect(text(container)).not.toContain('$$');
+	});
+
+	it('formule seule calée à gauche, contre la lettre, comme un choix de texte', async () => {
+		const main = document.body.appendChild(document.createElement('main'));
+		main.style.width = '600px';
+		const { container } = await render(ChoiceList, {
+			target: main,
+			props: { items: [...symboles, { content: 'Texte' }] }
+		});
+		await expect.poll(() => container.querySelectorAll('li math-div, li math-span').length).toBe(3);
+		const lis = [...container.querySelectorAll('li')];
+		for (const li of lis.slice(0, 3)) {
+			const lettre = li.querySelector('[data-letter]')!.getBoundingClientRect();
+			const formule = li.querySelector('math-div, math-span')!.getBoundingClientRect();
+			// écart lettre → formule : celui d'un choix de texte (gap 0,5 rem), pas le milieu de la ligne
+			expect(formule.left - lettre.right).toBeLessThan(24);
+		}
 	});
 });

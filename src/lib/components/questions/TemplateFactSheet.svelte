@@ -12,9 +12,9 @@
 
 <script lang="ts">
 	import { resolve } from '$app/paths';
-	import type { TemplateFactSheetResult } from '$lib/questions/template-fact-sheet';
-	import * as Card from '$lib/components/ui/card';
-	import { Badge } from '$lib/components/ui/badge';
+	import type { TemplateFactSheetResult } from '#lib/questions/template-fact-sheet.ts';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
 	import { Eye, Pencil, TriangleAlert } from '@lucide/svelte';
 
 	interface Props {

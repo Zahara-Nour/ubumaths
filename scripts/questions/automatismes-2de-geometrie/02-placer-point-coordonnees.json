@@ -3,7 +3,7 @@
 	"title": "Placer un point de coordonnées données",
 	"description": "Placer dans un repère orthogonal gradué de 1 en 1 un point de coordonnées relatives données : un point quelconque (coordonnées distinctes pour repérer l'inversion), ou deux points dont l'un est sur un axe.",
 	"grades": ["5"],
-	"level": 1,
+	"level": 4,
 	"delay": 30,
 	"status": "draft",
 	"variations": [

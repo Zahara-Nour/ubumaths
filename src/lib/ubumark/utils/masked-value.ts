@@ -5,7 +5,7 @@
  * En évaluation notée, le serveur envoie l'énoncé SANS la réponse : dans chaque
  * bloc à geste, la valeur que l'élève doit trouver (`placer: A=3`, `construire: 35`,
  * `colorier: 3/8`, effectif d'une barre à construire) devient `?`
- * (`maskGestureAnswers`, `$lib/questions/masked-statement`).
+ * (`maskGestureAnswers`, `#lib/questions/masked-statement.ts`).
  *
  * Les parseurs lisent `?` comme une valeur de remplacement : l'écran garde les noms,
  * le nombre de points ou de barres, la forme ; la valeur ne sert qu'au dessin de la
@@ -21,9 +21,10 @@ export const MASKED_VALUE = '?';
 
 /**
  * Ligne de la réponse d'un bloc à geste : `placer:`, `tracer:`, `construire:`,
- * `colorier:`, `representer:`
+ * `colorier:`, `representer:`, `graduer:` (nombre de parts), `attendu:` (programme tortue)
  */
-const ANSWER_KEY_LINE = /^(?:placer|tracer|construire|colorier|representer)\s*:(.*)$/i;
+const ANSWER_KEY_LINE =
+	/^(?:placer|tracer|construire|colorier|representer|graduer|attendu)\s*:(.*)$/i;
 
 /**
  * Donnée masquée : une barre (`Natation = ?`) ou une boîte à moustaches

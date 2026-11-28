@@ -10,25 +10,23 @@
  */
 
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { Database, Tables } from '$lib/types/database';
+import type { Database, Tables } from '#lib/types/database.ts';
 import type {
 	AssignmentWithDetails,
 	AttemptSummary,
-	AttemptValidation,
 	DbEvaluation,
 	DbEvaluationAssignment,
 	EvaluationResult,
 	EvaluationStatistics,
 	EvaluationStatus,
 	EvaluationWithSeries
-} from '$lib/types/evaluation';
-import { getAttemptsRemaining, getStudentStatus, isEvaluationForm } from '$lib/types/evaluation';
-import { isDeadlinePassed } from '$lib/utils/dates';
-import { SeriesError, toDbSeriesMany } from '$lib/server/series';
-import { savedSeriesItemsSchema } from '$lib/validation/series';
-import { parseStoredSeries } from '$lib/server/series-lines';
-import type { EvaluationSettings } from '$lib/server/validation/evaluations';
-import { createServerLogger } from '$lib/utils/logger';
+} from '#lib/types/evaluation.ts';
+import { getStudentStatus, isEvaluationForm } from '#lib/types/evaluation.ts';
+import { SeriesError, toDbSeriesMany } from '#lib/server/series.ts';
+import { savedSeriesItemsSchema } from '#lib/validation/series.ts';
+import { parseStoredSeries } from '#lib/server/series-lines.ts';
+import type { EvaluationSettings } from '#lib/server/validation/evaluations.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('server/evaluations');
 
@@ -457,55 +455,6 @@ export async function countAttempts(
 		throw new EvaluationError(500, 'Impossible de vérifier les tentatives précédentes');
 	}
 	return count ?? 0;
-}
-
-function refused(reason: string, extra: Partial<AttemptValidation> = {}): AttemptValidation {
-	return {
-		can_attempt: false,
-		reason,
-		attempts_remaining: 0,
-		deadline_passed: false,
-		current_attempts: 0,
-		...extra
-	};
-}
-
-/**
- * Un élève peut-il commencer une tentative (B14) ? Date limite et nombre de
- * tentatives sont ceux de l'ÉVALUATION ; les tentatives se comptent par
- * `test_sessions.evaluation_id` + élève. Une panne refuse (on n'accorde pas une
- * tentative qu'on ne sait pas justifier).
- */
-export async function validateAttempt(
-	supabase: TypedSupabaseClient,
-	evaluation: Pick<DbEvaluation, 'id' | 'status' | 'deadline' | 'max_attempts'>,
-	studentId: string
-): Promise<AttemptValidation> {
-	if (evaluation.status !== 'published') {
-		return refused("Ce contrôle n'est pas ouvert");
-	}
-	if (isDeadlinePassed(evaluation.deadline)) {
-		return refused('La date limite est dépassée', { deadline_passed: true });
-	}
-
-	let currentAttempts: number;
-	try {
-		currentAttempts = await countAttempts(supabase, evaluation.id, studentId);
-	} catch {
-		return refused('Impossible de vérifier les tentatives précédentes');
-	}
-
-	const attemptsRemaining = getAttemptsRemaining(currentAttempts, evaluation.max_attempts);
-	if (attemptsRemaining !== null && attemptsRemaining <= 0) {
-		return refused('Nombre maximal de tentatives atteint', { current_attempts: currentAttempts });
-	}
-
-	return {
-		can_attempt: true,
-		attempts_remaining: attemptsRemaining,
-		deadline_passed: false,
-		current_attempts: currentAttempts
-	};
 }
 
 /**

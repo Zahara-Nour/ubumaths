@@ -6,18 +6,17 @@
  * Cf. spec TDD : docs/archive/wip/srs-anti-fraud-spec-tdd.md §B12
  */
 
-import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireTeacherOfClass } from '$lib/server/stats/teacher-class-auth';
-import { classIdParamSchema } from '$lib/server/validation/teacher-analytics';
-import { createServerLogger } from '$lib/utils/logger';
+import { requireTeacherOfClass } from '#lib/server/stats/teacher-class-auth.ts';
+import { classIdParamSchema } from '#lib/server/validation/teacher-analytics.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/teacher/classes/[classId]/anti-fraud/count/+server');
 
 export const GET: RequestHandler = async ({ params, locals }) => {
 	const paramCheck = classIdParamSchema.safeParse(params);
 	if (!paramCheck.success) {
-		return json({ error: paramCheck.error.issues[0].message }, { status: 400 });
+		return Response.json({ error: paramCheck.error.issues[0].message }, { status: 400 });
 	}
 
 	const { classId } = paramCheck.data;
@@ -33,12 +32,12 @@ export const GET: RequestHandler = async ({ params, locals }) => {
 	// affiche un classement amputé sans le dire.
 	if (memberRowsError) {
 		logger.error('Périmètre illisible :', memberRowsError);
-		return json({ error: 'Impossible de déterminer le périmètre' }, { status: 500 });
+		return Response.json({ error: 'Impossible de déterminer le périmètre' }, { status: 500 });
 	}
 
 	const studentIds = (memberRows ?? []).map((m) => m.student_id);
 	if (studentIds.length === 0) {
-		return json({ count: 0 });
+		return Response.json({ count: 0 });
 	}
 
 	const { count, error } = await locals.supabase
@@ -48,8 +47,10 @@ export const GET: RequestHandler = async ({ params, locals }) => {
 		.eq('resolved', false);
 
 	if (error) {
-		return json({ error: error.message }, { status: 500 });
+		// Le message de la base reste dans le journal du serveur.
+		logger.error('Comptage des signalements impossible :', error);
+		return Response.json({ error: 'Impossible de compter les signalements' }, { status: 500 });
 	}
 
-	return json({ count: count ?? 0 });
+	return Response.json({ count: count ?? 0 });
 };

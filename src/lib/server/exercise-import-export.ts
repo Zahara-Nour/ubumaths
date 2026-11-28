@@ -7,8 +7,13 @@
  * @module server/exercise-import-export
  */
 
+import {
+	saveExerciseWithVersion,
+	splitVersionContent,
+	withLatestVersions
+} from '#lib/server/exercise-versions.ts';
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { Database } from '$lib/types/database';
+import type { Database } from '#lib/types/database.ts';
 import type {
 	Exercise,
 	ExerciseExport,
@@ -16,21 +21,21 @@ import type {
 	ExerciseExportV2,
 	ImportResult,
 	ImportOptions
-} from '$lib/exercises/types';
-import { getExerciseContentSafe } from '$lib/exercises/types';
+} from '#lib/exercises/types.ts';
+import { getExerciseContentSafe } from '#lib/exercises/types.ts';
 import {
 	validateExerciseExport,
 	sanitizeExerciseForInsert,
 	type ValidatedExerciseExport
-} from '$lib/exercises/validation';
+} from '#lib/exercises/validation.ts';
 import {
 	serializeToMarkdown,
 	parseMarkdownWithFrontmatter
-} from '$lib/exercises/markdown-frontmatter';
+} from '#lib/exercises/markdown-frontmatter.ts';
 import { createExercise } from './exercises';
 import { syncResourceTags } from './resource-tags';
 import { createHash } from 'crypto';
-import { createServerLogger } from '$lib/utils/logger';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('server/exercise-import-export');
 
@@ -202,7 +207,7 @@ async function findDuplicateExercise(
 	for (let from = 0; ; from += DUPLICATE_SCAN_PAGE_SIZE) {
 		const { data, error } = await supabase
 			.from('exercises')
-			.select('id, title, shared, variations')
+			.select('id, title')
 			.eq('created_by', userId)
 			.order('id', { ascending: true })
 			.range(from, from + DUPLICATE_SCAN_PAGE_SIZE - 1);
@@ -214,7 +219,8 @@ async function findDuplicateExercise(
 			throw new Error(error.message);
 		}
 
-		const rows = data ?? [];
+		// Contenu comparé : la DERNIÈRE version de chaque exercice (ADR 0044)
+		const rows = await withLatestVersions(supabase, data ?? []);
 		for (const existing of rows) {
 			// Get content from variations (single source of truth)
 			const existingContent = getExerciseContentSafe(existing as unknown as Exercise);
@@ -229,6 +235,19 @@ async function findDuplicateExercise(
 
 		if (rows.length < DUPLICATE_SCAN_PAGE_SIZE) return null;
 	}
+}
+
+/**
+ * `statement_md` / `solution_md` du format d'échange ne sont pas des colonnes d'`exercises` :
+ * l'énoncé et la correction vivent dans `variations` (version de l'exercice). Les envoyer à la
+ * création faisait refuser l'insertion par PostgREST (« Could not find the 'solution_md' column »),
+ * ce que les tests unitaires, qui simulent la base, ne voyaient pas.
+ */
+function withoutLegacyStatement<T extends { statement_md?: unknown; solution_md?: unknown }>(
+	data: T
+): Omit<T, 'statement_md' | 'solution_md'> {
+	const { statement_md: _statement, solution_md: _solution, ...rest } = data;
+	return rest;
 }
 
 /**
@@ -353,25 +372,26 @@ export async function importExerciseFromJSON(
 			// pas (Zod les retire), donc remplacer garde la visibilité et la case
 			// « Afficher sur Google » de l'exercice existant — jamais de « privé +
 			// Google » (CHECK 23514), jamais de Google coché par un fichier.
-			const { data, error } = await supabase
-				.from('exercises')
-				.update({
-					...rowUpdate,
-					updated_at: new Date().toISOString()
-				})
-				.eq('id', duplicateId)
-				.eq('created_by', userId)
-				.select()
-				.single();
-
-			if (error) {
-				return { success: false, error: error.message };
+			// Le contenu remplace celui de la DERNIÈRE version (ADR 0044) ; la fiche d'identité
+			// reste sur la ligne d'`exercises`. Les deux sont écrites ensemble : tout ou rien.
+			const { identity, content } = splitVersionContent(rowUpdate);
+			try {
+				await saveExerciseWithVersion(supabase, duplicateId, identity, content);
+			} catch (e) {
+				logger.error('Failed to replace the imported exercise:', e);
+				return {
+					success: false,
+					error:
+						e instanceof Error
+							? e.message
+							: String((e as { message?: unknown }).message ?? 'Failed to replace exercise')
+				};
 			}
 
 			// Re-sync tags through the junction. On failure, surface the error so the
 			// caller knows the tags weren't applied (the row update itself succeeded).
 			try {
-				await syncResourceTags(supabase, 'exercise', data!.id, replaceTags ?? []);
+				await syncResourceTags(supabase, 'exercise', duplicateId, replaceTags ?? []);
 			} catch (e) {
 				logger.error('Failed to sync tags while replacing imported exercise:', e);
 				return {
@@ -380,7 +400,7 @@ export async function importExerciseFromJSON(
 				};
 			}
 
-			return { success: true, exerciseId: data!.id };
+			return { success: true, exerciseId: duplicateId };
 		} else if (options.onDuplicate === 'create-copy') {
 			// Create a new exercise with modified title
 			const cleanData = sanitizeExerciseForInsert(exerciseData);
@@ -396,7 +416,7 @@ export async function importExerciseFromJSON(
 			const result = await createExercise(
 				supabase,
 				{
-					...cleanData,
+					...withoutLegacyStatement(cleanData),
 					title: newTitle
 				},
 				userId
@@ -412,7 +432,7 @@ export async function importExerciseFromJSON(
 
 	// Sanitize and create exercise
 	const cleanData = sanitizeExerciseForInsert(exerciseData);
-	const result = await createExercise(supabase, cleanData, userId);
+	const result = await createExercise(supabase, withoutLegacyStatement(cleanData), userId);
 
 	if (result.error) {
 		return { success: false, error: result.error.message };

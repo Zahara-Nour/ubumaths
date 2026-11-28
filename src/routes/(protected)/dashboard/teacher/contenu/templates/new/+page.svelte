@@ -8,21 +8,21 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
 	import type { ActionData } from './$types';
-	import { Button } from '$lib/components/ui/button';
-	import BackLink from '$lib/components/navigation/BackLink.svelte';
-	import { Input } from '$lib/components/ui/input';
-	import { Label } from '$lib/components/ui/label';
-	import { Textarea } from '$lib/components/ui/textarea';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import BackLink from '#lib/components/navigation/BackLink.svelte';
+	import { Input } from '#lib/components/ui/input/index.ts';
+	import { Label } from '#lib/components/ui/label/index.ts';
+	import { Textarea } from '#lib/components/ui/textarea/index.ts';
 	import {
 		Card,
 		CardContent,
 		CardDescription,
 		CardHeader,
 		CardTitle
-	} from '$lib/components/ui/card';
-	import { toaster } from '$lib/stores/toaster.svelte';
-	import GradeBadgeSelector from '$lib/components/GradeBadgeSelector.svelte';
-	import type { GradeCode } from '$lib/types/grades';
+	} from '#lib/components/ui/card/index.ts';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
+	import GradeBadgeSelector from '#lib/components/GradeBadgeSelector.svelte';
+	import type { GradeCode } from '#lib/types/grades.ts';
 
 	let { form }: { form: ActionData } = $props();
 

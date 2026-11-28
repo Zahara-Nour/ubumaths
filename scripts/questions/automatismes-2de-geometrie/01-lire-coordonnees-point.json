@@ -3,7 +3,7 @@
 	"title": "Lire les coordonnées d'un point",
 	"description": "Lire les coordonnées d'un point dans un repère orthogonal gradué de 1 en 1 : point quelconque (coordonnées relatives, distinctes pour repérer l'inversion), point sur l'axe des abscisses, point sur l'axe des ordonnées.",
 	"grades": ["5"],
-	"level": 1,
+	"level": 3,
 	"delay": 30,
 	"status": "draft",
 	"variations": [

@@ -1,0 +1,552 @@
+{
+	"id": "6058963e-3c10-4140-94a4-26f008dbe11f",
+	"title": "Produit scalaire : résoudre un problème géométrique",
+	"description": "Carré ABCD, I et J milieux de [AB] et [BC] : (DI) ⊥ (AJ) par Chasles (DA·BJ, AI·AB à calculer, DA·AB = 0 à justifier) ; rectangle : AC·BD = AD² − AB²",
+	"grades": ["1_SPE"],
+	"level": 7,
+	"delay": 90,
+	"status": "published",
+	"shared": {},
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:-a^2/2}}"
+				}
+			],
+			"statement": "$ABCD$ est un carré de côté ${{eval:a}}$. $I$ est le milieu de $[AB]$ et $J$ le milieu de $[BC]$. On veut démontrer que les droites $(DI)$ et $(AJ)$ sont perpendiculaires.\n\nPar la relation de Chasles, $\\overrightarrow{DI}=\\overrightarrow{DA}+\\overrightarrow{AI}$ et $\\overrightarrow{AJ}=\\overrightarrow{AB}+\\overrightarrow{BJ}$, donc :\n\n$$\\overrightarrow{DI}\\cdot\\overrightarrow{AJ}=\\overrightarrow{DA}\\cdot\\overrightarrow{AB}+\\overrightarrow{DA}\\cdot\\overrightarrow{BJ}+\\overrightarrow{AI}\\cdot\\overrightarrow{AB}+\\overrightarrow{AI}\\cdot\\overrightarrow{BJ}$$\n\nComplète.\n\n$\\overrightarrow{DA}\\cdot\\overrightarrow{BJ}=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..10"
+				}
+			],
+			"conditions": ["a % 2 = 0"],
+			"correction": {
+				"steps": [
+					"$\\overrightarrow{DA}$ et $\\overrightarrow{BJ}$ sont colinéaires et de **sens contraires** ($\\overrightarrow{BJ}$ va de $B$ vers $C$, comme $\\overrightarrow{AD}$).",
+					"$\\overrightarrow{DA}\\cdot\\overrightarrow{BJ}=-DA\\times BJ=-{{eval:a}}\\times{{eval:a/2}}=\\textcolor{{{color:primary.0}}}{{{eval:-a^2/2}}}$.",
+					"Donc $\\overrightarrow{DI}\\cdot\\overrightarrow{AJ}=0-{{eval:a^2/2}}+{{eval:a^2/2}}+0=0$ : les droites $(DI)$ et $(AJ)$ sont perpendiculaires."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a^2/2}}"
+				}
+			],
+			"statement": "$ABCD$ est un carré de côté ${{eval:a}}$. $I$ est le milieu de $[AB]$ et $J$ le milieu de $[BC]$. On veut démontrer que les droites $(DI)$ et $(AJ)$ sont perpendiculaires.\n\nPar la relation de Chasles, $\\overrightarrow{DI}=\\overrightarrow{DA}+\\overrightarrow{AI}$ et $\\overrightarrow{AJ}=\\overrightarrow{AB}+\\overrightarrow{BJ}$, donc :\n\n$$\\overrightarrow{DI}\\cdot\\overrightarrow{AJ}=\\overrightarrow{DA}\\cdot\\overrightarrow{AB}+\\overrightarrow{DA}\\cdot\\overrightarrow{BJ}+\\overrightarrow{AI}\\cdot\\overrightarrow{AB}+\\overrightarrow{AI}\\cdot\\overrightarrow{BJ}$$\n\nComplète.\n\n$\\overrightarrow{AI}\\cdot\\overrightarrow{AB}=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..10"
+				}
+			],
+			"conditions": ["a % 2 = 0"],
+			"correction": {
+				"steps": [
+					"$\\overrightarrow{AI}$ et $\\overrightarrow{AB}$ sont colinéaires et de **même sens**.",
+					"$\\overrightarrow{AI}\\cdot\\overrightarrow{AB}=AI\\times AB={{eval:a/2}}\\times{{eval:a}}=\\textcolor{{{color:primary.0}}}{{{eval:a^2/2}}}$.",
+					"Donc $\\overrightarrow{DI}\\cdot\\overrightarrow{AJ}=0-{{eval:a^2/2}}+{{eval:a^2/2}}+0=0$ : les droites $(DI)$ et $(AJ)$ sont perpendiculaires."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"statement": "$ABCD$ est un carré de côté ${{eval:a}}$. $I$ est le milieu de $[AB]$ et $J$ le milieu de $[BC]$. On veut démontrer que les droites $(DI)$ et $(AJ)$ sont perpendiculaires.\n\nPar la relation de Chasles, $\\overrightarrow{DI}=\\overrightarrow{DA}+\\overrightarrow{AI}$ et $\\overrightarrow{AJ}=\\overrightarrow{AB}+\\overrightarrow{BJ}$, donc :\n\n$$\\overrightarrow{DI}\\cdot\\overrightarrow{AJ}=\\overrightarrow{DA}\\cdot\\overrightarrow{AB}+\\overrightarrow{DA}\\cdot\\overrightarrow{BJ}+\\overrightarrow{AI}\\cdot\\overrightarrow{AB}+\\overrightarrow{AI}\\cdot\\overrightarrow{BJ}$$\n\nPourquoi $\\overrightarrow{DA}\\cdot\\overrightarrow{AB}=0$ ?\n\n```choix\n- Car les droites $(DA)$ et $(AB)$ sont perpendiculaires.\n- Car $DA=AB$.\n- Car $A$ est un point commun aux deux vecteurs.\n- Car les vecteurs $\\overrightarrow{DA}$ et $\\overrightarrow{AB}$ sont colinéaires.\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..10"
+				}
+			],
+			"conditions": ["a % 2 = 0"],
+			"correction": {
+				"steps": [
+					"$ABCD$ est un carré : l'angle $\\widehat{DAB}$ est droit.",
+					"Le produit scalaire de deux vecteurs orthogonaux est **nul** : $\\overrightarrow{DA}\\cdot\\overrightarrow{AB}=0$. De même, $\\overrightarrow{AI}\\cdot\\overrightarrow{BJ}=0$.",
+					"Des longueurs égales ne rendent pas un produit scalaire nul : $\\overrightarrow{AB}\\cdot\\overrightarrow{AB}={{eval:a^2}}$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:l^2-L^2}}"
+				}
+			],
+			"statement": "$ABCD$ est un rectangle tel que $AB={{eval:L}}$ et $AD={{eval:l}}$. On étudie l'angle de ses diagonales $[AC]$ et $[BD]$.\n\nPar la relation de Chasles, $\\overrightarrow{AC}=\\overrightarrow{AB}+\\overrightarrow{BC}$ et $\\overrightarrow{BD}=-\\overrightarrow{AB}+\\overrightarrow{BC}$, avec $\\overrightarrow{AB}\\cdot\\overrightarrow{BC}=0$.\n\nComplète.\n\n$\\overrightarrow{AC}\\cdot\\overrightarrow{BD}=?$",
+			"variables": [
+				{
+					"name": "L",
+					"expression": "3..9"
+				},
+				{
+					"name": "l",
+					"expression": "2..8"
+				}
+			],
+			"conditions": ["l < L"],
+			"correction": {
+				"steps": [
+					"$\\overrightarrow{AC}\\cdot\\overrightarrow{BD}=-\\overrightarrow{AB}\\cdot\\overrightarrow{AB}+\\overrightarrow{AB}\\cdot\\overrightarrow{BC}-\\overrightarrow{BC}\\cdot\\overrightarrow{AB}+\\overrightarrow{BC}\\cdot\\overrightarrow{BC}=-AB^2+BC^2$.",
+					"Avec $BC=AD={{eval:l}}$ : $\\overrightarrow{AC}\\cdot\\overrightarrow{BD}={{eval:l^2}}-{{eval:L^2}}=\\textcolor{{{color:primary.0}}}{{{eval:l^2-L^2}}}$.",
+					"Ce produit scalaire n'est pas nul : les diagonales ne sont pas perpendiculaires. Elles le sont seulement quand $AB=AD$, c'est-à-dire quand le rectangle est un carré."
+				]
+			}
+		},
+		{
+			"statement": "$ABCD$ est un rectangle tel que $AB={{L}}$ et $AD={{l}}$. Les points $E$ et $F$ vérifient $\\overrightarrow{AE}={{eval:ee/l}}\\,\\overrightarrow{AD}$ et $\\overrightarrow{AF}={{eval:ff/L}}\\,\\overrightarrow{AB}$. On veut montrer que les droites $(EC)$ et $(DF)$ sont perpendiculaires.\n\n```figure\nfenetre: -1.3 ; {{eval:L+1}} ; -1.2 ; {{eval:l+1}}\ntaille: moyenne\ndescription: Rectangle ABCD ; E sur le côté AD, F sur le côté AB ; segments EC et DF.\n---\nA = point(0, 0, etiquette=\"bas-gauche\")\nB = point({{L}}, 0, etiquette=\"bas-droite\")\nC = point({{L}}, {{l}}, etiquette=\"haut-droite\")\nD = point(0, {{l}}, etiquette=\"haut-gauche\")\nE = point(0, {{ee}}, etiquette=\"gauche\")\nF = point({{ff}}, 0, etiquette=\"bas\")\npolygone(A, B, C, D)\nangle(B, A, D, marque=\"carre\")\nsegment(E, C)\nsegment(D, F)\n```\n\nPar la relation de Chasles, $\\overrightarrow{EC}=\\overrightarrow{ED}+\\overrightarrow{DC}$ et $\\overrightarrow{DF}=\\overrightarrow{DA}+\\overrightarrow{AF}$. Les produits $\\overrightarrow{ED}\\cdot\\overrightarrow{AF}$ et $\\overrightarrow{DC}\\cdot\\overrightarrow{DA}$ sont nuls (vecteurs orthogonaux).\n\nCalcule les produits scalaires suivants.\n\n$\\overrightarrow{ED}\\cdot\\overrightarrow{DA}=?$\n\n$\\overrightarrow{DC}\\cdot\\overrightarrow{AF}=?$\n\n$\\overrightarrow{EC}\\cdot\\overrightarrow{DF}=?$",
+			"variables": [
+				{
+					"name": "l",
+					"expression": "3..7"
+				},
+				{
+					"name": "ee",
+					"expression": "1..{{eval:l-1}}"
+				},
+				{
+					"name": "ff",
+					"expression": "1..3"
+				},
+				{
+					"name": "L",
+					"expression": "eval:l*(l-ee)/ff"
+				}
+			],
+			"conditions": ["mod(l*(l-ee),ff) == 0", "L > l", "L <= 15"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:-(l-ee)*l}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:(l-ee)*l}}",
+							"message": "$\\overrightarrow{ED}$ et $\\overrightarrow{DA}$ sont colinéaires et de sens contraires : le produit est négatif.",
+							"label": "Signe faux"
+						},
+						{
+							"answer": "{{eval:-l*l}}",
+							"message": "$ED=AD-AE$ : ce n'est pas toute la longueur $AD$.",
+							"label": "ED = AD"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{eval:L*ff}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:L*L}}",
+							"message": "Multiplie $DC$ par $AF$, pas par $AB$.",
+							"label": "AB au lieu de AF"
+						},
+						{
+							"answer": "{{eval:-L*ff}}",
+							"message": "$\\overrightarrow{DC}$ et $\\overrightarrow{AF}$ ont le même sens : le produit est positif.",
+							"label": "Signe faux"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "0",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:(l-ee)*l+L*ff}}",
+							"message": "Additionne les deux produits avec leur signe : $\\overrightarrow{ED}\\cdot\\overrightarrow{DA}$ est négatif.",
+							"label": "Signe oublié dans la somme"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"$ED=AD-AE={{l}}-{{ee}}={{eval:l-ee}}$, et $\\overrightarrow{ED}$, $\\overrightarrow{DA}$ sont de sens contraires : $\\overrightarrow{ED}\\cdot\\overrightarrow{DA}=-ED\\times DA=-{{eval:l-ee}}\\times {{l}}=\\textcolor{{{color:primary.0}}}{ {{eval:-(l-ee)*l}} }$.",
+					"$AF={{ff}}$, et $\\overrightarrow{DC}$, $\\overrightarrow{AF}$ sont de même sens : $\\overrightarrow{DC}\\cdot\\overrightarrow{AF}=DC\\times AF={{L}}\\times {{ff}}=\\textcolor{{{color:primary.0}}}{ {{eval:L*ff}} }$.",
+					"$\\overrightarrow{EC}\\cdot\\overrightarrow{DF}=\\overrightarrow{ED}\\cdot\\overrightarrow{DA}+\\overrightarrow{ED}\\cdot\\overrightarrow{AF}+\\overrightarrow{DC}\\cdot\\overrightarrow{DA}+\\overrightarrow{DC}\\cdot\\overrightarrow{AF}={{eval:-(l-ee)*l}}+0+0+{{eval:L*ff}}=\\textcolor{{{color:primary.0}}}{ 0 }$ : les droites $(EC)$ et $(DF)$ sont perpendiculaires."
+				]
+			},
+			"hint": "Développe $(\\overrightarrow{ED}+\\overrightarrow{DC})\\cdot(\\overrightarrow{DA}+\\overrightarrow{AF})$ : deux des quatre produits sont nuls. $\\overrightarrow{ED}$ et $\\overrightarrow{DA}$ sont colinéaires."
+		},
+		{
+			"statement": "$ABCD$ est un rectangle tel que $AB={{L}}$ et $AD={{l}}$. Les points $E$ et $F$ vérifient $\\overrightarrow{AE}={{eval:ee/l}}\\,\\overrightarrow{AD}$ et $\\overrightarrow{AF}={{eval:ff/L}}\\,\\overrightarrow{AB}$. On veut montrer que les droites $(EC)$ et $(DF)$ sont perpendiculaires.\n\n```figure\nfenetre: -1.3 ; {{eval:L+1}} ; -1.2 ; {{eval:l+1}}\ntaille: moyenne\ndescription: Rectangle ABCD ; E sur le côté AD, F sur le côté AB ; segments EC et DF.\n---\nA = point(0, 0, etiquette=\"bas-gauche\")\nB = point({{L}}, 0, etiquette=\"bas-droite\")\nC = point({{L}}, {{l}}, etiquette=\"haut-droite\")\nD = point(0, {{l}}, etiquette=\"haut-gauche\")\nE = point(0, {{ee}}, etiquette=\"gauche\")\nF = point({{ff}}, 0, etiquette=\"bas\")\npolygone(A, B, C, D)\nangle(B, A, D, marque=\"carre\")\nsegment(E, C)\nsegment(D, F)\n```\n\nOn se place dans le repère orthonormé d'origine $A$ où $B({{L}}\\,;0)$ et $D(0\\,;{{l}})$.\n\nDonne les coordonnées des vecteurs $\\overrightarrow{EC}$ et $\\overrightarrow{DF}$, puis calcule leur produit scalaire.\n\n$\\overrightarrow{EC}(?\\,;?)$\n\n$\\overrightarrow{DF}(?\\,;?)$\n\n$\\overrightarrow{EC}\\cdot\\overrightarrow{DF}=?$",
+			"variables": [
+				{
+					"name": "l",
+					"expression": "3..7"
+				},
+				{
+					"name": "ee",
+					"expression": "1..{{eval:l-1}}"
+				},
+				{
+					"name": "ff",
+					"expression": "1..3"
+				},
+				{
+					"name": "L",
+					"expression": "eval:l*(l-ee)/ff"
+				}
+			],
+			"conditions": ["mod(l*(l-ee),ff) == 0", "L > l", "L <= 15"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{L}}"
+				},
+				{
+					"expectedAnswer": "{{eval:l-ee}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:ee-l}}",
+							"message": "$\\overrightarrow{EC}$ : ordonnée de $C$ moins ordonnée de $E$.",
+							"label": "Ordonnée inversée"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{ff}}"
+				},
+				{
+					"expectedAnswer": "{{eval:-l}}",
+					"expectedErrors": [
+						{
+							"answer": "{{l}}",
+							"message": "$\\overrightarrow{DF}$ : ordonnée de $F$ moins ordonnée de $D$.",
+							"label": "Ordonnée inversée"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "0",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:L*ff+l*(l-ee)}}",
+							"message": "Attention au signe de l'ordonnée de $\\overrightarrow{DF}$.",
+							"label": "Signe de l'ordonnée de DF"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"Dans ce repère, $E(0\\,;{{ee}})$, $C({{L}}\\,;{{l}})$, $D(0\\,;{{l}})$ et $F({{ff}}\\,;0)$.",
+					"$\\overrightarrow{EC}\\left(\\textcolor{{{color:primary.0}}}{ {{L}} }\\,;\\textcolor{{{color:primary.0}}}{ {{eval:l-ee}} }\\right)$ et $\\overrightarrow{DF}\\left(\\textcolor{{{color:primary.0}}}{ {{ff}} }\\,;\\textcolor{{{color:primary.0}}}{ {{eval:-l}} }\\right)$.",
+					"$\\overrightarrow{EC}\\cdot\\overrightarrow{DF}={{L}}\\times {{ff}}+{{eval:l-ee}}\\times({{eval:-l}})={{eval:L*ff}}-{{eval:l*(l-ee)}}=\\textcolor{{{color:primary.0}}}{ 0 }$ : les droites $(EC)$ et $(DF)$ sont perpendiculaires."
+				]
+			},
+			"hint": "Dans ce repère, $A(0\\,;0)$, $B({{L}}\\,;0)$ et $D(0\\,;{{l}})$ : lis d'abord les coordonnées de $E$, $F$ et $C$."
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["-18"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "6"
+			},
+			"description": "−18",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["18"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "6"
+			},
+			"description": "Erreur : 18 (sens oublié)",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["-36"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "6"
+			},
+			"description": "Erreur : −36",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "6"
+			},
+			"description": "Erreur : 0",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["18"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "6"
+			},
+			"description": "18",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["36"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "6"
+			},
+			"description": "Erreur : 36",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "6"
+			},
+			"description": "Erreur : 0",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "6"
+			},
+			"description": "orthogonaux",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "6"
+			},
+			"description": "Erreur : longueurs égales",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "6"
+			},
+			"description": "Erreur : point commun",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "6"
+			},
+			"description": "Erreur : colinéaires",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["-16"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"L": "5",
+				"l": "3"
+			},
+			"description": "−16",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["16"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"L": "5",
+				"l": "3"
+			},
+			"description": "Erreur : 16",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"L": "5",
+				"l": "3"
+			},
+			"description": "Erreur : 0",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["34"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"L": "5",
+				"l": "3"
+			},
+			"description": "Erreur : 34",
+			"variationIndex": 3
+		},
+		{
+			"description": "12 × 4, AE = 1, AF = 1 : −12, 12, 0",
+			"variationIndex": 4,
+			"variables": {
+				"l": "4",
+				"ee": "1",
+				"ff": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["-12", "12", "0"]
+		},
+		{
+			"description": "ED·DA positif",
+			"variationIndex": 4,
+			"variables": {
+				"l": "4",
+				"ee": "1",
+				"ff": "1"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "$\\overrightarrow{ED}$ et $\\overrightarrow{DA}$ sont colinéaires et de sens contraires : le produit est négatif."
+			},
+			"answers": ["12", "12", "0"]
+		},
+		{
+			"description": "ED = AD : −16",
+			"variationIndex": 4,
+			"variables": {
+				"l": "4",
+				"ee": "1",
+				"ff": "1"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "$ED = AD - AE$ : ce n'est pas toute la longueur $AD$."
+			},
+			"answers": ["-16", "12", "0"]
+		},
+		{
+			"description": "DC·AB : 144",
+			"variationIndex": 4,
+			"variables": {
+				"l": "4",
+				"ee": "1",
+				"ff": "1"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Multiplie $DC$ par $AF$, pas par $AB$."
+			},
+			"answers": ["-12", "144", "0"]
+		},
+		{
+			"description": "somme sans signe : 24",
+			"variationIndex": 4,
+			"variables": {
+				"l": "4",
+				"ee": "1",
+				"ff": "1"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Additionne les deux produits avec leur signe : $\\overrightarrow{ED}\\cdot\\overrightarrow{DA}$ est négatif."
+			},
+			"answers": ["-12", "12", "24"]
+		},
+		{
+			"description": "15 × 5, AE = 2, AF = 1 : −15, 15, 0",
+			"variationIndex": 4,
+			"variables": {
+				"l": "5",
+				"ee": "2",
+				"ff": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["-15", "15", "0"]
+		},
+		{
+			"description": "EC(12 ; 3), DF(1 ; −4), 0",
+			"variationIndex": 5,
+			"variables": {
+				"l": "4",
+				"ee": "1",
+				"ff": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["12", "3", "1", "-4", "0"]
+		},
+		{
+			"description": "EC ordonnée inversée",
+			"variationIndex": 5,
+			"variables": {
+				"l": "4",
+				"ee": "1",
+				"ff": "1"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "$\\overrightarrow{EC}$ : ordonnée de $C$ moins ordonnée de $E$."
+			},
+			"answers": ["12", "-3", "1", "-4", "0"]
+		},
+		{
+			"description": "DF ordonnée inversée",
+			"variationIndex": 5,
+			"variables": {
+				"l": "4",
+				"ee": "1",
+				"ff": "1"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "$\\overrightarrow{DF}$ : ordonnée de $F$ moins ordonnée de $D$."
+			},
+			"answers": ["12", "3", "1", "4", "0"]
+		},
+		{
+			"description": "produit 24",
+			"variationIndex": 5,
+			"variables": {
+				"l": "4",
+				"ee": "1",
+				"ff": "1"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Attention au signe de l'ordonnée de $\\overrightarrow{DF}$."
+			},
+			"answers": ["12", "3", "1", "-4", "24"]
+		}
+	]
+}

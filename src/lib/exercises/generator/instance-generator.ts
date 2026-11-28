@@ -108,8 +108,8 @@ import {
 	resolveText,
 	detectCircularDependencies,
 	parseMarkdown
-} from '$lib/ubumark';
-import { createRandomSource, randomIndex } from '$lib/utils/random';
+} from '#lib/ubumark/index.ts';
+import { createRandomSource, randomIndex } from '#lib/utils/random.ts';
 
 // ============================================================================
 // MAIN GENERATOR

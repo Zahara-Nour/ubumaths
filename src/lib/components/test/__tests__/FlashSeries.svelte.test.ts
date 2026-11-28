@@ -8,12 +8,12 @@ import { describe, it, expect, vi } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import { flushSync, tick } from 'svelte';
 import FlashSeries from '../FlashSeries.svelte';
-import type { QuestionInstance } from '$lib/questions/types';
-import type { TestResult } from '$lib/types/test';
-import { resolvedMarkdown } from '$lib/ubumark';
+import type { QuestionInstance } from '#lib/questions/types.ts';
+import type { TestResult } from '#lib/types/test.ts';
+import { resolvedMarkdown } from '#lib/ubumark/index.ts';
 
-const FOUND = "J'avais trouvé";
-const NOT_FOUND = "Je n'avais pas trouvé";
+const FOUND = 'Réussi';
+const NOT_FOUND = 'Pas réussi';
 const REVIEW = "Revoir celles que je n'avais pas trouvées";
 
 function makeInstance(statement: string, courseCard = false): QuestionInstance {
@@ -205,13 +205,13 @@ describe('FlashSeries — fin de série', () => {
 		expect(findButton(container, REVIEW)).toBeUndefined();
 	});
 
-	it('« Recommencer avec de nouvelles questions » et « Retour au panier »', async () => {
+	it('« Recommencer avec de nouvelles questions » et « Retour à ma série »', async () => {
 		const { container, onRestart, onBack } = await open([makeInstance('Énoncé A')]);
 
 		await answer(container, false);
 		await click(container, 'Recommencer avec de nouvelles questions');
 		expect(onRestart).toHaveBeenCalledTimes(1);
-		await click(container, 'Retour au panier');
+		await click(container, 'Retour à ma série');
 		expect(onBack).toHaveBeenCalledTimes(1);
 	});
 });
@@ -252,7 +252,7 @@ describe('FlashSeries — clavier et série vide', () => {
 		await click(container, 'Voir la correction');
 		await tick();
 
-		expect(document.activeElement?.textContent?.trim()).toBe("J'avais trouvé");
+		expect(document.activeElement?.textContent?.trim()).toBe(FOUND);
 	});
 
 	it('après une auto-évaluation, le focus va sur le retournement de la carte suivante', async () => {
@@ -277,8 +277,81 @@ describe('FlashSeries — clavier et série vide', () => {
 		const { container, onBack, onComplete } = await open([]);
 
 		expect(container.textContent).toContain('Aucune carte à afficher');
-		await click(container, 'Retour au panier');
+		await click(container, 'Retour à ma série');
 		expect(onBack).toHaveBeenCalledTimes(1);
 		expect(onComplete).not.toHaveBeenCalled();
+	});
+});
+
+// Une trace « déclarée » par carte du premier tour (ADR 0038, N9)
+describe('FlashSeries — traces', () => {
+	const MODELES = ['22222222-2222-4222-8222-222222222222', '33333333-3333-4333-8333-333333333333'];
+
+	async function openTraced() {
+		const record = vi.fn();
+		const instances = MODELES.map((templateId, index) => ({
+			...makeInstance(`Énoncé ${index}`),
+			templateId,
+			seed: index + 10
+		}));
+		const result = await render(FlashSeries, {
+			instances,
+			isLoggedIn: true,
+			onComplete: vi.fn(),
+			onRestart: vi.fn(),
+			onBack: vi.fn(),
+			traceRecorder: { record, settle: async () => ({ failed: 0 }) }
+		});
+		flushSync();
+		await tick();
+		return { ...result, record };
+	}
+
+	it('chaque clic « Réussi / Pas réussi » envoie sa trace aussitôt, lieu flash_cards', async () => {
+		const { container, record } = await openTraced();
+		await answer(container, true);
+		expect(record).toHaveBeenCalledTimes(1);
+		expect(record.mock.calls[0][0]).toEqual({
+			template_id: MODELES[0],
+			success: true,
+			place: 'flash_cards',
+			seed: 10
+		});
+		await answer(container, false);
+		expect(record.mock.calls[1][0]).toMatchObject({ template_id: MODELES[1], success: false });
+	});
+
+	it('coup de pouce ouvert (idée 5) : la trace dit « avec indice », pas la carte suivante', async () => {
+		const record = vi.fn();
+		const instances = MODELES.map((templateId, index) => ({
+			...makeInstance(`Énoncé ${index}`),
+			templateId,
+			seed: index + 10,
+			hint: resolvedMarkdown(`Indice ${index}`)
+		}));
+		const { container } = await render(FlashSeries, {
+			instances,
+			isLoggedIn: true,
+			onComplete: vi.fn(),
+			onRestart: vi.fn(),
+			onBack: vi.fn(),
+			traceRecorder: { record, settle: async () => ({ failed: 0 }) }
+		});
+		flushSync();
+		await tick();
+		await click(container, 'Coup de pouce');
+		await answer(container, true);
+		expect(record.mock.calls[0][0]).toMatchObject({ success: true, with_help: true });
+		await answer(container, true);
+		expect(record.mock.calls[1][0]).not.toHaveProperty('with_help');
+	});
+
+	it('« Revoir » les cartes ratées : aucune nouvelle trace', async () => {
+		const { container, record } = await openTraced();
+		await answer(container, true);
+		await answer(container, false);
+		await click(container, REVIEW);
+		await answer(container, true);
+		expect(record).toHaveBeenCalledTimes(2);
 	});
 });

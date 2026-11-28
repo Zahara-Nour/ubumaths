@@ -7,17 +7,17 @@
 -->
 
 <script lang="ts">
-	import { lore } from '$lib/config/lore';
-	import type { PalotinType } from '$lib/config/buddy-messages';
-	import type { BuddyState } from '$lib/types/buddy';
-	import { PALOTIN_INFO } from '$lib/config/buddy-quiz';
-	import { studentCache } from '$lib/stores/studentDashboardCache.svelte';
+	import { lore } from '#lib/config/lore.ts';
+	import type { PalotinType } from '#lib/config/buddy-messages.ts';
+	import type { BuddyState } from '#lib/types/buddy.ts';
+	import { PALOTIN_INFO } from '#lib/config/buddy-quiz.ts';
+	import { studentCache } from '#lib/stores/studentDashboardCache.svelte.ts';
 	import BuddyAvatar from './BuddyAvatar.svelte';
 	import { formatXpAmount } from './buddy-gain';
-	import { Button } from '$lib/components/ui/button';
-	import * as Dialog from '$lib/components/ui/dialog';
-	import { Badge } from '$lib/components/ui/badge';
-	import { toaster } from '$lib/stores/toaster.svelte';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import * as Dialog from '#lib/components/ui/dialog/index.ts';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
 
 	interface Props {
 		open: boolean;

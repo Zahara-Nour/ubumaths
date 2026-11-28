@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { lore } from '$lib/config/lore';
+	import { lore } from '#lib/config/lore.ts';
 	/**
 	 * Editor for the new ValidationConfig shape (`{ ast_requirements?,
 	 * behavior?, timeout_ms? }`). Two independent panels — "Forme du code"
@@ -8,12 +8,16 @@
 	 * Zod refine catches the empty case; we surface inline guidance here).
 	 */
 
-	import type { ASTRequirement, BehaviorCheck, OutputComparison } from '$lib/shared/python';
-	import type { ValidationConfig } from '$lib/types/python-exercises';
-	import MySelect from '$lib/components/MySelect.svelte';
-	import MyCheckbox from '$lib/components/MyCheckbox.svelte';
-	import { Button } from '$lib/components/ui/button';
-	import { Input } from '$lib/components/ui/input';
+	import type {
+		ASTRequirement,
+		BehaviorCheck,
+		OutputComparison
+	} from '#lib/shared/python/index.ts';
+	import type { ValidationConfig } from '#lib/types/python-exercises.ts';
+	import MySelect from '#lib/components/MySelect.svelte';
+	import MyCheckbox from '#lib/components/MyCheckbox.svelte';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import { Input } from '#lib/components/ui/input/index.ts';
 	import { Plus, Trash2 } from '@lucide/svelte';
 	import ASTRequirementsPanel from './ASTRequirementsPanel.svelte';
 

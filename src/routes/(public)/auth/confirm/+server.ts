@@ -54,8 +54,8 @@
  */
 import { redirect } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { createServerLogger } from '$lib/utils/logger';
-import { validateRedirectUrl } from '$lib/server/validateRedirectUrl';
+import { createServerLogger } from '#lib/utils/logger.ts';
+import { validateRedirectUrl } from '#lib/server/validateRedirectUrl.ts';
 
 const logger = createServerLogger('auth/confirm/+server.ts');
 

@@ -10,8 +10,8 @@ import {
 	buddyMessages,
 	type PalotinType,
 	type BuddyMessageContext
-} from '$lib/config/buddy-messages';
-import type { BuddyExpression } from '$lib/types/buddy';
+} from '#lib/config/buddy-messages.ts';
+import type { BuddyExpression } from '#lib/types/buddy.ts';
 
 const RECENT_HISTORY_SIZE = 5;
 
@@ -25,8 +25,12 @@ const CONTEXT_EXPRESSION_MAP: Record<BuddyMessageContext, BuddyExpression> = {
 	streak_7: 'excited',
 	streak_14: 'excited',
 	streak_30: 'excited',
-	streak_lost: 'determined',
-	long_absence: 'sad',
+	return_after_pause: 'happy',
+	week_first_activity: 'happy',
+	active_weeks_3: 'excited',
+	active_weeks_5: 'excited',
+	active_weeks_10: 'excited',
+	long_struggle_won: 'excited',
 	level_up: 'excited',
 	theme_fractions: 'thinking',
 	theme_geometry: 'thinking',

@@ -13,15 +13,15 @@
 -->
 
 <script lang="ts">
-	import { lore } from '$lib/config/lore';
+	import { lore } from '#lib/config/lore.ts';
 	import { goto } from '$app/navigation';
 	import { invalidate } from '$app/navigation';
-	import * as Card from '$lib/components/ui/card';
-	import { Button } from '$lib/components/ui/button';
-	import { Badge } from '$lib/components/ui/badge';
-	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
-	import { Tabs, TabsContent, TabsList, TabsTrigger } from '$lib/components/ui/tabs';
-	import { toaster } from '$lib/stores/toaster.svelte';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
+	import * as DropdownMenu from '#lib/components/ui/dropdown-menu/index.ts';
+	import { Tabs, TabsContent, TabsList, TabsTrigger } from '#lib/components/ui/tabs/index.ts';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
 	import {
 		Plus,
 		BookOpen,
@@ -33,7 +33,7 @@
 		Lock,
 		Users
 	} from '@lucide/svelte';
-	import type { Deck } from '$lib/srs/types';
+	import type { Deck } from '#lib/srs/types.ts';
 
 	interface Props {
 		data: {

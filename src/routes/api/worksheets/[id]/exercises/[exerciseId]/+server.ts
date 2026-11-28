@@ -5,79 +5,22 @@
  * DELETE - Remove an exercise from the worksheet
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireRoles } from '$lib/server/middleware/auth';
+import { requireRoles } from '#lib/server/middleware/auth.ts';
 import {
 	validateUpdateWorksheetExercise,
 	worksheetExerciseResponseSchema
-} from '$lib/server/validation/worksheets';
-import { uuidSchema } from '$lib/server/validation/common';
-import { validateJsonResponse } from '$lib/server/validation/response-utils';
-import type { TablesUpdate } from '$lib/types/database';
-import { toJson } from '$lib/types/database-helpers';
-import { createServerLogger } from '$lib/utils/logger';
+} from '#lib/server/validation/worksheets.ts';
+import { verifyWorksheetLineAccess } from '#lib/server/worksheets/worksheet-line-access.ts';
+import { validateJsonResponse } from '#lib/server/validation/response-utils.ts';
+import type { TablesUpdate } from '#lib/types/database.ts';
+import { toJson } from '#lib/types/database-helpers.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/worksheets/[id]/exercises/[exerciseId]/+server');
 
 type ZodIssue = { path: (string | number)[]; message: string };
-
-/**
- * Verify worksheet and exercise exist and user has permission
- */
-async function verifyAccess(
-	supabase: App.Locals['supabase'],
-	worksheetId: string,
-	exerciseId: string,
-	userId: string,
-	role: string,
-	schoolId: string | null
-) {
-	// Validate UUID formats
-	const worksheetIdValidation = uuidSchema.safeParse(worksheetId);
-	if (!worksheetIdValidation.success) {
-		throw error(400, 'Identifiant de fiche invalide');
-	}
-
-	const exerciseIdValidation = uuidSchema.safeParse(exerciseId);
-	if (!exerciseIdValidation.success) {
-		throw error(400, 'Identifiant d’exercice invalide');
-	}
-
-	// Fetch worksheet
-	const { data: worksheet, error: worksheetError } = await supabase
-		.from('worksheets')
-		.select('id, created_by, school_id, status')
-		.eq('id', worksheetId)
-		.single();
-
-	if (worksheetError || !worksheet) {
-		throw error(404, 'Fiche introuvable');
-	}
-
-	// Verify ownership/authorization
-	if (role === 'teacher' && worksheet.created_by !== userId) {
-		throw error(403, 'Accès réservé à l’auteur de la fiche');
-	}
-
-	if (role === 'admin' && schoolId && worksheet.school_id !== schoolId) {
-		throw error(403, 'Cette fiche appartient à une autre école');
-	}
-
-	// Fetch worksheet exercise
-	const { data: worksheetExercise, error: exerciseError } = await supabase
-		.from('worksheet_exercises')
-		.select('*')
-		.eq('id', exerciseId)
-		.eq('worksheet_id', worksheetId)
-		.single();
-
-	if (exerciseError || !worksheetExercise) {
-		throw error(404, 'Exercice introuvable dans cette fiche');
-	}
-
-	return { worksheet, worksheetExercise };
-}
 
 /**
  * GET /api/worksheets/[id]/exercises/[exerciseId]
@@ -86,7 +29,7 @@ async function verifyAccess(
 export const GET: RequestHandler = async ({ locals, params }) => {
 	const { user, profile } = await requireRoles(locals, ['teacher', 'admin']);
 
-	const { worksheetExercise } = await verifyAccess(
+	const { worksheetExercise } = await verifyWorksheetLineAccess(
 		locals.supabase,
 		params.id,
 		params.exerciseId,
@@ -101,7 +44,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 		'GET /api/worksheets/[id]/exercises/[exerciseId]'
 	);
 
-	return json({ exercise: validated });
+	return Response.json({ exercise: validated });
 };
 
 /**
@@ -111,7 +54,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 export const PUT: RequestHandler = async ({ locals, params, request }) => {
 	const { user, profile } = await requireRoles(locals, ['teacher', 'admin']);
 
-	const { worksheet } = await verifyAccess(
+	const { worksheet } = await verifyWorksheetLineAccess(
 		locals.supabase,
 		params.id,
 		params.exerciseId,
@@ -203,7 +146,7 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 		'PUT /api/worksheets/[id]/exercises/[exerciseId]'
 	);
 
-	return json({ exercise: validated });
+	return Response.json({ exercise: validated });
 };
 
 /**
@@ -213,7 +156,7 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 export const DELETE: RequestHandler = async ({ locals, params }) => {
 	const { user, profile } = await requireRoles(locals, ['teacher', 'admin']);
 
-	const { worksheet } = await verifyAccess(
+	const { worksheet } = await verifyWorksheetLineAccess(
 		locals.supabase,
 		params.id,
 		params.exerciseId,
@@ -242,5 +185,5 @@ export const DELETE: RequestHandler = async ({ locals, params }) => {
 		throw error(500, 'Impossible de retirer l’exercice de la fiche');
 	}
 
-	return json({ success: true, message: 'Exercice retiré de la fiche' });
+	return Response.json({ success: true, message: 'Exercice retiré de la fiche' });
 };

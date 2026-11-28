@@ -7,12 +7,12 @@
 -->
 
 <script lang="ts">
-	import { lore } from '$lib/config/lore';
+	import { lore } from '#lib/config/lore.ts';
 	import { Play, Pause, SkipForward, RotateCcw } from '@lucide/svelte';
-	import { Button } from '$lib/components/ui/button';
-	import { ConfirmDialog } from '$lib/components/ui/confirm-dialog';
-	import { pomodoroStore } from '$lib/stores/pomodoro/pomodoro.svelte';
-	import { unlockAudio } from '$lib/stores/pomodoro/effects';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import { ConfirmDialog } from '#lib/components/ui/confirm-dialog/index.ts';
+	import { pomodoroStore } from '#lib/stores/pomodoro/pomodoro.svelte.ts';
+	import { unlockAudio } from '#lib/stores/pomodoro/effects.ts';
 
 	// ---------------------------------------------------------------------------
 	// Reset confirmation dialog state

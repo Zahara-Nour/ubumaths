@@ -6,14 +6,14 @@
 
 import type { PageServerLoad, Actions } from './$types';
 import { error, fail, redirect } from '@sveltejs/kit';
-import { requireRoles } from '$lib/server/middleware/auth';
+import { requireRoles } from '#lib/server/middleware/auth.ts';
 import {
 	insertTemplateWithStyle,
 	syncTemplateStyle
-} from '$lib/server/worksheets/worksheet-styles';
-import { validateUuidParam } from '$lib/server/validation/params';
+} from '#lib/server/worksheets/worksheet-styles.ts';
+import { validateUuidParam } from '#lib/server/validation/params.ts';
 import { z } from 'zod';
-import { createServerLogger } from '$lib/utils/logger';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger(
 	'(protected)/dashboard/teacher/contenu/worksheets/templates/[id]/+page.server'

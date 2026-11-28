@@ -13,11 +13,11 @@
 	demos.
 -->
 <script lang="ts">
-	import type { NotebookCell } from '$lib/types/notebook';
-	import type { NotebookStore } from '$lib/stores/notebookStore.svelte';
-	import PythonEditor from '$lib/components/python/PythonEditor.svelte';
-	import CellOutputs from '$lib/components/notebook/CellOutputs.svelte';
-	import { Button } from '$lib/components/ui/button';
+	import type { NotebookCell } from '#lib/types/notebook.ts';
+	import type { NotebookStore } from '#lib/stores/notebookStore.svelte.ts';
+	import PythonEditor from '#lib/components/python/PythonEditor.svelte';
+	import CellOutputs from '#lib/components/notebook/CellOutputs.svelte';
+	import { Button } from '#lib/components/ui/button/index.ts';
 	import { Play, Loader2, Square } from '@lucide/svelte';
 
 	interface Props {

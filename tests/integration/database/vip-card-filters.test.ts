@@ -29,8 +29,8 @@ import {
 import { createAuthenticatedClient } from '../../helpers/database/supabase-client';
 import { TestData } from '../../helpers/database/test-data-factory';
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { Database } from '$lib/types/database';
-import type { VipCardRarity } from '$lib/types/vip-card';
+import type { Database } from '#lib/types/database.ts';
+import type { VipCardRarity } from '#lib/types/vip-card.ts';
 
 describe('VIP Card Draw Filters - RPC Function Tests', () => {
 	let serviceClient: SupabaseClient<Database>;

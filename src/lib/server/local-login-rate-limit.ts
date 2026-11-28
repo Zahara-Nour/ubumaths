@@ -4,7 +4,7 @@
  * En local, toutes les sessions et les scripts Playwright viennent de la même IP et partagent
  * le compteur `rate_limits` de Supabase local : quelques connexions de test bloquent tout le
  * monde 15 minutes. On saute donc les limiteurs de connexion quand les DEUX conditions tiennent :
- * - `dev` (de `$app/environment`) est vrai : seulement sous `pnpm dev`, jamais dans un build
+ * - `dev` (de `$app/env`) est vrai : seulement sous `pnpm dev`, jamais dans un build
  *   (Vercel, aperçu) ;
  * - l'IP est une boucle locale, sous l'une de ses trois formes exactes.
  * Pas de variable d'environnement : elle pourrait être recopiée sur Vercel.

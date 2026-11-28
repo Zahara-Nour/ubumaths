@@ -18,7 +18,7 @@ import {
 import { statusFromChoices } from '../choices';
 import type { SubmittedAnswer } from '../grading';
 import type { InstanceBlank, QuestionInstance } from '../types';
-import type { ResolvedMarkdown } from '$lib/ubumark';
+import type { ResolvedMarkdown } from '#lib/ubumark/index.ts';
 
 // Fixtures
 function blanksInstance(

@@ -1,0 +1,24 @@
+{
+	"migration": "supabase/migrations/20261124193431_questions_idees_tle_probas_rangement_tags.sql",
+	"ranges": [
+		{
+			"id": "a3aa8f4a-f957-4f15-b78a-355f4976832d",
+			"title": "Loi binomiale : P(X = k), P(X ⩾ 1) à la calculatrice",
+			"fichier": "f02-loi-binomiale-calculatrice.json",
+			"branche": "Probabilités",
+			"notion": "Loi binomiale",
+			"sousNotion": "expression de la loi",
+			"point": "TSPE-510"
+		},
+		{
+			"id": "1220760b-e49c-41d5-a0d6-87ab59addbe0",
+			"title": "Loi binomiale : du vocabulaire à P(X ⩽ k)",
+			"fichier": "f03-loi-binomiale-vocabulaire.json",
+			"branche": "Probabilités",
+			"notion": "Loi binomiale",
+			"sousNotion": "expression de la loi",
+			"point": "TSPE-619"
+		}
+	],
+	"niveaux": []
+}

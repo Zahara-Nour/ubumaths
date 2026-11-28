@@ -5,15 +5,16 @@
  * POST: Create new conversation
  */
 
-import { json, error } from '@sveltejs/kit';
+import { WORKSHEET_LINE_VERSION, withLineVersion } from '#lib/server/exercise-versions.ts';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import {
 	getTutorConversationQuerySchema,
 	createTutorConversationSchema
-} from '$lib/server/validation/chat';
-import { requireAuth } from '$lib/server/middleware/auth';
-import { getExerciseContentSafe, type Exercise } from '$lib/exercises/types';
-import { createServerLogger } from '$lib/utils/logger';
+} from '#lib/server/validation/chat.ts';
+import { requireAuth } from '#lib/server/middleware/auth.ts';
+import { getExerciseContentSafe, type Exercise } from '#lib/exercises/types.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/tutor/conversations/+server');
 
@@ -58,7 +59,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 		throw error(500, 'Erreur lors de la recherche de la conversation');
 	}
 
-	return json({ conversation });
+	return Response.json({ conversation });
 };
 
 /**
@@ -107,22 +108,34 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		throw error(409, 'Une conversation existe déjà pour cet exercice');
 	}
 
-	// Fetch the exercise correction server-side (from variations)
-	const { data: exercise, error: exerciseError } = await locals.supabase
-		.from('exercises')
-		.select('id, shared, variations')
-		.eq('id', exerciseId)
-		.single();
+	// Le corrigé, lu côté serveur dans la VERSION que la fiche de l'affectation utilise (ADR 0044) :
+	// celle que l'élève a sous les yeux, pas la dernière.
+	const { data: assignment, error: assignmentError } = await locals.supabase
+		.from('worksheet_assignments')
+		.select('worksheet_id')
+		.eq('id', assignmentId)
+		.maybeSingle();
+	if (assignmentError) {
+		logger.error('Lecture impossible :', assignmentError);
+		throw error(500, 'Impossible de vérifier l’état actuel');
+	}
+	if (!assignment) throw error(404, 'Devoir introuvable');
 
-	// PGRST116 = la ligne n'existe pas, ce que la suite traite déjà. Une AUTRE
-	// panne prenait le même visage et faisait conclure « rien ici », donc créer
-	// par-dessus ce qu'on n'avait simplement pas su lire.
-	if (exerciseError && exerciseError.code !== 'PGRST116') {
+	const { data: lines, error: exerciseError } = await locals.supabase
+		.from('worksheet_exercises')
+		.select(`exercise:exercises (id), ${WORKSHEET_LINE_VERSION}`)
+		.eq('worksheet_id', assignment.worksheet_id)
+		.eq('exercise_id', exerciseId)
+		.order('position')
+		.limit(1);
+	const exerciseLine = lines?.[0];
+
+	if (exerciseError) {
 		logger.error('Lecture impossible :', exerciseError);
 		throw error(500, 'Impossible de vérifier l’état actuel');
 	}
-
-	// Use variations as single source of truth
+	if (!exerciseLine) throw error(404, 'Exercice absent de ce devoir');
+	const exercise = withLineVersion(exerciseLine).exercise;
 	const content = exercise
 		? getExerciseContentSafe(exercise as unknown as Exercise)
 		: { statement_md: '', solution_md: '' };
@@ -151,5 +164,5 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		throw error(500, 'Erreur lors de la création de la conversation');
 	}
 
-	return json({ conversation }, { status: 201 });
+	return Response.json({ conversation }, { status: 201 });
 };

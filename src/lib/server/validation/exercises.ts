@@ -2,13 +2,13 @@
  * Exercise API validation schemas
  *
  * Comprehensive Zod validation for all exercise-related API endpoints.
- * Re-exports existing validation from $lib/exercises/validation.ts and adds
+ * Re-exports existing validation from #lib/exercises/validation.ts and adds
  * additional schemas for API endpoints.
  */
 
 import { z } from 'zod';
 import { gradeCodeSchema, gradeFlexibleSchema } from './grades';
-import { SEARCH_INDEXED_REQUIRES_PUBLIC_MESSAGE } from '$lib/server/exercise-search-indexed';
+import { SEARCH_INDEXED_REQUIRES_PUBLIC_MESSAGE } from '#lib/server/exercise-search-indexed.ts';
 
 // ============================================================================
 // RE-EXPORT EXISTING VALIDATION
@@ -30,7 +30,7 @@ export {
 	type ValidatedExerciseExport,
 	type ValidatedExerciseFrontmatter,
 	type ValidatedTemplateCreate
-} from '$lib/exercises/validation';
+} from '#lib/exercises/validation.ts';
 
 // ============================================================================
 // API ENDPOINT SCHEMAS
@@ -207,6 +207,23 @@ export const sharedExerciseDefaultsSchema = z
 	.optional();
 
 // Base schema without refinement (needed for .partial() in Zod v4)
+/**
+ * Traductions des colonnes de l'exercice (`exercises.translations`) : le titre
+ * seul. Le contenu (énoncé, corrigé, réponses, indices) se traduit dans les
+ * variations (`exerciseTranslationsSchema`). `strict()` aux deux niveaux : une
+ * langue ou un champ inconnus sont un bug de l'appelant, pas une donnée.
+ */
+export const exerciseRowTranslationsSchema = z
+	.object({
+		en: z
+			.object({
+				title: z.string().trim().max(200, 'Titre anglais trop long').optional()
+			})
+			.strict()
+			.optional()
+	})
+	.strict();
+
 const exerciseBaseSchema = z.object({
 	// Statement and solution are optional when using variations system
 	statement_md: z.string().trim().max(50000, 'Énoncé trop long').optional(),
@@ -251,6 +268,8 @@ const exerciseBaseSchema = z.object({
 	topic: z.string().trim().max(100, 'Notion trop longue').optional().nullable(),
 	source: z.string().trim().max(200, 'Source trop longue').optional().nullable(),
 	title: z.string().trim().max(200, 'Titre trop long').optional().nullable(),
+	// Titre traduit, même borne que le titre français ; null efface la traduction
+	translations: exerciseRowTranslationsSchema.optional().nullable(),
 	// Legacy variables format (kept for backward compatibility)
 	variables: z
 		.union([z.array(z.any()), z.record(z.string(), z.any())])
@@ -403,17 +422,14 @@ export const bulkAssignSchema = z
 			.array(z.string().uuid('Identifiant de classe invalide'))
 			.max(50, '50 classes au maximum')
 			.optional(),
-		make_public: z.boolean().optional(),
 		optional_deadline: z.string().datetime('Date invalide').optional().nullable(),
 		notes: z.string().trim().max(1000, 'Notes trop longues').optional()
 	})
 	.refine(
 		(data) =>
-			(data.students && data.students.length > 0) ||
-			(data.classes && data.classes.length > 0) ||
-			data.make_public === true,
+			(data.students && data.students.length > 0) || (data.classes && data.classes.length > 0),
 		{
-			message: 'Choisir au moins un élève ou une classe, ou rendre l’exercice public'
+			message: 'Choisir au moins un élève ou une classe'
 		}
 	);
 
@@ -422,7 +438,8 @@ export const bulkAssignSchema = z
  */
 export const singleAssignSchema = z
 	.object({
-		assigned_to_type: z.enum(['student', 'class', 'public'], {
+		// « public » n'est plus une cible : on n'assigne qu'à un élève ou à une classe.
+		assigned_to_type: z.enum(['student', 'class'], {
 			message: 'Type d’affectation invalide'
 		}),
 		student_id: z.string().uuid('Identifiant d’élève invalide').optional(),
@@ -433,8 +450,7 @@ export const singleAssignSchema = z
 	.refine(
 		(data) => {
 			if (data.assigned_to_type === 'student') return !!data.student_id;
-			if (data.assigned_to_type === 'class') return !!data.class_id;
-			return true; // public doesn't need student_id or class_id
+			return !!data.class_id;
 		},
 		{
 			message:
@@ -459,29 +475,6 @@ export const assignmentQuerySchema = z.object({
 		.string()
 		.optional()
 		.transform((val) => (val === 'true' ? true : val === 'false' ? false : undefined))
-});
-
-/**
- * Schema for student exercise filters (GET /api/exercises/assigned)
- */
-export const studentExerciseFiltersSchema = z.object({
-	completed: z
-		.string()
-		.optional()
-		.transform((val) => (val === 'true' ? true : val === 'false' ? false : undefined)),
-	assigned_only: z
-		.string()
-		.optional()
-		.transform((val) => (val === 'true' ? true : val === 'false' ? false : undefined)),
-	public: z
-		.string()
-		.optional()
-		.transform((val) => (val === 'true' ? true : val === 'false' ? false : undefined)),
-	has_deadline: z
-		.string()
-		.optional()
-		.transform((val) => (val === 'true' ? true : val === 'false' ? false : undefined)),
-	search: z.string().trim().max(200, 'Recherche trop longue').optional()
 });
 
 /**
@@ -587,13 +580,6 @@ export function validateAssignmentQuery(params: URLSearchParams) {
 }
 
 /**
- * Validate student exercise filters
- */
-export function validateStudentExerciseFilters(params: URLSearchParams) {
-	return studentExerciseFiltersSchema.safeParse(Object.fromEntries(params));
-}
-
-/**
  * Validate export exercises request body
  */
 export function validateExportExercises(data: unknown) {
@@ -655,6 +641,8 @@ export const exerciseResponseSchema = z.object({
 	topic: z.string().nullable().optional(),
 	source: z.string().nullable().optional(),
 	title: z.string().nullable().optional(),
+	// Titre traduit : sans la clé, le schéma la retire et l'éditeur perd l'anglais
+	translations: z.record(z.string(), z.unknown()).nullable().optional(),
 	// Variables can be an array (from DB) or a record - accept both
 	variables: z
 		.union([z.array(z.any()), z.record(z.string(), z.any())])
@@ -726,42 +714,6 @@ export const exerciseAssignmentSchema = z.object({
  */
 export const exerciseAssignmentsResponseSchema = z.object({
 	assignments: z.array(exerciseAssignmentSchema)
-});
-
-/**
- * Assigned exercise (for student view) schema
- */
-export const assignedExerciseSchema = z.object({
-	id: z.string().uuid(),
-	statement_md: z.string(),
-	solution_md: z.string(),
-	category: z.enum([
-		'automatisme',
-		'application',
-		'adaptation',
-		'recherche',
-		'tache_complexe',
-		'situation_probleme',
-		'challenge',
-		'mission',
-		'synthese'
-	]),
-	tags: z.array(z.string()).optional(),
-	grades: z.array(gradeCodeSchema).optional(),
-	topic: z.string().nullable().optional(),
-	title: z.string().nullable().optional(),
-	assignment_id: z.string().uuid().nullable().optional(),
-	optional_deadline: z.string().datetime().nullable().optional(),
-	notes: z.string().nullable().optional(),
-	completed: z.boolean().optional(),
-	completed_at: z.string().datetime().nullable().optional()
-});
-
-/**
- * Student exercises response schema (GET /api/exercises/assigned)
- */
-export const studentExercisesResponseSchema = z.object({
-	exercises: z.array(assignedExerciseSchema)
 });
 
 /**

@@ -1,0 +1,225 @@
+{
+	"id": "e59976bf-d175-4d13-adf4-8952015a1606",
+	"title": "Suite de nombres : choisir la règle",
+	"description": "Reconnaître la règle d'une suite (+ a, × k, + a − b et + a + b en alternance) parmi quatre phrases",
+	"grades": ["CM1"],
+	"level": 1,
+	"delay": 60,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"spacesFromFourDigits": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Voici le début d'une suite de nombres :\n\n$${{eval:u+0*a}} \\ ;\\  {{eval:u+1*a}} \\ ;\\  {{eval:u+2*a}} \\ ;\\  {{eval:u+3*a}} \\ ;\\  {{eval:u+4*a}} \\ ;\\  \\ldots$$\n\nQuelle règle permet de construire cette suite ?\n\n```choix\n- On ajoute ${{a}}$ à chaque fois.\n- On ajoute ${{eval:a+1}}$ à chaque fois.\n- On ajoute ${{eval:2*a}}$ à chaque fois.\n- On multiplie par $2$ à chaque fois.\n```",
+			"variables": [
+				{
+					"name": "u",
+					"expression": "1..50"
+				},
+				{
+					"name": "a",
+					"expression": "2..12"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**La règle.** On ajoute ${{a}}$ à chaque fois.",
+					"Elle marche pour tous les nombres donnés : ${{eval:u+0*a}} + {{a}} = {{eval:u+1*a}}$ ; ${{eval:u+1*a}} + {{a}} = {{eval:u+2*a}}$ ; ${{eval:u+2*a}} + {{a}} = {{eval:u+3*a}}$ ; ${{eval:u+3*a}} + {{a}} = {{eval:u+4*a}}$."
+				]
+			}
+		},
+		{
+			"statement": "Voici le début d'une suite de nombres :\n\n$${{eval:u*k^0}} \\ ;\\  {{eval:u*k^1}} \\ ;\\  {{eval:u*k^2}} \\ ;\\  {{eval:u*k^3}} \\ ;\\  \\ldots$$\n\nQuelle règle permet de construire cette suite ?\n\n```choix\n- On multiplie par ${{k}}$ à chaque fois.\n- On ajoute ${{eval:u*(k-1)}}$ à chaque fois.\n- On multiplie par ${{eval:k+1}}$ à chaque fois.\n- On ajoute ${{k}}$ à chaque fois.\n```",
+			"variables": [
+				{
+					"name": "u",
+					"expression": "1..5"
+				},
+				{
+					"name": "k",
+					"expression": "2..3"
+				}
+			],
+			"conditions": ["u*(k-1)!=k"],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**La règle.** On multiplie par ${{k}}$ à chaque fois.",
+					"Elle marche pour tous les nombres donnés : ${{eval:u*k^0}} \\times {{k}} = {{eval:u*k^1}}$ ; ${{eval:u*k^1}} \\times {{k}} = {{eval:u*k^2}}$ ; ${{eval:u*k^2}} \\times {{k}} = {{eval:u*k^3}}$."
+				]
+			}
+		},
+		{
+			"statement": "Voici le début d'une suite de nombres :\n\n$${{eval:u}} \\ ;\\  {{eval:u+a}} \\ ;\\  {{eval:u+a-b}} \\ ;\\  {{eval:u+2*a-b}} \\ ;\\  {{eval:u+2*a-2*b}} \\ ;\\  {{eval:u+3*a-2*b}} \\ ;\\  \\ldots$$\n\nQuelle règle permet de construire cette suite ?\n\n```choix\n- On ajoute ${{a}}$, puis on retire ${{b}}$, et ainsi de suite.\n- On ajoute ${{eval:a-b}}$ à chaque fois.\n- On retire ${{b}}$, puis on ajoute ${{a}}$, et ainsi de suite.\n- On ajoute ${{a}}$ à chaque fois.\n```",
+			"variables": [
+				{
+					"name": "u",
+					"expression": "10..80"
+				},
+				{
+					"name": "a",
+					"expression": "3..9"
+				},
+				{
+					"name": "b",
+					"expression": "1..8"
+				}
+			],
+			"conditions": ["b<a"],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**La règle.** On ajoute ${{a}}$, puis on retire ${{b}}$, et ainsi de suite.",
+					"Elle marche pour tous les nombres donnés : ${{eval:u}} + {{a}} = {{eval:u+a}}$ ; ${{eval:u+a}} - {{b}} = {{eval:u+a-b}}$ ; ${{eval:u+a-b}} + {{a}} = {{eval:u+2*a-b}}$ ; ${{eval:u+2*a-b}} - {{b}} = {{eval:u+2*a-2*b}}$ ; ${{eval:u+2*a-2*b}} + {{a}} = {{eval:u+3*a-2*b}}$."
+				]
+			}
+		},
+		{
+			"statement": "Voici le début d'une suite de nombres :\n\n$${{eval:u}} \\ ;\\  {{eval:u+a}} \\ ;\\  {{eval:u+a+b}} \\ ;\\  {{eval:u+2*a+b}} \\ ;\\  {{eval:u+2*a+2*b}} \\ ;\\  {{eval:u+3*a+2*b}} \\ ;\\  \\ldots$$\n\nQuelle règle permet de construire cette suite ?\n\n```choix\n- On ajoute ${{a}}$, puis on ajoute ${{b}}$, et ainsi de suite.\n- On ajoute ${{eval:a+b}}$ à chaque fois.\n- On ajoute ${{b}}$, puis on ajoute ${{a}}$, et ainsi de suite.\n- On ajoute ${{a}}$ à chaque fois.\n```",
+			"variables": [
+				{
+					"name": "u",
+					"expression": "1..20"
+				},
+				{
+					"name": "a",
+					"expression": "1..9"
+				},
+				{
+					"name": "b",
+					"expression": "1..9"
+				}
+			],
+			"conditions": ["a!=b"],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**La règle.** On ajoute ${{a}}$, puis on ajoute ${{b}}$, et ainsi de suite.",
+					"Elle marche pour tous les nombres donnés : ${{eval:u}} + {{a}} = {{eval:u+a}}$ ; ${{eval:u+a}} + {{b}} = {{eval:u+a+b}}$ ; ${{eval:u+a+b}} + {{a}} = {{eval:u+2*a+b}}$ ; ${{eval:u+2*a+b}} + {{b}} = {{eval:u+2*a+2*b}}$ ; ${{eval:u+2*a+2*b}} + {{a}} = {{eval:u+3*a+2*b}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "+ 4 : la bonne règle",
+			"variationIndex": 0,
+			"variables": {
+				"u": "3",
+				"a": "4"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : + 8",
+			"variationIndex": 0,
+			"variables": {
+				"u": "3",
+				"a": "4"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "× 3 : la bonne règle",
+			"variationIndex": 1,
+			"variables": {
+				"u": "4",
+				"k": "3"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : + 8 (vrai au premier pas seulement)",
+			"variationIndex": 1,
+			"variables": {
+				"u": "4",
+				"k": "3"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "+ 5 − 2 : la bonne règle",
+			"variationIndex": 2,
+			"variables": {
+				"u": "80",
+				"a": "5",
+				"b": "2"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : + 3 à chaque fois",
+			"variationIndex": 2,
+			"variables": {
+				"u": "80",
+				"a": "5",
+				"b": "2"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "+ 1 + 4 : la bonne règle",
+			"variationIndex": 3,
+			"variables": {
+				"u": "1",
+				"a": "1",
+				"b": "4"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : + 4 puis + 1",
+			"variationIndex": 3,
+			"variables": {
+				"u": "1",
+				"a": "1",
+				"b": "4"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

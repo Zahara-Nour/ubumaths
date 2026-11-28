@@ -51,7 +51,7 @@ couvre:
 | Minimisation des donnees        | 9/10     | Excellent        |
 | Retention des donnees           | 8/10     | Bon (v1.5)       |
 | Droits utilisateur              | 10/10    | Excellent (v1.6) |
-| Documentation legale            | 7/10     | Bon (v1.2)       |
+| Documentation legale            | 7/10     | Bon (v1.3)       |
 | Consentement mineurs            | 9/10     | Excellent (v1.8) |
 | Tracabilite & Audit             | 8/10     | Bon (v1.9)       |
 | **GLOBAL**                      | **9/10** | **CONFORME**     |
@@ -314,6 +314,17 @@ CRON_SECRET                   # Secret taches planifiees
 > sans ligne en base (message purge apres 3 ans, piece jointe retiree). Autres durees reelles :
 > `error_logs` 30 j, `audit_logs` 60 j, `user_presence` 30 j, `friendships` refusees 2 ans,
 > `messages` / `private_messages` 3 ans.
+>
+> **L6 (2026-11-11, chantier `formes-de-serie`, migration `20261111224115`)** : la meme purge appelle
+> `purge_trace_answers()`, qui efface la reponse case par case et le verdict par case des traces
+> (`skill_attempts.answer_parts`, `part_verdicts`) creees avant le 1er aout de l'annee scolaire en
+> cours (minuit, heure de Paris). Le reste de la trace (reussi/rate, lieu, durees, graine, date)
+> est garde ; les copies de controle (`test_answers`) ne sont pas touchees.
+>
+> **Mesures de performance (2026-11-21, chantier `amelioration`, migration `20261121205833`)** : la
+> meme purge appelle `purge_web_vital_samples()`, qui efface les lignes de `web_vital_samples`
+> de plus de **90 jours**. La table est anonyme (heure arrondie, page generique, indicateur,
+> valeur, type d'appareil), ecrite par le serveur seul et lue par l'admin seul.
 
 **Situation actuelle** (historique, 2026-01) :
 
@@ -325,7 +336,7 @@ CRON_SECRET                   # Secret taches planifiees
 - `user_presence` : **30 jours**
 - `friendships` (rejected) : **2 ans**
 - `error_logs` : **30 jours** (tous ; réel `run_cleanup_expired_data`, corrigé le 2026-10-11)
-- `rate_limits` : clés de limites de débit, dont des **IP** (connexion, inscription, OAuth, `error-log`) et des **e-mails** (connexion, reset) ; ligne gardée le temps de sa fenêtre (≤ 24 h), purgée chaque jour par `run_cleanup_all` (job `cleanup-all`, 2 h). Lue et écrite par `service_role` seul.
+- `rate_limits` : clés de limites de débit, dont des **IP** (connexion, inscription, OAuth, `error-log` ; `web-vitals` : empreinte SHA-256 de l'IP, pas l'IP en clair) et des **e-mails** (connexion, reset) ; ligne gardée le temps de sa fenêtre (≤ 24 h), purgée chaque jour par `run_cleanup_all` (job `cleanup-all`, 2 h). Lue et écrite par `service_role` seul.
 
 > **Amelioration 2026-01-15** : Implementation de la politique de retention via pg_cron. Job hebdomadaire `rgpd-retention-cleanup` (dimanche 03:00 UTC) nettoie automatiquement les donnees expirees. Audit complet dans `background_job_runs` avec compteurs par table pour preuve de conformite. Messages en HARD delete (pas soft delete) conformement a l'Art. 17.
 
@@ -485,12 +496,40 @@ CRON_SECRET                   # Secret taches planifiees
 > par le clic ; un adolescent qui saisit sa propre seconde adresse se donne le consentement — même
 > limite que l'inscription de l'élève seul. En 1re/Tle, le clic est une confirmation d'adresse
 > enregistrée dans `parental_consents` comme un accord (`granted`) : décision de David.
+> **2026-11-25, cours particuliers** : l'admin peut inviter un élève de moins de 15 ans ; le parent
+> reçoit un courriel Brevo (`sendPrivateLessonInvitationEmail`) avec un lien de 7 jours. La page
+> du lien (`/auth/register/invitation/[token]`) crée le compte et recueille CGU et consentement en
+> une fois (même preuve que `/consent/[token]` : IP et navigateur de la requête, par
+> `grant_parental_consent`) ; un second courriel Brevo (`sendPrivateLessonWelcomeEmail`) redit
+> l'identifiant au parent. Prénom et adresse du parent sont gardés dans `private_lesson_invitations`,
+> effacés 30 jours après la fin de l'invitation (cron quotidien) ; la politique de confidentialité
+> le dit depuis sa v1.5 (2026-11-25, décision 9 de David). Le jeton du lien ne sort pas : pas de
+> referer, chemin masqué dans l'analytique et le journal des erreurs.
 > Le courriel d'inscription dit aussi comment réinitialiser le mot de passe (PR 3). « Mot de passe
 > oublié » avec l'identifiant envoie un second courriel Brevo (`sendChildPasswordResetEmail`) à
 > l'adresse du parent de la demande la plus récente, **seulement si elle est confirmée**
 > (`granted`) ; le parent choisit le mot de passe sans jamais être connecté au compte de l'enfant
 > ([auth.md § Mots de passe des élèves](../auth.md#mots-de-passe-des-élèves)). Rien de nouveau
 > n'est stocké ni lu : l'adresse vient de `parental_consents`, lue par la clé service.
+> **Carnet de liaison (2026-11-16, ADR 0040)** : deux courriels Brevo de plus vers les parents —
+> confirmation d'une adresse saisie par le professeur ou l'élève (prénom de l'élève et nom du
+> professeur seulement) et lien du carnet (adresse confirmée seulement). Les adresses sont
+> stockées dans `parent_contacts` (lues par le professeur, jamais par l'élève) ; chaque envoi
+> laisse une ligne sans adresse dans `parent_notifications`. PR 4 : deux courriels de plus vers
+> les adresses confirmées, au plus un par semaine — exception (évaluation non faite, révisions
+> en retard, inactivité ; une phrase par motif) et fin de trimestre (sans aucun nombre) ; chaque
+> courriel porte un jeton propre, haché. Les adresses d'un élève sans classe active depuis
+> 90 jours sont effacées par le cron quotidien, et les lignes de `parent_notifications` au bout
+> d'un an (Q42, 2026-11-17 ; politique v1.4, registre T9). Le lien du carnet expire à la fin de
+> l'année scolaire de l'école (31 août sans dates saisies ; 2026-11-28, politique v1.6). Voir
+> [carnet-de-liaison.md](../carnet-de-liaison.md).
+>
+> **Base locale (2026-11-17)** : `.env` porte la clé Brevo de prod ; avant ce jour, une adresse
+> de parent saisie sur la base locale recevait un vrai courriel. Désormais, sur la base locale
+> (adresse Supabase `localhost`/`127.0.0.1`, hors Vercel), `sendEmail` n'appelle plus Brevo : le
+> courriel est écrit dans `.captures/courriels/` (ignoré par git), `EMAIL_ENVOI_REEL=1` pour
+> envoyer quand même. Au moindre doute (adresse absente, Vercel), envoi réel : une capture en prod
+> avalerait les courriels des parents. Voir `src/lib/server/email/capture.ts`.
 
 ---
 
@@ -629,8 +668,10 @@ WHERE job_name = 'retention_cleanup' ORDER BY started_at DESC LIMIT 1;
 **Données de travail dans le navigateur** (constat T17 étendu, décision de David du 2026-10-13 :
 effacées à la déconnexion). `localStorage` garde le travail de l'élève : conversation avec le
 Père Ubu, code Python et Blockly, atelier, console de calcul, calculatrice, grapheur, tableur,
-tableau blanc, parties de jeux (démineur, 2048, Mathémo, Evoland, Cabinet Noir) et profil de
-joueur. La liste des clés vit dans `src/lib/utils/work-data.ts` ; **une nouvelle clé de travail
+tableau blanc, parties de jeux (démineur, 2048, Mathémo, Evoland, Cabinet Noir), profil de
+joueur et heure du dernier passage du Palotin (`chiphre:palotin:dernier-passage`, un horodatage
+sans identifiant, effacé pour que le plafond d'un élève ne fasse pas taire le Palotin du suivant),
+minuteur Pomodoro et son compteur du jour. La liste des clés vit dans `src/lib/utils/work-data.ts` ; **une nouvelle clé de travail
 s'y ajoute**, sinon elle survit au changement de compte. Le navigateur retient à qui ces données
 appartiennent ; le layout racine (`src/routes/+layout.ts`) le vérifie à chaque page et à chaque
 changement de session :
@@ -696,17 +737,17 @@ Fonctionnalites implementees :
 
 **Categories exportees** (format `1.4`, reecrit le 2026-10-11 contre le code — C12) :
 
-| Categorie        | Tables                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
-| ---------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `profile`        | `profiles` (identite, niveau, gidouilles, **consentement parental**, **declaration d'age**)                                                                                                                                                                                                                                                                                                                                                                                                                 |
-| `evaluation`     | `student_point_state`, `student_competence_level`, `skill_attempts`, `student_observable_state`                                                                                                                                                                                                                                                                                                                                                                                                             |
-| `activite`       | `exercise_completions`, `student_exercise_mastery`, `srs_decks`, `test_sessions` (+ reponses)                                                                                                                                                                                                                                                                                                                                                                                                               |
-| `communications` | `messages`, `private_messages`, `notifications`                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
-| `social`         | `friendships`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
-| `gaming`         | `game_players`, `student_mathoux` (sieste `asleep` comprise depuis le 2026-10-21, décoration portée `decoration` depuis le 2026-10-24, collier porté `collar` depuis le 2026-10-25, lunettes `glasses` et chapeau `hat` portés depuis le 2026-10-26), `student_mathou_decorations` (décorations, colliers, lunettes et chapeaux achetés, sous `mathou_decorations`, 2026-10-24) et `student_buddies` (**ajoutées le 2026-10-18**) ; `student_last_visits` (`dernier_passage`, `retour_a_feter`, 2026-10-22) |
-| `rewards`        | `reward_events`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
-| `classes`        | `class_members`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
-| `tuteur`         | `tutor_conversations` + `tutor_messages` (**ajoute le 2026-10-11**)                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| Categorie        | Tables                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
+| ---------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `profile`        | `profiles` (identite, niveau, gidouilles, **consentement parental**, **declaration d'age**, avatar porté `worn_avatar` et photo Google `google_avatar_url` depuis le 2026-11-11)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| `evaluation`     | `student_point_state`, `student_competence_level`, `skill_attempts` (lieu, durées, graine, réponse tapée et verdict par case depuis le 2026-11-11, ADR 0038 ; « répondu en QCM » depuis le 2026-11-22), `student_observable_state`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| `activite`       | `exercise_completions`, `student_exercise_mastery`, `srs_decks`, `test_sessions` (+ reponses)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| `communications` | `messages`, `private_messages`, `notifications`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| `social`         | `friendships`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| `gaming`         | `game_players`, `student_mathoux` (sieste `asleep` comprise depuis le 2026-10-21, décoration portée `decoration` depuis le 2026-10-24, collier porté `collar` depuis le 2026-10-25, lunettes `glasses` et chapeau `hat` portés depuis le 2026-10-26), `student_mathou_decorations` (décorations, colliers, lunettes et chapeaux achetés, sous `mathou_decorations`, 2026-10-24) et `student_buddies` (**ajoutées le 2026-10-18**) ; `student_avatars` (avatars achetés, sous `avatars`, 2026-11-11) ; `student_last_visits` (`dernier_passage`, `retour_a_feter`, 2026-10-22) ; La Descente de la Vistule sous `descente` : `student_beasts` (Bêtes et carnet, lues par pages) et `student_combat_moves` (coups gagnés), 2026-11-18 |
+| `rewards`        | `reward_events`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| `classes`        | `class_members`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| `tuteur`         | `tutor_conversations` + `tutor_messages` (**ajoute le 2026-10-11**)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
 
 **Metadata incluses** :
 

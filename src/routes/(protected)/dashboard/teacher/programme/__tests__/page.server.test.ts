@@ -10,11 +10,11 @@
  */
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
-vi.mock('$lib/server/middleware/auth', () => ({ requireRoles: async () => ({}) }));
+vi.mock('#lib/server/middleware/auth.ts', () => ({ requireRoles: async () => ({}) }));
 
 const getProgrammeTree = vi.hoisted(() => vi.fn(async () => [{ id: 'liste' }]));
 const getProgrammeMap = vi.hoisted(() => vi.fn(async () => [{ id: 'carte' }]));
-vi.mock('$lib/server/programme-tree', () => ({ getProgrammeTree, getProgrammeMap }));
+vi.mock('#lib/server/programme-tree.ts', () => ({ getProgrammeTree, getProgrammeMap }));
 
 import { load } from '../+page.server';
 

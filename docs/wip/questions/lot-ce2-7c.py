@@ -1,6 +1,6 @@
 """Écrit les 8 modèles du lot 7c du CE2 (statistiques) dans scripts/questions/ce2-7c/.
 
-Phase 0 validée par David le 2026-11-05 (§ 13 du journal `docs/wip/questions-ce2-progress.md`,
+Phase 0 validée par David le 2026-11-05 (§ 13 du journal `docs/archive/wip/questions-ce2-progress.md`,
 « je suis tes recos ») : 082 pris dans ce lot (barres à monter et `axe: à choisir` en prod) ;
 niveaux partagés (diagrammes en barres 4 à 6 avec la 5e ; 076 aux niveaux 1 et 2 du nœud
 « Représenter des données », avec la 2de). Bornes `cycle2.json` : CE2-074 (caractères qualitatifs ou

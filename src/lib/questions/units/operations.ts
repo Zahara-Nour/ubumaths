@@ -26,17 +26,17 @@ import {
 	invert,
 	unitsEqual as mathASTUnitsEqual,
 	unitsEquivalent
-} from '$lib/mathAST/units/operations';
+} from '#lib/mathAST/units/operations.ts';
 
 // Import unit factory functions
-import { unit, dimensionless, fromComponents } from '$lib/mathAST/units/factory';
+import { unit, dimensionless, fromComponents } from '#lib/mathAST/units/factory.ts';
 
 // Import conversion functions
 import {
 	unitsAreCompatible as mathASTUnitsAreCompatible,
 	getConversionFactor as mathASTGetConversionFactor,
 	getDimensionalSignature as mathASTGetDimensionalSignature
-} from '$lib/mathAST/units/conversion';
+} from '#lib/mathAST/units/conversion.ts';
 
 // ============================================================================
 // BACKWARD-COMPATIBLE ALIASES

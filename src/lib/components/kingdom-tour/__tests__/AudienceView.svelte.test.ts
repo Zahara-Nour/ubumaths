@@ -6,8 +6,8 @@ import { page } from 'vitest/browser';
 import { describe, expect, it } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import AudienceView from '../AudienceView.svelte';
-import { MONTH_PALETTES } from '$lib/almanach/palettes';
-import { AUDIENCE_VIEWS } from '$lib/kingdom-tour/views';
+import { MONTH_PALETTES } from '#lib/almanach/palettes.ts';
+import { AUDIENCE_VIEWS, PARENT_VIEW, STUDENT_VIEW, faqJsonLd } from '#lib/kingdom-tour/views.ts';
 
 // Constantes
 
@@ -53,5 +53,43 @@ describe('AudienceView', () => {
 			await screen.unmount();
 			main.remove();
 		}
+	});
+
+	describe('la FAQ des parents', () => {
+		it('quatre questions, repliées, la réponse déjà dans la page', async () => {
+			const screen = await renderView(PARENT_VIEW);
+			const entries = screen.container.querySelectorAll('#faq details');
+			expect(entries.length).toBe(4);
+			for (const entry of entries) expect((entry as HTMLDetailsElement).open).toBe(false);
+			expect(screen.container.querySelector('#faq')?.textContent).toMatch(/Groq/);
+		});
+
+		it('un clic sur la question ouvre sa réponse', async () => {
+			const screen = await renderView(PARENT_VIEW);
+			await screen.getByText('Les jeux ne vont-ils pas le distraire ?').click();
+			const entry = screen.container.querySelectorAll('#faq details')[3] as HTMLDetailsElement;
+			expect(entry.open).toBe(true);
+			await expect.element(screen.getByText(/Les gidouilles ne s’achètent pas/)).toBeVisible();
+		});
+
+		it('les données structurées FAQPage dans l’en-tête : une fois, lisibles, celles de la FAQ', async () => {
+			await renderView(PARENT_VIEW);
+			const faqScripts = [
+				...document.head.querySelectorAll('script[type="application/ld+json"]')
+			].filter((s) => s.textContent?.includes('"FAQPage"'));
+			expect(faqScripts.length).toBe(1);
+			expect(JSON.parse(faqScripts[0].textContent ?? '')).toEqual(faqJsonLd(PARENT_VIEW.faq ?? []));
+		});
+
+		it('la vue des élèves ne met aucune FAQPage dans l’en-tête', async () => {
+			await renderView(STUDENT_VIEW);
+			const scripts = [...document.head.querySelectorAll('script[type="application/ld+json"]')];
+			expect(scripts.some((s) => s.textContent?.includes('"FAQPage"'))).toBe(false);
+		});
+
+		it.each(VIEWS.filter(([id]) => id !== 'parent'))('%s : pas de FAQ', async (_, view) => {
+			const screen = await renderView(view);
+			expect(screen.container.querySelector('#faq')).toBeNull();
+		});
 	});
 });

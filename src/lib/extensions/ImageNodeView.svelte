@@ -12,7 +12,7 @@
 	@see ImageAttributePanel.svelte for the editing UI
 -->
 <script lang="ts">
-	import { lore } from '$lib/config/lore';
+	import { lore } from '#lib/config/lore.ts';
 	import { z } from 'zod';
 	import { NodeViewWrapper } from 'svelte-tiptap';
 	import type { Editor } from '@tiptap/core';
@@ -27,12 +27,12 @@
 		selected: boolean;
 	}
 	import { Pencil, Trash2, Check, X } from '@lucide/svelte';
-	import { Button } from '$lib/components/ui/button';
-	import * as Dialog from '$lib/components/ui/dialog';
-	import ImageAttributePanel from '$lib/components/exercises/ImageAttributePanel.svelte';
-	import { toaster } from '$lib/stores/toaster.svelte';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import * as Dialog from '#lib/components/ui/dialog/index.ts';
+	import ImageAttributePanel from '#lib/components/exercises/ImageAttributePanel.svelte';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
 	import { SIZE_CLASS_STYLES, SIZE_CLASSES, ALIGNMENTS } from './image-constants';
-	import type { ImageSizeClass, ImageAlignment } from '$lib/ubumark';
+	import type { ImageSizeClass, ImageAlignment } from '#lib/ubumark/index.ts';
 
 	// NodeView props from TipTap
 	let { node, updateAttributes, deleteNode, selected, editor, getPos }: NodeViewProps = $props();
@@ -179,7 +179,7 @@
 
 		// Try to parse and validate the markdown
 		try {
-			const { parseMarkdown } = await import('$lib/ubumark/parser');
+			const { parseMarkdown } = await import('#lib/ubumark/parser/index.ts');
 			const ast = parseMarkdown(markdownText);
 			const imageNode = ast.children.find((n) => n.type === 'image');
 
@@ -303,7 +303,7 @@
 				return;
 			}
 			try {
-				const { parseMarkdown } = await import('$lib/ubumark/parser');
+				const { parseMarkdown } = await import('#lib/ubumark/parser/index.ts');
 				const ast = parseMarkdown(markdownText);
 				const imageNode = ast.children.find((n) => n.type === 'image');
 				syntaxStatus = imageNode && imageNode.type === 'image' ? 'valid' : 'invalid';
@@ -353,7 +353,7 @@
 		isUpdating = true;
 
 		try {
-			const { parseMarkdown } = await import('$lib/ubumark/parser');
+			const { parseMarkdown } = await import('#lib/ubumark/parser/index.ts');
 			const ast = parseMarkdown(markdown);
 			const imageNode = ast.children.find((n) => n.type === 'image');
 

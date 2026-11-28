@@ -1,0 +1,570 @@
+{
+	"id": "4e196673-02f1-43e1-b895-394185bad8d2",
+	"title": "Lis la courbe (heure par heure, kg, km)",
+	"description": "La température heure par heure (axe de 2 en 2, valeur entre deux traits), l'heure d'une température donnée, la masse d'un bébé (axe de 0,5 en 0,5 kg), la distance d'un randonneur",
+	"grades": ["CM2"],
+	"level": 4,
+	"delay": 90,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"spacesFromFourDigits": true,
+			"zeros": "off"
+		}
+	},
+	"variations": [
+		{
+			"statement": "On a relevé la température toutes les heures, de $8$ h à $18$ h.\n\n```courbe\nx: 7 ; 19\ny: 0 ; 30\ngrille: 1 ; 2\naxes: x = Heure (h) ; y = Température (°C)\ndonnées: (8 ; {{t0}}) ; (9 ; {{t1}}) ; (10 ; {{t2}}) ; (11 ; {{t3}}) ; (12 ; {{t4}}) ; (13 ; {{t5}}) ; (14 ; {{t6}}) ; (15 ; {{t7}}) ; (16 ; {{t8}}) ; (17 ; {{t9}}) ; (18 ; {{t10}})\ntaille: moyenne\n```\n\nQuelle température faisait-il à ${{eval:8+k}}$ h ?\n\n$?$ °C",
+			"variables": [
+				{
+					"name": "t0",
+					"expression": "5..9"
+				},
+				{
+					"name": "d1",
+					"expression": "0..3"
+				},
+				{
+					"name": "d2",
+					"expression": "0..3"
+				},
+				{
+					"name": "d3",
+					"expression": "0..3"
+				},
+				{
+					"name": "d4",
+					"expression": "0..3"
+				},
+				{
+					"name": "d5",
+					"expression": "0..3"
+				},
+				{
+					"name": "d6",
+					"expression": "0..3"
+				},
+				{
+					"name": "d7",
+					"expression": "0..2"
+				},
+				{
+					"name": "d8",
+					"expression": "0..2"
+				},
+				{
+					"name": "d9",
+					"expression": "0..2"
+				},
+				{
+					"name": "d10",
+					"expression": "0..2"
+				},
+				{
+					"name": "t1",
+					"expression": "eval:t0+d1"
+				},
+				{
+					"name": "t2",
+					"expression": "eval:t1+d2"
+				},
+				{
+					"name": "t3",
+					"expression": "eval:t2+d3"
+				},
+				{
+					"name": "t4",
+					"expression": "eval:t3+d4"
+				},
+				{
+					"name": "t5",
+					"expression": "eval:t4+d5"
+				},
+				{
+					"name": "t6",
+					"expression": "eval:t5+d6"
+				},
+				{
+					"name": "t7",
+					"expression": "eval:t6-d7"
+				},
+				{
+					"name": "t8",
+					"expression": "eval:t7-d8"
+				},
+				{
+					"name": "t9",
+					"expression": "eval:t8-d9"
+				},
+				{
+					"name": "t10",
+					"expression": "eval:t9-d10"
+				},
+				{
+					"name": "k",
+					"expression": "0..10"
+				},
+				{
+					"name": "n",
+					"expression": "eval:(t0)*((k-1)*(k-2)*(k-3)*(k-4)*(k-5)*(k-6)*(k-7)*(k-8)*(k-9)*(k-10))/(3628800)+(t1)*((k-0)*(k-2)*(k-3)*(k-4)*(k-5)*(k-6)*(k-7)*(k-8)*(k-9)*(k-10))/(-362880)+(t2)*((k-0)*(k-1)*(k-3)*(k-4)*(k-5)*(k-6)*(k-7)*(k-8)*(k-9)*(k-10))/(80640)+(t3)*((k-0)*(k-1)*(k-2)*(k-4)*(k-5)*(k-6)*(k-7)*(k-8)*(k-9)*(k-10))/(-30240)+(t4)*((k-0)*(k-1)*(k-2)*(k-3)*(k-5)*(k-6)*(k-7)*(k-8)*(k-9)*(k-10))/(17280)+(t5)*((k-0)*(k-1)*(k-2)*(k-3)*(k-4)*(k-6)*(k-7)*(k-8)*(k-9)*(k-10))/(-14400)+(t6)*((k-0)*(k-1)*(k-2)*(k-3)*(k-4)*(k-5)*(k-7)*(k-8)*(k-9)*(k-10))/(17280)+(t7)*((k-0)*(k-1)*(k-2)*(k-3)*(k-4)*(k-5)*(k-6)*(k-8)*(k-9)*(k-10))/(-30240)+(t8)*((k-0)*(k-1)*(k-2)*(k-3)*(k-4)*(k-5)*(k-6)*(k-7)*(k-9)*(k-10))/(80640)+(t9)*((k-0)*(k-1)*(k-2)*(k-3)*(k-4)*(k-5)*(k-6)*(k-7)*(k-8)*(k-10))/(-362880)+(t10)*((k-0)*(k-1)*(k-2)*(k-3)*(k-4)*(k-5)*(k-6)*(k-7)*(k-8)*(k-9))/(3628800)"
+				}
+			],
+			"conditions": ["mod(n,2) == 1", "t10 >= 1"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{n}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On part de ${{eval:8+k}}$ h sur l'axe horizontal, on monte jusqu'au point de la courbe, puis on lit la température sur l'axe vertical : un carreau vaut $2$ °C.",
+					"Le point tombe au milieu d'un carreau : la moitié de $2$, c'est $1$.",
+					"À ${{eval:8+k}}$ h, il faisait $\\textcolor{{{color:primary.0}}}{{{n}}}$ °C."
+				]
+			}
+		},
+		{
+			"statement": "On a relevé la température toutes les heures, de $8$ h à $14$ h.\n\n```courbe\nx: 7 ; 15\ny: 0 ; 30\ngrille: 1 ; 2\naxes: x = Heure (h) ; y = Température (°C)\ndonnées: (8 ; {{t0}}) ; (9 ; {{t1}}) ; (10 ; {{t2}}) ; (11 ; {{t3}}) ; (12 ; {{t4}}) ; (13 ; {{t5}}) ; (14 ; {{t6}})\ntaille: moyenne\n```\n\nÀ quelle heure faisait-il ${{c}}$ °C ?\n\n$?$ h",
+			"variables": [
+				{
+					"name": "t0",
+					"expression": "4..8"
+				},
+				{
+					"name": "d1",
+					"expression": "1..3"
+				},
+				{
+					"name": "d2",
+					"expression": "1..3"
+				},
+				{
+					"name": "d3",
+					"expression": "1..3"
+				},
+				{
+					"name": "d4",
+					"expression": "1..3"
+				},
+				{
+					"name": "d5",
+					"expression": "1..3"
+				},
+				{
+					"name": "d6",
+					"expression": "1..3"
+				},
+				{
+					"name": "t1",
+					"expression": "eval:t0+d1"
+				},
+				{
+					"name": "t2",
+					"expression": "eval:t1+d2"
+				},
+				{
+					"name": "t3",
+					"expression": "eval:t2+d3"
+				},
+				{
+					"name": "t4",
+					"expression": "eval:t3+d4"
+				},
+				{
+					"name": "t5",
+					"expression": "eval:t4+d5"
+				},
+				{
+					"name": "t6",
+					"expression": "eval:t5+d6"
+				},
+				{
+					"name": "k",
+					"expression": "0..6"
+				},
+				{
+					"name": "c",
+					"expression": "eval:(t0)*((k-1)*(k-2)*(k-3)*(k-4)*(k-5)*(k-6))/(720)+(t1)*((k-0)*(k-2)*(k-3)*(k-4)*(k-5)*(k-6))/(-120)+(t2)*((k-0)*(k-1)*(k-3)*(k-4)*(k-5)*(k-6))/(48)+(t3)*((k-0)*(k-1)*(k-2)*(k-4)*(k-5)*(k-6))/(-36)+(t4)*((k-0)*(k-1)*(k-2)*(k-3)*(k-5)*(k-6))/(48)+(t5)*((k-0)*(k-1)*(k-2)*(k-3)*(k-4)*(k-6))/(-120)+(t6)*((k-0)*(k-1)*(k-2)*(k-3)*(k-4)*(k-5))/(720)"
+				},
+				{
+					"name": "h",
+					"expression": "eval:8+k"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{h}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On part de ${{c}}$ °C sur l'axe vertical, on suit la ligne horizontale jusqu'au point de la courbe, puis on descend lire l'heure.",
+					"${{c}}$ °C : à $\\textcolor{{{color:primary.0}}}{{{h}}}$ h."
+				]
+			}
+		},
+		{
+			"statement": "On a pesé un bébé chaque mois, de $1$ à $6$ mois.\n\n```courbe\nx: 0 ; 7\ny: 0 ; 10\ngrille: 1 ; 0,5\naxes: x = Âge (mois) ; y = Masse (kg)\ndonnées: (1 ; {{eval:w1/2;d}}) ; (2 ; {{eval:w2/2;d}}) ; (3 ; {{eval:w3/2;d}}) ; (4 ; {{eval:w4/2;d}}) ; (5 ; {{eval:w5/2;d}}) ; (6 ; {{eval:w6/2;d}})\ntaille: moyenne\n```\n\nQuelle était la masse du bébé à ${{eval:k+1}}$ mois ?\n\n$?$ kg",
+			"variables": [
+				{
+					"name": "w1",
+					"expression": "7..9"
+				},
+				{
+					"name": "g2",
+					"expression": "1..2"
+				},
+				{
+					"name": "g3",
+					"expression": "1..2"
+				},
+				{
+					"name": "g4",
+					"expression": "1..2"
+				},
+				{
+					"name": "g5",
+					"expression": "1..2"
+				},
+				{
+					"name": "g6",
+					"expression": "1..2"
+				},
+				{
+					"name": "w2",
+					"expression": "eval:w1+g2"
+				},
+				{
+					"name": "w3",
+					"expression": "eval:w2+g3"
+				},
+				{
+					"name": "w4",
+					"expression": "eval:w3+g4"
+				},
+				{
+					"name": "w5",
+					"expression": "eval:w4+g5"
+				},
+				{
+					"name": "w6",
+					"expression": "eval:w5+g6"
+				},
+				{
+					"name": "k",
+					"expression": "0..5"
+				},
+				{
+					"name": "n",
+					"expression": "eval:(w1)*((k-1)*(k-2)*(k-3)*(k-4)*(k-5))/(-120)+(w2)*((k-0)*(k-2)*(k-3)*(k-4)*(k-5))/(24)+(w3)*((k-0)*(k-1)*(k-3)*(k-4)*(k-5))/(-12)+(w4)*((k-0)*(k-1)*(k-2)*(k-4)*(k-5))/(12)+(w5)*((k-0)*(k-1)*(k-2)*(k-3)*(k-5))/(-24)+(w6)*((k-0)*(k-1)*(k-2)*(k-3)*(k-4))/(120)"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:n/2;d}}",
+					"requiredForm": {
+						"pattern": "a:number"
+					}
+				}
+			],
+			"correction": {
+				"steps": [
+					"On part de ${{eval:k+1}}$ mois sur l'axe horizontal, on monte jusqu'au point, puis on lit l'axe vertical : il est gradué de $0{,}5$ en $0{,}5$ kg, deux carreaux font $1$ kg.",
+					"À ${{eval:k+1}}$ mois, le bébé pesait $\\textcolor{{{color:primary.0}}}{{{eval:n/2;d}}}$ kg."
+				]
+			}
+		},
+		{
+			"statement": "Un randonneur part à $9$ h. La courbe donne la distance qu'il a parcourue depuis son départ, heure par heure.\n\n```courbe\nx: 8 ; 16\ny: 0 ; 30\ngrille: 1 ; 2\naxes: x = Heure (h) ; y = Distance parcourue (km)\ndonnées: (9 ; {{t0}}) ; (10 ; {{t1}}) ; (11 ; {{t2}}) ; (12 ; {{t3}}) ; (13 ; {{t4}}) ; (14 ; {{t5}}) ; (15 ; {{t6}})\ntaille: moyenne\n```\n\nQuelle distance avait-il parcourue à ${{eval:9+k}}$ h ?\n\n$?$ km",
+			"variables": [
+				{
+					"name": "v1",
+					"expression": "2..5"
+				},
+				{
+					"name": "v2",
+					"expression": "2..5"
+				},
+				{
+					"name": "v3",
+					"expression": "2..5"
+				},
+				{
+					"name": "v4",
+					"expression": "2..5"
+				},
+				{
+					"name": "v5",
+					"expression": "2..5"
+				},
+				{
+					"name": "v6",
+					"expression": "2..5"
+				},
+				{
+					"name": "t0",
+					"expression": "eval:0"
+				},
+				{
+					"name": "t1",
+					"expression": "eval:t0+v1"
+				},
+				{
+					"name": "t2",
+					"expression": "eval:t1+v2"
+				},
+				{
+					"name": "t3",
+					"expression": "eval:t2+v3"
+				},
+				{
+					"name": "t4",
+					"expression": "eval:t3+v4"
+				},
+				{
+					"name": "t5",
+					"expression": "eval:t4+v5"
+				},
+				{
+					"name": "t6",
+					"expression": "eval:t5+v6"
+				},
+				{
+					"name": "k",
+					"expression": "1..6"
+				},
+				{
+					"name": "n",
+					"expression": "eval:(t0)*((k-1)*(k-2)*(k-3)*(k-4)*(k-5)*(k-6))/(720)+(t1)*((k-0)*(k-2)*(k-3)*(k-4)*(k-5)*(k-6))/(-120)+(t2)*((k-0)*(k-1)*(k-3)*(k-4)*(k-5)*(k-6))/(48)+(t3)*((k-0)*(k-1)*(k-2)*(k-4)*(k-5)*(k-6))/(-36)+(t4)*((k-0)*(k-1)*(k-2)*(k-3)*(k-5)*(k-6))/(48)+(t5)*((k-0)*(k-1)*(k-2)*(k-3)*(k-4)*(k-6))/(-120)+(t6)*((k-0)*(k-1)*(k-2)*(k-3)*(k-4)*(k-5))/(720)"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{n}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On part de ${{eval:9+k}}$ h sur l'axe horizontal, on monte jusqu'au point, puis on lit la distance sur l'axe vertical : un carreau vaut $2$ km.",
+					"À ${{eval:9+k}}$ h, il avait parcouru $\\textcolor{{{color:primary.0}}}{{{n}}}$ km."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "11 h : 13 °C, entre deux traits",
+			"variationIndex": 0,
+			"variables": {
+				"t0": "7",
+				"d1": "2",
+				"d2": "3",
+				"d3": "1",
+				"d4": "2",
+				"d5": "3",
+				"d6": "0",
+				"d7": "1",
+				"d8": "2",
+				"d9": "1",
+				"d10": "2",
+				"t1": "9",
+				"t2": "12",
+				"t3": "13",
+				"t4": "15",
+				"t5": "18",
+				"t6": "18",
+				"t7": "17",
+				"t8": "15",
+				"t9": "14",
+				"t10": "12",
+				"k": "3",
+				"n": "13"
+			},
+			"answers": ["13"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : le trait du dessous (12)",
+			"variationIndex": 0,
+			"variables": {
+				"t0": "7",
+				"d1": "2",
+				"d2": "3",
+				"d3": "1",
+				"d4": "2",
+				"d5": "3",
+				"d6": "0",
+				"d7": "1",
+				"d8": "2",
+				"d9": "1",
+				"d10": "2",
+				"t1": "9",
+				"t2": "12",
+				"t3": "13",
+				"t4": "15",
+				"t5": "18",
+				"t6": "18",
+				"t7": "17",
+				"t8": "15",
+				"t9": "14",
+				"t10": "12",
+				"k": "3",
+				"n": "13"
+			},
+			"answers": ["12"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "13 °C : à 12 h",
+			"variationIndex": 1,
+			"variables": {
+				"t0": "5",
+				"d1": "2",
+				"d2": "1",
+				"d3": "3",
+				"d4": "2",
+				"d5": "3",
+				"d6": "1",
+				"t1": "7",
+				"t2": "8",
+				"t3": "11",
+				"t4": "13",
+				"t5": "16",
+				"t6": "17",
+				"k": "4",
+				"c": "13",
+				"h": "12"
+			},
+			"answers": ["12"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : la température lue au lieu de l'heure (13)",
+			"variationIndex": 1,
+			"variables": {
+				"t0": "5",
+				"d1": "2",
+				"d2": "1",
+				"d3": "3",
+				"d4": "2",
+				"d5": "3",
+				"d6": "1",
+				"t1": "7",
+				"t2": "8",
+				"t3": "11",
+				"t4": "13",
+				"t5": "16",
+				"t6": "17",
+				"k": "4",
+				"c": "13",
+				"h": "12"
+			},
+			"answers": ["13"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "3 mois : 5,5 kg",
+			"variationIndex": 2,
+			"variables": {
+				"w1": "8",
+				"g2": "2",
+				"g3": "1",
+				"g4": "2",
+				"g5": "1",
+				"g6": "1",
+				"w2": "10",
+				"w3": "11",
+				"w4": "13",
+				"w5": "14",
+				"w6": "15",
+				"k": "2",
+				"n": "11"
+			},
+			"answers": ["5,5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : un carreau compté pour 1 kg (11)",
+			"variationIndex": 2,
+			"variables": {
+				"w1": "8",
+				"g2": "2",
+				"g3": "1",
+				"g4": "2",
+				"g5": "1",
+				"g6": "1",
+				"w2": "10",
+				"w3": "11",
+				"w4": "13",
+				"w5": "14",
+				"w6": "15",
+				"k": "2",
+				"n": "11"
+			},
+			"answers": ["11"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "12 h : 12 km",
+			"variationIndex": 3,
+			"variables": {
+				"v1": "4",
+				"v2": "3",
+				"v3": "5",
+				"v4": "2",
+				"v5": "4",
+				"v6": "3",
+				"t0": "0",
+				"t1": "4",
+				"t2": "7",
+				"t3": "12",
+				"t4": "14",
+				"t5": "18",
+				"t6": "21",
+				"k": "3",
+				"n": "12"
+			},
+			"answers": ["12"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : l'heure d'avant (7)",
+			"variationIndex": 3,
+			"variables": {
+				"v1": "4",
+				"v2": "3",
+				"v3": "5",
+				"v4": "2",
+				"v5": "4",
+				"v6": "3",
+				"t0": "0",
+				"t1": "4",
+				"t2": "7",
+				"t3": "12",
+				"t4": "14",
+				"t5": "18",
+				"t6": "21",
+				"k": "3",
+				"n": "12"
+			},
+			"answers": ["7"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

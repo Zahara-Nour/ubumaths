@@ -7,7 +7,7 @@
  *
  * @example
  * ```typescript
- * import { hybridSearch, formatResultsForPrompt } from '$lib/server/rag';
+ * import { hybridSearch, formatResultsForPrompt } from '#lib/server/rag/index.ts';
  *
  * // Search for relevant content
  * const results = await hybridSearch(supabase, 'fractions équivalentes', {

@@ -12,8 +12,8 @@ for function curves. Displays a visual preview of each style option.
 -->
 
 <script lang="ts">
-	import { LINE_STYLES, LINE_STYLE_DASHARRAY, type LineStyle } from '$lib/grapheur/types';
-	import * as Popover from '$lib/components/ui/popover';
+	import { LINE_STYLES, LINE_STYLE_DASHARRAY, type LineStyle } from '#lib/grapheur/types.ts';
+	import * as Popover from '#lib/components/ui/popover/index.ts';
 
 	let { value, onchange }: { value: LineStyle; onchange: (style: LineStyle) => void } = $props();
 

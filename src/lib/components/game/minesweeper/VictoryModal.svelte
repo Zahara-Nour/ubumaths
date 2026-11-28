@@ -6,8 +6,8 @@
 
 	USAGE:
 	```typescript
-	import { modalStack } from '$lib/stores/modalStack.svelte';
-	import VictoryModal from '$lib/components/game/minesweeper/VictoryModal.svelte';
+	import { modalStack } from '#lib/stores/modalStack.svelte.ts';
+	import VictoryModal from '#lib/components/game/minesweeper/VictoryModal.svelte';
 
 	modalStack.push({
 		component: VictoryModal,
@@ -25,12 +25,12 @@
 -->
 
 <script lang="ts">
-	import { Button } from '$lib/components/ui/button';
+	import { Button } from '#lib/components/ui/button/index.ts';
 	import { RotateCcw, Trophy } from '@lucide/svelte';
-	import type { Difficulty, RewardBreakdown } from '$lib/types/minesweeper';
-	import { DIFFICULTY_LABELS } from '$lib/types/minesweeper';
-	import { formatDuration } from '$lib/utils/format';
-	import type { UnlockedAchievement } from '$lib/stores/minesweeper.svelte';
+	import type { Difficulty, RewardBreakdown } from '#lib/types/minesweeper.ts';
+	import { DIFFICULTY_LABELS } from '#lib/types/minesweeper.ts';
+	import { formatDuration } from '#lib/utils/format.ts';
+	import type { UnlockedAchievement } from '#lib/stores/minesweeper.svelte.ts';
 
 	interface Props {
 		gidouilles: number;

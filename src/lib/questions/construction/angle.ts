@@ -13,7 +13,7 @@
  * @module questions/construction/angle
  */
 
-import type { AngleCheck } from '$lib/ubumark/types/construction';
+import type { AngleCheck } from '#lib/ubumark/types/construction.ts';
 import type { DrawnLine, DrawnObject } from './answer';
 import { basePointsOf, constructionOf, isBuiltMark, isInFrame, repereAt } from './instruments';
 import type { ConstructionVerdict, Position } from './judge';

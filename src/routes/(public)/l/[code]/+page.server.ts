@@ -8,8 +8,8 @@
 
 import { error, redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
-import { resolveShortLink } from '$lib/server/short-links';
-import { shortLinkCodeSchema } from '$lib/validation/short-link';
+import { resolveShortLink } from '#lib/server/short-links.ts';
+import { shortLinkCodeSchema } from '#lib/validation/short-link.ts';
 
 const NOT_FOUND = 'Ce lien n’existe pas';
 

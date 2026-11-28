@@ -8,7 +8,7 @@
 import { describe, it, expect } from 'vitest';
 import { generateInstanceWithFixedVariables, getRootVariableNames } from '../test-instance-builder';
 import type { QuestionTemplate, QuestionVariation, QuestionVariable } from '../../types';
-import { templateMarkdown } from '$lib/ubumark';
+import { templateMarkdown } from '#lib/ubumark/index.ts';
 
 function makeTemplate(
 	variation: QuestionVariation,

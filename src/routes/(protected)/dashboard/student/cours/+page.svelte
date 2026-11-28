@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { lore } from '$lib/config/lore';
+	import { lore } from '#lib/config/lore.ts';
 	/**
 	 * Student Chapters List Page
 	 * ==========================
@@ -8,10 +8,10 @@
 	 * Each chapter card shows progress indicators and links to the detail view.
 	 */
 
-	import { navigating } from '$app/stores';
-	import * as Card from '$lib/components/ui/card';
-	import { Badge } from '$lib/components/ui/badge';
-	import { ChapterCard } from '$lib/components/cours';
+	import { navigating } from '$app/state';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
+	import { ChapterCard } from '#lib/components/cours/index.ts';
 	import { Book, FolderOpen, GraduationCap } from '@lucide/svelte';
 	import type { PageData } from './$types';
 
@@ -22,7 +22,7 @@
 	let { data }: Props = $props();
 
 	// Derived values
-	let isNavigating = $derived(!!$navigating);
+	let isNavigating = $derived(!!navigating.to);
 	let hasChapters = $derived(data.totalChapters > 0);
 </script>
 

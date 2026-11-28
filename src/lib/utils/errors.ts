@@ -27,7 +27,7 @@
  *
  * For error severity levels, import from errorMonitoring.ts:
  * ```typescript
- * import type { ErrorSeverity } from '$lib/utils/errorMonitoring';
+ * import type { ErrorSeverity } from '#lib/utils/errorMonitoring.ts';
  * // 'info' | 'warning' | 'error' | 'critical'
  * ```
  *

@@ -5,8 +5,8 @@
  * en ligne pour y retrouver les trous (`\placeholder[N]{}` et `{{blank:N}}`).
  */
 import { describe, it, expect } from 'vitest';
-import { parseMarkdown } from '$lib/ubumark';
-import type { TableNode } from '$lib/ubumark';
+import { parseMarkdown } from '#lib/ubumark/index.ts';
+import type { TableNode } from '#lib/ubumark/index.ts';
 import { cellHasBlanks, tableCellInlineNodes, tableHasBlanks } from '../fill-blanks-utils';
 
 function tableOf(markdown: string): TableNode {

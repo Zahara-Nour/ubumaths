@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { notificationStore } from '$lib/stores/notifications.svelte';
+	import { notificationStore } from '#lib/stores/notifications.svelte.ts';
 	import {
 		NOTIFICATION_TYPE_ICONS,
 		NOTIFICATION_PRIORITY_COLORS,
@@ -8,15 +8,15 @@
 		formatCreatorName,
 		getRelativeTime,
 		type NotificationWithDetails
-	} from '$lib/types/notification';
-	import { Button } from '$lib/components/ui/button';
-	import { sanitizeNotificationHtml } from '$lib/utils/sanitize-notification';
+	} from '#lib/types/notification.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import { sanitizeNotificationHtml } from '#lib/utils/sanitize-notification.ts';
 	import {
 		formatDailySummaryFromMetadata,
 		isDailySummaryMetadata
-	} from '$lib/utils/notification-formatters';
+	} from '#lib/utils/notification-formatters.ts';
 	import { Bell, Loader2 } from '@lucide/svelte';
-	import { goto } from '$app/navigation';
+	import { gotoNotification } from '#lib/navigation/goto-notification.ts';
 	import { onMount } from 'svelte';
 
 	/**
@@ -70,7 +70,7 @@
 
 		// Navigate if action URL exists
 		if (notification.action_url) {
-			goto(notification.action_url);
+			gotoNotification(notification.action_url);
 		}
 	}
 

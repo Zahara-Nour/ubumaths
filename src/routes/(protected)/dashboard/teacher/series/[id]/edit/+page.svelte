@@ -1,19 +1,23 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import * as Card from '$lib/components/ui/card';
-	import { Button } from '$lib/components/ui/button';
-	import BackLink from '$lib/components/navigation/BackLink.svelte';
-	import { Input } from '$lib/components/ui/input';
-	import { Label } from '$lib/components/ui/label';
-	import { Textarea } from '$lib/components/ui/textarea';
-	import MySelect from '$lib/components/MySelect.svelte';
-	import { Minus, Plus, Trash2 } from '@lucide/svelte';
-	import { toaster } from '$lib/stores/toaster.svelte';
-	import { submitAction } from '$lib/utils/form-action';
-	import { getGradeSelectItems } from '$lib/utils/grades';
-	import { MarkdownRenderer } from '$lib/components/markdown';
-	import { convertLegacyLatexToMarkdown } from '$lib/utils/latex-syntax-adapter';
-	import type { SeriesItem } from '$lib/validation/series';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import BackLink from '#lib/components/navigation/BackLink.svelte';
+	import { Input } from '#lib/components/ui/input/index.ts';
+	import { Label } from '#lib/components/ui/label/index.ts';
+	import { Textarea } from '#lib/components/ui/textarea/index.ts';
+	import MySelect from '#lib/components/MySelect.svelte';
+	import { Clock, Minus, Plus, Trash2 } from '@lucide/svelte';
+	import TooShortMark from '#lib/components/series/TooShortMark.svelte';
+	import ObservedDelayHint from '#lib/components/series/ObservedDelayHint.svelte';
+	import VariationPicker from '#lib/components/series/VariationPicker.svelte';
+	import { effectiveDelay, observedSuggestion, tooShortAt } from '#lib/types/duration-signals.ts';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
+	import { submitAction } from '#lib/utils/form-action.ts';
+	import { getGradeSelectItems } from '#lib/utils/grades.ts';
+	import { MarkdownRenderer } from '#lib/components/markdown/index.ts';
+	import { convertLegacyLatexToMarkdown } from '#lib/utils/latex-syntax-adapter.ts';
+	import type { SeriesItem } from '#lib/validation/series.ts';
 	import type { PageData } from './$types';
 
 	let { data }: { data: PageData } = $props();
@@ -38,6 +42,23 @@
 		const next = items[index].quantity + delta;
 		if (next < 1 || next > 99) return;
 		items[index].quantity = next;
+	}
+
+	// Durée observée appliquée à la copie de travail : écrite à l'enregistrement
+	function handleApplyDelay(index: number, seconds: number) {
+		items[index].delay = seconds;
+	}
+
+	// Choix des variations (idées-format, idée 2) : absent = toutes, rien d'enregistré
+	function handleVariations(index: number, variations: number[] | undefined) {
+		if (variations) items[index].variations = variations;
+		else delete items[index].variations;
+	}
+
+	// Variations en QCM (idées-format, idée 4) : absent = aucune, rien d'enregistré
+	function handleChoiceVariations(index: number, choiceVariations: number[] | undefined) {
+		if (choiceVariations) items[index].choiceVariations = choiceVariations;
+		else delete items[index].choiceVariations;
 	}
 
 	function handleRemove(index: number) {
@@ -132,6 +153,15 @@
 									</span>
 								{/if}
 								<div class="flex items-center gap-2">
+									<!-- Durée par question : en lecture (réglée dans le panier, ou par la durée observée) -->
+									<span
+										class="flex items-center gap-1 text-sm text-muted-foreground"
+										title="Durée par question"
+										data-duree
+									>
+										<Clock class="h-3.5 w-3.5" aria-hidden="true" />
+										{effectiveDelay(item.delay)}&nbsp;s
+									</span>
 									<Button
 										type="button"
 										size="icon"
@@ -161,6 +191,28 @@
 										<Trash2 class="h-4 w-4" />
 									</Button>
 								</div>
+								{#if template}
+									<!-- Sa propre ligne, comme les marques de durée -->
+									<div class="w-full">
+										<VariationPicker
+											{template}
+											selected={item.variations}
+											onchange={(variations) => handleVariations(index, variations)}
+											choiceSelected={item.choiceVariations}
+											onchoicechange={(choiceVariations) =>
+												handleChoiceVariations(index, choiceVariations)}
+										/>
+									</div>
+								{/if}
+								<TooShortMark
+									timing={tooShortAt(data.durationSignals, item.templateId, item.delay)}
+									class="w-full"
+								/>
+								<ObservedDelayHint
+									seconds={observedSuggestion(data.observedDurations, item.templateId, item.delay)}
+									onapply={(seconds) => handleApplyDelay(index, seconds)}
+									class="w-full"
+								/>
 							</li>
 						{/each}
 					</ul>

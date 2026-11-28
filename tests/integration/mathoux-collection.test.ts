@@ -29,7 +29,7 @@
 
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 import { createClient, type SupabaseClient } from '@supabase/supabase-js';
-import type { Database } from '$lib/types/database';
+import type { Database } from '#lib/types/database.ts';
 import {
 	createServiceRoleClient,
 	cleanupAllTestData
@@ -38,12 +38,15 @@ import { DEFAULT_TEST_PASSWORD } from '../helpers/database/supabase-client';
 import { getPostgresClient } from '../helpers/database/postgres-client';
 import { TestData } from '../helpers/database/test-data-factory';
 import { createFakeTemplate } from '../helpers/competence-referentiel.helpers';
-import { loadMathouCollection, loadMathouCollectionWithNews } from '$lib/server/mathoux/collection';
-import { readMathouMemory, rememberMathoux } from '$lib/server/mathoux/memory';
-import type { Mathou, MathouCollection } from '$lib/mathoux/collection-logic';
-import { mathouNews } from '$lib/mathoux/news';
-import { resolveTestLaunch } from '$lib/utils/test-launch';
-import { trainingQuery } from '$lib/mathoux/collection-logic';
+import {
+	loadMathouCollection,
+	loadMathouCollectionWithNews
+} from '#lib/server/mathoux/collection.ts';
+import { readMathouMemory, rememberMathoux } from '#lib/server/mathoux/memory.ts';
+import type { Mathou, MathouCollection } from '#lib/mathoux/collection-logic.ts';
+import { mathouNews } from '#lib/mathoux/news.ts';
+import { resolveTestLaunch } from '#lib/utils/test-launch.ts';
+import { trainingQuery } from '#lib/mathoux/collection-logic.ts';
 
 // ============================================================================
 // TYPES

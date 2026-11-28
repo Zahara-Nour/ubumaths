@@ -1,5 +1,5 @@
 <script lang="ts">
-	import '$lib/utils/mathlive-styles';
+	import '#lib/utils/mathlive-styles.ts';
 	/**
 	 * Un message dont les formules sont écrites `$…$` (refus de `.réciproque` :
 	 * « sur [0 ; +∞[ : $f^{-1}(x) = \sqrt{x}$ »), formules composées.
@@ -11,8 +11,9 @@
 	 * blanche `isSafeLatex` (même découpage, `messageParts`). Une formule que
 	 * MathLive ne sait pas composer reste en texte, échappée.
 	 */
-	import { convertLatexToMarkup, convertLatexToSpeakableText } from 'mathlive';
-	import { messageParts } from '$lib/atelier/reciprocal';
+	import { convertLatexToMarkup } from 'mathlive';
+	import { speakLatexInFrench } from '#lib/utils/formula-speech/french.ts';
+	import { messageParts } from '#lib/atelier/reciprocal.ts';
 
 	interface Props {
 		text: string;
@@ -27,7 +28,7 @@
 				return {
 					...part,
 					markup: convertLatexToMarkup(part.text, { defaultMode: 'inline-math' }),
-					spoken: convertLatexToSpeakableText(part.text)
+					spoken: speakLatexInFrench(part.text)
 				};
 			} catch {
 				return { ...part, markup: null, spoken: '' };

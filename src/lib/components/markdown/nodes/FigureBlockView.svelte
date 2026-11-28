@@ -23,13 +23,13 @@
 	@module components/markdown/nodes/FigureBlockView
 -->
 <script lang="ts">
-	import type { FigureNode } from '$lib/ubumark/types/figure';
-	import { buildFigureScene } from '$lib/ubumark/utils/figure-scene';
-	import { accentTspans, figureToSvg, type FigureShape } from '$lib/ubumark/utils/figure-svg';
+	import type { FigureNode } from '#lib/ubumark/types/figure.ts';
+	import { buildFigureScene } from '#lib/ubumark/utils/figure-scene.ts';
+	import { accentTspans, figureToSvg, type FigureShape } from '#lib/ubumark/utils/figure-svg.ts';
 	import FigureErrors from './FigureErrors.svelte';
 	import { OVER_BUDGET_MESSAGE, readRenderBudget, withinBudget } from '../render-budget';
 	import { readContentLocale } from '../content-locale';
-	import type { FigureScene } from '$lib/ubumark/utils/figure-scene';
+	import type { FigureScene } from '#lib/ubumark/utils/figure-scene.ts';
 	import type { Snippet } from 'svelte';
 
 	interface Props {

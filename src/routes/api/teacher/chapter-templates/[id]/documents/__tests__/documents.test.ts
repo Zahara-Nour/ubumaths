@@ -14,16 +14,16 @@ const MODELE = '22222222-2222-4222-8222-222222222222';
 const removeFileIfUnused = vi.fn(async () => false);
 const remove = vi.fn();
 
-vi.mock('$lib/server/middleware/auth', () => ({
+vi.mock('#lib/server/middleware/auth.ts', () => ({
 	requireRole: vi.fn(async () => ({ user: { id: 'prof' } }))
 }));
-vi.mock('$lib/server/template-guard', () => ({
+vi.mock('#lib/server/template-guard.ts', () => ({
 	requireOwnedTemplate: vi.fn(async () => MODELE)
 }));
-vi.mock('$lib/server/chapters', () => ({
+vi.mock('#lib/server/chapters.ts', () => ({
 	insertDocument: vi.fn(async () => ({ data: null, error: new Error('refusé') }))
 }));
-vi.mock('$lib/server/template-content', () => ({
+vi.mock('#lib/server/template-content.ts', () => ({
 	removeFileIfUnused: (...args: unknown[]) => removeFileIfUnused(...(args as []))
 }));
 

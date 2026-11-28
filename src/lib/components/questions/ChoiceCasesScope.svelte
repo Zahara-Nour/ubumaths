@@ -9,8 +9,8 @@
 -->
 <script lang="ts">
 	import type { Snippet } from 'svelte';
-	import type { ExpectedChoiceCase } from '$lib/questions/expected-result';
-	import { provideChoiceCaseResults } from '$lib/components/markdown/choice-case-results';
+	import type { ExpectedChoiceCase } from '#lib/questions/expected-result.ts';
+	import { provideChoiceCaseResults } from '#lib/components/markdown/choice-case-results.ts';
 
 	interface Props {
 		choiceCases: readonly ExpectedChoiceCase[];

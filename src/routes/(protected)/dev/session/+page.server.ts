@@ -19,7 +19,7 @@
  */
 import { error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
-import { requireAdmin } from '$lib/server/middleware/auth';
+import { requireAdmin } from '#lib/server/middleware/auth.ts';
 
 /**
  * Redact sensitive token data

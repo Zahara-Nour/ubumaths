@@ -1,6 +1,6 @@
 """Écrit les 6 modèles du lot 6b du CM2 (nombres décimaux) dans scripts/questions/cm2-6b/.
 
-Phase 0 du 2026-11-01 (§ 11 du journal `docs/wip/questions-cm2-progress.md`), recommandations
+Phase 0 du 2026-11-01 (§ 11 du journal `docs/archive/wip/questions-cm2-progress.md`), recommandations
 suivies par David (§ 11.1) : 6b = décimaux (031, 033, 145, 034, 146, 147) ; ranger (#12) garde une
 fraction décimale parmi les cinq nombres, comme l'exemple du BO ; intercaler (#13) accepte aussi
 l'écriture fractionnaire (règle `range`, sans forme exigée).

@@ -14,11 +14,11 @@
  */
 
 import type { VirtualKeyboardKeycap, VirtualKeyboardLayout } from 'mathlive';
-import { unitWritingToLatex } from '$lib/mathAST/units/display';
-import { unitsAreCompatible } from '$lib/mathAST/units/conversion';
-import type { Unit } from '$lib/mathAST/units/types';
+import { unitWritingToLatex } from '#lib/mathAST/units/display.ts';
+import { unitsAreCompatible } from '#lib/mathAST/units/conversion.ts';
+import type { Unit } from '#lib/mathAST/units/types.ts';
 import { extractUnitFromLatex, parseUnitExpression } from './parser';
-import { singleExpectedDuration } from './composite-duration';
+import { houseQuantityToLatex } from './validator';
 
 // ============================================================================
 // CONSTANTES
@@ -54,9 +54,12 @@ const KEYS_PER_ROW = 6;
 // FONCTIONS
 // ============================================================================
 
-/** Unité de la réponse attendue d'un trou (`5\unit{km}` → km), ou null si illisible */
+/**
+ * Unité de la réponse attendue d'un trou (`5\unit{km}` → km), ou null si illisible.
+ * La syntaxe maison (`28[mm]`, durée en h-min `{1[h]}{6[min]}`) est lue comme la correction la lit.
+ */
 function expectedUnit(expectedAnswer: string): Unit | null {
-	const writing = extractUnitFromLatex(singleExpectedDuration(expectedAnswer));
+	const writing = extractUnitFromLatex(houseQuantityToLatex(expectedAnswer));
 	return writing ? parseUnitExpression(writing) : null;
 }
 

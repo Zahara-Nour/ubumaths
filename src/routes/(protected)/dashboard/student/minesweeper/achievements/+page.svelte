@@ -1,8 +1,8 @@
 <script lang="ts">
-	import { Button } from '$lib/components/ui/button';
-	import { Card } from '$lib/components/ui/card';
-	import { Separator } from '$lib/components/ui/separator';
-	import AchievementShowcase from '$lib/components/game/minesweeper/AchievementShowcase.svelte';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import { Card } from '#lib/components/ui/card/index.ts';
+	import { Separator } from '#lib/components/ui/separator/index.ts';
+	import AchievementShowcase from '#lib/components/game/minesweeper/AchievementShowcase.svelte';
 	import type { PageData } from './$types';
 
 	let { data }: { data: PageData } = $props();

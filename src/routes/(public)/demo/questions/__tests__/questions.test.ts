@@ -2,7 +2,7 @@
  * Vitrine — la série de `/demo/questions` (PR 6g)
  *
  * - 4 questions, chacune avec une case et sa réponse attendue ;
- * - la première révision d'une carte neuve s'éloigne avec la note : Encore < Difficile < Bien < Facile.
+ * - la première révision d'une carte neuve s'éloigne davantage si elle est réussie : Pas réussi (Again) < Réussi (Good).
  */
 import { describe, it, expect } from 'vitest';
 import { demoClassroomItems, demoInstances, firstReviewIntervals } from '../questions';
@@ -21,12 +21,10 @@ describe('série de /demo/questions', () => {
 		expect(demoClassroomItems().every((item) => item.delaySeconds > 0)).toBe(true);
 	});
 
-	it('éloigne la première révision avec la note', () => {
-		const [again, hard, good, easy] = firstReviewIntervals();
+	it('éloigne davantage la première révision d’une carte réussie', () => {
+		const { missed, succeeded } = firstReviewIntervals();
 
-		expect(again).toBeGreaterThanOrEqual(1);
-		expect(again).toBeLessThan(hard);
-		expect(hard).toBeLessThan(good);
-		expect(good).toBeLessThan(easy);
+		expect(missed).toBeGreaterThanOrEqual(1);
+		expect(missed).toBeLessThan(succeeded);
 	});
 });

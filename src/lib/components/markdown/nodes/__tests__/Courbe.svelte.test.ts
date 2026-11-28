@@ -9,9 +9,9 @@ import { render } from 'vitest-browser-svelte';
 import Courbe from '../Courbe.svelte';
 import ListNode from '../ListNode.svelte';
 import MarkdownRenderer from '../../MarkdownRenderer.svelte';
-import { parseCourbeContent } from '$lib/ubumark/parser/courbe-parser';
-import { buildCourbeScene } from '$lib/ubumark/utils/courbe-scene';
-import { parseMarkdown, type ListNode as ListAst } from '$lib/ubumark';
+import { parseCourbeContent } from '#lib/ubumark/parser/courbe-parser.ts';
+import { buildCourbeScene } from '#lib/ubumark/utils/courbe-scene.ts';
+import { parseMarkdown, type ListNode as ListAst } from '#lib/ubumark/index.ts';
 
 const SOURCE = `x: -4 ; 6
 y: -8 ; 12

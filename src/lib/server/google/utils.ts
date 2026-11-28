@@ -2,8 +2,8 @@
  * Utility functions for Google API data processing
  */
 
-import type { GoogleMaterial } from '$lib/types/google';
-import type { MaterialType } from '$lib/types/google';
+import type { GoogleMaterial } from '#lib/types/google.ts';
+import type { MaterialType } from '#lib/types/google.ts';
 
 /**
  * Parse Google date format to JavaScript Date

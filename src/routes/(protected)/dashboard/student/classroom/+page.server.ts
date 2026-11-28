@@ -1,8 +1,8 @@
 import type { PageServerLoad } from './$types';
 import { redirect } from '@sveltejs/kit';
-import { requireRole } from '$lib/server/middleware/auth';
-import { GOOGLE_CLASSROOM_ENABLED } from '$lib/config/google-classroom';
-import { createServerLogger } from '$lib/utils/logger';
+import { requireRole } from '#lib/server/middleware/auth.ts';
+import { GOOGLE_CLASSROOM_ENABLED } from '#lib/config/google-classroom.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('(protected)/dashboard/student/classroom/+page.server');
 

@@ -20,12 +20,12 @@
  * - Array limits (max 50 each) to prevent DoS
  */
 
-import { json, error } from '@sveltejs/kit';
-import { assertGoogleClassroomEnabled } from '$lib/server/google/feature-guard';
+import { error } from '@sveltejs/kit';
+import { assertGoogleClassroomEnabled } from '#lib/server/google/feature-guard.ts';
 import type { RequestHandler } from './$types';
-import { requireRole } from '$lib/server/middleware/auth';
-import { bulkShareCourseworkSchema } from '$lib/server/validation';
-import { createServerLogger } from '$lib/utils/logger';
+import { requireRole } from '#lib/server/middleware/auth.ts';
+import { bulkShareCourseworkSchema } from '#lib/server/validation/index.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/google/coursework/bulk-share/+server');
 
@@ -180,7 +180,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		throw error(500, 'Impossible de partager les devoirs Classroom');
 	}
 
-	return json({
+	return Response.json({
 		success: true,
 		courseworkShared: courseworkIds.length,
 		sharesCreated: sharesToInsert.length

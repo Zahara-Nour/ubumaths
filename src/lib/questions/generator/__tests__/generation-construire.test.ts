@@ -11,8 +11,8 @@ import { generateInstance } from '../instance-generator';
 import { assignBlankIndices } from '../assign-blank-indices';
 import { validateTemplate } from '../../validators/template-validator';
 import type { ConstraintOptions, QuestionTemplate, QuestionVariation } from '../../types';
-import { templateMarkdown } from '$lib/ubumark';
-import { validateAnswer } from '$lib/utils/answer-validator';
+import { templateMarkdown } from '#lib/ubumark/index.ts';
+import { validateAnswer } from '#lib/utils/answer-validator.ts';
 
 function template(variation: Omit<QuestionVariation, 'statement'> & { statement: string }) {
 	return {

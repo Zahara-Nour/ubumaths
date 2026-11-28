@@ -8,34 +8,29 @@
 
 import type { PageServerLoad, Actions } from './$types';
 import { error, fail } from '@sveltejs/kit';
-import { requireRole } from '$lib/server/middleware/auth';
+import { requireRole } from '#lib/server/middleware/auth.ts';
 import {
 	getTeacherChapters,
 	createChapter,
 	updateChapter,
-	deleteChapter,
-	reorderChapters
-} from '$lib/server/chapters';
+	deleteChapter
+} from '#lib/server/chapters.ts';
 import {
 	listChapterTemplates,
 	instantiateTemplate,
 	TemplateUnusableError
-} from '$lib/server/chapter-templates';
-import {
-	createChapterSchema,
-	updateChapterSchema,
-	reorderChaptersSchema
-} from '$lib/server/validation/chapters';
-import { instantiateTemplateSchema } from '$lib/server/validation/chapter-templates';
-import type { ChapterSummary } from '$lib/types/chapters';
-import type { TemplateSummary } from '$lib/types/chapter-templates';
+} from '#lib/server/chapter-templates.ts';
+import { createChapterSchema, updateChapterSchema } from '#lib/server/validation/chapters.ts';
+import { instantiateTemplateSchema } from '#lib/server/validation/chapter-templates.ts';
+import type { ChapterSummary } from '#lib/types/chapters.ts';
+import type { TemplateSummary } from '#lib/types/chapter-templates.ts';
 import { z } from 'zod';
 import {
 	getActiveCourseShareToken,
 	revokeCourseShareToken,
 	rotateCourseShareToken
-} from '$lib/server/course-share-tokens';
-import { createServerLogger } from '$lib/utils/logger';
+} from '#lib/server/course-share-tokens.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('(protected)/dashboard/teacher/cours/[classId]/+page.server');
 
@@ -335,68 +330,6 @@ export const actions: Actions = {
 		}
 
 		return { success: true, action: 'delete' };
-	},
-
-	/**
-	 * Reorder chapters
-	 */
-	reorder: async ({ request, locals, params }) => {
-		await requireRole(locals, 'teacher');
-		const { classId } = params;
-
-		// Verify class exists
-		const { data: classData, error: classDataError } = await locals.supabase
-			.from('classes')
-			.select('id')
-			.eq('id', classId)
-			.single();
-
-		// PGRST116 = la ligne n'existe pas, et le refus qui suit est légitime. Toute
-		// AUTRE panne produisait le même « accès refusé ».
-		if (classDataError && classDataError.code !== 'PGRST116') {
-			logger.error('Vérification impossible :', classDataError);
-			return fail(500, { error: 'Verification impossible' });
-		}
-
-		if (!classData) {
-			return fail(403, { error: 'Acces refuse', action: 'reorder' });
-		}
-
-		const formData = await request.formData();
-		const orderJson = formData.get('order') as string;
-
-		let orderUpdates: Array<{ id: string; displayOrder: number }>;
-		try {
-			orderUpdates = JSON.parse(orderJson);
-		} catch {
-			return fail(400, { error: 'Format invalide', action: 'reorder' });
-		}
-
-		// Validate input
-		const validation = reorderChaptersSchema.safeParse({
-			chapters: orderUpdates
-		});
-
-		if (!validation.success) {
-			return fail(400, {
-				error: validation.error.issues[0].message,
-				action: 'reorder'
-			});
-		}
-
-		// Reorder chapters
-		const { error: reorderError } = await reorderChapters(
-			classId,
-			validation.data.chapters,
-			locals.supabase
-		);
-
-		if (reorderError) {
-			logger.error('[Reorder Chapters] Error:', reorderError);
-			return fail(500, { error: 'Erreur lors du reordonnancement', action: 'reorder' });
-		}
-
-		return { success: true, action: 'reorder' };
 	},
 
 	/**

@@ -1,0 +1,211 @@
+{
+	"id": "01b73ca2-004e-4cb1-8237-ce7ebf516ac9",
+	"title": "Choisis l'échelle et construis le diagramme (nombres quelconques)",
+	"description": "Tableau des effectifs donné, nombres qui ne tombent pas tous sur un trait : choisir l'échelle (2, 5 ou 10 par graduation) puis monter toutes les barres",
+	"grades": ["CM1"],
+	"level": 7,
+	"delay": 300,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Les élèves de la classe ont dit leur animal préféré.\n\n| Animal | Nombre d'élèves |\n|---|---|\n| Chat | ${{a}}$ |\n| Chien | ${{b}}$ |\n| Lapin | ${{c}}$ |\n| Poisson | ${{d}}$ |\n\nChoisis l'échelle de l'axe, puis construis le diagramme en barres.\n\n```barres\ntitre: Animal préféré\naxes: Animal ; Élèves\nChat = {{a}}\nChien = {{b}}\nLapin = {{c}}\nPoisson = {{d}}\naxe: à choisir\nplacer: toutes\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "3..20"
+				},
+				{
+					"name": "b",
+					"expression": "3..20"
+				},
+				{
+					"name": "c",
+					"expression": "3..20"
+				},
+				{
+					"name": "d",
+					"expression": "3..20"
+				},
+				{
+					"name": "m",
+					"expression": "eval:max(a, b, c, d)"
+				}
+			],
+			"conditions": ["m > 10"],
+			"blanks": [],
+			"correction": {
+				"steps": [
+					"L'axe a $10$ graduations : on prend la plus petite échelle où la plus grande barre rentre.",
+					"La plus grande barre : ${{m}}$ élèves. Avec $1$ par graduation, l'axe s'arrêterait à $10$ : trop court. Avec $2$, il monte jusqu'à $20$ : tout rentre.",
+					"Chaque barre monte jusqu'à son nombre d'élèves ; une barre peut s'arrêter entre deux traits."
+				]
+			}
+		},
+		{
+			"statement": "Les élèves de l'école ont choisi leur sport préféré.\n\n| Sport | Nombre d'élèves |\n|---|---|\n| Football | ${{a}}$ |\n| Danse | ${{b}}$ |\n| Judo | ${{c}}$ |\n| Basket | ${{d}}$ |\n\nChoisis l'échelle de l'axe, puis construis le diagramme en barres.\n\n```barres\ntitre: Sport préféré\naxes: Sport ; Élèves\nFootball = {{a}}\nDanse = {{b}}\nJudo = {{c}}\nBasket = {{d}}\naxe: à choisir\nplacer: toutes\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "8..50"
+				},
+				{
+					"name": "b",
+					"expression": "8..50"
+				},
+				{
+					"name": "c",
+					"expression": "8..50"
+				},
+				{
+					"name": "d",
+					"expression": "8..50"
+				},
+				{
+					"name": "m",
+					"expression": "eval:max(a, b, c, d)"
+				}
+			],
+			"conditions": ["m > 20"],
+			"blanks": [],
+			"correction": {
+				"steps": [
+					"L'axe a $10$ graduations : on prend la plus petite échelle où la plus grande barre rentre.",
+					"La plus grande barre : ${{m}}$ élèves. Avec $2$ par graduation, l'axe s'arrêterait à $20$ : trop court. Avec $5$, il monte jusqu'à $50$ : tout rentre.",
+					"Chaque barre monte jusqu'à son nombre d'élèves ; une barre peut s'arrêter entre deux traits."
+				]
+			}
+		},
+		{
+			"statement": "Les élèves de l'école ont choisi un atelier.\n\n| Atelier | Nombre d'élèves |\n|---|---|\n| Théâtre | ${{a}}$ |\n| Chorale | ${{b}}$ |\n| Échecs | ${{c}}$ |\n| Jardin | ${{d}}$ |\n| Dessin | ${{g}}$ |\n\nChoisis l'échelle de l'axe, puis construis le diagramme en barres.\n\n```barres\ntitre: Atelier choisi\naxes: Atelier ; Élèves\nThéâtre = {{a}}\nChorale = {{b}}\nÉchecs = {{c}}\nJardin = {{d}}\nDessin = {{g}}\naxe: à choisir\nplacer: toutes\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "12..100"
+				},
+				{
+					"name": "b",
+					"expression": "12..100"
+				},
+				{
+					"name": "c",
+					"expression": "12..100"
+				},
+				{
+					"name": "d",
+					"expression": "12..100"
+				},
+				{
+					"name": "g",
+					"expression": "12..100"
+				},
+				{
+					"name": "m",
+					"expression": "eval:max(a, b, c, d, g)"
+				}
+			],
+			"conditions": ["m > 50"],
+			"blanks": [],
+			"correction": {
+				"steps": [
+					"L'axe a $10$ graduations : on prend la plus petite échelle où la plus grande barre rentre.",
+					"La plus grande barre : ${{m}}$ élèves. Avec $5$ par graduation, l'axe s'arrêterait à $50$ : trop court. Avec $10$, il monte jusqu'à $100$ : tout rentre.",
+					"Chaque barre monte jusqu'à son nombre d'élèves ; une barre peut s'arrêter entre deux traits."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Animaux jusqu'à 17 : échelle 2",
+			"variationIndex": 0,
+			"variables": {
+				"a": "17",
+				"b": "9",
+				"c": "4",
+				"d": "12",
+				"m": "17"
+			},
+			"answers": ["2", "17", "9", "4", "12"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : échelle 5 (rentre, mais moins lisible)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "17",
+				"b": "9",
+				"c": "4",
+				"d": "12",
+				"m": "17"
+			},
+			"answers": ["5", "17", "9", "4", "12"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : une barre au trait du dessous (16)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "17",
+				"b": "9",
+				"c": "4",
+				"d": "12",
+				"m": "17"
+			},
+			"answers": ["2", "16", "9", "4", "12"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Sports jusqu'à 43 : échelle 5",
+			"variationIndex": 1,
+			"variables": {
+				"a": "43",
+				"b": "27",
+				"c": "12",
+				"d": "31",
+				"m": "43"
+			},
+			"answers": ["5", "43", "27", "12", "31"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Ateliers jusqu'à 87 : échelle 10",
+			"variationIndex": 2,
+			"variables": {
+				"a": "87",
+				"b": "54",
+				"c": "23",
+				"d": "66",
+				"g": "41",
+				"m": "87"
+			},
+			"answers": ["10", "87", "54", "23", "66", "41"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : échelle 5 (87 ne rentre pas)",
+			"variationIndex": 2,
+			"variables": {
+				"a": "87",
+				"b": "54",
+				"c": "23",
+				"d": "66",
+				"g": "41",
+				"m": "87"
+			},
+			"answers": ["5", "87", "54", "23", "66", "41"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

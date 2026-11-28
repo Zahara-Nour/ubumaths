@@ -13,7 +13,7 @@
  */
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
-import { contrastRatio } from '$lib/theme/author-color';
+import { contrastRatio } from '#lib/theme/author-color.ts';
 import { MONTH_NAMES } from '../calendar';
 import { HERO_HALO_OPACITY, HERO_VEIL_OPACITY, MONTH_PALETTES } from '../palettes';
 

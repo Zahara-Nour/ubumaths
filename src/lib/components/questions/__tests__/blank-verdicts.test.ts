@@ -8,8 +8,8 @@
 
 import { describe, it, expect } from 'vitest';
 import { computeBlankColors, computeBlankVerdicts } from '../blank-verdicts';
-import type { InstanceBlank, QuestionInstance } from '$lib/questions/types';
-import type { ResolvedMarkdown } from '$lib/ubumark';
+import type { InstanceBlank, QuestionInstance } from '#lib/questions/types.ts';
+import type { ResolvedMarkdown } from '#lib/ubumark/index.ts';
 
 function instance(blanks: InstanceBlank[]): QuestionInstance {
 	return {

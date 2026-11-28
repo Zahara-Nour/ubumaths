@@ -1,0 +1,385 @@
+{
+	"id": "66a1a4ee-cffe-4f6d-b083-8ed7e8c88305",
+	"title": "Trouver toutes les solutions",
+	"description": "Recherche exhaustive, en cochant toutes les solutions : les rectangles d'aire donnée à côtés entiers, les façons de ranger des œufs en boîtes pleines de 6 et de 10, les tailles impaires de groupes d'une classe ; essai organisé au corrigé",
+	"grades": ["CM2"],
+	"level": 1,
+	"delay": 240,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"spacesFromFourDigits": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "On cherche tous les rectangles dont les côtés mesurent un nombre entier de centimètres et dont l'aire est égale à ${{A}}~\\unit{cm^2}$. Un rectangle de $2~\\unit{cm}$ sur $10~\\unit{cm}$ est le même qu'un rectangle de $10~\\unit{cm}$ sur $2~\\unit{cm}$.\n\nCoche toutes les dimensions qui conviennent.\n\n```choix\nplusieurs: oui\nmelanger: non\n- $1~\\unit{cm}$ sur ${{eval:floor(A/1)}}~\\unit{cm}$\n- $2~\\unit{cm}$ sur ${{eval:floor(A/2)}}~\\unit{cm}$\n- $3~\\unit{cm}$ sur ${{eval:floor(A/3)}}~\\unit{cm}$\n- $4~\\unit{cm}$ sur ${{eval:floor(A/4)}}~\\unit{cm}$\n- $5~\\unit{cm}$ sur ${{eval:floor(A/5)}}~\\unit{cm}$\n- $6~\\unit{cm}$ sur ${{eval:floor(A/6)}}~\\unit{cm}$\n- $7~\\unit{cm}$ sur ${{eval:floor(A/7)}}~\\unit{cm}$\n- $8~\\unit{cm}$ sur ${{eval:floor(A/8)}}~\\unit{cm}$\n- $9~\\unit{cm}$ sur ${{eval:floor(A/9)}}~\\unit{cm}$\n```",
+			"variables": [
+				{
+					"name": "A",
+					"expression": "80..99"
+				},
+				{
+					"name": "t0",
+					"expression": "eval:(1-min(mod(A,1),1))"
+				},
+				{
+					"name": "t1",
+					"expression": "eval:(1-min(mod(A,2),1))"
+				},
+				{
+					"name": "t2",
+					"expression": "eval:(1-min(mod(A,3),1))"
+				},
+				{
+					"name": "t3",
+					"expression": "eval:(1-min(mod(A,4),1))"
+				},
+				{
+					"name": "t4",
+					"expression": "eval:(1-min(mod(A,5),1))"
+				},
+				{
+					"name": "t5",
+					"expression": "eval:(1-min(mod(A,6),1))"
+				},
+				{
+					"name": "t6",
+					"expression": "eval:(1-min(mod(A,7),1))"
+				},
+				{
+					"name": "t7",
+					"expression": "eval:(1-min(mod(A,8),1))"
+				},
+				{
+					"name": "t8",
+					"expression": "eval:(1-min(mod(A,9),1))"
+				}
+			],
+			"conditions": ["t0 + t1 + t2 + t3 + t4 + t5 + t6 + t7 + t8 >= 4"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:0*t0}};{{eval:1*t1}};{{eval:2*t2}};{{eval:3*t3}};{{eval:4*t4}};{{eval:5*t5}};{{eval:6*t6}};{{eval:7*t7}};{{eval:8*t8}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On essaie **chaque largeur** dans l'ordre, de $1$ à $9~\\unit{cm}$ (au-delà, la largeur dépasserait la longueur, et on retrouverait les mêmes rectangles). La largeur convient si ${{A}}$ se divise exactement par elle.",
+					"{{if:t0==1|$1 \\times {{eval:A/1}} = {{A}}$ **oui**|$1 \\times {{eval:floor(A/1)}} = {{eval:1*floor(A/1)}}$ non}} ; {{if:t1==1|$2 \\times {{eval:A/2}} = {{A}}$ **oui**|$2 \\times {{eval:floor(A/2)}} = {{eval:2*floor(A/2)}}$ non}} ; {{if:t2==1|$3 \\times {{eval:A/3}} = {{A}}$ **oui**|$3 \\times {{eval:floor(A/3)}} = {{eval:3*floor(A/3)}}$ non}} ; {{if:t3==1|$4 \\times {{eval:A/4}} = {{A}}$ **oui**|$4 \\times {{eval:floor(A/4)}} = {{eval:4*floor(A/4)}}$ non}} ; {{if:t4==1|$5 \\times {{eval:A/5}} = {{A}}$ **oui**|$5 \\times {{eval:floor(A/5)}} = {{eval:5*floor(A/5)}}$ non}} ; {{if:t5==1|$6 \\times {{eval:A/6}} = {{A}}$ **oui**|$6 \\times {{eval:floor(A/6)}} = {{eval:6*floor(A/6)}}$ non}} ; {{if:t6==1|$7 \\times {{eval:A/7}} = {{A}}$ **oui**|$7 \\times {{eval:floor(A/7)}} = {{eval:7*floor(A/7)}}$ non}} ; {{if:t7==1|$8 \\times {{eval:A/8}} = {{A}}$ **oui**|$8 \\times {{eval:floor(A/8)}} = {{eval:8*floor(A/8)}}$ non}} ; {{if:t8==1|$9 \\times {{eval:A/9}} = {{A}}$ **oui**|$9 \\times {{eval:floor(A/9)}} = {{eval:9*floor(A/9)}}$ non}}",
+					"Il y a ${{eval:t0 + t1 + t2 + t3 + t4 + t5 + t6 + t7 + t8}}$ rectangles."
+				]
+			}
+		},
+		{
+			"statement": "Alice a ${{N}}$ œufs à ranger dans des boîtes de 6 œufs et des boîtes de 10 œufs ; elle a assez de boîtes de chaque sorte. Tous les œufs doivent être rangés, et toutes les boîtes utilisées doivent être pleines.\n\nCoche toutes les façons de faire.\n\n```choix\nplusieurs: oui\nmelanger: non\n- aucune boîte de 10 et {{if:floor((N-0)/6)==0|aucune boîte de 6|${{eval:floor((N-0)/6)}}$ boîte{{if:floor((N-0)/6)>1|s|}} de 6}}\n- $1$ boîte de 10 et {{if:floor((N-10)/6)==0|aucune boîte de 6|${{eval:floor((N-10)/6)}}$ boîte{{if:floor((N-10)/6)>1|s|}} de 6}}\n- $2$ boîtes de 10 et {{if:floor((N-20)/6)==0|aucune boîte de 6|${{eval:floor((N-20)/6)}}$ boîte{{if:floor((N-20)/6)>1|s|}} de 6}}\n- $3$ boîtes de 10 et {{if:floor((N-30)/6)==0|aucune boîte de 6|${{eval:floor((N-30)/6)}}$ boîte{{if:floor((N-30)/6)>1|s|}} de 6}}\n- $4$ boîtes de 10 et {{if:floor((N-40)/6)==0|aucune boîte de 6|${{eval:floor((N-40)/6)}}$ boîte{{if:floor((N-40)/6)>1|s|}} de 6}}\n- $5$ boîtes de 10 et {{if:floor((N-50)/6)==0|aucune boîte de 6|${{eval:floor((N-50)/6)}}$ boîte{{if:floor((N-50)/6)>1|s|}} de 6}}\n- $6$ boîtes de 10 et {{if:floor((N-60)/6)==0|aucune boîte de 6|${{eval:floor((N-60)/6)}}$ boîte{{if:floor((N-60)/6)>1|s|}} de 6}}\n- $7$ boîtes de 10 et {{if:floor((N-70)/6)==0|aucune boîte de 6|${{eval:floor((N-70)/6)}}$ boîte{{if:floor((N-70)/6)>1|s|}} de 6}}\n- $8$ boîtes de 10 et {{if:floor((N-80)/6)==0|aucune boîte de 6|${{eval:floor((N-80)/6)}}$ boîte{{if:floor((N-80)/6)>1|s|}} de 6}}\n- $9$ boîtes de 10 et {{if:floor((N-90)/6)==0|aucune boîte de 6|${{eval:floor((N-90)/6)}}$ boîte{{if:floor((N-90)/6)>1|s|}} de 6}}\n```",
+			"variables": [
+				{
+					"name": "j",
+					"expression": "0..4"
+				},
+				{
+					"name": "N",
+					"expression": "eval:90+2*j"
+				},
+				{
+					"name": "t0",
+					"expression": "eval:(1-min(mod((N-0),6),1))"
+				},
+				{
+					"name": "t1",
+					"expression": "eval:(1-min(mod((N-10),6),1))"
+				},
+				{
+					"name": "t2",
+					"expression": "eval:(1-min(mod((N-20),6),1))"
+				},
+				{
+					"name": "t3",
+					"expression": "eval:(1-min(mod((N-30),6),1))"
+				},
+				{
+					"name": "t4",
+					"expression": "eval:(1-min(mod((N-40),6),1))"
+				},
+				{
+					"name": "t5",
+					"expression": "eval:(1-min(mod((N-50),6),1))"
+				},
+				{
+					"name": "t6",
+					"expression": "eval:(1-min(mod((N-60),6),1))"
+				},
+				{
+					"name": "t7",
+					"expression": "eval:(1-min(mod((N-70),6),1))"
+				},
+				{
+					"name": "t8",
+					"expression": "eval:(1-min(mod((N-80),6),1))"
+				},
+				{
+					"name": "t9",
+					"expression": "eval:(1-min(mod((N-90),6),1))"
+				},
+				{
+					"name": "f",
+					"expression": "eval:min(0+99*(1-t0),min(1+99*(1-t1),min(2+99*(1-t2),min(3+99*(1-t3),min(4+99*(1-t4),min(5+99*(1-t5),min(6+99*(1-t6),min(7+99*(1-t7),min(8+99*(1-t8),9+99*(1-t9))))))))))"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:0*t0+f*(1-t0)}};{{eval:1*t1+f*(1-t1)}};{{eval:2*t2+f*(1-t2)}};{{eval:3*t3+f*(1-t3)}};{{eval:4*t4+f*(1-t4)}};{{eval:5*t5+f*(1-t5)}};{{eval:6*t6+f*(1-t6)}};{{eval:7*t7+f*(1-t7)}};{{eval:8*t8+f*(1-t8)}};{{eval:9*t9+f*(1-t9)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On essaie **chaque nombre de boîtes de 10**, de $0$ à $9$ : les œufs qui restent doivent remplir exactement des boîtes de 6.",
+					"{{if:t0==1|${{eval:N-0}} = 6 \\times {{eval:(N-0)/6}}$ **oui**|${{eval:N-0}}$ non}} ; {{if:t1==1|${{eval:N-10}} = 6 \\times {{eval:(N-10)/6}}$ **oui**|${{eval:N-10}}$ non}} ; {{if:t2==1|${{eval:N-20}} = 6 \\times {{eval:(N-20)/6}}$ **oui**|${{eval:N-20}}$ non}} ; {{if:t3==1|${{eval:N-30}} = 6 \\times {{eval:(N-30)/6}}$ **oui**|${{eval:N-30}}$ non}} ; {{if:t4==1|${{eval:N-40}} = 6 \\times {{eval:(N-40)/6}}$ **oui**|${{eval:N-40}}$ non}} ; {{if:t5==1|${{eval:N-50}} = 6 \\times {{eval:(N-50)/6}}$ **oui**|${{eval:N-50}}$ non}} ; {{if:t6==1|${{eval:N-60}} = 6 \\times {{eval:(N-60)/6}}$ **oui**|${{eval:N-60}}$ non}} ; {{if:t7==1|${{eval:N-70}} = 6 \\times {{eval:(N-70)/6}}$ **oui**|${{eval:N-70}}$ non}} ; {{if:t8==1|${{eval:N-80}} = 6 \\times {{eval:(N-80)/6}}$ **oui**|${{eval:N-80}}$ non}} ; {{if:t9==1|{{if:N==90|aucun œuf ne reste **oui**|${{eval:N-90}} = 6 \\times {{eval:(N-90)/6}}$ **oui**}}|${{eval:N-90}}$ non}}",
+					"Il y a ${{eval:t0 + t1 + t2 + t3 + t4 + t5 + t6 + t7 + t8 + t9}}$ façons."
+				]
+			}
+		},
+		{
+			"statement": "Il y a ${{n}}$ élèves dans une classe. Le maître veut faire des groupes ayant tous le même nombre d'élèves ; il veut un nombre impair d'élèves dans chaque groupe, et au moins deux groupes.\n\nCoche toutes les tailles de groupe possibles.\n\n```choix\nplusieurs: oui\nmelanger: non\n- groupes de $3$ élèves\n- groupes de $5$ élèves\n- groupes de $7$ élèves\n- groupes de $9$ élèves\n- groupes de $11$ élèves\n- groupes de $13$ élèves\n- groupes de $15$ élèves\n```",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "20..45"
+				},
+				{
+					"name": "t0",
+					"expression": "eval:(1-min(mod(n,3),1))"
+				},
+				{
+					"name": "t1",
+					"expression": "eval:(1-min(mod(n,5),1))"
+				},
+				{
+					"name": "t2",
+					"expression": "eval:(1-min(mod(n,7),1))"
+				},
+				{
+					"name": "t3",
+					"expression": "eval:(1-min(mod(n,9),1))"
+				},
+				{
+					"name": "t4",
+					"expression": "eval:(1-min(mod(n,11),1))"
+				},
+				{
+					"name": "t5",
+					"expression": "eval:(1-min(mod(n,13),1))"
+				},
+				{
+					"name": "t6",
+					"expression": "eval:(1-min(mod(n,15),1))"
+				},
+				{
+					"name": "f",
+					"expression": "eval:min(0+99*(1-t0),min(1+99*(1-t1),min(2+99*(1-t2),min(3+99*(1-t3),min(4+99*(1-t4),min(5+99*(1-t5),6+99*(1-t6)))))))"
+				}
+			],
+			"conditions": ["t0 + t1 + t2 + t3 + t4 + t5 + t6 >= 2", "n != 34", "n != 38", "n != 42"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:0*t0+f*(1-t0)}};{{eval:1*t1+f*(1-t1)}};{{eval:2*t2+f*(1-t2)}};{{eval:3*t3+f*(1-t3)}};{{eval:4*t4+f*(1-t4)}};{{eval:5*t5+f*(1-t5)}};{{eval:6*t6+f*(1-t6)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On essaie **chaque nombre impair** : la taille convient si ${{n}}$ se divise exactement par elle.",
+					"{{if:t0==1|${{n}} = 3 \\times {{eval:n/3}}$ **oui**|3 : non}} ; {{if:t1==1|${{n}} = 5 \\times {{eval:n/5}}$ **oui**|5 : non}} ; {{if:t2==1|${{n}} = 7 \\times {{eval:n/7}}$ **oui**|7 : non}} ; {{if:t3==1|${{n}} = 9 \\times {{eval:n/9}}$ **oui**|9 : non}} ; {{if:t4==1|${{n}} = 11 \\times {{eval:n/11}}$ **oui**|11 : non}} ; {{if:t5==1|${{n}} = 13 \\times {{eval:n/13}}$ **oui**|13 : non}} ; {{if:t6==1|${{n}} = 15 \\times {{eval:n/15}}$ **oui**|15 : non}}",
+					"Il y a ${{eval:t0 + t1 + t2 + t3 + t4 + t5 + t6}}$ tailles possibles."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "rectangles 84 : 1, 2, 3, 4, 6, 7",
+			"variationIndex": 0,
+			"variables": {
+				"A": "84",
+				"t0": "1",
+				"t1": "1",
+				"t2": "1",
+				"t3": "1",
+				"t4": "0",
+				"t5": "1",
+				"t6": "1",
+				"t7": "0",
+				"t8": "0"
+			},
+			"answers": ["0;1;2;3;5;6"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Partiel : rectangles 84, le 7 × 12 oublié",
+			"variationIndex": 0,
+			"variables": {
+				"A": "84",
+				"t0": "1",
+				"t1": "1",
+				"t2": "1",
+				"t3": "1",
+				"t4": "0",
+				"t5": "1",
+				"t6": "1",
+				"t7": "0",
+				"t8": "0"
+			},
+			"answers": ["0;1;2;3;5"],
+			"expected": {
+				"status": "unoptimal_form"
+			}
+		},
+		{
+			"description": "Erreur : rectangles 84, 5 × 16 coché",
+			"variationIndex": 0,
+			"variables": {
+				"A": "84",
+				"t0": "1",
+				"t1": "1",
+				"t2": "1",
+				"t3": "1",
+				"t4": "0",
+				"t5": "1",
+				"t6": "1",
+				"t7": "0",
+				"t8": "0"
+			},
+			"answers": ["0;1;2;3;4;5;6"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "œufs 96 : 0, 3, 6, 9 boîtes de 10",
+			"variationIndex": 1,
+			"variables": {
+				"j": "3",
+				"N": "96",
+				"t0": "1",
+				"t1": "0",
+				"t2": "0",
+				"t3": "1",
+				"t4": "0",
+				"t5": "0",
+				"t6": "1",
+				"t7": "0",
+				"t8": "0",
+				"t9": "1",
+				"f": "0"
+			},
+			"answers": ["0;3;6;9"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Partiel : œufs 96, une seule façon",
+			"variationIndex": 1,
+			"variables": {
+				"j": "3",
+				"N": "96",
+				"t0": "1",
+				"t1": "0",
+				"t2": "0",
+				"t3": "1",
+				"t4": "0",
+				"t5": "0",
+				"t6": "1",
+				"t7": "0",
+				"t8": "0",
+				"t9": "1",
+				"f": "0"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "unoptimal_form"
+			}
+		},
+		{
+			"description": "Erreur : œufs 96, 1 boîte de 10 cochée",
+			"variationIndex": 1,
+			"variables": {
+				"j": "3",
+				"N": "96",
+				"t0": "1",
+				"t1": "0",
+				"t2": "0",
+				"t3": "1",
+				"t4": "0",
+				"t5": "0",
+				"t6": "1",
+				"t7": "0",
+				"t8": "0",
+				"t9": "1",
+				"f": "0"
+			},
+			"answers": ["0;1;3;6;9"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "groupes 30 : 3, 5, 15",
+			"variationIndex": 2,
+			"variables": {
+				"n": "30",
+				"t0": "1",
+				"t1": "1",
+				"t2": "0",
+				"t3": "0",
+				"t4": "0",
+				"t5": "0",
+				"t6": "1",
+				"f": "0"
+			},
+			"answers": ["0;1;6"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Partiel : groupes 30, le 15 oublié",
+			"variationIndex": 2,
+			"variables": {
+				"n": "30",
+				"t0": "1",
+				"t1": "1",
+				"t2": "0",
+				"t3": "0",
+				"t4": "0",
+				"t5": "0",
+				"t6": "1",
+				"f": "0"
+			},
+			"answers": ["0;1"],
+			"expected": {
+				"status": "unoptimal_form"
+			}
+		},
+		{
+			"description": "Erreur : groupes 30, 9 coché",
+			"variationIndex": 2,
+			"variables": {
+				"n": "30",
+				"t0": "1",
+				"t1": "1",
+				"t2": "0",
+				"t3": "0",
+				"t4": "0",
+				"t5": "0",
+				"t6": "1",
+				"f": "0"
+			},
+			"answers": ["0;1;3;6"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

@@ -15,7 +15,7 @@ const toaster = vi.hoisted(() => ({
 	warning: vi.fn(),
 	info: vi.fn()
 }));
-vi.mock('$lib/stores/toaster.svelte', () => ({ toaster }));
+vi.mock('#lib/stores/toaster.svelte.ts', () => ({ toaster }));
 
 import { QuestionCartStore } from '../questionCart.svelte';
 
@@ -43,7 +43,7 @@ describe('questionCart — ancien panier du navigateur', () => {
 		const cart = await freshCart();
 		expect(cart.totalItems).toBe(0);
 		expect(JSON.parse(localStorage.getItem(STORAGE_KEY) ?? 'null')).toEqual([]);
-		expect(toaster.info).toHaveBeenCalledWith("Panier d'une ancienne version vidé.");
+		expect(toaster.info).toHaveBeenCalledWith("Série d'une ancienne version vidée.");
 	});
 
 	it('panier mixte : les anciennes lignes sont retirées et comptées, les neuves gardées', async () => {
@@ -55,7 +55,7 @@ describe('questionCart — ancien panier du navigateur', () => {
 		expect(cart.allItems).toEqual([{ templateId: FRACTIONS_ID, quantity: 1, delay: 20 }]);
 		expect(JSON.parse(localStorage.getItem(STORAGE_KEY) ?? 'null')).toEqual(cart.allItems);
 		expect(toaster.info).toHaveBeenCalledWith(
-			"2 questions d'une ancienne version retirées du panier."
+			"2 questions d'une ancienne version retirées de ta série."
 		);
 	});
 

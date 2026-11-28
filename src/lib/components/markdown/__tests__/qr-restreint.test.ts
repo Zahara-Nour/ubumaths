@@ -3,7 +3,7 @@
  * doit pas pouvoir montrer à d'autres élèves un QR vers un site de son choix.
  */
 import { describe, expect, it } from 'vitest';
-import { parseMarkdown } from '$lib/ubumark';
+import { parseMarkdown } from '#lib/ubumark/index.ts';
 import {
 	RESTRICTED_BLOCK_PLACEHOLDER,
 	restrictDocument,

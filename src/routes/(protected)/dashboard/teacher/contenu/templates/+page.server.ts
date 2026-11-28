@@ -7,10 +7,10 @@
  */
 
 import type { PageServerLoad } from './$types';
-import { requireRole } from '$lib/server/middleware/auth';
-import { listChapterTemplates } from '$lib/server/chapter-templates';
-import { listTemplatesQuerySchema } from '$lib/server/validation/chapter-templates';
-import { createServerLogger } from '$lib/utils/logger';
+import { requireRole } from '#lib/server/middleware/auth.ts';
+import { listChapterTemplates } from '#lib/server/chapter-templates.ts';
+import { listTemplatesQuerySchema } from '#lib/server/validation/chapter-templates.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('dashboard/teacher/contenu/templates/+page.server');
 

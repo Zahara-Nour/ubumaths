@@ -1,0 +1,400 @@
+{
+	"id": "51f08367-a8db-4714-a119-821107398cdb",
+	"title": "Comparer une fraction à 1, un entier et une fraction, ranger",
+	"description": "Comparer p/q et 1, un entier et une fraction, puis ranger fractions et décimaux dans l'ordre croissant (pièges : 0,68 > 0,7 parce que 68 > 7, fraction jugée sans la comparer)",
+	"grades": ["2"],
+	"level": 8,
+	"delay": 60,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Compare $\\dfrac{ {{p}} }{ {{q}} }$ et $1$.\n\n```choix\nmelanger: non\n- $\\dfrac{ {{p}} }{ {{q}} }<1$\n- $\\dfrac{ {{p}} }{ {{q}} }=1$\n- $\\dfrac{ {{p}} }{ {{q}} }>1$\n```",
+			"variables": [
+				{
+					"name": "q",
+					"expression": "2..12"
+				},
+				{
+					"name": "p",
+					"expression": "1..20"
+				},
+				{
+					"name": "idx",
+					"expression": "eval:2*min(max(p-q,0),1)"
+				}
+			],
+			"conditions": ["p != q", "gcd(p,q) == 1", "p <= 2*q"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{idx}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$1=\\dfrac{ {{q}} }{ {{q}} }$ : on compare les numérateurs, le dénominateur étant le même.",
+					"{{if:idx==0|${{p}}<{{q}}$ : le numérateur est **plus petit** que le dénominateur, donc $\\textcolor{{{color:primary.0}}}{\\dfrac{ {{p}} }{ {{q}} }<1}$.|${{p}}>{{q}}$ : le numérateur est **plus grand** que le dénominateur, donc $\\textcolor{{{color:primary.0}}}{\\dfrac{ {{p}} }{ {{q}} }>1}$.}}"
+				]
+			},
+			"hintFromFirstStep": true
+		},
+		{
+			"statement": "Compare ${{n}}$ et $\\dfrac{ {{p}} }{ {{q}} }$.\n\n```choix\nmelanger: non\n- ${{n}}<\\dfrac{ {{p}} }{ {{q}} }$\n- ${{n}}=\\dfrac{ {{p}} }{ {{q}} }$\n- ${{n}}>\\dfrac{ {{p}} }{ {{q}} }$\n```",
+			"variables": [
+				{
+					"name": "q",
+					"expression": "3..9"
+				},
+				{
+					"name": "n",
+					"expression": "1..9"
+				},
+				{
+					"name": "r",
+					"expression": "1..8"
+				},
+				{
+					"name": "sg",
+					"expression": "0|1"
+				},
+				{
+					"name": "p",
+					"expression": "eval:n*q+(2*sg-1)*r"
+				},
+				{
+					"name": "idx",
+					"expression": "eval:2*(1-sg)"
+				}
+			],
+			"conditions": ["r < q", "gcd(r,q) == 1"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{idx}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On écrit ${{n}}$ avec le dénominateur ${{q}}$ : ${{n}}=\\dfrac{ {{eval:n*q}} }{ {{q}} }$.",
+					"{{if:sg==1|${{eval:n*q}}<{{p}}$, donc $\\textcolor{{{color:primary.0}}}{{{n}}<\\dfrac{ {{p}} }{ {{q}} }}$.|${{eval:n*q}}>{{p}}$, donc $\\textcolor{{{color:primary.0}}}{{{n}}>\\dfrac{ {{p}} }{ {{q}} }}$.}}"
+				]
+			},
+			"hintFromFirstStep": true
+		},
+		{
+			"statement": "Range ces nombres dans l'ordre **croissant**.\n\n```ranger\nsigne: <\n- $\\dfrac{ {{p}} }{ {{q}} }$\n- ${{eval:d2/100;d}}$\n- ${{eval:d3/10;d}}$\n- $\\dfrac{ {{r}} }{ {{s}} }$\n```",
+			"variables": [
+				{
+					"name": "d3",
+					"expression": "4..8"
+				},
+				{
+					"name": "c",
+					"expression": "1..5"
+				},
+				{
+					"name": "d2",
+					"expression": "eval:10*d3-c"
+				},
+				{
+					"name": "q",
+					"expression": "3|6|7|9"
+				},
+				{
+					"name": "p",
+					"expression": "eval:floor((d2*q-1)/100)"
+				},
+				{
+					"name": "s",
+					"expression": "4|5|8"
+				},
+				{
+					"name": "r",
+					"expression": "eval:floor(d3*s/10)+1"
+				}
+			],
+			"conditions": ["p >= 1", "r < s", "gcd(p,q) == 1", "gcd(r,s) == 1"],
+			"blanks": [],
+			"correction": {
+				"steps": [
+					"On écrit chaque nombre en écriture décimale (au millième près pour les fractions) : $\\dfrac{ {{p}} }{ {{q}} }\\approx {{eval:round(1000*p/q)/1000;d}}$, $\\dfrac{ {{r}} }{ {{s}} }={{eval:r/s;d}}$.",
+					"Pour comparer ${{eval:d2/100;d}}$ et ${{eval:d3/10;d}}$, on écrit ${{eval:d3/10;d}}={{eval:d3/10;d}}0$ : ${{eval:d2/100;d}}<{{eval:d3/10;d}}0$ (on ne compare pas ${{eval:d2}}$ et ${{eval:d3}}$).",
+					"$\\textcolor{{{color:primary.0}}}{\\dfrac{ {{p}} }{ {{q}} }<{{eval:d2/100;d}}<{{eval:d3/10;d}}<\\dfrac{ {{r}} }{ {{s}} }}$"
+				]
+			},
+			"hint": "Écris tous les nombres en écriture décimale, avec le même nombre de chiffres après la virgule (par exemple trois), puis compare-les."
+		},
+		{
+			"statement": "Compare $\\dfrac{ {{p}} }{ {{q}} }$ et $1$, sans calculatrice.\n\n```choix\nmelanger: non\n- $\\dfrac{ {{p}} }{ {{q}} }<1$\n- $\\dfrac{ {{p}} }{ {{q}} }=1$\n- $\\dfrac{ {{p}} }{ {{q}} }>1$\n```",
+			"variables": [
+				{
+					"name": "hi",
+					"expression": "1000..9999"
+				},
+				{
+					"name": "u",
+					"expression": "1..9"
+				},
+				{
+					"name": "v",
+					"expression": "1..9"
+				},
+				{
+					"name": "p",
+					"expression": "eval:100*hi+10*u+v"
+				},
+				{
+					"name": "q",
+					"expression": "eval:100*hi+10*v+u"
+				},
+				{
+					"name": "idx",
+					"expression": "eval:2*min(max(u-v,0),1)"
+				}
+			],
+			"conditions": ["u != v"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{idx}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Inutile de calculer : on compare le numérateur ${{p}}$ et le dénominateur ${{q}}$. Ils ont les mêmes premiers chiffres ; on compare les deux derniers : ${{eval:10*u+v}}$ et ${{eval:10*v+u}}$.",
+					"{{if:idx==0|${{p}}<{{q}}$ : le numérateur est **plus petit** que le dénominateur, donc $\\textcolor{{{color:primary.0}}}{\\dfrac{ {{p}} }{ {{q}} }<1}$.|${{p}}>{{q}}$ : le numérateur est **plus grand** que le dénominateur, donc $\\textcolor{{{color:primary.0}}}{\\dfrac{ {{p}} }{ {{q}} }>1}$.}}"
+				]
+			},
+			"hint": "Une fraction est plus petite que $1$ quand son numérateur est plus petit que son dénominateur. Compare-les chiffre par chiffre, en partant de la gauche."
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "7/8 < 1",
+			"variationIndex": 0,
+			"variables": {
+				"q": "8",
+				"p": "7",
+				"idx": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 7/8 > 1",
+			"variationIndex": 0,
+			"variables": {
+				"q": "8",
+				"p": "7",
+				"idx": "0"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "9/4 > 1",
+			"variationIndex": 0,
+			"variables": {
+				"q": "4",
+				"p": "9",
+				"idx": "2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 9/4 < 1",
+			"variationIndex": 0,
+			"variables": {
+				"q": "4",
+				"p": "9",
+				"idx": "2"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "3 < 17/5",
+			"variationIndex": 1,
+			"variables": {
+				"q": "5",
+				"n": "3",
+				"r": "2",
+				"sg": "1",
+				"p": "17",
+				"idx": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 3 > 17/5",
+			"variationIndex": 1,
+			"variables": {
+				"q": "5",
+				"n": "3",
+				"r": "2",
+				"sg": "1",
+				"p": "17",
+				"idx": "0"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "4 > 25/7",
+			"variationIndex": 1,
+			"variables": {
+				"q": "7",
+				"n": "4",
+				"r": "3",
+				"sg": "0",
+				"p": "25",
+				"idx": "2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 4 = 25/7",
+			"variationIndex": 1,
+			"variables": {
+				"q": "7",
+				"n": "4",
+				"r": "3",
+				"sg": "0",
+				"p": "25",
+				"idx": "2"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "2/3 < 0,68 < 0,7 < 3/4",
+			"variationIndex": 2,
+			"variables": {
+				"d3": "7",
+				"c": "2",
+				"d2": "68",
+				"q": "3",
+				"p": "2",
+				"s": "4",
+				"r": "3"
+			},
+			"answers": ["3", "0", "1", "2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 0,7 avant 0,68",
+			"variationIndex": 2,
+			"variables": {
+				"d3": "7",
+				"c": "2",
+				"d2": "68",
+				"q": "3",
+				"p": "2",
+				"s": "4",
+				"r": "3"
+			},
+			"answers": ["3", "1", "0", "2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "123 457 / 123 475 < 1",
+			"variationIndex": 3,
+			"variables": {
+				"hi": "1234",
+				"u": "5",
+				"v": "7",
+				"p": "123457",
+				"q": "123475",
+				"idx": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 123 457 / 123 475 > 1",
+			"variationIndex": 3,
+			"variables": {
+				"hi": "1234",
+				"u": "5",
+				"v": "7",
+				"p": "123457",
+				"q": "123475",
+				"idx": "0"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 123 457 / 123 475 = 1 (presque égaux)",
+			"variationIndex": 3,
+			"variables": {
+				"hi": "1234",
+				"u": "5",
+				"v": "7",
+				"p": "123457",
+				"q": "123475",
+				"idx": "0"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "987 691 / 987 619 > 1",
+			"variationIndex": 3,
+			"variables": {
+				"hi": "9876",
+				"u": "9",
+				"v": "1",
+				"p": "987691",
+				"q": "987619",
+				"idx": "2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 987 691 / 987 619 < 1",
+			"variationIndex": 3,
+			"variables": {
+				"hi": "9876",
+				"u": "9",
+				"v": "1",
+				"p": "987691",
+				"q": "987619",
+				"idx": "2"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

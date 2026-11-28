@@ -4,10 +4,10 @@
 	 * conteneur — et un grapheur, que les cartes de fonction et de courbe lisent
 	 * (`useGrapheurStore`).
 	 */
-	import { provideAtelier } from '$lib/atelier/context';
-	import type { Atelier } from '$lib/atelier/atelier.svelte';
-	import { provideGrapheurStore } from '$lib/stores/grapheur-context';
-	import { GrapheurStore } from '$lib/stores/grapheur.svelte';
+	import { provideAtelier } from '#lib/atelier/context.ts';
+	import type { Atelier } from '#lib/atelier/atelier.svelte.ts';
+	import { provideGrapheurStore } from '#lib/stores/grapheur-context.ts';
+	import { GrapheurStore } from '#lib/stores/grapheur.svelte.ts';
 	import ObjectPanel from '../../ObjectPanel.svelte';
 
 	let { atelier, graph = new GrapheurStore() }: { atelier: Atelier; graph?: GrapheurStore } =

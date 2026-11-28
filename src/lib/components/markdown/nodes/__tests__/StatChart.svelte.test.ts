@@ -10,16 +10,16 @@ import { render } from 'vitest-browser-svelte';
 import StatChart from '../StatChart.svelte';
 import ListNode from '../ListNode.svelte';
 import MarkdownRenderer from '../../MarkdownRenderer.svelte';
-import { parseStatChartContent } from '$lib/ubumark/parser/stat-chart-parser';
+import { parseStatChartContent } from '#lib/ubumark/parser/stat-chart-parser.ts';
 import {
 	buildStatChartScene,
 	type PieScene,
 	type SimulationScene
-} from '$lib/ubumark/utils/stat-chart-scene';
-import { parseMarkdown, type ListNode as ListAst } from '$lib/ubumark';
+} from '#lib/ubumark/utils/stat-chart-scene.ts';
+import { parseMarkdown, type ListNode as ListAst } from '#lib/ubumark/index.ts';
 import { DOCUMENT_FIGURE_LIMITS } from '../../render-budget';
-import { buildComparisonScene } from '$lib/ubumark/utils/comparison-scene';
-import { describeList } from '$lib/statistics/describe';
+import { buildComparisonScene } from '#lib/ubumark/utils/comparison-scene.ts';
+import { describeList } from '#lib/statistics/describe.ts';
 
 // =============================================================================
 // Helpers

@@ -121,7 +121,7 @@ async function _addQuestionsToCart(page: Page, questionCount: number = 5): Promi
 	// This is a simplified version - adjust based on actual UI
 	const addButtons = page
 		.locator('[data-testid="add-to-cart"]')
-		.or(page.locator('button:has-text("Ajouter au panier")'));
+		.or(page.locator('button:has-text("Ajouter à ma série")'));
 	const count = Math.min(await addButtons.count(), questionCount);
 
 	for (let i = 0; i < count; i++) {

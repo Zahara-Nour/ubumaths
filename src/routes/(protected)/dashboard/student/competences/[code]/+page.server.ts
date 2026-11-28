@@ -11,15 +11,15 @@
 
 import type { PageServerLoad } from './$types';
 import { error } from '@sveltejs/kit';
-import { requireRole } from '$lib/server/middleware/auth';
+import { requireRole } from '#lib/server/middleware/auth.ts';
 import type {
 	MathCompetenceCode,
 	MathCompetenceLevel,
 	MissingForNext,
 	SubdimensionLetter,
 	ValidatedObservables
-} from '$lib/types/skills';
-import { createServerLogger } from '$lib/utils/logger';
+} from '#lib/types/skills.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('(protected)/dashboard/student/competences/[code]/+page.server');
 

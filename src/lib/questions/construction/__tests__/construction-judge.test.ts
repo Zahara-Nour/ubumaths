@@ -1,13 +1,13 @@
 /**
  * Juge d'une case « figure » (bloc ```figure-a-completer) — comportements de la
- * phase 0 de CP-059 (`docs/wip/geometrie-validation-progress.md` § 3) :
+ * phase 0 de CP-059 (`docs/archive/wip/geometrie-validation-progress.md` § 3) :
  * on juge le RÉSULTAT par des positions, en tout-ou-rien, avec le message de
  * la première vérification ratée.
  */
 import { describe, it, expect } from 'vitest';
 import { judgeConstruction } from '../judge';
 import { parseConstructionAnswer, serializeConstructionAnswer } from '../answer';
-import type { ConstructionCheck } from '$lib/ubumark/types/construction';
+import type { ConstructionCheck } from '#lib/ubumark/types/construction.ts';
 
 const POINTS = new Map([
 	['A', { x: 1, y: 2 }],

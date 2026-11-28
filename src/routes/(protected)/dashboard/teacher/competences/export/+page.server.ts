@@ -8,9 +8,9 @@
  */
 
 import type { PageServerLoad } from './$types';
-import { requireRole } from '$lib/server/middleware/auth';
-import { loadClassCompetenceExport } from '$lib/server/competences/load-export-data';
-import type { ExportCompetence, ExportStudentRow } from '$lib/server/competences/export-csv';
+import { requireRole } from '#lib/server/middleware/auth.ts';
+import { loadClassCompetenceExport } from '#lib/server/competences/load-export-data.ts';
+import type { ExportCompetence, ExportStudentRow } from '#lib/server/competences/export-csv.ts';
 
 export interface CompetencesExportPageData {
 	classes: { id: string; name: string }[];

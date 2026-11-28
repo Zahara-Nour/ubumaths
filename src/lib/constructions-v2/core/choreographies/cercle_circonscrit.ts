@@ -27,8 +27,8 @@
  * Total : 17 sub-steps for a single `cercle_circonscrit @euclide` statement.
  */
 
-import { exact } from '$lib/geometry-core/types/geo-value';
-import { numericNode } from '$lib/mathAST/common/numeric';
+import { exact } from '#lib/geometry-core/types/geo-value.ts';
+import { numericNode } from '#lib/mathAST/common/numeric.ts';
 import type { Voie, ChoreographyFn, ChoreographyResult, SubStep, TraceTag } from './types';
 import { fixed, labelAux, mesure, role, type Role } from './names';
 

@@ -11,12 +11,13 @@
  */
 
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { Database, Json } from '$lib/types/database';
+import type { Database, Json } from '#lib/types/database.ts';
 import { createSystemNotification } from './notifications';
-import { dev } from '$app/environment';
+import { dev } from '$app/env';
 import { createServiceRoleClient } from './serviceRoleClient';
-import { escapeHtml } from '$lib/utils/html-escape';
-import { createServerLogger } from '$lib/utils/logger';
+import { escapeHtml } from '#lib/utils/html-escape.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
+import { redactSecretUrl } from '#lib/utils/analytics-redact.ts';
 
 const logger = createServerLogger('server/errorMonitoring');
 
@@ -157,6 +158,16 @@ function redactEmails(value: unknown): unknown {
 }
 
 /**
+ * Valeur texte du contexte : adresses courriel ET jetons des liens personnels (carnet,
+ * invitation de cours particulier) masqués. Le contexte porte parfois l'URL de la page
+ * (`freezeDetection` : tâche longue, gel), que le masquage de `url` ne voit pas.
+ */
+function redactValue(value: unknown): unknown {
+	const masked = redactEmails(value);
+	return typeof masked === 'string' ? redactSecretUrl(masked) : masked;
+}
+
+/**
  * Sanitize an object by removing sensitive fields
  *
  * Les clés sensibles (password, token…) sont remplacées ; dans les autres, les
@@ -182,10 +193,10 @@ function sanitizeObject(
 		} else if (Array.isArray(value)) {
 			// Sanitize arrays of objects
 			sanitized[key] = value.map((item) =>
-				item && typeof item === 'object' ? sanitizeObject(item) : redactEmails(item)
+				item && typeof item === 'object' ? sanitizeObject(item) : redactValue(item)
 			);
 		} else {
-			sanitized[key] = redactEmails(value);
+			sanitized[key] = redactValue(value);
 		}
 	}
 
@@ -268,12 +279,14 @@ export async function logError(
 		// Sanitize sensitive data
 		const sanitized = sanitizeErrorData(data);
 
-		// Truncate long fields
+		// Truncate long fields. Le jeton d'un lien personnel (carnet de liaison,
+		// ADR 0040) ne reste ni dans l'adresse ni dans le message : il est dans le
+		// CHEMIN, que le masquage des paramètres ne voit pas.
 		const truncated = {
 			...sanitized,
-			message: truncateString(sanitized.message, 1000),
+			message: truncateString(sanitized.message && redactSecretUrl(sanitized.message), 1000),
 			stack_trace: truncateString(sanitized.stack_trace, 5000),
-			url: truncateString(sanitized.url, 500)
+			url: truncateString(sanitized.url && redactSecretUrl(sanitized.url), 500)
 		};
 
 		// Use service role client to bypass RLS
@@ -361,7 +374,7 @@ async function notifyCriticalError(
 			action_url: `/dashboard/admin/errors/${errorId}`,
 			target_type: 'role',
 			target_roles: ['admin'],
-			system_event_type: 'assessment_graded' // Note: 'error_critical' not in SystemEventType enum, using fallback
+			system_event_type: 'error_critical'
 		});
 	} catch (error) {
 		logger.error('Failed to send critical error notification:', error);

@@ -1,0 +1,321 @@
+{
+	"id": "590169c4-e51d-4ea1-adaa-1cc38093442f",
+	"title": "Calculer un quotient",
+	"description": "Diviser par $100$",
+	"grades": ["CM2"],
+	"level": 2,
+	"delay": 15,
+	"status": "published",
+	"shared": {
+		"conditions": ["a!=0", "mod(a*10^q,10)!=0", "a>=10^(m-1)"]
+	},
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:{{expression1}};d}}"
+				}
+			],
+			"statement": "Calcule.\n\n$${{expression1}}$$",
+			"variables": [
+				{
+					"name": "m",
+					"expression": "0..3"
+				},
+				{
+					"name": "q",
+					"expression": "0..1"
+				},
+				{
+					"name": "a",
+					"expression": "digits:m.q"
+				},
+				{
+					"name": "expression1",
+					"expression": "a:100"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Diviser par $10$, $100$, $1000$.** Diviser par $10$ rend chaque chiffre $10$ fois plus petit : dans le tableau de numération, chaque chiffre glisse d'un rang vers la droite. Par $100$, il glisse de deux rangs ; par $1000$, de trois rangs. Les rangs restés vides entre la virgule et le premier chiffre reçoivent un $0$.",
+					"{{if:a>=10000|Le premier chiffre de ${{a}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(a/10000+1/100000)}}}$, est au rang des dizaines de milliers. Il glisse de deux rangs vers la droite : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{centaines}}$.|{{if:a>=1000|Le premier chiffre de ${{a}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(a/1000+1/100000)}}}$, est au rang des milliers. Il glisse de deux rangs vers la droite : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{dizaines}}$.|{{if:a>=100|Le premier chiffre de ${{a}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(a/100+1/100000)}}}$, est au rang des centaines. Il glisse de deux rangs vers la droite : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{unités}}$.|{{if:a>=10|Le premier chiffre de ${{a}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(a/10+1/100000)}}}$, est au rang des dizaines. Il glisse de deux rangs vers la droite : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{dixièmes}}$.|{{if:a>=1|Le premier chiffre de ${{a}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(a/1+1/100000)}}}$, est au rang des unités. Il glisse de deux rangs vers la droite : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{centièmes}}$.|Le premier chiffre de ${{a}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(a*10+1/100000)}}}$, est au rang des dixièmes. Il glisse de deux rangs vers la droite : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{millièmes}}$.}}}}}}}}}}",
+					"$$\\begin{align} {{a}} \\div 100 &= {{solution}} \\end{align}$$"
+				]
+			}
+		},
+		{
+			"statement": "Complète.\n\n$$? \\div {{eval:10^k}} = {{Q}}$$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..3"
+				},
+				{
+					"name": "m",
+					"expression": "1..3"
+				},
+				{
+					"name": "q",
+					"expression": "0..1"
+				},
+				{
+					"name": "a",
+					"expression": "digits:m.q"
+				},
+				{
+					"name": "Q",
+					"expression": "eval:a/10^k;d"
+				}
+			],
+			"conditions": ["a!=0", "mod(a*10^q,10)!=0", "a>=10^(m-1)", "q+k<=3"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a;d}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:a/10^(2*k);d}}",
+							"message": "Tu as divisé ${{Q}}$ par ${{eval:10^k}}$ : le nombre cherché est ${{eval:10^k}}$ fois plus grand que ${{Q}}$.",
+							"label": "Décalage dans le mauvais sens"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Diviser par $10$, $100$, $1000$** fait glisser chaque chiffre vers la droite. Pour retrouver le nombre de départ, on fait l'inverse : on multiplie ${{Q}}$ par ${{eval:10^k}}$, chaque chiffre glisse de ${{k}}$ rang{{if:k>1|s|}} vers la gauche.",
+					"$${{Q}} \\times {{eval:10^k}} = {{solution}}$$",
+					"$$\\textcolor{{{color:primary.0}}}{{{solution}}} \\div {{eval:10^k}} = {{Q}}$$"
+				]
+			},
+			"hint": "Le nombre cherché, divisé par ${{eval:10^k}}$, donne ${{Q}}$ : quelle opération fait le chemin inverse ?"
+		},
+		{
+			"statement": "Complète avec $10$, $100$ ou $1\\,000$.\n\n$${{a}} \\div ? = {{Q}}$$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..3"
+				},
+				{
+					"name": "m",
+					"expression": "1..3"
+				},
+				{
+					"name": "q",
+					"expression": "0..1"
+				},
+				{
+					"name": "a",
+					"expression": "digits:m.q"
+				},
+				{
+					"name": "Q",
+					"expression": "eval:a/10^k;d"
+				}
+			],
+			"conditions": ["a!=0", "mod(a*10^q,10)!=0", "a>=10^(m-1)", "q+k<=3"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:10^k}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:10^(-k);d}}",
+							"message": "Le quotient est plus petit que ${{a}}$ : on a divisé par un nombre plus grand que $1$.",
+							"label": "Rapport inversé"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Diviser par $10$, $100$, $1000$.** Diviser par $10$ fait glisser chaque chiffre d'un rang vers la droite ; par $100$, de deux rangs ; par $1000$, de trois rangs.",
+					"De ${{a}}$ à ${{Q}}$, chaque chiffre a glissé de ${{k}}$ rang{{if:k>1|s|}} vers la droite.",
+					"$${{a}} \\div \\textcolor{{{color:primary.0}}}{{{solution}}} = {{Q}}$$"
+				]
+			},
+			"hint": "Repère un chiffre de ${{a}}$ dans ${{Q}}$ : de combien de rangs a-t-il glissé vers la droite ?"
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["4{,}321"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "432.1",
+				"m": "3",
+				"q": "1"
+			},
+			"description": "432,1 : 100",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["4.321"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "432.1",
+				"m": "3",
+				"q": "1"
+			},
+			"description": "point",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["0{,}070"],
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["zeros"]
+			},
+			"variables": {
+				"a": "7",
+				"m": "1",
+				"q": "0"
+			},
+			"description": "0,070 : zéro inutile",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["0{,}07"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "7",
+				"m": "1",
+				"q": "0"
+			},
+			"description": "7 : 100",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["0{,}7"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "7",
+				"m": "1",
+				"q": "0"
+			},
+			"description": "mauvais décalage",
+			"variationIndex": 0
+		},
+		{
+			"description": "F4 : … ÷ 100 = 0,52",
+			"variationIndex": 1,
+			"variables": {
+				"k": "2",
+				"m": "2",
+				"q": "0",
+				"a": "52"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["52"]
+		},
+		{
+			"description": "F4 : décalage dans le mauvais sens",
+			"variationIndex": 1,
+			"variables": {
+				"k": "2",
+				"m": "2",
+				"q": "0",
+				"a": "52"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as divisé $0.52$ par $100$ : le nombre cherché est $100$ fois plus grand que $0.52$."
+			},
+			"answers": ["0{,}0052"]
+		},
+		{
+			"description": "F4 : un rang de moins (5,2)",
+			"variationIndex": 1,
+			"variables": {
+				"k": "2",
+				"m": "2",
+				"q": "0",
+				"a": "52"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["5{,}2"]
+		},
+		{
+			"description": "F4 : … ÷ 1 000 = 0,317",
+			"variationIndex": 1,
+			"variables": {
+				"k": "3",
+				"m": "3",
+				"q": "0",
+				"a": "317"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["317"]
+		},
+		{
+			"description": "F4 : 6,4 ÷ 100 = 0,064",
+			"variationIndex": 2,
+			"variables": {
+				"k": "2",
+				"m": "1",
+				"q": "1",
+				"a": "6.4"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["100"]
+		},
+		{
+			"description": "F4 : rapport inversé (0,01)",
+			"variationIndex": 2,
+			"variables": {
+				"k": "2",
+				"m": "1",
+				"q": "1",
+				"a": "6.4"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Le quotient est plus petit que $6.4$ : on a divisé par un nombre plus grand que $1$."
+			},
+			"answers": ["0{,}01"]
+		},
+		{
+			"description": "F4 : 10 au lieu de 100",
+			"variationIndex": 2,
+			"variables": {
+				"k": "2",
+				"m": "1",
+				"q": "1",
+				"a": "6.4"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["10"]
+		},
+		{
+			"description": "F4 : 1000 au lieu de 100",
+			"variationIndex": 2,
+			"variables": {
+				"k": "2",
+				"m": "1",
+				"q": "1",
+				"a": "6.4"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["1000"]
+		}
+	]
+}

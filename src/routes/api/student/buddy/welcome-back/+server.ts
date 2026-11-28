@@ -2,8 +2,9 @@
  * POST /api/student/buddy/welcome-back
  * ====================================
  *
- * Le Palotin a dit « tu m'as manqué » : le retour de l'élève après une longue
- * absence est fêté, on l'efface (docs/systeme/buddy-palotins.md).
+ * Le Palotin a fêté le retour de l'élève après une pause : on l'efface
+ * (docs/systeme/buddy-palotins.md). La semaine en cours compte aussi comme
+ * fêtée : un seul moment à la fois (T4, chantier `regularite`).
  * Appelé par le widget APRÈS avoir montré la bulle : un préchargement de page
  * ne consomme donc rien.
  *
@@ -12,21 +13,34 @@
  * fêter (deuxième appel, autre onglet).
  */
 
-import { error, json } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireRole } from '$lib/server/middleware/auth';
-import { acknowledgeWelcomeBack } from '$lib/server/buddy-queries';
-import { createServerLogger } from '$lib/utils/logger';
+import { requireRole } from '#lib/server/middleware/auth.ts';
+import { acknowledgeWelcomeBack } from '#lib/server/buddy-queries.ts';
+import { markWeekCelebrated } from '#lib/server/buddy-weeks.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/student/buddy/welcome-back/+server');
 
 export const POST: RequestHandler = async ({ locals }) => {
 	const { user } = await requireRole(locals, 'student');
 
+	let acknowledged: boolean;
 	try {
-		return json({ acknowledged: await acknowledgeWelcomeBack(user.id) });
+		acknowledged = await acknowledgeWelcomeBack(user.id);
 	} catch (err) {
 		logger.error('Retour à fêter non effacé :', err);
 		throw error(500, 'Retour non enregistré');
 	}
+
+	// Retour vraiment fêté seulement (un double appel ne consomme pas la semaine).
+	// Non bloquant : au pire, la semaine sera fêtée en plus à la prochaine activité
+	if (acknowledged) {
+		try {
+			await markWeekCelebrated(user.id, 'current');
+		} catch (err) {
+			logger.error('Semaine non marquée fêtée après le retour :', err);
+		}
+	}
+	return Response.json({ acknowledged });
 };

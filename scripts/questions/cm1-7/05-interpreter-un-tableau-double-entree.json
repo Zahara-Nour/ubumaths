@@ -1,0 +1,536 @@
+{
+	"id": "e1d59914-fe13-4aa6-a057-548e44426f6a",
+	"title": "Que dit le tableau à double entrée ? (cinq lignes)",
+	"description": "Clubs de sport : le sport qui attire le plus de filles (case choix), combien de garçons de plus que de filles, le total général, le sport qui attire le plus d'enfants (case choix)",
+	"grades": ["CM1"],
+	"level": 7,
+	"delay": 150,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"spacesFromFourDigits": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Ce tableau donne le nombre d'enfants inscrits dans les clubs de sport de la ville.\n\n```tableau-croise\nlignes: Natation ; Football ; Danse ; Judo ; Tennis\ncolonnes: Filles ; Garçons\nNatation = {{f1}} ; {{g1}}\nFootball = {{f2}} ; {{g2}}\nDanse = {{f3}} ; {{g3}}\nJudo = {{f4}} ; {{g4}}\nTennis = {{f5}} ; {{g5}}\ncoin: Sport \\ Élèves\ntotaux: non\n```\n\nQuel sport attire le plus de filles ?\n\n```choix\nmelanger: non\n- Natation\n- Football\n- Danse\n- Judo\n- Tennis\n```",
+			"variables": [
+				{
+					"name": "b1",
+					"expression": "15..199"
+				},
+				{
+					"name": "b2",
+					"expression": "15..199"
+				},
+				{
+					"name": "b3",
+					"expression": "15..199"
+				},
+				{
+					"name": "b4",
+					"expression": "15..199"
+				},
+				{
+					"name": "b5",
+					"expression": "15..199"
+				},
+				{
+					"name": "c",
+					"expression": "200..240"
+				},
+				{
+					"name": "k",
+					"expression": "0..4"
+				},
+				{
+					"name": "f1",
+					"expression": "eval:b1+(c-b1)*((k-1)*(k-2)*(k-3)*(k-4))/(24)"
+				},
+				{
+					"name": "f2",
+					"expression": "eval:b2+(c-b2)*((k-0)*(k-2)*(k-3)*(k-4))/(-6)"
+				},
+				{
+					"name": "f3",
+					"expression": "eval:b3+(c-b3)*((k-0)*(k-1)*(k-3)*(k-4))/(4)"
+				},
+				{
+					"name": "f4",
+					"expression": "eval:b4+(c-b4)*((k-0)*(k-1)*(k-2)*(k-4))/(-6)"
+				},
+				{
+					"name": "f5",
+					"expression": "eval:b5+(c-b5)*((k-0)*(k-1)*(k-2)*(k-3))/(24)"
+				},
+				{
+					"name": "g1",
+					"expression": "15..240"
+				},
+				{
+					"name": "g2",
+					"expression": "15..240"
+				},
+				{
+					"name": "g3",
+					"expression": "15..240"
+				},
+				{
+					"name": "g4",
+					"expression": "15..240"
+				},
+				{
+					"name": "g5",
+					"expression": "15..240"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{k}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Les filles : on ne regarde que la colonne « Filles », et on y cherche le plus grand nombre.",
+					"Le plus grand : ${{c}}$, c'est {{if:k==0|la natation|{{if:k==1|le football|{{if:k==2|la danse|{{if:k==3|le judo|le tennis}}}}}}}}."
+				]
+			}
+		},
+		{
+			"statement": "Ce tableau donne le nombre d'enfants inscrits dans les clubs de sport de la ville.\n\n```tableau-croise\nlignes: Natation ; Football ; Danse ; Judo ; Tennis\ncolonnes: Filles ; Garçons\nNatation = {{f1}} ; {{g1}}\nFootball = {{f2}} ; {{g2}}\nDanse = {{f3}} ; {{g3}}\nJudo = {{f4}} ; {{g4}}\nTennis = {{f5}} ; {{g5}}\ncoin: Sport \\ Élèves\ntotaux: non\n```\n\nDans le club de {{if:k==0|natation|{{if:k==1|football|{{if:k==2|danse|{{if:k==3|judo|tennis}}}}}}}}, combien y a-t-il de garçons de plus que de filles ?\n\n$?$ garçons de plus",
+			"variables": [
+				{
+					"name": "f1",
+					"expression": "15..240"
+				},
+				{
+					"name": "f2",
+					"expression": "15..240"
+				},
+				{
+					"name": "f3",
+					"expression": "15..240"
+				},
+				{
+					"name": "f4",
+					"expression": "15..240"
+				},
+				{
+					"name": "f5",
+					"expression": "15..240"
+				},
+				{
+					"name": "g1",
+					"expression": "15..240"
+				},
+				{
+					"name": "g2",
+					"expression": "15..240"
+				},
+				{
+					"name": "g3",
+					"expression": "15..240"
+				},
+				{
+					"name": "g4",
+					"expression": "15..240"
+				},
+				{
+					"name": "g5",
+					"expression": "15..240"
+				},
+				{
+					"name": "k",
+					"expression": "0..4"
+				},
+				{
+					"name": "x",
+					"expression": "eval:(f1)*((k-1)*(k-2)*(k-3)*(k-4))/(24)+(f2)*((k-0)*(k-2)*(k-3)*(k-4))/(-6)+(f3)*((k-0)*(k-1)*(k-3)*(k-4))/(4)+(f4)*((k-0)*(k-1)*(k-2)*(k-4))/(-6)+(f5)*((k-0)*(k-1)*(k-2)*(k-3))/(24)"
+				},
+				{
+					"name": "y",
+					"expression": "eval:(g1)*((k-1)*(k-2)*(k-3)*(k-4))/(24)+(g2)*((k-0)*(k-2)*(k-3)*(k-4))/(-6)+(g3)*((k-0)*(k-1)*(k-3)*(k-4))/(4)+(g4)*((k-0)*(k-1)*(k-2)*(k-4))/(-6)+(g5)*((k-0)*(k-1)*(k-2)*(k-3))/(24)"
+				},
+				{
+					"name": "d",
+					"expression": "eval:y-x"
+				}
+			],
+			"conditions": ["y > x"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Sur la ligne « {{if:k==0|Natation|{{if:k==1|Football|{{if:k==2|Danse|{{if:k==3|Judo|Tennis}}}}}}}} » : ${{y}}$ garçons et ${{x}}$ filles.",
+					"« Combien de plus » : l'écart, ${{y}} - {{x}} = \\textcolor{{{color:primary.0}}}{{{d}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Ce tableau donne le nombre d'enfants inscrits dans les clubs de sport de la ville.\n\n```tableau-croise\nlignes: Natation ; Football ; Danse ; Judo ; Tennis\ncolonnes: Filles ; Garçons\nNatation = {{f1}} ; {{g1}}\nFootball = {{f2}} ; {{g2}}\nDanse = {{f3}} ; {{g3}}\nJudo = {{f4}} ; {{g4}}\nTennis = {{f5}} ; {{g5}}\ncoin: Sport \\ Élèves\ntotaux: non\n```\n\nCombien d'enfants sont inscrits dans un club de sport, en tout ?\n\n$?$ enfants",
+			"variables": [
+				{
+					"name": "f1",
+					"expression": "15..95"
+				},
+				{
+					"name": "f2",
+					"expression": "15..95"
+				},
+				{
+					"name": "f3",
+					"expression": "15..95"
+				},
+				{
+					"name": "f4",
+					"expression": "15..95"
+				},
+				{
+					"name": "f5",
+					"expression": "15..95"
+				},
+				{
+					"name": "g1",
+					"expression": "15..95"
+				},
+				{
+					"name": "g2",
+					"expression": "15..95"
+				},
+				{
+					"name": "g3",
+					"expression": "15..95"
+				},
+				{
+					"name": "g4",
+					"expression": "15..95"
+				},
+				{
+					"name": "g5",
+					"expression": "15..95"
+				},
+				{
+					"name": "sf",
+					"expression": "eval:f1+f2+f3+f4+f5"
+				},
+				{
+					"name": "sg",
+					"expression": "eval:g1+g2+g3+g4+g5"
+				},
+				{
+					"name": "n",
+					"expression": "eval:sf+sg"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{n}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On additionne la colonne des filles : ${{f1}} + {{f2}} + {{f3}} + {{f4}} + {{f5}} = {{sf}}$.",
+					"Puis celle des garçons : ${{g1}} + {{g2}} + {{g3}} + {{g4}} + {{g5}} = {{sg}}$.",
+					"En tout : ${{sf}} + {{sg}} = \\textcolor{{{color:primary.0}}}{{{n}}}$ enfants."
+				]
+			}
+		},
+		{
+			"statement": "Ce tableau donne le nombre d'enfants inscrits dans les clubs de sport de la ville.\n\n```tableau-croise\nlignes: Natation ; Football ; Danse ; Judo ; Tennis\ncolonnes: Filles ; Garçons\nNatation = {{f1}} ; {{g1}}\nFootball = {{f2}} ; {{g2}}\nDanse = {{f3}} ; {{g3}}\nJudo = {{f4}} ; {{g4}}\nTennis = {{f5}} ; {{g5}}\ncoin: Sport \\ Élèves\ntotaux: non\n```\n\nQuel sport attire le plus d'enfants, filles et garçons ensemble ?\n\n```choix\nmelanger: non\n- Natation\n- Football\n- Danse\n- Judo\n- Tennis\n```",
+			"variables": [
+				{
+					"name": "f1",
+					"expression": "20..95"
+				},
+				{
+					"name": "f2",
+					"expression": "20..95"
+				},
+				{
+					"name": "f3",
+					"expression": "20..95"
+				},
+				{
+					"name": "f4",
+					"expression": "20..95"
+				},
+				{
+					"name": "f5",
+					"expression": "20..95"
+				},
+				{
+					"name": "h1",
+					"expression": "20..95"
+				},
+				{
+					"name": "h2",
+					"expression": "20..95"
+				},
+				{
+					"name": "h3",
+					"expression": "20..95"
+				},
+				{
+					"name": "h4",
+					"expression": "20..95"
+				},
+				{
+					"name": "h5",
+					"expression": "20..95"
+				},
+				{
+					"name": "c",
+					"expression": "200..230"
+				},
+				{
+					"name": "k",
+					"expression": "0..4"
+				},
+				{
+					"name": "fk",
+					"expression": "eval:(f1)*((k-1)*(k-2)*(k-3)*(k-4))/(24)+(f2)*((k-0)*(k-2)*(k-3)*(k-4))/(-6)+(f3)*((k-0)*(k-1)*(k-3)*(k-4))/(4)+(f4)*((k-0)*(k-1)*(k-2)*(k-4))/(-6)+(f5)*((k-0)*(k-1)*(k-2)*(k-3))/(24)"
+				},
+				{
+					"name": "g1",
+					"expression": "eval:h1+(c-fk-h1)*((k-1)*(k-2)*(k-3)*(k-4))/(24)"
+				},
+				{
+					"name": "g2",
+					"expression": "eval:h2+(c-fk-h2)*((k-0)*(k-2)*(k-3)*(k-4))/(-6)"
+				},
+				{
+					"name": "g3",
+					"expression": "eval:h3+(c-fk-h3)*((k-0)*(k-1)*(k-3)*(k-4))/(4)"
+				},
+				{
+					"name": "g4",
+					"expression": "eval:h4+(c-fk-h4)*((k-0)*(k-1)*(k-2)*(k-4))/(-6)"
+				},
+				{
+					"name": "g5",
+					"expression": "eval:h5+(c-fk-h5)*((k-0)*(k-1)*(k-2)*(k-3))/(24)"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{k}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Filles et garçons ensemble : on additionne les deux cases de chaque ligne, puis on compare les cinq totaux.",
+					"Le plus grand total : ${{c}}$, c'est {{if:k==0|la natation|{{if:k==1|le football|{{if:k==2|la danse|{{if:k==3|le judo|le tennis}}}}}}}}."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Le plus de filles : la danse",
+			"variationIndex": 0,
+			"variables": {
+				"b1": "128",
+				"b2": "64",
+				"b3": "150",
+				"b4": "45",
+				"b5": "82",
+				"c": "212",
+				"k": "2",
+				"f1": "128",
+				"f2": "64",
+				"f3": "212",
+				"f4": "45",
+				"f5": "82",
+				"g1": "112",
+				"g2": "215",
+				"g3": "23",
+				"g4": "96",
+				"g5": "77"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : le plus de garçons (football)",
+			"variationIndex": 0,
+			"variables": {
+				"b1": "128",
+				"b2": "64",
+				"b3": "150",
+				"b4": "45",
+				"b5": "82",
+				"c": "212",
+				"k": "2",
+				"f1": "128",
+				"f2": "64",
+				"f3": "212",
+				"f4": "45",
+				"f5": "82",
+				"g1": "112",
+				"g2": "215",
+				"g3": "23",
+				"g4": "96",
+				"g5": "77"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Football : 215 − 64 = 151",
+			"variationIndex": 1,
+			"variables": {
+				"f1": "128",
+				"f2": "64",
+				"f3": "197",
+				"f4": "45",
+				"f5": "82",
+				"g1": "112",
+				"g2": "215",
+				"g3": "23",
+				"g4": "96",
+				"g5": "77",
+				"k": "1",
+				"x": "64",
+				"y": "215",
+				"d": "151"
+			},
+			"answers": ["151"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : le nombre de garçons",
+			"variationIndex": 1,
+			"variables": {
+				"f1": "128",
+				"f2": "64",
+				"f3": "197",
+				"f4": "45",
+				"f5": "82",
+				"g1": "112",
+				"g2": "215",
+				"g3": "23",
+				"g4": "96",
+				"g5": "77",
+				"k": "1",
+				"x": "64",
+				"y": "215",
+				"d": "151"
+			},
+			"answers": ["215"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Total général : 315 + 312 = 627",
+			"variationIndex": 2,
+			"variables": {
+				"f1": "68",
+				"f2": "54",
+				"f3": "87",
+				"f4": "45",
+				"f5": "61",
+				"g1": "72",
+				"g2": "85",
+				"g3": "23",
+				"g4": "56",
+				"g5": "76",
+				"sf": "315",
+				"sg": "312",
+				"n": "627"
+			},
+			"answers": ["627"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : les filles seulement",
+			"variationIndex": 2,
+			"variables": {
+				"f1": "68",
+				"f2": "54",
+				"f3": "87",
+				"f4": "45",
+				"f5": "61",
+				"g1": "72",
+				"g2": "85",
+				"g3": "23",
+				"g4": "56",
+				"g5": "76",
+				"sf": "315",
+				"sg": "312",
+				"n": "627"
+			},
+			"answers": ["315"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Le plus d'enfants : le tennis (220)",
+			"variationIndex": 3,
+			"variables": {
+				"f1": "90",
+				"f2": "54",
+				"f3": "87",
+				"f4": "45",
+				"f5": "61",
+				"h1": "92",
+				"h2": "85",
+				"h3": "23",
+				"h4": "56",
+				"h5": "76",
+				"c": "220",
+				"k": "4",
+				"fk": "61",
+				"g1": "92",
+				"g2": "85",
+				"g3": "23",
+				"g4": "56",
+				"g5": "159"
+			},
+			"answers": ["4"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : le plus de filles (natation)",
+			"variationIndex": 3,
+			"variables": {
+				"f1": "90",
+				"f2": "54",
+				"f3": "87",
+				"f4": "45",
+				"f5": "61",
+				"h1": "92",
+				"h2": "85",
+				"h3": "23",
+				"h4": "56",
+				"h5": "76",
+				"c": "220",
+				"k": "4",
+				"fk": "61",
+				"g1": "92",
+				"g2": "85",
+				"g3": "23",
+				"g4": "56",
+				"g5": "159"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

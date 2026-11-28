@@ -1,0 +1,296 @@
+{
+	"id": "b408ace2-e2d6-401f-a1ba-bc65977cb53d",
+	"title": "Vrai ou faux : propriétés des suites",
+	"description": "Choisir la réponse justifiée : bornée ⇏ convergente, croissante ⇏ +∞, +∞ ⇏ croissante, majorée par une suite convergente ⇏ convergente",
+	"grades": ["T_SPE"],
+	"level": 2,
+	"delay": 60,
+	"status": "draft",
+	"shared": {},
+	"variations": [
+		{
+			"statement": "Cette affirmation est-elle vraie ou fausse ? Choisis la réponse correctement justifiée.\n\n« Toute suite bornée converge. »\n\n```choix\n- Faux : $u_n=(-1)^n$ est bornée (entre $-1$ et $1$) mais n'a pas de limite\n- Vrai : une suite bornée ne peut pas tendre vers l'infini, donc elle converge\n- Vrai : c'est le théorème de convergence des suites monotones\n- Faux : $u_n=n$ est bornée mais tend vers $+\\infty$\n```",
+			"variables": [],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La suite $u_n=(-1)^n$ prend les valeurs $1$ et $-1$ : elle est bornée, mais elle n'a pas de limite.",
+					"L'affirmation est donc $\\textcolor{{{color:primary.0}}}{\\text{fausse}}$. Le théorème demande une suite **monotone** et bornée ; $u_n=n$ n'est pas bornée."
+				]
+			},
+			"hint": "Une affirmation sur « toute suite » est vraie si elle se démontre pour toutes les suites ; un seul contre-exemple la rend fausse, à condition qu'il vérifie l'hypothèse **sans** vérifier la conclusion. Vérifie aussi que le théorème cité est bien celui du cours."
+		},
+		{
+			"statement": "Cette affirmation est-elle vraie ou fausse ? Choisis la réponse correctement justifiée.\n\n« Toute suite croissante tend vers $+\\infty$. »\n\n```choix\n- Faux : $u_n=1-\\dfrac{1}{n+1}$ est croissante et converge vers $1$\n- Vrai : ses termes augmentent, donc ils dépassent tout réel\n- Vrai : c'est le théorème « toute suite croissante tend vers $+\\infty$ »\n- Faux : $u_n=-n$ est croissante et tend vers $-\\infty$\n```",
+			"variables": [],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La suite $u_n=1-\\dfrac{1}{n+1}$ est croissante (on retire un nombre de plus en plus petit) et converge vers $1$.",
+					"L'affirmation est donc $\\textcolor{{{color:primary.0}}}{\\text{fausse}}$. Le théorème dit : toute suite croissante **non majorée** tend vers $+\\infty$ ; $u_n=-n$ est décroissante."
+				]
+			},
+			"hint": "Une affirmation sur « toute suite » est vraie si elle se démontre pour toutes les suites ; un seul contre-exemple la rend fausse, à condition qu'il vérifie l'hypothèse **sans** vérifier la conclusion. Vérifie aussi que le théorème cité est bien celui du cours."
+		},
+		{
+			"statement": "Cette affirmation est-elle vraie ou fausse ? Choisis la réponse correctement justifiée.\n\n« Une suite qui tend vers $+\\infty$ est croissante. »\n\n```choix\n- Faux : $u_n=n+2(-1)^n$ tend vers $+\\infty$ (car $u_n\\geqslant n-2$), mais $u_1<u_0$\n- Vrai : si elle n'était pas croissante, elle ne pourrait pas dépasser tout réel\n- Vrai : c'est la réciproque du théorème « toute suite croissante non majorée tend vers $+\\infty$ »\n- Faux : $u_n=n^2$ tend vers $+\\infty$ mais n'est pas croissante\n```",
+			"variables": [],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$u_n=n+2(-1)^n\\geqslant n-2$, donc $u_n$ tend vers $+\\infty$ ; pourtant $u_0=2$ et $u_1=-1$ : la suite n'est pas croissante.",
+					"L'affirmation est donc $\\textcolor{{{color:primary.0}}}{\\text{fausse}}$. La réciproque d'un théorème n'est pas un théorème ; et $u_n=n^2$ est croissante sur $\\mathbb{N}$."
+				]
+			},
+			"hint": "Une affirmation sur « toute suite » est vraie si elle se démontre pour toutes les suites ; un seul contre-exemple la rend fausse, à condition qu'il vérifie l'hypothèse **sans** vérifier la conclusion. Vérifie aussi que le théorème cité est bien celui du cours."
+		},
+		{
+			"statement": "Cette affirmation est-elle vraie ou fausse ? Choisis la réponse correctement justifiée.\n\n« Si $u_n\\leqslant v_n$ pour tout entier naturel $n$ et si $(v_n)$ converge, alors $(u_n)$ converge. »\n\n```choix\n- Faux : avec $u_n=-n$ et $v_n=0$, on a $u_n\\leqslant v_n$, $(v_n)$ converge, mais $(u_n)$ tend vers $-\\infty$\n- Vrai : c'est le théorème des gendarmes\n- Vrai : $(u_n)$ est majorée par une suite convergente, donc elle converge\n- Faux : avec $u_n=\\dfrac{1}{n+1}$ et $v_n=1$, $(u_n)$ ne converge pas\n```",
+			"variables": [],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Avec $u_n=-n$ et $v_n=0$ : $u_n\\leqslant v_n$ et $(v_n)$ converge vers $0$, mais $(u_n)$ tend vers $-\\infty$.",
+					"L'affirmation est donc $\\textcolor{{{color:primary.0}}}{\\text{fausse}}$. Les gendarmes demandent un encadrement par **deux** suites de même limite ; une suite majorée ne converge pas forcément ; et $\\dfrac{1}{n+1}$ converge vers $0$."
+				]
+			},
+			"hint": "Une affirmation sur « toute suite » est vraie si elle se démontre pour toutes les suites ; un seul contre-exemple la rend fausse, à condition qu'il vérifie l'hypothèse **sans** vérifier la conclusion. Vérifie aussi que le théorème cité est bien celui du cours."
+		},
+		{
+			"statement": "Cette affirmation est-elle vraie ou fausse ? Choisis la réponse correctement justifiée.\n\n« Toute suite croissante et majorée converge. »\n\n```choix\n- Vrai : c'est le théorème de convergence monotone (admis)\n- Faux : $u_n=1-\\dfrac{1}{n+1}$ est croissante, majorée par $1$, mais ne converge pas\n- Vrai : une suite majorée converge toujours\n- Faux : $u_n=(-1)^n$ est majorée par $1$ mais n'a pas de limite\n```",
+			"variables": [],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le cours l'admet : toute suite croissante et majorée converge (vers un réel inférieur ou égal au majorant). L'affirmation est donc $\\textcolor{{{color:primary.0}}}{\\text{vraie}}$.",
+					"$u_n=1-\\dfrac{1}{n+1}$ converge vers $1$ ; $u_n=(-1)^n$ n'est pas croissante ; et une suite seulement majorée peut ne pas converger, comme $(-1)^n$ ou $-n$."
+				]
+			},
+			"hint": "Une affirmation sur « toute suite » est vraie si elle se démontre pour toutes les suites ; un seul contre-exemple la rend fausse, à condition qu'il vérifie l'hypothèse **sans** vérifier la conclusion. Vérifie aussi que le théorème cité est bien celui du cours."
+		},
+		{
+			"statement": "Cette affirmation est-elle vraie ou fausse ? Choisis la réponse correctement justifiée.\n\n« Si $u_n\\geqslant v_n$ pour tout entier naturel $n$ et si $(v_n)$ tend vers $+\\infty$, alors $(u_n)$ tend vers $+\\infty$. »\n\n```choix\n- Vrai : c'est un théorème de comparaison du cours\n- Faux : avec $v_n=n$ et $u_n=-n$, la suite $(u_n)$ tend vers $-\\infty$\n- Vrai : c'est le théorème des gendarmes\n- Faux : avec $v_n=n$ et $u_n=n+(-1)^n$, la suite $(u_n)$ n'a pas de limite\n```",
+			"variables": [],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Théorème de comparaison : si $u_n\\geqslant v_n$ à partir d'un certain rang et si $(v_n)$ tend vers $+\\infty$, alors $(u_n)$ tend vers $+\\infty$. L'affirmation est donc $\\textcolor{{{color:primary.0}}}{\\text{vraie}}$.",
+					"Avec $u_n=-n$, l'hypothèse $u_n\\geqslant v_n$ est fausse ; $n+(-1)^n\\geqslant n-1$ tend vers $+\\infty$ ; et les gendarmes demandent un encadrement par deux suites de même limite finie."
+				]
+			},
+			"hint": "Une affirmation sur « toute suite » est vraie si elle se démontre pour toutes les suites ; un seul contre-exemple la rend fausse, à condition qu'il vérifie l'hypothèse **sans** vérifier la conclusion. Vérifie aussi que le théorème cité est bien celui du cours."
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "v0 (bornée) : faux, bon contre-exemple",
+			"variationIndex": 0,
+			"variables": {},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0"]
+		},
+		{
+			"description": "v0 (bornée) : vrai, faux argument",
+			"variationIndex": 0,
+			"variables": {},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["1"]
+		},
+		{
+			"description": "v0 (bornée) : faux contre-exemple",
+			"variationIndex": 0,
+			"variables": {},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["3"]
+		},
+		{
+			"description": "v1 (croissante) : faux, bon contre-exemple",
+			"variationIndex": 1,
+			"variables": {},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0"]
+		},
+		{
+			"description": "v1 (croissante) : vrai, faux argument",
+			"variationIndex": 1,
+			"variables": {},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["1"]
+		},
+		{
+			"description": "v1 (croissante) : faux contre-exemple",
+			"variationIndex": 1,
+			"variables": {},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["3"]
+		},
+		{
+			"description": "v2 (tend vers +∞) : faux, bon contre-exemple",
+			"variationIndex": 2,
+			"variables": {},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0"]
+		},
+		{
+			"description": "v2 (tend vers +∞) : vrai, faux argument",
+			"variationIndex": 2,
+			"variables": {},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["1"]
+		},
+		{
+			"description": "v2 (tend vers +∞) : faux contre-exemple",
+			"variationIndex": 2,
+			"variables": {},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["3"]
+		},
+		{
+			"description": "v3 (comparaison) : faux, bon contre-exemple",
+			"variationIndex": 3,
+			"variables": {},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0"]
+		},
+		{
+			"description": "v3 (comparaison) : vrai, faux argument",
+			"variationIndex": 3,
+			"variables": {},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["1"]
+		},
+		{
+			"description": "v3 (comparaison) : faux contre-exemple",
+			"variationIndex": 3,
+			"variables": {},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["3"]
+		},
+		{
+			"description": "v4 (croissante majorée) : vrai, théorème du cours",
+			"variationIndex": 4,
+			"variables": {},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0"]
+		},
+		{
+			"description": "v4 (croissante majorée) : faux, contre-exemple hors hypothèse",
+			"variationIndex": 4,
+			"variables": {},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["1"]
+		},
+		{
+			"description": "v4 (croissante majorée) : vrai, faux argument",
+			"variationIndex": 4,
+			"variables": {},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["2"]
+		},
+		{
+			"description": "v4 (croissante majorée) : faux, contre-exemple qui n'en est pas un",
+			"variationIndex": 4,
+			"variables": {},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["3"]
+		},
+		{
+			"description": "v5 (comparaison +∞) : vrai, théorème du cours",
+			"variationIndex": 5,
+			"variables": {},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0"]
+		},
+		{
+			"description": "v5 (comparaison +∞) : faux, contre-exemple hors hypothèse",
+			"variationIndex": 5,
+			"variables": {},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["1"]
+		},
+		{
+			"description": "v5 (comparaison +∞) : vrai, faux argument",
+			"variationIndex": 5,
+			"variables": {},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["2"]
+		},
+		{
+			"description": "v5 (comparaison +∞) : faux, contre-exemple qui n'en est pas un",
+			"variationIndex": 5,
+			"variables": {},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["3"]
+		}
+	]
+}

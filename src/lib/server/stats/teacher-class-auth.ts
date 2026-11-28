@@ -13,7 +13,7 @@
  */
 
 import { error } from '@sveltejs/kit';
-import { requireRole, type AuthResult } from '$lib/server/middleware/auth';
+import { requireRole, type AuthResult } from '#lib/server/middleware/auth.ts';
 
 export interface TeacherClassAuthResult extends AuthResult {
 	classRow: { id: string; name: string; grade: string | null };

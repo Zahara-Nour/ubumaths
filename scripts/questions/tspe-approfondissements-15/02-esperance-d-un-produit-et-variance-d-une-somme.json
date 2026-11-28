@@ -1,0 +1,289 @@
+{
+	"id": "81353e4d-b232-417e-a8f6-c10244f8b4a3",
+	"title": "E(XY) = E(X)E(Y) et variance d'une somme",
+	"description": "Factoriser la somme qui définit E(XY) par indépendance (case choix), développement de V(X + Y) (case), E((X + Y)²) et V(X + Y) (deux cases), contre-exemple Y = X (case), démonstration (étapes à ranger)",
+	"grades": ["T_SPE"],
+	"level": 4,
+	"delay": 120,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true,
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Soit $X$ et $Y$ deux variables aléatoires **indépendantes**, à valeurs réelles en nombre fini. On écrit $E(XY)=\\displaystyle\\sum_{x,\\,y}xy\\,P\\left(\\{X=x\\}\\cap\\{Y=y\\}\\right)$, la somme portant sur les valeurs $x$ de $X$ et $y$ de $Y$.\n\nQuelle propriété permet de factoriser cette somme en $\\left(\\displaystyle\\sum_{x}xP(X=x)\\right)\\left(\\displaystyle\\sum_{y}yP(Y=y)\\right)$ ?\n\n```choix\n- Par indépendance, $P\\left(\\{X=x\\}\\cap\\{Y=y\\}\\right)=P(X=x)\\times P(Y=y)$ pour tous $x$ et $y$\n- La linéarité de l'espérance : $E(X+Y)=E(X)+E(Y)$\n- $P\\left(\\{X=x\\}\\cap\\{Y=y\\}\\right)=P(X=x)+P(Y=y)$ pour tous $x$ et $y$\n- Les évènements $\\{X=x\\}$ sont deux à deux incompatibles\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$X$ et $Y$ sont indépendantes : $P\\left(\\{X=x\\}\\cap\\{Y=y\\}\\right)=P(X=x)\\times P(Y=y)$.",
+					"Chaque terme s'écrit $xP(X=x)\\times yP(Y=y)$ : la somme double est le produit des deux sommes simples.",
+					"Donc $\\textcolor{{{color:primary.0}}}{E(XY)=E(X)E(Y)}$. La linéarité ne parle que de sommes, pas de produits."
+				]
+			}
+		},
+		{
+			"statement": "Soit $X$ et $Y$ deux variables aléatoires à valeurs réelles en nombre fini (indépendantes ou non). On rappelle que $V(Z)=E(Z^2)-\\left(E(Z)\\right)^2$ pour toute variable $Z$.\n\nEn développant, complète.\n\n$V(X+Y)=V(X)+V(Y)+?\\left(E(XY)-E(X)E(Y)\\right)$",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "2"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Par linéarité, $E\\left((X+Y)^2\\right)=E(X^2)+2E(XY)+E(Y^2)$.",
+					"Et $\\left(E(X+Y)\\right)^2=\\left(E(X)+E(Y)\\right)^2=E(X)^2+2E(X)E(Y)+E(Y)^2$.",
+					"En soustrayant : $\\textcolor{{{color:primary.0}}}{V(X+Y)=V(X)+V(Y)+2\\left(E(XY)-E(X)E(Y)\\right)}$. Si $X$ et $Y$ sont indépendantes, le dernier terme est nul."
+				]
+			}
+		},
+		{
+			"statement": "Soit $X$ et $Y$ deux variables aléatoires **indépendantes**, à valeurs réelles en nombre fini. On sait que $E(X)={{eval:u}}$, $E(Y)={{eval:w}}$, $E(X^2)={{eval:s}}$ et $E(Y^2)={{eval:t}}$.\n\nComplète.\n\n$E\\left((X+Y)^2\\right)=?$ et $V(X+Y)=?$",
+			"variables": [
+				{
+					"name": "u",
+					"expression": "1..5"
+				},
+				{
+					"name": "w",
+					"expression": "1..5"
+				},
+				{
+					"name": "p",
+					"expression": "1..6"
+				},
+				{
+					"name": "q",
+					"expression": "1..6"
+				},
+				{
+					"name": "s",
+					"expression": "eval:u^2+p"
+				},
+				{
+					"name": "t",
+					"expression": "eval:w^2+q"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:s+t+2*u*w}}"
+				},
+				{
+					"expectedAnswer": "{{eval:p+q}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Par indépendance, $E(XY)=E(X)E(Y)={{eval:u*w}}$.",
+					"$E\\left((X+Y)^2\\right)=E(X^2)+2E(XY)+E(Y^2)={{eval:s}}+2\\times{{eval:u*w}}+{{eval:t}}={{eval:s+t+2*u*w}}$.",
+					"$V(X+Y)=E\\left((X+Y)^2\\right)-\\left(E(X)+E(Y)\\right)^2={{eval:s+t+2*u*w}}-{{eval:u+w}}^2={{eval:p+q}}$.",
+					"Donc $\\textcolor{{{color:primary.0}}}{E\\left((X+Y)^2\\right)={{eval:s+t+2*u*w}}}$ et $\\textcolor{{{color:primary.0}}}{V(X+Y)={{eval:p+q}}}$, c'est bien $V(X)+V(Y)={{eval:p}}+{{eval:q}}$."
+				]
+			}
+		},
+		{
+			"statement": "La variable aléatoire $X$ suit la loi de Bernoulli de paramètre ${{eval:k/10;d}}$, et l'on pose $Y=X$.\n\nRéponds par une fraction irréductible ou par un nombre décimal exact.\n\n$E(XY)=?$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..9"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:k/10}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$X$ ne prend que les valeurs $0$ et $1$, donc $XY=X^2=X$ et $E(XY)=E(X)={{eval:k/10;d}}$.",
+					"Or $E(X)E(Y)={{eval:k/10;d}}^2={{eval:k^2/100;d}}$ : l'égalité $E(XY)=E(X)E(Y)$ est fausse ici, car $X$ et $Y=X$ ne sont pas indépendantes.",
+					"Donc $\\textcolor{{{color:primary.0}}}{E(XY)={{eval:k/10;d}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Soit $X$ et $Y$ deux variables aléatoires **indépendantes**, à valeurs réelles en nombre fini. On démontre que $V(X+Y)=V(X)+V(Y)$.\n\nRemets les étapes de la démonstration dans l'ordre.\n\n```ranger\nsigne: aucun\n- En développant, $V(X+Y)=V(X)+V(Y)+2\\left(E(XY)-E(X)E(Y)\\right)$, sans hypothèse sur $X$ et $Y$.\n- Par indépendance, $P\\left(\\{X=x\\}\\cap\\{Y=y\\}\\right)=P(X=x)\\times P(Y=y)$ pour tous $x$ et $y$.\n- En factorisant la somme $\\displaystyle\\sum_{x,\\,y}xy\\,P\\left(\\{X=x\\}\\cap\\{Y=y\\}\\right)$, on obtient $E(XY)=E(X)E(Y)$.\n- Le terme $2\\left(E(XY)-E(X)E(Y)\\right)$ est donc nul.\n- Donc $V(X+Y)=V(X)+V(Y)$.\n```",
+			"variables": [],
+			"correction": {
+				"steps": [
+					"Le développement vaut pour toutes variables ; l'indépendance sert seulement à montrer que $E(XY)=E(X)E(Y)$.",
+					"D'où $\\textcolor{{{color:primary.0}}}{V(X+Y)=V(X)+V(Y)}$ pour $X$ et $Y$ indépendantes."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "indépendance",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : linéarité",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : somme des probabilités",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : incompatibles",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "2",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 1",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 0",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "28 et 3",
+			"variationIndex": 2,
+			"variables": {
+				"u": "2",
+				"w": "3",
+				"p": "1",
+				"q": "2",
+				"s": "5",
+				"t": "11"
+			},
+			"answers": ["28", "3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : sans 2E(XY)",
+			"variationIndex": 2,
+			"variables": {
+				"u": "2",
+				"w": "3",
+				"p": "1",
+				"q": "2",
+				"s": "5",
+				"t": "11"
+			},
+			"answers": ["16", "3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : V = E(X²) + E(Y²)",
+			"variationIndex": 2,
+			"variables": {
+				"u": "2",
+				"w": "3",
+				"p": "1",
+				"q": "2",
+				"s": "5",
+				"t": "11"
+			},
+			"answers": ["28", "16"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "0,3",
+			"variationIndex": 3,
+			"variables": {
+				"k": "3"
+			},
+			"answers": ["0,3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : p²",
+			"variationIndex": 3,
+			"variables": {
+				"k": "3"
+			},
+			"answers": ["0,09"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 0",
+			"variationIndex": 3,
+			"variables": {
+				"k": "3"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Étapes dans l’ordre",
+			"variationIndex": 4,
+			"variables": {},
+			"answers": ["4", "0", "1", "2", "3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : deuxième et troisième étapes échangées",
+			"variationIndex": 4,
+			"variables": {},
+			"answers": ["4", "1", "0", "2", "3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

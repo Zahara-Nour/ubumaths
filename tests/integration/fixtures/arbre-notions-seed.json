@@ -686,7 +686,7 @@
 				{
 					"nom": "Suites récurrentes",
 					"niveaux": "Tle, Tle comp.",
-					"sous_notions": ["escalier", "point fixe"],
+					"sous_notions": ["escalier", "point fixe", "récurrence linéaire d'ordre 2"],
 					"note": null
 				},
 				{
@@ -930,6 +930,10 @@
 						"vecteur normal et équation cartésienne"
 					],
 					"note": "dans l'espace"
+				},
+				{
+					"nom": "Agrandissement et réduction",
+					"sous_notions": []
 				}
 			]
 		},
@@ -982,7 +986,8 @@
 						"triangle quelconque",
 						"parallélogramme",
 						"disque",
-						"unités et conversions"
+						"unités et conversions",
+						"aires sur quadrillage"
 					],
 					"note": "au CM : comparer et mesurer, formules carré/rectangle au CM2"
 				},
@@ -1062,7 +1067,8 @@
 						"absence de mémoire",
 						"densité et aire",
 						"fonction de répartition",
-						"espérance et variance"
+						"espérance et variance",
+						"loi de Poisson"
 					],
 					"note": null
 				},

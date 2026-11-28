@@ -13,12 +13,12 @@ import { generateInstance } from '../instance-generator';
 import { assignBlankIndices } from '../assign-blank-indices';
 import { validateTemplate } from '../../validators/template-validator';
 import type { QuestionTemplate, QuestionVariation } from '../../types';
-import { templateMarkdown } from '$lib/ubumark';
-import { isBlankValueCorrect, validateAnswer } from '$lib/utils/answer-validator';
+import { templateMarkdown } from '#lib/ubumark/index.ts';
+import { isBlankValueCorrect, validateAnswer } from '#lib/utils/answer-validator.ts';
 import { buildExpectedResult } from '../../expected-result';
 import { toPublicQuestion } from '../../public-question';
 import { findUnmaskedAnswers, maskGestureAnswers } from '../../masked-statement';
-import { parseTrigCircleContent } from '$lib/ubumark/parser/trig-circle-parser';
+import { parseTrigCircleContent } from '#lib/ubumark/parser/trig-circle-parser.ts';
 
 function template(variation: Omit<QuestionVariation, 'statement'> & { statement: string }) {
 	return {

@@ -18,7 +18,7 @@
  */
 
 import { BasePythonExecutor } from './base-executor.svelte';
-import { debugStore } from '$lib/stores/pythonDebug.svelte';
+import { debugStore } from '#lib/stores/pythonDebug.svelte.ts';
 import type { DebugSnapshot, DebugPauseReason } from '../debug/types';
 
 // =============================================================================

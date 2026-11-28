@@ -4,8 +4,8 @@
  */
 
 import { describe, expect, it } from 'vitest';
-import { parseMonnaieContent } from '$lib/ubumark/parser/monnaie-parser';
-import { generateMonnaieTypst } from '$lib/ubumark/generators/monnaie-typst';
+import { parseMonnaieContent } from '#lib/ubumark/parser/monnaie-parser.ts';
+import { generateMonnaieTypst } from '#lib/ubumark/generators/monnaie-typst.ts';
 import {
 	addToBuild,
 	buildAnswer,
@@ -14,8 +14,8 @@ import {
 	canAdd,
 	EMPTY_BUILD,
 	solutionBuild
-} from '$lib/ubumark/utils/monnaie-construire';
-import { buildMonnaieScene } from '$lib/ubumark/utils/monnaie-scene';
+} from '#lib/ubumark/utils/monnaie-construire.ts';
+import { buildMonnaieScene } from '#lib/ubumark/utils/monnaie-scene.ts';
 import {
 	amountAnswer,
 	amountWords,
@@ -23,9 +23,9 @@ import {
 	denominationName,
 	readAmount,
 	toCents
-} from '$lib/ubumark/utils/monnaie-valeurs';
-import { buildAnswerOf } from '$lib/questions/generator/build-answer';
-import { MONNAIE_COINS, MONNAIE_NOTES, type MonnaieNode } from '$lib/ubumark/types/monnaie';
+} from '#lib/ubumark/utils/monnaie-valeurs.ts';
+import { buildAnswerOf } from '#lib/questions/generator/build-answer.ts';
+import { MONNAIE_COINS, MONNAIE_NOTES, type MonnaieNode } from '#lib/ubumark/types/monnaie.ts';
 
 const parse = (...lines: string[]) => parseMonnaieContent(lines.join('\n'));
 const messages = (node: MonnaieNode) => node.errors.map((e) => e.message);

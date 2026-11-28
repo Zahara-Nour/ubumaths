@@ -7,9 +7,9 @@
  * Le filtre de l'URL s'appelle `point`.
  */
 import { describe, it, expect, vi } from 'vitest';
-import { createFakeSupabase } from '$lib/server/__tests__/helpers/fake-supabase';
+import { createFakeSupabase } from '#lib/server/__tests__/helpers/fake-supabase.ts';
 
-vi.mock('$lib/server/stats/teacher-class-auth', () => ({
+vi.mock('#lib/server/stats/teacher-class-auth.ts', () => ({
 	requireTeacherOfClass: async () => undefined
 }));
 
@@ -36,7 +36,7 @@ const FLAG_ROW = {
 	resolved_by: null,
 	resolved_at: null,
 	created_at: '2026-11-01T10:00:00Z',
-	profiles: { id: STUDENT_ID, first_name: 'Ada', last_name: 'L.' },
+	profiles: { id: STUDENT_ID, firstname: 'Ada', lastname: 'L.' },
 	curriculum_points: { id: POINT_ID, name: 'Additionner deux fractions' }
 };
 
@@ -82,6 +82,34 @@ describe('GET anti-fraud/flags', () => {
 		);
 		const select = flagsQuery?.calls.find((c) => c.method === 'select');
 		expect(String(select?.args[0])).toContain('curriculum_points(id, name)');
+	});
+
+	it('lit le prénom et le nom dans les colonnes firstname et lastname du profil (E79)', async () => {
+		const { response, fake } = await get();
+		const body = await response.json();
+		expect(body.flags[0].student).toEqual({ id: STUDENT_ID, first_name: 'Ada', last_name: 'L.' });
+		// Le faux client rend la fixture quel que soit le select : on vérifie les colonnes demandées
+		// (`first_name` et `last_name` n'existent pas dans `profiles` : la base répondait 500).
+		const flagsQuery = fake.queries.find(
+			(q) => q.table === 'srs_anti_fraud_flags' && q.calls.some((c) => c.method === 'limit')
+		);
+		const select = String(flagsQuery?.calls.find((c) => c.method === 'select')?.args[0]);
+		expect(select).toContain('(id, firstname, lastname)');
+		expect(select).not.toMatch(/first_name|last_name/);
+	});
+
+	it('ne rend pas le message de la base quand la lecture des signalements échoue', async () => {
+		const fake = createFakeSupabase((table) => {
+			if (table === 'class_members') return { data: [{ student_id: STUDENT_ID }] };
+			return { data: null, error: { message: 'column profiles_1.first_name does not exist' } };
+		});
+		const response = await GET({
+			params: { classId: CLASS_ID },
+			url: new URL(`http://localhost/api/teacher/classes/${CLASS_ID}/anti-fraud/flags`),
+			locals: { supabase: fake.client }
+		} as never);
+		expect(response.status).toBe(500);
+		expect(await response.json()).toEqual({ error: 'Impossible de lire les signalements' });
 	});
 
 	it('rend point: null pour un signalement sans point', async () => {

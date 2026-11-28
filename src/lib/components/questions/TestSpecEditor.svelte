@@ -20,23 +20,23 @@
 		ConstraintId,
 		SharedVariationDefaults,
 		QuestionVariable
-	} from '$lib/questions/types';
-	import type { TestSpecResult } from '$lib/questions/test-spec-runner';
-	import { getRootVariableNames } from '$lib/questions/generator/test-instance-builder';
-	import { readChoiceCase, statementCaseKinds } from '$lib/questions/choice-case-editor';
-	import { readWorkFigureCases } from '$lib/questions/work-figure-editor';
-	import { formatChoiceAnswer, parseChoiceAnswer } from '$lib/questions/choice-case';
-	import { choiceLetter } from '$lib/questions/choices';
+	} from '#lib/questions/types.ts';
+	import type { TestSpecResult } from '#lib/questions/test-spec-runner.ts';
+	import { getRootVariableNames } from '#lib/questions/generator/test-instance-builder.ts';
+	import { readChoiceCase, statementCaseKinds } from '#lib/questions/choice-case-editor.ts';
+	import { readWorkFigureCases } from '#lib/questions/work-figure-editor.ts';
+	import { formatChoiceAnswer, parseChoiceAnswer } from '#lib/questions/choice-case.ts';
+	import { choiceLetter } from '#lib/questions/choices.ts';
 	import { SvelteMap } from 'svelte/reactivity';
-	import { Button } from '$lib/components/ui/button';
-	import { Input } from '$lib/components/ui/input';
-	import { Label } from '$lib/components/ui/label';
-	import { Badge } from '$lib/components/ui/badge';
-	import MySelect from '$lib/components/MySelect.svelte';
-	import MyCheckbox from '$lib/components/MyCheckbox.svelte';
-	import MathField from '$lib/components/MathField.svelte';
-	import InlineMarkdown from '$lib/components/markdown/InlineMarkdown.svelte';
-	import MarkdownRenderer from '$lib/components/markdown/MarkdownRenderer.svelte';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import { Input } from '#lib/components/ui/input/index.ts';
+	import { Label } from '#lib/components/ui/label/index.ts';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
+	import MySelect from '#lib/components/MySelect.svelte';
+	import MyCheckbox from '#lib/components/MyCheckbox.svelte';
+	import MathField from '#lib/components/MathField.svelte';
+	import InlineMarkdown from '#lib/components/markdown/InlineMarkdown.svelte';
+	import MarkdownRenderer from '#lib/components/markdown/MarkdownRenderer.svelte';
 	import { Plus, Trash2, Play, Check, X, Copy, Loader2 } from '@lucide/svelte';
 
 	interface Props {
@@ -215,7 +215,7 @@
 	async function runSpec(index: number) {
 		isRunning = true;
 		try {
-			const { runTestSpec } = await import('$lib/questions/test-spec-runner');
+			const { runTestSpec } = await import('#lib/questions/test-spec-runner.ts');
 			const result = runTestSpec(buildTemplateForTest(), testSpecs[index]);
 			results.set(index, result);
 		} finally {
@@ -226,7 +226,7 @@
 	async function runAll() {
 		isRunning = true;
 		try {
-			const { runTestSpec } = await import('$lib/questions/test-spec-runner');
+			const { runTestSpec } = await import('#lib/questions/test-spec-runner.ts');
 			const templateForTest = buildTemplateForTest();
 			results.clear();
 			for (let i = 0; i < testSpecs.length; i++) {

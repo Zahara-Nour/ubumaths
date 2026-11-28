@@ -1,0 +1,92 @@
+{
+	"id": "5cbf5d65-2b5d-47d2-a803-48c2891c0e23",
+	"title": "Relecture — suites de 1re, 14 modèles publiés complétés",
+	"grade": "1_SPE",
+	"description": "Relecture dans /dev/modeles des 14 modèles publiés de 1re spé auxquels le chantier idees-1re-suites a ajouté des variations (à la fin de chaque modèle).",
+	"items": [
+		{
+			"modele": "Valeur renvoyée par une fonction Python de seuil",
+			"templateId": "19961e67-88c4-43bf-a76b-6a2af61dedf3",
+			"quantity": 1,
+			"delay": 60
+		},
+		{
+			"modele": "Somme de termes consécutifs d'une suite arithmétique",
+			"templateId": "44b32cad-1803-4ff2-a649-4c502610b43c",
+			"quantity": 1,
+			"delay": 60
+		},
+		{
+			"modele": "De l'énoncé à l'expression de la suite",
+			"templateId": "45da9678-f16d-4168-9e19-aefcd4197edb",
+			"quantity": 1,
+			"delay": 60
+		},
+		{
+			"modele": "Sens de variation d'une suite géométrique de raison positive",
+			"templateId": "5042401b-ceb0-4dc2-aa48-b83e90ee4bf2",
+			"quantity": 1,
+			"delay": 60
+		},
+		{
+			"modele": "Terme général d'une suite arithmétique",
+			"templateId": "65e96f31-31fe-4c2b-b894-e689b998b849",
+			"quantity": 1,
+			"delay": 60
+		},
+		{
+			"modele": "Calculer un terme d'une suite géométrique",
+			"templateId": "727fb88a-0cb7-4937-88c7-c522dffe04f4",
+			"quantity": 1,
+			"delay": 60
+		},
+		{
+			"modele": "Calculer un terme",
+			"templateId": "7703e625-8a3e-48bd-b4d3-245201766457",
+			"quantity": 1,
+			"delay": 60
+		},
+		{
+			"modele": "Reconnaître une suite géométrique à partir de sa forme explicite",
+			"templateId": "84114cb2-cb00-4526-a9d3-a03a3a15976b",
+			"quantity": 1,
+			"delay": 60
+		},
+		{
+			"modele": "Déterminer la raison d'une suite géométrique",
+			"templateId": "85afd455-84a0-4caa-82c0-36840b19a219",
+			"quantity": 1,
+			"delay": 60
+		},
+		{
+			"modele": "Somme de termes consécutifs d'une suite géométrique",
+			"templateId": "b72fae4a-f8c1-4758-a4d7-9a7523cda877",
+			"quantity": 1,
+			"delay": 60
+		},
+		{
+			"modele": "Reconnaître une suite géométrique à partir de sa relation de récurrence",
+			"templateId": "cea65372-59a4-48b7-adeb-ffd56d6cf8d1",
+			"quantity": 1,
+			"delay": 60
+		},
+		{
+			"modele": "Calculer un terme d'une suite géométrique",
+			"templateId": "cf51cb93-c89b-477d-bfed-eb3cffae5edf",
+			"quantity": 1,
+			"delay": 60
+		},
+		{
+			"modele": "Reconnaître une suite arithmétique à partir de sa forme explicite",
+			"templateId": "d2943133-ebf7-424d-946a-8fed6cfa76be",
+			"quantity": 1,
+			"delay": 60
+		},
+		{
+			"modele": "Terme général d'une suite géométrique",
+			"templateId": "e67b1cbd-3a00-4379-bb4c-5a39ddff360f",
+			"quantity": 1,
+			"delay": 60
+		}
+	]
+}

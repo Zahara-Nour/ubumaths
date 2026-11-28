@@ -14,7 +14,7 @@ import type { GeoValue } from '../types/geo-value';
 import { exact } from '../types/geo-value';
 import { geoAdd, geoSub, geoMul, geoDiv, simplifyExact } from '../compute/geo-arithmetic';
 import { geoToNumber } from '../compute/to-number';
-import { cos, sin } from '$lib/mathAST';
+import { cos, sin } from '#lib/mathAST/index.ts';
 
 function geoCos(angle: GeoValue): GeoValue {
 	if (angle.kind === 'exact') {

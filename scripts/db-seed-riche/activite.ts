@@ -68,6 +68,8 @@ export function planActivite(c: Contexte) {
 		worksheet_id: f.id,
 		status: 'active',
 		correction_release_mode: 'immediate',
+		// Sans lui, l'élève ne voit aucun corrigé, quel que soit le mode de libération.
+		show_corrections: true,
 		individualized: false,
 		assigned_at: quand(3 * (i + 1)),
 		created_by: c.prof

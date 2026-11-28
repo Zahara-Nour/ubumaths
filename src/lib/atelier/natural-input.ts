@@ -13,10 +13,10 @@
  * @module atelier/natural-input
  */
 
-import { plain, type AtelierCommand } from '$lib/atelier/commands';
-import { normalizePasted } from '$lib/atelier/parse';
-import { parse as parseUnit } from '$lib/mathAST/units/parser';
-import { resolveUnit, UNIT_FAMILIES } from '$lib/mathAST/units/definitions';
+import { plain, type AtelierCommand } from '#lib/atelier/commands.ts';
+import { normalizePasted } from '#lib/atelier/parse.ts';
+import { parse as parseUnit } from '#lib/mathAST/units/parser.ts';
+import { resolveUnit, UNIT_FAMILIES } from '#lib/mathAST/units/definitions.ts';
 
 // Types
 
@@ -229,21 +229,55 @@ function unitLine(line: LineKind): boolean {
 /**
  * Ce que devient un mot FINI (décision 4), ou `null` : rien ne change. Un mot
  * de commande seulement en tête ; un petit mot seulement dans une commande
- * (« sur » aussi après le `=` d'une fonction) ; une unité seulement après
+ * (« sur », « pour » aussi après le `=` d'une fonction) ; une unité seulement après
  * « nombre + espace », jamais dans une commande ni une définition de fonction.
  */
 export function finishedWordLatex(
 	found: WordAtCaret,
 	line: LineKind,
-	words: readonly CommandWord[]
+	words: readonly CommandWord[],
+	lineLatex = ''
 ): string | null {
 	const { word, place } = found;
 	const text = String.raw`\text{${word}}`;
 	if (place === 'start' && found.atoms > 1) return findCommand(words, word) ? text : null;
 	if (line === 'command') return isSmallWord(word) ? text : null;
-	if (line === 'function-definition') return normalized(word) === 'sur' ? text : null;
+	if (line === 'function-definition')
+		return definitionWord(normalized(word), lineLatex) ? text : null;
 	const unit = place === 'after-number' && unitLine(line) && (word === 'min' || isUnit(word));
 	return unit ? String.raw`\mathrm{${word}}` : null;
+}
+
+/**
+ * Les mots d'une définition de fonction : « sur », « pour » (chantier
+ * fonctions-domaines) ; « ou », « et » seulement après « pour », dans la
+ * condition — `f(t) = et` reste e·t.
+ */
+function definitionWord(word: string, lineLatex: string): boolean {
+	if (word === 'sur' || word === 'pour') return true;
+	return (word === 'ou' || word === 'et') && /\\text\{\s*pour\s*\}/.test(lineLatex);
+}
+
+/** Les mots d'une définition, le plus long d'abord : « pour » avant son « ou ». */
+const CARD_WORDS = ['pour', 'sur', 'ou', 'et'] as const;
+
+/**
+ * Dans la CARTE d'une fonction, le mot qui finit au curseur, à l'espace qui le
+ * suit : son LaTeX (`\text{ pour }`, l'écriture que la carte réaffiche) et le
+ * nombre de lettres qu'il remplace ; `null` sinon. La carte ignore l'espace :
+ * MathLive y colle le mot à ce qui précède (`xpour`, `x<0ou`), le mot est
+ * donc la FIN de la suite de lettres. « ou », « et » seulement après « pour »,
+ * comme dans la console (`definitionWord`) : `f(x) = e t` reste e·t.
+ */
+export function cardWordAtCaret(before: string): { latex: string; atoms: number } | null {
+	// Les lettres d'une commande (`\infty`) ne sont pas un mot
+	const run = new RegExp(`(?<![\\\\${LETTER}])[${LETTER}]+$`).exec(before)?.[0];
+	if (run === undefined) return null;
+	const word = CARD_WORDS.find((candidate) => run.endsWith(candidate));
+	if (word === undefined || !definitionWord(word, before)) return null;
+	// L'espace tapée juste avant (`x\,pour`, `mathModeSpace`) : le mot a déjà ses blancs
+	const spaced = run === word && before.slice(0, -word.length).endsWith('\\,');
+	return { latex: String.raw`\text{ ${word} }`, atoms: word.length + (spaced ? 1 : 0) };
 }
 
 /**

@@ -8,11 +8,12 @@
  */
 import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireAuth } from '$lib/server/middleware/auth';
-import { validateUuidParam } from '$lib/server/validation/params';
-import { createServiceRoleClient } from '$lib/server/serviceRoleClient';
-import { getAttachmentDownloadUrl } from '$lib/server/message-attachments';
-import { createServerLogger } from '$lib/utils/logger';
+import { requireAuth } from '#lib/server/middleware/auth.ts';
+import { validateUuidParam } from '#lib/server/validation/params.ts';
+import { createServiceRoleClient } from '#lib/server/serviceRoleClient.ts';
+import { getAttachmentDownloadUrl } from '#lib/server/message-attachments.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
+import { toBrowserAddress } from '#lib/utils/supabase-address.ts';
 
 const logger = createServerLogger('api/messages/attachments/[attachmentId]/+server');
 
@@ -34,7 +35,8 @@ export const GET: RequestHandler = async ({ params, locals }) => {
 	return new Response(null, {
 		status: 303,
 		headers: {
-			location: url,
+			// En dev sur la base locale : par le relais du serveur de dev (inchangé en prod)
+			location: toBrowserAddress(url),
 			'cache-control': 'private, no-store',
 			'referrer-policy': 'no-referrer'
 		}

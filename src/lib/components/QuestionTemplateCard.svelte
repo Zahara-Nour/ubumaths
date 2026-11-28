@@ -23,11 +23,11 @@
 -->
 
 <script lang="ts">
-	import type { QuestionTemplate } from '$lib/questions/types';
-	import { getQuestionType, isCourseQuestion, QUESTION_TYPE_LABELS } from '$lib/questions/types';
-	import { Button } from '$lib/components/ui/button';
-	import { Badge } from '$lib/components/ui/badge';
-	import * as Card from '$lib/components/ui/card';
+	import type { QuestionTemplate } from '#lib/questions/types.ts';
+	import { getQuestionType, isCourseQuestion, QUESTION_TYPE_LABELS } from '#lib/questions/types.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
+	import * as Card from '#lib/components/ui/card/index.ts';
 	import { Eye, Pencil, Copy, Trash2 } from '@lucide/svelte';
 
 	interface Props {

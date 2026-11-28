@@ -6,12 +6,12 @@
  * Purpose: Mark a student's VIP card as used (by template ID, FIFO order)
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { z } from 'zod';
-import { requireAuth } from '$lib/server/middleware/auth';
-import { verifyTeacherStudentWithRole } from '$lib/server/middleware/student-access';
-import { createServerLogger } from '$lib/utils/logger';
+import { requireAuth } from '#lib/server/middleware/auth.ts';
+import { verifyTeacherStudentWithRole } from '#lib/server/middleware/student-access.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/teacher/rewards/use-vip-card/+server');
 
@@ -64,7 +64,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		throw error(404, rpcResult.error || 'No unused card found');
 	}
 
-	return json({
+	return Response.json({
 		success: true,
 		message: 'Carte VIP utilisée avec succès'
 	});

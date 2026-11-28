@@ -4,17 +4,17 @@
  * POST - Create a new tag
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import {
 	validateCreateTag,
 	tagListResponseSchema,
 	createTagResponseSchema
-} from '$lib/server/validation';
-import { validateJsonResponse } from '$lib/server/validation/response-utils';
-import { requireRoles } from '$lib/server/middleware/auth';
-import { isTaggableKind } from '$lib/server/resource-tags';
-import { createServerLogger } from '$lib/utils/logger';
+} from '#lib/server/validation/index.ts';
+import { validateJsonResponse } from '#lib/server/validation/response-utils.ts';
+import { requireRoles } from '#lib/server/middleware/auth.ts';
+import { isTaggableKind } from '#lib/server/resource-tags.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/tags/+server');
 
@@ -74,7 +74,7 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 	// Validate response
 	const validated = validateJsonResponse(tagListResponseSchema, { tags }, 'GET /api/tags');
 
-	return json(validated);
+	return Response.json(validated);
 };
 
 /**
@@ -94,7 +94,7 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 	try {
 		body = await request.json();
 	} catch {
-		throw error(400, 'Invalid JSON body');
+		throw error(400, 'Corps de requête JSON invalide');
 	}
 
 	const validation = validateCreateTag(body);
@@ -139,7 +139,7 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 				fullTag,
 				'POST /api/tags (existing)'
 			);
-			return json(validated, { status: 200 });
+			return Response.json(validated, { status: 200 });
 		}
 	}
 
@@ -165,5 +165,5 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 	// Validate response
 	const validated = validateJsonResponse(createTagResponseSchema, newTag, 'POST /api/tags');
 
-	return json(validated, { status: 201 });
+	return Response.json(validated, { status: 201 });
 };

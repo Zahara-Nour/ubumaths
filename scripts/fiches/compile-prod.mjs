@@ -44,8 +44,10 @@ const WASM = join(
 	'pkg',
 	'typst_ts_web_compiler_bg.wasm'
 );
-// Police mathématique : STIX Two Math (macOS) ; le texte utilise les polices intégrées
-const MATH_FONT = '/System/Library/Fonts/Supplemental/STIXTwoMath.otf';
+// Polices : celles de la production, rien de plus. Le compilateur ajoute de lui-même
+// les polices « text » de typst-assets (New Computer Modern et sa police mathématique),
+// comme le bundle du navigateur ; une police locale en plus (l'ancienne STIX Two Math
+// de macOS) pouvait donner au témoin un glyphe que la prod n'a pas (L9).
 
 // Polices du Corrigé (les mêmes fichiers que `CORRECTION_FONT_FILES`)
 const POLICES_CORRIGE = ['ShantellSans-Light.ttf', 'ShantellSans-Bold.ttf', 'ChiphreMath.ttf'].map(
@@ -76,10 +78,6 @@ if (!existsSync(WASM)) {
 	console.error(`Compilateur introuvable : ${WASM} (lancer depuis la racine, après pnpm install)`);
 	process.exit(2);
 }
-if (!existsSync(MATH_FONT)) {
-	console.error(`Police mathématique introuvable : ${MATH_FONT} (adapter MATH_FONT)`);
-	process.exit(2);
-}
 
 const acces = new MemoryAccessModel();
 // Téléchargement immédiat : différé dans getBody, un paquet introuvable n'aurait
@@ -96,7 +94,7 @@ const compilateur = createTypstCompiler();
 await compilateur.init({
 	getModule: () => readFileSync(WASM),
 	beforeBuild: [
-		loadFonts([MATH_FONT, ...policesEnPlus].map((f) => new Uint8Array(readFileSync(f)))),
+		loadFonts(policesEnPlus.map((f) => new Uint8Array(readFileSync(f)))),
 		withAccessModel(acces),
 		withPackageRegistry(new NodeFetchPackageRegistry(acces, telecharger))
 	]

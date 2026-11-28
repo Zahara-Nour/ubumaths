@@ -1,0 +1,239 @@
+{
+	"id": "33ff7000-4605-4e22-81db-6e2307cd6291",
+	"title": "Dernier chiffre et décimales d'un produit de décimaux",
+	"description": "Sans calculer le produit de deux décimaux : son dernier chiffre (0,3 × 0,7 → 1) ou son nombre de chiffres après la virgule (pièges : produit des derniers chiffres non réduit, chiffres additionnés, décimales comptées comme pour une addition)",
+	"grades": ["6"],
+	"level": 1,
+	"delay": 30,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"spacesFromFourDigits": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Sans calculer le produit, trouve son dernier chiffre.\n\n$${{eval:X/10^a;d}}\\times {{eval:Y/10^b;d}}$$\n\nLe dernier chiffre du produit est $?$.",
+			"variables": [
+				{
+					"name": "X",
+					"expression": "2..99"
+				},
+				{
+					"name": "a",
+					"expression": "1|2"
+				},
+				{
+					"name": "Y",
+					"expression": "2..99"
+				},
+				{
+					"name": "b",
+					"expression": "1|2"
+				},
+				{
+					"name": "ux",
+					"expression": "eval:mod(X,10)"
+				},
+				{
+					"name": "uy",
+					"expression": "eval:mod(Y,10)"
+				},
+				{
+					"name": "f",
+					"expression": "eval:ux*uy"
+				},
+				{
+					"name": "g",
+					"expression": "eval:mod(f,10)"
+				}
+			],
+			"conditions": ["mod(X,10) != 0", "mod(Y,10) != 0", "mod(ux*uy,10) != 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{g}}",
+					"expectedErrors": [
+						{
+							"answer": "{{f}}",
+							"message": "${{f}}$ n'est pas un chiffre : le dernier chiffre du produit est celui de ${{f}}$.",
+							"label": "Produit des derniers chiffres non réduit"
+						},
+						{
+							"answer": "{{eval:mod(ux+uy,10)}}",
+							"message": "Tu as additionné les derniers chiffres : ici, on multiplie ${{ux}}$ par ${{uy}}$.",
+							"label": "Derniers chiffres additionnés"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le dernier chiffre du produit ne dépend que des derniers chiffres des deux facteurs : {{if:f>=10|${{ux}}\\times {{uy}}={{eval:(f-g)/10}}\\textcolor{{{color:primary.0}}}{ {{g}} }$.|${{ux}}\\times {{uy}}=\\textcolor{{{color:primary.0}}}{ {{g}} }$.}}",
+					"**Vérification.** ${{eval:X/10^a;d}}\\times {{eval:Y/10^b;d}}={{eval:X*Y/10^(a+b);d}}$."
+				]
+			},
+			"hint": "Le dernier chiffre du produit ne dépend que des derniers chiffres des deux nombres."
+		},
+		{
+			"statement": "Sans calculer le produit, trouve combien il a de chiffres après la virgule.\n\n$${{eval:X/10^a;d}}\\times {{eval:Y/10^b;d}}$$\n\nLe produit a $?$ chiffres après la virgule.",
+			"variables": [
+				{
+					"name": "X",
+					"expression": "2..99"
+				},
+				{
+					"name": "a",
+					"expression": "1|2"
+				},
+				{
+					"name": "Y",
+					"expression": "2..99"
+				},
+				{
+					"name": "b",
+					"expression": "1|2"
+				},
+				{
+					"name": "ux",
+					"expression": "eval:mod(X,10)"
+				},
+				{
+					"name": "uy",
+					"expression": "eval:mod(Y,10)"
+				},
+				{
+					"name": "f",
+					"expression": "eval:ux*uy"
+				},
+				{
+					"name": "g",
+					"expression": "eval:mod(f,10)"
+				}
+			],
+			"conditions": ["mod(X,10) != 0", "mod(Y,10) != 0", "mod(ux*uy,10) != 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a+b}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:max(a,b)}}",
+							"message": "Tu as fait comme pour une addition : dans un produit, on compte les chiffres après la virgule des deux facteurs réunis.",
+							"label": "Comme pour une addition"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"${{eval:X/10^a;d}}$ a ${{a}}$ chiffre{{if:a>1|s|}} après la virgule, ${{eval:Y/10^b;d}}$ en a ${{b}}$ ; ${{ux}}\\times {{uy}}={{f}}$ ne finit pas par $0$.",
+					"Le produit a donc ${{a}}+{{b}}=\\textcolor{{{color:primary.0}}}{ {{eval:a+b}} }$ chiffres après la virgule.",
+					"**Vérification.** ${{eval:X/10^a;d}}\\times {{eval:Y/10^b;d}}={{eval:X*Y/10^(a+b);d}}$."
+				]
+			},
+			"hint": "Dans un produit de deux décimaux, compte les chiffres après la virgule de chacun des deux facteurs."
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "a : 0,3 × 0,7 = 0,21 → 1",
+			"variationIndex": 0,
+			"variables": {
+				"X": "3",
+				"a": "1",
+				"Y": "7",
+				"b": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["1"]
+		},
+		{
+			"description": "a : 21 non réduit",
+			"variationIndex": 0,
+			"variables": {
+				"X": "3",
+				"a": "1",
+				"Y": "7",
+				"b": "1"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "$21$ n'est pas un chiffre : le dernier chiffre du produit est celui de $21$."
+			},
+			"answers": ["21"]
+		},
+		{
+			"description": "a : additionnés",
+			"variationIndex": 0,
+			"variables": {
+				"X": "3",
+				"a": "1",
+				"Y": "7",
+				"b": "1"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as additionné les derniers chiffres : ici, on multiplie $3$ par $7$."
+			},
+			"answers": ["0"]
+		},
+		{
+			"description": "a : 0,46 × 0,7 = 0,322 → 2",
+			"variationIndex": 0,
+			"variables": {
+				"X": "46",
+				"a": "2",
+				"Y": "7",
+				"b": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["2"]
+		},
+		{
+			"description": "b : 0,3 × 0,7 → 2 décimales",
+			"variationIndex": 1,
+			"variables": {
+				"X": "3",
+				"a": "1",
+				"Y": "7",
+				"b": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["2"]
+		},
+		{
+			"description": "b : 0,46 × 0,7 → 3 décimales",
+			"variationIndex": 1,
+			"variables": {
+				"X": "46",
+				"a": "2",
+				"Y": "7",
+				"b": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["3"]
+		},
+		{
+			"description": "b : comme une addition",
+			"variationIndex": 1,
+			"variables": {
+				"X": "46",
+				"a": "2",
+				"Y": "7",
+				"b": "1"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as fait comme pour une addition : dans un produit, on compte les chiffres après la virgule des deux facteurs réunis."
+			},
+			"answers": ["2"]
+		}
+	]
+}

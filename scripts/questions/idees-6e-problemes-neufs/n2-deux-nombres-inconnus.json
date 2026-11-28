@@ -1,0 +1,391 @@
+{
+	"id": "4048d9c5-3e97-4aad-ae20-75d89a4a63fe",
+	"rangement": {
+		"noeud": "Algèbre > Premiers pas algébriques > nombre inconnu",
+		"point": "6-142"
+	},
+	"title": "Deux nombres inconnus : billets et devinettes",
+	"description": "Trouver deux nombres sans lettre : billets de 5 € et de 10 € (nombre de billets et somme donnés, « si tous étaient des billets de 5 € ») ; deux entiers de 2 à 12 dont on donne la somme et le produit, ou l'écart et le produit (essais organisés) ; pièges : euros pris pour des billets, somme partagée en deux",
+	"grades": ["6"],
+	"level": 4,
+	"delay": 120,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"spacesFromFourDigits": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Dans sa tirelire, Zoé n'a que des billets de $5~\\unit{€}$ et de $10~\\unit{€}$. Elle a ${{N}}$ billets en tout, pour ${{eval:((100*S)/100)[€]}}$.\n\nCombien a-t-elle de billets de chaque sorte ?\n\nBillets de $5~\\unit{€}$ : $?$\n\nBillets de $10~\\unit{€}$ : $?$",
+			"variables": [
+				{
+					"name": "N",
+					"expression": "20..40"
+				},
+				{
+					"name": "y",
+					"expression": "3..37"
+				},
+				{
+					"name": "x",
+					"expression": "eval:N-y"
+				},
+				{
+					"name": "S",
+					"expression": "eval:5*x+10*y"
+				}
+			],
+			"conditions": ["x>=3", "x!=y"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{x}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:S/5}}",
+							"message": "Il n'y a pas que des billets de $5~\\unit{€}$ : avec ${{eval:S/5}}$ billets, on dépasserait les ${{N}}$ billets de la tirelire.",
+							"label": "Tous les billets de 5 €"
+						},
+						{
+							"answer": "{{eval:N-(S-5*N)}}",
+							"message": "Tu as retiré ${{eval:S-5*N}}$ billets : ${{eval:S-5*N}}$, ce sont des euros. Chaque billet de $10~\\unit{€}$ apporte $5~\\unit{€}$ de plus qu'un billet de $5~\\unit{€}$.",
+							"label": "Euros en trop pris pour des billets"
+						},
+						{
+							"answer": "{{y}}",
+							"message": "C'est le nombre de billets de $10~\\unit{€}$ : vérifie l'ordre des cases.",
+							"label": "Cases échangées"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{y}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:S-5*N}}",
+							"message": "C'est l'argent en trop, en euros : chaque billet de $10~\\unit{€}$ apporte $5~\\unit{€}$ de plus qu'un billet de $5~\\unit{€}$.",
+							"label": "Euros en trop non partagés"
+						},
+						{
+							"answer": "{{eval:S/10}}",
+							"message": "Il n'y a pas que des billets de $10~\\unit{€}$ : il y a aussi des billets de $5~\\unit{€}$.",
+							"label": "Tous les billets de 10 €"
+						},
+						{
+							"answer": "{{x}}",
+							"message": "C'est le nombre de billets de $5~\\unit{€}$ : vérifie l'ordre des cases.",
+							"label": "Cases échangées"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Si tous les billets étaient des billets de $5~\\unit{€}$**, Zoé aurait ${{N}} \\times 5 = {{eval:5*N}}~\\unit{€}$.",
+					"**Ce qui manque.** Elle a ${{S}} - {{eval:5*N}} = {{eval:S-5*N}}~\\unit{€}$ de plus. Chaque billet de $10~\\unit{€}$ apporte $5~\\unit{€}$ de plus qu'un billet de $5~\\unit{€}$ : ${{eval:S-5*N}} \\div 5 = \\textcolor{{{color:primary.0}}}{{{y}}}$ billets de $10~\\unit{€}$.",
+					"**Les billets de $5~\\unit{€}$.** ${{N}} - {{y}} = \\textcolor{{{color:primary.0}}}{{{x}}}$.",
+					"**Vérification.** ${{x}} \\times 5 + {{y}} \\times 10 = {{eval:5*x}} + {{eval:10*y}} = {{S}}$."
+				]
+			},
+			"hint": "Si tous les billets étaient des billets de $5~\\unit{€}$, combien d'argent y aurait-il dans la tirelire ?"
+		},
+		{
+			"statement": "Je pense à deux nombres entiers. Leur somme est ${{eval:x+y}}$ et leur produit est ${{eval:x*y}}$.\n\nQuels sont ces deux nombres ? Écris le plus petit dans la première case.\n\nLe plus petit : $?$\n\nLe plus grand : $?$",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "2..11"
+				},
+				{
+					"name": "y",
+					"expression": "3..12"
+				}
+			],
+			"conditions": ["x<y", "mod(x+y,2)==0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{x}}",
+					"expectedErrors": [
+						{
+							"answer": "{{y}}",
+							"message": "C'est le plus grand des deux nombres : le plus petit va dans la première case.",
+							"label": "Nombres échangés"
+						},
+						{
+							"answer": "{{eval:(x+y)/2}}",
+							"message": "${{eval:(x+y)/2}} + {{eval:(x+y)/2}} = {{eval:x+y}}$, mais ${{eval:(x+y)/2}} \\times {{eval:(x+y)/2}} = {{eval:(x+y)*(x+y)/4}}$, pas ${{eval:x*y}}$.",
+							"label": "Somme partagée en deux"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{y}}",
+					"expectedErrors": [
+						{
+							"answer": "{{x}}",
+							"message": "C'est le plus petit des deux nombres : le plus petit va dans la première case.",
+							"label": "Nombres échangés"
+						},
+						{
+							"answer": "{{eval:(x+y)/2}}",
+							"message": "Les deux nombres ne sont pas égaux : leur produit serait ${{eval:(x+y)*(x+y)/4}}$, pas ${{eval:x*y}}$.",
+							"label": "Somme partagée en deux"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Essais organisés.** On cherche deux nombres dont le produit vaut ${{eval:x*y}}$ : il y en a peu, on les essaie un à un et on calcule leur somme.",
+					"${{x}} \\times {{y}} = {{eval:x*y}}$ et ${{x}} + {{y}} = {{eval:x+y}}$ : les deux nombres sont $\\textcolor{{{color:primary.0}}}{{{x}}}$ et $\\textcolor{{{color:primary.0}}}{{{y}}}$."
+				]
+			},
+			"hint": "Écris ${{eval:x*y}}$ comme le produit de deux nombres, de toutes les façons possibles : laquelle a la bonne somme ?"
+		},
+		{
+			"statement": "Je pense à deux nombres entiers. Le plus grand dépasse le plus petit de ${{eval:y-x}}$, et leur produit est ${{eval:x*y}}$.\n\nQuels sont ces deux nombres ? Écris le plus petit dans la première case.\n\nLe plus petit : $?$\n\nLe plus grand : $?$",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "2..11"
+				},
+				{
+					"name": "y",
+					"expression": "3..12"
+				}
+			],
+			"conditions": ["x<y", "y-x!=x"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{x}}",
+					"expectedErrors": [
+						{
+							"answer": "{{y}}",
+							"message": "C'est le plus grand des deux nombres : le plus petit va dans la première case.",
+							"label": "Nombres échangés"
+						},
+						{
+							"answer": "{{eval:y-x}}",
+							"message": "${{eval:y-x}}$, c'est l'écart entre les deux nombres, pas l'un d'eux.",
+							"label": "Écart pris pour un nombre"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{y}}",
+					"expectedErrors": [
+						{
+							"answer": "{{x}}",
+							"message": "C'est le plus petit des deux nombres : le plus petit va dans la première case.",
+							"label": "Nombres échangés"
+						},
+						{
+							"answer": "{{eval:x*y}}",
+							"message": "${{eval:x*y}}$ est le produit des deux nombres, pas l'un d'eux.",
+							"label": "Produit pris pour un nombre"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Essais organisés.** On cherche deux nombres dont le produit vaut ${{eval:x*y}}$ : il y en a peu, on les essaie un à un et on calcule leur écart.",
+					"${{x}} \\times {{y}} = {{eval:x*y}}$ et ${{y}} - {{x}} = {{eval:y-x}}$ : les deux nombres sont $\\textcolor{{{color:primary.0}}}{{{x}}}$ et $\\textcolor{{{color:primary.0}}}{{{y}}}$."
+				]
+			},
+			"hint": "Écris ${{eval:x*y}}$ comme le produit de deux nombres, de toutes les façons possibles : laquelle a le bon écart ?"
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Billets : 30 billets, 210 € → 18 de 5 €, 12 de 10 €",
+			"variationIndex": 0,
+			"variables": {
+				"N": "30",
+				"y": "12",
+				"x": "18",
+				"S": "210"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["18", "12"]
+		},
+		{
+			"description": "Billets : cases échangées",
+			"variationIndex": 0,
+			"variables": {
+				"N": "30",
+				"y": "12",
+				"x": "18",
+				"S": "210"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "C'est le nombre de billets de $10~\\unit{€}$ : vérifie l'ordre des cases."
+			},
+			"answers": ["12", "18"]
+		},
+		{
+			"description": "Billets : 60 € en trop non partagés",
+			"variationIndex": 0,
+			"variables": {
+				"N": "30",
+				"y": "12",
+				"x": "18",
+				"S": "210"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "C'est l'argent en trop, en euros : chaque billet de $10~\\unit{€}$ apporte $5~\\unit{€}$ de plus qu'un billet de $5~\\unit{€}$."
+			},
+			"answers": ["18", "60"]
+		},
+		{
+			"description": "Billets : 210 ÷ 10 (21)",
+			"variationIndex": 0,
+			"variables": {
+				"N": "30",
+				"y": "12",
+				"x": "18",
+				"S": "210"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Il n'y a pas que des billets de $10~\\unit{€}$ : il y a aussi des billets de $5~\\unit{€}$."
+			},
+			"answers": ["18", "21"]
+		},
+		{
+			"description": "Billets : 210 ÷ 5 (42)",
+			"variationIndex": 0,
+			"variables": {
+				"N": "30",
+				"y": "12",
+				"x": "18",
+				"S": "210"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Il n'y a pas que des billets de $5~\\unit{€}$ : avec $42$ billets, on dépasserait les $30$ billets de la tirelire."
+			},
+			"answers": ["42", "12"]
+		},
+		{
+			"description": "Billets : 30 − 60 (−30)",
+			"variationIndex": 0,
+			"variables": {
+				"N": "30",
+				"y": "12",
+				"x": "18",
+				"S": "210"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as retiré $60$ billets : $60$, ce sont des euros. Chaque billet de $10~\\unit{€}$ apporte $5~\\unit{€}$ de plus qu'un billet de $5~\\unit{€}$."
+			},
+			"answers": ["-30", "12"]
+		},
+		{
+			"description": "Somme : 14 et 48 → 6 et 8",
+			"variationIndex": 1,
+			"variables": {
+				"x": "6",
+				"y": "8"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["6", "8"]
+		},
+		{
+			"description": "Somme : échangés",
+			"variationIndex": 1,
+			"variables": {
+				"x": "6",
+				"y": "8"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "C'est le plus grand des deux nombres : le plus petit va dans la première case."
+			},
+			"answers": ["8", "6"]
+		},
+		{
+			"description": "Somme : 7 et 7",
+			"variationIndex": 1,
+			"variables": {
+				"x": "6",
+				"y": "8"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "$7 + 7 = 14$, mais $7 \\times 7 = 49$, pas $48$."
+			},
+			"answers": ["7", "7"]
+		},
+		{
+			"description": "Somme : 3 et 11 (somme 14, produit 33)",
+			"variationIndex": 1,
+			"variables": {
+				"x": "3",
+				"y": "11"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["3", "11"]
+		},
+		{
+			"description": "Écart : écart 5, produit 36 → 4 et 9",
+			"variationIndex": 2,
+			"variables": {
+				"x": "4",
+				"y": "9"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["4", "9"]
+		},
+		{
+			"description": "Écart : échangés",
+			"variationIndex": 2,
+			"variables": {
+				"x": "4",
+				"y": "9"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "C'est le plus grand des deux nombres : le plus petit va dans la première case."
+			},
+			"answers": ["9", "4"]
+		},
+		{
+			"description": "Écart : l'écart écrit (5)",
+			"variationIndex": 2,
+			"variables": {
+				"x": "4",
+				"y": "9"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "$5$, c'est l'écart entre les deux nombres, pas l'un d'eux."
+			},
+			"answers": ["5", "9"]
+		},
+		{
+			"description": "Écart : le produit écrit (36)",
+			"variationIndex": 2,
+			"variables": {
+				"x": "4",
+				"y": "9"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "$36$ est le produit des deux nombres, pas l'un d'eux."
+			},
+			"answers": ["4", "36"]
+		}
+	]
+}

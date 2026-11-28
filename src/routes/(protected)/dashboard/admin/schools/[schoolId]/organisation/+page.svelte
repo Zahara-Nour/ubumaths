@@ -1,12 +1,12 @@
 <script lang="ts">
-	import { lore } from '$lib/config/lore';
+	import { lore } from '#lib/config/lore.ts';
 	import type { PageData, ActionData } from './$types';
-	import { Button } from '$lib/components/ui/button';
-	import BackLink from '$lib/components/navigation/BackLink.svelte';
-	import { Input } from '$lib/components/ui/input';
-	import * as Tabs from '$lib/components/ui/tabs';
-	import { toaster } from '$lib/stores/toaster.svelte';
-	import { submitAction, refreshPageData } from '$lib/utils/form-action';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import BackLink from '#lib/components/navigation/BackLink.svelte';
+	import { Input } from '#lib/components/ui/input/index.ts';
+	import * as Tabs from '#lib/components/ui/tabs/index.ts';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
+	import { submitAction, refreshPageData } from '#lib/utils/form-action.ts';
 	import {
 		formatPeriodTimes,
 		validateTimetable,
@@ -14,11 +14,11 @@
 		getNextPeriodNumber,
 		createDefaultTimetable,
 		type SchoolPeriod
-	} from '$lib/utils/timetable';
+	} from '#lib/utils/timetable.ts';
 	import { Plus, Pencil, Trash2, MoveUp, MoveDown, Calendar, Copy, Check } from '@lucide/svelte';
 	import { enhance } from '$app/forms';
-	import MySelect from '$lib/components/MySelect.svelte';
-	import TypedConfirmDialog from '$lib/components/admin/TypedConfirmDialog.svelte';
+	import MySelect from '#lib/components/MySelect.svelte';
+	import TypedConfirmDialog from '#lib/components/admin/TypedConfirmDialog.svelte';
 
 	// Types for the new academic tables
 	type SchoolYear = {

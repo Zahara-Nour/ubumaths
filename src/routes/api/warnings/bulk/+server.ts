@@ -20,12 +20,12 @@
  * - added: number (how many warnings were added)
  */
 
-import { error, json } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { addWarningsBulkSchema } from '$lib/server/validation/warnings';
-import { addWarningsBulk } from '$lib/server/warnings';
-import { requireRoles } from '$lib/server/middleware/auth';
-import { createServerLogger } from '$lib/utils/logger';
+import { addWarningsBulkSchema } from '#lib/server/validation/warnings.ts';
+import { addWarningsBulk } from '#lib/server/warnings.ts';
+import { requireRoles } from '#lib/server/middleware/auth.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/warnings/bulk/+server');
 
@@ -51,7 +51,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			supabase
 		});
 
-		return json({
+		return Response.json({
 			success: true,
 			counts: result.counts,
 			added: result.added

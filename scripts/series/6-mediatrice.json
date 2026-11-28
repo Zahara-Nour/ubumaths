@@ -1,0 +1,44 @@
+{
+	"id": "756deb56-9240-409d-877b-924fbe16fdb9",
+	"title": "La médiatrice d'un segment",
+	"grade": "6",
+	"description": "Définition, propriété caractéristique, calculs et problèmes, puis tracer la médiatrice sur quadrillage et la construire au compas.",
+	"items": [
+		{
+			"modele": "Définition de la médiatrice d'un segment",
+			"templateId": "15f9d78b-f1b0-4d20-b72f-a4eb2bdeefe4",
+			"quantity": 2,
+			"delay": 60
+		},
+		{
+			"modele": "Propriété caractéristique de la médiatrice",
+			"templateId": "9e90342c-2426-4f9f-93bd-f4e6dd3d6670",
+			"quantity": 3,
+			"delay": 60
+		},
+		{
+			"modele": "Calculer avec la médiatrice",
+			"templateId": "eadf2049-599d-40bf-ab90-9091dbf38f1d",
+			"quantity": 2,
+			"delay": 90
+		},
+		{
+			"modele": "Problèmes avec la médiatrice",
+			"templateId": "1b2ed3a5-7080-4bd2-8c0d-962df1814cf7",
+			"quantity": 2,
+			"delay": 90
+		},
+		{
+			"modele": "Tracer la médiatrice d'un segment sur quadrillage",
+			"templateId": "c52b5ea3-361f-42dd-b1dc-4989b19765fb",
+			"quantity": 1,
+			"delay": 120
+		},
+		{
+			"modele": "Construire la médiatrice d'un segment",
+			"templateId": "ed444b1d-6cba-402a-99f7-6dee2f5fc1dd",
+			"quantity": 1,
+			"delay": 240
+		}
+	]
+}

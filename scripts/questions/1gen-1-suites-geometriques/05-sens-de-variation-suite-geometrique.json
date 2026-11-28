@@ -1,0 +1,316 @@
+{
+	"id": "569e0140-d5da-440f-a4c3-07bae4e6b30b",
+	"title": "Sens de variation d'une suite géométrique",
+	"description": "Premier terme et raison strictement positifs : la raison donne le sens de variation",
+	"grades": ["1_GEN"],
+	"level": 1,
+	"delay": 20,
+	"status": "draft",
+	"shared": {},
+	"variations": [
+		{
+			"statement": "La suite $(u_n)$ est définie par $u_0={{a}}$ et, pour tout entier naturel $n$, $u_{n+1}={{q}}\\times u_n$.\n\nQuel est le sens de variation de la suite $(u_n)$ ?\n\n```choix\nmelanger: non\n- croissante\n- décroissante\n- constante\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9"
+				},
+				{
+					"name": "q",
+					"expression": "1.2|1.5|2|3"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$(u_n)$ est géométrique de raison $q=\\textcolor{{{color:primary.0}}}{{{q}}}$ et de premier terme positif.",
+					"Pour une suite géométrique de premier terme positif et de raison $q>0$ : si $q>1$, elle est croissante ; si $0<q<1$, elle est décroissante ; si $q=1$, elle est constante.",
+					"Ici $q>1$ : la suite est **croissante**."
+				]
+			}
+		},
+		{
+			"statement": "La suite $(u_n)$ est définie par $u_0={{a}}$ et, pour tout entier naturel $n$, $u_{n+1}={{q}}\\times u_n$.\n\nQuel est le sens de variation de la suite $(u_n)$ ?\n\n```choix\nmelanger: non\n- croissante\n- décroissante\n- constante\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "10..90"
+				},
+				{
+					"name": "q",
+					"expression": "0.2|0.5|0.8|0.9"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "1"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$(u_n)$ est géométrique de raison $q=\\textcolor{{{color:primary.0}}}{{{q}}}$ et de premier terme positif.",
+					"Pour une suite géométrique de premier terme positif et de raison $q>0$ : si $q>1$, elle est croissante ; si $0<q<1$, elle est décroissante ; si $q=1$, elle est constante.",
+					"Ici $0<q<1$ : la suite est **décroissante**."
+				]
+			}
+		},
+		{
+			"statement": "La suite $(u_n)$ est définie, pour tout entier naturel $n$, par $u_n={{a}}\\times{{q}}^n$.\n\nQuel est le sens de variation de la suite $(u_n)$ ?\n\n```choix\nmelanger: non\n- croissante\n- décroissante\n- constante\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "100|200|500|1000"
+				},
+				{
+					"name": "q",
+					"expression": "0.5|0.8|0.9"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "1"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$(u_n)$ est géométrique de premier terme $u_0={{a}}>0$ et de raison $q=\\textcolor{{{color:primary.0}}}{{{q}}}$.",
+					"Pour une suite géométrique de premier terme positif et de raison $q>0$ : si $q>1$, elle est croissante ; si $0<q<1$, elle est décroissante ; si $q=1$, elle est constante.",
+					"Ici $0<q<1$ : la suite est **décroissante**, même si son premier terme est grand."
+				]
+			}
+		},
+		{
+			"statement": "Un lac contient ${{a}}$ tonnes d'algues ; cette masse baisse de ${{t}}~\\%$ chaque année. On note $u_n$ la masse d'algues, en tonnes, au bout de $n$ années.\n\nQuel est le sens de variation de la suite $(u_n)$ ?\n\n```choix\nmelanger: non\n- croissante\n- décroissante\n- constante\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "20..80"
+				},
+				{
+					"name": "t",
+					"expression": "5|10|20"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "1"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Baisser de ${{t}}~\\%$, c'est multiplier par $1-\\dfrac{{{t}}}{100}=\\textcolor{{{color:primary.0}}}{{{eval:1-t/100;d}}}$ : $(u_n)$ est géométrique de raison ${{eval:1-t/100;d}}$.",
+					"Pour une suite géométrique de premier terme positif et de raison $q>0$ : si $q>1$, elle est croissante ; si $0<q<1$, elle est décroissante ; si $q=1$, elle est constante.",
+					"Ici $0<q<1$ : la suite est **décroissante**."
+				]
+			}
+		},
+		{
+			"statement": "$(u_n)$ est la suite géométrique de premier terme $u_0={{a}}$ et de raison $q=1$.\n\nQuel est le sens de variation de la suite $(u_n)$ ?\n\n```choix\nmelanger: non\n- croissante\n- décroissante\n- constante\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..20"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "2"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Pour une suite géométrique de premier terme positif et de raison $q>0$ : si $q>1$, elle est croissante ; si $0<q<1$, elle est décroissante ; si $q=1$, elle est constante.",
+					"Ici $q=\\textcolor{{{color:primary.0}}}{1}$ : tous les termes valent ${{a}}$, la suite est **constante**."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "variation 0 : bonne réponse",
+			"variationIndex": 0,
+			"variables": {
+				"a": "4",
+				"q": "1.5"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "variation 0 : « décroissante » refusé",
+			"variationIndex": 0,
+			"variables": {
+				"a": "4",
+				"q": "1.5"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 0 : « constante » refusé",
+			"variationIndex": 0,
+			"variables": {
+				"a": "4",
+				"q": "1.5"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 1 : bonne réponse",
+			"variationIndex": 1,
+			"variables": {
+				"a": "50",
+				"q": "0.8"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "variation 1 : « croissante » refusé",
+			"variationIndex": 1,
+			"variables": {
+				"a": "50",
+				"q": "0.8"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 1 : « constante » refusé",
+			"variationIndex": 1,
+			"variables": {
+				"a": "50",
+				"q": "0.8"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 2 : bonne réponse",
+			"variationIndex": 2,
+			"variables": {
+				"a": "500",
+				"q": "0.9"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "variation 2 : « croissante » refusé",
+			"variationIndex": 2,
+			"variables": {
+				"a": "500",
+				"q": "0.9"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 2 : « constante » refusé",
+			"variationIndex": 2,
+			"variables": {
+				"a": "500",
+				"q": "0.9"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 3 : bonne réponse",
+			"variationIndex": 3,
+			"variables": {
+				"a": "40",
+				"t": "10"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "variation 3 : « croissante » refusé",
+			"variationIndex": 3,
+			"variables": {
+				"a": "40",
+				"t": "10"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 3 : « constante » refusé",
+			"variationIndex": 3,
+			"variables": {
+				"a": "40",
+				"t": "10"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 4 : bonne réponse",
+			"variationIndex": 4,
+			"variables": {
+				"a": "7"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "variation 4 : « croissante » refusé",
+			"variationIndex": 4,
+			"variables": {
+				"a": "7"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 4 : « décroissante » refusé",
+			"variationIndex": 4,
+			"variables": {
+				"a": "7"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

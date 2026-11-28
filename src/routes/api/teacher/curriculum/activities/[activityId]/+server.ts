@@ -8,12 +8,11 @@
  * rows kept). Teacher/admin only.
  */
 
-import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireRoles } from '$lib/server/middleware/auth';
-import { curriculumDbError } from '$lib/server/curriculum';
-import { reconcileAutoCoverage } from '$lib/server/curriculum-coverage';
-import { createServerLogger } from '$lib/utils/logger';
+import { requireRoles } from '#lib/server/middleware/auth.ts';
+import { curriculumDbError } from '#lib/server/curriculum.ts';
+import { reconcileAutoCoverage } from '#lib/server/curriculum-coverage.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/teacher/curriculum/activities/[activityId]/+server');
 
@@ -32,10 +31,10 @@ export const DELETE: RequestHandler = async ({ params, locals }) => {
 
 	if (fetchErr) {
 		logger.error('[curriculum] activity fetch (DELETE) failed:', fetchErr);
-		return json({ error: 'Échec de la suppression' }, { status: 500 });
+		return Response.json({ error: 'Échec de la suppression' }, { status: 500 });
 	}
 	if (!activity) {
-		return json({ error: 'Activité introuvable' }, { status: 404 });
+		return Response.json({ error: 'Activité introuvable' }, { status: 404 });
 	}
 
 	const { entry_id, kind } = activity as { entry_id: string; kind: string };
@@ -49,7 +48,7 @@ export const DELETE: RequestHandler = async ({ params, locals }) => {
 		const mapped = curriculumDbError(dbErr);
 		if (mapped) return mapped;
 		logger.error('[curriculum] activity DELETE failed:', dbErr);
-		return json({ error: dbErr.message }, { status: 500 });
+		return Response.json({ error: dbErr.message }, { status: 500 });
 	}
 
 	if (TAGGED_KINDS.has(kind)) {
@@ -60,5 +59,5 @@ export const DELETE: RequestHandler = async ({ params, locals }) => {
 		}
 	}
 
-	return json({ success: true });
+	return Response.json({ success: true });
 };

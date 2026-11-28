@@ -1,0 +1,365 @@
+{
+	"id": "571ca739-e3be-47de-b431-e888a9e46f18",
+	"title": "Calculer un produit",
+	"description": "Déterminer un produit à partir d'un autre",
+	"grades": ["6"],
+	"level": 5,
+	"delay": 20,
+	"status": "published",
+	"shared": {
+		"variables": [
+			{
+				"name": "a_int",
+				"expression": "1..2"
+			},
+			{
+				"name": "a_dec",
+				"expression": "0..2"
+			},
+			{
+				"name": "ai1",
+				"expression": "1..9"
+			},
+			{
+				"name": "ai2",
+				"expression": "10..99"
+			},
+			{
+				"name": "ad1",
+				"expression": "1..9"
+			},
+			{
+				"name": "ad2",
+				"expression": "1..99!m(10)"
+			},
+			{
+				"name": "a",
+				"expression": "{{eval:(2-a_int)*ai1+(a_int-1)*ai2+a_dec*(2-a_dec)*ad1/10+a_dec*(a_dec-1)/2*ad2/100;d}}"
+			},
+			{
+				"name": "b1",
+				"expression": "10..99"
+			},
+			{
+				"name": "b2",
+				"expression": "1..9"
+			},
+			{
+				"name": "b",
+				"expression": "{{eval:b1+b2/10;d}}"
+			},
+			{
+				"name": "c",
+				"expression": "10|100|1000"
+			}
+		]
+	},
+	"options": {
+		"constraints": {
+			"spacesFromFourDigits": true
+		}
+	},
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a*c*b;d}}"
+				}
+			],
+			"statement": "Sachant que ${{eval:a;d}} * {{eval:b;d}}={{eval:a*b;d}}$, calcule :\n\n$${{expression1}}$$",
+			"variables": [
+				{
+					"name": "expression1",
+					"expression": "{{eval:a*c;d}}* {{b}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"${{eval:a*c;d}}$ est $\\textcolor{{{color:primary.0}}}{{{eval:c}}\\text{ fois}}$ plus grand que ${{eval:a;d}}$,",
+					"donc le résultat de ${{eval:a*c;d}} \\times {{eval:b;d}}$ est  $\\textcolor{{{color:primary.0}}}{{{eval:c}}\\text{ fois}}$ plus grand que celui de ${{eval:a;d}}\\times{{eval:b;d}}$,",
+					" c'est-à-dire $\\textcolor{{{color:primary.0}}}{{{eval:c}}\\times} {{eval:a*b;d}} = {{solution}}$"
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a*c*b;d}}"
+				}
+			],
+			"statement": "Sachant que ${{eval:b;d}} * {{eval:a;d}}={{eval:a*b;d}}$, calcule :\n\n$${{expression2}}$$",
+			"variables": [
+				{
+					"name": "expression2",
+					"expression": "{{b}}*{{eval:a*c;d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"${{eval:a*c;d}}$ est $\\textcolor{{{color:primary.0}}}{{{eval:c}}\\text{ fois}}$ plus grand que ${{eval:a;d}}$,",
+					"donc le résultat de ${{eval:b;d}} \\times {{eval:a*c;d}} $ est  $\\textcolor{{{color:primary.0}}}{{{eval:c}}\\text{ fois}}$ plus grand que celui de ${{eval:b;d}} \\times {{eval:a;d}}$,",
+					"c'est-à-dire $\\textcolor{{{color:primary.0}}}{{{eval:c}}\\times} {{eval:a*b;d}} = {{solution}}$"
+				]
+			}
+		},
+		{
+			"statement": "Sachant que ${{A}} \\times {{B}} = {{eval:A*B}}$, calcule :\n\n$${{x}} \\times {{y}} = ?$$",
+			"variables": [
+				{
+					"name": "A",
+					"expression": "11..99"
+				},
+				{
+					"name": "B",
+					"expression": "11..99"
+				},
+				{
+					"name": "u",
+					"expression": "1..2"
+				},
+				{
+					"name": "v",
+					"expression": "1..2"
+				},
+				{
+					"name": "x",
+					"expression": "eval:A/10^u;d"
+				},
+				{
+					"name": "y",
+					"expression": "eval:B/10^v;d"
+				},
+				{
+					"name": "M",
+					"expression": "{{if:u>=v|{{u}}|{{v}}}}"
+				}
+			],
+			"conditions": ["mod(A,10)!=0", "mod(B,10)!=0", "mod(A*B,10)!=0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:A*B/10^(u+v);d}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:A*B/10^M;d}}",
+							"message": "Tu n'as compté les décimales que d'un seul facteur : ${{x}}$ en a ${{u}}$ et ${{y}}$ en a ${{v}}$.",
+							"label": "Décimales d'un seul facteur"
+						},
+						{
+							"answer": "{{eval:A*B}}",
+							"message": "Les deux facteurs sont plus petits que ${{A}}$ et ${{B}}$ : le produit est plus petit que ${{eval:A*B}}$.",
+							"label": "Produit des entiers recopié"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"${{x}}$ est ${{eval:10^u}}$ fois plus petit que ${{A}}$, et ${{y}}$ est ${{eval:10^v}}$ fois plus petit que ${{B}}$.",
+					"Donc ${{x}} \\times {{y}}$ est ${{eval:10^u}} \\times {{eval:10^v}} = {{eval:10^(u+v)}}$ fois plus petit que ${{A}} \\times {{B}}$ : $\\textcolor{{{color:primary.0}}}{{{u}}+{{v}}={{eval:u+v}}\\text{ décimales}}$.",
+					"$${{x}} \\times {{y}} = {{eval:A*B}} \\div {{eval:10^(u+v)}} = \\textcolor{{{color:primary.0}}}{{{solution}}}$$"
+				]
+			},
+			"hint": "Compare chaque facteur à ${{A}}$ et à ${{B}}$ : combien de fois est-il plus petit ?"
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["8\\,197{,}48"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"c": "10",
+				"b1": "44",
+				"b2": "6",
+				"ad1": "1",
+				"ad2": "38",
+				"ai1": "1",
+				"ai2": "18",
+				"a_dec": "2",
+				"a_int": "2"
+			},
+			"description": "183,8 × 44,6 = 8 197,48",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["8197{,}48"],
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["spaces"]
+			},
+			"variables": {
+				"c": "10",
+				"b1": "44",
+				"b2": "6",
+				"ad1": "1",
+				"ad2": "38",
+				"ai1": "1",
+				"ai2": "18",
+				"a_dec": "2",
+				"a_int": "2"
+			},
+			"description": "8197,48 sans espace : perfectible",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["8\\,197{,}48"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"c": "10",
+				"b1": "44",
+				"b2": "6",
+				"ad1": "1",
+				"ad2": "38",
+				"ai1": "1",
+				"ai2": "18",
+				"a_dec": "2",
+				"a_int": "2"
+			},
+			"description": "44,6 × 183,8 = 8 197,48",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["81\\,974{,}8"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"c": "10",
+				"b1": "44",
+				"b2": "6",
+				"ad1": "1",
+				"ad2": "38",
+				"ai1": "1",
+				"ai2": "18",
+				"a_dec": "2",
+				"a_int": "2"
+			},
+			"description": "mauvais décalage : 81 974,8",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["5\\,830\\,400"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"c": "1000",
+				"b1": "91",
+				"b2": "1",
+				"ad1": "1",
+				"ad2": "1",
+				"ai1": "1",
+				"ai2": "64",
+				"a_dec": "0",
+				"a_int": "2"
+			},
+			"description": "64 000 × 91,1 = 5 830 400",
+			"variationIndex": 0
+		},
+		{
+			"description": "F6 : 2,3 × 0,47 = 1,081",
+			"variationIndex": 2,
+			"variables": {
+				"A": "23",
+				"B": "47",
+				"u": "1",
+				"v": "2"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["1{,}081"]
+		},
+		{
+			"description": "F6 : point décimal accepté",
+			"variationIndex": 2,
+			"variables": {
+				"A": "23",
+				"B": "47",
+				"u": "1",
+				"v": "2"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["1.081"]
+		},
+		{
+			"description": "F6 : décimales d'un seul facteur",
+			"variationIndex": 2,
+			"variables": {
+				"A": "23",
+				"B": "47",
+				"u": "1",
+				"v": "2"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu n'as compté les décimales que d'un seul facteur : $2.3$ en a $1$ et $0.47$ en a $2$."
+			},
+			"answers": ["10{,}81"]
+		},
+		{
+			"description": "F6 : produit des entiers recopié",
+			"variationIndex": 2,
+			"variables": {
+				"A": "23",
+				"B": "47",
+				"u": "1",
+				"v": "2"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Les deux facteurs sont plus petits que $23$ et $47$ : le produit est plus petit que $1081$."
+			},
+			"answers": ["1\\,081"]
+		},
+		{
+			"description": "F6 : 0,23 × 0,47 = 0,108 1",
+			"variationIndex": 2,
+			"variables": {
+				"A": "23",
+				"B": "47",
+				"u": "2",
+				"v": "2"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0{,}108\\,1"]
+		},
+		{
+			"description": "F6 : 0,1081 sans espace",
+			"variationIndex": 2,
+			"variables": {
+				"A": "23",
+				"B": "47",
+				"u": "2",
+				"v": "2"
+			},
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["spaces"]
+			},
+			"answers": ["0{,}1081"]
+		},
+		{
+			"description": "F6 : 0,23 × 0,47, une seule fois deux décimales",
+			"variationIndex": 2,
+			"variables": {
+				"A": "23",
+				"B": "47",
+				"u": "2",
+				"v": "2"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu n'as compté les décimales que d'un seul facteur : $0.23$ en a $2$ et $0.47$ en a $2$."
+			},
+			"answers": ["10{,}81"]
+		}
+	]
+}

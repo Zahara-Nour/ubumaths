@@ -21,24 +21,23 @@
 
 <script lang="ts">
 	import { Star } from '@lucide/svelte';
-	import gidouilleImg from '$lib/assets/images/gidouille.png';
-	import type { StudentVipCards } from '$lib/types/vip-card';
-	import { getTotalUnusedCards } from '$lib/utils/vip-cards';
-	import StudentVipCardsModal from '$lib/components/StudentVipCardsModal.svelte';
-	import StudentJournalModal from '$lib/components/rewards/StudentJournalModal.svelte';
-	import { modalStack } from '$lib/stores/modalStack.svelte';
-	import { studentCache } from '$lib/stores/studentDashboardCache.svelte';
-	import { Badge } from '$lib/components/ui/badge';
-	import { WARNING_TYPE_LABELS, type WarningType } from '$lib/types/warnings';
-	import type { StudentWarningCounts } from '$lib/server/warnings';
+	import gidouilleImg from '#lib/assets/images/gidouille.png';
+	import type { StudentVipCards } from '#lib/types/vip-card.ts';
+	import { getTotalUnusedCards } from '#lib/utils/vip-cards.ts';
+	import StudentVipCardsModal from '#lib/components/StudentVipCardsModal.svelte';
+	import StudentJournalModal from '#lib/components/rewards/StudentJournalModal.svelte';
+	import { modalStack } from '#lib/stores/modalStack.svelte.ts';
+	import { studentCache } from '#lib/stores/studentDashboardCache.svelte.ts';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
+	import { WARNING_TYPE_LABELS, type WarningType } from '#lib/types/warnings.ts';
+	import type { StudentWarningCounts } from '#lib/server/warnings.ts';
 
 	interface Props {
-		riddlesSolved: number; // Not in cache, passed as prop (unused - Riddles tile removed)
 		studentId: string; // Needed for modal
 		periodId: string | null; // Academic period for warnings
 	}
 
-	let { riddlesSolved: _riddlesSolved, studentId, periodId }: Props = $props();
+	let { studentId, periodId }: Props = $props();
 
 	// Derive rewards from cache (reactive to cache updates)
 	const rewards = $derived(studentCache.getRewardsSync());

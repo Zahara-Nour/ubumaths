@@ -19,10 +19,10 @@
 
 import { createHash, randomBytes, randomInt, timingSafeEqual } from 'node:crypto';
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { Database } from '$lib/types/database';
-import { createAnonymousSupabase } from '$lib/server/anonymous-supabase';
-import { childLoginIdOf, isChildAccountEmail } from '$lib/utils/child-account';
-import { createServerLogger } from '$lib/utils/logger';
+import type { Database } from '#lib/types/database.ts';
+import { createAnonymousSupabase } from '#lib/server/anonymous-supabase.ts';
+import { childLoginIdOf, isChildAccountEmail } from '#lib/utils/child-account.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 // Types
 

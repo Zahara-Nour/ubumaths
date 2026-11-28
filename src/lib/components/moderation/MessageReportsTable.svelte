@@ -18,15 +18,15 @@
 		- Responsive design
 -->
 <script lang="ts">
-	import * as Table from '$lib/components/ui/table';
-	import { Badge } from '$lib/components/ui/badge';
-	import { Button } from '$lib/components/ui/button';
+	import * as Table from '#lib/components/ui/table/index.ts';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
 	import { ChevronLeft, ChevronRight, Eye } from '@lucide/svelte';
 	import { formatDistanceToNow } from 'date-fns';
 	import { fr } from 'date-fns/locale';
 	import ReviewReportDialog, {
 		type ReportData
-	} from '$lib/components/moderation/ReviewReportDialog.svelte';
+	} from '#lib/components/moderation/ReviewReportDialog.svelte';
 
 	// Component Props
 	interface Props {

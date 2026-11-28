@@ -1,12 +1,12 @@
 import { error, fail } from '@sveltejs/kit';
 import type { PageServerLoad, Actions } from './$types';
-import { requireAdmin } from '$lib/server/middleware/auth';
+import { requireAdmin } from '#lib/server/middleware/auth.ts';
 import {
 	adminClassCreateSchema,
 	adminClassIdSchema,
 	adminClassUpdateSchema
-} from '$lib/server/validation/admin';
-import { createServerLogger } from '$lib/utils/logger';
+} from '#lib/server/validation/admin.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('(protected)/dashboard/admin/classes/+page.server');
 
@@ -123,6 +123,24 @@ export const actions: Actions = {
 			}
 		}
 
+		// La classe prend l'année active de son école (Phase 1 de la bascule
+		// d'année : `school_year_id` n'était jamais posé à la création).
+		let school_year_id: string | null = null;
+		if (school_id) {
+			const { data: activeYear, error: yearError } = await supabase
+				.from('school_years')
+				.select('id')
+				.eq('school_id', school_id)
+				.eq('is_active', true)
+				.maybeSingle();
+
+			if (yearError) {
+				logger.error('Error fetching active school year:', yearError);
+				return fail(500, { message: "Impossible de lire l'année active de l'école" });
+			}
+			school_year_id = activeYear?.id ?? null;
+		}
+
 		// Insert class
 		const { error: insertError } = await supabase.from('classes').insert({
 			name,
@@ -130,6 +148,7 @@ export const actions: Actions = {
 			school_id,
 			grade,
 			join_code,
+			school_year_id,
 			is_active: true
 		});
 
@@ -138,6 +157,13 @@ export const actions: Actions = {
 			return fail(400, { message: insertError.message });
 		}
 
+		if (school_id && !school_year_id) {
+			return {
+				success: true,
+				warning:
+					"Aucune année active pour cette école : la classe n'est rattachée à aucune année. Activez l'année dans l'organisation de l'école."
+			};
+		}
 		return { success: true };
 	},
 

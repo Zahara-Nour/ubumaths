@@ -8,8 +8,8 @@ import {
 	formatMedium,
 	formatShort,
 	type PataphysicalDate
-} from '$lib/almanach/calendar';
-import { MONTH_PALETTES } from '$lib/almanach/palettes';
+} from '#lib/almanach/calendar.ts';
+import { MONTH_PALETTES } from '#lib/almanach/palettes.ts';
 
 // Les transitions retarderaient la couleur lue après une bascule de mode
 const noTransitions = document.head.appendChild(document.createElement('style'));

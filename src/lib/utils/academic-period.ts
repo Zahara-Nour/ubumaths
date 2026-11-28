@@ -13,14 +13,14 @@
  * EXAMPLES:
  * ---------
  * ```typescript
- * import { findCurrentPeriod, getPeriodName } from '$lib/utils/academic-period';
+ * import { findCurrentPeriod, getPeriodName } from '#lib/utils/academic-period.ts';
  *
  * const currentPeriodId = findCurrentPeriod(academicPeriods);
  * const periodName = getPeriodName(currentPeriod);
  * ```
  */
 
-import type { Database } from '$lib/types/database';
+import type { Database } from '#lib/types/database.ts';
 
 type AcademicPeriod = Database['public']['Tables']['academic_periods']['Row'];
 

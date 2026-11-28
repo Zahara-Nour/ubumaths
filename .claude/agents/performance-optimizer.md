@@ -16,7 +16,7 @@ Tu analyses et réduis une lenteur **constatée** dans Chiphre : chargement de p
 ## Méthode
 
 1. **Mesurer d'abord** et annoncer chaque mesure avec son décor (machine, base locale ou prod, cache chaud ou froid, volume de données). Sans mesure, poser la question plutôt que supposer.
-2. Base : requêtes N+1, colonnes inutiles dans `.select()`, index manquants. Prod en **lecture seule** via le MCP Supabase (`EXPLAIN`, advisors, logs) ; données locales réalistes : `pnpm db:reset && pnpm db:seed-riche`.
+2. Base : requêtes N+1, colonnes inutiles dans `.select()`, index manquants. Prod en **lecture seule** via le MCP Supabase (`EXPLAIN`, advisors, logs) ; données locales réalistes : `pnpm db:seed-riche` (remise à neuf complète `pnpm db:neuf` : efface la base de dev de toutes les sessions, accord de David d'abord).
 3. Réseau : requêtes séquentielles indépendantes → `Promise.all` ; mises à jour fréquentes → UI optimiste + envoi groupé (motif existant, ne pas en inventer un autre).
 4. Page : imports lourds (MathLive, Pyodide, Typst) en `import()` dynamique ; bundle : `pnpm analyze`.
 5. Re-mesurer après, dans le même décor.

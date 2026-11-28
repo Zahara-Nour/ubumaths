@@ -1,7 +1,7 @@
 <script lang="ts">
-	import MySelect from '$lib/components/MySelect.svelte';
-	import { Input } from '$lib/components/ui/input';
-	import { Label } from '$lib/components/ui/label';
+	import MySelect from '#lib/components/MySelect.svelte';
+	import { Input } from '#lib/components/ui/input/index.ts';
+	import { Label } from '#lib/components/ui/label/index.ts';
 	import {
 		DAYS_PER_MONTH,
 		EXTRA_DAY_NAMES,
@@ -15,7 +15,7 @@
 		type ExtraDay,
 		type PataphysicalDate,
 		type PataphysicalDateInput
-	} from '$lib/almanach/calendar';
+	} from '#lib/almanach/calendar.ts';
 
 	// Types
 	type Direction = 'to-almanach' | 'to-gregorian';

@@ -14,7 +14,7 @@
  */
 
 import { getContext, hasContext, setContext } from 'svelte';
-import type { ViewerRole } from '$lib/resources';
+import type { ViewerRole } from '#lib/resources/index.ts';
 
 /** Qui lit les références, et de quel endroit. */
 export interface InternalLinkReader {

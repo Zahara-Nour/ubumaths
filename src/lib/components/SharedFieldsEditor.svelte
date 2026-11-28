@@ -15,20 +15,21 @@
 -->
 
 <script lang="ts">
-	import type { QuestionVariable, PrecisionType } from '$lib/questions/types';
-	import type { TemplateMarkdown } from '$lib/ubumark';
-	import * as Card from '$lib/components/ui/card';
-	import * as Collapsible from '$lib/components/ui/collapsible';
-	import { Input } from '$lib/components/ui/input';
-	import { Label } from '$lib/components/ui/label';
+	import type { QuestionVariable, PrecisionType } from '#lib/questions/types.ts';
+	import type { TemplateMarkdown } from '#lib/ubumark/index.ts';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import * as Collapsible from '#lib/components/ui/collapsible/index.ts';
+	import { Input } from '#lib/components/ui/input/index.ts';
+	import { Label } from '#lib/components/ui/label/index.ts';
 	import VariableEditor from './VariableEditor.svelte';
-	import { MarkdownEditor } from '$lib/components/markdown';
+	import { MarkdownEditor } from '#lib/components/markdown/index.ts';
 	import MySelect from './MySelect.svelte';
 	import MyCheckbox from './MyCheckbox.svelte';
 	import PrecisionEditor from './PrecisionEditor.svelte';
 	import { ChevronDown, CircleQuestionMark } from '@lucide/svelte';
-	import { ACCEPTABLE_PLACEHOLDER, REQUIRED_FORM_OPTIONS } from '$lib/questions/form-options';
-	import type { CalculusEditorState } from '$lib/questions/calculus/calculus-editor';
+	import { ACCEPTABLE_PLACEHOLDER, REQUIRED_FORM_OPTIONS } from '#lib/questions/form-options.ts';
+	import { IMPOSSIBLE_LABEL_MAX } from '#lib/questions/impossible-answer.ts';
+	import type { CalculusEditorState } from '#lib/questions/calculus/calculus-editor.ts';
 
 	interface Props {
 		open: boolean;
@@ -56,6 +57,10 @@
 		sharedBlankVector: boolean;
 		sharedBlankVectorCollinear: boolean;
 		sharedBlankMatrix: boolean;
+		/** Case ordinaire : bouton « impossible » (la réponse peut ne pas exister) */
+		sharedBlankImpossible: boolean;
+		/** Texte du bouton « impossible » */
+		sharedBlankImpossibleLabel: string;
 		/** Case « primitive » ou « solution-ed » et ses champs */
 		sharedBlankCalculus: CalculusEditorState;
 		sharedValidationRulesJson: string;
@@ -86,6 +91,8 @@
 		sharedBlankVector = $bindable(),
 		sharedBlankVectorCollinear = $bindable(),
 		sharedBlankMatrix = $bindable(),
+		sharedBlankImpossible = $bindable(),
+		sharedBlankImpossibleLabel = $bindable(),
 		sharedBlankCalculus = $bindable(),
 		sharedValidationRulesJson = $bindable(),
 		sharedAnswerFormatsJson = $bindable(),
@@ -345,6 +352,29 @@
 							{/if}
 							<!-- Matrice dans une case : coefficients comparés par valeur (clavier « Matrice ») -->
 							<MyCheckbox bind:checked={sharedBlankMatrix} label="Réponse : matrice" />
+							<!-- Case ordinaire : bouton « pas factorisable » quand la réponse peut ne pas exister -->
+							{#if !sharedBlankIntervals && !sharedBlankEquation && !sharedBlankVector && !sharedBlankMatrix && !sharedBlankCalculus.primitive && !sharedBlankCalculus.solution && !sharedBlankCalculus.resolution && !sharedBlankCalculus.parametric}
+								<MyCheckbox
+									bind:checked={sharedBlankImpossible}
+									label="Bouton « impossible » (la réponse peut ne pas exister)"
+								/>
+								{#if sharedBlankImpossible}
+									<div class="space-y-1 pl-6">
+										<Input
+											type="text"
+											bind:value={sharedBlankImpossibleLabel}
+											maxlength={IMPOSSIBLE_LABEL_MAX}
+											aria-label="Texte du bouton"
+											placeholder="Texte du bouton"
+										/>
+										<p class="text-xs text-muted-foreground">
+											Sur les tirages sans réponse, écrire impossible comme réponse attendue (par
+											ex.
+											{'{{if:delta<0|impossible|…}}'}).
+										</p>
+									</div>
+								{/if}
+							{/if}
 							<!-- Primitive de f : x^3+C juste pour 3x^2 (dérivée de la réponse comparée à f) -->
 							<MyCheckbox
 								bind:checked={sharedBlankCalculus.primitive}
@@ -410,6 +440,49 @@
 										aria-label="Variable"
 									/>
 								</div>
+							{/if}
+							<!-- Équation résolue ligne par ligne : chaque ligne a les mêmes solutions que
+							     la précédente, la dernière est « x = … » (case seule dans $$?$$) -->
+							<MyCheckbox
+								bind:checked={sharedBlankCalculus.resolution}
+								label="Réponse : équation résolue ligne par ligne"
+							/>
+							{#if sharedBlankCalculus.resolution}
+								<div class="space-y-2 pl-6">
+									<Input
+										type="text"
+										bind:value={sharedBlankCalculus.equation}
+										placeholder="Équation de l'énoncé (ex: {'{{a}}'}x+{'{{b}}'}={'{{c}}'})"
+										aria-label="Équation de l'énoncé"
+									/>
+									<Input
+										type="text"
+										bind:value={sharedBlankCalculus.variable}
+										placeholder="Inconnue (défaut : x)"
+										aria-label="Inconnue"
+									/>
+									<Input
+										type="text"
+										inputmode="numeric"
+										bind:value={sharedBlankCalculus.minLines}
+										placeholder="Lignes exigées (défaut : 1, x = … seul accepté)"
+										aria-label="Nombre de lignes exigé"
+									/>
+									<p class="text-xs text-muted-foreground">
+										Case seule dans un bloc $$?$$ ; réponse attendue x = solution.
+									</p>
+								</div>
+							{/if}
+							<!-- Droite paramétrique de l'espace : toute représentation de la même droite
+							     est juste (case seule dans $$?$$, trois lignes x =, y =, z =) -->
+							<MyCheckbox
+								bind:checked={sharedBlankCalculus.parametric}
+								label="Réponse : représentation paramétrique d'une droite (espace)"
+							/>
+							{#if sharedBlankCalculus.parametric}
+								<p class="pl-6 text-xs text-muted-foreground">
+									Case seule dans un bloc $$?$$ ; réponse attendue x=1+2t\\y=2\\z=-1+3t.
+								</p>
 							{/if}
 						</Collapsible.Content>
 					</Collapsible.Root>

@@ -7,9 +7,9 @@
  * (`\mathrm` inconnu du parseur).
  */
 import { describe, it, expect } from 'vitest';
-import { runAllTestSpecs } from '$lib/questions/test-spec-runner';
-import { parseLatex } from '$lib/mathAST';
-import type { QuestionTemplate } from '$lib/questions/types';
+import { runAllTestSpecs } from '#lib/questions/test-spec-runner.ts';
+import { parseLatex } from '#lib/mathAST/index.ts';
+import type { QuestionTemplate } from '#lib/questions/types.ts';
 
 function verdicts(expected: string, answers: string[]): Record<string, string> {
 	const template = {

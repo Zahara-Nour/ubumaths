@@ -11,12 +11,12 @@
  */
 
 import { describe, expect, it } from 'vitest';
-import { WebReplEngine } from '$lib/mathAST/cli/web/web-repl-engine';
+import { WebReplEngine } from '#lib/mathAST/cli/web/web-repl-engine.ts';
 import { resolveCommand } from '../commands';
 import { Atelier } from '../atelier.svelte';
 import { runInput } from '../calcul';
-import { displayUnitsInLatex } from '$lib/mathAST/units/display';
-import { degreeSignWritten } from '$lib/mathAST/cli/core/degrees';
+import { displayUnitsInLatex } from '#lib/mathAST/units/display.ts';
+import { degreeSignWritten } from '#lib/mathAST/cli/core/degrees.ts';
 
 const LINES: readonly string[] = [
 	'-x^2+x+1=0',

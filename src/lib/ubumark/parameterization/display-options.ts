@@ -12,7 +12,7 @@
  *
  * @example Basic usage
  * ```typescript
- * import { resolveDisplayOptions, GLOBAL_DISPLAY_DEFAULTS } from '$lib/ubumark/parameterization';
+ * import { resolveDisplayOptions, GLOBAL_DISPLAY_DEFAULTS } from '#lib/ubumark/parameterization/index.ts';
  *
  * // Template-level defaults
  * const templateDefaults = { shuffleTerms: true, removeNullTerms: true };

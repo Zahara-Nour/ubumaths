@@ -7,7 +7,7 @@
  *
  * USAGE:
  * ```typescript
- * import { chooseCardsSchema } from '$lib/server/validation/choose-cards';
+ * import { chooseCardsSchema } from '#lib/server/validation/choose-cards.ts';
  *
  * const validation = chooseCardsSchema.safeParse(body);
  * if (!validation.success) {

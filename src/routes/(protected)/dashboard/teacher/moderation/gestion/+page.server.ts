@@ -1,9 +1,98 @@
 import type { PageServerLoad } from './$types';
+import type { SupabaseClient } from '@supabase/supabase-js';
+import type { Database } from '#lib/types/database.ts';
 import { error } from '@sveltejs/kit';
-import { getTeacherClassesWithStudents } from '$lib/server/students';
-import { createServerLogger } from '$lib/utils/logger';
+import { getTeacherClassesWithStudents } from '#lib/server/students.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('(protected)/dashboard/teacher/moderation/gestion/+page.server');
+
+/** Nombre de messages marqués affichés, les plus récents d'abord. */
+const FLAGGED_MESSAGES_LIMIT = 100;
+
+// ============================================================================
+// TYPES
+// ============================================================================
+
+/**
+ * Suppression d'un message marqué : `moderation` quand elle est tracée dans
+ * `moderation_logs`, `untraced` sinon (auteur, ou suppression de modération sans
+ * trace : `review_report`, `soft_delete_message`), `null` s'il n'est pas supprimé.
+ */
+type FlaggedDeletion = 'moderation' | 'untraced' | null;
+
+interface FlaggedMessageRow {
+	id: string;
+	conversationId: string | null;
+	text: string;
+	reason: string | null;
+	createdAt: string | null;
+	senderName: string | null;
+	conversationName: string | null;
+	isGroup: boolean | null;
+	deletedBy: FlaggedDeletion;
+}
+
+// ============================================================================
+// FUNCTIONS
+// ============================================================================
+
+function fullName(firstname: string | null, lastname: string | null): string | null {
+	return `${firstname ?? ''} ${lastname ?? ''}`.trim() || null;
+}
+
+/**
+ * Messages marqués automatiquement, les plus récents d'abord (écart T21).
+ *
+ * Fonction `get_flagged_messages_for_teacher` (décision de David, 2026-11-25).
+ * Elle rend aussi les messages marqués des conversations à deux entre élèves (ce
+ * message et son auteur, rien d'autre de la conversation) et les messages marqués
+ * supprimés, que la RLS de `messages` ne rend pas au prof. La page est réservée
+ * au prof : l'admin reçoit un 403 du layout, gardé par David (2026-11-25).
+ *
+ * Même règle que les signalements (T20) : un échec de lecture se dit (`failed`),
+ * il ne ressemble pas à « aucun message marqué ».
+ */
+async function loadFlaggedMessages(
+	supabase: SupabaseClient<Database>
+): Promise<{ messages: FlaggedMessageRow[]; failed: boolean }> {
+	const { data, error: rpcError } = await supabase.rpc('get_flagged_messages_for_teacher', {
+		p_limit: FLAGGED_MESSAGES_LIMIT
+	});
+	if (rpcError) {
+		logger.error('Failed to fetch flagged messages:', rpcError);
+		return { messages: [], failed: true };
+	}
+	// Les types générés annoncent des colonnes non nulles ; la fonction en rend
+	// de nulles (auteur supprimé, conversation sans nom, message non supprimé).
+	const rows: {
+		id: string;
+		conversation_id: string | null;
+		plain_text: string | null;
+		flag_reason: string | null;
+		created_at: string | null;
+		deleted_at: string | null;
+		deleted_by_moderation: boolean | null;
+		sender_firstname: string | null;
+		sender_lastname: string | null;
+		conversation_name: string | null;
+		is_group: boolean | null;
+	}[] = data ?? [];
+	return {
+		failed: false,
+		messages: rows.map((m) => ({
+			id: m.id,
+			conversationId: m.conversation_id,
+			text: m.plain_text ?? '',
+			reason: m.flag_reason,
+			createdAt: m.created_at,
+			senderName: fullName(m.sender_firstname, m.sender_lastname),
+			conversationName: m.conversation_name,
+			isGroup: m.is_group,
+			deletedBy: m.deleted_at ? (m.deleted_by_moderation ? 'moderation' : 'untraced') : null
+		}))
+	};
+}
 
 /**
  * Load moderation data for teachers
@@ -12,9 +101,11 @@ const logger = createServerLogger('(protected)/dashboard/teacher/moderation/gest
  * - Active restrictions created by this teacher
  * - Moderation logs for this teacher's actions
  * - Message reports for moderation
+ * - Messages flagged automatically (RPC `get_flagged_messages_for_teacher`,
+ *   deleted ones and student 1-on-1 chats included)
  * - Students from teacher's classes (for new restriction dialog)
  *
- * Only accessible by teachers and admins
+ * Only accessible by teachers (the layout answers 403 to an admin)
  */
 export const load: PageServerLoad = async ({ locals }) => {
 	const { user, profile, supabase } = locals;
@@ -24,56 +115,65 @@ export const load: PageServerLoad = async ({ locals }) => {
 		throw error(401, 'Connexion requise');
 	}
 
-	// Check teacher role
-	if (!['teacher', 'admin'].includes(profile.role)) {
+	// Prof seulement : le layout répond déjà 403 à l'admin (M59)
+	if (profile.role !== 'teacher') {
 		throw error(403, 'Accès refusé');
 	}
 
 	// Fetch all data in parallel
-	const [restrictionsResult, logsResult, reportsResult, pendingCountResult, classesWithStudents] =
-		await Promise.all([
-			// Active restrictions for this teacher's students
-			supabase
-				.from('user_restrictions')
-				.select(
-					`
+	const [
+		restrictionsResult,
+		logsResult,
+		reportsResult,
+		pendingCountResult,
+		flaggedResult,
+		classesWithStudents
+	] = await Promise.all([
+		// Active restrictions for this teacher's students
+		supabase
+			.from('user_restrictions')
+			.select(
+				`
 				*,
 				user:profiles!user_restrictions_user_id_fkey(id, firstname, lastname),
 				restricted_by_profile:profiles!user_restrictions_restricted_by_fkey(firstname, lastname),
 				conversation:conversations(name)
 			`
-				)
-				.eq('restricted_by', user.id)
-				.or(`expires_at.is.null,expires_at.gt.${new Date().toISOString()}`)
-				.order('created_at', { ascending: false }),
+			)
+			.eq('restricted_by', user.id)
+			.or(`expires_at.is.null,expires_at.gt.${new Date().toISOString()}`)
+			.order('created_at', { ascending: false }),
 
-			// Moderation logs for this teacher
-			supabase
-				.from('moderation_logs')
-				.select(
-					`
+		// Moderation logs for this teacher
+		supabase
+			.from('moderation_logs')
+			.select(
+				`
 				*,
 				moderator:profiles!moderation_logs_moderator_id_fkey(firstname, lastname)
 			`
-				)
-				.eq('moderator_id', user.id)
-				.order('created_at', { ascending: false })
-				.limit(100),
+			)
+			.eq('moderator_id', user.id)
+			.order('created_at', { ascending: false })
+			.limit(100),
 
-			// Message reports via RPC
-			supabase.rpc('get_reports_for_moderation', {
-				// Paramètre `DEFAULT NULL` : l'omettre demande bien tous les signalements.
-				p_status: undefined,
-				p_limit: 100,
-				p_offset: 0
-			}),
+		// Message reports via RPC
+		supabase.rpc('get_reports_for_moderation', {
+			// Paramètre `DEFAULT NULL` : l'omettre demande bien tous les signalements.
+			p_status: undefined,
+			p_limit: 100,
+			p_offset: 0
+		}),
 
-			// Pending reports count via RPC
-			supabase.rpc('get_pending_reports_count'),
+		// Pending reports count via RPC
+		supabase.rpc('get_pending_reports_count'),
 
-			// Students from teacher's classes (for new restriction dialog)
-			getTeacherClassesWithStudents(user.id, supabase)
-		]);
+		// ⚠️ Écart T21 : messages marqués automatiquement (`is_flagged`).
+		loadFlaggedMessages(supabase),
+
+		// Students from teacher's classes (for new restriction dialog)
+		getTeacherClassesWithStudents(user.id, supabase)
+	]);
 
 	if (restrictionsResult.error) {
 		logger.error('Failed to fetch restrictions:', restrictionsResult.error);
@@ -85,14 +185,16 @@ export const load: PageServerLoad = async ({ locals }) => {
 		throw error(500, 'Failed to load logs');
 	}
 
+	// ⚠️ Écart T20 : un échec de lecture des signalements ne doit pas ressembler à
+	// « aucun signalement ». Le reste de la page (restrictions, historique) reste
+	// utilisable : on ne lève pas, on le dit à la page, qui affiche une alerte.
 	if (reportsResult.error) {
 		logger.error('Failed to fetch reports:', reportsResult.error);
-		// Don't throw, just log - reports feature might not be set up
 	}
 
+	// Compteur illisible : `null` (inconnu), jamais 0.
 	if (pendingCountResult.error) {
 		logger.error('Failed to fetch pending count:', pendingCountResult.error);
-		// Don't throw, just log
 	}
 
 	// Flatten and deduplicate students from all classes
@@ -159,7 +261,11 @@ export const load: PageServerLoad = async ({ locals }) => {
 				(['spam', 'harassment', 'inappropriate', 'other'] as const).find((m) => m === r.reason) ??
 				'other'
 		})),
-		pendingReportsCount: pendingCountResult.data ?? 0,
+		reportsLoadFailed: reportsResult.error !== null,
+		pendingReportsCount: pendingCountResult.error ? null : (pendingCountResult.data ?? 0),
+		flaggedMessages: flaggedResult.messages,
+		flaggedMessagesLoadFailed: flaggedResult.failed,
+		flaggedMessagesLimit: FLAGGED_MESSAGES_LIMIT,
 		students
 	};
 };

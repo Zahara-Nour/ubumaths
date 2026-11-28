@@ -1,6 +1,6 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { RiddleDifficulty } from '$lib/types/riddle';
-import { createServerLogger } from '$lib/utils/logger';
+import type { RiddleDifficulty } from '#lib/types/riddle.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('server/riddle-auto-select');
 

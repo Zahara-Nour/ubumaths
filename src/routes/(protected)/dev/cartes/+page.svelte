@@ -1,7 +1,7 @@
 <script lang="ts">
-	import VipCardHolo from '$lib/components/VipCardHolo.svelte';
+	import VipCardHolo from '#lib/components/VipCardHolo.svelte';
 	import { resolve } from '$app/paths';
-	import { templateToVipCard } from '$lib/stores/vipCardTemplates.svelte';
+	import { templateToVipCard } from '#lib/stores/vipCardTemplates.svelte.ts';
 	import type { PageData } from './$types';
 
 	let { data }: { data: PageData } = $props();
@@ -28,9 +28,9 @@
 		<p class="subtitle">Effet holographique interactif inspiré des cartes Pokémon</p>
 
 		<nav class="demo-nav">
-			<a href={resolve('/dev')}>← Pages de dev</a>
+			<a href={resolve('dev')}>← Pages de dev</a>
 			<span class="nav-separator">|</span>
-			<a href={resolve('/dev/cartes/exemples')}>📖 Configuration Examples</a>
+			<a href={resolve('dev/cartes/exemples')}>📖 Configuration Examples</a>
 		</nav>
 
 		<div class="intro-section">

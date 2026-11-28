@@ -5,7 +5,7 @@
  */
 
 import { describe, expect, it } from 'vitest';
-import { parseLatex } from '$lib/mathAST/parser';
+import { parseLatex } from '#lib/mathAST/parser/index.ts';
 import {
 	generatePedagogicalDomainSteps,
 	dispatchPedagogicalDomain,

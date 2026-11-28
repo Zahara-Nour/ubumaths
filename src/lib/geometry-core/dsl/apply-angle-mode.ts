@@ -12,9 +12,9 @@
  * Phase 5 of dsl-mathast-routing plan.
  */
 
-import type { MathNode, FunctionNode } from '$lib/mathAST/types';
-import { isFunction } from '$lib/mathAST/guards';
-import { multiply, divide, number as mathNumber, piConstant, func } from '$lib/mathAST/factory';
+import type { MathNode, FunctionNode } from '#lib/mathAST/types.ts';
+import { isFunction } from '#lib/mathAST/guards.ts';
+import { multiply, divide, number as mathNumber, piConstant, func } from '#lib/mathAST/factory.ts';
 
 export type AngleMode = 'deg' | 'rad';
 

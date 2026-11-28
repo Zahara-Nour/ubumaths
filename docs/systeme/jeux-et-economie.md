@@ -35,6 +35,10 @@ couvre:
   - 'src/routes/api/student/{bonus-history,gidouilles-activity,rewards}/**'
   - 'src/routes/api/students/*/vip-cards/**'
   - 'src/routes/api/classes/*/gidouilles/**'
+  - 'src/lib/avatars/**'
+  - 'src/lib/server/avatars/**'
+  - 'src/lib/components/avatars/**'
+  - 'src/routes/api/student/avatars/**'
 ---
 
 # Jeux et économie (gidouilles, cartes VIP, marché, classements)
@@ -55,7 +59,11 @@ prof distribue aussi gidouilles et cartes à la main.
 
 Le compagnon virtuel (Palotins) a sa propre doc : [buddy-palotins.md](buddy-palotins.md). Le
 tableau des Palotins du prof (`teacher/gamification/buddies`) affiche la Constance Royale en
-semaines tenues d'affilée, telle que l'élève la voit (`displayedConstance`). L'onglet voisin
+semaines tenues d'affilée, telle que l'élève la voit (`displayedConstance`). Il lit chaque classe
+par `fetchClassMembersWithBuddies` (`src/lib/server/buddy-class.ts`) : le Palotin s'embarque à
+travers le profil de l'élève. Embarqué directement depuis `class_members`, PostgREST le résolvait
+vers `profiles` et la page restait vide (« Aucun Bataillon actif ») jusqu'au 2026-11-22 ; preuve
+contre PostgREST : `tests/integration/palotins-vue-prof.test.ts`. L'onglet voisin
 « Mathoux » (`teacher/gamification/mathoux`) montre les Mathoux des élèves par classe : voir
 [mathoux.md § Vue du professeur](mathoux.md#vue-du-professeur).
 Les tables, une par une : [base-de-donnees-tables.md](base-de-donnees-tables.md) (sections
@@ -141,6 +149,7 @@ dans le code, hors catalogue, sans travaux tant qu'ils ne reprennent pas.
 | Inventaire élève                      | `src/routes/(protected)/dashboard/student/inventory/+page.svelte` (`vip-cards/collection` y redirige)                                                                                                                                                                                                                        |
 | Marché                                | `src/routes/(protected)/dashboard/student/marketplace/`, `src/routes/api/marketplace/`, `src/lib/server/marketplace/`, `src/lib/stores/marketplace.svelte.ts`                                                                                                                                                                |
 | Marché (prof)                         | `src/routes/(protected)/dashboard/teacher/gamification/marketplace/+page.svelte`                                                                                                                                                                                                                                             |
+| Boutique d'avatars                    | `src/routes/api/student/avatars/` (`GET` catalogue, `buy/`, `wear/`) → `buy_avatar`, `set_worn_avatar` ; `src/lib/server/avatars/shop.ts` ; écran `src/lib/components/avatars/AvatarShopSection.svelte` (Marché et « Mon profil »)                                                                                           |
 
 Les cartes possédées vivent dans `profiles.vip_cards` (jsonb), le catalogue dans
 `vip_card_templates`, les probabilités de tirage dans `vip_card_config`, le journal dans
@@ -221,6 +230,11 @@ Les RPC de classement unifié sont dans `supabase/migrations/20260616230000_fix_
      (`credit-gidouilles.ts`), libellé « Révision du jour terminée », rendues par
      `POST /api/srs/review/submit` sous `review_gidouilles`. La séance réclamée n'est relâchée que
      si rien n'a été donné (ni XP ni gidouilles).
+   - **victoire dans la Descente de la Vistule** (décision de David du 2026-11-18) : 1 par Bête
+     ordinaire, 3 par grosse Bête, 0 pour le tutoriel, **4 au plus sur 24 heures glissantes**,
+     coupé au plafond ; la victoire compte toujours comme travail au-delà. Libellés « Descente :
+     victoire contre … », par `record_beast_victory` (`service_role` seul ; voir
+     [base-de-donnees.md](base-de-donnees.md)). Pas encore appelée par le code (chantier `navadra`).
 8. **Toute écriture de gidouilles passe par `gidouilles_activity`**, d'où le journal
    (`reward_events`) — sauf Navadra (voir plus haut) et les fonctions citées dans Doutes.
 
@@ -254,6 +268,23 @@ Les RPC de classement unifié sont dans `supabase/migrations/20260616230000_fix_
 - **Lunettes et chapeaux des Mathoux** (lot D, 2026-10-26) : cinq lunettes et cinq chapeaux, de 10
   à 40, achetés de la même façon (« Chatterie : monocle acheté ») et montrés dans la même vitrine.
   Voir [mathoux.md § Lunettes et chapeaux](mathoux.md#lunettes-et-chapeaux).
+- **Boutique d'avatars** (chantier `boutique-avatars`, phase 0 validée le 2026-11-06) : avatars
+  achetés une fois pour toutes, à prix fixe (en base, `avatar_catalog.price`), par
+  `POST /api/student/avatars/buy` → `buy_avatar` (solde vérifié, débit, ligne « Avatar : <nom>
+  acheté » au journal, sous verrou ; l'achat n'équipe pas). Consentement exigé comme pour la
+  boutique VIP. Porter ou retirer (`POST /api/student/avatars/wear`, `avatar: null` pour
+  retirer) est gratuit, sans consentement, et passe par `set_worn_avatar`, qui recopie l'image
+  dans `profiles.avatar_url` (la photo Google revient au retrait). Les deux routes prennent
+  l'élève de la **session** (les fonctions font confiance à `p_student_id`) et partagent la
+  limite `avatar_shop:<id>` (30 par minute). Le catalogue vu par l'élève
+  (`GET /api/student/avatars`, `readAvatarShop`) montre les avatars **en vente** (actifs, dans
+  leur fenêtre) et ceux qu'il **possède** (même retirés ou hors fenêtre : toujours portables).
+  L'écran est dans l'onglet « Avatars » du Marché **et** dans « Mon profil », parce que le Marché
+  n'est ouvert qu'aux classes où le prof l'active (décision de David du 2026-11-11 : 37 élèves
+  sur 81 l'avaient). Réservée aux élèves : prof et admin gardent leur emblème. Après un port,
+  la page est rechargée (`refreshAll`) et l'en-tête montre le nouvel avatar. Base, gardes
+  et tests : [base-de-donnees.md](base-de-donnees.md) (`tests/integration/boutique-avatars.test.ts`) ;
+  routes : `src/routes/api/student/avatars/__tests__/avatars-routes.test.ts`.
 - **Cartes réservées au serveur** : personne ne modifie directement `profiles.vip_cards` (garde
   `guard_profile_reserved_fields`, migration `20261003150000_vip_cartes_verrou.sql`) ; seules les
   fonctions SECURITY DEFINER le font.
@@ -316,7 +347,9 @@ directe de l'élève est supprimée (`20261016090200`) ; EXECUTE est retiré à 
 les pages `dashboard/student/riddles/**` passent l'énigme par `toStudentRiddle`
 (`src/lib/types/riddle.ts`), qui ne garde de `answer` que le type de saisie et, pour un QCM, les
 choix. `RiddleCard` ne corrige donc plus dans le navigateur : le verdict vient de la route de
-soumission. Si l'envoi échoue, `onSubmit` rend `false` et la carte revient à la saisie. Test : `src/routes/(protected)/dashboard/student/riddles/__tests__/`.
+soumission. Si l'envoi échoue, `onSubmit` rend `false` et la carte revient à la saisie. Le gain du Palotin rendu
+par la soumission (`buddy_xp`) passe par `receiveBuddyGain` (cache du Palotin à jour, retour après
+une pause à fêter, [buddy-palotins.md](buddy-palotins.md)). Test : `src/routes/(protected)/dashboard/student/riddles/__tests__/`.
 
 ⚠️ **Réponse attendue et correction : `riddle_solutions`, plus `riddles`** (étape B, 2026-10-12).
 `riddles.answer` / `riddles.correction` n'existent plus (étape C, `20261016100800`) : les requêtes sur
@@ -388,6 +421,9 @@ s'affichait en erreur).
 
 ## Doutes (constatés le 2026-10-10, non corrigés)
 
+- **Images de 4 cartes Mathémo absentes** (constaté le 2026-11-22, chantier `seed-complet`) : 4 modèles
+  de cartes VIP en prod citent `/images/vip-cards/mathemo-*.webp`, qui n'existe pas dans `static/` →
+  404, en prod comme en local (rien à voir avec le stockage Supabase).
 - ✅ **`gidouilles_history` (corrigé le 2026-10-10, migration `20261014120000_gidouilles_history_e19`)** :
   `finalize_tournament`, `redistribute_tournament_rewards`, `complete_multiplayer_match` et
   `abandon_multiplayer_match` ne plantent plus (tournois : journal dans `gidouilles_activity` ;

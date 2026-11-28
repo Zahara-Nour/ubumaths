@@ -7,7 +7,7 @@
  * @example
  * ```svelte
  * <script>
- *   import { DebugToolbar, DebugPanel } from '$lib/components/python/debug';
+ *   import { DebugToolbar, DebugPanel } from '#lib/components/python/debug/index.ts';
  * </script>
  *
  * <DebugToolbar

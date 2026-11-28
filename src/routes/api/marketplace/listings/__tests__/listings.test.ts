@@ -9,13 +9,13 @@
 import { describe, test, expect, beforeEach, vi } from 'vitest';
 import type { RequestEvent as _RequestEvent } from '@sveltejs/kit';
 import { GET, POST } from '../+server.js';
-import { createMockSupabase } from '$tests/helpers';
+import { createMockSupabase } from '#tests/helpers/index.ts';
 import {
 	createTestUser,
 	createTestClass,
 	createTestListing,
 	mockRPCFunctions
-} from '$tests/helpers/fixtures';
+} from '#tests/helpers/fixtures/index.ts';
 
 // ============================================================================
 // MODULE MOCKS (hoisted - must be at top level, NOT inside beforeEach)
@@ -26,12 +26,12 @@ import {
 // enrichment real and turning listing/card enrichment into a passthrough
 // (tests assert on raw listing fields, not on derived card-template data).
 // Garde commune : session/profil lus dans `locals` (cf. helper)
-vi.mock('$lib/server/middleware/auth', async (importActual) =>
-	(await import('$tests/helpers/garde-auth-locals')).gardeAuthDepuisLocals(importActual)
+vi.mock('#lib/server/middleware/auth.ts', async (importActual) =>
+	(await import('#tests/helpers/garde-auth-locals.ts')).gardeAuthDepuisLocals(importActual)
 );
 
-vi.mock('$lib/server/marketplace/helpers', async (importActual) => {
-	const actual = await importActual<typeof import('$lib/server/marketplace/helpers')>();
+vi.mock('#lib/server/marketplace/helpers.ts', async (importActual) => {
+	const actual = await importActual<typeof import('#lib/server/marketplace/helpers.ts')>();
 	return {
 		...actual,
 		validateCardOwnership: vi.fn().mockResolvedValue(true),
@@ -48,7 +48,7 @@ vi.mock('$lib/server/marketplace/helpers', async (importActual) => {
 });
 
 // Auteurs en lecture seule (A2) : appel serveur au client service, jamais réel ici.
-vi.mock('$lib/server/marketplace/hidden-creators', () => ({
+vi.mock('#lib/server/marketplace/hidden-creators.ts', () => ({
 	getHiddenMarketplaceCreators: vi.fn().mockResolvedValue([])
 }));
 
@@ -94,7 +94,7 @@ describe('/api/marketplace/listings', () => {
 		// Restore default behaviour on the (hoisted) helper module mock.
 		// vi.clearAllMocks() wipes the resolved values configured at mock
 		// definition time, so we re-assert the happy-path defaults here.
-		const helpers = await import('$lib/server/marketplace/helpers');
+		const helpers = await import('#lib/server/marketplace/helpers.ts');
 		(helpers.validateCardOwnership as unknown as ReturnType<typeof vi.fn>).mockResolvedValue(true);
 		(helpers.lockCardsForEntity as unknown as ReturnType<typeof vi.fn>).mockResolvedValue({
 			success: true
@@ -109,7 +109,7 @@ describe('/api/marketplace/listings', () => {
 		(helpers.enrichListingsWithCardData as unknown as ReturnType<typeof vi.fn>).mockImplementation(
 			async (_supabase: unknown, listings: unknown[]) => listings
 		);
-		const hidden = await import('$lib/server/marketplace/hidden-creators');
+		const hidden = await import('#lib/server/marketplace/hidden-creators.ts');
 		(hidden.getHiddenMarketplaceCreators as unknown as ReturnType<typeof vi.fn>).mockResolvedValue(
 			[]
 		);
@@ -175,7 +175,7 @@ describe('/api/marketplace/listings', () => {
 		// Décision de David (2026-10-10, A2) : les annonces d'un auteur en lecture seule
 		// (consentement parental) sont masquées du marché.
 		test('masque les annonces des auteurs en lecture seule de l’école', async () => {
-			const hidden = await import('$lib/server/marketplace/hidden-creators');
+			const hidden = await import('#lib/server/marketplace/hidden-creators.ts');
 			(
 				hidden.getHiddenMarketplaceCreators as unknown as ReturnType<typeof vi.fn>
 			).mockResolvedValue(['user-2', 'user-3']);
@@ -198,7 +198,7 @@ describe('/api/marketplace/listings', () => {
 		});
 
 		test('le prof voit toujours ces annonces (surveillance)', async () => {
-			const hidden = await import('$lib/server/marketplace/hidden-creators');
+			const hidden = await import('#lib/server/marketplace/hidden-creators.ts');
 			(
 				hidden.getHiddenMarketplaceCreators as unknown as ReturnType<typeof vi.fn>
 			).mockResolvedValue(['user-2']);
@@ -441,7 +441,7 @@ describe('/api/marketplace/listings', () => {
 		});
 
 		test('handles marketplace disabled gracefully', async () => {
-			const { isMarketplaceEnabled } = await import('$lib/server/marketplace/helpers');
+			const { isMarketplaceEnabled } = await import('#lib/server/marketplace/helpers.ts');
 			(isMarketplaceEnabled as unknown as ReturnType<typeof vi.fn>).mockResolvedValue(false);
 
 			const mockLocals = {
@@ -464,7 +464,7 @@ describe('/api/marketplace/listings', () => {
 		});
 
 		test('handles school not found error', async () => {
-			const { getStudentSchoolId } = await import('$lib/server/marketplace/helpers');
+			const { getStudentSchoolId } = await import('#lib/server/marketplace/helpers.ts');
 			(getStudentSchoolId as unknown as ReturnType<typeof vi.fn>).mockResolvedValue(null);
 
 			const mockLocals = {
@@ -631,7 +631,7 @@ describe('/api/marketplace/listings', () => {
 		});
 
 		test('checks marketplace is enabled', async () => {
-			const { isMarketplaceEnabled } = await import('$lib/server/marketplace/helpers');
+			const { isMarketplaceEnabled } = await import('#lib/server/marketplace/helpers.ts');
 			(isMarketplaceEnabled as unknown as ReturnType<typeof vi.fn>).mockResolvedValue(false);
 
 			const mockRequest = {
@@ -660,7 +660,7 @@ describe('/api/marketplace/listings', () => {
 		});
 
 		test('enforces active listings limit', async () => {
-			const { checkActiveListingsLimit } = await import('$lib/server/marketplace/helpers');
+			const { checkActiveListingsLimit } = await import('#lib/server/marketplace/helpers.ts');
 			(checkActiveListingsLimit as unknown as ReturnType<typeof vi.fn>).mockResolvedValue(false);
 
 			const mockRequest = {
@@ -689,7 +689,7 @@ describe('/api/marketplace/listings', () => {
 		});
 
 		test('validates card ownership for sell listings', async () => {
-			const { validateCardOwnership } = await import('$lib/server/marketplace/helpers');
+			const { validateCardOwnership } = await import('#lib/server/marketplace/helpers.ts');
 			(validateCardOwnership as unknown as ReturnType<typeof vi.fn>).mockResolvedValue(false);
 
 			const mockRequest = {
@@ -722,7 +722,7 @@ describe('/api/marketplace/listings', () => {
 			// removed in commit 8260972a3 ("remove incorrect checkCardsUnused
 			// blocking listings") because it wrongly blocked legitimate listings.
 			// So forcing checkCardsUnused -> false must NOT prevent creation.
-			const { checkCardsUnused } = await import('$lib/server/marketplace/helpers');
+			const { checkCardsUnused } = await import('#lib/server/marketplace/helpers.ts');
 			(checkCardsUnused as unknown as ReturnType<typeof vi.fn>).mockResolvedValue(false);
 
 			mockSupabase._mockChain.insert.mockImplementation((data) => {
@@ -762,7 +762,7 @@ describe('/api/marketplace/listings', () => {
 		});
 
 		test('handles card locking failure with rollback', async () => {
-			const { lockCardsForEntity } = await import('$lib/server/marketplace/helpers');
+			const { lockCardsForEntity } = await import('#lib/server/marketplace/helpers.ts');
 			(lockCardsForEntity as unknown as ReturnType<typeof vi.fn>).mockResolvedValue({
 				success: false,
 				error: 'Failed to lock cards'
@@ -1078,7 +1078,7 @@ describe('/api/marketplace/listings', () => {
 		});
 
 		test('handles concurrent listing creation attempts', async () => {
-			const { checkActiveListingsLimit } = await import('$lib/server/marketplace/helpers');
+			const { checkActiveListingsLimit } = await import('#lib/server/marketplace/helpers.ts');
 			let callCount = 0;
 
 			// Simulate limit reached after first call

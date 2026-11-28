@@ -8,7 +8,7 @@ import { describe, it, expect } from 'vitest';
 import { page, userEvent } from 'vitest/browser';
 import { render } from 'vitest-browser-svelte';
 import MarkdownRenderer from '../MarkdownRenderer.svelte';
-import type { ExerciseHint } from '$lib/exercises/types';
+import type { ExerciseHint } from '#lib/exercises/types.ts';
 
 const HINTS: ExerciseHint[] = [
 	{

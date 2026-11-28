@@ -29,13 +29,13 @@
  * - All inputs validated with Zod
  */
 
-import { json, error } from '@sveltejs/kit';
-import { assertGoogleClassroomEnabled } from '$lib/server/google/feature-guard';
+import { error } from '@sveltejs/kit';
+import { assertGoogleClassroomEnabled } from '#lib/server/google/feature-guard.ts';
 import type { RequestHandler } from './$types';
-import { requireRole } from '$lib/server/middleware/auth';
-import { updateSharedMaterialByIdSchema, uuidSchema } from '$lib/server/validation';
-import type { TablesUpdate } from '$lib/types/database';
-import { createServerLogger } from '$lib/utils/logger';
+import { requireRole } from '#lib/server/middleware/auth.ts';
+import { updateSharedMaterialByIdSchema, uuidSchema } from '#lib/server/validation/index.ts';
+import type { TablesUpdate } from '#lib/types/database.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/google/shared-materials/[id]/+server');
 
@@ -89,7 +89,7 @@ export const DELETE: RequestHandler = async ({ locals, params }) => {
 		throw error(500, 'Impossible de supprimer le support partagé');
 	}
 
-	return json({
+	return Response.json({
 		success: true,
 		message: 'Support partagé supprimé'
 	});
@@ -245,7 +245,7 @@ export const PATCH: RequestHandler = async ({ locals, params, request }) => {
 	}
 
 	// Transform to camelCase
-	return json({
+	return Response.json({
 		success: true,
 		sharedMaterial: {
 			id: updatedRecord.id,

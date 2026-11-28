@@ -3,8 +3,8 @@
 	classe les résultats par ressemblance avec le français.
 -->
 <script lang="ts">
-	import { lettersOnly } from '$lib/ciphers/alphabet';
-	import { caesarBruteForce } from '$lib/ciphers/frequency';
+	import { lettersOnly } from '#lib/ciphers/alphabet.ts';
+	import { caesarBruteForce } from '#lib/ciphers/frequency.ts';
 
 	// Constantes
 	/** En dessous, le classement par fréquences devient peu fiable */

@@ -24,16 +24,19 @@ import type {
 	WorkerBreakpoint,
 	ExerciseValidationConfig,
 	ExerciseValidationResult
-} from '$lib/shared/python';
-import { PYODIDE_CONFIG, fromWorkerMessageSchema } from '$lib/shared/python';
+} from '#lib/shared/python/index.ts';
+// Valeurs importées de leurs fichiers, jamais du barrel `#lib/shared/python/index.ts` : il ré-exporte les
+// exécuteurs qui étendent cette classe (import circulaire, cf. __tests__/import-direct.test.ts)
+import { PYODIDE_CONFIG } from '../config';
+import { fromWorkerMessageSchema } from '../worker/messages';
 import type {
 	DebugStepAction,
 	DebugSnapshot,
 	DebugPauseReason
-} from '$lib/shared/python/debug/types';
-import type { PythonListReport } from '$lib/atelier/from-python';
+} from '#lib/shared/python/debug/types.ts';
+import type { PythonListReport } from '#lib/atelier/from-python.ts';
 
-// Use a simple browser check instead of $app/environment
+// Use a simple browser check instead of $app/env
 // This avoids issues with SvelteKit runtime modules in worker-related contexts
 const isBrowser = typeof window !== 'undefined';
 

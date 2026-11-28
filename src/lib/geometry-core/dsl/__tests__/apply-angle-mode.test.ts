@@ -12,8 +12,8 @@
 
 import { describe, it, expect } from 'vitest';
 import { applyAngleMode } from '../apply-angle-mode';
-import { parseCustom } from '$lib/mathAST';
-import { compile } from '$lib/mathAST/eval/compile';
+import { parseCustom } from '#lib/mathAST/index.ts';
+import { compile } from '#lib/mathAST/eval/compile.ts';
 
 function evalNode(node: ReturnType<typeof parseCustom>): number {
 	return compile(node)({});

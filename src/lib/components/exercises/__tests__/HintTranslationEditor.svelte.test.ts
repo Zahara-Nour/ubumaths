@@ -2,7 +2,7 @@ import { page } from 'vitest/browser';
 import { describe, expect, it } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import HintTranslationEditor from '../HintTranslationEditor.svelte';
-import type { ExerciseHint } from '$lib/exercises/types';
+import type { ExerciseHint } from '#lib/exercises/types.ts';
 
 /**
  * The French hints are the fixed frame: same ids, same types, same URLs. The

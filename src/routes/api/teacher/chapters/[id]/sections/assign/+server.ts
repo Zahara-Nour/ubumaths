@@ -6,12 +6,12 @@
  * base quand une section est supprimée.
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireRole } from '$lib/server/middleware/auth';
-import { assignToSection } from '$lib/server/chapter-sections';
-import { assignToSectionSchema } from '$lib/server/validation/chapter-sections';
-import { uuidSchema } from '$lib/server/validation/common';
+import { requireRole } from '#lib/server/middleware/auth.ts';
+import { assignToSection } from '#lib/server/chapter-sections.ts';
+import { assignToSectionSchema } from '#lib/server/validation/chapter-sections.ts';
+import { uuidSchema } from '#lib/server/validation/common.ts';
 
 type ZodIssue = { path: (string | number)[]; message: string };
 
@@ -68,5 +68,5 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 		throw error(500, 'Impossible de ranger les ressources');
 	}
 
-	return json({ success: true });
+	return Response.json({ success: true });
 };

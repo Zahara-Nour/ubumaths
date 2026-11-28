@@ -23,24 +23,10 @@
  */
 
 import type { GeoParametricCurve } from '../types/elements';
-import type { CompiledFn } from '$lib/mathAST/eval/compile';
+import type { CompiledFn } from '#lib/mathAST/eval/compile.ts';
+import type { NewtonConfig } from './parametric-newton';
 
-export interface IntersectionConfig1D {
-	/** Number of equally spaced starts in [t_min, t_max]. */
-	numStarts: number;
-	/** Maximum Newton iterations per start. */
-	maxIterations: number;
-	/** Convergence tolerance on |f(t)|. */
-	convergenceTolerance: number;
-	/** After clamping, reject if |f(t)| exceeds this (more permissive). */
-	acceptanceTolerance: number;
-	/** Skip start / abandon iteration if |f'(t0)| < this. */
-	singularityThreshold: number;
-	/** Dedup epsilon = (t_max − t_min) × this. */
-	duplicateThresholdRatio: number;
-}
-
-const DEFAULT_CONFIG: IntersectionConfig1D = {
+const DEFAULT_CONFIG: NewtonConfig = {
 	numStarts: 16,
 	maxIterations: 20,
 	convergenceTolerance: 1e-8,
@@ -65,7 +51,7 @@ function newtonMultiStart(
 	tMin: number,
 	tMax: number,
 	evalF: (t: number) => { f: number; fPrime: number; x: number; y: number },
-	cfg: IntersectionConfig1D,
+	cfg: NewtonConfig,
 	postFilter?: (t: number, x: number, y: number) => boolean
 ): ParametricIntersection1D[] {
 	const N = Math.max(2, cfg.numStarts);
@@ -190,7 +176,7 @@ export function findParametricLineIntersections(
 	py: number,
 	vx: number,
 	vy: number,
-	config?: Partial<IntersectionConfig1D>
+	config?: Partial<NewtonConfig>
 ): ParametricIntersection1D[] {
 	const cfg = { ...DEFAULT_CONFIG, ...config };
 	if (!curve.compiledXPrime || !curve.compiledYPrime) return [];
@@ -238,7 +224,7 @@ export function findParametricCircleIntersections(
 	cx: number,
 	cy: number,
 	r: number,
-	config?: Partial<IntersectionConfig1D>
+	config?: Partial<NewtonConfig>
 ): ParametricIntersection1D[] {
 	const cfg = { ...DEFAULT_CONFIG, ...config };
 	if (!curve.compiledXPrime || !curve.compiledYPrime) return [];
@@ -279,7 +265,7 @@ export function findParametricSegmentIntersections(
 	p1y: number,
 	p2x: number,
 	p2y: number,
-	config?: Partial<IntersectionConfig1D>
+	config?: Partial<NewtonConfig>
 ): ParametricIntersection1D[] {
 	const cfg = { ...DEFAULT_CONFIG, ...config };
 	if (
@@ -338,7 +324,7 @@ export function findParametricRayIntersections(
 	oy: number,
 	vx: number,
 	vy: number,
-	config?: Partial<IntersectionConfig1D>
+	config?: Partial<NewtonConfig>
 ): ParametricIntersection1D[] {
 	const cfg = { ...DEFAULT_CONFIG, ...config };
 	if (
@@ -392,7 +378,7 @@ export function findParametricFunctionIntersections(
 	fnPrime: CompiledFn,
 	xMin: number,
 	xMax: number,
-	config?: Partial<IntersectionConfig1D>
+	config?: Partial<NewtonConfig>
 ): ParametricIntersection1D[] {
 	const cfg = { ...DEFAULT_CONFIG, ...config };
 	if (!curve.compiledXPrime || !curve.compiledYPrime) return [];

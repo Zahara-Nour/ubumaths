@@ -2,7 +2,7 @@
  * Évaluation notée, corrigée par le serveur (chantier 5, PR B) — intégration
  * ==========================================================================
  *
- * `$lib/server/evaluation-attempts` face à la VRAIE base : lectures de droits
+ * `#lib/server/evaluation-attempts.ts` face à la VRAIE base : lectures de droits
  * sous RLS (client de l'élève), écritures en service_role (Q38), avec de VRAIS
  * modèles publiés (TinyMath #314, QCM migré en case choix, et #142, question à case), posés dans
  * des catégories propres au test.
@@ -23,39 +23,40 @@
 import { readFileSync } from 'node:fs';
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 import { createClient, type SupabaseClient } from '@supabase/supabase-js';
-import type { Database, Json } from '$lib/types/database';
+import type { Database, Json } from '#lib/types/database.ts';
 import { cleanupAllTestData } from '../helpers/database/trigger-test-helpers';
 import { DEFAULT_TEST_PASSWORD } from '../helpers/database/supabase-client';
 import { TestData } from '../helpers/database/test-data-factory';
 import {
 	AttemptAlreadySubmittedError,
+	readEvaluationOverview,
 	readSubmittedCopy,
 	startEvaluationAttempt,
 	submitEvaluationAttempt,
 	type AttemptActors,
 	type StartResult
-} from '$lib/server/evaluation-attempts';
+} from '#lib/server/evaluation-attempts.ts';
 import {
 	getEvaluationResults,
 	getStudentAssignments,
 	getEvaluation
-} from '$lib/server/evaluations';
-import { EvaluationError } from '$lib/server/evaluations';
-import { generateInstance } from '$lib/questions/generator/instance-generator';
-import { toQuestionTemplate, type QuestionTemplateRow } from '$lib/types/question-template';
-import type { QuestionInstance } from '$lib/questions/types';
-import { parseChoiceAnswer } from '$lib/questions/choice-case';
+} from '#lib/server/evaluations.ts';
+import { EvaluationError } from '#lib/server/evaluations.ts';
+import { generateInstance } from '#lib/questions/generator/instance-generator.ts';
+import { toQuestionTemplate, type QuestionTemplateRow } from '#lib/types/question-template.ts';
+import type { QuestionInstance } from '#lib/questions/types.ts';
+import { parseChoiceAnswer } from '#lib/questions/choice-case.ts';
 import {
 	gradeQuestion,
 	statusFromBlankStatuses,
 	type SubmittedAnswer
-} from '$lib/questions/grading';
-import { isAnswerTooComplex } from '$lib/questions/answer-complexity';
-import { submitAttemptSchema } from '$lib/server/validation/evaluations';
+} from '#lib/questions/grading.ts';
+import { isAnswerTooComplex } from '#lib/questions/answer-complexity.ts';
+import { submitAttemptSchema } from '#lib/server/validation/evaluations.ts';
 import {
 	GRADING_BUDGET_EXCEEDED_FEEDBACK,
 	SUBMISSION_GRADING_BUDGET_MS
-} from '$lib/server/grading-budget';
+} from '#lib/server/grading-budget.ts';
 
 // Types
 type Client = SupabaseClient<Database>;
@@ -153,6 +154,8 @@ async function createEvaluation(
 		deadline?: string | null;
 		status?: 'draft' | 'published';
 		items?: Json;
+		/** V72 : sans mélange par défaut, pour que les tests lisent l'ordre de la série */
+		shuffle_questions?: boolean;
 	} = {}
 ): Promise<{ evaluationId: string; assignmentId: string }> {
 	const { data: series, error: seriesError } = await service
@@ -175,6 +178,7 @@ async function createEvaluation(
 			max_attempts: settings.max_attempts ?? null,
 			deadline: settings.deadline ?? null,
 			status: settings.status ?? 'published',
+			shuffle_questions: settings.shuffle_questions ?? false,
 			created_by: teacher.id
 		})
 		.select('id')
@@ -470,8 +474,9 @@ describe('évaluation notée, corrigée par le serveur (chantier 5)', () => {
 			const instances = await oracle(first.attemptId);
 			const result = await submitEvaluationAttempt(actors(student), first.attemptId, {
 				answers: [
-					{ position: 0, ...rightAnswer(instances[0]) },
-					{ position: 1, ...wrongAnswer(instances[1]) },
+					// PR 4 bis : fin et durée de chaque question, pour sa trace
+					{ position: 0, ...rightAnswer(instances[0]), timeSpent: 5, endReason: 'validated' },
+					{ position: 1, ...wrongAnswer(instances[1]), timeSpent: 99, endReason: 'timeout' },
 					{ position: 2, ...rightAnswer(instances[2]) }
 				]
 			});
@@ -547,6 +552,39 @@ describe('évaluation notée, corrigée par le serveur (chantier 5)', () => {
 			expect(traces).toHaveLength(3);
 			expect(traces!.every((t) => t.source === 'auto')).toBe(true);
 			expect(traces!.filter((t) => t.success)).toHaveLength(2);
+		});
+
+		it('PR 4 bis : traces au lieu « contrôle », avec durées, sans graine ni réponse', async () => {
+			const { data: traces, error } = await service
+				.from('skill_attempts')
+				.select(
+					'template_id, success, place, response_ms, allotted_ms, end_reason, seed, answer_parts, part_verdicts'
+				)
+				.eq('student_id', student.id);
+			expect(error).toBeNull();
+			const shown = (traces ?? [])
+				.map((t) => [
+					t.template_id,
+					t.success,
+					t.place,
+					t.response_ms,
+					t.allotted_ms,
+					t.end_reason,
+					t.seed,
+					t.answer_parts,
+					t.part_verdicts
+				])
+				.sort((a, b) => String(a).localeCompare(String(b)));
+			expect(shown).toEqual(
+				[
+					// Validée en 5 s sur 20 s allouées
+					[FILL_ID, true, 'evaluation', 5000, 20_000, 'validated', null, null, null],
+					// Temps écoulé : durée = durée allouée (99 s envoyées, ignorées)
+					[FILL_ID, false, 'evaluation', 20_000, 20_000, 'timeout', null, null, null],
+					// Ni fin ni durée envoyées : lieu seul
+					[QCM_ID, true, 'evaluation', null, null, null, null, null, null]
+				].sort((a, b) => String(a).localeCompare(String(b)))
+			);
 		});
 
 		it('C11 : renvoyer une tentative terminée → 409 AVEC la copie déjà notée, rien d’écrit', async () => {
@@ -686,6 +724,68 @@ describe('évaluation notée, corrigée par le serveur (chantier 5)', () => {
 				}
 			);
 			expect(result).toMatchObject({ late: false, grade: 20 });
+		});
+
+		it('PR 4 bis : Course — validée, vide au chrono, laissée par « Terminer »', async () => {
+			// Élève neuf : ses traces ne viennent que de cette copie
+			const racer = await person('student');
+			const { error: memberError } = await service
+				.from('class_members')
+				.insert({ class_id: classId, student_id: racer.id, status: 'active' });
+			expect(memberError, 'décor : inscription').toBeNull();
+
+			const attempt = await start(racer, assignmentId);
+			const instances = await oracle(attempt.attemptId);
+			const result = await submitEvaluationAttempt(actors(racer), attempt.attemptId, {
+				answers: [
+					{ position: 0, ...rightAnswer(instances[0]), timeSpent: 12, endReason: 'validated' },
+					// Rien de tapé, chrono écoulé : fin et durée seules
+					{ position: 1, timeSpent: 60, endReason: 'timeout' }
+					// Position 2 : laissée par « Terminer », rien d'envoyé
+				]
+			});
+			expect(result.questions.map((q) => [q.status, q.points])).toEqual([
+				['correct', 1],
+				['empty', 0],
+				['empty', 0]
+			]);
+
+			// Question vide : jugée vide, sans réponse rangée, sa durée gardée
+			const { data: empty } = await service
+				.from('test_answers')
+				.select('status, points, user_answer, time_spent, question_instance')
+				.eq('test_session_id', attempt.attemptId);
+			const second = (empty ?? []).find(
+				(a) => (a.question_instance as { attemptPosition: number }).attemptPosition === 1
+			);
+			expect(second).toMatchObject({ status: 'empty', user_answer: null, time_spent: 60 });
+			expect(Number(second!.points)).toBe(0);
+
+			const { data: traces, error } = await service
+				.from('skill_attempts')
+				.select('template_id, success, place, response_ms, allotted_ms, end_reason, seed')
+				.eq('student_id', racer.id);
+			expect(error).toBeNull();
+			const shown = (traces ?? [])
+				.map((t) => [
+					t.template_id,
+					t.success,
+					t.place,
+					t.response_ms,
+					t.allotted_ms,
+					t.end_reason,
+					t.seed
+				])
+				.sort((a, b) => String(a).localeCompare(String(b)));
+			expect(shown).toEqual(
+				[
+					// Durée allouée = durée de la course (60 s)
+					[FILL_ID, true, 'evaluation', 12_000, 60_000, 'validated', null],
+					[FILL_ID, false, 'evaluation', 60_000, 60_000, 'timeout', null],
+					// « Terminer » : ratée, sans durée ni fin
+					[QCM_ID, false, 'evaluation', null, null, null, null]
+				].sort((a, b) => String(a).localeCompare(String(b)))
+			);
 		});
 	});
 
@@ -841,6 +941,52 @@ describe('évaluation notée, corrigée par le serveur (chantier 5)', () => {
 				answers: instances.map((instance, position) => ({ position, ...rightAnswer(instance) }))
 			});
 			expect(result.grade).toBe(20);
+		});
+	});
+
+	describe('V72 : « Mélanger l’ordre des questions »', () => {
+		// Graines : un compteur (tirages distincts) ; mélange : toujours 0, donc
+		// FILL, FILL, QCM → QCM, FILL, FILL (i = 2) → FILL, QCM, FILL (i = 1)
+		function drawsWithFixedShuffle(): (max: number) => number {
+			let seed = 1;
+			return (max) => (max >= 1000 ? seed++ : 0);
+		}
+
+		async function templateOrder(attemptId: string): Promise<string[]> {
+			const { data, error } = await service
+				.from('evaluation_attempt_questions')
+				.select('position, template_id')
+				.eq('test_session_id', attemptId)
+				.order('position');
+			if (error) throw new Error(error.message);
+			return (data ?? []).map((row) => row.template_id);
+		}
+
+		it('case cochée : l’ordre tiré est rangé, la reprise le garde', async () => {
+			const { assignmentId } = await createEvaluation({ shuffle_questions: true });
+			const pupil = await person('student');
+			const { error } = await service
+				.from('class_members')
+				.insert({ class_id: classId, student_id: pupil.id, status: 'active' });
+			expect(error, 'décor : inscription').toBeNull();
+
+			const attempt = await start(pupil, assignmentId, { randomInt: drawsWithFixedShuffle() });
+			expect(await templateOrder(attempt.attemptId)).toEqual([FILL_ID, QCM_ID, FILL_ID]);
+
+			const resumed = await start(pupil, assignmentId);
+			expect(resumed.questions).toEqual(attempt.questions);
+		});
+
+		it('case décochée : l’ordre de la série', async () => {
+			const { assignmentId } = await createEvaluation({ shuffle_questions: false });
+			const pupil = await person('student');
+			const { error } = await service
+				.from('class_members')
+				.insert({ class_id: classId, student_id: pupil.id, status: 'active' });
+			expect(error, 'décor : inscription').toBeNull();
+
+			const attempt = await start(pupil, assignmentId, { randomInt: drawsWithFixedShuffle() });
+			expect(await templateOrder(attempt.attemptId)).toEqual([FILL_ID, FILL_ID, QCM_ID]);
 		});
 	});
 
@@ -1198,6 +1344,111 @@ describe('évaluation notée, corrigée par le serveur (chantier 5)', () => {
 			});
 			const result = await submitEvaluationAttempt(actors(cubesStudent), attempt.attemptId, body);
 			expect(result.questions[0]).toMatchObject({ status: 'correct', points: 1 });
+		});
+	});
+	describe('Page d’attente : lecture seule, avant le démarrage (diaporama-reglages, PR 2b)', () => {
+		let reader: Person;
+		let assignmentId: string;
+		let evaluationId: string;
+
+		beforeAll(async () => {
+			reader = await person('student');
+			const { error } = await service
+				.from('class_members')
+				.insert({ class_id: classId, student_id: reader.id, status: 'active' });
+			expect(error, 'décor : inscription').toBeNull();
+			({ assignmentId, evaluationId } = await createEvaluation({
+				form: 'course',
+				time_limit: 600
+			}));
+		});
+
+		async function sessionsOf(who: Person): Promise<number> {
+			const { count } = await service
+				.from('test_sessions')
+				.select('id', { count: 'exact', head: true })
+				.eq('evaluation_id', evaluationId)
+				.eq('user_id', who.id);
+			return count ?? -1;
+		}
+
+		it('avant le démarrage : titre, forme, 3 questions, 10 min ; AUCUNE séance créée', async () => {
+			const overview = await readEvaluationOverview(actors(reader), assignmentId);
+			expect(overview).toEqual({
+				preview: false,
+				evaluation: {
+					id: evaluationId,
+					form: 'course',
+					time_limit: 600,
+					title: 'Éval serveur ZZ'
+				},
+				questionCount: 3,
+				durationSeconds: 600,
+				resumed: false
+			});
+			expect(await sessionsOf(reader)).toBe(0);
+		});
+
+		it('tentative commencée : reprise, questions de la tentative, temps RESTANT ; rien de plus', async () => {
+			const attempt = await start(reader, assignmentId);
+			const later = () => new Date(Date.now() + 240_000);
+			const overview = await readEvaluationOverview(actors(reader, { now: later }), assignmentId);
+			expect(overview.resumed).toBe(true);
+			expect(overview.questionCount).toBe(attempt.questions.length);
+			expect(overview.durationSeconds).toBeGreaterThanOrEqual(358);
+			expect(overview.durationSeconds).toBeLessThanOrEqual(360);
+			expect(await sessionsOf(reader)).toBe(1);
+		});
+
+		it('Contrôle blanc : durée = somme des chronos (20 + 20 + 15 s)', async () => {
+			const { assignmentId: blank } = await createEvaluation({ form: 'interactive' });
+			const overview = await readEvaluationOverview(actors(reader), blank);
+			expect(overview).toMatchObject({ questionCount: 3, durationSeconds: 55, resumed: false });
+		});
+
+		it('Q37 : tentative en cours, date limite passée ENTRE-TEMPS → reprise, pas 403', async () => {
+			const { assignmentId: closing, evaluationId: closingId } = await createEvaluation({
+				form: 'course',
+				time_limit: 600
+			});
+			await start(reader, closing);
+			const { error } = await service
+				.from('evaluations')
+				.update({ deadline: '2020-01-01T00:00:00Z' })
+				.eq('id', closingId)
+				.select('id');
+			expect(error, 'décor : date limite passée').toBeNull();
+			const overview = await readEvaluationOverview(actors(reader), closing);
+			expect(overview.resumed).toBe(true);
+		});
+
+		it('élève hors de la classe (lien copié) → 404, pour la page d’attente comme pour start', async () => {
+			const outsider = await person('student');
+			expect(await statusOf(readEvaluationOverview(actors(outsider), assignmentId))).toBe(404);
+			expect(await statusOf(startEvaluationAttempt(actors(outsider), assignmentId))).toBe(404);
+			expect(await sessionsOf(outsider)).toBe(0);
+		});
+
+		it('membre archivé de la classe → 404', async () => {
+			expect(await statusOf(readEvaluationOverview(actors(archived), assignmentId))).toBe(404);
+		});
+
+		it('brouillon → 404 pour l’élève', async () => {
+			const { assignmentId: draft } = await createEvaluation({ status: 'draft' });
+			expect(await statusOf(readEvaluationOverview(actors(reader), draft))).toBe(404);
+		});
+
+		it('date limite passée, aucune tentative en cours → 403', async () => {
+			const { assignmentId: late } = await createEvaluation({
+				deadline: '2020-01-01T00:00:00Z'
+			});
+			expect(await statusOf(readEvaluationOverview(actors(reader), late))).toBe(403);
+		});
+
+		it('prof propriétaire : aperçu, aucune séance', async () => {
+			const overview = await readEvaluationOverview(actors(teacher), assignmentId);
+			expect(overview).toMatchObject({ preview: true, questionCount: 3, durationSeconds: 600 });
+			expect(await sessionsOf(teacher)).toBe(0);
 		});
 	});
 });

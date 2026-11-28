@@ -13,9 +13,9 @@
  * @module atelier/domain-guard
  */
 
-import type { MathNode } from '$lib/mathAST/types';
-import type { RenderedStep } from '$lib/mathAST/common/step-renderer-base';
-import type { PedagogicalSimplifyResult } from '$lib/mathAST/pedagogical-simplify/types';
+import type { MathNode } from '#lib/mathAST/types.ts';
+import type { RenderedStep } from '#lib/mathAST/common/step-renderer-base.ts';
+import type { PedagogicalSimplifyResult } from '#lib/mathAST/pedagogical-simplify/types.ts';
 import {
 	describeConditions,
 	domainChange,
@@ -24,11 +24,11 @@ import {
 	tidyWithConditions,
 	type TidyCondition,
 	type TidyOptions
-} from '$lib/mathAST/tidy';
-import { toLatex } from '$lib/mathAST/latex-generator';
-import { computeCost } from '$lib/mathAST/simplify/cost';
-import { stripUnnecessaryBrackets } from '$lib/mathAST/transforms';
-import { withValueInRegister } from '$lib/mathAST/integration/coefficient-register';
+} from '#lib/mathAST/tidy/index.ts';
+import { toLatex } from '#lib/mathAST/latex-generator.ts';
+import { computeCost } from '#lib/mathAST/simplify/cost.ts';
+import { stripUnnecessaryBrackets } from '#lib/mathAST/transforms.ts';
+import { withValueInRegister } from '#lib/mathAST/integration/coefficient-register.ts';
 
 // =============================================================================
 // Types

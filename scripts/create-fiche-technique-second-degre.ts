@@ -26,8 +26,8 @@ import { config } from 'dotenv';
 import {
 	validateCreateWorksheet,
 	validateCreateWorksheetExercise
-} from '$lib/server/validation/worksheets';
-import type { Database } from '$lib/types/database';
+} from '#lib/server/validation/worksheets.ts';
+import type { Database } from '#lib/types/database.ts';
 
 config({ path: '.env' });
 

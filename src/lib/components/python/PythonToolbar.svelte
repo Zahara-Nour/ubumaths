@@ -1,7 +1,7 @@
 <script lang="ts">
 	// Imports
-	import { Button } from '$lib/components/ui/button';
-	import { Separator } from '$lib/components/ui/separator';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import { Separator } from '#lib/components/ui/separator/index.ts';
 	import {
 		Play,
 		Bug,
@@ -21,7 +21,7 @@
 		FileCode,
 		Settings
 	} from '@lucide/svelte';
-	import { toaster } from '$lib/stores/toaster.svelte';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
 
 	// Props
 	let {

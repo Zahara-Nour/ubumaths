@@ -1,9 +1,9 @@
 <script lang="ts">
-	import BackLink from '$lib/components/navigation/BackLink.svelte';
-	import GeometryCanvas from '$lib/components/geometry/GeometryCanvas.svelte';
-	import { Figure } from '$lib/geometry-core/graph/figure';
-	import { exact } from '$lib/geometry-core/types/geo-value';
-	import { number, numericNode, sqrt } from '$lib/mathAST';
+	import BackLink from '#lib/components/navigation/BackLink.svelte';
+	import GeometryCanvas from '#lib/components/geometry/GeometryCanvas.svelte';
+	import { Figure } from '#lib/geometry-core/graph/figure.ts';
+	import { exact } from '#lib/geometry-core/types/geo-value.ts';
+	import { number, numericNode, sqrt } from '#lib/mathAST/index.ts';
 
 	function pt(x: number, y: number) {
 		return { x: exact(numericNode(x)), y: exact(numericNode(y)) };

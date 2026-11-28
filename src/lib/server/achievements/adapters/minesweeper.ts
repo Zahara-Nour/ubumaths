@@ -4,8 +4,8 @@ import type {
 	UnlockedAchievementResponse,
 	AchievementCategory,
 	AchievementRarity
-} from '$lib/types/achievements';
-import type { Database } from '$lib/types/database';
+} from '#lib/types/achievements.ts';
+import type { Database } from '#lib/types/database.ts';
 
 /**
  * Legacy Minesweeper achievement types from database

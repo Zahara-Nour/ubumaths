@@ -6,7 +6,7 @@
  *
  * @example
  * ```typescript
- * import { verifyForm } from '$lib/mathAST/pattern';
+ * import { verifyForm } from '#lib/mathAST/pattern/index.ts';
  *
  * // Check if answer is in linear form ax + b
  * const result = verifyForm('2x + 3', 'a * $x + b');

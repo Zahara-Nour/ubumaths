@@ -15,7 +15,7 @@
  * la bande passe sous la fraise et seul ce qui pend dépasse dessous.
  */
 
-import type { MathouCollarId } from '$lib/mathoux/decorations';
+import type { MathouCollarId } from '#lib/mathoux/decorations.ts';
 import type { MathouStage } from './mathou-races';
 import type { DecorationShape } from './mathou-decorations';
 import { INK, RED, pearGeometry } from './mathou-dessin';

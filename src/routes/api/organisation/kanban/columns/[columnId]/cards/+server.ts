@@ -6,14 +6,14 @@
  *        we return 404 instead of letting the INSERT fail silently).
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireAuth } from '$lib/server/middleware/auth';
-import { parseKanbanId, createCardSchema } from '$lib/server/validation/kanban';
-import { getColumnBoardId, rateLimitResponse } from '$lib/server/kanban';
-import { checkKanbanCardMutationRateLimit } from '$lib/server/rateLimiter';
-import type { KanbanCard, KanbanCardInsert } from '$lib/types/database-helpers';
-import { createServerLogger } from '$lib/utils/logger';
+import { requireAuth } from '#lib/server/middleware/auth.ts';
+import { parseKanbanId, createCardSchema } from '#lib/server/validation/kanban.ts';
+import { getColumnBoardId, rateLimitResponse } from '#lib/server/kanban.ts';
+import { checkKanbanCardMutationRateLimit } from '#lib/server/rateLimiter.ts';
+import type { KanbanCard, KanbanCardInsert } from '#lib/types/database-helpers.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/organisation/kanban/columns/[columnId]/cards/+server');
 
@@ -65,5 +65,5 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 		throw error(500, 'Erreur lors de la création de la carte');
 	}
 
-	return json({ card: data as KanbanCard }, { status: 201 });
+	return Response.json({ card: data as KanbanCard }, { status: 201 });
 };

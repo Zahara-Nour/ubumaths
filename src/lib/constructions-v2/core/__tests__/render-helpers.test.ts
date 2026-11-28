@@ -1,8 +1,8 @@
 import { describe, it, expect } from 'vitest';
-import { Figure } from '$lib/geometry-core/graph/figure';
-import { numeric } from '$lib/geometry-core/types/geo-value';
-import type { GeoPoint } from '$lib/geometry-core/types/primitives';
-import { createTransformer } from '$lib/geometry-core/viewport/viewport';
+import { Figure } from '#lib/geometry-core/graph/figure.ts';
+import { numeric } from '#lib/geometry-core/types/geo-value.ts';
+import type { GeoPoint } from '#lib/geometry-core/types/primitives.ts';
+import { createTransformer } from '#lib/geometry-core/viewport/viewport.ts';
 import {
 	partialSegmentSVG,
 	partialArcSVGPath,

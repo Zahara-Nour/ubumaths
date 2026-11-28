@@ -3,7 +3,7 @@
  * =====================================================
  *
  * Comportements validés par David le 2026-10-26
- * (`docs/wip/geometrie-validation-progress.md` § 8 et § 9) : l'élève trace la droite
+ * (`docs/archive/wip/geometrie-validation-progress.md` § 8 et § 9) : l'élève trace la droite
  * (AB) puis tape « oui » ou « non » ; Valider grisé tant que la droite manque ; droite
  * fausse → le message du juge ; réponse fausse → faux, sans message de cases
  * numérotées (un enfant de CP ne lit pas « Les blancs suivants… », ni « Blanc 1 »).
@@ -16,10 +16,10 @@ import { render } from 'vitest-browser-svelte';
 import QuestionCard from '../QuestionCard.svelte';
 import FlashCard from '../FlashCard.svelte';
 import CorrectionCard from '../CorrectionCard.svelte';
-import { generateInstance } from '$lib/questions/generator/instance-generator';
-import type { QuestionInstance, QuestionTemplate } from '$lib/questions/types';
-import type { TestAnswerResult } from '$lib/types/test';
-import { templateMarkdown } from '$lib/ubumark';
+import { generateInstance } from '#lib/questions/generator/instance-generator.ts';
+import type { QuestionInstance, QuestionTemplate } from '#lib/questions/types.ts';
+import type { TestAnswerResult } from '#lib/types/test.ts';
+import { templateMarkdown } from '#lib/ubumark/index.ts';
 
 // C presque sur la droite (AB) : 0,25 carreau au-dessus
 const BLOCK = [

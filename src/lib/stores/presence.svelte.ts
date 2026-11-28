@@ -18,10 +18,10 @@
  * @module stores/presence
  */
 
-import { browser } from '$app/environment';
+import { browser } from '$app/env';
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { Database } from '$lib/types/database';
-import { createLogger } from '$lib/utils/logger';
+import type { Database } from '#lib/types/database.ts';
+import { createLogger } from '#lib/utils/logger.ts';
 
 const logger = createLogger('PresenceManager');
 

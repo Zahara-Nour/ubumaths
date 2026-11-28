@@ -12,18 +12,22 @@
 -->
 
 <script lang="ts">
-	import { lore } from '$lib/config/lore';
+	import { lore } from '#lib/config/lore.ts';
 	import type { PageData } from './$types';
-	import VipCard from '$lib/components/VipCard.svelte';
-	import VipCardSellModal from '$lib/components/vip-cards/VipCardSellModal.svelte';
-	import Badge from '$lib/components/ui/badge/badge.svelte';
+	import VipCard from '#lib/components/VipCard.svelte';
+	import VipCardSellModal from '#lib/components/vip-cards/VipCardSellModal.svelte';
+	import Badge from '#lib/components/ui/badge/badge.svelte';
 	import { Lock, Trophy, Sparkles, Gem } from '@lucide/svelte';
-	import { cn } from '$lib/utils';
-	import type { VipCard as VipCardType, VipCardRarity, StudentVipCards } from '$lib/types/vip-card';
+	import { cn } from '#lib/utils.ts';
+	import type {
+		VipCard as VipCardType,
+		VipCardRarity,
+		StudentVipCards
+	} from '#lib/types/vip-card.ts';
 	import type { CardCollectionStatus } from './+page.server';
-	import { toaster } from '$lib/stores/toaster.svelte';
-	import { syncVipCards, syncGidouilles } from '$lib/utils/cache-sync';
-	import { asVipCardCategory, asVipCardAction } from '$lib/types/vip-card';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
+	import { syncVipCards, syncGidouilles } from '#lib/utils/cache-sync.ts';
+	import { asVipCardCategory, asVipCardAction } from '#lib/types/vip-card.ts';
 
 	let { data }: { data: PageData } = $props();
 

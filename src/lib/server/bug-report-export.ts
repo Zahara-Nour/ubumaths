@@ -9,12 +9,12 @@ import type {
 	BugReportSessionContext,
 	CapturedError,
 	ClaudeCodeExport
-} from '$lib/types/bug-reports';
+} from '#lib/types/bug-reports.ts';
 import {
 	BUG_REPORT_CATEGORY_LABELS,
 	BUG_REPORT_SEVERITY_LABELS,
 	BUG_REPORT_STATUS_LABELS
-} from '$lib/types/bug-reports';
+} from '#lib/types/bug-reports.ts';
 
 /**
  * Extract file paths from stack traces

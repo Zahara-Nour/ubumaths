@@ -5,7 +5,7 @@
  * Manages reward event history with pagination, filtering, and infinite scroll support.
  *
  * Usage:
- * import { rewardJournalStore } from '$lib/stores/rewardJournal.svelte';
+ * import { rewardJournalStore } from '#lib/stores/rewardJournal.svelte.ts';
  *
  * // Fetch events for current student
  * await rewardJournalStore.fetchEvents();
@@ -30,7 +30,7 @@ import type {
 	RewardJournalFilters,
 	RewardJournalResponse,
 	PaginationMeta
-} from '$lib/types/reward-journal';
+} from '#lib/types/reward-journal.ts';
 
 // Default filters (empty = no filtering)
 const DEFAULT_FILTERS: RewardJournalFilters = {};

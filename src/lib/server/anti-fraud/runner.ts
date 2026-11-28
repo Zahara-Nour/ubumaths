@@ -43,7 +43,7 @@
  */
 
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { Database } from '$lib/types/database';
+import type { Database } from '#lib/types/database.ts';
 import type { ReviewEntry, AttemptEntry, JobReport, SignalResult } from './types';
 import {
 	composeSignals,
@@ -53,8 +53,8 @@ import {
 	detectNoAgain,
 	detectSrsVsQuizGap
 } from './detectors';
-import type { RunJobOptions } from '$lib/server/validation/anti-fraud';
-import { createServerLogger } from '$lib/utils/logger';
+import type { RunJobOptions } from '#lib/server/validation/anti-fraud.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('server/anti-fraud/runner');
 
@@ -200,7 +200,7 @@ async function loadAttempts(
 
 	const { data: attempts, error: attemptsError } = await supabase
 		.from('skill_attempts')
-		.select('created_at, success, grade, source')
+		.select('created_at, success, grade, source, place')
 		.eq('student_id', studentId)
 		.in('template_id', templateIds)
 		.gte('created_at', windowStart.toISOString());
@@ -212,7 +212,10 @@ async function loadAttempts(
 
 	const all = (attempts ?? []) as unknown as AttemptEntry[];
 	return {
-		srs: all.filter((a) => a.source === 'srs'),
+		// Révisions : `srs` avant l'ADR 0038, puis « déclaré » au lieu `review`
+		srs: all.filter(
+			(a) => a.source === 'srs' || (a.source === 'student_self' && a.place === 'review')
+		),
 		quiz: all.filter((a) => a.source === 'auto')
 	};
 }

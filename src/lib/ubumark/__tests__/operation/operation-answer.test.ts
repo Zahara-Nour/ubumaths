@@ -7,8 +7,8 @@
  */
 
 import { describe, expect, it } from 'vitest';
-import { parseOperationContent } from '$lib/ubumark/parser/operation-parser';
-import { buildOperationScene, type OperationScene } from '$lib/ubumark/utils/operation-scene';
+import { parseOperationContent } from '#lib/ubumark/parser/operation-parser.ts';
+import { buildOperationScene, type OperationScene } from '#lib/ubumark/utils/operation-scene.ts';
 import {
 	commaFromAnswer,
 	digitsFromAnswer,
@@ -16,7 +16,7 @@ import {
 	readOperationAnswer,
 	wrongComma,
 	wrongResultDigits
-} from '$lib/ubumark/utils/operation-answer';
+} from '#lib/ubumark/utils/operation-answer.ts';
 
 function spec(...lines: string[]) {
 	const node = parseOperationContent(lines.join('\n'));

@@ -1,12 +1,12 @@
 <script lang="ts">
-	import BackLink from '$lib/components/navigation/BackLink.svelte';
-	import { lore } from '$lib/config/lore';
+	import BackLink from '#lib/components/navigation/BackLink.svelte';
+	import { lore } from '#lib/config/lore.ts';
 	import { goto } from '$app/navigation';
 	import ExerciseForm, {
 		emptyExerciseForm,
 		buildSubmitBody,
 		type ExerciseFormState
-	} from '$lib/components/python/exercises/ExerciseForm.svelte';
+	} from '#lib/components/python/exercises/ExerciseForm.svelte';
 
 	let { data } = $props();
 

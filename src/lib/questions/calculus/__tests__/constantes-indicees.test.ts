@@ -5,7 +5,7 @@
  * l'unité imaginaire.
  */
 import { describe, it, expect } from 'vitest';
-import { parseLatex } from '$lib/mathAST/parser';
+import { parseLatex } from '#lib/mathAST/parser/index.ts';
 import { constantNames } from '../calculus-reading';
 
 describe('constantNames : constantes indicées (L22)', () => {

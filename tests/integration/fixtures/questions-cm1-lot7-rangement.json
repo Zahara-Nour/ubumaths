@@ -1,0 +1,145 @@
+[
+	{
+		"id": "01b73ca2-004e-4cb1-8237-ce7ebf516ac9",
+		"noeudAvant": null,
+		"noeudApres": "Statistiques > Représenter des données > diagrammes en barres",
+		"gradesAvant": ["CM1"],
+		"gradesApres": ["CM1"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["CM1§CM1-135"]
+	},
+	{
+		"id": "1e1e0342-0768-4529-af21-a4650fb8bbc9",
+		"noeudAvant": null,
+		"noeudApres": "Statistiques > Représenter des données > tableaux",
+		"gradesAvant": ["CM1"],
+		"gradesApres": ["CM1"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["CM1§CM1-120"]
+	},
+	{
+		"id": "40dcbbcc-c71e-46e4-9d33-4b15f126f6da",
+		"noeudAvant": null,
+		"noeudApres": "Statistiques > Représenter des données > tableaux",
+		"gradesAvant": ["CM1"],
+		"gradesApres": ["CM1"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["CM1§CM1-169"]
+	},
+	{
+		"id": "5291dc9f-a66d-46fa-8f0a-ccbdca44f35f",
+		"noeudAvant": null,
+		"noeudApres": "Statistiques > Représenter des données > courbes et repères",
+		"gradesAvant": ["CM1"],
+		"gradesApres": ["CM1"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["CM1§CM1-139"]
+	},
+	{
+		"id": "62389b29-78e4-4730-8434-ef6e36960083",
+		"noeudAvant": null,
+		"noeudApres": "Statistiques > Représenter des données > tableau à double entrée",
+		"gradesAvant": ["CM1"],
+		"gradesApres": ["CM1"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["CM1§CM1-137"]
+	},
+	{
+		"id": "a434bd68-a6e8-43b4-9c36-77114bce678b",
+		"noeudAvant": null,
+		"noeudApres": "Statistiques > Représenter des données > courbes et repères",
+		"gradesAvant": ["CM1"],
+		"gradesApres": ["CM1"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["CM1§CM1-136"]
+	},
+	{
+		"id": "ae74fe73-874e-4eae-9fa4-6897148d88e7",
+		"noeudAvant": null,
+		"noeudApres": "Statistiques > Représenter des données",
+		"gradesAvant": ["CM1"],
+		"gradesApres": ["CM1"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["CM1§CM1-122"]
+	},
+	{
+		"id": "c245f0cc-7b05-45be-bdbd-e0f7217fe87d",
+		"noeudAvant": null,
+		"noeudApres": "Statistiques > Représenter des données > diagrammes en barres",
+		"gradesAvant": ["CM1"],
+		"gradesApres": ["CM1"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["CM1§CM1-171"]
+	},
+	{
+		"id": "cc52549c-ff47-432a-8486-5256fb79c31c",
+		"noeudAvant": null,
+		"noeudApres": "Statistiques > Représenter des données > diagrammes en barres",
+		"gradesAvant": ["CM1"],
+		"gradesApres": ["CM1"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["CM1§CM1-138"]
+	},
+	{
+		"id": "da976537-296f-4cb0-b4d2-a73bd6743d6d",
+		"noeudAvant": null,
+		"noeudApres": "Statistiques > Représenter des données > courbes et repères",
+		"gradesAvant": ["CM1"],
+		"gradesApres": ["CM1"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["CM1§CM1-172"]
+	},
+	{
+		"id": "e1d59914-fe13-4aa6-a057-548e44426f6a",
+		"noeudAvant": null,
+		"noeudApres": "Statistiques > Représenter des données > tableau à double entrée",
+		"gradesAvant": ["CM1"],
+		"gradesApres": ["CM1"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["CM1§CM1-170"]
+	},
+	{
+		"id": "f1f7b2d1-caa4-4c4c-a3bb-939c49715e44",
+		"noeudAvant": null,
+		"noeudApres": "Statistiques > Représenter des données",
+		"gradesAvant": ["CM1"],
+		"gradesApres": ["CM1"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["CM1§CM1-122"]
+	},
+	{
+		"id": "f5742b78-a6c3-45b6-a341-81e4b67fb9de",
+		"noeudAvant": null,
+		"noeudApres": "Statistiques > Représenter des données > tableaux",
+		"gradesAvant": ["CM1"],
+		"gradesApres": ["CM1"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["CM1§CM1-121"]
+	}
+]

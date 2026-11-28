@@ -4,16 +4,21 @@
 
 	Manages a complete SRS review session for a deck — or for the COMPUTED
 	revision deck of a chapter (`source.kind === 'chapter'`, étape 3 des
-	questions de cours). La source (`$lib/srs/review-source`) fixe les adresses
+	questions de cours). La source (`#lib/srs/review-source.ts`) fixe les adresses
 	et traduit les cartes du serveur ; l'écran est le même.
 
 	Features:
 	- Fetches due cards from API
 	- Displays cards one by one using FlashCard
-	- Shows FSRS grading buttons after flip
+	- Shows « Pas réussi / Réussi » after flip (FSRS Again / Good)
+	- Coup de pouce (idée 5 du chantier `idees-format`) : ouvert, « Réussi » devient
+	  « Difficile » côté serveur, trace « avec indice »
 	- Submits reviews and updates stats
 	- Progress tracking
 	- Completion summary
+	- Réactions du Palotin (chantier `palotins`, partie C) : 5 réussites
+	  d'affilée (note ≥ 3) ou 3 erreurs sur une notion → il passe une fois au
+	  plus, et la carte suivante attend son départ
 
 	Props:
 	- source: deck (deckId, states, all) ou chapitre (chapterId)
@@ -21,27 +26,29 @@
 -->
 
 <script lang="ts">
-	import { onMount } from 'svelte';
-	import FlashCard from '$lib/components/questions/FlashCard.svelte';
+	import { onDestroy, onMount } from 'svelte';
+	import FlashCard from '#lib/components/questions/FlashCard.svelte';
 	import CustomFlashCard from './CustomFlashCard.svelte';
-	import FSRSButtons from './FSRSButtons.svelte';
-	import { Button } from '$lib/components/ui/button';
-	import * as Card from '$lib/components/ui/card';
-	import { Progress } from '$lib/components/ui/progress';
+	import SelfAssessButtons from '#lib/components/questions/SelfAssessButtons.svelte';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import { Progress } from '#lib/components/ui/progress/index.ts';
 	import { CheckCircle2, Trophy, ArrowLeft, RotateCcw } from '@lucide/svelte';
-	import { toaster } from '$lib/stores/toaster.svelte';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
 	import {
 		dueUrl,
 		submitRequest,
 		toSessionPayload,
 		type ReviewSource,
 		type SessionCard
-	} from '$lib/srs/review-source';
-	import BuddyGainCard from '$lib/components/buddy/BuddyGainCard.svelte';
-	import MathouNewsCard from '$lib/components/mathoux/MathouNewsCard.svelte';
-	import { fetchMathouNews } from '$lib/components/mathoux/mathou-news';
-	import type { MathouNews } from '$lib/mathoux/news';
-	import { receiveBuddyGain, type BuddyGainView } from '$lib/components/buddy/buddy-gain';
+	} from '#lib/srs/review-source.ts';
+	import BuddyGainCard from '#lib/components/buddy/BuddyGainCard.svelte';
+	import MathouNewsCard from '#lib/components/mathoux/MathouNewsCard.svelte';
+	import { fetchMathouNews } from '#lib/components/mathoux/mathou-news.ts';
+	import type { MathouNews } from '#lib/mathoux/news.ts';
+	import { receiveBuddyGain, type BuddyGainView } from '#lib/components/buddy/buddy-gain.ts';
+	import { createSeanceReactions } from '#lib/components/buddy/seance-reactions.ts';
+	import { isCourseCard } from '#lib/questions/types.ts';
 
 	interface Props {
 		/**
@@ -97,9 +104,15 @@
 	let wrongCount = $state(0);
 	let sessionStartTime = $state<number>(0);
 	let cardStartTime = $state<number>(0);
+	// Coup de pouce ouvert sur la carte affichée (idée 5)
+	let helped = $state(false);
 
 	// Derived state
 	const currentCard = $derived(cards[currentIndex]);
+	// Réactions du Palotin : une séance par composant
+	const seanceReactions = createSeanceReactions();
+	// Séance quittée pendant le passage du Palotin : rien ne continue
+	let destroyed = false;
 	const totalCards = $derived(cards.length);
 	const progressPercent = $derived(totalCards > 0 ? (currentIndex / totalCards) * 100 : 0);
 	const remainingCards = $derived(totalCards - currentIndex);
@@ -108,6 +121,10 @@
 	// ============================================================================
 	// INITIALIZATION
 	// ============================================================================
+
+	onDestroy(() => {
+		destroyed = true;
+	});
 
 	onMount(async () => {
 		sessionStartTime = Date.now();
@@ -167,25 +184,26 @@
 	}
 
 	/**
-	 * Handle grade selection
+	 * Auto-évaluation : deux boutons (N7), FSRS reçoit Good (3) ou Again (1)
 	 */
-	async function handleGrade(grade: 1 | 2 | 3 | 4) {
+	async function handleAssess(succeeded: boolean) {
 		if (!currentCard || isSubmitting) return;
 
 		isSubmitting = true;
+		const grade = succeeded ? 3 : 1;
 
 		// Calculate time spent on this card (in seconds)
 		const timeSpent = Math.round((Date.now() - cardStartTime) / 1000);
 
 		// Track correct/wrong
-		if (grade >= 3) {
+		if (succeeded) {
 			correctCount++;
 		} else {
 			wrongCount++;
 		}
 
 		try {
-			const request = submitRequest(source, currentCard, grade, timeSpent);
+			const request = submitRequest(source, currentCard, grade, timeSpent, helped);
 			const response = await fetch(request.url, {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
@@ -198,6 +216,11 @@
 
 			// Fin de séance : le serveur peut joindre le gain du Palotin (`buddy_xp`)
 			await readBuddyGain(response);
+
+			// Le Palotin peut réagir : la carte suivante attend son départ
+			const waiting = reactTo(currentCard, grade);
+			if (waiting) await waiting;
+			if (destroyed) return;
 
 			// Move to next card
 			await moveToNextCard();
@@ -237,6 +260,20 @@
 	}
 
 	/**
+	 * Le Palotin réagit-il à cette note ? Réussite = note ≥ 3, comme le compte
+	 * de la séance ; notion du modèle (carte personnelle : aucune). Jamais sur
+	 * une carte de cours (hors score) ni sur la dernière carte. `null` : non.
+	 */
+	function reactTo(card: SessionCard, grade: 1 | 2 | 3 | 4): Promise<void> | null {
+		if (card.kind === 'template' && isCourseCard(card.instance)) return null;
+		return seanceReactions.afterAnswer({
+			correct: grade >= 3,
+			notionId: card.kind === 'template' ? card.notionId : null,
+			isLast: currentIndex + 1 >= totalCards
+		});
+	}
+
+	/**
 	 * Move to next card or complete session
 	 */
 	async function moveToNextCard() {
@@ -247,6 +284,7 @@
 			// Next card
 			currentIndex++;
 			isFlipped = false;
+			helped = false;
 			isSubmitting = false;
 			cardStartTime = Date.now();
 		}
@@ -460,6 +498,8 @@
 						interactive={false}
 						instance={currentCard.instance}
 						size="lg"
+						showHint
+						onHintOpen={() => (helped = true)}
 						onFlip={handleFlip}
 					/>
 				{:else}
@@ -473,14 +513,14 @@
 			{/key}
 		</div>
 
-		<!-- FSRS Grading Buttons (shown after flip) -->
+		<!-- Auto-évaluation (après retournement) -->
 		{#if showGradeButtons}
 			<div class="grade-section animate-fadeIn">
-				<FSRSButtons onGrade={handleGrade} disabled={isSubmitting} showIntervals={false} />
+				<SelfAssessButtons onAssess={handleAssess} disabled={isSubmitting} keyboard size="lg" />
 			</div>
 		{:else if !isFlipped}
 			<div class="text-center text-sm text-muted-foreground">
-				<p>Retournez la carte pour révéler la correction, puis notez votre réponse</p>
+				<p>Retournez la carte pour révéler la correction, puis dites si vous aviez réussi</p>
 			</div>
 		{/if}
 	</div>

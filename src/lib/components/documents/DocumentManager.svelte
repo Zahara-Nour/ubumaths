@@ -1,13 +1,13 @@
 <script lang="ts">
-	import { lore } from '$lib/config/lore';
-	import { Button } from '$lib/components/ui/button';
-	import { Input } from '$lib/components/ui/input';
-	import * as Tabs from '$lib/components/ui/tabs';
+	import { lore } from '#lib/config/lore.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import { Input } from '#lib/components/ui/input/index.ts';
+	import * as Tabs from '#lib/components/ui/tabs/index.ts';
 	import { Search, RefreshCw, FileText, Upload } from '@lucide/svelte';
 	import DocumentUploader from './DocumentUploader.svelte';
 	import DocumentCard from './DocumentCard.svelte';
-	import { toaster } from '$lib/stores/toaster.svelte';
-	import type { GradeCode } from '$lib/types/grades';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
+	import type { GradeCode } from '#lib/types/grades.ts';
 
 	interface Document {
 		id: string;

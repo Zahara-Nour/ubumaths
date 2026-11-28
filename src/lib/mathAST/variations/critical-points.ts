@@ -18,7 +18,7 @@ import { computeDomain } from '../domain/compute';
 import { evaluate } from '../eval';
 import { substitute } from '../eval/substitute';
 import { exactValueToShow } from '../eval/exact-value';
-import { endpointToNumber } from '$lib/math/intervals/endpoint';
+import { endpointToNumber } from '#lib/math/intervals/endpoint.ts';
 import { containsNode } from '../domain/algebra';
 
 // =============================================================================

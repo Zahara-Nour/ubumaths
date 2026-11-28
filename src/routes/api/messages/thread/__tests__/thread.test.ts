@@ -14,7 +14,7 @@ const TEACHER = '22222222-2222-4222-8222-222222222222';
 const ROOT = '33333333-3333-4333-8333-333333333333';
 const REPLY = '44444444-4444-4444-8444-444444444444';
 
-vi.mock('$lib/server/middleware/auth', () => ({
+vi.mock('#lib/server/middleware/auth.ts', () => ({
 	requireAuth: vi.fn(async () => ({ user: { id: USER } }))
 }));
 
@@ -172,5 +172,24 @@ describe('GET /api/messages/thread', () => {
 			sender_name: null,
 			sender_avatar_url: 'a.png'
 		});
+	});
+
+	// Écart V133 : la page du fil choisit à qui répondre d'après les destinataires
+	it('chaque message porte ses destinataires (identifiant et nom), rien d’autre', async () => {
+		const { promise } = call((name) => {
+			if (name === 'get_message_thread') return { data: [threadRow(ROOT, USER, 0)], error: null };
+			return {
+				data: [
+					{
+						...detailsRow(ROOT, USER),
+						recipients: [{ id: TEACHER, name: 'M. Prof', avatar_url: null, role: 'teacher' }]
+					}
+				],
+				error: null
+			};
+		});
+
+		const { messages } = await (await promise).json();
+		expect(messages[0].recipients).toEqual([{ id: TEACHER, name: 'M. Prof' }]);
 	});
 });

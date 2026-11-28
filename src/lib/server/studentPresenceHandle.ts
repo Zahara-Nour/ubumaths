@@ -19,10 +19,10 @@
  *   n'empêche jamais la page de s'afficher.
  */
 
-import type { Handle } from '@sveltejs/kit';
-import { recordStudentPresence } from '$lib/server/buddy-queries';
-import { utcDay } from '$lib/utils/buddy-constance';
-import { createServerLogger } from '$lib/utils/logger';
+import type { Handle } from '@sveltejs/kit/hooks';
+import { recordStudentPresence } from '#lib/server/buddy-queries.ts';
+import { utcDay } from '#lib/utils/buddy-constance.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('server/studentPresenceHandle');
 

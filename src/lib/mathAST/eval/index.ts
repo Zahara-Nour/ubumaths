@@ -8,8 +8,8 @@
  *
  * @example
  * ```typescript
- * import { substitute, evaluate, getVariables, hasAllBindings } from '$lib/mathAST/eval';
- * import { parseLatex } from '$lib/mathAST/parser';
+ * import { substitute, evaluate, getVariables, hasAllBindings } from '#lib/mathAST/eval/index.ts';
+ * import { parseLatex } from '#lib/mathAST/parser/index.ts';
  *
  * // Parse and substitute
  * const expr = parseLatex('x + y');
@@ -43,7 +43,7 @@
  * // fResult.value = { n: 9n, d: 1n } (equals 9 = 3^2)
  *
  * // Function with pre-computed derivative and inverse
- * import { derivativeFunc, inverseFunc } from '$lib/mathAST/factory';
+ * import { derivativeFunc, inverseFunc } from '#lib/mathAST/factory.ts';
  * const fWithDerivative = {
  *   expression: parseLatex('x^2'),
  *   parameters: ['x'],
@@ -64,7 +64,7 @@
  * // invResult.value = { n: 3n, d: 1n } (equals 3 = sqrt(9))
  *
  * // Compare numeric values
- * import { compareNumericNodes } from '$lib/mathAST/eval';
+ * import { compareNumericNodes } from '#lib/mathAST/eval/index.ts';
  * const cmp = compareNumericNodes(parseLatex('\\pi'), parseLatex('3'));
  * // cmp = 1 (π > 3)
  *

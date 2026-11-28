@@ -27,12 +27,12 @@
  * Les trois fichiers, servis depuis `static/` : téléchargés pour un Corrigé seulement.
  * `/fonts/` est gardé 30 jours en cache (`vercel.json`) : changer une police =
  * changer son `?v=`, sinon un navigateur garde l'ancienne (2026-11-03 : gras
- * mathématique ajouté à Chiphre Math).
+ * mathématique ajouté à Chiphre Math ; 2026-11-12 : z redessiné à coins).
  */
 export const CORRECTION_FONT_FILES = [
 	'/fonts/chiphre-math-typst/ShantellSans-Light.ttf',
 	'/fonts/chiphre-math-typst/ShantellSans-Bold.ttf',
-	'/fonts/chiphre-math-typst/ChiphreMath.ttf?v=2026-11-03'
+	'/fonts/chiphre-math-typst/ChiphreMath.ttf?v=2026-11-12'
 ] as const;
 
 const START_MARK = '// <polices-du-corrige>';
@@ -56,9 +56,10 @@ const TOP_LEVEL_SET_TEXT = /^#set text\(/gm;
 
 /**
  * Position juste après l'appel Typst qui commence à `start` (parenthèses
- * équilibrées, chaînes ignorées), ou null s'il n'est pas fermé.
+ * équilibrées, chaînes ignorées), ou null s'il n'est pas fermé. Sert aussi à la
+ * lecture facilitée (`easy-reading.ts`).
  */
-function endOfTypstCall(typst: string, start: number): number | null {
+export function endOfTypstCall(typst: string, start: number): number | null {
 	const open = typst.indexOf('(', start);
 	if (open === -1) return null;
 
@@ -86,17 +87,18 @@ function endOfTypstCall(typst: string, start: number): number | null {
  *   (pied de page, numéros de page) ;
  * - après le DERNIER `#set text(…)` de premier niveau, sinon la police du
  *   modèle l'emporterait sur tout le contenu.
+ *
+ * @param rules - d'autres règles de police (essai de `/dev/polices/luciole`) ;
+ *   par défaut celles du Corrigé
  */
-export function withCorrectionFonts(typst: string): string {
+export function withCorrectionFonts(typst: string, rules: string = CORRECTION_FONT_RULES): string {
 	let insertAt: number | null = null;
 	for (const match of typst.matchAll(TOP_LEVEL_SET_TEXT)) {
 		insertAt = endOfTypstCall(typst, match.index) ?? insertAt;
 	}
 	const body =
-		insertAt === null
-			? typst
-			: `${typst.slice(0, insertAt)}\n${CORRECTION_FONT_RULES}${typst.slice(insertAt)}`;
-	return `${CORRECTION_FONT_RULES}\n${body}`;
+		insertAt === null ? typst : `${typst.slice(0, insertAt)}\n${rules}${typst.slice(insertAt)}`;
+	return `${rules}\n${body}`;
 }
 
 /** Le document porte-t-il les règles de police du Corrigé ? */
@@ -106,20 +108,28 @@ export function hasCorrectionFonts(typst: string): boolean {
 
 /** Le même document sans les règles de police du Corrigé (repli : police standard) */
 export function withoutCorrectionFonts(typst: string): string {
+	return withoutMarkedRules(typst, START_MARK, END_MARK);
+}
+
+/**
+ * Le même document sans chaque bloc de règles encadré par `startMark` et
+ * `endMark` (repli). Sert aussi à la lecture facilitée (`easy-reading.ts`).
+ */
+export function withoutMarkedRules(typst: string, startMark: string, endMark: string): string {
 	let result = typst;
 	for (;;) {
-		const start = result.indexOf(START_MARK);
+		const start = result.indexOf(startMark);
 		if (start === -1) return result;
-		const end = result.indexOf(END_MARK, start);
+		const end = result.indexOf(endMark, start);
 		if (end === -1) return result;
 		// En tête, le saut de ligne qui suit les règles part avec elles ; ailleurs,
 		// celui qui les précède
 		if (start === 0) {
-			const after = end + END_MARK.length;
+			const after = end + endMark.length;
 			result = result.slice(result[after] === '\n' ? after + 1 : after);
 		} else {
 			const from = result[start - 1] === '\n' ? start - 1 : start;
-			result = result.slice(0, from) + result.slice(end + END_MARK.length);
+			result = result.slice(0, from) + result.slice(end + endMark.length);
 		}
 	}
 }

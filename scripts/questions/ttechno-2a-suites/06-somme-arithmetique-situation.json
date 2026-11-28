@@ -1,0 +1,282 @@
+{
+	"id": "65e0e9f5-dfff-49b5-8a91-11ae76bbc89b",
+	"title": "Somme arithmétique en situation",
+	"description": "Reconnaître qu'un total relève d'une somme de termes consécutifs d'une suite arithmétique, puis la calculer",
+	"grades": ["T_TECHNO"],
+	"level": 3,
+	"delay": 90,
+	"status": "draft",
+	"shared": {},
+	"variations": [
+		{
+			"statement": "Une entreprise fabrique ${{p}}$ vélos la première année, puis chaque année ${{r}}$ vélos de plus que l'année précédente.\n\nCombien de vélos aura-t-elle fabriqués en tout au bout de ${{n}}$ années ?\n\n$?$ vélos",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "200..500"
+				},
+				{
+					"name": "r",
+					"expression": "10..40"
+				},
+				{
+					"name": "n",
+					"expression": "5..12"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:n*(2*p+(n-1)*r)/2}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La production de l'année $k$ est $u_k$ : suite arithmétique de premier terme $u_1={{p}}$ et de raison ${{r}}$, donc $u_{ {{n}} }={{p}}+{{eval:n-1}}\\times{{r}}={{eval:p+(n-1)*r}}$.",
+					"Le total est la somme $u_1+u_2+\\cdots+u_{ {{n}} }$ de ${{n}}$ termes. La somme de termes consécutifs d'une suite arithmétique vaut $\\text{nombre de termes}\\times\\dfrac{\\text{premier terme}+\\text{dernier terme}}{2}$.",
+					"$S={{n}}\\times\\dfrac{ {{p}}+{{eval:p+(n-1)*r}} }{2}=\\textcolor{{{color:primary.0}}}{{{eval:n*(2*p+(n-1)*r)/2}}}$ vélos."
+				]
+			}
+		},
+		{
+			"statement": "Léa épargne : elle met ${{p}}~\\unit{€}$ de côté le premier mois, puis chaque mois ${{r}}~\\unit{€}$ de plus que le mois précédent.\n\nQuelle somme aura-t-elle mise de côté en tout au bout de ${{n}}$ mois ?\n\n$?~\\unit{€}$",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "10..50"
+				},
+				{
+					"name": "r",
+					"expression": "2..10"
+				},
+				{
+					"name": "n",
+					"expression": "6|10|12|18|24"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:n*(2*p+(n-1)*r)/2}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le versement du mois $k$ est $u_k$ : suite arithmétique de premier terme $u_1={{p}}$ et de raison ${{r}}$, donc $u_{ {{n}} }={{p}}+{{eval:n-1}}\\times{{r}}={{eval:p+(n-1)*r}}$.",
+					"Le total est la somme $u_1+u_2+\\cdots+u_{ {{n}} }$ de ${{n}}$ termes. La somme de termes consécutifs d'une suite arithmétique vaut $\\text{nombre de termes}\\times\\dfrac{\\text{premier terme}+\\text{dernier terme}}{2}$.",
+					"$S={{n}}\\times\\dfrac{ {{p}}+{{eval:p+(n-1)*r}} }{2}=\\textcolor{{{color:primary.0}}}{{{eval:n*(2*p+(n-1)*r)/2}}}~\\unit{€}$."
+				]
+			}
+		},
+		{
+			"statement": "Un théâtre a vendu ${{p}}$ abonnements la première saison, puis chaque saison ${{r}}$ abonnements de plus que la précédente. On note $u_k$ le nombre d'abonnements vendus la saison $k$ (donc $u_1={{p}}$).\n\n{{if:w==0|Combien d'abonnements le théâtre vendra-t-il **pendant la saison** ${{n}}$ ?|Combien d'abonnements le théâtre aura-t-il vendus **en tout pendant les ${{n}}$ premières saisons** ?}}\n\nPour répondre, on calcule…\n\n```choix\nmelanger: non\n- le terme $u_{ {{n}} }$\n- la somme $u_1+u_2+\\cdots+u_{ {{n}} }$\n- la somme $u_1+u_2+\\cdots+u_{ {{eval:n-1}} }$\n```",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "120..300"
+				},
+				{
+					"name": "r",
+					"expression": "5..20"
+				},
+				{
+					"name": "n",
+					"expression": "6..12"
+				},
+				{
+					"name": "w",
+					"expression": "0|1"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{w}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$(u_k)$ est arithmétique de premier terme $u_1={{p}}$ et de raison ${{r}}$.",
+					"{{if:w==0|On demande la vente d'**une seule** saison, la ${{n}}^{\\text{e}}$ : c'est le terme $u_{ {{n}} }$.|On demande un **total** sur les saisons $1$ à ${{n}}$ : c'est la somme $u_1+u_2+\\cdots+u_{ {{n}} }$, qui compte ${{n}}$ termes.}}"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "300 vélos, +20, 10 ans : 3 900",
+			"variationIndex": 0,
+			"variables": {
+				"p": "300",
+				"r": "20",
+				"n": "10"
+			},
+			"answers": ["3900"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : dernier terme seul (480)",
+			"variationIndex": 0,
+			"variables": {
+				"p": "300",
+				"r": "20",
+				"n": "10"
+			},
+			"answers": ["480"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 11 termes (4 400)",
+			"variationIndex": 0,
+			"variables": {
+				"p": "300",
+				"r": "20",
+				"n": "10"
+			},
+			"answers": ["4400"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : sans la hausse (3 000)",
+			"variationIndex": 0,
+			"variables": {
+				"p": "300",
+				"r": "20",
+				"n": "10"
+			},
+			"answers": ["3000"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "20 €, +5, 12 mois : 570",
+			"variationIndex": 1,
+			"variables": {
+				"p": "20",
+				"r": "5",
+				"n": "12"
+			},
+			"answers": ["570"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : dernier versement (75)",
+			"variationIndex": 1,
+			"variables": {
+				"p": "20",
+				"r": "5",
+				"n": "12"
+			},
+			"answers": ["75"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 12 × 20 + 12 × 5 (300)",
+			"variationIndex": 1,
+			"variables": {
+				"p": "20",
+				"r": "5",
+				"n": "12"
+			},
+			"answers": ["300"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "choix : bonne réponse 0",
+			"variationIndex": 2,
+			"variables": {
+				"p": "200",
+				"r": "10",
+				"n": "8",
+				"w": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "choix 1 refusé",
+			"variationIndex": 2,
+			"variables": {
+				"p": "200",
+				"r": "10",
+				"n": "8",
+				"w": "0"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "choix 2 refusé",
+			"variationIndex": 2,
+			"variables": {
+				"p": "200",
+				"r": "10",
+				"n": "8",
+				"w": "0"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "choix : bonne réponse 1",
+			"variationIndex": 2,
+			"variables": {
+				"p": "200",
+				"r": "10",
+				"n": "8",
+				"w": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "choix 0 refusé",
+			"variationIndex": 2,
+			"variables": {
+				"p": "200",
+				"r": "10",
+				"n": "8",
+				"w": "1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "choix 2 refusé",
+			"variationIndex": 2,
+			"variables": {
+				"p": "200",
+				"r": "10",
+				"n": "8",
+				"w": "1"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

@@ -1,0 +1,174 @@
+---
+title: Lot d'outils `python` — case « programme Python exécuté » (outil 49)
+date: 2026-11-28
+status: lot clos, outil 49 livré (#3318, 2026-11-28)
+---
+
+# Lot `python` : outil 49
+
+## Reprendre ici
+
+_Mis à jour le 2026-11-28, après #3318._
+
+- **État** : lot `python` clos ; outil 49 livré (#3318), journal archivé.
+- **Prochaine action** : aucune dans ce lot. Les modèles qui se servent de la case (TSA1-35,
+  TSPE-392, 393) restent aux sessions « questions ».
+- **En attente de David** : dire si un modèle à case Python doit quand même avoir une spec pour ses
+  cases ordinaires (§ Code) ; ligne `python` d'`outils-lots.md` à passer à `fait (#3318, 2026-11-28)`
+  (fichier laissé indexé par une autre session au moment de la clôture).
+- **Pièges** : la note du serveur (`gradeWithinBudget`) compte faux une case Python, PAS
+  `gradeQuestion` (partagé avec le badge d'entraînement).
+
+## L'outil
+
+`outils-manquants.md` n° 49 : l'élève écrit une fonction Python (seuil d'une suite…), jugée par
+des tests, dans une case d'un modèle de question. Besoin : TSPE-392, TSPE-393, relevé
+`idees-tle-suites` (TSA1-35 : « écrire en Python une fonction seuil (tests cachés), puis le rang »).
+
+Ce qui existe : les exercices Python (`/python-exercises`) jugent déjà une fonction (`unit_test`,
+`reference_solution`, exigences sur le code comme « utilise une boucle »), dans un worker Pyodide
+du navigateur, délai de 5 s. Mais ce ne sont pas des cases de modèles de questions.
+
+## Phase 0
+
+### Exemple d'élève (nominal)
+
+Énoncé : « La suite $u$ est définie par $u_0 = 2$ et $u_{n+1} = 1{,}5\,u_n$. Écris la fonction
+`seuil(A)` qui rend le plus petit rang $n$ tel que $u_n > A$. » Les nombres 2 et 1,5 sont tirés.
+
+L'élève voit un éditeur de code, déjà rempli par le début donné par l'auteur :
+
+```python
+def seuil(A):
+    u = 2
+    n = 0
+    while ...:
+        ...
+    return n
+```
+
+Il complète, appuie sur « Valider » comme pour toute question. Le programme tourne dans son
+navigateur sur quelques valeurs de `A` choisies par l'auteur. Tout juste → case juste.
+
+### Limite
+
+- La fonction rend le bon rang pour `A = 100` mais pas pour `A = 2` (cas du bord : $u_0 > A$ est
+  faux, il faut un tour de boucle) → case fausse, message : « `seuil(2)` : ta fonction rend 0, on
+  attendait 1. »
+- L'élève écrit `return 7` (la réponse d'un seul test) → faux, car plusieurs valeurs de `A`.
+- Une deuxième case ordinaire peut suivre (« donne le rang pour A = 1000 ») : elle se juge seule.
+
+### Erreur
+
+- Erreur de syntaxe → case fausse, message avec la ligne (« ligne 4 : il manque `:` »).
+- Boucle sans fin → arrêt au bout de 5 s, case fausse : « ton programme ne s'arrête pas ».
+- Pas de fonction `seuil` → « il faut écrire la fonction `seuil` ».
+- Premier lancement : Python se charge (quelques secondes, ~10 Mo) ; un message « Python se
+  charge… » tant que ce n'est pas prêt.
+
+### Syntaxe d'auteur proposée
+
+Un bloc dans l'énoncé, à la place de la case ; l'auteur écrit **sa solution**, pas les résultats
+attendus (c'est la solution qui les calcule, avec les nombres tirés) :
+
+````
+```python-a-ecrire
+fonction: seuil
+depart: |
+  def seuil(A):
+      u = {{u0}}
+      n = 0
+      while ...:
+          ...
+      return n
+solution: |
+  def seuil(A):
+      u = {{u0}}
+      n = 0
+      while u <= A:
+          u = {{q}} * u
+          n = n + 1
+      return n
+essais: seuil(2) ; seuil(100) ; seuil(10000)
+exiger: boucle
+```
+````
+
+`exiger:` reprend les exigences des exercices Python (boucle, pas de `print`…), facultatif.
+
+### Questions à David
+
+- **Q1 — Évaluations notées.** Une évaluation notée est corrigée par le serveur (ADR 0015), et le
+  serveur ne sait pas faire tourner Python. Je propose : un modèle qui a une case Python **ne peut
+  pas entrer dans une évaluation notée** (refus clair à l'ajout), ni dans les jeux et combats
+  corrigés par le serveur. Il sert à l'entraînement (séries, fiches, révisions). D'accord ?
+- **Q2 — Solution visible.** Le navigateur doit avoir la solution de l'auteur pour juger : un élève
+  qui sait ouvrir les outils du navigateur peut la lire (comme aujourd'hui pour les exercices
+  Python). Acceptable pour de l'entraînement ?
+- **Q3 — Ce que l'élève voit d'un essai raté.** Je propose de montrer le premier essai raté («
+  `seuil(2)` : ta fonction rend 0, on attendait 1 »). Ou bien cacher les essais (« un de nos
+  essais échoue »), comme dit TSA1-35 « tests cachés » ?
+- **Q4 — Début donné.** Le `depart:` est-il librement modifiable par l'élève, ou bien seules les
+  zones `...` sont modifiables (les « zones verrouillées » des exercices Python) ? Je propose
+  libre, plus simple ; les zones verrouillées en option plus tard.
+
+### Réponses de David (2026-11-28)
+
+David a demandé mes recommandations, puis : « je te suis ». Donc :
+
+- **Q1** : refus d'une case Python dans une évaluation notée, et dans les jeux et combats corrigés
+  par le serveur ; refus visible là où le prof compose l'évaluation.
+- **Q2** : solution lisible dans le navigateur, acceptée (entraînement).
+- **Q3** : on montre le premier essai raté. Pas d'essais cachés pour l'instant.
+- **Q4** : début donné librement modifiable ; pas de zones verrouillées.
+
+## Code (2026-11-28)
+
+Choix faits :
+
+- **Essais** : UN appel `validateExercise` par essai (`reference_solution`, `generator` réduit au
+  tuple des arguments : `seuil(2)` → `(2,)`, `count: 1`, `seed: 0`). Aucun changement du worker ;
+  chaque appel dit quel essai a raté, le message cite l'essai tel qu'écrit. Exigences
+  (`defines_function` + `exiger:`) et syntaxe au premier appel seulement.
+- **Valeur de la case** : `python1:` + JSON `{ code, verdict }` (Zod) ; attendu `python-attendu1:` +
+  JSON `{ fonction, solution, essais, exiger }`. Le juge synchrone lit le verdict.
+- **Avant la validation** : registre de préparations par contexte (`answer-preparations.ts`), posé
+  par `QuestionCard` et `FlashCard` (seuls hôtes de `FillBlanksInput`). Sans préparation, « Valider »
+  reste synchrone (sinon 29 tests de cartes cassaient : verdict attendu tout de suite après le clic).
+- **Runtime** : un `PlaygroundExecutor` partagé par la page, chargé à la demande par la case ; boucle
+  sans fin = worker bloqué, détruit et remplacé.
+- **Jamais corrigé par le serveur (Q1)** : `excludePythonCases` dans `drawSeriesQuestions` (tirages de
+  `evaluation-attempts.ts`, aperçu prof d'un contrôle dans `/automaths/test`) ; avertissement sur la
+  page « Nouveau contrôle » (`pythonTemplateTitles`) ; `gradeQuestion` compte faux ;
+  `findUnmaskedAnswers` compte le bloc comme fuite ; Descente déjà écartée par `isCombatInstance` ;
+  combats Navadra et défis : ne tirent pas de modèles de questions (vérifié par grep).
+- **`checkTemplate`** : erreurs d'auteur au tirage (parseur) ; **pas de spec exigée** pour un modèle
+  à case Python (une spec ne pourrait pas juger le programme côté serveur) — choix à signaler à David.
+- Pas d'autocomplétion dans l'éditeur de la case (sinon repli sur le store du terrain de jeu).
+
+Fichiers : parseur `ubumark/parser/python-a-ecrire-parser.ts`, types `ubumark/types/python-a-ecrire.ts`,
+Typst `ubumark/generators/python-a-ecrire-typst.ts`, `questions/python/` (valeur, juge, exclusion),
+`server/series-python-cases.ts`, composants `PythonCaseInput.svelte`, `PythonAEcrire.svelte`,
+`PythonCorrige.svelte`, catalogue `block-catalog/python-a-ecrire.ts` ; branchements : générateur
+(`assign-blank-indices`, `build-answer`, `instance-generator`), `expected-result`, `masked-statement`,
+`answer-validator`, `grading`, `series-items`, `check-template`, `template-validator`,
+`serie-automatismes`, `markdown-parser`, éditeur riche. Tests : parseur + Typst, valeur, juge simulé,
+juge avec le vrai Pyodide (`*-real`, hors CI ordinaire), génération, éditeur riche, avertissement
+serveur, montage dans `FillBlanksInput`, `QuestionCard` / `FlashCard`.
+
+## Revue et vérification à l'écran (2026-11-28)
+
+- **Vu à l'écran** (`e2e/verifs/case-python.spec.ts`, aperçu admin, Chrome, clair et sombre) : la
+  carte disait « Faux » sur un programme juste, alors que la case disait « juste ». Cause : la
+  garde « case Python = faux » posée dans `gradeQuestion`, qui donne aussi le badge
+  d'entraînement (`trainingStatus`). Garde déplacée dans `gradeWithinBudget` (correction du serveur
+  seule), test rouge puis vert (`generation-python.test.ts`). Messages sans accents graves (texte
+  brut : la valeur rendue par la fonction de l'élève y figure).
+- **Revue de code (opus)** : badge (ci-dessus) ; course finie pendant qu'un programme tourne →
+  `TestCourse` ignore la validation tardive (sans test dédié : harnais trop lourd) ; « plus de
+  5 secondes » retiré du message (l'abandon réel est à ~10 s) ; `import()` du runtime attendu par
+  « Valider » et son échec affiché. Pièges d'auteur documentés (`ubumark.md`) : `{{…}}` collé sans
+  parenthèses, `;` dans un essai, arguments nommés, départ déjà juste, solution qui boucle.
+- **Audit de sécurité (opus)** : aucun bloquant ni important. Mineur corrigé : un long programme
+  dépassait la borne de 2 000 caractères de `answer_parts` (tentative refusée sans bruit) →
+  `pythonAnswerForTrace` raccourcit le code, verdict gardé.

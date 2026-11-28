@@ -8,7 +8,7 @@ import { generateCourbeTypst } from '../../generators/courbe-typst';
 import { generateStatChartTypst } from '../../generators/stat-chart-typst';
 import { parseCourbeContent } from '../../parser/courbe-parser';
 import { parseStatChartContent } from '../../parser/stat-chart-parser';
-import { NAMED_COLOR_PRINT } from '$lib/theme/named-colors';
+import { NAMED_COLOR_PRINT } from '#lib/theme/named-colors.ts';
 
 describe('palette commune au PDF', () => {
 	it('courbe : chaque couleur nommée imprime sa variante claire', () => {

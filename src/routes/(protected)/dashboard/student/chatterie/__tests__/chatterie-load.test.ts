@@ -5,13 +5,13 @@
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
-vi.mock('$lib/server/middleware/auth', () => ({ requireRole: vi.fn() }));
-vi.mock('$lib/server/mathoux/collection', () => ({ loadMathouCollection: vi.fn() }));
-vi.mock('$lib/server/mathoux/decorations', () => ({ readOwnedDecorations: vi.fn() }));
+vi.mock('#lib/server/middleware/auth.ts', () => ({ requireRole: vi.fn() }));
+vi.mock('#lib/server/mathoux/collection.ts', () => ({ loadMathouCollection: vi.fn() }));
+vi.mock('#lib/server/mathoux/decorations.ts', () => ({ readOwnedDecorations: vi.fn() }));
 
-import { requireRole } from '$lib/server/middleware/auth';
-import { loadMathouCollection } from '$lib/server/mathoux/collection';
-import { readOwnedDecorations } from '$lib/server/mathoux/decorations';
+import { requireRole } from '#lib/server/middleware/auth.ts';
+import { loadMathouCollection } from '#lib/server/mathoux/collection.ts';
+import { readOwnedDecorations } from '#lib/server/mathoux/decorations.ts';
 import { load } from '../+page.server';
 
 const SUPABASE = { from: vi.fn() };

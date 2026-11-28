@@ -40,12 +40,12 @@ function pages(dir: string): string[] {
 	});
 }
 
-/** Composants .svelte importés par un fichier ($lib/… ou chemin relatif) */
+/** Composants .svelte importés par un fichier (#lib/… ou chemin relatif) */
 function imports(file: string): string[] {
 	const src = readFileSync(file, 'utf8');
 	return [...src.matchAll(/from\s+['"]([^'"]+\.svelte)['"]/g)]
 		.map(([, spec]) =>
-			spec.startsWith('$lib/')
+			spec.startsWith('#lib/')
 				? join(LIB, spec.slice(5))
 				: spec.startsWith('.')
 					? resolve(dirname(file), spec)

@@ -29,21 +29,21 @@
  * @module atelier/limit-steps
  */
 
-import type { RenderedStep } from '$lib/mathAST/common/step-renderer-base';
-import type { MathNode } from '$lib/mathAST/types';
-import type { LimitDirection } from '$lib/mathAST/limits/types';
+import type { RenderedStep } from '#lib/mathAST/common/step-renderer-base.ts';
+import type { MathNode } from '#lib/mathAST/types.ts';
+import type { LimitDirection } from '#lib/mathAST/limits/types.ts';
 import type {
 	PedagogicalLimitRule,
 	PedagogicalLimitStep
-} from '$lib/mathAST/pedagogical-limits/types';
-import { generatePedagogicalLimitSteps } from '$lib/mathAST/pedagogical-limits/pipeline';
-import { containsPiecewiseFunction } from '$lib/mathAST/limits/piecewise';
-import { PedagogicalLimitRenderer } from '$lib/mathAST/pedagogical-limits/renderer';
-import { parse } from '$lib/mathAST/cli/core/pipeline';
-import { getVariables } from '$lib/mathAST/eval/substitute';
-import { fraction, variable as variableNode } from '$lib/mathAST/factory';
-import { transformAST } from '$lib/mathAST/visitor';
-import { toLatex } from '$lib/mathAST/latex-generator';
+} from '#lib/mathAST/pedagogical-limits/types.ts';
+import { generatePedagogicalLimitSteps } from '#lib/mathAST/pedagogical-limits/pipeline.ts';
+import { containsPiecewiseFunction } from '#lib/mathAST/limits/piecewise.ts';
+import { PedagogicalLimitRenderer } from '#lib/mathAST/pedagogical-limits/renderer.ts';
+import { parse } from '#lib/mathAST/cli/core/pipeline.ts';
+import { getVariables } from '#lib/mathAST/eval/substitute.ts';
+import { fraction, variable as variableNode } from '#lib/mathAST/factory.ts';
+import { transformAST } from '#lib/mathAST/visitor.ts';
+import { toLatex } from '#lib/mathAST/latex-generator.ts';
 import { concludesLimitAnswer, showsNothing, type LimitAnswer } from './limit-steps-check';
 import { hasStar } from './evaluate-steps-check';
 import { summaryOf } from './steps-summary';

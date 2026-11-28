@@ -1,7 +1,7 @@
 <script lang="ts">
-	import { Button } from '$lib/components/ui/button';
-	import BackLink from '$lib/components/navigation/BackLink.svelte';
-	import { getSpellIconUrl } from '$lib/utils/game/assets';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import BackLink from '#lib/components/navigation/BackLink.svelte';
+	import { getSpellIconUrl } from '#lib/utils/game/assets.ts';
 	import type { PageData } from './$types';
 
 	let { data }: { data: PageData } = $props();

@@ -28,7 +28,7 @@ import {
 import { DEFAULT_TEST_PASSWORD } from '../helpers/database/supabase-client';
 import { getPostgresClient } from '../helpers/database/postgres-client';
 import { TestData } from '../helpers/database/test-data-factory';
-import type { Database } from '$lib/types/database';
+import type { Database } from '#lib/types/database.ts';
 
 // ============================================================================
 // CONSTANTS
@@ -94,8 +94,6 @@ const RELATIONS_FERMEES = [
 	'math_competence_subdimensions',
 	'math_competences',
 	'mathemo_scores',
-	'message_template_versions',
-	'message_templates',
 	'migration_images',
 	'minesweeper_multiplayer_game_state',
 	'minesweeper_multiplayer_matches',
@@ -129,12 +127,9 @@ const RELATIONS_FERMEES = [
 	'student_observable_state',
 	'student_point_state',
 	'student_warnings',
-	'template_audit_log',
-	'template_usage_stats',
 	'terms_acceptances',
 	'tutor_conversations',
 	'tutor_messages',
-	'user_favorite_templates',
 	'user_preferences',
 	'user_whiteboard_template_favorites',
 	'vip_card_config',
@@ -180,7 +175,6 @@ const RELATIONS_FERMEES = [
 const FONCTIONS_REVOQUEES = [
 	'public.add_student_to_class_chat()',
 	'public.audit_trigger_func()',
-	'public.auto_log_template_changes()',
 	'public.award_gidouilles_on_victory()',
 	'public.calculate_3bv(jsonb)',
 	'public.calculate_elo_change(integer,integer)',
@@ -204,8 +198,6 @@ const FONCTIONS_REVOQUEES = [
 	'public.enforce_kanban_tags_per_board_cap()',
 	'public.enforce_single_teacher()',
 	'public.ensure_single_active_deck()',
-	'public.exercise_has_multiple_variations(uuid)',
-	'public.exercise_variation_count(uuid)',
 	'public.exercises_search_vector(text,text,text,text[])',
 	'public.extract_plain_text_from_tiptap(jsonb)',
 	'public.friendships_freeze_parties()',
@@ -246,7 +238,6 @@ const FONCTIONS_REVOQUEES = [
 	'public.purge_pending_student_on_activation()',
 	'public.rag_hybrid_search(text,vector,text[],text[],integer,double precision,double precision)',
 	'public.rate_limit_submissions()',
-	'public.save_template_version()',
 	'public.set_checklist_completed_at_insert()',
 	'public.set_checklist_completed_at()',
 	'public.set_class_member_left_at()',
@@ -278,7 +269,6 @@ const FONCTIONS_REVOQUEES = [
 	'public.update_google_integrations_updated_at()',
 	'public.update_message_drafts_updated_at()',
 	'public.update_message_search_index()',
-	'public.update_message_template_updated_at()',
 	'public.update_parental_consents_updated_at()',
 	'public.update_parody_evaluations_updated_at()',
 	'public.update_pem_updated_at()',
@@ -374,11 +364,17 @@ describe('(a) anon n’a plus aucun droit sur les objets fermés', () => {
 	// → 132 relations, 133 fonctions.
 	// 2026-11-03 (M11, ecarts-a-trier) : `class_google_classroom_links` supprimée
 	// → 131 relations, 133 fonctions.
-	it('l’inventaire compte 131 relations et 133 fonctions', () => {
-		expect(RELATIONS_FERMEES).toHaveLength(131);
-		expect(new Set(RELATIONS_FERMEES).size).toBe(131);
-		expect(FONCTIONS_REVOQUEES).toHaveLength(133);
-		expect(new Set(FONCTIONS_REVOQUEES).size).toBe(133);
+	// 2026-11-26 (versions-exercices, PR 4) : `exercise_has_multiple_variations(uuid)` et
+	// `exercise_variation_count(uuid)` supprimées → 131 relations, 131 fonctions.
+	// 2026-11-26 (M60, modèles de message supprimés) : `message_templates`,
+	// `message_template_versions`, `template_audit_log`, `template_usage_stats`,
+	// `user_favorite_templates` et leurs 3 fonctions de trigger supprimées
+	// → 126 relations, 128 fonctions.
+	it('l’inventaire compte 126 relations et 128 fonctions', () => {
+		expect(RELATIONS_FERMEES).toHaveLength(126);
+		expect(new Set(RELATIONS_FERMEES).size).toBe(126);
+		expect(FONCTIONS_REVOQUEES).toHaveLength(128);
+		expect(new Set(FONCTIONS_REVOQUEES).size).toBe(128);
 	});
 
 	it.each(RELATIONS_FERMEES)('table/vue %s : aucun droit pour anon', async (rel) => {

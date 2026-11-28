@@ -1,0 +1,231 @@
+{
+	"rangement": {
+		"noeud": "Géométrie > Figures planes > cercle",
+		"point": "6-162"
+	},
+	"title": "Construire des cercles d'après un programme",
+	"description": "Tracer au compas un cercle de centre et de diamètre donnés, le cercle de diamètre [AB] (milieu marqué à la règle graduée), et un programme de deux cercles ; pièges : le diamètre pris pour le rayon, le compas piqué au bout du diamètre, centre et point échangés",
+	"grades": ["6"],
+	"level": 3,
+	"delay": 180,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Trace le cercle de centre $O$ et de **diamètre** ${{eval:2*k}}~\\unit{cm}$.\n\n```figure-a-completer\nfenetre: 0 ; 14 ; 0 ; 14\nverifier: cercle c = cercle(O, rayon={{k}} cm)\n---\nO = point(7, 7)\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "3..6"
+				}
+			],
+			"conditions": [],
+			"correction": {
+				"steps": [
+					"**Le rayon est la moitié du diamètre** : ${{eval:2*k}} \\div 2 = \\textcolor{{{color:primary.0}}}{{{k}}~\\unit{cm}}$.",
+					"Poser le $0$ de la règle graduée sur $O$, ouvrir le compas jusqu'à la graduation ${{k}}~\\unit{cm}$, piquer en $O$ et tracer le cercle."
+				]
+			},
+			"hint": "Le compas s'ouvre du rayon, pas du diamètre : combien mesure le rayon ?"
+		},
+		{
+			"statement": "Trace le cercle de **diamètre** $[AB]$.\n\n```figure-a-completer\nfenetre: 0 ; 14 ; 0 ; 11\noutils: regle, compas, point\nverifier: point I = milieu(A, B)\nverifier: cercle c = cercle(I, passant=A)\n---\nA = point(3, 5)\nB = point({{eval:3+n}}, 5)\nsegment(A, B)\n```",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "6..10"
+				}
+			],
+			"conditions": [],
+			"correction": {
+				"steps": [
+					"**Le centre d'un cercle de diamètre $[AB]$ est le milieu de $[AB]$.** $AB = {{n}}~\\unit{cm}$ : le milieu $I$ est à ${{eval:n/2;d}}~\\unit{cm}$ de $A$, on le marque à la règle graduée.",
+					"Piquer le compas en $\\textcolor{{{color:primary.0}}}{I}$, l'ouvrir jusqu'à $A$ et tracer le cercle : il passe aussi par $B$."
+				]
+			},
+			"hint": "Où est le centre d'un cercle dont $[AB]$ est un diamètre ?"
+		},
+		{
+			"statement": "Réalise le programme de construction :\n\n1. Trace le segment $[CD]$ de ${{n}}~\\unit{cm}$.\n2. Trace le cercle de centre $C$ et de rayon ${{r}}~\\unit{cm}$.\n3. Trace le cercle de centre $D$ qui passe par $C$.\n\n```figure-a-completer\nfenetre: -2 ; 20 ; -3 ; 13\noutils: segment, regle, compas\nverifier: segment CD = {{n}} cm\nverifier: cercle c1 = cercle(C, rayon={{r}} cm)\nverifier: cercle c2 = cercle(D, passant=C)\n---\nC = point(4, 5)\n```",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "6..7"
+				},
+				{
+					"name": "r",
+					"expression": "3..5"
+				}
+			],
+			"conditions": [],
+			"correction": {
+				"steps": [
+					"**Le segment** : règle graduée posée avec son $0$ sur $C$, tracer jusqu'à ${{n}}~\\unit{cm}$ et nommer $D$ le bout.",
+					"**Cercle de centre $C$** : compas ouvert sur la règle jusqu'à ${{r}}~\\unit{cm}$, piqué en $\\textcolor{{{color:primary.0}}}{C}$.",
+					"**Cercle de centre $D$** : compas piqué en $\\textcolor{{{color:primary.0}}}{D}$ et ouvert jusqu'à $C$ : son rayon est $DC = {{n}}~\\unit{cm}$."
+				]
+			},
+			"hint": "Pour chaque cercle : où piques-tu le compas (le centre), et jusqu'où l'ouvres-tu (le rayon) ?"
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Diamètre 8 cm : rayon 4 cm",
+			"variationIndex": 0,
+			"variables": {
+				"k": "4"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["regle(7;7;8;7;1)|cercle(7;7;11;7)"]
+		},
+		{
+			"description": "Diamètre 12 cm : rayon 6 cm",
+			"variationIndex": 0,
+			"variables": {
+				"k": "6"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["regle(7;7;8;7;1)|cercle(7;7;13;7)"]
+		},
+		{
+			"description": "Erreur : diamètre 6 cm pris pour le rayon",
+			"variationIndex": 0,
+			"variables": {
+				"k": "3"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["regle(7;7;8;7;1)|cercle(7;7;13;7)"]
+		},
+		{
+			"description": "Erreur : compas ouvert sans la règle",
+			"variationIndex": 0,
+			"variables": {
+				"k": "4"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["cercle(7;7;11;7)"]
+		},
+		{
+			"description": "AB = 6 cm : milieu puis cercle",
+			"variationIndex": 1,
+			"variables": {
+				"n": "6"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["regle(3;5;9;5;1)|point(6;5)|cercle(6;5;3;5)"]
+		},
+		{
+			"description": "AB = 9 cm : milieu puis cercle",
+			"variationIndex": 1,
+			"variables": {
+				"n": "9"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["regle(3;5;12;5;1)|point(7.5;5)|cercle(7.5;5;3;5)"]
+		},
+		{
+			"description": "Erreur : compas piqué en A, rayon AB",
+			"variationIndex": 1,
+			"variables": {
+				"n": "8"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["regle(3;5;11;5;1)|point(7;5)|cercle(3;5;11;5)"]
+		},
+		{
+			"description": "Erreur : milieu pas marqué",
+			"variationIndex": 1,
+			"variables": {
+				"n": "8"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["cercle(7;5;3;5)"]
+		},
+		{
+			"description": "Erreur : milieu mal placé (3,5 cm au lieu de 4 cm)",
+			"variationIndex": 1,
+			"variables": {
+				"n": "8"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["regle(3;5;11;5;1)|point(6.5;5)|cercle(6.5;5;3;5)"]
+		},
+		{
+			"description": "n = 6, r = 4 : le segment et les deux cercles",
+			"variationIndex": 2,
+			"variables": {
+				"n": "6",
+				"r": "4"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["regle(4;5;10;5;1)|segment(4;5;10;5)|cercle(4;5;8;5)|cercle(10;5;4;5)"]
+		},
+		{
+			"description": "n = 7, r = 3 : le segment et les deux cercles",
+			"variationIndex": 2,
+			"variables": {
+				"n": "7",
+				"r": "3"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["regle(4;5;11;5;1)|segment(4;5;11;5)|cercle(4;5;7;5)|cercle(11;5;4;5)"]
+		},
+		{
+			"description": "Erreur : cercle 3 de centre C passant par D (centre et point échangés)",
+			"variationIndex": 2,
+			"variables": {
+				"n": "6",
+				"r": "4"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["regle(4;5;10;5;1)|segment(4;5;10;5)|cercle(4;5;8;5)|cercle(4;5;10;5)"]
+		},
+		{
+			"description": "Erreur : cercle 3 oublié",
+			"variationIndex": 2,
+			"variables": {
+				"n": "6",
+				"r": "4"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["regle(4;5;10;5;1)|segment(4;5;10;5)|cercle(4;5;8;5)"]
+		},
+		{
+			"description": "Erreur : rayon 5 cm au lieu de 4 cm",
+			"variationIndex": 2,
+			"variables": {
+				"n": "6",
+				"r": "4"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["regle(4;5;10;5;1)|segment(4;5;10;5)|cercle(4;5;9;5)|cercle(10;5;4;5)"]
+		}
+	]
+}

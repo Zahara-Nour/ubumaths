@@ -8,9 +8,9 @@
  *
  * @example
  * ```typescript
- * import { taylorExpand, maclaurin } from '$lib/mathAST/taylor';
- * import { func, variable } from '$lib/mathAST/factory';
- * import { toCustom } from '$lib/mathAST';
+ * import { taylorExpand, maclaurin } from '#lib/mathAST/taylor/index.ts';
+ * import { func, variable } from '#lib/mathAST/factory.ts';
+ * import { toCustom } from '#lib/mathAST/index.ts';
  *
  * // Maclaurin series of sin(x), order 5
  * const sinExpr = func('sin', [variable('x')]);

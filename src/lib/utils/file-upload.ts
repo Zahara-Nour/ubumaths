@@ -7,11 +7,12 @@
  */
 
 import type { SupabaseClient } from '@supabase/supabase-js';
-import { generateUniqueFilename } from '$lib/utils/filename';
+import { generateUniqueFilename } from '#lib/utils/filename.ts';
+import { toStoredAddress } from '#lib/utils/supabase-address.ts';
 import {
 	MESSAGE_ATTACHMENT_BUCKET,
 	messageAttachmentRefusal
-} from '$lib/utils/message-attachment-rules';
+} from '#lib/utils/message-attachment-rules.ts';
 
 export const MAX_FILE_SIZE = 1048576; // 1MB in bytes
 
@@ -84,7 +85,7 @@ export async function uploadChatAttachment(
 				file_type: file.type,
 				file_size: file.size,
 				storage_path: storagePath,
-				public_url: publicUrl
+				public_url: toStoredAddress(publicUrl)
 			}
 		};
 	} catch (error) {
@@ -116,80 +117,6 @@ export async function uploadMultipleAttachments(
 	);
 
 	return results;
-}
-
-/**
- * Delete attachment from storage
- *
- * @param supabase - Supabase client
- * @param storagePath - Path to file in storage
- */
-export async function deleteChatAttachment(
-	supabase: SupabaseClient,
-	storagePath: string
-): Promise<{ success: boolean; error?: string }> {
-	try {
-		const { error } = await supabase.storage.from('chat-attachments').remove([storagePath]);
-
-		if (error) {
-			console.error('Storage delete error:', error);
-			return {
-				success: false,
-				error: `Erreur de suppression: ${error.message}`
-			};
-		}
-
-		return { success: true };
-	} catch (error) {
-		console.error('Exception during file deletion:', error);
-		return {
-			success: false,
-			error: 'Erreur inattendue lors de la suppression'
-		};
-	}
-}
-
-/**
- * Validate file type (optional - can be used for additional validation)
- *
- * @param file - File to validate
- * @param allowedTypes - Array of allowed MIME types
- * @returns True if file type is allowed
- */
-export function validateFileType(file: File, allowedTypes: string[]): boolean {
-	return allowedTypes.some((type) => {
-		// Support wildcards like "image/*"
-		if (type.endsWith('/*')) {
-			const category = type.split('/')[0];
-			return file.type.startsWith(category + '/');
-		}
-		return file.type === type;
-	});
-}
-
-/**
- * Get file icon based on file type
- *
- * @param fileType - MIME type
- * @returns Icon name or emoji
- */
-export function getFileIcon(fileType: string): string {
-	if (fileType.startsWith('image/')) return '🖼️';
-	if (fileType.startsWith('video/')) return '🎥';
-	if (fileType.startsWith('audio/')) return '🎵';
-	if (fileType === 'application/pdf') return '📄';
-	if (
-		fileType === 'application/msword' ||
-		fileType === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
-	)
-		return '📝';
-	if (
-		fileType === 'application/vnd.ms-excel' ||
-		fileType === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-	)
-		return '📊';
-	if (fileType.startsWith('text/')) return '📃';
-	return '📎';
 }
 
 /** Pièce jointe de la messagerie, déposée et prête à être enregistrée. */

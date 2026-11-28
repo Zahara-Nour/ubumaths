@@ -10,10 +10,10 @@
 -->
 
 <script lang="ts">
-	import * as Alert from '$lib/components/ui/alert';
+	import * as Alert from '#lib/components/ui/alert/index.ts';
 	import { TriangleAlert } from '@lucide/svelte';
-	import { bareGreekWarnings } from '$lib/exercises/bare-greek-warnings';
-	import type { ExerciseVariation } from '$lib/exercises/types';
+	import { bareGreekWarnings } from '#lib/exercises/bare-greek-warnings.ts';
+	import type { ExerciseVariation } from '#lib/exercises/types.ts';
 
 	interface Props {
 		variation: ExerciseVariation;

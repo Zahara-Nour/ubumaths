@@ -13,10 +13,10 @@
  */
 
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { Database, Tables } from '$lib/types/database';
-import type { StudentWorkInbox, WorkItem, WorkSource } from '$lib/types/student-inbox';
-import { formLabel } from '$lib/types/evaluation';
-import { createServerLogger } from '$lib/utils/logger';
+import type { Database, Tables } from '#lib/types/database.ts';
+import type { StudentWorkInbox, WorkItem, WorkSource } from '#lib/types/student-inbox.ts';
+import { formLabel } from '#lib/types/evaluation.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('server/student-inbox');
 
@@ -309,7 +309,9 @@ async function fetchExerciseItems(
 	userId: string,
 	classIds: string[]
 ): Promise<WorkItem[]> {
-	const orClauses = [`student_id.eq.${userId}`, `assigned_to_type.eq.public`];
+	// Pas d'affectation « public » : elle n'ouvre l'exercice à personne (décision
+	// du 2026-11-26), la carte mènerait à un refus.
+	const orClauses = [`student_id.eq.${userId}`];
 	if (classIds.length > 0) {
 		orClauses.push(`class_id.in.(${classIds.join(',')})`);
 	}
@@ -321,7 +323,9 @@ async function fetchExerciseItems(
 		.or(orClauses.join(','));
 	logError('exercise.assignments', assignmentsErr);
 
-	const assignments = (assignmentsRaw ?? []) as ExerciseAssignmentRow[];
+	const assignments = ((assignmentsRaw ?? []) as ExerciseAssignmentRow[]).filter(
+		(assignment) => assignment.assigned_to_type !== 'public'
+	);
 	if (assignments.length === 0) return [];
 
 	const exerciseIds = Array.from(new Set(assignments.map((a) => a.exercise_id)));

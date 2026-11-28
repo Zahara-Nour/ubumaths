@@ -35,7 +35,7 @@
  * @module extensions/calcul-aligne
  */
 
-import { MOTIF_ECART } from '$lib/ubumark/utils/calcul-centre';
+import { MOTIF_ECART } from '#lib/ubumark/utils/calcul-centre.ts';
 
 /**
  * Marqueur posé à la place du curseur dans le LaTeX du champ : MathLive le garde

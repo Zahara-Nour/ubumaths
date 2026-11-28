@@ -28,13 +28,13 @@
  * - Status 500: Server error
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireRoles } from '$lib/server/middleware/auth';
-import { verifyTeacherStudentWithRole } from '$lib/server/middleware/student-access';
-import { awardAchievementSchema } from '$lib/server/validation/achievements';
-import { awardAchievement, AchievementServiceError } from '$lib/server/achievements/service';
-import { createServerLogger } from '$lib/utils/logger';
+import { requireRoles } from '#lib/server/middleware/auth.ts';
+import { verifyTeacherStudentWithRole } from '#lib/server/middleware/student-access.ts';
+import { awardAchievementSchema } from '#lib/server/validation/achievements.ts';
+import { awardAchievement, AchievementServiceError } from '#lib/server/achievements/service.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/achievements/award/+server');
 
@@ -69,7 +69,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			throw error(500, 'Failed to award achievement');
 		}
 
-		return json({
+		return Response.json({
 			success: true,
 			message: 'Achievement awarded successfully'
 		});

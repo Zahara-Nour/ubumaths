@@ -1,19 +1,19 @@
 <script lang="ts">
-	import { lore } from '$lib/config/lore';
-	import { invalidateAll } from '$app/navigation';
-	import { Button } from '$lib/components/ui/button';
-	import BackLink from '$lib/components/navigation/BackLink.svelte';
-	import { Input } from '$lib/components/ui/input';
-	import { Label } from '$lib/components/ui/label';
-	import { Textarea } from '$lib/components/ui/textarea';
-	import { Checkbox } from '$lib/components/ui/checkbox';
-	import * as Tabs from '$lib/components/ui/tabs';
-	import * as Card from '$lib/components/ui/card';
-	import { Badge } from '$lib/components/ui/badge';
-	import ConfirmDialog from '$lib/components/ui/confirm-dialog/ConfirmDialog.svelte';
-	import { toaster } from '$lib/stores/toaster.svelte';
-	import { formatUserError } from '$lib/utils/errors';
-	import { formatDeadlineFull } from '$lib/utils/dates';
+	import { lore } from '#lib/config/lore.ts';
+	import { refreshAll } from '$app/navigation';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import BackLink from '#lib/components/navigation/BackLink.svelte';
+	import { Input } from '#lib/components/ui/input/index.ts';
+	import { Label } from '#lib/components/ui/label/index.ts';
+	import { Textarea } from '#lib/components/ui/textarea/index.ts';
+	import MyCheckbox from '#lib/components/MyCheckbox.svelte';
+	import * as Tabs from '#lib/components/ui/tabs/index.ts';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
+	import ConfirmDialog from '#lib/components/ui/confirm-dialog/ConfirmDialog.svelte';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
+	import { formatUserError } from '#lib/utils/errors.ts';
+	import { formatDeadlineFull } from '#lib/utils/dates.ts';
 	import { Users, User, Globe, X, Calendar } from '@lucide/svelte';
 	import type { PageData } from './$types';
 
@@ -29,17 +29,9 @@
 	let classDeadline = $state<string>('');
 	let classNotes = $state<string>('');
 
-	// State for public assignment
-	let publicNotes = $state<string>('');
-
 	// Loading state
 	let loading = $state(false);
 	let assignmentsLoading = $state(false);
-
-	// Check if exercise is already public
-	let hasPublicAssignment = $derived(
-		data.assignments.some((a: { assigned_to_type: string }) => a.assigned_to_type === 'public')
-	);
 
 	// Confirm dialog state
 	let deleteDialogOpen = $state(false);
@@ -103,7 +95,7 @@
 			studentNotes = '';
 
 			// Reload data
-			await invalidateAll();
+			await refreshAll();
 		} catch (err) {
 			toaster.error(formatUserError(err));
 		} finally {
@@ -147,43 +139,7 @@
 			classNotes = '';
 
 			// Reload data
-			await invalidateAll();
-		} catch (err) {
-			toaster.error(formatUserError(err));
-		} finally {
-			loading = false;
-		}
-	}
-
-	/**
-	 * Make exercise public
-	 */
-	async function makePublic() {
-		loading = true;
-
-		try {
-			const response = await fetch(`/api/exercises/${data.exercise.id}/assign`, {
-				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({
-					make_public: true,
-					notes: publicNotes || null
-				})
-			});
-
-			const result = await response.json();
-
-			if (!response.ok) {
-				throw new Error(result.error || 'Échec de publication');
-			}
-
-			toaster.success(`${lore.learning.exercise} rendue publique`);
-
-			// Reset form
-			publicNotes = '';
-
-			// Reload data
-			await invalidateAll();
+			await refreshAll();
 		} catch (err) {
 			toaster.error(formatUserError(err));
 		} finally {
@@ -218,7 +174,7 @@
 			}
 
 			toaster.success('Assignation supprimée');
-			await invalidateAll();
+			await refreshAll();
 		} catch (err) {
 			toaster.error(formatUserError(err));
 		} finally {
@@ -265,7 +221,7 @@
 		<!-- Assignment Creation Panel -->
 		<div>
 			<Tabs.Root value="students">
-				<Tabs.List class="grid w-full grid-cols-3">
+				<Tabs.List class="grid w-full grid-cols-2">
 					<Tabs.Trigger value="students">
 						<User class="mr-2 h-4 w-4" />
 						{lore.entities.student}s
@@ -273,10 +229,6 @@
 					<Tabs.Trigger value="classes">
 						<Users class="mr-2 h-4 w-4" />
 						{lore.entities.class}s
-					</Tabs.Trigger>
-					<Tabs.Trigger value="public">
-						<Globe class="mr-2 h-4 w-4" />
-						Public
 					</Tabs.Trigger>
 				</Tabs.List>
 
@@ -310,18 +262,19 @@
 									{:else}
 										<div class="max-h-60 overflow-y-auto rounded-md border">
 											{#each data.students as student (student.id)}
-												<button
-													type="button"
+												<label
 													class="flex w-full cursor-pointer items-center gap-3 border-b p-3 text-left transition-colors last:border-b-0 hover:bg-accent"
-													onclick={() => toggleStudent(student.id)}
-													aria-label="Sélectionner le {lore.entities.student} {student.full_name}"
 												>
-													<Checkbox checked={selectedStudents.includes(student.id)} />
+													<MyCheckbox
+														checked={selectedStudents.includes(student.id)}
+														onchange={() => toggleStudent(student.id)}
+														aria-label="Sélectionner le {lore.entities.student} {student.full_name}"
+													/>
 													<div class="flex-1">
 														<div class="font-medium">{student.full_name}</div>
 														<div class="text-xs text-muted-foreground">{student.email}</div>
 													</div>
-												</button>
+												</label>
 											{/each}
 										</div>
 									{/if}
@@ -391,13 +344,14 @@
 									{:else}
 										<div class="space-y-2">
 											{#each data.classes as classItem (classItem.id)}
-												<button
-													type="button"
+												<label
 													class="flex w-full cursor-pointer items-center gap-3 rounded-lg border p-3 text-left transition-colors hover:bg-accent"
-													onclick={() => toggleClass(classItem.id)}
-													aria-label="Sélectionner le {lore.entities.class} {classItem.name}"
 												>
-													<Checkbox checked={selectedClasses.includes(classItem.id)} />
+													<MyCheckbox
+														checked={selectedClasses.includes(classItem.id)}
+														onchange={() => toggleClass(classItem.id)}
+														aria-label="Sélectionner le {lore.entities.class} {classItem.name}"
+													/>
 													<div class="flex-1">
 														<div class="font-medium">{classItem.name}</div>
 														<div class="text-xs text-muted-foreground">
@@ -405,7 +359,7 @@
 															{lore.entities.student}{classItem.student_count > 1 ? 's' : ''}
 														</div>
 													</div>
-												</button>
+												</label>
 											{/each}
 										</div>
 									{/if}
@@ -442,52 +396,6 @@
 								{loading ? 'Assignation...' : `Assigner à ${selectedClasses.length} classe(s)`}
 							</Button>
 						</Card.Footer>
-					</Card.Root>
-				</Tabs.Content>
-
-				<!-- Public Tab -->
-				<Tabs.Content value="public">
-					<Card.Root>
-						<Card.Header>
-							<Card.Title>Rendre public</Card.Title>
-							<Card.Description>
-								Tous les {lore.entities.student}s de la plateforme pourront accéder à cette {lore
-									.learning.exercise}
-							</Card.Description>
-						</Card.Header>
-						<Card.Content>
-							{#if hasPublicAssignment}
-								<div
-									class="rounded-md bg-green-50 p-4 text-green-800 dark:bg-green-950 dark:text-green-100"
-								>
-									<div class="flex items-center gap-2">
-										<Globe class="h-5 w-5" />
-										<p class="font-medium">Cette {lore.learning.exercise} est déjà publique</p>
-									</div>
-								</div>
-							{:else}
-								<div class="space-y-4">
-									<div>
-										<Label for="public-notes" class="mb-2 block text-sm font-medium">
-											Notes pour les {lore.entities.student}s
-										</Label>
-										<Textarea
-											id="public-notes"
-											bind:value={publicNotes}
-											rows={3}
-											placeholder="Informations pour tous les {lore.entities.student}s..."
-										/>
-									</div>
-								</div>
-							{/if}
-						</Card.Content>
-						{#if !hasPublicAssignment}
-							<Card.Footer>
-								<Button onclick={makePublic} disabled={loading} class="w-full">
-									{loading ? 'Création...' : 'Rendre public'}
-								</Button>
-							</Card.Footer>
-						{/if}
 					</Card.Root>
 				</Tabs.Content>
 			</Tabs.Root>

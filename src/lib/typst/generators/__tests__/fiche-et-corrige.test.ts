@@ -13,8 +13,8 @@ import { generateWorksheetTypst } from '../worksheet-generator';
 import { resolveTemplate } from '../../templates/styles';
 import { DEFAULT_TEMPLATE_IDS } from '../../templates/default-templates';
 import { hasCorrectionFonts, withoutCorrectionFonts } from '../../correction-fonts';
-import { worksheetPdfFileName } from '$lib/worksheets/pdf-file-name';
-import type { InstanceData, WorksheetConfig, WorksheetRow } from '$lib/types/worksheets';
+import { worksheetPdfFileName } from '#lib/worksheets/pdf-file-name.ts';
+import type { InstanceData, WorksheetConfig, WorksheetRow } from '#lib/types/worksheets.ts';
 
 const ASSESSMENT = DEFAULT_TEMPLATE_IDS.assessment;
 

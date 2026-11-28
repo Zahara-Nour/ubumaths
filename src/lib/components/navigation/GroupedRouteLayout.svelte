@@ -1,13 +1,16 @@
 <script lang="ts">
-	import { page } from '$app/stores';
-	import { cn } from '$lib/utils.js';
+	import { page } from '$app/state';
+	import { cn } from '#lib/utils.ts';
 	import type { Component, Snippet } from 'svelte';
 
 	type Tab = {
 		href: string;
 		label: string;
 		icon?: Component;
-		badge?: number;
+		/** Nombre à signaler (affiché s'il est > 0), ou `'?'` quand il est inconnu. */
+		badge?: number | '?';
+		/** Infobulle et nom lu de la pastille (ex. « Nombre de signalements inconnu »). */
+		badgeLabel?: string;
 	};
 
 	let {
@@ -23,7 +26,7 @@
 	} = $props();
 
 	function isActiveTab(href: string): boolean {
-		return $page.url.pathname.startsWith(href);
+		return page.url.pathname.startsWith(href);
 	}
 </script>
 
@@ -57,8 +60,9 @@
 					<tab.icon class="size-4" />
 				{/if}
 				{tab.label}
-				{#if tab.badge && tab.badge > 0}
+				{#if tab.badge === '?' || (tab.badge && tab.badge > 0)}
 					<span
+						title={tab.badgeLabel}
 						class={cn(
 							'ml-1 flex h-5 min-w-5 items-center justify-center rounded-full px-1.5 text-xs font-bold',
 							isActiveTab(tab.href)
@@ -67,6 +71,9 @@
 						)}
 					>
 						{tab.badge}
+						{#if tab.badgeLabel}
+							<span class="sr-only">{tab.badgeLabel}</span>
+						{/if}
 					</span>
 				{/if}
 			</a>

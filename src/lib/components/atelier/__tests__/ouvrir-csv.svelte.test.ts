@@ -11,8 +11,8 @@ import { render } from 'vitest-browser-svelte';
 import { userEvent } from 'vitest/browser';
 import { tick } from 'svelte';
 import AtelierContainer from '../AtelierContainer.svelte';
-import { Atelier } from '$lib/atelier/atelier.svelte';
-import { MAX_CSV_BYTES } from '$lib/atelier/grid';
+import { Atelier } from '#lib/atelier/atelier.svelte.ts';
+import { MAX_CSV_BYTES } from '#lib/atelier/grid.ts';
 
 async function settle() {
 	await tick();

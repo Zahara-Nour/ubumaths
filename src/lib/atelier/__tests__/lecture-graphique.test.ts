@@ -3,7 +3,7 @@
  * le graphe (lot 3 bis de `docs/archive/wip/atelier-refonte-interface-phase0.md`).
  */
 import { describe, expect, it } from 'vitest';
-import { consoleReadings, readingCallOf, MAX_READINGS } from '$lib/atelier/reading';
+import { consoleReadings, readingCallOf, MAX_READINGS } from '#lib/atelier/reading.ts';
 
 const NAMES = ['f', 'g', "f'"];
 

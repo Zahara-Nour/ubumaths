@@ -8,11 +8,11 @@
  */
 
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { GradeCode } from '$lib/types/grades';
+import type { GradeCode } from '#lib/types/grades.ts';
 import { getEmbeddingService } from './embeddings';
 import { chunkText, chunkMarkdown, chunkExercise, type Chunk } from './chunker';
 import { createHash } from 'crypto';
-import { createServerLogger } from '$lib/utils/logger';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('server/rag/processor');
 

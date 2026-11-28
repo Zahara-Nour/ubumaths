@@ -8,7 +8,7 @@
 import { describe, it, expect } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import CustomFlashCard from '../CustomFlashCard.svelte';
-import { templateMarkdown } from '$lib/ubumark';
+import { templateMarkdown } from '#lib/ubumark/index.ts';
 
 describe('CustomFlashCard — carte plus haute que l’écran', () => {
 	it('le recto défile au lieu de couper la fin', async () => {

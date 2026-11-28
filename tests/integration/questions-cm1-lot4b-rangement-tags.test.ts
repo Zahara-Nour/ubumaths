@@ -6,7 +6,7 @@
  * calcul posé créés le 2026-11-01 par scripts/create-questions.ts (sans nœud ni tag) vont sur une
  * sous-notion (celle de leur point, ou une sous-notion de la notion où le point est posé : 050,
  * 165) et reçoivent ce point, un seul (ADR 0020).
- * Décision de David (journal docs/wip/questions-cm1-progress.md § 13 bis).
+ * Décision de David (journal docs/archive/wip/questions-cm1-progress.md § 13 bis).
  *
  * Les modèles n'existent qu'en production. Le test fabrique donc l'état de la prod — des copies
  * minimales portant les VRAIS identifiants, au CM1, sans nœud ni tag — puis rejoue la migration
@@ -14,6 +14,8 @@
  * restent actifs : chaque tag posé a passé la règle du nœud.
  *
  * @vitest-environment node
+ *
+ * @migration-de-donnees : hors des PR, rejoué la nuit (scripts/ci-integration-exclusions.sh)
  */
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 import { readFileSync } from 'node:fs';

@@ -20,8 +20,8 @@
 -->
 
 <script lang="ts">
-	import { lore } from '$lib/config/lore';
-	import type { DbRiddleAttempt, StudentRiddle } from '$lib/types/riddle';
+	import { lore } from '#lib/config/lore.ts';
+	import type { DbRiddleAttempt, StudentRiddle } from '#lib/types/riddle.ts';
 	import {
 		getDifficultyLabel,
 		getDifficultyColor,
@@ -29,18 +29,18 @@
 		getAttemptStatusLabel,
 		getAttemptStatusColor,
 		formatAttemptNumber
-	} from '$lib/types/riddle';
-	import { isAnswerComplete } from '$lib/utils/riddle-validator';
-	import * as Card from '$lib/components/ui/card';
-	import { Badge } from '$lib/components/ui/badge';
-	import ConsentButton from '$lib/components/ConsentButton.svelte';
-	import RiddleNumericalInput from '$lib/components/riddles/inputs/RiddleNumericalInput.svelte';
-	import RiddleTextInput from '$lib/components/riddles/inputs/RiddleTextInput.svelte';
-	import RiddleQcmInput from '$lib/components/riddles/inputs/RiddleQcmInput.svelte';
-	import RiddleMathInput from '$lib/components/riddles/inputs/RiddleMathInput.svelte';
-	import RiddleManualInput from '$lib/components/riddles/inputs/RiddleManualInput.svelte';
-	import { cn } from '$lib/utils';
-	import { MarkdownRenderer } from '$lib/components/markdown';
+	} from '#lib/types/riddle.ts';
+	import { isAnswerComplete } from '#lib/utils/riddle-validator.ts';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
+	import ConsentButton from '#lib/components/ConsentButton.svelte';
+	import RiddleNumericalInput from '#lib/components/riddles/inputs/RiddleNumericalInput.svelte';
+	import RiddleTextInput from '#lib/components/riddles/inputs/RiddleTextInput.svelte';
+	import RiddleQcmInput from '#lib/components/riddles/inputs/RiddleQcmInput.svelte';
+	import RiddleMathInput from '#lib/components/riddles/inputs/RiddleMathInput.svelte';
+	import RiddleManualInput from '#lib/components/riddles/inputs/RiddleManualInput.svelte';
+	import { cn } from '#lib/utils.ts';
+	import { MarkdownRenderer } from '#lib/components/markdown/index.ts';
 	import { Send, Clock } from '@lucide/svelte';
 
 	// Props

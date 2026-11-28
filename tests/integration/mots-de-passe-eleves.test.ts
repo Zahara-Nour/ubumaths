@@ -21,15 +21,15 @@ import {
 } from '../helpers/database/trigger-test-helpers';
 import { getPostgresClient } from '../helpers/database/postgres-client';
 import { TestData } from '../helpers/database/test-data-factory';
-import type { Database } from '$lib/types/database';
-import { createChildAccount, createParentRequest } from '$lib/server/child-registration';
+import type { Database } from '#lib/types/database.ts';
+import { createChildAccount, createParentRequest } from '#lib/server/child-registration.ts';
 import {
 	createChildResetToken,
 	findChildResetTarget,
 	setChildPasswordFromToken,
 	setProvisionalPassword
-} from '$lib/server/child-password';
-import { childAccountEmail } from '$lib/utils/child-account';
+} from '#lib/server/child-password.ts';
+import { childAccountEmail } from '#lib/utils/child-account.ts';
 
 // ============================================================================
 // HELPERS

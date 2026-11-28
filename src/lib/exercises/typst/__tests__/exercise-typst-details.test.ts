@@ -9,7 +9,7 @@
  */
 import { describe, it, expect } from 'vitest';
 import { generateExerciseTypst, generateStaticExerciseTypst } from '../exercise-typst-generator';
-import type { Exercise } from '$lib/exercises/types';
+import type { Exercise } from '#lib/exercises/types.ts';
 
 const SOLUTION = [
 	'On obtient $x=2$.',

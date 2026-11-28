@@ -12,10 +12,10 @@
  * programme où un tag est déjà posé.
  */
 
-import type { ClassificationNode } from '$lib/types/database-helpers';
-import { GRADES, getGradesAtOrAbove, isGradeCode } from '$lib/types/grades';
-import { loadNodesWithAncestors, PROGRAMME_POINT_COLS } from '$lib/server/programme-tree';
-import type { ProgrammePointRow } from '$lib/utils/programme-tree';
+import type { ClassificationNode } from '#lib/types/database-helpers.ts';
+import { GRADES, getGradesAtOrAbove, isGradeCode } from '#lib/types/grades.ts';
+import { loadNodesWithAncestors, PROGRAMME_POINT_COLS } from '#lib/server/programme-tree.ts';
+import type { ProgrammePointRow } from '#lib/utils/programme-tree.ts';
 
 // Types
 

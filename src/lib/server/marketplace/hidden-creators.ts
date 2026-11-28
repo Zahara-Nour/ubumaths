@@ -7,7 +7,7 @@
  * un élève, elle nommerait ses camarades sans consentement.
  */
 
-import { createServiceRoleClient } from '$lib/server/serviceRoleClient';
+import { createServiceRoleClient } from '#lib/server/serviceRoleClient.ts';
 
 /** Auteurs d'annonces actives de l'école, en lecture seule. */
 export async function getHiddenMarketplaceCreators(schoolId: string): Promise<string[]> {

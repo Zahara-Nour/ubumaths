@@ -1,6 +1,6 @@
 import type { PageServerLoad } from './$types';
 import { redirect } from '@sveltejs/kit';
-import { GOOGLE_CLASSROOM_ENABLED } from '$lib/config/google-classroom';
+import { GOOGLE_CLASSROOM_ENABLED } from '#lib/config/google-classroom.ts';
 
 export const load: PageServerLoad = async () => {
 	// Google Classroom access is disabled: hide the teacher integration page

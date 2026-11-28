@@ -10,10 +10,10 @@
  *   décimale : l'autre écriture du bouton (`= 0{,}25`, `\approx 0{,}7071`).
  */
 
-import { WebReplEngine } from '$lib/mathAST/cli/web/web-repl-engine';
-import { Atelier } from '$lib/atelier/atelier.svelte';
-import { runInput, type Alternative } from '$lib/atelier/calcul';
-import { resolveCommand } from '$lib/atelier/commands';
+import { WebReplEngine } from '#lib/mathAST/cli/web/web-repl-engine.ts';
+import { Atelier } from '#lib/atelier/atelier.svelte.ts';
+import { runInput, type Alternative } from '#lib/atelier/calcul.ts';
+import { resolveCommand } from '#lib/atelier/commands.ts';
 import type { Produced } from './compare';
 
 // =============================================================================

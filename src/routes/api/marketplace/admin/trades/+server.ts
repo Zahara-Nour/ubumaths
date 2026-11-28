@@ -1,8 +1,8 @@
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireRoles } from '$lib/server/middleware/auth';
-import { adminTradesQuerySchema } from '$lib/server/marketplace/validation';
-import { createServerLogger } from '$lib/utils/logger';
+import { requireRoles } from '#lib/server/middleware/auth.ts';
+import { adminTradesQuerySchema } from '#lib/server/marketplace/validation.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/marketplace/admin/trades/+server');
 
@@ -70,7 +70,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 
 		if (classIds.length === 0) {
 			// Teacher has no classes
-			return json({
+			return Response.json({
 				trades: [],
 				pagination: {
 					page,
@@ -96,7 +96,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 
 		if (studentIds.length === 0) {
 			// Teacher has no students
-			return json({
+			return Response.json({
 				trades: [],
 				pagination: {
 					page,
@@ -170,7 +170,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 		const studentIds = schoolStudents?.map((s: { id: string }) => s.id) || [];
 
 		if (studentIds.length === 0) {
-			return json({
+			return Response.json({
 				trades: [],
 				pagination: {
 					page,
@@ -214,7 +214,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 		throw error(500, 'Erreur lors de la récupération des échanges');
 	}
 
-	return json({
+	return Response.json({
 		trades: trades || [],
 		pagination: {
 			page,

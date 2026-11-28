@@ -8,13 +8,13 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import { page } from 'vitest/browser';
-import type { Mathou, MathouCollection } from '$lib/mathoux/collection-logic';
-import { buildSeriesLink, type SeriesItem } from '$lib/validation/series';
-import { consent } from '$lib/stores/consent.svelte';
-import type { MathouCatalogId } from '$lib/mathoux/decorations';
+import type { Mathou, MathouCollection } from '#lib/mathoux/collection-logic.ts';
+import { buildSeriesLink, type SeriesItem } from '#lib/validation/series.ts';
+import { consent } from '#lib/stores/consent.svelte.ts';
+import type { MathouCatalogId } from '#lib/mathoux/decorations.ts';
 import ChatteriePage from '../+page.svelte';
 
-vi.mock('$app/navigation', () => ({ invalidateAll: vi.fn(async () => {}) }));
+vi.mock('$app/navigation', () => ({ refreshAll: vi.fn(async () => {}) }));
 
 const REVISION_HREF = '/dashboard/revisions/decks/programme';
 
@@ -374,13 +374,13 @@ describe('Décorer un Mathou (panse, cou, yeux, tête)', () => {
 	});
 
 	it('acheter : une requête pour CE Mathou, la page se recharge', async () => {
-		const { invalidateAll } = await import('$app/navigation');
+		const { refreshAll } = await import('$app/navigation');
 		await renderDecor(single({}), [], 30);
 		await page.getByRole('button', { name: 'Décorer le Mathou des Fractions' }).click();
 		await page
 			.getByRole('button', { name: 'Acheter Cocarde pour le Mathou des Fractions' })
 			.click();
-		await vi.waitFor(() => expect(invalidateAll).toHaveBeenCalled());
+		await vi.waitFor(() => expect(refreshAll).toHaveBeenCalled());
 		expect(fetchMock).toHaveBeenCalledWith(
 			'/api/student/mathoux/decorations/buy',
 			expect.objectContaining({ method: 'POST' })
@@ -392,8 +392,8 @@ describe('Décorer un Mathou (panse, cou, yeux, tête)', () => {
 	});
 
 	it('refus (page périmée : déjà achetée dans un autre onglet) : le message, puis la page se recharge', async () => {
-		const { invalidateAll } = await import('$app/navigation');
-		vi.mocked(invalidateAll).mockClear();
+		const { refreshAll } = await import('$app/navigation');
+		vi.mocked(refreshAll).mockClear();
 		fetchMock.mockResolvedValue(
 			new Response(JSON.stringify({ message: 'Tu as déjà cette décoration.' }), { status: 409 })
 		);
@@ -401,14 +401,14 @@ describe('Décorer un Mathou (panse, cou, yeux, tête)', () => {
 		await page.getByRole('button', { name: 'Décorer le Mathou des Fractions' }).click();
 		const buy = page.getByRole('button', { name: 'Acheter Cœur pour le Mathou des Fractions' });
 		await buy.click();
-		await vi.waitFor(() => expect(invalidateAll).toHaveBeenCalledTimes(1));
+		await vi.waitFor(() => expect(refreshAll).toHaveBeenCalledTimes(1));
 		// Les boutons se libèrent
 		await expect.element(buy).toBeEnabled();
 	});
 
 	it('panne : pas de rechargement, les boutons se libèrent', async () => {
-		const { invalidateAll } = await import('$app/navigation');
-		vi.mocked(invalidateAll).mockClear();
+		const { refreshAll } = await import('$app/navigation');
+		vi.mocked(refreshAll).mockClear();
 		fetchMock.mockRejectedValue(new Error('réseau'));
 		await renderDecor(single({}), [], 30);
 		await page.getByRole('button', { name: 'Décorer le Mathou des Fractions' }).click();
@@ -416,7 +416,7 @@ describe('Décorer un Mathou (panse, cou, yeux, tête)', () => {
 		await buy.click();
 		await vi.waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(1));
 		await expect.element(buy).toBeEnabled();
-		expect(invalidateAll).not.toHaveBeenCalled();
+		expect(refreshAll).not.toHaveBeenCalled();
 	});
 
 	it('poser une décoration portée ailleurs, ou retirer celle de ce Mathou : gratuit', async () => {

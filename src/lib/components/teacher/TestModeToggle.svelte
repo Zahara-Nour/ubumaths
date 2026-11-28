@@ -12,32 +12,37 @@
 	 * - Full-page loading overlay during mode switch
 	 * - Only shown for non-test teachers
 	 * - Test teachers (is_test = true) are always in test mode
+	 * - L'état affiché est celui du COMPTE (`enabled`, lu côté serveur dans
+	 *   `user_preferences`), jamais celui du navigateur : sur un autre appareil,
+	 *   l'interrupteur dit la même chose que les listes d'élèves affichées
 	 *
 	 * USAGE:
 	 * ```svelte
-	 * <TestModeToggle currentUserIsTest={profile.is_test} />
+	 * <TestModeToggle currentUserIsTest={profile.is_test} enabled={data.teacherTestMode} />
 	 * ```
 	 */
 
-	import { testMode } from '$lib/stores/test-mode.svelte';
-	import { Badge } from '$lib/components/ui/badge';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
 
 	// Props
-	let { currentUserIsTest = false }: { currentUserIsTest?: boolean } = $props();
+	let {
+		currentUserIsTest = false,
+		enabled = false
+	}: { currentUserIsTest?: boolean; enabled?: boolean } = $props();
+
+	// État affiché : celui du compte, basculé le temps de l'enregistrement
+	let pendingValue = $state<boolean | null>(null);
+	let shown = $derived(pendingValue ?? enabled);
 
 	// Loading state
 	let isLoading = $state(false);
 
 	// Handle toggle
 	async function handleToggle() {
-		// Set loading state
+		const newValue = !enabled;
 		isLoading = true;
+		pendingValue = newValue;
 
-		// 1. Update client-side store (for immediate UI feedback)
-		testMode.toggle();
-		const newValue = $testMode; // Get the new value AFTER toggling
-
-		// 2. Sync with server database
 		try {
 			const response = await fetch('/api/test-mode', {
 				method: 'POST',
@@ -47,20 +52,18 @@
 
 			if (!response.ok) {
 				console.error('[TestModeToggle] Failed to sync test mode with server');
-				// Revert client-side change on error
-				testMode.toggle();
+				pendingValue = null;
 				isLoading = false;
 				return;
 			}
 
 			await response.json();
 
-			// 3. Force HARD page reload to refetch with new test mode
+			// Rechargement complet : les listes d'élèves sont relues avec le nouveau mode
 			window.location.reload();
 		} catch (error) {
 			console.error('[TestModeToggle] Error syncing test mode:', error);
-			// Revert client-side change on error
-			testMode.toggle();
+			pendingValue = null;
 			isLoading = false;
 		}
 	}
@@ -73,13 +76,13 @@
 			<input
 				type="checkbox"
 				id="test-mode-toggle"
-				checked={$testMode}
+				checked={shown}
 				onchange={handleToggle}
 				class="h-5 w-5 rounded border-border text-primary focus:ring-2 focus:ring-ring"
 			/>
 		</label>
 
-		{#if $testMode}
+		{#if shown}
 			<Badge class="bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200">
 				Affichage : Étudiants de test
 			</Badge>

@@ -11,7 +11,11 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import { page } from 'vitest/browser';
-import { ANCIEN_LIEN_MESSAGE, SERIES_LINK_PARAM, encodeSeriesParam } from '$lib/validation/series';
+import {
+	ANCIEN_LIEN_MESSAGE,
+	SERIES_LINK_PARAM,
+	encodeSeriesParam
+} from '#lib/validation/series.ts';
 
 const url = vi.hoisted(() => ({ current: new URL('http://localhost/automaths/panier') }));
 vi.mock('$app/state', () => ({
@@ -26,21 +30,20 @@ const navigation = vi.hoisted(() => ({
 	goto: vi.fn(async () => {}),
 	replaceState: vi.fn()
 }));
-vi.mock('$app/navigation', async (importOriginal) => ({
-	...(await importOriginal<typeof import('$app/navigation')>()),
-	...navigation
-}));
+vi.mock('$app/navigation', async () =>
+	(await import('#tests/helpers/app-navigation-mock.ts')).appNavigationMock({ ...navigation })
+);
 const toaster = vi.hoisted(() => ({
 	success: vi.fn(),
 	error: vi.fn(),
 	warning: vi.fn(),
 	info: vi.fn()
 }));
-vi.mock('$lib/stores/toaster.svelte', () => ({ toaster }));
+vi.mock('#lib/stores/toaster.svelte.ts', () => ({ toaster }));
 
 import Page from '../+page.svelte';
-import { questionTemplatesCache } from '$lib/stores/questionTemplates.svelte';
-import { questionCart } from '$lib/stores/questionCart.svelte';
+import { questionTemplatesCache } from '#lib/stores/questionTemplates.svelte.ts';
+import { questionCart } from '#lib/stores/questionCart.svelte.ts';
 
 const MINE = '11111111-1111-4111-8111-111111111111';
 const SHARED = '22222222-2222-4222-8222-222222222222';
@@ -101,7 +104,7 @@ describe('Panier ouvert par un lien de série (Q45)', () => {
 		await renderPanier();
 
 		await vi.waitFor(() => expect(questionCart.allItems).toEqual(SERIES));
-		expect(document.body.textContent).not.toContain('Remplacer ton panier');
+		expect(document.body.textContent).not.toContain('Remplacer ta série');
 		await expectUrlCleaned();
 	});
 
@@ -110,7 +113,7 @@ describe('Panier ouvert par un lien de série (Q45)', () => {
 		openLink(encodeSeriesParam(SERIES));
 		await renderPanier();
 
-		await expect.element(page.getByText('Remplacer ton panier par cette série ?')).toBeVisible();
+		await expect.element(page.getByText('Remplacer ta série par celle du lien ?')).toBeVisible();
 		expect(navigation.replaceState).not.toHaveBeenCalled();
 		await page.getByRole('button', { name: 'Remplacer', exact: true }).click();
 
@@ -149,7 +152,7 @@ describe('Panier ouvert par un lien de série (Q45)', () => {
 		await renderPanier();
 
 		await expect.element(page.getByText(/Ce lien de série est abîmé/)).toBeVisible();
-		expect(document.body.textContent).not.toContain('Remplacer ton panier');
+		expect(document.body.textContent).not.toContain('Remplacer ta série');
 		expect(questionCart.allItems).toEqual([{ templateId: MINE, quantity: 3, delay: 20 }]);
 		await expectUrlCleaned();
 	});
@@ -161,7 +164,7 @@ describe('Panier ouvert par un lien de série (Q45)', () => {
 		await renderPanier();
 
 		await expect.element(page.getByText(ANCIEN_LIEN_MESSAGE)).toBeVisible();
-		expect(document.body.textContent).not.toContain('Remplacer ton panier');
+		expect(document.body.textContent).not.toContain('Remplacer ta série');
 		expect(questionCart.allItems).toEqual([{ templateId: MINE, quantity: 3, delay: 20 }]);
 		await expectUrlCleaned();
 	});
@@ -170,7 +173,7 @@ describe('Panier ouvert par un lien de série (Q45)', () => {
 		questionCart.addToCart(MINE, 3, 20);
 		await renderPanier();
 
-		await expect.element(page.getByText('Mon Panier')).toBeVisible();
+		await expect.element(page.getByRole('heading', { name: 'Ma série' })).toBeVisible();
 		expect(navigation.replaceState).not.toHaveBeenCalled();
 		expect(questionCart.allItems).toEqual([{ templateId: MINE, quantity: 3, delay: 20 }]);
 	});

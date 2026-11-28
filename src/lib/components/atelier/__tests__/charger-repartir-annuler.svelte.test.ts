@@ -10,8 +10,8 @@
 import { describe, it, expect, afterEach, beforeEach } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import AtelierContainer from '../AtelierContainer.svelte';
-import { Atelier } from '$lib/atelier/atelier.svelte';
-import { CalcDesk } from '$lib/atelier/desk.svelte';
+import { Atelier } from '#lib/atelier/atelier.svelte.ts';
+import { CalcDesk } from '#lib/atelier/desk.svelte.ts';
 import {
 	ATELIER_STATE_VERSION,
 	ATELIER_STORAGE_KEY,
@@ -19,9 +19,9 @@ import {
 	loadAtelier,
 	saveAtelier,
 	type AtelierState
-} from '$lib/atelier/persistence';
-import { CALC_HISTORY_STORAGE_KEY, saveCalcHistory } from '$lib/atelier/history-storage';
-import { atelierFileToJson } from '$lib/atelier/atelier-file';
+} from '#lib/atelier/persistence.ts';
+import { CALC_HISTORY_STORAGE_KEY, saveCalcHistory } from '#lib/atelier/history-storage.ts';
+import { atelierFileToJson } from '#lib/atelier/atelier-file.ts';
 
 // =============================================================================
 // Décor

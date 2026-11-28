@@ -51,7 +51,7 @@
 -->
 
 <script lang="ts">
-	import { Button } from '$lib/components/ui/button';
+	import { Button } from '#lib/components/ui/button/index.ts';
 	import { X } from '@lucide/svelte';
 	import VipCard from './VipCard.svelte';
 	import VipCardHoloModal from './VipCardHoloModal.svelte';
@@ -60,19 +60,19 @@
 		getUniqueCardTypesCount,
 		getTotalUnusedCards,
 		sortCardsByPriority
-	} from '$lib/utils/vip-cards';
-	import type { VipCard as VipCardType } from '$lib/types/vip-card';
+	} from '#lib/utils/vip-cards.ts';
+	import type { VipCard as VipCardType } from '#lib/types/vip-card.ts';
 	import { Sparkles } from '@lucide/svelte';
-	import { toaster } from '$lib/stores/toaster.svelte';
-	import { teacherCache } from '$lib/stores/teacherDashboardCache.svelte';
-	import { modalStack } from '$lib/stores/modalStack.svelte';
-	import { vipCardTemplates } from '$lib/stores/vipCardTemplates.svelte';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
+	import { teacherCache } from '#lib/stores/teacherDashboardCache.svelte.ts';
+	import { modalStack } from '#lib/stores/modalStack.svelte.ts';
+	import { vipCardTemplates } from '#lib/stores/vipCardTemplates.svelte.ts';
 	import {
 		openVipCardDrawModal,
 		openVipCardExchangeModal,
 		openVipCardChooseModal,
 		openRemoveWarningsModal
-	} from '$lib/utils/vip-card-modals';
+	} from '#lib/utils/vip-card-modals.ts';
 
 	interface Props {
 		studentName: string;

@@ -11,9 +11,9 @@
 
 import { describe, it, expect } from 'vitest';
 import { validateAnswer } from '../answer-validator';
-import { computeBlankVerdicts } from '$lib/components/questions/blank-verdicts';
-import type { InstanceBlank, QuestionInstance } from '$lib/questions/types';
-import type { ResolvedMarkdown } from '$lib/ubumark';
+import { computeBlankVerdicts } from '#lib/components/questions/blank-verdicts.ts';
+import type { InstanceBlank, QuestionInstance } from '#lib/questions/types.ts';
+import type { ResolvedMarkdown } from '#lib/ubumark/index.ts';
 
 function createInstance(blanks: InstanceBlank[]): QuestionInstance {
 	return {

@@ -27,10 +27,10 @@ import {
 import { figureNameWarnings } from '../figure-name-check';
 import { requiredFormVerdict } from '../required-form-validator';
 import { evaluateRule } from '../validation-rule-evaluator';
-import { validateAnswer } from '$lib/utils/answer-validator';
-import { createQuestionTemplateSchema } from '$lib/server/validation/questions';
+import { validateAnswer } from '#lib/utils/answer-validator.ts';
+import { createQuestionTemplateSchema } from '#lib/server/validation/questions.ts';
 import type { QuestionInstance, QuestionTemplate } from '../types';
-import { templateMarkdown } from '$lib/ubumark';
+import { templateMarkdown } from '#lib/ubumark/index.ts';
 
 // ============================================================================
 // HELPERS
@@ -319,6 +319,38 @@ describe('figureNameWarnings — un nom de figure attendu est signalé à l’au
 		template.shared = { statement: templateMarkdown('Quel triangle ? [_]') };
 		template.variations[0].statement = undefined;
 		expect(figureNameWarnings(template)).toEqual([]);
+	});
+
+	it('tableau à compléter à variables : seules les cases d’avant le tableau sont lues (outil 63)', () => {
+		// Le tableau compte pour une case sur l'énoncé brut, deux au tirage : la case
+		// texte qui le suit serait lue comme une case maths, à tort
+		const template = lengthTemplate('ABC');
+		template.variations[0].statement = templateMarkdown(
+			[
+				'Côté : $?$',
+				'',
+				'```variation',
+				'variable: x',
+				'domain: -inf, {{al}}, +inf',
+				'',
+				'sign: f(x)',
+				'  -inf,{{al}}: ?{{if:D>0|+|-}}',
+				'  {{al}}: ||',
+				'  {{al}},+inf: ?{{if:D>0|+|-}}',
+				'```',
+				'',
+				'Quel triangle ? [_]'
+			].join('\n')
+		);
+		template.variations[0].blanks = [
+			{ expectedAnswer: 'ABC' },
+			{ expectedAnswer: '' },
+			{ expectedAnswer: '' },
+			{ expectedAnswer: 'ABC' }
+		];
+		const warnings = figureNameWarnings(template);
+		expect(warnings).toHaveLength(1);
+		expect(warnings[0]).toMatch(/Variation 1, case 1 :/);
 	});
 
 	it('mode produit (déclaration) : rien à signaler', () => {

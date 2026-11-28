@@ -11,9 +11,9 @@
 import { describe, it, expect, afterEach } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import FlashCard from '../FlashCard.svelte';
-import { generateInstance } from '$lib/questions/generator/instance-generator';
-import type { QuestionInstance, QuestionTemplate } from '$lib/questions/types';
-import { templateMarkdown } from '$lib/ubumark';
+import { generateInstance } from '#lib/questions/generator/instance-generator.ts';
+import type { QuestionInstance, QuestionTemplate } from '#lib/questions/types.ts';
+import { templateMarkdown } from '#lib/ubumark/index.ts';
 
 // Fenêtre 0..12 × 0..8 ; A(4 ; 4), B(8 ; 4), C(5 ; 7) : centre (6 ; 5), rayon √5.
 // Médiatrice de [AB] : x = 6, par (6 ; 4 ± √12) ; de [AC] : par (4,5 ∓ 1,5√3 ; 5,5 ± √3/2)

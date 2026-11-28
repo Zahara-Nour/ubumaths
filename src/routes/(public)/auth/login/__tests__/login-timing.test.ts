@@ -26,7 +26,7 @@ import { describe, test, expect, vi, beforeEach } from 'vitest';
 import { actions } from '../+page.server';
 
 // Mock dependencies
-vi.mock('$lib/utils/logger', () => ({
+vi.mock('#lib/utils/logger.ts', () => ({
 	createServerLogger: () => ({
 		info: vi.fn(),
 		error: vi.fn(),
@@ -35,7 +35,7 @@ vi.mock('$lib/utils/logger', () => ({
 	})
 }));
 
-vi.mock('$lib/server/rateLimiter', () => ({
+vi.mock('#lib/server/rateLimiter.ts', () => ({
 	checkLoginRateLimitByIP: vi.fn().mockResolvedValue({ allowed: true }),
 	checkLoginRateLimitByEmail: vi.fn().mockResolvedValue({ allowed: true }),
 	checkOAuthRateLimitByIP: vi.fn().mockResolvedValue({ allowed: true })

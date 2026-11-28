@@ -18,12 +18,13 @@ import { render } from 'vitest-browser-svelte';
 import { page } from 'vitest/browser';
 import { tick } from 'svelte';
 
-const invalidateAll = vi.hoisted(() => vi.fn(async () => {}));
-vi.mock('$app/navigation', async (importOriginal) => ({
-	...(await importOriginal<typeof import('$app/navigation')>()),
-	goto: vi.fn(async () => {}),
-	invalidateAll
-}));
+const refreshAll = vi.hoisted(() => vi.fn(async () => {}));
+vi.mock('$app/navigation', async () =>
+	(await import('#tests/helpers/app-navigation-mock.ts')).appNavigationMock({
+		goto: vi.fn(async () => {}),
+		refreshAll
+	})
+);
 
 const toaster = vi.hoisted(() => ({
 	success: vi.fn(),
@@ -31,12 +32,12 @@ const toaster = vi.hoisted(() => ({
 	warning: vi.fn(),
 	info: vi.fn()
 }));
-vi.mock('$lib/stores/toaster.svelte', () => ({ toaster }));
+vi.mock('#lib/stores/toaster.svelte.ts', () => ({ toaster }));
 
 import Page from '../+page.svelte';
-import type { ProgrammeBranch, ProgrammePointView } from '$lib/utils/programme-tree';
-import type { MapBranch } from '$lib/utils/programme-map';
-import type { OfficialProgramme } from '$lib/programmes/official-programmes';
+import type { ProgrammeBranch, ProgrammePointView } from '#lib/utils/programme-tree.ts';
+import type { MapBranch } from '#lib/utils/programme-map.ts';
+import type { OfficialProgramme } from '#lib/programmes/official-programmes.ts';
 
 const POINT_ID = '11111111-1111-4111-8111-111111111111';
 
@@ -159,7 +160,7 @@ let fetchMock: ReturnType<typeof vi.fn>;
 beforeEach(() => {
 	fetchMock = vi.fn(async () => new Response(JSON.stringify({ point: {} }), { status: 200 }));
 	vi.stubGlobal('fetch', fetchMock);
-	invalidateAll.mockClear();
+	refreshAll.mockClear();
 });
 
 afterEach(() => {

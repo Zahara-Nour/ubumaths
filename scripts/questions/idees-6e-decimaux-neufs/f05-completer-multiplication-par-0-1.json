@@ -1,0 +1,256 @@
+{
+	"id": "44d352a2-579c-44cc-b804-43bbcec8da4e",
+	"title": "Compléter une multiplication par 0,1, 0,01 ou 0,001",
+	"description": "Égalité à trou : le facteur manquant (… × 0,01 = 0,47) ou le coefficient manquant (36 × … = 0,036) (pièges : multiplier encore au lieu de chercher le facteur, 1 000 au lieu de 0,001, un rang de trop ou de moins)",
+	"grades": ["6"],
+	"level": 1,
+	"delay": 40,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"spacesFromFourDigits": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Complète l'égalité.\n\n$$?\\times {{eval:10^(-k);d}}={{eval:N/10^(q+k);d}}$$",
+			"variables": [
+				{
+					"name": "N",
+					"expression": "11..999"
+				},
+				{
+					"name": "q",
+					"expression": "0|1"
+				},
+				{
+					"name": "k",
+					"expression": "1..3"
+				}
+			],
+			"conditions": ["mod(N,10) != 0", "q + k <= 3"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:N/10^q;d}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:N/10^(q+2*k);d}}",
+							"message": "Tu as encore multiplié ${{eval:N/10^(q+k);d}}$ par ${{eval:10^(-k);d}}$ : cherche le nombre qui, multiplié par ${{eval:10^(-k);d}}$, donne ${{eval:N/10^(q+k);d}}$.",
+							"label": "Multiplié au lieu de chercher le facteur"
+						},
+						{
+							"answer": "{{eval:N/10^(q-1);d}}",
+							"message": "Tu as décalé d'un rang de trop : multiplier par ${{eval:10^(-k);d}}$ fait reculer chaque chiffre de ${{k}}$ rang{{if:k>1|s|}}, pas plus.",
+							"label": "Un rang de trop"
+						},
+						{
+							"answer": "{{eval:N/10^(q+1);d}}",
+							"message": "Tu as décalé d'un rang de moins : multiplier par ${{eval:10^(-k);d}}$ fait reculer chaque chiffre de ${{k}}$ rang{{if:k>1|s|}}.",
+							"label": "Un rang de moins"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"Multiplier par ${{eval:10^(-k);d}}$, c'est diviser par ${{eval:10^k}}$ : chaque chiffre recule de ${{k}}$ rang{{if:k>1|s|}} vers la droite.",
+					"Le nombre cherché est donc ${{eval:10^k}}$ fois plus grand que ${{eval:N/10^(q+k);d}}$ : $\\textcolor{{{color:primary.0}}}{{{eval:N/10^q;d}}}\\times {{eval:10^(-k);d}}={{eval:N/10^(q+k);d}}$."
+				]
+			},
+			"hint": "Multiplier par ${{eval:10^(-k);d}}$, c'est diviser par ${{eval:10^k}}$ : le nombre cherché est donc plus grand que ${{eval:N/10^(q+k);d}}$."
+		},
+		{
+			"statement": "Complète l'égalité avec $0.1$, $0.01$ ou $0.001$.\n\n$${{eval:N/10^q;d}}\\times ?={{eval:N/10^(q+k);d}}$$",
+			"variables": [
+				{
+					"name": "N",
+					"expression": "11..999"
+				},
+				{
+					"name": "q",
+					"expression": "0|1"
+				},
+				{
+					"name": "k",
+					"expression": "1..3"
+				}
+			],
+			"conditions": ["mod(N,10) != 0", "q + k <= 3"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:10^(-k);d}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:10^k}}",
+							"message": "Multiplier par ${{eval:10^k}}$ rend le nombre plus grand : ici, ${{eval:N/10^(q+k);d}}$ est plus petit que ${{eval:N/10^q;d}}$.",
+							"label": "Multiplier par 10, 100 ou 1 000"
+						},
+						{
+							"answer": "{{if:k==1|0.01|{{eval:10^(1-k);d}}}}",
+							"message": "Compte les rangs : de ${{eval:N/10^q;d}}$ à ${{eval:N/10^(q+k);d}}$, chaque chiffre recule de ${{k}}$ rang{{if:k>1|s|}} vers la droite.",
+							"label": "Rangs mal comptés"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"De ${{eval:N/10^q;d}}$ à ${{eval:N/10^(q+k);d}}$, chaque chiffre recule de ${{k}}$ rang{{if:k>1|s|}} vers la droite : on a divisé par ${{eval:10^k}}$.",
+					"Diviser par ${{eval:10^k}}$, c'est multiplier par ${{eval:10^(-k);d}}$ : ${{eval:N/10^q;d}}\\times \\textcolor{{{color:primary.0}}}{{{eval:10^(-k);d}}}={{eval:N/10^(q+k);d}}$."
+				]
+			},
+			"hint": "Compare le rang d'un même chiffre dans ${{eval:N/10^q;d}}$ et dans ${{eval:N/10^(q+k);d}}$ : de combien de rangs a-t-il reculé ?"
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "a : … × 0,01 = 0,47",
+			"variationIndex": 0,
+			"variables": {
+				"N": "47",
+				"q": "0",
+				"k": "2"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["47"]
+		},
+		{
+			"description": "a : multiplié encore",
+			"variationIndex": 0,
+			"variables": {
+				"N": "47",
+				"q": "0",
+				"k": "2"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as encore multiplié $0.47$ par $0.01$ : cherche le nombre qui, multiplié par $0.01$, donne $0.47$."
+			},
+			"answers": ["0,0047"]
+		},
+		{
+			"description": "a : un rang de trop",
+			"variationIndex": 0,
+			"variables": {
+				"N": "47",
+				"q": "0",
+				"k": "2"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as décalé d'un rang de trop : multiplier par $0.01$ fait reculer chaque chiffre de $2$ rangs, pas plus."
+			},
+			"answers": ["470"]
+		},
+		{
+			"description": "a : un rang de moins",
+			"variationIndex": 0,
+			"variables": {
+				"N": "47",
+				"q": "0",
+				"k": "2"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as décalé d'un rang de moins : multiplier par $0.01$ fait reculer chaque chiffre de $2$ rangs."
+			},
+			"answers": ["4,7"]
+		},
+		{
+			"description": "a : … × 0,1 = 0,52 → 5,2",
+			"variationIndex": 0,
+			"variables": {
+				"N": "52",
+				"q": "1",
+				"k": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["5,2"]
+		},
+		{
+			"description": "a : … × 0,001 = 0,365 → 365",
+			"variationIndex": 0,
+			"variables": {
+				"N": "365",
+				"q": "0",
+				"k": "3"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["365"]
+		},
+		{
+			"description": "b : 36 × … = 0,036",
+			"variationIndex": 1,
+			"variables": {
+				"N": "36",
+				"q": "0",
+				"k": "3"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0,001"]
+		},
+		{
+			"description": "b : 1 000 au lieu de 0,001",
+			"variationIndex": 1,
+			"variables": {
+				"N": "36",
+				"q": "0",
+				"k": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Multiplier par $1000$ rend le nombre plus grand : ici, $0.036$ est plus petit que $36$."
+			},
+			"answers": ["1\\,000"]
+		},
+		{
+			"description": "b : rangs mal comptés",
+			"variationIndex": 1,
+			"variables": {
+				"N": "36",
+				"q": "0",
+				"k": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Compte les rangs : de $36$ à $0.036$, chaque chiffre recule de $3$ rangs vers la droite."
+			},
+			"answers": ["0,01"]
+		},
+		{
+			"description": "b : 5,2 × … = 0,52",
+			"variationIndex": 1,
+			"variables": {
+				"N": "52",
+				"q": "1",
+				"k": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0,1"]
+		},
+		{
+			"description": "b : 5,2, rangs mal comptés",
+			"variationIndex": 1,
+			"variables": {
+				"N": "52",
+				"q": "1",
+				"k": "1"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Compte les rangs : de $5.2$ à $0.52$, chaque chiffre recule de $1$ rang vers la droite."
+			},
+			"answers": ["0,01"]
+		}
+	]
+}

@@ -4,26 +4,26 @@
 	 *
 	 * Displays user's own bug reports with filtering.
 	 */
-	import { goto, invalidateAll } from '$app/navigation';
-	import * as Card from '$lib/components/ui/card';
-	import { Button } from '$lib/components/ui/button';
-	import BugReportList from '$lib/components/bug-reports/BugReportList.svelte';
-	import BugReportDialog from '$lib/components/bug-reports/BugReportDialog.svelte';
-	import * as Dialog from '$lib/components/ui/dialog';
+	import { goto, refreshAll } from '$app/navigation';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import BugReportList from '#lib/components/bug-reports/BugReportList.svelte';
+	import BugReportDialog from '#lib/components/bug-reports/BugReportDialog.svelte';
+	import * as Dialog from '#lib/components/ui/dialog/index.ts';
 	import { formatDistanceToNow } from 'date-fns';
 	import { fr } from 'date-fns/locale';
-	import type { BugReportWithAuthor } from '$lib/types/bug-reports';
+	import type { BugReportWithAuthor } from '#lib/types/bug-reports.ts';
 	import {
 		BUG_REPORT_CATEGORY_LABELS,
 		BUG_REPORT_CATEGORY_ICONS,
 		BUG_REPORT_SEVERITY_LABELS
-	} from '$lib/types/bug-reports';
+	} from '#lib/types/bug-reports.ts';
 	import type {
 		BugReportCategory,
 		BugReportSeverity,
 		BugReportStatus
-	} from '$lib/types/bug-reports';
-	import BugReportStatusBadge from '$lib/components/bug-reports/BugReportStatusBadge.svelte';
+	} from '#lib/types/bug-reports.ts';
+	import BugReportStatusBadge from '#lib/components/bug-reports/BugReportStatusBadge.svelte';
 	import { Plus, Bug, Clock, CheckCircle } from '@lucide/svelte';
 
 	let { data } = $props();
@@ -52,7 +52,7 @@
 		createDialogOpen = open;
 		if (!open) {
 			// Refresh data after closing
-			invalidateAll();
+			refreshAll();
 		}
 	}
 

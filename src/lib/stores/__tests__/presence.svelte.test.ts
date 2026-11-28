@@ -21,7 +21,7 @@ import {
 	STALE_AFTER_MS
 } from '../presence.svelte';
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { Database } from '$lib/types/database';
+import type { Database } from '#lib/types/database.ts';
 
 // ============================================================================
 // TEST SETUP
@@ -42,7 +42,7 @@ function createMockSupabaseClient(): SupabaseClient<Database> {
 }
 
 // Mock browser environment using vi.stubEnv
-vi.mock('$app/environment', () => ({
+vi.mock('$app/env', () => ({
 	browser: true,
 	building: false,
 	dev: true,

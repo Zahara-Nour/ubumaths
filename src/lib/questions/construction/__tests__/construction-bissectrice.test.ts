@@ -22,7 +22,7 @@ import {
 import { constructionOf, intersectTraits, repereAt, traitOf, type Trait } from '../instruments';
 import { solutionBissectrices } from '../drawing';
 import { serializeConstructionAnswer, type DrawnObject, type DrawnRepere } from '../answer';
-import { readConstructionHeader } from '$lib/ubumark/parser/construction-parser';
+import { readConstructionHeader } from '#lib/ubumark/parser/construction-parser.ts';
 
 function checksOf(source: string) {
 	const { spec, errors } = readConstructionHeader(source);

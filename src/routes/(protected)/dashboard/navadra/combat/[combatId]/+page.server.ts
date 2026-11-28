@@ -4,25 +4,25 @@
 
 import type { PageServerLoad, Actions } from './$types';
 import { error, fail } from '@sveltejs/kit';
-import { validateAnswer } from '$lib/utils/game/challenge-variables';
+import { validateAnswer } from '#lib/utils/game/challenge-variables.ts';
 import {
 	calculateDamage,
 	calculateXPReward,
 	calculatePrestigeReward,
 	calculatePyrsReward
-} from '$lib/utils/game/combat';
-import { selectSpellSchema, submitAnswerSchema } from '$lib/server/validation/navadra';
-import { validateUuidParam } from '$lib/server/validation/params';
+} from '#lib/utils/game/combat.ts';
+import { selectSpellSchema, submitAnswerSchema } from '#lib/server/validation/navadra.ts';
+import { validateUuidParam } from '#lib/server/validation/params.ts';
 import {
 	toGameMonster,
 	toGameSpell,
 	asCombatFlow,
 	toGamePlayer,
 	toGameChallenge
-} from '$lib/types/game';
-import type { GameSpell } from '$lib/types/game';
-import { toJson } from '$lib/types/database-helpers';
-import { createServerLogger } from '$lib/utils/logger';
+} from '#lib/types/game.ts';
+import type { GameSpell } from '#lib/types/game.ts';
+import { toJson, type JsonRequis } from '#lib/types/database-helpers.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('(protected)/dashboard/navadra/combat/[combatId]/+page.server');
 
@@ -315,7 +315,10 @@ export const actions: Actions = {
 			time_taken,
 			answer_given: answer,
 			correct_answer,
-			challenge_instance: null // We don't need to store the full instance anymore
+			// ⚠️ La colonne est obligatoire (`NOT NULL`) : avec `null`, la base refuse la ligne, et
+			// l'erreur n'est pas lue. Comportement gardé tel quel ici (les types générés depuis les
+			// migrations l'ont révélé) : à trancher avec la refonte de Navadra.
+			challenge_instance: null as unknown as JsonRequis
 		});
 
 		// Fetch spell and player level

@@ -1,0 +1,237 @@
+{
+	"id": "c52b5ea3-361f-42dd-b1dc-4989b19765fb",
+	"title": "Tracer la médiatrice d'un segment sur quadrillage",
+	"description": "Sur quadrillage, à la règle et à l'équerre : placer le milieu en comptant les carreaux, puis tracer la perpendiculaire au segment qui passe par ce milieu",
+	"grades": ["6"],
+	"level": 3,
+	"delay": 120,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Trace la **médiatrice** du segment $[AB]$ avec la règle et l'équerre.\n\n```figure-a-completer\nfenetre: 0 ; 10 ; 0 ; 8\ngrille: 1\noutils: droite, equerre\nverifier: droite m = mediatrice(A, B)\n---\n{{if:k==1|A = point(2, 4, etiquette=\"gauche\")\nB = point(8, 4, etiquette=\"droite\")\nsegment(A, B)|{{if:k==2|A = point(1, 3, etiquette=\"gauche\")\nB = point(7, 3, etiquette=\"droite\")\nsegment(A, B)|A = point(3, 5, etiquette=\"gauche\")\nB = point(9, 5, etiquette=\"droite\")\nsegment(A, B)}}}}\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..3"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**La médiatrice** de $[AB]$ est la droite **perpendiculaire** à $[AB]$ qui passe par son **milieu**.",
+					"$[AB]$ est horizontal : on compte les carreaux de $A$ à $B$ et on place le milieu $I$ à la moitié.",
+					"La médiatrice est la droite **verticale** qui passe par $I$ : on la trace à l'équerre, posée le long de $[AB]$ et glissée jusqu'à $I$. C'est la $\\textcolor{{{color:primary.0}}}{\\text{médiatrice de }[AB]}$."
+				]
+			}
+		},
+		{
+			"statement": "Trace la **médiatrice** du segment $[AB]$ avec la règle et l'équerre.\n\n```figure-a-completer\nfenetre: 0 ; 10 ; 0 ; 8\ngrille: 1\noutils: droite, equerre\nverifier: droite m = mediatrice(A, B)\n---\n{{if:k==1|A = point(5, 1, etiquette=\"bas\")\nB = point(5, 7, etiquette=\"haut\")\nsegment(A, B)|{{if:k==2|A = point(3, 2, etiquette=\"bas\")\nB = point(3, 6, etiquette=\"haut\")\nsegment(A, B)|A = point(4, 1, etiquette=\"bas\")\nB = point(4, 5, etiquette=\"haut\")\nsegment(A, B)}}}}\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..3"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**La médiatrice** de $[AB]$ est la droite **perpendiculaire** à $[AB]$ qui passe par son **milieu**.",
+					"$[AB]$ est vertical : on compte les carreaux de $A$ à $B$ et on place le milieu $I$ à la moitié.",
+					"La médiatrice est la droite **horizontale** qui passe par $I$ : on la trace à l'équerre, posée le long de $[AB]$ et glissée jusqu'à $I$. C'est la $\\textcolor{{{color:primary.0}}}{\\text{médiatrice de }[AB]}$."
+				]
+			}
+		},
+		{
+			"statement": "Trace la **médiatrice** du segment $[AB]$ avec la règle et l'équerre.\n\n```figure-a-completer\nfenetre: 0 ; 10 ; 0 ; 8\ngrille: 1\noutils: droite, equerre\nverifier: droite m = mediatrice(A, B)\n---\n{{if:k==1|A = point(2, 2, etiquette=\"bas-gauche\")\nB = point(6, 4, etiquette=\"droite\")\nsegment(A, B)|{{if:k==2|A = point(2, 5, etiquette=\"haut-gauche\")\nB = point(6, 3, etiquette=\"droite\")\nsegment(A, B)|A = point(3, 1, etiquette=\"bas-gauche\")\nB = point(7, 3, etiquette=\"droite\")\nsegment(A, B)}}}}\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..3"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**La médiatrice** de $[AB]$ est la droite **perpendiculaire** à $[AB]$ qui passe par son **milieu**.",
+					"De $A$ à $B$, on avance de 4 carreaux et on se déplace de 2 carreaux en hauteur : le milieu $I$ est à 2 carreaux de $A$ vers la droite et à 1 carreau en hauteur.",
+					"La médiatrice est perpendiculaire à $[AB]$ en $I$ : on la trace à l'équerre, posée le long de $[AB]$ et glissée jusqu'à $I$ (en comptant les carreaux : $[AB]$ fait 2 carreaux en largeur pour 1 en hauteur ; la perpendiculaire fait 1 carreau en largeur pour 2 en hauteur, en tournant d'un quart de tour). C'est la $\\textcolor{{{color:primary.0}}}{\\text{médiatrice de }[AB]}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "horizontal 1 : par I et un nœud de la médiatrice",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1"
+			},
+			"answers": ["droite(5;4;5;5)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "horizontal 2 : par I et un nœud de la médiatrice",
+			"variationIndex": 0,
+			"variables": {
+				"k": "2"
+			},
+			"answers": ["droite(4;3;4;4)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "horizontal 3 : par I et un nœud de la médiatrice",
+			"variationIndex": 0,
+			"variables": {
+				"k": "3"
+			},
+			"answers": ["droite(6;5;6;6)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur horizontal : perpendiculaire par A",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1"
+			},
+			"answers": ["droite(2;4;2;5)"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur horizontal : par le milieu, pas perpendiculaire",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1"
+			},
+			"answers": ["droite(5;4;6;7)"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "vertical 1 : par I et un nœud de la médiatrice",
+			"variationIndex": 1,
+			"variables": {
+				"k": "1"
+			},
+			"answers": ["droite(5;4;4;4)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "vertical 2 : par I et un nœud de la médiatrice",
+			"variationIndex": 1,
+			"variables": {
+				"k": "2"
+			},
+			"answers": ["droite(3;4;2;4)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "vertical 3 : par I et un nœud de la médiatrice",
+			"variationIndex": 1,
+			"variables": {
+				"k": "3"
+			},
+			"answers": ["droite(4;3;3;3)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur vertical : perpendiculaire par A",
+			"variationIndex": 1,
+			"variables": {
+				"k": "1"
+			},
+			"answers": ["droite(5;1;4;1)"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur vertical : par le milieu, pas perpendiculaire",
+			"variationIndex": 1,
+			"variables": {
+				"k": "1"
+			},
+			"answers": ["droite(5;4;6;7)"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "en biais 1 : par I et un nœud de la médiatrice",
+			"variationIndex": 2,
+			"variables": {
+				"k": "1"
+			},
+			"answers": ["droite(4;3;3;5)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "en biais 2 : par I et un nœud de la médiatrice",
+			"variationIndex": 2,
+			"variables": {
+				"k": "2"
+			},
+			"answers": ["droite(4;4;5;6)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "en biais 3 : par I et un nœud de la médiatrice",
+			"variationIndex": 2,
+			"variables": {
+				"k": "3"
+			},
+			"answers": ["droite(5;2;4;4)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur en biais : perpendiculaire par A",
+			"variationIndex": 2,
+			"variables": {
+				"k": "1"
+			},
+			"answers": ["droite(2;2;1;4)"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur en biais : par le milieu, pas perpendiculaire",
+			"variationIndex": 2,
+			"variables": {
+				"k": "1"
+			},
+			"answers": ["droite(4;3;5;6)"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Rien de tracé",
+			"variationIndex": 0,
+			"variables": {
+				"k": "2"
+			},
+			"answers": [""],
+			"expected": {
+				"status": "empty"
+			}
+		}
+	]
+}

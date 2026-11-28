@@ -5,23 +5,23 @@
 -->
 
 <script lang="ts">
-	import { lore } from '$lib/config/lore';
+	import { lore } from '#lib/config/lore.ts';
 	import type { PageData } from './$types';
 	import {
 		asRiddleDifficulty,
 		getDifficultyLabel,
 		getDifficultyColor,
 		type DbRiddle
-	} from '$lib/types/riddle';
-	import { Button } from '$lib/components/ui/button';
-	import BackLink from '$lib/components/navigation/BackLink.svelte';
-	import { Badge } from '$lib/components/ui/badge';
-	import { Input } from '$lib/components/ui/input';
-	import { Label } from '$lib/components/ui/label';
-	import * as Card from '$lib/components/ui/card';
-	import MySelect from '$lib/components/MySelect.svelte';
-	import * as Alert from '$lib/components/ui/alert';
-	import { toaster } from '$lib/stores/toaster.svelte';
+	} from '#lib/types/riddle.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import BackLink from '#lib/components/navigation/BackLink.svelte';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
+	import { Input } from '#lib/components/ui/input/index.ts';
+	import { Label } from '#lib/components/ui/label/index.ts';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import MySelect from '#lib/components/MySelect.svelte';
+	import * as Alert from '#lib/components/ui/alert/index.ts';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
 	import { Sparkles, Calendar, History, Trash2, Plus } from '@lucide/svelte';
 	import { format } from 'date-fns';
 	import { fr } from 'date-fns/locale';

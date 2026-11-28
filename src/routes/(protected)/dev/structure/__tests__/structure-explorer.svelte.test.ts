@@ -11,13 +11,13 @@ import { afterEach, beforeAll, beforeEach, describe, it, expect, vi } from 'vite
 import { page, userEvent } from 'vitest/browser';
 import { render } from 'vitest-browser-svelte';
 // Comme la page : polices et classes du rendu MathLive (le rendu local = celui de la CI)
-import '$lib/utils/mathlive-styles';
-import { MARKER_PREFIX, stripMarkers, structureFromLatex } from '$lib/mathAST/structure';
+import '#lib/utils/mathlive-styles.ts';
+import { MARKER_PREFIX, stripMarkers, structureFromLatex } from '#lib/mathAST/structure/index.ts';
 import StructureExplorerHarness from './StructureExplorerHarness.svelte';
 import StructureReadingHarness from './StructureReadingHarness.svelte';
 
 // Le dictionnaire arrive de /api/dictionnaire (ADR 0022) : ici, le jeu de référence figé
-vi.mock('$lib/dictionary/fetch-dictionary', async () => {
+vi.mock('#lib/dictionary/fetch-dictionary.ts', async () => {
 	const { REFERENCE_DICTIONARY: entries } =
 		await import('../../../../../../tests/fixtures/lexique/dictionnaire-reference');
 	return { fetchDictionary: async () => entries };

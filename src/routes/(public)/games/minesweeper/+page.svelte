@@ -1,16 +1,17 @@
 <script lang="ts">
+	import SeoHead from '#lib/seo/SeoHead.svelte';
 	import { onDestroy, onMount } from 'svelte';
-	import { minesweeperStore } from '$lib/stores/minesweeper.svelte';
-	import { Card } from '$lib/components/ui/card';
-	import { Button } from '$lib/components/ui/button';
-	import { Separator } from '$lib/components/ui/separator';
-	import MinesweeperBoard from '$lib/components/game/minesweeper/MinesweeperBoard.svelte';
-	import GameControls from '$lib/components/game/minesweeper/GameControls.svelte';
-	import SavedGameInfo from '$lib/components/game/minesweeper/SavedGameInfo.svelte';
-	import AchievementToast from '$lib/components/game/minesweeper/AchievementToast.svelte';
-	import UndoConfirmModal from '$lib/components/game/minesweeper/UndoConfirmModal.svelte';
+	import { minesweeperStore } from '#lib/stores/minesweeper.svelte.ts';
+	import { Card } from '#lib/components/ui/card/index.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import { Separator } from '#lib/components/ui/separator/index.ts';
+	import MinesweeperBoard from '#lib/components/game/minesweeper/MinesweeperBoard.svelte';
+	import GameControls from '#lib/components/game/minesweeper/GameControls.svelte';
+	import SavedGameInfo from '#lib/components/game/minesweeper/SavedGameInfo.svelte';
+	import AchievementToast from '#lib/components/game/minesweeper/AchievementToast.svelte';
+	import UndoConfirmModal from '#lib/components/game/minesweeper/UndoConfirmModal.svelte';
 	import type { PageData } from './$types';
-	import type { GameState, Difficulty } from '$lib/types/minesweeper';
+	import type { GameState, Difficulty } from '#lib/types/minesweeper.ts';
 
 	let { data }: { data: PageData } = $props();
 
@@ -109,10 +110,10 @@
 	});
 </script>
 
-<svelte:head>
-	<title>Démineur - Chiphre</title>
-	<meta name="description" content="Jouez au Démineur sur Chiphre et gagnez des gidouilles !" />
-</svelte:head>
+<SeoHead
+	title="Démineur : jeu de logique en ligne | Chiphre"
+	description="Le Démineur, jeu de logique et de déduction : joue sur Chiphre et gagne des gidouilles."
+/>
 
 <main class="min-h-screen bg-gradient-to-br from-background to-muted p-4 md:p-8">
 	<div class="mx-auto max-w-6xl">

@@ -1,0 +1,207 @@
+{
+	"id": "3263f8f6-44af-4952-9cf0-45fdc0d8e344",
+	"title": "Valeur approchée d'une solution par balayage",
+	"description": "x² + x = k sur [0 ; +∞[ : encadrement renvoyé par balayage(k, 1), encadrement au dixième d'après un tableau de valeurs, condition à compléter, sens de balayage(k, 0.01)",
+	"grades": ["1_TECHNO"],
+	"level": 3,
+	"delay": 90,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "On cherche la solution positive $\\alpha$ de l'équation $x^2+x={{k}}$. Sur $[0\\,;+\\infty[$, la fonction $f:x\\mapsto x^2+x$ est croissante. On considère le programme Python suivant.\n\n```python\ndef f(x):\n    return x**2 + x\n\ndef balayage(k, pas):\n    x = 0\n    while f(x + pas) <= k:\n        x = x + pas\n    return x, x + pas\n```\n\nQue renvoie `balayage({{k}}, 1)` ? Complète l'encadrement de $\\alpha$.\n\n$?\\leqslant\\alpha\\leqslant?$",
+			"blanks": [
+				{
+					"expectedAnswer": "{{m}}"
+				},
+				{
+					"expectedAnswer": "{{eval:m+1}}"
+				}
+			],
+			"variables": [
+				{
+					"name": "k",
+					"expression": "3..40"
+				},
+				{
+					"name": "m",
+					"expression": "eval:floor((sqrt(1+4*k)-1)/2)"
+				}
+			],
+			"correction": {
+				"steps": [
+					"`x` avance de $1$ en $1$ à partir de $0$ tant que $f(x+1)\\leqslant{{k}}$.",
+					"$f({{m}})={{eval:m^2+m}}\\leqslant{{k}}$ et $f({{eval:m+1}})={{eval:(m+1)^2+m+1}}>{{k}}$ : la boucle s'arrête pour $x={{m}}$.",
+					"La fonction renvoie $({{m}}, {{eval:m+1}})$ : $\\textcolor{{{color:primary.0}}}{{{m}}}\\leqslant\\alpha\\leqslant\\textcolor{{{color:primary.0}}}{{{eval:m+1}}}$."
+				]
+			},
+			"conditions": ["mod(sqrt(1+4*k),1) != 0"]
+		},
+		{
+			"statement": "On cherche la solution positive $\\alpha$ de l'équation $x^2+x={{k}}$. Sur $[0\\,;+\\infty[$, la fonction $f:x\\mapsto x^2+x$ est croissante. Un tableur donne quelques valeurs de $f$.\n\n| $x$ | ${{eval:(t-1)/10;d}}$ | ${{eval:(t)/10;d}}$ | ${{eval:(t+1)/10;d}}$ | ${{eval:(t+2)/10;d}}$ |\n| --- | --- | --- | --- | --- |\n| $f(x)$ | ${{eval:((t-1)^2+10*(t-1))/100;d}}$ | ${{eval:((t)^2+10*(t))/100;d}}$ | ${{eval:((t+1)^2+10*(t+1))/100;d}}$ | ${{eval:((t+2)^2+10*(t+2))/100;d}}$ |\n\nEncadre $\\alpha$ entre deux nombres à un dixième près.\n\n$?<\\alpha<?$",
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:t/10;d}}"
+				},
+				{
+					"expectedAnswer": "{{eval:(t+1)/10;d}}"
+				}
+			],
+			"variables": [
+				{
+					"name": "k",
+					"expression": "5..40"
+				},
+				{
+					"name": "t",
+					"expression": "eval:floor(10*(sqrt(1+4*k)-1)/2)"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On cherche où $f(x)$ passe au-dessus de ${{k}}$.",
+					"$f({{eval:t/10;d}})={{eval:((t)^2+10*(t))/100;d}}<{{k}}$ et $f({{eval:(t+1)/10;d}})={{eval:((t+1)^2+10*(t+1))/100;d}}>{{k}}$ ; $f$ étant croissante, $\\textcolor{{{color:primary.0}}}{{{eval:t/10;d}}}<\\alpha<\\textcolor{{{color:primary.0}}}{{{eval:(t+1)/10;d}}}$."
+				]
+			},
+			"conditions": ["mod(sqrt(1+4*k),1) != 0"]
+		},
+		{
+			"statement": "On cherche la solution positive $\\alpha$ de l'équation $x^2+x={{k}}$. Sur $[0\\,;+\\infty[$, la fonction $f:x\\mapsto x^2+x$ est croissante. La fonction `balayage` ci-dessous doit renvoyer un encadrement de $\\alpha$ d'amplitude `pas`.\n\n```python\ndef f(x):\n    return x**2 + x\n\ndef balayage(k, pas):\n    x = 0\n    while ...:\n        x = x + pas\n    return x, x + pas\n```\n\nQue faut-il écrire à la place des points de suspension ?\n\n```choix\n- `f(x + pas) <= k`\n- `f(x) <= k`\n- `f(x + pas) >= k`\n- `x + pas <= k`\n```",
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"variables": [
+				{
+					"name": "k",
+					"expression": "3..40"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On avance tant que le nombre suivant, `x + pas`, a encore une image inférieure ou égale à $k$ : `f(x + pas) <= k`.",
+					"Avec `f(x) <= k`, on irait un pas trop loin : $f(x)$ dépasserait $k$ et l'encadrement serait faux. Comparer `x + pas` à $k$ oublie la fonction $f$."
+				]
+			}
+		},
+		{
+			"statement": "On cherche la solution positive $\\alpha$ de l'équation $x^2+x={{k}}$. Sur $[0\\,;+\\infty[$, la fonction $f:x\\mapsto x^2+x$ est croissante. On considère le programme Python suivant.\n\n```python\ndef f(x):\n    return x**2 + x\n\ndef balayage(k, pas):\n    x = 0\n    while f(x + pas) <= k:\n        x = x + pas\n    return x, x + pas\n```\n\nL'appel `balayage({{k}}, 0.01)` renvoie deux nombres. Ils forment…\n\n```choix\n- un encadrement de $\\alpha$ d'amplitude $0{,}01$\n- un encadrement de $\\alpha$ d'amplitude $0{,}1$\n- la valeur exacte de $\\alpha$ et une valeur approchée\n- un encadrement de $f(\\alpha)$ d'amplitude $0{,}01$\n```",
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"variables": [
+				{
+					"name": "k",
+					"expression": "3..40"
+				}
+			],
+			"correction": {
+				"steps": [
+					"`x` avance de $0{,}01$ en $0{,}01$ : la fonction renvoie `x` et `x + 0.01`, avec $f(x)\\leqslant{{k}}<f(x+0{,}01)$.",
+					"$f$ étant croissante, $x\\leqslant\\alpha<x+0{,}01$ : c'est un **encadrement de $\\alpha$ d'amplitude $0{,}01$**, pas la valeur exacte."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "k = 10 : entre 2 et 3",
+			"variationIndex": 0,
+			"variables": {
+				"k": "10",
+				"m": "2"
+			},
+			"answers": ["2", "3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : un pas trop loin",
+			"variationIndex": 0,
+			"variables": {
+				"k": "10",
+				"m": "2"
+			},
+			"answers": ["3", "4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "k = 10 : entre 2,7 et 2,8",
+			"variationIndex": 1,
+			"variables": {
+				"k": "10",
+				"t": "27"
+			},
+			"answers": ["2.7", "2.8"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : décalé",
+			"variationIndex": 1,
+			"variables": {
+				"k": "10",
+				"t": "27"
+			},
+			"answers": ["2.8", "2.9"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "f(x + pas) <= k",
+			"variationIndex": 2,
+			"variables": {
+				"k": "10"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : f(x) <= k",
+			"variationIndex": 2,
+			"variables": {
+				"k": "10"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Amplitude 0,01",
+			"variationIndex": 3,
+			"variables": {
+				"k": "10"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : amplitude 0,1",
+			"variationIndex": 3,
+			"variables": {
+				"k": "10"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

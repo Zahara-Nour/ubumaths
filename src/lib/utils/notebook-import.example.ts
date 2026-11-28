@@ -5,7 +5,7 @@
  */
 
 import { importIpynb, isValidIpynb, getIpynbMetadata } from './notebook-import';
-import type { NotebookContent } from '$lib/types/notebook';
+import type { NotebookContent } from '#lib/types/notebook.ts';
 
 // Example 1: Validate before importing
 export function importNotebookFile(fileContent: string): NotebookContent | null {

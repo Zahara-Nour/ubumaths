@@ -14,14 +14,14 @@
  * sont comptées depuis le début du texte.
  */
 
-import { parse } from '$lib/geometry-core/dsl/parser';
-import { interpret } from '$lib/geometry-core/dsl/interpreter';
-import { DslParseError, DslRuntimeError } from '$lib/geometry-core/dsl/errors';
-import { DslTokenizerError } from '$lib/geometry-core/dsl/tokenizer';
-import type { Figure } from '$lib/geometry-core/graph/figure';
-import { parseFigureContent } from '$lib/ubumark/parser/figure-parser';
-import { hasFigureHeader } from '$lib/utils/stored-figure-header';
-import type { FigureHeader, FigureInteractiveSettings } from '$lib/ubumark/types/figure';
+import { parse } from '#lib/geometry-core/dsl/parser.ts';
+import { interpret } from '#lib/geometry-core/dsl/interpreter.ts';
+import { DslParseError, DslRuntimeError } from '#lib/geometry-core/dsl/errors.ts';
+import { DslTokenizerError } from '#lib/geometry-core/dsl/tokenizer.ts';
+import type { Figure } from '#lib/geometry-core/graph/figure.ts';
+import { parseFigureContent } from '#lib/ubumark/parser/figure-parser.ts';
+import { hasFigureHeader } from '#lib/utils/stored-figure-header.ts';
+import type { FigureHeader, FigureInteractiveSettings } from '#lib/ubumark/types/figure.ts';
 
 // ============================================================================
 // TYPES

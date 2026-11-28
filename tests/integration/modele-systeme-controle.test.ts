@@ -8,6 +8,8 @@
  * sera jouée en production.
  *
  * @vitest-environment node
+ *
+ * @migration-de-donnees : hors des PR, rejoué la nuit (scripts/ci-integration-exclusions.sh)
  */
 import { describe, it, expect, afterAll } from 'vitest';
 import { readFile } from 'node:fs/promises';

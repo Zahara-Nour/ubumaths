@@ -10,8 +10,8 @@
  * @module ubumark/builders/variation-table
  */
 
-import type { VariationResult } from '$lib/mathAST/variations';
-import { limitValueLatex, variationValueLatex } from '$lib/mathAST/variations/latex';
+import type { VariationResult } from '#lib/mathAST/variations/index.ts';
+import { limitValueLatex, variationValueLatex } from '#lib/mathAST/variations/latex.ts';
 import type {
 	DomainPoint,
 	SignRow,
@@ -20,7 +20,7 @@ import type {
 	VariationRow,
 	VariationTableNode,
 	VariationValue
-} from '$lib/ubumark/types/variation-table';
+} from '#lib/ubumark/types/variation-table.ts';
 
 // =============================================================================
 // Constantes

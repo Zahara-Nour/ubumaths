@@ -12,7 +12,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 const insertMock = vi.fn();
 const serviceFrom = vi.fn(() => ({ insert: insertMock }));
 
-vi.mock('$lib/server/serviceRoleClient', () => ({
+vi.mock('#lib/server/serviceRoleClient.ts', () => ({
 	createServiceRoleClient: () => ({ from: serviceFrom })
 }));
 

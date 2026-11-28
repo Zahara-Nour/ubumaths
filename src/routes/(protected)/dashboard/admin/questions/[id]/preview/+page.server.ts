@@ -13,14 +13,14 @@
 
 import { error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
-import { validateUuidParam } from '$lib/server/validation/params';
-import { requireAdmin } from '$lib/server/middleware/auth';
+import { validateUuidParam } from '#lib/server/validation/params.ts';
+import { requireAdmin } from '#lib/server/middleware/auth.ts';
 import {
 	FACT_SHEET_TEMPLATE_COLS,
 	loadTemplateFactSheet,
 	type FactSheetTemplateRow
-} from '$lib/server/template-fact-sheet';
-import type { TemplateFactSheetResult } from '$lib/questions/template-fact-sheet';
+} from '#lib/server/template-fact-sheet.ts';
+import type { TemplateFactSheetResult } from '#lib/questions/template-fact-sheet.ts';
 
 export const load: PageServerLoad = async ({ params, locals }) => {
 	const { supabase } = await requireAdmin(locals);

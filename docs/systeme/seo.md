@@ -37,7 +37,9 @@ description, son adresse canonique, une image de partage. Trois fichiers portent
 - `toJsonLdScript(data)` : `JSON.stringify` puis `<`, `>`, `&` échappés en `<`… Le JSON relu
   est identique, mais un titre d'article ne peut ni fermer la balise ni ouvrir un commentaire.
 - `toPlainText(text)` : texte ubumark → texte brut (formules `~…~` et `$…$` aplaties, `\pi` → π,
-  gras retiré). Sert à la description d'un article du Shtam.
+  fractions en a/b, imbriquées comprises, avec parenthèses autour d'un terme composé, `\sqrt{2}` →
+  √2, gras retiré). Sert à la description d'un article du Shtam, au glossaire et à l'infobulle de la
+  grille des points de l'analytique prof (V122).
 
 ### `SeoHead.svelte`
 
@@ -49,18 +51,32 @@ Props : `title`, `description`, `type` (`website` par défaut, `article` pour le
 L'URL canonique est `absoluteUrl(page.url.pathname)` : **le chemin seul**, la query string est
 ignorée (`?depuis=…` ne fait pas une autre page).
 
-Utilisé par 32 pages de `src/routes/(public)/` (accueil, Shtam, chiffrement, outils, pages
+Utilisé par 53 pages de `src/routes/(public)/` (accueil, Shtam, chiffrement, outils, jeux, pages
 légales, `/a-propos`, `/upsilon`, page d'un terme du glossaire `/glossaire/[slug]`…) et par `src/lib/components/kingdom-tour/AudienceView.svelte`
 (pages `/eleves`, `/parents`, `/professeurs`).
+
+### Règle des titres
+
+Le titre d'onglet d'une page du plan de site dit d'abord ce qu'on y fait, avec les mots qu'on
+tape dans un moteur (« Grapheur en ligne : tracer des fonctions et des suites »), puis finit par
+` | Chiphre`. Un seul séparateur avant le nom du site. Deux exceptions : l'accueil, qui commence
+par le nom du site, et les articles du Shtam, qui finissent par « — Le Shtam ».
+
+Garde : `src/lib/seo/__tests__/titres-pages.test.ts`. Toute page de `SITEMAP_PAGES` passe par
+`SeoHead` (ou `AudienceView`), n'écrit aucun `<title>` à la main, et n'emploie aucun autre
+séparateur ; les titres des démonstrations (`demoSeo`) et des trois pages de présentation suivent
+la même règle.
 
 ### `JsonLd.svelte`
 
 Prend `data: Record<string, unknown>`, rend `{@html toJsonLdScript(data)}` dans `<svelte:head>`.
-Deux appelants :
+Trois appelants :
 
 - `src/routes/(public)/+page.svelte` : `WebSite` + `Organization` (nom, URL, logo) ;
 - `src/routes/(public)/shtam/[slug]/+page.svelte` : `SatiricalArticle` (titre tronqué à 110
-  caractères, date, auteur, éditeur, `isPartOf` le périodique Le Shtam).
+  caractères, date, auteur, éditeur, `isPartOf` le périodique Le Shtam) ;
+- `src/lib/components/kingdom-tour/AudienceView.svelte` : `FAQPage` (`faqJsonLd` de
+  `src/lib/kingdom-tour/views.ts`), pour une vue qui a une FAQ (`/parents`).
 
 ### Ce qui n'est pas dans `src/lib/seo/`
 
@@ -86,8 +102,4 @@ Deux appelants :
 
 ## Écarts connus
 
-- **Deux `SITE_URL`** : `src/lib/seo/site.ts` (`https://www.chiph.re`, sans barre finale) et
-  `src/lib/email-templates/welcome.ts` (`https://www.chiph.re/`, avec). Le second ne passe pas
-  par `site.ts`.
-- **Données structurées limitées à deux pages** (accueil, article du Shtam). Pas de JSON-LD pour
-  les exercices publics ni les pages outils.
+Les écarts de cette zone sont au [registre des écarts](../ecarts/registre.md) : `pnpm ecarts`. Un écart s'écrit là-bas, jamais ici.

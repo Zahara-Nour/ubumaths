@@ -1,18 +1,18 @@
 import { describe, expect, it, vi } from 'vitest';
-import { CHILD_ACCOUNT_DOMAIN } from '$lib/utils/child-account';
+import { CHILD_ACCOUNT_DOMAIN } from '#lib/utils/child-account.ts';
 
-vi.mock('$lib/utils/logger', () => ({
+vi.mock('#lib/utils/logger.ts', () => ({
 	createServerLogger: () => ({ info: vi.fn(), error: vi.fn(), warn: vi.fn(), debug: vi.fn() })
 }));
 
-vi.mock('$lib/server/rateLimiter', () => ({
+vi.mock('#lib/server/rateLimiter.ts', () => ({
 	checkLoginRateLimitByIP: vi.fn(async () => ({ allowed: true })),
 	checkLoginRateLimitByEmail: vi.fn(async () => ({ allowed: true })),
 	checkOAuthRateLimitByIP: vi.fn(async () => ({ allowed: true }))
 }));
 
 const { actions } = await import('../+page.server');
-const { checkLoginRateLimitByEmail } = await import('$lib/server/rateLimiter');
+const { checkLoginRateLimitByEmail } = await import('#lib/server/rateLimiter.ts');
 
 async function login(identifier: string) {
 	const signInWithPassword = vi.fn(async () => ({

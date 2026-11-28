@@ -10,11 +10,11 @@
 		BugReportStatus,
 		BugReportCategory,
 		BugReportSeverity
-	} from '$lib/types/bug-reports';
-	import { BUG_REPORT_STATUS_LABELS, BUG_REPORT_CATEGORY_LABELS } from '$lib/types/bug-reports';
+	} from '#lib/types/bug-reports.ts';
+	import { BUG_REPORT_STATUS_LABELS, BUG_REPORT_CATEGORY_LABELS } from '#lib/types/bug-reports.ts';
 	import BugReportCard from './BugReportCard.svelte';
-	import MySelect from '$lib/components/MySelect.svelte';
-	import MyCheckbox from '$lib/components/MyCheckbox.svelte';
+	import MySelect from '#lib/components/MySelect.svelte';
+	import MyCheckbox from '#lib/components/MyCheckbox.svelte';
 	import { Loader2 } from '@lucide/svelte';
 
 	interface Props {

@@ -1,6 +1,6 @@
 """Écrit les 9 modèles du lot 6a du CE2 (longueurs et masses) dans scripts/questions/ce2-6a/.
 
-Phase 0 validée par David le 2026-11-01 (§ 10 du journal `docs/wip/questions-ce2-progress.md`).
+Phase 0 validée par David le 2026-11-01 (§ 10 du journal `docs/archive/wip/questions-ce2-progress.md`).
 Bornes `cycle2.json`, CE2-035 à 038 (longueurs) et 045 à 048 (masses) :
 - 035 : m, dm, cm, mm, km et leurs symboles ; 036 : cm–mm, m–dm–cm, km–m, 1 cm = 10 mm,
   1 m = 1 000 mm (16 m = 1 600 cm = 160 dm ; 5 km + 750 m = 5 750 m), sans tableau ni virgule ;

@@ -12,7 +12,7 @@
 	@module components/markdown/nodes/Espace
 -->
 <script lang="ts">
-	import type { EspaceNode } from '$lib/ubumark/types/espace';
+	import type { EspaceNode } from '#lib/ubumark/types/espace.ts';
 	import Cubes from './Cubes.svelte';
 	import CubesGeste from './CubesGeste.svelte';
 	import PatronGeste from './PatronGeste.svelte';
@@ -39,7 +39,7 @@
 {:else if node.genre === 'patron'}
 	<Patron {node} {showErrors} class={className} />
 {:else if node.genre === 'cubes' && node.spec?.kind === 'cubes' && node.spec.task && node.errors.length === 0}
-	<CubesGeste {node} class={className} />
+	<CubesGeste {node} {showErrors} class={className} />
 {:else if node.genre === 'cubes'}
 	<Cubes {node} {showErrors} class={className} />
 {/if}

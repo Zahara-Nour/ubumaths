@@ -26,7 +26,7 @@
 -->
 <script lang="ts">
 	import { untrack } from 'svelte';
-	import type { TrigCircleNode, TrigNamedPoint } from '$lib/ubumark/types/trig-circle';
+	import type { TrigCircleNode, TrigNamedPoint } from '#lib/ubumark/types/trig-circle.ts';
 	import {
 		TRIG_PLACER_STEPS,
 		TRIG_RADIUS,
@@ -40,7 +40,7 @@
 		stepAnswer,
 		stepOfRadians,
 		stepRadians
-	} from '$lib/ubumark/utils/trig-placer';
+	} from '#lib/ubumark/utils/trig-placer.ts';
 	import TrigCircle from './TrigCircle.svelte';
 	import type { BuildCase } from './CollectionConstruire.svelte';
 

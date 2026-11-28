@@ -1,5 +1,5 @@
 /**
- * Fonctions déclarées par un EXERCICE (`exercises.generic_functions`) à l'écran
+ * Fonctions déclarées par un EXERCICE (`exercise_versions.generic_functions`) à l'écran
  * ============================================================================
  *
  * Fiche de l'élève : l'énoncé et la correction sont relus au rendu. Sans la
@@ -11,7 +11,7 @@ import { describe, it, expect } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import ExerciseModal from '../ExerciseModal.svelte';
 import ExerciseDisplay from '../ExerciseDisplay.svelte';
-import type { StudentExerciseView } from '$lib/types/worksheets';
+import type { StudentExerciseView } from '#lib/types/worksheets.ts';
 
 const STATEMENT = "Calcule ~P'(2)~ pour ~P(x)=x^2~.";
 

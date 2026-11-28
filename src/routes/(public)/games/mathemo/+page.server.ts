@@ -7,12 +7,12 @@
  */
 
 import type { PageServerLoad } from './$types';
-import type { StudentVipCards } from '$lib/types/vip-card';
-import { countAvailableConsumableUses } from '$lib/utils/vip-cards';
+import type { StudentVipCards } from '#lib/types/vip-card.ts';
+import { countAvailableConsumableUses } from '#lib/utils/vip-cards.ts';
 import { error } from '@sveltejs/kit';
-import { isDictionaryAdmin, loadDictionary } from '$lib/server/dictionary/load';
+import { isDictionaryAdmin, loadDictionary } from '#lib/server/dictionary/load.ts';
 import { playableTerms } from './dictionary-words';
-import { createServerLogger } from '$lib/utils/logger';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('(public)/games/mathemo/+page.server');
 
@@ -59,7 +59,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 		supabase.from('profiles').select('vip_cards, gidouilles').eq('id', user.id).single()
 	]);
 
-	const vipCards = (profileResult.data?.vip_cards as StudentVipCards | null) ?? {};
+	const vipCards = (profileResult.data?.vip_cards as StudentVipCards | undefined) ?? {};
 	const gidouilles = (profileResult.data?.gidouilles as number) ?? 0;
 
 	return {

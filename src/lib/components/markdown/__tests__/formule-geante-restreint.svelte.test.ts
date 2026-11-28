@@ -19,8 +19,8 @@ import { describe, it, expect, afterEach } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import type { JSONContent } from '@tiptap/core';
 import MarkdownRenderer from '../MarkdownRenderer.svelte';
-import CellOutputs from '$lib/components/notebook/CellOutputs.svelte';
-import { tipTapToMarkdown } from '$lib/components/rich-text/markdown-export';
+import CellOutputs from '#lib/components/notebook/CellOutputs.svelte';
+import { tipTapToMarkdown } from '#lib/components/rich-text/markdown-export.ts';
 
 // Constantes
 const nest = (times: number, wrap: (inner: string) => string, seed = 'x') => {

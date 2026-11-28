@@ -270,3 +270,35 @@ Les incertitudes sont dans `questions-techno.json` (sans décision) :
   - Langage Python ou tableur. — _BO Tle techno p.5_ (BO)
 - **TTECHNO-091** — Faire le lien avec l'expression admise de l'espérance
   - Langage Python ou tableur. — _BO Tle techno p.5_ (BO)
+
+## Couverture en modèles de questions (prod, 2026-11-19)
+
+Chantier `questions-ttechno` (démarche [couvrir-un-niveau.md](../../../../pratiques/couvrir-un-niveau.md)), du
+2026-11-17 au 2026-11-19, pour la **Tle STMG** : tout le programme de Terminale technologique sauf la rubrique
+« Activités géométriques (série STD2A) » (17 points : 001 à 014, 070 à 072 ; coniques, perspective centrale), laissée
+hors chantier (Q1). Journal dans `docs/archive/wip/questions-ttechno-progress.md`, scripts d'écriture dans
+`docs/wip/questions/lot-ttechno-*.py`, fichiers des lots dans `scripts/questions/ttechno-*`.
+
+- **91 modèles publiés** contiennent le niveau `T_TECHNO` : 52 neufs (Tle techno seule) et 39 existants tagués ;
+  **75 points STMG sur 75** couverts (relevé MCP du 2026-11-19). Aucun brouillon `T_TECHNO` laissé.
+- **Sans modèle, par décision** (Q17) : 017 et 019 (formules des sommes de n premiers termes), couverts de fait par
+  les modèles de 026 et 027.
+- **Existant tagué** (tag TTECHNO + `T_TECHNO` dans `grades`, page à cocher avant chaque migration) : lot 0 (#2756,
+  30 modèles de 1re spé, Tle spé, Tle complémentaires) ; c4887e49 → 025 et 0b5c3db6 → 023 (lot 2a, #2776) ; 6 modèles
+  communs aˣ de `questions-1gen` (lot 3, #2800) ; 4ff9d049 (089) l'était déjà.
+- **Lots écrits** : 1 automatismes, 4 modèles (#2763, #2766) ; 2a suites, 8 (#2774, #2776) ; 2b Python, 3 (#2784,
+  #2790) ; 3a propriétés de aˣ, 4 (#2809, #2811) ; 3b fonctions x ↦ aˣ et k·aˣ, 4 (#2815, #2818) ; 4 taux moyen et
+  point intercalé, 2 (#2819, #2820) ; 5a logarithme décimal, 6 (#2845) ; 5b équations, inéquations, seuils, 3
+  (#2849, #2851) ; 6 fonction inverse, 5 (#2862, #2868) ; 7 deux variables, ajustements, 6 (#2874, #2876) ; 8 loi
+  binomiale, 7 (#2882, #2886).
+- **Outil livré en route** : saisie de « log » dans une case de réponse (`\log` sans case de base, Q27, #2839),
+  préalable aux réponses exactes du lot 5b.
+- **Choix de forme** (décisions de David) : un seul point TTECHNO par modèle (trigger, ADR 0020) ; modèles eˣ / ln
+  jamais tagués, réécrits en base a / log dans des modèles neufs, originaux intacts (Q3) ; un modèle « en partie »
+  dans les bornes donne un modèle neuf, pas une scission ; 069, 090, 091 en lecture d'un graphique fourni (Q4) ;
+  Python et tableur sous la forme des modèles Python de 1re spé, une variation de chaque quand le BO dit « Python ou
+  tableur » (Q5, Q22, Q34) ; aˣ sur ℝ, x < 0 compris (Q19) ; équation purement algébrique en valeur exacte
+  (2ˣ = 5 ⇒ x = log 5 / log 2), arrondi en contexte (Q25) ; fonction inverse sur ]0 ; +∞[, plus une variation sur
+  ℝ privé de 0 (Q28) ; ajustement en log(y) en texte seulement, le bloc ` ```nuage ` ne connaissant que ln, carré,
+  √, inverse (Q32, outil manquant n° 42) ; droite de Mayer calculée et donnée (Q33) ; coefficients binomiaux au
+  triangle, n ⩽ 10, sans factorielle (Q37) ; simulations à graine fixe, questions indépendantes du tirage (Q38).

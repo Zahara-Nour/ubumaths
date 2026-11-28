@@ -8,18 +8,18 @@
  * GET - List all tokens for this exercise
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireRole } from '$lib/server/middleware/auth';
-import { getExercise } from '$lib/server/exercises';
+import { requireRole } from '#lib/server/middleware/auth.ts';
+import { getExercise } from '#lib/server/exercises.ts';
 import {
 	createShareToken,
 	getExerciseShareTokens,
 	buildShareUrl
-} from '$lib/server/exercise-share-tokens';
-import { validateCreateShareToken } from '$lib/server/validation/exercises';
-import { validateUuidParam } from '$lib/server/validation/params';
-import { createServerLogger } from '$lib/utils/logger';
+} from '#lib/server/exercise-share-tokens.ts';
+import { validateCreateShareToken } from '#lib/server/validation/exercises.ts';
+import { validateUuidParam } from '#lib/server/validation/params.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/exercises/[id]/share/+server');
 
@@ -82,7 +82,7 @@ export const POST: RequestHandler = async ({ locals, params, request, url }) => 
 	const baseUrl = url.origin;
 	const shareUrl = buildShareUrl(baseUrl, slug, tokenResult.data.token);
 
-	return json(
+	return Response.json(
 		{
 			token: tokenResult.data,
 			share_url: shareUrl
@@ -120,7 +120,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 		throw error(500, 'Impossible de charger les liens de partage');
 	}
 
-	return json({
+	return Response.json({
 		tokens: tokensResult.data
 	});
 };

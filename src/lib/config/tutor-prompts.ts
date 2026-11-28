@@ -15,8 +15,8 @@
  * @module config/tutor-prompts
  */
 
-import type { GradeCode, SchoolLevel } from '$lib/types/grades';
-import { GRADES } from '$lib/types/grades';
+import type { GradeCode, SchoolLevel } from '#lib/types/grades.ts';
+import { GRADES } from '#lib/types/grades.ts';
 import { GRADE_ADAPTATIONS, PERE_UBU_GRADE_MODIFIERS } from './tutor-grade-adaptations';
 import type { HelpMethod } from './tutor-help-methods';
 import { HELP_METHODS } from './tutor-help-methods';

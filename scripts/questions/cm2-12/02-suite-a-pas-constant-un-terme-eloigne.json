@@ -1,0 +1,189 @@
+{
+	"id": "1b122322-0ce2-4ca4-b366-55f130f11366",
+	"title": "Suite à pas constant : un terme éloigné",
+	"description": "Suite où l'on ajoute toujours le même nombre : le 100e nombre, le 20e, 30e ou 50e, ou le rang d'un nombre donné",
+	"grades": ["CM2"],
+	"level": 1,
+	"delay": 150,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"spacesFromFourDigits": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Voici le début d'une suite de nombres. On ajoute toujours le même nombre pour passer d'un nombre au suivant.\n\n$${{eval:u+0*a}} \\ ;\\  {{eval:u+1*a}} \\ ;\\  {{eval:u+2*a}} \\ ;\\  {{eval:u+3*a}} \\ ;\\  \\ldots$$\n\nQuel est le 100e nombre de cette suite ?\n\n$?$",
+			"variables": [
+				{
+					"name": "u",
+					"expression": "1..20"
+				},
+				{
+					"name": "a",
+					"expression": "2..12"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:u+(100-1)*a}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**La règle.** On ajoute ${{a}}$ à chaque fois : ${{u}} + {{a}} = {{eval:u+a}}$, ${{eval:u+a}} + {{a}} = {{eval:u+2*a}}$.",
+					"**Jusqu'au 100e nombre.** Du 1er au 100e nombre, on avance de ${{eval:100-1}}$ pas de ${{a}}$ : ${{eval:100-1}} \\times {{a}} = {{eval:(100-1)*a}}$.",
+					"$${{u}} + {{eval:(100-1)*a}} = \\textcolor{{{color:primary.0}}}{{{eval:u+(100-1)*a}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Voici le début d'une suite de nombres. On ajoute toujours le même nombre pour passer d'un nombre au suivant.\n\n$${{eval:u+0*a}} \\ ;\\  {{eval:u+1*a}} \\ ;\\  {{eval:u+2*a}} \\ ;\\  {{eval:u+3*a}} \\ ;\\  \\ldots$$\n\nQuel est le {{r}}e nombre de cette suite ?\n\n$?$",
+			"variables": [
+				{
+					"name": "u",
+					"expression": "1..20"
+				},
+				{
+					"name": "a",
+					"expression": "2..12"
+				},
+				{
+					"name": "r",
+					"expression": "20|30|50"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:u+(r-1)*a}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**La règle.** On ajoute ${{a}}$ à chaque fois : ${{u}} + {{a}} = {{eval:u+a}}$, ${{eval:u+a}} + {{a}} = {{eval:u+2*a}}$.",
+					"**Jusqu'au {{r}}e nombre.** Du 1er au {{r}}e nombre, on avance de ${{eval:r-1}}$ pas de ${{a}}$ : ${{eval:r-1}} \\times {{a}} = {{eval:(r-1)*a}}$.",
+					"$${{u}} + {{eval:(r-1)*a}} = \\textcolor{{{color:primary.0}}}{{{eval:u+(r-1)*a}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Voici le début d'une suite de nombres. On ajoute toujours le même nombre pour passer d'un nombre au suivant.\n\n$${{eval:u+0*a}} \\ ;\\  {{eval:u+1*a}} \\ ;\\  {{eval:u+2*a}} \\ ;\\  {{eval:u+3*a}} \\ ;\\  \\ldots$$\n\nÀ quel rang trouve-t-on le nombre ${{eval:u+(r-1)*a}}$ dans cette suite ?\n\nC'est le $?$e nombre.",
+			"variables": [
+				{
+					"name": "u",
+					"expression": "1..20"
+				},
+				{
+					"name": "a",
+					"expression": "2..12"
+				},
+				{
+					"name": "r",
+					"expression": "15..60"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{r}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**La règle.** On ajoute ${{a}}$ à chaque fois : ${{u}} + {{a}} = {{eval:u+a}}$, ${{eval:u+a}} + {{a}} = {{eval:u+2*a}}$.",
+					"**Combien de pas depuis le 1er nombre ?** ${{eval:u+(r-1)*a}} - {{u}} = {{eval:(r-1)*a}}$, et ${{eval:(r-1)*a}} \\div {{a}} = {{eval:r-1}}$ : on a avancé de ${{eval:r-1}}$ pas.",
+					"Le 1er nombre, plus ${{eval:r-1}}$ pas : c'est le $\\textcolor{{{color:primary.0}}}{{{r}}}$e nombre."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "100e de 5 ; 8 ; 11 : 302",
+			"variationIndex": 0,
+			"variables": {
+				"u": "5",
+				"a": "3"
+			},
+			"answers": ["302"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 100 pas au lieu de 99 (305)",
+			"variationIndex": 0,
+			"variables": {
+				"u": "5",
+				"a": "3"
+			},
+			"answers": ["305"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 100 × 3 (300)",
+			"variationIndex": 0,
+			"variables": {
+				"u": "5",
+				"a": "3"
+			},
+			"answers": ["300"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "30e de 5 ; 8 ; 11 : 92",
+			"variationIndex": 1,
+			"variables": {
+				"u": "5",
+				"a": "3",
+				"r": "30"
+			},
+			"answers": ["92"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 30 pas au lieu de 29 (95)",
+			"variationIndex": 1,
+			"variables": {
+				"u": "5",
+				"a": "3",
+				"r": "30"
+			},
+			"answers": ["95"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "rang de 62 dans 5 ; 8 ; 11 : 20",
+			"variationIndex": 2,
+			"variables": {
+				"u": "5",
+				"a": "3",
+				"r": "20"
+			},
+			"answers": ["20"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : le nombre de pas (19)",
+			"variationIndex": 2,
+			"variables": {
+				"u": "5",
+				"a": "3",
+				"r": "20"
+			},
+			"answers": ["19"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

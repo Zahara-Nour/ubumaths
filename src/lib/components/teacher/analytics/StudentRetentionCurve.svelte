@@ -5,8 +5,8 @@
 	SVG inline minimaliste.
 -->
 <script lang="ts">
-	import { Skeleton } from '$lib/components/ui/skeleton';
-	import * as Card from '$lib/components/ui/card';
+	import { Skeleton } from '#lib/components/ui/skeleton/index.ts';
+	import * as Card from '#lib/components/ui/card/index.ts';
 
 	interface RetentionPoint {
 		week_start: string;

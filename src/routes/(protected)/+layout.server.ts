@@ -48,10 +48,10 @@
 
 import type { LayoutServerLoad } from './$types';
 import { error, redirect } from '@sveltejs/kit';
-import { requireUserOrRedirect } from '$lib/server/auth';
-import { createServerLogger } from '$lib/utils/logger';
-import { logError } from '$lib/server/errorMonitoring';
-import { getConsentStatus, type ConsentProfile } from '$lib/utils/consent';
+import { requireUserOrRedirect } from '#lib/server/auth.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
+import { logError } from '#lib/server/errorMonitoring.ts';
+import { getConsentStatus, type ConsentProfile } from '#lib/utils/consent.ts';
 
 const logger = createServerLogger('(protected)/+layout.server.ts');
 

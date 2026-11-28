@@ -1,0 +1,247 @@
+{
+	"id": "8da9f669-17bd-46a5-a28a-098c13381fc8",
+	"title": "Sommet, côtés et nature d'un angle",
+	"description": "Nommer le sommet et les côtés d'un angle ; dire s'il est aigu, droit ou obtus (sans quadrillage, côtés de longueurs différentes)",
+	"grades": ["CM1", "CM2"],
+	"level": 1,
+	"delay": 90,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Quel est le sommet de cet angle ?\n\n```figure\nfenetre: -5 ; 5 ; -5 ; 5\ngrille: non\ndescription: Un angle marqué en rouge, formé de deux demi-droites, et trois points nommés.\n---\n{{if:v==0|{{if:k==1|A|{{if:k==2|M|{{if:k==3|R|F}}}}}}|{{if:v==1|{{if:k==1|B|{{if:k==2|N|{{if:k==3|S|G}}}}}}|{{if:k==1|C|{{if:k==2|P|{{if:k==3|T|H}}}}}}}}}} = point(0, 0)\n{{if:v==0|{{if:k==1|B|{{if:k==2|N|{{if:k==3|S|G}}}}}}|{{if:v==1|{{if:k==1|C|{{if:k==2|P|{{if:k==3|T|H}}}}}}|{{if:k==1|A|{{if:k==2|M|{{if:k==3|R|F}}}}}}}}}} = point({{if:v==0|{{if:k==1|A|{{if:k==2|M|{{if:k==3|R|F}}}}}}|{{if:v==1|{{if:k==1|B|{{if:k==2|N|{{if:k==3|S|G}}}}}}|{{if:k==1|C|{{if:k==2|P|{{if:k==3|T|H}}}}}}}}}}, longueur={{m1}}, angle={{t}})\n{{if:v==0|{{if:k==1|C|{{if:k==2|P|{{if:k==3|T|H}}}}}}|{{if:v==1|{{if:k==1|A|{{if:k==2|M|{{if:k==3|R|F}}}}}}|{{if:k==1|B|{{if:k==2|N|{{if:k==3|S|G}}}}}}}}}} = point({{if:v==0|{{if:k==1|A|{{if:k==2|M|{{if:k==3|R|F}}}}}}|{{if:v==1|{{if:k==1|B|{{if:k==2|N|{{if:k==3|S|G}}}}}}|{{if:k==1|C|{{if:k==2|P|{{if:k==3|T|H}}}}}}}}}}, longueur={{m2}}, angle={{eval:t+a}})\ndemidroite({{if:v==0|{{if:k==1|A|{{if:k==2|M|{{if:k==3|R|F}}}}}}|{{if:v==1|{{if:k==1|B|{{if:k==2|N|{{if:k==3|S|G}}}}}}|{{if:k==1|C|{{if:k==2|P|{{if:k==3|T|H}}}}}}}}}}, {{if:v==0|{{if:k==1|B|{{if:k==2|N|{{if:k==3|S|G}}}}}}|{{if:v==1|{{if:k==1|C|{{if:k==2|P|{{if:k==3|T|H}}}}}}|{{if:k==1|A|{{if:k==2|M|{{if:k==3|R|F}}}}}}}}}}, epaisseur=2)\ndemidroite({{if:v==0|{{if:k==1|A|{{if:k==2|M|{{if:k==3|R|F}}}}}}|{{if:v==1|{{if:k==1|B|{{if:k==2|N|{{if:k==3|S|G}}}}}}|{{if:k==1|C|{{if:k==2|P|{{if:k==3|T|H}}}}}}}}}}, {{if:v==0|{{if:k==1|C|{{if:k==2|P|{{if:k==3|T|H}}}}}}|{{if:v==1|{{if:k==1|A|{{if:k==2|M|{{if:k==3|R|F}}}}}}|{{if:k==1|B|{{if:k==2|N|{{if:k==3|S|G}}}}}}}}}}, epaisseur=2)\nangle({{if:v==0|{{if:k==1|B|{{if:k==2|N|{{if:k==3|S|G}}}}}}|{{if:v==1|{{if:k==1|C|{{if:k==2|P|{{if:k==3|T|H}}}}}}|{{if:k==1|A|{{if:k==2|M|{{if:k==3|R|F}}}}}}}}}}, {{if:v==0|{{if:k==1|A|{{if:k==2|M|{{if:k==3|R|F}}}}}}|{{if:v==1|{{if:k==1|B|{{if:k==2|N|{{if:k==3|S|G}}}}}}|{{if:k==1|C|{{if:k==2|P|{{if:k==3|T|H}}}}}}}}}}, {{if:v==0|{{if:k==1|C|{{if:k==2|P|{{if:k==3|T|H}}}}}}|{{if:v==1|{{if:k==1|A|{{if:k==2|M|{{if:k==3|R|F}}}}}}|{{if:k==1|B|{{if:k==2|N|{{if:k==3|S|G}}}}}}}}}}, couleur=\"rouge\", arcRadiusPx=35)\n```\n\n```choix\nmelanger: non\n- le point {{if:k==1|A|{{if:k==2|M|{{if:k==3|R|F}}}}}}\n- le point {{if:k==1|B|{{if:k==2|N|{{if:k==3|S|G}}}}}}\n- le point {{if:k==1|C|{{if:k==2|P|{{if:k==3|T|H}}}}}}\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..4"
+				},
+				{
+					"name": "v",
+					"expression": "0..2"
+				},
+				{
+					"name": "t",
+					"expression": "0..330"
+				},
+				{
+					"name": "a",
+					"expression": "40..140"
+				},
+				{
+					"name": "m1",
+					"expression": "3..4"
+				},
+				{
+					"name": "m2",
+					"expression": "3..4"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{v}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le sommet d'un angle est le point d'où partent ses deux côtés.",
+					"Les côtés de l'angle sont les deux demi-droites qui partent du sommet : $[{{if:v==0|{{if:k==1|A|{{if:k==2|M|{{if:k==3|R|F}}}}}}|{{if:v==1|{{if:k==1|B|{{if:k==2|N|{{if:k==3|S|G}}}}}}|{{if:k==1|C|{{if:k==2|P|{{if:k==3|T|H}}}}}}}}}}{{if:v==0|{{if:k==1|B|{{if:k==2|N|{{if:k==3|S|G}}}}}}|{{if:v==1|{{if:k==1|C|{{if:k==2|P|{{if:k==3|T|H}}}}}}|{{if:k==1|A|{{if:k==2|M|{{if:k==3|R|F}}}}}}}}}})$ et $[{{if:v==0|{{if:k==1|A|{{if:k==2|M|{{if:k==3|R|F}}}}}}|{{if:v==1|{{if:k==1|B|{{if:k==2|N|{{if:k==3|S|G}}}}}}|{{if:k==1|C|{{if:k==2|P|{{if:k==3|T|H}}}}}}}}}}{{if:v==0|{{if:k==1|C|{{if:k==2|P|{{if:k==3|T|H}}}}}}|{{if:v==1|{{if:k==1|A|{{if:k==2|M|{{if:k==3|R|F}}}}}}|{{if:k==1|B|{{if:k==2|N|{{if:k==3|S|G}}}}}}}}}})$.",
+					"Le sommet est le point $\\textcolor{{{color:primary.0}}}{{{if:v==0|{{if:k==1|A|{{if:k==2|M|{{if:k==3|R|F}}}}}}|{{if:v==1|{{if:k==1|B|{{if:k==2|N|{{if:k==3|S|G}}}}}}|{{if:k==1|C|{{if:k==2|P|{{if:k==3|T|H}}}}}}}}}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Quels sont les côtés de cet angle ?\n\n```figure\nfenetre: -5 ; 5 ; -5 ; 5\ngrille: non\ndescription: Un angle marqué en rouge, formé de deux demi-droites, et trois points nommés.\n---\n{{if:v==0|{{if:k==1|A|{{if:k==2|M|{{if:k==3|R|F}}}}}}|{{if:v==1|{{if:k==1|B|{{if:k==2|N|{{if:k==3|S|G}}}}}}|{{if:k==1|C|{{if:k==2|P|{{if:k==3|T|H}}}}}}}}}} = point(0, 0)\n{{if:v==0|{{if:k==1|B|{{if:k==2|N|{{if:k==3|S|G}}}}}}|{{if:v==1|{{if:k==1|C|{{if:k==2|P|{{if:k==3|T|H}}}}}}|{{if:k==1|A|{{if:k==2|M|{{if:k==3|R|F}}}}}}}}}} = point({{if:v==0|{{if:k==1|A|{{if:k==2|M|{{if:k==3|R|F}}}}}}|{{if:v==1|{{if:k==1|B|{{if:k==2|N|{{if:k==3|S|G}}}}}}|{{if:k==1|C|{{if:k==2|P|{{if:k==3|T|H}}}}}}}}}}, longueur={{m1}}, angle={{t}})\n{{if:v==0|{{if:k==1|C|{{if:k==2|P|{{if:k==3|T|H}}}}}}|{{if:v==1|{{if:k==1|A|{{if:k==2|M|{{if:k==3|R|F}}}}}}|{{if:k==1|B|{{if:k==2|N|{{if:k==3|S|G}}}}}}}}}} = point({{if:v==0|{{if:k==1|A|{{if:k==2|M|{{if:k==3|R|F}}}}}}|{{if:v==1|{{if:k==1|B|{{if:k==2|N|{{if:k==3|S|G}}}}}}|{{if:k==1|C|{{if:k==2|P|{{if:k==3|T|H}}}}}}}}}}, longueur={{m2}}, angle={{eval:t+a}})\ndemidroite({{if:v==0|{{if:k==1|A|{{if:k==2|M|{{if:k==3|R|F}}}}}}|{{if:v==1|{{if:k==1|B|{{if:k==2|N|{{if:k==3|S|G}}}}}}|{{if:k==1|C|{{if:k==2|P|{{if:k==3|T|H}}}}}}}}}}, {{if:v==0|{{if:k==1|B|{{if:k==2|N|{{if:k==3|S|G}}}}}}|{{if:v==1|{{if:k==1|C|{{if:k==2|P|{{if:k==3|T|H}}}}}}|{{if:k==1|A|{{if:k==2|M|{{if:k==3|R|F}}}}}}}}}}, epaisseur=2)\ndemidroite({{if:v==0|{{if:k==1|A|{{if:k==2|M|{{if:k==3|R|F}}}}}}|{{if:v==1|{{if:k==1|B|{{if:k==2|N|{{if:k==3|S|G}}}}}}|{{if:k==1|C|{{if:k==2|P|{{if:k==3|T|H}}}}}}}}}}, {{if:v==0|{{if:k==1|C|{{if:k==2|P|{{if:k==3|T|H}}}}}}|{{if:v==1|{{if:k==1|A|{{if:k==2|M|{{if:k==3|R|F}}}}}}|{{if:k==1|B|{{if:k==2|N|{{if:k==3|S|G}}}}}}}}}}, epaisseur=2)\nangle({{if:v==0|{{if:k==1|B|{{if:k==2|N|{{if:k==3|S|G}}}}}}|{{if:v==1|{{if:k==1|C|{{if:k==2|P|{{if:k==3|T|H}}}}}}|{{if:k==1|A|{{if:k==2|M|{{if:k==3|R|F}}}}}}}}}}, {{if:v==0|{{if:k==1|A|{{if:k==2|M|{{if:k==3|R|F}}}}}}|{{if:v==1|{{if:k==1|B|{{if:k==2|N|{{if:k==3|S|G}}}}}}|{{if:k==1|C|{{if:k==2|P|{{if:k==3|T|H}}}}}}}}}}, {{if:v==0|{{if:k==1|C|{{if:k==2|P|{{if:k==3|T|H}}}}}}|{{if:v==1|{{if:k==1|A|{{if:k==2|M|{{if:k==3|R|F}}}}}}|{{if:k==1|B|{{if:k==2|N|{{if:k==3|S|G}}}}}}}}}}, couleur=\"rouge\", arcRadiusPx=35)\n```\n\n```choix\nmelanger: non\n- $[{{if:k==1|A|{{if:k==2|M|{{if:k==3|R|F}}}}}}{{if:k==1|B|{{if:k==2|N|{{if:k==3|S|G}}}}}})$ et $[{{if:k==1|A|{{if:k==2|M|{{if:k==3|R|F}}}}}}{{if:k==1|C|{{if:k==2|P|{{if:k==3|T|H}}}}}})$\n- $[{{if:k==1|B|{{if:k==2|N|{{if:k==3|S|G}}}}}}{{if:k==1|A|{{if:k==2|M|{{if:k==3|R|F}}}}}})$ et $[{{if:k==1|B|{{if:k==2|N|{{if:k==3|S|G}}}}}}{{if:k==1|C|{{if:k==2|P|{{if:k==3|T|H}}}}}})$\n- $[{{if:k==1|C|{{if:k==2|P|{{if:k==3|T|H}}}}}}{{if:k==1|A|{{if:k==2|M|{{if:k==3|R|F}}}}}})$ et $[{{if:k==1|C|{{if:k==2|P|{{if:k==3|T|H}}}}}}{{if:k==1|B|{{if:k==2|N|{{if:k==3|S|G}}}}}})$\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..4"
+				},
+				{
+					"name": "v",
+					"expression": "0..2"
+				},
+				{
+					"name": "t",
+					"expression": "0..330"
+				},
+				{
+					"name": "a",
+					"expression": "40..140"
+				},
+				{
+					"name": "m1",
+					"expression": "3..4"
+				},
+				{
+					"name": "m2",
+					"expression": "3..4"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{v}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Les deux côtés partent du sommet de l'angle, le point ${{if:v==0|{{if:k==1|A|{{if:k==2|M|{{if:k==3|R|F}}}}}}|{{if:v==1|{{if:k==1|B|{{if:k==2|N|{{if:k==3|S|G}}}}}}|{{if:k==1|C|{{if:k==2|P|{{if:k==3|T|H}}}}}}}}}}$.",
+					"Ce sont les demi-droites $\\textcolor{{{color:primary.0}}}{[{{if:v==0|{{if:k==1|A|{{if:k==2|M|{{if:k==3|R|F}}}}}}|{{if:v==1|{{if:k==1|B|{{if:k==2|N|{{if:k==3|S|G}}}}}}|{{if:k==1|C|{{if:k==2|P|{{if:k==3|T|H}}}}}}}}}}{{if:v==0|{{if:k==1|B|{{if:k==2|N|{{if:k==3|S|G}}}}}}|{{if:v==1|{{if:k==1|C|{{if:k==2|P|{{if:k==3|T|H}}}}}}|{{if:k==1|A|{{if:k==2|M|{{if:k==3|R|F}}}}}}}}}})}$ et $\\textcolor{{{color:primary.0}}}{[{{if:v==0|{{if:k==1|A|{{if:k==2|M|{{if:k==3|R|F}}}}}}|{{if:v==1|{{if:k==1|B|{{if:k==2|N|{{if:k==3|S|G}}}}}}|{{if:k==1|C|{{if:k==2|P|{{if:k==3|T|H}}}}}}}}}}{{if:v==0|{{if:k==1|C|{{if:k==2|P|{{if:k==3|T|H}}}}}}|{{if:v==1|{{if:k==1|A|{{if:k==2|M|{{if:k==3|R|F}}}}}}|{{if:k==1|B|{{if:k==2|N|{{if:k==3|S|G}}}}}}}}}})}$."
+				]
+			}
+		},
+		{
+			"statement": "Cet angle est-il aigu, droit ou obtus ?\n\n```figure\nfenetre: -5 ; 5 ; -5 ; 5\ngrille: non\ndescription: Un angle marqué en rouge, sans quadrillage.\n---\nO = point(0, 0, visible=faux)\nX = point(O, longueur={{m1}}, angle={{t}}, visible=faux)\nY = point(O, longueur={{m2}}, angle={{eval:t+a}}, visible=faux)\nsegment(O, X, epaisseur=2)\nsegment(O, Y, epaisseur=2)\nangle(X, O, Y, couleur=\"rouge\", arcRadiusPx=35)\n```\n\n```choix\nmelanger: non\n- L'angle est aigu.\n- L'angle est droit.\n- L'angle est obtus.\n```",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "0..2"
+				},
+				{
+					"name": "d",
+					"expression": "25..50"
+				},
+				{
+					"name": "a",
+					"expression": "eval:90+(c-1)*d"
+				},
+				{
+					"name": "t",
+					"expression": "0..330"
+				},
+				{
+					"name": "m1",
+					"expression": "2..4"
+				},
+				{
+					"name": "m2",
+					"expression": "3..4"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{c}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On pose le coin de l'équerre sur le sommet, un bord le long d'un côté.",
+					"{{if:c==0|L'autre côté reste à l'intérieur du coin de l'équerre : l'angle est plus petit qu'un angle droit.|{{if:c==1|L'autre côté suit exactement l'autre bord de l'équerre.|L'autre côté passe à l'extérieur du coin de l'équerre : l'angle est plus grand qu'un angle droit.}}}}",
+					"L'angle est $\\textcolor{{{color:primary.0}}}{{{if:c==0|\\text{aigu}|{{if:c==1|\\text{droit}|\\text{obtus}}}}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Sommet B (trio A, B, C)",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1",
+				"v": "1",
+				"t": "20",
+				"a": "70",
+				"m1": "3",
+				"m2": "4"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : un bout de côté (A)",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1",
+				"v": "1",
+				"t": "20",
+				"a": "70",
+				"m1": "3",
+				"m2": "4"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Côtés [NM) et [NP)",
+			"variationIndex": 1,
+			"variables": {
+				"k": "2",
+				"v": "1",
+				"t": "200",
+				"a": "110",
+				"m1": "4",
+				"m2": "3"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : côtés partant de M",
+			"variationIndex": 1,
+			"variables": {
+				"k": "2",
+				"v": "1",
+				"t": "200",
+				"a": "110",
+				"m1": "4",
+				"m2": "3"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Angle de 60 : aigu",
+			"variationIndex": 2,
+			"variables": {
+				"c": "0",
+				"d": "30",
+				"a": "60",
+				"t": "45",
+				"m1": "2",
+				"m2": "4"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Angle droit, tourné",
+			"variationIndex": 2,
+			"variables": {
+				"c": "1",
+				"d": "30",
+				"a": "90",
+				"t": "30",
+				"m1": "3",
+				"m2": "4"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : angle obtus dit aigu",
+			"variationIndex": 2,
+			"variables": {
+				"c": "2",
+				"d": "40",
+				"a": "130",
+				"t": "0",
+				"m1": "2",
+				"m2": "3"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

@@ -10,15 +10,15 @@
 	 */
 
 	import { onMount, onDestroy } from 'svelte';
-	import { browser } from '$app/environment';
-	import { parseDsl } from '$lib/geometry-core/dsl';
-	import type { DslRuntimeErrorDetails } from '$lib/geometry-core/dsl/errors';
+	import { browser } from '$app/env';
+	import { parseDsl } from '#lib/geometry-core/dsl/index.ts';
+	import type { DslRuntimeErrorDetails } from '#lib/geometry-core/dsl/errors.ts';
 	import ConstructionPlayer from './ConstructionPlayer.svelte';
 	import InlineFormatted from './InlineFormatted.svelte';
-	import { Button } from '$lib/components/ui/button';
+	import { Button } from '#lib/components/ui/button/index.ts';
 	import type { EditorView } from '@codemirror/view';
 	import type { Extension, StateEffectType } from '@codemirror/state';
-	import { BUILTIN_NAMES, MATH_FUNCTIONS } from '$lib/geometry-core/dsl/builtins';
+	import { BUILTIN_NAMES, MATH_FUNCTIONS } from '#lib/geometry-core/dsl/builtins.ts';
 
 	interface Props {
 		value?: string;

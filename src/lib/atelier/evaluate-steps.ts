@@ -32,20 +32,20 @@
  * @module atelier/evaluate-steps
  */
 
-import type { RenderedStep } from '$lib/mathAST/common/step-renderer-base';
-import type { MathNode } from '$lib/mathAST/types';
-import { parse } from '$lib/mathAST/cli/core/pipeline';
-import { listInFrench, typedValueNode } from '$lib/mathAST/cli/commands/eval.command';
-import type { Assignment } from '$lib/mathAST/cli/core/variable-argument';
-import { substitute } from '$lib/mathAST/eval';
-import { getVariables } from '$lib/mathAST/eval/substitute';
-import { toLatex } from '$lib/mathAST/latex-generator';
-import { findNodes, mapNode } from '$lib/mathAST/transforms';
-import { isUnit } from '$lib/mathAST/guards';
-import { fraction, parentheses } from '$lib/mathAST/factory';
-import { hasDecimalLiteral } from '$lib/mathAST/tidy/decimal';
-import { generatePedagogicalArithmeticSteps } from '$lib/mathAST/pedagogical-arithmetic/pipeline';
-import { PedagogicalArithmeticRenderer } from '$lib/mathAST/pedagogical-arithmetic/renderer';
+import type { RenderedStep } from '#lib/mathAST/common/step-renderer-base.ts';
+import type { MathNode } from '#lib/mathAST/types.ts';
+import { parse } from '#lib/mathAST/cli/core/pipeline.ts';
+import { listInFrench, typedValueNode } from '#lib/mathAST/cli/commands/eval.command.ts';
+import type { Assignment } from '#lib/mathAST/cli/core/variable-argument.ts';
+import { substitute } from '#lib/mathAST/eval/index.ts';
+import { getVariables } from '#lib/mathAST/eval/substitute.ts';
+import { toLatex } from '#lib/mathAST/latex-generator.ts';
+import { findNodes, mapNode } from '#lib/mathAST/transforms.ts';
+import { isUnit } from '#lib/mathAST/guards.ts';
+import { fraction, parentheses } from '#lib/mathAST/factory.ts';
+import { hasDecimalLiteral } from '#lib/mathAST/tidy/decimal.ts';
+import { generatePedagogicalArithmeticSteps } from '#lib/mathAST/pedagogical-arithmetic/pipeline.ts';
+import { PedagogicalArithmeticRenderer } from '#lib/mathAST/pedagogical-arithmetic/renderer.ts';
 import {
 	concludesEngineValue,
 	hasFraction,

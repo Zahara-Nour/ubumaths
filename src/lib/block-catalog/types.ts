@@ -23,14 +23,24 @@ export type CatalogNodeType =
 	| 'figure'
 	| 'stat-chart'
 	| 'qr'
+	| 'engrenages'
 	| 'scratch'
 	| 'horloge'
 	| 'partage'
 	| 'espace'
 	| 'operation'
 	| 'ranger'
+	| 'associer'
+	| 'trous'
+	| 'tortue'
+	| 'calcul'
+	| 'robot'
+	| 'labyrinthe'
+	| 'yohaku'
+	| 'python-a-ecrire'
 	| 'collection'
-	| 'monnaie';
+	| 'monnaie'
+	| 'schema-barres';
 
 /** Une ligne du tableau des réglages */
 export interface BlockSetting {

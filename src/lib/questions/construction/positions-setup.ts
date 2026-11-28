@@ -6,20 +6,20 @@
  * @module questions/construction/positions-setup
  */
 
-import { parseFigureContent } from '$lib/ubumark/parser/figure-parser';
-import { readConstructionHeader } from '$lib/ubumark/parser/construction-parser';
-import { buildFigureScene, type FigureScene } from '$lib/ubumark/utils/figure-scene';
-import { isCircle, isPointElement, type GeoElement } from '$lib/geometry-core/types/elements';
-import { geoToNumber } from '$lib/geometry-core/compute/to-number';
-import { circleToSVG } from '$lib/geometry-core/rendering/svg-primitives';
-import { createTransformer } from '$lib/geometry-core/viewport/viewport';
+import { parseFigureContent } from '#lib/ubumark/parser/figure-parser.ts';
+import { readConstructionHeader } from '#lib/ubumark/parser/construction-parser.ts';
+import { buildFigureScene, type FigureScene } from '#lib/ubumark/utils/figure-scene.ts';
+import { isCircle, isPointElement, type GeoElement } from '#lib/geometry-core/types/elements.ts';
+import { geoToNumber } from '#lib/geometry-core/compute/to-number.ts';
+import { circleToSVG } from '#lib/geometry-core/rendering/svg-primitives.ts';
+import { createTransformer } from '#lib/geometry-core/viewport/viewport.ts';
 import type { Trait } from './instruments';
 import { ConstructionAuthorError, type Position } from './judge';
 import { registerConstructionPositions, type ConstructionGeometry } from './positions';
 import type { ExpectedCircle, ExpectedLine, ExpectedPoints } from './point';
 import type { FigureLine, FigureSegment, FigureShapes } from './symmetry';
-import type { FigureHeader } from '$lib/ubumark/types/figure';
-import { centeredCircleOf, type ConstructionCheck } from '$lib/ubumark/types/construction';
+import type { FigureHeader } from '#lib/ubumark/types/figure.ts';
+import { centeredCircleOf, type ConstructionCheck } from '#lib/ubumark/types/construction.ts';
 
 /** Position de chaque point NOMMÉ d'une scène (le nom affiché : A, B…) */
 export function namedPointPositions(scene: FigureScene): Map<string, Position> {
@@ -227,7 +227,7 @@ function resolveGeometry(source: string): ConstructionGeometry {
 	}
 	return {
 		points: allNamedPointPositions(scene),
-		shapes: figureShapes(scene, node.header),
+		shapes: { ...figureShapes(scene, node.header), tools: spec.tools },
 		expected: expectedPoints(figureSource, spec.checks)
 	};
 }

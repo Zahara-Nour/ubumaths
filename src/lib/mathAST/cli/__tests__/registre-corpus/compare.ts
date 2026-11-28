@@ -31,11 +31,11 @@
  * - Lisible = se parse : `1000!` ne se calcule pas, mais se compare au texte.
  */
 
-import { checkForm } from '$lib/mathAST/cosmetic-transforms';
-import { parseLatex } from '$lib/mathAST/parser';
-import { compile } from '$lib/mathAST/eval/compile';
-import { findNodes } from '$lib/mathAST/transforms';
-import { isVariable } from '$lib/mathAST/guards';
+import { checkForm } from '#lib/mathAST/cosmetic-transforms.ts';
+import { parseLatex } from '#lib/mathAST/parser/index.ts';
+import { compile } from '#lib/mathAST/eval/compile.ts';
+import { findNodes } from '#lib/mathAST/transforms.ts';
+import { isVariable } from '#lib/mathAST/guards.ts';
 import type { RegistreCase } from '../../../../../../tests/fixtures/mathast/registre-corpus';
 
 // =============================================================================

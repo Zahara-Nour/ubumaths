@@ -8,8 +8,8 @@
  */
 import { describe, it, expect } from 'vitest';
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { Database } from '$lib/types/database';
-import { tableMock, type TableResponse } from '$lib/server/worksheets/__tests__/table-mock';
+import type { Database } from '#lib/types/database.ts';
+import { tableMock, type TableResponse } from '#lib/server/worksheets/__tests__/table-mock.ts';
 
 const ELEVE = '550e8400-e29b-41d4-a716-446655440001';
 const AUTRE = '550e8400-e29b-41d4-a716-446655440002';
@@ -89,13 +89,52 @@ describe('PUT', () => {
 	});
 });
 
+// Lecture facilitée (chantier `lecture-facilitee`, D9 du 2026-11-19)
+describe('PUT : lecture facilitée', () => {
+	it("l'élève allume la sienne, sans réécrire sa taille", async () => {
+		const { locals: l, mock } = locals(ELEVE, 'student', ECRIT);
+		const response = await put(l, { easyReading: true });
+		expect(await response.json()).toEqual({ easyReading: true });
+		expect(mock.writes[0]).toMatchObject({ values: { student_id: ELEVE, easy_reading: true } });
+		expect(mock.writes[0].values).not.toHaveProperty('text_size');
+	});
+
+	it("le prof l'éteint pour l'élève qu'il nomme", async () => {
+		const { locals: l, mock } = locals(PROF, 'teacher', ECRIT);
+		await put(l, { studentId: ELEVE, easyReading: false });
+		expect(mock.writes[0]).toMatchObject({ values: { student_id: ELEVE, easy_reading: false } });
+	});
+
+	it("l'élève ne l'allume pas pour un camarade : 403, rien d'écrit", async () => {
+		const { locals: l, mock } = locals(ELEVE, 'student', ECRIT);
+		await expect(put(l, { studentId: AUTRE, easyReading: true })).rejects.toMatchObject({
+			status: 403
+		});
+		expect(mock.writes).toEqual([]);
+	});
+
+	it('valeur autre qu’un booléen, ou aucun réglage : 400', async () => {
+		const { locals: l } = locals(ELEVE, 'student', ECRIT);
+		await expect(put(l, { easyReading: 'oui' })).rejects.toMatchObject({ status: 400 });
+		await expect(put(l, {})).rejects.toMatchObject({ status: 400 });
+	});
+});
+
 describe('GET', () => {
+	it("rend aussi la lecture facilitée de l'élève", async () => {
+		const { locals: l } = locals(ELEVE, 'student', {
+			data: [{ student_id: ELEVE, text_size: 'normal', easy_reading: true }],
+			error: null
+		});
+		expect(await (await get(l)).json()).toEqual({ textSize: 'normal', easyReading: true });
+	});
+
 	it("l'élève lit la sienne", async () => {
 		const { locals: l } = locals(ELEVE, 'student', {
 			data: [{ student_id: ELEVE, text_size: 'x_large' }],
 			error: null
 		});
-		expect(await (await get(l)).json()).toEqual({ textSize: 'x_large' });
+		expect(await (await get(l)).json()).toEqual({ textSize: 'x_large', easyReading: false });
 	});
 
 	it("l'élève ne lit pas celle d'un camarade : 403", async () => {

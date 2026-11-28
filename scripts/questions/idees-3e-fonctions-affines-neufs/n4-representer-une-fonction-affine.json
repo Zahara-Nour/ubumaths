@@ -1,0 +1,230 @@
+{
+	"id": "b213f446-242b-4177-851a-2c50978a9f5f",
+	"rangement": {
+		"noeud": "Fonctions > Généralités sur les fonctions",
+		"point": "3-039"
+	},
+	"title": "Représenter graphiquement une fonction affine",
+	"description": "Tracer la droite de f(x) = ax + b en plaçant deux de ses points : coefficient directeur entier, fonction linéaire, coefficient directeur en demis",
+	"grades": ["3"],
+	"level": 1,
+	"delay": 90,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true
+	},
+	"variations": [
+		{
+			"statement": "On considère la fonction affine $f$ définie par $f(x)={{a}}x{{b;+}}$.\n\nTrace la droite qui représente $f$ : place deux de ses points.\n\n```courbe\nx: -5 ; 5\ny: -5 ; 5\ngrille: 1 ; 1\ntracer: y = ({{a}})*x+({{b}})\ntaille: moyenne\ndescription: Repère gradué de 1 en 1, de −5 à 5 sur les deux axes.\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..3;±"
+				},
+				{
+					"name": "b",
+					"expression": "1..3;±"
+				}
+			],
+			"conditions": ["a!=b"],
+			"correction": {
+				"steps": [
+					"Pour représenter $f$, on place deux points de sa droite : $(0\\,;f(0))$ sur l'axe des ordonnées, puis un deuxième en calculant une autre image.",
+					"```courbe\nx: -5 ; 5\ny: -5 ; 5\ngrille: 1 ; 1\nf(x) = ({{a}})*x+({{b}})   bleu   nom=\\mathcal{C}_f\npoints: A(0 ; {{b}}), B(1 ; {{eval:a+b}})\ntaille: moyenne\ndescription: Droite représentant f et deux de ses points, A sur l'axe des ordonnées et B.\n```",
+					"$f(0)={{b}}$ donne $A(0\\,;{{b}})$, et $f(1)={{a}}\\times1{{b;+}}={{eval:a+b}}$ donne $B(1\\,;{{eval:a+b}})$."
+				]
+			},
+			"hint": "Commence par le point d'abscisse $0$ : son ordonnée est $f(0)$. Calcule ensuite l'image d'un autre nombre."
+		},
+		{
+			"statement": "On considère la fonction affine $f$ définie par $f(x)={{a}}x$.\n\nTrace la droite qui représente $f$ : place deux de ses points.\n\n```courbe\nx: -5 ; 5\ny: -5 ; 5\ngrille: 1 ; 1\ntracer: y = ({{a}})*x\ntaille: moyenne\ndescription: Repère gradué de 1 en 1, de −5 à 5 sur les deux axes.\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..3;±"
+				},
+				{
+					"name": "b",
+					"expression": "0"
+				}
+			],
+			"conditions": [],
+			"correction": {
+				"steps": [
+					"Pour représenter $f$, on place deux points de sa droite : $(0\\,;f(0))$ sur l'axe des ordonnées, puis un deuxième en calculant une autre image.",
+					"```courbe\nx: -5 ; 5\ny: -5 ; 5\ngrille: 1 ; 1\nf(x) = ({{a}})*x   bleu   nom=\\mathcal{C}_f\npoints: A(0 ; {{b}}), B(1 ; {{eval:a}})\ntaille: moyenne\ndescription: Droite représentant f et deux de ses points, A sur l'axe des ordonnées et B.\n```",
+					"$f(0)=0$ : la droite passe par l'origine $A(0\\,;0)$. Puis $f(1)={{a}}$ donne $B(1\\,;{{a}})$."
+				]
+			},
+			"hint": "Commence par le point d'abscisse $0$ : son ordonnée est $f(0)$. Calcule ensuite l'image d'un autre nombre."
+		},
+		{
+			"statement": "On considère la fonction affine $f$ définie par $f(x)={{if:n<0|-}}\\dfrac{ {{eval:abs(n)}} }{2}x{{b;+}}$.\n\nTrace la droite qui représente $f$ : place deux de ses points.\n\n```courbe\nx: -5 ; 5\ny: -5 ; 5\ngrille: 1 ; 1\ntracer: y = ({{n}})/2*x+({{b}})\ntaille: moyenne\ndescription: Repère gradué de 1 en 1, de −5 à 5 sur les deux axes.\n```",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "1|3|-1|-3"
+				},
+				{
+					"name": "b",
+					"expression": "1..3;±"
+				}
+			],
+			"conditions": [],
+			"correction": {
+				"steps": [
+					"Pour représenter $f$, on place deux points de sa droite : $(0\\,;f(0))$ sur l'axe des ordonnées, puis un deuxième en calculant une autre image.",
+					"```courbe\nx: -5 ; 5\ny: -5 ; 5\ngrille: 1 ; 1\nf(x) = ({{n}})/2*x+({{b}})   bleu   nom=\\mathcal{C}_f\npoints: A(0 ; {{b}}), B(2 ; {{eval:n+b}})\ntaille: moyenne\ndescription: Droite représentant f et deux de ses points, A sur l'axe des ordonnées et B.\n```",
+					"$f(0)={{b}}$ donne $A(0\\,;{{b}})$. Une abscisse paire donne une image entière : $f(2)={{if:n<0|-}}\\dfrac{ {{eval:abs(n)}} }{2}\\times2{{b;+}}={{eval:n+b}}$, d'où $B(2\\,;{{eval:n+b}})$."
+				]
+			},
+			"hint": "Commence par le point d'abscisse $0$ : son ordonnée est $f(0)$. Calcule ensuite l'image d'un autre nombre."
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "v0 : (0 ; −1) et (1 ; 1)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"b": "-1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0;-1/1;1"]
+		},
+		{
+			"description": "v0 : deux autres points",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"b": "-1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["2;3/-1;-3"]
+		},
+		{
+			"description": "v0 : a et b inversés (y = −x + 2)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"b": "-1"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["0;2/1;1"]
+		},
+		{
+			"description": "v0 : signe de a (y = −2x − 1)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"b": "-1"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["0;-1/1;-3"]
+		},
+		{
+			"description": "v0 : un seul point, posé deux fois",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"b": "-1"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["0;-1/0;-1"]
+		},
+		{
+			"description": "v0 : f(x) = −x + 3",
+			"variationIndex": 0,
+			"variables": {
+				"a": "-1",
+				"b": "3"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0;3/3;0"]
+		},
+		{
+			"description": "v1 : (0 ; 0) et (1 ; −3)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "-3",
+				"b": "0"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0;0/1;-3"]
+		},
+		{
+			"description": "v1 : signe de a",
+			"variationIndex": 1,
+			"variables": {
+				"a": "-3",
+				"b": "0"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["0;0/1;3"]
+		},
+		{
+			"description": "v2 : (0 ; 1) et (2 ; −2)",
+			"variationIndex": 2,
+			"variables": {
+				"n": "-3",
+				"b": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0;1/2;-2"]
+		},
+		{
+			"description": "v2 : (−2 ; 4) et (2 ; −2)",
+			"variationIndex": 2,
+			"variables": {
+				"n": "-3",
+				"b": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["-2;4/2;-2"]
+		},
+		{
+			"description": "v2 : pente renversée (−2/3)",
+			"variationIndex": 2,
+			"variables": {
+				"n": "-3",
+				"b": "1"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["0;1/3;-1"]
+		},
+		{
+			"description": "v2 : signe de a (y = 3/2 x + 1)",
+			"variationIndex": 2,
+			"variables": {
+				"n": "-3",
+				"b": "1"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["0;1/2;4"]
+		}
+	]
+}

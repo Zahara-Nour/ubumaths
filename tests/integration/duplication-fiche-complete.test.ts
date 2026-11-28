@@ -128,12 +128,12 @@ async function seedWorksheet(): Promise<string> {
 	);
 	await sql(
 		`insert into public.worksheet_exercises
-		 (worksheet_id, exercise_id, section_id, position, points, variant_mode, variant_config,
+		 (worksheet_id, exercise_id, exercise_version_id, section_id, position, points, variant_mode, variant_config,
 		  custom_instructions, answer_frame_lines, translations, is_essential, variation_index,
 		  correction_visible)
 		 values
-		 ($1, $2, $3, 1, 7, 'n_versions', $4, 'Fais-le', $5, $6, true, 2, false),
-		 ($1, $2, null, 2, 3, 'none', null, null, null, null, false, null, true)`,
+		 ($1, $2, (select v.id from public.exercise_versions v where v.exercise_id = $2 order by v.number desc limit 1), $3, 1, 7, 'n_versions', $4, 'Fais-le', $5, $6, true, 2, false),
+		 ($1, $2, (select v.id from public.exercise_versions v where v.exercise_id = $2 order by v.number desc limit 1), null, 2, 3, 'none', null, null, null, null, false, null, true)`,
 		[
 			id,
 			exerciseId,
@@ -205,5 +205,55 @@ describe('dupliquer une fiche recopie tout son contenu', () => {
 			.toEqual(originalExercises.map((e) => without(e, EXCLUDED.worksheet_exercises)));
 		// La section de l'exercice pointe vers la section COPIÉE
 		expect(copyExercises.map((e) => e.section_id)).toEqual([copySections[0].id, null]);
+	});
+
+	it('catégorie, case « titre libre » et notions suivent la copie, dans l’ordre (ADR 0041)', async () => {
+		const [{ id: branchId }] = await sql(
+			`insert into public.classification_nodes (kind, parent_id, name)
+			 values ('branch', null, $1) returning id`,
+			[`${RUN} branche`]
+		);
+		const nodeIds: string[] = [];
+		for (const name of ['Suites', 'Dérivation']) {
+			const [{ id: nodeId }] = await sql(
+				`insert into public.classification_nodes (kind, parent_id, name)
+				 values ('notion', $1, $2) returning id`,
+				[branchId, `${RUN} ${name}`]
+			);
+			nodeIds.push(nodeId as string);
+		}
+		const [{ id }] = await sql(
+			`insert into public.worksheets (title, type, status, created_by, category, custom_title)
+			 values ($1, 'worksheet', 'draft', $2, 'review', false) returning id`,
+			[`${RUN} révisions`, teacherId]
+		);
+		// Ordre d'impression inverse de l'ordre de création
+		await sql(
+			`insert into public.worksheet_classifications (worksheet_id, node_id, position)
+			 values ($1, $2, 0), ($1, $3, 1)`,
+			[id, nodeIds[1], nodeIds[0]]
+		);
+
+		const response = await duplicateWorksheet({ locals, params: { id } } as never);
+		expect(response.status).toBe(201);
+		const copyId = ((await response.json()) as { worksheet: { id: string } }).worksheet.id;
+
+		const [copy] = await sql('select category, custom_title from public.worksheets where id = $1', [
+			copyId
+		]);
+		expect(copy).toEqual({ category: 'review', custom_title: false });
+		const notions = await sql(
+			`select node_id, position from public.worksheet_classifications
+			 where worksheet_id = $1 order by position`,
+			[copyId]
+		);
+		expect(notions).toEqual([
+			{ node_id: nodeIds[1], position: 0 },
+			{ node_id: nodeIds[0], position: 1 }
+		]);
+
+		await sql('delete from public.worksheets where id = any($1)', [[id, copyId]]);
+		await sql('delete from public.classification_nodes where id = any($1)', [nodeIds]);
+		await sql('delete from public.classification_nodes where id = $1', [branchId]);
 	});
 });

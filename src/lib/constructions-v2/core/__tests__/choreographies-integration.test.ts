@@ -13,12 +13,12 @@
 import { describe, it, expect } from 'vitest';
 import { ConstructionExecutor } from '../executor';
 import type { SubStep } from '../choreographies/types';
-import { geoToNumber } from '$lib/geometry-core/compute/to-number';
-import { numeric } from '$lib/geometry-core/types/geo-value';
+import { geoToNumber } from '#lib/geometry-core/compute/to-number.ts';
+import { numeric } from '#lib/geometry-core/types/geo-value.ts';
 import {
 	computeAngleGeometry,
 	projectAngleEndpoints
-} from '$lib/geometry-core/rendering/angle-geometry-shared';
+} from '#lib/geometry-core/rendering/angle-geometry-shared.ts';
 
 describe('ConstructionExecutor — decorator wiring (Phase 3)', () => {
 	it('no decorators → currentDecoratorTriple is null after step', () => {
@@ -702,10 +702,10 @@ describe('ConstructionExecutor — parallele @euclide @parallelogramme (6 sub-st
 			kinds.push(exec.currentSubStep?.kind ?? 'null');
 		}
 		expect(kinds).toEqual([
-			'compass-measure', // SS1 : setSquare positions on (AB) at A
-			'compass-measure', // SS2 : setSquare slides from A to F
+			'instrument-move', // SS1 : setSquare positions on (AB) at A
+			'instrument-move', // SS2 : setSquare slides from A to F
 			'ruler-trace', // SS3 : pencil traces portion inside setSquare
-			'compass-measure', // SS4 : swap setSquare → ruler (positioned along perpendicular)
+			'instrument-move', // SS4 : swap setSquare → ruler (positioned along perpendicular)
 			'ruler-trace' // SS5 : pencil extends along ruler to complete perpendicular
 		]);
 	});
@@ -743,11 +743,11 @@ describe('ConstructionExecutor — parallele @euclide @parallelogramme (6 sub-st
 			kinds.push(exec.currentSubStep?.kind ?? 'null');
 		}
 		expect(kinds).toEqual([
-			'compass-measure', // SS1 : setSquare positions on (AB) at A
-			'compass-measure', // SS2 : ruler positions against setSquare's vertical edge
-			'compass-measure', // SS3 : setSquare slides along ruler to C_final
+			'instrument-move', // SS1 : setSquare positions on (AB) at A
+			'instrument-move', // SS2 : ruler positions against setSquare's vertical edge
+			'instrument-move', // SS3 : setSquare slides along ruler to C_final
 			'ruler-trace', // SS4 : pencil traces along setSquare's horizontal edge
-			'compass-measure', // SS5 : swap setSquare → ruler aligned with parallel
+			'instrument-move', // SS5 : swap setSquare → ruler aligned with parallel
 			'ruler-trace' // SS6 : pencil extends parallel along ruler
 		]);
 	});
@@ -1015,17 +1015,17 @@ describe('ConstructionExecutor — parallele @equerre @double_perpendiculaire (1
 		const steps = playSubSteps(exec);
 		expect(steps.map((s) => s.kind)).toEqual([
 			// perpendiculaire(P, A, B) @equerre, par ctx.sub
-			'compass-measure', // équerre posée sur (AB)
-			'compass-measure', // glissement jusqu'au pied
+			'instrument-move', // équerre posée sur (AB)
+			'instrument-move', // glissement jusqu'au pied
 			'ruler-trace', // tracé de e le long de l'équerre
-			'compass-measure', // règle
+			'instrument-move', // règle
 			'ruler-trace', // prolongement de e
 			// la droite auxiliaire e apparaît
 			'line-fade-in',
 			// équerre posée sur e, angle droit en P
-			'compass-measure',
+			'instrument-move',
 			'ruler-trace', // tracé d'une portion de la parallèle
-			'compass-measure', // règle
+			'instrument-move', // règle
 			'ruler-trace' // prolongement
 		]);
 		expect(steps.map((s) => s.instrument ?? null)).toEqual([

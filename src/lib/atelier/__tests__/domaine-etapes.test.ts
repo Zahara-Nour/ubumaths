@@ -17,8 +17,8 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import type { RenderedStep } from '$lib/mathAST/common/step-renderer-base';
-import type { Domain } from '$lib/mathAST/domain/types';
+import type { RenderedStep } from '#lib/mathAST/common/step-renderer-base.ts';
+import type { Domain } from '#lib/mathAST/domain/types.ts';
 import { Atelier } from '../atelier.svelte';
 import { CalcDesk } from '../desk.svelte';
 import { domainLine } from '../domain-steps';

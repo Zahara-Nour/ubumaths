@@ -3,7 +3,7 @@
  * ===========================================================================
  *
  * ADR 0022, comportements 8, 9 et refus 10 à 16 de
- * docs/wip/dictionnaire-en-base-spec.md, à travers `$lib/server/dictionary/admin`
+ * docs/wip/dictionnaire-en-base-spec.md, à travers `#lib/server/dictionary/admin.ts`
  * (ce qu'appellent les routes `/api/admin/dictionnaire`) :
  *   - l'admin ajoute, modifie, masque ; chaque modification garde la version
  *     précédente, avec son auteur ;
@@ -14,9 +14,9 @@
  */
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 import { createClient, type SupabaseClient } from '@supabase/supabase-js';
-import type { Database } from '$lib/types/database';
-import type { DictionaryEntryInput } from '$lib/dictionary/entry-schema';
-import { createEntry, loadVersions, updateEntry } from '$lib/server/dictionary/admin';
+import type { Database } from '#lib/types/database.ts';
+import type { DictionaryEntryInput } from '#lib/dictionary/entry-schema.ts';
+import { createEntry, loadVersions, updateEntry } from '#lib/server/dictionary/admin.ts';
 import { cleanupAllTestData } from '../helpers/database/trigger-test-helpers';
 import { DEFAULT_TEST_PASSWORD } from '../helpers/database/supabase-client';
 import { getPostgresClient } from '../helpers/database/postgres-client';

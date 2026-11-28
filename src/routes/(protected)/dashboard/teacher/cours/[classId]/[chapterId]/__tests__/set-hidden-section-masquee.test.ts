@@ -13,11 +13,11 @@ import { describe, it, expect, vi } from 'vitest';
 
 const setLinkedElementHidden = vi.fn();
 
-vi.mock('$lib/server/middleware/auth', () => ({
+vi.mock('#lib/server/middleware/auth.ts', () => ({
 	requireRole: vi.fn(async () => ({ user: { id: 'prof' } }))
 }));
-vi.mock('$lib/server/chapters-publication', async (importOriginal) => ({
-	...(await importOriginal<typeof import('$lib/server/chapters-publication')>()),
+vi.mock('#lib/server/chapters-publication.ts', async (importOriginal) => ({
+	...(await importOriginal<typeof import('#lib/server/chapters-publication.ts')>()),
 	setLinkedElementHidden: (...args: unknown[]) => setLinkedElementHidden(...args)
 }));
 

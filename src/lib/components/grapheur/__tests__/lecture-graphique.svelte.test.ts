@@ -7,8 +7,8 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import { userEvent } from 'vitest/browser';
 import GraphSVG from '../GraphSVG.svelte';
-import { GrapheurStore } from '$lib/stores/grapheur.svelte';
-import { grapheurContext } from '$lib/stores/grapheur-context';
+import { GrapheurStore } from '#lib/stores/grapheur.svelte.ts';
+import { grapheurContext } from '#lib/stores/grapheur-context.ts';
 
 // Une instance neuve par test, fournie aux composants par le contexte.
 let grapheurStore = new GrapheurStore();
@@ -56,6 +56,59 @@ describe('lecture graphique — les calculs de la console', () => {
 		// a et f(a) écrits au pied des pointillés
 		expect(reading!.textContent).toContain('2');
 		expect(reading!.textContent).toContain('4');
+	});
+
+	it('E28 — f(1,5) sur x² − 2 (f(x) proche de 0) : x passe sous l’axe, les deux étiquettes ne se touchent pas', async () => {
+		plotted('x^2-2', [1.5]);
+		const { container } = await render(GraphSVG, { context: grapheurContext(grapheurStore) });
+		await settle();
+
+		const reading = container.querySelector('g.image-readings [data-source="console"]')!;
+		const [atBox, valueBox] = [...reading.querySelectorAll('rect.tooltip-bg')];
+		const axisY = attr(reading.querySelector('line.lecture-verticale')!, 'y1');
+		const box = (r: Element) => ({
+			left: attr(r, 'x'),
+			right: attr(r, 'x') + attr(r, 'width'),
+			top: attr(r, 'y'),
+			bottom: attr(r, 'y') + attr(r, 'height')
+		});
+		const a = box(atBox);
+		const b = box(valueBox);
+		const touch = a.left < b.right && b.left < a.right && a.top < b.bottom && b.top < a.bottom;
+		expect(touch, 'étiquettes de x et de f(x) séparées').toBe(false);
+		// x sous l'axe des abscisses
+		expect(a.top).toBeGreaterThan(axisY);
+	});
+
+	it('E28 — f(1,4) sur x² − 2 (f(x) juste sous l’axe) : les deux étiquettes ne se touchent pas', async () => {
+		plotted('x^2-2', [1.4]);
+		const { container } = await render(GraphSVG, { context: grapheurContext(grapheurStore) });
+		await settle();
+
+		const reading = container.querySelector('g.image-readings [data-source="console"]')!;
+		const [atBox, valueBox] = [...reading.querySelectorAll('rect.tooltip-bg')].map((r) => ({
+			left: attr(r, 'x'),
+			right: attr(r, 'x') + attr(r, 'width'),
+			top: attr(r, 'y'),
+			bottom: attr(r, 'y') + attr(r, 'height')
+		}));
+		const touch =
+			atBox.left < valueBox.right &&
+			valueBox.left < atBox.right &&
+			atBox.top < valueBox.bottom &&
+			valueBox.top < atBox.bottom;
+		expect(touch, 'étiquettes de x et de f(x) séparées').toBe(false);
+	});
+
+	it('E28 — f(2) sur x² : l’étiquette de x reste au-dessus de l’axe', async () => {
+		plotted('x^2', [2]);
+		const { container } = await render(GraphSVG, { context: grapheurContext(grapheurStore) });
+		await settle();
+
+		const reading = container.querySelector('g.image-readings [data-source="console"]')!;
+		const atBox = reading.querySelector('rect.tooltip-bg')!;
+		const axisY = attr(reading.querySelector('line.lecture-verticale')!, 'y1');
+		expect(attr(atBox, 'y') + attr(atBox, 'height')).toBeLessThan(axisY);
 	});
 
 	it('hors de l’ensemble de définition : rien de dessiné', async () => {

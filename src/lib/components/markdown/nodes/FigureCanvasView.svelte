@@ -23,14 +23,14 @@
 	@module components/markdown/nodes/FigureCanvasView
 -->
 <script lang="ts">
-	import type { FigureInteractiveSettings, FigureNode } from '$lib/ubumark/types/figure';
-	import { buildFigureScene, FIGURE_DEFAULT_COLOR } from '$lib/ubumark/utils/figure-scene';
-	import { figureViewFromWindow } from '$lib/ubumark/utils/figure-view';
-	import type { Figure } from '$lib/geometry-core/graph/figure';
-	import type { Viewport } from '$lib/geometry-core/viewport/types';
-	import GeometryCanvas from '$lib/components/geometry/GeometryCanvas.svelte';
-	import FigureFrameLayer from '$lib/components/geometry/FigureFrameLayer.svelte';
-	import { Button } from '$lib/components/ui/button';
+	import type { FigureInteractiveSettings, FigureNode } from '#lib/ubumark/types/figure.ts';
+	import { buildFigureScene, FIGURE_DEFAULT_COLOR } from '#lib/ubumark/utils/figure-scene.ts';
+	import { figureViewFromWindow } from '#lib/ubumark/utils/figure-view.ts';
+	import type { Figure } from '#lib/geometry-core/graph/figure.ts';
+	import type { Viewport } from '#lib/geometry-core/viewport/types.ts';
+	import GeometryCanvas from '#lib/components/geometry/GeometryCanvas.svelte';
+	import FigureFrameLayer from '#lib/components/geometry/FigureFrameLayer.svelte';
+	import { Button } from '#lib/components/ui/button/index.ts';
 	import FigureErrors from './FigureErrors.svelte';
 	import { OVER_BUDGET_MESSAGE, readRenderBudget, withinBudget } from '../render-budget';
 	import { readContentLocale } from '../content-locale';

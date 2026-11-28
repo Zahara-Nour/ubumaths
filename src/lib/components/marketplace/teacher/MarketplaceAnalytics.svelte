@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { lore } from '$lib/config/lore';
+	import { lore } from '#lib/config/lore.ts';
 	import { onMount } from 'svelte';
 	import {
 		Card,
@@ -7,10 +7,10 @@
 		CardDescription,
 		CardHeader,
 		CardTitle
-	} from '$lib/components/ui/card';
-	import { Badge } from '$lib/components/ui/badge';
-	import { Progress } from '$lib/components/ui/progress';
-	import { toaster } from '$lib/stores/toaster.svelte';
+	} from '#lib/components/ui/card/index.ts';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
+	import { Progress } from '#lib/components/ui/progress/index.ts';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
 	import { TrendingUp, BarChart3, Award, Coins } from '@lucide/svelte';
 
 	interface Analytics {

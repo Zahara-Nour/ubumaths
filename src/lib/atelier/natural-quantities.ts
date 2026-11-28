@@ -28,7 +28,7 @@
  * @module atelier/natural-quantities
  */
 
-import { parse as parseUnit } from '$lib/mathAST/units/parser';
+import { parse as parseUnit } from '#lib/mathAST/units/parser.ts';
 
 // =============================================================================
 // Types

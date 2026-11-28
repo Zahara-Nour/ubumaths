@@ -4,7 +4,7 @@
  * Produces a #cetz.canvas({...}) block using the cetz drawing library.
  */
 
-import { HEX_COLOR } from '$lib/theme/named-colors';
+import { HEX_COLOR } from '#lib/theme/named-colors.ts';
 import type { Figure } from '../graph/figure';
 import { conicPointFromParam } from '../graph/conic-helpers';
 import type { Viewport } from '../viewport/types';

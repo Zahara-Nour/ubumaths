@@ -10,22 +10,23 @@ import { page } from 'vitest/browser';
 vi.mock('$app/state', () => ({
 	page: { url: new URL('http://localhost/automaths/panier'), state: {} }
 }));
-vi.mock('$app/navigation', async (importOriginal) => ({
-	...(await importOriginal<typeof import('$app/navigation')>()),
-	goto: vi.fn(async () => {})
-}));
+vi.mock('$app/navigation', async () =>
+	(await import('#tests/helpers/app-navigation-mock.ts')).appNavigationMock({
+		goto: vi.fn(async () => {})
+	})
+);
 const toaster = vi.hoisted(() => ({
 	success: vi.fn(),
 	error: vi.fn(),
 	warning: vi.fn(),
 	info: vi.fn()
 }));
-vi.mock('$lib/stores/toaster.svelte', () => ({ toaster }));
+vi.mock('#lib/stores/toaster.svelte.ts', () => ({ toaster }));
 
 import Page from '../+page.svelte';
-import { questionTemplatesCache } from '$lib/stores/questionTemplates.svelte';
-import { questionCart } from '$lib/stores/questionCart.svelte';
-import { parseSeriesLink } from '$lib/validation/series';
+import { questionTemplatesCache } from '#lib/stores/questionTemplates.svelte.ts';
+import { questionCart } from '#lib/stores/questionCart.svelte.ts';
+import { parseSeriesLink } from '#lib/validation/series.ts';
 
 const TEMPLATE_ID = '11111111-1111-4111-8111-111111111111';
 
@@ -104,7 +105,7 @@ describe('Panier — série (C18)', () => {
 
 	it('Q44 : forme « Flash-cards » → lien qui lance la série sous cette forme', async () => {
 		await renderPanier('student');
-		await page.getByRole('button', { name: 'Forme du lien' }).click();
+		await page.getByRole('combobox', { name: 'Forme du lien' }).click();
 		await page.getByRole('option', { name: 'Flash-cards' }).click();
 		await page.getByRole('button', { name: 'Copier le lien' }).click();
 
@@ -117,7 +118,7 @@ describe('Panier — série (C18)', () => {
 
 	it('Q44 : « Course aux nombres » → le lien porte le temps limite réglé', async () => {
 		await renderPanier('student');
-		await page.getByRole('button', { name: 'Forme du lien' }).click();
+		await page.getByRole('combobox', { name: 'Forme du lien' }).click();
 		await page.getByRole('option', { name: 'Course aux nombres' }).click();
 		await expect.element(page.getByLabelText('Temps limite (minutes)')).toHaveValue(5);
 		await page.getByLabelText('Temps limite (minutes)').fill('8');
@@ -132,7 +133,7 @@ describe('Panier — série (C18)', () => {
 
 	it('Q44 : temps limite hors de 1 à 60 min → rien n’est copié, message', async () => {
 		await renderPanier('student');
-		await page.getByRole('button', { name: 'Forme du lien' }).click();
+		await page.getByRole('combobox', { name: 'Forme du lien' }).click();
 		await page.getByRole('option', { name: 'Course aux nombres' }).click();
 		await page.getByLabelText('Temps limite (minutes)').fill('90');
 		await page.getByRole('button', { name: 'Copier le lien' }).click();

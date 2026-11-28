@@ -11,13 +11,13 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import type { RenderedStep } from '$lib/mathAST/common/step-renderer-base';
+import type { RenderedStep } from '#lib/mathAST/common/step-renderer-base.ts';
 import { Atelier } from '../atelier.svelte';
-import { WebReplEngine } from '$lib/mathAST/cli/web/web-repl-engine';
+import { WebReplEngine } from '#lib/mathAST/cli/web/web-repl-engine.ts';
 import { runInput, type CalcSession } from '../calcul';
-import { inDecimalRegister } from '$lib/mathAST/pedagogical-limits/decimal-register';
-import { divide, number, opposite, subtract, variable } from '$lib/mathAST/factory';
-import { toLatex } from '$lib/mathAST/latex-generator';
+import { inDecimalRegister } from '#lib/mathAST/pedagogical-limits/decimal-register.ts';
+import { divide, number, opposite, subtract, variable } from '#lib/mathAST/factory.ts';
+import { toLatex } from '#lib/mathAST/latex-generator.ts';
 
 // =============================================================================
 // Décor

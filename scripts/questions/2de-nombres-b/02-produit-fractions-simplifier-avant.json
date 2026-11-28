@@ -1,0 +1,501 @@
+{
+	"id": "3e4a8f6c-55fe-49d1-bf7d-0ae352e1451a",
+	"title": "Produit de fractions, en simplifiant avant",
+	"description": "Calculer un produit de fractions en simplifiant avant de multiplier (14/15 × 3/7 = 2/5), avec un facteur négatif, puis entier × fraction (pièges : multiplier aussi le dénominateur par l'entier, ne pas simplifier)",
+	"grades": ["2"],
+	"level": 3,
+	"delay": 90,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Donne le résultat sous la forme d'une fraction irréductible.\n\n$\\dfrac{ {{a}} }{ {{b}} }\\times\\dfrac{ {{c}} }{ {{d}} }=?$",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "3|5|7"
+				},
+				{
+					"name": "q",
+					"expression": "3|5|7"
+				},
+				{
+					"name": "u",
+					"expression": "1|2|4"
+				},
+				{
+					"name": "v",
+					"expression": "1|2|4"
+				},
+				{
+					"name": "t",
+					"expression": "1|3|5|7"
+				},
+				{
+					"name": "w",
+					"expression": "1|3|5|7"
+				},
+				{
+					"name": "a",
+					"expression": "eval:p*u"
+				},
+				{
+					"name": "b",
+					"expression": "eval:q*t"
+				},
+				{
+					"name": "c",
+					"expression": "eval:q*v"
+				},
+				{
+					"name": "d",
+					"expression": "eval:p*w"
+				},
+				{
+					"name": "N",
+					"expression": "eval:u*v"
+				},
+				{
+					"name": "D",
+					"expression": "eval:t*w"
+				}
+			],
+			"conditions": ["p!=q", "gcd(a,b)==1", "gcd(c,d)==1", "gcd(u*v,t*w)==1", "t*w>1"],
+			"blanks": [
+				{
+					"expectedAnswer": "\\frac{ {{N}} }{ {{D}} }",
+					"expectedErrors": [
+						{
+							"answer": "\\frac{ {{eval:a*d}} }{ {{eval:b*c}} }",
+							"message": "Tu as multiplié en croix : pour un produit, on multiplie les numérateurs entre eux et les dénominateurs entre eux.",
+							"label": "Produit en croix"
+						},
+						{
+							"answer": "\\frac{ {{eval:a*d+b*c}} }{ {{eval:b*d}} }",
+							"message": "Tu as additionné les deux fractions au lieu de les multiplier.",
+							"label": "Addition au lieu de multiplication"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"On ne multiplie pas tout de suite : on décompose pour repérer les facteurs communs.",
+					"$$\\dfrac{ {{a}} }{ {{b}} }\\times\\dfrac{ {{c}} }{ {{d}} }=\\dfrac{ {{p}}{{if:u>1|\\times{{u}}}}\\times{{q}}{{if:v>1|\\times{{v}}}} }{ {{q}}{{if:t>1|\\times{{t}}}}\\times{{p}}{{if:w>1|\\times{{w}}}} }$$",
+					"On simplifie par ${{p}}$ et par ${{q}}$ :",
+					"$$\\dfrac{ {{a}} }{ {{b}} }\\times\\dfrac{ {{c}} }{ {{d}} }=\\dfrac{ {{if:u==1|{{v}}|{{if:v==1|{{u}}|{{u}}\\times{{v}}}}}} }{ {{if:t==1|{{w}}|{{if:w==1|{{t}}|{{t}}\\times{{w}}}}}} }=\\textcolor{{{color:primary.0}}}{\\dfrac{ {{N}} }{ {{D}} }}$$"
+				]
+			},
+			"hint": "Ne multiplie pas tout de suite : décompose ${{a}}$, ${{b}}$, ${{c}}$ et ${{d}}$ en produits pour repérer les facteurs communs, puis simplifie."
+		},
+		{
+			"statement": "Donne le résultat sous la forme d'une fraction irréductible.\n\n$\\dfrac{ {{a}} }{ {{b}} }\\times\\left(-\\dfrac{ {{c}} }{ {{d}} }\\right)=?$",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "3|5|7"
+				},
+				{
+					"name": "q",
+					"expression": "3|5|7"
+				},
+				{
+					"name": "u",
+					"expression": "1|2|4"
+				},
+				{
+					"name": "v",
+					"expression": "1|2|4"
+				},
+				{
+					"name": "t",
+					"expression": "1|3|5|7"
+				},
+				{
+					"name": "w",
+					"expression": "1|3|5|7"
+				},
+				{
+					"name": "a",
+					"expression": "eval:p*u"
+				},
+				{
+					"name": "b",
+					"expression": "eval:q*t"
+				},
+				{
+					"name": "c",
+					"expression": "eval:q*v"
+				},
+				{
+					"name": "d",
+					"expression": "eval:p*w"
+				},
+				{
+					"name": "N",
+					"expression": "eval:u*v"
+				},
+				{
+					"name": "D",
+					"expression": "eval:t*w"
+				}
+			],
+			"conditions": ["p!=q", "gcd(a,b)==1", "gcd(c,d)==1", "gcd(u*v,t*w)==1", "t*w>1"],
+			"blanks": [
+				{
+					"expectedAnswer": "-\\frac{ {{N}} }{ {{D}} }",
+					"expectedErrors": [
+						{
+							"answer": "\\frac{ {{N}} }{ {{D}} }",
+							"message": "Ton résultat a le mauvais signe : un seul des deux facteurs est négatif.",
+							"label": "Signe moins oublié"
+						},
+						{
+							"answer": "-\\frac{ {{eval:a*d}} }{ {{eval:b*c}} }",
+							"message": "Tu as multiplié en croix : pour un produit, on multiplie les numérateurs entre eux et les dénominateurs entre eux.",
+							"label": "Produit en croix"
+						},
+						{
+							"answer": "\\frac{ {{eval:a*d-b*c}} }{ {{eval:b*d}} }",
+							"message": "Tu as soustrait les deux fractions au lieu de les multiplier.",
+							"label": "Soustraction au lieu de multiplication"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"On ne multiplie pas tout de suite : on décompose pour repérer les facteurs communs.",
+					"$$\\dfrac{ {{a}} }{ {{b}} }\\times\\left(-\\dfrac{ {{c}} }{ {{d}} }\\right)=-\\dfrac{ {{p}}{{if:u>1|\\times{{u}}}}\\times{{q}}{{if:v>1|\\times{{v}}}} }{ {{q}}{{if:t>1|\\times{{t}}}}\\times{{p}}{{if:w>1|\\times{{w}}}} }$$",
+					"On simplifie par ${{p}}$ et par ${{q}}$ (un seul signe moins : le produit est négatif) :",
+					"$$\\dfrac{ {{a}} }{ {{b}} }\\times\\left(-\\dfrac{ {{c}} }{ {{d}} }\\right)=-\\dfrac{ {{if:u==1|{{v}}|{{if:v==1|{{u}}|{{u}}\\times{{v}}}}}} }{ {{if:t==1|{{w}}|{{if:w==1|{{t}}|{{t}}\\times{{w}}}}}} }=\\textcolor{{{color:primary.0}}}{-\\dfrac{ {{N}} }{ {{D}} }}$$"
+				]
+			},
+			"hint": "Ne multiplie pas tout de suite : décompose ${{a}}$, ${{b}}$, ${{c}}$ et ${{d}}$ pour repérer les facteurs communs. Compte aussi les signes moins."
+		},
+		{
+			"statement": "Donne le résultat sous la forme d'une fraction irréductible.\n\n${{n}}\\times\\dfrac{ {{a}} }{ {{b}} }=?$",
+			"variables": [
+				{
+					"name": "q",
+					"expression": "2|3|5|7"
+				},
+				{
+					"name": "u",
+					"expression": "2..5"
+				},
+				{
+					"name": "t",
+					"expression": "2..5"
+				},
+				{
+					"name": "a",
+					"expression": "1..9"
+				},
+				{
+					"name": "n",
+					"expression": "eval:q*u"
+				},
+				{
+					"name": "b",
+					"expression": "eval:q*t"
+				},
+				{
+					"name": "N",
+					"expression": "eval:u*a"
+				},
+				{
+					"name": "D",
+					"expression": "eval:t"
+				}
+			],
+			"conditions": ["gcd(a,b)==1", "gcd(u*a,t)==1"],
+			"blanks": [
+				{
+					"expectedAnswer": "\\frac{ {{N}} }{ {{D}} }",
+					"expectedErrors": [
+						{
+							"answer": "\\frac{ {{eval:n*a}} }{ {{eval:n*b}} }",
+							"message": "Tu as multiplié aussi le dénominateur par l'entier : l'entier ne multiplie que le numérateur.",
+							"label": "Entier multiplié en haut et en bas"
+						},
+						{
+							"answer": "\\frac{ {{a}} }{ {{eval:n*b}} }",
+							"message": "Tu as multiplié le dénominateur par l'entier : c'est le numérateur qu'il faut multiplier.",
+							"label": "Entier multiplié au dénominateur"
+						},
+						{
+							"answer": "\\frac{ {{eval:n*b+a}} }{ {{b}} }",
+							"message": "Tu as additionné l'entier et la fraction au lieu de les multiplier.",
+							"label": "Addition au lieu de multiplication"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"On multiplie l'entier par le numérateur seulement, mais on simplifie avant de calculer :",
+					"$${{n}}\\times\\dfrac{ {{a}} }{ {{b}} }=\\dfrac{ {{n}}\\times{{a}} }{ {{b}} }=\\dfrac{ {{q}}\\times{{u}}\\times{{a}} }{ {{q}}\\times{{t}} }$$",
+					"On simplifie par ${{q}}$ :",
+					"$${{n}}\\times\\dfrac{ {{a}} }{ {{b}} }=\\dfrac{ {{u}}\\times{{a}} }{ {{t}} }=\\textcolor{{{color:primary.0}}}{\\dfrac{ {{N}} }{ {{D}} }}$$"
+				]
+			},
+			"hint": "L'entier ne multiplie que le numérateur. Avant de calculer, cherche un facteur commun à ${{n}}$ et à ${{b}}$."
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "14/15 × 3/7 = 2/5",
+			"variationIndex": 0,
+			"variables": {
+				"p": "7",
+				"u": "2",
+				"q": "3",
+				"t": "5",
+				"v": "1",
+				"w": "1"
+			},
+			"answers": ["\\frac{2}{5}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Non simplifiée : 42/105",
+			"variationIndex": 0,
+			"variables": {
+				"p": "7",
+				"u": "2",
+				"q": "3",
+				"t": "5",
+				"v": "1",
+				"w": "1"
+			},
+			"answers": ["\\frac{42}{105}"],
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["reducedFractions"]
+			}
+		},
+		{
+			"description": "Erreur : produit en croix 98/45",
+			"variationIndex": 0,
+			"variables": {
+				"p": "7",
+				"u": "2",
+				"q": "3",
+				"t": "5",
+				"v": "1",
+				"w": "1"
+			},
+			"answers": ["\\frac{98}{45}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "14/15 × (−3/7) = −2/5",
+			"variationIndex": 1,
+			"variables": {
+				"p": "7",
+				"u": "2",
+				"q": "3",
+				"t": "5",
+				"v": "1",
+				"w": "1"
+			},
+			"answers": ["-\\frac{2}{5}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : signe oublié",
+			"variationIndex": 1,
+			"variables": {
+				"p": "7",
+				"u": "2",
+				"q": "3",
+				"t": "5",
+				"v": "1",
+				"w": "1"
+			},
+			"answers": ["\\frac{2}{5}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "6 × 5/4 = 15/2",
+			"variationIndex": 2,
+			"variables": {
+				"q": "2",
+				"u": "3",
+				"t": "2",
+				"a": "5"
+			},
+			"answers": ["\\frac{15}{2}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 6 multiplie aussi le dénominateur (30/24)",
+			"variationIndex": 2,
+			"variables": {
+				"q": "2",
+				"u": "3",
+				"t": "2",
+				"a": "5"
+			},
+			"answers": ["\\frac{30}{24}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Non simplifiée : 30/4",
+			"variationIndex": 2,
+			"variables": {
+				"q": "2",
+				"u": "3",
+				"t": "2",
+				"a": "5"
+			},
+			"answers": ["\\frac{30}{4}"],
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["reducedFractions"]
+			}
+		},
+		{
+			"description": "Erreur prévue : 14/15 × 3/7 en croix (98/45)",
+			"variationIndex": 0,
+			"variables": {
+				"p": "7",
+				"u": "2",
+				"q": "3",
+				"t": "5",
+				"v": "1",
+				"w": "1"
+			},
+			"answers": ["\\frac{98}{45}"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as multiplié en croix : pour un produit, on multiplie les numérateurs entre eux et les dénominateurs entre eux."
+			}
+		},
+		{
+			"description": "Erreur prévue : 14/15 + 3/7",
+			"variationIndex": 0,
+			"variables": {
+				"p": "7",
+				"u": "2",
+				"q": "3",
+				"t": "5",
+				"v": "1",
+				"w": "1"
+			},
+			"answers": ["\\frac{143}{105}"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as additionné les deux fractions au lieu de les multiplier."
+			}
+		},
+		{
+			"description": "Erreur prévue : 2/5 pour 14/15 × (−3/7)",
+			"variationIndex": 1,
+			"variables": {
+				"p": "7",
+				"u": "2",
+				"q": "3",
+				"t": "5",
+				"v": "1",
+				"w": "1"
+			},
+			"answers": ["\\frac{2}{5}"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Ton résultat a le mauvais signe : un seul des deux facteurs est négatif."
+			}
+		},
+		{
+			"description": "Erreur prévue : −98/45 en croix",
+			"variationIndex": 1,
+			"variables": {
+				"p": "7",
+				"u": "2",
+				"q": "3",
+				"t": "5",
+				"v": "1",
+				"w": "1"
+			},
+			"answers": ["-\\frac{98}{45}"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as multiplié en croix : pour un produit, on multiplie les numérateurs entre eux et les dénominateurs entre eux."
+			}
+		},
+		{
+			"description": "Erreur prévue : 14/15 − 3/7",
+			"variationIndex": 1,
+			"variables": {
+				"p": "7",
+				"u": "2",
+				"q": "3",
+				"t": "5",
+				"v": "1",
+				"w": "1"
+			},
+			"answers": ["\\frac{53}{105}"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as soustrait les deux fractions au lieu de les multiplier."
+			}
+		},
+		{
+			"description": "Erreur prévue : 6 × 5/4 = 30/24",
+			"variationIndex": 2,
+			"variables": {
+				"q": "2",
+				"u": "3",
+				"t": "2",
+				"a": "5"
+			},
+			"answers": ["\\frac{30}{24}"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as multiplié aussi le dénominateur par l'entier : l'entier ne multiplie que le numérateur."
+			}
+		},
+		{
+			"description": "Erreur prévue : 6 × 5/4 = 5/24",
+			"variationIndex": 2,
+			"variables": {
+				"q": "2",
+				"u": "3",
+				"t": "2",
+				"a": "5"
+			},
+			"answers": ["\\frac{5}{24}"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as multiplié le dénominateur par l'entier : c'est le numérateur qu'il faut multiplier."
+			}
+		},
+		{
+			"description": "Erreur prévue : 6 + 5/4 = 29/4",
+			"variationIndex": 2,
+			"variables": {
+				"q": "2",
+				"u": "3",
+				"t": "2",
+				"a": "5"
+			},
+			"answers": ["\\frac{29}{4}"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as additionné l'entier et la fraction au lieu de les multiplier."
+			}
+		}
+	]
+}

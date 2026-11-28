@@ -14,7 +14,7 @@ import { expressionOf } from '../engine';
 import { deriveSteps } from '../derive-steps';
 import { CalcDesk } from '../desk.svelte';
 import { runInput } from '../calcul';
-import { WebReplEngine } from '$lib/mathAST/cli/web/web-repl-engine';
+import { WebReplEngine } from '#lib/mathAST/cli/web/web-repl-engine.ts';
 
 function derivativeOf(definition: string, order = 1): string | undefined {
 	const atelier = new Atelier();

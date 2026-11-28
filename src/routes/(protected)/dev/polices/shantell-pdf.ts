@@ -7,14 +7,14 @@
  * Chiphre Math (formules, police OpenType MATH construite par tools/chiphre-math).
  */
 
-import { getCorrectionFontsCompiler } from '$lib/typst/compiler/correction-fonts-compiler';
-import { withCorrectionFonts } from '$lib/typst/correction-fonts';
-import { fetchExternalImages, urlToVirtualPath } from '$lib/typst/image-loader';
+import { getCorrectionFontsCompiler } from '#lib/typst/compiler/correction-fonts-compiler.ts';
+import { withCorrectionFonts } from '#lib/typst/correction-fonts.ts';
+import { fetchExternalImages, urlToVirtualPath } from '#lib/typst/image-loader.ts';
 import {
 	clearTrackedExternalImages,
 	getTrackedExternalImages,
 	markdownToTypst
-} from '$lib/ubumark/generators/typst-generator';
+} from '#lib/ubumark/generators/typst-generator.ts';
 
 // Types
 export type PdfFontSet = 'shantell' | 'standard';

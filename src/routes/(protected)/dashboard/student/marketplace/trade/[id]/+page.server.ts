@@ -1,7 +1,7 @@
 import { error, redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
-import { isMarketplaceEnabled } from '$lib/server/marketplace/helpers';
-import type { VipCardInstance } from '$lib/types/vip-card';
+import { isMarketplaceEnabled } from '#lib/server/marketplace/helpers.ts';
+import type { VipCardInstance } from '#lib/types/vip-card.ts';
 
 /**
  * Page server load for the trade board

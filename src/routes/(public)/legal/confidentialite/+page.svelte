@@ -1,10 +1,10 @@
 <script lang="ts">
-	import SeoHead from '$lib/seo/SeoHead.svelte';
+	import SeoHead from '#lib/seo/SeoHead.svelte';
 	import { resolve } from '$app/paths';
 </script>
 
 <SeoHead
-	title="Politique de confidentialité - Chiphre"
+	title="Politique de confidentialité | Chiphre"
 	description="Politique de confidentialité de Chiphre : comment nous collectons, utilisons et protégeons vos données personnelles."
 />
 
@@ -12,7 +12,7 @@
 	<article class="prose max-w-none prose-slate dark:prose-invert">
 		<h1>Politique de confidentialité</h1>
 
-		<p class="lead text-muted-foreground">Dernière mise à jour : 22 octobre 2026 | Version 1.1</p>
+		<p class="lead text-muted-foreground">Dernière mise à jour : 28 novembre 2026 | Version 1.6</p>
 
 		<hr />
 
@@ -23,7 +23,7 @@
 				<li><strong>Responsable</strong> : [À COMPLÉTER]</li>
 				<li><strong>Adresse</strong> : [À COMPLÉTER]</li>
 				<li><strong>Email de contact</strong> : contact@chiph.re</li>
-				<li><strong>Site web</strong> : <a href={resolve('/')}>chiph.re</a></li>
+				<li><strong>Site web</strong> : <a href={resolve('')}>chiph.re</a></li>
 			</ul>
 		</section>
 
@@ -39,6 +39,10 @@
 				<li>La communication entre élèves et enseignants</li>
 				<li>L'intégration avec Google Classroom (pour les enseignants)</li>
 				<li>Des fonctionnalités de gamification pour motiver l'apprentissage</li>
+				<li>
+					L'information des parents par le carnet de liaison, quand l'enseignant l'active pour la
+					classe
+				</li>
 			</ul>
 		</section>
 
@@ -124,11 +128,66 @@
 								le compte)
 							</td>
 						</tr>
+						<tr>
+							<td>Dernière semaine fêtée par le Palotin</td>
+							<td>
+								Que le Palotin ne fête qu'une fois une semaine de travail (supprimée avec le compte)
+							</td>
+						</tr>
 					</tbody>
 				</table>
 			</div>
 
-			<h3>3.3 Données NON collectées</h3>
+			<h3>3.3 Données des parents (carnet de liaison)</h3>
+			<p>
+				Quand l'enseignant active le carnet de liaison pour une classe, chaque parent reçoit un lien
+				personnel vers une page qui résume le travail de son enfant, sans créer de compte. Chiphre
+				enregistre alors :
+			</p>
+			<div class="overflow-x-auto">
+				<table>
+					<thead>
+						<tr>
+							<th>Donnée</th>
+							<th>Finalité</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td>Adresse e-mail du parent (deux parents au plus par élève)</td>
+							<td>
+								Envoyer le lien du carnet et, seulement quand quelque chose ne va pas, un courriel
+								d'information
+							</td>
+						</tr>
+						<tr>
+							<td>État de l'adresse (en attente, confirmée, refusée, retirée, courriels arrêtés)</td
+							>
+							<td>N'écrire qu'à une adresse confirmée par le parent lui-même</td>
+						</tr>
+						<tr>
+							<td>Liens du carnet (conservés sous forme chiffrée, jamais en clair)</td>
+							<td>Ouvrir le carnet, et le fermer si le lien est révoqué ou expiré</td>
+						</tr>
+						<tr>
+							<td>Liste des courriels envoyés (date et motif, sans l'adresse)</td>
+							<td>Ne pas signaler deux fois la même chose ; l'élève voit ce qui a été envoyé</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+			<p>
+				Le carnet montre au parent, pour son enfant seulement : les jours de travail de la semaine,
+				l'état des révisions et les évaluations faites ou non, <strong>jamais les notes</strong>, ni
+				les réponses, ni les messages. L'élève voit le même carnet que ses parents, mais pas leurs
+				adresses.
+			</p>
+			<p>
+				<strong>Base légale</strong> : intérêt légitime (art. 6.1.f RGPD), l'information des parents sur
+				la scolarité de leur enfant.
+			</p>
+
+			<h3>3.4 Données NON collectées</h3>
 			<p>
 				Conformément au principe de minimisation des données (Art. 5(1)(c) RGPD), nous ne collectons
 				<strong>pas</strong> :
@@ -156,6 +215,11 @@
 					élèves
 				</li>
 				<li><strong>Communication</strong> : Échanges entre élèves et enseignants</li>
+				<li>
+					<strong>Information des parents</strong> : Carnet de liaison et courriels d'exception (évaluation
+					non faite, révisions en retard, absence d'activité), plus un message positif par trimestre s'il
+					y a lieu
+				</li>
 				<li>
 					<strong>Sécurité et maintenance</strong> : Détection des incidents, correction des bugs
 				</li>
@@ -188,6 +252,14 @@
 				</li>
 				<li><strong>Pas de publicité</strong> : Aucune publicité ciblée n'est affichée</li>
 				<li><strong>Pas de profilage commercial</strong> : Les données ne sont jamais vendues</li>
+				<li>
+					<strong>Transparence envers l'élève</strong> : L'élève voit exactement ce que voient ses parents,
+					et la liste des courriels qui leur ont été envoyés
+				</li>
+				<li>
+					<strong>Élève majeur</strong> : Il peut demander à son enseignant d'arrêter le partage avec
+					ses parents
+				</li>
 			</ul>
 		</section>
 
@@ -198,6 +270,10 @@
 			<ul>
 				<li><strong>Enseignant</strong> : Accès aux données de ses élèves uniquement</li>
 				<li><strong>Administrateur</strong> : Accès pour maintenance et support</li>
+				<li>
+					<strong>Parent</strong> : Accès, par son lien personnel, au carnet de liaison de son enfant
+					uniquement
+				</li>
 			</ul>
 
 			<h3>6.2 Sous-traitants</h3>
@@ -229,7 +305,7 @@
 						</tr>
 						<tr>
 							<td>Brevo</td>
-							<td>Envoi des e-mails (consentement parental, comptes)</td>
+							<td>Envoi des e-mails (consentement parental, comptes, carnet de liaison)</td>
 							<td>Union européenne (France)</td>
 						</tr>
 						<tr>
@@ -288,6 +364,10 @@
 							</td>
 						</tr>
 						<tr>
+							<td>Dernière semaine fêtée par le Palotin</td>
+							<td>Remplacée chaque semaine fêtée, supprimée avec le profil</td>
+						</tr>
+						<tr>
 							<td>Conversations avec le tuteur IA</td>
 							<td>1 an après le dernier message</td>
 						</tr>
@@ -298,6 +378,35 @@
 						<tr>
 							<td>Messages</td>
 							<td>3 ans</td>
+						</tr>
+						<tr>
+							<td>Adresse e-mail d'un parent (carnet de liaison)</td>
+							<td>
+								Tant que l'élève est dans une classe ; effacée 90 jours après qu'il n'est plus dans
+								aucune classe, aussitôt si le destinataire indique ne pas être le parent ou si
+								l'enseignant la retire
+							</td>
+						</tr>
+						<tr>
+							<td>
+								Invitation de cours particulier (prénom de l'enfant, adresse e-mail du parent,
+								niveau ; lien conservé sous forme chiffrée)
+							</td>
+							<td>
+								Effacée 30 jours après sa fin : création du compte, annulation, ou expiration du
+								lien (valable 7 jours)
+							</td>
+						</tr>
+						<tr>
+							<td>Lien du carnet de liaison</td>
+							<td>
+								Expire à la fin de l'année scolaire de l'école (le 31 août si elle n'a pas saisi ses
+								dates) ; effacé avec l'adresse
+							</td>
+						</tr>
+						<tr>
+							<td>Liste des courriels envoyés aux parents</td>
+							<td>Chaque courriel en est effacé 1 an après son envoi ; supprimée avec le profil</td>
 						</tr>
 						<tr>
 							<td>Logs techniques</td>
@@ -341,6 +450,19 @@
 					</p>
 				</div>
 			</div>
+
+			<h3>Parents destinataires du carnet de liaison</h3>
+			<ul>
+				<li>
+					Chaque courriel contient un lien « Ne plus recevoir ces courriels » : un clic suffit, et
+					le carnet reste consultable
+				</li>
+				<li>
+					Une personne qui reçoit une demande de confirmation sans être le parent clique « Je ne
+					suis pas le parent de cet élève » : son adresse est effacée
+				</li>
+				<li>Pour toute autre demande (accès, effacement) : contact@chiph.re</li>
+			</ul>
 
 			<h3>Droit de réclamation</h3>
 			<p>

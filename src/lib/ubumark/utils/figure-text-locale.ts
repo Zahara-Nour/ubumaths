@@ -11,7 +11,7 @@
  * @module ubumark/utils/figure-text-locale
  */
 
-import type { ContentLocale } from '$lib/types/locale';
+import type { ContentLocale } from '#lib/types/locale.ts';
 
 /**
  * Décimal à point : chiffres, point, chiffres, sans chiffre ni `d.` autour

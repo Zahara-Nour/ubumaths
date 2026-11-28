@@ -8,7 +8,7 @@
 import { describe, expect, it } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import { page } from 'vitest/browser';
-import type { MathouCollection } from '$lib/mathoux/collection-logic';
+import type { MathouCollection } from '#lib/mathoux/collection-logic.ts';
 import ChatterieProfPage from '../+page.svelte';
 
 const TRAINING_ITEMS = [

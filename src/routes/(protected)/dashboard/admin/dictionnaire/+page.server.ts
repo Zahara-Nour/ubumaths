@@ -7,10 +7,10 @@
 import { error } from '@sveltejs/kit';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { PageServerLoad } from './$types';
-import type { Database } from '$lib/types/database';
-import { requireAdmin } from '$lib/server/middleware/auth';
-import { loadAdminDictionary } from '$lib/server/dictionary/admin';
-import { createServerLogger } from '$lib/utils/logger';
+import type { Database } from '#lib/types/database.ts';
+import { requireAdmin } from '#lib/server/middleware/auth.ts';
+import { loadAdminDictionary } from '#lib/server/dictionary/admin.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('(protected)/dashboard/admin/dictionnaire/+page.server');
 

@@ -12,11 +12,11 @@
 import { describe, it, expect } from 'vitest';
 import { generateInstance } from '../instance-generator';
 import type { QuestionTemplate } from '../../types';
-import type { Variable } from '$lib/ubumark';
-import { templateMarkdown, resolveVariables } from '$lib/ubumark';
-import { validateAnswer } from '$lib/utils/answer-validator';
-import { createRandomSource } from '$lib/utils/random';
-import { expressionToLatex } from '$lib/components/markdown/utils/math-utils';
+import type { Variable } from '#lib/ubumark/index.ts';
+import { templateMarkdown, resolveVariables } from '#lib/ubumark/index.ts';
+import { validateAnswer } from '#lib/utils/answer-validator.ts';
+import { createRandomSource } from '#lib/utils/random.ts';
+import { expressionToLatex } from '#lib/components/markdown/utils/math-utils.ts';
 
 const A_B: Variable[] = [
 	{ name: 'a', expression: '7[mm]' },

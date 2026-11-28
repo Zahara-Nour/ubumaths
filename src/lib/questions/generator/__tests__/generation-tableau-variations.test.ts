@@ -11,12 +11,12 @@ import { beforeAll, describe, it, expect } from 'vitest';
 import { generateInstance } from '../instance-generator';
 import { assignBlankIndices } from '../assign-blank-indices';
 import type { QuestionInstance, QuestionTemplate, QuestionVariation } from '../../types';
-import { templateMarkdown, parseMarkdown } from '$lib/ubumark';
-import { variationRowForDisplay } from '$lib/ubumark/parser/variation-table-parser';
-import { validateAnswer } from '$lib/utils/answer-validator';
+import { templateMarkdown, parseMarkdown } from '#lib/ubumark/index.ts';
+import { variationRowForDisplay } from '#lib/ubumark/parser/variation-table-parser.ts';
+import { validateAnswer } from '#lib/utils/answer-validator.ts';
 import { toPublicQuestion, gestureAnswerLeaks } from '../../public-question';
 import { findUnmaskedAnswers } from '../../masked-statement';
-import type { VariationTableNode } from '$lib/ubumark/types/variation-table';
+import type { VariationTableNode } from '#lib/ubumark/types/variation-table.ts';
 
 function template(variation: Omit<QuestionVariation, 'statement'> & { statement: string }) {
 	return {
@@ -186,6 +186,92 @@ describe('tableau de variations : évaluation notée, énoncé masqué', () => {
 			'  -inf: -inf, bottom',
 			'  -2: 4, top',
 			'  -inf,-2: ?'
+		);
+		expect(findUnmaskedAnswers(leaky)).toEqual(['variation']);
+	});
+});
+
+// Outil 59 (phase 0 du 2026-11-28) : flèches cachées autour d'une double barre
+describe('homographique : flèches cachées autour d’une double barre', () => {
+	/** ↘ ↘ autour de 2 ; limites données par le test */
+	const homo = (barre: string) =>
+		variation(
+			'variable: x',
+			'domain: -inf, 2, +inf',
+			'',
+			'variation: f(x)',
+			'  -inf: , top',
+			`  2: ${barre}`,
+			'  +inf: , bottom',
+			'  -inf,2: ?flèche',
+			'  2,+inf: ?flèche'
+		);
+
+	it('1re, sans limites : deux cases flèche, jugées', () => {
+		const instance = generate(template({ statement: homo('||, , bottom, , top') }));
+		expect(instance.blanks?.map((b) => [b.cellule, b.expectedAnswer])).toEqual([
+			['fleche', '↘'],
+			['fleche', '↘']
+		]);
+		expect(judgeCase(instance, 0, '↘')).toBe(true);
+		expect(judgeCase(instance, 1, '↗')).toBe(false);
+	});
+
+	it('Tle, limites cachées : l’énoncé envoyé ne dit ni les limites ni leur hauteur', () => {
+		const instance = generate(template({ statement: homo('||, ?-inf, bottom, ?+inf, top') }));
+		expect(instance.blanks?.map((b) => b.cellule)).toEqual([
+			'fleche',
+			'valeur',
+			'valeur',
+			'fleche'
+		]);
+		const sent = toPublicQuestion(instance, { position: 0, delaySeconds: 30 });
+		const block = sent.statement.slice(sent.statement.indexOf('```variation'));
+		expect(block).toContain('  2: ||, ?, center, ?, center');
+		expect(block).not.toMatch(/inf, (top|bottom)|, , (top|bottom)/);
+		expect(findUnmaskedAnswers(sent.statement)).toEqual([]);
+		expect(gestureAnswerLeaks(instance)).toEqual([]);
+		expect(tableOf(sent.statement).cases).toHaveLength(4);
+	});
+
+	it('1re, sans limites : l’énoncé envoyé met la double barre au milieu', () => {
+		const instance = generate(template({ statement: homo('||, , bottom, , top') }));
+		const sent = toPublicQuestion(instance, { position: 0, delaySeconds: 30 });
+		const block = sent.statement.slice(sent.statement.indexOf('```variation'));
+		expect(block).toContain('  2: ||, , center, , center');
+		expect(findUnmaskedAnswers(sent.statement)).toEqual([]);
+	});
+
+	it('une seule flèche cachée : l’autre côté de la double barre garde sa hauteur', () => {
+		const instance = generate(
+			template({
+				statement: variation(
+					'variable: x',
+					'domain: -inf, 2, +inf',
+					'',
+					'variation: f(x)',
+					'  -inf: , top',
+					'  2: ||, -inf, bottom, +inf, top',
+					'  +inf: , bottom',
+					'  -inf,2: ?flèche'
+				)
+			})
+		);
+		const sent = toPublicQuestion(instance, { position: 0, delaySeconds: 30 });
+		expect(sent.statement).toContain('  2: ||, -inf, center, +inf, top');
+		expect(findUnmaskedAnswers(sent.statement)).toEqual([]);
+	});
+
+	it('garde : une limite à sa hauteur à côté d’une flèche masquée est une fuite', () => {
+		const leaky = variation(
+			'case: 0',
+			'variable: x',
+			'domain: -inf, 2, +inf',
+			'',
+			'variation: f(x)',
+			'  -inf: , center',
+			'  2: ||, ?, bottom, ?, center',
+			'  -inf,2: ?'
 		);
 		expect(findUnmaskedAnswers(leaky)).toEqual(['variation']);
 	});

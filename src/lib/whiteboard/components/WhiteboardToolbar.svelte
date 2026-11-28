@@ -17,9 +17,9 @@
 
 	import { whiteboardStore } from '../stores/whiteboard.svelte';
 	import type { Tool, LaserMode } from '../stores/whiteboard.svelte';
-	import { Button } from '$lib/components/ui/button';
-	import * as Popover from '$lib/components/ui/popover';
-	import { Slider } from '$lib/components/ui/slider';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import * as Popover from '#lib/components/ui/popover/index.ts';
+	import { Slider } from '#lib/components/ui/slider/index.ts';
 	import {
 		Pen,
 		Pencil,

@@ -6,16 +6,16 @@
 
 import { error, fail } from '@sveltejs/kit';
 import type { Actions, PageServerLoad } from './$types';
-import { requireRoles } from '$lib/server/middleware/auth';
-import { validateUuidParam } from '$lib/server/validation/params';
-import { parseFigureFormData } from '$lib/server/validation/geometry-figures';
+import { requireRoles } from '#lib/server/middleware/auth.ts';
+import { validateUuidParam } from '#lib/server/validation/params.ts';
+import { parseFigureFormData } from '#lib/server/validation/geometry-figures.ts';
 import {
 	deleteGeometryFigure,
 	FIGURE_NOT_FOUND_MESSAGE,
 	GeometryFigureError,
 	getOwnGeometryFigure,
 	updateGeometryFigure
-} from '$lib/server/geometry-figures';
+} from '#lib/server/geometry-figures.ts';
 
 export const load: PageServerLoad = async ({ params, locals }) => {
 	const { user } = await requireRoles(locals, ['teacher', 'admin']);

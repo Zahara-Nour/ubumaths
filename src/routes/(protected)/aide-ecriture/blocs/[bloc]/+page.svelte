@@ -2,8 +2,8 @@
 	Fiche d'un bloc ubumark (`/aide-ecriture/blocs/<bloc>`, professeur seul).
 -->
 <script lang="ts">
-	import BlockHelpPage from '$lib/components/block-catalog/BlockHelpPage.svelte';
-	import { findBlockEntry } from '$lib/block-catalog';
+	import BlockHelpPage from '#lib/components/block-catalog/BlockHelpPage.svelte';
+	import { findBlockEntry } from '#lib/block-catalog/index.ts';
 
 	let { data } = $props();
 

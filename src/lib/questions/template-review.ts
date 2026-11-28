@@ -8,7 +8,7 @@
  * « Non rangé » sous son programme. Chantier revue-modeles (phase 0 du 2026-10-28).
  */
 
-import { GRADES, isGradeCode } from '$lib/types/grades';
+import { GRADES, isGradeCode } from '#lib/types/grades.ts';
 
 // Types
 
@@ -252,18 +252,55 @@ export interface ReviewFilters {
 	verdict: VerdictFilter;
 	status: StatusFilter;
 	alertsOnly: boolean;
+	/** Texte cherché dans le titre, rogné ; vide = pas de filtre */
+	title: string;
+	/** Code d'un point du programme, en majuscules ; null = pas de filtre */
+	point: string | null;
 }
 
 export const DEFAULT_FILTERS: ReviewFilters = {
 	verdict: 'tous',
 	status: 'tous',
-	alertsOnly: false
+	alertsOnly: false,
+	title: '',
+	point: null
 };
+
+/** Longueur maximale du texte cherché dans les titres */
+export const MAX_TITLE_SEARCH = 100;
+/** Longueur maximale d'un code de point saisi */
+export const MAX_POINT_INPUT = 20;
+/** Forme des codes de point : programme, tiret, numéro (`1SPE-213`, `CP-058`, `6-001`) */
+const POINT_CODE = /^[A-Z0-9]{1,10}-\d{1,4}$/;
+
+/** Texte comparable : sans casse, sans accents, espaces resserrés */
+export function normalizeSearch(text: string): string {
+	return text.normalize('NFD').replace(/\p{M}/gu, '').toLowerCase().replace(/\s+/g, ' ').trim();
+}
+
+/** Le code de point en majuscules, ou null s'il n'a pas la forme d'un code */
+export function parsePointCode(raw: string): string | null {
+	const code = raw.trim().toUpperCase();
+	return POINT_CODE.test(code) ? code : null;
+}
+
+/** Aucun filtre posé ? */
+export function isDefaultFilters(f: ReviewFilters): boolean {
+	return (
+		f.verdict === DEFAULT_FILTERS.verdict &&
+		f.status === DEFAULT_FILTERS.status &&
+		f.alertsOnly === DEFAULT_FILTERS.alertsOnly &&
+		f.title === DEFAULT_FILTERS.title &&
+		f.point === DEFAULT_FILTERS.point
+	);
+}
 
 /** Le modèle passe-t-il les filtres de la vue ? */
 export function matchesFilters(t: TemplateSummary, f: ReviewFilters): boolean {
 	if (f.status !== 'tous' && t.status !== f.status) return false;
 	if (f.alertsOnly && summaryAlerts(t).length === 0) return false;
+	if (f.title && !normalizeSearch(t.title).includes(normalizeSearch(f.title))) return false;
+	if (f.point && !t.points.some((p) => p.code === f.point)) return false;
 	switch (f.verdict) {
 		case 'tous':
 			return true;
@@ -276,16 +313,208 @@ export function matchesFilters(t: TemplateSummary, f: ReviewFilters): boolean {
 	}
 }
 
-/** Les filtres lus dans l'adresse ; une valeur inconnue vaut le défaut */
+/**
+ * Les filtres lus dans l'adresse ; une valeur inconnue vaut le défaut. Les bornes (longueur du
+ * titre, forme du point) sont vérifiées avant, par le chargement serveur (400).
+ */
 export function parseFilters(params: URLSearchParams): ReviewFilters {
 	const verdict = params.get('verdict');
 	const status = params.get('statut');
+	const point = params.get('point');
 	return {
 		verdict:
 			verdict === 'valide' || verdict === 'a_revoir' || verdict === 'sans' || verdict === 'modifie'
 				? verdict
 				: 'tous',
 		status: status === 'draft' || status === 'published' ? status : 'tous',
-		alertsOnly: params.get('alertes') === '1'
+		alertsOnly: params.get('alertes') === '1',
+		title: (params.get('titre') ?? '').trim().slice(0, MAX_TITLE_SEARCH),
+		point: point ? parsePointCode(point) : null
 	};
+}
+
+// Série
+
+/** Une ligne de série : un modèle, ses répétitions, sa durée (secondes) */
+export interface SeriesLine {
+	templateId: string;
+	quantity: number;
+	delay: number;
+}
+
+/** Une ligne de série telle que la vue la montre */
+export interface SeriesSheetEntry extends SeriesLine {
+	/** Clé d'affichage : un modèle peut figurer deux fois dans une série */
+	key: string;
+	/** Faux si le modèle n'est plus en base */
+	found: boolean;
+}
+
+/**
+ * Les lignes d'une série, dans son ordre, qui passent les filtres. Un modèle disparu de la base
+ * reste dans la liste (`found: false`) pour être signalé, quels que soient les filtres.
+ */
+export function seriesSelection(
+	items: readonly SeriesLine[],
+	byId: ReadonlyMap<string, TemplateSummary>,
+	f: ReviewFilters
+): SeriesSheetEntry[] {
+	const entries: SeriesSheetEntry[] = [];
+	items.forEach((item, i) => {
+		const t = byId.get(item.templateId);
+		if (t && !matchesFilters(t, f)) return;
+		entries.push({
+			templateId: item.templateId,
+			quantity: item.quantity,
+			delay: item.delay,
+			key: `${i}-${item.templateId}`,
+			found: t !== undefined
+		});
+	});
+	return entries;
+}
+
+/** Le sélecteur des séries : « titre · niveau », par année scolaire puis titre */
+export function seriesOptions(
+	rows: readonly { id: string; title: string; grade: string }[]
+): { value: string; label: string }[] {
+	return [...rows]
+		.sort(
+			(a, b) =>
+				programmeRank(a.grade) - programmeRank(b.grade) || a.title.localeCompare(b.title, 'fr')
+		)
+		.map((r) => ({ value: r.id, label: `${r.title} · ${programmeName(r.grade)}` }));
+}
+
+// Parcours d'une série
+
+/** Affichage d'une série choisie : « parcours » (par défaut) ou « fiches » (l'affichage d'avant) */
+export type ReviewView = 'parcours' | 'fiches';
+
+/** Un point du programme, tel que le parcours le cherche dans les notions de la série */
+export interface PointSummary {
+	code: string;
+	grade: string | null;
+	name: string;
+	nodeId: string | null;
+	archived: boolean;
+	/** Au moins un modèle (quel que soit son statut) est tagué sur ce point */
+	tagged: boolean;
+}
+
+/** L'affichage demandé dans l'adresse (`?vue=`) ; une valeur inconnue vaut « parcours » */
+export function parseReviewView(params: URLSearchParams): ReviewView {
+	return params.get('vue') === 'fiches' ? 'fiches' : 'parcours';
+}
+
+/** La notion d'un nœud : le 2e étage de son chemin (branche > notion > sous-notion) ; null au-dessus */
+export function notionOf(nodeId: string, nodes: ReadonlyMap<string, TreeNodeRow>): string | null {
+	return nodeChain(nodeId, nodes)[1]?.id ?? null;
+}
+
+/** Les notions des modèles de la série, sans doublon, dans l'ordre de la série */
+export function seriesNotions(
+	templateIds: readonly string[],
+	byId: ReadonlyMap<string, TemplateSummary>,
+	nodes: ReadonlyMap<string, TreeNodeRow>
+): { id: string; name: string }[] {
+	const seen = new Set<string>();
+	const notions: { id: string; name: string }[] = [];
+	for (const id of templateIds) {
+		const nodeId = byId.get(id)?.nodeId;
+		const notion = nodeId ? notionOf(nodeId, nodes) : null;
+		if (!notion || seen.has(notion)) continue;
+		seen.add(notion);
+		notions.push({ id: notion, name: nodes.get(notion)?.name ?? notion });
+	}
+	return notions;
+}
+
+/** Le nœud est-il l'une de ces notions, ou en dessous ? */
+function isUnderNotions(
+	nodeId: string | null,
+	notionIds: ReadonlySet<string>,
+	nodes: ReadonlyMap<string, TreeNodeRow>
+): boolean {
+	if (!nodeId) return false;
+	const notion = notionOf(nodeId, nodes);
+	return notion !== null && notionIds.has(notion);
+}
+
+/** Ordre de l'arbre : positions du chemin, étage par étage (un nœud avant ses enfants) */
+function compareChains(a: readonly TreeNodeRow[], b: readonly TreeNodeRow[]): number {
+	for (let i = 0; i < Math.min(a.length, b.length); i++) {
+		const d = a[i].position - b[i].position || a[i].name.localeCompare(b[i].name, 'fr');
+		if (d !== 0) return d;
+	}
+	return a.length - b.length;
+}
+
+/**
+ * « Ailleurs dans les mêmes notions » : les modèles rangés dans ces notions (ou en dessous), tagués
+ * sur un point du niveau de la série, absents de la série et retenus par les filtres, dans l'ordre
+ * de l'arbre puis du titre.
+ */
+export function neighbourTemplates(input: {
+	seriesTemplateIds: readonly string[];
+	notionIds: readonly string[];
+	templates: readonly TemplateSummary[];
+	nodes: ReadonlyMap<string, TreeNodeRow>;
+	grade: string;
+	filters: ReviewFilters;
+}): string[] {
+	const { nodes, grade, filters } = input;
+	const notions = new Set(input.notionIds);
+	if (notions.size === 0) return [];
+	const inSeries = new Set(input.seriesTemplateIds);
+	return input.templates
+		.filter(
+			(t) =>
+				!inSeries.has(t.id) &&
+				isUnderNotions(t.nodeId, notions, nodes) &&
+				t.points.some((p) => p.grade === grade) &&
+				matchesFilters(t, filters)
+		)
+		.map((t) => ({ t, chain: nodeChain(t.nodeId ?? '', nodes) }))
+		.sort((a, b) => compareChains(a.chain, b.chain) || a.t.title.localeCompare(b.t.title, 'fr'))
+		.map(({ t }) => t.id);
+}
+
+/** Les points du niveau rangés dans ces notions, sans aucun modèle et non archivés, par code */
+export function pointsWithoutTemplate(
+	points: readonly PointSummary[],
+	notionIds: readonly string[],
+	nodes: ReadonlyMap<string, TreeNodeRow>,
+	grade: string
+): { code: string; name: string }[] {
+	const notions = new Set(notionIds);
+	return points
+		.filter(
+			(p) =>
+				p.grade === grade && !p.tagged && !p.archived && isUnderNotions(p.nodeId, notions, nodes)
+		)
+		.sort((a, b) => a.code.localeCompare(b.code, 'fr', { numeric: true }))
+		.map((p) => ({ code: p.code, name: p.name }));
+}
+
+/** Nombre de questions d'une série et durée totale (secondes) */
+export function seriesTotals(lines: readonly Pick<SeriesLine, 'quantity' | 'delay'>[]): {
+	questions: number;
+	seconds: number;
+} {
+	let questions = 0;
+	let seconds = 0;
+	for (const l of lines) {
+		questions += l.quantity;
+		seconds += l.quantity * l.delay;
+	}
+	return { questions, seconds };
+}
+
+/** Durée lisible : « 45 s », « 1 min », « 1 min 30 », « 1 min 05 » */
+export function formatSeriesDuration(seconds: number): string {
+	if (seconds < 60) return `${seconds} s`;
+	const min = Math.floor(seconds / 60);
+	const s = seconds % 60;
+	return s === 0 ? `${min} min` : `${min} min ${String(s).padStart(2, '0')}`;
 }

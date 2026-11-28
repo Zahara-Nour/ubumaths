@@ -23,13 +23,13 @@
  * @module mathAST/sign/format
  */
 
-import type { Interval } from '$lib/math/intervals/types';
+import type { Interval } from '#lib/math/intervals/types.ts';
 import type { Domain } from '../domain/types';
 import type { MathNode } from '../types';
 import type { SignAnalysisResult, SignedInterval, ZeroInfo, Sign } from './types';
 import { toCustom } from '../custom-generator';
 import { formatInterval as formatDomainInterval } from '../domain/format';
-import { endpointToNumber } from '$lib/math/intervals/endpoint';
+import { endpointToNumber } from '#lib/math/intervals/endpoint.ts';
 
 // =============================================================================
 // Main Formatting Function

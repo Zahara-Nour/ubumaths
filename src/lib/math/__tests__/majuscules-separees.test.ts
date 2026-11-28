@@ -9,8 +9,8 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { areEquivalent, stripLatexSpacing } from '$lib/math';
-import { removeSpaces, checkForm } from '$lib/mathAST/cosmetic-transforms';
+import { areEquivalent, stripLatexSpacing } from '#lib/math/index.ts';
+import { removeSpaces, checkForm } from '#lib/mathAST/cosmetic-transforms.ts';
 
 /** Le sens « longueur », que les questions demandent (défaut du parseur : produit). */
 const LENGTH = { capitalPairs: 'length' } as const;

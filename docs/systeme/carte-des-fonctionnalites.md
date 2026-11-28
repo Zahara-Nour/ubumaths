@@ -12,7 +12,7 @@ couvre:
 
 # Carte des fonctionnalités : ce que Chiphre offre, à qui, par où
 
-> Vérifié contre le code le 2026-10-11 (branche `feat/sitemap-complet`) ; Tour du Royaume revu le 2026-11-01 (cartes). Inventaire **vu de l'utilisateur** :
+> Vérifié contre le code le 2026-10-11 (branche `feat/sitemap-complet`) ; Tour du Royaume revu le 2026-11-01 (cartes) ; La Tortue ajoutée le 2026-11-14 (chantier `blockly`) ; Programmes de calcul le 2026-11-15 ; sélecteur de niveau de La Tortue le 2026-11-17. Inventaire **vu de l'utilisateur** :
 > chaque fonctionnalité sous son libellé réel, sa route, son accès, et la preuve de ses points forts.
 > Le fonctionnement de chaque système est dans sa propre doc (carte : [docs/README.md](../README.md)) ;
 > le lore utilisable en vitrine est dans [univers-chiphre.md](univers-chiphre.md#le-lore-en-vitrine).
@@ -42,25 +42,27 @@ raison (démos, parcours d'authentification, pages à compte ou à jeton, routes
 source). La garde `src/lib/seo/__tests__/sitemap-pages.test.ts` parcourt le disque et échoue sur
 toute nouvelle page publique qui n'est dans aucune des trois listes.
 
-| Libellé dans l'interface                   | Route                                              | Ce que ça fait                                                                                                                                                                        | Menu                    | Sitemap  |
-| ------------------------------------------ | -------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------- | -------- |
-| Automaths                                  | `/automaths` → `/automaths/panier`                 | Banque de questions ; une série se lance en **En classe**, **Entraînement**, **Course aux nombres** ou **Flash-cards** (`src/lib/components/test/TestModeDialog.svelte:48-73`)        | oui                     | oui      |
-| Atelier (vues Calcul, Graphe, Données)     | `/atelier` (`/grapheur` y mène)                    | Calcul formel en français avec étapes, grapheur, statistiques et probabilités ; partage par lien. Rien ne quitte le navigateur (`src/routes/(public)/atelier/+page.svelte:6`)         | oui                     | oui      |
-| Chiffrement — le Cabinet Noir de Turingrad | `/chiffrement`, 9 établis, `/chiffrement/depeches` | Chiffrer, déchiffrer, décrypter (César → RSA), calculs pas à pas ; campagne des 9 Dépêches du Czar (`src/lib/ciphers/dispatches.ts`). 100 % navigateur                                | oui                     | oui      |
-| Upsilon                                    | `/upsilon`                                         | Simulateur de la calculatrice graphique Upsilon                                                                                                                                       | oui                     | oui      |
-| Python Playground                          | `/python`                                          | Python dans le navigateur (Pyodide), débogueur pas à pas, diagramme mémoire (`src/lib/components/python/debug/`)                                                                      | **non** (élève, prof)   | oui      |
-| Jeux : Trio, Mathémo, Démineur, 2048       | `/games/*`                                         | Jeux mathématiques ; gidouilles gagnées si l'élève est connecté (`public: true`, `src/routes/(public)/games/+page.svelte`)                                                            | oui                     | oui      |
-| Glossaire Mathématique                     | `/glossaire`                                       | Dictionnaire, définitions par niveau (671 entrées dans la copie figée `tests/fixtures/lexique/dictionnaire-reference.ts` ; la base fait foi) ; une page par terme `/glossaire/<slug>` | **non**                 | oui      |
-| Le Shtam                                   | `/shtam`, `/shtam/[slug]`                          | Gazette parodique du Royaume ; chaque article finit par son « Vrai du faux »                                                                                                          | oui                     | oui      |
-| L'Almanach des Chiphres                    | `/almanach`                                        | Calendrier pataphysique, date du jour, convertisseur                                                                                                                                  | **non**                 | oui      |
-| Zygomatics (« Les presques évaluations »)  | `/presques-evaluations`                            | Parodies d'évaluations en PDF                                                                                                                                                         | oui                     | oui      |
-| Chiphre, c'est quoi ?                      | `/a-propos`                                        | Le manifeste, pour les parents                                                                                                                                                        | non (panneau « Infos ») | oui      |
-| Démonstrations                             | `/demo` (11 vitrines)                              | Chiphre en action, sans compte : questions, corrigés, diaporama, figures… (`src/lib/seo/demo-pages.ts`)                                                                               | non (panneau « Infos ») | oui      |
-| Exercice partagé                           | `/exercice/[slug]`                                 | Variantes, graine partageable, export PDF, solution ; le tuteur seulement pour un élève connecté. Indexé seulement si coché « Afficher sur Google » (sinon `noindex`)                 | non (lien partagé)      | si coché |
-| Cahier de textes public                    | `/cahier/[token]`                                  | Séances et devoirs d'une classe, par lien                                                                                                                                             | non (lien du prof)      | non      |
-| Cours public                               | `/cours/[token]`                                   | Cours publié d'une classe (chapitres, documents, fiches, objectifs, séries), par lien                                                                                                 | non (lien du prof)      | non      |
-| Figure géométrique partagée                | `/figures/[id]`                                    | Figure du prof, interactive (curseurs) ; titre, niveaux, description. Une figure privée ou inexistante rend la même 404. Toujours `noindex` (ADR 0027)                                | non (lien du prof)      | non      |
-| Le Trône Royal (Père Ubu)                  | `/pere-ubu`                                        | Père Ubu et ses répliques ; **son chat exige un compte** : un visiteur est invité à se connecter                                                                                      | non                     | oui      |
+| Libellé dans l'interface                   | Route                                              | Ce que ça fait                                                                                                                                                                                           | Menu                    | Sitemap  |
+| ------------------------------------------ | -------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------- | -------- |
+| Automaths                                  | `/automaths` → `/automaths/panier`                 | Banque de questions ; une série se lance en **En classe**, **Contrôle blanc**, **Course aux nombres**, **Flash-cards** ou **Saisie** (`src/lib/components/test/TestModeDialog.svelte`)                   | oui                     | oui      |
+| Atelier (vues Calcul, Graphe, Données)     | `/atelier` (`/grapheur` y mène)                    | Calcul formel en français avec étapes, grapheur, statistiques et probabilités ; partage par lien. Rien ne quitte le navigateur (`src/routes/(public)/atelier/+page.svelte:6`)                            | oui                     | oui      |
+| Chiffrement — le Cabinet Noir de Turingrad | `/chiffrement`, 9 établis, `/chiffrement/depeches` | Chiffrer, déchiffrer, décrypter (César → RSA), calculs pas à pas ; campagne des 9 Dépêches du Czar (`src/lib/ciphers/dispatches.ts`). 100 % navigateur                                                   | oui                     | oui      |
+| Upsilon                                    | `/upsilon`                                         | Simulateur de la calculatrice graphique Upsilon                                                                                                                                                          | oui                     | oui      |
+| La Tortue                                  | `/tortue`                                          | Programmer une tortue par blocs (avancer, tourner, répéter ; variables en 4e, conditions en 3e) ; tracé animé sur quadrillage, aperçu Python. Rien n'est enregistré, aucun JavaScript exécuté (ADR 0039) | oui                     | oui      |
+| Programmes de calcul                       | `/programmes-de-calcul`                            | Construire un programme de calcul par blocs (nombre choisi, opérations, afficher) et l'essayer sur un nombre. Rien n'est enregistré ni jugé, aucun JavaScript exécuté (ADR 0039)                         | oui                     | oui      |
+| Python Playground                          | `/python`                                          | Python dans le navigateur (Pyodide), débogueur pas à pas, diagramme mémoire (`src/lib/components/python/debug/`)                                                                                         | **non** (élève, prof)   | oui      |
+| Jeux : Trio, Mathémo, Démineur, 2048       | `/games/*`                                         | Jeux mathématiques ; gidouilles gagnées si l'élève est connecté (`public: true`, `src/routes/(public)/games/+page.svelte`)                                                                               | oui                     | oui      |
+| Glossaire Mathématique                     | `/glossaire`                                       | Dictionnaire, définitions par niveau (671 entrées dans la copie figée `tests/fixtures/lexique/dictionnaire-reference.ts` ; la base fait foi) ; une page par terme `/glossaire/<slug>`                    | **non**                 | oui      |
+| Le Shtam                                   | `/shtam`, `/shtam/[slug]`                          | Gazette parodique du Royaume ; chaque article finit par son « Vrai du faux »                                                                                                                             | oui                     | oui      |
+| L'Almanach des Chiphres                    | `/almanach`                                        | Calendrier pataphysique, date du jour, convertisseur                                                                                                                                                     | **non**                 | oui      |
+| Zygomatics (« Les presques évaluations »)  | `/presques-evaluations`                            | Parodies d'évaluations en PDF                                                                                                                                                                            | oui                     | oui      |
+| Chiphre, c'est quoi ?                      | `/a-propos`                                        | Le manifeste, pour les parents                                                                                                                                                                           | non (panneau « Infos ») | oui      |
+| Démonstrations                             | `/demo` (11 vitrines)                              | Chiphre en action, sans compte : questions, corrigés, diaporama, figures… (`src/lib/seo/demo-pages.ts`)                                                                                                  | non (panneau « Infos ») | oui      |
+| Exercice partagé                           | `/exercice/[slug]`                                 | Variantes, graine partageable, export PDF, solution ; le tuteur seulement pour un élève connecté. Indexé seulement si coché « Afficher sur Google » (sinon `noindex`)                                    | non (lien partagé)      | si coché |
+| Cahier de textes public                    | `/cahier/[token]`                                  | Séances et devoirs d'une classe, par lien                                                                                                                                                                | non (lien du prof)      | non      |
+| Cours public                               | `/cours/[token]`                                   | Cours publié d'une classe (chapitres, documents, fiches, objectifs, séries), par lien                                                                                                                    | non (lien du prof)      | non      |
+| Figure géométrique partagée                | `/figures/[id]`                                    | Figure du prof, interactive (curseurs) ; titre, niveaux, description. Une figure privée ou inexistante rend la même 404. Toujours `noindex` (ADR 0027)                                                   | non (lien du prof)      | non      |
+| Le Trône Royal (Père Ubu)                  | `/pere-ubu`                                        | Père Ubu et ses répliques ; **son chat exige un compte** : un visiteur est invité à se connecter                                                                                                         | non                     | oui      |
 
 ## Avec un compte élève
 
@@ -79,18 +81,18 @@ connexion Google désactivée (`GOOGLE_LOGIN_ENABLED`, `src/routes/(public)/auth
 
 ## Points forts, avec leur preuve
 
-| Point fort                                                       | Preuve dans le code                                                                                                                                                             |
-| ---------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **La forme de la réponse est corrigée**, pas seulement sa valeur | 5 statuts `correct · unoptimal_form · bad_form · incorrect · empty`, crédit partiel (`src/lib/questions/types.ts:1034`) ; forme exigée ([questions.md](questions.md))           |
-| **Étapes expliquées en français**, selon le niveau               | `src/lib/mathAST/pedagogical-*/` ; dans l'Atelier, `solve-steps.ts`, `derive-steps.ts`, `simplify-steps.ts`                                                                     |
-| **Correction concise puis détaillée**, écran et papier           | `src/lib/questions/correction-detail.ts`, [ADR 0017](../adr/0017-correction-concise-et-detaillee.md)                                                                            |
-| **Mots cliquables** : un mot de l'énoncé ouvre sa définition     | niveau du lecteur (`src/lib/lexicon/reader-grade.ts`) ; éteints en évaluation notée (`src/lib/components/markdown/lexicon-context.ts:9`)                                        |
-| **Atelier et Cabinet Noir sans compte, sans envoi de données**   | `src/routes/(public)/atelier/+page.svelte:6` ; `src/lib/ciphers/` 100 % client ([univers-chiphre.md](univers-chiphre.md))                                                       |
-| **PDF compilés dans le navigateur**                              | Typst en WASM ([fiches-et-pdf.md](fiches-et-pdf.md))                                                                                                                            |
-| **Base de données à Paris**, fonctions en région Paris           | Supabase `eu-west-3` (`src/routes/(public)/legal/mentions-legales/+page.svelte:53`), Vercel `cdg1` (`svelte.config.js:10`) — [ADR 0003](../adr/0003-donnees-hebergees-en-ue.md) |
-| **Cookies strictement nécessaires**, pas de publicité            | `mentions-legales/+page.svelte:112` ; Compendium : ni publicité ni avantage pédagogique payant                                                                                  |
-| **Consentement parental, export et suppression du compte**       | `/consent/[token]`, `src/routes/api/account/{export,delete}` ([conformite/](conformite/README.md))                                                                              |
-| **Confort de lecture**                                           | taille du texte de 75 % à 150 % (`src/lib/stores/fontSize.svelte.ts:20-21`), mode sombre qui suit le système                                                                    |
+| Point fort                                                       | Preuve dans le code                                                                                                                                                                        |
+| ---------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **La forme de la réponse est corrigée**, pas seulement sa valeur | 5 statuts `correct · unoptimal_form · bad_form · incorrect · empty`, crédit partiel (`src/lib/questions/types.ts:1034`) ; forme exigée ([questions.md](questions.md))                      |
+| **Étapes expliquées en français**, selon le niveau               | `src/lib/mathAST/pedagogical-*/` ; dans l'Atelier, `solve-steps.ts`, `derive-steps.ts`, `simplify-steps.ts`                                                                                |
+| **Correction concise puis détaillée**, écran et papier           | `src/lib/questions/correction-detail.ts`, [ADR 0017](../adr/0017-correction-concise-et-detaillee.md)                                                                                       |
+| **Mots cliquables** : un mot de l'énoncé ouvre sa définition     | niveau du lecteur (`src/lib/dictionary/reader-grade.ts`) ; éteints en évaluation notée (`src/lib/components/markdown/lexicon-context.ts:9`)                                                |
+| **Atelier et Cabinet Noir sans compte, sans envoi de données**   | `src/routes/(public)/atelier/+page.svelte:6` ; `src/lib/ciphers/` 100 % client ([univers-chiphre.md](univers-chiphre.md))                                                                  |
+| **PDF compilés dans le navigateur**                              | Typst en WASM ([fiches-et-pdf.md](fiches-et-pdf.md))                                                                                                                                       |
+| **Base de données à Paris**, fonctions en région Paris           | Supabase `eu-west-3` (`src/routes/(public)/legal/mentions-legales/+page.svelte:53`), Vercel `cdg1` (adaptateur dans `vite.config.ts`) — [ADR 0003](../adr/0003-donnees-hebergees-en-ue.md) |
+| **Cookies strictement nécessaires**, pas de publicité            | `mentions-legales/+page.svelte:112` ; Compendium : ni publicité ni avantage pédagogique payant                                                                                             |
+| **Consentement parental, export et suppression du compte**       | `/consent/[token]`, `src/routes/api/account/{export,delete}` ([conformite/](conformite/README.md))                                                                                         |
+| **Confort de lecture**                                           | taille du texte de 75 % à 150 % (`src/lib/stores/fontSize.svelte.ts:20-21`), mode sombre qui suit le système                                                                               |
 
 ## Ce qu'il ne faut pas promettre
 
@@ -100,7 +102,11 @@ connexion Google désactivée (`GOOGLE_LOGIN_ENABLED`, `src/routes/(public)/auth
   Paris », qui est exact.
 - **Un suivi « accessible aux parents »** : aucun rôle parent ni vue de progression pour eux ; le
   seul accès famille est le lien du cahier de textes et celui du cours (ADR 0025). `/a-propos` dit
-  désormais exactement cela (D12, 2026-10-12).
+  désormais exactement cela (D12, 2026-10-12). Le **carnet de liaison** (ADR 0040,
+  [carnet-de-liaison.md](carnet-de-liaison.md)) est construit (PR #2718 à #2737, 2026-11) : une
+  page par parent, sans compte, sans note. Ne le promettre qu'une fois en production, et toujours
+  « si le professeur l'active pour la classe » (il ne part qu'à son geste ; pas d'élève hors classe).
+  `/carnet/lien-perdu` est hors du sitemap (`noindex`).
 - **Une interface multilingue** : l'interface est en français seulement ; seuls certains contenus
   (fiches) existent en anglais.
 - **Parler à Père Ubu sans compte** : le chat de `/pere-ubu` exige un compte ; un visiteur y voit
@@ -121,7 +127,7 @@ connexion Google désactivée (`GOOGLE_LOGIN_ENABLED`, `src/routes/(public)/auth
 
 ## Comment un visiteur entre
 
-- **Accueil** (`src/routes/(public)/+page.svelte`, épuré le 2026-10-06) : titre, Père Ubu au
+- **Accueil** (`src/routes/(public)/+page.svelte`, épuré le 2026-10-06) : titre qui commence par le nom du site, Père Ubu au
   centre, une dépêche du Shtam tirée au hasard. Pour un visiteur **anonyme**, la
   [roue des publics](#la-roue-des-publics-et-les-trois-vues) dérive autour de Père Ubu et mène aux
   trois vues. Père Ubu mène au [Tour du Royaume](#le-tour-du-royaume-royaume) (le lien texte
@@ -129,7 +135,7 @@ connexion Google désactivée (`GOOGLE_LOGIN_ENABLED`, `src/routes/(public)/auth
   (pages légales, `/a-propos`) est dans le coin inférieur droit (`src/routes/+layout.svelte`).
 - **En-tête** (`src/lib/components/Header.svelte`) : « Connexion » en haut à droite ; l'inscription
   n'est atteinte que depuis la page de connexion (« Créer un compte »).
-- **Menu** : Accueil, Automaths, Jeux, Upsilon, Atelier, Chiffrement, Le Shtam, Zygomatics
+- **Menu** : Accueil, Automaths, Jeux, La Tortue, Programmes de calcul, Upsilon, Atelier, Chiffrement, Le Shtam, Zygomatics
   (D13, D14 : Géométrie retirée, Automaths et le Shtam ajoutés, 2026-10-12).
 
 ## La roue des publics et les trois vues
@@ -144,10 +150,10 @@ aiguillage, Élève / Parent / Professeur, vers trois vues courtes : `/eleves`, 
 | Fichier                                                | Rôle                                                                                               |
 | ------------------------------------------------------ | -------------------------------------------------------------------------------------------------- |
 | `src/lib/kingdom-tour/audiences.ts`                    | `AUDIENCES` : les trois publics, leur libellé et leur adresse                                      |
-| `src/lib/kingdom-tour/views.ts`                        | Le contenu des trois vues (`STUDENT_VIEW`, `PARENT_VIEW`, `TEACHER_VIEW`)                          |
+| `src/lib/kingdom-tour/views.ts`                        | Le contenu des trois vues (`STUDENT_VIEW`, `PARENT_VIEW`, `TEACHER_VIEW`), `faqJsonLd`             |
 | `src/lib/kingdom-tour/drift.ts`                        | `driftGeometry`, `driftAt` : la dérive autour de Père Ubu (pures)                                  |
 | `src/lib/components/kingdom-tour/AudienceWheel.svelte` | La roue : la chandelle verte, sa lumière, ses trois choix ; `placement` `corner` (vues) ou `orbit` |
-| `src/lib/components/kingdom-tour/AudienceView.svelte`  | La mise en page d'une vue : Père Ubu, blocs, démos du Tour, portes d'entrée, autres vues en liens  |
+| `src/lib/components/kingdom-tour/AudienceView.svelte`  | La mise en page d'une vue : Père Ubu, blocs, démos du Tour, FAQ, portes d'entrée, autres vues      |
 | `src/routes/(public)/{eleves,parents,professeurs}/`    | Une page par vue ; le serveur choisit l'ambiance du mois (jamais prérendue)                        |
 
 **Invariants**
@@ -179,16 +185,24 @@ aiguillage, Élève / Parent / Professeur, vers trois vues courtes : `/eleves`, 
   toujours ». Le niveau est dit partout : du CM1 à la Terminale.
 - **Le registre** : élèves tutoyés ; parents et professeurs vouvoyés (les descriptions du Tour,
   qui tutoient, sont réécrites pour les professeurs).
-- **Les parents** lisent franchement : pas de compte parent (les liens du cahier de textes et du
-  cours, par le professeur), et le tuteur passe par un prestataire aux États-Unis.
+- **Les parents** (revue point par point du 2026-11-17, journal `docs/archive/wip/presentation-parents-progress.md`) :
+  sur la page, ce qui fait venir (qui est derrière, ce que l'enfant y fait, le suivi par le
+  [carnet de liaison](carnet-de-liaison.md), l'inscription avec un code de classe et le prix) ;
+  dans la **FAQ**, ce qui rassure (à qui il parle, le tuteur IA et son prestataire aux États-Unis,
+  nommé, les données, les jeux). La FAQ est faite de `<details>` natifs : repliée, mais ses
+  réponses restent dans le HTML, et reprises en données structurées `FAQPage` (`faqJsonLd`). Les
+  gidouilles ne s'achètent jamais avec de l'argent réel. Pas de démonstration « La forme compte »
+  (elle reste aux professeurs).
 
 **Comment étendre** : un bloc → une entrée de `blocks` dans `views.ts` (son icône dans `ViewIcon`
-et dans `AudienceView.svelte`) ; un lien → une page publique qui existe (le test le vérifie).
+et dans `AudienceView.svelte`) ; une question fréquente → une entrée de `faq` ; un lien → une
+page publique qui existe (le test le vérifie).
 
-**Tests** : `src/lib/kingdom-tour/__tests__/views.test.ts` (liens, registre, argent, niveau),
+**Tests** : `src/lib/kingdom-tour/__tests__/views.test.ts` (liens, registre, argent, niveau, page
+des parents, `faqJsonLd`),
 `drift.test.ts` (zone libre, flanc, vitesse) ; `src/lib/components/kingdom-tour/__tests__/`
-(`AudienceWheel` : clavier, survol, invitation ; `AudienceView` : titre, roue, autres vues, pas de
-débord à 320, 375 et 1280 px) ; `src/routes/(public)/__tests__/page.svelte.test.ts` (roue pour
+(`AudienceWheel` : clavier, survol, invitation ; `AudienceView` : titre, roue, autres vues, FAQ
+repliée qui s'ouvre au clic, `FAQPage` dans l'en-tête, pas de débord à 320, 375 et 1280 px) ; `src/routes/(public)/__tests__/page.svelte.test.ts` (roue pour
 l'anonyme seulement, Père Ubu vers `/royaume`).
 
 ## Le Tour du Royaume (`/royaume`)
@@ -259,11 +273,8 @@ débord) ; `src/routes/(public)/royaume/[ville]/__tests__/` (404, clic sur un li
 
 ## Écarts connus
 
-Consignés dans [ecarts-a-trier.md](../wip/ecarts-a-trier.md) (chantier K19 ; V15 corrigé par le Tour du
-Royaume, D19 par la chandelle qui se pose au bout d'une minute ; V14, C16, C17, D12-D15 corrigés le
-2026-10-12) :
+Les écarts de cette zone sont au [registre des écarts](../ecarts/registre.md) : `pnpm ecarts`. Un écart s'écrit là-bas, jamais ici.
 
-- Glossaire et Almanach : absents du menu (décision de David du 2026-10-12 : le menu garde
-  Automaths et le Shtam, les plus vivants).
-- Accessibilité, tout le site : anneau de focus clair à 2:1 (D16), `muted-foreground` à 4,4:1 sur fonds
-  teintés (D17), pas de lien d'évitement (D18).
+### Points non vérifiés
+
+- Glossaire et Almanach : absents du menu (décision de David du 2026-10-12 : le menu garde Automaths et le Shtam, les plus vivants).

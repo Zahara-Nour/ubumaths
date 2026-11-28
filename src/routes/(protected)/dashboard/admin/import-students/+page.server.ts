@@ -4,9 +4,9 @@ import {
 	validateFormData,
 	importStudentsFormSchema,
 	importedStudentsSchema
-} from '$lib/server/validation';
-import { requireAdmin } from '$lib/server/middleware/auth';
-import { createServerLogger } from '$lib/utils/logger';
+} from '#lib/server/validation/index.ts';
+import { requireAdmin } from '#lib/server/middleware/auth.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('(protected)/dashboard/admin/import-students/+page.server');
 

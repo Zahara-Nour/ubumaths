@@ -1,0 +1,262 @@
+{
+	"id": "2e898e54-bad7-4a92-b5ca-5d40561ca24d",
+	"title": "Formules du tableur pour un tableau croisé",
+	"description": "Total d'une ligne, d'une colonne, fréquence recopiée avec une référence bloquée, choix du diagramme",
+	"grades": ["1_GEN"],
+	"level": 1,
+	"delay": 45,
+	"status": "draft",
+	"shared": {},
+	"variations": [
+		{
+			"statement": "Une feuille de calcul contient le tableau croisé des élèves d'un lycée selon leur sexe et leur façon de venir.\n\n|   | A | B | C | D |\n|---|---|---|---|---|\n| 1 |   | Vélo | Bus | Total |\n| 2 | Filles | {{f1}} | {{f2}} |   |\n| 3 | Garçons | {{g1}} | {{g2}} |   |\n| 4 | Total |   |   |   |\n\nQuelle formule écrire dans la cellule D2 pour obtenir le nombre total de filles ?\n\n```choix\n- =SOMME(B2:C2)\n- =SOMME(B2:B3)\n- =SOMME(B2:D2)\n- =B2*C2\n```",
+			"variables": [
+				{
+					"name": "f1",
+					"expression": "5..30"
+				},
+				{
+					"name": "f2",
+					"expression": "5..30"
+				},
+				{
+					"name": "g1",
+					"expression": "5..30"
+				},
+				{
+					"name": "g2",
+					"expression": "5..30"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Tableur.** Une plage de cellules s'écrit avec deux-points : « B2:C2 » va de B2 à C2.",
+					"Les filles sont sur la ligne 2, dans les colonnes B et C : $\\textcolor{{{color:primary.0}}}{\\text{=SOMME(B2:C2)}}$ donne ${{f1}}+{{f2}}={{eval:f1+f2}}$.",
+					"« =SOMME(B2:B3) » additionne la colonne Vélo ; « =SOMME(B2:D2) » contient sa propre cellule D2 ; « =B2*C2 » multiplie."
+				]
+			}
+		},
+		{
+			"statement": "Une feuille de calcul contient le tableau croisé des élèves d'un lycée selon leur sexe et leur façon de venir.\n\n|   | A | B | C | D |\n|---|---|---|---|---|\n| 1 |   | Vélo | Bus | Total |\n| 2 | Filles | {{f1}} | {{f2}} |   |\n| 3 | Garçons | {{g1}} | {{g2}} |   |\n| 4 | Total |   |   |   |\n\nQuelle formule écrire dans la cellule B4 pour obtenir le nombre total d'élèves qui viennent à vélo ?\n\n```choix\n- =SOMME(B2:B3)\n- =SOMME(B2:C2)\n- =SOMME(B2:B4)\n- =B2+C3\n```",
+			"variables": [
+				{
+					"name": "f1",
+					"expression": "5..30"
+				},
+				{
+					"name": "f2",
+					"expression": "5..30"
+				},
+				{
+					"name": "g1",
+					"expression": "5..30"
+				},
+				{
+					"name": "g2",
+					"expression": "5..30"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Tableur.** Une plage de cellules s'écrit avec deux-points : « B2:C2 » va de B2 à C2.",
+					"Les élèves qui viennent à vélo sont dans la colonne B, lignes 2 et 3 : $\\textcolor{{{color:primary.0}}}{\\text{=SOMME(B2:B3)}}$ donne ${{f1}}+{{g1}}={{eval:f1+g1}}$.",
+					"« =SOMME(B2:C2) » additionne la ligne des filles ; « =SOMME(B2:B4) » contient sa propre cellule B4 ; « =B2+C3 » mélange vélo et bus."
+				]
+			}
+		},
+		{
+			"statement": "Une feuille de calcul contient le tableau croisé des élèves d'un lycée selon leur sexe et leur façon de venir.\n\n|   | A | B | C | D |\n|---|---|---|---|---|\n| 1 |   | Vélo | Bus | Total |\n| 2 | Filles | {{f1}} | {{f2}} |   |\n| 3 | Garçons | {{g1}} | {{g2}} |   |\n| 4 | Total | {{eval:f1+g1}} | {{eval:f2+g2}} |   |\n| 5 |   | Part parmi les cyclistes |   |   |\n| 6 | Filles |   |   |   |\n| 7 | Garçons |   |   |   |\n\nEn B6, on veut la part des filles parmi les élèves qui viennent à vélo, puis recopier la formule vers le bas, en B7, pour obtenir celle des garçons. Quelle formule écrire en B6 ?\n\n```choix\n- =B2/B\\$4\n- =B2/B4\n- =B\\$2/B\\$4\n- =B4/B2\n```",
+			"variables": [
+				{
+					"name": "f1",
+					"expression": "5..30"
+				},
+				{
+					"name": "f2",
+					"expression": "5..30"
+				},
+				{
+					"name": "g1",
+					"expression": "5..30"
+				},
+				{
+					"name": "g2",
+					"expression": "5..30"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"En B6, il faut calculer $\\dfrac{\\text{B2}}{\\text{B4}}$. Mais en recopiant vers le bas, le tableur augmente de 1 chaque numéro de ligne : « =B2/B4 » deviendrait « =B3/B5 » en B7, et B5 ne contient pas le total.",
+					"Le symbole \\$ devant le 4 **bloque** la ligne : « =B2/B\\$4 » devient « =B3/B\\$4 » en B7, la part des garçons. La bonne formule est $\\textcolor{{{color:primary.0}}}{\\text{=B2/B\\$4}}$.",
+					"« =B\\$2/B\\$4 » donnerait encore la part des filles en B7 ; « =B4/B2 » est l'inverse."
+				]
+			}
+		},
+		{
+			"statement": "Une feuille de calcul contient le tableau croisé des élèves d'un lycée selon leur sexe et leur façon de venir.\n\n|   | A | B | C | D |\n|---|---|---|---|---|\n| 1 |   | Vélo | Bus | Total |\n| 2 | Filles | {{f1}} | {{f2}} |   |\n| 3 | Garçons | {{g1}} | {{g2}} |   |\n| 4 | Total |   |   |   |\n\nOn veut que le tableur trace un diagramme pour comparer la façon de venir des filles et celle des garçons, alors qu'ils ne sont pas aussi nombreux. Quel diagramme choisir ?\n\n```choix\n- Deux diagrammes circulaires, un pour les filles, un pour les garçons\n- Un seul diagramme circulaire des totaux « Vélo » et « Bus »\n- Une courbe qui relie les effectifs\n- Un diagramme en barres des totaux de la ligne 4\n```",
+			"variables": [
+				{
+					"name": "f1",
+					"expression": "5..30"
+				},
+				{
+					"name": "f2",
+					"expression": "5..30"
+				},
+				{
+					"name": "g1",
+					"expression": "5..30"
+				},
+				{
+					"name": "g2",
+					"expression": "5..30"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Pour comparer deux groupes d'effectifs différents, on compare des **proportions**.",
+					"Un diagramme circulaire par groupe montre la part de chaque façon de venir dans ce groupe : **deux diagrammes circulaires, un pour les filles, un pour les garçons**.",
+					"Les totaux de la ligne 4 mélangent filles et garçons ; une courbe ne convient pas à des catégories."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "D2 : =SOMME(B2:C2)",
+			"variationIndex": 0,
+			"variables": {
+				"f1": "12",
+				"f2": "18",
+				"g1": "9",
+				"g2": "21"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : la colonne (=SOMME(B2:B3))",
+			"variationIndex": 0,
+			"variables": {
+				"f1": "12",
+				"f2": "18",
+				"g1": "9",
+				"g2": "21"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "B4 : =SOMME(B2:B3)",
+			"variationIndex": 1,
+			"variables": {
+				"f1": "12",
+				"f2": "18",
+				"g1": "9",
+				"g2": "21"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : référence circulaire (=SOMME(B2:B4))",
+			"variationIndex": 1,
+			"variables": {
+				"f1": "12",
+				"f2": "18",
+				"g1": "9",
+				"g2": "21"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "B6 : =B2/B$4",
+			"variationIndex": 2,
+			"variables": {
+				"f1": "12",
+				"f2": "18",
+				"g1": "9",
+				"g2": "21"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : =B2/B4 (faux après recopie)",
+			"variationIndex": 2,
+			"variables": {
+				"f1": "12",
+				"f2": "18",
+				"g1": "9",
+				"g2": "21"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Deux circulaires",
+			"variationIndex": 3,
+			"variables": {
+				"f1": "12",
+				"f2": "18",
+				"g1": "9",
+				"g2": "21"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : barres des totaux",
+			"variationIndex": 3,
+			"variables": {
+				"f1": "12",
+				"f2": "18",
+				"g1": "9",
+				"g2": "21"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

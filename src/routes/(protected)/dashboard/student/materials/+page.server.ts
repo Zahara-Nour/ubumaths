@@ -1,9 +1,9 @@
 import type { PageServerLoad } from './$types';
 import { error, redirect } from '@sveltejs/kit';
-import { requireRole } from '$lib/server/middleware/auth';
-import { listStudentSharedMaterialsSchema } from '$lib/server/validation';
-import { GOOGLE_CLASSROOM_ENABLED } from '$lib/config/google-classroom';
-import { createServerLogger } from '$lib/utils/logger';
+import { requireRole } from '#lib/server/middleware/auth.ts';
+import { listStudentSharedMaterialsSchema } from '#lib/server/validation/index.ts';
+import { GOOGLE_CLASSROOM_ENABLED } from '#lib/config/google-classroom.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('(protected)/dashboard/student/materials/+page.server');
 

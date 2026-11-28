@@ -7,7 +7,7 @@
 import { describe, it, expect } from 'vitest';
 import { ConstructionExecutor } from '../executor';
 import type { SubStep } from '../choreographies/types';
-import { geoToNumber } from '$lib/geometry-core/compute/to-number';
+import { geoToNumber } from '#lib/geometry-core/compute/to-number.ts';
 import { PROTRACTOR_RADIUS } from '../../constants';
 
 /** Charge le script et rend les sous-étapes chorégraphiées, dans l'ordre. */
@@ -49,8 +49,8 @@ describe('bissectrice @mesure — déroulé', () => {
 		const { exec, steps } = subSteps(script);
 		expect(exec.totalSteps).toBe(3 + 4);
 		expect(steps.map((s) => s.kind)).toEqual([
-			'compass-measure',
-			'compass-measure',
+			'instrument-move',
+			'instrument-move',
 			'point-fade-in',
 			'ruler-trace'
 		]);

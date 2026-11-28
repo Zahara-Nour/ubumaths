@@ -17,9 +17,9 @@ import { atelierFileToJson, readAtelierFile } from '../atelier-file';
 import { historyToJson } from '../history-export';
 import { readHistory } from '../history-import';
 import { isFunction } from '../types';
-import type { Figure } from '$lib/geometry-core/graph/figure';
-import { createTransformer } from '$lib/geometry-core/viewport/viewport';
-import { functionToSVG } from '$lib/geometry-core/rendering/svg-primitives';
+import type { Figure } from '#lib/geometry-core/graph/figure.ts';
+import { createTransformer } from '#lib/geometry-core/viewport/viewport.ts';
+import { functionToSVG } from '#lib/geometry-core/rendering/svg-primitives.ts';
 
 // =============================================================================
 // Décor

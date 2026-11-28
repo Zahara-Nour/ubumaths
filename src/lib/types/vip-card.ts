@@ -2,7 +2,7 @@
 // =========================
 // This file defines the structure and data for the VIP card reward system.
 
-import type { WarningType } from '$lib/server/warnings';
+import type { WarningType } from '#lib/server/warnings.ts';
 
 /**
  * How the VIP card was acquired.

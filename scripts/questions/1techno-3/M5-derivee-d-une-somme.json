@@ -1,0 +1,177 @@
+{
+	"id": "531a7080-9b20-46be-a614-7104d5401451",
+	"title": "Dérivée d'une somme",
+	"description": "Dériver terme à terme une somme de x³, x², x et d'une constante (coefficients 1)",
+	"grades": ["1_TECHNO"],
+	"level": 2,
+	"delay": 60,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		},
+		"cleanCoefficients": true
+	},
+	"variations": [
+		{
+			"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=x^3+x^2$.\n\n$f'(x)=?$",
+			"blanks": [
+				{
+					"expectedAnswer": "3x^2+2x"
+				}
+			],
+			"variables": [],
+			"correction": {
+				"steps": [
+					"La dérivée d'une somme est la somme des dérivées : $(x^3)'=3x^2$ et $(x^2)'=2x$.",
+					"$f'(x)=\\textcolor{{{color:primary.0}}}{3x^2+2x}$."
+				]
+			}
+		},
+		{
+			"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=x^2+x{{c;+}}$.\n\n$f'(x)=?$",
+			"blanks": [
+				{
+					"expectedAnswer": "2x+1"
+				}
+			],
+			"variables": [
+				{
+					"name": "c",
+					"expression": "1..9;±"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On dérive terme à terme : $(x^2)'=2x$, $(x)'=1$, et la dérivée d'une constante est nulle.",
+					"$f'(x)=\\textcolor{{{color:primary.0}}}{2x+1}$."
+				]
+			}
+		},
+		{
+			"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=x^3+x{{c;+}}$.\n\n$f'(x)=?$",
+			"blanks": [
+				{
+					"expectedAnswer": "3x^2+1"
+				}
+			],
+			"variables": [
+				{
+					"name": "c",
+					"expression": "1..9;±"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On dérive terme à terme : $(x^3)'=3x^2$, $(x)'=1$, et la dérivée de ${{c}}$ est nulle.",
+					"$f'(x)=\\textcolor{{{color:primary.0}}}{3x^2+1}$."
+				]
+			}
+		},
+		{
+			"statement": "Soit $u$ et $v$ deux fonctions dérivables sur un intervalle $I$. La dérivée de $u+v$ est…\n\n```choix\n- $u'+v'$\n- $u'\\times v'$\n- $u'+v$\n- $u+v'$\n```",
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"variables": [],
+			"correction": {
+				"steps": ["La dérivée d'une somme est la somme des dérivées : $(u+v)'=u'+v'$."]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "x³ + x² : 3x² + 2x",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["3x^2+2x"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : exposants non baissés",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["3x^3+2x^2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "x² + x + 5 : 2x + 1",
+			"variationIndex": 1,
+			"variables": {
+				"c": "5"
+			},
+			"answers": ["2x+1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : constante gardée",
+			"variationIndex": 1,
+			"variables": {
+				"c": "5"
+			},
+			"answers": ["2x+6"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : dérivée de x nulle",
+			"variationIndex": 1,
+			"variables": {
+				"c": "5"
+			},
+			"answers": ["2x"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "x³ + x - 4 : 3x² + 1",
+			"variationIndex": 2,
+			"variables": {
+				"c": "-4"
+			},
+			"answers": ["3x^2+1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : constante gardée",
+			"variationIndex": 2,
+			"variables": {
+				"c": "-4"
+			},
+			"answers": ["3x^2-3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "(u + v)′ = u′ + v′",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : produit des dérivées",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

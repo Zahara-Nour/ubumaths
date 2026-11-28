@@ -19,8 +19,8 @@ import { astOf } from './parse';
 import { derivativeAstOf } from './engine';
 import { INTERNAL_LETTER, renameVariableIn, studentDefinitionOf, typedLetterOf } from './letter';
 import { intervalLabelOf } from './interval';
-import { toCustom } from '$lib/mathAST/custom-generator';
-import type { MathNode } from '$lib/mathAST/types';
+import { toCustom } from '#lib/mathAST/custom-generator.ts';
+import type { MathNode } from '#lib/mathAST/types.ts';
 
 // =============================================================================
 // Constantes

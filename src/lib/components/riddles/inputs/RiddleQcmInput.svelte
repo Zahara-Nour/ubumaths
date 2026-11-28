@@ -4,9 +4,9 @@
 -->
 
 <script lang="ts">
-	import { Label } from '$lib/components/ui/label';
-	import { Checkbox } from '$lib/components/ui/checkbox';
-	import { cn } from '$lib/utils';
+	import { Label } from '#lib/components/ui/label/index.ts';
+	import { Checkbox } from '#lib/components/ui/checkbox/index.ts';
+	import { cn } from '#lib/utils.ts';
 
 	interface Props {
 		choices: string[];

@@ -1,10 +1,10 @@
 <script lang="ts">
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	import { onMount } from 'svelte'; // For future challenge initialization
-	import type { ChallengeInstance } from '$lib/types/game';
-	import { interpolateQuestion } from '$lib/utils/game/challenge-variables';
-	import { MarkdownRenderer } from '$lib/components/markdown';
-	import { Button } from '$lib/components/ui/button';
+	import type { ChallengeInstance } from '#lib/types/game.ts';
+	import { interpolateQuestion } from '#lib/utils/game/challenge-variables.ts';
+	import { MarkdownRenderer } from '#lib/components/markdown/index.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
 	import ChallengeTimer from './ChallengeTimer.svelte';
 	import ChallengeInput from './ChallengeInput.svelte';
 

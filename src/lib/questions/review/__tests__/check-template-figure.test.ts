@@ -2,7 +2,7 @@
  * Vérification d'un modèle à case « figure » (bloc ```figure-a-completer) :
  * chaque tirage doit CONSTRUIRE la figure et y trouver les points de `verifier:`.
  *
- * Piège trouvé avec CP-058 (`docs/wip/geometrie-validation-progress.md` § 10) :
+ * Piège trouvé avec CP-058 (`docs/archive/wip/geometrie-validation-progress.md` § 10) :
  * `eval:(y1 + y2)/2 + h/4` rend `\dfrac{13}{4}`, la figure ne se construit pas
  * (toute réponse de l'élève jugée fausse), et pourtant 200/200 tirages
  * « réussis » : les tirages ne regardaient pas la figure.
@@ -10,9 +10,9 @@
 
 import { describe, it, expect } from 'vitest';
 import { checkTemplate, formatCheckReport } from '../check-template';
-import type { QuestionTemplate } from '$lib/questions/types';
-import { templateMarkdown } from '$lib/ubumark';
-import { templatePublicationErrors } from '$lib/server/template-publication';
+import type { QuestionTemplate } from '#lib/questions/types.ts';
+import { templateMarkdown } from '#lib/ubumark/index.ts';
+import { templatePublicationErrors } from '#lib/server/template-publication.ts';
 
 // ============================================================================
 // FIXTURES

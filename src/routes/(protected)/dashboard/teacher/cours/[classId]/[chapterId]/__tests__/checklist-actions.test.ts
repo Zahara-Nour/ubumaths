@@ -13,11 +13,11 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 
 const addChecklistItem = vi.fn();
 
-vi.mock('$lib/server/middleware/auth', () => ({
+vi.mock('#lib/server/middleware/auth.ts', () => ({
 	requireRole: vi.fn(async () => ({ user: { id: 'prof' } }))
 }));
-vi.mock('$lib/server/chapters', async (importOriginal) => ({
-	...(await importOriginal<typeof import('$lib/server/chapters')>()),
+vi.mock('#lib/server/chapters.ts', async (importOriginal) => ({
+	...(await importOriginal<typeof import('#lib/server/chapters.ts')>()),
 	addChecklistItem: (...args: unknown[]) => addChecklistItem(...args)
 }));
 

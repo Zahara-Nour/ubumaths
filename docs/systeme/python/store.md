@@ -16,7 +16,7 @@ Documentation de `src/lib/stores/pythonPlayground.svelte.ts` (≈ 1 000 lignes),
 `PythonPlaygroundStore` est une **classe Svelte 5** exposée en singleton :
 
 ```typescript
-import { pythonStore } from '$lib/stores/pythonPlayground.svelte';
+import { pythonStore } from '#lib/stores/pythonPlayground.svelte.ts';
 ```
 
 Le store **délègue toute l'exécution** à un `PlaygroundExecutor` privé (`this._executor`) et ajoute la couche **playground-specific** :
@@ -244,7 +244,7 @@ const DEFAULT_THEME: EditorTheme = 'default';
 
 ```svelte
 <script lang="ts">
-	import { pythonStore } from '$lib/stores/pythonPlayground.svelte';
+	import { pythonStore } from '#lib/stores/pythonPlayground.svelte.ts';
 	import { onMount, onDestroy } from 'svelte';
 
 	let { user, profile } = $props();

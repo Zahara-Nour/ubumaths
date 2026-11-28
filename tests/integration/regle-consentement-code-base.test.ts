@@ -29,8 +29,8 @@ import { cleanupAllTestData } from '../helpers/database/trigger-test-helpers';
 import { DEFAULT_TEST_PASSWORD } from '../helpers/database/supabase-client';
 import { getPostgresClient } from '../helpers/database/postgres-client';
 import { TestData } from '../helpers/database/test-data-factory';
-import { GRADES_EXEMPT_FROM_CONSENT } from '$lib/utils/consent';
-import type { Database } from '$lib/types/database';
+import { GRADES_EXEMPT_FROM_CONSENT } from '#lib/utils/consent.ts';
+import type { Database } from '#lib/types/database.ts';
 
 // ============================================================================
 // CONSTANTES

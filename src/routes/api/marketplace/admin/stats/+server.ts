@@ -1,9 +1,9 @@
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireRoles } from '$lib/server/middleware/auth';
+import { requireRoles } from '#lib/server/middleware/auth.ts';
 // Supabase client is now accessed via locals.supabase
-import { adminStatsQuerySchema } from '$lib/server/marketplace/validation';
-import { createServerLogger } from '$lib/utils/logger';
+import { adminStatsQuerySchema } from '#lib/server/marketplace/validation.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/marketplace/admin/stats/+server');
 
@@ -181,7 +181,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 
 	if (studentIds.length === 0) {
 		// No students found, return empty stats
-		return json({
+		return Response.json({
 			stats: {
 				period,
 				totalTrades: 0,
@@ -295,7 +295,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 			? Math.round((totalCardsTraded / completedTrades.length) * 10) / 10
 			: 0;
 
-	return json({
+	return Response.json({
 		stats: {
 			period,
 			dateFrom: dateFrom.toISOString(),

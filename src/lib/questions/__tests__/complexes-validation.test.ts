@@ -6,8 +6,8 @@
  * équivalentes, formule d'Euler, argument modulo 2π, ensemble fini de complexes.
  */
 import { describe, it, expect } from 'vitest';
-import { runAllTestSpecs } from '$lib/questions/test-spec-runner';
-import type { QuestionTemplate } from '$lib/questions/types';
+import { runAllTestSpecs } from '#lib/questions/test-spec-runner.ts';
+import type { QuestionTemplate } from '#lib/questions/types.ts';
 
 function verdicts(
 	expected: string,

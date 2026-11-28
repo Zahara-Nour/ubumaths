@@ -15,9 +15,9 @@ import { describe, it, expect, beforeAll } from 'vitest';
 import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 import { REFERENCE_DICTIONARY } from '../fixtures/lexique/dictionnaire-reference';
 import { READING_WORDS_2026_10_11 } from '../fixtures/lexique/mots-lecture-2026-10-11';
-import type { Database } from '$lib/types/database';
-import { newProblems, type CheckedEntry } from '$lib/dictionary/consistency';
-import { rowToTerm } from '$lib/dictionary/entry-schema';
+import type { Database } from '#lib/types/database.ts';
+import { newProblems, type CheckedEntry } from '#lib/dictionary/consistency.ts';
+import { rowToTerm } from '#lib/dictionary/entry-schema.ts';
 
 // ============================================================================
 // CONSTANTES

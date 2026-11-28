@@ -5,9 +5,9 @@
 
 import { describe, it, expect } from 'vitest';
 import { resolveExpression } from '../../../parameterization/resolver/variable-resolver';
-import { createRandomSource } from '$lib/utils/random';
-import { parseLatex } from '$lib/mathAST/parser';
-import { evaluateNodeToApproximatedNumber } from '$lib/mathAST/eval/evaluate';
+import { createRandomSource } from '#lib/utils/random.ts';
+import { parseLatex } from '#lib/mathAST/parser/index.ts';
+import { evaluateNodeToApproximatedNumber } from '#lib/mathAST/eval/evaluate.ts';
 
 const JS_NOTATION = /\d[eE][+-]?\d/;
 

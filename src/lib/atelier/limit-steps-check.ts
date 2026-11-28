@@ -16,13 +16,13 @@
  * @module atelier/limit-steps-check
  */
 
-import type { MathNode } from '$lib/mathAST/types';
+import type { MathNode } from '#lib/mathAST/types.ts';
 import type {
 	PedagogicalLimitResult,
 	PedagogicalLimitRule,
 	PedagogicalLimitStep
-} from '$lib/mathAST/pedagogical-limits/types';
-import { isInfinity } from '$lib/mathAST/guards';
+} from '#lib/mathAST/pedagogical-limits/types.ts';
+import { isInfinity } from '#lib/mathAST/guards.ts';
 import { concludesEngineValue } from './evaluate-steps-check';
 
 // =============================================================================

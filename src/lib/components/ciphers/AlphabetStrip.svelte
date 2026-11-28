@@ -3,7 +3,7 @@
 	C'est toute la clé d'un chiffre de substitution, César et Atbash compris.
 -->
 <script lang="ts">
-	import { ALPHABET } from '$lib/ciphers/alphabet';
+	import { ALPHABET } from '#lib/ciphers/alphabet.ts';
 
 	// Props
 	let { key }: { key: string } = $props();

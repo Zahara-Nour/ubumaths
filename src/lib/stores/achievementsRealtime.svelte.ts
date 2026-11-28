@@ -1,10 +1,10 @@
-import { browser } from '$app/environment';
+import { browser } from '$app/env';
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { Database } from '$lib/types/database';
-import type { Achievement } from '$lib/types/achievements';
+import type { Database } from '#lib/types/database.ts';
+import type { Achievement } from '#lib/types/achievements.ts';
 import { supabaseRealtimeManager } from './supabaseRealtime.svelte';
 import { achievementsStore } from './achievements.svelte';
-import { createLogger } from '$lib/utils/logger';
+import { createLogger } from '#lib/utils/logger.ts';
 
 const logger = createLogger('achievementsRealtime.svelte.ts');
 
@@ -66,7 +66,7 @@ function isValidPayload(payload: unknown): payload is StudentAchievementInsertPa
  *
  * @example
  * ```ts
- * import { achievementsRealtimeManager } from '$lib/stores/achievementsRealtime.svelte';
+ * import { achievementsRealtimeManager } from '#lib/stores/achievementsRealtime.svelte.ts';
  *
  * // Initialize
  * achievementsRealtimeManager.init(supabase, userId);

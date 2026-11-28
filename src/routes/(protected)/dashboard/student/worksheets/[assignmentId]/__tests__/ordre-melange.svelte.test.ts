@@ -9,7 +9,7 @@
  */
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { render } from 'vitest-browser-svelte';
-import type { StudentWorksheetView } from '$lib/types/worksheets';
+import type { StudentWorksheetView } from '#lib/types/worksheets.ts';
 import WorksheetPage from '../+page.svelte';
 
 const SECTION_ID = '00000000-0000-4000-8000-0000000000c1';

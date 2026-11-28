@@ -7,9 +7,9 @@ import { describe, it, expect } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import QrBlock from '../QrBlock.svelte';
 import MarkdownRenderer from '../../MarkdownRenderer.svelte';
-import { parseQrContent } from '$lib/ubumark/parser/qr-parser';
-import { QR_COLORS, encodeQr } from '$lib/qr/qr-code';
-import { decodeSvg } from '$lib/qr/__tests__/decode-qr';
+import { parseQrContent } from '#lib/ubumark/parser/qr-parser.ts';
+import { QR_COLORS, encodeQr } from '#lib/qr/qr-code.ts';
+import { decodeSvg } from '#lib/qr/__tests__/decode-qr.ts';
 
 async function imageOf(container: HTMLElement): Promise<SVGSVGElement> {
 	await expect

@@ -22,7 +22,8 @@
  * Posé dans le hook APRÈS `adminElevationHandle` (qui remplit `locals.adminElevation`).
  */
 
-import { error, redirect, type Handle, type RequestEvent } from '@sveltejs/kit';
+import { error, redirect, type RequestEvent } from '@sveltejs/kit';
+import type { Handle } from '@sveltejs/kit/hooks';
 
 // ============================================================================
 // CONSTANTES

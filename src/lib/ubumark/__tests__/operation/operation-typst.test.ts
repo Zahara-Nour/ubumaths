@@ -4,11 +4,11 @@
  */
 
 import { describe, expect, it } from 'vitest';
-import { parseMarkdown } from '$lib/ubumark';
-import { generateTypst } from '$lib/ubumark/generators/typst-generator';
-import { generateOperationTypst } from '$lib/ubumark/generators/operation-typst';
-import { parseOperationContent } from '$lib/ubumark/parser/operation-parser';
-import { OPERATION_UNAVAILABLE } from '$lib/ubumark/types/operation';
+import { parseMarkdown } from '#lib/ubumark/index.ts';
+import { generateTypst } from '#lib/ubumark/generators/typst-generator.ts';
+import { generateOperationTypst } from '#lib/ubumark/generators/operation-typst.ts';
+import { parseOperationContent } from '#lib/ubumark/parser/operation-parser.ts';
+import { OPERATION_UNAVAILABLE } from '#lib/ubumark/types/operation.ts';
 
 const typst = (...lines: string[]) =>
 	generateOperationTypst(parseOperationContent(lines.join('\n')));

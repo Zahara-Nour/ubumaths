@@ -37,9 +37,9 @@ import {
 	conditionDomain,
 	comparison
 } from '../factory';
-import { isNumber, isNegativeInfinity } from '$lib/mathAST/guards';
-import { number, opposite } from '$lib/mathAST/factory';
-import { literalNumberValue } from '$lib/mathAST/common/numeric';
+import { isNumber, isNegativeInfinity } from '#lib/mathAST/guards.ts';
+import { number, opposite } from '#lib/mathAST/factory.ts';
+import { literalNumberValue } from '#lib/mathAST/common/numeric.ts';
 
 describe('isEmpty()', () => {
 	it('returns true for empty domain', () => {

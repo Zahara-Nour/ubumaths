@@ -1,0 +1,221 @@
+{
+	"id": "f88cc70d-a12d-4481-8943-f0532fabd647",
+	"title": "Somme des carrés des écarts à une droite",
+	"description": "Calculer Σ(yᵢ − (axᵢ + b))² sur trois points ; ligne d'une fonction Python ; formule de tableur à recopier vers le bas",
+	"grades": ["T_TECHNO"],
+	"level": 2,
+	"delay": 90,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "On considère la série statistique suivante et la droite d'équation $y={{a}}x+{{b}}$.\n\n| $x_i$ | $1$ | $2$ | $3$ |\n|---|---|---|---|\n| $y_i$ | ${{eval:a+b+d1}}$ | ${{eval:2*a+b+d2}}$ | ${{eval:3*a+b+d3}}$ |\n\nCalcule la somme des carrés des écarts $S=\\sum_i\\left(y_i-({{a}}x_i+{{b}})\\right)^2$.\n\n$S=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..4"
+				},
+				{
+					"name": "b",
+					"expression": "1..5"
+				},
+				{
+					"name": "d1",
+					"expression": "-2..2"
+				},
+				{
+					"name": "d2",
+					"expression": "-2..2"
+				},
+				{
+					"name": "d3",
+					"expression": "-2..2"
+				}
+			],
+			"conditions": ["d1^2+d2^2+d3^2 > 1", "abs(d1)+abs(d2)+abs(d3) > abs(d1+d2+d3)"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:d1^2+d2^2+d3^2}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Pour chaque point, on calcule l'écart $y_i-({{a}}x_i+{{b}})$ : ${{eval:a+b+d1}}-{{eval:a+b}}={{d1}}$, ${{eval:2*a+b+d2}}-{{eval:2*a+b}}={{d2}}$ et ${{eval:3*a+b+d3}}-{{eval:3*a+b}}={{d3}}$.",
+					"On élève chaque écart au carré, puis on ajoute : $S=({{d1}})^2+({{d2}})^2+({{d3}})^2=\\textcolor{{{color:primary.0}}}{{{eval:d1^2+d2^2+d3^2}}}$."
+				]
+			}
+		},
+		{
+			"statement": "La fonction Python `S` reçoit les listes `X` et `Y` des valeurs d'une série statistique, et les nombres `a` et `b`. Elle doit renvoyer la somme des carrés des écarts $\\sum_i\\left(y_i-(ax_i+b)\\right)^2$.\n\n```python\ndef S(X, Y, a, b):\n    s = 0\n    for i in range(len(X)):\n        s = s + ...\n    return s\n```\n\nQue faut-il écrire à la place des points de suspension ?\n\n```choix\nmelanger: non\n- `Y[i] - (a*X[i] + b)**2`\n- `(Y[i] - a*X[i] + b)**2`\n- `(Y[i] - (a*X[i] + b))**2`\n- `(Y[i] - (a*X[i] + b))*2`\n```",
+			"variables": [],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "2"
+				}
+			],
+			"correction": {
+				"steps": [
+					"À chaque tour de boucle, on ajoute à `s` le carré de l'écart du point numéro `i` : l'écart est `Y[i] - (a*X[i] + b)`, et `**2` élève au carré.",
+					"Les parenthèses comptent : la ligne est `s = s + (Y[i] - (a*X[i] + b))**2`, la $\\textcolor{{{color:primary.0}}}{\\text{troisième}}$ proposition.",
+					"`Y[i] - (a*X[i] + b)**2` n'élève au carré que `a*X[i] + b` ; `(Y[i] - a*X[i] + b)**2` change le signe de `b` ; `*2` multiplie par 2 au lieu d'élever au carré."
+				]
+			}
+		},
+		{
+			"statement": "Dans une feuille de calcul, les valeurs $x_i$ sont en colonne A, les valeurs $y_i$ en colonne B (lignes 2 à 7), $a$ est dans la cellule F1 et $b$ dans la cellule F2.\n\n|   | A | B | C |\n|---|---|---|---|\n| 1 | x | y | carré de l'écart |\n| 2 | 1 | 4,1 |   |\n| 3 | 2 | 5,8 |   |\n\nOn veut écrire en C2 une formule, puis la recopier vers le bas jusqu'en C7, pour obtenir le carré de l'écart $\\left(y_i-(ax_i+b)\\right)^2$ de chaque ligne. Quelle formule écrire en C2 ?\n\n```choix\nmelanger: non\n- =(B2-(F1*A2+F2))^2\n- =(B2-(\\$F\\$1*A2+\\$F\\$2))^2\n- =B2-(\\$F\\$1*A2+\\$F\\$2)^2\n- =(B2-\\$F\\$1*A2+\\$F\\$2)^2\n```",
+			"variables": [],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "1"
+				}
+			],
+			"correction": {
+				"steps": [
+					"L'écart de la ligne 2 est B2 − (F1 × A2 + F2) ; « ^2 » élève au carré, avec des parenthèses autour de tout l'écart.",
+					"En recopiant vers le bas, A2 et B2 deviennent A3 et B3 (c'est voulu), mais F1 et F2 deviendraient F2 et F3 : il faut les bloquer avec des « \\$ » : \\$F\\$1 et \\$F\\$2.",
+					"La bonne formule est « =(B2-(\\$F\\$1*A2+\\$F\\$2))^2 », la $\\textcolor{{{color:primary.0}}}{\\text{deuxième}}$. La somme s'obtient ensuite par « =SOMME(C2:C7) »."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "a = 2, b = 1, écarts 1, −1, 2 : S = 6",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"b": "1",
+				"d1": "1",
+				"d2": "-1",
+				"d3": "2"
+			},
+			"answers": ["6"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : somme des écarts sans carré (2)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"b": "1",
+				"d1": "1",
+				"d2": "-1",
+				"d3": "2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : somme des valeurs absolues (4)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"b": "1",
+				"d1": "1",
+				"d2": "-1",
+				"d3": "2"
+			},
+			"answers": ["4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "écarts 0, −2, 1 : S = 5",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "4",
+				"d1": "0",
+				"d2": "-2",
+				"d3": "1"
+			},
+			"answers": ["5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "choix : bonne réponse 2",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : carré de la droite seule",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : signe de b",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : fois 2",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "choix : bonne réponse 1",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : sans $",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : carré mal placé",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : signe de b",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

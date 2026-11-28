@@ -8,13 +8,13 @@ import { render } from 'vitest-browser-svelte';
 import { userEvent } from 'vitest/browser';
 import Operation from '../Operation.svelte';
 import MarkdownRenderer from '../../MarkdownRenderer.svelte';
-import { parseOperationContent } from '$lib/ubumark/parser/operation-parser';
+import { parseOperationContent } from '#lib/ubumark/parser/operation-parser.ts';
 import {
 	OPERATION_ARIA_LABEL,
 	OPERATION_DIVISION_ARIA_LABEL,
 	OPERATION_UNAVAILABLE
-} from '$lib/ubumark/types/operation';
-import type { ResolvedMarkdown } from '$lib/ubumark';
+} from '#lib/ubumark/types/operation.ts';
+import type { ResolvedMarkdown } from '#lib/ubumark/index.ts';
 
 let mains: HTMLElement[] = [];
 function mainElement(): HTMLElement {

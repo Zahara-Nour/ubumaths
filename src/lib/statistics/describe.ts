@@ -5,7 +5,7 @@
  * (`.stats`) et les blocs ubumark l'appellent. Pas de seconde implémentation
  * ailleurs (chantier outils statistiques, 2026-10-01).
  *
- * ⚠️ **Aucun import `$lib`** dans `src/lib/statistics/` : `mathAST` l'importe
+ * ⚠️ **Aucun import `#lib`** dans `src/lib/statistics/` : `mathAST` l'importe
  * par un chemin relatif, et `pnpm math` le fait tourner sous `tsx`, sans alias.
  *
  * ⚠️ **Variance de POPULATION** : divisée par l'effectif total, pas par

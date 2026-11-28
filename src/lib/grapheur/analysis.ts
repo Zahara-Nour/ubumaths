@@ -22,44 +22,44 @@ import type {
 	FunctionAnalysis
 } from './types';
 import type { Plottable } from './types';
-import type { SampledCurve } from '$lib/geometry-core/viewport';
-import { sampleFunction } from '$lib/geometry-core/viewport';
+import type { SampledCurve } from '#lib/geometry-core/viewport/index.ts';
+import { sampleFunction } from '#lib/geometry-core/viewport/index.ts';
 import { isExplicitFunction } from './types';
 import type { ExplicitFunction } from './types';
 import { createEvaluator } from './evaluator';
 import type { VariableBindings } from './evaluator';
-import type { MathNode } from '$lib/mathAST/types';
-import type { CompiledFn } from '$lib/mathAST/eval/compile';
-import { compile } from '$lib/mathAST/eval/compile';
-import { differentiate } from '$lib/mathAST/differentiation';
-import { visitAST } from '$lib/mathAST/visitor';
+import type { MathNode } from '#lib/mathAST/types.ts';
+import type { CompiledFn } from '#lib/mathAST/eval/compile.ts';
+import { compile } from '#lib/mathAST/eval/compile.ts';
+import { differentiate } from '#lib/mathAST/differentiation/index.ts';
+import { visitAST } from '#lib/mathAST/visitor.ts';
 import {
 	findCriticalZeros,
 	findCriticalExtrema,
 	getAllDiscontinuities
-} from '$lib/mathAST/analysis';
-import { evaluate, evaluateNodeToApproximatedNumber } from '$lib/mathAST/eval/evaluate';
-import { exactValueToShow } from '$lib/mathAST/eval/exact-value';
-import { isInfinity } from '$lib/mathAST/guards';
+} from '#lib/mathAST/analysis/index.ts';
+import { evaluate, evaluateNodeToApproximatedNumber } from '#lib/mathAST/eval/evaluate.ts';
+import { exactValueToShow } from '#lib/mathAST/eval/exact-value.ts';
+import { isInfinity } from '#lib/mathAST/guards.ts';
 import { exactAsymptotes } from './asymptotes-exactes';
-import { touchesZero } from '$lib/mathAST/analysis/near-zero';
+import { touchesZero } from '#lib/mathAST/analysis/near-zero.ts';
 import { restrictAnalysis, type Restriction } from './restriction';
-import { substitute } from '$lib/mathAST/eval/substitute';
-import { add, infinity, multiply, variable } from '$lib/mathAST/factory';
-import { evaluateLimit } from '$lib/mathAST/limits';
-import { toLatex } from '$lib/mathAST/latex-generator';
+import { substitute } from '#lib/mathAST/eval/substitute.ts';
+import { add, infinity, multiply, variable } from '#lib/mathAST/factory.ts';
+import { evaluateLimit } from '#lib/mathAST/limits/index.ts';
+import { toLatex } from '#lib/mathAST/latex-generator.ts';
 // `number()` refuse un littéral signé ; `numericNode()` gère le signe lui-même.
-import { numericNode } from '$lib/mathAST/common/numeric';
-import { integrateDefinite } from '$lib/mathAST/integration';
+import { numericNode } from '#lib/mathAST/common/numeric.ts';
+import { integrateDefinite } from '#lib/mathAST/integration/index.ts';
 import type {
 	DifferentiableCurve,
 	OsculatingCircleData
-} from '$lib/geometry-core/graph/parametric-calculus';
+} from '#lib/geometry-core/graph/parametric-calculus.ts';
 import {
 	computeArcLength,
 	computeCurvature,
 	computeOsculatingCircle
-} from '$lib/geometry-core/graph/parametric-calculus';
+} from '#lib/geometry-core/graph/parametric-calculus.ts';
 
 // =============================================================================
 // Constants
@@ -85,6 +85,15 @@ const JUMP_THRESHOLD = 100;
 // la période de cos(πx/50), qui y rend exactement 1 — tous les écarts sont nuls
 // et l'oscillation passe pour une asymptote y = 1.
 const LARGE_X_VALUES = [137, 1373, 13729, 137299] as const;
+
+/**
+ * Sondes de secours pour une convergence logarithmiquement lente : (ln x)²/√x
+ * vaut encore 0,38 en 137 299. On n'y recourt que si les sondes ordinaires ne
+ * concluent pas, et on les espace géométriquement (x² d'une sonde à l'autre),
+ * pour que la fonction ait le temps de se stabiliser, ou de montrer qu'elle ne
+ * le fait pas (ln x garde des écarts qui ne rétrécissent jamais).
+ */
+const HUGE_X_VALUES = [1e3, 1e6, 1e12, 1e24, 1e48, 1e96] as const;
 
 /** Convergence tolerance for limit estimation */
 const LIMIT_TOLERANCE = 0.001;
@@ -1070,10 +1079,15 @@ export function findHorizontalAsymptotes(
 	// encore 0,032 en x = 137 299), ou CONFIRMER celle qu'elles trouvent, avec
 	// son écriture exacte. En désaccord, le numérique garde la main.
 	const resolve = (sign: 1 | -1): { y: number; exactLatex?: string } | null => {
-		const numeric = estimateLimit(
-			evaluator,
-			LARGE_X_VALUES.map((x) => sign * x)
-		);
+		const numeric =
+			estimateLimit(
+				evaluator,
+				LARGE_X_VALUES.map((x) => sign * x)
+			) ??
+			estimateLimit(
+				evaluator,
+				HUGE_X_VALUES.map((x) => sign * x)
+			);
 		const exact = expression ? symbolicLimit(expression, sign) : null;
 		if (exact === null) return numeric === null ? null : { y: numeric };
 		if (numeric === null) return exact;
@@ -1750,6 +1764,30 @@ export interface IntegralResult {
 
 /** Samples used to draw the shaded boundary. */
 const INTEGRAL_SAMPLES = 200;
+
+/**
+ * Pourquoi `integralUnder` n'a pas d'aire sur `[from ; to]` : le refus de
+ * `integrateDefinite` (un pôle entre les bornes, une intégrale qui diverge),
+ * ou `null` s'il n'en donne pas. E2 (2026-11-23) : la carte n'affichait que
+ * « aire = — ».
+ */
+export function integralRefusal(
+	func: ExplicitFunction,
+	from: number,
+	to: number,
+	bindings: VariableBindings = {}
+): string | null {
+	if (!func.ast || !Number.isFinite(from) || !Number.isFinite(to) || from === to) return null;
+	const [lower, upper] = from < to ? [from, to] : [to, from];
+	const bound = bindParameters(func.ast, bindings);
+	if (!bound) return null;
+	try {
+		const result = integrateDefinite(bound, numericNode(lower), numericNode(upper));
+		return result.value === null && result.error ? `${result.error}.` : null;
+	} catch {
+		return null;
+	}
+}
 
 /**
  * Compute the signed area between `f` and the axis, over `[from ; to]`.

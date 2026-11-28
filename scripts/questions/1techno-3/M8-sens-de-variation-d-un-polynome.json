@@ -1,0 +1,310 @@
+{
+	"id": "14b60caa-e18e-46d8-9ff6-3889fd9de40e",
+	"title": "Sens de variation d'une fonction polynôme de degré au plus 3",
+	"description": "Signe de la dérivée (affine, ou factorisée de racines données ou évidentes), puis variations",
+	"grades": ["1_TECHNO"],
+	"level": 3,
+	"delay": 60,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		},
+		"cleanCoefficients": true
+	},
+	"variations": [
+		{
+			"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)={{eval:a*x^2+b*x+c}}$.\n\nDonne le ou les intervalles sur lesquels $f$ est croissante (intervalle ou réunion d'intervalles).\n\n$S=?$",
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:a>0|[{{r}};+\\infty[|]-\\infty;{{r}}]}}",
+					"answerKind": "intervalles",
+					"openableBounds": true
+				}
+			],
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "a",
+					"expression": "1..3;±"
+				},
+				{
+					"name": "r",
+					"expression": "-4..4"
+				},
+				{
+					"name": "b",
+					"expression": "eval:-2*a*r"
+				},
+				{
+					"name": "c",
+					"expression": "-6..6"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$f'(x)={{eval:2*a*x+b}}$, qui s'annule en $x={{r}}$.",
+					"{{if:a>0|Le coefficient de $x$ dans $f'(x)$ est positif : $f'(x)\\geqslant 0$ pour $x\\geqslant {{r}}$.|Le coefficient de $x$ dans $f'(x)$ est négatif : $f'(x)\\geqslant 0$ pour $x\\leqslant {{r}}$.}}",
+					"$f$ est croissante sur $\\textcolor{{{color:primary.0}}}{ {{if:a>0|[{{r}}\\,;+\\infty[|]-\\infty\\,;{{r}}]}} }$."
+				]
+			},
+			"conditions": ["r != 0"]
+		},
+		{
+			"statement": "Soit $f$ une fonction polynôme de degré $3$, définie sur $\\mathbb{R}$. On admet que sa dérivée s'écrit $f'(x)={{eval:3*a}}(x{{eval:-p;+}})(x{{eval:-q;+}})$.\n\nDonne le ou les intervalles sur lesquels $f$ est croissante (intervalle ou réunion d'intervalles).\n\n$S=?$",
+			"blanks": [
+				{
+					"expectedAnswer": "]-\\infty;{{p}}]\\cup[{{q}};+\\infty[",
+					"answerKind": "intervalles",
+					"openableBounds": true
+				}
+			],
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..2"
+				},
+				{
+					"name": "p",
+					"expression": "-5..3"
+				},
+				{
+					"name": "d",
+					"expression": "1..5"
+				},
+				{
+					"name": "q",
+					"expression": "eval:p+d"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$f'(x)$ est un produit : ${{eval:3*a}}>0$, $x{{eval:-p;+}}$ s'annule en ${{p}}$ et $x{{eval:-q;+}}$ en ${{q}}$. $f'(x)$ est positif à l'extérieur des racines, négatif entre elles.",
+					"$f$ est croissante là où $f'(x)\\geqslant 0$ : sur $\\textcolor{{{color:primary.0}}}{]-\\infty\\,;{{p}}]\\cup[{{q}}\\,;+\\infty[}$."
+				]
+			},
+			"conditions": ["p != 0", "q != 0"]
+		},
+		{
+			"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)={{eval:x^3-3*p^2*x}}$.\n\nSa dérivée est $f'(x)=3x^2-{{eval:3*p^2}}=3(x^2-{{eval:p^2}})$ ; ses racines sont évidentes.\n\nDonne le ou les intervalles sur lesquels $f$ est croissante (intervalle ou réunion d'intervalles).\n\n$S=?$",
+			"blanks": [
+				{
+					"expectedAnswer": "]-\\infty;{{eval:-p}}]\\cup[{{p}};+\\infty[",
+					"answerKind": "intervalles",
+					"openableBounds": true
+				}
+			],
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "p",
+					"expression": "1..4"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$x^2={{eval:p^2}}$ pour $x=-{{p}}$ ou $x={{p}}$ : $f'(x)=3(x+{{p}})(x-{{p}})$.",
+					"$f'(x)$ est positif à l'extérieur des racines, négatif entre elles.",
+					"$f$ est croissante sur $\\textcolor{{{color:primary.0}}}{]-\\infty\\,;-{{p}}]\\cup[{{p}}\\,;+\\infty[}$."
+				]
+			}
+		},
+		{
+			"statement": "Soit $f$ une fonction polynôme de degré $3$, définie sur $\\mathbb{R}$, avec $f({{p}})={{fp}}$ et $f({{q}})={{fq}}$. On admet que sa dérivée s'écrit $f'(x)=3(x{{eval:-p;+}})(x{{eval:-q;+}})$.\n\nComplète le tableau de variation.\n\n```variation\nvariable: x\ndomain: -inf, ?{{p}}, ?{{q}}, +inf\n\nsign: f'(x)\n  -inf,{{p}}: ?+\n  {{p}}: z\n  {{p}},{{q}}: ?-\n  {{q}}: z\n  {{q}},+inf: ?+\n\nvariation: f(x)\n  {{p}}: {{fp}}, top\n  {{q}}: {{fq}}, bottom\n  -inf,{{p}}: ?flèche\n  {{p}},{{q}}: ?flèche\n  {{q}},+inf: ?flèche\n```",
+			"blanks": [],
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1"
+				},
+				{
+					"name": "p",
+					"expression": "-4..1"
+				},
+				{
+					"name": "d",
+					"expression": "1..4"
+				},
+				{
+					"name": "q",
+					"expression": "eval:p+d"
+				},
+				{
+					"name": "fp",
+					"expression": "1..9"
+				},
+				{
+					"name": "fq",
+					"expression": "eval:fp-d^3"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$f'(x)$ est un produit : ${{eval:3*a}}>0$, $x{{eval:-p;+}}$ s'annule en ${{p}}$ et $x{{eval:-q;+}}$ en ${{q}}$. $f'(x)$ est positif à l'extérieur des racines, négatif entre elles.",
+					"```variation\nvariable: x\ndomain: -inf, {{p}}, {{q}}, +inf\n\nsign: f'(x)\n  -inf,{{p}}: +\n  {{p}}: z\n  {{p}},{{q}}: -\n  {{q}}: z\n  {{q}},+inf: +\n\nvariation: f(x)\n  {{p}}: {{fp}}, top\n  {{q}}: {{fq}}, bottom\n```"
+				]
+			},
+			"conditions": ["p != 0", "q != 0"]
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "x² - 4x + 1 : [2 ; +∞[",
+			"variationIndex": 0,
+			"variables": {
+				"a": "1",
+				"r": "2",
+				"b": "-4",
+				"c": "1"
+			},
+			"answers": ["[2;+\\infty["],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Borne ouverte acceptée",
+			"variationIndex": 0,
+			"variables": {
+				"a": "1",
+				"r": "2",
+				"b": "-4",
+				"c": "1"
+			},
+			"answers": ["]2;+\\infty["],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : intervalle de décroissance",
+			"variationIndex": 0,
+			"variables": {
+				"a": "1",
+				"r": "2",
+				"b": "-4",
+				"c": "1"
+			},
+			"answers": ["]-\\infty;2]"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "-x² - 2x : ]-∞ ; -1]",
+			"variationIndex": 0,
+			"variables": {
+				"a": "-1",
+				"r": "-1",
+				"b": "-2",
+				"c": "0"
+			},
+			"answers": ["]-\\infty;-1]"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "3(x+1)(x-2)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "1",
+				"p": "-1",
+				"d": "3",
+				"q": "2"
+			},
+			"answers": ["]-\\infty;-1]\\cup[2;+\\infty["],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : entre les racines",
+			"variationIndex": 1,
+			"variables": {
+				"a": "1",
+				"p": "-1",
+				"d": "3",
+				"q": "2"
+			},
+			"answers": ["[-1;2]"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : signes des racines",
+			"variationIndex": 1,
+			"variables": {
+				"a": "1",
+				"p": "-1",
+				"d": "3",
+				"q": "2"
+			},
+			"answers": ["]-\\infty;-2]\\cup[1;+\\infty["],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "x³ - 12x",
+			"variationIndex": 2,
+			"variables": {
+				"p": "2"
+			},
+			"answers": ["]-\\infty;-2]\\cup[2;+\\infty["],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : [-2 ; 2]",
+			"variationIndex": 2,
+			"variables": {
+				"p": "2"
+			},
+			"answers": ["[-2;2]"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Tableau : -1, 1, +, -, +, ↗, ↘, ↗",
+			"variationIndex": 3,
+			"variables": {
+				"a": "1",
+				"p": "-1",
+				"d": "2",
+				"q": "1",
+				"fp": "5",
+				"fq": "-3"
+			},
+			"answers": ["-1", "1", "+", "-", "+", "↗", "↘", "↗"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : signes inversés",
+			"variationIndex": 3,
+			"variables": {
+				"a": "1",
+				"p": "-1",
+				"d": "2",
+				"q": "1",
+				"fp": "5",
+				"fq": "-3"
+			},
+			"answers": ["-1", "1", "-", "+", "-", "↘", "↗", "↘"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

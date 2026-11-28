@@ -5,7 +5,7 @@
  * as arrays of SampledCurve (one per connected component).
  */
 
-import type { CompiledFn } from '$lib/mathAST/eval/compile';
+import type { CompiledFn } from '#lib/mathAST/eval/compile.ts';
 import type { Viewport, SampledCurve, Point } from '../viewport/types';
 
 /** Default grid resolution (cells per axis). */

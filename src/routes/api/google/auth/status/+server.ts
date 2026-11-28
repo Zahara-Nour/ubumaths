@@ -24,9 +24,8 @@
  * }
  */
 
-import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireRole } from '$lib/server/middleware/auth';
+import { requireRole } from '#lib/server/middleware/auth.ts';
 
 /**
  * Check Google Classroom connection status
@@ -48,7 +47,7 @@ export const GET: RequestHandler = async ({ locals }) => {
 
 	// If error or no data, not connected
 	if (fetchError || !integration) {
-		return json({
+		return Response.json({
 			connected: false,
 			googleEmail: null,
 			lastSync: null,
@@ -57,7 +56,7 @@ export const GET: RequestHandler = async ({ locals }) => {
 	}
 
 	// Return connection status and metadata
-	return json({
+	return Response.json({
 		connected: true,
 		googleEmail: integration.google_email || null,
 		lastSync: integration.last_sync_at || null,

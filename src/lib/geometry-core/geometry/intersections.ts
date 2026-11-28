@@ -22,12 +22,12 @@ import {
 } from '../compute/geo-arithmetic';
 import { geoIsZero } from '../compute/compare';
 import { geoToNumber } from '../compute/to-number';
-import type { MathNode } from '$lib/mathAST/types';
-import type { CompiledFn } from '$lib/mathAST/eval/compile';
-import { subtract, add, multiply, variable } from '$lib/mathAST/factory';
-import { numericNode } from '$lib/mathAST/common/numeric';
-import { compile } from '$lib/mathAST/eval/compile';
-import { findRoots } from '$lib/mathAST/analysis/roots';
+import type { MathNode } from '#lib/mathAST/types.ts';
+import type { CompiledFn } from '#lib/mathAST/eval/compile.ts';
+import { subtract, add, multiply, variable } from '#lib/mathAST/factory.ts';
+import { numericNode } from '#lib/mathAST/common/numeric.ts';
+import { compile } from '#lib/mathAST/eval/compile.ts';
+import { findRoots } from '#lib/mathAST/analysis/roots.ts';
 
 /**
  * Intersect two lines defined by two points each.

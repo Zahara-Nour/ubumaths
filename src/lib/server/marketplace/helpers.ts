@@ -1,9 +1,9 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { Database } from '$lib/types/database';
-import { insertSystemNotification } from '$lib/server/notifications';
-import { createServiceRoleClient } from '$lib/server/serviceRoleClient';
+import type { Database } from '#lib/types/database.ts';
+import { insertSystemNotification } from '#lib/server/notifications.ts';
+import { createServiceRoleClient } from '#lib/server/serviceRoleClient.ts';
 import { completerParticipant, fetchParticipants } from './participants';
-import { createServerLogger } from '$lib/utils/logger';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('server/marketplace/helpers');
 

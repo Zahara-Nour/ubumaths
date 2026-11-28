@@ -1,0 +1,225 @@
+{
+	"id": "382171b6-f5b5-490d-97c1-e0e9db592ac4",
+	"title": "Équation réduite de la tangente : la formule",
+	"description": "Formule y = f′(a)(x − a) + f(a), coefficient directeur f′(a), lecture inverse",
+	"grades": ["1_TECHNO"],
+	"level": 1,
+	"delay": 30,
+	"status": "draft",
+	"options": {
+		"courseQuestion": true
+	},
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		},
+		"cleanCoefficients": true
+	},
+	"variations": [
+		{
+			"statement": "Soit $f$ une fonction dérivable en $a$. La tangente à sa courbe au point d'abscisse $a$ a pour équation…\n\n```choix\n- $y=f'(a)(x-a)+f(a)$\n- $y=f(a)(x-a)+f'(a)$\n- $y=f'(a)x+f(a)$\n- $y=f'(a)(x+a)+f(a)$\n```",
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"variables": [],
+			"correction": {
+				"steps": [
+					"La tangente passe par $A(a\\,;\\,f(a))$ et a pour coefficient directeur $f'(a)$ : $y=f'(a)(x-a)+f(a)$.",
+					"Pour $x=a$, on retrouve bien $y=f(a)$ : c'est ce que ne vérifie pas $y=f'(a)x+f(a)$."
+				]
+			}
+		},
+		{
+			"statement": "Soit $f$ une fonction dérivable en $a$. Le coefficient directeur de la tangente à sa courbe au point d'abscisse $a$ est…\n\n```choix\nmelanger: non\n- $f'(a)$\n- $f(a)$\n- $a$\n- $f(a)-a$\n```",
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"variables": [],
+			"correction": {
+				"steps": [
+					"Le nombre dérivé $f'(a)$ est le coefficient directeur de la tangente en $a$ ; $f(a)$ est l'ordonnée du point de contact."
+				]
+			}
+		},
+		{
+			"statement": "La tangente à la courbe d'une fonction $f$ au point d'abscisse ${{a}}$ a pour équation $y={{eval:m*x+p}}$.\n\n$f'({{a}})=?$",
+			"blanks": [
+				{
+					"expectedAnswer": "{{m}}"
+				}
+			],
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "a",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "m",
+					"expression": "1..6;±"
+				},
+				{
+					"name": "p",
+					"expression": "1..9;±"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le coefficient directeur de la tangente au point d'abscisse ${{a}}$ est le nombre dérivé $f'({{a}})$.",
+					"Ici il vaut ${{m}}$ : $f'({{a}})=\\textcolor{{{color:primary.0}}}{ {{m}} }$."
+				]
+			}
+		},
+		{
+			"statement": "La tangente à la courbe d'une fonction $f$ au point d'abscisse ${{a}}$ a pour équation $y={{eval:m*x+p}}$.\n\n$f({{a}})=?$",
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:m*a+p}}"
+				}
+			],
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "a",
+					"expression": "1..4;±"
+				},
+				{
+					"name": "m",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "p",
+					"expression": "1..9;±"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La tangente passe par le point de la courbe d'abscisse ${{a}}$, de coordonnées $({{a}}\\,;\\,f({{a}}))$.",
+					"Donc $f({{a}})={{m}}\\times{{a;()}}{{p;+}}=\\textcolor{{{color:primary.0}}}{ {{eval:m*a+p}} }$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Formule",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : f et f′ échangés",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : y = f′(a)x + f(a)",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Coefficient directeur f′(a)",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : f(a)",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "y = 4x - 3 en 2 : 4",
+			"variationIndex": 2,
+			"variables": {
+				"a": "2",
+				"m": "4",
+				"p": "-3"
+			},
+			"answers": ["4"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : ordonnée à l'origine",
+			"variationIndex": 2,
+			"variables": {
+				"a": "2",
+				"m": "4",
+				"p": "-3"
+			},
+			"answers": ["-3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : image 5",
+			"variationIndex": 2,
+			"variables": {
+				"a": "2",
+				"m": "4",
+				"p": "-3"
+			},
+			"answers": ["5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "y = 2x + 1 en 3 : 7",
+			"variationIndex": 3,
+			"variables": {
+				"a": "3",
+				"m": "2",
+				"p": "1"
+			},
+			"answers": ["7"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : coefficient directeur",
+			"variationIndex": 3,
+			"variables": {
+				"a": "3",
+				"m": "2",
+				"p": "1"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

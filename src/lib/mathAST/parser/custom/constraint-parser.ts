@@ -38,9 +38,15 @@
 import type { PatternConstraint, IntervalConstraint } from '../../pattern/types';
 import { P } from '../../pattern/builder';
 import type { MathNodeType } from '../../types';
-import { intervalSet, interval, openEndpoint, closedEndpoint, bound } from '$lib/math/intervals';
+import {
+	intervalSet,
+	interval,
+	openEndpoint,
+	closedEndpoint,
+	bound
+} from '#lib/math/intervals/index.ts';
 import type { MathNode } from '../../types';
-import type { Endpoint } from '$lib/math/intervals';
+import type { Endpoint } from '#lib/math/intervals/index.ts';
 import { parseCustomPratt } from './parser-pratt';
 
 // =============================================================================

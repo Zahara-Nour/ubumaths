@@ -42,6 +42,11 @@
 		/** Le compte autoSlide de la dernière diapositive est arrivé à 0 */
 		onend?: () => void;
 		/**
+		 * Compte d'une diapositive arrivé à 0 : true = le Deck se met en pause
+		 * sur elle au lieu d'avancer (ni `next`, ni `onend`)
+		 */
+		holdOnExpire?: (position: { h: number; v: number }) => boolean;
+		/**
 		 * Couche rendue par-dessus les diapositives, dans l'élément du Deck
 		 * (donc visible en plein écran) : minuteur, boutons… Reçoit le contexte.
 		 */
@@ -52,7 +57,15 @@
 	// Props
 	// ==========================================================================
 
-	let { config = {}, children, onready, onslidechanged, onend, overlay }: Props = $props();
+	let {
+		config = {},
+		children,
+		onready,
+		onslidechanged,
+		onend,
+		holdOnExpire,
+		overlay
+	}: Props = $props();
 
 	// ==========================================================================
 	// State
@@ -266,9 +279,14 @@
 	 * Compte de la diapositive courante arrivé à 0 : on avance.
 	 * Un fragment restant compte comme une étape : la diapositive repart pour
 	 * sa durée. Rien à montrer après (dernière diapositive) : onend, sans boucler.
+	 * `holdOnExpire` peut retenir la diapositive : pause, sans avancer.
 	 */
 	function handleAutoSlideExpire(): void {
 		const { h, v, f } = store;
+		if (holdOnExpire?.({ h, v })) {
+			store.setPaused(true);
+			return;
+		}
 		store.next();
 		if (store.h !== h || store.v !== v) {
 			// Changement venu du minuteur : dit tel quel avant que l'effet ne le voie
@@ -311,11 +329,11 @@
 	// ==========================================================================
 
 	function handleLeft() {
-		store.prevH(); // Horizontal only (skip verticals)
+		store.left(); // Fragment d'abord, puis horizontale (verticales sautées)
 	}
 
 	function handleRight() {
-		store.nextH(); // Horizontal only (skip verticals)
+		store.right(); // Fragment d'abord, puis horizontale (verticales sautées)
 	}
 
 	function handleUp() {

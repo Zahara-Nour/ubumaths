@@ -10,8 +10,8 @@ import { page } from 'vitest/browser';
 import { describe, it, expect } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import FillBlanksInput from '../FillBlanksInput.svelte';
-import type { ResolvedMarkdown } from '$lib/ubumark';
-import type { InstanceBlank } from '$lib/questions/types';
+import type { ResolvedMarkdown } from '#lib/ubumark/index.ts';
+import type { InstanceBlank } from '#lib/questions/types.ts';
 
 /** Région des messages par trou (MathLive a ses propres role=status) */
 const messagesRegion = () => page.getByRole('status', { name: 'Messages par blanc' });

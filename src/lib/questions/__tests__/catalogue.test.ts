@@ -7,7 +7,7 @@
  * dépliée, une seule fois par modèle.
  */
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import type { QuestionTemplate } from '$lib/questions/types';
+import type { QuestionTemplate } from '#lib/questions/types.ts';
 
 const generateInstance = vi.fn((template: QuestionTemplate, _seed: number) =>
 	template.id === 'casse'
@@ -15,7 +15,7 @@ const generateInstance = vi.fn((template: QuestionTemplate, _seed: number) =>
 		: { success: true as const, instance: { templateId: template.id } }
 );
 
-vi.mock('$lib/questions/generator/instance-generator', () => ({
+vi.mock('#lib/questions/generator/instance-generator.ts', () => ({
 	generateInstance: (template: QuestionTemplate, seed: number) => generateInstance(template, seed)
 }));
 

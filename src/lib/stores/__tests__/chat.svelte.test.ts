@@ -20,7 +20,7 @@ import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { chatStore } from '../chat.svelte';
 import { supabaseRealtimeManager } from '../supabaseRealtime.svelte';
 import type { SupabaseClient, RealtimeChannel } from '@supabase/supabase-js';
-import type { Database } from '$lib/types/database';
+import type { Database } from '#lib/types/database.ts';
 
 // ============================================================================
 // TEST SETUP
@@ -166,7 +166,7 @@ function refetchMock(row: Record<string, unknown> | null) {
 }
 
 // Mock browser environment
-vi.mock('$app/environment', () => ({
+vi.mock('$app/env', () => ({
 	browser: true,
 	building: false,
 	dev: true,
@@ -643,6 +643,35 @@ describe('Optimistic UI Updates', () => {
 		// Should be removed (rolled back)
 		messages = chatStore.getMessages(conversationId);
 		expect(messages).toHaveLength(0);
+	});
+
+	it('message trop long (refus 22001 de la base) : toast explicite, refus signalé', async () => {
+		const mockChannel = createMockChannel(`chat-${conversationId}`);
+		vi.spyOn(supabaseRealtimeManager, 'getChannel').mockReturnValue(mockChannel);
+		const { toaster } = await import('#lib/stores/toaster.svelte.ts');
+		const toastSpy = vi.spyOn(toaster, 'error');
+
+		const fromMock = vi.fn(() => ({
+			insert: vi.fn(() => ({
+				select: vi.fn(() => ({
+					single: vi.fn(() =>
+						Promise.resolve({
+							data: null,
+							error: { code: '22001', message: 'message trop long (200000 caracteres au plus)' }
+						})
+					)
+				}))
+			}))
+		}));
+		supabase.from = fromMock as unknown as typeof supabase.from;
+
+		const result = await chatStore.sendMessage(conversationId, 'Test');
+
+		expect(result).toBe(null);
+		expect(chatStore.lastSendRefusalShown).toBe(true);
+		expect(toastSpy).toHaveBeenCalledWith(expect.stringContaining('Message trop long'));
+		expect(chatStore.getMessages(conversationId)).toHaveLength(0);
+		toastSpy.mockRestore();
 	});
 
 	it('should rollback optimistic message on network error', async () => {

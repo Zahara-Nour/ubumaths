@@ -10,11 +10,15 @@
  * le mélange).
  */
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { tableMock, twoLevelExercise } from '$lib/server/worksheets/__tests__/table-mock';
-import { assignmentCopyScope, copyDisplayNumbers } from '$lib/worksheets/worksheet-copy';
+import {
+	tableMock,
+	twoLevelExercise,
+	versionedLine
+} from '#lib/server/worksheets/__tests__/table-mock.ts';
+import { assignmentCopyScope, copyDisplayNumbers } from '#lib/worksheets/worksheet-copy.ts';
 
 const user = vi.hoisted(() => ({ id: '' }));
-vi.mock('$lib/server/middleware/auth', () => ({
+vi.mock('#lib/server/middleware/auth.ts', () => ({
 	requireRole: async () => ({ user: { id: user.id } })
 }));
 
@@ -82,7 +86,7 @@ function supabase(overrides: Record<string, object> = {}) {
 				data: ROWS,
 				error: null,
 				single: {
-					data: { id: REPORTED.id, position: 1, variation_index: null, exercise: EXERCISE },
+					data: versionedLine({ id: REPORTED.id, position: 1, variation_index: null }, EXERCISE),
 					error: null
 				}
 			},

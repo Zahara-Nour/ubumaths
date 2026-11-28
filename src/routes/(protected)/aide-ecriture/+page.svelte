@@ -4,7 +4,7 @@
 	`AIDE_PAGES`.
 -->
 <script lang="ts">
-	import PageIndex, { type IndexedPage } from '$lib/components/PageIndex.svelte';
+	import PageIndex, { type IndexedPage } from '#lib/components/PageIndex.svelte';
 
 	const AIDE_PAGES: IndexedPage[] = [
 		{

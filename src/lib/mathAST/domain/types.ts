@@ -5,7 +5,7 @@
  * for functions. Supports interval notation, condition-based constraints,
  * and domain algebra operations.
  *
- * Core interval types are imported from $lib/math/intervals.
+ * Core interval types are imported from #lib/math/intervals.
  * This module adds domain-specific types like ConditionDomain.
  */
 
@@ -22,10 +22,10 @@ export type {
 	// Domain types (interval-based)
 	EmptySet,
 	UniversalSet
-} from '$lib/math/intervals/types';
+} from '#lib/math/intervals/types.ts';
 
 // Import for use in this file
-import type { Interval, EmptySet, UniversalSet } from '$lib/math/intervals/types';
+import type { Interval, EmptySet, UniversalSet } from '#lib/math/intervals/types.ts';
 import type { MathNode } from '../types';
 
 // =============================================================================

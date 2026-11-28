@@ -13,17 +13,17 @@ import {
 	parseLatexSafe,
 	type CapitalPairs,
 	type GenericFunctionConfig
-} from '$lib/mathAST/parser';
-import { evaluate } from '$lib/mathAST/eval';
-import { evaluateNodeToApproximatedNumber } from '$lib/mathAST/eval/evaluate';
-import { toLatex, areEquivalent as areEquivalentNodes } from '$lib/mathAST';
-import type { EvalValue } from '$lib/mathAST/eval/types';
-import type { MathNode } from '$lib/mathAST/types';
-import type { AnswerAssumptions } from '$lib/mathAST/assumptions';
-import { bareDecimalCommaToPoint, expectsSeparatorComma } from '$lib/mathAST/decimal-comma';
-import { separateSpacedCapitals } from '$lib/mathAST/parser/latex/point-names';
+} from '#lib/mathAST/parser/index.ts';
+import { evaluate } from '#lib/mathAST/eval/index.ts';
+import { evaluateNodeToApproximatedNumber } from '#lib/mathAST/eval/evaluate.ts';
+import { toLatex, areEquivalent as areEquivalentNodes } from '#lib/mathAST/index.ts';
+import type { EvalValue } from '#lib/mathAST/eval/types.ts';
+import type { MathNode } from '#lib/mathAST/types.ts';
+import type { AnswerAssumptions } from '#lib/mathAST/assumptions.ts';
+import { bareDecimalCommaToPoint, expectsSeparatorComma } from '#lib/mathAST/decimal-comma.ts';
+import { separateSpacedCapitals } from '#lib/mathAST/parser/latex/point-names.ts';
 
-export type { AnswerAssumptionKind, AnswerAssumptions } from '$lib/mathAST/assumptions';
+export type { AnswerAssumptionKind, AnswerAssumptions } from '#lib/mathAST/assumptions.ts';
 
 // Intervals (re-export for convenience)
 export * as intervals from './intervals';

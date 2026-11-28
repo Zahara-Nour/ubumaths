@@ -204,7 +204,7 @@
 
 ### 3.1 apigeom
 
-**Candidat principal d'inspiration** | `extern/apigeom/` | ~37K LOC TypeScript | SVG | Par Remi Angot/Coopmaths
+**Candidat principal d'inspiration** | `extern/apigeom/` | ~37K LOC TypeScript | SVG | Projet tiers open source
 
 #### A. Fonctionnalites
 

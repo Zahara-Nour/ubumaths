@@ -11,7 +11,7 @@
  *
  * @example Basic usage
  * ```typescript
- * import { getTypstService } from '$lib/typst/service';
+ * import { getTypstService } from '#lib/typst/service/index.ts';
  *
  * const service = getTypstService();
  * await service.initialize();
@@ -24,7 +24,7 @@
  *
  * @example With priority
  * ```typescript
- * import { getTypstService, PRIORITY } from '$lib/typst/service';
+ * import { getTypstService, PRIORITY } from '#lib/typst/service/index.ts';
  *
  * const service = getTypstService();
  * const result = await service.compileWithPriority(
@@ -47,7 +47,7 @@ import type {
 import { DEFAULT_SERVICE_CONFIG } from '../types';
 import { TypstCache } from '../cache';
 import { getTypstCompiler } from '../compiler';
-import { createLogger } from '$lib/utils/logger';
+import { createLogger } from '#lib/utils/logger.ts';
 
 const logger = createLogger('typst-service');
 

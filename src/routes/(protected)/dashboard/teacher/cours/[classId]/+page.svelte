@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { lore } from '$lib/config/lore';
+	import { lore } from '#lib/config/lore.ts';
 	/**
 	 * Teacher Class Chapters Page
 	 * ============================
@@ -13,21 +13,21 @@
 	 */
 
 	import { enhance } from '$app/forms';
-	import { invalidateAll } from '$app/navigation';
+	import { refreshAll } from '$app/navigation';
 	import { navigating, page } from '$app/state';
-	import { Button } from '$lib/components/ui/button';
-	import BackLink from '$lib/components/navigation/BackLink.svelte';
-	import * as Card from '$lib/components/ui/card';
-	import * as Dialog from '$lib/components/ui/dialog';
-	import { Badge } from '$lib/components/ui/badge';
-	import { Input } from '$lib/components/ui/input';
-	import { Label } from '$lib/components/ui/label';
-	import { Textarea } from '$lib/components/ui/textarea';
-	import MySelect from '$lib/components/MySelect.svelte';
-	import MyCheckbox from '$lib/components/MyCheckbox.svelte';
-	import { toaster } from '$lib/stores/toaster.svelte';
-	import { CourseShareLinkCard } from '$lib/components/cours/teacher';
-	import { CHAPTER_ICONS } from '$lib/types/chapters';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import BackLink from '#lib/components/navigation/BackLink.svelte';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import * as Dialog from '#lib/components/ui/dialog/index.ts';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
+	import { Input } from '#lib/components/ui/input/index.ts';
+	import { Label } from '#lib/components/ui/label/index.ts';
+	import { Textarea } from '#lib/components/ui/textarea/index.ts';
+	import MySelect from '#lib/components/MySelect.svelte';
+	import MyCheckbox from '#lib/components/MyCheckbox.svelte';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
+	import { CourseShareLinkCard } from '#lib/components/cours/teacher/index.ts';
+	import { CHAPTER_ICONS } from '#lib/types/chapters.ts';
 	import {
 		Plus,
 		Eye,
@@ -45,9 +45,9 @@
 		Copy
 	} from '@lucide/svelte';
 	import type { PageData, ActionData } from './$types';
-	import type { TemplateSummary } from '$lib/types/chapter-templates';
-	import { templateSelectItems } from '$lib/utils/template-select-items';
-	import { formatGradeShort } from '$lib/utils/grades';
+	import type { TemplateSummary } from '#lib/types/chapter-templates.ts';
+	import { templateSelectItems } from '#lib/utils/template-select-items.ts';
+	import { formatGradeShort } from '#lib/utils/grades.ts';
 
 	interface Props {
 		data: PageData;
@@ -128,7 +128,7 @@
 				showTemplateDialog = false;
 				resetTemplateForm();
 			}
-			invalidateAll();
+			refreshAll();
 		} else if (form?.error) {
 			toaster.error(form.error);
 		}

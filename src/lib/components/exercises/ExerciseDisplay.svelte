@@ -26,21 +26,22 @@
 	@see src/lib/components/markdown/MarkdownRenderer.svelte
 -->
 <script lang="ts">
-	import { lore } from '$lib/config/lore';
+	import { lore } from '#lib/config/lore.ts';
 	import {
 		generateExerciseInstance,
 		generateStudentSeed,
 		generateGroupSeed,
 		isParameterized
-	} from '$lib/exercises/generator/instance-generator';
-	import type { Exercise, ExerciseInstance } from '$lib/exercises/types';
-	import { getExerciseContentSafe } from '$lib/exercises/types';
-	import { genericFunctionsConfig as toGenericFunctionsConfig } from '$lib/components/markdown/utils/math-utils';
-	import { Button } from '$lib/components/ui/button';
-	import { MarkdownRenderer } from '$lib/components/markdown';
-	import { detailedCorrection } from '$lib/questions/correction-detail';
-	import { provideCapitalPairs } from '$lib/components/markdown/content-capital-pairs';
-	import { exerciseCapitalPairs } from '$lib/questions/capital-pairs';
+	} from '#lib/exercises/generator/instance-generator.ts';
+	import type { Exercise, ExerciseInstance } from '#lib/exercises/types.ts';
+	import { getExerciseContentSafe } from '#lib/exercises/types.ts';
+	import { genericFunctionsConfig as toGenericFunctionsConfig } from '#lib/components/markdown/utils/math-utils.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import { MarkdownRenderer } from '#lib/components/markdown/index.ts';
+	import { detailedCorrection } from '#lib/questions/correction-detail.ts';
+	import { provideCapitalPairs } from '#lib/components/markdown/content-capital-pairs.ts';
+	import { exerciseCapitalPairs } from '#lib/questions/capital-pairs.ts';
+	import InCorrection from '#lib/components/markdown/InCorrection.svelte';
 
 	interface Props {
 		exercise: Exercise;
@@ -301,11 +302,13 @@
 	{#if showSolution}
 		<div class="solution exercise-content mt-6 rounded-lg border border-border bg-muted/30 p-4">
 			<h3 class="mb-3 text-lg font-semibold text-foreground">Solution</h3>
-			<MarkdownRenderer
-				content={displaySolutionMd}
-				genericFunctions={genericFunctionsConfig}
-				hints={displayHints}
-			/>
+			<InCorrection>
+				<MarkdownRenderer
+					content={displaySolutionMd}
+					genericFunctions={genericFunctionsConfig}
+					hints={displayHints}
+				/>
+			</InCorrection>
 		</div>
 	{/if}
 {/if}

@@ -13,7 +13,7 @@
  * @module atelier/commands
  */
 
-import type { WebReplEngine } from '$lib/mathAST/cli/web/web-repl-engine';
+import type { WebReplEngine } from '#lib/mathAST/cli/web/web-repl-engine.ts';
 import type { Atelier } from './atelier.svelte';
 
 // =============================================================================

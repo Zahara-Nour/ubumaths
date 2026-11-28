@@ -13,16 +13,16 @@
 	messagerie) reste sur `/dev/editeur-riche` (chantier demo-debug, PR 6h).
 -->
 <script lang="ts">
-	import { demoSeo } from '$lib/seo/demo-pages';
-	import SeoHead from '$lib/seo/SeoHead.svelte';
+	import { demoSeo } from '#lib/seo/demo-pages.ts';
+	import SeoHead from '#lib/seo/SeoHead.svelte';
 	import type { JSONContent } from '@tiptap/core';
-	import BackLink from '$lib/components/navigation/BackLink.svelte';
-	import * as Card from '$lib/components/ui/card';
-	import { MarkdownRenderer } from '$lib/components/markdown';
-	import RichTextEditor from '$lib/components/rich-text/RichTextEditor.svelte';
-	import RestrictedRichText from '$lib/components/rich-text/RestrictedRichText.svelte';
-	import { tipTapToMarkdown } from '$lib/components/rich-text/markdown-export';
-	import JournalContent from '$lib/components/journal/JournalContent.svelte';
+	import BackLink from '#lib/components/navigation/BackLink.svelte';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import { MarkdownRenderer } from '#lib/components/markdown/index.ts';
+	import RichTextEditor from '#lib/components/rich-text/RichTextEditor.svelte';
+	import RestrictedRichText from '#lib/components/rich-text/RestrictedRichText.svelte';
+	import { tipTapToMarkdown } from '#lib/components/rich-text/markdown-export.ts';
+	import JournalContent from '#lib/components/journal/JournalContent.svelte';
 
 	// Constantes
 	const INITIAL_DOC: JSONContent = {

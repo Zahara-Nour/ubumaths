@@ -1,0 +1,2006 @@
+<title>Automaths, chercher une question</title>
+<meta name="claude:viewport-fit-sides" content="cover" />
+<link
+	rel="stylesheet"
+	href="https://fonts.googleapis.com/css2?family=Lora:wght@600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap"
+/>
+<style>
+	/* Mise en page : colonne de lecture étroite, maquettes à pleine largeur dans des cadres d'appareil */
+	:root {
+		--bg: #f7f6f2;
+		--surface: #ffffff;
+		--fg: #23221f;
+		--muted: #6d6a62;
+		--line: #e2dfd6;
+		--accent: #e8b100;
+		--accent-ink: #2a2100;
+		--accent-soft: #fbefc4;
+		--bad: #b3401f;
+		--good: #2f7a4a;
+		--screen: #fbfaf7;
+		--display: 'Lora', Georgia, serif;
+		--body: 'Inter', system-ui, -apple-system, sans-serif;
+		--mono: 'JetBrains Mono', ui-monospace, monospace;
+	}
+	@media (prefers-color-scheme: dark) {
+		:root:not([data-theme='light']) {
+			--bg: #1d1c1a;
+			--surface: #262522;
+			--fg: #ecebe6;
+			--muted: #a29e94;
+			--line: #3a3833;
+			--accent: #f5c518;
+			--accent-ink: #231b00;
+			--accent-soft: #3d3412;
+			--bad: #ef8a6a;
+			--good: #7dcf9a;
+			--screen: #2b2a27;
+			color-scheme: dark;
+		}
+	}
+	:root[data-theme='dark'] {
+		--bg: #1d1c1a;
+		--surface: #262522;
+		--fg: #ecebe6;
+		--muted: #a29e94;
+		--line: #3a3833;
+		--accent: #f5c518;
+		--accent-ink: #231b00;
+		--accent-soft: #3d3412;
+		--bad: #ef8a6a;
+		--good: #7dcf9a;
+		--screen: #2b2a27;
+		color-scheme: dark;
+	}
+
+	* {
+		box-sizing: border-box;
+	}
+	body {
+		background: var(--bg);
+		color: var(--fg);
+		font: 15px/1.6 var(--body);
+	}
+	.wrap {
+		max-width: 1120px;
+		margin: 0 auto;
+		padding-block: 40px 80px;
+		padding-left: max(16px, env(safe-area-inset-left, 0px));
+		padding-right: max(16px, env(safe-area-inset-right, 0px));
+	}
+	.prose {
+		max-width: 68ch;
+	}
+	h1,
+	h2,
+	h3 {
+		font-family: var(--display);
+		text-wrap: balance;
+		line-height: 1.2;
+	}
+	h1 {
+		font-size: 2.2rem;
+		margin: 0 0 8px;
+	}
+	h2 {
+		font-size: 1.5rem;
+		margin: 56px 0 12px;
+		padding-top: 16px;
+		border-top: 1px solid var(--line);
+	}
+	h3 {
+		font-size: 1.1rem;
+		margin: 28px 0 8px;
+	}
+	.lead {
+		color: var(--muted);
+		font-size: 1.05rem;
+		margin: 0;
+	}
+	.eyebrow {
+		font: 600 0.72rem/1 var(--body);
+		letter-spacing: 0.08em;
+		text-transform: uppercase;
+		color: var(--muted);
+	}
+	code {
+		font-family: var(--mono);
+		font-size: 0.85em;
+		background: var(--surface);
+		border: 1px solid var(--line);
+		padding: 1px 5px;
+		border-radius: 4px;
+	}
+	a {
+		color: inherit;
+		text-decoration-color: var(--accent);
+		text-underline-offset: 3px;
+	}
+
+	/* Chiffres mesurés */
+	.figures {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+		gap: 12px;
+		margin: 24px 0;
+	}
+	.fig {
+		background: var(--surface);
+		border: 1px solid var(--line);
+		border-radius: 8px;
+		padding: 14px 16px;
+	}
+	.fig b {
+		display: block;
+		font: 600 1.6rem/1.1 var(--display);
+		font-variant-numeric: tabular-nums;
+	}
+	.fig span {
+		color: var(--muted);
+		font-size: 0.85rem;
+	}
+
+	/* Problèmes */
+	.issues {
+		display: grid;
+		gap: 10px;
+		margin: 16px 0;
+		padding: 0;
+		list-style: none;
+	}
+	.issues li {
+		display: grid;
+		grid-template-columns: 6.5rem 1fr;
+		gap: 12px;
+		background: var(--surface);
+		border: 1px solid var(--line);
+		border-radius: 8px;
+		padding: 12px 14px;
+	}
+	.issues li > div {
+		min-width: 0;
+	}
+	.tag {
+		align-self: start;
+		font: 600 0.7rem/1 var(--body);
+		letter-spacing: 0.05em;
+		text-transform: uppercase;
+		padding: 5px 7px;
+		border-radius: 4px;
+		text-align: center;
+		background: var(--accent-soft);
+		color: var(--fg);
+	}
+	.tag.grave {
+		background: var(--bad);
+		color: var(--surface);
+	}
+	@media (max-width: 520px) {
+		.issues li {
+			grid-template-columns: 1fr;
+		}
+		.tag {
+			justify-self: start;
+		}
+	}
+
+	/* Maquettes */
+	.devices {
+		display: grid;
+		grid-template-columns: minmax(0, 2.2fr) minmax(0, 1fr);
+		gap: 28px;
+		align-items: start;
+		margin: 20px 0;
+	}
+	@media (max-width: 860px) {
+		.devices {
+			grid-template-columns: 1fr;
+		}
+		.phone {
+			max-width: 360px;
+			margin: 0 auto;
+		}
+	}
+	.device {
+		border: 1px solid var(--line);
+		border-radius: 14px;
+		background: var(--screen);
+		overflow: hidden;
+		font-size: 12px;
+		line-height: 1.4;
+	}
+	.device-label {
+		font: 600 0.72rem/1 var(--body);
+		letter-spacing: 0.06em;
+		text-transform: uppercase;
+		color: var(--muted);
+		margin: 0 0 8px;
+	}
+	.phone .device {
+		border-radius: 26px;
+		border-width: 6px;
+		border-color: var(--line);
+	}
+
+	.bar {
+		display: flex;
+		gap: 8px;
+		align-items: center;
+		padding: 10px 12px;
+		border-bottom: 1px solid var(--line);
+		background: var(--surface);
+		flex-wrap: wrap;
+	}
+	.search {
+		flex: 1 1 180px;
+		min-width: 0;
+		display: flex;
+		align-items: center;
+		gap: 6px;
+		border: 1px solid var(--line);
+		border-radius: 8px;
+		padding: 6px 9px;
+		color: var(--muted);
+		background: var(--screen);
+	}
+	.search kbd {
+		margin-left: auto;
+		font: 10px var(--mono);
+		border: 1px solid var(--line);
+		border-radius: 4px;
+		padding: 0 4px;
+	}
+	.seg {
+		display: inline-flex;
+		border: 1px solid var(--line);
+		border-radius: 8px;
+		overflow: hidden;
+	}
+	.seg span {
+		padding: 5px 8px;
+		border-left: 1px solid var(--line);
+		white-space: nowrap;
+	}
+	.seg span:first-child {
+		border-left: 0;
+	}
+	.seg .on {
+		background: var(--accent);
+		color: var(--accent-ink);
+		font-weight: 600;
+	}
+	.pill {
+		display: inline-flex;
+		align-items: center;
+		gap: 4px;
+		border: 1px solid var(--line);
+		border-radius: 999px;
+		padding: 4px 10px;
+		white-space: nowrap;
+		background: var(--surface);
+	}
+	.pill.on {
+		background: var(--accent);
+		border-color: var(--accent);
+		color: var(--accent-ink);
+		font-weight: 600;
+	}
+	.pill small {
+		color: inherit;
+		opacity: 0.65;
+	}
+
+	.desk {
+		display: grid;
+		grid-template-columns: 170px minmax(0, 1fr) 150px;
+		min-height: 420px;
+	}
+	.side {
+		border-right: 1px solid var(--line);
+		padding: 10px 8px;
+		background: var(--surface);
+	}
+	.side .b {
+		font-weight: 600;
+		padding: 5px 6px;
+		display: flex;
+		justify-content: space-between;
+	}
+	.side .n {
+		padding: 4px 6px 4px 16px;
+		border-radius: 6px;
+		display: flex;
+		justify-content: space-between;
+		color: var(--muted);
+	}
+	.side .n.on {
+		background: var(--accent-soft);
+		color: var(--fg);
+		font-weight: 600;
+	}
+	.side .b.closed {
+		color: var(--muted);
+		font-weight: 500;
+	}
+	.count {
+		font-variant-numeric: tabular-nums;
+		color: var(--muted);
+		font-weight: 400;
+	}
+	.main {
+		padding: 10px 12px;
+		min-width: 0;
+	}
+	.crumb {
+		color: var(--muted);
+		margin-bottom: 6px;
+	}
+	.chips {
+		display: flex;
+		gap: 6px;
+		overflow-x: auto;
+		padding-bottom: 6px;
+		margin-bottom: 8px;
+		scrollbar-width: none;
+	}
+	.sec {
+		font-weight: 600;
+		margin: 10px 0 6px;
+		display: flex;
+		justify-content: space-between;
+	}
+	.cards {
+		display: grid;
+		grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+		gap: 8px;
+	}
+	.card {
+		border: 1px solid var(--line);
+		border-radius: 8px;
+		background: var(--surface);
+		padding: 8px;
+		display: grid;
+		gap: 6px;
+		position: relative;
+	}
+	.card .t {
+		font-weight: 600;
+		padding-right: 26px;
+	}
+	.card .d {
+		color: var(--muted);
+		font-size: 11px;
+	}
+	.card .q {
+		background: var(--screen);
+		border-radius: 6px;
+		padding: 8px;
+		min-height: 42px;
+		font-family: var(--display);
+	}
+	.add {
+		position: absolute;
+		top: 6px;
+		right: 6px;
+		width: 24px;
+		height: 24px;
+		border-radius: 6px;
+		border: 1px solid var(--line);
+		display: grid;
+		place-items: center;
+		font-weight: 600;
+		background: var(--surface);
+	}
+	.add.in {
+		background: var(--accent);
+		border-color: var(--accent);
+		color: var(--accent-ink);
+	}
+	.lvl {
+		font-size: 10px;
+		color: var(--muted);
+	}
+	.cart {
+		border-left: 1px solid var(--line);
+		padding: 10px;
+		background: var(--surface);
+		display: flex;
+		flex-direction: column;
+		gap: 6px;
+	}
+	.cart .h {
+		font-weight: 600;
+	}
+	.cart .it {
+		border: 1px solid var(--line);
+		border-radius: 6px;
+		padding: 5px 6px;
+		display: flex;
+		justify-content: space-between;
+		gap: 4px;
+	}
+	.cart .go {
+		margin-top: auto;
+		background: var(--accent);
+		color: var(--accent-ink);
+		font-weight: 600;
+		text-align: center;
+		border-radius: 8px;
+		padding: 7px;
+	}
+
+	.ph {
+		display: flex;
+		flex-direction: column;
+		height: 600px;
+		position: relative;
+	}
+	.ph .scroll {
+		flex: 1;
+		overflow: hidden;
+		padding: 8px 10px;
+		display: grid;
+		gap: 8px;
+		align-content: start;
+	}
+	.ph .bottom {
+		border-top: 1px solid var(--line);
+		background: var(--surface);
+		padding: 8px 10px;
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 8px;
+	}
+	.ph .bottom b {
+		background: var(--accent);
+		color: var(--accent-ink);
+		border-radius: 8px;
+		padding: 7px 10px;
+	}
+	.sheet {
+		position: absolute;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		height: 64%;
+		background: var(--surface);
+		border-top: 1px solid var(--line);
+		border-radius: 16px 16px 0 0;
+		padding: 8px 12px;
+		box-shadow: 0 -8px 24px rgb(0 0 0 / 0.18);
+	}
+	.grab {
+		width: 36px;
+		height: 4px;
+		border-radius: 4px;
+		background: var(--line);
+		margin: 0 auto 8px;
+	}
+	.sheet .row {
+		display: flex;
+		justify-content: space-between;
+		padding: 9px 2px;
+		border-bottom: 1px solid var(--line);
+	}
+	.dim {
+		position: absolute;
+		inset: 0;
+		background: rgb(0 0 0 / 0.35);
+	}
+
+	.note {
+		font-size: 0.85rem;
+		color: var(--muted);
+		margin: 6px 0 0;
+	}
+	.callout {
+		background: var(--accent-soft);
+		border-radius: 8px;
+		padding: 12px 16px;
+		margin: 16px 0;
+	}
+
+	table {
+		border-collapse: collapse;
+		width: 100%;
+		font-size: 0.9rem;
+	}
+	.tablewrap {
+		overflow-x: auto;
+		margin: 12px 0;
+	}
+	th,
+	td {
+		text-align: left;
+		padding: 8px 10px;
+		border-bottom: 1px solid var(--line);
+		vertical-align: top;
+	}
+	th {
+		font-weight: 600;
+		color: var(--muted);
+		font-size: 0.78rem;
+		letter-spacing: 0.04em;
+		text-transform: uppercase;
+	}
+	.ok {
+		color: var(--good);
+		font-weight: 600;
+	}
+	.new {
+		color: var(--bad);
+		font-weight: 600;
+	}
+
+	ol.q {
+		padding-left: 1.2rem;
+		display: grid;
+		gap: 14px;
+	}
+	ol.q li::marker {
+		font-weight: 600;
+	}
+	.ex {
+		color: var(--muted);
+		font-size: 0.9rem;
+		display: block;
+		margin-top: 2px;
+	}
+	.src {
+		font-size: 0.85rem;
+		color: var(--muted);
+	}
+	.src li {
+		margin: 4px 0;
+	}
+
+	/* Roue et arbre du programme */
+	.pair {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr));
+		gap: 24px;
+		margin: 16px 0;
+	}
+	.pair > figure {
+		margin: 0;
+		min-width: 0;
+		background: var(--surface);
+		border: 1px solid var(--line);
+		border-radius: 10px;
+		padding: 14px;
+	}
+	.pair figcaption {
+		font-size: 0.85rem;
+		color: var(--muted);
+		margin-top: 8px;
+	}
+	svg.roue {
+		width: 100%;
+		max-width: 300px;
+		display: block;
+		margin: 0 auto;
+	}
+	svg.roue path {
+		stroke: var(--surface);
+		stroke-width: 0.6;
+	}
+	svg.roue .s0 {
+		fill: var(--accent);
+	}
+	svg.roue .s1 {
+		fill: var(--accent-soft);
+	}
+	svg.roue .o0 {
+		fill: var(--muted);
+		opacity: 0.55;
+	}
+	svg.roue .o1 {
+		fill: var(--line);
+	}
+	svg.roue text {
+		font: 600 8px var(--body);
+		fill: var(--accent-ink);
+		text-anchor: middle;
+		dominant-baseline: middle;
+	}
+	svg.roue .centre {
+		fill: var(--screen);
+	}
+	svg.roue .centre-t {
+		fill: var(--fg);
+		font-size: 9px;
+	}
+	.verdict {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr));
+		gap: 12px;
+		margin: 12px 0;
+	}
+	.verdict > div {
+		background: var(--surface);
+		border: 1px solid var(--line);
+		border-radius: 8px;
+		padding: 12px 14px;
+		min-width: 0;
+	}
+	.verdict h4 {
+		margin: 0 0 6px;
+		font-size: 0.8rem;
+		letter-spacing: 0.05em;
+		text-transform: uppercase;
+	}
+	.verdict ul {
+		margin: 0;
+		padding-left: 1.1rem;
+	}
+	.plus h4 {
+		color: var(--good);
+	}
+	.moins h4 {
+		color: var(--bad);
+	}
+	.prog .pt {
+		padding: 5px 6px 5px 22px;
+		border-radius: 6px;
+		color: var(--fg);
+		display: grid;
+		grid-template-columns: auto 1fr auto;
+		gap: 6px;
+		align-items: baseline;
+	}
+	.prog .pt.on {
+		background: var(--accent-soft);
+	}
+	.prog .code {
+		font: 10px var(--mono);
+		color: var(--muted);
+	}
+	.prog .pt .count {
+		font-size: 10px;
+	}
+	.desk.prog-desk {
+		grid-template-columns: 250px minmax(0, 1fr);
+	}
+	.switch {
+		display: inline-flex;
+		border: 1px solid var(--line);
+		border-radius: 8px;
+		overflow: hidden;
+	}
+	.switch span {
+		padding: 5px 9px;
+	}
+	.switch .on {
+		background: var(--fg);
+		color: var(--bg);
+		font-weight: 600;
+	}
+</style>
+
+<div class="wrap">
+	<p class="eyebrow">Chantier à ouvrir · recherche du 18 novembre 2026</p>
+	<h1>Automaths : trouver une question vite, sur tous les écrans</h1>
+	<p class="lead prose">
+		Diagnostic de la page actuelle (code et prod, ordinateur et téléphone), ce que disent les études
+		d'ergonomie, puis une proposition dessinée en trois tailles d'écran. Rien n'est décidé : les
+		choix à trancher sont en fin de page.
+	</p>
+
+	<div class="figures">
+		<div class="fig"><b>2 454</b><span>modèles publiés</span></div>
+		<div class="fig"><b>17</b><span>branches non vides (sur 19)</span></div>
+		<div class="fig"><b>21</b><span>notions au plus dans une branche (Géométrie)</span></div>
+		<div class="fig"><b>88</b><span>sous-notions au plus (Nombres et calculs)</span></div>
+		<div class="fig"><b>4 · 56</b><span>modèles par sous-notion : médiane · maximum</span></div>
+	</div>
+
+	<h2>Ce qui gêne aujourd'hui</h2>
+	<p class="prose">
+		Le chemin actuel : menu « Branche », menu « Niveau », onglets des notions, puis accordéons des
+		sous-notions, tous fermés. Il faut <b>trois choix et un clic</b> avant de voir une seule
+		question.
+	</p>
+	<ul class="issues">
+		<li>
+			<span class="tag grave">Téléphone</span>
+			<div>
+				<b>Les onglets des notions remplissent tout le premier écran.</b> Dans « Nombres et calculs
+				», 16 onglets passent sur 9 lignes à 570 px. Avec plusieurs rangées, les onglets changent de
+				place d'une branche à l'autre : on perd ses repères (Nielsen, cité par CXL). Géométrie en a
+				21.
+			</div>
+		</li>
+		<li>
+			<span class="tag grave">Téléphone</span>
+			<div>
+				<b>Le bouton rond du panier cache « Ajouter au panier ».</b> Constaté en prod : il se pose
+				sur le bouton de la dernière carte visible. En plus, il clignote dès qu'il contient une
+				question, en permanence.
+			</div>
+		</li>
+		<li>
+			<span class="tag grave">Partout</span>
+			<div>
+				<b>Aucune recherche.</b> Un prof qui pense « double distributivité » doit savoir que c'est
+				dans Algèbre › Calcul littéral › Développer. Avec 2 454 modèles, chercher par mot est le
+				chemin le plus court, et les modèles sont déjà tous dans le navigateur.
+			</div>
+		</li>
+		<li>
+			<span class="tag">Partout</span>
+			<div>
+				<b>Les sous-notions sont fermées et sans compteur.</b> « ordre », « décomposition », «
+				écritures »… : on ouvre pour savoir s'il y a 1 ou 40 questions. Rien n'indique non plus ce
+				qui est déjà dans le panier.
+			</div>
+		</li>
+		<li>
+			<span class="tag">Partout</span>
+			<div>
+				<b>« Branche » est un menu caché.</b> Les 17 branches ne se voient pas ; en prod le menu
+				ressemble à du texte simple, sans bordure. Le niveau, le premier critère d'un prof (« je
+				fais une série pour mes 4e »), est en deuxième position.
+			</div>
+		</li>
+		<li>
+			<span class="tag">Partout</span>
+			<div>
+				<b>On ne peut pas retirer une question depuis la grille</b> : le bouton devient « Dans le
+				panier », grisé. Il faut aller au panier pour corriger un ajout.
+			</div>
+		</li>
+		<li>
+			<span class="tag">Partout</span>
+			<div>
+				<b>L'adresse ne garde que le niveau.</b> Un rechargement ou un retour arrière depuis le
+				panier ramène à la première notion de la première branche.
+			</div>
+		</li>
+		<li>
+			<span class="tag">Détail</span>
+			<div>
+				Le badge de niveau affiche un nombre (« 1 ») sans légende visible ; une carte prend presque
+				un écran de téléphone pour un énoncé d'une ligne (hauteur fixe de 12 rem).
+			</div>
+		</li>
+	</ul>
+
+	<h2>Ce que disent les études</h2>
+	<div class="prose">
+		<h3>1. Gros catalogue : chercher et filtrer, pas seulement descendre l'arbre</h3>
+		<p>
+			Au-delà de quelques centaines d'éléments, les filtres par facettes deviennent nécessaires, à
+			condition de filtrer selon ce qui compte pour l'utilisateur (NN/g). Ici, deux facettes
+			comptent : le <b>niveau</b> et le <b>thème</b>. La recherche par mot complète l'arbre, elle ne
+			le remplace pas : les grandes plateformes d'exercices proposent les deux, barre de recherche
+			et classement par niveau.
+		</p>
+		<h3>2. Les filtres actifs doivent rester visibles</h3>
+		<p>
+			Baymard : afficher les filtres appliqués accélère la recherche et évite d'oublier dans quel
+			contexte on regarde ; 28 % des sites ne le font pas. Un compteur à côté de chaque option évite
+			les impasses.
+		</p>
+		<h3>3. Sur téléphone, les filtres vont dans leur propre couche</h3>
+		<p>
+			Baymard encore : une barre latérale ne se tasse pas dans un téléphone. Il faut un panneau qui
+			monte du bas (ou plein écran), ouvert par un bouton qui dit ce qu'il fait.
+		</p>
+		<h3>4. Les onglets ne passent pas à la ligne</h3>
+		<p>
+			Au-delà de 5 à 7 onglets, les systèmes de design proposent un défilement horizontal ou un
+			menu, jamais plusieurs rangées (Adobe Spectrum, Red Hat). Les notions sont trop nombreuses
+			pour des onglets : elles relèvent d'une liste.
+		</p>
+		<h3>5. La recherche instantanée : récents d'abord</h3>
+		<p>
+			Les palettes de recherche (⌘K, « / ») montrent les éléments récents avant les résultats et
+			filtrent sans accent ni majuscule. Pour un prof qui refait des séries chaque semaine,
+			retrouver « mes dernières notions » est le gain le plus fréquent.
+		</p>
+	</div>
+
+	<h2>La proposition</h2>
+	<p class="prose">
+		Un même principe à toutes les tailles : <b>une barre fixe en haut</b> (recherche + niveau),
+		<b>le thème choisi dans une liste à compteurs</b>,
+		<b>les sous-notions en pastilles qui défilent</b>, <b>toutes les cartes visibles</b> rangées en
+		sections, et <b>la série en cours toujours visible</b> sans rien cacher. La tuile reste la
+		flash-card (décision du 29 septembre 2026), avec un bouton + / ✓ dans son coin.
+	</p>
+
+	<div class="devices">
+		<div>
+			<p class="device-label">Ordinateur (≥ 1 280 px) : trois colonnes</p>
+			<div class="device" aria-label="Maquette ordinateur">
+				<div class="bar">
+					<div class="search">⌕ Chercher : « distributivité », « aire du disque »…<kbd>/</kbd></div>
+					<div class="seg">
+						<span>Tous</span><span>6e</span><span>5e</span><span class="on">4e</span><span>3e</span
+						><span>2de</span><span>…</span>
+					</div>
+					<span class="pill">+ niveaux inférieurs</span>
+				</div>
+				<div class="desk">
+					<div class="side">
+						<div class="b closed">Nombres et calculs <span class="count">212</span></div>
+						<div class="b">Algèbre <span class="count">96</span></div>
+						<div class="n">Expressions <span class="count">14</span></div>
+						<div class="n on">Calcul littéral <span class="count">38</span></div>
+						<div class="n">Équations <span class="count">31</span></div>
+						<div class="n">Inéquations <span class="count">13</span></div>
+						<div class="b closed">Géométrie <span class="count">88</span></div>
+						<div class="b closed">Fonctions <span class="count">41</span></div>
+						<div class="b closed">Grandeurs et mesures <span class="count">57</span></div>
+						<div class="b closed">Proportionnalité <span class="count">22</span></div>
+						<div class="b closed">…</div>
+					</div>
+					<div class="main">
+						<div class="crumb">Algèbre › <b>Calcul littéral</b> · 38 questions en 4e</div>
+						<div class="chips">
+							<span class="pill on">Tout</span><span class="pill">Réduire <small>9</small></span
+							><span class="pill">Développer <small>12</small></span
+							><span class="pill">Factoriser <small>10</small></span
+							><span class="pill">Substituer <small>7</small></span>
+						</div>
+						<div class="sec">Réduire <span class="count">9</span></div>
+						<div class="cards">
+							<div class="card">
+								<span class="add in">✓</span>
+								<div class="t">Réduire une somme</div>
+								<div class="d">Deux termes en x</div>
+								<div class="q">3x + 5x = ?</div>
+								<span class="lvl">4e · niveau 1</span>
+							</div>
+							<div class="card">
+								<span class="add">+</span>
+								<div class="t">Réduire une somme</div>
+								<div class="d">Termes en x et constantes</div>
+								<div class="q">2x + 3 − 5x + 1 = ?</div>
+								<span class="lvl">4e · niveau 2</span>
+							</div>
+							<div class="card">
+								<span class="add">+</span>
+								<div class="t">Réduire un produit</div>
+								<div class="d">Monômes</div>
+								<div class="q">3x × 4x = ?</div>
+								<span class="lvl">4e · niveau 2</span>
+							</div>
+						</div>
+						<div class="sec">Développer <span class="count">12</span></div>
+						<div class="cards">
+							<div class="card">
+								<span class="add in">✓</span>
+								<div class="t">Simple distributivité</div>
+								<div class="d">Facteur positif</div>
+								<div class="q">3(x + 2) = ?</div>
+								<span class="lvl">4e · niveau 1</span>
+							</div>
+							<div class="card">
+								<span class="add">+</span>
+								<div class="t">Double distributivité</div>
+								<div class="d">Coefficients entiers</div>
+								<div class="q">(x + 2)(x − 5) = ?</div>
+								<span class="lvl">4e · niveau 3</span>
+							</div>
+						</div>
+					</div>
+					<div class="cart">
+						<div class="h">Ma série · 3</div>
+						<div class="it">Réduire une somme <span>×</span></div>
+						<div class="it">Simple distributivité <span>×</span></div>
+						<div class="it">Fractions : somme <span>×</span></div>
+						<div class="go">Lancer la série →</div>
+					</div>
+				</div>
+			</div>
+			<p class="note">
+				Entre 768 et 1 280 px (tablette, petit portable) : la colonne de la série disparaît et
+				devient un bouton « Ma série · 3 » dans la barre du haut, qui ouvre un panneau latéral.
+			</p>
+		</div>
+
+		<div class="phone">
+			<p class="device-label">Téléphone (&lt; 768 px)</p>
+			<div class="device" aria-label="Maquette téléphone">
+				<div class="ph">
+					<div class="bar">
+						<div class="search">⌕ Chercher une question</div>
+					</div>
+					<div class="bar">
+						<span class="pill on">4e ▾</span>
+						<span class="pill">Algèbre › Calcul littéral ▾</span>
+					</div>
+					<div class="scroll">
+						<div class="chips">
+							<span class="pill on">Tout</span><span class="pill">Réduire <small>9</small></span
+							><span class="pill">Développer <small>12</small></span
+							><span class="pill">Factoriser</span>
+						</div>
+						<div class="sec">Réduire <span class="count">9</span></div>
+						<div class="card">
+							<span class="add in">✓</span>
+							<div class="t">Réduire une somme</div>
+							<div class="d">Deux termes en x</div>
+							<div class="q">3x + 5x = ?</div>
+						</div>
+						<div class="card">
+							<span class="add">+</span>
+							<div class="t">Réduire une somme</div>
+							<div class="d">Termes en x et constantes</div>
+							<div class="q">2x + 3 − 5x + 1 = ?</div>
+						</div>
+					</div>
+					<div class="bottom"><span>3 questions</span><b>Voir la série →</b></div>
+					<div class="dim"></div>
+					<div class="sheet">
+						<div class="grab"></div>
+						<div style="font-weight: 600; margin-bottom: 4px">‹ Algèbre</div>
+						<div class="row"><span>Expressions</span><span class="count">14</span></div>
+						<div class="row"><b>Calcul littéral</b><span class="count">38</span></div>
+						<div class="row"><span>Équations</span><span class="count">31</span></div>
+						<div class="row"><span>Inéquations</span><span class="count">13</span></div>
+					</div>
+				</div>
+			</div>
+			<p class="note">
+				Le thème s'ouvre dans un panneau qui monte du bas : on choisit la branche, puis la notion,
+				comme dans les réglages d'un téléphone. Le panneau est dessiné ouvert ici.
+			</p>
+		</div>
+	</div>
+
+	<h3>Les pièces une par une</h3>
+	<div class="tablewrap">
+		<table>
+			<thead>
+				<tr>
+					<th>Élément</th>
+					<th>Comportement</th>
+					<th>Composant</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td>Recherche</td>
+					<td>
+						Instantanée, sans accent ni majuscule, dans le titre, la description et le nom de la
+						notion. Résultats rangés par notion, dans le niveau choisi. Touche « / » pour y aller.
+						Vide : notions récentes.
+					</td>
+					<td>
+						<code>Input</code> <span class="ok">existe</span> ; palette <code>Command</code> de
+						bits-ui <span class="new">à ajouter</span> (sans nouvelle dépendance)
+					</td>
+				</tr>
+				<tr>
+					<td>Niveau</td>
+					<td>
+						Ordinateur : boutons groupés, toujours visibles. Téléphone : pastille qui ouvre la
+						liste. Mémorisé d'une visite à l'autre.
+					</td>
+					<td>
+						<code>ToggleGroup</code> <span class="new">à ajouter</span> · <code>Popover</code>
+						<span class="ok">existe</span>
+					</td>
+				</tr>
+				<tr>
+					<td>Thème (branche › notion)</td>
+					<td>
+						Liste à deux étages, avec compteurs filtrés par niveau ; les branches vides au niveau
+						choisi sont grisées.
+					</td>
+					<td>
+						<code>Collapsible</code>, <code>ScrollArea</code> <span class="ok">existent</span> ·
+						téléphone : <code>Sheet</code> par le bas <span class="ok">existe</span>
+					</td>
+				</tr>
+				<tr>
+					<td>Sous-notions</td>
+					<td>
+						Pastilles sur une ligne, qui défilent ; la pastille suit la section lue ; un clic fait
+						défiler jusqu'à elle.
+					</td>
+					<td>À écrire (CSS <code>overflow-x</code> + <code>IntersectionObserver</code>)</td>
+				</tr>
+				<tr>
+					<td>Cartes</td>
+					<td>
+						Toutes affichées, aperçu calculé quand la carte approche de l'écran (remplace le calcul
+						à l'ouverture de l'accordéon). Bouton + / ✓ de 44 px sur téléphone, qui ajoute et
+						retire.
+					</td>
+					<td><code>FlashCard</code> <span class="ok">existe</span></td>
+				</tr>
+				<tr>
+					<td>Série en cours</td>
+					<td>
+						Colonne à droite sur grand écran, panneau latéral sur tablette, barre en bas sur
+						téléphone. Remplace le bouton rond clignotant.
+					</td>
+					<td><code>Sheet</code> <span class="ok">existe</span></td>
+				</tr>
+				<tr>
+					<td>Adresse</td>
+					<td>
+						<code>?niveau=4e&amp;notion=…&amp;q=…</code> : un rechargement, un retour depuis la
+						série ou un lien envoyé à un collègue retombent au même endroit.
+					</td>
+					<td><code>replaceState</code>, déjà utilisé pour le niveau</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+	<div class="callout prose">
+		Performance : avec toutes les cartes visibles, l'aperçu de chaque carte est calculé seulement
+		quand elle approche de l'écran. La plus grosse sous-notion a 56 modèles, une notion complète
+		quelques centaines au plus : ça tient sans liste virtuelle.
+	</div>
+
+	<h2>Deux autres pistes : la roue et l'arbre du programme</h2>
+	<p class="prose">
+		Ajoutées le 18 novembre, à ta demande. Les deux sont dessinées avec les vrais effectifs de la
+		prod.
+	</p>
+
+	<h3>La roue (cercle de parts)</h3>
+	<div class="pair">
+		<figure>
+			<svg
+				class="roue"
+				viewBox="0 0 300 300"
+				role="img"
+				aria-label="Roue complète : 17 branches au centre, 129 notions autour"
+			>
+				<path
+					class="s0"
+					d="M150.0 55.0A95 95 0 0 1 239.4 182.1L187.7 163.5A40 40 0 0 0 150.0 110.0Z"
+				/>
+				<path
+					class="o0"
+					d="M150.0 10.0A140 140 0 0 1 166.7 11.0L161.7 52.7A98 98 0 0 0 150.0 52.0Z"
+				/>
+				<path
+					class="o0"
+					d="M166.7 11.0A140 140 0 0 1 183.2 14.0L173.2 54.8A98 98 0 0 0 161.7 52.7Z"
+				/>
+				<path
+					class="o0"
+					d="M183.2 14.0A140 140 0 0 1 199.2 18.9L184.4 58.3A98 98 0 0 0 173.2 54.8Z"
+				/>
+				<path
+					class="o0"
+					d="M199.2 18.9A140 140 0 0 1 214.5 25.7L195.1 63.0A98 98 0 0 0 184.4 58.3Z"
+				/>
+				<path
+					class="o0"
+					d="M214.5 25.7A140 140 0 0 1 228.9 34.3L205.2 69.0A98 98 0 0 0 195.1 63.0Z"
+				/>
+				<path
+					class="o0"
+					d="M228.9 34.3A140 140 0 0 1 242.1 44.6L214.5 76.2A98 98 0 0 0 205.2 69.0Z"
+				/>
+				<path
+					class="o0"
+					d="M242.1 44.6A140 140 0 0 1 254.1 56.3L222.8 84.4A98 98 0 0 0 214.5 76.2Z"
+				/>
+				<path
+					class="o0"
+					d="M254.1 56.3A140 140 0 0 1 264.5 69.4L230.1 93.6A98 98 0 0 0 222.8 84.4Z"
+				/>
+				<path
+					class="o0"
+					d="M264.5 69.4A140 140 0 0 1 273.3 83.7L236.3 103.6A98 98 0 0 0 230.1 93.6Z"
+				/>
+				<path
+					class="o0"
+					d="M273.3 83.7A140 140 0 0 1 280.3 98.9L241.2 114.2A98 98 0 0 0 236.3 103.6Z"
+				/>
+				<path
+					class="o0"
+					d="M280.3 98.9A140 140 0 0 1 285.5 114.8L244.9 125.4A98 98 0 0 0 241.2 114.2Z"
+				/>
+				<path
+					class="o0"
+					d="M285.5 114.8A140 140 0 0 1 288.7 131.2L247.1 136.9A98 98 0 0 0 244.9 125.4Z"
+				/>
+				<path
+					class="o0"
+					d="M288.7 131.2A140 140 0 0 1 290.0 147.9L248.0 148.6A98 98 0 0 0 247.1 136.9Z"
+				/>
+				<path
+					class="o0"
+					d="M290.0 147.9A140 140 0 0 1 289.2 164.7L247.5 160.3A98 98 0 0 0 248.0 148.6Z"
+				/>
+				<path
+					class="o0"
+					d="M289.2 164.7A140 140 0 0 1 286.5 181.2L245.5 171.8A98 98 0 0 0 247.5 160.3Z"
+				/>
+				<path
+					class="o0"
+					d="M286.5 181.2A140 140 0 0 1 281.8 197.3L242.2 183.1A98 98 0 0 0 245.5 171.8Z"
+				/>
+				<text x="204.8" y="111.4">Nombres</text>
+				<path
+					class="s1"
+					d="M239.4 182.1A95 95 0 0 1 177.1 241.1L161.4 188.3A40 40 0 0 0 187.7 163.5Z"
+				/>
+				<path
+					class="o1"
+					d="M281.8 197.3A140 140 0 0 1 278.6 205.4L240.0 188.8A98 98 0 0 0 242.2 183.1Z"
+				/>
+				<path
+					class="o1"
+					d="M278.6 205.4A140 140 0 0 1 274.9 213.3L237.4 194.3A98 98 0 0 0 240.0 188.8Z"
+				/>
+				<path
+					class="o1"
+					d="M274.9 213.3A140 140 0 0 1 270.7 221.0L234.5 199.7A98 98 0 0 0 237.4 194.3Z"
+				/>
+				<path
+					class="o1"
+					d="M270.7 221.0A140 140 0 0 1 266.0 228.4L231.2 204.9A98 98 0 0 0 234.5 199.7Z"
+				/>
+				<path
+					class="o1"
+					d="M266.0 228.4A140 140 0 0 1 260.9 235.5L227.6 209.8A98 98 0 0 0 231.2 204.9Z"
+				/>
+				<path
+					class="o1"
+					d="M260.9 235.5A140 140 0 0 1 255.3 242.2L223.7 214.6A98 98 0 0 0 227.6 209.8Z"
+				/>
+				<path
+					class="o1"
+					d="M255.3 242.2A140 140 0 0 1 249.4 248.6L219.6 219.0A98 98 0 0 0 223.7 214.6Z"
+				/>
+				<path
+					class="o1"
+					d="M249.4 248.6A140 140 0 0 1 243.0 254.6L215.1 223.2A98 98 0 0 0 219.6 219.0Z"
+				/>
+				<path
+					class="o1"
+					d="M243.0 254.6A140 140 0 0 1 236.3 260.2L210.4 227.2A98 98 0 0 0 215.1 223.2Z"
+				/>
+				<path
+					class="o1"
+					d="M236.3 260.2A140 140 0 0 1 229.2 265.4L205.5 230.8A98 98 0 0 0 210.4 227.2Z"
+				/>
+				<path
+					class="o1"
+					d="M229.2 265.4A140 140 0 0 1 221.9 270.1L200.3 234.1A98 98 0 0 0 205.5 230.8Z"
+				/>
+				<path
+					class="o1"
+					d="M221.9 270.1A140 140 0 0 1 214.2 274.4L195.0 237.1A98 98 0 0 0 200.3 234.1Z"
+				/>
+				<path
+					class="o1"
+					d="M214.2 274.4A140 140 0 0 1 206.4 278.2L189.4 239.7A98 98 0 0 0 195.0 237.1Z"
+				/>
+				<path
+					class="o1"
+					d="M206.4 278.2A140 140 0 0 1 198.2 281.4L183.8 242.0A98 98 0 0 0 189.4 239.7Z"
+				/>
+				<path
+					class="o1"
+					d="M198.2 281.4A140 140 0 0 1 189.9 284.2L178.0 243.9A98 98 0 0 0 183.8 242.0Z"
+				/>
+				<text x="196.1" y="198.7">Fonctions</text>
+				<path
+					class="s0"
+					d="M177.1 241.1A95 95 0 0 1 108.6 235.5L132.6 186.0A40 40 0 0 0 161.4 188.3Z"
+				/>
+				<path
+					class="o0"
+					d="M189.9 284.2A140 140 0 0 1 185.2 285.5L174.6 244.9A98 98 0 0 0 178.0 243.9Z"
+				/>
+				<path
+					class="o0"
+					d="M185.2 285.5A140 140 0 0 1 180.4 286.7L171.3 245.7A98 98 0 0 0 174.6 244.9Z"
+				/>
+				<path
+					class="o0"
+					d="M180.4 286.7A140 140 0 0 1 175.6 287.6L167.9 246.4A98 98 0 0 0 171.3 245.7Z"
+				/>
+				<path
+					class="o0"
+					d="M175.6 287.6A140 140 0 0 1 170.7 288.5L164.5 246.9A98 98 0 0 0 167.9 246.4Z"
+				/>
+				<path
+					class="o0"
+					d="M170.7 288.5A140 140 0 0 1 165.8 289.1L161.1 247.4A98 98 0 0 0 164.5 246.9Z"
+				/>
+				<path
+					class="o0"
+					d="M165.8 289.1A140 140 0 0 1 160.9 289.6L157.6 247.7A98 98 0 0 0 161.1 247.4Z"
+				/>
+				<path
+					class="o0"
+					d="M160.9 289.6A140 140 0 0 1 156.0 289.9L154.2 247.9A98 98 0 0 0 157.6 247.7Z"
+				/>
+				<path
+					class="o0"
+					d="M156.0 289.9A140 140 0 0 1 151.0 290.0L150.7 248.0A98 98 0 0 0 154.2 247.9Z"
+				/>
+				<path
+					class="o0"
+					d="M151.0 290.0A140 140 0 0 1 146.1 289.9L147.3 248.0A98 98 0 0 0 150.7 248.0Z"
+				/>
+				<path
+					class="o0"
+					d="M146.1 289.9A140 140 0 0 1 141.2 289.7L143.8 247.8A98 98 0 0 0 147.3 248.0Z"
+				/>
+				<path
+					class="o0"
+					d="M141.2 289.7A140 140 0 0 1 136.3 289.3L140.4 247.5A98 98 0 0 0 143.8 247.8Z"
+				/>
+				<path
+					class="o0"
+					d="M136.3 289.3A140 140 0 0 1 131.4 288.8L137.0 247.1A98 98 0 0 0 140.4 247.5Z"
+				/>
+				<path
+					class="o0"
+					d="M131.4 288.8A140 140 0 0 1 126.5 288.0L133.5 246.6A98 98 0 0 0 137.0 247.1Z"
+				/>
+				<path
+					class="o0"
+					d="M126.5 288.0A140 140 0 0 1 121.6 287.1L130.1 246.0A98 98 0 0 0 133.5 246.6Z"
+				/>
+				<path
+					class="o0"
+					d="M121.6 287.1A140 140 0 0 1 116.8 286.0L126.8 245.2A98 98 0 0 0 130.1 246.0Z"
+				/>
+				<path
+					class="o0"
+					d="M116.8 286.0A140 140 0 0 1 112.1 284.8L123.4 244.3A98 98 0 0 0 126.8 245.2Z"
+				/>
+				<path
+					class="o0"
+					d="M112.1 284.8A140 140 0 0 1 107.3 283.3L120.1 243.3A98 98 0 0 0 123.4 244.3Z"
+				/>
+				<path
+					class="o0"
+					d="M107.3 283.3A140 140 0 0 1 102.7 281.8L116.9 242.2A98 98 0 0 0 120.1 243.3Z"
+				/>
+				<path
+					class="o0"
+					d="M102.7 281.8A140 140 0 0 1 98.1 280.0L113.6 241.0A98 98 0 0 0 116.9 242.2Z"
+				/>
+				<path
+					class="o0"
+					d="M98.1 280.0A140 140 0 0 1 93.5 278.1L110.5 239.7A98 98 0 0 0 113.6 241.0Z"
+				/>
+				<path
+					class="o0"
+					d="M93.5 278.1A140 140 0 0 1 89.0 276.0L107.3 238.2A98 98 0 0 0 110.5 239.7Z"
+				/>
+				<text x="144.6" y="216.8">Géométrie</text>
+				<path
+					class="s1"
+					d="M108.6 235.5A95 95 0 0 1 73.3 206.1L117.7 173.6A40 40 0 0 0 132.6 186.0Z"
+				/>
+				<path
+					class="o1"
+					d="M89.0 276.0A140 140 0 0 1 82.3 272.5L102.6 235.8A98 98 0 0 0 107.3 238.2Z"
+				/>
+				<path
+					class="o1"
+					d="M82.3 272.5A140 140 0 0 1 75.7 268.7L98.0 233.1A98 98 0 0 0 102.6 235.8Z"
+				/>
+				<path
+					class="o1"
+					d="M75.7 268.7A140 140 0 0 1 69.4 264.5L93.6 230.1A98 98 0 0 0 98.0 233.1Z"
+				/>
+				<path
+					class="o1"
+					d="M69.4 264.5A140 140 0 0 1 63.3 259.9L89.3 226.9A98 98 0 0 0 93.6 230.1Z"
+				/>
+				<path
+					class="o1"
+					d="M63.3 259.9A140 140 0 0 1 57.4 255.0L85.2 223.5A98 98 0 0 0 89.3 226.9Z"
+				/>
+				<path
+					class="o1"
+					d="M57.4 255.0A140 140 0 0 1 51.9 249.9L81.3 219.9A98 98 0 0 0 85.2 223.5Z"
+				/>
+				<path
+					class="o1"
+					d="M51.9 249.9A140 140 0 0 1 46.6 244.4L77.6 216.1A98 98 0 0 0 81.3 219.9Z"
+				/>
+				<path
+					class="o1"
+					d="M46.6 244.4A140 140 0 0 1 41.6 238.6L74.1 212.0A98 98 0 0 0 77.6 216.1Z"
+				/>
+				<path
+					class="o1"
+					d="M41.6 238.6A140 140 0 0 1 37.0 232.6L70.9 207.8A98 98 0 0 0 74.1 212.0Z"
+				/>
+				<text x="107.1" y="201.5">Algèbre</text>
+				<path
+					class="s0"
+					d="M73.3 206.1A95 95 0 0 1 56.3 165.4L110.5 156.5A40 40 0 0 0 117.7 173.6Z"
+				/>
+				<path
+					class="o0"
+					d="M37.0 232.6A140 140 0 0 1 33.2 227.2L68.3 204.1A98 98 0 0 0 70.9 207.8Z"
+				/>
+				<path
+					class="o0"
+					d="M33.2 227.2A140 140 0 0 1 29.7 221.7L65.8 200.2A98 98 0 0 0 68.3 204.1Z"
+				/>
+				<path
+					class="o0"
+					d="M29.7 221.7A140 140 0 0 1 26.5 216.0L63.6 196.2A98 98 0 0 0 65.8 200.2Z"
+				/>
+				<path
+					class="o0"
+					d="M26.5 216.0A140 140 0 0 1 23.6 210.1L61.5 192.1A98 98 0 0 0 63.6 196.2Z"
+				/>
+				<path
+					class="o0"
+					d="M23.6 210.1A140 140 0 0 1 20.9 204.1L59.6 187.9A98 98 0 0 0 61.5 192.1Z"
+				/>
+				<path
+					class="o0"
+					d="M20.9 204.1A140 140 0 0 1 18.5 198.0L57.9 183.6A98 98 0 0 0 59.6 187.9Z"
+				/>
+				<path
+					class="o0"
+					d="M18.5 198.0A140 140 0 0 1 16.4 191.8L56.5 179.3A98 98 0 0 0 57.9 183.6Z"
+				/>
+				<path
+					class="o0"
+					d="M16.4 191.8A140 140 0 0 1 14.6 185.5L55.2 174.8A98 98 0 0 0 56.5 179.3Z"
+				/>
+				<path
+					class="o0"
+					d="M14.6 185.5A140 140 0 0 1 13.1 179.1L54.1 170.4A98 98 0 0 0 55.2 174.8Z"
+				/>
+				<path
+					class="o0"
+					d="M13.1 179.1A140 140 0 0 1 11.8 172.7L53.3 165.9A98 98 0 0 0 54.1 170.4Z"
+				/>
+				<text x="88.2" y="175.9">Grandeurs</text>
+				<path
+					class="s1"
+					d="M56.3 165.4A95 95 0 0 1 56.7 132.0L110.7 142.4A40 40 0 0 0 110.5 156.5Z"
+				/>
+				<path
+					class="o1"
+					d="M11.8 172.7A140 140 0 0 1 10.8 164.5L52.5 160.1A98 98 0 0 0 53.3 165.9Z"
+				/>
+				<path
+					class="o1"
+					d="M10.8 164.5A140 140 0 0 1 10.1 156.3L52.1 154.4A98 98 0 0 0 52.5 160.1Z"
+				/>
+				<path
+					class="o1"
+					d="M10.1 156.3A140 140 0 0 1 10.0 148.0L52.0 148.6A98 98 0 0 0 52.1 154.4Z"
+				/>
+				<path
+					class="o1"
+					d="M10.0 148.0A140 140 0 0 1 10.4 139.8L52.3 142.9A98 98 0 0 0 52.0 148.6Z"
+				/>
+				<path
+					class="o1"
+					d="M10.4 139.8A140 140 0 0 1 11.2 131.6L52.9 137.1A98 98 0 0 0 52.3 142.9Z"
+				/>
+				<path
+					class="o1"
+					d="M11.2 131.6A140 140 0 0 1 12.5 123.5L53.8 131.4A98 98 0 0 0 52.9 137.1Z"
+				/>
+				<path
+					class="s0"
+					d="M56.7 132.0A95 95 0 0 1 68.2 101.7L115.6 129.6A40 40 0 0 0 110.7 142.4Z"
+				/>
+				<path
+					class="o0"
+					d="M12.5 123.5A140 140 0 0 1 13.8 117.6L54.7 127.3A98 98 0 0 0 53.8 131.4Z"
+				/>
+				<path
+					class="o0"
+					d="M13.8 117.6A140 140 0 0 1 15.3 111.8L55.7 123.2A98 98 0 0 0 54.7 127.3Z"
+				/>
+				<path
+					class="o0"
+					d="M15.3 111.8A140 140 0 0 1 17.1 106.0L57.0 119.2A98 98 0 0 0 55.7 123.2Z"
+				/>
+				<path
+					class="o0"
+					d="M17.1 106.0A140 140 0 0 1 19.1 100.4L58.4 115.3A98 98 0 0 0 57.0 119.2Z"
+				/>
+				<path
+					class="o0"
+					d="M19.1 100.4A140 140 0 0 1 21.3 94.8L59.9 111.4A98 98 0 0 0 58.4 115.3Z"
+				/>
+				<path
+					class="o0"
+					d="M21.3 94.8A140 140 0 0 1 23.8 89.3L61.7 107.5A98 98 0 0 0 59.9 111.4Z"
+				/>
+				<path
+					class="o0"
+					d="M23.8 89.3A140 140 0 0 1 26.5 84.0L63.6 103.8A98 98 0 0 0 61.7 107.5Z"
+				/>
+				<path
+					class="o0"
+					d="M26.5 84.0A140 140 0 0 1 29.5 78.8L65.6 100.1A98 98 0 0 0 63.6 103.8Z"
+				/>
+				<path
+					class="s1"
+					d="M68.2 101.7A95 95 0 0 1 84.7 81.0L122.5 120.9A40 40 0 0 0 115.6 129.6Z"
+				/>
+				<path class="o1" d="M29.5 78.8A140 140 0 0 1 33.6 72.1L68.5 95.5A98 98 0 0 0 65.6 100.1Z" />
+				<path class="o1" d="M33.6 72.1A140 140 0 0 1 38.2 65.8L71.7 91.0A98 98 0 0 0 68.5 95.5Z" />
+				<path class="o1" d="M38.2 65.8A140 140 0 0 1 43.0 59.7L75.1 86.8A98 98 0 0 0 71.7 91.0Z" />
+				<path class="o1" d="M43.0 59.7A140 140 0 0 1 48.2 53.8L78.8 82.7A98 98 0 0 0 75.1 86.8Z" />
+				<path class="o1" d="M48.2 53.8A140 140 0 0 1 53.8 48.3L82.6 78.8A98 98 0 0 0 78.8 82.7Z" />
+				<path
+					class="s0"
+					d="M84.7 81.0A95 95 0 0 1 97.4 70.9L127.9 116.7A40 40 0 0 0 122.5 120.9Z"
+				/>
+				<path class="o0" d="M53.8 48.3A140 140 0 0 1 57.3 45.1L85.1 76.6A98 98 0 0 0 82.6 78.8Z" />
+				<path class="o0" d="M57.3 45.1A140 140 0 0 1 61.0 42.0L87.7 74.4A98 98 0 0 0 85.1 76.6Z" />
+				<path class="o0" d="M61.0 42.0A140 140 0 0 1 64.7 39.0L90.3 72.3A98 98 0 0 0 87.7 74.4Z" />
+				<path class="o0" d="M64.7 39.0A140 140 0 0 1 68.6 36.1L93.0 70.3A98 98 0 0 0 90.3 72.3Z" />
+				<path class="o0" d="M68.6 36.1A140 140 0 0 1 72.5 33.4L95.8 68.4A98 98 0 0 0 93.0 70.3Z" />
+				<path
+					class="s1"
+					d="M97.4 70.9A95 95 0 0 1 109.3 64.2L132.9 113.9A40 40 0 0 0 127.9 116.7Z"
+				/>
+				<path class="o1" d="M72.5 33.4A140 140 0 0 1 75.9 31.2L98.1 66.8A98 98 0 0 0 95.8 68.4Z" />
+				<path class="o1" d="M75.9 31.2A140 140 0 0 1 79.3 29.1L100.5 65.4A98 98 0 0 0 98.1 66.8Z" />
+				<path
+					class="o1"
+					d="M79.3 29.1A140 140 0 0 1 82.8 27.2L103.0 64.0A98 98 0 0 0 100.5 65.4Z"
+				/>
+				<path
+					class="o1"
+					d="M82.8 27.2A140 140 0 0 1 86.4 25.3L105.5 62.7A98 98 0 0 0 103.0 64.0Z"
+				/>
+				<path
+					class="o1"
+					d="M86.4 25.3A140 140 0 0 1 90.0 23.5L108.0 61.5A98 98 0 0 0 105.5 62.7Z"
+				/>
+				<path
+					class="s0"
+					d="M109.3 64.2A95 95 0 0 1 116.4 61.1L135.9 112.6A40 40 0 0 0 132.9 113.9Z"
+				/>
+				<path
+					class="o0"
+					d="M90.0 23.5A140 140 0 0 1 92.1 22.5L109.5 60.8A98 98 0 0 0 108.0 61.5Z"
+				/>
+				<path
+					class="o0"
+					d="M92.1 22.5A140 140 0 0 1 94.2 21.6L110.9 60.1A98 98 0 0 0 109.5 60.8Z"
+				/>
+				<path
+					class="o0"
+					d="M94.2 21.6A140 140 0 0 1 96.3 20.7L112.4 59.5A98 98 0 0 0 110.9 60.1Z"
+				/>
+				<path
+					class="o0"
+					d="M96.3 20.7A140 140 0 0 1 98.4 19.9L113.9 58.9A98 98 0 0 0 112.4 59.5Z"
+				/>
+				<path
+					class="o0"
+					d="M98.4 19.9A140 140 0 0 1 100.5 19.0L115.4 58.3A98 98 0 0 0 113.9 58.9Z"
+				/>
+				<path
+					class="s1"
+					d="M116.4 61.1A95 95 0 0 1 123.8 58.7L139.0 111.5A40 40 0 0 0 135.9 112.6Z"
+				/>
+				<path
+					class="o1"
+					d="M100.5 19.0A140 140 0 0 1 103.2 18.0L117.3 57.6A98 98 0 0 0 115.4 58.3Z"
+				/>
+				<path
+					class="o1"
+					d="M103.2 18.0A140 140 0 0 1 106.0 17.1L119.2 57.0A98 98 0 0 0 117.3 57.6Z"
+				/>
+				<path
+					class="o1"
+					d="M106.0 17.1A140 140 0 0 1 108.7 16.2L121.1 56.4A98 98 0 0 0 119.2 57.0Z"
+				/>
+				<path
+					class="o1"
+					d="M108.7 16.2A140 140 0 0 1 111.4 15.4L123.0 55.8A98 98 0 0 0 121.1 56.4Z"
+				/>
+				<path
+					class="s0"
+					d="M123.8 58.7A95 95 0 0 1 130.7 57.0L141.9 110.8A40 40 0 0 0 139.0 111.5Z"
+				/>
+				<path
+					class="o0"
+					d="M111.4 15.4A140 140 0 0 1 113.9 14.7L124.8 55.3A98 98 0 0 0 123.0 55.8Z"
+				/>
+				<path
+					class="o0"
+					d="M113.9 14.7A140 140 0 0 1 116.5 14.1L126.5 54.9A98 98 0 0 0 124.8 55.3Z"
+				/>
+				<path
+					class="o0"
+					d="M116.5 14.1A140 140 0 0 1 119.0 13.5L128.3 54.4A98 98 0 0 0 126.5 54.9Z"
+				/>
+				<path
+					class="o0"
+					d="M119.0 13.5A140 140 0 0 1 121.5 12.9L130.1 54.0A98 98 0 0 0 128.3 54.4Z"
+				/>
+				<path
+					class="s1"
+					d="M130.7 57.0A95 95 0 0 1 136.9 55.9L144.5 110.4A40 40 0 0 0 141.9 110.8Z"
+				/>
+				<path
+					class="o1"
+					d="M121.5 12.9A140 140 0 0 1 124.6 12.3L132.2 53.6A98 98 0 0 0 130.1 54.0Z"
+				/>
+				<path
+					class="o1"
+					d="M124.6 12.3A140 140 0 0 1 127.6 11.8L134.3 53.3A98 98 0 0 0 132.2 53.6Z"
+				/>
+				<path
+					class="o1"
+					d="M127.6 11.8A140 140 0 0 1 130.7 11.3L136.5 52.9A98 98 0 0 0 134.3 53.3Z"
+				/>
+				<path
+					class="s0"
+					d="M136.9 55.9A95 95 0 0 1 143.2 55.2L147.1 110.1A40 40 0 0 0 144.5 110.4Z"
+				/>
+				<path
+					class="o0"
+					d="M130.7 11.3A140 140 0 0 1 133.0 11.0L138.1 52.7A98 98 0 0 0 136.5 52.9Z"
+				/>
+				<path
+					class="o0"
+					d="M133.0 11.0A140 140 0 0 1 135.3 10.8L139.7 52.5A98 98 0 0 0 138.1 52.7Z"
+				/>
+				<path
+					class="o0"
+					d="M135.3 10.8A140 140 0 0 1 137.6 10.5L141.4 52.4A98 98 0 0 0 139.7 52.5Z"
+				/>
+				<path
+					class="o0"
+					d="M137.6 10.5A140 140 0 0 1 140.0 10.4L143.0 52.3A98 98 0 0 0 141.4 52.4Z"
+				/>
+				<path
+					class="s1"
+					d="M143.2 55.2A95 95 0 0 1 149.5 55.0L149.8 110.0A40 40 0 0 0 147.1 110.1Z"
+				/>
+				<path
+					class="o1"
+					d="M140.0 10.4A140 140 0 0 1 142.3 10.2L144.6 52.1A98 98 0 0 0 143.0 52.3Z"
+				/>
+				<path
+					class="o1"
+					d="M142.3 10.2A140 140 0 0 1 144.6 10.1L146.2 52.1A98 98 0 0 0 144.6 52.1Z"
+				/>
+				<path
+					class="o1"
+					d="M144.6 10.1A140 140 0 0 1 147.0 10.0L147.9 52.0A98 98 0 0 0 146.2 52.1Z"
+				/>
+				<path
+					class="o1"
+					d="M147.0 10.0A140 140 0 0 1 149.3 10.0L149.5 52.0A98 98 0 0 0 147.9 52.0Z"
+				/>
+				<path
+					class="s0"
+					d="M149.5 55.0A95 95 0 0 1 150.0 55.0L150.0 110.0A40 40 0 0 0 149.8 110.0Z"
+				/>
+				<path
+					class="o0"
+					d="M149.3 10.0A140 140 0 0 1 149.4 10.0L149.6 52.0A98 98 0 0 0 149.5 52.0Z"
+				/>
+				<path
+					class="o0"
+					d="M149.4 10.0A140 140 0 0 1 149.6 10.0L149.7 52.0A98 98 0 0 0 149.6 52.0Z"
+				/>
+				<path
+					class="o0"
+					d="M149.6 10.0A140 140 0 0 1 149.7 10.0L149.8 52.0A98 98 0 0 0 149.7 52.0Z"
+				/>
+				<path
+					class="o0"
+					d="M149.7 10.0A140 140 0 0 1 149.9 10.0L149.9 52.0A98 98 0 0 0 149.8 52.0Z"
+				/>
+				<path
+					class="o0"
+					d="M149.9 10.0A140 140 0 0 1 150.0 10.0L150.0 52.0A98 98 0 0 0 149.9 52.0Z"
+				/>
+
+				<circle class="centre" cx="150" cy="150" r="38" />
+				<text class="centre-t" x="150" y="150">2 454</text>
+			</svg>
+			<figcaption>
+				<b>Roue complète.</b> Au centre, les 17 branches, à la taille de leur nombre de questions.
+				Autour, les 129 notions. La plus petite part fait 0,06° : on ne la voit pas.
+			</figcaption>
+		</figure>
+		<figure>
+			<svg
+				class="roue"
+				viewBox="0 0 300 300"
+				role="img"
+				aria-label="Roue zoomée sur Géométrie : 14 notions"
+			>
+				<path
+					class="s0"
+					d="M150.0 10.0A140 140 0 0 1 289.8 142.6L204.9 147.1A55 55 0 0 0 150.0 95.0Z"
+				/>
+				<text x="217.4" y="78.9">Figures planes</text>
+				<path
+					class="s1"
+					d="M289.8 142.6A140 140 0 0 1 250.5 247.4L189.5 188.3A55 55 0 0 0 204.9 147.1Z"
+				/>
+				<text x="241.8" y="184.4">Géométrie repérée</text>
+				<path
+					class="s0"
+					d="M250.5 247.4A140 140 0 0 1 153.0 290.0L151.2 205.0A55 55 0 0 0 189.5 188.3Z"
+				/>
+				<text x="189.2" y="239.8">Orthogonalité…</text>
+				<path
+					class="s1"
+					d="M153.0 290.0A140 140 0 0 1 64.9 261.1L116.6 193.7A55 55 0 0 0 151.2 205.0Z"
+				/>
+				<text x="119.5" y="243.1">Vecteurs</text>
+				<path
+					class="s0"
+					d="M64.9 261.1A140 140 0 0 1 14.8 186.5L96.9 164.3A55 55 0 0 0 116.6 193.7Z"
+				/>
+				<text x="68.6" y="204.6">Produit scalaire</text>
+				<path
+					class="s1"
+					d="M14.8 186.5A140 140 0 0 1 17.4 105.1L97.9 132.3A55 55 0 0 0 96.9 164.3Z"
+				/>
+				<text x="52.0" y="146.9">Solides</text>
+				<path
+					class="s0"
+					d="M17.4 105.1A140 140 0 0 1 55.8 46.4L113.0 109.3A55 55 0 0 0 97.9 132.3Z"
+				/>
+				<text x="68.0" y="96.3">Espace</text>
+				<path
+					class="s1"
+					d="M55.8 46.4A140 140 0 0 1 87.4 24.8L125.4 100.8A55 55 0 0 0 113.0 109.3Z"
+				/>
+				<path
+					class="s0"
+					d="M87.4 24.8A140 140 0 0 1 103.7 17.9L131.8 98.1A55 55 0 0 0 125.4 100.8Z"
+				/>
+				<path
+					class="s1"
+					d="M103.7 17.9A140 140 0 0 1 117.8 13.7L137.4 96.5A55 55 0 0 0 131.8 98.1Z"
+				/>
+				<path
+					class="s0"
+					d="M117.8 13.7A140 140 0 0 1 126.5 12.0L140.8 95.8A55 55 0 0 0 137.4 96.5Z"
+				/>
+				<path
+					class="s1"
+					d="M126.5 12.0A140 140 0 0 1 135.3 10.8L144.2 95.3A55 55 0 0 0 140.8 95.8Z"
+				/>
+				<path
+					class="s0"
+					d="M135.3 10.8A140 140 0 0 1 144.1 10.1L147.7 95.0A55 55 0 0 0 144.2 95.3Z"
+				/>
+				<path
+					class="s1"
+					d="M144.1 10.1A140 140 0 0 1 150.0 10.0L150.0 95.0A55 55 0 0 0 147.7 95.0Z"
+				/>
+
+				<circle class="centre" cx="150" cy="150" r="53" />
+				<text class="centre-t" x="150" y="146">Géométrie</text>
+				<text class="centre-t" x="150" y="160">‹ retour</text>
+			</svg>
+			<figcaption>
+				<b>Après un clic sur Géométrie.</b> Les 14 notions qui ont des questions. Sur un téléphone
+				(roue de 300 px), Figures planes a 228 px de bord, mais Thalès 16 px et Pythagore 9 px.
+			</figcaption>
+		</figure>
+	</div>
+	<div class="verdict">
+		<div class="plus">
+			<h4>Ce qui marche</h4>
+			<ul>
+				<li>
+					On voit d'un coup d'œil où est la matière : Nombres et calculs fait un tiers du cercle.
+				</li>
+				<li>C'est ludique, dans le ton de Chiphre, et ça donne envie d'explorer.</li>
+				<li>Un clic qui zoome, un clic au centre pour remonter : facile à comprendre.</li>
+			</ul>
+		</div>
+		<div class="moins">
+			<h4>Ce qui coince</h4>
+			<ul>
+				<li>
+					<b>Les petites parts sont les notions du collège.</b> Avec des parts à la taille du nombre
+					de questions, Pythagore et Thalès sont écrasés par le lycée. Il faudrait des parts égales,
+					donc perdre l'intérêt de la roue.
+				</li>
+				<li>
+					<b>Les noms ne tiennent pas.</b> « Orthogonalité et distances dans l'espace » dans une
+					part : nom coupé, ou caché dans une bulle qu'on ne voit pas au doigt.
+				</li>
+				<li>
+					<b>Deux étages au plus.</b> Sous-notions et points du programme n'y entrent pas : il faut
+					de toute façon une liste ensuite.
+				</li>
+				<li>Au clavier et au lecteur d'écran, une roue se parcourt mal.</li>
+			</ul>
+		</div>
+	</div>
+	<p class="prose">
+		<b>Mon avis :</b> une belle <b>vue d'ensemble</b>, un seul anneau, sur ordinateur, en entrée de
+		page (« d'où viennent les 2 454 questions »). Pas l'outil principal pour choisir.
+	</p>
+
+	<h3>L'arbre du programme, comme dans la page Programme</h3>
+	<p class="prose">
+		Mesure :
+		<b>les 2 762 points du programme, tous niveaux, désignent chacun une notion de l'arbre</b>.
+		Presque tous ont déjà des questions publiées (exception : Terminale expertes, 13 points sur
+		176). On peut donc proposer au prof de parcourir <b>le programme de sa classe</b>, point par
+		point, au lieu de l'arbre des notions.
+	</p>
+	<div class="devices">
+		<div>
+			<p class="device-label">
+				Ordinateur : le programme de 4e à gauche, les questions du point à droite
+			</p>
+			<div class="device" aria-label="Maquette par le programme">
+				<div class="bar">
+					<div class="switch"><span>Par thème</span><span class="on">Programme de 4e</span></div>
+					<div class="search">⌕ Chercher dans le programme de 4e<kbd>/</kbd></div>
+				</div>
+				<div class="desk prog-desk">
+					<div class="side prog">
+						<div class="b closed">Nombres et calculs <span class="count">22 points</span></div>
+						<div class="b">Algèbre <span class="count">11 points</span></div>
+						<div class="n">Calcul littéral</div>
+						<div class="pt">
+							<span class="code">4-021</span><span>Formules : nombres pairs, impairs</span
+							><span class="count">3</span>
+						</div>
+						<div class="pt on">
+							<span class="code">4-022</span><span>Distributivité simple pour développer</span
+							><span class="count">2</span>
+						</div>
+						<div class="pt">
+							<span class="code">4-070</span><span>Distributivité simple pour factoriser</span
+							><span class="count">6</span>
+						</div>
+						<div class="n">Équations</div>
+						<div class="pt">
+							<span class="code">4-024</span><span>Résoudre ax + b = c</span
+							><span class="count">12</span>
+						</div>
+						<div class="pt">
+							<span class="code">4-025</span><span>Résoudre ax + b = cx + d</span
+							><span class="count">3</span>
+						</div>
+						<div class="b closed">Géométrie</div>
+						<div class="b closed">…</div>
+					</div>
+					<div class="main">
+						<div class="crumb">Programme de 4e › Algèbre › <b>4-022</b></div>
+						<p style="margin: 0 0 8px">
+							« Connaître et utiliser la distributivité simple pour développer une expression
+							algébrique. »
+						</p>
+						<div class="cards">
+							<div class="card">
+								<span class="add in">✓</span>
+								<div class="t">Simple distributivité</div>
+								<div class="d">Facteur positif</div>
+								<div class="q">3(x + 2) = ?</div>
+							</div>
+							<div class="card">
+								<span class="add">+</span>
+								<div class="t">Simple distributivité</div>
+								<div class="d">Facteur négatif</div>
+								<div class="q">−2(x − 4) = ?</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<p class="note">
+				Les codes et les intitulés de points sont ceux de la prod, raccourcis pour la maquette. Les
+				deux questions à droite sont inventées.
+			</p>
+		</div>
+		<div class="phone">
+			<p class="device-label">Téléphone : le même arbre, en liste verticale</p>
+			<div class="device">
+				<div class="ph">
+					<div class="bar">
+						<div class="switch"><span>Par thème</span><span class="on">Programme 4e</span></div>
+					</div>
+					<div class="scroll prog">
+						<div class="b">‹ Algèbre · Calcul littéral</div>
+						<div class="pt">
+							<span class="code">4-021</span
+							><span>Produire des formules : nombres pairs/impairs (2n)</span
+							><span class="count">3</span>
+						</div>
+						<div class="pt on">
+							<span class="code">4-022</span><span>Distributivité simple pour développer</span
+							><span class="count">2</span>
+						</div>
+						<div class="pt">
+							<span class="code">4-070</span><span>Distributivité simple pour factoriser</span
+							><span class="count">6</span>
+						</div>
+						<div class="pt">
+							<span class="code">4-023</span><span>Calcul algébrique pour démontrer</span
+							><span class="count">3</span>
+						</div>
+						<div class="sec">4-022 · 2 questions</div>
+						<div class="card">
+							<span class="add in">✓</span>
+							<div class="t">Simple distributivité</div>
+							<div class="q">3(x + 2) = ?</div>
+						</div>
+					</div>
+					<div class="bottom"><span>3 questions</span><b>Voir la série →</b></div>
+				</div>
+			</div>
+			<p class="note">
+				La carte mentale de la page Programme se lit de gauche à droite sur quatre colonnes : sur
+				téléphone, elle défile de côté. Ici, le même arbre se lit de haut en bas.
+			</p>
+		</div>
+	</div>
+	<div class="verdict">
+		<div class="plus">
+			<h4>Ce qui marche</h4>
+			<ul>
+				<li>
+					Le prof pense en programme : « cette semaine, 4-024 ». Il retrouve les mots du BO, qu'il
+					connaît, au lieu d'un classement qu'il doit apprendre.
+				</li>
+				<li>Même arbre que la page Programme : un seul modèle mental dans tout Chiphre.</li>
+				<li>
+					Les intitulés longs passent à la ligne dans une liste ; ils ne passeraient pas dans une
+					roue.
+				</li>
+				<li>Les points sans question se voient (compteur à 0) : utile pour toi aussi.</li>
+			</ul>
+		</div>
+		<div class="moins">
+			<h4>Ce qui coince</h4>
+			<ul>
+				<li>
+					<b>Plusieurs points partagent une notion</b>, donc les mêmes questions. En 4e, 4-021,
+					4-075 et 4-023 désignent tous « Calcul littéral » : les trois mêmes questions reviennent
+					trois fois.
+				</li>
+				<li>
+					<b>Un point posé sur une notion</b> (pas sur une sous-notion) : faut-il montrer les
+					questions des sous-notions ? Exemple : 4-003 « enchaînement d'opérations avec des relatifs
+					» n'a aucune question sur la notion elle-même.
+				</li>
+				<li>Sans niveau choisi, cette vue n'existe pas : il faut le niveau d'abord.</li>
+			</ul>
+		</div>
+	</div>
+	<p class="prose">
+		<b>Mon avis :</b> c'est la meilleure des deux pistes. Je la vois
+		<b>comme deuxième façon de parcourir</b>, proposée dès qu'un niveau est choisi (bascule « Par
+		thème · Programme de 4e »). La colonne de gauche de ma première maquette prend alors l'étage des
+		points.
+	</p>
+
+	<h2>Ce que tu dois trancher</h2>
+	<ol class="q prose">
+		<li>
+			<b>Par où commence-t-on : la recherche ou l'arbre ?</b>
+			<span class="ex"
+				>Exemple : un prof arrive sur la page. Soit le champ « Chercher » a le curseur et la liste
+				des thèmes est à côté (proposé), soit on garde l'arbre en premier et la recherche est une
+				loupe dans un coin.</span
+			>
+		</li>
+		<li>
+			<b>Le niveau devient-il une étape obligatoire ?</b>
+			<span class="ex"
+				>Exemple : à la première visite, « Pour quelle classe ? 6e · 5e · 4e… » avant de montrer
+				quoi que ce soit, puis retenu. Ou bien « Tous les niveaux » par défaut, comme
+				aujourd'hui.</span
+			>
+		</li>
+		<li>
+			<b>La série en cours : colonne fixe à droite, ou panneau qu'on ouvre ?</b>
+			<span class="ex"
+				>Exemple : sur ton écran d'ordinateur, voir en permanence les 7 questions déjà choisies
+				(mais deux cartes par ligne au lieu de trois), ou un bouton « Ma série · 7 » qui ouvre la
+				liste.</span
+			>
+		</li>
+		<li>
+			<b>Les sous-notions : toutes dépliées en sections, ou une seule à la fois ?</b>
+			<span class="ex"
+				>Exemple : dans « Calcul littéral », voir Réduire, Développer, Factoriser à la suite en
+				faisant défiler (proposé), ou cliquer « Développer » pour ne voir que ses 12 cartes.</span
+			>
+		</li>
+		<li>
+			<b>Une carte plus basse pour les énoncés courts ?</b>
+			<span class="ex"
+				>La tuile reste la flash-card. Question : garder la hauteur fixe de 12 rem (grille
+				régulière) ou laisser « 3x + 5x = ? » prendre deux fois moins de place.</span
+			>
+		</li>
+		<li>
+			<b
+				>Parcourir par le programme : en plus de l’arbre des notions, à sa place, ou pas du tout
+				?</b
+			>
+			<span class="ex"
+				>Exemple : un prof choisit « 4e ». Soit il voit tout de suite le programme de 4e (4-001,
+				4-002…), soit il garde Algèbre › Calcul littéral et bascule s’il veut.</span
+			>
+		</li>
+		<li>
+			<b>Points qui partagent une notion : montrer les questions à chaque point, ou une fois ?</b>
+			<span class="ex"
+				>Exemple : 4-021, 4-075 et 4-023 désignent « Calcul littéral ». Ses trois questions
+				apparaissent sous les trois points, ou sous le premier seulement avec un renvoi.</span
+			>
+		</li>
+		<li><b>La roue : en vue d’ensemble sur ordinateur, ou on l’abandonne ?</b></li>
+	</ol>
+
+	<h2>Découpage possible en PR</h2>
+	<ol class="prose">
+		<li>
+			<b>Correctifs immédiats</b> : bouton du panier qui ne cache plus rien et ne clignote plus,
+			retrait depuis la grille, notion gardée dans l'adresse.
+		</li>
+		<li>
+			<b>Recherche</b> : champ, normalisation des accents, résultats groupés par notion, touche « /
+			».
+		</li>
+		<li>
+			<b>Navigation</b> : liste des thèmes à compteurs (colonne / panneau du bas), pastilles des
+			sous-notions, sections dépliées avec aperçus calculés à l'approche.
+		</li>
+		<li><b>Série en cours</b> visible selon la taille d'écran.</li>
+	</ol>
+	<p class="note prose">
+		Chaque lot se teste seul ; le premier ne dépend d'aucune réponse ci-dessus.
+	</p>
+
+	<h2>Sources</h2>
+	<ul class="src prose">
+		<li>
+			<a href="https://www.nngroup.com/articles/filters-vs-facets/">NN/g : Filters vs. Facets</a>
+		</li>
+		<li>
+			<a href="https://baymard.com/blog/how-to-design-applied-filters"
+				>Baymard : How to design applied filters</a
+			>
+			· <a href="https://baymard.com/blog/ecommerce-filter-ui">Ecommerce filter UI</a> ·
+			<a href="https://baymard.com/guidelines/2572-applied-filters-on-mobile"
+				>Applied filters on mobile</a
+			>
+		</li>
+		<li>
+			<a href="https://cxl.com/blog/tabbed-navigation/">CXL : Tabbed navigation</a> (citation de
+			Jakob Nielsen sur les onglets à plusieurs rangées)
+		</li>
+		<li>
+			<a href="https://spectrum.adobe.com/page/tabs">Adobe Spectrum : Tabs</a> ·
+			<a href="https://ux.redhat.com/elements/tabs/guidelines/">Red Hat Design System : Tabs</a>
+		</li>
+		<li>
+			<a href="https://blog.ixl.com/2024/09/24/how-to-find-ixl-skills-for-your-child-to-work-on/"
+				>IXL : trouver une compétence</a
+			>
+			(vue par niveau, recherche)
+		</li>
+		<li>
+			<a href="https://www.saasframe.io/blog/saas-search-modal-ux-examples"
+				>SaaSFrame : exemples de palettes de recherche</a
+			>
+		</li>
+	</ul>
+</div>

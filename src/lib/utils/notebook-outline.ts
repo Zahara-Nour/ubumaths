@@ -15,7 +15,7 @@
  * heading line itself).
  */
 
-import type { NotebookCell } from '$lib/types/notebook';
+import type { NotebookCell } from '#lib/types/notebook.ts';
 
 export interface OutlineEntry {
 	cellId: string;

@@ -19,10 +19,11 @@
 	@see ParagraphNode.svelte for similar inline rendering
 -->
 <script lang="ts">
-	import { sanitizeUrl } from '$lib/utils/sanitize';
-	import type { InlineNode } from '$lib/ubumark';
-	import type { ExerciseHint } from '$lib/exercises/types';
+	import { sanitizeUrl } from '#lib/utils/sanitize-url.ts';
+	import type { InlineNode } from '#lib/ubumark/index.ts';
+	import type { ExerciseHint } from '#lib/exercises/types.ts';
 	import MathInline from './MathInline.svelte';
+	import InlineColor from './InlineColor.svelte';
 	import TextNode from './TextNode.svelte';
 	import HintReference from './HintReference.svelte';
 
@@ -106,14 +107,18 @@
 				bold={child.bold}
 				italic={child.italic}
 				code={child.code}
+				color={child.color}
+				unknownClasses={child.unknownClasses}
 				terms={child.terms}
 				termOffset={adjusted.hasLeadingSpace ? 1 : 0}
 			/>{#if adjusted.hasTrailingSpace}&ensp;{/if}
 		{:else if child.type === 'math-inline'}
-			{#key child.expression}<MathInline
-					expression={child.expression}
-					syntax={child.syntax}
-				/>{/key}
+			<InlineColor color={child.color}
+				>{#key child.expression}<MathInline
+						expression={child.expression}
+						syntax={child.syntax}
+					/>{/key}</InlineColor
+			>
 		{:else if child.type === 'link'}
 			<a
 				href={sanitizeUrl(child.url)}

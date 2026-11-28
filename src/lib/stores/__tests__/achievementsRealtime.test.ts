@@ -14,7 +14,7 @@
 
 import { describe, it, expect, beforeEach, afterEach, vi, type Mock } from 'vitest';
 import type { SupabaseClient, RealtimeChannel } from '@supabase/supabase-js';
-import type { Database } from '$lib/types/database';
+import type { Database } from '#lib/types/database.ts';
 
 // ============================================================================
 // MOCKS - Using vi.hoisted() for proper hoisting
@@ -61,7 +61,7 @@ const {
 });
 
 // Mock supabaseRealtimeManager
-vi.mock('$lib/stores/supabaseRealtime.svelte', () => ({
+vi.mock('#lib/stores/supabaseRealtime.svelte.ts', () => ({
 	supabaseRealtimeManager: {
 		createChannel: mockCreateChannel,
 		subscribeChannel: mockSubscribeChannel,
@@ -71,7 +71,7 @@ vi.mock('$lib/stores/supabaseRealtime.svelte', () => ({
 }));
 
 // Mock achievementsStore
-vi.mock('$lib/stores/achievements.svelte', () => ({
+vi.mock('#lib/stores/achievements.svelte.ts', () => ({
 	achievementsStore: {
 		showUnlockToast: mockShowUnlockToast,
 		clearCache: mockClearCache,
@@ -80,7 +80,7 @@ vi.mock('$lib/stores/achievements.svelte', () => ({
 }));
 
 // Mock browser environment
-vi.mock('$app/environment', () => ({
+vi.mock('$app/env', () => ({
 	browser: true,
 	building: false,
 	dev: true,
@@ -88,7 +88,7 @@ vi.mock('$app/environment', () => ({
 }));
 
 // Mock logger
-vi.mock('$lib/utils/logger', () => ({
+vi.mock('#lib/utils/logger.ts', () => ({
 	createLogger: () => ({
 		info: vi.fn(),
 		warn: vi.fn(),

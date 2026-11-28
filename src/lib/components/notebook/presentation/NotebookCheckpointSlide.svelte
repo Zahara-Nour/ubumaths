@@ -10,9 +10,9 @@
 	we want the cell fully visible, just sized to fit the slide.
 -->
 <script lang="ts">
-	import type { CheckpointCell as CheckpointCellType } from '$lib/types/notebook';
-	import type { NotebookStore } from '$lib/stores/notebookStore.svelte';
-	import CheckpointCell from '$lib/components/notebook/CheckpointCell.svelte';
+	import type { CheckpointCell as CheckpointCellType } from '#lib/types/notebook.ts';
+	import type { NotebookStore } from '#lib/stores/notebookStore.svelte.ts';
+	import CheckpointCell from '#lib/components/notebook/CheckpointCell.svelte';
 
 	interface Props {
 		cell: CheckpointCellType;

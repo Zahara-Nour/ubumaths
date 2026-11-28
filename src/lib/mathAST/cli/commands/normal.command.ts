@@ -5,7 +5,7 @@
  * Shows numerator/denominator polynomials with their terms, coefficients, and monomials.
  */
 
-import chalk from 'chalk';
+import { colors } from '../core/terminal-colors';
 import { BaseCommand } from './base-command';
 import type { CommandContext, CommandResult } from '../types';
 import {
@@ -27,17 +27,17 @@ import { toCustom } from '../../custom-generator';
  */
 function formatTerm(term: NormalTerm, index: number): string[] {
 	const lines: string[] = [];
-	const prefix = chalk.dim(`  Term ${index + 1}:`);
+	const prefix = colors.dim(`  Term ${index + 1}:`);
 
 	// Coefficient
 	const coeffStr = algebraicToString(term.coefficient);
 
 	// Monomial
 	const monomialStr =
-		term.monomial.length === 0 ? chalk.dim('[1]') : monomialToString(term.monomial);
+		term.monomial.length === 0 ? colors.dim('[1]') : monomialToString(term.monomial);
 
 	lines.push(
-		`${prefix} coefficient=${chalk.yellow(coeffStr)}, monomial=${chalk.blue(monomialStr)}`
+		`${prefix} coefficient=${colors.yellow(coeffStr)}, monomial=${colors.blue(monomialStr)}`
 	);
 
 	return lines;
@@ -50,7 +50,7 @@ function formatPolynomial(terms: readonly NormalTerm[], label: string): string[]
 	const lines: string[] = [];
 
 	if (terms.length === 0) {
-		lines.push(`  ${label}: ${chalk.dim('[0]')}`);
+		lines.push(`  ${label}: ${colors.dim('[0]')}`);
 		return lines;
 	}
 
@@ -63,7 +63,7 @@ function formatPolynomial(terms: readonly NormalTerm[], label: string): string[]
 		terms[0].coefficient.terms[0].rational.n === 1n &&
 		terms[0].coefficient.terms[0].rational.d === 1n
 	) {
-		lines.push(`  ${label}: ${chalk.dim('[1]')}`);
+		lines.push(`  ${label}: ${colors.dim('[1]')}`);
 		return lines;
 	}
 
@@ -81,7 +81,7 @@ function formatPolynomial(terms: readonly NormalTerm[], label: string): string[]
 function formatNormalForm(form: NormalForm): string[] {
 	const lines: string[] = [];
 
-	lines.push(chalk.bold('NormalForm:'));
+	lines.push(colors.bold('NormalForm:'));
 	lines.push(...formatPolynomial(form.numerator, 'Numerator'));
 	lines.push(...formatPolynomial(form.denominator, 'Denominator'));
 
@@ -140,8 +140,8 @@ export class NormalCommand extends BaseCommand {
 			const lines = [
 				...structureLines,
 				'',
-				chalk.dim('Simplified:') + ' ' + chalk.magenta(simplifiedExpr),
-				chalk.dim('Hash:') + '       ' + chalk.cyan(hash)
+				colors.dim('Simplified:') + ' ' + colors.magenta(simplifiedExpr),
+				colors.dim('Hash:') + '       ' + colors.cyan(hash)
 			];
 
 			return {

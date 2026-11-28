@@ -4,14 +4,14 @@
 	Spec : docs/archive/wip/srs-anti-fraud-spec-tdd.md §B9
 -->
 <script lang="ts">
-	import { lore } from '$lib/config/lore';
-	import { Skeleton } from '$lib/components/ui/skeleton';
-	import { Badge } from '$lib/components/ui/badge';
-	import { Button } from '$lib/components/ui/button';
-	import * as Card from '$lib/components/ui/card';
+	import { lore } from '#lib/config/lore.ts';
+	import { Skeleton } from '#lib/components/ui/skeleton/index.ts';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import * as Card from '#lib/components/ui/card/index.ts';
 	import { CircleAlert, AlertTriangle, ShieldCheck, Eye } from '@lucide/svelte';
 	import FlagDetailsDialog from './FlagDetailsDialog.svelte';
-	import { toaster } from '$lib/stores/toaster.svelte';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
 	import { SvelteSet } from 'svelte/reactivity';
 
 	interface FlagListItem {

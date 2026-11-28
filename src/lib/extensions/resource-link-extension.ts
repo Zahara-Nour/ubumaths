@@ -19,20 +19,23 @@
  * is computed with `match[0].slice(char.length)`. That last line only makes sense
  * for multi-character triggers.
  *
- * @see $lib/resources/registry for how the inserted link is later resolved
+ * @see #lib/resources/registry for how the inserted link is later resolved
  */
 
 import { Extension } from '@tiptap/core';
 import Suggestion from '@tiptap/suggestion';
 import { PluginKey } from '@tiptap/pm/state';
-import { createSuggestionRenderer, type SuggestionItem } from '$lib/extensions/suggestion-renderer';
-import { RESOURCE_KINDS, isResourceKind, type ResourceKind } from '$lib/resources/kinds';
-import { parseResourceQuery, prefixHint } from '$lib/resources/prefixes';
+import {
+	createSuggestionRenderer,
+	type SuggestionItem
+} from '#lib/extensions/suggestion-renderer.ts';
+import { RESOURCE_KINDS, isResourceKind, type ResourceKind } from '#lib/resources/kinds.ts';
+import { parseResourceQuery, prefixHint } from '#lib/resources/prefixes.ts';
 import {
 	parseExerciseSelection,
 	formatExerciseSelection,
 	describeExerciseSelection
-} from '$lib/resources/exercise-selection';
+} from '#lib/resources/exercise-selection.ts';
 
 // ============================================================================
 // TYPES
@@ -232,7 +235,7 @@ function groupByKind(rows: SearchResult[]): SearchEntry[] {
  * numéro, `[[exos:derivees#3]]` désigne l'EXERCICE, et lui apporte ses points.
  *
  * Le numéro est celui que l'élève lit sur sa fiche : c'est le serveur qui le
- * traduit, avec la règle partagée de `$lib/worksheets/exercise-numbering`.
+ * traduit, avec la règle partagée de `#lib/worksheets/exercise-numbering.ts`.
  *
  * En cas d'échec — numéro hors de la fiche, réseau — on retombe sur la
  * référence à la fiche. Un lien juste mais moins précis vaut mieux qu'un lien

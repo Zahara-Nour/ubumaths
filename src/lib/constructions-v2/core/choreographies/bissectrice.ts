@@ -25,9 +25,9 @@ import {
 	type SubStep,
 	type TraceTag
 } from './types';
-import { isAngle, isLine, isRay, isSegment } from '$lib/geometry-core/types/elements';
-import type { Figure } from '$lib/geometry-core/graph/figure';
-import { geoToNumber } from '$lib/geometry-core/compute/to-number';
+import { isAngle, isLine, isRay, isSegment } from '#lib/geometry-core/types/elements.ts';
+import type { Figure } from '#lib/geometry-core/graph/figure.ts';
+import { geoToNumber } from '#lib/geometry-core/compute/to-number.ts';
 import { de, droite, en, labelAux, nom, role } from './names';
 import { PROTRACTOR_RADIUS } from '../../constants';
 
@@ -1049,7 +1049,7 @@ function buildRapporteur(ctx: Parameters<ChoreographyFn>[0]): ChoreographyResult
 			: `l’angle : ${formatDeg(read)}°`;
 	const subSteps: SubStep[] = [
 		{
-			kind: 'compass-measure',
+			kind: 'instrument-move',
 			instrument: 'protractor',
 			instrumentTarget: { x: V.x, y: V.y, rotation },
 			compassRadius: 0,
@@ -1060,7 +1060,7 @@ function buildRapporteur(ctx: Parameters<ChoreographyFn>[0]): ChoreographyResult
 			instruction: `On place le centre du rapporteur sur ${nom(nV)}, le 0 sur ${side}, et on lit ${reading}`
 		},
 		{
-			kind: 'compass-measure',
+			kind: 'instrument-move',
 			instrument: 'pencil',
 			secondaryInstrument: 'protractor',
 			instrumentTarget: {

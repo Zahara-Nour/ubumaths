@@ -1,0 +1,181 @@
+{
+	"id": "216555e7-9f28-4992-b0f4-416bc418e7da",
+	"title": "Tracer la représentation graphique d'une fonction affine",
+	"description": "Placer deux points de la droite y = ax + b : coefficient entier, puis fractionnaire, puis coût fixe + coût par séance",
+	"grades": ["1_GEN"],
+	"level": 1,
+	"delay": 60,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true
+	},
+	"variations": [
+		{
+			"statement": "On considère la fonction affine $f$ définie par $f(x)={{a}}x{{b;+}}$.\n\nTrace sa représentation graphique : place deux de ses points.\n\n```courbe\nx: -6 ; 6\ny: -6 ; 6\ngrille: 1 ; 1\ntracer: y = {{a}}x + {{b}}\ntaille: moyenne\ndescription: Repère gradué de 1 en 1, de −6 à 6 sur les deux axes.\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..3;±"
+				},
+				{
+					"name": "b",
+					"expression": "-4..4"
+				}
+			],
+			"conditions": ["abs((a)+(b)) <= 6", "abs((b)-(a)) <= 6"],
+			"correction": {
+				"steps": [
+					"La représentation graphique de $f:x\\mapsto ax+b$ est la droite d'équation $y=ax+b$. Pour la tracer, on place deux de ses points : $(0\\,;b)$ sur l'axe des ordonnées, puis un deuxième en avançant en abscisse.",
+					"```courbe\nx: -6 ; 6\ny: -6 ; 6\ngrille: 1 ; 1\nf(x) = ({{a}})*x+({{b}})   bleu   nom=\\mathcal{C}_f\npoints: A(0 ; {{b}}), B(1 ; {{eval:(a)+(b)}})\ntaille: moyenne\ndescription: Droite représentant f et deux de ses points, A et B, d'abscisses 0 et 1.\n```",
+					"Ici $f(0)={{b}}$ donne $A(0\\,;{{b}})$, et $f(1)={{eval:(a)+(b)}}$ donne $B(1\\,;{{eval:(a)+(b)}})$ : en avançant de $1$, on {{if:a>0|monte|descend}} de ${{eval:abs(a)}}$."
+				]
+			}
+		},
+		{
+			"statement": "On considère la fonction affine $f$ définie par $f(x)={{if:n<0|-}}\\dfrac{ {{eval:abs(n)}} }{ {{q}} }x{{b;+}}$.\n\nTrace sa représentation graphique : place deux de ses points.\n\n```courbe\nx: -6 ; 6\ny: -6 ; 6\ngrille: 1 ; 1\ntracer: y = {{n}}/{{q}}x + {{b}}\ntaille: moyenne\ndescription: Repère gradué de 1 en 1, de −6 à 6 sur les deux axes.\n```",
+			"variables": [
+				{
+					"name": "q",
+					"expression": "2|3"
+				},
+				{
+					"name": "n",
+					"expression": "1..2;±"
+				},
+				{
+					"name": "b",
+					"expression": "-4..4"
+				}
+			],
+			"conditions": ["mod(n, q) != 0", "abs((b)+(n)) <= 6", "abs((b)-(n)) <= 6"],
+			"correction": {
+				"steps": [
+					"La représentation graphique de $f:x\\mapsto ax+b$ est la droite d'équation $y=ax+b$. Pour la tracer, on place deux de ses points : $(0\\,;b)$ sur l'axe des ordonnées, puis un deuxième en avançant en abscisse.",
+					"```courbe\nx: -6 ; 6\ny: -6 ; 6\ngrille: 1 ; 1\nf(x) = ({{n}})/({{q}})*x+({{b}})   bleu   nom=\\mathcal{C}_f\npoints: A(0 ; {{b}}), B({{q}} ; {{eval:(b)+(n)}})\ntaille: moyenne\ndescription: Droite représentant f et deux de ses points, A et B, d'abscisses 0 et {{q}}.\n```",
+					"Le coefficient directeur est ${{if:n<0|-}}\\dfrac{ {{eval:abs(n)}} }{ {{q}} }$ : en avançant de ${{q}}$, on {{if:n>0|monte|descend}} de ${{eval:abs(n)}}$, de $A(0\\,;{{b}})$ à $B({{q}}\\,;{{eval:(b)+(n)}})$ ; les deux points tombent sur la grille."
+				]
+			}
+		},
+		{
+			"statement": "Une salle d'escalade demande ${{b}}~\\unit{€}$ d'inscription, puis ${{a}}~\\unit{€}$ par séance. Le coût, en euros, de $x$ séances est $f(x)={{a}}x+{{b}}$.\n\nTrace la représentation graphique de $f$ : place deux de ses points.\n\n```courbe\nx: -1 ; 8\ny: -5 ; 100\ngrille: 1 ; 5\naxes: x = Séances ; y = Coût (€)\ntracer: y = {{a}}x + {{b}}\ntaille: moyenne\ndescription: Repère : séances de −1 à 8 en abscisse, de 1 en 1 ; coût de −5 à 100 € en ordonnée, de 5 en 5.\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "5|10"
+				},
+				{
+					"name": "b",
+					"expression": "10|15|20"
+				}
+			],
+			"conditions": [],
+			"correction": {
+				"steps": [
+					"Le coût est une fonction affine du nombre de séances : sa représentation graphique est la droite d'équation $y={{a}}x+{{b}}$. On place deux de ses points.",
+					"```courbe\nx: -1 ; 8\ny: -5 ; 100\ngrille: 1 ; 5\naxes: x = Séances ; y = Coût (€)\nf(x) = {{a}}*x+{{b}}   bleu   nom=\\mathcal{C}_f\npoints: A(0 ; {{b}}), B(2 ; {{eval:2*a+b}})\ntaille: moyenne\ndescription: Droite représentant f et deux de ses points, A et B, d'abscisses 0 et 2.\n```",
+					"Sans séance, on paie l'inscription : $f(0)={{b}}$, d'où $A(0\\,;{{b}})$. Pour $2$ séances : $f(2)={{a}}\\times2+{{b}}={{eval:2*a+b}}$, d'où $B(2\\,;{{eval:2*a+b}})$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "f(x) = 2x − 1 : (0 ; −1) et (1 ; 1)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"b": "-1"
+			},
+			"answers": ["0;-1/1;1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "f(x) = 2x − 1 : deux autres points",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"b": "-1"
+			},
+			"answers": ["2;3/-1;-3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : coefficient directeur opposé",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"b": "-1"
+			},
+			"answers": ["0;-1/1;-3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : a et b échangés",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"b": "-1"
+			},
+			"answers": ["0;2/1;1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "f(x) = −2/3 x + 1 : (0 ; 1) et (3 ; −1)",
+			"variationIndex": 1,
+			"variables": {
+				"q": "3",
+				"n": "-2",
+				"b": "1"
+			},
+			"answers": ["0;1/3;-1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : pente inversée (−3/2)",
+			"variationIndex": 1,
+			"variables": {
+				"q": "3",
+				"n": "-2",
+				"b": "1"
+			},
+			"answers": ["0;1/2;-2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Escalade 10 € + 5 €/séance : (0 ; 10) et (2 ; 20)",
+			"variationIndex": 2,
+			"variables": {
+				"a": "5",
+				"b": "10"
+			},
+			"answers": ["0;10/2;20"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : a et b échangés (0 ; 5)",
+			"variationIndex": 2,
+			"variables": {
+				"a": "5",
+				"b": "10"
+			},
+			"answers": ["0;5/1;15"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

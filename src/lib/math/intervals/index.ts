@@ -8,15 +8,15 @@
  *
  * @example
  * // Create intervals with symbolic bounds
- * import { closedInterval, bound, formatDomainInterval } from '$lib/math/intervals';
- * import { number } from '$lib/mathAST/factory';
+ * import { closedInterval, bound, formatDomainInterval } from '#lib/math/intervals/index.ts';
+ * import { number } from '#lib/mathAST/factory.ts';
  *
  * const domain = intervalSet([closedInterval(number(0), bound('sqrt(2)'))]);
  * console.log(formatDomainInterval(domain)); // "[0 ; √2]"
  *
  * @example
  * // Perform set operations
- * import { intersect, union, complement, positiveReals, unitInterval } from '$lib/math/intervals';
+ * import { intersect, union, complement, positiveReals, unitInterval } from '#lib/math/intervals/index.ts';
  *
  * const result = intersect(positiveReals(), unitInterval());
  * // result = ]0 ; 1]

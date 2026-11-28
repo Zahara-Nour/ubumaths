@@ -33,10 +33,10 @@
  */
 import { fail, redirect } from '@sveltejs/kit';
 import type { Actions, PageServerLoad } from './$types';
-import { createServerLogger } from '$lib/utils/logger';
-import { checkSignupRateLimitByIP, checkSignupRateLimitByEmail } from '$lib/server/rateLimiter';
-import { validateFormData, registerFormSchema } from '$lib/server/validation';
-import { createServiceRoleClient } from '$lib/server/serviceRoleClient';
+import { createServerLogger } from '#lib/utils/logger.ts';
+import { checkSignupRateLimitByIP, checkSignupRateLimitByEmail } from '#lib/server/rateLimiter.ts';
+import { validateFormData, registerFormSchema } from '#lib/server/validation/index.ts';
+import { createServiceRoleClient } from '#lib/server/serviceRoleClient.ts';
 
 const logger = createServerLogger('auth/register/+page.server.ts');
 

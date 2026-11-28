@@ -20,20 +20,20 @@
 
 <script lang="ts">
 	// Imports
-	import type { QuestionInstance } from '$lib/questions/types';
-	import { getQuestionType } from '$lib/questions/types';
-	import type { AnswerData } from '$lib/types/question-display';
-	import type { TestAnswerResult } from '$lib/types/test';
-	import FlashCard from '$lib/components/questions/FlashCard.svelte';
-	import QuestionCard from '$lib/components/questions/QuestionCard.svelte';
-	import CorrectionCard from '$lib/components/questions/CorrectionCard.svelte';
-	import { TILE_CARD_HEIGHT } from '$lib/components/questions/tile-card';
+	import type { QuestionInstance } from '#lib/questions/types.ts';
+	import { getQuestionType } from '#lib/questions/types.ts';
+	import type { AnswerData } from '#lib/types/question-display.ts';
+	import type { TestAnswerResult } from '#lib/types/test.ts';
+	import FlashCard from '#lib/components/questions/FlashCard.svelte';
+	import QuestionCard from '#lib/components/questions/QuestionCard.svelte';
+	import CorrectionCard from '#lib/components/questions/CorrectionCard.svelte';
+	import { TILE_CARD_HEIGHT } from '#lib/components/questions/tile-card.ts';
 	import {
 		provideAuthoringAdvice,
 		provideAuthoringErrors
-	} from '$lib/components/markdown/authoring-errors';
-	import * as Tabs from '$lib/components/ui/tabs';
-	import { Button } from '$lib/components/ui/button';
+	} from '#lib/components/markdown/authoring-errors.ts';
+	import * as Tabs from '#lib/components/ui/tabs/index.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
 	import { RotateCcw } from '@lucide/svelte';
 
 	// Types
@@ -41,9 +41,11 @@
 		instance: QuestionInstance;
 		/** Onglet choisi ; absent : celui par défaut selon le type de question */
 		tab?: PreviewTab;
+		/** Sans la barre d'onglets ni les phrases d'explication : l'onglet est choisi par le parent */
+		bare?: boolean;
 	}
 
-	let { instance, tab = $bindable() }: Props = $props();
+	let { instance, tab = $bindable(), bare = false }: Props = $props();
 
 	// Page de prof : messages d'erreur d'auteur détaillés pour tous les rendus imbriqués
 	provideAuthoringErrors(() => true);
@@ -94,16 +96,20 @@
 </script>
 
 <Tabs.Root value={activeTab} onValueChange={handleTabChange} class="space-y-4">
-	<Tabs.List class="grid w-full grid-cols-3">
-		<Tabs.Trigger value="flashcard">Flash-card</Tabs.Trigger>
-		<Tabs.Trigger value="training">Entraînement</Tabs.Trigger>
-		<Tabs.Trigger value="classroom">En classe</Tabs.Trigger>
-	</Tabs.List>
+	{#if !bare}
+		<Tabs.List class="grid w-full grid-cols-3">
+			<Tabs.Trigger value="flashcard">Flash-card</Tabs.Trigger>
+			<Tabs.Trigger value="training">Contrôle blanc</Tabs.Trigger>
+			<Tabs.Trigger value="classroom">En classe</Tabs.Trigger>
+		</Tabs.List>
+	{/if}
 
 	<Tabs.Content value="flashcard" class="space-y-2">
-		<p class="text-sm text-muted-foreground">
-			Série en flash-cards et révisions : l'élève retourne la carte pour voir la correction.
-		</p>
+		{#if !bare}
+			<p class="text-sm text-muted-foreground">
+				Série en flash-cards et révisions : l'élève retourne la carte pour voir la correction.
+			</p>
+		{/if}
 		<FlashCard {instance} interactive={false} size="lg" />
 	</Tabs.Content>
 
@@ -111,7 +117,9 @@
 		{#if answerResult}
 			<div class="flex flex-wrap items-center justify-between gap-2">
 				<p class="text-sm text-muted-foreground">
-					Carte de correction telle qu'affichée en fin de série.
+					{bare
+						? 'Correction de fin de série'
+						: "Carte de correction telle qu'affichée en fin de série."}
 				</p>
 				<Button variant="outline" size="sm" onclick={restartTraining}>
 					<RotateCcw class="mr-2 h-4 w-4" aria-hidden="true" />
@@ -120,9 +128,11 @@
 			</div>
 			<CorrectionCard {answerResult} questionNumber={1} size="md" />
 		{:else}
-			<p class="text-sm text-muted-foreground">
-				Série en entraînement : l'élève saisit sa réponse puis valide.
-			</p>
+			{#if !bare}
+				<p class="text-sm text-muted-foreground">
+					Série en entraînement : l'élève saisit sa réponse puis valide.
+				</p>
+			{/if}
 			<!-- Sans `unitKeys`, comme un item de buildSeriesItems : FillBlanksInput déduit
 			     les touches d'unités de l'instance, exactement comme en série -->
 			{#key attempt}
@@ -135,9 +145,11 @@
 		<div class="flex flex-wrap items-center justify-between gap-2">
 			<p class="text-sm text-muted-foreground">
 				{#if classroomBack}
-					Grille des corrections de fin de séance (verso).
+					{bare
+						? 'Verso (grille des corrections)'
+						: 'Grille des corrections de fin de séance (verso).'}
 				{:else}
-					Projection en classe : la carte ne se retourne pas.
+					{bare ? 'Projection' : 'Projection en classe : la carte ne se retourne pas.'}
 				{/if}
 			</p>
 			<Button variant="outline" size="sm" onclick={() => (classroomBack = !classroomBack)}>

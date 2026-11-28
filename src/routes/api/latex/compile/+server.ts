@@ -1,8 +1,8 @@
-import { error } from '@sveltejs/kit';
+import { error, isHttpError } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { compileLatexSchema } from '$lib/server/validation/latex';
-import { requireAuth } from '$lib/server/middleware/auth';
-import { createServerLogger } from '$lib/utils/logger';
+import { compileLatexSchema } from '#lib/server/validation/latex.ts';
+import { requireAuth } from '#lib/server/middleware/auth.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/latex/compile/+server');
 
@@ -71,6 +71,8 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			}
 		});
 	} catch (err) {
+		// Refus de la validation (400) ou du service : rendu tel quel, jamais changé en 500
+		if (isHttpError(err)) throw err;
 		logger.error('LaTeX compilation error:', err);
 		throw error(500, `Compilation failed: ${err instanceof Error ? err.message : 'Unknown error'}`);
 	}

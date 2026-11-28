@@ -25,7 +25,7 @@ import type {
 	ChapterDocument,
 	ChapterSection,
 	ChapterSeries
-} from '$lib/types/chapters';
+} from '#lib/types/chapters.ts';
 import ChapterSectionsEditor from '../ChapterSectionsEditor.svelte';
 
 // Constantes

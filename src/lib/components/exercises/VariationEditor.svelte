@@ -1,25 +1,25 @@
 <script lang="ts">
-	import { Button } from '$lib/components/ui/button';
-	import { Input } from '$lib/components/ui/input';
-	import { Label } from '$lib/components/ui/label';
-	import * as Card from '$lib/components/ui/card';
-	import * as Collapsible from '$lib/components/ui/collapsible';
-	import MySelect from '$lib/components/MySelect.svelte';
-	import * as Tabs from '$lib/components/ui/tabs';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import { Input } from '#lib/components/ui/input/index.ts';
+	import { Label } from '#lib/components/ui/label/index.ts';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import * as Collapsible from '#lib/components/ui/collapsible/index.ts';
+	import MySelect from '#lib/components/MySelect.svelte';
+	import * as Tabs from '#lib/components/ui/tabs/index.ts';
 	import ExerciseRichTextEditor from './ExerciseRichTextEditor.svelte';
 	import HintEditor from './HintEditor.svelte';
 	import HintTranslationEditor from './HintTranslationEditor.svelte';
-	import type { ExerciseVariation, GuidanceLabel, ExerciseHint } from '$lib/exercises/types';
-	import type { ContentLocale } from '$lib/types/locale';
+	import type { ExerciseVariation, GuidanceLabel, ExerciseHint } from '#lib/exercises/types.ts';
+	import type { ContentLocale } from '#lib/types/locale.ts';
 	import {
 		hasEnglishStatement,
 		translatedField,
 		withTranslatedField,
 		type TranslatableField
-	} from '$lib/exercises/translation-draft';
-	import type { Variable } from '$lib/ubumark';
+	} from '#lib/exercises/translation-draft.ts';
+	import type { Variable } from '#lib/ubumark/index.ts';
 	import type { SupabaseClient } from '@supabase/supabase-js';
-	import { provideContentLocale } from '$lib/components/markdown/content-locale';
+	import { provideContentLocale } from '#lib/components/markdown/content-locale.ts';
 
 	interface Props {
 		variation: ExerciseVariation;
@@ -226,7 +226,7 @@
 					<Card.Header class="cursor-pointer py-3" {...props}>
 						<div class="flex items-center justify-between">
 							<Card.Title class="text-base">
-								Enonce <span class="text-destructive">*</span>
+								Énoncé <span class="text-destructive">*</span>
 								{#if hasTranslation}
 									<span
 										class="ml-2 rounded border border-border px-1.5 py-0.5 align-middle text-xs font-normal text-muted-foreground"

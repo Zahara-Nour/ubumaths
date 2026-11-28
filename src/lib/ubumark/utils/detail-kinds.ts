@@ -10,6 +10,8 @@
  * @module ubumark/utils/detail-kinds
  */
 
+import { resolveNamedColor, type NamedColor } from '#lib/theme/named-colors.ts';
+
 /** Type d'un détail, quel que soit son marqueur. */
 export type DetailKind = 'calculation' | 'reminder' | 'method' | 'warning';
 
@@ -68,22 +70,66 @@ export function parseCalloutKind(raw: string): CalloutKind | null {
 export const CALLOUT_MARKER_REGEX = /^\s*\[!([^\]\s]*)\]\s?(.*)$/;
 
 /**
- * Détail en ligne `[texte]{.mot}`. Le texte peut contenir UN niveau de
- * crochets (`$[0;1]$`) ; le mot est capturé tel quel (validé ensuite).
+ * Marquage en ligne `[texte]{.classe …}` : détail de correction (ADR 0017), mot du
+ * dictionnaire (`.def`, `.def=…`, `.nodef`), couleur de la palette (ADR 0042),
+ * plusieurs classes séparées par des espaces (`{.orange .def}`). Le texte peut
+ * contenir UN niveau de crochets. Une classe est tout ce qui n'est ni espace, ni
+ * accolade, ni crochet, ni `=` (un `{.#ff0000}` est donc lu, puis refusé) ;
+ * `.def=…` va en dernier, sa cible peut contenir des espaces.
  */
-export const INLINE_DETAIL_REGEX = /\[((?:[^[\]]|\[[^[\]]*\])+)\]\{\.(\p{L}+)\}/gu;
+export const SPAN_MARK_REGEX =
+	/\[((?:[^[\]]|\[[^[\]]*\])+)\]\{(\.[^\s{}[\]=]+(?:\s+\.[^\s{}[\]=]+)*(?:=[^{}\n]+)?)\}/gu;
+
+/** Ce que disent les classes d'un marquage `{.…}`. */
+export interface SpanClasses {
+	detail?: DetailKind;
+	lexicon?: { mode: 'force' | 'block'; target?: string };
+	color?: NamedColor;
+	/** Classes qui ne sont ni un détail, ni une marque du dictionnaire, ni une couleur */
+	unknown: string[];
+}
 
 /**
- * Mot du lexique marqué à la main (lot 2 du lexique) : `[mot]{.def}`,
- * `[mot]{.def=carré (géométrie)}` (entrée visée) ou `[mot]{.nodef}`. Même
- * syntaxe que les détails en ligne, mais ce n'est pas un détail de correction.
+ * Lit la liste `.a .b .def=cible` (groupe 2 de {@link SPAN_MARK_REGEX}). La
+ * première classe de chaque sorte compte ; les suivantes sont ignorées.
  */
-export const LEXICON_MARK_REGEX =
-	/\[((?:[^[\]]|\[[^[\]]*\])+)\]\{\.(def|nodef)(?:=([^{}\n]+))?\}/gu;
-
-/** `def` / `nodef` : mots réservés au lexique, jamais un type de détail. */
-export function isLexiconMarkWord(raw: string): boolean {
-	return raw === 'def' || raw === 'nodef';
+export function parseSpanClasses(raw: string): SpanClasses {
+	const result: SpanClasses = { unknown: [] };
+	for (const token of raw.trim().split(/\s+(?=\.)/)) {
+		// Casse ignorée, comme pour les couleurs et les détails : `{.Def}` = `{.def}`
+		const raw = token.slice(1);
+		const equals0 = raw.indexOf('=');
+		const word =
+			equals0 >= 0 ? raw.slice(0, equals0).toLowerCase() + raw.slice(equals0) : raw.toLowerCase();
+		const equals = word.indexOf('=');
+		if (equals >= 0) {
+			const name = word.slice(0, equals);
+			const target = word.slice(equals + 1).trim();
+			if (name === 'def' && target) result.lexicon ??= { mode: 'force', target };
+			else result.unknown.push(raw);
+			continue;
+		}
+		if (word === 'def') {
+			result.lexicon ??= { mode: 'force' };
+			continue;
+		}
+		if (word === 'nodef') {
+			result.lexicon ??= { mode: 'block' };
+			continue;
+		}
+		const detail = parseDetailKind(word);
+		if (detail) {
+			result.detail ??= detail;
+			continue;
+		}
+		const color = resolveNamedColor(word);
+		if (color) {
+			result.color ??= color;
+			continue;
+		}
+		result.unknown.push(raw);
+	}
+	return result;
 }
 
 /** Caractère de masquage : ni crochet, ni accolade, ni lettre. */

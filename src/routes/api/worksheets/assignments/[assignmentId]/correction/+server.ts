@@ -19,27 +19,29 @@
  *   corrigé qui ne vaudrait pour personne. `per_student_copies` le dit.
  */
 
-import { error, json } from '@sveltejs/kit';
+import { WORKSHEET_LINE_VERSION, withLineVersion } from '#lib/server/exercise-versions.ts';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireAuth } from '$lib/server/middleware/auth';
+import { requireAuth } from '#lib/server/middleware/auth.ts';
 import { z } from 'zod';
-import { sanitizeForFileName } from '$lib/worksheets/pdf-file-name';
-import { generateWorksheetTypst } from '$lib/typst/generators';
-import { canAccessCorrections } from '$lib/server/worksheets/correction-release';
+import { sanitizeForFileName } from '#lib/worksheets/pdf-file-name.ts';
+import { generateWorksheetTypst } from '#lib/typst/generators/index.ts';
+import { canAccessCorrections } from '#lib/server/worksheets/correction-release.ts';
+import { loadWorksheetClassifications } from '#lib/server/worksheets/worksheet-classification.ts';
 import {
 	fetchAssignmentClasses,
 	formatClassNames
-} from '$lib/server/worksheets/assignment-classes';
-import { worksheetLocale } from '$lib/types/worksheets';
-import type { WorksheetAssignmentRow } from '$lib/types/worksheets';
+} from '#lib/server/worksheets/assignment-classes.ts';
+import { worksheetLocale } from '#lib/types/worksheets.ts';
+import type { WorksheetAssignmentRow } from '#lib/types/worksheets.ts';
 import {
 	assignmentCopyScope,
 	buildWorksheetCopy,
 	hasPerStudentCopies,
 	type WorksheetForCopy
-} from '$lib/worksheets/worksheet-copy';
-import { isStudentOfAssignment } from '$lib/server/worksheets/assignment-recipients';
-import { createServerLogger } from '$lib/utils/logger';
+} from '#lib/worksheets/worksheet-copy.ts';
+import { isStudentOfAssignment } from '#lib/server/worksheets/assignment-recipients.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/worksheets/assignments/[assignmentId]/correction/+server');
 
@@ -92,12 +94,11 @@ export const GET: RequestHandler = async ({ params, locals, url }) => {
 						exercise:exercises(
 							id,
 							title,
+							translations,
 							variables,
-							shared,
-							variations,
-							generic_functions,
 							topic
-						)
+						),
+						${WORKSHEET_LINE_VERSION}
 					)
 				)
 			`
@@ -170,7 +171,13 @@ export const GET: RequestHandler = async ({ params, locals, url }) => {
 			throw error(404, 'Aucune correction disponible');
 		}
 
-		const worksheet = assignment.worksheet as unknown as WorksheetForCopy;
+		// Contenu : la version choisie par la fiche pour chaque exercice (ADR 0044), pas la dernière
+		const worksheetRow = assignment.worksheet;
+		if (!worksheetRow) throw error(404, 'Fiche introuvable');
+		const worksheet = {
+			...worksheetRow,
+			worksheet_exercises: worksheetRow.worksheet_exercises.map((line) => withLineVersion(line))
+		} as unknown as WorksheetForCopy;
 
 		// La copie de la classe, recalculée (ADR 0023) : la même que l'aperçu
 		// d'affectation sans élève
@@ -183,7 +190,7 @@ export const GET: RequestHandler = async ({ params, locals, url }) => {
 		// prof (D6), destinataire de l'affectation ; sans élève, on le demande.
 		const perStudentCopies = hasPerStudentCopies(worksheet, classScope);
 		if (perStudentCopies && !studentId) {
-			return json({ success: true, needs_student: true, per_student_copies: true });
+			return Response.json({ success: true, needs_student: true, per_student_copies: true });
 		}
 		if (perStudentCopies && studentId) {
 			if (!(await isStudentOfAssignment(locals.supabase, assignmentId, studentId))) {
@@ -205,7 +212,7 @@ export const GET: RequestHandler = async ({ params, locals, url }) => {
 
 		// If JSON format requested, return correction data
 		if (format === 'json') {
-			return json({
+			return Response.json({
 				success: true,
 				worksheet: {
 					id: worksheet.id,
@@ -236,7 +243,11 @@ export const GET: RequestHandler = async ({ params, locals, url }) => {
 
 		// Generate Typst content for correction
 		const typstContent = generateWorksheetTypst({
-			worksheet: worksheet,
+			// Notions de la fiche (ADR 0041) : titre composé et bas de page
+			worksheet: {
+				...worksheet,
+				classifications: await loadWorksheetClassifications(locals.supabase, worksheet.id)
+			},
 			instance: instanceData,
 			config: worksheet.config || {},
 			mode: 'correction',
@@ -249,7 +260,7 @@ export const GET: RequestHandler = async ({ params, locals, url }) => {
 		// Return Typst source (PDF generation must be done client-side)
 		const filename = `${sanitizeForFileName(worksheet.title)}_correction_${sanitizeForFileName(studentName)}.pdf`;
 
-		return json({
+		return Response.json({
 			success: true,
 			typst: typstContent,
 			filename,

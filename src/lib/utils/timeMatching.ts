@@ -27,7 +27,7 @@
  * USAGE EXAMPLE:
  * --------------
  * ```typescript
- * import { findCurrentSchedule, formatScheduleMatch } from '$lib/utils/timeMatching';
+ * import { findCurrentSchedule, formatScheduleMatch } from '#lib/utils/timeMatching.ts';
  *
  * const classes = [{ id: '123', name: 'Math 6A', schedules: [...] }];
  * const match = findCurrentSchedule(classes);
@@ -39,7 +39,7 @@
  * ```
  */
 
-import type { Class, ClassSchedule } from '$lib/types/database-helpers';
+import type { Class, ClassSchedule } from '#lib/types/database-helpers.ts';
 import { formatTimeDisplay, getDayName } from './schedule';
 import { getOrderedSchoolDays, type WeekConfig } from './week-config';
 

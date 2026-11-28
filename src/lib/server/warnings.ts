@@ -12,7 +12,7 @@
  *
  * USAGE:
  * ```typescript
- * import { getCurrentAcademicPeriod, getClassWarnings } from '$lib/server/warnings';
+ * import { getCurrentAcademicPeriod, getClassWarnings } from '#lib/server/warnings.ts';
  *
  * const period = await getCurrentAcademicPeriod({ schoolId, supabase });
  * const warnings = await getClassWarnings({ classId, periodId: period.id, teacherId, supabase });
@@ -25,7 +25,7 @@
  */
 
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { Database } from '$lib/types/database';
+import type { Database } from '#lib/types/database.ts';
 import { error } from '@sveltejs/kit';
 
 // ============================================================================
@@ -33,8 +33,8 @@ import { error } from '@sveltejs/kit';
 // ============================================================================
 
 // Import and re-export shared types and constants
-import { type WarningType, WARNING_TYPE_LABELS, getWarningTypeLabel } from '$lib/types/warnings';
-import { createServerLogger } from '$lib/utils/logger';
+import { type WarningType, WARNING_TYPE_LABELS, getWarningTypeLabel } from '#lib/types/warnings.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('server/warnings');
 export { type WarningType, WARNING_TYPE_LABELS, getWarningTypeLabel };
@@ -151,7 +151,8 @@ export async function getCurrentAcademicPeriod(options: {
  * Get warning counts for all students in a class for a specific period
  *
  * Uses optimized single-query aggregation with GROUP BY and COUNT.
- * Automatically verifies teacher ownership via RLS policies.
+ * Vérifie seulement que la classe existe (mono-professeur : prof et admin voient
+ * toutes les classes) ; l'accès réel est tenu par la RLS.
  *
  * @param options - Configuration object
  * @param options.classId - The class UUID
@@ -187,12 +188,12 @@ export async function getClassWarnings(options: {
 		.maybeSingle();
 
 	if (classError) {
-		logger.error('[getClassWarnings] Error verifying class ownership:', classError);
-		throw error(500, `Failed to verify class ownership: ${classError.message}`);
+		logger.error('[getClassWarnings] Error checking class existence:', classError);
+		throw error(500, `Failed to check class existence: ${classError.message}`);
 	}
 
 	if (!classCheck) {
-		logger.error('[getClassWarnings] Teacher does not own class:', classId);
+		logger.error('[getClassWarnings] Class not found or not visible:', classId);
 		throw error(403, 'Accès refusé aux avertissements de cette classe');
 	}
 
@@ -238,53 +239,6 @@ export async function getClassWarnings(options: {
 	}
 
 	return warningsMap;
-}
-
-/**
- * Add a warning for a student via RPC
- *
- * Atomically inserts a warning and returns updated counts in a single DB call.
- * The RPC handles: auth check, type validation, max 20 limit, advisory lock.
- *
- * @param options - Configuration object
- * @returns Promise resolving to updated warning counts for the student
- */
-export async function addWarning(options: {
-	studentId: string;
-	classId: string;
-	periodId: string;
-	warningType: WarningType;
-	supabase: SupabaseClient<Database>;
-}): Promise<StudentWarningCounts> {
-	const { studentId, classId, periodId, warningType, supabase } = options;
-
-	const { data, error: rpcError } = await supabase.rpc('add_warning', {
-		p_student_id: studentId,
-		p_class_id: classId,
-		p_academic_period_id: periodId,
-		p_warning_type: warningType
-	});
-
-	if (rpcError) {
-		logger.error('[addWarning] RPC error:', rpcError);
-		throw error(500, `Failed to add warning: ${rpcError.message}`);
-	}
-
-	// RPC returns JSON; Supabase types it as `unknown` so we cast to our known shape
-	const result = data as unknown as {
-		success: boolean;
-		error?: string;
-		counts?: StudentWarningCounts;
-	};
-
-	if (!result.success) {
-		const msg = result.error || 'Unknown error';
-		if (msg.includes('Unauthorized')) throw error(403, msg);
-		if (msg.includes('20 warnings')) throw error(409, msg);
-		throw error(400, msg);
-	}
-
-	return result.counts ?? { C: 0, M: 0, R: 0, T: 0 };
 }
 
 /**

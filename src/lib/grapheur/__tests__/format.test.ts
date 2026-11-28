@@ -6,7 +6,7 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { formatGraphValue } from '$lib/grapheur/format';
+import { formatGraphValue } from '#lib/grapheur/format.ts';
 
 describe('formatGraphValue', () => {
 	it('garde quatre chiffres significatifs', () => {

@@ -2,13 +2,13 @@
  * Bloc ```solide → Typst (texte produit) — chantier `solides`, lot 3
  */
 import { describe, expect, it } from 'vitest';
-import { parseMarkdown } from '$lib/ubumark';
-import { generateTypst } from '$lib/ubumark/generators/typst-generator';
-import { generateEspaceTypst } from '$lib/ubumark/generators/espace-typst';
-import { parseEspaceContent } from '$lib/ubumark/parser/espace-parser';
-import { ESPACE_UNAVAILABLE } from '$lib/ubumark/types/espace';
-import { buildSolideScene } from '$lib/ubumark/utils/espace-solides';
-import type { SolideSpec } from '$lib/ubumark/types/espace';
+import { parseMarkdown } from '#lib/ubumark/index.ts';
+import { generateTypst } from '#lib/ubumark/generators/typst-generator.ts';
+import { generateEspaceTypst } from '#lib/ubumark/generators/espace-typst.ts';
+import { parseEspaceContent } from '#lib/ubumark/parser/espace-parser.ts';
+import { ESPACE_UNAVAILABLE } from '#lib/ubumark/types/espace.ts';
+import { buildSolideScene } from '#lib/ubumark/utils/espace-solides.ts';
+import type { SolideSpec } from '#lib/ubumark/types/espace.ts';
 
 const typst = (...lines: string[]) =>
 	generateEspaceTypst(parseEspaceContent(lines.join('\n'), 'solide'));

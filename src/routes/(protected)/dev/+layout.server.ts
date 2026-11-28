@@ -7,7 +7,7 @@
  * élève. Ce load force la requête à l'entrée dans l'espace et refait le contrôle.
  */
 
-import { checkReservedArea } from '$lib/server/reservedAreasHandle';
+import { checkReservedArea } from '#lib/server/reservedAreasHandle.ts';
 import type { LayoutServerLoad } from './$types';
 
 export const load: LayoutServerLoad = async (event) => {

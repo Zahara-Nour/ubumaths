@@ -1,20 +1,20 @@
 /**
- * Longue absence de l'élève : son Palotin est triste au retour
- * =============================================================
+ * Retour de l'élève après une pause : son Palotin le fête
+ * ========================================================
  *
- * Décidé par David le 2026-10-21 (docs/systeme/buddy-palotins.md) :
- * « triste » quand l'élève revient 21 jours ou plus après son dernier passage
- * (14 attraperait les petites vacances). Jour UTC, comme la Constance Royale.
+ * Décidé par David le 2026-10-21 (docs/systeme/buddy-palotins.md) : un retour,
+ * c'est un passage 21 jours ou plus après le précédent (14 attraperait les
+ * petites vacances). Jour UTC, comme la Constance Royale.
  *
- * Présence notée sur toute page vue (docs/systeme/buddy-palotins.md) :
- * le retour est souvent détecté loin du Palotin ; il est fêté à la première
- * apparition du Palotin dans les 7 jours, puis oublié — et effacé au premier
- * passage qui suit.
+ * Depuis le 2026-11-12 (chantier `regularite`, R2) : le Palotin ne parle
+ * jamais d'une absence. Il fête le retour, joyeux et sans en dire la durée,
+ * APRÈS la 1re activité (un jour travaillé depuis le retour), dans les 7 jours ;
+ * le retour est ensuite oublié, et effacé au premier passage qui suit.
  */
 
 // Constantes
 
-/** Écart minimal, en jours, entre deux passages pour que le Palotin soit triste. */
+/** Écart minimal, en jours, entre deux passages pour que ce soit un retour. */
 export const LONG_ABSENCE_DAYS = 21;
 
 /** Jours pendant lesquels un retour reste à fêter (jour du retour compris). */
@@ -63,4 +63,21 @@ export function lastExpiredWelcomeBackDay(today: string): string | null {
 	const time = Date.parse(`${today}T00:00:00Z`);
 	if (Number.isNaN(time)) return null;
 	return new Date(time - WELCOME_BACK_DAYS * DAY_MS).toISOString().slice(0, 10);
+}
+
+/**
+ * Vrai si le Palotin fête le retour `today` : le retour du jour `welcomeBackOn`
+ * est encore à fêter, et l'élève a travaillé depuis (`lastWorkedDay`, dernier
+ * jour travaillé, le jour du retour compris). Faux sans jour travaillé, ou si
+ * l'un des jours est illisible.
+ */
+export function isReturnToCelebrate(
+	welcomeBackOn: string | null,
+	lastWorkedDay: string | null,
+	today: string
+): boolean {
+	if (welcomeBackOn === null || lastWorkedDay === null) return false;
+	if (!isWelcomeBackDue(welcomeBackOn, today)) return false;
+	const days = daysBetween(welcomeBackOn, lastWorkedDay);
+	return days !== null && days >= 0;
 }

@@ -14,7 +14,7 @@
  */
 
 import type { QuestionInstance, ValidationStatus } from './types';
-import { validateBlanksDetailed } from '$lib/utils/answer-validator';
+import { validateBlanksDetailed } from '#lib/utils/answer-validator.ts';
 import { gradedPart } from './graded-part';
 
 // Types

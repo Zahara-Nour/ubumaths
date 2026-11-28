@@ -3,7 +3,7 @@
  * Delete all resolved errors (admin only)
  *
  * SECURITY:
- * - Admin-only access (enforced via requireRole middleware)
+ * - Admin-only access (requireAdmin : prof en mode administration ou vrai compte admin)
  * - No request body validation needed (no parameters)
  *
  * WARNING:
@@ -15,18 +15,18 @@
  * - { success: true, deleted_count: number }
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { deleteAllResolvedErrors } from '$lib/server/errorMonitoring';
-import { requireRole } from '$lib/server/middleware/auth';
-import { createServiceRoleClient } from '$lib/server/serviceRoleClient';
-import { createServerLogger } from '$lib/utils/logger';
+import { deleteAllResolvedErrors } from '#lib/server/errorMonitoring.ts';
+import { requireAdmin } from '#lib/server/middleware/auth.ts';
+import { createServiceRoleClient } from '#lib/server/serviceRoleClient.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/errors/delete-resolved/+server');
 
 export const POST: RequestHandler = async ({ locals }) => {
 	// SECURITY: Require admin role
-	await requireRole(locals, 'admin');
+	await requireAdmin(locals);
 
 	try {
 		// Rôle admin vérifié ci-dessus ; la fonction est réservée au serveur (Q143).
@@ -36,7 +36,7 @@ export const POST: RequestHandler = async ({ locals }) => {
 			throw error(500, result.error || 'Failed to delete resolved errors');
 		}
 
-		return json({
+		return Response.json({
 			success: true,
 			deleted_count: result.deletedCount || 0
 		});

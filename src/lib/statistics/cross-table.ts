@@ -4,7 +4,7 @@
  * Programme de 2de, `2-170` à `2-173` : totaux (fréquences marginales) et
  * fréquences conditionnelles, par ligne ou par colonne.
  *
- * ⚠️ Aucun import `$lib` : voir `statistics/describe`.
+ * ⚠️ Aucun import `#lib` : voir `statistics/describe`.
  *
  * @module statistics/cross-table
  */

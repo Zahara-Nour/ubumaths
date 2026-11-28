@@ -1,0 +1,378 @@
+{
+	"id": "6a461989-66f1-457d-9673-969e869b7dd5",
+	"rangement": {
+		"noeud": "Fonctions > Fonctions trigonométriques > cercle et radians",
+		"point": "1SPE-304"
+	},
+	"title": "Ramener un réel dans [0 ; 2π[",
+	"description": "Trouver le réel de [0 ; 2π[ associé au même point du cercle trigonométrique qu'un réel donné (29π/6, −11π/4, −22π/3…), en retirant ou en ajoutant des tours",
+	"grades": ["1_SPE"],
+	"level": 2,
+	"delay": 45,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Détermine le réel de l'intervalle $\\left[0\\,;2\\pi\\right[$ associé au même point du cercle trigonométrique que le réel $\\frac{ {{a}}\\pi}{6}$.\n\n$?$",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "1|5|7|11"
+				},
+				{
+					"name": "k",
+					"expression": "1..3"
+				},
+				{
+					"name": "a",
+					"expression": "eval:p+12*k"
+				},
+				{
+					"name": "r",
+					"expression": "eval:p*\\pi/6"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{r}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:(p-12)*\\pi/6}}",
+							"message": "Le réel demandé est dans $\\left[0\\,;2\\pi\\right[$ : il ne peut pas être négatif. Ajoute encore un tour.",
+							"label": "Réel de ]−π ; π]"
+						},
+						{
+							"answer": "{{eval:(p+12)*\\pi/6}}",
+							"message": "Ce réel dépasse $2\\pi$ : retire encore un tour.",
+							"label": "Un tour de trop"
+						},
+						{
+							"answer": "{{eval:(12-p)*\\pi/6}}",
+							"message": "Ce réel est celui du point symétrique : ajouter ou retirer des tours ne change pas le point, changer de signe le change.",
+							"label": "Symétrique"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"On retire des tours complets ($2\\pi=\\frac{12\\pi}{6}$) jusqu'à tomber dans $\\left[0\\,;2\\pi\\right[$ :",
+					"$$\\frac{ {{a}}\\pi}{6}={{r}}+\\frac{ {{eval:12*k}}\\pi}{6}={{r}}+{{eval:2*k}}\\pi$$",
+					"Comme $0\\leqslant {{r}}<2\\pi$, le réel cherché est $\\textcolor{{{color:primary.0}}}{ {{r}} }$.",
+					"```trig\npreset: custom\nangles: {{p}}*pi/6\n```"
+				]
+			},
+			"hint": "Ajouter ou retirer $2\\pi$ ne change pas le point : écris $2\\pi=\\frac{12\\pi}{6}$."
+		},
+		{
+			"statement": "Détermine le réel de l'intervalle $\\left[0\\,;2\\pi\\right[$ associé au même point du cercle trigonométrique que le réel $-\\frac{ {{if:a==1||{{a}}}}\\pi}{4}$.\n\n$?$",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "1|3|5|7"
+				},
+				{
+					"name": "k",
+					"expression": "1..3"
+				},
+				{
+					"name": "a",
+					"expression": "eval:8*k-p"
+				},
+				{
+					"name": "r",
+					"expression": "eval:p*\\pi/4"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{r}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:(p-8)*\\pi/4}}",
+							"message": "Le réel demandé est dans $\\left[0\\,;2\\pi\\right[$ : il ne peut pas être négatif. Ajoute encore un tour.",
+							"label": "Un tour de moins"
+						},
+						{
+							"answer": "{{eval:(p+8)*\\pi/4}}",
+							"message": "Ce réel dépasse $2\\pi$ : retire encore un tour.",
+							"label": "Un tour de trop"
+						},
+						{
+							"answer": "{{eval:(8-p)*\\pi/4}}",
+							"message": "N'oublie pas le signe moins du réel de départ.",
+							"label": "Signe oublié"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"On ajoute des tours complets ($2\\pi=\\frac{8\\pi}{4}$) jusqu'à tomber dans $\\left[0\\,;2\\pi\\right[$ :",
+					"$$-\\frac{ {{a}}\\pi}{4}={{r}}-\\frac{ {{eval:8*k}}\\pi}{4}={{r}}-{{eval:2*k}}\\pi$$",
+					"Comme $0\\leqslant {{r}}<2\\pi$, le réel cherché est $\\textcolor{{{color:primary.0}}}{ {{r}} }$.",
+					"```trig\npreset: custom\nangles: {{p}}*pi/4\n```"
+				]
+			},
+			"hint": "Le réel est négatif : ajoute des tours complets, avec $2\\pi=\\frac{8\\pi}{4}$."
+		},
+		{
+			"statement": "Détermine le réel de l'intervalle $\\left[0\\,;2\\pi\\right[$ associé au même point du cercle trigonométrique que le réel $-\\frac{ {{if:a==1||{{a}}}}\\pi}{3}$.\n\n$?$",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "1|2|4|5"
+				},
+				{
+					"name": "k",
+					"expression": "1..3"
+				},
+				{
+					"name": "a",
+					"expression": "eval:6*k-p"
+				},
+				{
+					"name": "r",
+					"expression": "eval:p*\\pi/3"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{r}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:(p-6)*\\pi/3}}",
+							"message": "Le réel demandé est dans $\\left[0\\,;2\\pi\\right[$ : il ne peut pas être négatif. Ajoute encore un tour.",
+							"label": "Un tour de moins"
+						},
+						{
+							"answer": "{{eval:(p+6)*\\pi/3}}",
+							"message": "Ce réel dépasse $2\\pi$ : retire encore un tour.",
+							"label": "Un tour de trop"
+						},
+						{
+							"answer": "{{eval:(6-p)*\\pi/3}}",
+							"message": "N'oublie pas le signe moins du réel de départ.",
+							"label": "Signe oublié"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"On ajoute des tours complets ($2\\pi=\\frac{6\\pi}{3}$) jusqu'à tomber dans $\\left[0\\,;2\\pi\\right[$ :",
+					"$$-\\frac{ {{a}}\\pi}{3}={{r}}-\\frac{ {{eval:6*k}}\\pi}{3}={{r}}-{{eval:2*k}}\\pi$$",
+					"Comme $0\\leqslant {{r}}<2\\pi$, le réel cherché est $\\textcolor{{{color:primary.0}}}{ {{r}} }$.",
+					"```trig\npreset: custom\nangles: {{p}}*pi/3\n```"
+				]
+			},
+			"hint": "Le réel est négatif : ajoute des tours complets, avec $2\\pi=\\frac{6\\pi}{3}$."
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "29π/6 → 5π/6",
+			"variationIndex": 0,
+			"variables": {
+				"p": "5",
+				"k": "2"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["\\frac{5\\pi}{6}"]
+		},
+		{
+			"description": "29π/6 : un tour de trop, 17π/6",
+			"variationIndex": 0,
+			"variables": {
+				"p": "5",
+				"k": "2"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Ce réel dépasse $2 \\pi$ : retire encore un tour."
+			},
+			"answers": ["\\frac{17\\pi}{6}"]
+		},
+		{
+			"description": "29π/6 : symétrique 7π/6",
+			"variationIndex": 0,
+			"variables": {
+				"p": "5",
+				"k": "2"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Ce réel est celui du point symétrique : ajouter ou retirer des tours ne change pas le point, changer de signe le change."
+			},
+			"answers": ["\\frac{7\\pi}{6}"]
+		},
+		{
+			"description": "29π/6 : non réduit 10π/12",
+			"variationIndex": 0,
+			"variables": {
+				"p": "5",
+				"k": "2"
+			},
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["reducedFractions"]
+			},
+			"answers": ["\\frac{10\\pi}{12}"]
+		},
+		{
+			"description": "19π/6 → 7π/6",
+			"variationIndex": 0,
+			"variables": {
+				"p": "7",
+				"k": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["\\frac{7\\pi}{6}"]
+		},
+		{
+			"description": "19π/6 : −5π/6 de ]−π ; π]",
+			"variationIndex": 0,
+			"variables": {
+				"p": "7",
+				"k": "1"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Le réel demandé est dans $\\left[0\\,;2\\pi\\right[$ : il ne peut pas être négatif. Ajoute encore un tour."
+			},
+			"answers": ["-\\frac{5\\pi}{6}"]
+		},
+		{
+			"description": "−11π/4 → 5π/4",
+			"variationIndex": 1,
+			"variables": {
+				"p": "5",
+				"k": "2"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["\\frac{5\\pi}{4}"]
+		},
+		{
+			"description": "−11π/4 : −3π/4, un tour de moins",
+			"variationIndex": 1,
+			"variables": {
+				"p": "5",
+				"k": "2"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Le réel demandé est dans $\\left[0\\,;2\\pi\\right[$ : il ne peut pas être négatif. Ajoute encore un tour."
+			},
+			"answers": ["-\\frac{3\\pi}{4}"]
+		},
+		{
+			"description": "−11π/4 : 13π/4, un tour de trop",
+			"variationIndex": 1,
+			"variables": {
+				"p": "5",
+				"k": "2"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Ce réel dépasse $2 \\pi$ : retire encore un tour."
+			},
+			"answers": ["\\frac{13\\pi}{4}"]
+		},
+		{
+			"description": "−11π/4 : signe oublié, 3π/4",
+			"variationIndex": 1,
+			"variables": {
+				"p": "5",
+				"k": "2"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "N'oublie pas le signe moins du réel de départ."
+			},
+			"answers": ["\\frac{3\\pi}{4}"]
+		},
+		{
+			"description": "−7π/4 → π/4",
+			"variationIndex": 1,
+			"variables": {
+				"p": "1",
+				"k": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["\\frac{\\pi}{4}"]
+		},
+		{
+			"description": "−π/3 → 5π/3",
+			"variationIndex": 2,
+			"variables": {
+				"p": "5",
+				"k": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["\\frac{5\\pi}{3}"]
+		},
+		{
+			"description": "−π/3 : signe oublié, π/3",
+			"variationIndex": 2,
+			"variables": {
+				"p": "5",
+				"k": "1"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "N'oublie pas le signe moins du réel de départ."
+			},
+			"answers": ["\\frac{\\pi}{3}"]
+		},
+		{
+			"description": "−π/3 : réel de départ gardé",
+			"variationIndex": 2,
+			"variables": {
+				"p": "5",
+				"k": "1"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Le réel demandé est dans $\\left[0\\,;2\\pi\\right[$ : il ne peut pas être négatif. Ajoute encore un tour."
+			},
+			"answers": ["-\\frac{\\pi}{3}"]
+		},
+		{
+			"description": "−22π/3 → 2π/3",
+			"variationIndex": 2,
+			"variables": {
+				"p": "2",
+				"k": "2"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["\\frac{2\\pi}{3}"]
+		},
+		{
+			"description": "−22π/3 : 8π/3, un tour de trop",
+			"variationIndex": 2,
+			"variables": {
+				"p": "2",
+				"k": "2"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Ce réel dépasse $2 \\pi$ : retire encore un tour."
+			},
+			"answers": ["\\frac{8\\pi}{3}"]
+		}
+	]
+}

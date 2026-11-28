@@ -8,7 +8,7 @@
  * @module types/question-display
  */
 
-import type { QuestionInstance, ValidationStatus, ConstraintId } from '$lib/questions/types';
+import type { QuestionInstance, ValidationStatus, ConstraintId } from '#lib/questions/types.ts';
 
 // ============================================================================
 // ANSWER DATA

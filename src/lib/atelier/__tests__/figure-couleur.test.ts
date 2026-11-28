@@ -9,9 +9,9 @@ import { describe, it, expect } from 'vitest';
 import { Atelier } from '../atelier.svelte';
 import { CalcDesk } from '../desk.svelte';
 import { AtelierFigure, syncFigure } from '../figure-sync';
-import type { Figure } from '$lib/geometry-core/graph/figure';
-import { resolveScreenStyle } from '$lib/geometry-core/rendering/svg-primitives';
-import { curveColorValue } from '$lib/grapheur/colors';
+import type { Figure } from '#lib/geometry-core/graph/figure.ts';
+import { resolveScreenStyle } from '#lib/geometry-core/rendering/svg-primitives.ts';
+import { curveColorValue } from '#lib/grapheur/colors.ts';
 
 function desk(...lines: string[]): CalcDesk {
 	const d = new CalcDesk(new Atelier());

@@ -15,12 +15,15 @@
  * See `docs/wip/geometry/singularity-rigorous-study.md`.
  */
 
-import type { MathNode } from '$lib/mathAST/types';
-import { toCustom } from '$lib/mathAST/custom-generator';
-import { analyzeContinuity, getDiscontinuitySourceDescription } from '$lib/mathAST/analysis';
-import type { Discontinuity, LimitSign } from '$lib/mathAST/analysis';
-import { isInfinity } from '$lib/mathAST/guards';
-import { computeNumericValue } from '$lib/mathAST/eval/numeric-value';
+import type { MathNode } from '#lib/mathAST/types.ts';
+import { toCustom } from '#lib/mathAST/custom-generator.ts';
+import {
+	analyzeContinuity,
+	getDiscontinuitySourceDescription
+} from '#lib/mathAST/analysis/index.ts';
+import type { Discontinuity, LimitSign } from '#lib/mathAST/analysis/index.ts';
+import { isInfinity } from '#lib/mathAST/guards.ts';
+import { computeNumericValue } from '#lib/mathAST/eval/numeric-value.ts';
 
 /**
  * A discontinuity of `f` whose location falls inside the integration range

@@ -5,8 +5,8 @@
 -->
 
 <script lang="ts">
-	import type { AnswerAssumptions } from '$lib/math';
-	import { formatAnswerAssumptions } from '$lib/questions/answer-assumptions';
+	import type { AnswerAssumptions } from '#lib/math/index.ts';
+	import { formatAnswerAssumptions } from '#lib/questions/answer-assumptions.ts';
 
 	interface Props {
 		assumptions: AnswerAssumptions | undefined;

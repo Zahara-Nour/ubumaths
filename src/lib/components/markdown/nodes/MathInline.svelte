@@ -19,8 +19,9 @@
 	@see ExerciseDisplay.svelte for rendering context
 -->
 <script lang="ts">
-	import '$lib/utils/mathlive-styles';
-	import 'mathlive';
+	import { onMount } from 'svelte';
+	import '#lib/utils/mathlive-styles.ts';
+	import { convertLatexToSpeakableText } from 'mathlive';
 	import { expressionToLatex } from '../utils/math-utils';
 	import { readContentLocale } from '../content-locale';
 	import { readCapitalPairs } from '../content-capital-pairs';
@@ -31,7 +32,11 @@
 		readProjectMediaOnly,
 		readRestrictedRendering
 	} from '../restricted-rendering';
-	import type { GenericFunctionConfig } from '$lib/mathAST/parser/types';
+	import type { GenericFunctionConfig } from '#lib/mathAST/parser/types.ts';
+	import { readBreakableMath } from '../content-breakable-math';
+	import { splitLatexAtBreaks } from '#lib/utils/latex-break-points.ts';
+	import { speakLatexInFrench } from '#lib/utils/formula-speech/french.ts';
+	import { stripSpeechMarkup } from '#lib/utils/formula-speech/speech-markup.ts';
 
 	interface Props {
 		expression: string;
@@ -76,13 +81,51 @@
 			(isRefusedRestrictedFormula(expression) || isRefusedRestrictedFormula(latex))) ||
 			(isProjectMediaOnly() && (hasUnsafeMathCommand(expression) || hasUnsafeMathCommand(latex)))
 	);
+	// Lieu étroit (étapes à ranger, E52) : la formule en morceaux, la ligne se coupe
+	// après un `=` ou un `+` ; ailleurs, d'un seul tenant
+	const isBreakable = readBreakableMath();
+	let pieces = $derived(isBreakable() ? splitLatexAtBreaks(latex) : [latex]);
+	// `className` se répète sur chaque morceau : une classe à marge ou bordure les
+	// encadrerait un à un (aucun appelant n'en passe aujourd'hui).
+	// Découpée, la formule se lit d'un tenant : le conteneur porte la lecture de la
+	// formule entière, les morceaux (chacun `role="img"` chez MathLive) sont cachés
+	// Lecture dans la langue du contenu (E32). L'anglaise vient de MathLive, dans le
+	// navigateur seulement : `convertLatexToSpeakableText` lit `window.MathfieldElement`,
+	// au rendu serveur elle lève et la page part en 500. Après le montage, pas par
+	// `browser` : l'hydratation ne réécrit pas un attribut.
+	let mounted = $state(false);
+	let english = $derived(contentLocale() === 'en');
+	let spoken = $derived.by(() => {
+		if (pieces.length <= 1) return undefined;
+		if (!english) return speakLatexInFrench(latex);
+		return mounted ? stripSpeechMarkup(convertLatexToSpeakableText(latex)) : undefined;
+	});
+
+	onMount(() => {
+		mounted = true;
+	});
 </script>
 
 {#if unsafe}
 	<code class="restricted-math {className}">${expression}$</code>
 {:else}
 	{#key latex}
-		<math-span class="inline-math-static {className}">{latex}</math-span>
+		{#if pieces.length > 1}
+			<span
+				class="inline-math-pieces"
+				role="img"
+				aria-label={spoken}
+				lang={english ? 'en' : undefined}
+				>{#each pieces as piece, i (i)}{#if i > 0}<wbr />{/if}<math-span
+						class="inline-math-static {className}"
+						aria-hidden="true">{piece}</math-span
+					>{/each}</span
+			>
+		{:else}
+			<math-span class="inline-math-static {className}" lang={english ? 'en' : undefined}
+				>{latex}</math-span
+			>
+		{/if}
 	{/key}
 {/if}
 

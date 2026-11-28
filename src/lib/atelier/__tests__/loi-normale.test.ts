@@ -7,12 +7,12 @@
 
 import { describe, it, expect } from 'vitest';
 import { Atelier } from '../atelier.svelte';
-import { WebReplEngine } from '$lib/mathAST/cli/web/web-repl-engine';
+import { WebReplEngine } from '#lib/mathAST/cli/web/web-repl-engine.ts';
 import { runInput, type CalcSession } from '../calcul';
 import { commandCatalog } from '../commands';
-import { parseStatChartContent } from '$lib/ubumark/parser/stat-chart-parser';
-import { buildStatChartScene, type LawScene } from '$lib/ubumark/utils/stat-chart-scene';
-import { normalCdf, normalProbability } from '$lib/statistics/density';
+import { parseStatChartContent } from '#lib/ubumark/parser/stat-chart-parser.ts';
+import { buildStatChartScene, type LawScene } from '#lib/ubumark/utils/stat-chart-scene.ts';
+import { normalCdf, normalProbability } from '#lib/statistics/density.ts';
 
 function session(): CalcSession {
 	return { atelier: new Atelier(), engine: new WebReplEngine() };

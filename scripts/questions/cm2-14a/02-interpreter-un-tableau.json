@@ -1,0 +1,583 @@
+{
+	"id": "e1f02c23-582c-4e7e-b5a0-20578e66f834",
+	"title": "Que dit le tableau ? (grands nombres, décimaux, double entrée)",
+	"description": "Le pays le plus peuplé (neuf chiffres), le colis le plus léger (2,125 contre 2,3 : le plus long n'est pas le plus grand), l'année la plus pluvieuse d'une ville (double entrée), combien de kg de plus pèse un colis (centièmes)",
+	"grades": ["CM2"],
+	"level": 7,
+	"delay": 120,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"spacesFromFourDigits": true,
+			"zeros": "off"
+		}
+	},
+	"variations": [
+		{
+			"statement": "Ce tableau donne le nombre d'habitants de cinq pays.\n\n| Pays | Nombre d'habitants |\n|---|---|\n| Valdorie | ${{p1}}$ |\n| Morvanie | ${{p2}}$ |\n| Brévanie | ${{p3}}$ |\n| Talessie | ${{p4}}$ |\n| Norlande | ${{p5}}$ |\n\nQuel pays est le plus peuplé ?\n\n```choix\nmelanger: non\n- Valdorie\n- Morvanie\n- Brévanie\n- Talessie\n- Norlande\n```",
+			"variables": [
+				{
+					"name": "b1",
+					"expression": "800000000..949999999"
+				},
+				{
+					"name": "b2",
+					"expression": "800000000..949999999"
+				},
+				{
+					"name": "b3",
+					"expression": "800000000..949999999"
+				},
+				{
+					"name": "b4",
+					"expression": "800000000..949999999"
+				},
+				{
+					"name": "b5",
+					"expression": "800000000..949999999"
+				},
+				{
+					"name": "c",
+					"expression": "950000000..999999999"
+				},
+				{
+					"name": "k",
+					"expression": "0..4"
+				},
+				{
+					"name": "p1",
+					"expression": "eval:(b1)+((c)-(b1))*((k-1)*(k-2)*(k-3)*(k-4))/(24)"
+				},
+				{
+					"name": "p2",
+					"expression": "eval:(b2)+((c)-(b2))*((k-0)*(k-2)*(k-3)*(k-4))/(-6)"
+				},
+				{
+					"name": "p3",
+					"expression": "eval:(b3)+((c)-(b3))*((k-0)*(k-1)*(k-3)*(k-4))/(4)"
+				},
+				{
+					"name": "p4",
+					"expression": "eval:(b4)+((c)-(b4))*((k-0)*(k-1)*(k-2)*(k-4))/(-6)"
+				},
+				{
+					"name": "p5",
+					"expression": "eval:(b5)+((c)-(b5))*((k-0)*(k-1)*(k-2)*(k-3))/(24)"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{k}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Tous les nombres ont neuf chiffres : on les compare chiffre par chiffre, depuis la gauche (centaines de millions, puis dizaines de millions…).",
+					"Le plus grand : ${{c}}$, c'est la {{if:k==0|Valdorie|{{if:k==1|Morvanie|{{if:k==2|Brévanie|{{if:k==3|Talessie|Norlande}}}}}}}}."
+				]
+			}
+		},
+		{
+			"statement": "Ce tableau donne la masse de cinq colis.\n\n| Colis | Masse (kg) |\n|---|---|\n| A | ${{eval:m1/1000;d}}$ |\n| B | ${{eval:m2/1000;d}}$ |\n| C | ${{eval:m3/1000;d}}$ |\n| D | ${{eval:m4/1000;d}}$ |\n| E | ${{eval:m5/1000;d}}$ |\n\nQuel colis est le plus léger ?\n\n```choix\nmelanger: non\n- Le colis A\n- Le colis B\n- Le colis C\n- Le colis D\n- Le colis E\n```",
+			"variables": [
+				{
+					"name": "u1",
+					"expression": "2..9"
+				},
+				{
+					"name": "u2",
+					"expression": "2..9"
+				},
+				{
+					"name": "u3",
+					"expression": "2..9"
+				},
+				{
+					"name": "u4",
+					"expression": "2..9"
+				},
+				{
+					"name": "u5",
+					"expression": "2..9"
+				},
+				{
+					"name": "c",
+					"expression": "2101..2199"
+				},
+				{
+					"name": "k",
+					"expression": "0..4"
+				},
+				{
+					"name": "m1",
+					"expression": "eval:(2000+100*u1)+((c)-(2000+100*u1))*((k-1)*(k-2)*(k-3)*(k-4))/(24)"
+				},
+				{
+					"name": "m2",
+					"expression": "eval:(2000+100*u2)+((c)-(2000+100*u2))*((k-0)*(k-2)*(k-3)*(k-4))/(-6)"
+				},
+				{
+					"name": "m3",
+					"expression": "eval:(2000+100*u3)+((c)-(2000+100*u3))*((k-0)*(k-1)*(k-3)*(k-4))/(4)"
+				},
+				{
+					"name": "m4",
+					"expression": "eval:(2000+100*u4)+((c)-(2000+100*u4))*((k-0)*(k-1)*(k-2)*(k-4))/(-6)"
+				},
+				{
+					"name": "m5",
+					"expression": "eval:(2000+100*u5)+((c)-(2000+100*u5))*((k-0)*(k-1)*(k-2)*(k-3))/(24)"
+				}
+			],
+			"conditions": ["mod(c,10) != 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{k}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le plus léger a la plus petite masse. Toutes commencent par $2$ unités : on compare les dixièmes. Un nombre qui a plus de chiffres après la virgule n'est pas plus grand pour autant.",
+					"${{eval:c/1000;d}}$ n'a qu'$1$ dixième : c'est la plus petite masse, le colis {{if:k==0|A|{{if:k==1|B|{{if:k==2|C|{{if:k==3|D|E}}}}}}}}."
+				]
+			}
+		},
+		{
+			"statement": "Ce tableau donne la hauteur de pluie tombée en un an (en mm) dans cinq villes, trois années de suite.\n\n```tableau-croise\nlignes: Brumeval ; Castelroc ; Pontaval ; Mirelande ; Sablonnière\ncolonnes: 2023 ; 2024 ; 2025\nBrumeval = {{r10}} ; {{r11}} ; {{r12}}\nCastelroc = {{r20}} ; {{r21}} ; {{r22}}\nPontaval = {{r30}} ; {{r31}} ; {{r32}}\nMirelande = {{r40}} ; {{r41}} ; {{r42}}\nSablonnière = {{r50}} ; {{r51}} ; {{r52}}\ncoin: Ville \\ Année\ntotaux: non\n```\n\nEn quelle année a-t-il le plus plu à {{if:k==0|Brumeval|{{if:k==1|Castelroc|{{if:k==2|Pontaval|{{if:k==3|Mirelande|Sablonnière}}}}}}}} ?\n\n```choix\nmelanger: non\n- 2023\n- 2024\n- 2025\n```",
+			"variables": [
+				{
+					"name": "b10",
+					"expression": "400..1099"
+				},
+				{
+					"name": "b11",
+					"expression": "400..1099"
+				},
+				{
+					"name": "b12",
+					"expression": "400..1099"
+				},
+				{
+					"name": "b20",
+					"expression": "400..1099"
+				},
+				{
+					"name": "b21",
+					"expression": "400..1099"
+				},
+				{
+					"name": "b22",
+					"expression": "400..1099"
+				},
+				{
+					"name": "b30",
+					"expression": "400..1099"
+				},
+				{
+					"name": "b31",
+					"expression": "400..1099"
+				},
+				{
+					"name": "b32",
+					"expression": "400..1099"
+				},
+				{
+					"name": "b40",
+					"expression": "400..1099"
+				},
+				{
+					"name": "b41",
+					"expression": "400..1099"
+				},
+				{
+					"name": "b42",
+					"expression": "400..1099"
+				},
+				{
+					"name": "b50",
+					"expression": "400..1099"
+				},
+				{
+					"name": "b51",
+					"expression": "400..1099"
+				},
+				{
+					"name": "b52",
+					"expression": "400..1099"
+				},
+				{
+					"name": "t",
+					"expression": "1100..1200"
+				},
+				{
+					"name": "k",
+					"expression": "0..4"
+				},
+				{
+					"name": "q",
+					"expression": "0..2"
+				},
+				{
+					"name": "r10",
+					"expression": "eval:b10+(t-b10)*((k-1)*(k-2)*(k-3)*(k-4))/(24)*((q-1)*(q-2))/(2)"
+				},
+				{
+					"name": "r11",
+					"expression": "eval:b11+(t-b11)*((k-1)*(k-2)*(k-3)*(k-4))/(24)*((q-0)*(q-2))/(-1)"
+				},
+				{
+					"name": "r12",
+					"expression": "eval:b12+(t-b12)*((k-1)*(k-2)*(k-3)*(k-4))/(24)*((q-0)*(q-1))/(2)"
+				},
+				{
+					"name": "r20",
+					"expression": "eval:b20+(t-b20)*((k-0)*(k-2)*(k-3)*(k-4))/(-6)*((q-1)*(q-2))/(2)"
+				},
+				{
+					"name": "r21",
+					"expression": "eval:b21+(t-b21)*((k-0)*(k-2)*(k-3)*(k-4))/(-6)*((q-0)*(q-2))/(-1)"
+				},
+				{
+					"name": "r22",
+					"expression": "eval:b22+(t-b22)*((k-0)*(k-2)*(k-3)*(k-4))/(-6)*((q-0)*(q-1))/(2)"
+				},
+				{
+					"name": "r30",
+					"expression": "eval:b30+(t-b30)*((k-0)*(k-1)*(k-3)*(k-4))/(4)*((q-1)*(q-2))/(2)"
+				},
+				{
+					"name": "r31",
+					"expression": "eval:b31+(t-b31)*((k-0)*(k-1)*(k-3)*(k-4))/(4)*((q-0)*(q-2))/(-1)"
+				},
+				{
+					"name": "r32",
+					"expression": "eval:b32+(t-b32)*((k-0)*(k-1)*(k-3)*(k-4))/(4)*((q-0)*(q-1))/(2)"
+				},
+				{
+					"name": "r40",
+					"expression": "eval:b40+(t-b40)*((k-0)*(k-1)*(k-2)*(k-4))/(-6)*((q-1)*(q-2))/(2)"
+				},
+				{
+					"name": "r41",
+					"expression": "eval:b41+(t-b41)*((k-0)*(k-1)*(k-2)*(k-4))/(-6)*((q-0)*(q-2))/(-1)"
+				},
+				{
+					"name": "r42",
+					"expression": "eval:b42+(t-b42)*((k-0)*(k-1)*(k-2)*(k-4))/(-6)*((q-0)*(q-1))/(2)"
+				},
+				{
+					"name": "r50",
+					"expression": "eval:b50+(t-b50)*((k-0)*(k-1)*(k-2)*(k-3))/(24)*((q-1)*(q-2))/(2)"
+				},
+				{
+					"name": "r51",
+					"expression": "eval:b51+(t-b51)*((k-0)*(k-1)*(k-2)*(k-3))/(24)*((q-0)*(q-2))/(-1)"
+				},
+				{
+					"name": "r52",
+					"expression": "eval:b52+(t-b52)*((k-0)*(k-1)*(k-2)*(k-3))/(24)*((q-0)*(q-1))/(2)"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{q}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On ne regarde que la ligne « {{if:k==0|Brumeval|{{if:k==1|Castelroc|{{if:k==2|Pontaval|{{if:k==3|Mirelande|Sablonnière}}}}}}}} », et on y cherche le plus grand nombre.",
+					"Le plus grand : ${{t}}$ mm, en {{if:q==0|2023|{{if:q==1|2024|2025}}}}."
+				]
+			}
+		},
+		{
+			"statement": "Ce tableau donne la masse de cinq colis.\n\n| Colis | Masse (kg) |\n|---|---|\n| A | ${{eval:m1/100;d}}$ |\n| B | ${{eval:m2/100;d}}$ |\n| C | ${{eval:m3/100;d}}$ |\n| D | ${{eval:m4/100;d}}$ |\n| E | ${{eval:m5/100;d}}$ |\n\nCombien de kilogrammes le colis {{if:k==0|A|{{if:k==1|B|{{if:k==2|C|{{if:k==3|D|E}}}}}}}} pèse-t-il de plus que le colis {{if:k==0|B|{{if:k==1|C|{{if:k==2|D|{{if:k==3|E|A}}}}}}}} ?\n\n$?$ kg",
+			"variables": [
+				{
+					"name": "m1",
+					"expression": "105..995"
+				},
+				{
+					"name": "m2",
+					"expression": "105..995"
+				},
+				{
+					"name": "m3",
+					"expression": "105..995"
+				},
+				{
+					"name": "m4",
+					"expression": "105..995"
+				},
+				{
+					"name": "m5",
+					"expression": "105..995"
+				},
+				{
+					"name": "k",
+					"expression": "0..4"
+				},
+				{
+					"name": "x",
+					"expression": "eval:(m1)*((k-1)*(k-2)*(k-3)*(k-4))/(24)+(m2)*((k-0)*(k-2)*(k-3)*(k-4))/(-6)+(m3)*((k-0)*(k-1)*(k-3)*(k-4))/(4)+(m4)*((k-0)*(k-1)*(k-2)*(k-4))/(-6)+(m5)*((k-0)*(k-1)*(k-2)*(k-3))/(24)"
+				},
+				{
+					"name": "y",
+					"expression": "eval:(m2)*((k-1)*(k-2)*(k-3)*(k-4))/(24)+(m3)*((k-0)*(k-2)*(k-3)*(k-4))/(-6)+(m4)*((k-0)*(k-1)*(k-3)*(k-4))/(4)+(m5)*((k-0)*(k-1)*(k-2)*(k-4))/(-6)+(m1)*((k-0)*(k-1)*(k-2)*(k-3))/(24)"
+				},
+				{
+					"name": "d",
+					"expression": "eval:x-y"
+				}
+			],
+			"conditions": ["x > y", "mod(x-y,100) != 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:d/100;d}}",
+					"requiredForm": {
+						"pattern": "a:number"
+					}
+				}
+			],
+			"correction": {
+				"steps": [
+					"On lit les deux masses : colis {{if:k==0|A|{{if:k==1|B|{{if:k==2|C|{{if:k==3|D|E}}}}}}}} ${{eval:x/100;d}}$ kg, colis {{if:k==0|B|{{if:k==1|C|{{if:k==2|D|{{if:k==3|E|A}}}}}}}} ${{eval:y/100;d}}$ kg.",
+					"« Combien de plus » : on calcule l'écart, ${{eval:x/100;d}} - {{eval:y/100;d}} = \\textcolor{{{color:primary.0}}}{{{eval:d/100;d}}}$ kg."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Le plus peuplé : Talessie (rang 3)",
+			"variationIndex": 0,
+			"variables": {
+				"b1": "912345678",
+				"b2": "948120004",
+				"b3": "875300120",
+				"b4": "931002456",
+				"b5": "809870000",
+				"c": "967000123",
+				"k": "3",
+				"p1": "912345678",
+				"p2": "948120004",
+				"p3": "875300120",
+				"p4": "967000123",
+				"p5": "809870000"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : Morvanie (948…)",
+			"variationIndex": 0,
+			"variables": {
+				"b1": "912345678",
+				"b2": "948120004",
+				"b3": "875300120",
+				"b4": "931002456",
+				"b5": "809870000",
+				"c": "967000123",
+				"k": "3",
+				"p1": "912345678",
+				"p2": "948120004",
+				"p3": "875300120",
+				"p4": "967000123",
+				"p5": "809870000"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Le plus léger : colis C (2,125 kg)",
+			"variationIndex": 1,
+			"variables": {
+				"u1": "5",
+				"u2": "2",
+				"u3": "9",
+				"u4": "3",
+				"u5": "7",
+				"c": "2125",
+				"k": "2",
+				"m1": "2500",
+				"m2": "2200",
+				"m3": "2125",
+				"m4": "2300",
+				"m5": "2700"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : colis B (2,2 kg, le plus court)",
+			"variationIndex": 1,
+			"variables": {
+				"u1": "5",
+				"u2": "2",
+				"u3": "9",
+				"u4": "3",
+				"u5": "7",
+				"c": "2125",
+				"k": "2",
+				"m1": "2500",
+				"m2": "2200",
+				"m3": "2125",
+				"m4": "2300",
+				"m5": "2700"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Castelroc : 2025",
+			"variationIndex": 2,
+			"variables": {
+				"b10": "441",
+				"b11": "538",
+				"b12": "635",
+				"b20": "482",
+				"b21": "579",
+				"b22": "676",
+				"b30": "523",
+				"b31": "620",
+				"b32": "717",
+				"b40": "564",
+				"b41": "661",
+				"b42": "758",
+				"b50": "605",
+				"b51": "702",
+				"b52": "799",
+				"t": "1150",
+				"k": "1",
+				"q": "2",
+				"r10": "441",
+				"r11": "538",
+				"r12": "635",
+				"r20": "482",
+				"r21": "579",
+				"r22": "1150",
+				"r30": "523",
+				"r31": "620",
+				"r32": "717",
+				"r40": "564",
+				"r41": "661",
+				"r42": "758",
+				"r50": "605",
+				"r51": "702",
+				"r52": "799"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 2024",
+			"variationIndex": 2,
+			"variables": {
+				"b10": "441",
+				"b11": "538",
+				"b12": "635",
+				"b20": "482",
+				"b21": "579",
+				"b22": "676",
+				"b30": "523",
+				"b31": "620",
+				"b32": "717",
+				"b40": "564",
+				"b41": "661",
+				"b42": "758",
+				"b50": "605",
+				"b51": "702",
+				"b52": "799",
+				"t": "1150",
+				"k": "1",
+				"q": "2",
+				"r10": "441",
+				"r11": "538",
+				"r12": "635",
+				"r20": "482",
+				"r21": "579",
+				"r22": "1150",
+				"r30": "523",
+				"r31": "620",
+				"r32": "717",
+				"r40": "564",
+				"r41": "661",
+				"r42": "758",
+				"r50": "605",
+				"r51": "702",
+				"r52": "799"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "C − D : 9,12 − 2,56 = 6,56",
+			"variationIndex": 3,
+			"variables": {
+				"m1": "745",
+				"m2": "380",
+				"m3": "912",
+				"m4": "256",
+				"m5": "503",
+				"k": "2",
+				"x": "912",
+				"y": "256",
+				"d": "656"
+			},
+			"answers": ["6,56"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : la somme (11,68)",
+			"variationIndex": 3,
+			"variables": {
+				"m1": "745",
+				"m2": "380",
+				"m3": "912",
+				"m4": "256",
+				"m5": "503",
+				"k": "2",
+				"x": "912",
+				"y": "256",
+				"d": "656"
+			},
+			"answers": ["11,68"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "A − B : 7,45 − 3,8 = 3,65",
+			"variationIndex": 3,
+			"variables": {
+				"m1": "745",
+				"m2": "380",
+				"m3": "912",
+				"m4": "256",
+				"m5": "503",
+				"k": "0",
+				"x": "745",
+				"y": "380",
+				"d": "365"
+			},
+			"answers": ["3,65"],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}

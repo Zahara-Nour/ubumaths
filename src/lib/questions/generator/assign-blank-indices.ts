@@ -16,6 +16,7 @@
  * - Bloc ```collection ou ```monnaie à construire (`construire: N`) → UNE case, `case: N`
  *   posé dans le bloc ; droite à placer (```line, `placer: A=3 ; B=7`) → une case par point,
  *   droite à représenter (```line, `representer: [2, +inf[`) → une case (texte),
+ *   droite à graduer (```line, `graduer: 3`) → une case pour les parts puis une par point,
  *   N, N + 1…, seul N est posé ; diagramme en barres à construire (```barres, `placer:`) →
  *   une case par barre, de même ; repère à points à placer (```courbe, `placer: A=(2 ; 3)`)
  *   → une case par point, de même (refusé aussi comme option d'un bloc choix)
@@ -31,27 +32,40 @@
  * @module questions/generator/assign-blank-indices
  */
 
-import { parseOperationContent } from '$lib/ubumark/parser/operation-parser';
-import { findFigureBlocks } from '$lib/ubumark/parser/figure-parser';
-import { findBuildCollections } from '$lib/ubumark/parser/collection-parser';
-import { findBuildMonnaies } from '$lib/ubumark/parser/monnaie-parser';
-import { findLinesToPlace, isLineToRepresent } from '$lib/ubumark/parser/number-line-parser';
-import { findHorlogesToPlace } from '$lib/ubumark/parser/horloge-parser';
-import { findBarsToPlace, findBoxPlotsToPlace } from '$lib/ubumark/parser/stat-chart-parser';
-import { findRangersToPlace } from '$lib/ubumark/parser/ranger-parser';
-import { findPartagesToColorier } from '$lib/ubumark/parser/partage-parser';
+import { parseOperationContent } from '#lib/ubumark/parser/operation-parser.ts';
+import { findFigureBlocks } from '#lib/ubumark/parser/figure-parser.ts';
+import { findBuildCollections } from '#lib/ubumark/parser/collection-parser.ts';
+import { findBuildMonnaies } from '#lib/ubumark/parser/monnaie-parser.ts';
+import { findLinesToPlace, isLineToRepresent } from '#lib/ubumark/parser/number-line-parser.ts';
+import { findHorlogesToPlace } from '#lib/ubumark/parser/horloge-parser.ts';
+import { findBarsToPlace, findBoxPlotsToPlace } from '#lib/ubumark/parser/stat-chart-parser.ts';
+import { findRangersToPlace } from '#lib/ubumark/parser/ranger-parser.ts';
+import {
+	ASSOCIER_FENCE_MESSAGE,
+	associerItemHasBlock,
+	findAssociersToPlace,
+	parseAssocierContent
+} from '#lib/ubumark/parser/associer-parser.ts';
+import { findTrousToPlace } from '#lib/ubumark/parser/trous-parser.ts';
+import { findPartagesToColorier } from '#lib/ubumark/parser/partage-parser.ts';
 import {
 	findCubesToBuild,
 	findPatronsToBuild,
 	findSolidesToBuild
-} from '$lib/ubumark/parser/espace-parser';
-import { findCourbesToPlace } from '$lib/ubumark/parser/courbe-parser';
-import { findTrigCirclesToPlace } from '$lib/ubumark/parser/trig-circle-parser';
-import { findVariationsToFill } from '$lib/ubumark/parser/variation-table-parser';
-import { NESTED_PREFIX } from '$lib/ubumark/parser/nested-line';
+} from '#lib/ubumark/parser/espace-parser.ts';
+import { findCourbesToPlace } from '#lib/ubumark/parser/courbe-parser.ts';
+import { findTrigCirclesToPlace } from '#lib/ubumark/parser/trig-circle-parser.ts';
+import { findTortuesToProgram } from '#lib/ubumark/parser/tortue-parser.ts';
+import { findCalculsToProgram } from '#lib/ubumark/parser/calcul-parser.ts';
+import { findRobotsToProduce } from '#lib/ubumark/parser/robot-parser.ts';
+import { findLabyrinthesAParcourir } from '#lib/ubumark/parser/labyrinthe-parser.ts';
+import { findYohakusARemplir } from '#lib/ubumark/parser/yohaku-parser.ts';
+import { findPythonsAEcrire } from '#lib/ubumark/parser/python-a-ecrire-parser.ts';
+import { findVariationsToFill } from '#lib/ubumark/parser/variation-table-parser.ts';
+import { NESTED_PREFIX } from '#lib/ubumark/parser/nested-line.ts';
 import { buildCaseCount } from './build-answer';
 import { buildKindName, type BuildKind } from '../types';
-import { operationCaseCount } from '$lib/ubumark/utils/operation-division-answer';
+import { operationCaseCount } from '#lib/ubumark/utils/operation-division-answer.ts';
 import {
 	CHOICE_BLOCK_NESTED_MESSAGE,
 	CHOICE_BLOCK_UNCLOSED_MESSAGE,
@@ -60,7 +74,7 @@ import {
 	isChoiceBlockStart,
 	isNestedChoiceBlockStart,
 	parseChoiceBody
-} from '$lib/ubumark/parser/choix-parser';
+} from '#lib/ubumark/parser/choix-parser.ts';
 
 /** Type d'une case : formule, texte, ou case « choix » (bloc ```choix) */
 export type AssignedBlankType = 'math' | 'text' | 'choice';
@@ -137,6 +151,20 @@ export interface AssignBlankIndicesResult {
 export interface VariationBlank {
 	source: string;
 	cell: number;
+}
+
+/**
+ * Un tableau à compléter de l'énoncé porte-t-il une variable (`{{al}}`) ou une
+ * expression ? Sur l'énoncé brut, il ne se lit alors souvent pas et compte pour une
+ * case : le nombre de ses cases, et le rang des cases qui le suivent, ne se savent
+ * qu'au tirage (outil 63, `docs/wip/outil-tableau-variation-progress.md`).
+ */
+export function variationCasesUnresolved(
+	result: Pick<AssignBlankIndicesResult, 'variationBlanks'>
+): boolean {
+	return Object.values(result.variationBlanks ?? {}).some(({ source }) =>
+		/\{\{|<<expr:/.test(source)
+	);
 }
 
 /** Marque d'un bloc ```choix mis à l'abri : début, rang du bloc, fin */
@@ -267,6 +295,24 @@ function choiceBlockErrors(block: MarkedChoiceBlock, caseIndex: number): string[
 	if (findTrigCirclesToPlace(block.body.join('\n')).length > 0) {
 		errors.push(`${prefix} ${buildNestedMessage('trig')}`);
 	}
+	if (findTortuesToProgram(block.body.join('\n')).length > 0) {
+		errors.push(`${prefix} ${buildNestedMessage('tortue')}`);
+	}
+	if (findCalculsToProgram(block.body.join('\n')).length > 0) {
+		errors.push(`${prefix} ${buildNestedMessage('calcul')}`);
+	}
+	if (findRobotsToProduce(block.body.join('\n')).length > 0) {
+		errors.push(`${prefix} ${buildNestedMessage('robot')}`);
+	}
+	if (findLabyrinthesAParcourir(block.body.join('\n')).length > 0) {
+		errors.push(`${prefix} ${buildNestedMessage('labyrinthe')}`);
+	}
+	if (findYohakusARemplir(block.body.join('\n')).length > 0) {
+		errors.push(`${prefix} ${buildNestedMessage('yohaku')}`);
+	}
+	if (findPythonsAEcrire(block.body.join('\n')).length > 0) {
+		errors.push(`${prefix} ${buildNestedMessage('python')}`);
+	}
 	if (findVariationsToFill(block.body.join('\n')).length > 0) {
 		errors.push(`${prefix} ${VARIATION_NESTED_MESSAGE}`);
 	}
@@ -377,16 +423,24 @@ const NESTED_BLOCK_NAMES: Record<BuildKind, string> = {
 	barres: 'Un diagramme en barres à construire',
 	'boite-a-moustaches': 'Une boîte à moustaches à construire',
 	ranger: 'Des étiquettes à ranger',
+	associer: 'Des éléments à associer',
+	trous: 'Un texte à trous',
 	partage: 'Une figure à colorier',
 	cubes: 'Un assemblage de cubes à geste',
 	patron: 'Un patron à geste',
 	courbe: 'Un repère à points à placer',
 	trig: 'Un cercle trigonométrique à points à placer',
-	solide: 'Un solide à geste'
+	solide: 'Un solide à geste',
+	tortue: 'Un programme tortue',
+	calcul: 'Un programme de calcul',
+	robot: 'Un robot à produire',
+	labyrinthe: 'Un labyrinthe à parcourir',
+	yohaku: 'Une grille à remplir',
+	python: 'Un programme Python'
 };
 
 const buildNestedMessage = (kind: BuildKind) =>
-	`${NESTED_BLOCK_NAMES[kind]} ${kind === 'ranger' ? 'doivent' : 'doit'} être au premier niveau de l’énoncé (ni dans une liste, ni dans une citation)`;
+	`${NESTED_BLOCK_NAMES[kind]} ${kind === 'ranger' || kind === 'associer' ? 'doivent' : 'doit'} être au premier niveau de l’énoncé (ni dans une liste, ni dans une citation)`;
 
 /** Bloc `cases: aucune` : opération résolue, rien à remplir */
 function isSolvedOperation(body: string[]): boolean {
@@ -490,6 +544,10 @@ function markBuildBlocks(statement: string): {
 	blocks: BuildBlock[];
 	errors: string[];
 } {
+	const associers = findAssociersToPlace(statement);
+	/** Une courbe dans un élément à associer : le bloc associer la refuse, avec son message */
+	const inAssocier = (index: number) =>
+		associers.some((b) => index > b.startIndex && index < b.endIndex);
 	const found = [
 		...findBuildCollections(statement).map((b) => ({ ...b, kind: 'collection' as const })),
 		...findBuildMonnaies(statement).map((b) => ({ ...b, kind: 'monnaie' as const })),
@@ -501,14 +559,31 @@ function markBuildBlocks(statement: string): {
 			kind: 'boite-a-moustaches' as const
 		})),
 		...findRangersToPlace(statement).map((b) => ({ ...b, kind: 'ranger' as const })),
+		...associers.map((b) => ({ ...b, kind: 'associer' as const })),
+		...findTrousToPlace(statement).map((b) => ({ ...b, kind: 'trous' as const })),
 		...findPartagesToColorier(statement).map((b) => ({ ...b, kind: 'partage' as const })),
 		...findCubesToBuild(statement).map((b) => ({ ...b, kind: 'cubes' as const })),
 		...findPatronsToBuild(statement).map((b) => ({ ...b, kind: 'patron' as const })),
-		...findCourbesToPlace(statement).map((b) => ({ ...b, kind: 'courbe' as const })),
+		...findCourbesToPlace(statement)
+			.filter((b) => !inAssocier(b.startIndex))
+			.map((b) => ({ ...b, kind: 'courbe' as const })),
 		...findTrigCirclesToPlace(statement).map((b) => ({ ...b, kind: 'trig' as const })),
-		...findSolidesToBuild(statement).map((b) => ({ ...b, kind: 'solide' as const }))
+		...findSolidesToBuild(statement).map((b) => ({ ...b, kind: 'solide' as const })),
+		...findTortuesToProgram(statement).map((b) => ({ ...b, kind: 'tortue' as const })),
+		...findCalculsToProgram(statement).map((b) => ({ ...b, kind: 'calcul' as const })),
+		...findRobotsToProduce(statement).map((b) => ({ ...b, kind: 'robot' as const })),
+		...findLabyrinthesAParcourir(statement).map((b) => ({ ...b, kind: 'labyrinthe' as const })),
+		...findYohakusARemplir(statement).map((b) => ({ ...b, kind: 'yohaku' as const })),
+		...findPythonsAEcrire(statement).map((b) => ({ ...b, kind: 'python' as const }))
 	].sort((a, b) => a.startIndex - b.startIndex);
 	const errors = found.filter((b) => b.nested).map((b) => buildNestedMessage(b.kind));
+	// Courbe dans un élément d'un bloc fermé par ``` : même message que l'aperçu
+	for (const block of associers) {
+		if (block.nested || block.fence.length > 3) continue;
+		if (parseAssocierContent(block.body.join('\n')).items.some(associerItemHasBlock)) {
+			errors.push(`Des éléments à associer : ${ASSOCIER_FENCE_MESSAGE}`);
+		}
+	}
 	const marked = found.filter((b) => !b.nested);
 	const markAfter = new Set(marked.map((b) => b.startIndex));
 	const out = statement
@@ -731,6 +806,8 @@ export function assignBlankIndices(
 								build.kind === 'barres' ||
 								build.kind === 'boite-a-moustaches' ||
 								build.kind === 'ranger' ||
+								build.kind === 'associer' ||
+								build.kind === 'trous' ||
 								build.kind === 'courbe' ||
 								build.kind === 'trig') && {
 								point
@@ -748,10 +825,18 @@ export function assignBlankIndices(
 								build.kind === 'courbe' ||
 								build.kind === 'trig' ||
 								build.kind === 'ranger' ||
+								build.kind === 'associer' ||
+								build.kind === 'trous' ||
 								build.kind === 'partage' ||
 								build.kind === 'cubes' ||
 								build.kind === 'patron' ||
-								build.kind === 'solide'
+								build.kind === 'solide' ||
+								build.kind === 'tortue' ||
+								build.kind === 'calcul' ||
+								build.kind === 'robot' ||
+								build.kind === 'labyrinthe' ||
+								build.kind === 'yohaku' ||
+								build.kind === 'python'
 								? 'text'
 								: 'math'
 						);

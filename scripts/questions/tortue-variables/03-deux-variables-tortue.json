@@ -1,0 +1,151 @@
+{
+	"id": "a0b27395-9cd5-4b02-8118-d0c124f68e5d",
+	"title": "Deux variables (tortue)",
+	"description": "Faire tracer à la tortue la spirale de Fibonacci (1, 1, 2, 3, 5, 8…) avec deux variables.",
+	"grades": ["3"],
+	"level": 2,
+	"delay": 300,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Fais tracer à la tortue la spirale dessinée en gris : ses ${{n}}$ traits mesurent $1, 1, 2, 3, 5${{if:n==6|$, 8$|}}… Chaque longueur est la **somme des deux précédentes**.\n\nUtilise deux variables, **a** (le trait à tracer) et **b** (le trait suivant) : au plus $8$ blocs.\n\n```tortue\nniveau: 3e\nattendu: mettre a à 1 ; mettre b à 1 ; répéter {{n}} [ avancer a ; tourner à gauche 90 ; ajouter a à b ; mettre a à b − a ]\nmontrer: oui\nblocs: 8\n```",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "5..6"
+				}
+			],
+			"conditions": [],
+			"blanks": [],
+			"correction": {
+				"steps": [
+					"Au départ, a et b valent $1$. À chaque tour, la tortue avance de a, puis tourne d'un quart de tour à gauche.",
+					"Il faut ensuite passer au trait suivant : a prend la valeur de b, et b prend la valeur a $+$ b. Avec une troisième variable : mettre c à a $+$ b ; mettre a à b ; mettre b à c. Sans elle : ajouter a à b, puis mettre a à b $-$ a (l'ancienne valeur de b).",
+					"Un programme juste : mettre a à $1$ ; mettre b à $1$ ; répéter ${{n}}$ [ avancer a ; tourner à gauche $90$ ; ajouter a à b ; mettre a à b $-$ a ]."
+				]
+			}
+		},
+		{
+			"statement": "Le programme posé dans l'espace de travail doit tracer la spirale dessinée en gris, dont les traits mesurent $1, 1, 2, 3, 5${{if:n==6|$, 8$|}}… (chaque longueur est la somme des deux précédentes). **a** est le trait à tracer, **b** le trait suivant.\n\nAprès « ajouter a à b », b vaut déjà le trait d'après : il manque une instruction pour que a prenne la valeur suivante. Complète le programme (au plus $8$ blocs).\n\n```tortue\nniveau: 3e\nattendu: mettre a à 1 ; mettre b à 1 ; répéter {{n}} [ avancer a ; tourner à gauche 90 ; ajouter a à b ; mettre a à b − a ]\ndépart: mettre a à 1 ; mettre b à 1 ; répéter {{n}} [ avancer a ; tourner à gauche 90 ; ajouter a à b ]\nmontrer: oui\nblocs: 8\n```",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "5..6"
+				}
+			],
+			"conditions": [],
+			"blanks": [],
+			"correction": {
+				"steps": [
+					"Avant « ajouter a à b », a et b valent deux longueurs qui se suivent, par exemple $2$ et $3$. Après, b vaut $5$ : la longueur d'après.",
+					"a doit prendre l'ancienne valeur de b, c'est-à-dire $3 = 5 - 2$ : mettre a à b $-$ a.",
+					"Un programme juste : mettre a à $1$ ; mettre b à $1$ ; répéter ${{n}}$ [ avancer a ; tourner à gauche $90$ ; ajouter a à b ; mettre a à b $-$ a ]."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Fibonacci : juste",
+			"variationIndex": 0,
+			"variables": {
+				"n": "6"
+			},
+			"answers": [
+				"mettre a à 1 ; mettre b à 1 ; répéter 6 [ avancer a ; tourner à gauche 90 ; ajouter a à b ; mettre a à b − a ]"
+			],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Fibonacci : juste, avec une troisième variable",
+			"variationIndex": 0,
+			"variables": {
+				"n": "6"
+			},
+			"answers": [
+				"mettre a à 1 ; mettre b à 1 ; répéter 6 [ avancer a ; tourner à gauche 90 ; mettre c à a + b ; mettre a à b ; mettre b à c ]"
+			],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : mettre a à b avant de calculer b",
+			"variationIndex": 0,
+			"variables": {
+				"n": "6"
+			},
+			"answers": [
+				"mettre a à 1 ; mettre b à 1 ; répéter 6 [ avancer a ; tourner à gauche 90 ; mettre a à b ; mettre b à a + b ]"
+			],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : sans variable, trop de blocs",
+			"variationIndex": 0,
+			"variables": {
+				"n": "6"
+			},
+			"answers": [
+				"avancer 1 ; tourner à gauche 90 ; avancer 1 ; tourner à gauche 90 ; avancer 2 ; tourner à gauche 90 ; avancer 3 ; tourner à gauche 90 ; avancer 5 ; tourner à gauche 90 ; avancer 8 ; tourner à gauche 90"
+			],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : une seule variable qui augmente de 1",
+			"variationIndex": 0,
+			"variables": {
+				"n": "6"
+			},
+			"answers": ["mettre a à 1 ; répéter 6 [ avancer a ; tourner à gauche 90 ; ajouter 1 à a ]"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "À compléter : juste",
+			"variationIndex": 1,
+			"variables": {
+				"n": "5"
+			},
+			"answers": [
+				"mettre a à 1 ; mettre b à 1 ; répéter 5 [ avancer a ; tourner à gauche 90 ; ajouter a à b ; mettre a à b − a ]"
+			],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : mettre a à b",
+			"variationIndex": 1,
+			"variables": {
+				"n": "5"
+			},
+			"answers": [
+				"mettre a à 1 ; mettre b à 1 ; répéter 5 [ avancer a ; tourner à gauche 90 ; ajouter a à b ; mettre a à b ]"
+			],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : départ non modifié",
+			"variationIndex": 1,
+			"variables": {
+				"n": "5"
+			},
+			"answers": [
+				"mettre a à 1 ; mettre b à 1 ; répéter 5 [ avancer a ; tourner à gauche 90 ; ajouter a à b ]"
+			],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

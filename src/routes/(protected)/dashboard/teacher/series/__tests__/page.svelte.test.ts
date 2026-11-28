@@ -8,10 +8,9 @@ import { render } from 'vitest-browser-svelte';
 import { page } from 'vitest/browser';
 
 const goto = vi.hoisted(() => vi.fn(async () => {}));
-vi.mock('$app/navigation', async (importOriginal) => ({
-	...(await importOriginal<typeof import('$app/navigation')>()),
-	goto
-}));
+vi.mock('$app/navigation', async () =>
+	(await import('#tests/helpers/app-navigation-mock.ts')).appNavigationMock({ goto })
+);
 
 const toaster = vi.hoisted(() => ({
 	success: vi.fn(),
@@ -19,11 +18,11 @@ const toaster = vi.hoisted(() => ({
 	warning: vi.fn(),
 	info: vi.fn()
 }));
-vi.mock('$lib/stores/toaster.svelte', () => ({ toaster }));
+vi.mock('#lib/stores/toaster.svelte.ts', () => ({ toaster }));
 
 import Page from '../+page.svelte';
-import type { SeriesWithUsage } from '$lib/types/evaluation';
-import { parseSeriesLink } from '$lib/validation/series';
+import type { SeriesWithUsage } from '#lib/types/evaluation.ts';
+import { parseSeriesLink } from '#lib/validation/series.ts';
 
 const ITEM = {
 	templateId: '11111111-1111-4111-8111-111111111111',
@@ -114,7 +113,7 @@ describe('Page Séries — lien de série (Q44, Q46)', () => {
 
 	it('« En classe » : lien qui lance la série sous cette forme', async () => {
 		await renderPage([series({})]);
-		await page.getByRole('button', { name: 'Forme du lien' }).click();
+		await page.getByRole('combobox', { name: 'Forme du lien' }).click();
 		await page.getByRole('option', { name: 'En classe' }).click();
 		await page.getByRole('button', { name: 'Copier le lien' }).click();
 
@@ -126,7 +125,7 @@ describe('Page Séries — lien de série (Q44, Q46)', () => {
 
 	it('« Course aux nombres » : une durée est proposée et portée par le lien', async () => {
 		await renderPage([series({})]);
-		await page.getByRole('button', { name: 'Forme du lien' }).click();
+		await page.getByRole('combobox', { name: 'Forme du lien' }).click();
 		await page.getByRole('option', { name: 'Course aux nombres' }).click();
 		await page.getByLabelText('Temps limite (minutes)').fill('12');
 		await page.getByRole('button', { name: 'Copier le lien' }).click();

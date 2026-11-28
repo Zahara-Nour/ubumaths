@@ -1,0 +1,892 @@
+{
+	"id": "46b95c39-fc13-4e8d-a013-50799dbfd666",
+	"title": "Problème : une fraction du reste",
+	"description": "Léa dépense 1/3 de son argent, puis 1/4 de ce qui reste : quelle fraction lui reste-t-il ? (1/2) ; deux étapes puis trois, contextes variés (piège : prendre 1/4 du total, 1 − 1/3 − 1/4)",
+	"grades": ["2"],
+	"level": 8,
+	"delay": 120,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "{{if:w==0|Léa|{{if:w==1|Nathan|Jade}}}} dépense {{if:a==1|le|les}} $\\dfrac{ {{a}} }{ {{b}} }$ de son argent de poche pour un livre, puis {{if:c==1|le|les}} $\\dfrac{ {{c}} }{ {{d}} }$ de ce qui lui reste pour une place de cinéma.\n\nQuelle fraction de son argent de poche de départ lui reste-t-il ? Donne le résultat sous la forme d'une fraction irréductible.\n\n$$?$$",
+			"variables": [
+				{
+					"name": "w",
+					"expression": "0..2"
+				},
+				{
+					"name": "b",
+					"expression": "2..6"
+				},
+				{
+					"name": "a",
+					"expression": "1..4"
+				},
+				{
+					"name": "d",
+					"expression": "2..6"
+				},
+				{
+					"name": "c",
+					"expression": "1..4"
+				},
+				{
+					"name": "R1",
+					"expression": "eval:b-a"
+				},
+				{
+					"name": "R2",
+					"expression": "eval:d-c"
+				},
+				{
+					"name": "X",
+					"expression": "eval:(b-a)*(d-c)"
+				},
+				{
+					"name": "Y",
+					"expression": "eval:b*d"
+				},
+				{
+					"name": "g",
+					"expression": "eval:gcd(abs(X),Y)"
+				},
+				{
+					"name": "N",
+					"expression": "eval:(X)/(g)"
+				},
+				{
+					"name": "D",
+					"expression": "eval:(Y)/(g)"
+				}
+			],
+			"conditions": ["a<b", "c<d", "gcd(a,b)==1", "gcd(c,d)==1"],
+			"blanks": [
+				{
+					"expectedAnswer": "\\frac{ {{N}} }{ {{D}} }",
+					"expectedErrors": [
+						{
+							"answer": "\\frac{ {{eval:b*d-a*d-b*c}} }{ {{eval:b*d}} }",
+							"message": "Tu as pris la deuxième fraction du total : elle porte sur ce qui reste.",
+							"label": "Fraction prise du total"
+						},
+						{
+							"answer": "\\frac{ {{eval:b*d-(b-a)*(d-c)}} }{ {{eval:b*d}} }",
+							"message": "Tu as donné la part dépensée : on demande ce qui reste.",
+							"label": "Part utilisée au lieu du reste"
+						},
+						{
+							"answer": "\\frac{ {{eval:c*(b-a)}} }{ {{eval:b*d}} }",
+							"message": "Tu as calculé la part dépensée pour le cinéma, pas ce qui reste.",
+							"label": "Part de la dernière étape"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"Après la première étape, il reste $1-\\dfrac{ {{a}} }{ {{b}} }=\\dfrac{ {{R1}} }{ {{b}} }$ du total.",
+					"Ensuite, on prend $\\dfrac{ {{c}} }{ {{d}} }$ **de ce reste**, pas du total : il reste les $1-\\dfrac{ {{c}} }{ {{d}} }=\\dfrac{ {{R2}} }{ {{d}} }$ de $\\dfrac{ {{R1}} }{ {{b}} }$.",
+					"Prendre une fraction d'une quantité, c'est multiplier :",
+					"$$\\dfrac{ {{R2}} }{ {{d}} }\\times\\dfrac{ {{R1}} }{ {{b}} }=\\dfrac{ {{X}} }{ {{Y}} }$$",
+					"{{if:g>1|On simplifie par ${{g}}$ : ${{if:X<0|-}}\\dfrac{ {{eval:abs(X)}} }{ {{Y}} }=\\textcolor{{{color:primary.0}}}{{{if:N<0|-}}\\dfrac{ {{eval:abs(N)}} }{ {{D}} }}$.|Le résultat $\\textcolor{{{color:primary.0}}}{{{if:N<0|-}}\\dfrac{ {{eval:abs(N)}} }{ {{D}} }}$ ne se simplifie pas.}}"
+				]
+			},
+			"hint": "Calcule d'abord la fraction qui reste après le livre. La deuxième fraction se prend **de ce reste**, pas de tout l'argent."
+		},
+		{
+			"statement": "Une bouteille de jus de fruits est pleine. {{if:w==0|Noé|{{if:w==1|Lina|Adam}}}} en boit les $\\dfrac{ {{a}} }{ {{b}} }$, puis on verse {{if:c==1|le|les}} $\\dfrac{ {{c}} }{ {{d}} }$ de ce qui reste dans une carafe.\n\nQuelle fraction de la bouteille pleine reste-t-il dans la bouteille ? Donne le résultat sous la forme d'une fraction irréductible.\n\n$$?$$",
+			"variables": [
+				{
+					"name": "w",
+					"expression": "0..2"
+				},
+				{
+					"name": "b",
+					"expression": "2..6"
+				},
+				{
+					"name": "a",
+					"expression": "1..4"
+				},
+				{
+					"name": "d",
+					"expression": "2..6"
+				},
+				{
+					"name": "c",
+					"expression": "1..4"
+				},
+				{
+					"name": "R1",
+					"expression": "eval:b-a"
+				},
+				{
+					"name": "R2",
+					"expression": "eval:d-c"
+				},
+				{
+					"name": "X",
+					"expression": "eval:(b-a)*(d-c)"
+				},
+				{
+					"name": "Y",
+					"expression": "eval:b*d"
+				},
+				{
+					"name": "g",
+					"expression": "eval:gcd(abs(X),Y)"
+				},
+				{
+					"name": "N",
+					"expression": "eval:(X)/(g)"
+				},
+				{
+					"name": "D",
+					"expression": "eval:(Y)/(g)"
+				}
+			],
+			"conditions": ["a<b", "c<d", "gcd(a,b)==1", "gcd(c,d)==1"],
+			"blanks": [
+				{
+					"expectedAnswer": "\\frac{ {{N}} }{ {{D}} }",
+					"expectedErrors": [
+						{
+							"answer": "\\frac{ {{eval:b*d-a*d-b*c}} }{ {{eval:b*d}} }",
+							"message": "Tu as pris la deuxième fraction du total : elle porte sur ce qui reste.",
+							"label": "Fraction prise du total"
+						},
+						{
+							"answer": "\\frac{ {{eval:b*d-(b-a)*(d-c)}} }{ {{eval:b*d}} }",
+							"message": "Tu as donné la part sortie de la bouteille : on demande ce qui reste dedans.",
+							"label": "Part utilisée au lieu du reste"
+						},
+						{
+							"answer": "\\frac{ {{eval:c*(b-a)}} }{ {{eval:b*d}} }",
+							"message": "Tu as calculé la part versée dans la carafe, pas ce qui reste dans la bouteille.",
+							"label": "Part de la dernière étape"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"Après la première étape, il reste $1-\\dfrac{ {{a}} }{ {{b}} }=\\dfrac{ {{R1}} }{ {{b}} }$ du total.",
+					"Ensuite, on prend $\\dfrac{ {{c}} }{ {{d}} }$ **de ce reste**, pas du total : il reste les $1-\\dfrac{ {{c}} }{ {{d}} }=\\dfrac{ {{R2}} }{ {{d}} }$ de $\\dfrac{ {{R1}} }{ {{b}} }$.",
+					"Prendre une fraction d'une quantité, c'est multiplier :",
+					"$$\\dfrac{ {{R2}} }{ {{d}} }\\times\\dfrac{ {{R1}} }{ {{b}} }=\\dfrac{ {{X}} }{ {{Y}} }$$",
+					"{{if:g>1|On simplifie par ${{g}}$ : ${{if:X<0|-}}\\dfrac{ {{eval:abs(X)}} }{ {{Y}} }=\\textcolor{{{color:primary.0}}}{{{if:N<0|-}}\\dfrac{ {{eval:abs(N)}} }{ {{D}} }}$.|Le résultat $\\textcolor{{{color:primary.0}}}{{{if:N<0|-}}\\dfrac{ {{eval:abs(N)}} }{ {{D}} }}$ ne se simplifie pas.}}"
+				]
+			},
+			"hint": "Calcule d'abord la fraction qui reste dans la bouteille après la première étape. La deuxième fraction se prend **de ce reste**, pas de la bouteille pleine."
+		},
+		{
+			"statement": "{{if:w==0|Maya|{{if:w==1|Nolan|Zoé}}}} a cueilli un bouquet de fleurs. {{if:w==1|Il|Elle}} en donne {{if:a==1|le|les}} $\\dfrac{ {{a}} }{ {{b}} }$ à sa mère, puis {{if:c==1|le|les}} $\\dfrac{ {{c}} }{ {{d}} }$ de ce qui reste à sa sœur, puis {{if:f==1|le|les}} $\\dfrac{ {{f}} }{ {{h}} }$ de ce qui reste encore à son amie.\n\nQuelle fraction du bouquet lui reste-t-il ? Donne le résultat sous la forme d'une fraction irréductible.\n\n$$?$$",
+			"variables": [
+				{
+					"name": "w",
+					"expression": "0..2"
+				},
+				{
+					"name": "b",
+					"expression": "2..5"
+				},
+				{
+					"name": "a",
+					"expression": "1..3"
+				},
+				{
+					"name": "d",
+					"expression": "2..5"
+				},
+				{
+					"name": "c",
+					"expression": "1..3"
+				},
+				{
+					"name": "h",
+					"expression": "2..5"
+				},
+				{
+					"name": "f",
+					"expression": "1..3"
+				},
+				{
+					"name": "R1",
+					"expression": "eval:b-a"
+				},
+				{
+					"name": "R2",
+					"expression": "eval:d-c"
+				},
+				{
+					"name": "R3",
+					"expression": "eval:h-f"
+				},
+				{
+					"name": "X",
+					"expression": "eval:(b-a)*(d-c)*(h-f)"
+				},
+				{
+					"name": "Y",
+					"expression": "eval:b*d*h"
+				},
+				{
+					"name": "g",
+					"expression": "eval:gcd(abs(X),Y)"
+				},
+				{
+					"name": "N",
+					"expression": "eval:(X)/(g)"
+				},
+				{
+					"name": "D",
+					"expression": "eval:(Y)/(g)"
+				}
+			],
+			"conditions": ["a<b", "c<d", "f<h", "gcd(a,b)==1", "gcd(c,d)==1", "gcd(f,h)==1"],
+			"blanks": [
+				{
+					"expectedAnswer": "\\frac{ {{N}} }{ {{D}} }",
+					"expectedErrors": [
+						{
+							"answer": "\\frac{ {{eval:b*d*h-a*d*h-c*b*h-f*b*d}} }{ {{eval:b*d*h}} }",
+							"message": "Tu as pris chaque fraction du total : chacune porte sur ce qui reste.",
+							"label": "Fractions prises du total"
+						},
+						{
+							"answer": "\\frac{ {{eval:b*d*h-(b-a)*(d-c)*(h-f)}} }{ {{eval:b*d*h}} }",
+							"message": "Tu as donné la part du bouquet offerte : on demande ce qui reste.",
+							"label": "Part utilisée au lieu du reste"
+						},
+						{
+							"answer": "\\frac{ {{eval:f*(b-a)*(d-c)}} }{ {{eval:b*d*h}} }",
+							"message": "Tu as calculé la part donnée à l'amie, pas ce qui reste.",
+							"label": "Part de la dernière étape"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"À chaque étape, on prend une fraction **de ce qui reste**, pas du bouquet entier.",
+					"Il reste successivement $1-\\dfrac{ {{a}} }{ {{b}} }=\\dfrac{ {{R1}} }{ {{b}} }$, puis $1-\\dfrac{ {{c}} }{ {{d}} }=\\dfrac{ {{R2}} }{ {{d}} }$ de ce reste, puis $1-\\dfrac{ {{f}} }{ {{h}} }=\\dfrac{ {{R3}} }{ {{h}} }$ du nouveau reste.",
+					"Prendre une fraction d'une quantité, c'est multiplier :",
+					"$$\\dfrac{ {{R3}} }{ {{h}} }\\times\\dfrac{ {{R2}} }{ {{d}} }\\times\\dfrac{ {{R1}} }{ {{b}} }=\\dfrac{ {{X}} }{ {{Y}} }$$",
+					"{{if:g>1|On simplifie par ${{g}}$ : ${{if:X<0|-}}\\dfrac{ {{eval:abs(X)}} }{ {{Y}} }=\\textcolor{{{color:primary.0}}}{{{if:N<0|-}}\\dfrac{ {{eval:abs(N)}} }{ {{D}} }}$.|Le résultat $\\textcolor{{{color:primary.0}}}{{{if:N<0|-}}\\dfrac{ {{eval:abs(N)}} }{ {{D}} }}$ ne se simplifie pas.}}"
+				]
+			},
+			"hint": "À chaque étape, la fraction se prend **de ce qui reste**, pas du bouquet entier : calcule ce qui reste après chaque don."
+		},
+		{
+			"statement": "{{if:w==0|Léa|{{if:w==1|Nathan|Jade}}}} a ${{M}}~\\unit{€}$. {{if:w==1|Il|Elle}} dépense {{if:a==1|le|les}} $\\dfrac{ {{a}} }{ {{b}} }$ de son argent pour un livre, puis {{if:c==1|le|les}} $\\dfrac{ {{c}} }{ {{d}} }$ de ce qui lui reste pour une place de cinéma.\n\nCombien d'argent lui reste-t-il ?\n\n$?$",
+			"variables": [
+				{
+					"name": "w",
+					"expression": "0..2"
+				},
+				{
+					"name": "b",
+					"expression": "2..6"
+				},
+				{
+					"name": "a",
+					"expression": "1..4"
+				},
+				{
+					"name": "d",
+					"expression": "2..6"
+				},
+				{
+					"name": "c",
+					"expression": "1..4"
+				},
+				{
+					"name": "k",
+					"expression": "1..6"
+				},
+				{
+					"name": "M",
+					"expression": "eval:k*b*d"
+				},
+				{
+					"name": "P1",
+					"expression": "eval:M*a/b"
+				},
+				{
+					"name": "M1",
+					"expression": "eval:M-M*a/b"
+				},
+				{
+					"name": "P2",
+					"expression": "eval:(M-M*a/b)*c/d"
+				},
+				{
+					"name": "F",
+					"expression": "eval:M*(b-a)*(d-c)/(b*d)"
+				}
+			],
+			"conditions": [
+				"a<b",
+				"c<d",
+				"gcd(a,b)==1",
+				"gcd(c,d)==1",
+				"M<=120",
+				"a*d+b*c<b*d",
+				"b*d-a*d-b*c!=b*d-(b-a)*(d-c)",
+				"b*d-a*d-b*c!=c*(b-a)"
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{F}}\\unit{€}",
+					"unit": {
+						"expected": true
+					},
+					"expectedErrors": [
+						{
+							"answer": "{{eval:M-M*a/b-M*c/d}}\\unit{€}",
+							"message": "Tu as pris la deuxième fraction de tout l'argent : elle porte sur ce qui reste.",
+							"label": "Fraction prise du total"
+						},
+						{
+							"answer": "{{eval:M-F}}\\unit{€}",
+							"message": "Tu as donné l'argent dépensé : on demande ce qui reste.",
+							"label": "Dépense au lieu du reste"
+						},
+						{
+							"answer": "{{P2}}\\unit{€}",
+							"message": "Tu as calculé le prix de la place de cinéma, pas ce qui reste.",
+							"label": "Part de la dernière étape"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le livre coûte $\\dfrac{ {{a}} }{ {{b}} }$ de ${{M}}~\\unit{€}$ : ${{M}}\\times\\dfrac{ {{a}} }{ {{b}} }={{P1}}~\\unit{€}$. Il reste ${{M}}-{{P1}}={{M1}}~\\unit{€}$.",
+					"La place de cinéma coûte $\\dfrac{ {{c}} }{ {{d}} }$ **de ce reste**, pas du total : ${{M1}}\\times\\dfrac{ {{c}} }{ {{d}} }={{P2}}~\\unit{€}$.",
+					"Il reste ${{M1}}-{{P2}}=\\textcolor{{{color:primary.0}}}{{{F}}~\\unit{€}}$."
+				]
+			},
+			"hint": "Calcule d'abord l'argent qui reste après le livre. La deuxième fraction se prend **de ce reste**, pas de tout l'argent."
+		},
+		{
+			"statement": "{{if:w==0|Léa|{{if:w==1|Nathan|Jade}}}} dépense {{if:a==1|le|les}} $\\dfrac{ {{a}} }{ {{b}} }$ de son argent de poche pour un livre, puis {{if:c==1|le|les}} $\\dfrac{ {{c}} }{ {{d}} }$ de ce qui lui reste pour une place de cinéma.\n\nQuelle fraction de son argent de poche de départ lui reste-t-il après le livre ? Et après le cinéma ? Donne chaque résultat sous la forme d'une fraction irréductible.\n\nAprès le livre : $?$\n\nAprès le cinéma : $?$",
+			"variables": [
+				{
+					"name": "w",
+					"expression": "0..2"
+				},
+				{
+					"name": "b",
+					"expression": "2..6"
+				},
+				{
+					"name": "a",
+					"expression": "1..4"
+				},
+				{
+					"name": "d",
+					"expression": "2..6"
+				},
+				{
+					"name": "c",
+					"expression": "1..4"
+				},
+				{
+					"name": "R1",
+					"expression": "eval:b-a"
+				},
+				{
+					"name": "R2",
+					"expression": "eval:d-c"
+				},
+				{
+					"name": "X",
+					"expression": "eval:(b-a)*(d-c)"
+				},
+				{
+					"name": "Y",
+					"expression": "eval:b*d"
+				},
+				{
+					"name": "g",
+					"expression": "eval:gcd(abs(X),Y)"
+				},
+				{
+					"name": "N",
+					"expression": "eval:(X)/(g)"
+				},
+				{
+					"name": "D",
+					"expression": "eval:(Y)/(g)"
+				}
+			],
+			"conditions": ["a<b", "c<d", "gcd(a,b)==1", "gcd(c,d)==1"],
+			"blanks": [
+				{
+					"expectedAnswer": "\\frac{ {{R1}} }{ {{b}} }",
+					"expectedErrors": [
+						{
+							"answer": "\\frac{ {{a}} }{ {{b}} }",
+							"message": "Tu as donné la part dépensée pour le livre : on demande ce qui reste.",
+							"label": "Part dépensée au lieu du reste"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "\\frac{ {{N}} }{ {{D}} }",
+					"expectedErrors": [
+						{
+							"answer": "\\frac{ {{eval:b*d-a*d-b*c}} }{ {{eval:b*d}} }",
+							"message": "Tu as pris la deuxième fraction du total : elle porte sur ce qui reste.",
+							"label": "Fraction prise du total"
+						},
+						{
+							"answer": "\\frac{ {{eval:b*d-(b-a)*(d-c)}} }{ {{eval:b*d}} }",
+							"message": "Tu as donné la part dépensée : on demande ce qui reste.",
+							"label": "Part utilisée au lieu du reste"
+						},
+						{
+							"answer": "\\frac{ {{eval:c*(b-a)}} }{ {{eval:b*d}} }",
+							"message": "Tu as calculé la part dépensée pour le cinéma, pas ce qui reste.",
+							"label": "Part de la dernière étape"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"Après la première étape, il reste $1-\\dfrac{ {{a}} }{ {{b}} }=\\dfrac{ {{R1}} }{ {{b}} }$ du total.",
+					"Ensuite, on prend $\\dfrac{ {{c}} }{ {{d}} }$ **de ce reste**, pas du total : il reste les $1-\\dfrac{ {{c}} }{ {{d}} }=\\dfrac{ {{R2}} }{ {{d}} }$ de $\\dfrac{ {{R1}} }{ {{b}} }$.",
+					"Prendre une fraction d'une quantité, c'est multiplier :",
+					"$$\\dfrac{ {{R2}} }{ {{d}} }\\times\\dfrac{ {{R1}} }{ {{b}} }=\\dfrac{ {{X}} }{ {{Y}} }$$",
+					"{{if:g>1|On simplifie par ${{g}}$ : ${{if:X<0|-}}\\dfrac{ {{eval:abs(X)}} }{ {{Y}} }=\\textcolor{{{color:primary.0}}}{{{if:N<0|-}}\\dfrac{ {{eval:abs(N)}} }{ {{D}} }}$.|Le résultat $\\textcolor{{{color:primary.0}}}{{{if:N<0|-}}\\dfrac{ {{eval:abs(N)}} }{ {{D}} }}$ ne se simplifie pas.}}"
+				]
+			},
+			"hint": "Calcule d'abord la fraction qui reste après le livre. La deuxième fraction se prend **de ce reste**, pas de tout l'argent."
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "1/3 puis 1/4 du reste : il reste 1/2",
+			"variationIndex": 0,
+			"variables": {
+				"w": "0",
+				"a": "1",
+				"b": "3",
+				"c": "1",
+				"d": "4"
+			},
+			"answers": ["\\frac{1}{2}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 1/4 du total (1 − 1/3 − 1/4 = 5/12)",
+			"variationIndex": 0,
+			"variables": {
+				"w": "0",
+				"a": "1",
+				"b": "3",
+				"c": "1",
+				"d": "4"
+			},
+			"answers": ["\\frac{5}{12}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 2/5 puis 1/2 du reste, la fraction dépensée 7/10 au lieu de 3/10",
+			"variationIndex": 0,
+			"variables": {
+				"w": "0",
+				"a": "2",
+				"b": "5",
+				"c": "1",
+				"d": "2"
+			},
+			"answers": ["\\frac{7}{10}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Non simplifiée : 6/12",
+			"variationIndex": 0,
+			"variables": {
+				"w": "0",
+				"a": "1",
+				"b": "3",
+				"c": "1",
+				"d": "4"
+			},
+			"answers": ["\\frac{6}{12}"],
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["reducedFractions"]
+			}
+		},
+		{
+			"description": "Bouteille : 1/4 puis 2/3 du reste, il reste 1/4",
+			"variationIndex": 1,
+			"variables": {
+				"w": "1",
+				"a": "1",
+				"b": "4",
+				"c": "2",
+				"d": "3"
+			},
+			"answers": ["\\frac{1}{4}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 1 − 1/4 − 2/3 = 1/12",
+			"variationIndex": 1,
+			"variables": {
+				"w": "1",
+				"a": "1",
+				"b": "4",
+				"c": "2",
+				"d": "3"
+			},
+			"answers": ["\\frac{1}{12}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Bouquet : 1/2, 1/3, 1/4 : il reste 1/4",
+			"variationIndex": 2,
+			"variables": {
+				"w": "0",
+				"a": "1",
+				"b": "2",
+				"c": "1",
+				"d": "3",
+				"f": "1",
+				"h": "4"
+			},
+			"answers": ["\\frac{1}{4}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 1 − 1/2 − 1/3 − 1/4 = −1/12",
+			"variationIndex": 2,
+			"variables": {
+				"w": "0",
+				"a": "1",
+				"b": "2",
+				"c": "1",
+				"d": "3",
+				"f": "1",
+				"h": "4"
+			},
+			"answers": ["-\\frac{1}{12}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur prévue : 1 − 1/3 − 1/4",
+			"variationIndex": 0,
+			"variables": {
+				"w": "0",
+				"a": "1",
+				"b": "3",
+				"c": "1",
+				"d": "4"
+			},
+			"answers": ["\\frac{5}{12}"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as pris la deuxième fraction du total : elle porte sur ce qui reste."
+			}
+		},
+		{
+			"description": "Erreur prévue : 1 − 4/9 dépensé",
+			"variationIndex": 0,
+			"variables": {
+				"w": "0",
+				"a": "1",
+				"b": "3",
+				"c": "1",
+				"d": "3"
+			},
+			"answers": ["\\frac{5}{9}"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as donné la part dépensée : on demande ce qui reste."
+			}
+		},
+		{
+			"description": "Erreur prévue : 1/4 de 2/3",
+			"variationIndex": 0,
+			"variables": {
+				"w": "0",
+				"a": "1",
+				"b": "3",
+				"c": "1",
+				"d": "4"
+			},
+			"answers": ["\\frac{2}{12}"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as calculé la part dépensée pour le cinéma, pas ce qui reste."
+			}
+		},
+		{
+			"description": "Erreur prévue : 1 − 1/4 − 2/3",
+			"variationIndex": 1,
+			"variables": {
+				"w": "1",
+				"a": "1",
+				"b": "4",
+				"c": "2",
+				"d": "3"
+			},
+			"answers": ["\\frac{1}{12}"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as pris la deuxième fraction du total : elle porte sur ce qui reste."
+			}
+		},
+		{
+			"description": "Erreur prévue : 3/4 sorti",
+			"variationIndex": 1,
+			"variables": {
+				"w": "1",
+				"a": "1",
+				"b": "4",
+				"c": "2",
+				"d": "3"
+			},
+			"answers": ["\\frac{3}{4}"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as donné la part sortie de la bouteille : on demande ce qui reste dedans."
+			}
+		},
+		{
+			"description": "Erreur prévue : 2/3 de 3/4",
+			"variationIndex": 1,
+			"variables": {
+				"w": "1",
+				"a": "1",
+				"b": "4",
+				"c": "2",
+				"d": "3"
+			},
+			"answers": ["\\frac{6}{12}"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as calculé la part versée dans la carafe, pas ce qui reste dans la bouteille."
+			}
+		},
+		{
+			"description": "Erreur prévue : 1 − 1/2 − 1/3 − 1/4",
+			"variationIndex": 2,
+			"variables": {
+				"w": "0",
+				"a": "1",
+				"b": "2",
+				"c": "1",
+				"d": "3",
+				"f": "1",
+				"h": "4"
+			},
+			"answers": ["-\\frac{1}{12}"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as pris chaque fraction du total : chacune porte sur ce qui reste."
+			}
+		},
+		{
+			"description": "Erreur prévue : 3/4 donné",
+			"variationIndex": 2,
+			"variables": {
+				"w": "0",
+				"a": "1",
+				"b": "2",
+				"c": "1",
+				"d": "3",
+				"f": "1",
+				"h": "4"
+			},
+			"answers": ["\\frac{3}{4}"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as donné la part du bouquet offerte : on demande ce qui reste."
+			}
+		},
+		{
+			"description": "Erreur prévue : 1/4 de 1/3",
+			"variationIndex": 2,
+			"variables": {
+				"w": "0",
+				"a": "1",
+				"b": "2",
+				"c": "1",
+				"d": "3",
+				"f": "1",
+				"h": "4"
+			},
+			"answers": ["\\frac{2}{24}"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as calculé la part donnée à l'amie, pas ce qui reste."
+			}
+		},
+		{
+			"description": "36 €, 1/3 puis 1/4 du reste : 18 €",
+			"variationIndex": 3,
+			"variables": {
+				"w": "0",
+				"a": "1",
+				"b": "3",
+				"c": "1",
+				"d": "4",
+				"k": "3"
+			},
+			"answers": ["18\\,€"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur prévue : 15 € (le quart pris sur 36)",
+			"variationIndex": 3,
+			"variables": {
+				"w": "0",
+				"a": "1",
+				"b": "3",
+				"c": "1",
+				"d": "4",
+				"k": "3"
+			},
+			"answers": ["15\\,€"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as pris la deuxième fraction de tout l'argent : elle porte sur ce qui reste."
+			}
+		},
+		{
+			"description": "Erreur prévue : 6 € (prix du cinéma)",
+			"variationIndex": 3,
+			"variables": {
+				"w": "0",
+				"a": "1",
+				"b": "3",
+				"c": "1",
+				"d": "4",
+				"k": "3"
+			},
+			"answers": ["6\\,€"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as calculé le prix de la place de cinéma, pas ce qui reste."
+			}
+		},
+		{
+			"description": "Erreur prévue : 8 € dépensés sur 12 €",
+			"variationIndex": 3,
+			"variables": {
+				"w": "1",
+				"a": "1",
+				"b": "3",
+				"c": "1",
+				"d": "2",
+				"k": "2"
+			},
+			"answers": ["8\\,€"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as donné l'argent dépensé : on demande ce qui reste."
+			}
+		},
+		{
+			"description": "Deux cases : 2/3 puis 1/2",
+			"variationIndex": 4,
+			"variables": {
+				"w": "0",
+				"a": "1",
+				"b": "3",
+				"c": "1",
+				"d": "4"
+			},
+			"answers": ["\\frac{2}{3}", "\\frac{1}{2}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur prévue : 1/3 après le livre",
+			"variationIndex": 4,
+			"variables": {
+				"w": "0",
+				"a": "1",
+				"b": "3",
+				"c": "1",
+				"d": "4"
+			},
+			"answers": ["\\frac{1}{3}", "\\frac{1}{2}"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as donné la part dépensée pour le livre : on demande ce qui reste."
+			}
+		},
+		{
+			"description": "Erreur prévue : 5/12 (le quart pris du total)",
+			"variationIndex": 4,
+			"variables": {
+				"w": "0",
+				"a": "1",
+				"b": "3",
+				"c": "1",
+				"d": "4"
+			},
+			"answers": ["\\frac{2}{3}", "\\frac{5}{12}"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as pris la deuxième fraction du total : elle porte sur ce qui reste."
+			}
+		},
+		{
+			"description": "Erreur prévue : 1/6 (part du cinéma)",
+			"variationIndex": 4,
+			"variables": {
+				"w": "0",
+				"a": "1",
+				"b": "3",
+				"c": "1",
+				"d": "4"
+			},
+			"answers": ["\\frac{2}{3}", "\\frac{1}{6}"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as calculé la part dépensée pour le cinéma, pas ce qui reste."
+			}
+		},
+		{
+			"description": "Erreur prévue : 7/10 dépensés",
+			"variationIndex": 4,
+			"variables": {
+				"w": "0",
+				"a": "2",
+				"b": "5",
+				"c": "1",
+				"d": "2"
+			},
+			"answers": ["\\frac{3}{5}", "\\frac{7}{10}"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as donné la part dépensée : on demande ce qui reste."
+			}
+		}
+	]
+}

@@ -11,11 +11,11 @@
 	 * bornes de l'objet (`positionSliderOf`), le nombre écrit dans la définition
 	 * réécrit par `slidePosition`.
 	 */
-	import { useAtelier } from '$lib/atelier/context';
-	import { constantOf } from '$lib/atelier/atelier.svelte';
-	import type { PointObject, Slider as SliderSettings, ValueObject } from '$lib/atelier/types';
-	import { Slider } from '$lib/components/ui/slider';
-	import { gestureHandlers } from '$lib/atelier/gesture';
+	import { useAtelier } from '#lib/atelier/context.ts';
+	import { constantOf } from '#lib/atelier/atelier.svelte.ts';
+	import type { PointObject, Slider as SliderSettings, ValueObject } from '#lib/atelier/types.ts';
+	import { Slider } from '#lib/components/ui/slider/index.ts';
+	import { gestureHandlers } from '#lib/atelier/gesture.ts';
 
 	interface Props {
 		object: ValueObject | PointObject;

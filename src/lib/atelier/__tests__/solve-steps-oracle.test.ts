@@ -21,13 +21,16 @@
 import { describe, expect, it } from 'vitest';
 import { astOf } from '../parse';
 import { solveSteps } from '../solve-steps';
-import { generateEquationSteps, generateInequalitySteps } from '$lib/mathAST/pedagogical-solve';
-import type { EquationStep } from '$lib/mathAST/pedagogical-solve';
-import { solve } from '$lib/mathAST/solve';
-import { solveInequality } from '$lib/mathAST/solve/inequality';
-import { containsValue } from '$lib/mathAST/domain/algebra';
-import { compile } from '$lib/mathAST/eval/compile';
-import type { MathNode, RelationNode } from '$lib/mathAST/types';
+import {
+	generateEquationSteps,
+	generateInequalitySteps
+} from '#lib/mathAST/pedagogical-solve/index.ts';
+import type { EquationStep } from '#lib/mathAST/pedagogical-solve/index.ts';
+import { solve } from '#lib/mathAST/solve/index.ts';
+import { solveInequality } from '#lib/mathAST/solve/inequality/index.ts';
+import { containsValue } from '#lib/mathAST/domain/algebra.ts';
+import { compile } from '#lib/mathAST/eval/compile.ts';
+import type { MathNode, RelationNode } from '#lib/mathAST/types.ts';
 
 // =============================================================================
 // Constantes

@@ -11,10 +11,10 @@
 	 */
 
 	import type { PageData } from './$types';
-	import { Button } from '$lib/components/ui/button';
-	import MySelect from '$lib/components/MySelect.svelte';
-	import MyCheckbox from '$lib/components/MyCheckbox.svelte';
-	import { toaster } from '$lib/stores/toaster.svelte';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import MySelect from '#lib/components/MySelect.svelte';
+	import MyCheckbox from '#lib/components/MyCheckbox.svelte';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
 	import { SvelteSet } from 'svelte/reactivity';
 	import { Loader2, Users, ArrowLeftRight, TriangleAlert } from '@lucide/svelte';
 

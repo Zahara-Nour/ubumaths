@@ -18,7 +18,7 @@
 	import type { SlideProps } from './types.js';
 	import SlideAnnotationLayer from '../components/SlideAnnotationLayer.svelte';
 	import { slideAnnotationStore } from '../stores/slideAnnotationStore.svelte.js';
-	import type { AnnotationElement } from '$lib/whiteboard/types/document';
+	import type { AnnotationElement } from '#lib/whiteboard/types/document.ts';
 
 	// ==========================================================================
 	// Props

@@ -24,17 +24,17 @@
  * - Access via class membership or individual assignment
  */
 
-import { error, json } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireRole } from '$lib/server/middleware/auth';
+import { requireRole } from '#lib/server/middleware/auth.ts';
 import {
 	validateStudentWorksheetsQuery,
 	studentWorksheetsListResponseSchema
-} from '$lib/server/validation/worksheets';
-import { validateJsonResponse } from '$lib/server/validation/response-utils';
-import { fetchClassesByAssignment } from '$lib/server/worksheets/assignment-classes';
-import type { StudentWorksheetListItem } from '$lib/types/worksheets';
-import { createServerLogger } from '$lib/utils/logger';
+} from '#lib/server/validation/worksheets.ts';
+import { validateJsonResponse } from '#lib/server/validation/response-utils.ts';
+import { fetchClassesByAssignment } from '#lib/server/worksheets/assignment-classes.ts';
+import type { StudentWorksheetListItem } from '#lib/types/worksheets.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/student/worksheets/+server');
 
@@ -228,7 +228,7 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 			'GET /api/student/worksheets'
 		);
 
-		return json(validated);
+		return Response.json(validated);
 	} catch (err) {
 		// Re-throw SvelteKit errors
 		if (err && typeof err === 'object' && 'status' in err) {

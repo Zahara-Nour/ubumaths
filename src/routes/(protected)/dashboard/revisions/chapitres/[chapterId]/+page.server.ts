@@ -9,9 +9,9 @@
 
 import { error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
-import { requireRole } from '$lib/server/middleware/auth';
-import { chapterDeckParamsSchema } from '$lib/server/validation/srs';
-import { createServerLogger } from '$lib/utils/logger';
+import { requireRole } from '#lib/server/middleware/auth.ts';
+import { chapterDeckParamsSchema } from '#lib/server/validation/srs.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger(
 	'(protected)/dashboard/revisions/chapitres/[chapterId]/+page.server'

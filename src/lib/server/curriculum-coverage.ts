@@ -23,12 +23,12 @@
  * without its coverage, and would never drop a point whose citation was deleted.
  */
 
-import { extractResourceReferences, referenceIdsOfKind } from '$lib/resources/references';
-import { parseExerciseSelection } from '$lib/resources/exercise-selection';
-import { resolveExercisesAtDisplayNumbers } from '$lib/server/worksheets/display-number';
-import { keepLinksOfGrade } from '$lib/server/curriculum-grade';
-import { keepCheckablePointIds } from '$lib/server/curriculum-point-status';
-import { readStoredSeriesMany } from '$lib/server/series-lines';
+import { extractResourceReferences, referenceIdsOfKind } from '#lib/resources/references.ts';
+import { parseExerciseSelection } from '#lib/resources/exercise-selection.ts';
+import { resolveExercisesAtDisplayNumbers } from '#lib/server/worksheets/display-number.ts';
+import { keepLinksOfGrade } from '#lib/server/curriculum-grade.ts';
+import { keepCheckablePointIds } from '#lib/server/curriculum-point-status.ts';
+import { readStoredSeriesMany } from '#lib/server/series-lines.ts';
 
 type Sb = App.Locals['supabase'];
 

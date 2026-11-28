@@ -11,14 +11,14 @@
 	l'élève connecté, au niveau 5e pour un visiteur.
 -->
 <script lang="ts">
-	import { demoSeo } from '$lib/seo/demo-pages';
-	import SeoHead from '$lib/seo/SeoHead.svelte';
-	import '$lib/utils/mathlive-styles';
+	import { demoSeo } from '#lib/seo/demo-pages.ts';
+	import SeoHead from '#lib/seo/SeoHead.svelte';
+	import '#lib/utils/mathlive-styles.ts';
 	import 'mathlive';
-	import { Button } from '$lib/components/ui/button';
-	import BackLink from '$lib/components/navigation/BackLink.svelte';
-	import StructureField from '$lib/components/structure/StructureField.svelte';
-	import { provideStructureLexicon } from '$lib/components/structure/structure-lexicon.svelte';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import BackLink from '#lib/components/navigation/BackLink.svelte';
+	import StructureField from '#lib/components/structure/StructureField.svelte';
+	import { provideStructureLexicon } from '#lib/components/structure/structure-lexicon.svelte.ts';
 
 	// Types
 	interface Example {

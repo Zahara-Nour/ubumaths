@@ -11,12 +11,14 @@ import { describe, it, expect } from 'vitest';
 import { WorksheetGenerator, generateWorksheetTypst } from '../worksheet-generator';
 import { DEFAULT_TEMPLATES, DEFAULT_TEMPLATE_IDS } from '../../templates/default-templates';
 import { exerciseBadge } from '../../worksheet-palette';
+import { CORRECTION_FONT_RULES, hasCorrectionFonts } from '../../correction-fonts';
+import { hasEasyReading, withoutEasyReading } from '../../easy-reading';
 import type {
 	WorksheetRow,
 	InstanceData,
 	WorksheetConfig,
 	WorksheetTemplateRow
-} from '$lib/types/worksheets';
+} from '#lib/types/worksheets.ts';
 
 // Test fixtures
 const createMockWorksheet = (overrides?: Partial<WorksheetRow>): WorksheetRow => ({
@@ -778,7 +780,7 @@ describe('generateWorksheetTypst (legacy function)', () => {
 	});
 });
 
-// Fonctions déclarées par l'exercice (`exercises.generic_functions`) : sans elles,
+// Fonctions déclarées par l'exercice (`exercise_versions.generic_functions`) : sans elles,
 // `C'(x)` s'imprimait en rouge « Unexpected token: ' » dans l'énoncé ET le corrigé.
 describe('fonctions déclarées de l’exercice', () => {
 	const instanceWithC = (genericFunctions: string[] | null | undefined): InstanceData =>
@@ -926,6 +928,152 @@ describe('taille du texte', () => {
 			textSize: 'x_large'
 		});
 		expect(typst).toContain('size: 18pt, lang:');
+	});
+});
+
+// Lecture facilitée (élèves dys, chantier `lecture-facilitee`, D9–D13 du 2026-11-19)
+describe('lecture facilitée', () => {
+	const typstOf = (
+		mode: 'worksheet' | 'answers' | 'correction',
+		options: {
+			easyReading?: boolean;
+			withCorrections?: 'answers' | 'correction';
+			textSize?: 'normal' | 'large' | 'x_large';
+		} = {}
+	) =>
+		new WorksheetGenerator(createMockConfig(), undefined, { mode }, options).generate({
+			worksheet: createMockWorksheet(),
+			instance: createMockInstance()
+		}).typstContent;
+
+	it('sans réglage : rien ne change (pas de Luciole)', () => {
+		expect(hasEasyReading(typstOf('worksheet'))).toBe(false);
+		expect(typstOf('worksheet')).toBe(typstOf('worksheet', { easyReading: false }));
+	});
+
+	it.each([
+		['fiche', 'worksheet', undefined],
+		['réponses', 'answers', undefined],
+		['corrigé', 'correction', undefined],
+		['fiche + réponses', 'worksheet', 'answers'],
+		['fiche + corrigé', 'worksheet', 'correction']
+	] as const)('%s : tout le document en Luciole', (_, mode, withCorrections) => {
+		const typst = typstOf(mode, { easyReading: true, withCorrections });
+		expect(hasEasyReading(typst)).toBe(true);
+		// Le même document, Luciole en plus
+		expect(withoutEasyReading(typst)).toBe(
+			typstOf(mode, { withCorrections, easyReading: false }).replaceAll(
+				CORRECTION_FONT_RULES + '\n',
+				''
+			)
+		);
+	});
+
+	it('corrigé : les corrections quittent Shantell Sans / Chiphre Math', () => {
+		expect(hasCorrectionFonts(typstOf('correction'))).toBe(true);
+		expect(hasCorrectionFonts(typstOf('correction', { easyReading: true }))).toBe(false);
+		expect(
+			hasCorrectionFonts(typstOf('worksheet', { easyReading: true, withCorrections: 'correction' }))
+		).toBe(false);
+	});
+
+	// Revue de la PR 4b : une opération posée émet `#set text(size: 13pt)` en
+	// début de ligne DANS son bloc ; les règles ne doivent pas s'y loger, sinon
+	// la police du gabarit l'emporte sur toute la fiche
+	it.each(Object.entries(DEFAULT_TEMPLATE_IDS))(
+		'style %s, exercice qui pose ses propres `#set` (opération posée) : Luciole l’emporte',
+		(_, templateId) => {
+			const typst = new WorksheetGenerator(
+				createMockConfig(),
+				undefined,
+				{ mode: 'worksheet' },
+				{ easyReading: true }
+			).generate({
+				worksheet: createMockWorksheet({ style_id: templateId }),
+				instance: createMockInstance({
+					exercises: [
+						{
+							exercise_id: 'ex-op',
+							title: 'Poser',
+							position: 1,
+							parameters: {},
+							statement:
+								'Pose et calcule.\n\n```operation\ncalcul: 56,75 + 234\ncases: aucune\n```',
+							solution: ''
+						}
+					]
+				})
+			}).typstContent;
+			const nested = typst.indexOf('#set text(size: 13pt)');
+			expect(nested, 'l’opération posée n’émet plus son `#set` : test à revoir').toBeGreaterThan(
+				-1
+			);
+			const templateFont = typst.lastIndexOf('#set text(font: "New Computer Modern"');
+			const rules = [...typst.matchAll(/\/\/ <lecture-facilitee>/g)].map((m) => m.index);
+			// Des règles après la police du gabarit, et avant le contenu des exercices
+			expect(rules.some((at) => at > templateFont && at < nested)).toBe(true);
+			// Aucune règle à l'intérieur du bloc de l'opération
+			expect(rules.every((at) => at < nested)).toBe(true);
+		}
+	);
+
+	// Gabarit d'un prof qui place `{{exercises}}` en début de ligne : les règles
+	// sont posées sur le gabarit, avant les exercices (revue de la PR 4b)
+	it('gabarit d’un prof, exercices en début de ligne : Luciole l’emporte', () => {
+		const typst = new WorksheetGenerator(
+			createMockConfig(),
+			undefined,
+			{ mode: 'worksheet' },
+			{ easyReading: true }
+		).generate({
+			worksheet: createMockWorksheet(),
+			instance: createMockInstance({
+				exercises: [
+					{
+						exercise_id: 'ex-op',
+						title: 'Poser',
+						position: 1,
+						parameters: {},
+						statement: 'Pose.\n\n```operation\ncalcul: 56,75 + 234\ncases: aucune\n```',
+						solution: ''
+					}
+				]
+			}),
+			template: {
+				id: 'gabarit-prof',
+				name: 'Gabarit du prof',
+				description: null,
+				template_content: '#set text(font: "New Computer Modern", size: 11pt)\n{{exercises}}',
+				placeholders: [],
+				created_by: 'teacher-id',
+				created_at: '2024-01-01',
+				updated_at: '2024-01-01'
+			} as WorksheetTemplateRow
+		}).typstContent;
+		const nested = typst.indexOf('#set text(size: 13pt)');
+		expect(nested, 'l’opération posée n’émet plus son `#set` : test à revoir').toBeGreaterThan(-1);
+		const templateFont = typst.lastIndexOf('#set text(font: "New Computer Modern"');
+		const rules = [...typst.matchAll(/\/\/ <lecture-facilitee>/g)].map((m) => m.index);
+		expect(rules.some((at) => at > templateFont && at < nested)).toBe(true);
+		expect(rules.every((at) => at < nested)).toBe(true);
+	});
+
+	it('se cumule avec la taille du texte', () => {
+		const typst = typstOf('worksheet', { easyReading: true, textSize: 'large' });
+		expect(hasEasyReading(typst)).toBe(true);
+		expect(typst).toContain('size: 14pt, lang:');
+	});
+
+	it('la fonction héritée transmet la lecture facilitée', () => {
+		const typst = generateWorksheetTypst({
+			worksheet: createMockWorksheet(),
+			instance: createMockInstance(),
+			config: createMockConfig(),
+			mode: 'correction',
+			easyReading: true
+		});
+		expect(hasEasyReading(typst)).toBe(true);
+		expect(hasCorrectionFonts(typst)).toBe(false);
 	});
 });
 

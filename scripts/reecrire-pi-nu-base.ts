@@ -26,8 +26,8 @@
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { isDeepStrictEqual } from 'node:util';
-import { rewriteBarePi } from '$lib/ubumark/parameterization/validator/bare-pi';
-import type { Json, Tables, TablesUpdate } from '$lib/types/database';
+import { rewriteBarePi } from '#lib/ubumark/parameterization/validator/bare-pi.ts';
+import type { Json, Tables, TablesUpdate } from '#lib/types/database.ts';
 import { createScriptClient, hasFlag } from './relecture/common';
 
 // ============================================================================

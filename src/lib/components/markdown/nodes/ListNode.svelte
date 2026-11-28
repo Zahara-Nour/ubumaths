@@ -19,10 +19,10 @@
 	@see ExerciseDisplay.svelte for original renderList() implementation
 -->
 <script lang="ts">
-	import type { ListItemNode, ASTNode, InlineNode } from '$lib/ubumark';
-	import type { SchemeId } from '$lib/types/list-numbering';
-	import type { GenericFunctionConfig } from '$lib/mathAST/parser/types';
-	import type { ExerciseHint } from '$lib/exercises/types';
+	import type { ListItemNode, ASTNode, InlineNode } from '#lib/ubumark/index.ts';
+	import type { SchemeId } from '#lib/types/list-numbering.ts';
+	import type { GenericFunctionConfig } from '#lib/mathAST/parser/types.ts';
+	import type { ExerciseHint } from '#lib/exercises/types.ts';
 	import ParagraphNode from './ParagraphNode.svelte';
 	import MathBlock from './MathBlock.svelte';
 	import ImageDisplay from './ImageDisplay.svelte';
@@ -34,10 +34,13 @@
 	import VariationTable from './VariationTable.svelte';
 	import ProbabilityTree from './ProbabilityTree.svelte';
 	import TrigCircle from './TrigCircle.svelte';
+	import NumberLine from './NumberLine.svelte';
 	import Courbe from './Courbe.svelte';
 	import FigureBlock from './FigureBlock.svelte';
 	import StatChart from './StatChart.svelte';
+	import RangerPlacer from './RangerPlacer.svelte';
 	import QrBlock from './QrBlock.svelte';
+	import Engrenages from './Engrenages.svelte';
 	import ScratchBlock from './ScratchBlock.svelte';
 	import Horloge from './Horloge.svelte';
 	import Partage from './Partage.svelte';
@@ -45,22 +48,26 @@
 	import Operation from './Operation.svelte';
 	import Collection from './Collection.svelte';
 	import Monnaie from './Monnaie.svelte';
+	import SchemaBarres from './SchemaBarres.svelte';
 	// Self-import for recursive rendering (Svelte 5 pattern)
 	import ListNode from './ListNode.svelte';
-	import type { VariationTableNode } from '$lib/ubumark/types/variation-table';
-	import type { ProbabilityTreeNode } from '$lib/ubumark/types/probability-tree';
-	import type { TrigCircleNode } from '$lib/ubumark/types/trig-circle';
-	import type { CourbeNode } from '$lib/ubumark/types/courbe';
-	import type { FigureNode } from '$lib/ubumark/types/figure';
-	import type { StatChartNode } from '$lib/ubumark/types/stat-chart';
-	import type { QrNode } from '$lib/ubumark/types/qr';
-	import type { ScratchNode } from '$lib/ubumark/types/scratch';
-	import type { HorlogeNode } from '$lib/ubumark/types/horloge';
-	import type { PartageNode } from '$lib/ubumark/types/partage';
-	import type { EspaceNode } from '$lib/ubumark/types/espace';
-	import type { OperationNode } from '$lib/ubumark/types/operation';
-	import type { CollectionNode } from '$lib/ubumark/types/collection';
-	import type { MonnaieNode } from '$lib/ubumark/types/monnaie';
+	import type { VariationTableNode } from '#lib/ubumark/types/variation-table.ts';
+	import type { ProbabilityTreeNode } from '#lib/ubumark/types/probability-tree.ts';
+	import type { TrigCircleNode } from '#lib/ubumark/types/trig-circle.ts';
+	import type { NumberLineNode } from '#lib/ubumark/types/number-line.ts';
+	import type { CourbeNode } from '#lib/ubumark/types/courbe.ts';
+	import type { FigureNode } from '#lib/ubumark/types/figure.ts';
+	import type { StatChartNode } from '#lib/ubumark/types/stat-chart.ts';
+	import type { QrNode } from '#lib/ubumark/types/qr.ts';
+	import type { EngrenagesNode } from '#lib/ubumark/types/engrenages.ts';
+	import type { ScratchNode } from '#lib/ubumark/types/scratch.ts';
+	import type { HorlogeNode } from '#lib/ubumark/types/horloge.ts';
+	import type { PartageNode } from '#lib/ubumark/types/partage.ts';
+	import type { EspaceNode } from '#lib/ubumark/types/espace.ts';
+	import type { OperationNode } from '#lib/ubumark/types/operation.ts';
+	import type { CollectionNode } from '#lib/ubumark/types/collection.ts';
+	import type { MonnaieNode } from '#lib/ubumark/types/monnaie.ts';
+	import type { SchemaBarresNode } from '#lib/ubumark/types/schema-barres.ts';
 
 	interface Props {
 		ordered: boolean;
@@ -235,6 +242,13 @@
 	}
 
 	/**
+	 * Droite graduée (```line en retrait dans un item de liste)
+	 */
+	function isNumberLineNode(node: ASTNode): node is NumberLineNode {
+		return node.type === 'number-line';
+	}
+
+	/**
 	 * Bloc ```courbe en retrait dans un item de liste
 	 */
 	function isCourbeNode(node: ASTNode): node is CourbeNode {
@@ -260,6 +274,11 @@
 	 */
 	function isQrNode(node: ASTNode): node is QrNode {
 		return node.type === 'qr';
+	}
+
+	/** Bloc ```engrenages en retrait dans un item de liste */
+	function isEngrenagesNode(node: ASTNode): node is EngrenagesNode {
+		return node.type === 'engrenages';
 	}
 
 	/**
@@ -298,6 +317,13 @@
 	}
 
 	/**
+	 * Bloc ```schema-barres en retrait dans un item de liste
+	 */
+	function isSchemaBarresNode(node: ASTNode): node is SchemaBarresNode {
+		return node.type === 'schema-barres';
+	}
+
+	/**
 	 * Bloc ```partage en retrait dans un item de liste
 	 */
 	function isPartageNode(node: ASTNode): node is PartageNode {
@@ -326,17 +352,21 @@
 			'variation-table',
 			'probability-tree',
 			'trig-circle',
+			'number-line',
 			'courbe',
 			'figure',
 			'stat-chart',
 			'qr',
+			'engrenages',
 			'scratch',
 			'horloge',
 			'partage',
 			'espace',
 			'operation',
 			'collection',
-			'monnaie'
+			'monnaie',
+			'schema-barres',
+			'ranger'
 		].includes(node.type);
 	}
 
@@ -469,6 +499,8 @@
 						<ProbabilityTree node={child} />
 					{:else if isTrigCircleNode(child)}
 						<TrigCircle node={child} />
+					{:else if isNumberLineNode(child)}
+						<NumberLine node={child} />
 					{:else if isCourbeNode(child)}
 						<Courbe node={child} />
 					{:else if isFigureNode(child)}
@@ -477,6 +509,8 @@
 						<StatChart node={child} />
 					{:else if isQrNode(child)}
 						<QrBlock node={child} />
+					{:else if isEngrenagesNode(child)}
+						<Engrenages node={child} />
 					{:else if isScratchNode(child)}
 						<ScratchBlock node={child} />
 					{:else if isHorlogeNode(child)}
@@ -491,6 +525,11 @@
 						<Collection node={child} />
 					{:else if isMonnaieNode(child)}
 						<Monnaie node={child} />
+					{:else if isSchemaBarresNode(child)}
+						<SchemaBarres node={child} />
+					{:else if child.type === 'ranger'}
+						<!-- Étiquettes à ranger dans un item de liste de cours (écart L89) -->
+						<RangerPlacer node={child} />
 					{:else if child.type === 'horizontal-rule'}
 						<HorizontalRule />
 					{/if}
@@ -581,6 +620,8 @@
 						<ProbabilityTree node={child} />
 					{:else if isTrigCircleNode(child)}
 						<TrigCircle node={child} />
+					{:else if isNumberLineNode(child)}
+						<NumberLine node={child} />
 					{:else if isCourbeNode(child)}
 						<Courbe node={child} />
 					{:else if isFigureNode(child)}
@@ -589,6 +630,8 @@
 						<StatChart node={child} />
 					{:else if isQrNode(child)}
 						<QrBlock node={child} />
+					{:else if isEngrenagesNode(child)}
+						<Engrenages node={child} />
 					{:else if isScratchNode(child)}
 						<ScratchBlock node={child} />
 					{:else if isHorlogeNode(child)}
@@ -603,6 +646,11 @@
 						<Collection node={child} />
 					{:else if isMonnaieNode(child)}
 						<Monnaie node={child} />
+					{:else if isSchemaBarresNode(child)}
+						<SchemaBarres node={child} />
+					{:else if child.type === 'ranger'}
+						<!-- Étiquettes à ranger dans un item de liste de cours (écart L89) -->
+						<RangerPlacer node={child} />
 					{:else if child.type === 'horizontal-rule'}
 						<HorizontalRule />
 					{/if}

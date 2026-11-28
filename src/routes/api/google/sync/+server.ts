@@ -29,12 +29,12 @@
  * Consider implementing as background job for production
  */
 
-import { json, error } from '@sveltejs/kit';
-import { assertGoogleClassroomEnabled } from '$lib/server/google/feature-guard';
+import { error } from '@sveltejs/kit';
+import { assertGoogleClassroomEnabled } from '#lib/server/google/feature-guard.ts';
 import type { RequestHandler } from './$types';
-import { requireRole } from '$lib/server/middleware/auth';
-import { fullSync } from '$lib/server/google/sync';
-import { createServerLogger } from '$lib/utils/logger';
+import { requireRole } from '#lib/server/middleware/auth.ts';
+import { fullSync } from '#lib/server/google/sync.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/google/sync/+server');
 
@@ -76,7 +76,7 @@ export const POST: RequestHandler = async ({ locals }) => {
 		);
 
 		// Return results
-		return json({
+		return Response.json({
 			success: true,
 			coursesSynced: result.coursesSynced,
 			courseworkSynced: result.courseworkSynced,

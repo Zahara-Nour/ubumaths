@@ -4,12 +4,12 @@
 
 import { z } from 'zod';
 import { formDataTransforms } from './common';
-import { validatePasswordPolicy } from '$lib/server/passwordPolicy';
+import { validatePasswordPolicy } from '#lib/server/passwordPolicy.ts';
 import {
 	childLoginBase,
 	isChildAccountEmail,
 	normalizeLoginIdentifier
-} from '$lib/utils/child-account';
+} from '#lib/utils/child-account.ts';
 
 /**
  * SECURITY (finding H6): the server-side password policy was dead code — real
@@ -17,7 +17,7 @@ import {
  * sets a new password (register, update after reset), so complexity + common-
  * password checks are actually applied server-side.
  */
-function enforcePasswordPolicy(password: string, ctx: z.RefinementCtx): void {
+export function enforcePasswordPolicy(password: string, ctx: z.RefinementCtx): void {
 	const result = validatePasswordPolicy(password);
 	if (!result.valid) {
 		for (const message of result.errors) {
@@ -32,7 +32,7 @@ function enforcePasswordPolicy(password: string, ctx: z.RefinementCtx): void {
 
 /**
  * Login form schema. Le champ `email` reçoit une adresse OU l'identifiant d'un enfant
- * (`noelie42`), changé en adresse du domaine fictif (`$lib/utils/child-account`).
+ * (`noelie42`), changé en adresse du domaine fictif (`#lib/utils/child-account.ts`).
  */
 export const loginFormSchema = z.object({
 	email: z
@@ -96,6 +96,33 @@ export const registerFormSchema = z
 	.superRefine((d, ctx) => enforcePasswordPolicy(d.password, ctx));
 
 /**
+ * Prénom d'un enfant inscrit par son parent ou invité en cours particulier : il doit
+ * garder au moins une lettre latine une fois replié, sinon aucun identifiant n'est possible.
+ * Lettres, espaces, tirets, apostrophes : le prénom part dans le sujet d'un courriel, il ne
+ * doit pouvoir porter ni lien ni texte arbitraire (audit PR 2, M1).
+ */
+export const childFirstnameSchema = z
+	.string()
+	.trim()
+	.min(1, 'Prénom requis')
+	.max(50)
+	.regex(/^[\p{L}\p{M}][\p{L}\p{M} '’-]*$/u, 'Lettres, espaces, tirets et apostrophes seulement')
+	.refine((name) => childLoginBase(name) !== null, {
+		message: 'Le prénom doit contenir au moins une lettre de l’alphabet latin'
+	});
+
+/** Adresse d'un parent : un CONTACT, jamais l'adresse fictive d'un compte d'enfant. */
+export const parentContactEmailSchema = z
+	.string()
+	.trim()
+	.toLowerCase()
+	.max(254)
+	.email('Adresse email invalide')
+	.refine((email) => !isChildAccountEmail(email), {
+		message: 'Utilisez votre adresse email réelle'
+	});
+
+/**
  * Inscription d'un enfant par son parent (page /auth/register/parent).
  *
  * Prénom seul (minimisation, décision 7) ; il doit garder au moins une lettre latine une
@@ -104,29 +131,8 @@ export const registerFormSchema = z
  */
 export const parentRegisterFormSchema = z
 	.object({
-		childFirstname: z
-			.string()
-			.trim()
-			.min(1, 'Prénom requis')
-			.max(50)
-			// Lettres, espaces, tirets, apostrophes : le prénom part dans le sujet d'un
-			// courriel, il ne doit pouvoir porter ni lien ni texte arbitraire (audit PR 2, M1).
-			.regex(
-				/^[\p{L}\p{M}][\p{L}\p{M} '’-]*$/u,
-				'Lettres, espaces, tirets et apostrophes seulement'
-			)
-			.refine((name) => childLoginBase(name) !== null, {
-				message: 'Le prénom doit contenir au moins une lettre de l’alphabet latin'
-			}),
-		parentEmail: z
-			.string()
-			.trim()
-			.toLowerCase()
-			.max(254)
-			.email('Adresse email invalide')
-			.refine((email) => !isChildAccountEmail(email), {
-				message: 'Utilisez votre adresse email réelle'
-			}),
+		childFirstname: childFirstnameSchema,
+		parentEmail: parentContactEmailSchema,
 		password: z.string().min(8, 'Le mot de passe doit contenir au moins 8 caractères').max(72),
 		confirmPassword: z.string().min(1, 'Confirmation du mot de passe requise'),
 		classCode: z.string().trim().min(1, 'Code de classe requis').max(64),

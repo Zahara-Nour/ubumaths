@@ -24,8 +24,8 @@
 
 import { createClient } from '@supabase/supabase-js';
 import { config } from 'dotenv';
-import { validateCreateWorksheetExercise } from '$lib/server/validation/worksheets';
-import type { Database } from '$lib/types/database';
+import { validateCreateWorksheetExercise } from '#lib/server/validation/worksheets.ts';
+import type { Database } from '#lib/types/database.ts';
 
 config({ path: '.env' });
 

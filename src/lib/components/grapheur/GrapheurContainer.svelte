@@ -19,8 +19,8 @@ Features:
 	import ViewportControls from './ViewportControls.svelte';
 	import CoordinatesDisplay from './CoordinatesDisplay.svelte';
 	import KeyboardHandler from './KeyboardHandler.svelte';
-	import { provideGrapheurStore } from '$lib/stores/grapheur-context';
-	import type { GrapheurStore } from '$lib/stores/grapheur.svelte';
+	import { provideGrapheurStore } from '#lib/stores/grapheur-context.ts';
+	import type { GrapheurStore } from '#lib/stores/grapheur.svelte.ts';
 
 	/**
 	 * Optional CSS class for container customization

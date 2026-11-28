@@ -7,14 +7,14 @@
 
 import { describe, it, expect } from 'vitest';
 import { Atelier } from '../atelier.svelte';
-import { WebReplEngine } from '$lib/mathAST/cli/web/web-repl-engine';
+import { WebReplEngine } from '#lib/mathAST/cli/web/web-repl-engine.ts';
 import { runInput, type CalcSession } from '../calcul';
 import { commandCatalog } from '../commands';
 import { actionsFor } from '../actions';
 import { CalcDesk } from '../desk.svelte';
-import { summarizeList } from '$lib/statistics/describe';
-import { formatSummary } from '$lib/statistics/format';
-import type { ComparisonScene } from '$lib/ubumark/utils/stat-chart-scene';
+import { summarizeList } from '#lib/statistics/describe.ts';
+import { formatSummary } from '#lib/statistics/format.ts';
+import type { ComparisonScene } from '#lib/ubumark/utils/stat-chart-scene.ts';
 
 // =============================================================================
 // Helpers

@@ -20,11 +20,11 @@
 	5. Spin the wheel to test functionality
 -->
 <script lang="ts">
-	import Wheel from '$lib/components/Wheel.svelte';
-	import { Button } from '$lib/components/ui/button';
-	import { Input } from '$lib/components/ui/input';
+	import Wheel from '#lib/components/Wheel.svelte';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import { Input } from '#lib/components/ui/input/index.ts';
 	import { Copy, Plus, Trash2, RotateCcw } from '@lucide/svelte';
-	import { toaster } from '$lib/stores/toaster.svelte';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
 
 	// Student interface matching Wheel component requirements
 	interface Student {
@@ -144,7 +144,7 @@
 		return (
 			`<` +
 			`script>
-  import Wheel from '$lib/components/Wheel.svelte';
+  import Wheel from '#lib/components/Wheel.svelte';
 
   const students = ${studentsCode};
 </` +

@@ -7,7 +7,7 @@
  *
  * @example
  * ```typescript
- * import { mockIds, mockProfiles, createMockProfile } from '$tests/helpers/fixtures';
+ * import { mockIds, mockProfiles, createMockProfile } from '#tests/helpers/fixtures/index.ts';
  *
  * // Use predefined IDs
  * const teacherId = mockIds.teacher;

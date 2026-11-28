@@ -1,6 +1,6 @@
 """Écrit les 7 modèles du lot 4 du CM2 (calcul mental sur les décimaux) dans scripts/questions/cm2-4/.
 
-Phase 0 validée par David le 2026-11-01 (§ 9 du journal `docs/wip/questions-cm2-progress.md`).
+Phase 0 validée par David le 2026-11-01 (§ 9 du journal `docs/archive/wip/questions-cm2-progress.md`).
 Bornes : `cycle3.json`, CM2 (040, 118, 041 : nombre ENTIER ajouté ou retiré, k unités d'un seul
 rang, k de 1 à 9, des unités aux milliers, sans retenue ou avec une retenue — lecture littérale
 du programme, décision de David du 2026-11-01 : les dixièmes / centièmes sont au CM1 ; 048 : une ou deux décimales ; 049 : résultat à

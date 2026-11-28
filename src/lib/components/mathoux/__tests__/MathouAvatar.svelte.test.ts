@@ -17,7 +17,7 @@ import {
 	MATHOU_DECORATION_IDS,
 	MATHOU_GLASSES_IDS,
 	MATHOU_HAT_IDS
-} from '$lib/mathoux/decorations';
+} from '#lib/mathoux/decorations.ts';
 
 function svgOf(container: HTMLElement): SVGSVGElement {
 	const svg = container.querySelector('svg');

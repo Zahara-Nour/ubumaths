@@ -11,7 +11,7 @@
  * dark) so the chips stay legible without dominating the card body.
  */
 
-import type { KanbanTagColor } from '$lib/types/database-helpers';
+import type { KanbanTagColor } from '#lib/types/database-helpers.ts';
 
 export interface TagColorTokens {
 	/** Compact chip on a card body. */

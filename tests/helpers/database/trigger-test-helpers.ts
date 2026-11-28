@@ -5,7 +5,7 @@
  */
 
 import { createClient, type SupabaseClient } from '@supabase/supabase-js';
-import type { Database } from '$lib/types/database';
+import type { Database } from '#lib/types/database.ts';
 import { deleteTestAuthUsers, closePostgresClient, getPostgresClient } from './postgres-client';
 import { purgeTemplatesOf } from './purge-modeles';
 
@@ -355,10 +355,11 @@ export async function insertTestClass(params: {
 /**
  * Insert a test exercise
  */
-export async function insertTestExercise(params: {
-	createdBy: string;
-	type?: string;
-}): Promise<Database['public']['Tables']['exercises']['Row']> {
+export async function insertTestExercise(params: { createdBy: string; type?: string }): Promise<
+	Database['public']['Tables']['exercises']['Row'] & {
+		variations: Database['public']['Tables']['exercise_versions']['Row']['variations'];
+	}
+> {
 	const serviceClient = createServiceRoleClient();
 
 	const exercise = {
@@ -371,10 +372,32 @@ export async function insertTestExercise(params: {
 		created_at: new Date().toISOString()
 	};
 
-	const { data, error } = await serviceClient.from('exercises').insert(exercise).select().single();
+	const { variations, ...identity } = exercise;
+	const { data, error } = await serviceClient.from('exercises').insert(identity).select().single();
 
 	if (error) throw error;
-	return data;
+	// La version 1 porte le contenu (ADR 0044), comme `createExercise`
+	const { error: versionError } = await serviceClient
+		.from('exercise_versions')
+		.insert({ exercise_id: data.id, number: 1, created_by: data.created_by, variations });
+	if (versionError) throw versionError;
+	return { ...data, variations };
+}
+
+/**
+ * La dernière version d'un exercice : une ligne de fiche de test la prend (ADR 0044), comme
+ * `POST /api/worksheets/[id]/exercises`.
+ */
+export async function latestTestVersionId(exerciseId: string): Promise<string> {
+	const { data, error } = await createServiceRoleClient()
+		.from('exercise_versions')
+		.select('id')
+		.eq('exercise_id', exerciseId)
+		.order('number', { ascending: false })
+		.limit(1)
+		.single();
+	if (error) throw new Error(`version de ${exerciseId} : ${error.message}`);
+	return data.id;
 }
 
 /**

@@ -1,0 +1,1354 @@
+[
+	{
+		"id": "31d64c00-144e-4c0f-887f-475be9ac001e",
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"grades": ["CM1", "CM2"],
+		"delay": 90,
+		"level": 2,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{n}}"
+					}
+				],
+				"statement": "Quelle est l'aire de la figure, en carreaux ?\n\n```figure\nfenetre: 0 ; 9 ; 0 ; 7\ngrille: 1\ndescription: Une figure coloriée sur un quadrillage.\n---\n{{if:j==1|a1 = point(1, 1, visible=faux)\na2 = point(5, 1, visible=faux)\na3 = point(5, 4, visible=faux)\na4 = point(1, 4, visible=faux)\npolygone(a1, a2, a3, a4, couleur=\"noir\", epaisseur=2, remplissage=\"bleu\", opacite_fond=0.35)|{{if:j==2|a1 = point(1, 1, visible=faux)\na2 = point(6, 1, visible=faux)\na3 = point(6, 3, visible=faux)\na4 = point(3, 3, visible=faux)\na5 = point(3, 5, visible=faux)\na6 = point(1, 5, visible=faux)\npolygone(a1, a2, a3, a4, a5, a6, couleur=\"noir\", epaisseur=2, remplissage=\"bleu\", opacite_fond=0.35)|{{if:j==3|a1 = point(1, 1, visible=faux)\na2 = point(5, 1, visible=faux)\na3 = point(5, 4, visible=faux)\na4 = point(4, 4, visible=faux)\na5 = point(4, 3, visible=faux)\na6 = point(2, 3, visible=faux)\na7 = point(2, 4, visible=faux)\na8 = point(1, 4, visible=faux)\npolygone(a1, a2, a3, a4, a5, a6, a7, a8, couleur=\"noir\", epaisseur=2, remplissage=\"bleu\", opacite_fond=0.35)|{{if:j==4|a1 = point(1, 1, visible=faux)\na2 = point(5, 1, visible=faux)\na3 = point(5, 2, visible=faux)\na4 = point(4, 2, visible=faux)\na5 = point(4, 3, visible=faux)\na6 = point(3, 3, visible=faux)\na7 = point(3, 4, visible=faux)\na8 = point(2, 4, visible=faux)\na9 = point(2, 5, visible=faux)\na10 = point(1, 5, visible=faux)\npolygone(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, couleur=\"noir\", epaisseur=2, remplissage=\"bleu\", opacite_fond=0.35)|{{if:j==5|a1 = point(2, 1, visible=faux)\na2 = point(4, 1, visible=faux)\na3 = point(4, 2, visible=faux)\na4 = point(5, 2, visible=faux)\na5 = point(5, 4, visible=faux)\na6 = point(4, 4, visible=faux)\na7 = point(4, 5, visible=faux)\na8 = point(2, 5, visible=faux)\na9 = point(2, 4, visible=faux)\na10 = point(1, 4, visible=faux)\na11 = point(1, 2, visible=faux)\na12 = point(2, 2, visible=faux)\npolygone(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, couleur=\"noir\", epaisseur=2, remplissage=\"bleu\", opacite_fond=0.35)|{{if:j==6|a1 = point(1, 3, visible=faux)\na2 = point(3, 3, visible=faux)\na3 = point(3, 1, visible=faux)\na4 = point(6, 1, visible=faux)\na5 = point(6, 3, visible=faux)\na6 = point(4, 3, visible=faux)\na7 = point(4, 5, visible=faux)\na8 = point(1, 5, visible=faux)\npolygone(a1, a2, a3, a4, a5, a6, a7, a8, couleur=\"noir\", epaisseur=2, remplissage=\"bleu\", opacite_fond=0.35)|{{if:j==7|a1 = point(1, 1, visible=faux)\na2 = point(6, 1, visible=faux)\na3 = point(6, 2, visible=faux)\na4 = point(5, 2, visible=faux)\na5 = point(5, 3, visible=faux)\na6 = point(4, 3, visible=faux)\na7 = point(4, 4, visible=faux)\na8 = point(3, 4, visible=faux)\na9 = point(3, 5, visible=faux)\na10 = point(2, 5, visible=faux)\na11 = point(2, 6, visible=faux)\na12 = point(1, 6, visible=faux)\npolygone(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, couleur=\"noir\", epaisseur=2, remplissage=\"bleu\", opacite_fond=0.35)|{{if:j==8|a1 = point(1, 1, visible=faux)\na2 = point(3, 1, visible=faux)\na3 = point(3, 3, visible=faux)\na4 = point(5, 3, visible=faux)\na5 = point(5, 4, visible=faux)\na6 = point(3, 4, visible=faux)\na7 = point(3, 5, visible=faux)\na8 = point(6, 5, visible=faux)\na9 = point(6, 6, visible=faux)\na10 = point(1, 6, visible=faux)\npolygone(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, couleur=\"noir\", epaisseur=2, remplissage=\"bleu\", opacite_fond=0.35)|{{if:j==9|a1 = point(1, 3, visible=faux)\na2 = point(3, 3, visible=faux)\na3 = point(3, 1, visible=faux)\na4 = point(4, 1, visible=faux)\na5 = point(4, 3, visible=faux)\na6 = point(6, 3, visible=faux)\na7 = point(6, 4, visible=faux)\na8 = point(1, 4, visible=faux)\npolygone(a1, a2, a3, a4, a5, a6, a7, a8, couleur=\"noir\", epaisseur=2, remplissage=\"bleu\", opacite_fond=0.35)|a1 = point(1, 1, visible=faux)\na2 = point(6, 1, visible=faux)\na3 = point(6, 5, visible=faux)\na4 = point(5, 5, visible=faux)\na5 = point(5, 3, visible=faux)\na6 = point(2, 3, visible=faux)\na7 = point(2, 5, visible=faux)\na8 = point(1, 5, visible=faux)\npolygone(a1, a2, a3, a4, a5, a6, a7, a8, couleur=\"noir\", epaisseur=2, remplissage=\"bleu\", opacite_fond=0.35)}}}}}}}}}}}}}}}}}}\n```\n\nL'aire de la figure est de $?$ carreaux.",
+				"variables": [
+					{
+						"name": "j",
+						"expression": "1..10"
+					},
+					{
+						"name": "n",
+						"expression": "eval:(1-min(abs(j-1),1))*12+(1-min(abs(j-2),1))*14+(1-min(abs(j-3),1))*10+(1-min(abs(j-4),1))*10+(1-min(abs(j-5),1))*12+(1-min(abs(j-6),1))*12+(1-min(abs(j-7),1))*15+(1-min(abs(j-8),1))*15+(1-min(abs(j-9),1))*7+(1-min(abs(j-10),1))*14"
+					}
+				],
+				"correction": {
+					"steps": [
+						"L'unité est le carreau : on compte les carreaux recouverts par la figure.",
+						"Ligne par ligne, du bas vers le haut : ${{if:j==1|4 + 4 + 4|{{if:j==2|5 + 5 + 2 + 2|{{if:j==3|4 + 4 + 2|{{if:j==4|4 + 3 + 2 + 1|{{if:j==5|2 + 4 + 4 + 2|{{if:j==6|3 + 3 + 3 + 3|{{if:j==7|5 + 4 + 3 + 2 + 1|{{if:j==8|2 + 2 + 4 + 2 + 5|{{if:j==9|1 + 1 + 5|5 + 5 + 2 + 2}}}}}}}}}}}}}}}}}} = \\textcolor{{{color:primary.0}}}{{{if:j==1|12|{{if:j==2|14|{{if:j==3|10|{{if:j==4|10|{{if:j==5|12|{{if:j==6|12|{{if:j==7|15|{{if:j==8|15|{{if:j==9|7|14}}}}}}}}}}}}}}}}}}}$ carreaux."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{n}}"
+					}
+				],
+				"statement": "Quelle est l'aire de la figure, en carreaux ?\n\n```figure\nfenetre: 0 ; 9 ; 0 ; 7\ngrille: 1\ndescription: Une figure coloriée sur un quadrillage, avec des carreaux entiers et des demi-carreaux.\n---\n{{if:j==1|a1 = point(1, 1, visible=faux)\na2 = point(5, 1, visible=faux)\na3 = point(5, 3, visible=faux)\na4 = point(3, 5, visible=faux)\na5 = point(1, 3, visible=faux)\npolygone(a1, a2, a3, a4, a5, couleur=\"noir\", epaisseur=2, remplissage=\"vert\", opacite_fond=0.35)|{{if:j==2|a1 = point(1, 1, visible=faux)\na2 = point(5, 1, visible=faux)\na3 = point(7, 3, visible=faux)\na4 = point(3, 3, visible=faux)\npolygone(a1, a2, a3, a4, couleur=\"noir\", epaisseur=2, remplissage=\"vert\", opacite_fond=0.35)|{{if:j==3|a1 = point(1, 1, visible=faux)\na2 = point(7, 1, visible=faux)\na3 = point(5, 3, visible=faux)\na4 = point(3, 3, visible=faux)\npolygone(a1, a2, a3, a4, couleur=\"noir\", epaisseur=2, remplissage=\"vert\", opacite_fond=0.35)|{{if:j==4|a1 = point(1, 1, visible=faux)\na2 = point(5, 1, visible=faux)\na3 = point(1, 5, visible=faux)\npolygone(a1, a2, a3, couleur=\"noir\", epaisseur=2, remplissage=\"vert\", opacite_fond=0.35)|{{if:j==5|a1 = point(3, 1, visible=faux)\na2 = point(5, 3, visible=faux)\na3 = point(3, 5, visible=faux)\na4 = point(1, 3, visible=faux)\npolygone(a1, a2, a3, a4, couleur=\"noir\", epaisseur=2, remplissage=\"vert\", opacite_fond=0.35)|{{if:j==6|a1 = point(1, 2, visible=faux)\na2 = point(4, 2, visible=faux)\na3 = point(4, 1, visible=faux)\na4 = point(6, 3, visible=faux)\na5 = point(4, 5, visible=faux)\na6 = point(4, 4, visible=faux)\na7 = point(1, 4, visible=faux)\npolygone(a1, a2, a3, a4, a5, a6, a7, couleur=\"noir\", epaisseur=2, remplissage=\"vert\", opacite_fond=0.35)|a1 = point(1, 1, visible=faux)\na2 = point(7, 1, visible=faux)\na3 = point(7, 3, visible=faux)\na4 = point(5, 5, visible=faux)\na5 = point(3, 5, visible=faux)\na6 = point(1, 3, visible=faux)\npolygone(a1, a2, a3, a4, a5, a6, couleur=\"noir\", epaisseur=2, remplissage=\"vert\", opacite_fond=0.35)}}}}}}}}}}}}\n```\n\nL'aire de la figure est de $?$ carreaux.",
+				"variables": [
+					{
+						"name": "j",
+						"expression": "1..7"
+					},
+					{
+						"name": "n",
+						"expression": "eval:(1-min(abs(j-1),1))*12+(1-min(abs(j-2),1))*8+(1-min(abs(j-3),1))*8+(1-min(abs(j-4),1))*8+(1-min(abs(j-5),1))*8+(1-min(abs(j-6),1))*10+(1-min(abs(j-7),1))*20"
+					}
+				],
+				"correction": {
+					"steps": [
+						"On compte d'abord les carreaux entiers : ${{if:j==1|10|{{if:j==2|6|{{if:j==3|6|{{if:j==4|6|{{if:j==5|4|{{if:j==6|8|18}}}}}}}}}}}}$.",
+						"Puis les demi-carreaux : ${{if:j==1|4|{{if:j==2|4|{{if:j==3|4|{{if:j==4|4|{{if:j==5|8|{{if:j==6|4|4}}}}}}}}}}}}$. Deux demi-carreaux font un carreau entier : ${{if:j==1|4|{{if:j==2|4|{{if:j==3|4|{{if:j==4|4|{{if:j==5|8|{{if:j==6|4|4}}}}}}}}}}}}$ demi-carreaux font ${{if:j==1|2|{{if:j==2|2|{{if:j==3|2|{{if:j==4|2|{{if:j==5|4|{{if:j==6|2|2}}}}}}}}}}}}$ carreaux.",
+						"Aire : ${{if:j==1|10|{{if:j==2|6|{{if:j==3|6|{{if:j==4|6|{{if:j==5|4|{{if:j==6|8|18}}}}}}}}}}}} + {{if:j==1|2|{{if:j==2|2|{{if:j==3|2|{{if:j==4|2|{{if:j==5|4|{{if:j==6|2|2}}}}}}}}}}}} = \\textcolor{{{color:primary.0}}}{{{if:j==1|12|{{if:j==2|8|{{if:j==3|8|{{if:j==4|8|{{if:j==5|8|{{if:j==6|10|20}}}}}}}}}}}}}$ carreaux."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{n}}"
+					}
+				],
+				"statement": "L'unité d'aire est le rectangle orange **u**. Quelle est l'aire de la figure bleue, en unités **u** ?\n\n```figure\nfenetre: 0 ; 13 ; 0 ; 7\ngrille: 1\ndescription: Une figure bleue sur un quadrillage, et à côté un rectangle orange de deux carreaux, l'unité u.\n---\n{{if:j==1|a1 = point(1, 1, visible=faux)\na2 = point(5, 1, visible=faux)\na3 = point(5, 4, visible=faux)\na4 = point(1, 4, visible=faux)\npolygone(a1, a2, a3, a4, couleur=\"noir\", epaisseur=2, remplissage=\"bleu\", opacite_fond=0.35)\nu1 = point(10, 1, visible=faux)\nu2 = point(12, 1, visible=faux)\nu3 = point(12, 2, visible=faux)\nu4 = point(10, 2, visible=faux)\npolygone(u1, u2, u3, u4, couleur=\"noir\", epaisseur=2, remplissage=\"orange\", opacite_fond=0.6)\ntexte(11, 2.6, \"u\")|{{if:j==2|a1 = point(1, 1, visible=faux)\na2 = point(6, 1, visible=faux)\na3 = point(6, 3, visible=faux)\na4 = point(3, 3, visible=faux)\na5 = point(3, 5, visible=faux)\na6 = point(1, 5, visible=faux)\npolygone(a1, a2, a3, a4, a5, a6, couleur=\"noir\", epaisseur=2, remplissage=\"bleu\", opacite_fond=0.35)\nu1 = point(10, 1, visible=faux)\nu2 = point(12, 1, visible=faux)\nu3 = point(12, 2, visible=faux)\nu4 = point(10, 2, visible=faux)\npolygone(u1, u2, u3, u4, couleur=\"noir\", epaisseur=2, remplissage=\"orange\", opacite_fond=0.6)\ntexte(11, 2.6, \"u\")|{{if:j==3|a1 = point(1, 1, visible=faux)\na2 = point(5, 1, visible=faux)\na3 = point(5, 4, visible=faux)\na4 = point(4, 4, visible=faux)\na5 = point(4, 3, visible=faux)\na6 = point(2, 3, visible=faux)\na7 = point(2, 4, visible=faux)\na8 = point(1, 4, visible=faux)\npolygone(a1, a2, a3, a4, a5, a6, a7, a8, couleur=\"noir\", epaisseur=2, remplissage=\"bleu\", opacite_fond=0.35)\nu1 = point(10, 1, visible=faux)\nu2 = point(12, 1, visible=faux)\nu3 = point(12, 2, visible=faux)\nu4 = point(10, 2, visible=faux)\npolygone(u1, u2, u3, u4, couleur=\"noir\", epaisseur=2, remplissage=\"orange\", opacite_fond=0.6)\ntexte(11, 2.6, \"u\")|{{if:j==4|a1 = point(1, 1, visible=faux)\na2 = point(5, 1, visible=faux)\na3 = point(5, 2, visible=faux)\na4 = point(4, 2, visible=faux)\na5 = point(4, 3, visible=faux)\na6 = point(3, 3, visible=faux)\na7 = point(3, 4, visible=faux)\na8 = point(2, 4, visible=faux)\na9 = point(2, 5, visible=faux)\na10 = point(1, 5, visible=faux)\npolygone(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, couleur=\"noir\", epaisseur=2, remplissage=\"bleu\", opacite_fond=0.35)\nu1 = point(10, 1, visible=faux)\nu2 = point(12, 1, visible=faux)\nu3 = point(12, 2, visible=faux)\nu4 = point(10, 2, visible=faux)\npolygone(u1, u2, u3, u4, couleur=\"noir\", epaisseur=2, remplissage=\"orange\", opacite_fond=0.6)\ntexte(11, 2.6, \"u\")|{{if:j==5|a1 = point(2, 1, visible=faux)\na2 = point(4, 1, visible=faux)\na3 = point(4, 2, visible=faux)\na4 = point(5, 2, visible=faux)\na5 = point(5, 4, visible=faux)\na6 = point(4, 4, visible=faux)\na7 = point(4, 5, visible=faux)\na8 = point(2, 5, visible=faux)\na9 = point(2, 4, visible=faux)\na10 = point(1, 4, visible=faux)\na11 = point(1, 2, visible=faux)\na12 = point(2, 2, visible=faux)\npolygone(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, couleur=\"noir\", epaisseur=2, remplissage=\"bleu\", opacite_fond=0.35)\nu1 = point(10, 1, visible=faux)\nu2 = point(12, 1, visible=faux)\nu3 = point(12, 2, visible=faux)\nu4 = point(10, 2, visible=faux)\npolygone(u1, u2, u3, u4, couleur=\"noir\", epaisseur=2, remplissage=\"orange\", opacite_fond=0.6)\ntexte(11, 2.6, \"u\")|{{if:j==6|a1 = point(1, 3, visible=faux)\na2 = point(3, 3, visible=faux)\na3 = point(3, 1, visible=faux)\na4 = point(6, 1, visible=faux)\na5 = point(6, 3, visible=faux)\na6 = point(4, 3, visible=faux)\na7 = point(4, 5, visible=faux)\na8 = point(1, 5, visible=faux)\npolygone(a1, a2, a3, a4, a5, a6, a7, a8, couleur=\"noir\", epaisseur=2, remplissage=\"bleu\", opacite_fond=0.35)\nu1 = point(10, 1, visible=faux)\nu2 = point(12, 1, visible=faux)\nu3 = point(12, 2, visible=faux)\nu4 = point(10, 2, visible=faux)\npolygone(u1, u2, u3, u4, couleur=\"noir\", epaisseur=2, remplissage=\"orange\", opacite_fond=0.6)\ntexte(11, 2.6, \"u\")|a1 = point(1, 1, visible=faux)\na2 = point(6, 1, visible=faux)\na3 = point(6, 5, visible=faux)\na4 = point(5, 5, visible=faux)\na5 = point(5, 3, visible=faux)\na6 = point(2, 3, visible=faux)\na7 = point(2, 5, visible=faux)\na8 = point(1, 5, visible=faux)\npolygone(a1, a2, a3, a4, a5, a6, a7, a8, couleur=\"noir\", epaisseur=2, remplissage=\"bleu\", opacite_fond=0.35)\nu1 = point(10, 1, visible=faux)\nu2 = point(12, 1, visible=faux)\nu3 = point(12, 2, visible=faux)\nu4 = point(10, 2, visible=faux)\npolygone(u1, u2, u3, u4, couleur=\"noir\", epaisseur=2, remplissage=\"orange\", opacite_fond=0.6)\ntexte(11, 2.6, \"u\")}}}}}}}}}}}}\n```\n\nL'aire de la figure est de $?$ unités **u**.",
+				"variables": [
+					{
+						"name": "j",
+						"expression": "1..7"
+					},
+					{
+						"name": "n",
+						"expression": "eval:(1-min(abs(j-1),1))*6+(1-min(abs(j-2),1))*7+(1-min(abs(j-3),1))*5+(1-min(abs(j-4),1))*5+(1-min(abs(j-5),1))*6+(1-min(abs(j-6),1))*6+(1-min(abs(j-7),1))*7"
+					}
+				],
+				"correction": {
+					"steps": [
+						"L'unité **u** recouvre $2$ carreaux.",
+						"La figure recouvre ${{if:j==1|12|{{if:j==2|14|{{if:j==3|10|{{if:j==4|10|{{if:j==5|12|{{if:j==6|12|14}}}}}}}}}}}}$ carreaux.",
+						"En unités **u** : ${{if:j==1|12|{{if:j==2|14|{{if:j==3|10|{{if:j==4|10|{{if:j==5|12|{{if:j==6|12|14}}}}}}}}}}}} \\div 2 = \\textcolor{{{color:primary.0}}}{{{if:j==1|6|{{if:j==2|7|{{if:j==3|5|{{if:j==4|5|{{if:j==5|6|{{if:j==6|6|7}}}}}}}}}}}}}$ unités **u**."
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "draft",
+		"title": "Aire en carreaux",
+		"description": "Compter les carreaux d'une figure sur quadrillage : carreaux entiers ; avec des demi-carreaux ; dans une unité fournie de deux carreaux",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["12"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"j": "1",
+					"n": "12"
+				},
+				"description": "Rectangle 4 × 3 : 12",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["14"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"j": "1",
+					"n": "12"
+				},
+				"description": "Erreur : le tour compté (14)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["14"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"j": "2",
+					"n": "14"
+				},
+				"description": "L : 5 + 5 + 2 + 2 = 14",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["12"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"j": "1",
+					"n": "12"
+				},
+				"description": "Maison : 8 entiers + 4 demis = 12",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["14"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"j": "1",
+					"n": "12"
+				},
+				"description": "Erreur : demi-carreaux comptés entiers (14)",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["8"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"j": "4",
+					"n": "8"
+				},
+				"description": "Triangle : 6 entiers + 4 demis = 8",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["6"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"j": "4",
+					"n": "8"
+				},
+				"description": "Erreur : triangle, demis oubliés (6)",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["6"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"j": "1",
+					"n": "6"
+				},
+				"description": "Rectangle 4 × 3 en dominos : 6 u",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["12"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"j": "1",
+					"n": "6"
+				},
+				"description": "Erreur : carreaux comptés (12)",
+				"variationIndex": 2
+			}
+		],
+		"classification_node_id": null
+	},
+	{
+		"id": "4c1ce174-15a0-4613-9df1-d4674350459e",
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"grades": ["CM1", "CM2"],
+		"delay": 90,
+		"level": 2,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{v}}"
+					}
+				],
+				"statement": "Comment se note l'angle marqué en rouge ?\n\n```figure\nfenetre: -4.5 ; 4.5 ; -4 ; 4\ngrille: non\ndescription: Un triangle aux sommets nommés ; un de ses angles est marqué en rouge.\n---\n{{if:k==1|{{if:v==0|A = point(-3, -2, etiquette=\"bas-gauche\")\nB = point(3, -2, etiquette=\"bas-droite\")\nC = point(0, 3, etiquette=\"haut\")\npolygone(A, B, C, couleur=\"noir\", epaisseur=2)\nangle(B, A, C, couleur=\"rouge\", remplissage=\"rouge\", arcRadiusPx=32)|{{if:v==1|A = point(-3, -2, etiquette=\"bas-gauche\")\nB = point(3, -2, etiquette=\"bas-droite\")\nC = point(0, 3, etiquette=\"haut\")\npolygone(A, B, C, couleur=\"noir\", epaisseur=2)\nangle(A, B, C, couleur=\"rouge\", remplissage=\"rouge\", arcRadiusPx=32)|A = point(-3, -2, etiquette=\"bas-gauche\")\nB = point(3, -2, etiquette=\"bas-droite\")\nC = point(0, 3, etiquette=\"haut\")\npolygone(A, B, C, couleur=\"noir\", epaisseur=2)\nangle(A, C, B, couleur=\"rouge\", remplissage=\"rouge\", arcRadiusPx=32)}}}}|{{if:k==2|{{if:v==0|M = point(-3.5, -1.5, etiquette=\"gauche\")\nN = point(3, -2.5, etiquette=\"bas-droite\")\nP = point(1, 3, etiquette=\"haut\")\npolygone(M, N, P, couleur=\"noir\", epaisseur=2)\nangle(N, M, P, couleur=\"rouge\", remplissage=\"rouge\", arcRadiusPx=32)|{{if:v==1|M = point(-3.5, -1.5, etiquette=\"gauche\")\nN = point(3, -2.5, etiquette=\"bas-droite\")\nP = point(1, 3, etiquette=\"haut\")\npolygone(M, N, P, couleur=\"noir\", epaisseur=2)\nangle(M, N, P, couleur=\"rouge\", remplissage=\"rouge\", arcRadiusPx=32)|M = point(-3.5, -1.5, etiquette=\"gauche\")\nN = point(3, -2.5, etiquette=\"bas-droite\")\nP = point(1, 3, etiquette=\"haut\")\npolygone(M, N, P, couleur=\"noir\", epaisseur=2)\nangle(M, P, N, couleur=\"rouge\", remplissage=\"rouge\", arcRadiusPx=32)}}}}|{{if:k==3|{{if:v==0|R = point(-2.5, 2.5, etiquette=\"haut-gauche\")\nS = point(-3, -2.5, etiquette=\"bas-gauche\")\nT = point(3.5, -0.5, etiquette=\"droite\")\npolygone(R, S, T, couleur=\"noir\", epaisseur=2)\nangle(S, R, T, couleur=\"rouge\", remplissage=\"rouge\", arcRadiusPx=32)|{{if:v==1|R = point(-2.5, 2.5, etiquette=\"haut-gauche\")\nS = point(-3, -2.5, etiquette=\"bas-gauche\")\nT = point(3.5, -0.5, etiquette=\"droite\")\npolygone(R, S, T, couleur=\"noir\", epaisseur=2)\nangle(R, S, T, couleur=\"rouge\", remplissage=\"rouge\", arcRadiusPx=32)|R = point(-2.5, 2.5, etiquette=\"haut-gauche\")\nS = point(-3, -2.5, etiquette=\"bas-gauche\")\nT = point(3.5, -0.5, etiquette=\"droite\")\npolygone(R, S, T, couleur=\"noir\", epaisseur=2)\nangle(R, T, S, couleur=\"rouge\", remplissage=\"rouge\", arcRadiusPx=32)}}}}|{{if:v==0|F = point(-3.5, 1, etiquette=\"gauche\")\nG = point(2, -3, etiquette=\"bas\")\nH = point(3, 3, etiquette=\"haut-droite\")\npolygone(F, G, H, couleur=\"noir\", epaisseur=2)\nangle(G, F, H, couleur=\"rouge\", remplissage=\"rouge\", arcRadiusPx=32)|{{if:v==1|F = point(-3.5, 1, etiquette=\"gauche\")\nG = point(2, -3, etiquette=\"bas\")\nH = point(3, 3, etiquette=\"haut-droite\")\npolygone(F, G, H, couleur=\"noir\", epaisseur=2)\nangle(F, G, H, couleur=\"rouge\", remplissage=\"rouge\", arcRadiusPx=32)|F = point(-3.5, 1, etiquette=\"gauche\")\nG = point(2, -3, etiquette=\"bas\")\nH = point(3, 3, etiquette=\"haut-droite\")\npolygone(F, G, H, couleur=\"noir\", epaisseur=2)\nangle(F, H, G, couleur=\"rouge\", remplissage=\"rouge\", arcRadiusPx=32)}}}}}}}}}}\n```\n\n```choix\nmelanger: non\n- ${{if:k==1|\\widehat{BAC}|{{if:k==2|\\widehat{NMP}|{{if:k==3|\\widehat{SRT}|\\widehat{GFH}}}}}}}$\n- ${{if:k==1|\\widehat{ABC}|{{if:k==2|\\widehat{MNP}|{{if:k==3|\\widehat{RST}|\\widehat{FGH}}}}}}}$\n- ${{if:k==1|\\widehat{ACB}|{{if:k==2|\\widehat{MPN}|{{if:k==3|\\widehat{RTS}|\\widehat{FHG}}}}}}}$\n```",
+				"variables": [
+					{
+						"name": "k",
+						"expression": "1..4"
+					},
+					{
+						"name": "v",
+						"expression": "0..2"
+					}
+				],
+				"correction": {
+					"steps": [
+						"On note un angle avec trois lettres sous un chapeau : la lettre du **sommet** au milieu, une lettre de chaque côté.",
+						"Le sommet de l'angle rouge est le point ${{if:v==0|{{if:k==1|A|{{if:k==2|M|{{if:k==3|R|F}}}}}}|{{if:v==1|{{if:k==1|B|{{if:k==2|N|{{if:k==3|S|G}}}}}}|{{if:k==1|C|{{if:k==2|P|{{if:k==3|T|H}}}}}}}}}}$.",
+						"L'angle se note $\\textcolor{{{color:primary.0}}}{{{if:k==1|{{if:v==0|\\widehat{BAC}|{{if:v==1|\\widehat{ABC}|\\widehat{ACB}}}}}|{{if:k==2|{{if:v==0|\\widehat{NMP}|{{if:v==1|\\widehat{MNP}|\\widehat{MPN}}}}}|{{if:k==3|{{if:v==0|\\widehat{SRT}|{{if:v==1|\\widehat{RST}|\\widehat{RTS}}}}}|{{if:v==0|\\widehat{GFH}|{{if:v==1|\\widehat{FGH}|\\widehat{FHG}}}}}}}}}}}}$ (ou ${{if:k==1|{{if:v==0|\\widehat{A}|{{if:v==1|\\widehat{B}|\\widehat{C}}}}}|{{if:k==2|{{if:v==0|\\widehat{M}|{{if:v==1|\\widehat{N}|\\widehat{P}}}}}|{{if:k==3|{{if:v==0|\\widehat{R}|{{if:v==1|\\widehat{S}|\\widehat{T}}}}}|{{if:v==0|\\widehat{F}|{{if:v==1|\\widehat{G}|\\widehat{H}}}}}}}}}}}$, quand il n'y a qu'un angle en ce point)."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{v}}"
+					}
+				],
+				"statement": "Quel est le sommet de l'angle ${{if:k==1|{{if:v==0|\\widehat{BAC}|{{if:v==1|\\widehat{ABC}|\\widehat{ACB}}}}}|{{if:k==2|{{if:v==0|\\widehat{NMP}|{{if:v==1|\\widehat{MNP}|\\widehat{MPN}}}}}|{{if:k==3|{{if:v==0|\\widehat{SRT}|{{if:v==1|\\widehat{RST}|\\widehat{RTS}}}}}|{{if:v==0|\\widehat{GFH}|{{if:v==1|\\widehat{FGH}|\\widehat{FHG}}}}}}}}}}}$ ?\n\n```figure\nfenetre: -4.5 ; 4.5 ; -4 ; 4\ngrille: non\ndescription: Un triangle aux sommets nommés.\n---\n{{if:k==1|A = point(-3, -2, etiquette=\"bas-gauche\")\nB = point(3, -2, etiquette=\"bas-droite\")\nC = point(0, 3, etiquette=\"haut\")\npolygone(A, B, C, couleur=\"noir\", epaisseur=2)|{{if:k==2|M = point(-3.5, -1.5, etiquette=\"gauche\")\nN = point(3, -2.5, etiquette=\"bas-droite\")\nP = point(1, 3, etiquette=\"haut\")\npolygone(M, N, P, couleur=\"noir\", epaisseur=2)|{{if:k==3|R = point(-2.5, 2.5, etiquette=\"haut-gauche\")\nS = point(-3, -2.5, etiquette=\"bas-gauche\")\nT = point(3.5, -0.5, etiquette=\"droite\")\npolygone(R, S, T, couleur=\"noir\", epaisseur=2)|F = point(-3.5, 1, etiquette=\"gauche\")\nG = point(2, -3, etiquette=\"bas\")\nH = point(3, 3, etiquette=\"haut-droite\")\npolygone(F, G, H, couleur=\"noir\", epaisseur=2)}}}}}}\n```\n\n```choix\nmelanger: non\n- le point {{if:k==1|A|{{if:k==2|M|{{if:k==3|R|F}}}}}}\n- le point {{if:k==1|B|{{if:k==2|N|{{if:k==3|S|G}}}}}}\n- le point {{if:k==1|C|{{if:k==2|P|{{if:k==3|T|H}}}}}}\n```",
+				"variables": [
+					{
+						"name": "k",
+						"expression": "1..4"
+					},
+					{
+						"name": "v",
+						"expression": "0..2"
+					}
+				],
+				"correction": {
+					"steps": [
+						"On note un angle avec trois lettres sous un chapeau : la lettre du **sommet** au milieu, une lettre de chaque côté.",
+						"Dans ${{if:k==1|{{if:v==0|\\widehat{BAC}|{{if:v==1|\\widehat{ABC}|\\widehat{ACB}}}}}|{{if:k==2|{{if:v==0|\\widehat{NMP}|{{if:v==1|\\widehat{MNP}|\\widehat{MPN}}}}}|{{if:k==3|{{if:v==0|\\widehat{SRT}|{{if:v==1|\\widehat{RST}|\\widehat{RTS}}}}}|{{if:v==0|\\widehat{GFH}|{{if:v==1|\\widehat{FGH}|\\widehat{FHG}}}}}}}}}}}$, la lettre du milieu est ${{if:v==0|{{if:k==1|A|{{if:k==2|M|{{if:k==3|R|F}}}}}}|{{if:v==1|{{if:k==1|B|{{if:k==2|N|{{if:k==3|S|G}}}}}}|{{if:k==1|C|{{if:k==2|P|{{if:k==3|T|H}}}}}}}}}}$.",
+						"Le sommet est le point $\\textcolor{{{color:primary.0}}}{{{if:v==0|{{if:k==1|A|{{if:k==2|M|{{if:k==3|R|F}}}}}}|{{if:v==1|{{if:k==1|B|{{if:k==2|N|{{if:k==3|S|G}}}}}}|{{if:k==1|C|{{if:k==2|P|{{if:k==3|T|H}}}}}}}}}}}$."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{v}}"
+					}
+				],
+				"statement": "Quel angle est l'angle ${{if:k==1|{{if:v==0|\\widehat{BAC}|{{if:v==1|\\widehat{ABC}|\\widehat{ACB}}}}}|{{if:k==2|{{if:v==0|\\widehat{NMP}|{{if:v==1|\\widehat{MNP}|\\widehat{MPN}}}}}|{{if:k==3|{{if:v==0|\\widehat{SRT}|{{if:v==1|\\widehat{RST}|\\widehat{RTS}}}}}|{{if:v==0|\\widehat{GFH}|{{if:v==1|\\widehat{FGH}|\\widehat{FHG}}}}}}}}}}}$ ?\n\n```figure\nfenetre: -4.5 ; 4.5 ; -4 ; 4\ngrille: non\ndescription: Un triangle aux sommets nommés ; ses trois angles sont marqués en bleu, en rouge et en vert.\n---\n{{if:k==1|A = point(-3, -2, etiquette=\"bas-gauche\")\nB = point(3, -2, etiquette=\"bas-droite\")\nC = point(0, 3, etiquette=\"haut\")\npolygone(A, B, C, couleur=\"noir\", epaisseur=2)\nangle(B, A, C, couleur=\"bleu\", remplissage=\"bleu\", arcRadiusPx=32)\nangle(A, B, C, couleur=\"rouge\", remplissage=\"rouge\", arcRadiusPx=32)\nangle(A, C, B, couleur=\"vert\", remplissage=\"vert\", arcRadiusPx=32)|{{if:k==2|M = point(-3.5, -1.5, etiquette=\"gauche\")\nN = point(3, -2.5, etiquette=\"bas-droite\")\nP = point(1, 3, etiquette=\"haut\")\npolygone(M, N, P, couleur=\"noir\", epaisseur=2)\nangle(N, M, P, couleur=\"bleu\", remplissage=\"bleu\", arcRadiusPx=32)\nangle(M, N, P, couleur=\"rouge\", remplissage=\"rouge\", arcRadiusPx=32)\nangle(M, P, N, couleur=\"vert\", remplissage=\"vert\", arcRadiusPx=32)|{{if:k==3|R = point(-2.5, 2.5, etiquette=\"haut-gauche\")\nS = point(-3, -2.5, etiquette=\"bas-gauche\")\nT = point(3.5, -0.5, etiquette=\"droite\")\npolygone(R, S, T, couleur=\"noir\", epaisseur=2)\nangle(S, R, T, couleur=\"bleu\", remplissage=\"bleu\", arcRadiusPx=32)\nangle(R, S, T, couleur=\"rouge\", remplissage=\"rouge\", arcRadiusPx=32)\nangle(R, T, S, couleur=\"vert\", remplissage=\"vert\", arcRadiusPx=32)|F = point(-3.5, 1, etiquette=\"gauche\")\nG = point(2, -3, etiquette=\"bas\")\nH = point(3, 3, etiquette=\"haut-droite\")\npolygone(F, G, H, couleur=\"noir\", epaisseur=2)\nangle(G, F, H, couleur=\"bleu\", remplissage=\"bleu\", arcRadiusPx=32)\nangle(F, G, H, couleur=\"rouge\", remplissage=\"rouge\", arcRadiusPx=32)\nangle(F, H, G, couleur=\"vert\", remplissage=\"vert\", arcRadiusPx=32)}}}}}}\n```\n\n```choix\nmelanger: non\n- l'angle bleu\n- l'angle rouge\n- l'angle vert\n```",
+				"variables": [
+					{
+						"name": "k",
+						"expression": "1..4"
+					},
+					{
+						"name": "v",
+						"expression": "0..2"
+					}
+				],
+				"correction": {
+					"steps": [
+						"On note un angle avec trois lettres sous un chapeau : la lettre du **sommet** au milieu, une lettre de chaque côté.",
+						"Dans ${{if:k==1|{{if:v==0|\\widehat{BAC}|{{if:v==1|\\widehat{ABC}|\\widehat{ACB}}}}}|{{if:k==2|{{if:v==0|\\widehat{NMP}|{{if:v==1|\\widehat{MNP}|\\widehat{MPN}}}}}|{{if:k==3|{{if:v==0|\\widehat{SRT}|{{if:v==1|\\widehat{RST}|\\widehat{RTS}}}}}|{{if:v==0|\\widehat{GFH}|{{if:v==1|\\widehat{FGH}|\\widehat{FHG}}}}}}}}}}}$, la lettre du milieu est ${{if:v==0|{{if:k==1|A|{{if:k==2|M|{{if:k==3|R|F}}}}}}|{{if:v==1|{{if:k==1|B|{{if:k==2|N|{{if:k==3|S|G}}}}}}|{{if:k==1|C|{{if:k==2|P|{{if:k==3|T|H}}}}}}}}}}$ : c'est le sommet.",
+						"C'est l'angle {{if:v==0|**bleu**|{{if:v==1|**rouge**|**vert**}}}}, marqué au point $\\textcolor{{{color:primary.0}}}{{{if:v==0|{{if:k==1|A|{{if:k==2|M|{{if:k==3|R|F}}}}}}|{{if:v==1|{{if:k==1|B|{{if:k==2|N|{{if:k==3|S|G}}}}}}|{{if:k==1|C|{{if:k==2|P|{{if:k==3|T|H}}}}}}}}}}}$."
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "draft",
+		"title": "Noter un angle",
+		"description": "Notation à chapeau dans un triangle : noter l'angle marqué ; trouver le sommet d'un angle noté ; retrouver l'angle noté parmi trois angles de couleur",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["1"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"k": "1",
+					"v": "1"
+				},
+				"description": "Angle en B : ABC",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"k": "1",
+					"v": "1"
+				},
+				"description": "Erreur : BAC (sommet en tête)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["1"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"k": "2",
+					"v": "1"
+				},
+				"description": "MNP : sommet N",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"k": "2",
+					"v": "1"
+				},
+				"description": "Erreur : première lettre (M)",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["2"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"k": "3",
+					"v": "2"
+				},
+				"description": "RTS : angle vert (en T)",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"k": "3",
+					"v": "2"
+				},
+				"description": "Erreur : angle en R (bleu)",
+				"variationIndex": 2
+			}
+		],
+		"classification_node_id": null
+	},
+	{
+		"id": "614048c9-0e96-4577-9bd4-ce4fe1467559",
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"grades": ["CM1"],
+		"delay": 90,
+		"level": 1,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{n}}"
+					}
+				],
+				"statement": "Chaque carreau du quadrillage est un carré de $1~\\unit{cm}$ de côté. Quelle est l'aire de la figure ?\n\n```figure\nfenetre: 0 ; 9 ; 0 ; 7\ngrille: 1\ndescription: Une figure coloriée sur un quadrillage de carreaux de 1 cm.\n---\n{{if:j==1|a1 = point(1, 1, visible=faux)\na2 = point(6, 1, visible=faux)\na3 = point(6, 4, visible=faux)\na4 = point(1, 4, visible=faux)\npolygone(a1, a2, a3, a4, couleur=\"noir\", epaisseur=2, remplissage=\"bleu\", opacite_fond=0.35)|{{if:j==2|a1 = point(1, 1, visible=faux)\na2 = point(4, 1, visible=faux)\na3 = point(4, 4, visible=faux)\na4 = point(1, 4, visible=faux)\npolygone(a1, a2, a3, a4, couleur=\"noir\", epaisseur=2, remplissage=\"bleu\", opacite_fond=0.35)|{{if:j==3|a1 = point(1, 1, visible=faux)\na2 = point(7, 1, visible=faux)\na3 = point(7, 3, visible=faux)\na4 = point(4, 3, visible=faux)\na5 = point(4, 6, visible=faux)\na6 = point(1, 6, visible=faux)\npolygone(a1, a2, a3, a4, a5, a6, couleur=\"noir\", epaisseur=2, remplissage=\"bleu\", opacite_fond=0.35)|{{if:j==4|a1 = point(1, 1, visible=faux)\na2 = point(5, 1, visible=faux)\na3 = point(5, 2, visible=faux)\na4 = point(4, 2, visible=faux)\na5 = point(4, 3, visible=faux)\na6 = point(3, 3, visible=faux)\na7 = point(3, 4, visible=faux)\na8 = point(2, 4, visible=faux)\na9 = point(2, 5, visible=faux)\na10 = point(1, 5, visible=faux)\npolygone(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, couleur=\"noir\", epaisseur=2, remplissage=\"bleu\", opacite_fond=0.35)|{{if:j==5|a1 = point(2, 1, visible=faux)\na2 = point(4, 1, visible=faux)\na3 = point(4, 2, visible=faux)\na4 = point(5, 2, visible=faux)\na5 = point(5, 4, visible=faux)\na6 = point(4, 4, visible=faux)\na7 = point(4, 5, visible=faux)\na8 = point(2, 5, visible=faux)\na9 = point(2, 4, visible=faux)\na10 = point(1, 4, visible=faux)\na11 = point(1, 2, visible=faux)\na12 = point(2, 2, visible=faux)\npolygone(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, couleur=\"noir\", epaisseur=2, remplissage=\"bleu\", opacite_fond=0.35)|{{if:j==6|a1 = point(1, 1, visible=faux)\na2 = point(6, 1, visible=faux)\na3 = point(6, 5, visible=faux)\na4 = point(5, 5, visible=faux)\na5 = point(5, 3, visible=faux)\na6 = point(2, 3, visible=faux)\na7 = point(2, 5, visible=faux)\na8 = point(1, 5, visible=faux)\npolygone(a1, a2, a3, a4, a5, a6, a7, a8, couleur=\"noir\", epaisseur=2, remplissage=\"bleu\", opacite_fond=0.35)|{{if:j==7|a1 = point(1, 3, visible=faux)\na2 = point(3, 3, visible=faux)\na3 = point(3, 1, visible=faux)\na4 = point(6, 1, visible=faux)\na5 = point(6, 3, visible=faux)\na6 = point(4, 3, visible=faux)\na7 = point(4, 5, visible=faux)\na8 = point(1, 5, visible=faux)\npolygone(a1, a2, a3, a4, a5, a6, a7, a8, couleur=\"noir\", epaisseur=2, remplissage=\"bleu\", opacite_fond=0.35)|a1 = point(1, 1, visible=faux)\na2 = point(3, 1, visible=faux)\na3 = point(3, 3, visible=faux)\na4 = point(5, 3, visible=faux)\na5 = point(5, 4, visible=faux)\na6 = point(3, 4, visible=faux)\na7 = point(3, 5, visible=faux)\na8 = point(6, 5, visible=faux)\na9 = point(6, 6, visible=faux)\na10 = point(1, 6, visible=faux)\npolygone(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, couleur=\"noir\", epaisseur=2, remplissage=\"bleu\", opacite_fond=0.35)}}}}}}}}}}}}}}\n```\n\n$\\text{Aire} = ?~\\unit{cm^2}$",
+				"variables": [
+					{
+						"name": "j",
+						"expression": "1..8"
+					},
+					{
+						"name": "n",
+						"expression": "eval:(1-min(abs(j-1),1))*15+(1-min(abs(j-2),1))*9+(1-min(abs(j-3),1))*21+(1-min(abs(j-4),1))*10+(1-min(abs(j-5),1))*12+(1-min(abs(j-6),1))*14+(1-min(abs(j-7),1))*12+(1-min(abs(j-8),1))*15"
+					}
+				],
+				"correction": {
+					"steps": [
+						"Un carré de $1~\\unit{cm}$ de côté a une aire de $1~\\unit{cm^2}$ (un centimètre carré) : chaque carreau vaut $1~\\unit{cm^2}$.",
+						"Ligne par ligne : ${{if:j==1|5 + 5 + 5|{{if:j==2|3 + 3 + 3|{{if:j==3|6 + 6 + 3 + 3 + 3|{{if:j==4|4 + 3 + 2 + 1|{{if:j==5|2 + 4 + 4 + 2|{{if:j==6|5 + 5 + 2 + 2|{{if:j==7|3 + 3 + 3 + 3|2 + 2 + 4 + 2 + 5}}}}}}}}}}}}}} = {{if:j==1|15|{{if:j==2|9|{{if:j==3|21|{{if:j==4|10|{{if:j==5|12|{{if:j==6|14|{{if:j==7|12|15}}}}}}}}}}}}}}$ carreaux.",
+						"Aire : $\\textcolor{{{color:primary.0}}}{{{if:j==1|15|{{if:j==2|9|{{if:j==3|21|{{if:j==4|10|{{if:j==5|12|{{if:j==6|14|{{if:j==7|12|15}}}}}}}}}}}}}}~\\unit{cm^2}}$."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{n}}"
+					}
+				],
+				"statement": "Chaque carreau du quadrillage est un carré de $1~\\unit{cm}$ de côté. Quelle est l'aire de la figure ?\n\n```figure\nfenetre: 0 ; 9 ; 0 ; 7\ngrille: 1\ndescription: Une figure coloriée sur un quadrillage de carreaux de 1 cm, avec des carreaux entiers et des demi-carreaux.\n---\n{{if:j==1|a1 = point(1, 1, visible=faux)\na2 = point(5, 1, visible=faux)\na3 = point(1, 5, visible=faux)\npolygone(a1, a2, a3, couleur=\"noir\", epaisseur=2, remplissage=\"vert\", opacite_fond=0.35)|{{if:j==2|a1 = point(1, 1, visible=faux)\na2 = point(5, 1, visible=faux)\na3 = point(7, 3, visible=faux)\na4 = point(3, 3, visible=faux)\npolygone(a1, a2, a3, a4, couleur=\"noir\", epaisseur=2, remplissage=\"vert\", opacite_fond=0.35)|{{if:j==3|a1 = point(3, 1, visible=faux)\na2 = point(5, 3, visible=faux)\na3 = point(3, 5, visible=faux)\na4 = point(1, 3, visible=faux)\npolygone(a1, a2, a3, a4, couleur=\"noir\", epaisseur=2, remplissage=\"vert\", opacite_fond=0.35)|{{if:j==4|a1 = point(1, 1, visible=faux)\na2 = point(5, 1, visible=faux)\na3 = point(5, 3, visible=faux)\na4 = point(3, 5, visible=faux)\na5 = point(1, 3, visible=faux)\npolygone(a1, a2, a3, a4, a5, couleur=\"noir\", epaisseur=2, remplissage=\"vert\", opacite_fond=0.35)|{{if:j==5|a1 = point(1, 2, visible=faux)\na2 = point(4, 2, visible=faux)\na3 = point(4, 1, visible=faux)\na4 = point(6, 3, visible=faux)\na5 = point(4, 5, visible=faux)\na6 = point(4, 4, visible=faux)\na7 = point(1, 4, visible=faux)\npolygone(a1, a2, a3, a4, a5, a6, a7, couleur=\"noir\", epaisseur=2, remplissage=\"vert\", opacite_fond=0.35)|a1 = point(1, 1, visible=faux)\na2 = point(7, 1, visible=faux)\na3 = point(5, 3, visible=faux)\na4 = point(3, 3, visible=faux)\npolygone(a1, a2, a3, a4, couleur=\"noir\", epaisseur=2, remplissage=\"vert\", opacite_fond=0.35)}}}}}}}}}}\n```\n\n$\\text{Aire} = ?~\\unit{cm^2}$",
+				"variables": [
+					{
+						"name": "j",
+						"expression": "1..6"
+					},
+					{
+						"name": "n",
+						"expression": "eval:(1-min(abs(j-1),1))*8+(1-min(abs(j-2),1))*8+(1-min(abs(j-3),1))*8+(1-min(abs(j-4),1))*12+(1-min(abs(j-5),1))*10+(1-min(abs(j-6),1))*8"
+					}
+				],
+				"correction": {
+					"steps": [
+						"Un carré de $1~\\unit{cm}$ de côté a une aire de $1~\\unit{cm^2}$ (un centimètre carré) : chaque carreau vaut $1~\\unit{cm^2}$.",
+						"On compte d'abord les carreaux entiers : ${{if:j==1|6|{{if:j==2|6|{{if:j==3|4|{{if:j==4|10|{{if:j==5|8|6}}}}}}}}}}$.",
+						"Puis les demi-carreaux : ${{if:j==1|4|{{if:j==2|4|{{if:j==3|8|{{if:j==4|4|{{if:j==5|4|4}}}}}}}}}}$. Deux demi-carreaux font un carreau entier : ${{if:j==1|4|{{if:j==2|4|{{if:j==3|8|{{if:j==4|4|{{if:j==5|4|4}}}}}}}}}}$ demi-carreaux font ${{if:j==1|2|{{if:j==2|2|{{if:j==3|4|{{if:j==4|2|{{if:j==5|2|2}}}}}}}}}}$ carreaux.",
+						"Aire : ${{if:j==1|6|{{if:j==2|6|{{if:j==3|4|{{if:j==4|10|{{if:j==5|8|6}}}}}}}}}} + {{if:j==1|2|{{if:j==2|2|{{if:j==3|4|{{if:j==4|2|{{if:j==5|2|2}}}}}}}}}} = \\textcolor{{{color:primary.0}}}{{{if:j==1|8|{{if:j==2|8|{{if:j==3|8|{{if:j==4|12|{{if:j==5|10|8}}}}}}}}}}}$ carreaux.",
+						"Aire : $\\textcolor{{{color:primary.0}}}{{{if:j==1|8|{{if:j==2|8|{{if:j==3|8|{{if:j==4|12|{{if:j==5|10|8}}}}}}}}}}~\\unit{cm^2}}$."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{n}}"
+					}
+				],
+				"statement": "Chaque carreau du quadrillage est un carré de $1~\\unit{cm}$ de côté. De combien de centimètres carrés l'aire de la figure A dépasse-t-elle celle de la figure B ?\n\n```figure\nfenetre: 0 ; 10 ; 0 ; 14.5\ngrille: 1\ndescription: Deux figures coloriées sur un quadrillage de carreaux de 1 cm : A en haut, B en bas.\n---\n{{if:j==1|a1 = point(1, 8, visible=faux)\na2 = point(5, 8, visible=faux)\na3 = point(5, 12, visible=faux)\na4 = point(1, 12, visible=faux)\npolygone(a1, a2, a3, a4, couleur=\"noir\", epaisseur=2, remplissage=\"bleu\", opacite_fond=0.35)\nb1 = point(1, 1, visible=faux)\nb2 = point(6, 1, visible=faux)\nb3 = point(6, 2, visible=faux)\nb4 = point(2, 2, visible=faux)\nb5 = point(2, 6, visible=faux)\nb6 = point(1, 6, visible=faux)\npolygone(b1, b2, b3, b4, b5, b6, couleur=\"noir\", epaisseur=2, remplissage=\"rouge\", opacite_fond=0.35)\ntexte(0.5, 10.0, \"A\")\ntexte(0.5, 3.5, \"B\")|{{if:j==2|a1 = point(1, 8, visible=faux)\na2 = point(6, 8, visible=faux)\na3 = point(6, 12, visible=faux)\na4 = point(5, 12, visible=faux)\na5 = point(5, 10, visible=faux)\na6 = point(2, 10, visible=faux)\na7 = point(2, 12, visible=faux)\na8 = point(1, 12, visible=faux)\npolygone(a1, a2, a3, a4, a5, a6, a7, a8, couleur=\"noir\", epaisseur=2, remplissage=\"bleu\", opacite_fond=0.35)\nb1 = point(1, 1, visible=faux)\nb2 = point(3, 1, visible=faux)\nb3 = point(3, 5, visible=faux)\nb4 = point(1, 5, visible=faux)\npolygone(b1, b2, b3, b4, couleur=\"noir\", epaisseur=2, remplissage=\"rouge\", opacite_fond=0.35)\ntexte(0.5, 10.0, \"A\")\ntexte(0.5, 3.0, \"B\")|{{if:j==3|a1 = point(1, 8, visible=faux)\na2 = point(6, 8, visible=faux)\na3 = point(6, 9, visible=faux)\na4 = point(5, 9, visible=faux)\na5 = point(5, 10, visible=faux)\na6 = point(4, 10, visible=faux)\na7 = point(4, 11, visible=faux)\na8 = point(3, 11, visible=faux)\na9 = point(3, 12, visible=faux)\na10 = point(2, 12, visible=faux)\na11 = point(2, 13, visible=faux)\na12 = point(1, 13, visible=faux)\npolygone(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, couleur=\"noir\", epaisseur=2, remplissage=\"bleu\", opacite_fond=0.35)\nb1 = point(1, 3, visible=faux)\nb2 = point(3, 3, visible=faux)\nb3 = point(3, 1, visible=faux)\nb4 = point(4, 1, visible=faux)\nb5 = point(4, 3, visible=faux)\nb6 = point(6, 3, visible=faux)\nb7 = point(6, 4, visible=faux)\nb8 = point(1, 4, visible=faux)\npolygone(b1, b2, b3, b4, b5, b6, b7, b8, couleur=\"noir\", epaisseur=2, remplissage=\"rouge\", opacite_fond=0.35)\ntexte(0.5, 10.5, \"A\")\ntexte(0.5, 2.5, \"B\")|{{if:j==4|a1 = point(2, 8, visible=faux)\na2 = point(4, 8, visible=faux)\na3 = point(4, 9, visible=faux)\na4 = point(5, 9, visible=faux)\na5 = point(5, 11, visible=faux)\na6 = point(4, 11, visible=faux)\na7 = point(4, 12, visible=faux)\na8 = point(2, 12, visible=faux)\na9 = point(2, 11, visible=faux)\na10 = point(1, 11, visible=faux)\na11 = point(1, 9, visible=faux)\na12 = point(2, 9, visible=faux)\npolygone(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, couleur=\"noir\", epaisseur=2, remplissage=\"bleu\", opacite_fond=0.35)\nb1 = point(1, 1, visible=faux)\nb2 = point(5, 1, visible=faux)\nb3 = point(5, 2, visible=faux)\nb4 = point(6, 2, visible=faux)\nb5 = point(6, 3, visible=faux)\nb6 = point(2, 3, visible=faux)\nb7 = point(2, 2, visible=faux)\nb8 = point(1, 2, visible=faux)\npolygone(b1, b2, b3, b4, b5, b6, b7, b8, couleur=\"noir\", epaisseur=2, remplissage=\"rouge\", opacite_fond=0.35)\ntexte(0.5, 10.0, \"A\")\ntexte(0.5, 2.0, \"B\")|a1 = point(1, 8, visible=faux)\na2 = point(6, 8, visible=faux)\na3 = point(6, 10, visible=faux)\na4 = point(3, 10, visible=faux)\na5 = point(3, 12, visible=faux)\na6 = point(1, 12, visible=faux)\npolygone(a1, a2, a3, a4, a5, a6, couleur=\"noir\", epaisseur=2, remplissage=\"bleu\", opacite_fond=0.35)\nb1 = point(1, 1, visible=faux)\nb2 = point(5, 1, visible=faux)\nb3 = point(5, 4, visible=faux)\nb4 = point(4, 4, visible=faux)\nb5 = point(4, 3, visible=faux)\nb6 = point(2, 3, visible=faux)\nb7 = point(2, 4, visible=faux)\nb8 = point(1, 4, visible=faux)\npolygone(b1, b2, b3, b4, b5, b6, b7, b8, couleur=\"noir\", epaisseur=2, remplissage=\"rouge\", opacite_fond=0.35)\ntexte(0.5, 10.0, \"A\")\ntexte(0.5, 2.5, \"B\")}}}}}}}}\n```\n\nL'aire de A dépasse celle de B de $?~\\unit{cm^2}$.",
+				"variables": [
+					{
+						"name": "j",
+						"expression": "1..5"
+					},
+					{
+						"name": "n",
+						"expression": "eval:(1-min(abs(j-1),1))*7+(1-min(abs(j-2),1))*6+(1-min(abs(j-3),1))*8+(1-min(abs(j-4),1))*4+(1-min(abs(j-5),1))*4"
+					}
+				],
+				"correction": {
+					"steps": [
+						"Un carré de $1~\\unit{cm}$ de côté a une aire de $1~\\unit{cm^2}$ (un centimètre carré) : chaque carreau vaut $1~\\unit{cm^2}$.",
+						"Aire de A : ${{if:j==1|16|{{if:j==2|14|{{if:j==3|15|{{if:j==4|12|14}}}}}}}}~\\unit{cm^2}$ ; aire de B : ${{if:j==1|9|{{if:j==2|8|{{if:j==3|7|{{if:j==4|8|10}}}}}}}}~\\unit{cm^2}$.",
+						"Écart : ${{if:j==1|16 - 9|{{if:j==2|14 - 8|{{if:j==3|15 - 7|{{if:j==4|12 - 8|14 - 10}}}}}}}} = \\textcolor{{{color:primary.0}}}{{{if:j==1|7|{{if:j==2|6|{{if:j==3|8|{{if:j==4|4|4}}}}}}}}~\\unit{cm^2}}$."
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "draft",
+		"title": "Aire en centimètres carrés",
+		"description": "Aire d'une figure sur un quadrillage de carreaux de 1 cm, en cm² : carreaux entiers ; avec des demi-carreaux ; écart entre les aires de deux figures",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["15"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"j": "1",
+					"n": "15"
+				},
+				"description": "Rectangle 5 × 3 : 15 cm²",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["16"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"j": "1",
+					"n": "15"
+				},
+				"description": "Erreur : le tour (16)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["8"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"j": "1",
+					"n": "8"
+				},
+				"description": "Triangle : 6 + 2 = 8 cm²",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["10"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"j": "1",
+					"n": "8"
+				},
+				"description": "Erreur : demis comptés entiers (10)",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["7"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"j": "1",
+					"n": "7"
+				},
+				"description": "16 − 9 = 7 cm²",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["16"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"j": "1",
+					"n": "7"
+				},
+				"description": "Erreur : aire de A seule (16)",
+				"variationIndex": 2
+			}
+		],
+		"classification_node_id": null
+	},
+	{
+		"id": "8da9f669-17bd-46a5-a28a-098c13381fc8",
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"grades": ["CM1", "CM2"],
+		"delay": 90,
+		"level": 1,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{v}}"
+					}
+				],
+				"statement": "Quel est le sommet de cet angle ?\n\n```figure\nfenetre: -5 ; 5 ; -5 ; 5\ngrille: non\ndescription: Un angle marqué en rouge, formé de deux demi-droites, et trois points nommés.\n---\n{{if:v==0|{{if:k==1|A|{{if:k==2|M|{{if:k==3|R|F}}}}}}|{{if:v==1|{{if:k==1|B|{{if:k==2|N|{{if:k==3|S|G}}}}}}|{{if:k==1|C|{{if:k==2|P|{{if:k==3|T|H}}}}}}}}}} = point(0, 0)\n{{if:v==0|{{if:k==1|B|{{if:k==2|N|{{if:k==3|S|G}}}}}}|{{if:v==1|{{if:k==1|C|{{if:k==2|P|{{if:k==3|T|H}}}}}}|{{if:k==1|A|{{if:k==2|M|{{if:k==3|R|F}}}}}}}}}} = point({{if:v==0|{{if:k==1|A|{{if:k==2|M|{{if:k==3|R|F}}}}}}|{{if:v==1|{{if:k==1|B|{{if:k==2|N|{{if:k==3|S|G}}}}}}|{{if:k==1|C|{{if:k==2|P|{{if:k==3|T|H}}}}}}}}}}, longueur={{m1}}, angle={{t}})\n{{if:v==0|{{if:k==1|C|{{if:k==2|P|{{if:k==3|T|H}}}}}}|{{if:v==1|{{if:k==1|A|{{if:k==2|M|{{if:k==3|R|F}}}}}}|{{if:k==1|B|{{if:k==2|N|{{if:k==3|S|G}}}}}}}}}} = point({{if:v==0|{{if:k==1|A|{{if:k==2|M|{{if:k==3|R|F}}}}}}|{{if:v==1|{{if:k==1|B|{{if:k==2|N|{{if:k==3|S|G}}}}}}|{{if:k==1|C|{{if:k==2|P|{{if:k==3|T|H}}}}}}}}}}, longueur={{m2}}, angle={{eval:t+a}})\ndemidroite({{if:v==0|{{if:k==1|A|{{if:k==2|M|{{if:k==3|R|F}}}}}}|{{if:v==1|{{if:k==1|B|{{if:k==2|N|{{if:k==3|S|G}}}}}}|{{if:k==1|C|{{if:k==2|P|{{if:k==3|T|H}}}}}}}}}}, {{if:v==0|{{if:k==1|B|{{if:k==2|N|{{if:k==3|S|G}}}}}}|{{if:v==1|{{if:k==1|C|{{if:k==2|P|{{if:k==3|T|H}}}}}}|{{if:k==1|A|{{if:k==2|M|{{if:k==3|R|F}}}}}}}}}}, epaisseur=2)\ndemidroite({{if:v==0|{{if:k==1|A|{{if:k==2|M|{{if:k==3|R|F}}}}}}|{{if:v==1|{{if:k==1|B|{{if:k==2|N|{{if:k==3|S|G}}}}}}|{{if:k==1|C|{{if:k==2|P|{{if:k==3|T|H}}}}}}}}}}, {{if:v==0|{{if:k==1|C|{{if:k==2|P|{{if:k==3|T|H}}}}}}|{{if:v==1|{{if:k==1|A|{{if:k==2|M|{{if:k==3|R|F}}}}}}|{{if:k==1|B|{{if:k==2|N|{{if:k==3|S|G}}}}}}}}}}, epaisseur=2)\nangle({{if:v==0|{{if:k==1|B|{{if:k==2|N|{{if:k==3|S|G}}}}}}|{{if:v==1|{{if:k==1|C|{{if:k==2|P|{{if:k==3|T|H}}}}}}|{{if:k==1|A|{{if:k==2|M|{{if:k==3|R|F}}}}}}}}}}, {{if:v==0|{{if:k==1|A|{{if:k==2|M|{{if:k==3|R|F}}}}}}|{{if:v==1|{{if:k==1|B|{{if:k==2|N|{{if:k==3|S|G}}}}}}|{{if:k==1|C|{{if:k==2|P|{{if:k==3|T|H}}}}}}}}}}, {{if:v==0|{{if:k==1|C|{{if:k==2|P|{{if:k==3|T|H}}}}}}|{{if:v==1|{{if:k==1|A|{{if:k==2|M|{{if:k==3|R|F}}}}}}|{{if:k==1|B|{{if:k==2|N|{{if:k==3|S|G}}}}}}}}}}, couleur=\"rouge\", arcRadiusPx=35)\n```\n\n```choix\nmelanger: non\n- le point {{if:k==1|A|{{if:k==2|M|{{if:k==3|R|F}}}}}}\n- le point {{if:k==1|B|{{if:k==2|N|{{if:k==3|S|G}}}}}}\n- le point {{if:k==1|C|{{if:k==2|P|{{if:k==3|T|H}}}}}}\n```",
+				"variables": [
+					{
+						"name": "k",
+						"expression": "1..4"
+					},
+					{
+						"name": "v",
+						"expression": "0..2"
+					},
+					{
+						"name": "t",
+						"expression": "0..330"
+					},
+					{
+						"name": "a",
+						"expression": "40..140"
+					},
+					{
+						"name": "m1",
+						"expression": "3..4"
+					},
+					{
+						"name": "m2",
+						"expression": "3..4"
+					}
+				],
+				"correction": {
+					"steps": [
+						"Le sommet d'un angle est le point d'où partent ses deux côtés.",
+						"Les côtés de l'angle sont les deux demi-droites qui partent du sommet : $[{{if:v==0|{{if:k==1|A|{{if:k==2|M|{{if:k==3|R|F}}}}}}|{{if:v==1|{{if:k==1|B|{{if:k==2|N|{{if:k==3|S|G}}}}}}|{{if:k==1|C|{{if:k==2|P|{{if:k==3|T|H}}}}}}}}}}{{if:v==0|{{if:k==1|B|{{if:k==2|N|{{if:k==3|S|G}}}}}}|{{if:v==1|{{if:k==1|C|{{if:k==2|P|{{if:k==3|T|H}}}}}}|{{if:k==1|A|{{if:k==2|M|{{if:k==3|R|F}}}}}}}}}})$ et $[{{if:v==0|{{if:k==1|A|{{if:k==2|M|{{if:k==3|R|F}}}}}}|{{if:v==1|{{if:k==1|B|{{if:k==2|N|{{if:k==3|S|G}}}}}}|{{if:k==1|C|{{if:k==2|P|{{if:k==3|T|H}}}}}}}}}}{{if:v==0|{{if:k==1|C|{{if:k==2|P|{{if:k==3|T|H}}}}}}|{{if:v==1|{{if:k==1|A|{{if:k==2|M|{{if:k==3|R|F}}}}}}|{{if:k==1|B|{{if:k==2|N|{{if:k==3|S|G}}}}}}}}}})$.",
+						"Le sommet est le point $\\textcolor{{{color:primary.0}}}{{{if:v==0|{{if:k==1|A|{{if:k==2|M|{{if:k==3|R|F}}}}}}|{{if:v==1|{{if:k==1|B|{{if:k==2|N|{{if:k==3|S|G}}}}}}|{{if:k==1|C|{{if:k==2|P|{{if:k==3|T|H}}}}}}}}}}}$."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{v}}"
+					}
+				],
+				"statement": "Quels sont les côtés de cet angle ?\n\n```figure\nfenetre: -5 ; 5 ; -5 ; 5\ngrille: non\ndescription: Un angle marqué en rouge, formé de deux demi-droites, et trois points nommés.\n---\n{{if:v==0|{{if:k==1|A|{{if:k==2|M|{{if:k==3|R|F}}}}}}|{{if:v==1|{{if:k==1|B|{{if:k==2|N|{{if:k==3|S|G}}}}}}|{{if:k==1|C|{{if:k==2|P|{{if:k==3|T|H}}}}}}}}}} = point(0, 0)\n{{if:v==0|{{if:k==1|B|{{if:k==2|N|{{if:k==3|S|G}}}}}}|{{if:v==1|{{if:k==1|C|{{if:k==2|P|{{if:k==3|T|H}}}}}}|{{if:k==1|A|{{if:k==2|M|{{if:k==3|R|F}}}}}}}}}} = point({{if:v==0|{{if:k==1|A|{{if:k==2|M|{{if:k==3|R|F}}}}}}|{{if:v==1|{{if:k==1|B|{{if:k==2|N|{{if:k==3|S|G}}}}}}|{{if:k==1|C|{{if:k==2|P|{{if:k==3|T|H}}}}}}}}}}, longueur={{m1}}, angle={{t}})\n{{if:v==0|{{if:k==1|C|{{if:k==2|P|{{if:k==3|T|H}}}}}}|{{if:v==1|{{if:k==1|A|{{if:k==2|M|{{if:k==3|R|F}}}}}}|{{if:k==1|B|{{if:k==2|N|{{if:k==3|S|G}}}}}}}}}} = point({{if:v==0|{{if:k==1|A|{{if:k==2|M|{{if:k==3|R|F}}}}}}|{{if:v==1|{{if:k==1|B|{{if:k==2|N|{{if:k==3|S|G}}}}}}|{{if:k==1|C|{{if:k==2|P|{{if:k==3|T|H}}}}}}}}}}, longueur={{m2}}, angle={{eval:t+a}})\ndemidroite({{if:v==0|{{if:k==1|A|{{if:k==2|M|{{if:k==3|R|F}}}}}}|{{if:v==1|{{if:k==1|B|{{if:k==2|N|{{if:k==3|S|G}}}}}}|{{if:k==1|C|{{if:k==2|P|{{if:k==3|T|H}}}}}}}}}}, {{if:v==0|{{if:k==1|B|{{if:k==2|N|{{if:k==3|S|G}}}}}}|{{if:v==1|{{if:k==1|C|{{if:k==2|P|{{if:k==3|T|H}}}}}}|{{if:k==1|A|{{if:k==2|M|{{if:k==3|R|F}}}}}}}}}}, epaisseur=2)\ndemidroite({{if:v==0|{{if:k==1|A|{{if:k==2|M|{{if:k==3|R|F}}}}}}|{{if:v==1|{{if:k==1|B|{{if:k==2|N|{{if:k==3|S|G}}}}}}|{{if:k==1|C|{{if:k==2|P|{{if:k==3|T|H}}}}}}}}}}, {{if:v==0|{{if:k==1|C|{{if:k==2|P|{{if:k==3|T|H}}}}}}|{{if:v==1|{{if:k==1|A|{{if:k==2|M|{{if:k==3|R|F}}}}}}|{{if:k==1|B|{{if:k==2|N|{{if:k==3|S|G}}}}}}}}}}, epaisseur=2)\nangle({{if:v==0|{{if:k==1|B|{{if:k==2|N|{{if:k==3|S|G}}}}}}|{{if:v==1|{{if:k==1|C|{{if:k==2|P|{{if:k==3|T|H}}}}}}|{{if:k==1|A|{{if:k==2|M|{{if:k==3|R|F}}}}}}}}}}, {{if:v==0|{{if:k==1|A|{{if:k==2|M|{{if:k==3|R|F}}}}}}|{{if:v==1|{{if:k==1|B|{{if:k==2|N|{{if:k==3|S|G}}}}}}|{{if:k==1|C|{{if:k==2|P|{{if:k==3|T|H}}}}}}}}}}, {{if:v==0|{{if:k==1|C|{{if:k==2|P|{{if:k==3|T|H}}}}}}|{{if:v==1|{{if:k==1|A|{{if:k==2|M|{{if:k==3|R|F}}}}}}|{{if:k==1|B|{{if:k==2|N|{{if:k==3|S|G}}}}}}}}}}, couleur=\"rouge\", arcRadiusPx=35)\n```\n\n```choix\nmelanger: non\n- $[{{if:k==1|A|{{if:k==2|M|{{if:k==3|R|F}}}}}}{{if:k==1|B|{{if:k==2|N|{{if:k==3|S|G}}}}}})$ et $[{{if:k==1|A|{{if:k==2|M|{{if:k==3|R|F}}}}}}{{if:k==1|C|{{if:k==2|P|{{if:k==3|T|H}}}}}})$\n- $[{{if:k==1|B|{{if:k==2|N|{{if:k==3|S|G}}}}}}{{if:k==1|A|{{if:k==2|M|{{if:k==3|R|F}}}}}})$ et $[{{if:k==1|B|{{if:k==2|N|{{if:k==3|S|G}}}}}}{{if:k==1|C|{{if:k==2|P|{{if:k==3|T|H}}}}}})$\n- $[{{if:k==1|C|{{if:k==2|P|{{if:k==3|T|H}}}}}}{{if:k==1|A|{{if:k==2|M|{{if:k==3|R|F}}}}}})$ et $[{{if:k==1|C|{{if:k==2|P|{{if:k==3|T|H}}}}}}{{if:k==1|B|{{if:k==2|N|{{if:k==3|S|G}}}}}})$\n```",
+				"variables": [
+					{
+						"name": "k",
+						"expression": "1..4"
+					},
+					{
+						"name": "v",
+						"expression": "0..2"
+					},
+					{
+						"name": "t",
+						"expression": "0..330"
+					},
+					{
+						"name": "a",
+						"expression": "40..140"
+					},
+					{
+						"name": "m1",
+						"expression": "3..4"
+					},
+					{
+						"name": "m2",
+						"expression": "3..4"
+					}
+				],
+				"correction": {
+					"steps": [
+						"Les deux côtés partent du sommet de l'angle, le point ${{if:v==0|{{if:k==1|A|{{if:k==2|M|{{if:k==3|R|F}}}}}}|{{if:v==1|{{if:k==1|B|{{if:k==2|N|{{if:k==3|S|G}}}}}}|{{if:k==1|C|{{if:k==2|P|{{if:k==3|T|H}}}}}}}}}}$.",
+						"Ce sont les demi-droites $\\textcolor{{{color:primary.0}}}{[{{if:v==0|{{if:k==1|A|{{if:k==2|M|{{if:k==3|R|F}}}}}}|{{if:v==1|{{if:k==1|B|{{if:k==2|N|{{if:k==3|S|G}}}}}}|{{if:k==1|C|{{if:k==2|P|{{if:k==3|T|H}}}}}}}}}}{{if:v==0|{{if:k==1|B|{{if:k==2|N|{{if:k==3|S|G}}}}}}|{{if:v==1|{{if:k==1|C|{{if:k==2|P|{{if:k==3|T|H}}}}}}|{{if:k==1|A|{{if:k==2|M|{{if:k==3|R|F}}}}}}}}}})}$ et $\\textcolor{{{color:primary.0}}}{[{{if:v==0|{{if:k==1|A|{{if:k==2|M|{{if:k==3|R|F}}}}}}|{{if:v==1|{{if:k==1|B|{{if:k==2|N|{{if:k==3|S|G}}}}}}|{{if:k==1|C|{{if:k==2|P|{{if:k==3|T|H}}}}}}}}}}{{if:v==0|{{if:k==1|C|{{if:k==2|P|{{if:k==3|T|H}}}}}}|{{if:v==1|{{if:k==1|A|{{if:k==2|M|{{if:k==3|R|F}}}}}}|{{if:k==1|B|{{if:k==2|N|{{if:k==3|S|G}}}}}}}}}})}$."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{c}}"
+					}
+				],
+				"statement": "Cet angle est-il aigu, droit ou obtus ?\n\n```figure\nfenetre: -5 ; 5 ; -5 ; 5\ngrille: non\ndescription: Un angle marqué en rouge, sans quadrillage.\n---\nO = point(0, 0, visible=faux)\nX = point(O, longueur={{m1}}, angle={{t}}, visible=faux)\nY = point(O, longueur={{m2}}, angle={{eval:t+a}}, visible=faux)\nsegment(O, X, epaisseur=2)\nsegment(O, Y, epaisseur=2)\nangle(X, O, Y, couleur=\"rouge\", arcRadiusPx=35)\n```\n\n```choix\nmelanger: non\n- L'angle est aigu.\n- L'angle est droit.\n- L'angle est obtus.\n```",
+				"variables": [
+					{
+						"name": "c",
+						"expression": "0..2"
+					},
+					{
+						"name": "d",
+						"expression": "25..50"
+					},
+					{
+						"name": "a",
+						"expression": "eval:90+(c-1)*d"
+					},
+					{
+						"name": "t",
+						"expression": "0..330"
+					},
+					{
+						"name": "m1",
+						"expression": "2..4"
+					},
+					{
+						"name": "m2",
+						"expression": "3..4"
+					}
+				],
+				"correction": {
+					"steps": [
+						"On pose le coin de l'équerre sur le sommet, un bord le long d'un côté.",
+						"{{if:c==0|L'autre côté reste à l'intérieur du coin de l'équerre : l'angle est plus petit qu'un angle droit.|{{if:c==1|L'autre côté suit exactement l'autre bord de l'équerre.|L'autre côté passe à l'extérieur du coin de l'équerre : l'angle est plus grand qu'un angle droit.}}}}",
+						"L'angle est $\\textcolor{{{color:primary.0}}}{{{if:c==0|\\text{aigu}|{{if:c==1|\\text{droit}|\\text{obtus}}}}}}$."
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "draft",
+		"title": "Sommet, côtés et nature d'un angle",
+		"description": "Nommer le sommet et les côtés d'un angle ; dire s'il est aigu, droit ou obtus (sans quadrillage, côtés de longueurs différentes)",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["1"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "70",
+					"k": "1",
+					"t": "20",
+					"v": "1",
+					"m1": "3",
+					"m2": "4"
+				},
+				"description": "Sommet B (trio A, B, C)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "70",
+					"k": "1",
+					"t": "20",
+					"v": "1",
+					"m1": "3",
+					"m2": "4"
+				},
+				"description": "Erreur : un bout de côté (A)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["1"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "110",
+					"k": "2",
+					"t": "200",
+					"v": "1",
+					"m1": "4",
+					"m2": "3"
+				},
+				"description": "Côtés [NM) et [NP)",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "110",
+					"k": "2",
+					"t": "200",
+					"v": "1",
+					"m1": "4",
+					"m2": "3"
+				},
+				"description": "Erreur : côtés partant de M",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "60",
+					"c": "0",
+					"d": "30",
+					"t": "45",
+					"m1": "2",
+					"m2": "4"
+				},
+				"description": "Angle de 60 : aigu",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["1"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "90",
+					"c": "1",
+					"d": "30",
+					"t": "30",
+					"m1": "3",
+					"m2": "4"
+				},
+				"description": "Angle droit, tourné",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "130",
+					"c": "2",
+					"d": "40",
+					"t": "0",
+					"m1": "2",
+					"m2": "3"
+				},
+				"description": "Erreur : angle obtus dit aigu",
+				"variationIndex": 2
+			}
+		],
+		"classification_node_id": null
+	},
+	{
+		"id": "97f2374b-6491-4d5d-b07e-be6e2640427d",
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"grades": ["CM1", "CM2"],
+		"delay": 120,
+		"level": 1,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{c}}"
+					}
+				],
+				"statement": "Quel angle est le plus grand ?\n\n```figure\nfenetre: -4.5 ; 5 ; -0.8 ; 10.5\ngrille: non\ndescription: Un angle bleu en haut et un angle rouge en bas, aux côtés de longueurs différentes.\n---\nb0 = point(0, 6, visible=faux)\nb1 = point(b0, longueur={{lb}}, angle={{tb}}, visible=faux)\nb2 = point(b0, longueur={{lb}}, angle={{eval:tb+ab}}, visible=faux)\nsegment(b0, b1, epaisseur=2, couleur=\"bleu\")\nsegment(b0, b2, epaisseur=2, couleur=\"bleu\")\nangle(b1, b0, b2, couleur=\"bleu\", arcRadiusPx=30)\nr0 = point(0, 0, visible=faux)\nr1 = point(r0, longueur={{lr}}, angle={{tr}}, visible=faux)\nr2 = point(r0, longueur={{lr}}, angle={{eval:tr+ar}}, visible=faux)\nsegment(r0, r1, epaisseur=2, couleur=\"rouge\")\nsegment(r0, r2, epaisseur=2, couleur=\"rouge\")\nangle(r1, r0, r2, couleur=\"rouge\", arcRadiusPx=30)\n```\n\n```choix\nmelanger: non\n- L'angle bleu est le plus grand.\n- L'angle rouge est le plus grand.\n- Les deux angles sont égaux.\n```",
+				"variables": [
+					{
+						"name": "c",
+						"expression": "0..2"
+					},
+					{
+						"name": "p",
+						"expression": "30..60"
+					},
+					{
+						"name": "g",
+						"expression": "25..45"
+					},
+					{
+						"name": "zb",
+						"expression": "eval:1-min(c,1)"
+					},
+					{
+						"name": "zr",
+						"expression": "eval:1-min(abs(c-1),1)"
+					},
+					{
+						"name": "ab",
+						"expression": "eval:p+g*zb"
+					},
+					{
+						"name": "ar",
+						"expression": "eval:p+g*zr"
+					},
+					{
+						"name": "lb",
+						"expression": "eval:2+2*(1-zb)"
+					},
+					{
+						"name": "lr",
+						"expression": "eval:2+2*zb"
+					},
+					{
+						"name": "tb",
+						"expression": "0..40"
+					},
+					{
+						"name": "tr",
+						"expression": "0..40"
+					}
+				],
+				"correction": {
+					"steps": [
+						"Un angle est plus grand quand il est plus **ouvert** : la longueur des côtés ne compte pas.",
+						"On décalque un angle et on pose le calque sur l'autre, sommet sur sommet, un côté sur un côté.",
+						"{{if:c==2|Les deux autres côtés se superposent : $\\textcolor{{{color:primary.0}}}{\\text{les angles sont égaux}}$, même si leurs côtés n'ont pas la même longueur.|L'angle $\\textcolor{{{color:primary.0}}}{{{if:c==0|\\text{bleu}|\\text{rouge}}}}$ est le plus ouvert : c'est le plus grand, même si ses côtés sont plus courts.}}"
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{c}}"
+					}
+				],
+				"statement": "Voici un angle droit (en noir) et un angle rouge. Compare l'angle rouge à l'angle droit.\n\n```figure\nfenetre: -4.5 ; 5 ; -0.8 ; 10.5\ngrille: non\ndescription: En haut, un angle droit noir codé par un petit carré ; en bas, un angle rouge.\n---\nq0 = point(0, 6, visible=faux)\nq1 = point(3, 6, visible=faux)\nq2 = point(0, 9, visible=faux)\nsegment(q0, q1, epaisseur=2)\nsegment(q0, q2, epaisseur=2)\nangle(q1, q0, q2, marque=\"carre\", couleur=\"noir\")\nr0 = point(0, 0, visible=faux)\nr1 = point(r0, longueur={{l}}, angle={{t}}, visible=faux)\nr2 = point(r0, longueur={{l}}, angle={{eval:t+a}}, visible=faux)\nsegment(r0, r1, epaisseur=2, couleur=\"rouge\")\nsegment(r0, r2, epaisseur=2, couleur=\"rouge\")\nangle(r1, r0, r2, couleur=\"rouge\", arcRadiusPx=30)\n```\n\n```choix\nmelanger: non\n- L'angle rouge est plus petit que l'angle droit.\n- L'angle rouge est aussi grand que l'angle droit.\n- L'angle rouge est plus grand que l'angle droit.\n```",
+				"variables": [
+					{
+						"name": "c",
+						"expression": "0..2"
+					},
+					{
+						"name": "d",
+						"expression": "20..45"
+					},
+					{
+						"name": "a",
+						"expression": "eval:90+(c-1)*d"
+					},
+					{
+						"name": "t",
+						"expression": "0..40"
+					},
+					{
+						"name": "l",
+						"expression": "3..4"
+					}
+				],
+				"correction": {
+					"steps": [
+						"On compare avec un gabarit de l'angle droit, par exemple le coin de l'équerre, posé sur le sommet de l'angle rouge, un bord le long d'un côté.",
+						"L'angle rouge est $\\textcolor{{{color:primary.0}}}{{{if:c==0|\\text{plus petit}|{{if:c==1|\\text{aussi grand}|\\text{plus grand}}}}}}$ que l'angle droit{{if:c==0| : il est aigu.|{{if:c==1| : c'est un angle droit.| : il est obtus.}}}}"
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{w}}"
+					}
+				],
+				"statement": "Range les trois angles du plus petit au plus grand.\n\n```figure\nfenetre: -3 ; 4 ; -0.8 ; 11.5\ngrille: non\ndescription: Trois angles, bleu, rouge et vert, l'un au-dessus de l'autre.\n---\na0 = point(0, 8, visible=faux)\na1 = point(a0, longueur={{l0}}, angle={{t0}}, visible=faux)\na2 = point(a0, longueur={{l0}}, angle={{eval:t0+a0}}, visible=faux)\nsegment(a0, a1, epaisseur=2, couleur=\"bleu\")\nsegment(a0, a2, epaisseur=2, couleur=\"bleu\")\nangle(a1, a0, a2, couleur=\"bleu\", arcRadiusPx=30)\nb0 = point(0, 4, visible=faux)\nb1 = point(b0, longueur={{l1}}, angle={{t1}}, visible=faux)\nb2 = point(b0, longueur={{l1}}, angle={{eval:t1+a1}}, visible=faux)\nsegment(b0, b1, epaisseur=2, couleur=\"rouge\")\nsegment(b0, b2, epaisseur=2, couleur=\"rouge\")\nangle(b1, b0, b2, couleur=\"rouge\", arcRadiusPx=30)\nc0 = point(0, 0, visible=faux)\nc1 = point(c0, longueur={{l2}}, angle={{t2}}, visible=faux)\nc2 = point(c0, longueur={{l2}}, angle={{eval:t2+a2}}, visible=faux)\nsegment(c0, c1, epaisseur=2, couleur=\"vert\")\nsegment(c0, c2, epaisseur=2, couleur=\"vert\")\nangle(c1, c0, c2, couleur=\"vert\", arcRadiusPx=30)\n```\n\n```choix\nmelanger: non\n- bleu < rouge < vert\n- bleu < vert < rouge\n- rouge < bleu < vert\n- rouge < vert < bleu\n- vert < bleu < rouge\n- vert < rouge < bleu\n```",
+				"variables": [
+					{
+						"name": "w",
+						"expression": "0..5"
+					},
+					{
+						"name": "o0",
+						"expression": "25..40"
+					},
+					{
+						"name": "o1",
+						"expression": "eval:o0+30"
+					},
+					{
+						"name": "o2",
+						"expression": "eval:o1+30"
+					},
+					{
+						"name": "l0",
+						"expression": "2..3"
+					},
+					{
+						"name": "l1",
+						"expression": "2..3"
+					},
+					{
+						"name": "l2",
+						"expression": "2..3"
+					},
+					{
+						"name": "t0",
+						"expression": "0..30"
+					},
+					{
+						"name": "t1",
+						"expression": "0..30"
+					},
+					{
+						"name": "t2",
+						"expression": "0..30"
+					},
+					{
+						"name": "a0",
+						"expression": "eval:(1-min(abs(w-0),1))*o0+(1-min(abs(w-1),1))*o0+(1-min(abs(w-2),1))*o1+(1-min(abs(w-3),1))*o2+(1-min(abs(w-4),1))*o1+(1-min(abs(w-5),1))*o2"
+					},
+					{
+						"name": "a1",
+						"expression": "eval:(1-min(abs(w-0),1))*o1+(1-min(abs(w-1),1))*o2+(1-min(abs(w-2),1))*o0+(1-min(abs(w-3),1))*o0+(1-min(abs(w-4),1))*o2+(1-min(abs(w-5),1))*o1"
+					},
+					{
+						"name": "a2",
+						"expression": "eval:(1-min(abs(w-0),1))*o2+(1-min(abs(w-1),1))*o1+(1-min(abs(w-2),1))*o2+(1-min(abs(w-3),1))*o1+(1-min(abs(w-4),1))*o0+(1-min(abs(w-5),1))*o0"
+					}
+				],
+				"correction": {
+					"steps": [
+						"On compare les ouvertures deux à deux, avec un calque ou un gabarit : la longueur des côtés ne compte pas.",
+						"Du plus petit au plus grand : $\\textcolor{{{color:primary.0}}}{{{if:w==0|\\text{bleu < rouge < vert}|{{if:w==1|\\text{bleu < vert < rouge}|{{if:w==2|\\text{rouge < bleu < vert}|{{if:w==3|\\text{rouge < vert < bleu}|{{if:w==4|\\text{vert < bleu < rouge}|\\text{vert < rouge < bleu}}}}}}}}}}}}$."
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "draft",
+		"title": "Comparer des angles",
+		"description": "Comparer deux angles sans mesure (le plus ouvert a les côtés les plus courts) ; comparer à l'angle droit ; ranger trois angles",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"c": "0",
+					"g": "35",
+					"p": "40",
+					"ab": "75",
+					"ar": "40",
+					"lb": "2",
+					"lr": "4",
+					"tb": "10",
+					"tr": "20",
+					"zb": "1",
+					"zr": "0"
+				},
+				"description": "Bleu plus grand, côtés courts",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["1"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"c": "0",
+					"g": "35",
+					"p": "40",
+					"ab": "75",
+					"ar": "40",
+					"lb": "2",
+					"lr": "4",
+					"tb": "10",
+					"tr": "20",
+					"zb": "1",
+					"zr": "0"
+				},
+				"description": "Erreur : le rouge, aux côtés longs",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["2"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"c": "2",
+					"g": "30",
+					"p": "50",
+					"ab": "50",
+					"ar": "50",
+					"lb": "4",
+					"lr": "2",
+					"tb": "0",
+					"tr": "30",
+					"zb": "0",
+					"zr": "0"
+				},
+				"description": "Égaux, côtés différents",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["1"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"c": "2",
+					"g": "30",
+					"p": "50",
+					"ab": "50",
+					"ar": "50",
+					"lb": "4",
+					"lr": "2",
+					"tb": "0",
+					"tr": "30",
+					"zb": "0",
+					"zr": "0"
+				},
+				"description": "Erreur : égaux dits différents",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["2"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "120",
+					"c": "2",
+					"d": "30",
+					"l": "4",
+					"t": "10"
+				},
+				"description": "Rouge plus grand qu'un droit",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["1"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "90",
+					"c": "1",
+					"d": "30",
+					"l": "3",
+					"t": "25"
+				},
+				"description": "Rouge droit",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["2"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "60",
+					"c": "0",
+					"d": "30",
+					"l": "4",
+					"t": "10"
+				},
+				"description": "Erreur : aigu dit plus grand",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["2"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"w": "2",
+					"a0": "60",
+					"a1": "30",
+					"a2": "90",
+					"l0": "2",
+					"l1": "3",
+					"l2": "2",
+					"o0": "30",
+					"o1": "60",
+					"o2": "90",
+					"t0": "0",
+					"t1": "10",
+					"t2": "20"
+				},
+				"description": "Ordre rouge < bleu < vert",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["4"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"w": "2",
+					"a0": "60",
+					"a1": "30",
+					"a2": "90",
+					"l0": "2",
+					"l1": "3",
+					"l2": "2",
+					"o0": "30",
+					"o1": "60",
+					"o2": "90",
+					"t0": "0",
+					"t1": "10",
+					"t2": "20"
+				},
+				"description": "Erreur : ordre inverse",
+				"variationIndex": 2
+			}
+		],
+		"classification_node_id": null
+	},
+	{
+		"id": "d623374d-4e14-4bfa-aa80-5a627ae44b7c",
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"grades": ["CM1", "CM2"],
+		"delay": 90,
+		"level": 1,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{r}}"
+					}
+				],
+				"statement": "Quelle figure a la plus grande aire ?\n\n```figure\nfenetre: 0 ; 10 ; 0 ; 14.5\ngrille: 1\ndescription: Deux figures coloriées sur un quadrillage : A en haut, B en bas.\n---\n{{if:j==1|a1 = point(1, 8, visible=faux)\na2 = point(5, 8, visible=faux)\na3 = point(5, 12, visible=faux)\na4 = point(1, 12, visible=faux)\npolygone(a1, a2, a3, a4, couleur=\"noir\", epaisseur=2, remplissage=\"bleu\", opacite_fond=0.35)\nb1 = point(1, 1, visible=faux)\nb2 = point(5, 1, visible=faux)\nb3 = point(5, 4, visible=faux)\nb4 = point(4, 4, visible=faux)\nb5 = point(4, 3, visible=faux)\nb6 = point(2, 3, visible=faux)\nb7 = point(2, 4, visible=faux)\nb8 = point(1, 4, visible=faux)\npolygone(b1, b2, b3, b4, b5, b6, b7, b8, couleur=\"noir\", epaisseur=2, remplissage=\"rouge\", opacite_fond=0.35)\ntexte(0.5, 10.0, \"A\")\ntexte(0.5, 2.5, \"B\")|{{if:j==2|a1 = point(1, 8, visible=faux)\na2 = point(5, 8, visible=faux)\na3 = point(5, 11, visible=faux)\na4 = point(4, 11, visible=faux)\na5 = point(4, 10, visible=faux)\na6 = point(2, 10, visible=faux)\na7 = point(2, 11, visible=faux)\na8 = point(1, 11, visible=faux)\npolygone(a1, a2, a3, a4, a5, a6, a7, a8, couleur=\"noir\", epaisseur=2, remplissage=\"bleu\", opacite_fond=0.35)\nb1 = point(1, 1, visible=faux)\nb2 = point(5, 1, visible=faux)\nb3 = point(5, 5, visible=faux)\nb4 = point(1, 5, visible=faux)\npolygone(b1, b2, b3, b4, couleur=\"noir\", epaisseur=2, remplissage=\"rouge\", opacite_fond=0.35)\ntexte(0.5, 9.5, \"A\")\ntexte(0.5, 3.0, \"B\")|{{if:j==3|a1 = point(1, 8, visible=faux)\na2 = point(6, 8, visible=faux)\na3 = point(6, 12, visible=faux)\na4 = point(5, 12, visible=faux)\na5 = point(5, 10, visible=faux)\na6 = point(2, 10, visible=faux)\na7 = point(2, 12, visible=faux)\na8 = point(1, 12, visible=faux)\npolygone(a1, a2, a3, a4, a5, a6, a7, a8, couleur=\"noir\", epaisseur=2, remplissage=\"bleu\", opacite_fond=0.35)\nb1 = point(1, 3, visible=faux)\nb2 = point(3, 3, visible=faux)\nb3 = point(3, 1, visible=faux)\nb4 = point(4, 1, visible=faux)\nb5 = point(4, 3, visible=faux)\nb6 = point(6, 3, visible=faux)\nb7 = point(6, 4, visible=faux)\nb8 = point(1, 4, visible=faux)\npolygone(b1, b2, b3, b4, b5, b6, b7, b8, couleur=\"noir\", epaisseur=2, remplissage=\"rouge\", opacite_fond=0.35)\ntexte(0.5, 10.0, \"A\")\ntexte(0.5, 2.5, \"B\")|{{if:j==4|a1 = point(1, 10, visible=faux)\na2 = point(3, 10, visible=faux)\na3 = point(3, 8, visible=faux)\na4 = point(4, 8, visible=faux)\na5 = point(4, 10, visible=faux)\na6 = point(6, 10, visible=faux)\na7 = point(6, 11, visible=faux)\na8 = point(1, 11, visible=faux)\npolygone(a1, a2, a3, a4, a5, a6, a7, a8, couleur=\"noir\", epaisseur=2, remplissage=\"bleu\", opacite_fond=0.35)\nb1 = point(1, 1, visible=faux)\nb2 = point(6, 1, visible=faux)\nb3 = point(6, 5, visible=faux)\nb4 = point(5, 5, visible=faux)\nb5 = point(5, 3, visible=faux)\nb6 = point(2, 3, visible=faux)\nb7 = point(2, 5, visible=faux)\nb8 = point(1, 5, visible=faux)\npolygone(b1, b2, b3, b4, b5, b6, b7, b8, couleur=\"noir\", epaisseur=2, remplissage=\"rouge\", opacite_fond=0.35)\ntexte(0.5, 9.5, \"A\")\ntexte(0.5, 3.0, \"B\")|{{if:j==5|a1 = point(1, 8, visible=faux)\na2 = point(6, 8, visible=faux)\na3 = point(6, 9, visible=faux)\na4 = point(5, 9, visible=faux)\na5 = point(5, 10, visible=faux)\na6 = point(4, 10, visible=faux)\na7 = point(4, 11, visible=faux)\na8 = point(3, 11, visible=faux)\na9 = point(3, 12, visible=faux)\na10 = point(2, 12, visible=faux)\na11 = point(2, 13, visible=faux)\na12 = point(1, 13, visible=faux)\npolygone(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, couleur=\"noir\", epaisseur=2, remplissage=\"bleu\", opacite_fond=0.35)\nb1 = point(1, 1, visible=faux)\nb2 = point(3, 1, visible=faux)\nb3 = point(3, 5, visible=faux)\nb4 = point(1, 5, visible=faux)\npolygone(b1, b2, b3, b4, couleur=\"noir\", epaisseur=2, remplissage=\"rouge\", opacite_fond=0.35)\ntexte(0.5, 10.5, \"A\")\ntexte(0.5, 3.0, \"B\")|{{if:j==6|a1 = point(1, 8, visible=faux)\na2 = point(3, 8, visible=faux)\na3 = point(3, 12, visible=faux)\na4 = point(1, 12, visible=faux)\npolygone(a1, a2, a3, a4, couleur=\"noir\", epaisseur=2, remplissage=\"bleu\", opacite_fond=0.35)\nb1 = point(1, 1, visible=faux)\nb2 = point(6, 1, visible=faux)\nb3 = point(6, 2, visible=faux)\nb4 = point(5, 2, visible=faux)\nb5 = point(5, 3, visible=faux)\nb6 = point(4, 3, visible=faux)\nb7 = point(4, 4, visible=faux)\nb8 = point(3, 4, visible=faux)\nb9 = point(3, 5, visible=faux)\nb10 = point(2, 5, visible=faux)\nb11 = point(2, 6, visible=faux)\nb12 = point(1, 6, visible=faux)\npolygone(b1, b2, b3, b4, b5, b6, b7, b8, b9, b10, b11, b12, couleur=\"noir\", epaisseur=2, remplissage=\"rouge\", opacite_fond=0.35)\ntexte(0.5, 10.0, \"A\")\ntexte(0.5, 3.5, \"B\")|{{if:j==7|a1 = point(2, 8, visible=faux)\na2 = point(4, 8, visible=faux)\na3 = point(4, 9, visible=faux)\na4 = point(5, 9, visible=faux)\na5 = point(5, 11, visible=faux)\na6 = point(4, 11, visible=faux)\na7 = point(4, 12, visible=faux)\na8 = point(2, 12, visible=faux)\na9 = point(2, 11, visible=faux)\na10 = point(1, 11, visible=faux)\na11 = point(1, 9, visible=faux)\na12 = point(2, 9, visible=faux)\npolygone(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, couleur=\"noir\", epaisseur=2, remplissage=\"bleu\", opacite_fond=0.35)\nb1 = point(1, 1, visible=faux)\nb2 = point(5, 1, visible=faux)\nb3 = point(5, 2, visible=faux)\nb4 = point(6, 2, visible=faux)\nb5 = point(6, 3, visible=faux)\nb6 = point(2, 3, visible=faux)\nb7 = point(2, 2, visible=faux)\nb8 = point(1, 2, visible=faux)\npolygone(b1, b2, b3, b4, b5, b6, b7, b8, couleur=\"noir\", epaisseur=2, remplissage=\"rouge\", opacite_fond=0.35)\ntexte(0.5, 10.0, \"A\")\ntexte(0.5, 2.0, \"B\")|a1 = point(1, 8, visible=faux)\na2 = point(5, 8, visible=faux)\na3 = point(5, 9, visible=faux)\na4 = point(6, 9, visible=faux)\na5 = point(6, 10, visible=faux)\na6 = point(2, 10, visible=faux)\na7 = point(2, 9, visible=faux)\na8 = point(1, 9, visible=faux)\npolygone(a1, a2, a3, a4, a5, a6, a7, a8, couleur=\"noir\", epaisseur=2, remplissage=\"bleu\", opacite_fond=0.35)\nb1 = point(2, 1, visible=faux)\nb2 = point(4, 1, visible=faux)\nb3 = point(4, 2, visible=faux)\nb4 = point(5, 2, visible=faux)\nb5 = point(5, 4, visible=faux)\nb6 = point(4, 4, visible=faux)\nb7 = point(4, 5, visible=faux)\nb8 = point(2, 5, visible=faux)\nb9 = point(2, 4, visible=faux)\nb10 = point(1, 4, visible=faux)\nb11 = point(1, 2, visible=faux)\nb12 = point(2, 2, visible=faux)\npolygone(b1, b2, b3, b4, b5, b6, b7, b8, b9, b10, b11, b12, couleur=\"noir\", epaisseur=2, remplissage=\"rouge\", opacite_fond=0.35)\ntexte(0.5, 9.0, \"A\")\ntexte(0.5, 3.0, \"B\")}}}}}}}}}}}}}}\n```\n\n```choix\nmelanger: non\n- La figure A a la plus grande aire.\n- La figure B a la plus grande aire.\n- Les deux figures ont la même aire.\n```",
+				"variables": [
+					{
+						"name": "j",
+						"expression": "1..8"
+					},
+					{
+						"name": "r",
+						"expression": "eval:1-mod(j,2)"
+					}
+				],
+				"correction": {
+					"steps": [
+						"L'aire, c'est la place que prend la surface de la figure. On peut poser une figure sur l'autre, ou compter les carreaux qu'elle recouvre.",
+						"On compte les carreaux de chaque figure : A en a ${{if:j==1|16|{{if:j==2|10|{{if:j==3|14|{{if:j==4|7|{{if:j==5|15|{{if:j==6|8|{{if:j==7|12|8}}}}}}}}}}}}}}$, B en a ${{if:j==1|10|{{if:j==2|16|{{if:j==3|7|{{if:j==4|14|{{if:j==5|8|{{if:j==6|15|{{if:j==7|8|12}}}}}}}}}}}}}}$.",
+						"La figure qui recouvre le plus de carreaux prend le plus de place.",
+						"La figure $\\textcolor{{{color:primary.0}}}{{{if:r==0|\\text{A}|\\text{B}}}}$ a la plus grande aire."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "2"
+					}
+				],
+				"statement": "Quelle figure a la plus grande aire ?\n\n```figure\nfenetre: 0 ; 10 ; 0 ; 14.5\ngrille: 1\ndescription: Deux figures coloriées sur un quadrillage : A en haut, B en bas.\n---\n{{if:j==1|a1 = point(1, 8, visible=faux)\na2 = point(7, 8, visible=faux)\na3 = point(7, 10, visible=faux)\na4 = point(1, 10, visible=faux)\npolygone(a1, a2, a3, a4, couleur=\"noir\", epaisseur=2, remplissage=\"bleu\", opacite_fond=0.35)\nb1 = point(1, 1, visible=faux)\nb2 = point(4, 1, visible=faux)\nb3 = point(4, 5, visible=faux)\nb4 = point(1, 5, visible=faux)\npolygone(b1, b2, b3, b4, couleur=\"noir\", epaisseur=2, remplissage=\"rouge\", opacite_fond=0.35)\ntexte(0.5, 9.0, \"A\")\ntexte(0.5, 3.0, \"B\")|{{if:j==2|a1 = point(1, 8, visible=faux)\na2 = point(5, 8, visible=faux)\na3 = point(5, 10, visible=faux)\na4 = point(1, 10, visible=faux)\npolygone(a1, a2, a3, a4, couleur=\"noir\", epaisseur=2, remplissage=\"bleu\", opacite_fond=0.35)\nb1 = point(1, 1, visible=faux)\nb2 = point(5, 1, visible=faux)\nb3 = point(5, 2, visible=faux)\nb4 = point(6, 2, visible=faux)\nb5 = point(6, 3, visible=faux)\nb6 = point(2, 3, visible=faux)\nb7 = point(2, 2, visible=faux)\nb8 = point(1, 2, visible=faux)\npolygone(b1, b2, b3, b4, b5, b6, b7, b8, couleur=\"noir\", epaisseur=2, remplissage=\"rouge\", opacite_fond=0.35)\ntexte(0.5, 9.0, \"A\")\ntexte(0.5, 2.0, \"B\")|{{if:j==3|a1 = point(1, 8, visible=faux)\na2 = point(4, 8, visible=faux)\na3 = point(4, 11, visible=faux)\na4 = point(1, 11, visible=faux)\npolygone(a1, a2, a3, a4, couleur=\"noir\", epaisseur=2, remplissage=\"bleu\", opacite_fond=0.35)\nb1 = point(1, 1, visible=faux)\nb2 = point(6, 1, visible=faux)\nb3 = point(6, 2, visible=faux)\nb4 = point(2, 2, visible=faux)\nb5 = point(2, 6, visible=faux)\nb6 = point(1, 6, visible=faux)\npolygone(b1, b2, b3, b4, b5, b6, couleur=\"noir\", epaisseur=2, remplissage=\"rouge\", opacite_fond=0.35)\ntexte(0.5, 9.5, \"A\")\ntexte(0.5, 3.5, \"B\")|a1 = point(1, 8, visible=faux)\na2 = point(6, 8, visible=faux)\na3 = point(6, 10, visible=faux)\na4 = point(1, 10, visible=faux)\npolygone(a1, a2, a3, a4, couleur=\"noir\", epaisseur=2, remplissage=\"bleu\", opacite_fond=0.35)\nb1 = point(1, 1, visible=faux)\nb2 = point(5, 1, visible=faux)\nb3 = point(5, 4, visible=faux)\nb4 = point(4, 4, visible=faux)\nb5 = point(4, 3, visible=faux)\nb6 = point(2, 3, visible=faux)\nb7 = point(2, 4, visible=faux)\nb8 = point(1, 4, visible=faux)\npolygone(b1, b2, b3, b4, b5, b6, b7, b8, couleur=\"noir\", epaisseur=2, remplissage=\"rouge\", opacite_fond=0.35)\ntexte(0.5, 9.0, \"A\")\ntexte(0.5, 2.5, \"B\")}}}}}}\n```\n\n```choix\nmelanger: non\n- La figure A a la plus grande aire.\n- La figure B a la plus grande aire.\n- Les deux figures ont la même aire.\n```",
+				"variables": [
+					{
+						"name": "j",
+						"expression": "1..4"
+					}
+				],
+				"correction": {
+					"steps": [
+						"On peut découper la figure A et recoller les morceaux autrement, sans rien perdre ni rien ajouter : on obtient la figure B.",
+						"On compte les carreaux de chaque figure : A en a ${{if:j==1|12|{{if:j==2|8|{{if:j==3|9|10}}}}}}$, B en a ${{if:j==1|12|{{if:j==2|8|{{if:j==3|9|10}}}}}}$.",
+						"Découper et recoller ne change pas l'aire.",
+						"Les deux figures ont $\\textcolor{{{color:primary.0}}}{\\text{la même aire}}$."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{r}}"
+					}
+				],
+				"statement": "Lucas dit : « la figure qui a le plus long tour a la plus grande aire ». Quelle figure a la plus grande aire ?\n\n```figure\nfenetre: 0 ; 10 ; 0 ; 14.5\ngrille: 1\ndescription: Deux figures coloriées sur un quadrillage : A en haut, B en bas.\n---\n{{if:j==1|a1 = point(1, 8, visible=faux)\na2 = point(4, 8, visible=faux)\na3 = point(4, 11, visible=faux)\na4 = point(1, 11, visible=faux)\npolygone(a1, a2, a3, a4, couleur=\"noir\", epaisseur=2, remplissage=\"bleu\", opacite_fond=0.35)\nb1 = point(1, 1, visible=faux)\nb2 = point(9, 1, visible=faux)\nb3 = point(9, 2, visible=faux)\nb4 = point(1, 2, visible=faux)\npolygone(b1, b2, b3, b4, couleur=\"noir\", epaisseur=2, remplissage=\"rouge\", opacite_fond=0.35)\ntexte(0.5, 9.5, \"A\")\ntexte(0.5, 1.5, \"B\")|{{if:j==2|a1 = point(1, 8, visible=faux)\na2 = point(9, 8, visible=faux)\na3 = point(9, 9, visible=faux)\na4 = point(1, 9, visible=faux)\npolygone(a1, a2, a3, a4, couleur=\"noir\", epaisseur=2, remplissage=\"bleu\", opacite_fond=0.35)\nb1 = point(1, 1, visible=faux)\nb2 = point(4, 1, visible=faux)\nb3 = point(4, 4, visible=faux)\nb4 = point(1, 4, visible=faux)\npolygone(b1, b2, b3, b4, couleur=\"noir\", epaisseur=2, remplissage=\"rouge\", opacite_fond=0.35)\ntexte(0.5, 8.5, \"A\")\ntexte(0.5, 2.5, \"B\")|{{if:j==3|a1 = point(1, 8, visible=faux)\na2 = point(5, 8, visible=faux)\na3 = point(5, 12, visible=faux)\na4 = point(1, 12, visible=faux)\npolygone(a1, a2, a3, a4, couleur=\"noir\", epaisseur=2, remplissage=\"bleu\", opacite_fond=0.35)\nb1 = point(1, 1, visible=faux)\nb2 = point(8, 1, visible=faux)\nb3 = point(8, 3, visible=faux)\nb4 = point(1, 3, visible=faux)\npolygone(b1, b2, b3, b4, couleur=\"noir\", epaisseur=2, remplissage=\"rouge\", opacite_fond=0.35)\ntexte(0.5, 10.0, \"A\")\ntexte(0.5, 2.0, \"B\")|{{if:j==4|a1 = point(1, 8, visible=faux)\na2 = point(8, 8, visible=faux)\na3 = point(8, 10, visible=faux)\na4 = point(1, 10, visible=faux)\npolygone(a1, a2, a3, a4, couleur=\"noir\", epaisseur=2, remplissage=\"bleu\", opacite_fond=0.35)\nb1 = point(1, 1, visible=faux)\nb2 = point(5, 1, visible=faux)\nb3 = point(5, 5, visible=faux)\nb4 = point(1, 5, visible=faux)\npolygone(b1, b2, b3, b4, couleur=\"noir\", epaisseur=2, remplissage=\"rouge\", opacite_fond=0.35)\ntexte(0.5, 9.0, \"A\")\ntexte(0.5, 3.0, \"B\")|{{if:j==5|a1 = point(1, 8, visible=faux)\na2 = point(5, 8, visible=faux)\na3 = point(5, 11, visible=faux)\na4 = point(1, 11, visible=faux)\npolygone(a1, a2, a3, a4, couleur=\"noir\", epaisseur=2, remplissage=\"bleu\", opacite_fond=0.35)\nb1 = point(1, 1, visible=faux)\nb2 = point(8, 1, visible=faux)\nb3 = point(8, 2, visible=faux)\nb4 = point(2, 2, visible=faux)\nb5 = point(2, 6, visible=faux)\nb6 = point(1, 6, visible=faux)\npolygone(b1, b2, b3, b4, b5, b6, couleur=\"noir\", epaisseur=2, remplissage=\"rouge\", opacite_fond=0.35)\ntexte(0.5, 9.5, \"A\")\ntexte(0.5, 3.5, \"B\")|{{if:j==6|a1 = point(1, 8, visible=faux)\na2 = point(8, 8, visible=faux)\na3 = point(8, 9, visible=faux)\na4 = point(2, 9, visible=faux)\na5 = point(2, 13, visible=faux)\na6 = point(1, 13, visible=faux)\npolygone(a1, a2, a3, a4, a5, a6, couleur=\"noir\", epaisseur=2, remplissage=\"bleu\", opacite_fond=0.35)\nb1 = point(1, 1, visible=faux)\nb2 = point(5, 1, visible=faux)\nb3 = point(5, 4, visible=faux)\nb4 = point(1, 4, visible=faux)\npolygone(b1, b2, b3, b4, couleur=\"noir\", epaisseur=2, remplissage=\"rouge\", opacite_fond=0.35)\ntexte(0.5, 10.5, \"A\")\ntexte(0.5, 2.5, \"B\")|{{if:j==7|a1 = point(1, 8, visible=faux)\na2 = point(5, 8, visible=faux)\na3 = point(5, 11, visible=faux)\na4 = point(1, 11, visible=faux)\npolygone(a1, a2, a3, a4, couleur=\"noir\", epaisseur=2, remplissage=\"bleu\", opacite_fond=0.35)\nb1 = point(1, 1, visible=faux)\nb2 = point(6, 1, visible=faux)\nb3 = point(6, 5, visible=faux)\nb4 = point(5, 5, visible=faux)\nb5 = point(5, 2, visible=faux)\nb6 = point(2, 2, visible=faux)\nb7 = point(2, 5, visible=faux)\nb8 = point(1, 5, visible=faux)\npolygone(b1, b2, b3, b4, b5, b6, b7, b8, couleur=\"noir\", epaisseur=2, remplissage=\"rouge\", opacite_fond=0.35)\ntexte(0.5, 9.5, \"A\")\ntexte(0.5, 3.0, \"B\")|a1 = point(1, 8, visible=faux)\na2 = point(6, 8, visible=faux)\na3 = point(6, 12, visible=faux)\na4 = point(5, 12, visible=faux)\na5 = point(5, 9, visible=faux)\na6 = point(2, 9, visible=faux)\na7 = point(2, 12, visible=faux)\na8 = point(1, 12, visible=faux)\npolygone(a1, a2, a3, a4, a5, a6, a7, a8, couleur=\"noir\", epaisseur=2, remplissage=\"bleu\", opacite_fond=0.35)\nb1 = point(1, 1, visible=faux)\nb2 = point(5, 1, visible=faux)\nb3 = point(5, 4, visible=faux)\nb4 = point(1, 4, visible=faux)\npolygone(b1, b2, b3, b4, couleur=\"noir\", epaisseur=2, remplissage=\"rouge\", opacite_fond=0.35)\ntexte(0.5, 10.0, \"A\")\ntexte(0.5, 2.5, \"B\")}}}}}}}}}}}}}}\n```\n\n```choix\nmelanger: non\n- La figure A a la plus grande aire.\n- La figure B a la plus grande aire.\n- Les deux figures ont la même aire.\n```",
+				"variables": [
+					{
+						"name": "j",
+						"expression": "1..8"
+					},
+					{
+						"name": "r",
+						"expression": "eval:1-mod(j,2)"
+					}
+				],
+				"correction": {
+					"steps": [
+						"Le tour d'une figure (son périmètre) et sa surface (son aire) sont deux choses différentes : une figure longue et fine a un grand tour mais peu de place.",
+						"On compte les carreaux de chaque figure : A en a ${{if:j==1|9|{{if:j==2|8|{{if:j==3|16|{{if:j==4|14|{{if:j==5|12|{{if:j==6|11|{{if:j==7|12|11}}}}}}}}}}}}}}$, B en a ${{if:j==1|8|{{if:j==2|9|{{if:j==3|14|{{if:j==4|16|{{if:j==5|11|{{if:j==6|12|{{if:j==7|11|12}}}}}}}}}}}}}}$.",
+						"Lucas se trompe : la figure au plus long tour a ici la plus petite aire.",
+						"La figure $\\textcolor{{{color:primary.0}}}{{{if:r==0|\\text{A}|\\text{B}}}}$ a la plus grande aire."
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "draft",
+		"title": "Comparer les aires de deux figures",
+		"description": "Deux figures sur quadrillage : aires nettement différentes ; même aire après découpage et recollement ; la figure au plus long tour a la plus petite aire",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"j": "1",
+					"r": "0"
+				},
+				"description": "A (4 × 4) plus grande que B",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["1"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"j": "1",
+					"r": "0"
+				},
+				"description": "Erreur : B choisie",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["1"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"j": "2",
+					"r": "1"
+				},
+				"description": "Grande figure à droite : B",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["2"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"j": "2",
+					"r": "1"
+				},
+				"description": "Erreur : « même aire » quand B est plus grande",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["2"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"j": "1"
+				},
+				"description": "6 × 2 et 3 × 4 : même aire",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"j": "1"
+				},
+				"description": "Erreur : la plus longue (A) choisie",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"j": "1",
+					"r": "0"
+				},
+				"description": "3 × 3 contre 8 × 1 : A",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["1"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"j": "1",
+					"r": "0"
+				},
+				"description": "Erreur : la plus longue figure (B) choisie",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["1"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"j": "6",
+					"r": "1"
+				},
+				"description": "Bande fine à gauche : B",
+				"variationIndex": 2
+			}
+		],
+		"classification_node_id": null
+	}
+]

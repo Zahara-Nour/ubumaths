@@ -8,20 +8,20 @@
 	 * puissent pas diverger.
 	 */
 
-	import * as Card from '$lib/components/ui/card';
-	import { Badge } from '$lib/components/ui/badge';
-	import { Button } from '$lib/components/ui/button';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
 	import { CheckCircle2, Circle, LifeBuoy, ChevronRight, Hourglass } from '@lucide/svelte';
 	import {
 		formatNotionLevel,
 		getNotionLevelVisual,
 		notionLevel,
 		type NotionLevel
-	} from '$lib/types/skills';
-	import CurriculumPointFsrsBadge from '$lib/components/srs/CurriculumPointFsrsBadge.svelte';
-	import { formatGradeForDisplay, isValidGradeCode } from '$lib/utils/grades';
-	import type { NotionsProgression } from '$lib/server/progression/student-progression';
-	import { notionHref } from '$lib/navigation/return-links';
+	} from '#lib/types/skills.ts';
+	import CurriculumPointFsrsBadge from '#lib/components/srs/CurriculumPointFsrsBadge.svelte';
+	import { formatGradeForDisplay, isValidGradeCode } from '#lib/utils/grades.ts';
+	import type { NotionsProgression } from '#lib/server/progression/student-progression.ts';
+	import { notionHref } from '#lib/navigation/return-links.ts';
 
 	let {
 		notions,

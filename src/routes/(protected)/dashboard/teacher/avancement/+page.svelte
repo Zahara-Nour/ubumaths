@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { lore } from '$lib/config/lore';
+	import { lore } from '#lib/config/lore.ts';
 	/**
 	 * Teacher — Avancement du programme (coverage heatmap).
 	 *
@@ -10,12 +10,12 @@
 	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
 	import { resolve } from '$app/paths';
-	import MySelect from '$lib/components/MySelect.svelte';
-	import MyCheckbox from '$lib/components/MyCheckbox.svelte';
+	import MySelect from '#lib/components/MySelect.svelte';
+	import MyCheckbox from '#lib/components/MyCheckbox.svelte';
 	import { Gauge, ChevronRight, ChevronDown } from '@lucide/svelte';
 	import type { PageData } from './$types';
-	import ProgrammePointLabel from '$lib/components/programme/ProgrammePointLabel.svelte';
-	import { coverageStats } from '$lib/utils/programme-tree';
+	import ProgrammePointLabel from '#lib/components/programme/ProgrammePointLabel.svelte';
+	import { coverageStats } from '#lib/utils/programme-tree.ts';
 
 	type Branch = PageData['tree'][number];
 	type Notion = Branch['notions'][number];
@@ -29,9 +29,9 @@
 	function changeClass(value: string | string[]) {
 		if (typeof value !== 'string') return;
 		// Query-only navigation (reloads the server load).
-		const url = new URL(page.url);
+		const url = new URL(page.url.href);
 		url.searchParams.set('class', value);
-		goto(url, { keepFocus: true, noScroll: true });
+		goto(url, { reset: false });
 	}
 
 	function count(pointId: string): number {
@@ -103,7 +103,7 @@
 	{:else if data.tree.length === 0}
 		<div class="rounded-lg border border-dashed p-10 text-center text-muted-foreground">
 			Aucun programme défini pour le niveau de cette classe.
-			<a class="underline" href={resolve('/dashboard/teacher/programme')}>Voir le programme</a>
+			<a class="underline" href={resolve('dashboard/teacher/programme')}>Voir le programme</a>
 		</div>
 	{:else}
 		<!-- Legend + filter -->

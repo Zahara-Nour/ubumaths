@@ -8,7 +8,7 @@ import { describe, it, expect } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import ScratchBlock from '../ScratchBlock.svelte';
 import MarkdownRenderer from '../../MarkdownRenderer.svelte';
-import { parseScratchContent } from '$lib/ubumark/parser/scratch-parser';
+import { parseScratchContent } from '#lib/ubumark/parser/scratch-parser.ts';
 
 const PROGRAMME = [
 	'quand le drapeau vert pressé',

@@ -2,7 +2,7 @@
  * Re-exports from geometry-core/viewport.
  *
  * This file maintains backward compatibility — all existing imports
- * from '$lib/grapheur/viewport' continue to work.
+ * from '#lib/grapheur/viewport.ts' continue to work.
  */
 
 export {
@@ -16,6 +16,6 @@ export {
 	isValidViewport,
 	clampViewport,
 	fitViewport
-} from '$lib/geometry-core/viewport';
+} from '#lib/geometry-core/viewport/index.ts';
 
-export type { CoordinateTransformer } from '$lib/geometry-core/viewport';
+export type { CoordinateTransformer } from '#lib/geometry-core/viewport/index.ts';

@@ -1,0 +1,342 @@
+{
+	"id": "da94a049-ae7d-4c2e-9239-f5b89a077dc8",
+	"title": "Le plus petit ensemble qui contient le résultat",
+	"description": "Calculer puis choisir ℕ, ℤ, 𝔻, ℚ ou ℝ : 3 − 15, √49 − √121, 1/3 + 2/3, 8/10 + 5/100, 3 + 4/7, 4 + √29 (pièges : juger sur l'écriture et non sur le résultat)",
+	"grades": ["2"],
+	"level": 4,
+	"delay": 60,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true
+	},
+	"variations": [
+		{
+			"statement": "On note $x={{a}}-{{b}}$.\n\nQuel est le **plus petit** ensemble de nombres qui contient $x$ ?\n\n```choix\nmelanger: non\n- $\\mathbb{N}$\n- $\\mathbb{Z}$\n- $𝔻$\n- $\\mathbb{Q}$\n- $\\mathbb{R}$\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..15"
+				},
+				{
+					"name": "d",
+					"expression": "1..20"
+				},
+				{
+					"name": "b",
+					"expression": "eval:(a)+(d)"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "1"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On a $\\mathbb{N}\\subset\\mathbb{Z}\\subset𝔻\\subset\\mathbb{Q}\\subset\\mathbb{R}$ : chaque ensemble contient le précédent. On **calcule** d'abord $x$.",
+					"$x={{a}}-{{b}}=-{{d}}$ est un entier **négatif** : $x\\notin\\mathbb{N}$, mais $x\\in\\textcolor{{{color:primary.0}}}{\\mathbb{Z}}$."
+				]
+			}
+		},
+		{
+			"statement": "On note $x=\\sqrt{ {{eval:(a)^2}} }-\\sqrt{ {{eval:(b)^2}} }$.\n\nQuel est le **plus petit** ensemble de nombres qui contient $x$ ?\n\n```choix\nmelanger: non\n- $\\mathbb{N}$\n- $\\mathbb{Z}$\n- $𝔻$\n- $\\mathbb{Q}$\n- $\\mathbb{R}$\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9"
+				},
+				{
+					"name": "d",
+					"expression": "1..5"
+				},
+				{
+					"name": "b",
+					"expression": "eval:(a)+(d)"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "1"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On a $\\mathbb{N}\\subset\\mathbb{Z}\\subset𝔻\\subset\\mathbb{Q}\\subset\\mathbb{R}$ : chaque ensemble contient le précédent. On **calcule** d'abord $x$.",
+					"$\\sqrt{ {{eval:(a)^2}} }={{a}}$ et $\\sqrt{ {{eval:(b)^2}} }={{b}}$ : les racines sont des **entiers**.",
+					"$x={{a}}-{{b}}=-{{d}}$ est un entier négatif : $x\\notin\\mathbb{N}$, mais $x\\in\\textcolor{{{color:primary.0}}}{\\mathbb{Z}}$."
+				]
+			}
+		},
+		{
+			"statement": "On note $x=\\dfrac{ {{r}} }{ {{q}} }+\\dfrac{ {{b}} }{ {{q}} }$.\n\nQuel est le **plus petit** ensemble de nombres qui contient $x$ ?\n\n```choix\nmelanger: non\n- $\\mathbb{N}$\n- $\\mathbb{Z}$\n- $𝔻$\n- $\\mathbb{Q}$\n- $\\mathbb{R}$\n```",
+			"variables": [
+				{
+					"name": "q",
+					"expression": "3|6|7|9"
+				},
+				{
+					"name": "r",
+					"expression": "1..8"
+				},
+				{
+					"name": "k",
+					"expression": "1..3"
+				},
+				{
+					"name": "b",
+					"expression": "eval:(k)*(q)-(r)"
+				}
+			],
+			"conditions": ["r < q", "gcd(r,q) == 1"],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On a $\\mathbb{N}\\subset\\mathbb{Z}\\subset𝔻\\subset\\mathbb{Q}\\subset\\mathbb{R}$ : chaque ensemble contient le précédent. On **calcule** d'abord $x$.",
+					"Même dénominateur : $x=\\dfrac{ {{r}}+{{b}} }{ {{q}} }=\\dfrac{ {{eval:(k)*(q)}} }{ {{q}} }={{k}}$.",
+					"Les deux fractions ne sont pas entières, mais leur somme l'est : $x={{k}}\\in\\textcolor{{{color:primary.0}}}{\\mathbb{N}}$."
+				]
+			}
+		},
+		{
+			"statement": "On note $x=\\dfrac{ {{a}} }{10}+\\dfrac{ {{b}} }{100}$.\n\nQuel est le **plus petit** ensemble de nombres qui contient $x$ ?\n\n```choix\nmelanger: non\n- $\\mathbb{N}$\n- $\\mathbb{Z}$\n- $𝔻$\n- $\\mathbb{Q}$\n- $\\mathbb{R}$\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9"
+				},
+				{
+					"name": "b",
+					"expression": "1..9"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "2"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On a $\\mathbb{N}\\subset\\mathbb{Z}\\subset𝔻\\subset\\mathbb{Q}\\subset\\mathbb{R}$ : chaque ensemble contient le précédent. On **calcule** d'abord $x$.",
+					"$x=\\dfrac{ {{eval:10*(a)}} }{100}+\\dfrac{ {{b}} }{100}=\\dfrac{ {{eval:10*(a)+(b)}} }{100}=0{,}{{a}}{{b}}$.",
+					"Une fraction de dénominateur $100$ : $x$ est **décimal**, sans être entier : $x\\in\\textcolor{{{color:primary.0}}}{𝔻}$, $x\\notin\\mathbb{Z}$."
+				]
+			}
+		},
+		{
+			"statement": "On note $x={{a}}+\\dfrac{ {{p}} }{ {{q}} }$.\n\nQuel est le **plus petit** ensemble de nombres qui contient $x$ ?\n\n```choix\nmelanger: non\n- $\\mathbb{N}$\n- $\\mathbb{Z}$\n- $𝔻$\n- $\\mathbb{Q}$\n- $\\mathbb{R}$\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9"
+				},
+				{
+					"name": "q",
+					"expression": "3|7|9|11"
+				},
+				{
+					"name": "p",
+					"expression": "1..10"
+				}
+			],
+			"conditions": ["p < q", "gcd(p,q) == 1"],
+			"blanks": [
+				{
+					"expectedAnswer": "3"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On a $\\mathbb{N}\\subset\\mathbb{Z}\\subset𝔻\\subset\\mathbb{Q}\\subset\\mathbb{R}$ : chaque ensemble contient le précédent. On **calcule** d'abord $x$.",
+					"$x={{a}}+\\dfrac{ {{p}} }{ {{q}} }=\\dfrac{ {{eval:(a)*(q)+(p)}} }{ {{q}} }$, fraction irréductible.",
+					"Son dénominateur ${{q}}$ a un facteur premier autre que $2$ et $5$ : $x$ n'est pas décimal (son écriture décimale ne s'arrête pas).",
+					"C'est un quotient d'entiers : $x\\in\\textcolor{{{color:primary.0}}}{\\mathbb{Q}}$."
+				]
+			}
+		},
+		{
+			"statement": "On note $x={{a}}+\\sqrt{ {{k}} }$.\n\nQuel est le **plus petit** ensemble de nombres qui contient $x$ ?\n\n```choix\nmelanger: non\n- $\\mathbb{N}$\n- $\\mathbb{Z}$\n- $𝔻$\n- $\\mathbb{Q}$\n- $\\mathbb{R}$\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9"
+				},
+				{
+					"name": "k",
+					"expression": "2|3|5|6|7|10|11|13|15|17|19|29"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "4"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On a $\\mathbb{N}\\subset\\mathbb{Z}\\subset𝔻\\subset\\mathbb{Q}\\subset\\mathbb{R}$ : chaque ensemble contient le précédent. On **calcule** d'abord $x$.",
+					"${{k}}$ n'est pas un carré parfait : $\\sqrt{ {{k}} }$ n'est pas rationnel.",
+					"Si $x$ était rationnel, $\\sqrt{ {{k}} }=x-{{a}}$ le serait aussi : impossible. Donc $x\\notin\\mathbb{Q}$, et $x\\in\\textcolor{{{color:primary.0}}}{\\mathbb{R}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "3 − 15 : ℤ",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"d": "12",
+				"b": "15"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : ℕ (signe oublié)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"d": "12",
+				"b": "15"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "√49 − √121 : ℤ",
+			"variationIndex": 1,
+			"variables": {
+				"a": "7",
+				"d": "4",
+				"b": "11"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : ℝ (à cause des racines)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "7",
+				"d": "4",
+				"b": "11"
+			},
+			"answers": ["4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "1/3 + 2/3 : ℕ",
+			"variationIndex": 2,
+			"variables": {
+				"q": "3",
+				"r": "1",
+				"k": "1",
+				"b": "2"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : ℚ (à cause des fractions)",
+			"variationIndex": 2,
+			"variables": {
+				"q": "3",
+				"r": "1",
+				"k": "1",
+				"b": "2"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "8/10 + 5/100 : 𝔻",
+			"variationIndex": 3,
+			"variables": {
+				"a": "8",
+				"b": "5"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : ℚ",
+			"variationIndex": 3,
+			"variables": {
+				"a": "8",
+				"b": "5"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "3 + 4/7 : ℚ",
+			"variationIndex": 4,
+			"variables": {
+				"a": "3",
+				"q": "7",
+				"p": "4"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 𝔻",
+			"variationIndex": 4,
+			"variables": {
+				"a": "3",
+				"q": "7",
+				"p": "4"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "4 + √29 : ℝ",
+			"variationIndex": 5,
+			"variables": {
+				"a": "4",
+				"k": "29"
+			},
+			"answers": ["4"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : ℚ",
+			"variationIndex": 5,
+			"variables": {
+				"a": "4",
+				"k": "29"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

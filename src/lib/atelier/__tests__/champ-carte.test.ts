@@ -8,7 +8,7 @@
 import { describe, it, expect } from 'vitest';
 import { fieldLatexOf, definitionFromField, forMathlive } from '../mathfield';
 import { astOf, parseDefinition } from '../parse';
-import { toLatex } from '$lib/mathAST/latex-generator';
+import { toLatex } from '#lib/mathAST/latex-generator.ts';
 import { Atelier } from '../atelier.svelte';
 
 /** Deux écritures disent-elles la même chose, une fois relues ? */

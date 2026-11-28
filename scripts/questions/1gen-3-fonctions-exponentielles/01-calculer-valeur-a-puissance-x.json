@@ -1,0 +1,216 @@
+{
+	"id": "e4e65a69-2710-45d1-9592-1edd100d9067",
+	"title": "Calculer une valeur de a^x (exposant non entier)",
+	"description": "À la calculatrice : f(x) = aˣ, placement sur une fraction d'année, désintégration radioactive",
+	"grades": ["1_GEN"],
+	"level": 1,
+	"delay": 45,
+	"status": "draft",
+	"shared": {},
+	"variations": [
+		{
+			"statement": "On considère la fonction $f$ définie sur $[0\\,;+\\infty[$ par $f(x)={{a}}^x$.\n\nCalcule $f({{x}})$, arrondi au centième.\n\n$f({{x}})\\approx ?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1.5|2|3|0.5|0.8"
+				},
+				{
+					"name": "x",
+					"expression": "0.5|1.5|2.5|3.2"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:round(100*a^x)/100;d}}",
+					"precision": {
+						"type": "decimal",
+						"digits": 2
+					}
+				}
+			],
+			"correction": {
+				"steps": [
+					"On remplace $x$ par ${{x}}$ : $f({{x}})={{a}}^{ {{x}} }$. L'exposant n'est pas entier : on calcule à la calculatrice, avec la touche de puissance.",
+					"$f({{x}})\\approx\\textcolor{{{color:primary.0}}}{{{eval:round(100*a^x)/100;d}}}$ (et non ${{a}}\\times{{x}}$ : la puissance n'est pas un produit)."
+				]
+			}
+		},
+		{
+			"statement": "Un capital de ${{c}}~\\unit{€}$ est placé à ${{t}}~\\%$ par an, à intérêts composés. Sa valeur, en euros, au bout de $x$ années (fraction d'année comprise) est $V(x)={{c}}\\times{{eval:1+t/100;d}}^x$.\n\nCalcule la valeur du placement au bout de ${{x}}$ années, arrondie au centime.\n\n$V({{x}})\\approx ?$",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "1000|2000|5000"
+				},
+				{
+					"name": "t",
+					"expression": "2|3|4"
+				},
+				{
+					"name": "x",
+					"expression": "1.5|2.5|3.5"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:round(100*c*(1+t/100)^x)/100;d}}",
+					"precision": {
+						"type": "decimal",
+						"digits": 2
+					}
+				}
+			],
+			"correction": {
+				"steps": [
+					"On remplace $x$ par ${{x}}$ : $V({{x}})={{c}}\\times{{eval:1+t/100;d}}^{ {{x}} }$.",
+					"À la calculatrice : $V({{x}})\\approx\\textcolor{{{color:primary.0}}}{{{eval:round(100*c*(1+t/100)^x)/100;d}}}$ €. Les intérêts sont composés : on n'ajoute pas ${{t}}~\\%$ du capital de départ par année, on multiplie par ${{eval:1+t/100;d}}$."
+				]
+			}
+		},
+		{
+			"statement": "Un échantillon contient ${{n}}$ noyaux radioactifs. Au bout de $x$ demi-vies, il en reste $N(x)={{n}}\\times0{,}5^x$.\n\nCombien en reste-t-il au bout de ${{x}}$ demi-vies ? Arrondis à l'unité.\n\n$N({{x}})\\approx ?$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "1000|8000"
+				},
+				{
+					"name": "x",
+					"expression": "0.5|1.5|2.5"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:round(n*0.5^x)}}",
+					"precision": {
+						"type": "decimal",
+						"digits": 0
+					}
+				}
+			],
+			"correction": {
+				"steps": [
+					"On remplace $x$ par ${{x}}$ : $N({{x}})={{n}}\\times0{,}5^{ {{x}} }$.",
+					"À la calculatrice : $N({{x}})\\approx\\textcolor{{{color:primary.0}}}{{{eval:round(n*0.5^x)}}}$ noyaux."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "2^1,5 ≈ 2,83",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"x": "1.5"
+			},
+			"answers": ["2,83"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 2 × 1,5 = 3",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"x": "1.5"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 2^2,5 ≈ 5,66 (exposant + 1)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"x": "1.5"
+			},
+			"answers": ["5,66"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "0,8^2,5 ≈ 0,57",
+			"variationIndex": 0,
+			"variables": {
+				"a": "0.8",
+				"x": "2.5"
+			},
+			"answers": ["0,57"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "1000 × 1,02^1,5 ≈ 1030,15",
+			"variationIndex": 1,
+			"variables": {
+				"c": "1000",
+				"t": "2",
+				"x": "1.5"
+			},
+			"answers": ["1030,15"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : intérêts simples 1030",
+			"variationIndex": 1,
+			"variables": {
+				"c": "1000",
+				"t": "2",
+				"x": "1.5"
+			},
+			"answers": ["1030"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 1000 × 1,02 × 1,5 = 1530",
+			"variationIndex": 1,
+			"variables": {
+				"c": "1000",
+				"t": "2",
+				"x": "1.5"
+			},
+			"answers": ["1530"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "1000 × 0,5^1,5 ≈ 354",
+			"variationIndex": 2,
+			"variables": {
+				"n": "1000",
+				"x": "1.5"
+			},
+			"answers": ["354"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 1000 × 0,5 × 1,5 = 750",
+			"variationIndex": 2,
+			"variables": {
+				"n": "1000",
+				"x": "1.5"
+			},
+			"answers": ["750"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

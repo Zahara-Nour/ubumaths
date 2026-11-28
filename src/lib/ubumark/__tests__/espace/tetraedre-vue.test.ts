@@ -12,10 +12,10 @@
  * même fuyante, descendent à ~0,3 cm (contre 0,13 à 0,29 avant le correctif).
  */
 import { describe, expect, it } from 'vitest';
-import { parseEspaceContent } from '$lib/ubumark/parser/espace-parser';
-import type { SolideSpec } from '$lib/ubumark/types/espace';
-import type { EspacePoint } from '$lib/ubumark/utils/espace-scene';
-import { buildSolideScene, labelBox } from '$lib/ubumark/utils/espace-solides';
+import { parseEspaceContent } from '#lib/ubumark/parser/espace-parser.ts';
+import type { SolideSpec } from '#lib/ubumark/types/espace.ts';
+import type { EspacePoint } from '#lib/ubumark/utils/espace-scene.ts';
+import { buildSolideScene, labelBox } from '#lib/ubumark/utils/espace-solides.ts';
 
 // ============================================================================
 // OUTILS

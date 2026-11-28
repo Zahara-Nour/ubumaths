@@ -5,9 +5,9 @@
  */
 
 import { describe, expect, it } from 'vitest';
-import { parseMarkdown } from '$lib/ubumark';
-import type { InlineNode, ParagraphNode, TextNode } from '$lib/ubumark';
-import { splitCorrectionDetail } from '$lib/questions/correction-detail';
+import { parseMarkdown } from '#lib/ubumark/index.ts';
+import type { InlineNode, ParagraphNode, TextNode } from '#lib/ubumark/index.ts';
+import { splitCorrectionDetail } from '#lib/questions/correction-detail.ts';
 
 function paragraphChildren(md: string): InlineNode[] {
 	const block = parseMarkdown(md).children[0] as ParagraphNode;

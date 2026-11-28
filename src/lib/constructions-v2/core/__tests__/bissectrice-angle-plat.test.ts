@@ -9,8 +9,8 @@
 import { describe, it, expect } from 'vitest';
 import { ConstructionExecutor } from '../executor';
 import type { SubStep } from '../choreographies/types';
-import { geoToNumber } from '$lib/geometry-core/compute/to-number';
-import { isLine, isSegment } from '$lib/geometry-core/types/elements';
+import { geoToNumber } from '#lib/geometry-core/compute/to-number.ts';
+import { isLine, isSegment } from '#lib/geometry-core/types/elements.ts';
 
 type Pt = { x: number; y: number };
 

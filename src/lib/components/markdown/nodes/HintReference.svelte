@@ -21,12 +21,12 @@
 	@module components/markdown/nodes/HintReference
 -->
 <script lang="ts">
-	import type { ExerciseHint } from '$lib/exercises/types';
-	import * as Popover from '$lib/components/ui/popover';
+	import type { ExerciseHint } from '#lib/exercises/types.ts';
+	import * as Popover from '#lib/components/ui/popover/index.ts';
 	import MarkdownRenderer from '../MarkdownRenderer.svelte';
 	import { keepOutsideFocus } from '../outside-focus';
-	import { cn } from '$lib/utils';
-	import { sanitizeUrl } from '$lib/utils/sanitize';
+	import { cn } from '#lib/utils.ts';
+	import { sanitizeUrl } from '#lib/utils/sanitize-url.ts';
 	import { Lightbulb, AlertCircle, ExternalLink, FileText, Video } from '@lucide/svelte';
 
 	interface Props {

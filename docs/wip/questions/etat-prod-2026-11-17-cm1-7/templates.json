@@ -1,0 +1,4653 @@
+[
+	{
+		"id": "01b73ca2-004e-4cb1-8237-ce7ebf516ac9",
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"grades": ["CM1"],
+		"delay": 300,
+		"level": 7,
+		"variations": [
+			{
+				"blanks": [],
+				"statement": "Les élèves de la classe ont dit leur animal préféré.\n\n| Animal | Nombre d'élèves |\n|---|---|\n| Chat | ${{a}}$ |\n| Chien | ${{b}}$ |\n| Lapin | ${{c}}$ |\n| Poisson | ${{d}}$ |\n\nChoisis l'échelle de l'axe, puis construis le diagramme en barres.\n\n```barres\ntitre: Animal préféré\naxes: Animal ; Élèves\nChat = {{a}}\nChien = {{b}}\nLapin = {{c}}\nPoisson = {{d}}\naxe: à choisir\nplacer: toutes\n```",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "3..20"
+					},
+					{
+						"name": "b",
+						"expression": "3..20"
+					},
+					{
+						"name": "c",
+						"expression": "3..20"
+					},
+					{
+						"name": "d",
+						"expression": "3..20"
+					},
+					{
+						"name": "m",
+						"expression": "eval:max(a, b, c, d)"
+					}
+				],
+				"conditions": ["m > 10"],
+				"correction": {
+					"steps": [
+						"L'axe a $10$ graduations : on prend la plus petite échelle où la plus grande barre rentre.",
+						"La plus grande barre : ${{m}}$ élèves. Avec $1$ par graduation, l'axe s'arrêterait à $10$ : trop court. Avec $2$, il monte jusqu'à $20$ : tout rentre.",
+						"Chaque barre monte jusqu'à son nombre d'élèves ; une barre peut s'arrêter entre deux traits."
+					]
+				}
+			},
+			{
+				"blanks": [],
+				"statement": "Les élèves de l'école ont choisi leur sport préféré.\n\n| Sport | Nombre d'élèves |\n|---|---|\n| Football | ${{a}}$ |\n| Danse | ${{b}}$ |\n| Judo | ${{c}}$ |\n| Basket | ${{d}}$ |\n\nChoisis l'échelle de l'axe, puis construis le diagramme en barres.\n\n```barres\ntitre: Sport préféré\naxes: Sport ; Élèves\nFootball = {{a}}\nDanse = {{b}}\nJudo = {{c}}\nBasket = {{d}}\naxe: à choisir\nplacer: toutes\n```",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "8..50"
+					},
+					{
+						"name": "b",
+						"expression": "8..50"
+					},
+					{
+						"name": "c",
+						"expression": "8..50"
+					},
+					{
+						"name": "d",
+						"expression": "8..50"
+					},
+					{
+						"name": "m",
+						"expression": "eval:max(a, b, c, d)"
+					}
+				],
+				"conditions": ["m > 20"],
+				"correction": {
+					"steps": [
+						"L'axe a $10$ graduations : on prend la plus petite échelle où la plus grande barre rentre.",
+						"La plus grande barre : ${{m}}$ élèves. Avec $2$ par graduation, l'axe s'arrêterait à $20$ : trop court. Avec $5$, il monte jusqu'à $50$ : tout rentre.",
+						"Chaque barre monte jusqu'à son nombre d'élèves ; une barre peut s'arrêter entre deux traits."
+					]
+				}
+			},
+			{
+				"blanks": [],
+				"statement": "Les élèves de l'école ont choisi un atelier.\n\n| Atelier | Nombre d'élèves |\n|---|---|\n| Théâtre | ${{a}}$ |\n| Chorale | ${{b}}$ |\n| Échecs | ${{c}}$ |\n| Jardin | ${{d}}$ |\n| Dessin | ${{g}}$ |\n\nChoisis l'échelle de l'axe, puis construis le diagramme en barres.\n\n```barres\ntitre: Atelier choisi\naxes: Atelier ; Élèves\nThéâtre = {{a}}\nChorale = {{b}}\nÉchecs = {{c}}\nJardin = {{d}}\nDessin = {{g}}\naxe: à choisir\nplacer: toutes\n```",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "12..100"
+					},
+					{
+						"name": "b",
+						"expression": "12..100"
+					},
+					{
+						"name": "c",
+						"expression": "12..100"
+					},
+					{
+						"name": "d",
+						"expression": "12..100"
+					},
+					{
+						"name": "g",
+						"expression": "12..100"
+					},
+					{
+						"name": "m",
+						"expression": "eval:max(a, b, c, d, g)"
+					}
+				],
+				"conditions": ["m > 50"],
+				"correction": {
+					"steps": [
+						"L'axe a $10$ graduations : on prend la plus petite échelle où la plus grande barre rentre.",
+						"La plus grande barre : ${{m}}$ élèves. Avec $5$ par graduation, l'axe s'arrêterait à $50$ : trop court. Avec $10$, il monte jusqu'à $100$ : tout rentre.",
+						"Chaque barre monte jusqu'à son nombre d'élèves ; une barre peut s'arrêter entre deux traits."
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "draft",
+		"title": "Choisis l'échelle et construis le diagramme (nombres quelconques)",
+		"description": "Tableau des effectifs donné, nombres qui ne tombent pas tous sur un trait : choisir l'échelle (2, 5 ou 10 par graduation) puis monter toutes les barres",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["2", "17", "9", "4", "12"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "17",
+					"b": "9",
+					"c": "4",
+					"d": "12",
+					"m": "17"
+				},
+				"description": "Animaux jusqu'à 17 : échelle 2",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["5", "17", "9", "4", "12"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "17",
+					"b": "9",
+					"c": "4",
+					"d": "12",
+					"m": "17"
+				},
+				"description": "Erreur : échelle 5 (rentre, mais moins lisible)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["2", "16", "9", "4", "12"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "17",
+					"b": "9",
+					"c": "4",
+					"d": "12",
+					"m": "17"
+				},
+				"description": "Erreur : une barre au trait du dessous (16)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["5", "43", "27", "12", "31"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "43",
+					"b": "27",
+					"c": "12",
+					"d": "31",
+					"m": "43"
+				},
+				"description": "Sports jusqu'à 43 : échelle 5",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["10", "87", "54", "23", "66", "41"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "87",
+					"b": "54",
+					"c": "23",
+					"d": "66",
+					"g": "41",
+					"m": "87"
+				},
+				"description": "Ateliers jusqu'à 87 : échelle 10",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["5", "87", "54", "23", "66", "41"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "87",
+					"b": "54",
+					"c": "23",
+					"d": "66",
+					"g": "41",
+					"m": "87"
+				},
+				"description": "Erreur : échelle 5 (87 ne rentre pas)",
+				"variationIndex": 2
+			}
+		],
+		"classification_node_id": null
+	},
+	{
+		"id": "1e1e0342-0768-4529-af21-a4650fb8bbc9",
+		"type": "fill_in_blanks",
+		"options": {
+			"constraints": {
+				"spacesFromFourDigits": true
+			}
+		},
+		"precision": null,
+		"grades": ["CM1"],
+		"delay": 240,
+		"level": 4,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{n1}}"
+					},
+					{
+						"expectedAnswer": "{{n2}}"
+					},
+					{
+						"expectedAnswer": "{{n3}}"
+					},
+					{
+						"expectedAnswer": "{{n4}}"
+					},
+					{
+						"expectedAnswer": "{{n5}}"
+					},
+					{
+						"expectedAnswer": "28"
+					}
+				],
+				"statement": "On a demandé aux $28$ élèves de la classe leur sport préféré.\n\nLéa : {{if:s1==1|football|{{if:s1==2|danse|{{if:s1==3|natation|{{if:s1==4|judo|basket}}}}}}}} · Tom : {{if:s2==1|football|{{if:s2==2|danse|{{if:s2==3|natation|{{if:s2==4|judo|basket}}}}}}}} · Inès : {{if:s3==1|football|{{if:s3==2|danse|{{if:s3==3|natation|{{if:s3==4|judo|basket}}}}}}}} · Noah : {{if:s4==1|football|{{if:s4==2|danse|{{if:s4==3|natation|{{if:s4==4|judo|basket}}}}}}}} · Jade : {{if:s5==1|football|{{if:s5==2|danse|{{if:s5==3|natation|{{if:s5==4|judo|basket}}}}}}}} · Adam : {{if:s6==1|football|{{if:s6==2|danse|{{if:s6==3|natation|{{if:s6==4|judo|basket}}}}}}}} · Lina : {{if:s7==1|football|{{if:s7==2|danse|{{if:s7==3|natation|{{if:s7==4|judo|basket}}}}}}}} · Hugo : {{if:s8==1|football|{{if:s8==2|danse|{{if:s8==3|natation|{{if:s8==4|judo|basket}}}}}}}} · Zoé : {{if:s9==1|football|{{if:s9==2|danse|{{if:s9==3|natation|{{if:s9==4|judo|basket}}}}}}}} · Rayan : {{if:s10==1|football|{{if:s10==2|danse|{{if:s10==3|natation|{{if:s10==4|judo|basket}}}}}}}} · Emma : {{if:s11==1|football|{{if:s11==2|danse|{{if:s11==3|natation|{{if:s11==4|judo|basket}}}}}}}} · Sacha : {{if:s12==1|football|{{if:s12==2|danse|{{if:s12==3|natation|{{if:s12==4|judo|basket}}}}}}}} · Mila : {{if:s13==1|football|{{if:s13==2|danse|{{if:s13==3|natation|{{if:s13==4|judo|basket}}}}}}}} · Nolan : {{if:s14==1|football|{{if:s14==2|danse|{{if:s14==3|natation|{{if:s14==4|judo|basket}}}}}}}} · Chloé : {{if:s15==1|football|{{if:s15==2|danse|{{if:s15==3|natation|{{if:s15==4|judo|basket}}}}}}}} · Malo : {{if:s16==1|football|{{if:s16==2|danse|{{if:s16==3|natation|{{if:s16==4|judo|basket}}}}}}}} · Louna : {{if:s17==1|football|{{if:s17==2|danse|{{if:s17==3|natation|{{if:s17==4|judo|basket}}}}}}}} · Yanis : {{if:s18==1|football|{{if:s18==2|danse|{{if:s18==3|natation|{{if:s18==4|judo|basket}}}}}}}} · Rose : {{if:s19==1|football|{{if:s19==2|danse|{{if:s19==3|natation|{{if:s19==4|judo|basket}}}}}}}} · Ilyes : {{if:s20==1|football|{{if:s20==2|danse|{{if:s20==3|natation|{{if:s20==4|judo|basket}}}}}}}} · Anna : {{if:s21==1|football|{{if:s21==2|danse|{{if:s21==3|natation|{{if:s21==4|judo|basket}}}}}}}} · Gabin : {{if:s22==1|football|{{if:s22==2|danse|{{if:s22==3|natation|{{if:s22==4|judo|basket}}}}}}}} · Alice : {{if:s23==1|football|{{if:s23==2|danse|{{if:s23==3|natation|{{if:s23==4|judo|basket}}}}}}}} · Timéo : {{if:s24==1|football|{{if:s24==2|danse|{{if:s24==3|natation|{{if:s24==4|judo|basket}}}}}}}} · Nina : {{if:s25==1|football|{{if:s25==2|danse|{{if:s25==3|natation|{{if:s25==4|judo|basket}}}}}}}} · Liam : {{if:s26==1|football|{{if:s26==2|danse|{{if:s26==3|natation|{{if:s26==4|judo|basket}}}}}}}} · Elsa : {{if:s27==1|football|{{if:s27==2|danse|{{if:s27==3|natation|{{if:s27==4|judo|basket}}}}}}}} · Axel : {{if:s28==1|football|{{if:s28==2|danse|{{if:s28==3|natation|{{if:s28==4|judo|basket}}}}}}}}\n\nCompte, puis complète le tableau.\n\n| Sport préféré | Nombre d'élèves |\n|---|---|\n| Football | $?$ |\n| Danse | $?$ |\n| Natation | $?$ |\n| Judo | $?$ |\n| Basket | $?$ |\n| **Total** | $?$ |",
+				"variables": [
+					{
+						"name": "s1",
+						"expression": "1..5"
+					},
+					{
+						"name": "s2",
+						"expression": "1..5"
+					},
+					{
+						"name": "s3",
+						"expression": "1..5"
+					},
+					{
+						"name": "s4",
+						"expression": "1..5"
+					},
+					{
+						"name": "s5",
+						"expression": "1..5"
+					},
+					{
+						"name": "s6",
+						"expression": "1..5"
+					},
+					{
+						"name": "s7",
+						"expression": "1..5"
+					},
+					{
+						"name": "s8",
+						"expression": "1..5"
+					},
+					{
+						"name": "s9",
+						"expression": "1..5"
+					},
+					{
+						"name": "s10",
+						"expression": "1..5"
+					},
+					{
+						"name": "s11",
+						"expression": "1..5"
+					},
+					{
+						"name": "s12",
+						"expression": "1..5"
+					},
+					{
+						"name": "s13",
+						"expression": "1..5"
+					},
+					{
+						"name": "s14",
+						"expression": "1..5"
+					},
+					{
+						"name": "s15",
+						"expression": "1..5"
+					},
+					{
+						"name": "s16",
+						"expression": "1..5"
+					},
+					{
+						"name": "s17",
+						"expression": "1..5"
+					},
+					{
+						"name": "s18",
+						"expression": "1..5"
+					},
+					{
+						"name": "s19",
+						"expression": "1..5"
+					},
+					{
+						"name": "s20",
+						"expression": "1..5"
+					},
+					{
+						"name": "s21",
+						"expression": "1..5"
+					},
+					{
+						"name": "s22",
+						"expression": "1..5"
+					},
+					{
+						"name": "s23",
+						"expression": "1..5"
+					},
+					{
+						"name": "s24",
+						"expression": "1..5"
+					},
+					{
+						"name": "s25",
+						"expression": "1..5"
+					},
+					{
+						"name": "s26",
+						"expression": "1..5"
+					},
+					{
+						"name": "s27",
+						"expression": "1..5"
+					},
+					{
+						"name": "s28",
+						"expression": "1..5"
+					},
+					{
+						"name": "n1",
+						"expression": "eval:(s1-2)*(s1-3)*(s1-4)*(s1-5)/(24)+(s2-2)*(s2-3)*(s2-4)*(s2-5)/(24)+(s3-2)*(s3-3)*(s3-4)*(s3-5)/(24)+(s4-2)*(s4-3)*(s4-4)*(s4-5)/(24)+(s5-2)*(s5-3)*(s5-4)*(s5-5)/(24)+(s6-2)*(s6-3)*(s6-4)*(s6-5)/(24)+(s7-2)*(s7-3)*(s7-4)*(s7-5)/(24)+(s8-2)*(s8-3)*(s8-4)*(s8-5)/(24)+(s9-2)*(s9-3)*(s9-4)*(s9-5)/(24)+(s10-2)*(s10-3)*(s10-4)*(s10-5)/(24)+(s11-2)*(s11-3)*(s11-4)*(s11-5)/(24)+(s12-2)*(s12-3)*(s12-4)*(s12-5)/(24)+(s13-2)*(s13-3)*(s13-4)*(s13-5)/(24)+(s14-2)*(s14-3)*(s14-4)*(s14-5)/(24)+(s15-2)*(s15-3)*(s15-4)*(s15-5)/(24)+(s16-2)*(s16-3)*(s16-4)*(s16-5)/(24)+(s17-2)*(s17-3)*(s17-4)*(s17-5)/(24)+(s18-2)*(s18-3)*(s18-4)*(s18-5)/(24)+(s19-2)*(s19-3)*(s19-4)*(s19-5)/(24)+(s20-2)*(s20-3)*(s20-4)*(s20-5)/(24)+(s21-2)*(s21-3)*(s21-4)*(s21-5)/(24)+(s22-2)*(s22-3)*(s22-4)*(s22-5)/(24)+(s23-2)*(s23-3)*(s23-4)*(s23-5)/(24)+(s24-2)*(s24-3)*(s24-4)*(s24-5)/(24)+(s25-2)*(s25-3)*(s25-4)*(s25-5)/(24)+(s26-2)*(s26-3)*(s26-4)*(s26-5)/(24)+(s27-2)*(s27-3)*(s27-4)*(s27-5)/(24)+(s28-2)*(s28-3)*(s28-4)*(s28-5)/(24)"
+					},
+					{
+						"name": "n2",
+						"expression": "eval:(s1-1)*(s1-3)*(s1-4)*(s1-5)/(-6)+(s2-1)*(s2-3)*(s2-4)*(s2-5)/(-6)+(s3-1)*(s3-3)*(s3-4)*(s3-5)/(-6)+(s4-1)*(s4-3)*(s4-4)*(s4-5)/(-6)+(s5-1)*(s5-3)*(s5-4)*(s5-5)/(-6)+(s6-1)*(s6-3)*(s6-4)*(s6-5)/(-6)+(s7-1)*(s7-3)*(s7-4)*(s7-5)/(-6)+(s8-1)*(s8-3)*(s8-4)*(s8-5)/(-6)+(s9-1)*(s9-3)*(s9-4)*(s9-5)/(-6)+(s10-1)*(s10-3)*(s10-4)*(s10-5)/(-6)+(s11-1)*(s11-3)*(s11-4)*(s11-5)/(-6)+(s12-1)*(s12-3)*(s12-4)*(s12-5)/(-6)+(s13-1)*(s13-3)*(s13-4)*(s13-5)/(-6)+(s14-1)*(s14-3)*(s14-4)*(s14-5)/(-6)+(s15-1)*(s15-3)*(s15-4)*(s15-5)/(-6)+(s16-1)*(s16-3)*(s16-4)*(s16-5)/(-6)+(s17-1)*(s17-3)*(s17-4)*(s17-5)/(-6)+(s18-1)*(s18-3)*(s18-4)*(s18-5)/(-6)+(s19-1)*(s19-3)*(s19-4)*(s19-5)/(-6)+(s20-1)*(s20-3)*(s20-4)*(s20-5)/(-6)+(s21-1)*(s21-3)*(s21-4)*(s21-5)/(-6)+(s22-1)*(s22-3)*(s22-4)*(s22-5)/(-6)+(s23-1)*(s23-3)*(s23-4)*(s23-5)/(-6)+(s24-1)*(s24-3)*(s24-4)*(s24-5)/(-6)+(s25-1)*(s25-3)*(s25-4)*(s25-5)/(-6)+(s26-1)*(s26-3)*(s26-4)*(s26-5)/(-6)+(s27-1)*(s27-3)*(s27-4)*(s27-5)/(-6)+(s28-1)*(s28-3)*(s28-4)*(s28-5)/(-6)"
+					},
+					{
+						"name": "n3",
+						"expression": "eval:(s1-1)*(s1-2)*(s1-4)*(s1-5)/(4)+(s2-1)*(s2-2)*(s2-4)*(s2-5)/(4)+(s3-1)*(s3-2)*(s3-4)*(s3-5)/(4)+(s4-1)*(s4-2)*(s4-4)*(s4-5)/(4)+(s5-1)*(s5-2)*(s5-4)*(s5-5)/(4)+(s6-1)*(s6-2)*(s6-4)*(s6-5)/(4)+(s7-1)*(s7-2)*(s7-4)*(s7-5)/(4)+(s8-1)*(s8-2)*(s8-4)*(s8-5)/(4)+(s9-1)*(s9-2)*(s9-4)*(s9-5)/(4)+(s10-1)*(s10-2)*(s10-4)*(s10-5)/(4)+(s11-1)*(s11-2)*(s11-4)*(s11-5)/(4)+(s12-1)*(s12-2)*(s12-4)*(s12-5)/(4)+(s13-1)*(s13-2)*(s13-4)*(s13-5)/(4)+(s14-1)*(s14-2)*(s14-4)*(s14-5)/(4)+(s15-1)*(s15-2)*(s15-4)*(s15-5)/(4)+(s16-1)*(s16-2)*(s16-4)*(s16-5)/(4)+(s17-1)*(s17-2)*(s17-4)*(s17-5)/(4)+(s18-1)*(s18-2)*(s18-4)*(s18-5)/(4)+(s19-1)*(s19-2)*(s19-4)*(s19-5)/(4)+(s20-1)*(s20-2)*(s20-4)*(s20-5)/(4)+(s21-1)*(s21-2)*(s21-4)*(s21-5)/(4)+(s22-1)*(s22-2)*(s22-4)*(s22-5)/(4)+(s23-1)*(s23-2)*(s23-4)*(s23-5)/(4)+(s24-1)*(s24-2)*(s24-4)*(s24-5)/(4)+(s25-1)*(s25-2)*(s25-4)*(s25-5)/(4)+(s26-1)*(s26-2)*(s26-4)*(s26-5)/(4)+(s27-1)*(s27-2)*(s27-4)*(s27-5)/(4)+(s28-1)*(s28-2)*(s28-4)*(s28-5)/(4)"
+					},
+					{
+						"name": "n4",
+						"expression": "eval:(s1-1)*(s1-2)*(s1-3)*(s1-5)/(-6)+(s2-1)*(s2-2)*(s2-3)*(s2-5)/(-6)+(s3-1)*(s3-2)*(s3-3)*(s3-5)/(-6)+(s4-1)*(s4-2)*(s4-3)*(s4-5)/(-6)+(s5-1)*(s5-2)*(s5-3)*(s5-5)/(-6)+(s6-1)*(s6-2)*(s6-3)*(s6-5)/(-6)+(s7-1)*(s7-2)*(s7-3)*(s7-5)/(-6)+(s8-1)*(s8-2)*(s8-3)*(s8-5)/(-6)+(s9-1)*(s9-2)*(s9-3)*(s9-5)/(-6)+(s10-1)*(s10-2)*(s10-3)*(s10-5)/(-6)+(s11-1)*(s11-2)*(s11-3)*(s11-5)/(-6)+(s12-1)*(s12-2)*(s12-3)*(s12-5)/(-6)+(s13-1)*(s13-2)*(s13-3)*(s13-5)/(-6)+(s14-1)*(s14-2)*(s14-3)*(s14-5)/(-6)+(s15-1)*(s15-2)*(s15-3)*(s15-5)/(-6)+(s16-1)*(s16-2)*(s16-3)*(s16-5)/(-6)+(s17-1)*(s17-2)*(s17-3)*(s17-5)/(-6)+(s18-1)*(s18-2)*(s18-3)*(s18-5)/(-6)+(s19-1)*(s19-2)*(s19-3)*(s19-5)/(-6)+(s20-1)*(s20-2)*(s20-3)*(s20-5)/(-6)+(s21-1)*(s21-2)*(s21-3)*(s21-5)/(-6)+(s22-1)*(s22-2)*(s22-3)*(s22-5)/(-6)+(s23-1)*(s23-2)*(s23-3)*(s23-5)/(-6)+(s24-1)*(s24-2)*(s24-3)*(s24-5)/(-6)+(s25-1)*(s25-2)*(s25-3)*(s25-5)/(-6)+(s26-1)*(s26-2)*(s26-3)*(s26-5)/(-6)+(s27-1)*(s27-2)*(s27-3)*(s27-5)/(-6)+(s28-1)*(s28-2)*(s28-3)*(s28-5)/(-6)"
+					},
+					{
+						"name": "n5",
+						"expression": "eval:(s1-1)*(s1-2)*(s1-3)*(s1-4)/(24)+(s2-1)*(s2-2)*(s2-3)*(s2-4)/(24)+(s3-1)*(s3-2)*(s3-3)*(s3-4)/(24)+(s4-1)*(s4-2)*(s4-3)*(s4-4)/(24)+(s5-1)*(s5-2)*(s5-3)*(s5-4)/(24)+(s6-1)*(s6-2)*(s6-3)*(s6-4)/(24)+(s7-1)*(s7-2)*(s7-3)*(s7-4)/(24)+(s8-1)*(s8-2)*(s8-3)*(s8-4)/(24)+(s9-1)*(s9-2)*(s9-3)*(s9-4)/(24)+(s10-1)*(s10-2)*(s10-3)*(s10-4)/(24)+(s11-1)*(s11-2)*(s11-3)*(s11-4)/(24)+(s12-1)*(s12-2)*(s12-3)*(s12-4)/(24)+(s13-1)*(s13-2)*(s13-3)*(s13-4)/(24)+(s14-1)*(s14-2)*(s14-3)*(s14-4)/(24)+(s15-1)*(s15-2)*(s15-3)*(s15-4)/(24)+(s16-1)*(s16-2)*(s16-3)*(s16-4)/(24)+(s17-1)*(s17-2)*(s17-3)*(s17-4)/(24)+(s18-1)*(s18-2)*(s18-3)*(s18-4)/(24)+(s19-1)*(s19-2)*(s19-3)*(s19-4)/(24)+(s20-1)*(s20-2)*(s20-3)*(s20-4)/(24)+(s21-1)*(s21-2)*(s21-3)*(s21-4)/(24)+(s22-1)*(s22-2)*(s22-3)*(s22-4)/(24)+(s23-1)*(s23-2)*(s23-3)*(s23-4)/(24)+(s24-1)*(s24-2)*(s24-3)*(s24-4)/(24)+(s25-1)*(s25-2)*(s25-3)*(s25-4)/(24)+(s26-1)*(s26-2)*(s26-3)*(s26-4)/(24)+(s27-1)*(s27-2)*(s27-3)*(s27-4)/(24)+(s28-1)*(s28-2)*(s28-3)*(s28-4)/(24)"
+					}
+				],
+				"correction": {
+					"steps": [
+						"On compte chaque sport, en barrant les prénoms déjà comptés : football ${{n1}}$ ; danse ${{n2}}$ ; natation ${{n3}}$ ; judo ${{n4}}$ ; basket ${{n5}}$.",
+						"Le total : ${{n1}} + {{n2}} + {{n3}} + {{n4}} + {{n5}} = \\textcolor{{{color:primary.0}}}{28}$, autant que d'élèves : aucun prénom n'est oublié ni compté deux fois."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{nf1}}"
+					},
+					{
+						"expectedAnswer": "{{ng1}}"
+					},
+					{
+						"expectedAnswer": "{{nf2}}"
+					},
+					{
+						"expectedAnswer": "{{ng2}}"
+					},
+					{
+						"expectedAnswer": "{{nf3}}"
+					},
+					{
+						"expectedAnswer": "{{ng3}}"
+					}
+				],
+				"statement": "Dix filles et dix garçons ont choisi une activité pour le mercredi.\n\nFilles : Léa : {{if:f1==1|danse|{{if:f1==2|football|natation}}}} · Inès : {{if:f2==1|danse|{{if:f2==2|football|natation}}}} · Jade : {{if:f3==1|danse|{{if:f3==2|football|natation}}}} · Lina : {{if:f4==1|danse|{{if:f4==2|football|natation}}}} · Zoé : {{if:f5==1|danse|{{if:f5==2|football|natation}}}} · Emma : {{if:f6==1|danse|{{if:f6==2|football|natation}}}} · Mila : {{if:f7==1|danse|{{if:f7==2|football|natation}}}} · Chloé : {{if:f8==1|danse|{{if:f8==2|football|natation}}}} · Louna : {{if:f9==1|danse|{{if:f9==2|football|natation}}}} · Rose : {{if:f10==1|danse|{{if:f10==2|football|natation}}}}\n\nGarçons : Tom : {{if:g1==1|danse|{{if:g1==2|football|natation}}}} · Noah : {{if:g2==1|danse|{{if:g2==2|football|natation}}}} · Adam : {{if:g3==1|danse|{{if:g3==2|football|natation}}}} · Hugo : {{if:g4==1|danse|{{if:g4==2|football|natation}}}} · Rayan : {{if:g5==1|danse|{{if:g5==2|football|natation}}}} · Sacha : {{if:g6==1|danse|{{if:g6==2|football|natation}}}} · Nolan : {{if:g7==1|danse|{{if:g7==2|football|natation}}}} · Malo : {{if:g8==1|danse|{{if:g8==2|football|natation}}}} · Yanis : {{if:g9==1|danse|{{if:g9==2|football|natation}}}} · Ilyes : {{if:g10==1|danse|{{if:g10==2|football|natation}}}}\n\nCompte, puis complète le tableau à double entrée.\n\n| Activité | Filles | Garçons |\n|---|---|---|\n| Danse | $?$ | $?$ |\n| Football | $?$ | $?$ |\n| Natation | $?$ | $?$ |",
+				"variables": [
+					{
+						"name": "f1",
+						"expression": "1..3"
+					},
+					{
+						"name": "f2",
+						"expression": "1..3"
+					},
+					{
+						"name": "f3",
+						"expression": "1..3"
+					},
+					{
+						"name": "f4",
+						"expression": "1..3"
+					},
+					{
+						"name": "f5",
+						"expression": "1..3"
+					},
+					{
+						"name": "f6",
+						"expression": "1..3"
+					},
+					{
+						"name": "f7",
+						"expression": "1..3"
+					},
+					{
+						"name": "f8",
+						"expression": "1..3"
+					},
+					{
+						"name": "f9",
+						"expression": "1..3"
+					},
+					{
+						"name": "f10",
+						"expression": "1..3"
+					},
+					{
+						"name": "g1",
+						"expression": "1..3"
+					},
+					{
+						"name": "g2",
+						"expression": "1..3"
+					},
+					{
+						"name": "g3",
+						"expression": "1..3"
+					},
+					{
+						"name": "g4",
+						"expression": "1..3"
+					},
+					{
+						"name": "g5",
+						"expression": "1..3"
+					},
+					{
+						"name": "g6",
+						"expression": "1..3"
+					},
+					{
+						"name": "g7",
+						"expression": "1..3"
+					},
+					{
+						"name": "g8",
+						"expression": "1..3"
+					},
+					{
+						"name": "g9",
+						"expression": "1..3"
+					},
+					{
+						"name": "g10",
+						"expression": "1..3"
+					},
+					{
+						"name": "nf1",
+						"expression": "eval:(f1-2)*(f1-3)/(2)+(f2-2)*(f2-3)/(2)+(f3-2)*(f3-3)/(2)+(f4-2)*(f4-3)/(2)+(f5-2)*(f5-3)/(2)+(f6-2)*(f6-3)/(2)+(f7-2)*(f7-3)/(2)+(f8-2)*(f8-3)/(2)+(f9-2)*(f9-3)/(2)+(f10-2)*(f10-3)/(2)"
+					},
+					{
+						"name": "nf2",
+						"expression": "eval:(f1-1)*(f1-3)/(-1)+(f2-1)*(f2-3)/(-1)+(f3-1)*(f3-3)/(-1)+(f4-1)*(f4-3)/(-1)+(f5-1)*(f5-3)/(-1)+(f6-1)*(f6-3)/(-1)+(f7-1)*(f7-3)/(-1)+(f8-1)*(f8-3)/(-1)+(f9-1)*(f9-3)/(-1)+(f10-1)*(f10-3)/(-1)"
+					},
+					{
+						"name": "nf3",
+						"expression": "eval:(f1-1)*(f1-2)/(2)+(f2-1)*(f2-2)/(2)+(f3-1)*(f3-2)/(2)+(f4-1)*(f4-2)/(2)+(f5-1)*(f5-2)/(2)+(f6-1)*(f6-2)/(2)+(f7-1)*(f7-2)/(2)+(f8-1)*(f8-2)/(2)+(f9-1)*(f9-2)/(2)+(f10-1)*(f10-2)/(2)"
+					},
+					{
+						"name": "ng1",
+						"expression": "eval:(g1-2)*(g1-3)/(2)+(g2-2)*(g2-3)/(2)+(g3-2)*(g3-3)/(2)+(g4-2)*(g4-3)/(2)+(g5-2)*(g5-3)/(2)+(g6-2)*(g6-3)/(2)+(g7-2)*(g7-3)/(2)+(g8-2)*(g8-3)/(2)+(g9-2)*(g9-3)/(2)+(g10-2)*(g10-3)/(2)"
+					},
+					{
+						"name": "ng2",
+						"expression": "eval:(g1-1)*(g1-3)/(-1)+(g2-1)*(g2-3)/(-1)+(g3-1)*(g3-3)/(-1)+(g4-1)*(g4-3)/(-1)+(g5-1)*(g5-3)/(-1)+(g6-1)*(g6-3)/(-1)+(g7-1)*(g7-3)/(-1)+(g8-1)*(g8-3)/(-1)+(g9-1)*(g9-3)/(-1)+(g10-1)*(g10-3)/(-1)"
+					},
+					{
+						"name": "ng3",
+						"expression": "eval:(g1-1)*(g1-2)/(2)+(g2-1)*(g2-2)/(2)+(g3-1)*(g3-2)/(2)+(g4-1)*(g4-2)/(2)+(g5-1)*(g5-2)/(2)+(g6-1)*(g6-2)/(2)+(g7-1)*(g7-2)/(2)+(g8-1)*(g8-2)/(2)+(g9-1)*(g9-2)/(2)+(g10-1)*(g10-2)/(2)"
+					}
+				],
+				"correction": {
+					"steps": [
+						"Une case = une activité (la ligne) et un groupe (la colonne) : on compte les filles qui ont choisi chaque activité, puis les garçons.",
+						"Filles : danse ${{nf1}}$, football ${{nf2}}$, natation ${{nf3}}$ ; garçons : danse ${{ng1}}$, football ${{ng2}}$, natation ${{ng3}}$.",
+						"On vérifie : ${{nf1}} + {{nf2}} + {{nf3}} = 10$ filles et ${{ng1}} + {{ng2}} + {{ng3}} = 10$ garçons."
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "draft",
+		"title": "Range un relevé dans un tableau",
+		"description": "Compter un relevé de 28 réponses (5 sports) et remplir les effectifs avec le total ; ou un relevé de deux caractères (filles / garçons, 3 activités) et remplir un tableau à double entrée",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["10", "7", "4", "4", "3", "28"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"n1": "10",
+					"n2": "7",
+					"n3": "4",
+					"n4": "4",
+					"n5": "3",
+					"s1": "1",
+					"s2": "2",
+					"s3": "1",
+					"s4": "3",
+					"s5": "5",
+					"s6": "1",
+					"s7": "2",
+					"s8": "4",
+					"s9": "1",
+					"s10": "3",
+					"s11": "2",
+					"s12": "1",
+					"s13": "5",
+					"s14": "4",
+					"s15": "2",
+					"s16": "1",
+					"s17": "3",
+					"s18": "1",
+					"s19": "2",
+					"s20": "4",
+					"s21": "1",
+					"s22": "5",
+					"s23": "2",
+					"s24": "3",
+					"s25": "1",
+					"s26": "4",
+					"s27": "2",
+					"s28": "1"
+				},
+				"description": "28 réponses : 10, 7, 4, 4, 3, total 28",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["9", "7", "4", "4", "3", "28"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"n1": "10",
+					"n2": "7",
+					"n3": "4",
+					"n4": "4",
+					"n5": "3",
+					"s1": "1",
+					"s2": "2",
+					"s3": "1",
+					"s4": "3",
+					"s5": "5",
+					"s6": "1",
+					"s7": "2",
+					"s8": "4",
+					"s9": "1",
+					"s10": "3",
+					"s11": "2",
+					"s12": "1",
+					"s13": "5",
+					"s14": "4",
+					"s15": "2",
+					"s16": "1",
+					"s17": "3",
+					"s18": "1",
+					"s19": "2",
+					"s20": "4",
+					"s21": "1",
+					"s22": "5",
+					"s23": "2",
+					"s24": "3",
+					"s25": "1",
+					"s26": "4",
+					"s27": "2",
+					"s28": "1"
+				},
+				"description": "Erreur : un football oublié",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["5", "2", "2", "6", "3", "2"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"f1": "1",
+					"f2": "1",
+					"f3": "3",
+					"f4": "2",
+					"f5": "1",
+					"f6": "3",
+					"f7": "1",
+					"f8": "2",
+					"f9": "3",
+					"g1": "2",
+					"g2": "2",
+					"g3": "3",
+					"g4": "1",
+					"g5": "2",
+					"g6": "2",
+					"g7": "3",
+					"g8": "2",
+					"g9": "1",
+					"f10": "1",
+					"g10": "2",
+					"nf1": "5",
+					"nf2": "2",
+					"nf3": "3",
+					"ng1": "2",
+					"ng2": "6",
+					"ng3": "2"
+				},
+				"description": "Double entrée : 5, 2, 2, 6, 3, 2",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["2", "5", "6", "2", "2", "3"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"f1": "1",
+					"f2": "1",
+					"f3": "3",
+					"f4": "2",
+					"f5": "1",
+					"f6": "3",
+					"f7": "1",
+					"f8": "2",
+					"f9": "3",
+					"g1": "2",
+					"g2": "2",
+					"g3": "3",
+					"g4": "1",
+					"g5": "2",
+					"g6": "2",
+					"g7": "3",
+					"g8": "2",
+					"g9": "1",
+					"f10": "1",
+					"g10": "2",
+					"nf1": "5",
+					"nf2": "2",
+					"nf3": "3",
+					"ng1": "2",
+					"ng2": "6",
+					"ng3": "2"
+				},
+				"description": "Erreur : filles et garçons inversés",
+				"variationIndex": 1
+			}
+		],
+		"classification_node_id": null
+	},
+	{
+		"id": "40dcbbcc-c71e-46e4-9d33-4b15f126f6da",
+		"type": "fill_in_blanks",
+		"options": {
+			"constraints": {
+				"spacesFromFourDigits": true
+			}
+		},
+		"precision": null,
+		"grades": ["CM1"],
+		"delay": 90,
+		"level": 5,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{k}}"
+					}
+				],
+				"statement": "Ce tableau donne le nombre d'habitants de cinq villes.\n\n| Ville | Nombre d'habitants |\n|---|---|\n| Brumeval | ${{p1}}$ |\n| Castelroc | ${{p2}}$ |\n| Pontaval | ${{p3}}$ |\n| Mirelande | ${{p4}}$ |\n| Sablonnière | ${{p5}}$ |\n\nQuelle ville est la plus peuplée ?\n\n```choix\nmelanger: non\n- Brumeval\n- Castelroc\n- Pontaval\n- Mirelande\n- Sablonnière\n```",
+				"variables": [
+					{
+						"name": "b1",
+						"expression": "10000..799999"
+					},
+					{
+						"name": "b2",
+						"expression": "10000..799999"
+					},
+					{
+						"name": "b3",
+						"expression": "10000..799999"
+					},
+					{
+						"name": "b4",
+						"expression": "10000..799999"
+					},
+					{
+						"name": "b5",
+						"expression": "10000..799999"
+					},
+					{
+						"name": "c",
+						"expression": "800000..999999"
+					},
+					{
+						"name": "k",
+						"expression": "0..4"
+					},
+					{
+						"name": "p1",
+						"expression": "eval:b1+(c-b1)*((k-1)*(k-2)*(k-3)*(k-4))/(24)"
+					},
+					{
+						"name": "p2",
+						"expression": "eval:b2+(c-b2)*((k-0)*(k-2)*(k-3)*(k-4))/(-6)"
+					},
+					{
+						"name": "p3",
+						"expression": "eval:b3+(c-b3)*((k-0)*(k-1)*(k-3)*(k-4))/(4)"
+					},
+					{
+						"name": "p4",
+						"expression": "eval:b4+(c-b4)*((k-0)*(k-1)*(k-2)*(k-4))/(-6)"
+					},
+					{
+						"name": "p5",
+						"expression": "eval:b5+(c-b5)*((k-0)*(k-1)*(k-2)*(k-3))/(24)"
+					}
+				],
+				"correction": {
+					"steps": [
+						"La plus peuplée a le plus grand nombre d'habitants : on compare les nombres, d'abord leur nombre de chiffres, puis chiffre par chiffre depuis la gauche.",
+						"Le plus grand : ${{c}}$, c'est {{if:k==0|Brumeval|{{if:k==1|Castelroc|{{if:k==2|Pontaval|{{if:k==3|Mirelande|Sablonnière}}}}}}}}."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{k}}"
+					}
+				],
+				"statement": "Ce tableau donne le nombre d'habitants de cinq villes.\n\n| Ville | Nombre d'habitants |\n|---|---|\n| Brumeval | ${{p1}}$ |\n| Castelroc | ${{p2}}$ |\n| Pontaval | ${{p3}}$ |\n| Mirelande | ${{p4}}$ |\n| Sablonnière | ${{p5}}$ |\n\nQuelle ville est la moins peuplée ?\n\n```choix\nmelanger: non\n- Brumeval\n- Castelroc\n- Pontaval\n- Mirelande\n- Sablonnière\n```",
+				"variables": [
+					{
+						"name": "b1",
+						"expression": "200000..999999"
+					},
+					{
+						"name": "b2",
+						"expression": "200000..999999"
+					},
+					{
+						"name": "b3",
+						"expression": "200000..999999"
+					},
+					{
+						"name": "b4",
+						"expression": "200000..999999"
+					},
+					{
+						"name": "b5",
+						"expression": "200000..999999"
+					},
+					{
+						"name": "c",
+						"expression": "10000..99999"
+					},
+					{
+						"name": "k",
+						"expression": "0..4"
+					},
+					{
+						"name": "p1",
+						"expression": "eval:b1+(c-b1)*((k-1)*(k-2)*(k-3)*(k-4))/(24)"
+					},
+					{
+						"name": "p2",
+						"expression": "eval:b2+(c-b2)*((k-0)*(k-2)*(k-3)*(k-4))/(-6)"
+					},
+					{
+						"name": "p3",
+						"expression": "eval:b3+(c-b3)*((k-0)*(k-1)*(k-3)*(k-4))/(4)"
+					},
+					{
+						"name": "p4",
+						"expression": "eval:b4+(c-b4)*((k-0)*(k-1)*(k-2)*(k-4))/(-6)"
+					},
+					{
+						"name": "p5",
+						"expression": "eval:b5+(c-b5)*((k-0)*(k-1)*(k-2)*(k-3))/(24)"
+					}
+				],
+				"correction": {
+					"steps": [
+						"La moins peuplée a le plus petit nombre d'habitants : un nombre de 5 chiffres est plus petit qu'un nombre de 6 chiffres.",
+						"Le plus petit : ${{c}}$, c'est {{if:k==0|Brumeval|{{if:k==1|Castelroc|{{if:k==2|Pontaval|{{if:k==3|Mirelande|Sablonnière}}}}}}}}."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{d}}"
+					}
+				],
+				"statement": "Ce tableau donne le nombre d'habitants de cinq villes.\n\n| Ville | Nombre d'habitants |\n|---|---|\n| Brumeval | ${{p1}}$ |\n| Castelroc | ${{p2}}$ |\n| Pontaval | ${{p3}}$ |\n| Mirelande | ${{p4}}$ |\n| Sablonnière | ${{p5}}$ |\n\nCombien {{if:k==0|Brumeval|{{if:k==1|Castelroc|{{if:k==2|Pontaval|{{if:k==3|Mirelande|Sablonnière}}}}}}}} a-t-elle d'habitants de plus que {{if:k==0|Castelroc|{{if:k==1|Pontaval|{{if:k==2|Mirelande|{{if:k==3|Sablonnière|Brumeval}}}}}}}} ?\n\n$?$ habitants",
+				"variables": [
+					{
+						"name": "p1",
+						"expression": "10000..999999"
+					},
+					{
+						"name": "p2",
+						"expression": "10000..999999"
+					},
+					{
+						"name": "p3",
+						"expression": "10000..999999"
+					},
+					{
+						"name": "p4",
+						"expression": "10000..999999"
+					},
+					{
+						"name": "p5",
+						"expression": "10000..999999"
+					},
+					{
+						"name": "k",
+						"expression": "0..4"
+					},
+					{
+						"name": "x",
+						"expression": "eval:(p1)*((k-1)*(k-2)*(k-3)*(k-4))/(24)+(p2)*((k-0)*(k-2)*(k-3)*(k-4))/(-6)+(p3)*((k-0)*(k-1)*(k-3)*(k-4))/(4)+(p4)*((k-0)*(k-1)*(k-2)*(k-4))/(-6)+(p5)*((k-0)*(k-1)*(k-2)*(k-3))/(24)"
+					},
+					{
+						"name": "y",
+						"expression": "eval:(p2)*((k-1)*(k-2)*(k-3)*(k-4))/(24)+(p3)*((k-0)*(k-2)*(k-3)*(k-4))/(-6)+(p4)*((k-0)*(k-1)*(k-3)*(k-4))/(4)+(p5)*((k-0)*(k-1)*(k-2)*(k-4))/(-6)+(p1)*((k-0)*(k-1)*(k-2)*(k-3))/(24)"
+					},
+					{
+						"name": "d",
+						"expression": "eval:x-y"
+					}
+				],
+				"conditions": ["x > y"],
+				"correction": {
+					"steps": [
+						"On lit les deux nombres : {{if:k==0|Brumeval|{{if:k==1|Castelroc|{{if:k==2|Pontaval|{{if:k==3|Mirelande|Sablonnière}}}}}}}} ${{x}}$, {{if:k==0|Castelroc|{{if:k==1|Pontaval|{{if:k==2|Mirelande|{{if:k==3|Sablonnière|Brumeval}}}}}}}} ${{y}}$.",
+						"« Combien de plus » : on calcule l'écart, ${{x}} - {{y}} = \\textcolor{{{color:primary.0}}}{{{d}}}$ habitants."
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "draft",
+		"title": "Que dit le tableau des villes ?",
+		"description": "Villes inventées : la plus peuplée, la moins peuplée (case choix), combien d'habitants de plus qu'une autre ville",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["3"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"c": "905400",
+					"k": "3",
+					"b1": "245318",
+					"b2": "87650",
+					"b3": "512004",
+					"b4": "31872",
+					"b5": "698120",
+					"p1": "245318",
+					"p2": "87650",
+					"p3": "512004",
+					"p4": "905400",
+					"p5": "698120"
+				},
+				"description": "La plus peuplée : Mirelande (rang 3)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["4"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"c": "905400",
+					"k": "3",
+					"b1": "245318",
+					"b2": "87650",
+					"b3": "512004",
+					"b4": "31872",
+					"b5": "698120",
+					"p1": "245318",
+					"p2": "87650",
+					"p3": "512004",
+					"p4": "905400",
+					"p5": "698120"
+				},
+				"description": "Erreur : la dernière ligne",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"c": "45200",
+					"k": "0",
+					"b1": "245318",
+					"b2": "870650",
+					"b3": "512004",
+					"b4": "310872",
+					"b5": "698120",
+					"p1": "45200",
+					"p2": "870650",
+					"p3": "512004",
+					"p4": "310872",
+					"p5": "698120"
+				},
+				"description": "La moins peuplée : Brumeval",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["480 132"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"d": "480132",
+					"k": "2",
+					"x": "512004",
+					"y": "31872",
+					"p1": "245318",
+					"p2": "87650",
+					"p3": "512004",
+					"p4": "31872",
+					"p5": "698120"
+				},
+				"description": "Pontaval − Mirelande : 512 004 − 31 872 = 480 132",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["543 876"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"d": "480132",
+					"k": "2",
+					"x": "512004",
+					"y": "31872",
+					"p1": "245318",
+					"p2": "87650",
+					"p3": "512004",
+					"p4": "31872",
+					"p5": "698120"
+				},
+				"description": "Erreur : la somme",
+				"variationIndex": 2
+			}
+		],
+		"classification_node_id": null
+	},
+	{
+		"id": "5291dc9f-a66d-46fa-8f0a-ccbdca44f35f",
+		"type": "fill_in_blanks",
+		"options": {
+			"constraints": {
+				"spacesFromFourDigits": true
+			}
+		},
+		"precision": null,
+		"grades": ["CM1"],
+		"delay": 90,
+		"level": 1,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{n}}"
+					}
+				],
+				"statement": "On a relevé la température toutes les deux heures, de $8$ h à $18$ h.\n\n```courbe\nx: 6 ; 20\ny: 0 ; 30\ngrille: 2 ; 2\naxes: x = Heure (h) ; y = Température (°C)\ndonnées: (8 ; {{t0}}) ; (10 ; {{t1}}) ; (12 ; {{t2}}) ; (14 ; {{t3}}) ; (16 ; {{t4}}) ; (18 ; {{t5}})\ntaille: moyenne\n```\n\nQuelle température faisait-il à ${{eval:8+2*k}}$ h ?\n\n$?$ °C",
+				"variables": [
+					{
+						"name": "u0",
+						"expression": "2..5"
+					},
+					{
+						"name": "d1",
+						"expression": "1..3"
+					},
+					{
+						"name": "d2",
+						"expression": "1..3"
+					},
+					{
+						"name": "d3",
+						"expression": "0..2"
+					},
+					{
+						"name": "d4",
+						"expression": "1..2"
+					},
+					{
+						"name": "d5",
+						"expression": "1..2"
+					},
+					{
+						"name": "t0",
+						"expression": "eval:2*u0"
+					},
+					{
+						"name": "t1",
+						"expression": "eval:t0+2*d1"
+					},
+					{
+						"name": "t2",
+						"expression": "eval:t1+2*d2"
+					},
+					{
+						"name": "t3",
+						"expression": "eval:t2+2*d3"
+					},
+					{
+						"name": "t4",
+						"expression": "eval:t3-2*d4"
+					},
+					{
+						"name": "t5",
+						"expression": "eval:t4-2*d5"
+					},
+					{
+						"name": "k",
+						"expression": "0..5"
+					},
+					{
+						"name": "n",
+						"expression": "eval:(t0)*((k-1)*(k-2)*(k-3)*(k-4)*(k-5))/(-120)+(t1)*((k-0)*(k-2)*(k-3)*(k-4)*(k-5))/(24)+(t2)*((k-0)*(k-1)*(k-3)*(k-4)*(k-5))/(-12)+(t3)*((k-0)*(k-1)*(k-2)*(k-4)*(k-5))/(12)+(t4)*((k-0)*(k-1)*(k-2)*(k-3)*(k-5))/(-24)+(t5)*((k-0)*(k-1)*(k-2)*(k-3)*(k-4))/(120)"
+					}
+				],
+				"correction": {
+					"steps": [
+						"On part de ${{eval:8+2*k}}$ h sur l'axe horizontal, on monte jusqu'au point de la courbe, puis on lit la température sur l'axe vertical (de $2$ en $2$ °C).",
+						"À ${{eval:8+2*k}}$ h, il faisait $\\textcolor{{{color:primary.0}}}{{{n}}}$ °C."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{n}}"
+					}
+				],
+				"statement": "On a relevé la température toutes les heures, de $8$ h à $18$ h.\n\n```courbe\nx: 7 ; 19\ny: 0 ; 22\ngrille: 1 ; 1\naxes: x = Heure (h) ; y = Température (°C)\ndonnées: (8 ; {{t0}}) ; (9 ; {{t1}}) ; (10 ; {{t2}}) ; (11 ; {{t3}}) ; (12 ; {{t4}}) ; (13 ; {{t5}}) ; (14 ; {{t6}}) ; (15 ; {{t7}}) ; (16 ; {{t8}}) ; (17 ; {{t9}}) ; (18 ; {{t10}})\ntaille: moyenne\n```\n\nQuelle température faisait-il à ${{eval:8+k}}$ h ?\n\n$?$ °C",
+				"variables": [
+					{
+						"name": "t0",
+						"expression": "5..9"
+					},
+					{
+						"name": "d1",
+						"expression": "0..2"
+					},
+					{
+						"name": "d2",
+						"expression": "0..2"
+					},
+					{
+						"name": "d3",
+						"expression": "0..2"
+					},
+					{
+						"name": "d4",
+						"expression": "0..2"
+					},
+					{
+						"name": "d5",
+						"expression": "0..2"
+					},
+					{
+						"name": "d6",
+						"expression": "0..2"
+					},
+					{
+						"name": "d7",
+						"expression": "0..1"
+					},
+					{
+						"name": "d8",
+						"expression": "0..1"
+					},
+					{
+						"name": "d9",
+						"expression": "0..1"
+					},
+					{
+						"name": "d10",
+						"expression": "0..1"
+					},
+					{
+						"name": "t1",
+						"expression": "eval:t0+d1"
+					},
+					{
+						"name": "t2",
+						"expression": "eval:t1+d2"
+					},
+					{
+						"name": "t3",
+						"expression": "eval:t2+d3"
+					},
+					{
+						"name": "t4",
+						"expression": "eval:t3+d4"
+					},
+					{
+						"name": "t5",
+						"expression": "eval:t4+d5"
+					},
+					{
+						"name": "t6",
+						"expression": "eval:t5+d6"
+					},
+					{
+						"name": "t7",
+						"expression": "eval:t6-d7"
+					},
+					{
+						"name": "t8",
+						"expression": "eval:t7-d8"
+					},
+					{
+						"name": "t9",
+						"expression": "eval:t8-d9"
+					},
+					{
+						"name": "t10",
+						"expression": "eval:t9-d10"
+					},
+					{
+						"name": "k",
+						"expression": "1..10"
+					},
+					{
+						"name": "n",
+						"expression": "eval:(t0)*((k-1)*(k-2)*(k-3)*(k-4)*(k-5)*(k-6)*(k-7)*(k-8)*(k-9)*(k-10))/(3628800)+(t1)*((k-0)*(k-2)*(k-3)*(k-4)*(k-5)*(k-6)*(k-7)*(k-8)*(k-9)*(k-10))/(-362880)+(t2)*((k-0)*(k-1)*(k-3)*(k-4)*(k-5)*(k-6)*(k-7)*(k-8)*(k-9)*(k-10))/(80640)+(t3)*((k-0)*(k-1)*(k-2)*(k-4)*(k-5)*(k-6)*(k-7)*(k-8)*(k-9)*(k-10))/(-30240)+(t4)*((k-0)*(k-1)*(k-2)*(k-3)*(k-5)*(k-6)*(k-7)*(k-8)*(k-9)*(k-10))/(17280)+(t5)*((k-0)*(k-1)*(k-2)*(k-3)*(k-4)*(k-6)*(k-7)*(k-8)*(k-9)*(k-10))/(-14400)+(t6)*((k-0)*(k-1)*(k-2)*(k-3)*(k-4)*(k-5)*(k-7)*(k-8)*(k-9)*(k-10))/(17280)+(t7)*((k-0)*(k-1)*(k-2)*(k-3)*(k-4)*(k-5)*(k-6)*(k-8)*(k-9)*(k-10))/(-30240)+(t8)*((k-0)*(k-1)*(k-2)*(k-3)*(k-4)*(k-5)*(k-6)*(k-7)*(k-9)*(k-10))/(80640)+(t9)*((k-0)*(k-1)*(k-2)*(k-3)*(k-4)*(k-5)*(k-6)*(k-7)*(k-8)*(k-10))/(-362880)+(t10)*((k-0)*(k-1)*(k-2)*(k-3)*(k-4)*(k-5)*(k-6)*(k-7)*(k-8)*(k-9))/(3628800)"
+					}
+				],
+				"correction": {
+					"steps": [
+						"On part de ${{eval:8+k}}$ h sur l'axe horizontal, on monte jusqu'au point de la courbe, puis on lit la température sur l'axe vertical (de $1$ en $1$ °C).",
+						"À ${{eval:8+k}}$ h, il faisait $\\textcolor{{{color:primary.0}}}{{{n}}}$ °C."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{h}}"
+					}
+				],
+				"statement": "On a relevé la température toutes les deux heures, de $8$ h à $18$ h. Chaque point de la courbe est un relevé.\n\n```courbe\nx: 6 ; 20\ny: 0 ; 30\ngrille: 2 ; 2\naxes: x = Heure (h) ; y = Température (°C)\ndonnées: (8 ; {{t0}}) ; (10 ; {{t1}}) ; (12 ; {{t2}}) ; (14 ; {{t3}}) ; (16 ; {{t4}}) ; (18 ; {{t5}})\ntaille: moyenne\n```\n\nÀ quelle heure le relevé indique-t-il ${{c}}$ °C ?\n\n$?$ h",
+				"variables": [
+					{
+						"name": "u0",
+						"expression": "1..4"
+					},
+					{
+						"name": "d1",
+						"expression": "1..2"
+					},
+					{
+						"name": "d2",
+						"expression": "1..2"
+					},
+					{
+						"name": "d3",
+						"expression": "1..2"
+					},
+					{
+						"name": "d4",
+						"expression": "1..2"
+					},
+					{
+						"name": "d5",
+						"expression": "1..2"
+					},
+					{
+						"name": "t0",
+						"expression": "eval:2*u0"
+					},
+					{
+						"name": "t1",
+						"expression": "eval:t0+2*d1"
+					},
+					{
+						"name": "t2",
+						"expression": "eval:t1+2*d2"
+					},
+					{
+						"name": "t3",
+						"expression": "eval:t2+2*d3"
+					},
+					{
+						"name": "t4",
+						"expression": "eval:t3+2*d4"
+					},
+					{
+						"name": "t5",
+						"expression": "eval:t4+2*d5"
+					},
+					{
+						"name": "k",
+						"expression": "0..5"
+					},
+					{
+						"name": "c",
+						"expression": "eval:(t0)*((k-1)*(k-2)*(k-3)*(k-4)*(k-5))/(-120)+(t1)*((k-0)*(k-2)*(k-3)*(k-4)*(k-5))/(24)+(t2)*((k-0)*(k-1)*(k-3)*(k-4)*(k-5))/(-12)+(t3)*((k-0)*(k-1)*(k-2)*(k-4)*(k-5))/(12)+(t4)*((k-0)*(k-1)*(k-2)*(k-3)*(k-5))/(-24)+(t5)*((k-0)*(k-1)*(k-2)*(k-3)*(k-4))/(120)"
+					},
+					{
+						"name": "h",
+						"expression": "eval:8+2*k"
+					}
+				],
+				"correction": {
+					"steps": [
+						"On part de ${{c}}$ °C sur l'axe vertical, on suit la ligne horizontale jusqu'au point de la courbe, puis on descend lire l'heure.",
+						"Le relevé de ${{c}}$ °C : à $\\textcolor{{{color:primary.0}}}{{{h}}}$ h."
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "draft",
+		"title": "Lis la courbe des températures",
+		"description": "Relevé de la journée : la température à une heure donnée (BO : à 14 h), toutes les deux heures ou toutes les heures ; l'heure du relevé qui indique une température donnée",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["18"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"k": "3",
+					"n": "18",
+					"d1": "2",
+					"d2": "3",
+					"d3": "1",
+					"d4": "2",
+					"d5": "1",
+					"t0": "6",
+					"t1": "10",
+					"t2": "16",
+					"t3": "18",
+					"t4": "14",
+					"t5": "12",
+					"u0": "3"
+				},
+				"description": "14 h : 18 °C",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["16"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"k": "3",
+					"n": "18",
+					"d1": "2",
+					"d2": "3",
+					"d3": "1",
+					"d4": "2",
+					"d5": "1",
+					"t0": "6",
+					"t1": "10",
+					"t2": "16",
+					"t3": "18",
+					"t4": "14",
+					"t5": "12",
+					"u0": "3"
+				},
+				"description": "Erreur : le relevé de 12 h (16)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["16"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"k": "7",
+					"n": "16",
+					"d1": "1",
+					"d2": "2",
+					"d3": "2",
+					"d4": "1",
+					"d5": "2",
+					"d6": "2",
+					"d7": "1",
+					"d8": "0",
+					"d9": "1",
+					"t0": "7",
+					"t1": "8",
+					"t2": "10",
+					"t3": "12",
+					"t4": "13",
+					"t5": "15",
+					"t6": "17",
+					"t7": "16",
+					"t8": "16",
+					"t9": "15",
+					"d10": "1",
+					"t10": "14"
+				},
+				"description": "Toutes les heures, 15 h : 16 °C",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["17"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"k": "7",
+					"n": "16",
+					"d1": "1",
+					"d2": "2",
+					"d3": "2",
+					"d4": "1",
+					"d5": "2",
+					"d6": "2",
+					"d7": "1",
+					"d8": "0",
+					"d9": "1",
+					"t0": "7",
+					"t1": "8",
+					"t2": "10",
+					"t3": "12",
+					"t4": "13",
+					"t5": "15",
+					"t6": "17",
+					"t7": "16",
+					"t8": "16",
+					"t9": "15",
+					"d10": "1",
+					"t10": "14"
+				},
+				"description": "Erreur : le relevé de 14 h (17)",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["12"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"c": "10",
+					"h": "12",
+					"k": "2",
+					"d1": "2",
+					"d2": "1",
+					"d3": "2",
+					"d4": "1",
+					"d5": "2",
+					"t0": "4",
+					"t1": "8",
+					"t2": "10",
+					"t3": "14",
+					"t4": "16",
+					"t5": "20",
+					"u0": "2"
+				},
+				"description": "14 °C : à 12 h",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["14"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"c": "10",
+					"h": "12",
+					"k": "2",
+					"d1": "2",
+					"d2": "1",
+					"d3": "2",
+					"d4": "1",
+					"d5": "2",
+					"t0": "4",
+					"t1": "8",
+					"t2": "10",
+					"t3": "14",
+					"t4": "16",
+					"t5": "20",
+					"u0": "2"
+				},
+				"description": "Erreur : la température lue à la place de l'heure",
+				"variationIndex": 2
+			}
+		],
+		"classification_node_id": null
+	},
+	{
+		"id": "62389b29-78e4-4730-8434-ef6e36960083",
+		"type": "fill_in_blanks",
+		"options": {
+			"constraints": {
+				"spacesFromFourDigits": true
+			}
+		},
+		"precision": null,
+		"grades": ["CM1"],
+		"delay": 90,
+		"level": 6,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{n}}"
+					}
+				],
+				"statement": "Ce tableau donne le nombre d'enfants inscrits dans les clubs de sport de la ville.\n\n```tableau-croise\nlignes: Natation ; Football ; Danse ; Judo ; Tennis\ncolonnes: Filles ; Garçons\nNatation = {{f1}} ; {{g1}}\nFootball = {{f2}} ; {{g2}}\nDanse = {{f3}} ; {{g3}}\nJudo = {{f4}} ; {{g4}}\nTennis = {{f5}} ; {{g5}}\ncoin: Sport \\ Élèves\ntotaux: non\n```\n\nCombien de {{if:q==0|filles|garçons}} pratiquent {{if:k==0|la natation|{{if:k==1|le football|{{if:k==2|la danse|{{if:k==3|le judo|le tennis}}}}}}}} ?\n\n$?$ {{if:q==0|filles|garçons}}",
+				"variables": [
+					{
+						"name": "f1",
+						"expression": "15..240"
+					},
+					{
+						"name": "f2",
+						"expression": "15..240"
+					},
+					{
+						"name": "f3",
+						"expression": "15..240"
+					},
+					{
+						"name": "f4",
+						"expression": "15..240"
+					},
+					{
+						"name": "f5",
+						"expression": "15..240"
+					},
+					{
+						"name": "g1",
+						"expression": "15..240"
+					},
+					{
+						"name": "g2",
+						"expression": "15..240"
+					},
+					{
+						"name": "g3",
+						"expression": "15..240"
+					},
+					{
+						"name": "g4",
+						"expression": "15..240"
+					},
+					{
+						"name": "g5",
+						"expression": "15..240"
+					},
+					{
+						"name": "k",
+						"expression": "0..4"
+					},
+					{
+						"name": "q",
+						"expression": "0..1"
+					},
+					{
+						"name": "x",
+						"expression": "eval:(f1)*((k-1)*(k-2)*(k-3)*(k-4))/(24)+(f2)*((k-0)*(k-2)*(k-3)*(k-4))/(-6)+(f3)*((k-0)*(k-1)*(k-3)*(k-4))/(4)+(f4)*((k-0)*(k-1)*(k-2)*(k-4))/(-6)+(f5)*((k-0)*(k-1)*(k-2)*(k-3))/(24)"
+					},
+					{
+						"name": "y",
+						"expression": "eval:(g1)*((k-1)*(k-2)*(k-3)*(k-4))/(24)+(g2)*((k-0)*(k-2)*(k-3)*(k-4))/(-6)+(g3)*((k-0)*(k-1)*(k-3)*(k-4))/(4)+(g4)*((k-0)*(k-1)*(k-2)*(k-4))/(-6)+(g5)*((k-0)*(k-1)*(k-2)*(k-3))/(24)"
+					},
+					{
+						"name": "n",
+						"expression": "eval:x+(y-x)*q"
+					}
+				],
+				"correction": {
+					"steps": [
+						"La ligne « {{if:k==0|Natation|{{if:k==1|Football|{{if:k==2|Danse|{{if:k==3|Judo|Tennis}}}}}}}} » et la colonne « {{if:q==0|Filles|Garçons}} » : la réponse est dans la case où elles se croisent.",
+						"Cette case : $\\textcolor{{{color:primary.0}}}{{{n}}}$."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{n}}"
+					}
+				],
+				"statement": "Ce tableau donne le nombre d'enfants inscrits dans les clubs de sport de la ville, avec les totaux.\n\n```tableau-croise\nlignes: Natation ; Football ; Danse ; Judo ; Tennis\ncolonnes: Filles ; Garçons\nNatation = {{f1}} ; {{g1}}\nFootball = {{f2}} ; {{g2}}\nDanse = {{f3}} ; {{g3}}\nJudo = {{f4}} ; {{g4}}\nTennis = {{f5}} ; {{g5}}\ncoin: Sport \\ Élèves\ntotaux: oui\n```\n\nCombien d'enfants, filles et garçons, pratiquent {{if:k==0|la natation|{{if:k==1|le football|{{if:k==2|la danse|{{if:k==3|le judo|le tennis}}}}}}}} ?\n\n$?$ enfants",
+				"variables": [
+					{
+						"name": "f1",
+						"expression": "15..240"
+					},
+					{
+						"name": "f2",
+						"expression": "15..240"
+					},
+					{
+						"name": "f3",
+						"expression": "15..240"
+					},
+					{
+						"name": "f4",
+						"expression": "15..240"
+					},
+					{
+						"name": "f5",
+						"expression": "15..240"
+					},
+					{
+						"name": "g1",
+						"expression": "15..240"
+					},
+					{
+						"name": "g2",
+						"expression": "15..240"
+					},
+					{
+						"name": "g3",
+						"expression": "15..240"
+					},
+					{
+						"name": "g4",
+						"expression": "15..240"
+					},
+					{
+						"name": "g5",
+						"expression": "15..240"
+					},
+					{
+						"name": "k",
+						"expression": "0..4"
+					},
+					{
+						"name": "n",
+						"expression": "eval:(f1+g1)*((k-1)*(k-2)*(k-3)*(k-4))/(24)+(f2+g2)*((k-0)*(k-2)*(k-3)*(k-4))/(-6)+(f3+g3)*((k-0)*(k-1)*(k-3)*(k-4))/(4)+(f4+g4)*((k-0)*(k-1)*(k-2)*(k-4))/(-6)+(f5+g5)*((k-0)*(k-1)*(k-2)*(k-3))/(24)"
+					}
+				],
+				"correction": {
+					"steps": [
+						"Filles et garçons ensemble : c'est la colonne « Total », sur la ligne « {{if:k==0|Natation|{{if:k==1|Football|{{if:k==2|Danse|{{if:k==3|Judo|Tennis}}}}}}}} ».",
+						"On lit $\\textcolor{{{color:primary.0}}}{{{n}}}$ enfants (c'est bien la somme des deux cases de la ligne)."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{k}}"
+					}
+				],
+				"statement": "Ce tableau donne le nombre d'enfants inscrits dans les clubs de sport de la ville.\n\n```tableau-croise\nlignes: Natation ; Football ; Danse ; Judo ; Tennis\ncolonnes: Filles ; Garçons\nNatation = {{f1}} ; {{g1}}\nFootball = {{f2}} ; {{g2}}\nDanse = {{f3}} ; {{g3}}\nJudo = {{f4}} ; {{g4}}\nTennis = {{f5}} ; {{g5}}\ncoin: Sport \\ Élèves\ntotaux: non\n```\n\nDans quel sport y a-t-il ${{n}}$ garçons ?\n\n```choix\nmelanger: non\n- Natation\n- Football\n- Danse\n- Judo\n- Tennis\n```",
+				"variables": [
+					{
+						"name": "f1",
+						"expression": "15..240"
+					},
+					{
+						"name": "f2",
+						"expression": "15..240"
+					},
+					{
+						"name": "f3",
+						"expression": "15..240"
+					},
+					{
+						"name": "f4",
+						"expression": "15..240"
+					},
+					{
+						"name": "f5",
+						"expression": "15..240"
+					},
+					{
+						"name": "h1",
+						"expression": "15..240"
+					},
+					{
+						"name": "h2",
+						"expression": "15..240"
+					},
+					{
+						"name": "h3",
+						"expression": "15..240"
+					},
+					{
+						"name": "h4",
+						"expression": "15..240"
+					},
+					{
+						"name": "h5",
+						"expression": "15..240"
+					},
+					{
+						"name": "n",
+						"expression": "15..240"
+					},
+					{
+						"name": "k",
+						"expression": "0..4"
+					},
+					{
+						"name": "g1",
+						"expression": "eval:h1+(n-h1)*((k-1)*(k-2)*(k-3)*(k-4))/(24)"
+					},
+					{
+						"name": "g2",
+						"expression": "eval:h2+(n-h2)*((k-0)*(k-2)*(k-3)*(k-4))/(-6)"
+					},
+					{
+						"name": "g3",
+						"expression": "eval:h3+(n-h3)*((k-0)*(k-1)*(k-3)*(k-4))/(4)"
+					},
+					{
+						"name": "g4",
+						"expression": "eval:h4+(n-h4)*((k-0)*(k-1)*(k-2)*(k-4))/(-6)"
+					},
+					{
+						"name": "g5",
+						"expression": "eval:h5+(n-h5)*((k-0)*(k-1)*(k-2)*(k-3))/(24)"
+					}
+				],
+				"conditions": [
+					"(h1-n)*(h1-n) > 0",
+					"(h2-n)*(h2-n) > 0",
+					"(h3-n)*(h3-n) > 0",
+					"(h4-n)*(h4-n) > 0",
+					"(h5-n)*(h5-n) > 0",
+					"(f1-n)*(f1-n) > 0",
+					"(f2-n)*(f2-n) > 0",
+					"(f3-n)*(f3-n) > 0",
+					"(f4-n)*(f4-n) > 0",
+					"(f5-n)*(f5-n) > 0"
+				],
+				"correction": {
+					"steps": [
+						"On cherche ${{n}}$ dans la colonne « Garçons » seulement, puis on lit le sport sur sa ligne.",
+						"C'est {{if:k==0|la natation|{{if:k==1|le football|{{if:k==2|la danse|{{if:k==3|le judo|le tennis}}}}}}}}."
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "draft",
+		"title": "Lis le tableau à double entrée (cinq lignes)",
+		"description": "Clubs de sport, filles et garçons : une case (« combien de garçons pratiquent la natation ? »), la case d'un total, le sport qui a un nombre de garçons donné (case choix) ; nombres ≤ 240",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["112"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"k": "0",
+					"n": "112",
+					"q": "1",
+					"x": "128",
+					"y": "112",
+					"f1": "128",
+					"f2": "64",
+					"f3": "197",
+					"f4": "45",
+					"f5": "82",
+					"g1": "112",
+					"g2": "215",
+					"g3": "23",
+					"g4": "96",
+					"g5": "77"
+				},
+				"description": "Garçons en natation : 112",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["128"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"k": "0",
+					"n": "112",
+					"q": "1",
+					"x": "128",
+					"y": "112",
+					"f1": "128",
+					"f2": "64",
+					"f3": "197",
+					"f4": "45",
+					"f5": "82",
+					"g1": "112",
+					"g2": "215",
+					"g3": "23",
+					"g4": "96",
+					"g5": "77"
+				},
+				"description": "Erreur : la case des filles (128)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["45"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"k": "3",
+					"n": "45",
+					"q": "0",
+					"x": "45",
+					"y": "96",
+					"f1": "128",
+					"f2": "64",
+					"f3": "197",
+					"f4": "45",
+					"f5": "82",
+					"g1": "112",
+					"g2": "215",
+					"g3": "23",
+					"g4": "96",
+					"g5": "77"
+				},
+				"description": "Filles en judo : 45",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["220"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"k": "2",
+					"n": "220",
+					"f1": "128",
+					"f2": "64",
+					"f3": "197",
+					"f4": "45",
+					"f5": "82",
+					"g1": "112",
+					"g2": "215",
+					"g3": "23",
+					"g4": "96",
+					"g5": "77"
+				},
+				"description": "Total de la danse : 220",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["197"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"k": "2",
+					"n": "220",
+					"f1": "128",
+					"f2": "64",
+					"f3": "197",
+					"f4": "45",
+					"f5": "82",
+					"g1": "112",
+					"g2": "215",
+					"g3": "23",
+					"g4": "96",
+					"g5": "77"
+				},
+				"description": "Erreur : la case des filles seule",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["3"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"k": "3",
+					"n": "96",
+					"f1": "128",
+					"f2": "64",
+					"f3": "197",
+					"f4": "45",
+					"f5": "82",
+					"g1": "112",
+					"g2": "215",
+					"g3": "23",
+					"g4": "96",
+					"g5": "77",
+					"h1": "112",
+					"h2": "215",
+					"h3": "23",
+					"h4": "150",
+					"h5": "77"
+				},
+				"description": "96 garçons : le judo",
+				"variationIndex": 2
+			}
+		],
+		"classification_node_id": null
+	},
+	{
+		"id": "a434bd68-a6e8-43b4-9c36-77114bce678b",
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"grades": ["CM1"],
+		"delay": 240,
+		"level": 3,
+		"variations": [
+			{
+				"blanks": [],
+				"statement": "On a mesuré la hauteur d'une plante chaque semaine.\n\n| Point | A | B | C | D | E |\n|---|---|---|---|---|---|\n| Semaine | $1$ | $2$ | $3$ | $4$ | $5$ |\n| Hauteur (cm) | ${{h1}}$ | ${{h2}}$ | ${{h3}}$ | ${{h4}}$ | ${{h5}}$ |\n\nPlace les points A, B, C, D et E : la semaine sur l'axe horizontal, la hauteur sur l'axe vertical.\n\n```courbe\nx: 0 ; 6\ny: 0 ; 30\ngrille: 1 ; 2\naxes: x = Semaine ; y = Hauteur (cm)\nplacer: A=(1 ; {{h1}}) ; B=(2 ; {{h2}}) ; C=(3 ; {{h3}}) ; D=(4 ; {{h4}}) ; E=(5 ; {{h5}})\ntaille: moyenne\ndescription: Repère : semaine en abscisse, de 1 en 1 ; hauteur en ordonnée, de 0 à 30 cm, de 2 en 2.\n```",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..3"
+					},
+					{
+						"name": "d1",
+						"expression": "1..3"
+					},
+					{
+						"name": "d2",
+						"expression": "1..3"
+					},
+					{
+						"name": "d3",
+						"expression": "1..3"
+					},
+					{
+						"name": "d4",
+						"expression": "1..3"
+					},
+					{
+						"name": "h1",
+						"expression": "eval:2*a"
+					},
+					{
+						"name": "h2",
+						"expression": "eval:h1+2*d1"
+					},
+					{
+						"name": "h3",
+						"expression": "eval:h2+2*d2"
+					},
+					{
+						"name": "h4",
+						"expression": "eval:h3+2*d3"
+					},
+					{
+						"name": "h5",
+						"expression": "eval:h4+2*d4"
+					}
+				],
+				"correction": {
+					"steps": [
+						"Chaque colonne du tableau donne un point : on part de la valeur sur l'axe horizontal, puis on monte jusqu'à la valeur sur l'axe vertical (un carreau vaut $2$).",
+						"$A\\textcolor{{{color:primary.0}}}{(1 ; {{h1}})}$ ; $B\\textcolor{{{color:primary.0}}}{(2 ; {{h2}})}$ ; $C\\textcolor{{{color:primary.0}}}{(3 ; {{h3}})}$ ; $D\\textcolor{{{color:primary.0}}}{(4 ; {{h4}})}$ ; $E\\textcolor{{{color:primary.0}}}{(5 ; {{h5}})}$."
+					]
+				}
+			},
+			{
+				"blanks": [],
+				"statement": "On a relevé la température toutes les heures, un matin.\n\n| Point | A | B | C | D | E |\n|---|---|---|---|---|---|\n| Heure (h) | $8$ | $9$ | $10$ | $11$ | $12$ |\n| Température (°C) | ${{t1}}$ | ${{t2}}$ | ${{t3}}$ | ${{t4}}$ | ${{t5}}$ |\n\nPlace les points A, B, C, D et E : l'heure sur l'axe horizontal, la température sur l'axe vertical.\n\n```courbe\nx: 7 ; 13\ny: 0 ; 20\ngrille: 1 ; 1\naxes: x = Heure (h) ; y = Température (°C)\nplacer: A=(8 ; {{t1}}) ; B=(9 ; {{t2}}) ; C=(10 ; {{t3}}) ; D=(11 ; {{t4}}) ; E=(12 ; {{t5}})\ntaille: moyenne\ndescription: Repère : heure en abscisse, de 1 en 1 ; température en ordonnée, de 0 à 20 °C, de 1 en 1.\n```",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "3..6"
+					},
+					{
+						"name": "d1",
+						"expression": "0..3"
+					},
+					{
+						"name": "d2",
+						"expression": "1..3"
+					},
+					{
+						"name": "d3",
+						"expression": "0..3"
+					},
+					{
+						"name": "d4",
+						"expression": "1..3"
+					},
+					{
+						"name": "t1",
+						"expression": "eval:a"
+					},
+					{
+						"name": "t2",
+						"expression": "eval:t1+d1"
+					},
+					{
+						"name": "t3",
+						"expression": "eval:t2+d2"
+					},
+					{
+						"name": "t4",
+						"expression": "eval:t3+d3"
+					},
+					{
+						"name": "t5",
+						"expression": "eval:t4+d4"
+					}
+				],
+				"correction": {
+					"steps": [
+						"Chaque colonne du tableau donne un point : on part de la valeur sur l'axe horizontal, puis on monte jusqu'à la valeur sur l'axe vertical (un carreau vaut $1$).",
+						"$A\\textcolor{{{color:primary.0}}}{(8 ; {{t1}})}$ ; $B\\textcolor{{{color:primary.0}}}{(9 ; {{t2}})}$ ; $C\\textcolor{{{color:primary.0}}}{(10 ; {{t3}})}$ ; $D\\textcolor{{{color:primary.0}}}{(11 ; {{t4}})}$ ; $E\\textcolor{{{color:primary.0}}}{(12 ; {{t5}})}$."
+					]
+				}
+			},
+			{
+				"blanks": [],
+				"statement": "On a relevé chaque mois la hauteur d'eau d'un bassin.\n\n| Point | A | B | C | D | E |\n|---|---|---|---|---|---|\n| Mois | $1$ | $2$ | $3$ | $4$ | $5$ |\n| Hauteur (cm) | ${{b1}}$ | ${{b2}}$ | ${{b3}}$ | ${{b4}}$ | ${{b5}}$ |\n\nPlace les points A, B, C, D et E : le mois sur l'axe horizontal, la hauteur sur l'axe vertical.\n\n```courbe\nx: 0 ; 6\ny: 0 ; 60\ngrille: 1 ; 5\naxes: x = Mois ; y = Hauteur d'eau (cm)\nplacer: A=(1 ; {{b1}}) ; B=(2 ; {{b2}}) ; C=(3 ; {{b3}}) ; D=(4 ; {{b4}}) ; E=(5 ; {{b5}})\ntaille: moyenne\ndescription: Repère : mois en abscisse, de 1 en 1 ; hauteur en ordonnée, de 0 à 60 cm, de 5 en 5.\n```",
+				"variables": [
+					{
+						"name": "w1",
+						"expression": "2..12"
+					},
+					{
+						"name": "w2",
+						"expression": "2..12"
+					},
+					{
+						"name": "w3",
+						"expression": "2..12"
+					},
+					{
+						"name": "w4",
+						"expression": "2..12"
+					},
+					{
+						"name": "w5",
+						"expression": "2..12"
+					},
+					{
+						"name": "b1",
+						"expression": "eval:5*w1"
+					},
+					{
+						"name": "b2",
+						"expression": "eval:5*w2"
+					},
+					{
+						"name": "b3",
+						"expression": "eval:5*w3"
+					},
+					{
+						"name": "b4",
+						"expression": "eval:5*w4"
+					},
+					{
+						"name": "b5",
+						"expression": "eval:5*w5"
+					}
+				],
+				"correction": {
+					"steps": [
+						"Chaque colonne du tableau donne un point : on part de la valeur sur l'axe horizontal, puis on monte jusqu'à la valeur sur l'axe vertical (un carreau vaut $5$).",
+						"$A\\textcolor{{{color:primary.0}}}{(1 ; {{b1}})}$ ; $B\\textcolor{{{color:primary.0}}}{(2 ; {{b2}})}$ ; $C\\textcolor{{{color:primary.0}}}{(3 ; {{b3}})}$ ; $D\\textcolor{{{color:primary.0}}}{(4 ; {{b4}})}$ ; $E\\textcolor{{{color:primary.0}}}{(5 ; {{b5}})}$."
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "draft",
+		"title": "Place les points d'un relevé dans un repère",
+		"description": "Relevé de cinq valeurs (plante semaine par semaine, température heure par heure, hauteur d'eau mois par mois) : placer les points, axes et graduations donnés (de 2, 1 ou 5)",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["1;4", "2;6", "3;12", "4;16", "5;20"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "2",
+					"d1": "1",
+					"d2": "3",
+					"d3": "2",
+					"d4": "2",
+					"h1": "4",
+					"h2": "6",
+					"h3": "12",
+					"h4": "16",
+					"h5": "20"
+				},
+				"description": "Plante : 1;4, 2;6, 3;12, 4;16, 5;20",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["4;1", "2;6", "3;12", "4;16", "5;20"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "2",
+					"d1": "1",
+					"d2": "3",
+					"d3": "2",
+					"d4": "2",
+					"h1": "4",
+					"h2": "6",
+					"h3": "12",
+					"h4": "16",
+					"h5": "20"
+				},
+				"description": "Erreur : A avec semaine et hauteur échangées",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["8;4", "9;6", "10;9", "11;9", "12;11"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "4",
+					"d1": "2",
+					"d2": "3",
+					"d3": "0",
+					"d4": "2",
+					"t1": "4",
+					"t2": "6",
+					"t3": "9",
+					"t4": "9",
+					"t5": "11"
+				},
+				"description": "Température : 8;4, 9;6, 10;9, 11;9, 12;11",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["1;20", "2;35", "3;45", "4;30", "5;55"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"b1": "20",
+					"b2": "35",
+					"b3": "45",
+					"b4": "30",
+					"b5": "55",
+					"w1": "4",
+					"w2": "7",
+					"w3": "9",
+					"w4": "6",
+					"w5": "11"
+				},
+				"description": "Bassin : 1;20, 2;35, 3;45, 4;30, 5;55",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["1;4", "2;7", "3;9", "4;6", "5;11"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"b1": "20",
+					"b2": "35",
+					"b3": "45",
+					"b4": "30",
+					"b5": "55",
+					"w1": "4",
+					"w2": "7",
+					"w3": "9",
+					"w4": "6",
+					"w5": "11"
+				},
+				"description": "Erreur : un carreau compté pour 1 cm",
+				"variationIndex": 2
+			}
+		],
+		"classification_node_id": null
+	},
+	{
+		"id": "ae74fe73-874e-4eae-9fa4-6897148d88e7",
+		"type": "fill_in_blanks",
+		"options": {
+			"constraints": {
+				"spacesFromFourDigits": true
+			}
+		},
+		"precision": null,
+		"grades": ["CM1"],
+		"delay": 180,
+		"level": 3,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{n}}"
+					}
+				],
+				"statement": "Voici les prix d'entrée au cinéma.\n\n| | Adulte | Enfant |\n|---|---|---|\n| Prix d'une entrée | ${{A}}$ € | ${{E}}$ € |\n\nUne famille de ${{a}}$ adulte{{if:a>1|s|}} et ${{b}}$ enfants va au cinéma. Combien paie-t-elle en tout ?\n\n$?$ €",
+				"variables": [
+					{
+						"name": "A",
+						"expression": "8..14"
+					},
+					{
+						"name": "E",
+						"expression": "4..7"
+					},
+					{
+						"name": "a",
+						"expression": "1..2"
+					},
+					{
+						"name": "b",
+						"expression": "2..4"
+					},
+					{
+						"name": "pa",
+						"expression": "eval:a*A"
+					},
+					{
+						"name": "pb",
+						"expression": "eval:b*E"
+					},
+					{
+						"name": "n",
+						"expression": "eval:pa+pb"
+					}
+				],
+				"correction": {
+					"steps": [
+						"Les adultes : ${{a}} \\times {{A}} = {{pa}}$ €.",
+						"Les enfants : ${{b}} \\times {{E}} = {{pb}}$ €.",
+						"En tout : ${{pa}} + {{pb}} = \\textcolor{{{color:primary.0}}}{{{n}}}$ €."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{d}}"
+					}
+				],
+				"statement": "Ce tableau donne le nombre de repas servis à la cantine.\n\n```tableau-croise\nlignes: Filles ; Garçons\ncolonnes: Lundi ; Mardi ; Jeudi ; Vendredi\nFilles = {{f1}} ; {{f2}} ; {{f3}} ; {{f4}}\nGarçons = {{g1}} ; {{g2}} ; {{g3}} ; {{g4}}\ncoin: Élèves \\ Jour\ntotaux: non\n```\n\nCombien de repas a-t-on servis de plus le lundi que le mardi ?\n\n$?$ repas de plus",
+				"variables": [
+					{
+						"name": "f1",
+						"expression": "40..150"
+					},
+					{
+						"name": "f2",
+						"expression": "40..150"
+					},
+					{
+						"name": "f3",
+						"expression": "40..150"
+					},
+					{
+						"name": "f4",
+						"expression": "40..150"
+					},
+					{
+						"name": "g1",
+						"expression": "40..150"
+					},
+					{
+						"name": "g2",
+						"expression": "40..150"
+					},
+					{
+						"name": "g3",
+						"expression": "40..150"
+					},
+					{
+						"name": "g4",
+						"expression": "40..150"
+					},
+					{
+						"name": "x",
+						"expression": "eval:f1+g1"
+					},
+					{
+						"name": "y",
+						"expression": "eval:f2+g2"
+					},
+					{
+						"name": "d",
+						"expression": "eval:x-y"
+					}
+				],
+				"conditions": ["x > y"],
+				"correction": {
+					"steps": [
+						"Le lundi : ${{f1}} + {{g1}} = {{x}}$ repas.",
+						"Le mardi : ${{f2}} + {{g2}} = {{y}}$ repas.",
+						"L'écart : ${{x}} - {{y}} = \\textcolor{{{color:primary.0}}}{{{d}}}$ repas de plus le lundi."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{n}}"
+					}
+				],
+				"statement": "Ce tableau donne le nombre d'élèves de l'école.\n\n```tableau-croise\nlignes: CP ; CE1 ; CE2 ; CM1 ; CM2\ncolonnes: Filles ; Garçons\nCP = {{f1}} ; {{g1}}\nCE1 = {{f2}} ; {{g2}}\nCE2 = {{f3}} ; {{g3}}\nCM1 = {{f4}} ; {{g4}}\nCM2 = {{f5}} ; {{g5}}\ncoin: Classe \\ Élèves\ntotaux: non\n```\n\nPour la fête de l'école, chaque fille reçoit ${{p}}$ rubans. Combien de rubans faut-il en tout ?\n\n$?$ rubans",
+				"variables": [
+					{
+						"name": "f1",
+						"expression": "8..16"
+					},
+					{
+						"name": "f2",
+						"expression": "8..16"
+					},
+					{
+						"name": "f3",
+						"expression": "8..16"
+					},
+					{
+						"name": "f4",
+						"expression": "8..16"
+					},
+					{
+						"name": "f5",
+						"expression": "8..16"
+					},
+					{
+						"name": "g1",
+						"expression": "8..16"
+					},
+					{
+						"name": "g2",
+						"expression": "8..16"
+					},
+					{
+						"name": "g3",
+						"expression": "8..16"
+					},
+					{
+						"name": "g4",
+						"expression": "8..16"
+					},
+					{
+						"name": "g5",
+						"expression": "8..16"
+					},
+					{
+						"name": "p",
+						"expression": "2..5"
+					},
+					{
+						"name": "s",
+						"expression": "eval:f1+f2+f3+f4+f5"
+					},
+					{
+						"name": "n",
+						"expression": "eval:s*p"
+					}
+				],
+				"correction": {
+					"steps": [
+						"D'abord le nombre de filles : la colonne « Filles », ${{f1}} + {{f2}} + {{f3}} + {{f4}} + {{f5}} = {{s}}$.",
+						"Chaque fille reçoit ${{p}}$ rubans : ${{s}} \\times {{p}} = \\textcolor{{{color:primary.0}}}{{{n}}}$ rubans."
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "draft",
+		"title": "Résous un problème avec un tableau",
+		"description": "En deux étapes : le prix d'une famille au cinéma (tableau des prix), combien de repas de plus un jour que l'autre (double entrée), le nombre de rubans pour toutes les filles de l'école",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["42"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"A": "12",
+					"E": "6",
+					"a": "2",
+					"b": "3",
+					"n": "42",
+					"pa": "24",
+					"pb": "18"
+				},
+				"description": "2 × 12 + 3 × 6 = 42",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["18"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"A": "12",
+					"E": "6",
+					"a": "2",
+					"b": "3",
+					"n": "42",
+					"pa": "24",
+					"pb": "18"
+				},
+				"description": "Erreur : un adulte et un enfant (18)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["28"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"d": "28",
+					"x": "215",
+					"y": "187",
+					"f1": "112",
+					"f2": "98",
+					"f3": "125",
+					"f4": "87",
+					"g1": "103",
+					"g2": "89",
+					"g3": "96",
+					"g4": "119"
+				},
+				"description": "Lundi 215 − mardi 187 = 28",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["14"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"d": "28",
+					"x": "215",
+					"y": "187",
+					"f1": "112",
+					"f2": "98",
+					"f3": "125",
+					"f4": "87",
+					"g1": "103",
+					"g2": "89",
+					"g3": "96",
+					"g4": "119"
+				},
+				"description": "Erreur : les filles seulement (14)",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["180"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"n": "180",
+					"p": "3",
+					"s": "60",
+					"f1": "12",
+					"f2": "10",
+					"f3": "14",
+					"f4": "11",
+					"f5": "13",
+					"g1": "9",
+					"g2": "15",
+					"g3": "12",
+					"g4": "10",
+					"g5": "14"
+				},
+				"description": "60 filles × 3 = 180",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["360"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"n": "180",
+					"p": "3",
+					"s": "60",
+					"f1": "12",
+					"f2": "10",
+					"f3": "14",
+					"f4": "11",
+					"f5": "13",
+					"g1": "9",
+					"g2": "15",
+					"g3": "12",
+					"g4": "10",
+					"g5": "14"
+				},
+				"description": "Erreur : tous les élèves × 3",
+				"variationIndex": 2
+			}
+		],
+		"classification_node_id": null
+	},
+	{
+		"id": "c245f0cc-7b05-45be-bdbd-e0f7217fe87d",
+		"type": "fill_in_blanks",
+		"options": {
+			"constraints": {
+				"spacesFromFourDigits": true
+			}
+		},
+		"precision": null,
+		"grades": ["CM1"],
+		"delay": 120,
+		"level": 6,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{d}}"
+					}
+				],
+				"statement": "Ce diagramme donne le nombre de livres prêtés par la bibliothèque, chaque mois.\n\n```barres\ntitre: Livres prêtés\naxes: Mois ; Livres\nJanvier = {{a1}}\nFévrier = {{a2}}\nMars = {{a3}}\nAvril = {{a4}}\nMai = {{a5}}\naxe: 0 à 120, de 10 en 10\n```\n\nCombien de livres a-t-on prêtés de plus en {{if:k==0|février|{{if:k==1|mars|{{if:k==2|avril|mai}}}}}} qu'en {{if:k==0|janvier|{{if:k==1|février|{{if:k==2|mars|avril}}}}}} ?\n\n$?$ livres de plus",
+				"variables": [
+					{
+						"name": "u1",
+						"expression": "1..12"
+					},
+					{
+						"name": "u2",
+						"expression": "1..12"
+					},
+					{
+						"name": "u3",
+						"expression": "1..12"
+					},
+					{
+						"name": "u4",
+						"expression": "1..12"
+					},
+					{
+						"name": "u5",
+						"expression": "1..12"
+					},
+					{
+						"name": "a1",
+						"expression": "eval:10*u1"
+					},
+					{
+						"name": "a2",
+						"expression": "eval:10*u2"
+					},
+					{
+						"name": "a3",
+						"expression": "eval:10*u3"
+					},
+					{
+						"name": "a4",
+						"expression": "eval:10*u4"
+					},
+					{
+						"name": "a5",
+						"expression": "eval:10*u5"
+					},
+					{
+						"name": "k",
+						"expression": "0..3"
+					},
+					{
+						"name": "x",
+						"expression": "eval:(a1)*((k-1)*(k-2)*(k-3))/(-6)+(a2)*((k-0)*(k-2)*(k-3))/(2)+(a3)*((k-0)*(k-1)*(k-3))/(-2)+(a4)*((k-0)*(k-1)*(k-2))/(6)"
+					},
+					{
+						"name": "y",
+						"expression": "eval:(a2)*((k-1)*(k-2)*(k-3))/(-6)+(a3)*((k-0)*(k-2)*(k-3))/(2)+(a4)*((k-0)*(k-1)*(k-3))/(-2)+(a5)*((k-0)*(k-1)*(k-2))/(6)"
+					},
+					{
+						"name": "d",
+						"expression": "eval:y-x"
+					}
+				],
+				"conditions": ["y > x"],
+				"correction": {
+					"steps": [
+						"On lit les deux barres : {{if:k==0|février|{{if:k==1|mars|{{if:k==2|avril|mai}}}}}} ${{y}}$ livres, {{if:k==0|janvier|{{if:k==1|février|{{if:k==2|mars|avril}}}}}} ${{x}}$ livres.",
+						"« Combien de plus » : l'écart, ${{y}} - {{x}} = \\textcolor{{{color:primary.0}}}{{{d}}}$ livres."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{k}}"
+					}
+				],
+				"statement": "Ce diagramme donne le nombre de livres prêtés par la bibliothèque, chaque mois.\n\n```barres\ntitre: Livres prêtés\naxes: Mois ; Livres\nJanvier = {{a1}}\nFévrier = {{a2}}\nMars = {{a3}}\nAvril = {{a4}}\nMai = {{a5}}\naxe: 0 à 250, de 25 en 25\n```\n\nQuel mois a-t-on prêté le plus de livres ?\n\n```choix\nmelanger: non\n- Janvier\n- Février\n- Mars\n- Avril\n- Mai\n```",
+				"variables": [
+					{
+						"name": "u1",
+						"expression": "1..8"
+					},
+					{
+						"name": "u2",
+						"expression": "1..8"
+					},
+					{
+						"name": "u3",
+						"expression": "1..8"
+					},
+					{
+						"name": "u4",
+						"expression": "1..8"
+					},
+					{
+						"name": "u5",
+						"expression": "1..8"
+					},
+					{
+						"name": "c",
+						"expression": "9..10"
+					},
+					{
+						"name": "k",
+						"expression": "0..4"
+					},
+					{
+						"name": "a1",
+						"expression": "eval:25*u1+(25*c-25*u1)*((k-1)*(k-2)*(k-3)*(k-4))/(24)"
+					},
+					{
+						"name": "a2",
+						"expression": "eval:25*u2+(25*c-25*u2)*((k-0)*(k-2)*(k-3)*(k-4))/(-6)"
+					},
+					{
+						"name": "a3",
+						"expression": "eval:25*u3+(25*c-25*u3)*((k-0)*(k-1)*(k-3)*(k-4))/(4)"
+					},
+					{
+						"name": "a4",
+						"expression": "eval:25*u4+(25*c-25*u4)*((k-0)*(k-1)*(k-2)*(k-4))/(-6)"
+					},
+					{
+						"name": "a5",
+						"expression": "eval:25*u5+(25*c-25*u5)*((k-0)*(k-1)*(k-2)*(k-3))/(24)"
+					}
+				],
+				"correction": {
+					"steps": [
+						"Le plus de livres : la barre la plus haute.",
+						"C'est {{if:k==0|janvier|{{if:k==1|février|{{if:k==2|mars|{{if:k==3|avril|mai}}}}}}}}, avec ${{eval:25*c}}$ livres."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{n}}"
+					}
+				],
+				"statement": "Ce diagramme donne le nombre de livres prêtés par la bibliothèque, chaque mois.\n\n```barres\ntitre: Livres prêtés\naxes: Mois ; Livres\nJanvier = {{a1}}\nFévrier = {{a2}}\nMars = {{a3}}\nAvril = {{a4}}\nMai = {{a5}}\naxe: 0 à 500, de 50 en 50\n```\n\nCombien de livres a-t-on prêtés en tout de janvier à mars ?\n\n$?$ livres",
+				"variables": [
+					{
+						"name": "u1",
+						"expression": "1..10"
+					},
+					{
+						"name": "u2",
+						"expression": "1..10"
+					},
+					{
+						"name": "u3",
+						"expression": "1..10"
+					},
+					{
+						"name": "u4",
+						"expression": "1..10"
+					},
+					{
+						"name": "u5",
+						"expression": "1..10"
+					},
+					{
+						"name": "a1",
+						"expression": "eval:50*u1"
+					},
+					{
+						"name": "a2",
+						"expression": "eval:50*u2"
+					},
+					{
+						"name": "a3",
+						"expression": "eval:50*u3"
+					},
+					{
+						"name": "a4",
+						"expression": "eval:50*u4"
+					},
+					{
+						"name": "a5",
+						"expression": "eval:50*u5"
+					},
+					{
+						"name": "n",
+						"expression": "eval:a1+a2+a3"
+					}
+				],
+				"correction": {
+					"steps": [
+						"De janvier à mars : trois barres, janvier, février et mars (l'axe compte de $50$ en $50$).",
+						"On les additionne : ${{a1}} + {{a2}} + {{a3}} = \\textcolor{{{color:primary.0}}}{{{n}}}$ livres."
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "draft",
+		"title": "Que dit le diagramme en barres ? (livres prêtés)",
+		"description": "Combien de livres de plus un mois que le précédent (BO : mars et février), le mois du plus grand nombre de prêts (case choix), combien en tout de janvier à mars ; axes de 10, 25, 50",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["20"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"d": "20",
+					"k": "1",
+					"x": "70",
+					"y": "90",
+					"a1": "40",
+					"a2": "70",
+					"a3": "90",
+					"a4": "30",
+					"a5": "60",
+					"u1": "4",
+					"u2": "7",
+					"u3": "9",
+					"u4": "3",
+					"u5": "6"
+				},
+				"description": "Mars − février : 90 − 70 = 20",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["90"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"d": "20",
+					"k": "1",
+					"x": "70",
+					"y": "90",
+					"a1": "40",
+					"a2": "70",
+					"a3": "90",
+					"a4": "30",
+					"a5": "60",
+					"u1": "4",
+					"u2": "7",
+					"u3": "9",
+					"u4": "3",
+					"u5": "6"
+				},
+				"description": "Erreur : la barre de mars (90)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["3"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"c": "10",
+					"k": "3",
+					"a1": "100",
+					"a2": "175",
+					"a3": "200",
+					"a4": "250",
+					"a5": "150",
+					"u1": "4",
+					"u2": "7",
+					"u3": "8",
+					"u4": "3",
+					"u5": "6"
+				},
+				"description": "Le plus : avril (250)",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["1 000"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"n": "1000",
+					"a1": "200",
+					"a2": "350",
+					"a3": "450",
+					"a4": "150",
+					"a5": "300",
+					"u1": "4",
+					"u2": "7",
+					"u3": "9",
+					"u4": "3",
+					"u5": "6"
+				},
+				"description": "Janvier à mars : 200 + 350 + 450 = 1 000",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["1 450"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"n": "1000",
+					"a1": "200",
+					"a2": "350",
+					"a3": "450",
+					"a4": "150",
+					"a5": "300",
+					"u1": "4",
+					"u2": "7",
+					"u3": "9",
+					"u4": "3",
+					"u5": "6"
+				},
+				"description": "Erreur : les cinq mois",
+				"variationIndex": 2
+			}
+		],
+		"classification_node_id": null
+	},
+	{
+		"id": "cc52549c-ff47-432a-8486-5256fb79c31c",
+		"type": "fill_in_blanks",
+		"options": {
+			"constraints": {
+				"spacesFromFourDigits": true
+			}
+		},
+		"precision": null,
+		"grades": ["CM1"],
+		"delay": 90,
+		"level": 5,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{n}}"
+					}
+				],
+				"statement": "Ce diagramme donne le nombre de livres prêtés par la bibliothèque, chaque mois.\n\n```barres\ntitre: Livres prêtés\naxes: Mois ; Livres\nJanvier = {{a1}}\nFévrier = {{a2}}\nMars = {{a3}}\nAvril = {{a4}}\nMai = {{a5}}\naxe: 0 à 100, de 10 en 10\n```\n\nCombien de livres ont été prêtés en {{if:k==0|janvier|{{if:k==1|février|{{if:k==2|mars|{{if:k==3|avril|mai}}}}}}}} ?\n\n$?$ livres",
+				"variables": [
+					{
+						"name": "u1",
+						"expression": "1..10"
+					},
+					{
+						"name": "u2",
+						"expression": "1..10"
+					},
+					{
+						"name": "u3",
+						"expression": "1..10"
+					},
+					{
+						"name": "u4",
+						"expression": "1..10"
+					},
+					{
+						"name": "u5",
+						"expression": "1..10"
+					},
+					{
+						"name": "a1",
+						"expression": "eval:10*u1+0"
+					},
+					{
+						"name": "a2",
+						"expression": "eval:10*u2+0"
+					},
+					{
+						"name": "a3",
+						"expression": "eval:10*u3+0"
+					},
+					{
+						"name": "a4",
+						"expression": "eval:10*u4+0"
+					},
+					{
+						"name": "a5",
+						"expression": "eval:10*u5+0"
+					},
+					{
+						"name": "k",
+						"expression": "0..4"
+					},
+					{
+						"name": "n",
+						"expression": "eval:(a1)*((k-1)*(k-2)*(k-3)*(k-4))/(24)+(a2)*((k-0)*(k-2)*(k-3)*(k-4))/(-6)+(a3)*((k-0)*(k-1)*(k-3)*(k-4))/(4)+(a4)*((k-0)*(k-1)*(k-2)*(k-4))/(-6)+(a5)*((k-0)*(k-1)*(k-2)*(k-3))/(24)"
+					}
+				],
+				"correction": {
+					"steps": [
+						"On cherche la barre « {{if:k==0|Janvier|{{if:k==1|Février|{{if:k==2|Mars|{{if:k==3|Avril|Mai}}}}}}}} », puis on suit son haut jusqu'à l'axe vertical.",
+						"L'axe est gradué de $10$ en $10$ : chaque trait compte pour $10$ livres.",
+						"En {{if:k==0|janvier|{{if:k==1|février|{{if:k==2|mars|{{if:k==3|avril|mai}}}}}}}} : $\\textcolor{{{color:primary.0}}}{{{n}}}$ livres."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{n}}"
+					}
+				],
+				"statement": "Ce diagramme donne le nombre de livres prêtés par la bibliothèque, chaque mois.\n\n```barres\ntitre: Livres prêtés\naxes: Mois ; Livres\nJanvier = {{a1}}\nFévrier = {{a2}}\nMars = {{a3}}\nAvril = {{a4}}\nMai = {{a5}}\naxe: 0 à 250, de 25 en 25\n```\n\nCombien de livres ont été prêtés en {{if:k==0|janvier|{{if:k==1|février|{{if:k==2|mars|{{if:k==3|avril|mai}}}}}}}} ?\n\n$?$ livres",
+				"variables": [
+					{
+						"name": "u1",
+						"expression": "1..10"
+					},
+					{
+						"name": "u2",
+						"expression": "1..10"
+					},
+					{
+						"name": "u3",
+						"expression": "1..10"
+					},
+					{
+						"name": "u4",
+						"expression": "1..10"
+					},
+					{
+						"name": "u5",
+						"expression": "1..10"
+					},
+					{
+						"name": "a1",
+						"expression": "eval:25*u1+0"
+					},
+					{
+						"name": "a2",
+						"expression": "eval:25*u2+0"
+					},
+					{
+						"name": "a3",
+						"expression": "eval:25*u3+0"
+					},
+					{
+						"name": "a4",
+						"expression": "eval:25*u4+0"
+					},
+					{
+						"name": "a5",
+						"expression": "eval:25*u5+0"
+					},
+					{
+						"name": "k",
+						"expression": "0..4"
+					},
+					{
+						"name": "n",
+						"expression": "eval:(a1)*((k-1)*(k-2)*(k-3)*(k-4))/(24)+(a2)*((k-0)*(k-2)*(k-3)*(k-4))/(-6)+(a3)*((k-0)*(k-1)*(k-3)*(k-4))/(4)+(a4)*((k-0)*(k-1)*(k-2)*(k-4))/(-6)+(a5)*((k-0)*(k-1)*(k-2)*(k-3))/(24)"
+					}
+				],
+				"correction": {
+					"steps": [
+						"On cherche la barre « {{if:k==0|Janvier|{{if:k==1|Février|{{if:k==2|Mars|{{if:k==3|Avril|Mai}}}}}}}} », puis on suit son haut jusqu'à l'axe vertical.",
+						"L'axe est gradué de $25$ en $25$ : chaque trait compte pour $25$ livres.",
+						"En {{if:k==0|janvier|{{if:k==1|février|{{if:k==2|mars|{{if:k==3|avril|mai}}}}}}}} : $\\textcolor{{{color:primary.0}}}{{{n}}}$ livres."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{n}}"
+					}
+				],
+				"statement": "Ce diagramme donne le nombre de livres prêtés par la bibliothèque, chaque mois.\n\n```barres\ntitre: Livres prêtés\naxes: Mois ; Livres\nJanvier = {{a1}}\nFévrier = {{a2}}\nMars = {{a3}}\nAvril = {{a4}}\nMai = {{a5}}\naxe: 0 à 500, de 50 en 50\n```\n\nCombien de livres ont été prêtés en {{if:k==0|janvier|{{if:k==1|février|{{if:k==2|mars|{{if:k==3|avril|mai}}}}}}}} ?\n\n$?$ livres",
+				"variables": [
+					{
+						"name": "u1",
+						"expression": "1..10"
+					},
+					{
+						"name": "u2",
+						"expression": "1..10"
+					},
+					{
+						"name": "u3",
+						"expression": "1..10"
+					},
+					{
+						"name": "u4",
+						"expression": "1..10"
+					},
+					{
+						"name": "u5",
+						"expression": "1..10"
+					},
+					{
+						"name": "a1",
+						"expression": "eval:50*u1+0"
+					},
+					{
+						"name": "a2",
+						"expression": "eval:50*u2+0"
+					},
+					{
+						"name": "a3",
+						"expression": "eval:50*u3+0"
+					},
+					{
+						"name": "a4",
+						"expression": "eval:50*u4+0"
+					},
+					{
+						"name": "a5",
+						"expression": "eval:50*u5+0"
+					},
+					{
+						"name": "k",
+						"expression": "0..4"
+					},
+					{
+						"name": "n",
+						"expression": "eval:(a1)*((k-1)*(k-2)*(k-3)*(k-4))/(24)+(a2)*((k-0)*(k-2)*(k-3)*(k-4))/(-6)+(a3)*((k-0)*(k-1)*(k-3)*(k-4))/(4)+(a4)*((k-0)*(k-1)*(k-2)*(k-4))/(-6)+(a5)*((k-0)*(k-1)*(k-2)*(k-3))/(24)"
+					}
+				],
+				"correction": {
+					"steps": [
+						"On cherche la barre « {{if:k==0|Janvier|{{if:k==1|Février|{{if:k==2|Mars|{{if:k==3|Avril|Mai}}}}}}}} », puis on suit son haut jusqu'à l'axe vertical.",
+						"L'axe est gradué de $50$ en $50$ : chaque trait compte pour $50$ livres.",
+						"En {{if:k==0|janvier|{{if:k==1|février|{{if:k==2|mars|{{if:k==3|avril|mai}}}}}}}} : $\\textcolor{{{color:primary.0}}}{{{n}}}$ livres."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{n}}"
+					}
+				],
+				"statement": "Ce diagramme donne le nombre de livres prêtés par la bibliothèque, chaque mois.\n\n```barres\ntitre: Livres prêtés\naxes: Mois ; Livres\nJanvier = {{a1}}\nFévrier = {{a2}}\nMars = {{a3}}\nAvril = {{a4}}\nMai = {{a5}}\naxe: 0 à 200, de 20 en 20\n```\n\nCombien de livres ont été prêtés en {{if:k==0|janvier|{{if:k==1|février|{{if:k==2|mars|{{if:k==3|avril|mai}}}}}}}} ?\n\n$?$ livres",
+				"variables": [
+					{
+						"name": "u1",
+						"expression": "1..9"
+					},
+					{
+						"name": "u2",
+						"expression": "1..9"
+					},
+					{
+						"name": "u3",
+						"expression": "1..9"
+					},
+					{
+						"name": "u4",
+						"expression": "1..9"
+					},
+					{
+						"name": "u5",
+						"expression": "1..9"
+					},
+					{
+						"name": "a1",
+						"expression": "eval:20*u1+10"
+					},
+					{
+						"name": "a2",
+						"expression": "eval:20*u2+10"
+					},
+					{
+						"name": "a3",
+						"expression": "eval:20*u3+10"
+					},
+					{
+						"name": "a4",
+						"expression": "eval:20*u4+10"
+					},
+					{
+						"name": "a5",
+						"expression": "eval:20*u5+10"
+					},
+					{
+						"name": "k",
+						"expression": "0..4"
+					},
+					{
+						"name": "n",
+						"expression": "eval:(a1)*((k-1)*(k-2)*(k-3)*(k-4))/(24)+(a2)*((k-0)*(k-2)*(k-3)*(k-4))/(-6)+(a3)*((k-0)*(k-1)*(k-3)*(k-4))/(4)+(a4)*((k-0)*(k-1)*(k-2)*(k-4))/(-6)+(a5)*((k-0)*(k-1)*(k-2)*(k-3))/(24)"
+					}
+				],
+				"correction": {
+					"steps": [
+						"On cherche la barre « {{if:k==0|Janvier|{{if:k==1|Février|{{if:k==2|Mars|{{if:k==3|Avril|Mai}}}}}}}} », puis on suit son haut jusqu'à l'axe vertical.",
+						"L'axe est gradué de $20$ en $20$ ; le haut de la barre tombe au milieu, entre deux traits : la moitié de $20$, c'est $10$.",
+						"En {{if:k==0|janvier|{{if:k==1|février|{{if:k==2|mars|{{if:k==3|avril|mai}}}}}}}} : $\\textcolor{{{color:primary.0}}}{{{n}}}$ livres."
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "draft",
+		"title": "Lis le diagramme en barres (axe de 10, 20, 25 ou 50)",
+		"description": "Livres prêtés chaque mois : lire une barre sur un axe gradué de 10 en 10, de 25 en 25, de 50 en 50, puis une barre entre deux traits (axe de 20 en 20)",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["90"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"k": "2",
+					"n": "90",
+					"a1": "40",
+					"a2": "70",
+					"a3": "90",
+					"a4": "30",
+					"a5": "60",
+					"u1": "4",
+					"u2": "7",
+					"u3": "9",
+					"u4": "3",
+					"u5": "6"
+				},
+				"description": "De 10 en 10 : mars, 90",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["9"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"k": "2",
+					"n": "90",
+					"a1": "40",
+					"a2": "70",
+					"a3": "90",
+					"a4": "30",
+					"a5": "60",
+					"u1": "4",
+					"u2": "7",
+					"u3": "9",
+					"u4": "3",
+					"u5": "6"
+				},
+				"description": "Erreur : les traits comptés (9)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["175"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"k": "1",
+					"n": "175",
+					"a1": "100",
+					"a2": "175",
+					"a3": "225",
+					"a4": "75",
+					"a5": "150",
+					"u1": "4",
+					"u2": "7",
+					"u3": "9",
+					"u4": "3",
+					"u5": "6"
+				},
+				"description": "De 25 en 25 : février, 175",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["70"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"k": "1",
+					"n": "175",
+					"a1": "100",
+					"a2": "175",
+					"a3": "225",
+					"a4": "75",
+					"a5": "150",
+					"u1": "4",
+					"u2": "7",
+					"u3": "9",
+					"u4": "3",
+					"u5": "6"
+				},
+				"description": "Erreur : traits comptés de 10 en 10 (70)",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["300"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"k": "4",
+					"n": "300",
+					"a1": "200",
+					"a2": "350",
+					"a3": "450",
+					"a4": "150",
+					"a5": "300",
+					"u1": "4",
+					"u2": "7",
+					"u3": "9",
+					"u4": "3",
+					"u5": "6"
+				},
+				"description": "De 50 en 50 : mai, 300",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["90"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"k": "0",
+					"n": "90",
+					"a1": "90",
+					"a2": "150",
+					"a3": "190",
+					"a4": "70",
+					"a5": "130",
+					"u1": "4",
+					"u2": "7",
+					"u3": "9",
+					"u4": "3",
+					"u5": "6"
+				},
+				"description": "Entre deux traits : janvier, 90",
+				"variationIndex": 3
+			},
+			{
+				"answers": ["80"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"k": "0",
+					"n": "90",
+					"a1": "90",
+					"a2": "150",
+					"a3": "190",
+					"a4": "70",
+					"a5": "130",
+					"u1": "4",
+					"u2": "7",
+					"u3": "9",
+					"u4": "3",
+					"u5": "6"
+				},
+				"description": "Erreur : le trait du dessous (80)",
+				"variationIndex": 3
+			}
+		],
+		"classification_node_id": null
+	},
+	{
+		"id": "da976537-296f-4cb0-b4d2-a73bd6743d6d",
+		"type": "fill_in_blanks",
+		"options": {
+			"constraints": {
+				"spacesFromFourDigits": true
+			}
+		},
+		"precision": null,
+		"grades": ["CM1"],
+		"delay": 120,
+		"level": 2,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{h}}"
+					}
+				],
+				"statement": "On a relevé la température toutes les deux heures, de $8$ h à $18$ h.\n\n```courbe\nx: 6 ; 20\ny: 0 ; 30\ngrille: 2 ; 2\naxes: x = Heure (h) ; y = Température (°C)\ndonnées: (8 ; {{t0}}) ; (10 ; {{t1}}) ; (12 ; {{t2}}) ; (14 ; {{t3}}) ; (16 ; {{t4}}) ; (18 ; {{t5}})\ntaille: moyenne\n```\n\nÀ quelle heure la température est-elle la plus haute ?\n\n$?$ h",
+				"variables": [
+					{
+						"name": "w",
+						"expression": "12..14"
+					},
+					{
+						"name": "s",
+						"expression": "1..2"
+					},
+					{
+						"name": "k",
+						"expression": "0..5"
+					},
+					{
+						"name": "t0",
+						"expression": "eval:2*(w-s*abs(0-k))"
+					},
+					{
+						"name": "t1",
+						"expression": "eval:2*(w-s*abs(1-k))"
+					},
+					{
+						"name": "t2",
+						"expression": "eval:2*(w-s*abs(2-k))"
+					},
+					{
+						"name": "t3",
+						"expression": "eval:2*(w-s*abs(3-k))"
+					},
+					{
+						"name": "t4",
+						"expression": "eval:2*(w-s*abs(4-k))"
+					},
+					{
+						"name": "t5",
+						"expression": "eval:2*(w-s*abs(5-k))"
+					},
+					{
+						"name": "h",
+						"expression": "eval:8+2*k"
+					}
+				],
+				"correction": {
+					"steps": [
+						"La température la plus haute : le point le plus haut de la courbe.",
+						"Il est à ${{eval:2*w}}$ °C ; on descend lire l'heure : $\\textcolor{{{color:primary.0}}}{{{h}}}$ h."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{h}}"
+					}
+				],
+				"statement": "On a relevé la température toutes les deux heures, de $8$ h à $18$ h.\n\n```courbe\nx: 6 ; 20\ny: 0 ; 30\ngrille: 2 ; 2\naxes: x = Heure (h) ; y = Température (°C)\ndonnées: (8 ; {{t0}}) ; (10 ; {{t1}}) ; (12 ; {{t2}}) ; (14 ; {{t3}}) ; (16 ; {{t4}}) ; (18 ; {{t5}})\ntaille: moyenne\n```\n\nÀ quelle heure la température est-elle la plus basse ?\n\n$?$ h",
+				"variables": [
+					{
+						"name": "w",
+						"expression": "1..3"
+					},
+					{
+						"name": "s",
+						"expression": "1..2"
+					},
+					{
+						"name": "k",
+						"expression": "0..5"
+					},
+					{
+						"name": "t0",
+						"expression": "eval:2*(w+s*abs(0-k))"
+					},
+					{
+						"name": "t1",
+						"expression": "eval:2*(w+s*abs(1-k))"
+					},
+					{
+						"name": "t2",
+						"expression": "eval:2*(w+s*abs(2-k))"
+					},
+					{
+						"name": "t3",
+						"expression": "eval:2*(w+s*abs(3-k))"
+					},
+					{
+						"name": "t4",
+						"expression": "eval:2*(w+s*abs(4-k))"
+					},
+					{
+						"name": "t5",
+						"expression": "eval:2*(w+s*abs(5-k))"
+					},
+					{
+						"name": "h",
+						"expression": "eval:8+2*k"
+					}
+				],
+				"correction": {
+					"steps": [
+						"La température la plus basse : le point le plus bas de la courbe.",
+						"Il est à ${{eval:2*w}}$ °C ; on descend lire l'heure : $\\textcolor{{{color:primary.0}}}{{{h}}}$ h."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{n}}"
+					}
+				],
+				"statement": "On a relevé la température toutes les deux heures, de $8$ h à $18$ h.\n\n```courbe\nx: 6 ; 20\ny: 0 ; 30\ngrille: 2 ; 2\naxes: x = Heure (h) ; y = Température (°C)\ndonnées: (8 ; {{t0}}) ; (10 ; {{t1}}) ; (12 ; {{t2}}) ; (14 ; {{t3}}) ; (16 ; {{t4}}) ; (18 ; {{t5}})\ntaille: moyenne\n```\n\nDe combien de degrés la température a-t-elle monté entre $8$ h et $14$ h ?\n\n$?$ °C",
+				"variables": [
+					{
+						"name": "u0",
+						"expression": "2..5"
+					},
+					{
+						"name": "d1",
+						"expression": "1..3"
+					},
+					{
+						"name": "d2",
+						"expression": "1..3"
+					},
+					{
+						"name": "d3",
+						"expression": "0..2"
+					},
+					{
+						"name": "d4",
+						"expression": "1..2"
+					},
+					{
+						"name": "d5",
+						"expression": "1..2"
+					},
+					{
+						"name": "t0",
+						"expression": "eval:2*u0"
+					},
+					{
+						"name": "t1",
+						"expression": "eval:t0+2*d1"
+					},
+					{
+						"name": "t2",
+						"expression": "eval:t1+2*d2"
+					},
+					{
+						"name": "t3",
+						"expression": "eval:t2+2*d3"
+					},
+					{
+						"name": "t4",
+						"expression": "eval:t3-2*d4"
+					},
+					{
+						"name": "t5",
+						"expression": "eval:t4-2*d5"
+					},
+					{
+						"name": "n",
+						"expression": "eval:t3-t0"
+					}
+				],
+				"correction": {
+					"steps": [
+						"On lit les deux relevés : $8$ h, ${{t0}}$ °C ; $14$ h, ${{t3}}$ °C.",
+						"La hausse : l'écart, ${{t3}} - {{t0}} = \\textcolor{{{color:primary.0}}}{{{n}}}$ °C."
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "draft",
+		"title": "Que dit la courbe des températures ?",
+		"description": "Relevé de la journée : l'heure de la température la plus haute (BO), la plus basse, la hausse entre 8 h et 14 h",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["16"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"h": "16",
+					"k": "4",
+					"s": "2",
+					"w": "13",
+					"t0": "10",
+					"t1": "14",
+					"t2": "18",
+					"t3": "22",
+					"t4": "26",
+					"t5": "22"
+				},
+				"description": "La plus haute à 16 h (26 °C)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["26"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"h": "16",
+					"k": "4",
+					"s": "2",
+					"w": "13",
+					"t0": "10",
+					"t1": "14",
+					"t2": "18",
+					"t3": "22",
+					"t4": "26",
+					"t5": "22"
+				},
+				"description": "Erreur : la température au lieu de l'heure",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["8"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"h": "8",
+					"k": "0",
+					"s": "1",
+					"w": "2",
+					"t0": "4",
+					"t1": "6",
+					"t2": "8",
+					"t3": "10",
+					"t4": "12",
+					"t5": "14"
+				},
+				"description": "La plus basse à 8 h (4 °C)",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["18"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"h": "8",
+					"k": "0",
+					"s": "1",
+					"w": "2",
+					"t0": "4",
+					"t1": "6",
+					"t2": "8",
+					"t3": "10",
+					"t4": "12",
+					"t5": "14"
+				},
+				"description": "Erreur : l'heure la plus chaude (18 h)",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["12"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"n": "12",
+					"d1": "2",
+					"d2": "3",
+					"d3": "1",
+					"d4": "2",
+					"d5": "1",
+					"t0": "6",
+					"t1": "10",
+					"t2": "16",
+					"t3": "18",
+					"t4": "14",
+					"t5": "12",
+					"u0": "3"
+				},
+				"description": "Hausse de 8 h à 14 h : 18 − 6 = 12",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["18"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"n": "12",
+					"d1": "2",
+					"d2": "3",
+					"d3": "1",
+					"d4": "2",
+					"d5": "1",
+					"t0": "6",
+					"t1": "10",
+					"t2": "16",
+					"t3": "18",
+					"t4": "14",
+					"t5": "12",
+					"u0": "3"
+				},
+				"description": "Erreur : la température de 14 h",
+				"variationIndex": 2
+			}
+		],
+		"classification_node_id": null
+	},
+	{
+		"id": "e1d59914-fe13-4aa6-a057-548e44426f6a",
+		"type": "fill_in_blanks",
+		"options": {
+			"constraints": {
+				"spacesFromFourDigits": true
+			}
+		},
+		"precision": null,
+		"grades": ["CM1"],
+		"delay": 150,
+		"level": 7,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{k}}"
+					}
+				],
+				"statement": "Ce tableau donne le nombre d'enfants inscrits dans les clubs de sport de la ville.\n\n```tableau-croise\nlignes: Natation ; Football ; Danse ; Judo ; Tennis\ncolonnes: Filles ; Garçons\nNatation = {{f1}} ; {{g1}}\nFootball = {{f2}} ; {{g2}}\nDanse = {{f3}} ; {{g3}}\nJudo = {{f4}} ; {{g4}}\nTennis = {{f5}} ; {{g5}}\ncoin: Sport \\ Élèves\ntotaux: non\n```\n\nQuel sport attire le plus de filles ?\n\n```choix\nmelanger: non\n- Natation\n- Football\n- Danse\n- Judo\n- Tennis\n```",
+				"variables": [
+					{
+						"name": "b1",
+						"expression": "15..199"
+					},
+					{
+						"name": "b2",
+						"expression": "15..199"
+					},
+					{
+						"name": "b3",
+						"expression": "15..199"
+					},
+					{
+						"name": "b4",
+						"expression": "15..199"
+					},
+					{
+						"name": "b5",
+						"expression": "15..199"
+					},
+					{
+						"name": "c",
+						"expression": "200..240"
+					},
+					{
+						"name": "k",
+						"expression": "0..4"
+					},
+					{
+						"name": "f1",
+						"expression": "eval:b1+(c-b1)*((k-1)*(k-2)*(k-3)*(k-4))/(24)"
+					},
+					{
+						"name": "f2",
+						"expression": "eval:b2+(c-b2)*((k-0)*(k-2)*(k-3)*(k-4))/(-6)"
+					},
+					{
+						"name": "f3",
+						"expression": "eval:b3+(c-b3)*((k-0)*(k-1)*(k-3)*(k-4))/(4)"
+					},
+					{
+						"name": "f4",
+						"expression": "eval:b4+(c-b4)*((k-0)*(k-1)*(k-2)*(k-4))/(-6)"
+					},
+					{
+						"name": "f5",
+						"expression": "eval:b5+(c-b5)*((k-0)*(k-1)*(k-2)*(k-3))/(24)"
+					},
+					{
+						"name": "g1",
+						"expression": "15..240"
+					},
+					{
+						"name": "g2",
+						"expression": "15..240"
+					},
+					{
+						"name": "g3",
+						"expression": "15..240"
+					},
+					{
+						"name": "g4",
+						"expression": "15..240"
+					},
+					{
+						"name": "g5",
+						"expression": "15..240"
+					}
+				],
+				"correction": {
+					"steps": [
+						"Les filles : on ne regarde que la colonne « Filles », et on y cherche le plus grand nombre.",
+						"Le plus grand : ${{c}}$, c'est {{if:k==0|la natation|{{if:k==1|le football|{{if:k==2|la danse|{{if:k==3|le judo|le tennis}}}}}}}}."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{d}}"
+					}
+				],
+				"statement": "Ce tableau donne le nombre d'enfants inscrits dans les clubs de sport de la ville.\n\n```tableau-croise\nlignes: Natation ; Football ; Danse ; Judo ; Tennis\ncolonnes: Filles ; Garçons\nNatation = {{f1}} ; {{g1}}\nFootball = {{f2}} ; {{g2}}\nDanse = {{f3}} ; {{g3}}\nJudo = {{f4}} ; {{g4}}\nTennis = {{f5}} ; {{g5}}\ncoin: Sport \\ Élèves\ntotaux: non\n```\n\nDans le club de {{if:k==0|natation|{{if:k==1|football|{{if:k==2|danse|{{if:k==3|judo|tennis}}}}}}}}, combien y a-t-il de garçons de plus que de filles ?\n\n$?$ garçons de plus",
+				"variables": [
+					{
+						"name": "f1",
+						"expression": "15..240"
+					},
+					{
+						"name": "f2",
+						"expression": "15..240"
+					},
+					{
+						"name": "f3",
+						"expression": "15..240"
+					},
+					{
+						"name": "f4",
+						"expression": "15..240"
+					},
+					{
+						"name": "f5",
+						"expression": "15..240"
+					},
+					{
+						"name": "g1",
+						"expression": "15..240"
+					},
+					{
+						"name": "g2",
+						"expression": "15..240"
+					},
+					{
+						"name": "g3",
+						"expression": "15..240"
+					},
+					{
+						"name": "g4",
+						"expression": "15..240"
+					},
+					{
+						"name": "g5",
+						"expression": "15..240"
+					},
+					{
+						"name": "k",
+						"expression": "0..4"
+					},
+					{
+						"name": "x",
+						"expression": "eval:(f1)*((k-1)*(k-2)*(k-3)*(k-4))/(24)+(f2)*((k-0)*(k-2)*(k-3)*(k-4))/(-6)+(f3)*((k-0)*(k-1)*(k-3)*(k-4))/(4)+(f4)*((k-0)*(k-1)*(k-2)*(k-4))/(-6)+(f5)*((k-0)*(k-1)*(k-2)*(k-3))/(24)"
+					},
+					{
+						"name": "y",
+						"expression": "eval:(g1)*((k-1)*(k-2)*(k-3)*(k-4))/(24)+(g2)*((k-0)*(k-2)*(k-3)*(k-4))/(-6)+(g3)*((k-0)*(k-1)*(k-3)*(k-4))/(4)+(g4)*((k-0)*(k-1)*(k-2)*(k-4))/(-6)+(g5)*((k-0)*(k-1)*(k-2)*(k-3))/(24)"
+					},
+					{
+						"name": "d",
+						"expression": "eval:y-x"
+					}
+				],
+				"conditions": ["y > x"],
+				"correction": {
+					"steps": [
+						"Sur la ligne « {{if:k==0|Natation|{{if:k==1|Football|{{if:k==2|Danse|{{if:k==3|Judo|Tennis}}}}}}}} » : ${{y}}$ garçons et ${{x}}$ filles.",
+						"« Combien de plus » : l'écart, ${{y}} - {{x}} = \\textcolor{{{color:primary.0}}}{{{d}}}$."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{n}}"
+					}
+				],
+				"statement": "Ce tableau donne le nombre d'enfants inscrits dans les clubs de sport de la ville.\n\n```tableau-croise\nlignes: Natation ; Football ; Danse ; Judo ; Tennis\ncolonnes: Filles ; Garçons\nNatation = {{f1}} ; {{g1}}\nFootball = {{f2}} ; {{g2}}\nDanse = {{f3}} ; {{g3}}\nJudo = {{f4}} ; {{g4}}\nTennis = {{f5}} ; {{g5}}\ncoin: Sport \\ Élèves\ntotaux: non\n```\n\nCombien d'enfants sont inscrits dans un club de sport, en tout ?\n\n$?$ enfants",
+				"variables": [
+					{
+						"name": "f1",
+						"expression": "15..95"
+					},
+					{
+						"name": "f2",
+						"expression": "15..95"
+					},
+					{
+						"name": "f3",
+						"expression": "15..95"
+					},
+					{
+						"name": "f4",
+						"expression": "15..95"
+					},
+					{
+						"name": "f5",
+						"expression": "15..95"
+					},
+					{
+						"name": "g1",
+						"expression": "15..95"
+					},
+					{
+						"name": "g2",
+						"expression": "15..95"
+					},
+					{
+						"name": "g3",
+						"expression": "15..95"
+					},
+					{
+						"name": "g4",
+						"expression": "15..95"
+					},
+					{
+						"name": "g5",
+						"expression": "15..95"
+					},
+					{
+						"name": "sf",
+						"expression": "eval:f1+f2+f3+f4+f5"
+					},
+					{
+						"name": "sg",
+						"expression": "eval:g1+g2+g3+g4+g5"
+					},
+					{
+						"name": "n",
+						"expression": "eval:sf+sg"
+					}
+				],
+				"correction": {
+					"steps": [
+						"On additionne la colonne des filles : ${{f1}} + {{f2}} + {{f3}} + {{f4}} + {{f5}} = {{sf}}$.",
+						"Puis celle des garçons : ${{g1}} + {{g2}} + {{g3}} + {{g4}} + {{g5}} = {{sg}}$.",
+						"En tout : ${{sf}} + {{sg}} = \\textcolor{{{color:primary.0}}}{{{n}}}$ enfants."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{k}}"
+					}
+				],
+				"statement": "Ce tableau donne le nombre d'enfants inscrits dans les clubs de sport de la ville.\n\n```tableau-croise\nlignes: Natation ; Football ; Danse ; Judo ; Tennis\ncolonnes: Filles ; Garçons\nNatation = {{f1}} ; {{g1}}\nFootball = {{f2}} ; {{g2}}\nDanse = {{f3}} ; {{g3}}\nJudo = {{f4}} ; {{g4}}\nTennis = {{f5}} ; {{g5}}\ncoin: Sport \\ Élèves\ntotaux: non\n```\n\nQuel sport attire le plus d'enfants, filles et garçons ensemble ?\n\n```choix\nmelanger: non\n- Natation\n- Football\n- Danse\n- Judo\n- Tennis\n```",
+				"variables": [
+					{
+						"name": "f1",
+						"expression": "20..95"
+					},
+					{
+						"name": "f2",
+						"expression": "20..95"
+					},
+					{
+						"name": "f3",
+						"expression": "20..95"
+					},
+					{
+						"name": "f4",
+						"expression": "20..95"
+					},
+					{
+						"name": "f5",
+						"expression": "20..95"
+					},
+					{
+						"name": "h1",
+						"expression": "20..95"
+					},
+					{
+						"name": "h2",
+						"expression": "20..95"
+					},
+					{
+						"name": "h3",
+						"expression": "20..95"
+					},
+					{
+						"name": "h4",
+						"expression": "20..95"
+					},
+					{
+						"name": "h5",
+						"expression": "20..95"
+					},
+					{
+						"name": "c",
+						"expression": "200..230"
+					},
+					{
+						"name": "k",
+						"expression": "0..4"
+					},
+					{
+						"name": "fk",
+						"expression": "eval:(f1)*((k-1)*(k-2)*(k-3)*(k-4))/(24)+(f2)*((k-0)*(k-2)*(k-3)*(k-4))/(-6)+(f3)*((k-0)*(k-1)*(k-3)*(k-4))/(4)+(f4)*((k-0)*(k-1)*(k-2)*(k-4))/(-6)+(f5)*((k-0)*(k-1)*(k-2)*(k-3))/(24)"
+					},
+					{
+						"name": "g1",
+						"expression": "eval:h1+(c-fk-h1)*((k-1)*(k-2)*(k-3)*(k-4))/(24)"
+					},
+					{
+						"name": "g2",
+						"expression": "eval:h2+(c-fk-h2)*((k-0)*(k-2)*(k-3)*(k-4))/(-6)"
+					},
+					{
+						"name": "g3",
+						"expression": "eval:h3+(c-fk-h3)*((k-0)*(k-1)*(k-3)*(k-4))/(4)"
+					},
+					{
+						"name": "g4",
+						"expression": "eval:h4+(c-fk-h4)*((k-0)*(k-1)*(k-2)*(k-4))/(-6)"
+					},
+					{
+						"name": "g5",
+						"expression": "eval:h5+(c-fk-h5)*((k-0)*(k-1)*(k-2)*(k-3))/(24)"
+					}
+				],
+				"correction": {
+					"steps": [
+						"Filles et garçons ensemble : on additionne les deux cases de chaque ligne, puis on compare les cinq totaux.",
+						"Le plus grand total : ${{c}}$, c'est {{if:k==0|la natation|{{if:k==1|le football|{{if:k==2|la danse|{{if:k==3|le judo|le tennis}}}}}}}}."
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "draft",
+		"title": "Que dit le tableau à double entrée ? (cinq lignes)",
+		"description": "Clubs de sport : le sport qui attire le plus de filles (case choix), combien de garçons de plus que de filles, le total général, le sport qui attire le plus d'enfants (case choix)",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["2"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"c": "212",
+					"k": "2",
+					"b1": "128",
+					"b2": "64",
+					"b3": "150",
+					"b4": "45",
+					"b5": "82",
+					"f1": "128",
+					"f2": "64",
+					"f3": "212",
+					"f4": "45",
+					"f5": "82",
+					"g1": "112",
+					"g2": "215",
+					"g3": "23",
+					"g4": "96",
+					"g5": "77"
+				},
+				"description": "Le plus de filles : la danse",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["1"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"c": "212",
+					"k": "2",
+					"b1": "128",
+					"b2": "64",
+					"b3": "150",
+					"b4": "45",
+					"b5": "82",
+					"f1": "128",
+					"f2": "64",
+					"f3": "212",
+					"f4": "45",
+					"f5": "82",
+					"g1": "112",
+					"g2": "215",
+					"g3": "23",
+					"g4": "96",
+					"g5": "77"
+				},
+				"description": "Erreur : le plus de garçons (football)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["151"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"d": "151",
+					"k": "1",
+					"x": "64",
+					"y": "215",
+					"f1": "128",
+					"f2": "64",
+					"f3": "197",
+					"f4": "45",
+					"f5": "82",
+					"g1": "112",
+					"g2": "215",
+					"g3": "23",
+					"g4": "96",
+					"g5": "77"
+				},
+				"description": "Football : 215 − 64 = 151",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["215"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"d": "151",
+					"k": "1",
+					"x": "64",
+					"y": "215",
+					"f1": "128",
+					"f2": "64",
+					"f3": "197",
+					"f4": "45",
+					"f5": "82",
+					"g1": "112",
+					"g2": "215",
+					"g3": "23",
+					"g4": "96",
+					"g5": "77"
+				},
+				"description": "Erreur : le nombre de garçons",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["627"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"n": "627",
+					"f1": "68",
+					"f2": "54",
+					"f3": "87",
+					"f4": "45",
+					"f5": "61",
+					"g1": "72",
+					"g2": "85",
+					"g3": "23",
+					"g4": "56",
+					"g5": "76",
+					"sf": "315",
+					"sg": "312"
+				},
+				"description": "Total général : 315 + 312 = 627",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["315"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"n": "627",
+					"f1": "68",
+					"f2": "54",
+					"f3": "87",
+					"f4": "45",
+					"f5": "61",
+					"g1": "72",
+					"g2": "85",
+					"g3": "23",
+					"g4": "56",
+					"g5": "76",
+					"sf": "315",
+					"sg": "312"
+				},
+				"description": "Erreur : les filles seulement",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["4"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"c": "220",
+					"k": "4",
+					"f1": "90",
+					"f2": "54",
+					"f3": "87",
+					"f4": "45",
+					"f5": "61",
+					"fk": "61",
+					"g1": "92",
+					"g2": "85",
+					"g3": "23",
+					"g4": "56",
+					"g5": "159",
+					"h1": "92",
+					"h2": "85",
+					"h3": "23",
+					"h4": "56",
+					"h5": "76"
+				},
+				"description": "Le plus d'enfants : le tennis (220)",
+				"variationIndex": 3
+			},
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"c": "220",
+					"k": "4",
+					"f1": "90",
+					"f2": "54",
+					"f3": "87",
+					"f4": "45",
+					"f5": "61",
+					"fk": "61",
+					"g1": "92",
+					"g2": "85",
+					"g3": "23",
+					"g4": "56",
+					"g5": "159",
+					"h1": "92",
+					"h2": "85",
+					"h3": "23",
+					"h4": "56",
+					"h5": "76"
+				},
+				"description": "Erreur : le plus de filles (natation)",
+				"variationIndex": 3
+			}
+		],
+		"classification_node_id": null
+	},
+	{
+		"id": "f1f7b2d1-caa4-4c4c-a3bb-939c49715e44",
+		"type": "fill_in_blanks",
+		"options": {
+			"constraints": {
+				"spacesFromFourDigits": true
+			}
+		},
+		"precision": null,
+		"grades": ["CM1"],
+		"delay": 180,
+		"level": 3,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{n}}"
+					}
+				],
+				"statement": "Ce diagramme donne le nombre de billets de tombola vendus chaque jour de la semaine.\n\n```barres\ntitre: Billets vendus\naxes: Jour ; Billets\nLundi = {{a1}}\nMardi = {{a2}}\nMercredi = {{a3}}\nJeudi = {{a4}}\nVendredi = {{a5}}\naxe: 0 à 100, de 10 en 10\n```\n\nUn billet coûte ${{p}}$ €. Combien d'euros ont rapporté les billets du jeudi et du vendredi ?\n\n$?$ €",
+				"variables": [
+					{
+						"name": "u1",
+						"expression": "1..10"
+					},
+					{
+						"name": "u2",
+						"expression": "1..10"
+					},
+					{
+						"name": "u3",
+						"expression": "1..10"
+					},
+					{
+						"name": "u4",
+						"expression": "1..10"
+					},
+					{
+						"name": "u5",
+						"expression": "1..10"
+					},
+					{
+						"name": "a1",
+						"expression": "eval:10*u1"
+					},
+					{
+						"name": "a2",
+						"expression": "eval:10*u2"
+					},
+					{
+						"name": "a3",
+						"expression": "eval:10*u3"
+					},
+					{
+						"name": "a4",
+						"expression": "eval:10*u4"
+					},
+					{
+						"name": "a5",
+						"expression": "eval:10*u5"
+					},
+					{
+						"name": "p",
+						"expression": "2..5"
+					},
+					{
+						"name": "s",
+						"expression": "eval:a4+a5"
+					},
+					{
+						"name": "n",
+						"expression": "eval:s*p"
+					}
+				],
+				"correction": {
+					"steps": [
+						"Les billets du jeudi et du vendredi : ${{a4}} + {{a5}} = {{s}}$ billets.",
+						"Chaque billet rapporte ${{p}}$ € : ${{s}} \\times {{p}} = \\textcolor{{{color:primary.0}}}{{{n}}}$ €."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{d}}"
+					}
+				],
+				"statement": "Le club a vendu ${{T}}$ places de spectacle en quatre mois. Le diagramme montre les trois premiers mois seulement.\n\n```barres\ntitre: Places vendues\naxes: Mois ; Places\nJanvier = {{a}}\nFévrier = {{b}}\nMars = {{c}}\naxe: 0 à 200, de 20 en 20\n```\n\nCombien de places a-t-on vendues en avril ?\n\n$?$ places",
+				"variables": [
+					{
+						"name": "ua",
+						"expression": "2..10"
+					},
+					{
+						"name": "ub",
+						"expression": "2..10"
+					},
+					{
+						"name": "uc",
+						"expression": "2..10"
+					},
+					{
+						"name": "d",
+						"expression": "15..190"
+					},
+					{
+						"name": "a",
+						"expression": "eval:20*ua"
+					},
+					{
+						"name": "b",
+						"expression": "eval:20*ub"
+					},
+					{
+						"name": "c",
+						"expression": "eval:20*uc"
+					},
+					{
+						"name": "s",
+						"expression": "eval:a+b+c"
+					},
+					{
+						"name": "T",
+						"expression": "eval:s+d"
+					}
+				],
+				"correction": {
+					"steps": [
+						"Les trois mois du diagramme : ${{a}} + {{b}} + {{c}} = {{s}}$ places.",
+						"Avril : ce qui manque pour aller à ${{T}}$, ${{T}} - {{s}} = \\textcolor{{{color:primary.0}}}{{{d}}}$ places."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{n}}"
+					}
+				],
+				"statement": "On a relevé la température à $8$ h, $10$ h et $12$ h.\n\n```courbe\nx: 6 ; 14\ny: 0 ; 30\ngrille: 2 ; 2\naxes: x = Heure (h) ; y = Température (°C)\ndonnées: (8 ; {{t0}}) ; (10 ; {{t1}}) ; (12 ; {{t2}})\ntaille: moyenne\n```\n\nEntre $8$ h et $12$ h, la température a monté. Si elle monte encore d'autant entre $12$ h et $16$ h, quelle température fera-t-il à $16$ h ?\n\n$?$ °C",
+				"variables": [
+					{
+						"name": "u0",
+						"expression": "1..5"
+					},
+					{
+						"name": "d1",
+						"expression": "1..3"
+					},
+					{
+						"name": "d2",
+						"expression": "1..3"
+					},
+					{
+						"name": "t0",
+						"expression": "eval:2*u0"
+					},
+					{
+						"name": "t1",
+						"expression": "eval:t0+2*d1"
+					},
+					{
+						"name": "t2",
+						"expression": "eval:t1+2*d2"
+					},
+					{
+						"name": "m",
+						"expression": "eval:t2-t0"
+					},
+					{
+						"name": "n",
+						"expression": "eval:t2+m"
+					}
+				],
+				"correction": {
+					"steps": [
+						"On lit : $8$ h, ${{t0}}$ °C ; $12$ h, ${{t2}}$ °C. La hausse : ${{t2}} - {{t0}} = {{m}}$ °C.",
+						"Encore ${{m}}$ °C de plus : ${{t2}} + {{m}} = \\textcolor{{{color:primary.0}}}{{{n}}}$ °C à $16$ h."
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "draft",
+		"title": "Résous un problème avec un diagramme ou une courbe",
+		"description": "En deux étapes : la recette de deux jours de tombola (barres), le mois qui manque au diagramme par le total (barres), la température prévue si la hausse continue (courbe)",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["330"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"n": "330",
+					"p": "3",
+					"s": "110",
+					"a1": "50",
+					"a2": "80",
+					"a3": "60",
+					"a4": "70",
+					"a5": "40",
+					"u1": "5",
+					"u2": "8",
+					"u3": "6",
+					"u4": "7",
+					"u5": "4"
+				},
+				"description": "(70 + 40) × 3 = 330",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["210"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"n": "330",
+					"p": "3",
+					"s": "110",
+					"a1": "50",
+					"a2": "80",
+					"a3": "60",
+					"a4": "70",
+					"a5": "40",
+					"u1": "5",
+					"u2": "8",
+					"u3": "6",
+					"u4": "7",
+					"u5": "4"
+				},
+				"description": "Erreur : jeudi seulement (210)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["115"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"T": "475",
+					"a": "120",
+					"b": "160",
+					"c": "80",
+					"d": "115",
+					"s": "360",
+					"ua": "6",
+					"ub": "8",
+					"uc": "4"
+				},
+				"description": "Avril : 475 − 360 = 115",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["475"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"T": "475",
+					"a": "120",
+					"b": "160",
+					"c": "80",
+					"d": "115",
+					"s": "360",
+					"ua": "6",
+					"ub": "8",
+					"uc": "4"
+				},
+				"description": "Erreur : le total",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["22"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"m": "8",
+					"n": "22",
+					"d1": "2",
+					"d2": "2",
+					"t0": "6",
+					"t1": "10",
+					"t2": "14",
+					"u0": "3"
+				},
+				"description": "8 h 6 °C, 12 h 14 °C : 14 + 8 = 22",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["8"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"m": "8",
+					"n": "22",
+					"d1": "2",
+					"d2": "2",
+					"t0": "6",
+					"t1": "10",
+					"t2": "14",
+					"u0": "3"
+				},
+				"description": "Erreur : la hausse seule (8)",
+				"variationIndex": 2
+			}
+		],
+		"classification_node_id": null
+	},
+	{
+		"id": "f5742b78-a6c3-45b6-a341-81e4b67fb9de",
+		"type": "fill_in_blanks",
+		"options": {
+			"constraints": {
+				"spacesFromFourDigits": true
+			}
+		},
+		"precision": null,
+		"grades": ["CM1"],
+		"delay": 90,
+		"level": 4,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{n}}"
+					}
+				],
+				"statement": "Ce tableau donne le nombre d'habitants de cinq villes.\n\n| Ville | Nombre d'habitants |\n|---|---|\n| Brumeval | ${{p1}}$ |\n| Castelroc | ${{p2}}$ |\n| Pontaval | ${{p3}}$ |\n| Mirelande | ${{p4}}$ |\n| Sablonnière | ${{p5}}$ |\n\nQuel est le nombre d'habitants de {{if:k==0|Brumeval|{{if:k==1|Castelroc|{{if:k==2|Pontaval|{{if:k==3|Mirelande|Sablonnière}}}}}}}} ?\n\n$?$ habitants",
+				"variables": [
+					{
+						"name": "p1",
+						"expression": "10000..999999"
+					},
+					{
+						"name": "p2",
+						"expression": "10000..999999"
+					},
+					{
+						"name": "p3",
+						"expression": "10000..999999"
+					},
+					{
+						"name": "p4",
+						"expression": "10000..999999"
+					},
+					{
+						"name": "p5",
+						"expression": "10000..999999"
+					},
+					{
+						"name": "k",
+						"expression": "0..4"
+					},
+					{
+						"name": "n",
+						"expression": "eval:(p1)*((k-1)*(k-2)*(k-3)*(k-4))/(24)+(p2)*((k-0)*(k-2)*(k-3)*(k-4))/(-6)+(p3)*((k-0)*(k-1)*(k-3)*(k-4))/(4)+(p4)*((k-0)*(k-1)*(k-2)*(k-4))/(-6)+(p5)*((k-0)*(k-1)*(k-2)*(k-3))/(24)"
+					}
+				],
+				"correction": {
+					"steps": [
+						"On cherche la ligne « {{if:k==0|Brumeval|{{if:k==1|Castelroc|{{if:k==2|Pontaval|{{if:k==3|Mirelande|Sablonnière}}}}}}}} », puis on lit la case de la colonne « Nombre d'habitants ».",
+						"{{if:k==0|Brumeval|{{if:k==1|Castelroc|{{if:k==2|Pontaval|{{if:k==3|Mirelande|Sablonnière}}}}}}}} : $\\textcolor{{{color:primary.0}}}{{{n}}}$ habitants."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{k}}"
+					}
+				],
+				"statement": "Ce tableau donne le nombre d'habitants de cinq villes.\n\n| Ville | Nombre d'habitants |\n|---|---|\n| Brumeval | ${{p1}}$ |\n| Castelroc | ${{p2}}$ |\n| Pontaval | ${{p3}}$ |\n| Mirelande | ${{p4}}$ |\n| Sablonnière | ${{p5}}$ |\n\nQuelle ville a ${{n}}$ habitants ?\n\n```choix\nmelanger: non\n- Brumeval\n- Castelroc\n- Pontaval\n- Mirelande\n- Sablonnière\n```",
+				"variables": [
+					{
+						"name": "p1",
+						"expression": "10000..999999"
+					},
+					{
+						"name": "p2",
+						"expression": "10000..999999"
+					},
+					{
+						"name": "p3",
+						"expression": "10000..999999"
+					},
+					{
+						"name": "p4",
+						"expression": "10000..999999"
+					},
+					{
+						"name": "p5",
+						"expression": "10000..999999"
+					},
+					{
+						"name": "k",
+						"expression": "0..4"
+					},
+					{
+						"name": "n",
+						"expression": "eval:(p1)*((k-1)*(k-2)*(k-3)*(k-4))/(24)+(p2)*((k-0)*(k-2)*(k-3)*(k-4))/(-6)+(p3)*((k-0)*(k-1)*(k-3)*(k-4))/(4)+(p4)*((k-0)*(k-1)*(k-2)*(k-4))/(-6)+(p5)*((k-0)*(k-1)*(k-2)*(k-3))/(24)"
+					}
+				],
+				"correction": {
+					"steps": [
+						"On cherche ${{n}}$ dans la colonne « Nombre d'habitants », chiffre par chiffre, puis on lit la ville sur la même ligne.",
+						"C'est {{if:k==0|Brumeval|{{if:k==1|Castelroc|{{if:k==2|Pontaval|{{if:k==3|Mirelande|Sablonnière}}}}}}}}."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{n}}"
+					}
+				],
+				"statement": "Ce tableau donne l'altitude de cinq sommets.\n\n| Sommet | Altitude (m) |\n|---|---|\n| Pic de l'Aigle | ${{a1}}$ |\n| Mont Blanchet | ${{a2}}$ |\n| Dent du Loup | ${{a3}}$ |\n| Puy Vert | ${{a4}}$ |\n| Tête Grise | ${{a5}}$ |\n\nQuelle est l'altitude de {{if:k==0|le pic de l'Aigle|{{if:k==1|le mont Blanchet|{{if:k==2|la dent du Loup|{{if:k==3|le puy Vert|la tête Grise}}}}}}}} ?\n\n$?$ m",
+				"variables": [
+					{
+						"name": "a1",
+						"expression": "1000..4800"
+					},
+					{
+						"name": "a2",
+						"expression": "1000..4800"
+					},
+					{
+						"name": "a3",
+						"expression": "1000..4800"
+					},
+					{
+						"name": "a4",
+						"expression": "1000..4800"
+					},
+					{
+						"name": "a5",
+						"expression": "1000..4800"
+					},
+					{
+						"name": "k",
+						"expression": "0..4"
+					},
+					{
+						"name": "n",
+						"expression": "eval:(a1)*((k-1)*(k-2)*(k-3)*(k-4))/(24)+(a2)*((k-0)*(k-2)*(k-3)*(k-4))/(-6)+(a3)*((k-0)*(k-1)*(k-3)*(k-4))/(4)+(a4)*((k-0)*(k-1)*(k-2)*(k-4))/(-6)+(a5)*((k-0)*(k-1)*(k-2)*(k-3))/(24)"
+					}
+				],
+				"correction": {
+					"steps": [
+						"On cherche la ligne de {{if:k==0|le pic de l'Aigle|{{if:k==1|le mont Blanchet|{{if:k==2|la dent du Loup|{{if:k==3|le puy Vert|la tête Grise}}}}}}}}, puis on lit la colonne « Altitude (m) ».",
+						"Son altitude : $\\textcolor{{{color:primary.0}}}{{{n}}}$ m."
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "draft",
+		"title": "Lis un tableau à simple entrée",
+		"description": "Villes inventées : le nombre d'habitants d'une ville (10 000 à 999 999), la ville qui a un nombre d'habitants donné (case choix) ; l'altitude d'un sommet (1 000 à 4 800 m)",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["512 004"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"k": "2",
+					"n": "512004",
+					"p1": "245318",
+					"p2": "87650",
+					"p3": "512004",
+					"p4": "31872",
+					"p5": "698120"
+				},
+				"description": "Pontaval : 512 004",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["87 650"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"k": "2",
+					"n": "512004",
+					"p1": "245318",
+					"p2": "87650",
+					"p3": "512004",
+					"p4": "31872",
+					"p5": "698120"
+				},
+				"description": "Erreur : la ligne voisine (Castelroc)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["4"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"k": "4",
+					"n": "698120",
+					"p1": "245318",
+					"p2": "87650",
+					"p3": "512004",
+					"p4": "31872",
+					"p5": "698120"
+				},
+				"description": "698 120 : Sablonnière",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["2"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"k": "4",
+					"n": "698120",
+					"p1": "245318",
+					"p2": "87650",
+					"p3": "512004",
+					"p4": "31872",
+					"p5": "698120"
+				},
+				"description": "Erreur : Pontaval",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["3 512"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"k": "2",
+					"n": "3512",
+					"a1": "2845",
+					"a2": "1930",
+					"a3": "3512",
+					"a4": "4120",
+					"a5": "1205"
+				},
+				"description": "Dent du Loup : 3 512 m",
+				"variationIndex": 2
+			}
+		],
+		"classification_node_id": null
+	}
+]

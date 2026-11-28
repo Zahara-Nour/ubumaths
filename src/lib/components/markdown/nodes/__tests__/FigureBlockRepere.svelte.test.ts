@@ -7,8 +7,8 @@
 import { describe, it, expect, afterEach } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import FigureBlock from '../FigureBlock.svelte';
-import { parseFigureContent } from '$lib/ubumark/parser/figure-parser';
-import { buildFigureScene } from '$lib/ubumark/utils/figure-scene';
+import { parseFigureContent } from '#lib/ubumark/parser/figure-parser.ts';
+import { buildFigureScene } from '#lib/ubumark/utils/figure-scene.ts';
 
 const SCRIPT = `A = point(1, 1)
 B = point(4, 3)

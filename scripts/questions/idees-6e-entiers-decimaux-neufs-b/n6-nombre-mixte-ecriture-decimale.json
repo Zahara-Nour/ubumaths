@@ -1,0 +1,861 @@
+{
+	"id": "a153437d-3c06-4e4e-94ad-dd8ca5168f83",
+	"title": "Nombre mixte et écriture décimale",
+	"description": "Passer d'une écriture à l'autre : 3,47 = 3 + 47/100 = 347/100 ; 6/5 = 1 + 1/5 = 1,2 ; 0,125 = 12,5 % (pièges : un zéro de trop ou de moins au dénominateur, zéro oublié, entier ajouté au numérateur, trait de fraction lu comme une virgule, multiplication par 100 oubliée)",
+	"grades": ["6"],
+	"level": 2,
+	"delay": 60,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"spacesFromFourDigits": true,
+			"reducedFractions": "off"
+		}
+	},
+	"variations": [
+		{
+			"statement": "Écris ce nombre sous la forme d'un nombre entier plus une fraction décimale plus petite que $1$ (dénominateur $10$, $100$ ou $1\\,000$).\n\n$${{eval:a+b/D;d}}=?$$",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "1..3"
+				},
+				{
+					"name": "D",
+					"expression": "eval:10^p"
+				},
+				{
+					"name": "a",
+					"expression": "1..30"
+				},
+				{
+					"name": "b",
+					"expression": "1..999"
+				}
+			],
+			"conditions": ["b < D", "mod(b,10) != 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{a}}+\\frac{ {{b}} }{ {{D}} }",
+					"requiredForm": {
+						"pattern": "a:integer + p:integer & gte(0) & lt(w) / w:(eq(10) | eq(100) | eq(1000))"
+					},
+					"expectedErrors": [
+						{
+							"answer": "{{eval:a+10*b/D;d}}",
+							"message": "Ton dénominateur a un zéro de moins qu'il ne faut : il y a ${{p}}$ chiffre{{if:p>1|s|}} après la virgule, donc des {{if:p==1|dixièmes|{{if:p==2|centièmes|millièmes}}}}.",
+							"label": "Un zéro de moins au dénominateur"
+						},
+						{
+							"answer": "{{eval:a+b/(10*D);d}}",
+							"message": "Ton dénominateur a un zéro de trop : il y a ${{p}}$ chiffre{{if:p>1|s|}} après la virgule, donc des {{if:p==1|dixièmes|{{if:p==2|centièmes|millièmes}}}}.",
+							"label": "Un zéro de trop au dénominateur"
+						},
+						{
+							"answer": "{{eval:a+b/10^(1+min(floor(b/10),1)+min(floor(b/100),1));d}}",
+							"message": "Tu as oublié le zéro après la virgule : il y a ${{p}}$ chiffre{{if:p>1|s|}} après la virgule, donc des {{if:p==1|dixièmes|{{if:p==2|centièmes|millièmes}}}}.",
+							"label": "Zéro après la virgule oublié"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"La partie entière est ${{a}}$ ; après la virgule, ${{p}}$ chiffre{{if:p>1|s|}} : ${{b}}$ {{if:p==1|dixièmes|{{if:p==2|centièmes|millièmes}}}}.",
+					"$${{eval:a+b/D;d}}=\\textcolor{{{color:primary.0}}}{ {{a}}+\\dfrac{ {{b}} }{ {{D}} }}$$"
+				]
+			},
+			"hint": "Sépare la partie entière de ce qui est après la virgule. Le dernier chiffre après la virgule dit le dénominateur : dixièmes, centièmes ou millièmes."
+		},
+		{
+			"statement": "Écris ce nombre sous la forme d'une seule fraction décimale.\n\n$${{a}}+\\dfrac{ {{b}} }{ {{D}} }=?$$",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "1..3"
+				},
+				{
+					"name": "D",
+					"expression": "eval:10^p"
+				},
+				{
+					"name": "a",
+					"expression": "1..30"
+				},
+				{
+					"name": "b",
+					"expression": "1..999"
+				},
+				{
+					"name": "N",
+					"expression": "eval:a*D+b"
+				}
+			],
+			"conditions": ["b < D", "mod(b,10) != 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "\\frac{ {{N}} }{ {{D}} }",
+					"requiredForm": {
+						"pattern": "n:integer / w:(eq(10) | eq(100) | eq(1000))"
+					},
+					"expectedErrors": [
+						{
+							"answer": "{{eval:(a+b)/D;d}}",
+							"message": "Tu as ajouté ${{a}}$ au numérateur : ${{a}}$, c'est ${{eval:a*D}}$ {{if:p==1|dixièmes|{{if:p==2|centièmes|millièmes}}}}, pas ${{a}}$.",
+							"label": "Entier ajouté au numérateur"
+						},
+						{
+							"answer": "{{eval:(a*10^(1+min(floor(b/10),1)+min(floor(b/100),1))+b)/D;d}}",
+							"message": "Tu as collé ${{a}}$ et ${{b}}$ : il manque un zéro, car ${{a}}$, c'est ${{eval:a*D}}$ {{if:p==1|dixièmes|{{if:p==2|centièmes|millièmes}}}}.",
+							"label": "Chiffres collés, zéro oublié"
+						},
+						{
+							"answer": "{{eval:(a*D+b)/(10*D);d}}",
+							"message": "Le dénominateur ne change pas : ce sont toujours des {{if:p==1|dixièmes|{{if:p==2|centièmes|millièmes}}}}.",
+							"label": "Dénominateur changé"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"${{a}}={{a}}\\times{{D}}$ {{if:p==1|dixièmes|{{if:p==2|centièmes|millièmes}}}} $={{eval:a*D}}$ {{if:p==1|dixièmes|{{if:p==2|centièmes|millièmes}}}}, soit $\\dfrac{ {{eval:a*D}} }{ {{D}} }$.",
+					"$${{a}}+\\dfrac{ {{b}} }{ {{D}} }=\\dfrac{ {{eval:a*D}} }{ {{D}} }+\\dfrac{ {{b}} }{ {{D}} }=\\textcolor{{{color:primary.0}}}{\\dfrac{ {{N}} }{ {{D}} }}$$"
+				]
+			},
+			"hint": "Écris d'abord le nombre entier sous la forme d'une fraction de même dénominateur, puis additionne les numérateurs."
+		},
+		{
+			"statement": "Écris cette fraction sous la forme d'un nombre entier plus une fraction décimale plus petite que $1$.\n\n$$\\dfrac{ {{N}} }{ {{D}} }=?$$",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "2|3"
+				},
+				{
+					"name": "D",
+					"expression": "eval:10^p"
+				},
+				{
+					"name": "a",
+					"expression": "1..30"
+				},
+				{
+					"name": "b",
+					"expression": "1..999"
+				},
+				{
+					"name": "N",
+					"expression": "eval:a*D+b"
+				}
+			],
+			"conditions": ["b < D", "mod(b,10) != 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{a}}+\\frac{ {{b}} }{ {{D}} }",
+					"requiredForm": {
+						"pattern": "a:integer + p:integer & gte(0) & lt(w) / w:(eq(10) | eq(100) | eq(1000))"
+					},
+					"expectedErrors": [
+						{
+							"answer": "{{eval:floor(N/(D/10))+mod(N,D/10)/D;d}}",
+							"message": "Tu n'as pas coupé au bon endroit : ${{D}}$ {{if:p==1|dixièmes|{{if:p==2|centièmes|millièmes}}}} font une unité, il faut prendre ${{p}}$ chiffre{{if:p>1|s|}} pour la fraction.",
+							"label": "Coupé au mauvais rang"
+						},
+						{
+							"answer": "{{eval:a+10*b/D;d}}",
+							"message": "Le dénominateur ne change pas : ce sont toujours des {{if:p==1|dixièmes|{{if:p==2|centièmes|millièmes}}}}.",
+							"label": "Un zéro de moins au dénominateur"
+						},
+						{
+							"answer": "{{eval:a+b/(10*D);d}}",
+							"message": "Le dénominateur ne change pas : ce sont toujours des {{if:p==1|dixièmes|{{if:p==2|centièmes|millièmes}}}}, pas un zéro de plus.",
+							"label": "Un zéro de trop au dénominateur"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"${{D}}$ {{if:p==1|dixièmes|{{if:p==2|centièmes|millièmes}}}} font une unité : dans ${{N}}$ {{if:p==1|dixièmes|{{if:p==2|centièmes|millièmes}}}}, il y a ${{a}}$ unité{{if:a>1|s|}} et ${{b}}$ {{if:p==1|dixièmes|{{if:p==2|centièmes|millièmes}}}} de reste.",
+					"$$\\dfrac{ {{N}} }{ {{D}} }=\\dfrac{ {{eval:a*D}} }{ {{D}} }+\\dfrac{ {{b}} }{ {{D}} }=\\textcolor{{{color:primary.0}}}{ {{a}}+\\dfrac{ {{b}} }{ {{D}} }}$$"
+				]
+			},
+			"hint": "Combien d'unités entières dans cette fraction ? Une unité, c'est ${{D}}$ {{if:p==1|dixièmes|{{if:p==2|centièmes|millièmes}}}}."
+		},
+		{
+			"statement": "Écris cette fraction sous la forme d'un nombre entier plus une fraction plus petite que $1$, puis en écriture décimale.\n\n$$\\dfrac{ {{N}} }{ {{d}} }=?=?$$",
+			"variables": [
+				{
+					"name": "d",
+					"expression": "2|4|5"
+				},
+				{
+					"name": "q",
+					"expression": "1..9"
+				},
+				{
+					"name": "r",
+					"expression": "1..4"
+				},
+				{
+					"name": "N",
+					"expression": "eval:q*d+r"
+				}
+			],
+			"conditions": ["r < d"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{q}}+\\frac{ {{r}} }{ {{d}} }",
+					"requiredForm": {
+						"pattern": "a:integer + p:integer & gte(0) & lt(w) / w:integer"
+					},
+					"expectedErrors": [
+						{
+							"answer": "{{eval:q+N/d;d}}",
+							"message": "Tu as gardé tout le numérateur dans la fraction : elle doit être plus petite que $1$, retire les unités entières.",
+							"label": "Numérateur gardé"
+						},
+						{
+							"answer": "{{eval:r+q/d;d}}",
+							"message": "Tu as échangé : le nombre d'unités est le quotient de ${{N}}$ par ${{d}}$, le numérateur est le reste.",
+							"label": "Quotient et reste échangés"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{eval:N/d;d}}",
+					"requiredForm": {
+						"pattern": "a:number"
+					},
+					"expectedErrors": [
+						{
+							"answer": "{{eval:N+d/10;d}}",
+							"message": "Le trait de fraction n'est pas une virgule : $\\dfrac{ {{N}} }{ {{d}} }$, c'est ${{N}}$ divisé par ${{d}}$.",
+							"label": "Numérateur virgule dénominateur"
+						},
+						{
+							"answer": "{{eval:q+r/10;d}}",
+							"message": "Tu as écrit le numérateur après la virgule : $\\dfrac{ {{r}} }{ {{d}} }$ n'est pas ${{r}}$ dixièmes.",
+							"label": "Numérateur après la virgule"
+						},
+						{
+							"answer": "{{eval:q+d/10;d}}",
+							"message": "Tu as écrit le dénominateur après la virgule : cherche une fraction égale à $\\dfrac{ {{r}} }{ {{d}} }$ de dénominateur $10$ ou $100$.",
+							"label": "Dénominateur après la virgule"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"${{N}}={{q}}\\times{{d}}+{{r}}$ : $\\dfrac{ {{N}} }{ {{d}} }=\\textcolor{{{color:primary.0}}}{ {{q}}+\\dfrac{ {{r}} }{ {{d}} }}$.",
+					"$\\dfrac{ {{r}} }{ {{d}} }=\\dfrac{ {{eval:r*100/d}} }{100}={{eval:r/d;d}}$, donc $\\dfrac{ {{N}} }{ {{d}} }=\\textcolor{{{color:primary.0}}}{ {{eval:N/d;d}} }$."
+				]
+			},
+			"hint": "Combien de fois ${{d}}$ dans ${{N}}$ ? Le reste reste dans la fraction. Pour l'écriture décimale, écris cette fraction avec le dénominateur $10$ ou $100$."
+		},
+		{
+			"statement": "Écris ce nombre sous forme de pourcentage.\n\n$${{x}}=?$$",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "1..3"
+				},
+				{
+					"name": "n",
+					"expression": "1..999"
+				},
+				{
+					"name": "x",
+					"expression": "eval:n/10^p;d"
+				}
+			],
+			"conditions": ["n < 10^p", "mod(n,10) != 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:100*n/10^p;d}}\\%",
+					"expectedErrors": [
+						{
+							"answer": "{{x}}\\%",
+							"message": "Tu as oublié de multiplier par $100$ : un pourcentage compte des centièmes.",
+							"label": "Multiplication par 100 oubliée"
+						},
+						{
+							"answer": "{{eval:10*n/10^p;d}}\\%",
+							"message": "Tu n'as pas décalé la virgule assez loin : pour un pourcentage, multiplie par $100$, c'est-à-dire deux rangs vers la droite.",
+							"label": "Un rang de moins"
+						},
+						{
+							"answer": "{{eval:1000*n/10^p;d}}\\%",
+							"message": "Tu as décalé la virgule d'un rang de trop : pour un pourcentage, multiplie par $100$, c'est-à-dire deux rangs vers la droite, pas trois.",
+							"label": "Un rang de trop"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"Un pourcentage compte des centièmes : on multiplie par $100$, c'est-à-dire qu'on décale la virgule de deux rangs vers la droite.",
+					"$${{x}}=\\dfrac{ {{eval:100*n/10^p;d}} }{100}=\\textcolor{{{color:primary.0}}}{ {{eval:100*n/10^p;d}}\\,\\%}$$"
+				]
+			},
+			"hint": "Combien de centièmes dans ce nombre ? Le pourcentage, c'est ce nombre de centièmes."
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "v0 : 3,47 = 3 + 47/100",
+			"variationIndex": 0,
+			"variables": {
+				"p": "2",
+				"D": "100",
+				"a": "3",
+				"b": "47"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["3+\\frac{47}{100}"]
+		},
+		{
+			"description": "v0 : fraction égale 470/1 000 acceptée",
+			"variationIndex": 0,
+			"variables": {
+				"p": "2",
+				"D": "100",
+				"a": "3",
+				"b": "47"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["3+\\frac{470}{1\\,000}"]
+		},
+		{
+			"description": "v0 : une seule fraction refusée",
+			"variationIndex": 0,
+			"variables": {
+				"p": "2",
+				"D": "100",
+				"a": "3",
+				"b": "47"
+			},
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			},
+			"answers": ["\\frac{347}{100}"]
+		},
+		{
+			"description": "v0 : écriture décimale refusée",
+			"variationIndex": 0,
+			"variables": {
+				"p": "2",
+				"D": "100",
+				"a": "3",
+				"b": "47"
+			},
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			},
+			"answers": ["3,47"]
+		},
+		{
+			"description": "v0 : 3 + 47/10",
+			"variationIndex": 0,
+			"variables": {
+				"p": "2",
+				"D": "100",
+				"a": "3",
+				"b": "47"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Ton dénominateur a un zéro de moins qu'il ne faut : il y a $2$ chiffres après la virgule, donc des centièmes."
+			},
+			"answers": ["3+\\frac{47}{10}"]
+		},
+		{
+			"description": "v0 : 3 + 47/1 000",
+			"variationIndex": 0,
+			"variables": {
+				"p": "2",
+				"D": "100",
+				"a": "3",
+				"b": "47"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Ton dénominateur a un zéro de trop : il y a $2$ chiffres après la virgule, donc des centièmes."
+			},
+			"answers": ["3+\\frac{47}{1\\,000}"]
+		},
+		{
+			"description": "v0 : 3,07 = 3 + 7/100",
+			"variationIndex": 0,
+			"variables": {
+				"p": "2",
+				"D": "100",
+				"a": "3",
+				"b": "7"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["3+\\frac{7}{100}"]
+		},
+		{
+			"description": "v0 : 3,07 → 3 + 7/10",
+			"variationIndex": 0,
+			"variables": {
+				"p": "2",
+				"D": "100",
+				"a": "3",
+				"b": "7"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Ton dénominateur a un zéro de moins qu'il ne faut : il y a $2$ chiffres après la virgule, donc des centièmes."
+			},
+			"answers": ["3+\\frac{7}{10}"]
+		},
+		{
+			"description": "v0 : 3,5 = 3 + 5/10",
+			"variationIndex": 0,
+			"variables": {
+				"p": "1",
+				"D": "10",
+				"a": "3",
+				"b": "5"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["3+\\frac{5}{10}"]
+		},
+		{
+			"description": "v0 : 3,5 = 3 + 1/2 refusé (pas décimale)",
+			"variationIndex": 0,
+			"variables": {
+				"p": "1",
+				"D": "10",
+				"a": "3",
+				"b": "5"
+			},
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			},
+			"answers": ["3+\\frac{1}{2}"]
+		},
+		{
+			"description": "v1 : 3 + 7/100 = 307/100",
+			"variationIndex": 1,
+			"variables": {
+				"p": "2",
+				"D": "100",
+				"a": "3",
+				"b": "7",
+				"N": "307"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["\\frac{307}{100}"]
+		},
+		{
+			"description": "v1 : 3 + 7/100 → 10/100",
+			"variationIndex": 1,
+			"variables": {
+				"p": "2",
+				"D": "100",
+				"a": "3",
+				"b": "7",
+				"N": "307"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as ajouté $3$ au numérateur : $3$, c'est $300$ centièmes, pas $3$."
+			},
+			"answers": ["\\frac{10}{100}"]
+		},
+		{
+			"description": "v1 : 3 + 7/100 → 37/100",
+			"variationIndex": 1,
+			"variables": {
+				"p": "2",
+				"D": "100",
+				"a": "3",
+				"b": "7",
+				"N": "307"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as collé $3$ et $7$ : il manque un zéro, car $3$, c'est $300$ centièmes."
+			},
+			"answers": ["\\frac{37}{100}"]
+		},
+		{
+			"description": "v1 : 3 + 7/100 → 307/1 000",
+			"variationIndex": 1,
+			"variables": {
+				"p": "2",
+				"D": "100",
+				"a": "3",
+				"b": "7",
+				"N": "307"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Le dénominateur ne change pas : ce sont toujours des centièmes."
+			},
+			"answers": ["\\frac{307}{1\\,000}"]
+		},
+		{
+			"description": "v1 : écriture décimale refusée",
+			"variationIndex": 1,
+			"variables": {
+				"p": "2",
+				"D": "100",
+				"a": "3",
+				"b": "7",
+				"N": "307"
+			},
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			},
+			"answers": ["3,07"]
+		},
+		{
+			"description": "v1 : 12 + 405/1 000",
+			"variationIndex": 1,
+			"variables": {
+				"p": "3",
+				"D": "1000",
+				"a": "12",
+				"b": "405",
+				"N": "12405"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["\\frac{12\\,405}{1\\,000}"]
+		},
+		{
+			"description": "v2 : 347/100 = 3 + 47/100",
+			"variationIndex": 2,
+			"variables": {
+				"p": "2",
+				"D": "100",
+				"a": "3",
+				"b": "47",
+				"N": "347"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["3+\\frac{47}{100}"]
+		},
+		{
+			"description": "v2 : 34 + 7/100",
+			"variationIndex": 2,
+			"variables": {
+				"p": "2",
+				"D": "100",
+				"a": "3",
+				"b": "47",
+				"N": "347"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu n'as pas coupé au bon endroit : $100$ centièmes font une unité, il faut prendre $2$ chiffres pour la fraction."
+			},
+			"answers": ["34+\\frac{7}{100}"]
+		},
+		{
+			"description": "v2 : 3 + 47/10",
+			"variationIndex": 2,
+			"variables": {
+				"p": "2",
+				"D": "100",
+				"a": "3",
+				"b": "47",
+				"N": "347"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Le dénominateur ne change pas : ce sont toujours des centièmes."
+			},
+			"answers": ["3+\\frac{47}{10}"]
+		},
+		{
+			"description": "v2 : 3 + 47/1 000",
+			"variationIndex": 2,
+			"variables": {
+				"p": "2",
+				"D": "100",
+				"a": "3",
+				"b": "47",
+				"N": "347"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Le dénominateur ne change pas : ce sont toujours des centièmes, pas un zéro de plus."
+			},
+			"answers": ["3+\\frac{47}{1\\,000}"]
+		},
+		{
+			"description": "v2 : fraction recopiée refusée",
+			"variationIndex": 2,
+			"variables": {
+				"p": "2",
+				"D": "100",
+				"a": "3",
+				"b": "47",
+				"N": "347"
+			},
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			},
+			"answers": ["\\frac{347}{100}"]
+		},
+		{
+			"description": "v2 : 2 347/1 000 = 2 + 347/1 000",
+			"variationIndex": 2,
+			"variables": {
+				"p": "3",
+				"D": "1000",
+				"a": "2",
+				"b": "347",
+				"N": "2347"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["2+\\frac{347}{1\\,000}"]
+		},
+		{
+			"description": "v3 : 6/5 = 1 + 1/5 = 1,2",
+			"variationIndex": 3,
+			"variables": {
+				"d": "5",
+				"q": "1",
+				"r": "1",
+				"N": "6"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["1+\\frac{1}{5}", "1,2"]
+		},
+		{
+			"description": "v3 : 6/5 → 6,5",
+			"variationIndex": 3,
+			"variables": {
+				"d": "5",
+				"q": "1",
+				"r": "1",
+				"N": "6"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Le trait de fraction n'est pas une virgule : $\\dfrac{6}{5}$, c'est $6$ divisé par $5$."
+			},
+			"answers": ["1+\\frac{1}{5}", "6,5"]
+		},
+		{
+			"description": "v3 : 6/5 → 1,1",
+			"variationIndex": 3,
+			"variables": {
+				"d": "5",
+				"q": "1",
+				"r": "1",
+				"N": "6"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as écrit le numérateur après la virgule : $\\dfrac{1}{5}$ n'est pas $1$ dixièmes."
+			},
+			"answers": ["1+\\frac{1}{5}", "1,1"]
+		},
+		{
+			"description": "v3 : 6/5 → 1,5",
+			"variationIndex": 3,
+			"variables": {
+				"d": "5",
+				"q": "1",
+				"r": "1",
+				"N": "6"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as écrit le dénominateur après la virgule : cherche une fraction égale à $\\dfrac{1}{5}$ de dénominateur $10$ ou $100$."
+			},
+			"answers": ["1+\\frac{1}{5}", "1,5"]
+		},
+		{
+			"description": "v3 : 6/5 → 1 + 6/5",
+			"variationIndex": 3,
+			"variables": {
+				"d": "5",
+				"q": "1",
+				"r": "1",
+				"N": "6"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as gardé tout le numérateur dans la fraction : elle doit être plus petite que $1$, retire les unités entières."
+			},
+			"answers": ["1+\\frac{6}{5}", "1,2"]
+		},
+		{
+			"description": "v3 : 7/4 → 3 + 1/4",
+			"variationIndex": 3,
+			"variables": {
+				"d": "4",
+				"q": "1",
+				"r": "3",
+				"N": "7"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as échangé : le nombre d'unités est le quotient de $7$ par $4$, le numérateur est le reste."
+			},
+			"answers": ["3+\\frac{1}{4}", "1,75"]
+		},
+		{
+			"description": "v3 : 7/4 = 1 + 3/4 = 1,75",
+			"variationIndex": 3,
+			"variables": {
+				"d": "4",
+				"q": "1",
+				"r": "3",
+				"N": "7"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["1+\\frac{3}{4}", "1,75"]
+		},
+		{
+			"description": "v3 : 7/4, décimal dans la première case refusé",
+			"variationIndex": 3,
+			"variables": {
+				"d": "4",
+				"q": "1",
+				"r": "3",
+				"N": "7"
+			},
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			},
+			"answers": ["1,75", "1,75"]
+		},
+		{
+			"description": "v3 : 7/4, fraction dans la seconde case refusée",
+			"variationIndex": 3,
+			"variables": {
+				"d": "4",
+				"q": "1",
+				"r": "3",
+				"N": "7"
+			},
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			},
+			"answers": ["1+\\frac{3}{4}", "\\frac{7}{4}"]
+		},
+		{
+			"description": "v4 : 0,125 = 12,5 %",
+			"variationIndex": 4,
+			"variables": {
+				"p": "3",
+				"n": "125",
+				"x": "0.125"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["12,5\\%"]
+		},
+		{
+			"description": "v4 : 0,125 %",
+			"variationIndex": 4,
+			"variables": {
+				"p": "3",
+				"n": "125",
+				"x": "0.125"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as oublié de multiplier par $100$ : un pourcentage compte des centièmes."
+			},
+			"answers": ["0,125\\%"]
+		},
+		{
+			"description": "v4 : 1,25 %",
+			"variationIndex": 4,
+			"variables": {
+				"p": "3",
+				"n": "125",
+				"x": "0.125"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu n'as pas décalé la virgule assez loin : pour un pourcentage, multiplie par $100$, c'est-à-dire deux rangs vers la droite."
+			},
+			"answers": ["1,25\\%"]
+		},
+		{
+			"description": "v4 : 125 %",
+			"variationIndex": 4,
+			"variables": {
+				"p": "3",
+				"n": "125",
+				"x": "0.125"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as décalé la virgule d'un rang de trop : pour un pourcentage, multiplie par $100$, c'est-à-dire deux rangs vers la droite, pas trois."
+			},
+			"answers": ["125\\%"]
+		},
+		{
+			"description": "v4 : 0,4 = 40 %",
+			"variationIndex": 4,
+			"variables": {
+				"p": "1",
+				"n": "4",
+				"x": "0.4"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["40\\%"]
+		},
+		{
+			"description": "v4 : 0,4 → 4 %",
+			"variationIndex": 4,
+			"variables": {
+				"p": "1",
+				"n": "4",
+				"x": "0.4"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu n'as pas décalé la virgule assez loin : pour un pourcentage, multiplie par $100$, c'est-à-dire deux rangs vers la droite."
+			},
+			"answers": ["4\\%"]
+		}
+	],
+	"rangement": {
+		"noeud": "Nombres et calculs > Décimaux : numération > forme fractionnaire",
+		"point": "6-106"
+	}
+}

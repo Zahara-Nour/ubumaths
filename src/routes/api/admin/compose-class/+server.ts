@@ -27,11 +27,11 @@
  * et c'est voulu : la fonction est le garde, la route est le message.
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { composeClassSchema } from '$lib/server/validation/admin';
-import { requireAdmin } from '$lib/server/middleware/auth';
-import { createServerLogger } from '$lib/utils/logger';
+import { composeClassSchema } from '#lib/server/validation/admin.ts';
+import { requireAdmin } from '#lib/server/middleware/auth.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/admin/compose-class/+server');
 
@@ -117,7 +117,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	// présente — active ou archivée — n'est donc ni dupliquée ni réactivée, et
 	// c'est la même transaction qui le garantit.
 	if (eleveIds.size === 0) {
-		return json({ added: 0, ignored: 0, moved: 0, refused });
+		return Response.json({ added: 0, ignored: 0, moved: 0, refused });
 	}
 
 	// Une seule transaction : inscription et déplacement d'école ensemble.
@@ -133,7 +133,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 	const compte = resultat?.[0] ?? { enrolled: 0, moved: 0 };
 
-	return json({
+	return Response.json({
 		added: compte.enrolled,
 		// Les élèves éligibles que la fonction n'a pas inscrits : ils étaient
 		// déjà membres, actifs ou archivés.

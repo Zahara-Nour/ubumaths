@@ -13,7 +13,7 @@
  */
 
 import { SvelteSet } from 'svelte/reactivity';
-import type { ScenePoint } from '$lib/ubumark/utils/scene-commune';
+import type { ScenePoint } from '#lib/ubumark/utils/scene-commune.ts';
 
 // ============================================================================
 // FONCTIONS

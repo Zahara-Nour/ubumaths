@@ -10,10 +10,10 @@
  * endpoint level so they don't see template skeletons via the API.
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireAuth } from '$lib/server/middleware/auth';
-import { createServerLogger } from '$lib/utils/logger';
+import { requireAuth } from '#lib/server/middleware/auth.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/python-notebook-templates/+server');
 
@@ -57,5 +57,5 @@ export const GET: RequestHandler = async ({ locals }) => {
 		throw error(500, 'Impossible de charger les modèles de carnet');
 	}
 
-	return json({ templates: data ?? [] });
+	return Response.json({ templates: data ?? [] });
 };

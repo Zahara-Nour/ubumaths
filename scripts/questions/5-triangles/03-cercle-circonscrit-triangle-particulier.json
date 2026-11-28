@@ -1,0 +1,157 @@
+{
+	"id": "0b7c4059-9ab3-48f0-86a8-1731ac53965b",
+	"title": "Cercle circonscrit d'un triangle particulier",
+	"description": "Le centre du cercle circonscrit d'un triangle rectangle est le milieu de l'hypoténuse (observé, admis) ; dans un triangle isocèle, la médiatrice de la base passe par le sommet principal",
+	"grades": ["5"],
+	"level": 2,
+	"delay": 90,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Le triangle ${{if:k==1|A|{{if:k==2|B|C}}}}{{if:k==1|B|{{if:k==2|C|A}}}}{{if:k==1|C|{{if:k==2|A|B}}}}$ est rectangle en ${{if:k==1|A|{{if:k==2|B|C}}}}$. On a tracé son cercle circonscrit.\n\n```figure\nfenetre: -3.6 ; 3.6 ; -3.4 ; 3.4\ndescription: Un triangle rectangle et son cercle circonscrit, en bleu ; le centre du cercle n'est pas marqué.\n---\n{{if:k==1|A = point(-2.5, -1.7, etiquette=\"bas-gauche\")\nB = point(2.5, -1.7, etiquette=\"bas-droite\")\nC = point(-2.5, 1.7, etiquette=\"haut-gauche\")\ntriangle(A, B, C)\nangle(B, A, C, marque=\"carre\")\ncercle_circonscrit(A, B, C, couleur=\"bleu\")|{{if:k==2|B = point(-1.547, -2.597, etiquette=\"bas-gauche\")\nC = point(2.984, -0.484, etiquette=\"haut-droite\")\nA = point(-2.984, 0.484, etiquette=\"haut-gauche\")\ntriangle(B, C, A)\nangle(C, B, A, marque=\"carre\")\ncercle_circonscrit(B, C, A, couleur=\"bleu\")|C = point(-2.931, -0.742, etiquette=\"bas-gauche\")\nA = point(1.768, -2.453, etiquette=\"bas-droite\")\nB = point(-1.768, 2.453, etiquette=\"haut-gauche\")\ntriangle(C, A, B)\nangle(A, C, B, marque=\"carre\")\ncercle_circonscrit(C, A, B, couleur=\"bleu\")}}}}\n```\n\nOù se trouve le centre de ce cercle ?\n\n```choix\n- au milieu du côté $[{{if:k==1|B|{{if:k==2|C|A}}}}{{if:k==1|C|{{if:k==2|A|B}}}}]$\n- au sommet ${{if:k==1|A|{{if:k==2|B|C}}}}$\n- au milieu du côté $[{{if:k==1|A|{{if:k==2|B|C}}}}{{if:k==1|B|{{if:k==2|C|A}}}}]$\n- à l'intérieur du triangle, sur aucun côté\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..3"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le côté opposé à l'angle droit, $[{{if:k==1|B|{{if:k==2|C|A}}}}{{if:k==1|C|{{if:k==2|A|B}}}}]$, est l'**hypoténuse**.",
+					"**Le centre du cercle circonscrit à un triangle rectangle est le milieu de son hypoténuse** (on l'observe sur la figure ; on le démontrera en 4e).",
+					"Le centre est $\\textcolor{{{color:primary.0}}}{\\text{au milieu de }[{{if:k==1|B|{{if:k==2|C|A}}}}{{if:k==1|C|{{if:k==2|A|B}}}}]}$."
+				]
+			}
+		},
+		{
+			"statement": "Le triangle $ABC$ est rectangle en $A$, et $BC = {{c}}~\\unit{cm}$.\n\nQuel est le rayon de son cercle circonscrit ?\n\n$\\text{rayon} = ?~\\text{cm}$",
+			"variables": [
+				{
+					"name": "h",
+					"expression": "3..7"
+				},
+				{
+					"name": "c",
+					"expression": "eval:2*h"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{h}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Le centre du cercle circonscrit à un triangle rectangle est le milieu de son hypoténuse.** Ici, l'hypoténuse est $[BC]$ (le côté opposé à l'angle droit).",
+					"Le rayon est donc la moitié de l'hypoténuse : $\\dfrac{{{c}}}{2} = \\textcolor{{{color:primary.0}}}{{{h}}~\\unit{cm}}$."
+				]
+			}
+		},
+		{
+			"statement": "Le triangle ${{if:k==1|A|{{if:k==2|B|C}}}}{{if:k==1|B|{{if:k==2|C|A}}}}{{if:k==1|C|{{if:k==2|A|B}}}}$ est isocèle en ${{if:k==1|A|{{if:k==2|B|C}}}}$.\n\n```figure\nfenetre: -3.6 ; 3.6 ; -3 ; 4\ndescription: Un triangle isocèle, ses deux côtés égaux codés.\n---\n{{if:k==1|A = point(0, 3.2, etiquette=\"haut\")\nB = point(-2.2, -1.2, etiquette=\"bas-gauche\")\nC = point(2.2, -1.2, etiquette=\"bas-droite\")\ntriangle(A, B, C)\nmarque_segment(A, B)\nmarque_segment(A, C)|{{if:k==2|B = point(-1.6, 2.771, etiquette=\"haut-gauche\")\nC = point(-1.305, -2.139, etiquette=\"bas-gauche\")\nA = point(2.505, 0.061, etiquette=\"droite\")\ntriangle(B, C, A)\nmarque_segment(B, C)\nmarque_segment(B, A)|C = point(1.835, 2.621, etiquette=\"haut-droite\")\nA = point(-2.49, 0.279, etiquette=\"gauche\")\nB = point(1.114, -2.245, etiquette=\"bas-droite\")\ntriangle(C, A, B)\nmarque_segment(C, A)\nmarque_segment(C, B)}}}}\n```\n\nLa médiatrice du côté $[{{if:k==1|B|{{if:k==2|C|A}}}}{{if:k==1|C|{{if:k==2|A|B}}}}]$ passe par :\n\n```choix\n- le sommet ${{if:k==1|A|{{if:k==2|B|C}}}}$\n- le milieu de $[{{if:k==1|A|{{if:k==2|B|C}}}}{{if:k==1|B|{{if:k==2|C|A}}}}]$\n- le sommet ${{if:k==1|B|{{if:k==2|C|A}}}}$\n- aucun sommet du triangle\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..3"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**La médiatrice d'un segment** est formée des points à égale distance de ses deux extrémités.",
+					"Le triangle est isocèle en ${{if:k==1|A|{{if:k==2|B|C}}}}$ : ${{if:k==1|A|{{if:k==2|B|C}}}}{{if:k==1|B|{{if:k==2|C|A}}}} = {{if:k==1|A|{{if:k==2|B|C}}}}{{if:k==1|C|{{if:k==2|A|B}}}}$. Le point ${{if:k==1|A|{{if:k==2|B|C}}}}$ est à égale distance de ${{if:k==1|B|{{if:k==2|C|A}}}}$ et de ${{if:k==1|C|{{if:k==2|A|B}}}}$ : la médiatrice de $[{{if:k==1|B|{{if:k==2|C|A}}}}{{if:k==1|C|{{if:k==2|A|B}}}}]$ passe par $\\textcolor{{{color:primary.0}}}{\\text{le sommet }{{if:k==1|A|{{if:k==2|B|C}}}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Rectangle en A : milieu de [BC]",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : le sommet de l'angle droit",
+			"variationIndex": 0,
+			"variables": {
+				"k": "2"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : à l'intérieur",
+			"variationIndex": 0,
+			"variables": {
+				"k": "3"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "BC = 10 : rayon 5",
+			"variationIndex": 1,
+			"variables": {
+				"h": "5",
+				"c": "10"
+			},
+			"answers": ["5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : le rayon pris égal à l'hypoténuse",
+			"variationIndex": 1,
+			"variables": {
+				"h": "5",
+				"c": "10"
+			},
+			"answers": ["10"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Isocèle en A : par A",
+			"variationIndex": 2,
+			"variables": {
+				"k": "1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : par le milieu d'un côté égal",
+			"variationIndex": 2,
+			"variables": {
+				"k": "3"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

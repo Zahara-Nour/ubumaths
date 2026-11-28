@@ -1,0 +1,206 @@
+{
+	"id": "fba4bd3c-0888-4ce1-a4a3-70be99b68987",
+	"title": "Simuler une loi de Bernoulli avec random()",
+	"description": "random() < p renvoie 1 avec la probabilité p ; random() > p : 1 − p ; choisir la bonne fonction ; valeur renvoyée pour un tirage donné",
+	"grades": ["1_TECHNO"],
+	"level": 1,
+	"delay": 90,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "La fonction `random()` renvoie un nombre aléatoire de l'intervalle $[0\\,;1[$. On considère la fonction Python suivante.\n\n```python\nfrom random import random\n\ndef epreuve():\n    if random() < 0.{{pt}}:\n        return 1\n    else:\n        return 0\n```\n\nAvec quelle probabilité `epreuve()` renvoie-t-elle $1$ ?\n\n$?$",
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:pt/10;d}}"
+				}
+			],
+			"variables": [
+				{
+					"name": "pt",
+					"expression": "1..9"
+				}
+			],
+			"correction": {
+				"steps": [
+					"`random()` est inférieur à $0{,}{{pt}}$ avec une probabilité égale à la longueur de $[0\\,;0{,}{{pt}}[$, soit $0{,}{{pt}}$.",
+					"`epreuve()` renvoie $1$ avec la probabilité $\\textcolor{{{color:primary.0}}}{0{,}{{pt}}}$ : elle simule une loi de Bernoulli de paramètre $0{,}{{pt}}$."
+				]
+			}
+		},
+		{
+			"statement": "La fonction `random()` renvoie un nombre aléatoire de l'intervalle $[0\\,;1[$. On considère la fonction Python suivante.\n\n```python\nfrom random import random\n\ndef epreuve():\n    if random() > 0.{{pt}}:\n        return 1\n    else:\n        return 0\n```\n\nAvec quelle probabilité `epreuve()` renvoie-t-elle $1$ ?\n\n$?$",
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(10-pt)/10;d}}"
+				}
+			],
+			"variables": [
+				{
+					"name": "pt",
+					"expression": "1..9"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Attention au sens : `epreuve()` renvoie $1$ quand `random()` est **supérieur** à $0{,}{{pt}}$, c'est-à-dire dans $]0{,}{{pt}}\\,;1[$.",
+					"Cet intervalle a pour longueur $1-0{,}{{pt}}=0{,}{{eval:10-pt}}$ : `epreuve()` renvoie $1$ avec la probabilité $\\textcolor{{{color:primary.0}}}{0{,}{{eval:10-pt}}}$."
+				]
+			}
+		},
+		{
+			"statement": "La fonction `random()` renvoie un nombre aléatoire de l'intervalle $[0\\,;1[$. Chaque fonction ci-dessous renvoie $0$ ou $1$. Laquelle simule une loi de Bernoulli de paramètre $0{,}{{pt}}$ ?\n\n```choix\n- elle renvoie $1$ si `random() < 0.{{pt}}`, et $0$ sinon\n- elle renvoie $1$ si `random() < 0.{{eval:10-pt}}`, et $0$ sinon\n- elle renvoie $1$ si `random() == 0.{{pt}}`, et $0$ sinon\n- elle renvoie `randint(0, 1)`, c'est-à-dire $0$ ou $1$ au hasard\n```",
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"variables": [
+				{
+					"name": "pt",
+					"expression": "1..9"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Une loi de Bernoulli de paramètre $0{,}{{pt}}$ donne $1$ avec la probabilité $0{,}{{pt}}$.",
+					"`random() < 0.{{pt}}` est vrai avec la probabilité $0{,}{{pt}}$ : c'est la bonne fonction. `random() == 0.{{pt}}` n'est presque jamais vrai, et `randint(0, 1)` donne $1$ une fois sur deux (paramètre $0{,}5$)."
+				]
+			},
+			"conditions": ["pt != 5"]
+		},
+		{
+			"statement": "La fonction `random()` renvoie un nombre aléatoire de l'intervalle $[0\\,;1[$. On considère la fonction Python suivante.\n\n```python\nfrom random import random\n\ndef epreuve():\n    if random() < 0.{{pt}}:\n        return 1\n    else:\n        return 0\n```\n\nLors d'un appel, `random()` a renvoyé $0{,}{{r}}$. Que renvoie `epreuve()` ?\n\n$?$",
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:min(max(10*pt-r,0),1)}}"
+				}
+			],
+			"variables": [
+				{
+					"name": "pt",
+					"expression": "1..9"
+				},
+				{
+					"name": "r",
+					"expression": "11..99"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On compare : $0{,}{{r}}{{if:r<10*pt|<|\\geqslant}}0{,}{{pt}}$.",
+					"La condition `random() < 0.{{pt}}` est {{if:r<10*pt|vraie|fausse}} : `epreuve()` renvoie $\\textcolor{{{color:primary.0}}}{{{eval:min(max(10*pt-r,0),1)}}}$."
+				]
+			},
+			"conditions": ["mod(r,10) != 0"]
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "p = 0,3 : 0,3",
+			"variationIndex": 0,
+			"variables": {
+				"pt": "3"
+			},
+			"answers": ["0.3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 1 − p",
+			"variationIndex": 0,
+			"variables": {
+				"pt": "3"
+			},
+			"answers": ["0.7"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "random() > 0,3 : 0,7",
+			"variationIndex": 1,
+			"variables": {
+				"pt": "3"
+			},
+			"answers": ["0.7"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : lire 0,3",
+			"variationIndex": 1,
+			"variables": {
+				"pt": "3"
+			},
+			"answers": ["0.3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Bonne fonction",
+			"variationIndex": 2,
+			"variables": {
+				"pt": "3"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : random() == p",
+			"variationIndex": 2,
+			"variables": {
+				"pt": "3"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "0,27 < 0,3 : 1",
+			"variationIndex": 3,
+			"variables": {
+				"pt": "3",
+				"r": "27"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 0 au lieu de 1",
+			"variationIndex": 3,
+			"variables": {
+				"pt": "3",
+				"r": "27"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "0,42 > 0,3 : 0",
+			"variationIndex": 3,
+			"variables": {
+				"pt": "3",
+				"r": "42"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}

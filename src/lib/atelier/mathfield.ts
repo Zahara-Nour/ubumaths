@@ -16,7 +16,7 @@
  * @module atelier/mathfield
  */
 
-import type { MathNode } from '$lib/mathAST/types';
+import type { MathNode } from '#lib/mathAST/types.ts';
 import type { AtelierObject, ObjectKind } from './types';
 import {
 	astOf,
@@ -27,16 +27,16 @@ import {
 	type Provenance
 } from './parse';
 import { INTERNAL_LETTER, renameVariable } from './letter';
-import { intervalFieldLatex } from './interval';
+import { intervalFieldLatex, intervalKeyword } from './interval';
 import { readNaturalQuantities } from './natural-quantities';
 import { argumentSeparatorsShown } from './decimal-comma';
 import { readArguments, readConstruction } from './construction-read';
 import { argumentLatex, constructionLatex } from './construction';
 import { hasMeasureCall, measureCalls } from './measures-read';
-import { parse as parseUnit } from '$lib/mathAST/units/parser';
-import { toLatex } from '$lib/mathAST/latex-generator';
-import { isAddition, isDelimiter, isJuxtaposedSum, isNumber, isUnit } from '$lib/mathAST/guards';
-import { normalizeStudentQuantity } from '$lib/questions/units/student-input';
+import { parse as parseUnit } from '#lib/mathAST/units/parser.ts';
+import { toLatex } from '#lib/mathAST/latex-generator.ts';
+import { isAddition, isDelimiter, isJuxtaposedSum, isNumber, isUnit } from '#lib/mathAST/guards.ts';
+import { normalizeStudentQuantity } from '#lib/questions/units/student-input.ts';
 
 // =============================================================================
 // Constantes
@@ -60,10 +60,12 @@ export function fieldLatexOf(
 	functionNames: readonly string[],
 	letter: string = INTERNAL_LETTER
 ): string {
-	// `f(x) = x^2 sur [0;+∞[` : l'ensemble suit la définition, « sur » écrit en mot
+	// `f(x) = x^2 sur [0;+∞[` : l'ensemble suit la définition, « sur » écrit en mot ;
+	// `f(x) = x pour x > 2` : la condition, après « pour » (ce qui a été tapé)
 	const expression = expressionFieldLatex(object, functionNames, letter);
 	const interval = intervalFieldLatex(object);
-	return interval === null ? expression : `${expression}\\text{ sur }${interval}`;
+	if (interval === null) return expression;
+	return `${expression}\\text{ ${intervalKeyword(interval)} }${interval}`;
 }
 
 /** La définition seule, sans l'ensemble. */

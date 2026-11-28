@@ -18,10 +18,10 @@
 	- onClose: () => void
 -->
 <script lang="ts">
-	import * as Sheet from '$lib/components/ui/sheet';
-	import { Button } from '$lib/components/ui/button';
+	import * as Sheet from '#lib/components/ui/sheet/index.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
 	import { MessageCircle, Send } from '@lucide/svelte';
-	import type { TradeChatMessage } from '$lib/stores/tradeRealtime.svelte';
+	import type { TradeChatMessage } from '#lib/stores/tradeRealtime.svelte.ts';
 
 	interface Props {
 		open: boolean;

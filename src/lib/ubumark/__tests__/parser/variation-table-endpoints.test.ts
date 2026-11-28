@@ -7,15 +7,15 @@
  * (vartable : « array is empty ») et l'écran ne dessinait aucune flèche.
  */
 import { describe, it, expect } from 'vitest';
-import { withImplicitEndpoints } from '$lib/ubumark/parser/variation-table-parser';
-import { parseMarkdown } from '$lib/ubumark';
-import { generateVariationTableTypst } from '$lib/ubumark/generators/variation-table-typst';
+import { withImplicitEndpoints } from '#lib/ubumark/parser/variation-table-parser.ts';
+import { parseMarkdown } from '#lib/ubumark/index.ts';
+import { generateVariationTableTypst } from '#lib/ubumark/generators/variation-table-typst.ts';
 import type {
 	DomainPoint,
 	VariationRow,
 	VariationTableNode,
 	VariationValue
-} from '$lib/ubumark/types/variation-table';
+} from '#lib/ubumark/types/variation-table.ts';
 
 const domain: DomainPoint[] = [{ expression: '-inf' }, { expression: '3' }, { expression: '+inf' }];
 const row = (values: Record<string, VariationValue>): VariationRow => ({

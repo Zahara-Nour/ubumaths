@@ -1,5 +1,5 @@
 <script lang="ts">
-	import '$lib/utils/mathlive-styles';
+	import '#lib/utils/mathlive-styles.ts';
 	/**
 	 * Le champ de définition d'une carte : `f(x) =` puis un champ MathLive.
 	 *
@@ -11,15 +11,21 @@
 	import { onMount } from 'svelte';
 	import { on } from 'svelte/events';
 	import type { MathfieldElement } from 'mathlive';
-	import MathField from '$lib/components/MathField.svelte';
-	import { useAtelier } from '$lib/atelier/context';
-	import { definitionFromField, fieldLatexOf } from '$lib/atelier/mathfield';
-	import { internalDefinition, typedLetterOf } from '$lib/atelier/letter';
-	import { intervalWord, ONLY_FUNCTIONS, readInterval, splitInterval } from '$lib/atelier/interval';
-	import { parseDefinition } from '$lib/atelier/parse';
-	import { displayName } from '$lib/atelier/names';
-	import type { AtelierObject } from '$lib/atelier/types';
-	import { isConstruction } from '$lib/atelier/construction';
+	import MathField from '#lib/components/MathField.svelte';
+	import { useAtelier } from '#lib/atelier/context.ts';
+	import { definitionFromField, fieldLatexOf } from '#lib/atelier/mathfield.ts';
+	import { internalDefinition, typedLetterOf } from '#lib/atelier/letter.ts';
+	import {
+		intervalWord,
+		ONLY_FUNCTIONS,
+		readInterval,
+		splitInterval
+	} from '#lib/atelier/interval.ts';
+	import { parseDefinition } from '#lib/atelier/parse.ts';
+	import { cardWordAtCaret, denominatorOf } from '#lib/atelier/natural-input.ts';
+	import { displayName } from '#lib/atelier/names.ts';
+	import type { AtelierObject } from '#lib/atelier/types.ts';
+	import { isConstruction } from '#lib/atelier/construction.ts';
 
 	interface Props {
 		object: AtelierObject;
@@ -139,6 +145,11 @@
 		}
 	}
 
+	/** `x\,+\,1` → `x + 1` : une espace LaTeX ordinaire, que la lecture ignore (`\cos\,x` → `\cos x`). */
+	function withoutTypedSpaces(typed: string): string {
+		return typed.replace(/\\,/g, ' ');
+	}
+
 	/** Écrire maintenant ce qui a été tapé. */
 	function flush() {
 		if (timer !== null) clearTimeout(timer);
@@ -146,7 +157,9 @@
 		if (!dirty) return;
 		dirty = false;
 		// `f(x) = x^2 sur [0;+∞[` : l'ensemble est lu à part (`interval.ts`)
-		const { body, written } = splitInterval(latex, 'latex');
+		// L'espace tapée d'une fonction (`x\,+\,1`) se voit dans le champ, sans être rangée
+		const shown = object.kind === 'function' ? withoutTypedSpaces(latex) : latex;
+		const { body, written } = splitInterval(shown, 'latex');
 		if (written !== null && object.kind !== 'function') {
 			refusal = ONLY_FUNCTIONS;
 			return;
@@ -203,6 +216,52 @@
 		if (commit === 'validate') return;
 		if (timer !== null) clearTimeout(timer);
 		timer = setTimeout(flush, TYPING_DELAY_MS);
+	}
+
+	/**
+	 * L'espace après « pour », « sur » (et « ou », « et » après « pour ») fait du
+	 * mot un MOT (`\text{ pour }`), comme dans la console : MathLive ignore
+	 * l'espace et collait sinon les lettres à ce qui précède (`xpourx>2`, en
+	 * italique, comme un produit) jusqu'à la validation. Carte d'une fonction
+	 * seulement, au niveau 0 (pas dans une fraction ni un exposant).
+	 */
+	function finishWordOnSpace(event: KeyboardEvent) {
+		if (!element || event.key !== ' ' || event.isComposing) return;
+		if (event.ctrlKey || event.metaKey || event.altKey) return;
+		// Une sélection (revue) : l'espace la remplace, le mot à gauche n'est pas touché
+		if (!element.selectionIsCollapsed) return;
+		leaveSimpleDenominator();
+		if ((element.getElementInfo(element.position)?.depth ?? 0) > 0) return;
+		const found = cardWordAtCaret(element.getValue(0, element.position, 'latex'));
+		if (found === null) return;
+		event.preventDefault();
+		const end = element.position;
+		element.selection = { ranges: [[end - found.atoms, end]] };
+		element.insert(found.latex, {
+			insertionMode: 'replaceSelection',
+			selectionMode: 'after',
+			format: 'latex',
+			mode: 'math'
+		});
+		// Mesuré : le curseur reste sinon en mode texte, `x>2` partait dans le mot
+		element.executeCommand(['switchMode', 'math']);
+		latex = element.value;
+		handleInput();
+		updateSmartFence();
+	}
+
+	/**
+	 * `1/x pour x > 0` : l'espace tapée au bout d'un dénominateur simple (des
+	 * chiffres, une lettre) sort d'abord de la fraction, comme dans la console
+	 * (`NaturalField`) — sinon elle s'y écrit (mesuré : `\frac{1}{x\,pour…}`).
+	 */
+	function leaveSimpleDenominator() {
+		if (!element) return;
+		const here = element.getElementInfo(element.position);
+		const next = element.getElementInfo(element.position + 1);
+		if (here?.depth !== 1 || next?.depth !== 0 || !/^\\d?frac/.test(next.latex ?? '')) return;
+		const denominator = denominatorOf(next.latex ?? '');
+		if (/^(?:\d+|[A-Za-z])$/.test(denominator ?? '')) element.position = element.position + 1;
 	}
 
 	/** Revenir à la définition rangée : la frappe en cours est oubliée. */
@@ -274,7 +333,9 @@
 	onMount(() => {
 		// L'espace tapée dans une VALEUR fait la grandeur (lot C des grandeurs :
 		// « 5 m » est 5 mètres, « 5m » le produit) : MathLive l'ignore sinon
-		if (object.kind === 'value' && element) {
+		// Une FONCTION aussi : l'espace se voit, comme dans la console (David, 2026-11-28) ;
+		// la définition rangée n'en garde rien (`flush`)
+		if ((object.kind === 'value' || object.kind === 'function') && element) {
 			Object.assign(element, { mathModeSpace: '\\,' });
 		}
 		// Pas de menu ☰ (ni au clic droit) : mode texte ou LaTeX, couleur, style,
@@ -291,6 +352,9 @@
 		// Mode `validate` : Entrée et la sortie du champ rangent (lot 3). Lus sur
 		// la touche et sur `blur` plutôt que sur le `change` de MathLive, qui ne
 		// part pas toujours (champ vide au départ : mesuré)
+		if (element && object.kind === 'function') {
+			stops.push(on(element, 'keydown', finishWordOnSpace, { capture: true }));
+		}
 		if (element && commit === 'validate') {
 			stops.push(on(element, 'keydown', handleKeydown, { capture: true }));
 			stops.push(on(element, 'blur', commitNow));

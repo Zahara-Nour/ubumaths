@@ -7,14 +7,14 @@
  * - Updates school timezone and week_config in timetable JSONB
  */
 
-import { error, json } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireAdmin } from '$lib/server/middleware/auth';
-import { updateSchoolConfigSchema } from '$lib/server/validation/school-config';
-import { DEFAULT_TIMEZONE } from '$lib/utils/timezones';
-import { DEFAULT_WEEK_CONFIG } from '$lib/utils/week-config';
-import type { SchoolTimetable } from '$lib/utils/timetable';
-import { createServerLogger } from '$lib/utils/logger';
+import { requireAdmin } from '#lib/server/middleware/auth.ts';
+import { updateSchoolConfigSchema } from '#lib/server/validation/school-config.ts';
+import { DEFAULT_TIMEZONE } from '#lib/utils/timezones.ts';
+import { DEFAULT_WEEK_CONFIG } from '#lib/utils/week-config.ts';
+import type { SchoolTimetable } from '#lib/utils/timetable.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/admin/schools/[schoolId]/config/+server');
 
@@ -100,7 +100,7 @@ export const PUT: RequestHandler = async ({ params, request, locals }) => {
 	}
 
 	// Return success response
-	return json({
+	return Response.json({
 		success: true,
 		message: 'Configuration enregistrée',
 		school: {
@@ -155,7 +155,7 @@ export const GET: RequestHandler = async ({ params, locals }) => {
 		week_config: DEFAULT_WEEK_CONFIG
 	};
 
-	return json({
+	return Response.json({
 		success: true,
 		school: {
 			id: school.id,

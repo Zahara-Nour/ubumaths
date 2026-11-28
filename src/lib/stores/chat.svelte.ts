@@ -1,9 +1,9 @@
-import { toaster } from '$lib/stores/toaster.svelte';
-import { browser } from '$app/environment';
+import { toaster } from '#lib/stores/toaster.svelte.ts';
+import { browser } from '$app/env';
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { Database } from '$lib/types/database';
+import type { Database } from '#lib/types/database.ts';
 import { supabaseRealtimeManager } from './supabaseRealtime.svelte';
-import { createLogger } from '$lib/utils/logger';
+import { createLogger } from '#lib/utils/logger.ts';
 import { z } from 'zod';
 import { SvelteMap } from 'svelte/reactivity';
 
@@ -173,7 +173,7 @@ type BroadcastPayload =
  *
  * @example
  * ```ts
- * import { chatStore } from '$lib/stores/chat.svelte';
+ * import { chatStore } from '#lib/stores/chat.svelte.ts';
  *
  * // Initialize with Supabase client and user info
  * chatStore.init(supabase, userId, { full_name: 'John Doe', avatar_url: 'https://...' });
@@ -213,10 +213,11 @@ class ChatStore {
 	 */
 	private reconnectAttempts = new Map<string, number>();
 	/**
-	 * Vrai si le dernier `sendMessage` a été refusé par la garde « lecture seule » de la
-	 * base : le toast explicite est déjà affiché, l'appelant n'ajoute pas le sien.
+	 * Vrai si le dernier `sendMessage` a été refusé pour une raison que le store a déjà
+	 * dite dans un toast explicite (garde « lecture seule », message trop long) :
+	 * l'appelant n'ajoute pas le sien.
 	 */
-	lastSendRefusedForConsent = false;
+	lastSendRefusalShown = false;
 
 	/**
 	 * Maximum reconnection attempts before giving up
@@ -542,7 +543,8 @@ class ChatStore {
 					id: msg.id,
 					conversation_id: msg.conversation_id,
 					sender_id: msg.sender_id,
-					content: msg.content,
+					// Colonne obligatoire : la fonction la rend telle quelle, son type de retour ne le dit pas.
+					content: msg.content as Message['content'],
 					plain_text: msg.plain_text,
 					created_at: msg.created_at,
 					edited_at: msg.edited_at,
@@ -709,7 +711,8 @@ class ChatStore {
 					id: msg.id,
 					conversation_id: msg.conversation_id,
 					sender_id: msg.sender_id,
-					content: msg.content,
+					// Colonne obligatoire : la fonction la rend telle quelle, son type de retour ne le dit pas.
+					content: msg.content as Message['content'],
 					plain_text: msg.plain_text,
 					created_at: msg.created_at,
 					edited_at: msg.edited_at,
@@ -770,7 +773,7 @@ class ChatStore {
 			public_url: string;
 		}>
 	): Promise<Message | null> {
-		this.lastSendRefusedForConsent = false;
+		this.lastSendRefusalShown = false;
 		if (!browser || !this.supabase || !this.userId) {
 			logger.warn('Cannot send message: not initialized');
 			return null;
@@ -888,12 +891,15 @@ class ChatStore {
 				logger.error('Failed to insert message to DB:', insertError);
 				// Refus de la garde « lecture seule » de la base (trigger guard_read_only_author) :
 				// reconnu à son texte, car la RLS rend aussi 42501 (élève rendu muet, par exemple).
-				this.lastSendRefusedForConsent =
-					insertError.message?.includes('Consentement parental requis') ?? false;
-				if (this.lastSendRefusedForConsent) {
+				if (insertError.message?.includes('Consentement parental requis')) {
+					this.lastSendRefusalShown = true;
 					toaster.error(
 						'Consentement parental requis pour envoyer des messages. Voir avec l’enseignant.'
 					);
+				} else if (insertError.code === '22001') {
+					// Borne de taille de la base (trigger guard_message_taille, écart L124)
+					this.lastSendRefusalShown = true;
+					toaster.error('Message trop long : raccourcissez-le, ou envoyez-le en plusieurs fois.');
 				}
 				// Remove optimistic message on failure
 				const currentMessages = this.messages.get(conversationId) || [];

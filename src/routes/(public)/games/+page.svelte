@@ -1,5 +1,5 @@
 <script lang="ts">
-	import SeoHead from '$lib/seo/SeoHead.svelte';
+	import SeoHead from '#lib/seo/SeoHead.svelte';
 	import {
 		// Sword,
 		Lock
@@ -70,8 +70,8 @@
 </script>
 
 <SeoHead
-	title="Jeux Mathématiques | Chiphre"
-	description="Apprenez les mathématiques en vous amusant avec nos jeux éducatifs : Trio, Mathémo, Démineur et 2048."
+	title="Jeux de maths en ligne : Trio, Mathémo, Démineur, 2048 | Chiphre"
+	description="Quatre jeux de maths gratuits, sans compte : Trio (calcul mental), Mathémo (mot mystère), Démineur (logique) et 2048 (puissances de 2)."
 />
 
 <div class="mx-auto max-w-6xl p-4 md:p-6">

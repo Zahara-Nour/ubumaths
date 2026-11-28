@@ -26,7 +26,7 @@ import {
 	endpointToNumber,
 	isPositiveInfinityEndpoint,
 	isNegativeInfinityEndpoint
-} from '$lib/math/intervals/endpoint';
+} from '#lib/math/intervals/endpoint.ts';
 
 // =============================================================================
 // Types

@@ -1,3 +1,5 @@
+import adapter from '@sveltejs/adapter-vercel';
+import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
 import tailwindcss from '@tailwindcss/vite';
 import { defineConfig, type ViteUserConfig } from 'vitest/config';
 import { loadEnv, type Plugin } from 'vite';
@@ -6,6 +8,9 @@ import { readFileSync } from 'fs';
 import { Features } from 'lightningcss';
 import { visualizer } from 'rollup-plugin-visualizer';
 import { baseTestConfig } from './vitest.base.config';
+import { moduleSideEffects } from './scripts/side-effect-modules';
+import { retoursDev } from './scripts/retours/plugin.ts';
+import { supabaseRelay } from './scripts/relais/plugin.ts';
 
 // Read version from package.json at build time
 const pkg = JSON.parse(readFileSync('./package.json', 'utf-8'));
@@ -39,14 +44,18 @@ function mathliveFontDisplay(): Plugin {
 		enforce: 'pre',
 		transform(code, id) {
 			if (!/[\\/]mathlive[\\/]mathlive-(static|fonts)\.css(\?|$)/.test(id)) return null;
-			return { code: code.replaceAll('font-display:"swap"', 'font-display:swap'), map: null };
+
+			return {
+				code: code.replaceAll('font-display:"swap"', 'font-display:swap'),
+				map: null
+			};
 		}
 	};
 }
 
 // Retour typé explicitement : sur une fonction `async`, l'inférence ne
 // retrouve pas la bonne surcharge de `defineConfig` (TS2769).
-export default defineConfig(async ({ mode }): Promise<ViteUserConfig> => {
+export default defineConfig(async ({ mode, isSsrBuild }): Promise<ViteUserConfig> => {
 	// Load environment variables for server-side code
 	const env = loadEnv(mode, process.cwd(), '');
 	Object.assign(process.env, env);
@@ -62,8 +71,27 @@ export default defineConfig(async ({ mode }): Promise<ViteUserConfig> => {
 	return {
 		plugins: [
 			mathliveFontDisplay(),
+			// Route du bouton « signaler » : serveur de dev seulement (jamais dans le build)
+			retoursDev(),
+			// Supabase local relayé sous /__dev/supabase : serveur de dev et base locale seulement
+			supabaseRelay(),
 			tailwindcss(),
-			sveltekit(),
+			sveltekit({
+				// Consult https://svelte.dev/docs/kit/integrations
+				// for more information about preprocessors
+				preprocess: vitePreprocess(),
+				adapter: adapter({ runtime: 'nodejs22.x', regions: ['cdg1'] }),
+				// CSRF Protection - validates Origin/Referer headers for POST/PUT/DELETE/PATCH requests
+				// Protection is enabled by default - requests from different origins are blocked
+				// Add trusted origins here if you need to allow specific cross-origin requests
+				csrf: {
+					// trustedOrigins: ['https://mobile-app.chiph.re']
+				},
+				// Onglet resté ouvert pendant un déploiement : `updated.current` passe à vrai, et le
+				// prochain lien charge la page en entier (`+layout.svelte`, `#lib/utils/app-version.ts`)
+				version: { pollInterval: 5 * 60 * 1000 }
+			}),
+
 			// Bundle treemap, only when ANALYZE=1 (never in normal/prod builds).
 			// emitFile → the report lands in each build's output dir, i.e.
 			// .svelte-kit/output/client/stats.html (the user-facing bundle) and the
@@ -71,7 +99,14 @@ export default defineConfig(async ({ mode }): Promise<ViteUserConfig> => {
 			// locally with `ANALYZE=1 pnpm build` (a full build takes 64 s on the Mac
 			// mini, measured 2026-09-29 — the old 8 GB laptop could not run it).
 			...(process.env.ANALYZE
-				? [visualizer({ emitFile: true, filename: 'stats.html', gzipSize: true, brotliSize: true })]
+				? [
+						visualizer({
+							emitFile: true,
+							filename: 'stats.html',
+							gzipSize: true,
+							brotliSize: true
+						})
+					]
 				: [])
 		],
 
@@ -113,12 +148,12 @@ export default defineConfig(async ({ mode }): Promise<ViteUserConfig> => {
 		 */
 		optimizeDeps: {
 			include: [
-				'@supabase/supabase-js', // Authentication client
-				'@supabase/ssr', // Server-side auth helpers
-				'mathlive', // Math input editor (large library)
-				'canvas-confetti', // Celebration effects
-				'mode-watcher', // Dark mode management
-				'svelte-sonner', // Toast notifications
+				'@supabase/supabase-js' /* Authentication client */,
+				'@supabase/ssr' /* Server-side auth helpers */,
+				'mathlive' /* Math input editor (large library) */,
+				'canvas-confetti' /* Celebration effects */,
+				'mode-watcher' /* Dark mode management */,
+				'svelte-sonner' /* Toast notifications */,
 				// TipTap and ProseMirror - MUST be included to prevent duplicate plugin errors
 				'@tiptap/core',
 				'@tiptap/starter-kit',
@@ -169,7 +204,13 @@ export default defineConfig(async ({ mode }): Promise<ViteUserConfig> => {
 			// hooks.server.ts) la bloquerait. KaTeX_Size3 (3,6 Ko, sous le seuil de
 			// 4 Ko) l'était depuis `mathlive/static.css`, sur toute page à maths.
 			// `undefined` : la règle par défaut de Vite pour les autres fichiers.
-			assetsInlineLimit: (filePath) => (FONT_FILE.test(filePath) ? false : undefined)
+			assetsInlineLimit: (filePath) => (FONT_FILE.test(filePath) ? false : undefined),
+			// Build client : les modules `.ts` de `src/lib` sont déclarés sans effet de
+			// bord, sauf la liste de `scripts/side-effect-modules.ts` (garde : son test).
+			// Sans ça, une constante construite par un appel garde son module entier :
+			// ~210 Ko gzip de trop sur 67 pages à markdown (mesuré le 2026-11-11).
+			// Le serveur n'est pas concerné : son poids ne se télécharge pas.
+			...(isSsrBuild ? {} : { rolldownOptions: { treeshake: { moduleSideEffects } } })
 		},
 
 		// Sous Vite 8, le CSS du build est compressé par Lightning CSS (SvelteKit impose
@@ -236,14 +277,28 @@ export default defineConfig(async ({ mode }): Promise<ViteUserConfig> => {
 						name: 'server',
 						environment: 'node',
 						include: ['src/**/*.{test,spec}.{js,ts}', 'scripts/**/*.{test,spec}.{js,ts}'],
-						exclude: [
-							'src/**/*.svelte.{test,spec}.{js,ts}'
-							// tests/integration/** (incl. database/) is never matched by the include
-							// globs above; it runs via vitest.integration.config.ts (Supabase local).
-						],
+						exclude: ['src/**/*.svelte.{test,spec}.{js,ts}'],
+						// tests/integration/** (incl. database/) is never matched by the include
+						// globs above; it runs via vitest.integration.config.ts (Supabase local).
 						setupFiles: ['./vitest-setup-server.ts']
 					}
-				}
+				},
+				// Tests de preuve du registre des écarts (docs/ecarts/registre.md) : rouges
+				// tant que l'écart est vrai, donc hors de la CI et de `test:changed`. Le
+				// projet n'existe que pour `pnpm ecarts rejouer`, qui pose ECARTS_PREUVES.
+				...(process.env.ECARTS_PREUVES === '1'
+					? [
+							{
+								extends: './vite.config.ts',
+								test: {
+									name: 'ecarts',
+									environment: 'node',
+									include: ['tests/ecarts/**/*.test.ts'],
+									setupFiles: ['./vitest-setup-server.ts']
+								}
+							}
+						]
+					: [])
 			]
 		}
 	};

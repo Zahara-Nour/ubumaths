@@ -8,8 +8,8 @@
  * @module worksheets/document/student-adapter
  */
 
-import { isContentLocale, type ContentLocale } from '$lib/types/locale';
-import type { StudentWorksheetView } from '$lib/types/worksheets';
+import { isContentLocale, type ContentLocale } from '#lib/types/locale.ts';
+import type { StudentWorksheetView } from '#lib/types/worksheets.ts';
 import { worksheetHeader } from '../worksheet-header';
 import type { WorksheetDocument } from './types';
 import { placeExercises, writtenOrNull } from './numbering';

@@ -1,12 +1,12 @@
 <script lang="ts">
-	import BackLink from '$lib/components/navigation/BackLink.svelte';
-	import { lore } from '$lib/config/lore';
+	import BackLink from '#lib/components/navigation/BackLink.svelte';
+	import { lore } from '#lib/config/lore.ts';
 	import { goto } from '$app/navigation';
-	import * as Card from '$lib/components/ui/card';
-	import { toaster } from '$lib/stores/toaster.svelte';
-	import { submitAction } from '$lib/utils/form-action';
-	import EvaluationConfigForm from '$lib/components/assessments/EvaluationConfigForm.svelte';
-	import type { EvaluationSettingsInput } from '$lib/types/evaluation';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
+	import { submitAction } from '#lib/utils/form-action.ts';
+	import EvaluationConfigForm from '#lib/components/assessments/EvaluationConfigForm.svelte';
+	import type { EvaluationSettingsInput } from '#lib/types/evaluation.ts';
 	import type { PageData } from './$types';
 
 	let { data }: { data: PageData } = $props();

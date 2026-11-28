@@ -1,8 +1,8 @@
 <script lang="ts">
-	import { Button } from '$lib/components/ui/button';
+	import { Button } from '#lib/components/ui/button/index.ts';
 	import { X, Minimize2, Maximize2 } from '@lucide/svelte';
 	import TutorChat from './TutorChat.svelte';
-	import pereUbuImage from '$lib/assets/images/avatar-pereubu.png';
+	import pereUbuImage from '#lib/assets/images/avatar-pereubu.png';
 
 	interface ExerciseContext {
 		exerciseId?: string;

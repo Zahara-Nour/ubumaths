@@ -8,16 +8,15 @@
  * migration (le BO fait foi). Teacher/admin only.
  */
 
-import { json } from '@sveltejs/kit';
 import { z } from 'zod';
 import type { RequestHandler } from './$types';
-import { requireRoles } from '$lib/server/middleware/auth';
-import { updateProgrammePointSchema } from '$lib/server/validation/curriculum';
-import { curriculumDbError } from '$lib/server/curriculum';
-import { PROGRAMME_POINT_COLS } from '$lib/server/programme-tree';
-import type { ProgrammePoint } from '$lib/types/database-helpers';
-import type { TablesUpdate } from '$lib/types/database';
-import { createServerLogger } from '$lib/utils/logger';
+import { requireRoles } from '#lib/server/middleware/auth.ts';
+import { updateProgrammePointSchema } from '#lib/server/validation/curriculum.ts';
+import { curriculumDbError } from '#lib/server/curriculum.ts';
+import { PROGRAMME_POINT_COLS } from '#lib/server/programme-tree.ts';
+import type { ProgrammePoint } from '#lib/types/database-helpers.ts';
+import type { TablesUpdate } from '#lib/types/database.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/teacher/curriculum/points/[pointId]/+server');
 
@@ -28,19 +27,19 @@ export const PATCH: RequestHandler = async ({ params, request, locals }) => {
 
 	const id = pointIdSchema.safeParse(params.pointId);
 	if (!id.success) {
-		return json({ error: id.error.issues[0].message }, { status: 400 });
+		return Response.json({ error: id.error.issues[0].message }, { status: 400 });
 	}
 
 	let body: unknown;
 	try {
 		body = await request.json();
 	} catch {
-		return json({ error: 'Corps JSON invalide' }, { status: 400 });
+		return Response.json({ error: 'Corps JSON invalide' }, { status: 400 });
 	}
 
 	const parsed = updateProgrammePointSchema.safeParse(body);
 	if (!parsed.success) {
-		return json({ error: parsed.error.issues[0].message }, { status: 400 });
+		return Response.json({ error: parsed.error.issues[0].message }, { status: 400 });
 	}
 
 	const updates: TablesUpdate<'curriculum_points'> = {};
@@ -61,11 +60,11 @@ export const PATCH: RequestHandler = async ({ params, request, locals }) => {
 		const mapped = curriculumDbError(dbErr);
 		if (mapped) return mapped;
 		logger.error('[curriculum] point PATCH failed:', dbErr);
-		return json({ error: 'Échec de la mise à jour du point' }, { status: 500 });
+		return Response.json({ error: 'Échec de la mise à jour du point' }, { status: 500 });
 	}
 	if (!data) {
-		return json({ error: 'Point introuvable ou non modifiable' }, { status: 404 });
+		return Response.json({ error: 'Point introuvable ou non modifiable' }, { status: 404 });
 	}
 
-	return json({ point: data as ProgrammePoint });
+	return Response.json({ point: data as ProgrammePoint });
 };

@@ -13,27 +13,28 @@ const TEACHER_ID = '550e8400-e29b-41d4-a716-446655440001';
 const EXERCISE_ID = '550e8400-e29b-41d4-a716-446655440003';
 const TOKEN_ID = '550e8400-e29b-41d4-a716-446655440004';
 
-vi.mock('$lib/server/middleware/auth', () => ({
+vi.mock('#lib/server/middleware/auth.ts', () => ({
 	requireRole: vi.fn().mockResolvedValue({
 		user: { id: '550e8400-e29b-41d4-a716-446655440001' },
 		profile: { role: 'teacher' }
 	})
 }));
 
-vi.mock('$lib/server/exercises', async (importOriginal) => ({
-	...(await importOriginal<typeof import('$lib/server/exercises')>()),
+vi.mock('#lib/server/exercises.ts', async (importOriginal) => ({
+	...(await importOriginal<typeof import('#lib/server/exercises.ts')>()),
 	getExercise: vi.fn(),
 	deleteExercise: vi.fn()
 }));
 
-vi.mock('$lib/server/exercise-share-tokens', async (importOriginal) => ({
-	...(await importOriginal<typeof import('$lib/server/exercise-share-tokens')>()),
+vi.mock('#lib/server/exercise-share-tokens.ts', async (importOriginal) => ({
+	...(await importOriginal<typeof import('#lib/server/exercise-share-tokens.ts')>()),
 	revokeShareToken: vi.fn()
 }));
 
-const { getExercise, deleteExercise, EXERCISE_NOT_DELETED } = await import('$lib/server/exercises');
+const { getExercise, deleteExercise, EXERCISE_NOT_DELETED } =
+	await import('#lib/server/exercises.ts');
 const { revokeShareToken, SHARE_TOKEN_NOT_FOUND } =
-	await import('$lib/server/exercise-share-tokens');
+	await import('#lib/server/exercise-share-tokens.ts');
 const { DELETE: deleteExerciseRoute } = await import('../[id]/+server');
 const { DELETE: revokeRoute } = await import('../[id]/share/[tokenId]/+server');
 

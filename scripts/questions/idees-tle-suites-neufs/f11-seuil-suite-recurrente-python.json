@@ -1,0 +1,231 @@
+{
+	"id": "aa3cb8e7-1f20-4dd1-b93d-caaca88c6682",
+	"title": "Seuil d'une suite récurrente en Python",
+	"description": "Fonction seuil(S) avec une boucle while : condition à choisir (suite croissante), valeur renvoyée lue dans un tableau de termes (suite décroissante vers ℓ)",
+	"grades": ["T_SPE"],
+	"level": 2,
+	"delay": 60,
+	"status": "draft",
+	"shared": {},
+	"variations": [
+		{
+			"statement": "La suite $(u_n)$ est définie par $u_0={{u}}$ et, pour tout entier naturel $n$, $u_{n+1}={{eval:k/10;d}}u_n+{{b}}$ ; elle est croissante et tend vers $+\\infty$.\n\nLa fonction Python ci-dessous doit renvoyer le premier rang $n$ tel que $u_n>S$.\n\n```python\ndef seuil(S):\n    n = 0\n    u = {{u}}\n    while ...:\n        u = 1.{{eval:k-10}} * u + {{b}}\n        n = n + 1\n    return n\n```\n\nQue faut-il écrire à la place des points de suspension ?\n\n```choix\n- `u <= S`\n- `u > S`\n- `n <= S`\n- `u == S`\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "11..15"
+				},
+				{
+					"name": "b",
+					"expression": "4..20"
+				},
+				{
+					"name": "u",
+					"expression": "1..20"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La boucle `while` répète son contenu **tant que** sa condition est vraie : elle doit continuer tant que le seuil n'est pas dépassé, c'est-à-dire tant que $u_n\\leqslant S$.",
+					"Avec `u > S`, la boucle s'arrête tout de suite (au départ, $u_0\\leqslant S$) ; `n <= S` compare le rang au seuil, pas le terme ; `u == S` est faux dès le départ.",
+					"La condition est donc `u <= S`."
+				]
+			},
+			"hint": "La boucle `while` répète son contenu tant que sa condition est vraie : elle doit s'arrêter au premier rang où $u_n>S$."
+		},
+		{
+			"statement": "La suite $(u_n)$ est définie par $u_0={{eval:2*h+64}}$ et, pour tout entier naturel $n$, $u_{n+1}=0{,}5u_n+{{h}}$ ; elle est décroissante et converge vers ${{eval:2*h}}$. Voici ses premiers termes.\n\n| $n$ | $0$ | $1$ | $2$ | $3$ | $4$ | $5$ | $6$ |\n|---|---|---|---|---|---|---|---|\n| $u_n$ | ${{eval:2*h+64}}$ | ${{eval:2*h+32}}$ | ${{eval:2*h+16}}$ | ${{eval:2*h+8}}$ | ${{eval:2*h+4}}$ | ${{eval:2*h+2}}$ | ${{eval:2*h+1}}$ |\n\nOn considère la fonction Python suivante.\n\n```python\ndef seuil(S):\n    n = 0\n    u = {{eval:2*h+64}}\n    while u >= S:\n        u = 0.5 * u + {{h}}\n        n = n + 1\n    return n\n```\n\nQue renvoie `seuil({{eval:2*h+t}})` ?\n\n$?$",
+			"variables": [
+				{
+					"name": "h",
+					"expression": "5..15"
+				},
+				{
+					"name": "N",
+					"expression": "2..5"
+				},
+				{
+					"name": "lo",
+					"expression": "eval:64/2^N+1"
+				},
+				{
+					"name": "hi",
+					"expression": "eval:64/2^(N-1)-1"
+				},
+				{
+					"name": "t",
+					"expression": "{{lo}}..{{hi}}"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{N}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:N-1}}",
+							"message": "Tu as donné le dernier rang où $u_n \\geqslant {{eval:2*h+t}}$ : la fonction renvoie le premier rang où $u_n < {{eval:2*h+t}}$.",
+							"label": "Rang précédent"
+						},
+						{
+							"answer": "{{eval:N+1}}",
+							"message": "Tu as compté un tour de trop : $n$ vaut $0$ au départ, pour $u_0$.",
+							"label": "Un tour de trop"
+						},
+						{
+							"answer": "{{eval:2*h+64/2^N}}",
+							"message": "La fonction renvoie `n`, le rang, pas la valeur du terme `u`.",
+							"label": "Terme au lieu du rang"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"La boucle continue tant que $u_n\\geqslant{{eval:2*h+t}}$ : la fonction renvoie le premier rang $n$ tel que $u_n<{{eval:2*h+t}}$.",
+					"Dans le tableau, $u_{ {{eval:N-1}} }={{eval:2*h+64/2^(N-1)}}\\geqslant{{eval:2*h+t}}$ et $u_{ {{N}} }={{eval:2*h+64/2^N}}<{{eval:2*h+t}}$.",
+					"La fonction renvoie $\\textcolor{{{color:primary.0}}}{{{N}}}$."
+				]
+			},
+			"hint": "La boucle s'arrête dès que la condition `u >= S` devient fausse : cherche dans le tableau le premier terme strictement inférieur au seuil, et lis son rang."
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "a : u <= S",
+			"variationIndex": 0,
+			"variables": {
+				"k": "12",
+				"b": "5",
+				"u": "10"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0"]
+		},
+		{
+			"description": "a : inégalité inversée",
+			"variationIndex": 0,
+			"variables": {
+				"k": "12",
+				"b": "5",
+				"u": "10"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["1"]
+		},
+		{
+			"description": "a : n au lieu de u",
+			"variationIndex": 0,
+			"variables": {
+				"k": "12",
+				"b": "5",
+				"u": "10"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["2"]
+		},
+		{
+			"description": "a : égalité",
+			"variationIndex": 0,
+			"variables": {
+				"k": "12",
+				"b": "5",
+				"u": "10"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["3"]
+		},
+		{
+			"description": "b : rang 3 (S = 30)",
+			"variationIndex": 1,
+			"variables": {
+				"h": "10",
+				"N": "3",
+				"lo": "9",
+				"hi": "15",
+				"t": "10"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["3"]
+		},
+		{
+			"description": "b : rang précédent",
+			"variationIndex": 1,
+			"variables": {
+				"h": "10",
+				"N": "3",
+				"lo": "9",
+				"hi": "15",
+				"t": "10"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as donné le dernier rang où $u_n \\geqslant 30$ : la fonction renvoie le premier rang où $u_n < 30$."
+			},
+			"answers": ["2"]
+		},
+		{
+			"description": "b : un tour de trop",
+			"variationIndex": 1,
+			"variables": {
+				"h": "10",
+				"N": "3",
+				"lo": "9",
+				"hi": "15",
+				"t": "10"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as compté un tour de trop : $n$ vaut $0$ au départ, pour $u_0$."
+			},
+			"answers": ["4"]
+		},
+		{
+			"description": "b : terme au lieu du rang",
+			"variationIndex": 1,
+			"variables": {
+				"h": "10",
+				"N": "3",
+				"lo": "9",
+				"hi": "15",
+				"t": "10"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "La fonction renvoie `n`, le rang, pas la valeur du terme `u`."
+			},
+			"answers": ["28"]
+		},
+		{
+			"description": "b : rang 5 (S = 13)",
+			"variationIndex": 1,
+			"variables": {
+				"h": "5",
+				"N": "5",
+				"lo": "3",
+				"hi": "3",
+				"t": "3"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["5"]
+		}
+	]
+}

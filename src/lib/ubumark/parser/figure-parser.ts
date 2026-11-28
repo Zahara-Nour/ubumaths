@@ -52,8 +52,8 @@ import type {
 import { FIGURE_LIMITS, FIGURE_RENDER_MODES, FIGURE_SIZES } from '../types/figure';
 import type { FigureInteractiveSettings, FigureRenderWord } from '../types/figure';
 import { normalizeCourbeExpression } from './courbe-parser';
-import { parseCustom } from '$lib/mathAST/parser/custom';
-import { compile } from '$lib/mathAST/eval/compile';
+import { parseCustom } from '#lib/mathAST/parser/custom/index.ts';
+import { compile } from '#lib/mathAST/eval/compile.ts';
 
 // ============================================================================
 // CONSTANTES

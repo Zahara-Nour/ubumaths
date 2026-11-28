@@ -1,10 +1,10 @@
 <script lang="ts">
-	import SeoHead from '$lib/seo/SeoHead.svelte';
+	import SeoHead from '#lib/seo/SeoHead.svelte';
 	import { resolve } from '$app/paths';
 </script>
 
 <SeoHead
-	title="Mentions légales - Chiphre"
+	title="Mentions légales | Chiphre"
 	description="Mentions légales de Chiphre : informations sur l’éditeur, l’hébergement et les conditions d’utilisation."
 />
 
@@ -20,7 +20,7 @@
 			<h2>1. Éditeur du site</h2>
 			<p>
 				Le site <strong>Chiphre</strong> accessible à l'adresse
-				<a href={resolve('/')}>chiph.re</a> est édité par :
+				<a href={resolve('')}>chiph.re</a> est édité par :
 			</p>
 			<ul>
 				<li><strong>Responsable de publication</strong> : [À COMPLÉTER]</li>
@@ -79,8 +79,7 @@
 			<h3>4.2 Politique de confidentialité</h3>
 			<p>
 				Pour plus d'informations sur la collecte et le traitement des données personnelles,
-				consultez notre <a href={resolve('/legal/confidentialite')}>Politique de confidentialité</a
-				>.
+				consultez notre <a href={resolve('legal/confidentialite')}>Politique de confidentialité</a>.
 			</p>
 
 			<h3>4.3 Droits des utilisateurs</h3>

@@ -7,7 +7,7 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { templateMarkdown } from '$lib/ubumark';
+import { templateMarkdown } from '#lib/ubumark/index.ts';
 import type { ResolvedVariable } from '../../types';
 import type { InstanceBlank } from '../../types';
 import { buildCorrectionContext, resolveCorrectionContent } from '../correction-resolver';

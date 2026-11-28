@@ -5,23 +5,23 @@
  * DELETE - Delete template
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireRoles } from '$lib/server/middleware/auth';
+import { requireRoles } from '#lib/server/middleware/auth.ts';
 import {
 	countWorksheetsUsingTemplate,
 	deleteTemplateWithStyle,
 	syncTemplateStyle
-} from '$lib/server/worksheets/worksheet-styles';
+} from '#lib/server/worksheets/worksheet-styles.ts';
 import {
 	validateUpdateTemplate,
 	templateResponseSchema,
 	deleteTemplateResponseSchema
-} from '$lib/server/validation/worksheets';
-import { uuidSchema } from '$lib/server/validation/common';
-import { validateJsonResponse } from '$lib/server/validation/response-utils';
-import type { TablesUpdate } from '$lib/types/database';
-import { createServerLogger } from '$lib/utils/logger';
+} from '#lib/server/validation/worksheets.ts';
+import { uuidSchema } from '#lib/server/validation/common.ts';
+import { validateJsonResponse } from '#lib/server/validation/response-utils.ts';
+import type { TablesUpdate } from '#lib/types/database.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/worksheets/templates/[id]/+server');
 
@@ -68,7 +68,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 		'GET /api/worksheets/templates/[id]'
 	);
 
-	return json(validated);
+	return Response.json(validated);
 };
 
 /**
@@ -155,7 +155,7 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 		'PUT /api/worksheets/templates/[id]'
 	);
 
-	return json(validated);
+	return Response.json(validated);
 };
 
 /**
@@ -231,5 +231,5 @@ export const DELETE: RequestHandler = async ({ locals, params }) => {
 		'DELETE /api/worksheets/templates/[id]'
 	);
 
-	return json(validated);
+	return Response.json(validated);
 };

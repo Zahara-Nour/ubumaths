@@ -95,10 +95,14 @@ describe('built-in templates and display options', () => {
 		// Lot 1 de l'ADR 0030 : date de rendu, durée et calculatrice selon le type
 		due_date: 'ZZDUE',
 		duration: 'ZZDURATION',
-		calculator: 'ZZCALC'
+		calculator: 'ZZCALC',
+		// Niveau de la fiche (2026-11-19)
+		level: 'ZZLEVEL',
+		level_short: 'ZZSHORTLEVEL'
 	};
 	const FLAGS = [
 		'show_title',
+		'show_level',
 		'show_identity',
 		'show_date',
 		'show_due_date',

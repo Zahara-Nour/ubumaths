@@ -13,7 +13,7 @@
  * `review_gidouilles` ; une panne du crédit ne fait pas échouer la révision.
  */
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import type { BuddyXpFromExerciseResult } from '$lib/server/buddy-xp-service';
+import type { BuddyXpFromExerciseResult } from '#lib/server/buddy-xp-service.ts';
 
 const applyFsrsReview = vi.hoisted(() => vi.fn());
 const role = vi.hoisted(() => ({ current: 'student' }));
@@ -28,13 +28,13 @@ const rewardFinishedReviewSession = vi.hoisted(() =>
 	>()
 );
 
-vi.mock('$lib/server/srs/fsrs-actions', () => ({ applyFsrsReview }));
-vi.mock('$lib/server/srs/programme-deck', () => ({ ensureProgrammeDeckCard: vi.fn() }));
-vi.mock('$lib/server/srs/review-session-reward', () => ({ rewardFinishedReviewSession }));
-vi.mock('$lib/server/middleware/auth', () => ({
+vi.mock('#lib/server/srs/fsrs-actions.ts', () => ({ applyFsrsReview }));
+vi.mock('#lib/server/srs/programme-deck.ts', () => ({ ensureProgrammeDeckCard: vi.fn() }));
+vi.mock('#lib/server/srs/review-session-reward.ts', () => ({ rewardFinishedReviewSession }));
+vi.mock('#lib/server/middleware/auth.ts', () => ({
 	requireAuth: async () => ({ user: { id: ELEVE }, profile: { role: role.current } })
 }));
-vi.mock('$lib/server/middleware/consent', () => ({ requireConsent: () => {} }));
+vi.mock('#lib/server/middleware/consent.ts', () => ({ requireConsent: () => {} }));
 
 import { POST } from '../+server';
 

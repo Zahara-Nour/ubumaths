@@ -28,7 +28,9 @@
  *   pnpm tsx scripts/update-published-questions.ts --lot <lot> --publier  (écrit)
  *   lots : second-degre, suites, derivation, textcolor-2de, niveaux-2de-probabilites,
  *          textcolor-hors-2de, tracer-droites-2de, tableau-signes-2de, valeur-absolue-droite-2de,
- *          resoudre-graphique-droite-3, somme-vecteurs-2de
+ *          resoudre-graphique-droite-3, somme-vecteurs-2de, triangle-cm-6, blockly-6-210,
+ *          blockly-5-106, variable-e, totaux-ce, horloges-ce-zeros, motifs-allumettes,
+ *          cp-demi-droite, factoriser-impossible-1spe, quotient-simplifie-1spe
  *   … --seulement <id8>[,<id8>]   restreint aux cibles dont l'id commence ainsi
  *   … --sans-diff                 simulation sans le diff (preuves rouges seulement)
  */
@@ -36,12 +38,12 @@ import { execFileSync } from 'node:child_process';
 import { mkdtempSync, readFileSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import type { QuestionTemplate } from '$lib/questions/types';
-import { checkTemplate } from '$lib/questions/review/check-template';
-import { runAllTestSpecs } from '$lib/questions/test-spec-runner';
-import { toQuestionTemplate } from '$lib/types/question-template';
-import { toJson } from '$lib/types/database-helpers';
-import type { TablesUpdate } from '$lib/types/database';
+import type { QuestionTemplate } from '#lib/questions/types.ts';
+import { checkTemplate } from '#lib/questions/review/check-template.ts';
+import { runAllTestSpecs } from '#lib/questions/test-spec-runner.ts';
+import { toQuestionTemplate } from '#lib/types/question-template.ts';
+import { toJson } from '#lib/types/database-helpers.ts';
+import type { TablesUpdate } from '#lib/types/database.ts';
 import { argValue, createScriptClient, hasFlag } from './relecture/common';
 import { canonique, sharedAEcrire } from './relecture/shared-clean-coefficients';
 
@@ -199,6 +201,71 @@ const SOMME_VECTEURS_2DE: readonly string[] = [
 	'51192dc4-78df-4d5d-b6be-7062f456cef3' // Vecteurs › Représenter la somme de deux vecteurs (flèches u et v données, 2-297)
 ];
 
+/** Chantier `triangle-cote-cm`, point 5 : variations en cm ajoutées (docs/wip/questions/lot-12b-triangle-cm.py) */
+const TRIANGLE_CM_6: readonly string[] = [
+	'f06e45e8-45f3-48f7-8bd2-2a16ae86958f' // Triangles › Construire un triangle (6-173), + trois longueurs en cm, deux côtés et l'angle en cm
+];
+
+/** Chantier `blockly` (#2683) : `afficher 10` faux (ne dépend pas du nombre choisi), corrigé ajusté */
+const BLOCKLY_6_210: readonly string[] = [
+	'befab91c-c77e-464e-a5bf-79206462928d' // Algorithmique › Programme pour un résultat donné (6-210)
+];
+
+/** Chantier `blockly` (nombre maximal de blocs) : `blocs:` force la répétition (carré 3, escalier 5, créneaux 9) */
+const BLOCKLY_5_106: readonly string[] = [
+	'51636342-7294-407b-9fd0-42f9ede6e8a9' // Boucles › boucle bornée : Répéter des instructions (5-106)
+];
+
+/** Chantier `questions-cm1` (§ 19 ter) : `totaux: non` là où la ligne Total, affichée par défaut
+ *  depuis `238ec6bc6a`, donnait la réponse (le jour où il y en a le plus, le moins, le total d'un jour) */
+const TOTAUX_CE: readonly string[] = [
+	'f0f681c4-4057-4124-87dd-9ce75036bb0e', // CE2 « Que dit le tableau à double entrée ? (trois lignes) » V1, V2, V3
+	'29edb833-67b0-4bb1-8c0d-3862094c96dd' // CE1 « Que dit le tableau à double entrée ? » V2
+];
+
+/** Chantier `variable-e` (#2725) : `e` = constante d'Euler, jamais une variable ; renommée en h, v ou w */
+const VARIABLE_E: readonly string[] = [
+	'd5a36be9-f6bb-428f-b0e0-60bee080bd19', // CP « Où est-il ? » (e → h)
+	'092b310c-7a6b-44d0-8d41-3351beb2c912', // CM1 « Quelle fraction de la figure est coloriée ? » (e → h)
+	'406fd9a8-ad71-4c24-ab35-5029ddc1b18b', // 2de « Résoudre graphiquement f(x) = g(x) » (e → v)
+	'7efd2e76-f27c-4b9c-b8f0-71dfa86265e2', // 2de « Résoudre graphiquement f(x) < g(x) » (e → v)
+	'95bea43b-c956-47f0-b66b-31c93a79fde6' // 5e « Côtés opposés et diagonales d'un parallélogramme » (e → w)
+];
+
+/** Chantier `questions-cm1` (§ 21 neuvies) : `zeros: off` là où l'élève écrit une heure, pour que
+ *  « 8 h 05 » (minutes sur deux chiffres, écriture usuelle) ait le point entier, pas ½ */
+const HORLOGES_CE_ZEROS: readonly string[] = [
+	'0d41a45e-e8fb-4297-8007-7afbf12f09c8', // CE2 « Quelle heure est-il ? (heures et minutes) » V1, V2, V3
+	'71741618-2f0f-4d24-a4cf-95d360984dea' // CE2 « Dire l'heure et l'écrire en chiffres » V2, V3
+];
+
+/** Chantier `questions-cm2` (§ 19.1 e) : « de allumettes » → « d'allumettes » dans l'énoncé */
+const MOTIFS_ALLUMETTES: readonly string[] = [
+	'37dd213b-d85f-4774-8e78-b04bd92f774a', // CM1 « Motif évolutif : les trois étapes suivantes » V3, V4
+	'ac5fcd5c-d87c-4bea-9ab2-349b4855d955', // CM1 « Motif évolutif : choisir la règle » V3, V4
+	'89594aa7-17b2-45cb-9991-0483d311796f', // 1re spé « Motif : nombre d'éléments à une étape »
+	'05edc72b-5253-454c-91d6-b001fa50e12c', // 1re spé « Motif : relation explicite »
+	'41100a51-0ca9-436e-9d90-13ff62f01331' // 1re spé « Motif : relation de récurrence »
+];
+
+/** Chantier `questions` (CP-008) : la demi-droite de 0 à 20 (graduations à 12 px sur téléphone)
+ *  devient une demi-droite de 0 à 10 où seuls 0 et 10 sont écrits */
+const CP_DEMI_DROITE: readonly string[] = [
+	'11a01460-f201-44f5-83fc-18041c5c585d' // CP « Place le nombre sur la demi-droite » V2
+];
+
+/** Chantier `reponse-impossible` (outil n° 51, Q6) : trois variations « Factorise, si c'est
+ *  possible » où Δ < 0 se répond par le bouton « pas factorisable » */
+const FACTORISER_IMPOSSIBLE_1SPE: readonly string[] = [
+	'604f83b7-4ed3-4b0f-b393-85e60ac353b4' // 1re spé « Factoriser un trinôme à l'aide de ses racines »
+];
+
+/** Écart E77 (chantier `ecarts-verifs`) : un quotient juste mais non simplifié
+ *  (`k^n(n+2) / (k^{n+1}(n+1))`) vaut ½ point au lieu de « Juste » */
+const QUOTIENT_SIMPLIFIE_1SPE: readonly string[] = [
+	'cdb5a1cf-f8df-4ab1-9305-4d1b5b790711' // 1re spé « Sens de variation par le quotient u(n+1)/u(n) »
+];
+
 const LOTS: Record<string, Lot> = {
 	'second-degre': { dossier: 'scripts/questions/second-degre-existants', cibles: SECOND_DEGRE },
 	suites: { dossier: 'scripts/questions/suites-existants', cibles: SUITES },
@@ -231,6 +298,28 @@ const LOTS: Record<string, Lot> = {
 	'somme-vecteurs-2de': {
 		dossier: 'scripts/questions/2de-somme-vecteurs-existants',
 		cibles: SOMME_VECTEURS_2DE
+	},
+	'triangle-cm-6': { dossier: 'scripts/questions/6-triangle-existants', cibles: TRIANGLE_CM_6 },
+	'blockly-6-210': { dossier: 'scripts/questions/6-blockly-existants', cibles: BLOCKLY_6_210 },
+	'blockly-5-106': { dossier: 'scripts/questions/5-blockly-existants', cibles: BLOCKLY_5_106 },
+	'variable-e': { dossier: 'scripts/questions/variable-e-existants', cibles: VARIABLE_E },
+	'totaux-ce': { dossier: 'scripts/questions/ce-totaux-existants', cibles: TOTAUX_CE },
+	'horloges-ce-zeros': {
+		dossier: 'scripts/questions/ce-horloges-zeros',
+		cibles: HORLOGES_CE_ZEROS
+	},
+	'motifs-allumettes': {
+		dossier: 'scripts/questions/motifs-allumettes',
+		cibles: MOTIFS_ALLUMETTES
+	},
+	'cp-demi-droite': { dossier: 'scripts/questions/cp-demi-droite', cibles: CP_DEMI_DROITE },
+	'factoriser-impossible-1spe': {
+		dossier: 'scripts/questions/1spe-factoriser-impossible',
+		cibles: FACTORISER_IMPOSSIBLE_1SPE
+	},
+	'quotient-simplifie-1spe': {
+		dossier: 'scripts/questions/1spe-quotient-simplifie-existants',
+		cibles: QUOTIENT_SIMPLIFIE_1SPE
 	}
 };
 

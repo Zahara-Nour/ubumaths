@@ -15,8 +15,12 @@
 -->
 <script lang="ts">
 	import { escapeHtml } from '../utils';
-	import type { DetailKind, TermRange } from '$lib/ubumark';
+	import type { DetailKind, TermRange } from '#lib/ubumark/index.ts';
+	import type { NamedColor } from '#lib/theme/named-colors.ts';
 	import { inlineDetailClass } from '../detail-styles';
+	import { inlineColorValue, unknownClassesMessage } from '../inline-color';
+	import { readRestrictedRendering } from '../restricted-rendering';
+	import { readAuthoringErrors } from '../authoring-errors';
 	import LexiconTerm from './LexiconTerm.svelte';
 
 	interface Props {
@@ -26,6 +30,10 @@
 		code?: boolean;
 		/** Détail de correction en ligne `[texte]{.rappel}` (ADR 0017) */
 		detail?: DetailKind;
+		/** Texte coloré `[texte]{.orange}` (ADR 0042) */
+		color?: NamedColor;
+		/** Classes inconnues d'un marquage `[texte]{.…}` : message au prof */
+		unknownClasses?: string[];
 		/** Mots du dictionnaire repérés : positions dans le texte du nœud d'origine */
 		terms?: TermRange[];
 		/** Caractères retirés au début par l'appelant (espace devant une formule) */
@@ -39,12 +47,21 @@
 		italic = false,
 		code = false,
 		detail,
+		color,
+		unknownClasses,
 		terms,
 		termOffset = 0,
 		class: rawClassName = ''
 	}: Props = $props();
 
 	let className = $derived(`${rawClassName} ${inlineDetailClass(detail)}`.trim());
+
+	const restricted = readRestrictedRendering();
+	const authoringErrors = readAuthoringErrors();
+	let colorValue = $derived(inlineColorValue(color, restricted()));
+	let unknownMessage = $derived(
+		unknownClasses?.length && authoringErrors() ? unknownClassesMessage(unknownClasses) : null
+	);
 
 	// Escape content for safe rendering
 	let escapedContent = $derived(escapeHtml(content));
@@ -74,17 +91,22 @@
 				)}{/if}{/each}{:else}{@html escapedContent}{/if}{/snippet}
 
 {#if code}
-	<code class="rounded bg-muted px-1 py-0.5 text-sm text-foreground {className}"
+	<code
+		class="rounded bg-muted px-1 py-0.5 text-sm text-foreground {className}"
+		style:color={colorValue}
 		>{#if bold}<strong
 				>{#if italic}<em>{@render inner()}</em>{:else}{@render inner()}{/if}</strong
 			>{:else if italic}<em>{@render inner()}</em>{:else}{@render inner()}{/if}</code
 	>
 {:else if bold}
-	<strong class={className}
+	<strong class={className} style:color={colorValue}
 		>{#if italic}<em>{@render inner()}</em>{:else}{@render inner()}{/if}</strong
 	>
 {:else if italic}
-	<em class={className}>{@render inner()}</em>
+	<em class={className} style:color={colorValue}>{@render inner()}</em>
 {:else}
-	<span class={className}>{@render inner()}</span>
-{/if}
+	<span class={className} style:color={colorValue}>{@render inner()}</span>
+{/if}{#if unknownMessage}<span
+		class="ml-1 rounded-sm bg-destructive/10 px-1 text-xs text-destructive"
+		data-authoring-errors>{unknownMessage}</span
+	>{/if}

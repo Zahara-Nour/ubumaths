@@ -14,8 +14,8 @@
  * - Cache TTL: 10 minutes per period
  * - Map-based caching allows multiple periods to be cached simultaneously
  *
- * NOTE: Currently students cannot view their own warnings in the UI.
- * This endpoint structure is ready for when/if this feature is added.
+ * L'élève voit ses avertissements de la période courante sur son tableau de bord
+ * (RewardsBlock, via studentCache.getWarnings).
  *
  * RESPONSE:
  * {
@@ -41,13 +41,13 @@
  * ```
  */
 
-import { error, json } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireRole } from '$lib/server/middleware/auth';
-import type { StudentWarnings } from '$lib/types/student-cache';
-import type { Warning, WarningType, StudentWarningCounts } from '$lib/server/warnings';
+import { requireRole } from '#lib/server/middleware/auth.ts';
+import type { StudentWarnings } from '#lib/types/student-cache.ts';
+import type { Warning, WarningType, StudentWarningCounts } from '#lib/server/warnings.ts';
 import { z } from 'zod';
-import { createServerLogger } from '$lib/utils/logger';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/student/warnings/[periodId]/+server');
 
@@ -61,7 +61,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 	// Validate periodId parameter
 	const periodIdValidation = periodIdSchema.safeParse(params.periodId);
 	if (!periodIdValidation.success) {
-		throw error(400, 'Invalid period ID format');
+		throw error(400, 'Identifiant de période invalide');
 	}
 	const periodId = periodIdValidation.data;
 
@@ -110,7 +110,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 			warnings
 		};
 
-		return json({ warnings: studentWarnings });
+		return Response.json({ warnings: studentWarnings });
 	} catch (err) {
 		// Re-throw SvelteKit errors
 		if (err && typeof err === 'object' && 'status' in err) {

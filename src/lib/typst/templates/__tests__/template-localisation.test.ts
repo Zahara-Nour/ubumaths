@@ -10,7 +10,7 @@
 import { describe, expect, it } from 'vitest';
 import { DEFAULT_TEMPLATES, renderTemplate, SAMPLE_PREVIEW_DATA } from '../default-templates';
 import { labelPlaceholders } from '../../labels';
-import { TYPST_LANGS } from '$lib/types/locale';
+import { TYPST_LANGS } from '#lib/types/locale.ts';
 
 /**
  * Accented characters are the strongest tell: an English render must contain
@@ -58,8 +58,13 @@ function renderEnglish(templateContent: string): string {
 		exercises_badge: 'CONTENT',
 		instructions: 'CONTENT',
 		title: 'CONTENT',
+		// Catégorie et notions (ADR 0041) : traduites ou retirées par le générateur
+		title_sub: 'CONTENT',
+		footer_title: 'CONTENT',
 		// La phrase de calculatrice vient des libellés, posée par le générateur
 		calculator: 'CONTENT',
+		// Pas de niveau en anglais (aucun nom anglais), comme le générateur
+		show_level: '',
 		...labelPlaceholders('en'),
 		lang: TYPST_LANGS.en
 	};

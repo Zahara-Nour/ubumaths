@@ -16,19 +16,19 @@
  * - Only accesses files created by the app (drive.file scope)
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import {
 	GoogleNotConnectedError,
 	GoogleTokenExpiredError,
 	GoogleInsufficientPermissionsError
-} from '$lib/server/google/errors';
-import { requireRole } from '$lib/server/middleware/auth';
-import { loadFromDriveParamsSchema } from '$lib/server/validation/whiteboard-drive';
-import { GoogleDriveClient } from '$lib/server/google/drive-api';
-import { getTeacherAccessToken } from '$lib/server/google/sync';
-import { validateUbwFile } from '$lib/whiteboard/utils/file-operations';
-import { createServerLogger } from '$lib/utils/logger';
+} from '#lib/server/google/errors.ts';
+import { requireRole } from '#lib/server/middleware/auth.ts';
+import { loadFromDriveParamsSchema } from '#lib/server/validation/whiteboard-drive.ts';
+import { GoogleDriveClient } from '#lib/server/google/drive-api.ts';
+import { getTeacherAccessToken } from '#lib/server/google/sync.ts';
+import { validateUbwFile } from '#lib/whiteboard/utils/file-operations.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/whiteboard/drive/load/[fileId]/+server');
 
@@ -68,7 +68,7 @@ export const GET: RequestHandler = async ({ params, locals }) => {
 
 		logger.info(`[Whiteboard Drive] Loaded file ${fileId} for teacher ${user.id}`);
 
-		return json({
+		return Response.json({
 			document: docValidation.document,
 			fileId,
 			name: metadata.name,

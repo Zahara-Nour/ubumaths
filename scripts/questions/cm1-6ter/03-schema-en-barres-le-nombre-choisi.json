@@ -1,0 +1,276 @@
+{
+	"id": "c4011427-3b47-4837-9c98-2fe4b0b93cb1",
+	"title": "Schéma en barres : le nombre choisi",
+	"description": "Problèmes algébriques appuyés sur un schéma en barres donné : k fois un nombre plus ou moins b, « k fois plus », somme et écart (nombres ≤ 200)",
+	"grades": ["CM1"],
+	"level": 1,
+	"delay": 120,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"spacesFromFourDigits": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Mia a choisi un nombre. Elle le multiplie par ${{k}}$, puis elle ajoute ${{b}}$ : elle trouve ${{r}}$.\n\n```schema-barres\nMia : ? (2) ; ? (2){{if:k>2| ; ? (2)|}}{{if:k>3| ; ? (2)|}}{{if:k>4| ; ? (2)|}} ; {{b}} (1) = {{r}}\n```\n\nQuel nombre Mia a-t-elle choisi ?\n\nMia a choisi $?$.",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "2..5"
+				},
+				{
+					"name": "n",
+					"expression": "5..40"
+				},
+				{
+					"name": "b",
+					"expression": "1..30"
+				},
+				{
+					"name": "r",
+					"expression": "eval:k*n+b"
+				}
+			],
+			"conditions": ["r<=200"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{n}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**On enlève ${{b}}$.** Il reste ${{k}}$ parts égales : ${{r}} - {{b}} = {{eval:k*n}}$.",
+					"**Une part.** ${{eval:k*n}} \\div {{k}} = \\textcolor{{{color:primary.0}}}{{{n}}}$ : Mia a choisi $\\textcolor{{{color:primary.0}}}{{{n}}}$.\n\n```schema-barres\nMia : {{n}} (2) ; {{n}} (2){{if:k>2| ; {{n}} (2)|}}{{if:k>3| ; {{n}} (2)|}}{{if:k>4| ; {{n}} (2)|}} ; {{b}} (1) = {{r}}\n```\n\n",
+					"**Vérification.** ${{n}} \\times {{k}} + {{b}} = {{eval:k*n}} + {{b}} = {{r}}$."
+				]
+			}
+		},
+		{
+			"statement": "Tom a choisi un nombre. Il le multiplie par ${{k}}$, puis il retire ${{b}}$ : il trouve ${{r}}$.\n\n```schema-barres\nTom : ? (2) ; ? (2){{if:k>2| ; ? (2)|}}{{if:k>3| ; ? (2)|}}{{if:k>4| ; ? (2)|}}\n : {{r}} ({{eval:2*k-1}}) ; -{{b}} (1)\n```\n\nQuel nombre Tom a-t-il choisi ?\n\nTom a choisi $?$.",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "2..5"
+				},
+				{
+					"name": "n",
+					"expression": "6..40"
+				},
+				{
+					"name": "b",
+					"expression": "1..20"
+				},
+				{
+					"name": "r",
+					"expression": "eval:k*n-b"
+				}
+			],
+			"conditions": ["r<=200", "r>=5"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{n}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**On rajoute ${{b}}$.** Les ${{k}}$ parts égales font ${{r}} + {{b}} = {{eval:k*n}}$.",
+					"**Une part.** ${{eval:k*n}} \\div {{k}} = \\textcolor{{{color:primary.0}}}{{{n}}}$ : Tom a choisi $\\textcolor{{{color:primary.0}}}{{{n}}}$.\n\n```schema-barres\nTom : {{n}} (2) ; {{n}} (2){{if:k>2| ; {{n}} (2)|}}{{if:k>3| ; {{n}} (2)|}}{{if:k>4| ; {{n}} (2)|}}\n : {{r}} ({{eval:2*k-1}}) ; -{{b}} (1)\n```\n\n",
+					"**Vérification.** ${{n}} \\times {{k}} - {{b}} = {{eval:k*n}} - {{b}} = {{r}}$."
+				]
+			}
+		},
+		{
+			"statement": "Léo et Zoé ont ${{t}}$ billes à eux deux. Zoé en a ${{k}}$ fois plus que Léo.\n\n```schema-barres\nLéo : ?\nZoé : ? (1) ; ? (1){{if:k>2| ; ? (1)|}}{{if:k>3| ; ? (1)|}}{{if:k>4| ; ? (1)|}}\ntotal : {{t}}\n```\n\nCombien de billes chacun a-t-il ?\n\nLéo : $?$ billes\n\nZoé : $?$ billes",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "2..5"
+				},
+				{
+					"name": "n",
+					"expression": "3..40"
+				},
+				{
+					"name": "t",
+					"expression": "eval:(k+1)*n"
+				}
+			],
+			"conditions": ["t<=200"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{n}}"
+				},
+				{
+					"expectedAnswer": "{{eval:k*n}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Des parts égales.** Léo a $1$ part, Zoé ${{k}}$ parts : ${{eval:k+1}}$ parts en tout.",
+					"**Une part.** ${{t}} \\div {{eval:k+1}} = \\textcolor{{{color:primary.0}}}{{{n}}}$ : Léo a $\\textcolor{{{color:primary.0}}}{{{n}}}$ billes.",
+					"**Zoé.** ${{n}} \\times {{k}} = \\textcolor{{{color:primary.0}}}{{{eval:k*n}}}$ : Zoé a $\\textcolor{{{color:primary.0}}}{{{eval:k*n}}}$ billes.\n\n```schema-barres\nLéo : {{n}}\nZoé : {{n}} (1) ; {{n}} (1){{if:k>2| ; {{n}} (1)|}}{{if:k>3| ; {{n}} (1)|}}{{if:k>4| ; {{n}} (1)|}}\ntotal : {{t}}\n```\n\n",
+					"**Vérification.** ${{n}} + {{eval:k*n}} = {{t}}$."
+				]
+			}
+		},
+		{
+			"statement": "Hugo et Nina ont ${{t}}$ cartes à eux deux. Nina en a ${{d}}$ de plus que Hugo.\n\n```schema-barres\nHugo : ? (3)\nNina : ? (3) ; {{d}} (1,5)\ntotal : {{t}}\n```\n\nCombien de cartes chacun a-t-il ?\n\nHugo : $?$ cartes\n\nNina : $?$ cartes",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "5..90"
+				},
+				{
+					"name": "d",
+					"expression": "2..60"
+				},
+				{
+					"name": "t",
+					"expression": "eval:2*p+d"
+				}
+			],
+			"conditions": ["t<=200", "p>=d", "d*4>=p"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{p}}"
+				},
+				{
+					"expectedAnswer": "{{eval:p+d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Deux parts égales.** On enlève l'écart du total : ${{t}} - {{d}} = {{eval:2*p}}$. Il reste deux barres égales.",
+					"**Hugo.** ${{eval:2*p}} \\div 2 = \\textcolor{{{color:primary.0}}}{{{p}}}$.",
+					"**Nina.** ${{p}} + {{d}} = \\textcolor{{{color:primary.0}}}{{{eval:p+d}}}$.\n\n```schema-barres\nHugo : {{p}} (3)\nNina : {{p}} (3) ; {{d}} (1,5)\ntotal : {{t}}\n```\n\n",
+					"**Vérification.** ${{p}} + {{eval:p+d}} = {{t}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "3 × N + 7 = 100 : 31",
+			"variationIndex": 0,
+			"variables": {
+				"k": "3",
+				"n": "31",
+				"b": "7",
+				"r": "100"
+			},
+			"answers": ["31"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 93 (pas divisé)",
+			"variationIndex": 0,
+			"variables": {
+				"k": "3",
+				"n": "31",
+				"b": "7",
+				"r": "100"
+			},
+			"answers": ["93"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 33 (le 7 oublié)",
+			"variationIndex": 0,
+			"variables": {
+				"k": "3",
+				"n": "31",
+				"b": "7",
+				"r": "100"
+			},
+			"answers": ["33"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "3 × N − 6 = 54 : 20",
+			"variationIndex": 1,
+			"variables": {
+				"k": "3",
+				"n": "20",
+				"b": "6",
+				"r": "54"
+			},
+			"answers": ["20"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 16 (6 retiré au lieu d'ajouté)",
+			"variationIndex": 1,
+			"variables": {
+				"k": "3",
+				"n": "20",
+				"b": "6",
+				"r": "54"
+			},
+			"answers": ["16"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "84 billes, 3 fois plus : 21 et 63",
+			"variationIndex": 2,
+			"variables": {
+				"k": "3",
+				"n": "21",
+				"t": "84"
+			},
+			"answers": ["21", "63"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 28 et 84 (divisé par 3)",
+			"variationIndex": 2,
+			"variables": {
+				"k": "3",
+				"n": "21",
+				"t": "84"
+			},
+			"answers": ["28", "84"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "84 cartes, écart 12 : 36 et 48",
+			"variationIndex": 3,
+			"variables": {
+				"p": "36",
+				"d": "12",
+				"t": "84"
+			},
+			"answers": ["36", "48"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 42 et 54 (moitié du total)",
+			"variationIndex": 3,
+			"variables": {
+				"p": "36",
+				"d": "12",
+				"t": "84"
+			},
+			"answers": ["42", "54"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

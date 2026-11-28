@@ -1,0 +1,236 @@
+{
+	"id": "699b1aae-eada-468e-af95-25f74aede343",
+	"title": "Cours : formule des probabilités totales",
+	"description": "La formule des probabilités totales pour la partition {A, Ā} : écriture, chemins de l'arbre, vrai ou faux",
+	"grades": ["1_TECHNO"],
+	"level": 1,
+	"delay": 30,
+	"status": "draft",
+	"options": {
+		"courseQuestion": true
+	},
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "$A$ et $\\overline{A}$ forment une partition de l'univers, et $B$ est un évènement.\n\nD'après la formule des probabilités totales, $P(B)=\\ldots$\n\n```choix\n- $P(A\\cap B)+P(\\overline{A}\\cap B)$\n- $P_A(B)+P_{\\overline{A}}(B)$\n- $P(A)+P(\\overline{A})$\n- $P(A\\cap B)\\times P(\\overline{A}\\cap B)$\n```",
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"variables": [],
+			"correction": {
+				"steps": [
+					"$A$ et $\\overline{A}$ forment une **partition** de l'univers : la formule des probabilités totales donne $P(B)=P(A\\cap B)+P(\\overline{A}\\cap B)$.",
+					"On additionne les probabilités des **intersections** $A\\cap B$ et $\\overline{A}\\cap B$, pas les probabilités conditionnelles."
+				]
+			}
+		},
+		{
+			"statement": "On considère l'arbre pondéré ci-dessous.\n\n```probtree\nA:0.{{a}}\n  B:0.{{b}}\n  \\overline{B}:0.{{eval:10-b}}\n\\overline{A}:0.{{eval:10-a}}\n  B:0.{{c}}\n  \\overline{B}:0.{{eval:10-c}}\n```\n\nPour calculer $P(B)$ avec la formule des probabilités totales, on additionne…\n\n```choix\n- les probabilités des deux chemins qui mènent à $B$\n- les probabilités des deux branches qui partent de la racine\n- les probabilités de toutes les branches de l'arbre\n- la probabilité du seul chemin $A$ puis $B$\n```",
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..8"
+				},
+				{
+					"name": "b",
+					"expression": "1..9"
+				},
+				{
+					"name": "c",
+					"expression": "1..9"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$A$ et $\\overline{A}$ forment une **partition** de l'univers : la formule des probabilités totales donne $P(B)=P(A\\cap B)+P(\\overline{A}\\cap B)$.",
+					"La probabilité d'un chemin est le **produit** des probabilités de ses branches : $P(A\\cap B)=0{,}{{a}}\\times0{,}{{b}}$ et $P(\\overline{A}\\cap B)=0{,}{{eval:10-a}}\\times0{,}{{c}}$.",
+					"On additionne donc les probabilités des **deux chemins qui mènent à $B$**."
+				]
+			}
+		},
+		{
+			"statement": "$A$ et $\\overline{A}$ forment une partition de l'univers, avec $P(A)\\neq0$ et $P(\\overline{A})\\neq0$.\n\nVrai ou faux : $P(B)=P(A)\\times P_A(B)+P(\\overline{A})\\times P_{\\overline{A}}(B)$.\n\n```choix\nmelanger: non\n- Vrai\n- Faux\n```",
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"variables": [],
+			"correction": {
+				"steps": [
+					"$A$ et $\\overline{A}$ forment une **partition** de l'univers : la formule des probabilités totales donne $P(B)=P(A\\cap B)+P(\\overline{A}\\cap B)$.",
+					"Or $P(A\\cap B)=P(A)\\times P_A(B)$ et $P(\\overline{A}\\cap B)=P(\\overline{A})\\times P_{\\overline{A}}(B)$ : l'égalité est $\\textcolor{{{color:primary.0}}}{\\text{vraie}}$."
+				]
+			}
+		},
+		{
+			"statement": "$A$ et $\\overline{A}$ forment une partition de l'univers, avec $P(A)\\neq0$ et $P(\\overline{A})\\neq0$.\n\nVrai ou faux : $P(B)=P_A(B)+P_{\\overline{A}}(B)$.\n\n```choix\nmelanger: non\n- Vrai\n- Faux\n```",
+			"blanks": [
+				{
+					"expectedAnswer": "1"
+				}
+			],
+			"variables": [],
+			"correction": {
+				"steps": [
+					"$A$ et $\\overline{A}$ forment une **partition** de l'univers : la formule des probabilités totales donne $P(B)=P(A\\cap B)+P(\\overline{A}\\cap B)$.",
+					"Les probabilités conditionnelles doivent être **multipliées** par $P(A)$ et $P(\\overline{A})$ : $P(B)=P(A)\\times P_A(B)+P(\\overline{A})\\times P_{\\overline{A}}(B)$. L'égalité est $\\textcolor{{{color:primary.0}}}{\\text{fausse}}$."
+				]
+			}
+		},
+		{
+			"statement": "$A$ et $\\overline{A}$ forment une partition de l'univers. On sait que $P(A\\cap B)={{eval:s/100;d}}$ et $P(\\overline{A}\\cap B)={{eval:t/100;d}}$.\n\nRéponds par une fraction irréductible ou par un nombre décimal exact.\n\n$P(B)=?$",
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(s+t)/100}}"
+				}
+			],
+			"variables": [
+				{
+					"name": "s",
+					"expression": "5..45"
+				},
+				{
+					"name": "t",
+					"expression": "5..45"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$A$ et $\\overline{A}$ forment une **partition** de l'univers : la formule des probabilités totales donne $P(B)=P(A\\cap B)+P(\\overline{A}\\cap B)$.",
+					"$P(B)={{eval:s/100;d}}+{{eval:t/100;d}}=\\textcolor{{{color:primary.0}}}{{{eval:(s+t)/100;d}}}$."
+				]
+			},
+			"conditions": ["s != t"]
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Formule",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : conditionnelles",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Deux chemins",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3",
+				"b": "4",
+				"c": "6"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : branches de la racine",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3",
+				"b": "4",
+				"c": "6"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Vrai",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : faux",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Faux",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : vrai",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Somme",
+			"variationIndex": 4,
+			"variables": {
+				"s": "12",
+				"t": "23"
+			},
+			"answers": ["0,35"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Somme en fraction",
+			"variationIndex": 4,
+			"variables": {
+				"s": "12",
+				"t": "23"
+			},
+			"answers": ["\\frac{7}{20}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : produit",
+			"variationIndex": 4,
+			"variables": {
+				"s": "12",
+				"t": "23"
+			},
+			"answers": ["0,0276"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

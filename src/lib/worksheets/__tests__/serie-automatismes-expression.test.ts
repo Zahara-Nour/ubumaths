@@ -10,7 +10,7 @@
  * ses propres `?` n'a pas d'`answerFormat` : seul le marqueur disparaît.
  */
 import { describe, it, expect } from 'vitest';
-import type { QuestionTemplate } from '$lib/questions/types';
+import type { QuestionTemplate } from '#lib/questions/types.ts';
 import { buildSerie, BLANK_TEXT } from '../serie-automatismes';
 
 /** Un modèle d'une variation : énoncé, variables, cases */

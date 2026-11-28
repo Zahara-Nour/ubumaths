@@ -14,7 +14,7 @@
  */
 
 import { z } from 'zod';
-import { SUPERFLU_RULE_IDS, bySuperfluRule } from '$lib/mathAST/superflu/rules';
+import { SUPERFLU_RULE_IDS, bySuperfluRule } from '#lib/mathAST/superflu/rules.ts';
 import { findRulesSufficeBlanksWithoutRules } from './rules-suffice';
 import { answerAssumptionsSchema, refineAssumptionCollisions } from './answer-assumptions';
 import {
@@ -28,6 +28,9 @@ import {
 } from './types';
 import { genericFunctionNamesSchema } from './generic-functions';
 import { capitalPairsSchema } from './capital-pairs';
+import { hintSchema, refineHints } from './hint';
+import { IMPOSSIBLE_LABEL_MAX, IMPOSSIBLE_LABEL_PATTERN } from './impossible-answer';
+import { RESOLUTION_MAX_LINES } from './resolution/resolution-lines';
 
 // ============================================================================
 // BUILDING BLOCKS (exported, non-strict)
@@ -144,9 +147,36 @@ export const constraintIdSchema = z.enum([
 	'rounding'
 ]);
 
+/** Longueur maximale d'une réponse ou d'un message d'erreur prévue */
+const EXPECTED_ERROR_TEXT_MAX = 500;
+/** Longueur maximale du nom court d'une erreur prévue */
+const EXPECTED_ERROR_LABEL_MAX = 80;
+/** Nombre maximal d'erreurs prévues d'une case */
+const EXPECTED_ERRORS_MAX = 10;
+
+/** Erreur prévue d'une case (cf. `ExpectedError`) ; message et réponse non vides */
+const expectedErrorSchema = z
+	.object({
+		answer: z
+			.string()
+			.trim()
+			.min(1, 'Réponse de l’erreur prévue vide')
+			.max(EXPECTED_ERROR_TEXT_MAX),
+		message: z
+			.string()
+			.trim()
+			.min(1, 'Message de l’erreur prévue vide')
+			.max(EXPECTED_ERROR_TEXT_MAX),
+		label: z.string().trim().min(1).max(EXPECTED_ERROR_LABEL_MAX).optional()
+	})
+	.strict();
+
+const expectedErrorsSchema = z.array(expectedErrorSchema).max(EXPECTED_ERRORS_MAX);
+
 export const testSpecExpectedSchema = z.object({
 	status: z.enum(['correct', 'unoptimal_form', 'bad_form', 'incorrect', 'empty']),
-	constraintViolations: z.array(constraintIdSchema).optional()
+	constraintViolations: z.array(constraintIdSchema).optional(),
+	expectedErrorMessage: z.string().min(1).max(EXPECTED_ERROR_TEXT_MAX).optional()
 });
 
 export const testSpecSchema = z.object({
@@ -325,8 +355,20 @@ const calculusFieldsShape = {
 	equation: z.string().min(1).max(CALCULUS_TEXT_MAX).optional(),
 	solutionMode: z.enum(SOLUTION_MODES).optional(),
 	function: singleLetterSchema.optional(),
-	initial: z.string().min(1).max(CALCULUS_TEXT_MAX).optional()
+	initial: z.string().min(1).max(CALCULUS_TEXT_MAX).optional(),
+	minLines: z.number().int().min(1).max(RESOLUTION_MAX_LINES).optional()
 };
+
+/** Texte du bouton « impossible » : rien qui casse le `\text{…}` écrit dans la case */
+const impossibleLabelSchema = z
+	.string()
+	.trim()
+	.min(1)
+	.max(IMPOSSIBLE_LABEL_MAX)
+	.regex(
+		IMPOSSIBLE_LABEL_PATTERN,
+		'Texte du bouton : lettres, espaces, apostrophes et traits d’union seulement'
+	);
 
 export const blankDefaultsSchema = z.object({
 	precision: precisionSchema.optional(),
@@ -336,6 +378,7 @@ export const blankDefaultsSchema = z.object({
 	acceptDecimal: z.boolean().optional(),
 	acceptCombinatorialNotation: z.boolean().optional(),
 	answerKind: z.enum(ANSWER_KINDS).optional(),
+	impossibleLabel: impossibleLabelSchema.optional(),
 	vectorMode: z.enum(VECTOR_MODES).optional(),
 	openableBounds: z.boolean().optional(),
 	angleModulo: z.enum(ANGLE_MODULOS).optional(),
@@ -355,9 +398,12 @@ export const blankSchema = z.object({
 	acceptDecimal: z.boolean().optional(),
 	acceptCombinatorialNotation: z.boolean().optional(),
 	answerKind: z.enum(ANSWER_KINDS).optional(),
+	impossibleLabel: impossibleLabelSchema.optional(),
 	vectorMode: z.enum(VECTOR_MODES).optional(),
 	openableBounds: z.boolean().optional(),
 	angleModulo: z.enum(ANGLE_MODULOS).optional(),
+	expectedErrors: expectedErrorsSchema.optional(),
+	neverChoice: z.boolean().optional(),
 	...calculusFieldsShape,
 	unit: unitSchema.optional()
 });
@@ -589,6 +635,7 @@ const blankDefaultsStrictZ = z
 		acceptDecimal: z.boolean().optional(),
 		acceptCombinatorialNotation: z.boolean().optional(),
 		answerKind: z.enum(ANSWER_KINDS).optional(),
+		impossibleLabel: impossibleLabelSchema.optional(),
 		vectorMode: z.enum(VECTOR_MODES).optional(),
 		openableBounds: z.boolean().optional(),
 		angleModulo: z.enum(ANGLE_MODULOS).optional(),
@@ -610,9 +657,12 @@ const blankStrictZ = z
 		acceptDecimal: z.boolean().optional(),
 		acceptCombinatorialNotation: z.boolean().optional(),
 		answerKind: z.enum(ANSWER_KINDS).optional(),
+		impossibleLabel: impossibleLabelSchema.optional(),
 		vectorMode: z.enum(VECTOR_MODES).optional(),
 		openableBounds: z.boolean().optional(),
 		angleModulo: z.enum(ANGLE_MODULOS).optional(),
+		expectedErrors: expectedErrorsSchema.optional(),
+		neverChoice: z.boolean().optional(),
 		...calculusFieldsShape,
 		unit: unitStrictZ.optional()
 	})
@@ -659,7 +709,10 @@ const variationStrictZ = z
 		answerFormats: z.record(z.string(), z.string()).optional(),
 		validationRules: z.array(validationRuleStrictZ).optional(),
 		requiredForm: requiredFormStrictZ.optional(),
-		conditions: z.array(z.string()).optional()
+		conditions: z.array(z.string()).optional(),
+		// Coup de pouce (idée 5) : indice écrit, ou première étape de la correction
+		hint: hintSchema.optional(),
+		hintFromFirstStep: z.boolean().optional()
 	})
 	.strict();
 
@@ -704,6 +757,8 @@ export const questionTemplateSchema = z
 	)
 	// Hypothèse de l'énoncé posée sur une variable tirée : refusée
 	.superRefine(refineAssumptionCollisions)
+	// Coup de pouce qui donnerait la réponse : refusé (cf. hint.ts)
+	.superRefine(refineHints)
 	.superRefine((data, ctx) => {
 		// rulesSuffice sans aucune règle : toute réponse serait juste
 		data.variations.forEach((variation, variationIndex) => {

@@ -298,7 +298,7 @@ The component includes:
 <script lang="ts">
 	import ExerciseDisplay from '$lib/components/exercises/ExerciseDisplay.svelte';
 	import type { PageData } from './$types';
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 
 	let { data }: { data: PageData } = $props();
 	const exercise = data.exercise;

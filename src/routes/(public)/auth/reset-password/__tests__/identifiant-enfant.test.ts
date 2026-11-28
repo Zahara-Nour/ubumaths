@@ -25,15 +25,15 @@ const {
 	enFond: [] as Promise<unknown>[]
 }));
 
-vi.mock('$lib/server/rateLimiter', () => ({
+vi.mock('#lib/server/rateLimiter.ts', () => ({
 	checkPasswordResetRateLimitByIP,
 	checkPasswordResetRateLimitByEmail: vi.fn(async () => ({ allowed: true }))
 }));
-vi.mock('$lib/server/serviceRoleClient', () => ({ createServiceRoleClient: () => ({}) }));
-vi.mock('$lib/server/child-password', () => ({ findChildResetTarget, createChildResetToken }));
-vi.mock('$lib/server/email/brevo', () => ({ sendChildPasswordResetEmail }));
-vi.mock('$lib/server/response-floor', () => ({ waitForResponseFloor }));
-vi.mock('$lib/server/after-response', () => ({ runAfterResponse }));
+vi.mock('#lib/server/serviceRoleClient.ts', () => ({ createServiceRoleClient: () => ({}) }));
+vi.mock('#lib/server/child-password.ts', () => ({ findChildResetTarget, createChildResetToken }));
+vi.mock('#lib/server/email/brevo.ts', () => ({ sendChildPasswordResetEmail }));
+vi.mock('#lib/server/response-floor.ts', () => ({ waitForResponseFloor }));
+vi.mock('#lib/server/after-response.ts', () => ({ runAfterResponse }));
 
 const { actions } = await import('../+page.server');
 

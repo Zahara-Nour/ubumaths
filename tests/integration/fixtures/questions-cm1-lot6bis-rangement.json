@@ -1,0 +1,79 @@
+[
+	{
+		"id": "0e392697-75f1-4e5e-a346-27e7974fd9b3",
+		"noeudAvant": null,
+		"noeudApres": "Nombres et calculs > Entiers : numération > dénombrement",
+		"gradesAvant": ["CM1"],
+		"gradesApres": ["CM1"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["CM1§CM1-002"]
+	},
+	{
+		"id": "4241d466-9668-49b2-8f36-015be0af4ae9",
+		"noeudAvant": null,
+		"noeudApres": "Nombres et calculs > Entiers : numération > droite graduée",
+		"gradesAvant": ["CM1"],
+		"gradesApres": ["CM1"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["CM1§CM1-143"]
+	},
+	{
+		"id": "620f11e8-1d3e-4e36-b01c-c074aecca70d",
+		"noeudAvant": null,
+		"noeudApres": "Nombres et calculs > Décimaux : numération > décomposition",
+		"gradesAvant": ["CM1"],
+		"gradesApres": ["CM1"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["CM1§CM1-024"]
+	},
+	{
+		"id": "a047650a-0f85-4bc8-b0e0-51b51b18aeb4",
+		"noeudAvant": null,
+		"noeudApres": "Nombres et calculs > Entiers : numération > ordre",
+		"gradesAvant": ["CM1"],
+		"gradesApres": ["CM1"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["CM1§CM1-131"]
+	},
+	{
+		"id": "a62b2ce5-d4d0-4c02-9850-e70b6f2f5546",
+		"noeudAvant": null,
+		"noeudApres": "Nombres et calculs > Entiers : numération > droite graduée",
+		"gradesAvant": ["CM1"],
+		"gradesApres": ["CM1"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["CM1§CM1-010"]
+	},
+	{
+		"id": "c08f689b-0039-4388-8671-5bcd8a220246",
+		"noeudAvant": null,
+		"noeudApres": "Nombres et calculs > Décimaux : numération > arrondis et ordres de grandeur",
+		"gradesAvant": ["CM1"],
+		"gradesApres": ["CM1"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["CM1§CM1-048"]
+	},
+	{
+		"id": "d00b1f79-7982-43d5-858b-0255689079e1",
+		"noeudAvant": null,
+		"noeudApres": "Nombres et calculs > Entiers : numération > dénombrement",
+		"gradesAvant": ["CM1"],
+		"gradesApres": ["CM1"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["CM1§CM1-001"]
+	}
+]

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import gidouilleImage from '$lib/assets/images/gidouille.png';
+	import gidouilleImage from '#lib/assets/images/gidouille.png';
 
 	interface Props {
 		count: number;

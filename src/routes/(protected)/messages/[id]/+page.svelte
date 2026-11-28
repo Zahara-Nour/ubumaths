@@ -1,11 +1,11 @@
 <script lang="ts">
 	import { resolve } from '$app/paths';
-	import RestrictedRichText from '$lib/components/rich-text/RestrictedRichText.svelte';
-	import { lore } from '$lib/config/lore';
+	import RestrictedRichText from '#lib/components/rich-text/RestrictedRichText.svelte';
+	import { messageRoleLabel, replyRecipientId } from '#lib/utils/message-reply.ts';
 	import { page } from '$app/state';
-	import { privateMessages } from '$lib/stores/privateMessages.svelte';
-	import { Button } from '$lib/components/ui/button';
-	import BackLink from '$lib/components/navigation/BackLink.svelte';
+	import { privateMessages } from '#lib/stores/privateMessages.svelte.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import BackLink from '#lib/components/navigation/BackLink.svelte';
 	import {
 		Loader2,
 		Reply,
@@ -25,8 +25,8 @@
 	} from '@lucide/svelte';
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
-	import { cn } from '$lib/utils';
-	import UserAvatar from '$lib/components/UserAvatar.svelte';
+	import { cn } from '#lib/utils.ts';
+	import UserAvatar from '#lib/components/UserAvatar.svelte';
 
 	const messageId = $derived(page.params.id);
 
@@ -38,6 +38,16 @@
 	});
 
 	const message = $derived(privateMessages.currentMessage);
+
+	// À qui part la réponse : jamais à soi-même (message que j'ai envoyé → son destinataire)
+	const replyTo = $derived(
+		message && page.data.user ? replyRecipientId([message], page.data.user.id) : null
+	);
+
+	// Destinataires que cette page ne nomme pas (un élève ne lit que sa propre ligne)
+	const hiddenRecipientCount = $derived(
+		message ? Math.max(0, message.recipient_count - (message.recipients?.length ?? 0)) : 0
+	);
 
 	// Format date
 	function formatDate(dateStr: string): string {
@@ -98,12 +108,12 @@
 
 	// Reply to message
 	function replyToMessage() {
-		if (!message) return;
+		if (!message || !replyTo) return;
 		// Pass message context for reply
 		const params = new URLSearchParams({
 			replyTo: message.message_id,
 			subject: message.subject.startsWith('Re: ') ? message.subject : `Re: ${message.subject}`,
-			recipientId: message.sender_id
+			recipientId: replyTo
 		});
 		goto(`/messages/compose?${params.toString()}`);
 	}
@@ -159,10 +169,12 @@
 						Voir la conversation
 					</Button>
 				{/if}
-				<Button onclick={replyToMessage}>
-					<Reply class="mr-2 h-4 w-4" />
-					Répondre
-				</Button>
+				{#if replyTo}
+					<Button onclick={replyToMessage}>
+						<Reply class="mr-2 h-4 w-4" />
+						Répondre
+					</Button>
+				{/if}
 			</div>
 		</div>
 	</div>
@@ -201,7 +213,7 @@
 								{message.sender_name || 'Expéditeur inconnu'}
 							</div>
 							<div class="text-sm text-muted-foreground">
-								{message.sender_role === 'teacher' ? lore.entities.teacher : lore.entities.student}
+								{messageRoleLabel(message.sender_role)}
 							</div>
 							<div class="mt-1 text-xs text-muted-foreground">
 								{formatDate(message.sent_at)}
@@ -229,6 +241,12 @@
 										>
 									</div>
 								{/each}
+								{#if hiddenRecipientCount > 0}
+									<div class="text-sm text-muted-foreground">
+										et {hiddenRecipientCount} autre{hiddenRecipientCount > 1 ? 's' : ''}
+										destinataire{hiddenRecipientCount > 1 ? 's' : ''}
+									</div>
+								{/if}
 							</div>
 						</div>
 					{/if}
@@ -294,10 +312,12 @@
 
 				<!-- Actions -->
 				<div class="mt-8 flex items-center gap-3 border-t border-border pt-6">
-					<Button onclick={replyToMessage}>
-						<Reply class="mr-2 h-4 w-4" />
-						Répondre
-					</Button>
+					{#if replyTo}
+						<Button onclick={replyToMessage}>
+							<Reply class="mr-2 h-4 w-4" />
+							Répondre
+						</Button>
+					{/if}
 					{#if isPartOfThread}
 						<Button variant="outline" onclick={viewThread}>
 							<MessageSquare class="mr-2 h-4 w-4" />

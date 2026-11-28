@@ -5,17 +5,16 @@
  * DELETE - Delete construction
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { z } from 'zod';
-import { requireAuth, requireRoles } from '$lib/server/middleware/auth';
+import { requireAuth, requireRoles } from '#lib/server/middleware/auth.ts';
 import {
 	CONSTRUCTION_AUTHOR_ROLES,
 	CONSTRUCTION_COLUMNS,
 	canAuthorConstructions
-} from '$lib/server/constructions-access';
-import { constructionScriptSchema } from '$lib/constructions';
-import { createServerLogger } from '$lib/utils/logger';
+} from '#lib/server/constructions-access.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/constructions/[id]/+server');
 
@@ -41,7 +40,6 @@ const updateConstructionSchema = z.object({
 		.string()
 		.max(2000, 'La description ne doit pas dépasser 2000 caractères')
 		.optional(),
-	script: constructionScriptSchema.optional(),
 	dsl_script: z.string().max(50000, 'Le script DSL est trop long').optional(),
 	is_public: z.boolean().optional()
 });
@@ -85,7 +83,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 		throw error(404, 'Construction introuvable');
 	}
 
-	return json({ construction: data });
+	return Response.json({ construction: data });
 };
 
 /**
@@ -143,7 +141,7 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 		throw error(500, 'Impossible de modifier la construction');
 	}
 
-	return json({ construction: data });
+	return Response.json({ construction: data });
 };
 
 /**
@@ -175,5 +173,5 @@ export const DELETE: RequestHandler = async ({ locals, params }) => {
 		throw error(404, 'Construction introuvable');
 	}
 
-	return json({ success: true });
+	return Response.json({ success: true });
 };

@@ -12,11 +12,11 @@
  * USAGE:
  * ```typescript
  * // Server-side
- * import { NOTIFICATION_SANITIZE_CONFIG } from '$lib/utils/sanitize-configs';
+ * import { NOTIFICATION_SANITIZE_CONFIG } from '#lib/utils/sanitize-configs.ts';
  * const cleaned = DOMPurify.sanitize(html, NOTIFICATION_SANITIZE_CONFIG);
  *
  * // Client-side
- * import { NOTIFICATION_SANITIZE_CONFIG } from '$lib/utils/sanitize-configs';
+ * import { NOTIFICATION_SANITIZE_CONFIG } from '#lib/utils/sanitize-configs.ts';
  * const cleaned = DOMPurify.sanitize(html, NOTIFICATION_SANITIZE_CONFIG);
  * ```
  *

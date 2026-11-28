@@ -7,7 +7,7 @@
 
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { fetchStaffDirectory, indexStaffById } from './staff-directory';
-import type { Database } from '$lib/types/database';
+import type { Database } from '#lib/types/database.ts';
 import type {
 	CreateNotificationData,
 	CreateSystemNotificationData,
@@ -17,10 +17,10 @@ import type {
 	NotificationPriority,
 	NotificationTargetType,
 	SystemEventType
-} from '$lib/types/notification';
-import { escapeHtml } from '$lib/utils/html-escape';
+} from '#lib/types/notification.ts';
+import { escapeHtml } from '#lib/utils/html-escape.ts';
 import { createServiceRoleClient } from './serviceRoleClient';
-import { createServerLogger } from '$lib/utils/logger';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('server/notifications');
 
@@ -811,29 +811,4 @@ export async function notifyAdminsOfNewBugReport(data: {
 		action_label: 'Voir le rapport',
 		action_url: `/dashboard/admin/bug-reports?id=${data.reportId}`
 	});
-}
-
-/**
- * Hard delete expired notifications (cleanup job)
- */
-export async function cleanupExpiredNotifications(
-	supabase: SupabaseClientType
-): Promise<{ success: boolean; deletedCount?: number; error?: string }> {
-	try {
-		const { data, error } = await supabase
-			.from('notifications')
-			.delete()
-			.lt('expires_at', new Date().toISOString())
-			.select('id');
-
-		if (error) {
-			logger.error('Error cleaning up expired notifications:', error);
-			return { success: false, error: 'Erreur lors du nettoyage' };
-		}
-
-		return { success: true, deletedCount: data?.length || 0 };
-	} catch (error) {
-		logger.error('Error in cleanupExpiredNotifications:', error);
-		return { success: false, error: 'Erreur inattendue' };
-	}
 }

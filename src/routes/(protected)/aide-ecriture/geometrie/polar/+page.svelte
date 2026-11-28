@@ -1,5 +1,5 @@
 <script lang="ts">
-	import BackLink from '$lib/components/navigation/BackLink.svelte';
+	import BackLink from '#lib/components/navigation/BackLink.svelte';
 	import DslDemo from '../DslDemo.svelte';
 
 	// Polar curves (V2) — courbe("r = f(theta)", theta_min=..., theta_max=...)

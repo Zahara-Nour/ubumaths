@@ -7,8 +7,8 @@ import { describe, it, expect } from 'vitest';
 import { checkTemplate, formatCheckReport } from '../check-template';
 import { toTemplateInsertRow } from '../template-insert-row';
 import { draftTemplate, parseReviewFile } from '../review-file';
-import type { QuestionTemplate, TestSpec } from '$lib/questions/types';
-import { templateMarkdown } from '$lib/ubumark';
+import type { QuestionTemplate, TestSpec } from '#lib/questions/types.ts';
+import { templateMarkdown } from '#lib/ubumark/index.ts';
 
 // ============================================================================
 // FIXTURES

@@ -1,0 +1,234 @@
+{
+	"id": "1c7a2f93-b51f-4d0c-9945-f145292597ae",
+	"rangement": {
+		"noeud": "Nombres et calculs > Entiers : division > division euclidienne",
+		"point": null
+	},
+	"title": "Atteindre un multiple",
+	"description": "Depuis l'égalité de la division euclidienne (1 000 = 23 × 43 + 11) : le plus petit entier à ajouter ou à soustraire pour obtenir un multiple du diviseur (pièges : reste et complément confondus, le diviseur, le multiple au lieu de l'écart)",
+	"grades": ["3"],
+	"level": 1,
+	"delay": 60,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"spacesFromFourDigits": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "On sait que $${{N}} = ({{d}} \\times {{q}}) + {{r}}$$\n\nQuel est le plus petit entier qu'il faut ajouter à ${{N}}$ pour obtenir un multiple de ${{d}}$ ?\n\nIl faut ajouter $?$.",
+			"variables": [
+				{
+					"name": "d",
+					"expression": "11..99"
+				},
+				{
+					"name": "q",
+					"expression": "8..120"
+				},
+				{
+					"name": "r",
+					"expression": "1..{{eval:d-1}}"
+				},
+				{
+					"name": "N",
+					"expression": "eval:d*q+r"
+				}
+			],
+			"conditions": ["N>=500", "N<=2500", "d!=2*r", "r>=2", "d-r>=2"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:d-r}}",
+					"expectedErrors": [
+						{
+							"answer": "{{r}}",
+							"message": "En ajoutant ${{r}}$, on obtient ${{eval:N+r}}$ : le reste devient ${{eval:2*r}}$, pas $0$. Il faut compléter le reste ${{r}}$ jusqu'à ${{d}}$.",
+							"label": "Le reste au lieu du complément"
+						},
+						{
+							"answer": "{{d}}",
+							"message": "En ajoutant ${{d}}$, le reste ne change pas : il vaut toujours ${{r}}$. Il faut compléter le reste jusqu'à ${{d}}$.",
+							"label": "Le diviseur"
+						},
+						{
+							"answer": "{{eval:N+d-r}}",
+							"message": "${{eval:N+d-r}}$ est bien le multiple de ${{d}}$ qu'on atteint, mais on demande combien il faut ajouter.",
+							"label": "Le multiple au lieu de l'ajout"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"${{N}}$ contient ${{q}}$ fois ${{d}}$, et il reste ${{r}}$. Pour faire une fois de plus ${{d}}$, il manque ${{d}} - {{r}} = \\textcolor{{{color:primary.0}}}{{{eval:d-r}}}$.",
+					"$${{N}} + \\textcolor{{{color:primary.0}}}{{{eval:d-r}}} = {{eval:N+d-r}} = {{d}} \\times {{eval:q+1}}$$"
+				]
+			},
+			"hint": "Il reste ${{r}}$ : combien manque-t-il pour faire une fois de plus ${{d}}$ ?"
+		},
+		{
+			"statement": "On sait que $${{N}} = ({{d}} \\times {{q}}) + {{r}}$$\n\nQuel est le plus petit entier qu'il faut soustraire à ${{N}}$ pour obtenir un multiple de ${{d}}$ ?\n\nIl faut soustraire $?$.",
+			"variables": [
+				{
+					"name": "d",
+					"expression": "11..99"
+				},
+				{
+					"name": "q",
+					"expression": "8..120"
+				},
+				{
+					"name": "r",
+					"expression": "1..{{eval:d-1}}"
+				},
+				{
+					"name": "N",
+					"expression": "eval:d*q+r"
+				}
+			],
+			"conditions": ["N>=500", "N<=2500", "d!=2*r", "r>=2", "d-r>=2", "q!=r", "q!=d-r"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{r}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:d-r}}",
+							"message": "En soustrayant ${{eval:d-r}}$, on obtient ${{eval:N-d+r}}$, qui n'est pas un multiple de ${{d}}$. Ce qui dépasse le multiple, c'est le reste.",
+							"label": "Le complément au lieu du reste"
+						},
+						{
+							"answer": "{{eval:N-r}}",
+							"message": "${{eval:N-r}}$ est bien le multiple de ${{d}}$ qu'on atteint, mais on demande combien il faut soustraire.",
+							"label": "Le multiple au lieu du retrait"
+						},
+						{
+							"answer": "{{q}}",
+							"message": "${{q}}$ est le quotient : il compte combien de fois ${{d}}$ tient dans ${{N}}$. Ce qui dépasse, c'est le reste.",
+							"label": "Le quotient"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"${{N}} = ({{d}} \\times {{q}}) + {{r}}$ : ${{N}}$ dépasse de ${{r}}$ le multiple ${{d}} \\times {{q}} = {{eval:d*q}}$.",
+					"$${{N}} - \\textcolor{{{color:primary.0}}}{{{r}}} = {{eval:N-r}} = {{d}} \\times {{q}}$$"
+				]
+			},
+			"hint": "Dans l'égalité, quel nombre dépasse le multiple ${{d}} \\times {{q}}$ ?"
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "a : 1 000, ajouter 12",
+			"variationIndex": 0,
+			"variables": {
+				"d": "23",
+				"q": "43",
+				"r": "11"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["12"]
+		},
+		{
+			"description": "a : le reste",
+			"variationIndex": 0,
+			"variables": {
+				"d": "23",
+				"q": "43",
+				"r": "11"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "En ajoutant $11$, on obtient $1011$ : le reste devient $22$, pas $0$. Il faut compléter le reste $11$ jusqu'à $23$."
+			},
+			"answers": ["11"]
+		},
+		{
+			"description": "a : le diviseur",
+			"variationIndex": 0,
+			"variables": {
+				"d": "23",
+				"q": "43",
+				"r": "11"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "En ajoutant $23$, le reste ne change pas : il vaut toujours $11$. Il faut compléter le reste jusqu'à $23$."
+			},
+			"answers": ["23"]
+		},
+		{
+			"description": "a : le multiple",
+			"variationIndex": 0,
+			"variables": {
+				"d": "23",
+				"q": "43",
+				"r": "11"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "$1012$ est bien le multiple de $23$ qu'on atteint, mais on demande combien il faut ajouter."
+			},
+			"answers": ["1\\,012"]
+		},
+		{
+			"description": "b : 1 000, soustraire 11",
+			"variationIndex": 1,
+			"variables": {
+				"d": "23",
+				"q": "43",
+				"r": "11"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["11"]
+		},
+		{
+			"description": "b : le complément",
+			"variationIndex": 1,
+			"variables": {
+				"d": "23",
+				"q": "43",
+				"r": "11"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "En soustrayant $12$, on obtient $988$, qui n'est pas un multiple de $23$. Ce qui dépasse le multiple, c'est le reste."
+			},
+			"answers": ["12"]
+		},
+		{
+			"description": "b : le multiple",
+			"variationIndex": 1,
+			"variables": {
+				"d": "23",
+				"q": "43",
+				"r": "11"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "$989$ est bien le multiple de $23$ qu'on atteint, mais on demande combien il faut soustraire."
+			},
+			"answers": ["989"]
+		},
+		{
+			"description": "b : le quotient",
+			"variationIndex": 1,
+			"variables": {
+				"d": "23",
+				"q": "43",
+				"r": "11"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "$43$ est le quotient : il compte combien de fois $23$ tient dans $1000$. Ce qui dépasse, c'est le reste."
+			},
+			"answers": ["43"]
+		}
+	]
+}

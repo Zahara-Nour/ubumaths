@@ -12,9 +12,13 @@ import {
 	selectedColumns,
 	tableMock,
 	twoLevelExercise,
+	versionedLine,
 	type TableMock
-} from '$lib/server/worksheets/__tests__/table-mock';
-import { assignmentCopyScope, resolveWorksheetExerciseCopy } from '$lib/worksheets/worksheet-copy';
+} from '#lib/server/worksheets/__tests__/table-mock.ts';
+import {
+	assignmentCopyScope,
+	resolveWorksheetExerciseCopy
+} from '#lib/worksheets/worksheet-copy.ts';
 
 // ============================================================================
 // MOCKS
@@ -22,18 +26,18 @@ import { assignmentCopyScope, resolveWorksheetExerciseCopy } from '$lib/workshee
 
 const currentStudent = vi.hoisted(() => ({ id: '' }));
 
-vi.mock('$lib/server/middleware/auth', () => ({
+vi.mock('#lib/server/middleware/auth.ts', () => ({
 	requireRole: async () => ({ user: { id: currentStudent.id } })
 }));
-vi.mock('$lib/server/worksheets/assignment-access', () => ({
+vi.mock('#lib/server/worksheets/assignment-access.ts', () => ({
 	resolveAssignmentAccess: async () => ({ canRead: true, readOnly: false })
 }));
-vi.mock('$lib/server/worksheets/assignment-classes', () => ({
+vi.mock('#lib/server/worksheets/assignment-classes.ts', () => ({
 	fetchAssignmentClasses: async () => []
 }));
 // Correction visible par défaut ; un test la masque (cadres de réponse, audit S2)
 const visibility = vi.hoisted(() => ({ visible: true }));
-vi.mock('$lib/server/worksheets/correction-visibility', () => ({
+vi.mock('#lib/server/worksheets/correction-visibility.ts', () => ({
 	getCorrectionVisibilityMap: async (_s: unknown, _a: unknown, ids: string[]) =>
 		new Map(ids.map((id) => [id, visibility.visible]))
 }));
@@ -52,6 +56,12 @@ const STUDENTS = [
 	'550e8400-e29b-41d4-a716-446655440024',
 	'550e8400-e29b-41d4-a716-446655440025',
 	'550e8400-e29b-41d4-a716-446655440026'
+];
+
+/** Ancien contenu de la ligne d'`exercises` : périmé, il ne doit jamais atteindre l'élève */
+const STALE_VARIATIONS = [
+	{ label: 'guided', statement_md: 'PERIME guidé', solution_md: 'PERIME corrigé' },
+	{ label: 'autonomous', statement_md: 'PERIME autonome', solution_md: 'PERIME corrigé' }
 ];
 
 function assignmentRow(
@@ -95,19 +105,24 @@ function supabase(
 		},
 		worksheet_exercises: {
 			data: [
-				{
-					id: WE_ID,
-					position: 1,
-					points: null,
-					custom_instructions: null,
-					translations: null,
-					correction_visible: true,
-					variation_index: null,
-					section_id: null,
-					is_essential: false,
-					answer_frame_lines: answerFrameLines,
-					exercise
-				}
+				// Le contenu vient de la version de la ligne ; l'exercice garde un vieux contenu
+				// qui ne doit jamais sortir (ADR 0044)
+				versionedLine(
+					{
+						id: WE_ID,
+						position: 1,
+						points: null,
+						custom_instructions: null,
+						translations: null,
+						correction_visible: true,
+						variation_index: null,
+						section_id: null,
+						is_essential: false,
+						answer_frame_lines: answerFrameLines
+					},
+					exercise,
+					{ variations: STALE_VARIATIONS, shared: null }
+				)
 			],
 			error: null
 		},
@@ -171,6 +186,12 @@ describe('API élève : la copie suit l’affectation', () => {
 			const view = await fetchCopy(supabase('guided', true), studentId);
 			expect(view.exercises[0].statement).toMatch(/^Guidé/);
 		}
+	});
+
+	it('le contenu est celui de la VERSION de la ligne, jamais l’ancien contenu de l’exercice', async () => {
+		const view = await fetchCopy(supabase('guided', false), STUDENTS[0]);
+		expect(view.exercises[0].statement).toMatch(/^Guidé/);
+		expect(JSON.stringify(view)).not.toContain('PERIME');
 	});
 
 	it('niveau autonome : TOUS les élèves reçoivent la version autonome', async () => {
@@ -384,5 +405,42 @@ describe('API élève : la copie suit l’affectation', () => {
 			STUDENTS[0]
 		);
 		expect(view.exercises[0].printed_frame_lines).toBeUndefined();
+	});
+});
+
+// Titre d'exercice en anglais (2026-11-25) : la colonne `exercises.translations`
+describe('API élève : titre de l’exercice dans la langue de la fiche', () => {
+	const translated = () => ({
+		...twoLevelExercise(),
+		translations: { en: { title: 'Proportionality' } }
+	});
+
+	it('fiche anglaise : le titre anglais, lu avec l’exercice', async () => {
+		const mock = supabase('guided', false, translated(), { language: 'en' });
+		const view = (await fetchCopy(mock, STUDENTS[0])) as unknown as {
+			exercises: Array<{ title: string | null }>;
+		};
+		expect(view.exercises[0].title).toBe('Proportionality');
+		expect(selectedColumns(mock, 'worksheet_exercises')).toMatch(
+			/exercises\s*\([^)]*\btranslations\b/
+		);
+	});
+
+	it('fiche française : le titre français, même si l’anglais existe', async () => {
+		const view = (await fetchCopy(
+			supabase('guided', false, translated()),
+			STUDENTS[0]
+		)) as unknown as {
+			exercises: Array<{ title: string | null }>;
+		};
+		expect(view.exercises[0].title).toBe('Proportionnalité');
+	});
+
+	it('fiche anglaise sans titre anglais : le titre français', async () => {
+		const view = (await fetchCopy(
+			supabase('guided', false, twoLevelExercise(), { language: 'en' }),
+			STUDENTS[0]
+		)) as unknown as { exercises: Array<{ title: string | null }> };
+		expect(view.exercises[0].title).toBe('Proportionnalité');
 	});
 });

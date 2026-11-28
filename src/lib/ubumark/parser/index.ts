@@ -145,6 +145,57 @@ export {
 	isHorlogeBlockStart
 } from './horloge-parser';
 
+// Bloc ```tortue
+export {
+	parseTortue,
+	parseTortueContent,
+	findTortueBlocks,
+	isTortueBlockStart
+} from './tortue-parser';
+
+// Bloc ```calcul
+export {
+	parseCalcul,
+	parseCalculContent,
+	findCalculBlocks,
+	isCalculBlockStart
+} from './calcul-parser';
+
+// Bloc ```python-a-ecrire
+export {
+	parsePythonAEcrire,
+	parsePythonAEcrireContent,
+	findPythonAEcrireBlocks,
+	isPythonAEcrireBlockStart
+} from './python-a-ecrire-parser';
+
+// Bloc ```robot
+export { parseRobot, parseRobotContent, findRobotBlocks, isRobotBlockStart } from './robot-parser';
+
+// Bloc ```labyrinthe
+export {
+	parseLabyrinthe,
+	parseLabyrintheContent,
+	findLabyrintheBlocks,
+	isLabyrintheBlockStart
+} from './labyrinthe-parser';
+
+// Bloc ```engrenages
+export {
+	parseEngrenages,
+	parseEngrenagesContent,
+	findEngrenagesBlocks,
+	isEngrenagesBlockStart
+} from './engrenages-parser';
+
+// Bloc ```yohaku
+export {
+	parseYohaku,
+	parseYohakuContent,
+	findYohakuBlocks,
+	isYohakuBlockStart
+} from './yohaku-parser';
+
 // Bloc ```partage
 export {
 	parsePartage,
@@ -184,6 +235,14 @@ export {
 	findMonnaieBlocks,
 	isMonnaieBlockStart
 } from './monnaie-parser';
+
+// Bloc ```schema-barres
+export {
+	parseSchemaBarres,
+	parseSchemaBarresContent,
+	findSchemaBarresBlocks,
+	isSchemaBarresBlockStart
+} from './schema-barres-parser';
 
 // Bloc ```courbe
 export {

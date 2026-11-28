@@ -41,14 +41,14 @@
 	import { flip } from 'svelte/animate';
 	import { SvelteSet } from 'svelte/reactivity';
 	import { dndzone, SHADOW_PLACEHOLDER_ITEM_ID, TRIGGERS, type DndEvent } from 'svelte-dnd-action';
-	import { lore } from '$lib/config/lore';
-	import { Button } from '$lib/components/ui/button';
-	import { Input } from '$lib/components/ui/input';
-	import { Textarea } from '$lib/components/ui/textarea';
-	import { Label } from '$lib/components/ui/label';
-	import * as Card from '$lib/components/ui/card';
-	import ConfirmDialog from '$lib/components/ui/confirm-dialog/ConfirmDialog.svelte';
-	import { toaster } from '$lib/stores/toaster.svelte';
+	import { lore } from '#lib/config/lore.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import { Input } from '#lib/components/ui/input/index.ts';
+	import { Textarea } from '#lib/components/ui/textarea/index.ts';
+	import { Label } from '#lib/components/ui/label/index.ts';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import ConfirmDialog from '#lib/components/ui/confirm-dialog/ConfirmDialog.svelte';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
 	import {
 		GripVertical,
 		Trash2,
@@ -60,7 +60,7 @@
 		Save,
 		X
 	} from '@lucide/svelte';
-	import { exerciseEditHref } from '$lib/worksheets/exercise-edit-link';
+	import { exerciseEditHref } from '#lib/worksheets/exercise-edit-link.ts';
 	import {
 		applyPlacements,
 		applySectionOrder,
@@ -69,17 +69,19 @@
 		worksheetOutline,
 		type ExercisePlacement,
 		type SectionPlacement
-	} from '$lib/worksheets/worksheet-outline';
-	import { estOmbre } from '$lib/components/cours/teacher/section-dnd';
+	} from '#lib/worksheets/worksheet-outline.ts';
+	import { estOmbre } from '#lib/components/cours/teacher/section-dnd.ts';
 	import AnswerFrameLinesEditor from './AnswerFrameLinesEditor.svelte';
+	import LineVersionControl from './LineVersionControl.svelte';
+	import type { WorksheetVersionChoices } from '#lib/worksheets/line-version.ts';
 	import type {
 		AnswerFrameLines,
 		AnswerFrameMode,
 		RowTranslations,
 		WorksheetExerciseWithExercise,
 		WorksheetSectionRow
-	} from '$lib/types/worksheets';
-	import type { ContentLocale } from '$lib/types/locale';
+	} from '#lib/types/worksheets.ts';
+	import type { ContentLocale } from '#lib/types/locale.ts';
 
 	// Types
 	interface Props {
@@ -100,6 +102,13 @@
 		language?: ContentLocale;
 		/** Délai avant sauvegarde des cadres (tests : 0) */
 		frameSaveDelayMs?: number;
+		/** Versions des exercices de la fiche (ADR 0044 point 6) ; absent : aucun menu */
+		versionChoices?: WorksheetVersionChoices;
+		/** Fiche archivée : la version se lit, ne se change pas (hors `readonly`, une fiche
+		 *  publiée change de version) */
+		versionsLocked?: boolean;
+		/** Après un changement de version (ou un refus) : recharger la fiche */
+		onVersionChange?: () => void | Promise<void>;
 	}
 
 	/** Ce que manipule une zone de dépose : un identifiant, rien d'autre. */
@@ -125,7 +134,10 @@
 		answersOnSheet = false,
 		answerFrameMode = 'question',
 		language = 'fr',
-		frameSaveDelayMs
+		frameSaveDelayMs,
+		versionChoices,
+		versionsLocked = false,
+		onVersionChange
 	}: Props = $props();
 
 	const isEnglishWorksheet = $derived(language === 'en');
@@ -582,7 +594,14 @@
 </script>
 
 {#snippet exerciseRow(exercise: WorksheetExerciseWithExercise)}
-	<div class="group flex items-center gap-2 rounded-md border bg-card p-2 hover:bg-muted/50">
+	<!--
+		E91 : au téléphone, la ligne passe à la ligne (le titre et le choix de version gardent
+		leur largeur) et les boutons « au survol » restent visibles : un doigt ne survole pas, et
+		un bouton invisible mais touchable serait touché à la place du choix de version.
+	-->
+	<div
+		class="group flex flex-wrap items-center gap-2 rounded-md border bg-card p-2 hover:bg-muted/50"
+	>
 		{#if !readonly}
 			<div class="cursor-grab text-muted-foreground">
 				<GripVertical class="h-4 w-4" />
@@ -601,10 +620,21 @@
 			{numberById.get(exercise.id)}
 		</div>
 
-		<div class="min-w-0 flex-1">
-			<span class="truncate font-medium">
+		<div class="min-w-0 flex-1 basis-48">
+			<span class="block truncate font-medium">
 				{exercise.exercise?.title || '(Sans titre)'}
 			</span>
+			{#if versionChoices?.lines[exercise.id]}
+				<LineVersionControl
+					{worksheetId}
+					lineId={exercise.id}
+					exerciseNumber={numberById.get(exercise.id)}
+					choice={versionChoices.lines[exercise.id]}
+					activeAssignments={versionChoices.active_assignments}
+					disabled={versionsLocked}
+					onchanged={onVersionChange}
+				/>
+			{/if}
 		</div>
 
 		<div class="shrink-0 text-sm text-muted-foreground">
@@ -616,7 +646,7 @@
 		<Button
 			variant="ghost"
 			size="icon"
-			class="h-7 w-7 opacity-0 transition-opacity group-hover:opacity-100 focus-visible:opacity-100"
+			class="h-7 w-7 opacity-0 transition-opacity group-focus-within:opacity-100 group-hover:opacity-100 focus-visible:opacity-100 [@media(hover:none)]:opacity-100"
 			href={exerciseEditHref(exercise.exercise_id, worksheetId)}
 			aria-label="Modifier la {CORVEE}"
 			title="Modifier la {CORVEE}"
@@ -631,14 +661,16 @@
 				size="icon"
 				class="h-7 w-7 transition-opacity {exercise.is_essential
 					? 'text-amber-500 opacity-100 hover:bg-amber-50 hover:text-amber-600'
-					: 'text-muted-foreground opacity-0 group-hover:opacity-100 hover:text-amber-500'}"
+					: 'text-muted-foreground opacity-0 group-focus-within:opacity-100 group-hover:opacity-100 hover:text-amber-500 [@media(hover:none)]:opacity-100'}"
 				onclick={() => toggleEssential(exercise)}
 				disabled={togglingEssentialIds.has(exercise.id)}
 				aria-label={exercise.is_essential ? 'Retirer indispensable' : 'Marquer indispensable'}
 			>
 				<Star class="h-3.5 w-3.5 {exercise.is_essential ? 'fill-current' : ''}" />
 			</Button>
-			<div class="flex items-center gap-1 opacity-0 transition-opacity group-hover:opacity-100">
+			<div
+				class="flex items-center gap-1 opacity-0 transition-opacity group-focus-within:opacity-100 group-hover:opacity-100 [@media(hover:none)]:opacity-100"
+			>
 				<Button
 					variant="ghost"
 					size="icon"

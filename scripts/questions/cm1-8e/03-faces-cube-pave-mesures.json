@@ -1,0 +1,278 @@
+{
+	"id": "281ad02d-63ea-440e-a27b-7dcc382536ea",
+	"title": "Les faces d'un cube et d'un pavé : mesures",
+	"description": "Faces opposées pareilles ; mesures d'une face d'après les cotes ; combien de carrés et de rectangles non carrés (6 et 0, 2 et 4, 0 et 6)",
+	"grades": ["CM1"],
+	"level": 16,
+	"delay": 60,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Combien de faces de ce pavé sont exactement pareilles à la face grisée, la face grisée comprise ?\n\n```solide\nforme: pave {{if:o==1|5 3 2|{{if:o==2|6 2 4|4 3 5}}}}\nmarquer: face {{if:m==1|dessus|{{if:m==2|devant|droite}}}}\ncotes: cm\n```\n\n[_] faces",
+			"variables": [
+				{
+					"name": "o",
+					"expression": "1..3"
+				},
+				{
+					"name": "m",
+					"expression": "1..3"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "2"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Dans un pavé, deux faces face à face sont pareilles. La face grisée a sa jumelle : {{if:m==1|le dessous|{{if:m==2|la face de derrière|la face de gauche}}}}.",
+					"Les trois longueurs du pavé sont différentes : les autres faces ont d'autres mesures.",
+					"Il y a $\\textcolor{{{color:primary.0}}}{2}$ faces pareilles."
+				]
+			}
+		},
+		{
+			"statement": "La face grisée de ce pavé est un rectangle. Quelles sont ses mesures ?\n\n```solide\nforme: pave {{if:o==1|5 3 2|{{if:o==2|6 2 4|4 3 5}}}}\nmarquer: face {{if:m==1|dessus|{{if:m==2|devant|droite}}}}\ncotes: cm\n```\n\nLongueur : [_] cm\n\nLargeur : [_] cm",
+			"variables": [
+				{
+					"name": "o",
+					"expression": "1..3"
+				},
+				{
+					"name": "m",
+					"expression": "1..3"
+				},
+				{
+					"name": "a",
+					"expression": "{{if:o==1|{{if:m==1|5|{{if:m==2|5|3}}}}|{{if:o==2|{{if:m==1|6|{{if:m==2|6|4}}}}|{{if:m==1|4|{{if:m==2|5|5}}}}}}}}"
+				},
+				{
+					"name": "b",
+					"expression": "{{if:o==1|{{if:m==1|3|{{if:m==2|2|2}}}}|{{if:o==2|{{if:m==1|2|{{if:m==2|4|2}}}}|{{if:m==1|3|{{if:m==2|4|3}}}}}}}}"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{a}}"
+				},
+				{
+					"expectedAnswer": "{{b}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Chaque côté de la face grisée est une arête du pavé : on lit sa mesure sur l'arête pareille qui porte une cote.",
+					"La face grisée mesure $\\textcolor{{{color:primary.0}}}{{{a}}}$ cm sur $\\textcolor{{{color:primary.0}}}{{{b}}}$ cm."
+				]
+			}
+		},
+		{
+			"statement": "Parmi les $6$ faces de {{if:s==1|ce cube|{{if:s==2|ce pavé|ce pavé}}}}, combien sont des carrés, et combien sont des rectangles qui ne sont pas des carrés ?\n\n```solide\nforme: {{if:s==1|cube 3|{{if:s==2|pave 3 3 5|pave 5 3 2}}}}\ncotes: cm\n```\n\n[_] carrés et [_] rectangles non carrés",
+			"variables": [
+				{
+					"name": "s",
+					"expression": "1..3"
+				},
+				{
+					"name": "c",
+					"expression": "{{if:s==1|6|{{if:s==2|2|0}}}}"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{c}}"
+				},
+				{
+					"expectedAnswer": "{{eval:6-c}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"{{if:s==1|Toutes les arêtes mesurent $3$ cm : les $6$ faces sont des carrés.|{{if:s==2|Le dessus et le dessous mesurent $3$ cm sur $3$ cm : $2$ carrés. Les $4$ faces debout mesurent $3$ cm sur $5$ cm : des rectangles qui ne sont pas des carrés.|Les arêtes mesurent $5$, $3$ et $2$ cm : aucune face n'a quatre côtés égaux.}}}}",
+					"$\\textcolor{{{color:primary.0}}}{{{c}}}$ carré{{if:s==1|s|{{if:s==2|s|}}}} et $\\textcolor{{{color:primary.0}}}{{{eval:6-c}}}$ rectangle{{if:s==1||{{if:s==2|s|s}}}} non carré{{if:s==1||{{if:s==2|s|s}}}}."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Face du dessus : 2 pareilles",
+			"variationIndex": 0,
+			"variables": {
+				"o": "1",
+				"m": "1"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Face de droite : 2 pareilles",
+			"variationIndex": 0,
+			"variables": {
+				"o": "3",
+				"m": "3"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : la face grisée seule",
+			"variationIndex": 0,
+			"variables": {
+				"o": "2",
+				"m": "2"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : les 4 faces debout",
+			"variationIndex": 0,
+			"variables": {
+				"o": "1",
+				"m": "2"
+			},
+			"answers": ["4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Dessus du pavé 5 3 2 : 5 sur 3",
+			"variationIndex": 1,
+			"variables": {
+				"o": "1",
+				"m": "1",
+				"a": "5",
+				"b": "3"
+			},
+			"answers": ["5", "3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Devant du pavé 6 2 4 : 6 sur 4",
+			"variationIndex": 1,
+			"variables": {
+				"o": "2",
+				"m": "2",
+				"a": "6",
+				"b": "4"
+			},
+			"answers": ["6", "4"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Droite du pavé 4 3 5 : 5 sur 3",
+			"variationIndex": 1,
+			"variables": {
+				"o": "3",
+				"m": "3",
+				"a": "5",
+				"b": "3"
+			},
+			"answers": ["5", "3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : longueur et largeur échangées",
+			"variationIndex": 1,
+			"variables": {
+				"o": "1",
+				"m": "1",
+				"a": "5",
+				"b": "3"
+			},
+			"answers": ["3", "5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : la hauteur prise pour la largeur",
+			"variationIndex": 1,
+			"variables": {
+				"o": "1",
+				"m": "1",
+				"a": "5",
+				"b": "3"
+			},
+			"answers": ["5", "2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Cube : 6 et 0",
+			"variationIndex": 2,
+			"variables": {
+				"s": "1",
+				"c": "6"
+			},
+			"answers": ["6", "0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Pavé à base carrée : 2 et 4",
+			"variationIndex": 2,
+			"variables": {
+				"s": "2",
+				"c": "2"
+			},
+			"answers": ["2", "4"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : le dessus seul compté",
+			"variationIndex": 2,
+			"variables": {
+				"s": "2",
+				"c": "2"
+			},
+			"answers": ["1", "5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Pavé sans carré : 0 et 6",
+			"variationIndex": 2,
+			"variables": {
+				"s": "3",
+				"c": "0"
+			},
+			"answers": ["0", "6"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : cube jugé sans carré",
+			"variationIndex": 2,
+			"variables": {
+				"s": "1",
+				"c": "6"
+			},
+			"answers": ["0", "6"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

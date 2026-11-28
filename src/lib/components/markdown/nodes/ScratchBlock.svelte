@@ -17,9 +17,9 @@
 	@module components/markdown/nodes/ScratchBlock
 -->
 <script lang="ts">
-	import { browser } from '$app/environment';
-	import type { ScratchIssue, ScratchNode } from '$lib/ubumark/types/scratch';
-	import { SCRATCH_UNAVAILABLE } from '$lib/ubumark/types/scratch';
+	import { browser } from '$app/env';
+	import type { ScratchIssue, ScratchNode } from '#lib/ubumark/types/scratch.ts';
+	import { SCRATCH_UNAVAILABLE } from '#lib/ubumark/types/scratch.ts';
 	import { readAuthoringErrors } from '../authoring-errors';
 
 	interface Props {
@@ -46,8 +46,8 @@
 	/** Vérification et dessin, chargés seulement dans le navigateur */
 	const modules = browser
 		? Promise.all([
-				import('$lib/ubumark/utils/scratch-check'),
-				import('$lib/ubumark/utils/scratch-render')
+				import('#lib/ubumark/utils/scratch-check.ts'),
+				import('#lib/ubumark/utils/scratch-render.ts')
 			])
 		: null;
 

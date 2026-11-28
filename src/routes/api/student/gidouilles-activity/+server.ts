@@ -22,11 +22,11 @@
  * - created_by_name: string | null - name of teacher who made the change
  */
 
-import { error, json } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireRole } from '$lib/server/middleware/auth';
+import { requireRole } from '#lib/server/middleware/auth.ts';
 import { z } from 'zod';
-import { createServerLogger } from '$lib/utils/logger';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/student/gidouilles-activity/+server');
 
@@ -96,7 +96,7 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 			};
 		});
 
-		return json({ activity });
+		return Response.json({ activity });
 	} catch (err) {
 		// Re-throw SvelteKit errors
 		if (err && typeof err === 'object' && 'status' in err) {

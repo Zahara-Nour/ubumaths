@@ -1,4 +1,4 @@
-import { civilDateIn, civilToPataphysical } from '$lib/almanach/calendar';
+import { civilDateIn, civilToPataphysical } from '#lib/almanach/calendar.ts';
 import type { PageServerLoad } from './$types';
 
 // Jamais prérendue : la date du jour doit être celle de la requête, pas du build.

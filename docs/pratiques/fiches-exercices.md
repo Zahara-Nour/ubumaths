@@ -80,6 +80,18 @@ Seconde : **« Fonctions : généralités »** `41737393` (thème `Fonctions`, 1
 antécédents par le calcul, lectures graphiques ; 14 neufs + « Calcul d'images » `5b233301`) —
 `create-fonctions-generalites-2nde.ts`. Courbes de lecture graphique : tout ce qu'on fait LIRE est
 sur un nœud de la grille (vérifié par sympy) ; une cubique ne le permet qu'avec une racine double.
+**« Fonctions affines »** (thème `Fonctions affines`, 2026-11-12) — technique `18a394e6` (7 sections,
+15 neufs + « Antécédents par une fonction affine » `b5390946`), applications `e9bfec01` (4 sections,
+9 ex. dont 3 `autonomous`, 3 illustrations) — `create-fonctions-affines-2nde.ts`, sources versionnées
+dans `data/fiches/fonctions-affines-2nde/`. Côté fonctions seulement (équations de droite, parallélisme
+→ future fiche « Droites du plan ») ; tableaux de signes de mx + p seulement.
+
+**Sources d'une fiche : sous `data/fiches/<sujet>/`, jamais dans le scratchpad ni sous `docs/`.** Le
+scratchpad disparaît avec la session (les dossiers des fiches de 1re spé et de Seconde sont perdus) ;
+sous `docs/`, le prettier du pre-commit réécrit les listes ubumark (« 1. a. … » sur une ligne).
+`data/fiches/` est dans `.prettierignore`, et `data/` dans `.gitignore` : ajouter les sources avec
+`git add -f data/fiches/<sujet>/…` (sorties de `fiche:verifier` exclues par un `.gitignore` dans le
+dossier : `*.typ`, `*.pdf`, `fiche-*.png`, `corrige-*.png`, `virtual/`, cf. `data/fiches/fonctions-affines-2nde/`).
 
 Restent (priorité) : automatismes transverses (lectures graphiques,
 statistiques), listes Python injectées dans les thèmes, logique et ensembles, démonstrations
@@ -139,6 +151,9 @@ pnpm fiche:verifier <dossier> "Titre de la fiche"
 
 Enchaîne : Typst par le vrai générateur (FR/EN, énoncé/corrigé) → compilation par le compilateur
 **exact** de la production → débords de colonne (texte et tracés) → pages en PNG.
+Les illustrations citées par leur URL du bucket (pas encore envoyées) sont prises dans
+`<dossier>/images/` par leur nom de fichier et copiées sous `<dossier>/virtual/images/`
+(`scripts/fiches/images-locales.ts`) ; une image citée absente du dossier est signalée (⛔).
 
 Puis **relire les pages**. Les détecteurs ne voient pas : une chaîne d'égalités fausse, un vecteur
 minuscule, une ligne justifiée étirée par du code, un renvoi « question 3.a » alors que l'affichage
@@ -161,6 +176,18 @@ Garde-fous du modèle : base = prod vérifiée ; tout validé par Zod avant la m
 arrêt si un titre existe déjà dans le thème ou si une fiche de même titre existe ; existants
 retrouvés par préfixe d'id **et** titre ; chaque écriture doit rendre sa ligne (`.select()`) ; en
 cas d'échec, tout ce qui a été créé est supprimé.
+
+⚠️ **Versions d'un exercice (ADR 0044, depuis la PR 1 du chantier `versions-exercices`)** : le
+contenu d'un exercice (`variations`, `shared`, `generic_functions`) vit dans `exercise_versions`,
+plus sur `exercises`. Les scripts `create-*.ts` d'avant le 2026-11-25 ne se copient pas tels quels :
+
+- créer un exercice : `createExercise` (il écrit la version 1), avec `generic_functions` dans le
+  même appel — plus d'`update` de `generic_functions` sur `exercises` ;
+- retoucher un contenu : `writeVersionContent` de `src/lib/server/exercise-versions.ts` ;
+- ajouter une ligne de fiche : `exercise_version_id: await latestVersionId(supabase, exerciseId)`
+  (colonne obligatoire) ;
+- lire le contenu d'une fiche : la jointure `WORKSHEET_LINE_VERSION` (comme
+  `scripts/fiches/regen-depuis-base.ts`).
 
 ### 2.6 Vérifier ce qui est en base
 
@@ -226,7 +253,7 @@ d'un modèle publié se changent aussi là.
 Le champ `"points"` des JSON (codes des anciens points du référentiel) est **abandonné** (arbre des
 notions, étape 3) : `create-questions.ts` et `question:specs` refusent un fichier qui le porte, et
 `link-template-points.ts` a été retiré. `create-questions.ts --mettre-a-jour` réécrit toujours le
-contenu, la description et les `grades` d'un **brouillon** (comparés comme un ensemble) ; un modèle publié n'est
+contenu, la description, le délai et les `grades` d'un **brouillon** (comparés comme un ensemble) ; un modèle publié n'est
 jamais touché.
 
 ### Déclarer des fonctions dans un modèle (`shared.genericFunctions`)

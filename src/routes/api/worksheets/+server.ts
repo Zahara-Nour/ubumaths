@@ -4,18 +4,18 @@
  * POST - Create new worksheet
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireRoles } from '$lib/server/middleware/auth';
-import { syncResourceTags, fetchTagNamesForResources } from '$lib/server/resource-tags';
+import { requireRoles } from '#lib/server/middleware/auth.ts';
+import { syncResourceTags, fetchTagNamesForResources } from '#lib/server/resource-tags.ts';
 import {
 	validateListWorksheetsQuery,
 	validateCreateWorksheet,
 	worksheetListResponseSchema,
 	createWorksheetResponseSchema
-} from '$lib/server/validation/worksheets';
-import { validateJsonResponse } from '$lib/server/validation/response-utils';
-import { createServerLogger } from '$lib/utils/logger';
+} from '#lib/server/validation/worksheets.ts';
+import { validateJsonResponse } from '#lib/server/validation/response-utils.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/worksheets/+server');
 
@@ -126,7 +126,7 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 		'GET /api/worksheets'
 	);
 
-	return json(validated);
+	return Response.json(validated);
 };
 
 /**
@@ -195,5 +195,5 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 		'POST /api/worksheets'
 	);
 
-	return json(validated, { status: 201 });
+	return Response.json(validated, { status: 201 });
 };

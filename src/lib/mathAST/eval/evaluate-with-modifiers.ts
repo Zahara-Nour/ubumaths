@@ -10,8 +10,8 @@
  * @module mathAST/eval/evaluate-with-modifiers
  */
 
-import type { EvalModifiers } from '$lib/ubumark';
-import { parseLatex } from '$lib/mathAST/parser';
+import type { EvalModifiers } from '#lib/ubumark/index.ts';
+import { parseLatex } from '#lib/mathAST/parser/index.ts';
 import { evaluate, evaluateNodeToApproximatedNumber } from './evaluate';
 import { getVariables } from './substitute';
 import type { MathNode } from '../types';
@@ -34,6 +34,14 @@ import { parse as parseUnit, parseUnitTerms } from '../units/parser';
 import { exactConversion } from '../units/exact';
 import { format as formatUnit } from '../units';
 import { analyzeDimensions } from '../dimensional/analyzer';
+import { UNIT_ALIASES } from '../units/definitions';
+import {
+	fixedDecimalWriting,
+	rationalOfFloat,
+	roundToDecimalPlaces,
+	roundToSignificantDigits
+} from './decimal-rounding';
+import { warnEval } from './eval-warnings';
 
 // =============================================================================
 // Types
@@ -302,6 +310,116 @@ function formatExact(ast: MathNode, numValue: number): string {
 }
 
 // =============================================================================
+// `;dN`, `;aN`, `;pN` : écriture des nombres (2026-11-26)
+// =============================================================================
+// Règle : un zéro final ne s'écrit que s'il dit quelque chose — arrondi (`;aN`, `;pN`),
+// centimes (euro, voir `euroWriting`), ou demandé par l'auteur (`;dN`). L'écriture
+// garde le point décimal : la virgule est posée au rendu, comme pour tout `{{eval}}`.
+
+/** Un réglage d'écriture des nombres est écrit : `;dN`, `;aN` ou `;pN` */
+function hasNumberWriting(modifiers: EvalModifiers): boolean {
+	return (
+		modifiers.minDecimals !== undefined ||
+		modifiers.roundDecimals !== undefined ||
+		modifiers.significantDigits !== undefined
+	);
+}
+
+/** Le réglage écrit, pour les messages : `;a2`, `;p3`, `;d2` */
+function writingName(modifiers: EvalModifiers): string {
+	if (modifiers.roundDecimals !== undefined) return `;a${modifiers.roundDecimals}`;
+	if (modifiers.significantDigits !== undefined) return `;p${modifiers.significantDigits}`;
+	return `;d${modifiers.minDecimals ?? ''}`;
+}
+
+/** Décimales d'une écriture décimale simple (`3.755` → 3), `null` pour une autre écriture */
+function decimalsOf(text: string): number | null {
+	const match = /^-?\d+(?:\.(\d+))?$/.exec(text);
+	return match ? (match[1]?.length ?? 0) : null;
+}
+
+/**
+ * `;dN` : au moins N décimales, sans arrondir (`1.5` → `1.50`, `3.755` → `3.755`, signalé :
+ * la valeur a plus de N décimales). Une autre écriture (notation scientifique) reste telle quelle.
+ */
+function withMinDecimals(text: string, minDecimals: number, source: string): string {
+	const decimals = decimalsOf(text);
+	if (decimals === null) return text;
+	if (decimals > minDecimals) {
+		warnEval(
+			`{{eval:${source};d${minDecimals}}} vaut ${text} : plus de ${minDecimals} décimale(s), toutes écrites (arrondir avec ;a${minDecimals} ?)`
+		);
+		return text;
+	}
+	const padding = '0'.repeat(minDecimals - decimals);
+	return decimals === 0 ? `${text}.${padding}` : `${text}${padding}`;
+}
+
+/**
+ * Notation scientifique d'un arrondi à N chiffres significatifs : la mantisse en a N
+ * (`1.2 \times 10^{3}`, `3.0 \times 10^{0}`) ; mantisse 1 à un seul chiffre : `10^{3}`,
+ * comme `;sci` seul. `custom` : syntaxe maison (`1.2*10^{3}`), pour une grandeur.
+ */
+function significantScientific(
+	value: Rational,
+	exponent: number,
+	digits: number,
+	style: 'latex' | 'custom'
+): string {
+	if (value.n === 0n) return '0';
+	const scale =
+		exponent >= 0 ? { n: 10n ** BigInt(exponent), d: 1n } : { n: 1n, d: 10n ** BigInt(-exponent) };
+	const mantissa = fixedDecimalWriting(divRational(value, scale), digits - 1);
+	const negative = mantissa.startsWith('-');
+	const magnitude = negative ? mantissa.slice(1) : mantissa;
+	const power = `10^{${exponent}}`;
+	const times = style === 'latex' ? ' \\times ' : '*';
+	const text = magnitude === '1' ? power : `${magnitude}${times}${power}`;
+	return negative ? `-${text}` : text;
+}
+
+/**
+ * Écriture de la valeur exacte `value` selon `;aN`, `;pN` ou `;dN`. `unrounded` : l'écriture
+ * sans arrondi pour `;dN` (celle de `;d`) ; `source` : le calcul, pour les avertissements.
+ */
+function writtenNumber(
+	value: Rational,
+	modifiers: EvalModifiers,
+	style: 'latex' | 'custom',
+	unrounded: () => string,
+	source: string
+): string {
+	const { roundDecimals, significantDigits, minDecimals } = modifiers;
+	if (roundDecimals !== undefined) {
+		return fixedDecimalWriting(roundToDecimalPlaces(value, roundDecimals), roundDecimals);
+	}
+	if (significantDigits !== undefined) {
+		const rounded = roundToSignificantDigits(value, significantDigits);
+		return modifiers.scientific
+			? significantScientific(rounded.value, rounded.exponent, significantDigits, style)
+			: fixedDecimalWriting(rounded.value, rounded.places);
+	}
+	return withMinDecimals(unrounded(), minDecimals ?? 0, source);
+}
+
+/**
+ * Valeur exacte du calcul (`2.675` vaut 107/40, pas le flottant 2.67499…) ; un résultat
+ * irrationnel (`sqrt(2)`) : la valeur décimale du flottant, juste à 15 chiffres.
+ */
+function exactRationalOf(ast: MathNode, numValue: number): Rational {
+	try {
+		const exact = evaluate(foldIntegerExponents(ast), { mode: 'exact' });
+		if (exact.status === 'value' && isMathNode(exact.value)) {
+			const value = rationalOf(exact.value);
+			if (value !== null) return value;
+		}
+	} catch {
+		// repli sur la valeur décimale
+	}
+	return rationalOfFloat(numValue);
+}
+
+// =============================================================================
 // Grandeurs (lot 2 du chantier Grandeurs, docs/archive/wip/grandeurs-eval-progress.md)
 // =============================================================================
 
@@ -361,18 +479,32 @@ function repeatsDimension(unitWriting: string): boolean {
 	return false;
 }
 
+/** Une grandeur mise au propre : son écriture, sa valeur exacte et son unité écrite */
+interface QuantityWriting {
+	/** `28[mm]`, `-2[m]` */
+	readonly text: string;
+	/** La valeur, signe compris */
+	readonly value: Rational;
+	/** L'unité écrite (`mm`) */
+	readonly unit: string;
+}
+
 /**
  * Le résultat mis au propre doit être UNE grandeur à écriture décimale finie :
  * `28[mm]`, `-2[m]`. Sinon erreur visible (jamais d'unité jetée en silence).
+ * `rounded` (`;aN`, `;pN`, `;dN`) : une valeur sans écriture décimale finie (`1/3[m]`)
+ * est admise, l'arrondi l'écrira.
  */
-function quantityWriting(reduced: MathNode, source: MathNode): string {
-	const quantity = reduced.type === 'opposite' ? reduced.operand : reduced;
+function quantityWriting(reduced: MathNode, source: MathNode, rounded = false): QuantityWriting {
+	const negative = reduced.type === 'opposite';
+	const quantity = negative ? reduced.operand : reduced;
 	if (quantity.type !== 'unit') {
 		throw new Error(
 			`Le calcul ne donne pas une seule grandeur (dimensions incompatibles ?) : ${toCustom(source)} → ${toCustom(reduced)}`
 		);
 	}
-	if (quantity.expression.type !== 'number') {
+	const magnitude = rationalOf(quantity.expression);
+	if (magnitude === null || (!rounded && quantity.expression.type !== 'number')) {
 		throw new Error(
 			`Grandeur sans écriture décimale finie : ${toCustom(source)} → ${toCustom(reduced)} (imposer une unité avec ;[unité], ou réécrire la question)`
 		);
@@ -381,7 +513,56 @@ function quantityWriting(reduced: MathNode, source: MathNode): string {
 	if (repeatsDimension(writing)) {
 		throw new Error(`Unité incohérente dans le résultat : ${toCustom(reduced)}`);
 	}
-	return toCustom(reduced);
+	return {
+		text: toCustom(reduced),
+		value: negative ? negRational(magnitude) : magnitude,
+		unit: writing
+	};
+}
+
+/** L'unité écrite est l'euro (`€`, `euro`, `euros`, `EUR`) */
+function isEuro(unitWriting: string): boolean {
+	return unitWriting === '€' || UNIT_ALIASES.get(unitWriting) === '€';
+}
+
+/**
+ * Euro : sans `;aN`, `;pN`, `;dN` ni `;sci`, un prix à UNE décimale s'écrit avec deux
+ * (`3.7[€]` → `3.70[€]` : les centimes) ; un prix au-delà du centime (`3.755[€]`) est
+ * écrit tel quel et signalé, sauf réglage écrit (`;aN`, `;pN`, `;dN`). Toute autre grandeur : inchangée.
+ */
+function euroWriting(writing: string, modifiers: EvalModifiers, source: string): string {
+	const match = QUANTITY_WRITING.exec(writing);
+	if (!match || !isEuro(match[3])) return writing;
+	const decimals = decimalsOf(match[2]) ?? 0;
+	// `;dN` écrit : l'auteur a choisi ses décimales (l'avertissement de `;dN` dit le reste)
+	if (decimals > 2 && !hasNumberWriting(modifiers)) {
+		warnEval(
+			`{{eval:${source}}} vaut ${writing} : des euros au-delà du centime (arrondir avec ;a2 ?)`
+		);
+	}
+	if (decimals !== 1 || hasNumberWriting(modifiers) || modifiers.scientific) return writing;
+	return `${match[1]}${match[2]}0[${match[3]}]`;
+}
+
+/** Grandeur écrite selon `;aN`, `;pN`, `;dN` : `1.50[m]`, `1200[m]`, `1.2*10^{3}[m]` */
+function roundedQuantity(
+	value: Rational,
+	unit: string,
+	modifiers: EvalModifiers,
+	ast: MathNode
+): string {
+	const source = toCustom(ast);
+	const unrounded = (): string => {
+		const text = signedDecimal(value);
+		if (text === null) {
+			throw new Error(
+				`Pas d'écriture décimale finie de ${source} en [${unit}] (arrondir avec ;aN ou ;pN)`
+			);
+		}
+		return text;
+	};
+	const writing = `${writtenNumber(value, modifiers, 'custom', unrounded, source)}[${unit}]`;
+	return withSignModifiers(euroWriting(writing, modifiers, source), modifiers);
 }
 
 /** `;[unité]` — la grandeur exprimée dans l'unité imposée */
@@ -494,19 +675,37 @@ function evaluateQuantity(
 		return hmsWriting(ast);
 	}
 	if (modifiers.unit !== undefined) {
-		const expressed = expressedIn(ast, modifiers.unit);
+		// La conversion d'abord (exacte), l'arrondi ensuite : `(x)[m];[cm];a0`
+		if (hasNumberWriting(modifiers)) {
+			const value = valueIn(ast, modifiers.unit);
+			if (value === null) {
+				throw new Error(
+					`Unité incompatible : ${toCustom(ast)} ne s'exprime pas en [${modifiers.unit}]`
+				);
+			}
+			return roundedQuantity(value, modifiers.unit, modifiers, ast);
+		}
+		const expressed = euroWriting(expressedIn(ast, modifiers.unit), modifiers, toCustom(ast));
 		return withSignModifiers(withScientificQuantity(expressed, modifiers), modifiers);
 	}
 	const reduced = durationOrQuantity(ast, modifiers, durations);
 	if (!hasQuantity(reduced)) {
 		const value = rationalOf(reduced);
 		const zeroUnit = value !== null && value.n === 0n ? zeroQuantityUnit(ast) : null;
-		if (zeroUnit !== null) return `0[${zeroUnit}]`;
+		if (zeroUnit !== null) {
+			return hasNumberWriting(modifiers)
+				? roundedQuantity(value ?? { n: 0n, d: 1n }, zeroUnit, modifiers, ast)
+				: `0[${zeroUnit}]`;
+		}
 		return evaluateAstWithModifiers(reduced, modifiers);
 	}
 	if (isCompositeDuration(reduced)) return hmsWriting(ast);
+	const writing = quantityWriting(reduced, ast, hasNumberWriting(modifiers));
+	if (hasNumberWriting(modifiers)) {
+		return roundedQuantity(writing.value, writing.unit, modifiers, ast);
+	}
 	return withSignModifiers(
-		withScientificQuantity(quantityWriting(reduced, ast), modifiers),
+		withScientificQuantity(euroWriting(writing.text, modifiers, toCustom(ast)), modifiers),
 		modifiers
 	);
 }
@@ -526,7 +725,11 @@ function durationOrQuantity(
 	const reduced = tidy(ast, { unitChoice: 'written', durations });
 	if (!isCompositeDuration(reduced)) return reduced;
 	const written =
-		modifiers.scientific || modifiers.decimal || modifiers.addPositive || modifiers.bracketNegative;
+		modifiers.scientific ||
+		modifiers.decimal ||
+		modifiers.addPositive ||
+		modifiers.bracketNegative ||
+		hasNumberWriting(modifiers);
 	if (reduced.type !== 'opposite' && !written) return reduced;
 	return tidy(ast, { unitChoice: 'written', durations: 'single' });
 }
@@ -629,6 +832,11 @@ export function evaluateAstWithModifiers(
 			if (modifiers.scientific) {
 				throw new Error(`;sci : ${toCustom(ast)} n'est pas un nombre (calcul littéral)`);
 			}
+			if (hasNumberWriting(modifiers)) {
+				throw new Error(
+					`${writingName(modifiers)} : ${toCustom(ast)} n'est pas un nombre (calcul littéral)`
+				);
+			}
 			const reduced = tidy(ast);
 			// `a/(b-c)` avec b = c : dénominateur nul, comme dans un calcul numérique
 			if (hasZeroDenominator(reduced)) throw new Error('Division by zero');
@@ -660,21 +868,32 @@ export function evaluateAstWithModifiers(
 
 	// `;sci` : toujours la notation scientifique ; `;d` : décimal ; sinon exact, ou décimal.
 	// Un entier exact s'écrit toujours en entier (voir `formatNumber`)
-	let formattedOutput = modifiers.scientific
-		? scientificNotation(numValue)
-		: modifiers.decimal
-			? formatNumber(numValue, ast)
-			: formatExact(ast, numValue);
+	// `;aN`, `;pN`, `;dN` : l'écriture décimale réglée (zéros finaux compris)
+	let formattedOutput = hasNumberWriting(modifiers)
+		? writtenNumber(
+				exactRationalOf(ast, numValue),
+				modifiers,
+				'latex',
+				() => formatNumber(numValue, ast),
+				toCustom(ast)
+			)
+		: modifiers.scientific
+			? scientificNotation(numValue)
+			: modifiers.decimal
+				? formatNumber(numValue, ast)
+				: formatExact(ast, numValue);
+	// Le signe de ce qui est ÉCRIT : −0,001 arrondi au centième s'écrit 0.00, donc « +0.00 »
+	const negative = hasNumberWriting(modifiers) ? formattedOutput.startsWith('-') : numValue < 0;
 
 	// Apply formatting modifiers
 	// `>= 0` : 0 s'écrit « +0 », sinon `y{{c;+}}` donne « y0 », lu comme un produit
-	if (modifiers.addPositive && numValue >= 0) {
+	if (modifiers.addPositive && !negative) {
 		if (!formattedOutput.startsWith('+')) {
 			formattedOutput = '+' + formattedOutput;
 		}
 	}
 
-	if (modifiers.bracketNegative && numValue < 0) {
+	if (modifiers.bracketNegative && negative) {
 		if (!formattedOutput.startsWith('(')) {
 			formattedOutput = '(' + formattedOutput + ')';
 		}

@@ -13,21 +13,21 @@
  */
 
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { Database } from '$lib/types/database';
+import type { Database } from '#lib/types/database.ts';
 import type {
 	GeometryFigureRow,
 	GeometryFigureSummary,
 	GeometryFigureWithTags,
 	PublicGeometryFigure
-} from '$lib/types/database-helpers';
-import type { FigureInput, FigureListFilters } from '$lib/server/validation/geometry-figures';
+} from '#lib/types/database-helpers.ts';
+import type { FigureInput, FigureListFilters } from '#lib/server/validation/geometry-figures.ts';
 import {
 	fetchResourceIdsByAnyTag,
 	fetchResourceTagNames,
 	fetchTagNamesForResources,
 	syncResourceTags
-} from '$lib/server/resource-tags';
-import { createServerLogger } from '$lib/utils/logger';
+} from '#lib/server/resource-tags.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 // ============================================================================
 // TYPES

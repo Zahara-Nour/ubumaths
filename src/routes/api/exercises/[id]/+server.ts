@@ -5,25 +5,29 @@
  * DELETE - Delete exercise
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
+import { z } from 'zod';
 import type { RequestHandler } from './$types';
 import {
 	getExercise,
 	updateExercise,
 	deleteExercise,
 	EXERCISE_NOT_DELETED
-} from '$lib/server/exercises';
-import type { Database } from '$lib/types/database';
-import { validateUpdateExercise } from '$lib/server/validation';
-import { requireRole } from '$lib/server/middleware/auth';
-import { validateUuidParam } from '$lib/server/validation/params';
+} from '#lib/server/exercises.ts';
+import type { Database } from '#lib/types/database.ts';
+import { validateUpdateExercise } from '#lib/server/validation/index.ts';
+import { requireRole } from '#lib/server/middleware/auth.ts';
+import { validateUuidParam } from '#lib/server/validation/params.ts';
 import {
 	SEARCH_INDEXED_REQUIRES_PUBLIC_MESSAGE,
 	isSearchIndexedViolation
-} from '$lib/server/exercise-search-indexed';
-import { createServerLogger } from '$lib/utils/logger';
+} from '#lib/server/exercise-search-indexed.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/exercises/[id]/+server');
+
+/** La version à modifier, seule clé lue ici ; les autres sont validées par l'exercice */
+const versionTargetSchema = z.object({ version_id: z.string().uuid().optional() });
 
 type ExerciseUpdate = Database['public']['Tables']['exercises']['Update'];
 type ZodIssue = { path: (string | number)[]; message: string };
@@ -45,7 +49,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 		throw error(404, 'Exercice introuvable');
 	}
 
-	return json({ exercise: result.data });
+	return Response.json({ exercise: result.data });
 };
 
 /**
@@ -58,8 +62,12 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 
 	const { id } = params;
 
-	// Parse and validate update data
-	const body = await request.json();
+	// Parse and validate update data. `version_id` (facultatif) : la version modifiée sur place,
+	// la dernière par défaut (ADR 0044) ; le reste est l'exercice.
+	const rawBody: unknown = await request.json();
+	const versionParse = versionTargetSchema.safeParse(rawBody);
+	if (!versionParse.success) throw error(400, 'Version invalide');
+	const { version_id: _versionId, ...body } = rawBody as Record<string, unknown>;
 	const validation = validateUpdateExercise(body);
 
 	if (!validation.success) {
@@ -76,7 +84,13 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 	const data = validation.data as Omit<ExerciseUpdate, 'id' | 'created_by' | 'created_at'>;
 
 	// Update exercise
-	const result = await updateExercise(locals.supabase, id, data, user.id);
+	const result = await updateExercise(
+		locals.supabase,
+		id,
+		data,
+		user.id,
+		versionParse.data.version_id
+	);
 
 	if (result.error) {
 		if (result.error.message === 'Unauthorized') {
@@ -85,6 +99,11 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 		if (result.error.message === 'Exercise not found') {
 			throw error(404, 'Exercice introuvable');
 		}
+		// `save_exercise_with_version` : version absente ou d'un autre exercice (P0002), écriture de
+		// l'exercice refusée par la RLS (42501)
+		const code = (result.error as { code?: string }).code;
+		if (code === 'P0002') throw error(404, 'Version introuvable');
+		if (code === '42501') throw error(403, 'Seul l’auteur de l’exercice peut le modifier');
 		// « Privé + Google » : refus métier ou contrainte de la base (23514)
 		if (isSearchIndexedViolation(result.error)) {
 			throw error(400, SEARCH_INDEXED_REQUIRES_PUBLIC_MESSAGE);
@@ -93,7 +112,7 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 		throw error(500, 'Impossible de modifier l’exercice');
 	}
 
-	return json({ exercise: result.data });
+	return Response.json({ exercise: result.data });
 };
 
 /**
@@ -123,5 +142,5 @@ export const DELETE: RequestHandler = async ({ locals, params }) => {
 		throw error(500, 'Impossible de supprimer l’exercice');
 	}
 
-	return json({ success: true });
+	return Response.json({ success: true });
 };

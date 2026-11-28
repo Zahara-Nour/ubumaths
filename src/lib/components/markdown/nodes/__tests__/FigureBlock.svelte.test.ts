@@ -9,8 +9,8 @@ import { describe, it, expect, afterEach } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import FigureBlock from '../FigureBlock.svelte';
 import MarkdownRenderer from '../../MarkdownRenderer.svelte';
-import { parseFigureContent } from '$lib/ubumark/parser/figure-parser';
-import { buildFigureScene } from '$lib/ubumark/utils/figure-scene';
+import { parseFigureContent } from '#lib/ubumark/parser/figure-parser.ts';
+import { buildFigureScene } from '#lib/ubumark/utils/figure-scene.ts';
 
 const SOURCE = `fenetre: -1 ; 8 ; -1 ; 6
 taille: petite
@@ -219,7 +219,7 @@ C = point(5, 4, etiquette="aucune")
 texte(2, 4, "centre")`;
 
 	it('taille réelle = FIGURE_LABEL_FONT_PX, côtés et centrage respectés (boîtes mesurées)', async () => {
-		const { FIGURE_LABEL_FONT_PX } = await import('$lib/ubumark/utils/figure-svg');
+		const { FIGURE_LABEL_FONT_PX } = await import('#lib/ubumark/utils/figure-svg.ts');
 		const node = parseFigureContent(PLACEMENT);
 		const screen = await render(FigureBlock, { target: mainElement(), props: { node } });
 		const svg = await svgOf(screen.container);

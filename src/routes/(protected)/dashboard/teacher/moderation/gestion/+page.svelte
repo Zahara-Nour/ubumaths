@@ -6,7 +6,8 @@
 	and view moderation history.
 
 	Features:
-		- Tab navigation: Signalements | Restrictions | Logs
+		- Tab navigation: Signalements | Messages marqués | Restrictions | Logs
+		- Messages flagged automatically (read-only list)
 		- Message reports table with review dialog
 		- Active restrictions table with ability to remove
 		- Moderation logs table with pagination
@@ -14,15 +15,17 @@
 		- Automatic data refresh after actions
 -->
 <script lang="ts">
-	import { invalidateAll } from '$app/navigation';
-	import * as Tabs from '$lib/components/ui/tabs';
-	import { Badge } from '$lib/components/ui/badge';
-	import { Button } from '$lib/components/ui/button';
-	import ActiveRestrictionsTable from '$lib/components/moderation/ActiveRestrictionsTable.svelte';
-	import ModerationLogsTable from '$lib/components/moderation/ModerationLogsTable.svelte';
-	import MessageReportsTable from '$lib/components/moderation/MessageReportsTable.svelte';
-	import RestrictUserDialog from '$lib/components/moderation/RestrictUserDialog.svelte';
-	import { ShieldAlert, Flag, UserX } from '@lucide/svelte';
+	import { refreshAll } from '$app/navigation';
+	import * as Tabs from '#lib/components/ui/tabs/index.ts';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import ActiveRestrictionsTable from '#lib/components/moderation/ActiveRestrictionsTable.svelte';
+	import ModerationLogsTable from '#lib/components/moderation/ModerationLogsTable.svelte';
+	import MessageReportsTable from '#lib/components/moderation/MessageReportsTable.svelte';
+	import FlaggedMessagesList from '#lib/components/moderation/FlaggedMessagesList.svelte';
+	import RestrictUserDialog from '#lib/components/moderation/RestrictUserDialog.svelte';
+	import * as Alert from '#lib/components/ui/alert/index.ts';
+	import { ShieldAlert, Flag, UserX, TriangleAlert } from '@lucide/svelte';
 	import type { PageData } from './$types';
 
 	// Page Props
@@ -40,7 +43,7 @@
 	 */
 	async function handleUnrestrict(): Promise<void> {
 		// Refresh data from server
-		await invalidateAll();
+		await refreshAll();
 	}
 
 	/**
@@ -48,7 +51,7 @@
 	 */
 	async function handleReportReview(): Promise<void> {
 		// Refresh data from server
-		await invalidateAll();
+		await refreshAll();
 	}
 
 	/**
@@ -56,7 +59,7 @@
 	 */
 	async function handleNewRestriction(): Promise<void> {
 		// Refresh data from server
-		await invalidateAll();
+		await refreshAll();
 	}
 </script>
 
@@ -79,16 +82,17 @@
 
 	<!-- Tabs -->
 	<Tabs.Root value="reports" class="w-full">
-		<Tabs.List class="grid w-full grid-cols-3">
+		<Tabs.List class="grid w-full grid-cols-2 sm:grid-cols-4">
 			<Tabs.Trigger value="reports" class="relative">
 				<Flag class="mr-2 h-4 w-4" />
 				Signalements
-				{#if data.pendingReportsCount > 0}
+				{#if data.pendingReportsCount !== null && data.pendingReportsCount > 0}
 					<Badge variant="destructive" class="ml-2 h-5 min-w-5 px-1.5 text-xs">
 						{data.pendingReportsCount}
 					</Badge>
 				{/if}
 			</Tabs.Trigger>
+			<Tabs.Trigger value="flagged">Messages marqués</Tabs.Trigger>
 			<Tabs.Trigger value="restrictions">Restrictions actives</Tabs.Trigger>
 			<Tabs.Trigger value="logs">Historique</Tabs.Trigger>
 		</Tabs.List>
@@ -101,7 +105,57 @@
 					Messages signalés par les utilisateurs comme inappropriés.
 				</p>
 			</div>
-			<MessageReportsTable reports={data.reports} onReview={handleReportReview} />
+			{#if data.reportsLoadFailed}
+				<Alert.Root variant="destructive" role="alert">
+					<TriangleAlert />
+					<Alert.Title class="line-clamp-none"
+						>Les signalements n'ont pas pu être chargés</Alert.Title
+					>
+					<Alert.Description>
+						Des signalements peuvent attendre. Rechargez la page ; si le problème continue, prévenez
+						l'administrateur.
+					</Alert.Description>
+				</Alert.Root>
+			{:else}
+				{#if data.pendingReportsCount === null}
+					<Alert.Root variant="destructive" role="alert">
+						<TriangleAlert />
+						<Alert.Title class="line-clamp-none"
+							>Le nombre de signalements en attente n'a pas pu être calculé</Alert.Title
+						>
+						<Alert.Description>La liste ci-dessous reste à jour.</Alert.Description>
+					</Alert.Root>
+				{/if}
+				<MessageReportsTable reports={data.reports} onReview={handleReportReview} />
+			{/if}
+		</Tabs.Content>
+
+		<!-- Flagged Messages Tab (écart T21) -->
+		<Tabs.Content value="flagged" class="space-y-4 pt-6">
+			<div>
+				<h2 class="mb-2 text-xl font-semibold">Messages marqués automatiquement</h2>
+				<p class="text-sm text-muted-foreground">
+					Messages du chat où le filtre a repéré un mot grossier, une insulte ou une menace, même
+					supprimés depuis. Dans une conversation à deux entre élèves, seul le message marqué est
+					montré, pas le reste de la conversation. Pour agir dans une conversation de groupe,
+					ouvrez-la dans le
+					<a href="/dashboard/chat" class="underline">chat</a>.
+				</p>
+			</div>
+			{#if data.flaggedMessagesLoadFailed}
+				<Alert.Root variant="destructive" role="alert">
+					<TriangleAlert />
+					<Alert.Title class="line-clamp-none"
+						>Les messages marqués n'ont pas pu être chargés</Alert.Title
+					>
+					<Alert.Description>
+						Des messages peuvent attendre. Rechargez la page ; si le problème continue, prévenez
+						l'administrateur.
+					</Alert.Description>
+				</Alert.Root>
+			{:else}
+				<FlaggedMessagesList messages={data.flaggedMessages} limit={data.flaggedMessagesLimit} />
+			{/if}
 		</Tabs.Content>
 
 		<!-- Restrictions Tab -->

@@ -5,9 +5,9 @@ import { page, userEvent } from 'vitest/browser';
 import { afterEach, describe, expect, it } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import Page from '../+page.svelte';
-import { caesarEncrypt } from '$lib/ciphers/caesar';
-import { PROVINCES } from '$lib/kingdom-tour/tour';
-import { CITIES, capitalOf } from '$lib/kingdom-tour/cities';
+import { caesarEncrypt } from '#lib/ciphers/caesar.ts';
+import { PROVINCES } from '#lib/kingdom-tour/tour.ts';
+import { CITIES, capitalOf } from '#lib/kingdom-tour/cities.ts';
 
 // Constantes
 

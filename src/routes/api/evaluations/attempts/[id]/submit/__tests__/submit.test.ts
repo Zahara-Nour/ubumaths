@@ -9,25 +9,28 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 const submit = vi.hoisted(() => vi.fn());
 /** Comportement de l'envoi ; une fonction ordinaire (un vi.fn qui lève est signalé en échec) */
 const behavior = vi.hoisted(() => ({ current: null as null | (() => unknown) }));
-vi.mock('$lib/server/evaluation-attempts', async (importOriginal) => ({
-	...(await importOriginal<typeof import('$lib/server/evaluation-attempts')>()),
+vi.mock('#lib/server/evaluation-attempts.ts', async (importOriginal) => ({
+	...(await importOriginal<typeof import('#lib/server/evaluation-attempts.ts')>()),
 	submitEvaluationAttempt: async (...args: unknown[]) => {
 		submit(...args);
 		return behavior.current?.();
 	}
 }));
-vi.mock('$lib/server/serviceRoleClient', () => ({ createServiceRoleClient: () => ({}) }));
-vi.mock('$lib/server/middleware/auth', () => ({
+vi.mock('#lib/server/serviceRoleClient.ts', () => ({ createServiceRoleClient: () => ({}) }));
+vi.mock('#lib/server/middleware/auth.ts', () => ({
 	requireAuth: vi.fn(async (locals: { userId: string }) => ({
 		user: { id: locals.userId },
 		profile: { role: 'student' }
 	}))
 }));
 
-vi.mock('$lib/server/rateLimiter', () => import('$lib/server/__tests__/helpers/fake-rate-limiter'));
+vi.mock(
+	'#lib/server/rateLimiter.ts',
+	() => import('#lib/server/__tests__/helpers/fake-rate-limiter.ts')
+);
 
 import { POST } from '../+server';
-import { AttemptAlreadySubmittedError } from '$lib/server/evaluation-attempts';
+import { AttemptAlreadySubmittedError } from '#lib/server/evaluation-attempts.ts';
 
 const ATTEMPT = '99999999-9999-4999-8999-999999999999';
 const COPY = {

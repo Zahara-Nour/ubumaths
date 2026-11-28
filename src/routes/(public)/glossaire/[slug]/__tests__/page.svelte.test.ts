@@ -5,7 +5,7 @@
 import { page } from 'vitest/browser';
 import { describe, expect, it } from 'vitest';
 import { render } from 'vitest-browser-svelte';
-import type { MathTerm } from '$lib/dictionary/model';
+import type { MathTerm } from '#lib/dictionary/model.ts';
 import TermPage from '../+page.svelte';
 import type { PageData } from '../$types';
 
@@ -41,6 +41,13 @@ describe('/glossaire/[slug] : la page', () => {
 		await expect.element(page.getByText('CE1', { exact: true })).toBeVisible();
 		await expect.element(page.getByText('3 paquets de 2 font 6.')).toBeVisible();
 		await expect.element(page.getByText('produit', { exact: true })).toBeVisible();
+	});
+
+	// Le titre de l'onglet est la ligne cliquable des résultats de recherche : il dit
+	// « maths », car bien des termes existent hors des maths (« développement », « inclusion »).
+	it('le titre de l’onglet annonce une définition de maths', async () => {
+		await renderTerm({ term: MULTIPLICATION, description: 'd', cited: null });
+		await expect.poll(() => document.title).toBe('multiplication : définition (maths) | Chiphre');
 	});
 
 	it('ramène au glossaire et mène au Cabinet Noir', async () => {

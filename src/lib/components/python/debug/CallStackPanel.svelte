@@ -7,8 +7,8 @@
 	 */
 
 	// Imports
-	import type { DebugStackFrame } from '$lib/shared/python/debug/types';
-	import { cn } from '$lib/utils';
+	import type { DebugStackFrame } from '#lib/shared/python/debug/types.ts';
+	import { cn } from '#lib/utils.ts';
 	import ArrowRight from '@lucide/svelte/icons/arrow-right';
 
 	// Types

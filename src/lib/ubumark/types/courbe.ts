@@ -13,9 +13,9 @@
  * @module ubumark/types/courbe
  */
 
-import { NAMED_COLORS, type NamedColor } from '$lib/theme/named-colors';
+import { NAMED_COLORS, type NamedColor } from '#lib/theme/named-colors.ts';
 import type { BaseNode } from './ast';
-import type { MathNode } from '$lib/mathAST/types';
+import type { MathNode } from '#lib/mathAST/types.ts';
 
 // ============================================================================
 // VALEURS
@@ -132,6 +132,11 @@ export interface CourbeStaircase {
 	 * grapheur (`createRecurrenceFunctionEvaluator` l'évalue en x).
 	 */
 	relation: MathNode;
+	/**
+	 * Escalier à construire (`construire N`) : seul u₀ est dessiné (terme marqué sur
+	 * l'axe), l'élève construit la suite
+	 */
+	build?: true;
 }
 
 /**
@@ -158,6 +163,27 @@ export interface CourbeSequence {
 	staircase: CourbeStaircase | null;
 	color: CourbeColor;
 	label: CourbeLabel | null;
+	line: number;
+}
+
+/**
+ * Escalier à construire par l'élève (`construire N` sur la ligne d'une suite
+ * récurrente, une question, outil 48) : la suite dessinée ne garde que son premier
+ * terme (u₀ marqué sur l'axe) ; les termes suivants sont les RÉPONSES, jamais
+ * dessinés ni écrits dans le DOM avant la correction.
+ */
+export interface CourbeStaircaseToBuild {
+	sequenceName: string;
+	/** Rang du premier terme (u₀ : 0) */
+	firstIndex: number;
+	/** Valeur du premier terme, donnée */
+	start: number;
+	/** Les N vrais termes suivants, dans l'ordre : les réponses attendues */
+	terms: number[];
+	/** f écrite en x (syntaxe maison mathAST), lue par le juge : `sqrt(2*(x)+3)` */
+	relation: string;
+	/** Écart toléré : 3 % de la largeur de la fenêtre */
+	margin: number;
 	line: number;
 }
 
@@ -289,12 +315,23 @@ export interface CourbeSpec {
 	 * attendue, jamais dessinée ni écrite dans le DOM avant la correction
 	 */
 	vecteur?: CourbeVectorToTrace;
+	/**
+	 * Escalier à construire (`construire N`, jamais avec `placer:`, `tracer:` ni
+	 * `données:`) : ses termes sont les RÉPONSES attendues
+	 */
+	construire?: CourbeStaircaseToBuild;
 	/** Vecteurs donnés (`vecteurs:`), dessinés en flèches ; absent sans la clé */
 	vecteurs?: CourbeGivenVector[];
 	/** Titres des axes (`axes:`) ; absent sans la clé */
 	axisTitles?: CourbeAxisTitles;
 	/** Courbe de données (`données:`, jamais avec `placer:` ni `tracer:`) ; absente sans la clé */
 	donnees?: CourbeData;
+	/**
+	 * `solution: oui` (avec `placer:` ou `tracer:`, sans `case:`) : la réponse
+	 * attendue est dessinée en vert, à l'écran comme au PDF ; rien à faire pour
+	 * l'élève (corrigé imprimé d'une série d'automatismes, V108)
+	 */
+	solution?: true;
 }
 
 // ============================================================================
@@ -330,7 +367,8 @@ export interface CourbeNode extends BaseNode {
 	/**
 	 * Repère à points à placer dans une question : première case (`case: N`,
 	 * posée par le générateur) ; le point k a la case N + k. Droite à tracer :
-	 * une seule case, N
+	 * une seule case, N. Escalier à construire : le terme k (1 pour u₁) a la case
+	 * N + k − 1
 	 */
 	caseIndex?: number;
 }
@@ -369,6 +407,8 @@ export const COURBE_LIMITS = {
 	coefficient: 3,
 	/** Points à placer par l'élève (`placer:`) */
 	targets: 6,
+	/** Termes d'un escalier à construire (`construire N`) */
+	buildTerms: 6,
 	/** Longueur de l'équation d'une droite à tracer (`tracer:`) */
 	equation: 80,
 	/** Longueur d'un titre d'axe (`axes:`) */

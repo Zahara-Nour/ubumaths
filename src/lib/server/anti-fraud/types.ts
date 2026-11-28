@@ -4,7 +4,7 @@
  * Spec TDD : docs/archive/wip/srs-anti-fraud-spec-tdd.md
  */
 
-import type { AntiFraudFlagType, AntiFraudSeverity } from '$lib/types/database-helpers';
+import type { AntiFraudFlagType, AntiFraudSeverity } from '#lib/types/database-helpers.ts';
 
 /**
  * Entrée individuelle dans `srs_card_stats.review_history` (JSONB array).
@@ -27,6 +27,8 @@ export interface AttemptEntry {
 	success: boolean;
 	grade: number | null;
 	source: 'auto' | 'srs' | 'task' | string;
+	/** Lieu (ADR 0038) ; `null` pour les traces antérieures */
+	place?: string | null;
 }
 
 /**

@@ -12,7 +12,7 @@ import { buildExpectedResult, showsInstructionOnly, type ExpectedLine } from '..
 import { instructionOf } from '../correction-card-verdict';
 import { generateInstance } from '../generator/instance-generator';
 import type { QuestionInstance, QuestionTemplate } from '../types';
-import { templateMarkdown, type ResolvedMarkdown } from '$lib/ubumark';
+import { templateMarkdown, type ResolvedMarkdown } from '#lib/ubumark/index.ts';
 
 const TABLEAU = [
 	'```variation',

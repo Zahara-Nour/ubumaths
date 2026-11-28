@@ -3,13 +3,13 @@
  */
 
 import { describe, expect, it } from 'vitest';
-import { parsePartageContent } from '$lib/ubumark/parser/partage-parser';
+import { parsePartageContent } from '#lib/ubumark/parser/partage-parser.ts';
 import {
 	buildPartageScenes,
 	partageLabel,
 	type PartagePoint
-} from '$lib/ubumark/utils/partage-scene';
-import type { PartageSpec } from '$lib/ubumark/types/partage';
+} from '#lib/ubumark/utils/partage-scene.ts';
+import type { PartageSpec } from '#lib/ubumark/types/partage.ts';
 
 function specOf(...lines: string[]): PartageSpec {
 	const { spec, errors } = parsePartageContent(lines.join('\n'));

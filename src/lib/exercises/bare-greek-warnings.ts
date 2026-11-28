@@ -12,8 +12,8 @@
  * @module exercises/bare-greek-warnings
  */
 
-import { extractMath } from '$lib/ubumark/parser/math-extractor';
-import { VALID_SYMBOLS } from '$lib/mathAST/parser/custom/tokenizer';
+import { extractMath } from '#lib/ubumark/parser/math-extractor.ts';
+import { VALID_SYMBOLS } from '#lib/mathAST/parser/custom/tokenizer.ts';
 import type { ExerciseVariation } from './types';
 
 /** Un champ de la variation et les noms grecs à y corriger */

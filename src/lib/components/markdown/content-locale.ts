@@ -11,7 +11,7 @@
  */
 
 import { getContext, hasContext, setContext } from 'svelte';
-import { DEFAULT_CONTENT_LOCALE, type ContentLocale } from '$lib/types/locale';
+import { DEFAULT_CONTENT_LOCALE, type ContentLocale } from '#lib/types/locale.ts';
 
 const CONTENT_LOCALE_KEY = Symbol('markdown-content-locale');
 

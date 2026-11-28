@@ -3,7 +3,7 @@
  * =====================================================================
  *
  * `pnpm db:seed-riche` lit le contenu de la prod et l'écrit dans la base
- * LOCALE (inventaire : docs/wip/base-locale-inventaire.md, décision de David
+ * LOCALE (inventaire : docs/archive/wip/base-locale-inventaire.md, décision de David
  * du 2026-10-10). Ce qui est gardé ici, sans réseau ni base :
  * - jamais d'écriture ailleurs qu'en local, jamais de lecture d'une base locale
  *   prise pour la prod ;
@@ -14,14 +14,19 @@
  * - aucune table d'élèves ne figure dans la liste de copie.
  */
 
+import { readFileSync } from 'node:fs';
 import { describe, it, expect } from 'vitest';
 import {
 	COPIE,
+	INVENTE,
 	JAMAIS,
+	LIENS_COUPES,
+	lireSchema,
 	detecterFuite,
 	remplacerIds,
 	filtrerLignes,
 	neutraliser,
+	requeteOrphelins,
 	valeurPg,
 	verifierCibles
 } from '../db-seed-riche/regles';
@@ -129,7 +134,7 @@ describe('valeurPg', () => {
 
 describe('liste de copie', () => {
 	it('ne contient aucune table d’élèves ni d’échanges', () => {
-		for (const t of JAMAIS) expect(COPIE).not.toContain(t);
+		for (const t of [...INVENTE, ...JAMAIS]) expect(COPIE).not.toContain(t);
 	});
 
 	it('n’a pas de doublon', () => {
@@ -253,5 +258,211 @@ describe('liste de copie (après audit)', () => {
 	it('copie class_chapters, parent des chapitres, et pas chapter_decks, qui pointe vers des paquets d’élèves', () => {
 		expect(COPIE).toContain('class_chapters');
 		expect(COPIE).not.toContain('chapter_decks');
+	});
+});
+
+describe('lireSchema', () => {
+	const texte = [
+		'export type Database = {',
+		'\tgraphql_public: {',
+		'\t\tTables: {',
+		'\t\t\t[_ in never]: never;',
+		'\t\t};',
+		'\t};',
+		'\tpublic: {',
+		'\t\tTables: {',
+		'\t\t\tfiches: {',
+		'\t\t\t\tRow: {',
+		'\t\t\t\t\tid: string;',
+		'\t\t\t\t};',
+		'\t\t\t\tRelationships: [',
+		'\t\t\t\t\t{',
+		"\t\t\t\t\t\tforeignKeyName: 'fiches_classe_fkey';",
+		"\t\t\t\t\t\tcolumns: ['classe_id'];",
+		'\t\t\t\t\t\tisOneToOne: false;',
+		"\t\t\t\t\t\treferencedRelation: 'classes';",
+		"\t\t\t\t\t\treferencedColumns: ['id'];",
+		'\t\t\t\t\t},',
+		'\t\t\t\t\t{',
+		"\t\t\t\t\t\tforeignKeyName: 'fiches_classe_fkey';",
+		"\t\t\t\t\t\tcolumns: ['classe_id'];",
+		'\t\t\t\t\t\tisOneToOne: false;',
+		"\t\t\t\t\t\treferencedRelation: 'bilan';",
+		"\t\t\t\t\t\treferencedColumns: ['id'];",
+		'\t\t\t\t\t},',
+		'\t\t\t\t\t{',
+		"\t\t\t\t\t\tforeignKeyName: 'fiches_section_fkey';",
+		"\t\t\t\t\t\tcolumns: ['section_id', 'chapitre_id'];",
+		'\t\t\t\t\t\tisOneToOne: false;',
+		"\t\t\t\t\t\treferencedRelation: 'sections';",
+		"\t\t\t\t\t\treferencedColumns: ['id', 'chapitre_id'];",
+		'\t\t\t\t\t}',
+		'\t\t\t\t];',
+		'\t\t\t};',
+		'\t\t\tclasses: {',
+		'\t\t\t\tRow: {',
+		'\t\t\t\t\tid: string;',
+		'\t\t\t\t};',
+		'\t\t\t\tRelationships: [];',
+		'\t\t\t};',
+		'\t\t};',
+		'\t\tViews: {',
+		'\t\t\tbilan: {',
+		'\t\t\t\tRow: {',
+		'\t\t\t\t\tid: string;',
+		'\t\t\t\t};',
+		'\t\t\t};',
+		'\t\t};',
+		'\t};',
+		'};'
+	].join('\n');
+
+	it('rend les tables du schéma public avec leurs liens, lien composé compris', () => {
+		const { tables } = lireSchema(texte);
+		expect([...tables.keys()]).toEqual(['fiches', 'classes']);
+		expect(tables.get('fiches')).toEqual([
+			{ colonnes: ['classe_id'], vers: 'classes' },
+			{ colonnes: ['classe_id'], vers: 'bilan' },
+			{ colonnes: ['section_id', 'chapitre_id'], vers: 'sections' }
+		]);
+		expect(tables.get('classes')).toEqual([]);
+	});
+
+	it('rend les vues à part : elles ne sont pas des tables à classer', () => {
+		expect([...lireSchema(texte).vues]).toEqual(['bilan']);
+	});
+
+	it('refuse un texte où il ne trouve aucune table, plutôt que de tout laisser passer', () => {
+		expect(() => lireSchema('export type Database = {}')).toThrow(/aucune table/);
+	});
+});
+
+describe('classement de toutes les tables (copier, inventer, jamais)', () => {
+	// Le schéma tel que `pnpm db:types` l'a généré depuis les migrations du dépôt.
+	const { tables: schema, vues } = lireSchema(readFileSync('src/lib/types/database.ts', 'utf8'));
+	const familles = { COPIE, INVENTE, JAMAIS };
+
+	it('chaque table du schéma est dans une famille : une table nouvelle se classe avant de passer', () => {
+		const classees = new Set([...COPIE, ...INVENTE, ...JAMAIS]);
+		expect([...schema.keys()].filter((t) => !classees.has(t))).toEqual([]);
+	});
+
+	it('aucune table n’est dans deux familles', () => {
+		const toutes = [...COPIE, ...INVENTE, ...JAMAIS];
+		expect(toutes.filter((t, i) => toutes.indexOf(t) !== i)).toEqual([]);
+	});
+
+	it('aucune famille ne cite une table qui n’existe plus', () => {
+		for (const [nom, liste] of Object.entries(familles)) {
+			expect({ [nom]: liste.filter((t) => !schema.has(t)) }).toEqual({ [nom]: [] });
+		}
+	});
+
+	it('une table copiée ne pointe que vers des tables copiées, ou vers un compte', () => {
+		// Le contenu s'écrit sans vérification des liens : copier une table sans celle qu'elle
+		// désigne laisserait en local des lignes qui pointent dans le vide. La garde porte sur les
+		// TABLES ; une ligne écartée par le filtre d'auteur peut encore laisser une ligne
+		// orpheline, ce que seule une vérification sur la base voit (journal du chantier, § 7).
+		const orphelins: string[] = [];
+		for (const table of COPIE) {
+			for (const { colonnes, vers } of schema.get(table) ?? []) {
+				if (vues.has(vers)) continue; // une vue répète le lien vers la vraie table
+				if (vers === 'profiles' || COPIE.includes(vers)) continue;
+				if (colonnes.some((c) => LIENS_COUPES.includes(`${table}.${c}`))) continue;
+				orphelins.push(`${table}.${colonnes.join('+')} → ${vers}`);
+			}
+		}
+		expect(orphelins).toEqual([]);
+	});
+
+	it('un lien coupé existe encore, vers une table non copiée, et il est mis à vide à la copie', () => {
+		for (const lien of LIENS_COUPES) {
+			const [table, colonne] = lien.split('.');
+			const cibles = (schema.get(table) ?? [])
+				.filter((l) => l.colonnes.includes(colonne) && !vues.has(l.vers))
+				.map((l) => l.vers);
+			expect({ lien, cibles: cibles.length }).toEqual({ lien, cibles: 1 });
+			expect(COPIE).not.toContain(cibles[0]);
+			expect(neutraliser(table, { [colonne]: 'x' }, 0)[colonne]).toBeNull();
+		}
+	});
+
+	it('les tables de contenu ajoutées le 2026-11-21 sont copiées', () => {
+		for (const t of ['dictionary_entries', 'question_template_reviews', 'worksheet_styles']) {
+			expect(COPIE).toContain(t);
+		}
+	});
+
+	it('après audit : ce qui peut porter un élève sans que les gardes le voient n’est pas copié', () => {
+		// Identifiants d'inscription sans clé étrangère, nom de dossier libre, documents importés.
+		for (const t of ['school_year_closures', 'user_folders', 'rag_documents', 'rag_chunks']) {
+			expect(JAMAIS).toContain(t);
+		}
+	});
+
+	it('après audit : la description d’un tournoi, texte libre du prof, est vidée', () => {
+		const t = neutraliser(
+			'minesweeper_tournaments',
+			{ id: 1, name: 'n', description: 'Bravo Léo' },
+			0
+		);
+		expect(t).toEqual({ id: 1, name: 'n', description: null });
+	});
+
+	it('les sections de paquets de révision suivent les paquets : inventées, pas copiées', () => {
+		expect(INVENTE).toContain('srs_decks');
+		expect(INVENTE).toContain('srs_deck_sections');
+	});
+});
+
+describe('requeteOrphelins (liens vérifiés après la copie)', () => {
+	it('compte les lignes dont la cible manque, pour un lien simple', () => {
+		const sql = requeteOrphelins({
+			table: 'worksheet_exercises',
+			colonnes: ['worksheet_id'],
+			schemaCible: 'public',
+			cible: 'worksheets',
+			colonnesCible: ['id']
+		});
+		expect(sql).toBe(
+			'select count(*)::int n from public."worksheet_exercises" e ' +
+				'where e."worksheet_id" is not null ' +
+				'and not exists (select 1 from "public"."worksheets" c where c."id" = e."worksheet_id")'
+		);
+	});
+
+	it('lien composé : une colonne vide suffit à ne pas vérifier la ligne (MATCH SIMPLE)', () => {
+		const sql = requeteOrphelins({
+			table: 'srs_cards',
+			colonnes: ['section_id', 'deck_id'],
+			schemaCible: 'public',
+			cible: 'srs_deck_sections',
+			colonnesCible: ['id', 'deck_id']
+		});
+		expect(sql).toContain('where e."section_id" is not null and e."deck_id" is not null');
+		expect(sql).toContain('c."id" = e."section_id" and c."deck_id" = e."deck_id"');
+	});
+
+	it('une cible hors du schéma public (comptes) garde son schéma', () => {
+		const sql = requeteOrphelins({
+			table: 'profiles',
+			colonnes: ['id'],
+			schemaCible: 'auth',
+			cible: 'users',
+			colonnesCible: ['id']
+		});
+		expect(sql).toContain('from "auth"."users" c');
+	});
+
+	it('refuse un lien dont les colonnes ne se correspondent pas une à une', () => {
+		expect(() =>
+			requeteOrphelins({
+				table: 't',
+				colonnes: ['a', 'b'],
+				schemaCible: 'public',
+				cible: 'u',
+				colonnesCible: ['id']
+			})
+		).toThrow(/colonnes/);
 	});
 });

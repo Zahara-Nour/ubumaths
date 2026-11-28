@@ -1,12 +1,12 @@
 <script lang="ts">
-	import CipherWorkbench from '$lib/components/ciphers/CipherWorkbench.svelte';
-	import VigenereCrack from '$lib/components/ciphers/VigenereCrack.svelte';
-	import { Input } from '$lib/components/ui/input';
-	import { Label } from '$lib/components/ui/label';
-	import { letterIndex, lettersOnly } from '$lib/ciphers/alphabet';
-	import { attempt } from '$lib/ciphers/outcome';
-	import { vigenereDecrypt, vigenereEncrypt } from '$lib/ciphers/vigenere';
-	import SeoHead from '$lib/seo/SeoHead.svelte';
+	import CipherWorkbench from '#lib/components/ciphers/CipherWorkbench.svelte';
+	import VigenereCrack from '#lib/components/ciphers/VigenereCrack.svelte';
+	import { Input } from '#lib/components/ui/input/index.ts';
+	import { Label } from '#lib/components/ui/label/index.ts';
+	import { letterIndex, lettersOnly } from '#lib/ciphers/alphabet.ts';
+	import { attempt } from '#lib/ciphers/outcome.ts';
+	import { vigenereDecrypt, vigenereEncrypt } from '#lib/ciphers/vigenere.ts';
+	import SeoHead from '#lib/seo/SeoHead.svelte';
 
 	// Constantes
 	const PLAIN = 'Les Palotins se retrouveront à minuit derrière les cuisines du palais.';
@@ -21,7 +21,7 @@
 </script>
 
 <SeoHead
-	title="Chiffre de Vigenère : chiffrer, déchiffrer, décrypter — Chiphre"
+	title="Chiffre de Vigenère : chiffrer, déchiffrer, décrypter | Chiphre"
 	description="Le chiffre de Vigenère pas à pas : une clé répétée, un décalage par lettre, puis le décryptage par la méthode de Kasiski, l’indice de coïncidence et un César par colonne."
 />
 

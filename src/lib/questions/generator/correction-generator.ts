@@ -19,69 +19,73 @@
  * @module questions/generator/correction-generator
  */
 
-import { parseCustomSafe } from '$lib/mathAST';
+import { parseCustomSafe } from '#lib/mathAST/index.ts';
+import { bareDecimalCommaToPoint, expectsSeparatorComma } from '#lib/mathAST/decimal-comma.ts';
 import { templateGenericFunctions } from '../generic-functions';
 import { readingOf } from '../formula-reading';
-import type { MathNode, RelationNode } from '$lib/mathAST/types';
-import { toLatex } from '$lib/mathAST/latex-generator';
+import type { MathNode, RelationNode } from '#lib/mathAST/types.ts';
+import { toLatex } from '#lib/mathAST/latex-generator.ts';
 import type {
 	PedagogicalRenderOptions,
 	RenderedStep,
 	SchoolLevel
-} from '$lib/mathAST/common/step-renderer-base';
-import { generatePedagogicalArithmeticSteps } from '$lib/mathAST/pedagogical-arithmetic/pipeline';
-import { PedagogicalArithmeticRenderer } from '$lib/mathAST/pedagogical-arithmetic/renderer';
-import { extractPedagogicalTarget } from '$lib/mathAST/pedagogical-arithmetic/target-extractor';
-import { generatePedagogicalDifferentiationSteps } from '$lib/mathAST/pedagogical-differentiation/pipeline';
-import { PedagogicalDifferentiationRenderer } from '$lib/mathAST/pedagogical-differentiation/renderer';
+} from '#lib/mathAST/common/step-renderer-base.ts';
+import { generatePedagogicalArithmeticSteps } from '#lib/mathAST/pedagogical-arithmetic/pipeline.ts';
+import { PedagogicalArithmeticRenderer } from '#lib/mathAST/pedagogical-arithmetic/renderer.ts';
+import { extractPedagogicalTarget } from '#lib/mathAST/pedagogical-arithmetic/target-extractor.ts';
+import { generatePedagogicalDifferentiationSteps } from '#lib/mathAST/pedagogical-differentiation/pipeline.ts';
+import { PedagogicalDifferentiationRenderer } from '#lib/mathAST/pedagogical-differentiation/renderer.ts';
 import {
 	withRequestedFormStep,
 	withTidyStep
-} from '$lib/mathAST/pedagogical-differentiation/tidy-step';
+} from '#lib/mathAST/pedagogical-differentiation/tidy-step.ts';
 import {
 	generatePedagogicalIntegrationSteps,
 	PedagogicalIntegrationNotImplemented,
 	PedagogicalIntegrationRenderer
-} from '$lib/mathAST/pedagogical-integration';
-import type { IntegrationSchoolLevel } from '$lib/mathAST/pedagogical-integration';
-import { generatePedagogicalSimplifySteps } from '$lib/mathAST/pedagogical-simplify/pipeline';
-import { PedagogicalSimplifyRenderer } from '$lib/mathAST/pedagogical-simplify/renderer';
+} from '#lib/mathAST/pedagogical-integration/index.ts';
+import type { IntegrationSchoolLevel } from '#lib/mathAST/pedagogical-integration/index.ts';
+import { generatePedagogicalSimplifySteps } from '#lib/mathAST/pedagogical-simplify/pipeline.ts';
+import { PedagogicalSimplifyRenderer } from '#lib/mathAST/pedagogical-simplify/renderer.ts';
 import {
 	explainExpansion,
 	type ExplainExpansionOptions
-} from '$lib/mathAST/pedagogical-simplify/expand-explained';
+} from '#lib/mathAST/pedagogical-simplify/expand-explained.ts';
 import {
 	PedagogicalSimplifyNotImplemented,
 	type SimplifyIntent
-} from '$lib/mathAST/pedagogical-simplify/types';
+} from '#lib/mathAST/pedagogical-simplify/types.ts';
 import {
 	dispatchPedagogicalLimit,
 	PedagogicalLimitNotImplemented,
 	PedagogicalLimitRenderer
-} from '$lib/mathAST/pedagogical-limits';
+} from '#lib/mathAST/pedagogical-limits/index.ts';
 import {
 	dispatchPedagogicalDomain,
 	PedagogicalDomainNotImplemented,
 	PedagogicalDomainRenderer,
 	type PedagogicalDomainSchoolLevel
-} from '$lib/mathAST/pedagogical-domain';
-import { generateLinearEquationSteps } from '$lib/mathAST/pedagogical-solve/linear';
-import { LinearEquationRenderer } from '$lib/mathAST/pedagogical-solve/linear-renderer';
+} from '#lib/mathAST/pedagogical-domain/index.ts';
+import { generateLinearEquationSteps } from '#lib/mathAST/pedagogical-solve/linear.ts';
+import { LinearEquationRenderer } from '#lib/mathAST/pedagogical-solve/linear-renderer.ts';
 import {
 	generateQuadraticEquationSteps,
 	PedagogicalQuadraticNotImplemented
-} from '$lib/mathAST/pedagogical-solve/quadratic';
-import { QuadraticEquationRenderer } from '$lib/mathAST/pedagogical-solve/quadratic-renderer';
-import { stepsAsShown } from '$lib/mathAST/pedagogical-solve/shown-steps';
+} from '#lib/mathAST/pedagogical-solve/quadratic.ts';
+import { QuadraticEquationRenderer } from '#lib/mathAST/pedagogical-solve/quadratic-renderer.ts';
+import { stepsAsShown } from '#lib/mathAST/pedagogical-solve/shown-steps.ts';
 import {
 	generateLinearInequalitySteps,
 	UnsupportedInequalityDegree,
 	PedagogicalInequalityError
-} from '$lib/mathAST/pedagogical-solve/linear-inequality';
-import { generateQuadraticInequalitySteps } from '$lib/mathAST/pedagogical-solve/quadratic-inequality';
-import { generateRationalInequalitySteps } from '$lib/mathAST/pedagogical-solve/rational-inequality';
-import { InequalityNotSolvable } from '$lib/mathAST/solve/inequality/types';
-import type { LinearSchoolLevel, QuadraticSchoolLevel } from '$lib/mathAST/pedagogical-solve/types';
+} from '#lib/mathAST/pedagogical-solve/linear-inequality.ts';
+import { generateQuadraticInequalitySteps } from '#lib/mathAST/pedagogical-solve/quadratic-inequality.ts';
+import { generateRationalInequalitySteps } from '#lib/mathAST/pedagogical-solve/rational-inequality.ts';
+import { InequalityNotSolvable } from '#lib/mathAST/solve/inequality/types.ts';
+import type {
+	LinearSchoolLevel,
+	QuadraticSchoolLevel
+} from '#lib/mathAST/pedagogical-solve/types.ts';
 
 import type { FinalForm, GeneratedSteps, GeneratedStepsOptions, QuestionInstance } from '../types';
 import { gradeLevelToSchoolLevel } from '../grade-level-to-school-level';
@@ -1024,9 +1028,21 @@ function parseExpression(
 	const resolved = resolveExpression(template, instance.resolvedVariables ?? [], undefined, {
 		durations: 'single'
 	});
-	const parseResult = parseCustomSafe(resolved.trim(), readingOf(instance));
-	if (!parseResult.ast) return null;
-	return cleanCoefficients ? cleanCoefficientsAst(parseResult.ast) : parseResult.ast;
+	const ast = parseWithDecimalComma(resolved.trim(), instance);
+	if (!ast) return null;
+	return cleanCoefficients ? cleanCoefficientsAst(ast) : ast;
+}
+
+/**
+ * Lit la formule ; si le parseur la refuse et qu'aucune virgule n'y est séparatrice,
+ * relit ses virgules nues entre deux chiffres comme décimales (`0,6x^2-0,6`, écrit par
+ * l'auteur à la française). Une formule déjà lisible n'est jamais relue.
+ */
+function parseWithDecimalComma(formula: string, instance: QuestionInstance): MathNode | null {
+	const reading = readingOf(instance);
+	const parsed = parseCustomSafe(formula, reading).ast;
+	if (parsed || !formula.includes(',') || expectsSeparatorComma(formula)) return parsed ?? null;
+	return parseCustomSafe(bareDecimalCommaToPoint(formula), reading).ast ?? null;
 }
 
 /**

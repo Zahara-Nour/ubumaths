@@ -55,10 +55,10 @@ import { MacroRegistry } from './macro-registry';
 import { STDLIB_MACROS } from './stdlib';
 import { parse } from './parser';
 import { isMathPureExpr } from './math-pure-expr';
-import { parseCustom, getVariables, substitute } from '$lib/mathAST';
-import { numericNode } from '$lib/mathAST/common/numeric';
-import type { MathNode } from '$lib/mathAST';
-import { compile } from '$lib/mathAST/eval/compile';
+import { parseCustom, getVariables, substitute } from '#lib/mathAST/index.ts';
+import { numericNode } from '#lib/mathAST/common/numeric.ts';
+import type { MathNode } from '#lib/mathAST/index.ts';
+import { compile } from '#lib/mathAST/eval/compile.ts';
 import { applyAngleMode, type AngleMode } from './apply-angle-mode';
 
 /** Check if a resolved value is a vector element reference. */
@@ -165,8 +165,23 @@ const RESERVED_NAMES = new Set(['\\pi', 'e']);
 /** Message d'erreur par nom réservé : ce que le nom représente, et quoi faire. */
 const RESERVED_NAME_MESSAGES: Record<string, string> = {
 	'\\pi': '"π" est une constante réservée : c\'est le nombre π (≈ 3,14). Choisir un autre nom.',
-	e: '"e" est une constante réservée : c\'est le nombre e (≈ 2,718). Choisir un autre nom, par exemple "k".'
+	e: '"e" est une constante réservée : c\'est le nombre e (≈ 2,718). Choisir un autre nom'
 };
+
+/** Noms proposés à la place de `e`, dans l'ordre : le premier absent du script. */
+const SUGGESTED_NAMES = ['k', 'm', 'n', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'z'];
+
+/**
+ * Le message d'un nom réservé. Pour `e`, un exemple de nom que le script
+ * n'emploie nulle part (E5, 2026-11-23 : « par exemple "k" » quand k était
+ * déjà une droite du script).
+ */
+function reservedNameMessage(name: string, source: string): string {
+	const message = RESERVED_NAME_MESSAGES[name] ?? `"${name}" est une constante réservée`;
+	if (name !== 'e') return message;
+	const free = SUGGESTED_NAMES.find((candidate) => !new RegExp(`\\b${candidate}\\b`).test(source));
+	return free === undefined ? `${message}.` : `${message}, par exemple "${free}".`;
+}
 
 /**
  * Module-level cache for `parseCustom(rawSource) → MathNode`. The mapping is
@@ -187,12 +202,9 @@ const PARSE_FAILURE_CACHE = new Set<string>();
  */
 const PARSE_CACHE_MAX = 5_000;
 
-function assertNameNotReserved(name: string, line: number): void {
+function assertNameNotReserved(name: string, line: number, source: string): void {
 	if (RESERVED_NAMES.has(name)) {
-		throw new DslRuntimeError(
-			RESERVED_NAME_MESSAGES[name] ?? `"${name}" est une constante réservée`,
-			line
-		);
+		throw new DslRuntimeError(reservedNameMessage(name, source), line);
 	}
 }
 
@@ -311,7 +323,7 @@ class Interpreter {
 		this.consumeStep(stmt.line);
 		switch (stmt.kind) {
 			case 'assignment': {
-				assertNameNotReserved(stmt.name, stmt.line);
+				assertNameNotReserved(stmt.name, stmt.line, this.source);
 				this._assignmentLabel = this.macros.insideMacro ? undefined : stmt.name;
 				const value = this.evaluateExpr(stmt.value, stmt.line);
 				this._assignmentLabel = undefined;
@@ -325,7 +337,7 @@ class Interpreter {
 			}
 
 			case 'indexedAssignment': {
-				assertNameNotReserved(stmt.name, stmt.line);
+				assertNameNotReserved(stmt.name, stmt.line, this.source);
 				const index = Math.round(this.evaluateToNumber(stmt.index, stmt.line));
 				const value = this.evaluateExpr(stmt.value, stmt.line);
 				this.symbols.setIndexed(stmt.name, index, this.toSymbolEntry(value));
@@ -333,7 +345,7 @@ class Interpreter {
 			}
 
 			case 'destructuring': {
-				for (const name of stmt.names) assertNameNotReserved(name, stmt.line);
+				for (const name of stmt.names) assertNameNotReserved(name, stmt.line, this.source);
 				const inMacro = this.macros.insideMacro;
 				const value = this.evaluateExpr(stmt.value, stmt.line);
 				if (value.type !== 'tuple') {
@@ -422,7 +434,7 @@ class Interpreter {
 			}
 
 			case 'forRange': {
-				assertNameNotReserved(stmt.variable, stmt.line);
+				assertNameNotReserved(stmt.variable, stmt.line, this.source);
 				const from = Math.round(this.evaluateToNumber(stmt.from, stmt.line));
 				const to = Math.round(this.evaluateToNumber(stmt.to, stmt.line));
 				const maxIter = 1000;
@@ -439,7 +451,7 @@ class Interpreter {
 			}
 
 			case 'forIn': {
-				assertNameNotReserved(stmt.variable, stmt.line);
+				assertNameNotReserved(stmt.variable, stmt.line, this.source);
 				const iterable = this.evaluateExpr(stmt.iterable, stmt.line);
 				if (iterable.type !== 'tuple') {
 					throw new DslRuntimeError("'pour...dans' necessite une liste", stmt.line);

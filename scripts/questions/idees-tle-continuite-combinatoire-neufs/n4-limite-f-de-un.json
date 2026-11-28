@@ -1,0 +1,411 @@
+{
+	"id": "3603141b-ee2d-4786-9597-575e1a1a4a9d",
+	"rangement": {
+		"noeud": "Suites > Suites récurrentes > point fixe",
+		"point": "TSPE-427"
+	},
+	"title": "Limite de f(uₙ) quand uₙ converge et f est continue",
+	"description": "Calculer la limite de f(uₙ) quand (uₙ) converge vers ℓ et que f est continue en ℓ (exponentielle, racine carrée, logarithme, cosinus)",
+	"grades": ["T_SPE"],
+	"level": 2,
+	"delay": 60,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true
+	},
+	"variations": [
+		{
+			"statement": "La suite $(u_n)$ est définie pour tout entier naturel $n$ par $u_n=\\dfrac{{{if:a==1||{{if:a==-1|-|{{a}}}}}}n{{if:b==0||{{if:b>0|+{{b}}|{{b}}}}}}}{n+{{c}}}$.\n\nDétermine $\\displaystyle\\lim_{n\\to+\\infty}\\mathrm{e}^{u_n}$.\n\n$\\displaystyle\\lim_{n\\to+\\infty}\\mathrm{e}^{u_n}=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..3"
+				},
+				{
+					"name": "b",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "c",
+					"expression": "1..4"
+				}
+			],
+			"conditions": ["a*c != b"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:a==1|\\mathrm{e}|\\mathrm{e}^{ {{a}} }}}",
+					"expectedErrors": [
+						{
+							"answer": "{{a}}",
+							"message": "C'est la limite de $u_n$ ; on demande celle de $\\mathrm{e}^{u_n}$.",
+							"label": "Limite de uₙ"
+						},
+						{
+							"answer": "\\mathrm{e}^{\\frac{ {{b}} }{ {{c}} }}",
+							"message": "C'est $\\mathrm{e}^{u_0}$ : on cherche la limite quand $n$ tend vers $+\\infty$.",
+							"label": "e^(u₀)"
+						},
+						{
+							"answer": "+\\infty",
+							"message": "$u_n$ converge : $\\mathrm{e}^{u_n}$ ne tend pas vers $+\\infty$.",
+							"label": "+∞"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\displaystyle\\lim_{n\\to+\\infty}u_n=\\lim_{n\\to+\\infty}\\dfrac{n\\left({{a}}+\\frac{ {{b}} }{n}\\right)}{n\\left(1+\\frac{ {{c}} }{n}\\right)}={{a}}$.",
+					"La fonction exponentielle est continue en ${{a}}$, donc $\\displaystyle\\lim_{n\\to+\\infty}\\mathrm{e}^{u_n}=\\textcolor{{{color:primary.0}}}{\\mathrm{e}^{ {{a}} }}$."
+				]
+			},
+			"hint": "Cherche d'abord la limite de $u_n$, puis utilise la continuité de la fonction exponentielle."
+		},
+		{
+			"statement": "La suite $(u_n)$ est définie pour tout entier naturel $n$ par $u_n=\\dfrac{{{eval:p^2}}n+{{b}}}{n+{{c}}}$.\n\nDétermine $\\displaystyle\\lim_{n\\to+\\infty}\\sqrt{u_n}$.\n\n$\\displaystyle\\lim_{n\\to+\\infty}\\sqrt{u_n}=?$",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "2..4"
+				},
+				{
+					"name": "b",
+					"expression": "1..5"
+				},
+				{
+					"name": "c",
+					"expression": "1..4"
+				}
+			],
+			"conditions": ["p^2*c != b"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{p}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:p^2}}",
+							"message": "C'est la limite de $u_n$ ; on demande celle de $\\sqrt{u_n}$.",
+							"label": "Limite de uₙ"
+						},
+						{
+							"answer": "+\\infty",
+							"message": "$u_n$ converge : $\\sqrt{u_n}$ ne tend pas vers $+\\infty$.",
+							"label": "+∞"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\displaystyle\\lim_{n\\to+\\infty}u_n={{eval:p^2}}$ (quotient des termes de plus haut degré).",
+					"La fonction racine carrée est continue en ${{eval:p^2}}$, donc $\\displaystyle\\lim_{n\\to+\\infty}\\sqrt{u_n}=\\sqrt{ {{eval:p^2}} }=\\textcolor{{{color:primary.0}}}{ {{p}} }$."
+				]
+			},
+			"hint": "Cherche d'abord la limite de $u_n$, puis utilise la continuité de la fonction racine carrée."
+		},
+		{
+			"statement": "La suite $(u_n)$ est définie pour tout entier naturel $n$ par $u_n=\\dfrac{{{if:a==1||{{if:a==-1|-|{{a}}}}}}n{{if:b==0||{{if:b>0|+{{b}}|{{b}}}}}}}{n+{{c}}}$.\n\nDétermine $\\displaystyle\\lim_{n\\to+\\infty}\\ln\\left(u_n\\right)$.\n\n$\\displaystyle\\lim_{n\\to+\\infty}\\ln\\left(u_n\\right)=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..5"
+				},
+				{
+					"name": "b",
+					"expression": "1..5"
+				},
+				{
+					"name": "c",
+					"expression": "1..4"
+				}
+			],
+			"conditions": ["a*c != b"],
+			"blanks": [
+				{
+					"expectedAnswer": "\\ln {{a}}",
+					"expectedErrors": [
+						{
+							"answer": "{{a}}",
+							"message": "C'est la limite de $u_n$ ; on demande celle de $\\ln\\left(u_n\\right)$.",
+							"label": "Limite de uₙ"
+						},
+						{
+							"answer": "+\\infty",
+							"message": "$u_n$ converge : $\\ln\\left(u_n\\right)$ ne tend pas vers $+\\infty$.",
+							"label": "+∞"
+						},
+						{
+							"answer": "0",
+							"message": "$\\ln {{a}}$ n'est pas nul : $\\ln x=0$ seulement pour $x=1$.",
+							"label": "ln a = 0"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\displaystyle\\lim_{n\\to+\\infty}u_n=\\lim_{n\\to+\\infty}\\dfrac{n\\left({{a}}+\\frac{ {{b}} }{n}\\right)}{n\\left(1+\\frac{ {{c}} }{n}\\right)}={{a}}$, et ${{a}}>0$.",
+					"La fonction $\\ln$ est continue en ${{a}}$, donc $\\displaystyle\\lim_{n\\to+\\infty}\\ln\\left(u_n\\right)=\\textcolor{{{color:primary.0}}}{\\ln {{a}}}$."
+				]
+			},
+			"hint": "Cherche d'abord la limite de $u_n$, puis utilise la continuité de la fonction $\\ln$."
+		},
+		{
+			"statement": "La suite $(u_n)$ est définie pour tout entier naturel $n$ par $u_n=\\dfrac{\\pi n}{{{if:w==1||{{if:w==-1|-|{{w}}}}}}n+1}$.\n\nDétermine $\\displaystyle\\lim_{n\\to+\\infty}\\cos\\left(u_n\\right)$.\n\n$\\displaystyle\\lim_{n\\to+\\infty}\\cos\\left(u_n\\right)=?$",
+			"variables": [
+				{
+					"name": "w",
+					"expression": "1|2"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:w==1|-1|0}}",
+					"expectedErrors": [
+						{
+							"answer": "{{if:w==1|\\pi|\\frac{\\pi}{2}}}",
+							"message": "C'est la limite de $u_n$ ; on demande celle de $\\cos\\left(u_n\\right)$.",
+							"label": "Limite de uₙ"
+						},
+						{
+							"answer": "1",
+							"message": "C'est $\\cos\\left(u_0\\right)$ : on cherche la limite quand $n$ tend vers $+\\infty$.",
+							"label": "cos(u₀)"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\displaystyle\\lim_{n\\to+\\infty}u_n={{if:w==1|\\pi|\\dfrac{\\pi}{2}}}$ (quotient des termes de plus haut degré).",
+					"La fonction cosinus est continue en ${{if:w==1|\\pi|\\dfrac{\\pi}{2}}}$, donc $\\displaystyle\\lim_{n\\to+\\infty}\\cos\\left(u_n\\right)=\\cos {{if:w==1|\\pi|\\dfrac{\\pi}{2}}}=\\textcolor{{{color:primary.0}}}{ {{if:w==1|-1|0}} }$."
+				]
+			},
+			"hint": "Cherche d'abord la limite de $u_n$, puis utilise la continuité de la fonction cosinus."
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "N4 a : e²",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"b": "3",
+				"c": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["e^{2}"]
+		},
+		{
+			"description": "N4 a : e² en \\mathrm",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"b": "3",
+				"c": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["\\mathrm{e}^2"]
+		},
+		{
+			"description": "N4 a : limite de uₙ",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"b": "3",
+				"c": "1"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "C'est la limite de $u_n$ ; on demande celle de $\\mathrm{e}^{u_n}$."
+			},
+			"answers": ["2"]
+		},
+		{
+			"description": "N4 a : e^(u₀)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"b": "3",
+				"c": "1"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "C'est $\\mathrm{e}^{u_0}$ : on cherche la limite quand $n$ tend vers $+\\infty$."
+			},
+			"answers": ["e^{3}"]
+		},
+		{
+			"description": "N4 a : +∞",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"b": "3",
+				"c": "1"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "$u_n$ converge : $\\mathrm{e}^{u_n}$ ne tend pas vers $+\\infty$."
+			},
+			"answers": ["+\\infty"]
+		},
+		{
+			"description": "N4 a : a = 1 → e",
+			"variationIndex": 0,
+			"variables": {
+				"a": "1",
+				"b": "-3",
+				"c": "2"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["e"]
+		},
+		{
+			"description": "N4 b : p = 3 → 3",
+			"variationIndex": 1,
+			"variables": {
+				"p": "3",
+				"b": "2",
+				"c": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["3"]
+		},
+		{
+			"description": "N4 b : 9",
+			"variationIndex": 1,
+			"variables": {
+				"p": "3",
+				"b": "2",
+				"c": "1"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "C'est la limite de $u_n$ ; on demande celle de $\\sqrt{u_n}$."
+			},
+			"answers": ["9"]
+		},
+		{
+			"description": "N4 b : +∞",
+			"variationIndex": 1,
+			"variables": {
+				"p": "3",
+				"b": "2",
+				"c": "1"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["+\\infty"]
+		},
+		{
+			"description": "N4 c : ln 3",
+			"variationIndex": 2,
+			"variables": {
+				"a": "3",
+				"b": "1",
+				"c": "2"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["\\ln3"]
+		},
+		{
+			"description": "N4 c : ln(3)",
+			"variationIndex": 2,
+			"variables": {
+				"a": "3",
+				"b": "1",
+				"c": "2"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["\\ln(3)"]
+		},
+		{
+			"description": "N4 c : 3",
+			"variationIndex": 2,
+			"variables": {
+				"a": "3",
+				"b": "1",
+				"c": "2"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "C'est la limite de $u_n$ ; on demande celle de $\\ln\\left(u_n\\right)$."
+			},
+			"answers": ["3"]
+		},
+		{
+			"description": "N4 c : 0",
+			"variationIndex": 2,
+			"variables": {
+				"a": "3",
+				"b": "1",
+				"c": "2"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "$\\ln 3$ n'est pas nul : $\\ln x=0$ seulement pour $x = 1$."
+			},
+			"answers": ["0"]
+		},
+		{
+			"description": "N4 d : w = 1 → −1",
+			"variationIndex": 3,
+			"variables": {
+				"w": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["-1"]
+		},
+		{
+			"description": "N4 d : w = 2 → 0",
+			"variationIndex": 3,
+			"variables": {
+				"w": "2"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0"]
+		},
+		{
+			"description": "N4 d : π/2",
+			"variationIndex": 3,
+			"variables": {
+				"w": "2"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "C'est la limite de $u_n$ ; on demande celle de $\\cos\\left(u_n\\right)$."
+			},
+			"answers": ["\\frac{\\pi}{2}"]
+		},
+		{
+			"description": "N4 d : cos(u₀)",
+			"variationIndex": 3,
+			"variables": {
+				"w": "1"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "C'est $\\cos\\left(u_0\\right)$ : on cherche la limite quand $n$ tend vers $+\\infty$."
+			},
+			"answers": ["1"]
+		}
+	]
+}

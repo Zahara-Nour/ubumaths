@@ -7,16 +7,16 @@
 	 * tableau de bord lui apprend seulement qu'on ne s'adresse pas à lui.
 	 */
 
-	import { lore } from '$lib/config/lore';
-	import * as Card from '$lib/components/ui/card';
+	import { lore } from '#lib/config/lore.ts';
+	import * as Card from '#lib/components/ui/card/index.ts';
 	import { ChevronRight, Compass } from '@lucide/svelte';
 	import {
 		formatMathCompetenceLevel,
 		getMathCompetenceLevelVisual,
 		isCompetenceObserved,
 		type MathCompetenceLevel
-	} from '$lib/types/skills';
-	import type { CompetencesProgression } from '$lib/server/progression/student-progression';
+	} from '#lib/types/skills.ts';
+	import type { CompetencesProgression } from '#lib/server/progression/student-progression.ts';
 
 	let { competences }: { competences: CompetencesProgression } = $props();
 

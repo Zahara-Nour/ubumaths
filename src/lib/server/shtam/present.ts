@@ -3,7 +3,7 @@ import {
 	civilToPataphysical,
 	formatGregorian,
 	formatMedium
-} from '$lib/almanach/calendar';
+} from '#lib/almanach/calendar.ts';
 import { AUTHOR_LABELS, type ShtamArticle } from './articles';
 
 // Types

@@ -1,0 +1,241 @@
+{
+	"id": "94b1dbf6-b870-4430-8ea1-31830630449d",
+	"title": "Courbe de x ↦ a^x sur ℝ",
+	"description": "Associer trois courbes sur [−3 ; 3] ; courbes de a^x et (1/a)^x ; point d'abscisse −1 ; courbe au-dessus de l'axe des abscisses",
+	"grades": ["T_TECHNO"],
+	"level": 1,
+	"delay": 60,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Chaque courbe représente une fonction $x\\mapsto a^x$ sur $[-3\\,;3]$.\n\nRelie chaque courbe à sa fonction.\n\n````associer\n- ```courbe\n  x: -3.5 ; 3.5\n  y: -0.5 ; 8.5\n  grille: 1 ; 1\n  f(x) = {{a1}}^x sur [-3 ; 3]   bleu\n  points: A(1 ; {{a1}})\n  description: Courbe d'une fonction x ↦ aˣ sur [−3 ; 3], passant par (0 ; 1) et par A(1 ; {{a1}}).\n  ```\n  -> $x\\mapsto{{a1}}^x$\n- ```courbe\n  x: -3.5 ; 3.5\n  y: -0.5 ; 8.5\n  grille: 1 ; 1\n  f(x) = {{a2}}^x sur [-3 ; 3]   bleu\n  points: A(1 ; {{a2}})\n  description: Courbe d'une fonction x ↦ aˣ sur [−3 ; 3], passant par (0 ; 1) et par A(1 ; {{a2}}).\n  ```\n  -> $x\\mapsto{{a2}}^x$\n- ```courbe\n  x: -3.5 ; 3.5\n  y: -0.5 ; 8.5\n  grille: 1 ; 1\n  f(x) = {{a3}}^x sur [-3 ; 3]   bleu\n  points: A(1 ; {{a3}})\n  description: Courbe d'une fonction x ↦ aˣ sur [−3 ; 3], passant par (0 ; 1) et par A(1 ; {{a3}}).\n  ```\n  -> $x\\mapsto{{a3}}^x$\n````",
+			"variables": [
+				{
+					"name": "a1",
+					"expression": "1.2|1.5"
+				},
+				{
+					"name": "a2",
+					"expression": "2|2.5"
+				},
+				{
+					"name": "a3",
+					"expression": "0.5|0.6|0.8"
+				}
+			],
+			"conditions": [],
+			"correction": {
+				"steps": [
+					"Toutes ces courbes passent par $(0\\,;1)$, car $a^0=1$. Le point d'abscisse $1$ a pour ordonnée $a^1=a$ : on lit $a$ sur ce point. Pour $a>0$, la fonction $x\\mapsto a^x$ est croissante sur $\\mathbb{R}$ si $a>1$, décroissante sur $\\mathbb{R}$ si $0<a<1$, constante (égale à $1$) si $a=1$.",
+					"Courbe 1 : elle passe par $(1\\,;{{a1}})$, c'est $\\textcolor{{{color:primary.0}}}{x\\mapsto{{a1}}^x}$, croissante, la moins rapide.",
+					"Courbe 2 : elle passe par $(1\\,;{{a2}})$, c'est $\\textcolor{{{color:primary.0}}}{x\\mapsto{{a2}}^x}$, croissante, la plus rapide.",
+					"Courbe 3 : elle passe par $(1\\,;{{a3}})$, c'est $\\textcolor{{{color:primary.0}}}{x\\mapsto{{a3}}^x}$, décroissante : elle monte quand $x$ diminue."
+				]
+			}
+		},
+		{
+			"statement": "Chaque courbe représente une fonction $x\\mapsto a^x$ sur $[-3\\,;3]$.\n\nRelie chaque courbe à sa fonction.\n\n````associer\n- ```courbe\n  x: -3.5 ; 3.5\n  y: -0.5 ; 8.5\n  grille: 1 ; 1\n  f(x) = {{a1}}^x sur [-3 ; 3]   bleu\n  points: A(1 ; {{a1}})\n  description: Courbe d'une fonction x ↦ aˣ sur [−3 ; 3], passant par (0 ; 1) et par A(1 ; {{a1}}).\n  ```\n  -> $x\\mapsto{{a1}}^x$\n- ```courbe\n  x: -3.5 ; 3.5\n  y: -0.5 ; 8.5\n  grille: 1 ; 1\n  f(x) = {{a2}}^x sur [-3 ; 3]   bleu\n  points: A(1 ; {{a2}})\n  description: Courbe d'une fonction x ↦ aˣ sur [−3 ; 3], passant par (0 ; 1) et par A(1 ; {{a2}}).\n  ```\n  -> $x\\mapsto{{a2}}^x$\n- ```courbe\n  x: -3.5 ; 3.5\n  y: -0.5 ; 8.5\n  grille: 1 ; 1\n  f(x) = {{a3}}^x sur [-3 ; 3]   bleu\n  points: A(1 ; {{a3}})\n  description: Courbe d'une fonction x ↦ aˣ sur [−3 ; 3], passant par (0 ; 1) et par A(1 ; {{a3}}).\n  ```\n  -> $x\\mapsto{{a3}}^x$\n````",
+			"variables": [
+				{
+					"name": "a3",
+					"expression": "0.5|0.25"
+				},
+				{
+					"name": "a2",
+					"expression": "1"
+				},
+				{
+					"name": "a1",
+					"expression": "eval:1/a3"
+				}
+			],
+			"conditions": [],
+			"correction": {
+				"steps": [
+					"Toutes ces courbes passent par $(0\\,;1)$, car $a^0=1$. Le point d'abscisse $1$ a pour ordonnée $a^1=a$ : on lit $a$ sur ce point. Pour $a>0$, la fonction $x\\mapsto a^x$ est croissante sur $\\mathbb{R}$ si $a>1$, décroissante sur $\\mathbb{R}$ si $0<a<1$, constante (égale à $1$) si $a=1$.",
+					"Courbe 1 : elle passe par $(1\\,;{{a1}})$, c'est $\\textcolor{{{color:primary.0}}}{x\\mapsto{{a1}}^x}$, croissante.",
+					"Courbe 2 : elle passe par $(1\\,;{{a2}})$, c'est $\\textcolor{{{color:primary.0}}}{x\\mapsto{{a2}}^x}$, constante : la droite horizontale d'équation $y=1$.",
+					"Courbe 3 : elle passe par $(1\\,;{{a3}})$, c'est $\\textcolor{{{color:primary.0}}}{x\\mapsto{{a3}}^x}$, décroissante. Les courbes de $x\\mapsto{{a1}}^x$ et de $x\\mapsto{{a3}}^x$ sont symétriques par rapport à l'axe des ordonnées, car ${{a3}}^x=\\dfrac{1}{ {{a1}}^x}={{a1}}^{-x}$."
+				]
+			}
+		},
+		{
+			"statement": "On considère la fonction $f$ définie sur $\\mathbb{R}$ par $f(x)={{a}}^x$.\n\nQuelle est l'ordonnée du point de sa courbe d'abscisse $-1$ ? Donne la valeur exacte.\n\n$f(-1)=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2|4|5|10"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "\\frac{1}{ {{a}} }"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Pour $a>0$ et tout réel $x$ : $a^{-x}=\\dfrac{1}{a^x}$.",
+					"$f(-1)={{a}}^{-1}=\\dfrac{1}{ {{a}} }$ : le point $\\textcolor{{{color:primary.0}}}{\\left(-1\\,;\\dfrac{1}{ {{a}} }\\right)}$ est sur la courbe, sous la droite d'équation $y=1$ (la fonction est croissante)."
+				]
+			}
+		},
+		{
+			"statement": "On considère la fonction $f$ définie sur $\\mathbb{R}$ par $f(x)={{a}}^x$. Que peut-on dire de sa courbe représentative ?\n\n```choix\nmelanger: non\n- Elle est entièrement au-dessus de l'axe des abscisses.\n- Elle passe sous l'axe des abscisses pour $x<0$.\n- Elle passe par l'origine du repère.\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1.5|2|3|0.5|0.8"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Pour $a>0$, $a^x>0$ pour **tout** réel $x$, même négatif : $a^{-x}=\\dfrac{1}{a^x}$ est l'inverse d'un nombre positif.",
+					"Elle passe par $(0\\,;1)$, pas par l'origine : la courbe est $\\textcolor{{{color:primary.0}}}{\\text{entièrement au-dessus de l'axe des abscisses}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Courbes bien reliées",
+			"variationIndex": 0,
+			"variables": {
+				"a1": "1.5",
+				"a2": "2",
+				"a3": "0.5"
+			},
+			"answers": ["2", "0", "1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : courbes 1 et 2 échangées",
+			"variationIndex": 0,
+			"variables": {
+				"a1": "1.5",
+				"a2": "2",
+				"a3": "0.5"
+			},
+			"answers": ["0", "2", "1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "2^x, 1^x, 0,5^x bien reliées",
+			"variationIndex": 1,
+			"variables": {
+				"a1": "2",
+				"a2": "1",
+				"a3": "0.5"
+			},
+			"answers": ["2", "0", "1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 2^x et 0,5^x échangées",
+			"variationIndex": 1,
+			"variables": {
+				"a1": "2",
+				"a2": "1",
+				"a3": "0.5"
+			},
+			"answers": ["1", "0", "2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "f(−1) = 1/2",
+			"variationIndex": 2,
+			"variables": {
+				"a": "2"
+			},
+			"answers": ["\\frac{1}{2}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "f(−1) = 0,5",
+			"variationIndex": 2,
+			"variables": {
+				"a": "2"
+			},
+			"answers": ["0,5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : −2",
+			"variationIndex": 2,
+			"variables": {
+				"a": "2"
+			},
+			"answers": ["-2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : −1/2",
+			"variationIndex": 2,
+			"variables": {
+				"a": "2"
+			},
+			"answers": ["-\\frac{1}{2}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Au-dessus de l'axe",
+			"variationIndex": 3,
+			"variables": {
+				"a": "2"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : sous l'axe pour x < 0",
+			"variationIndex": 3,
+			"variables": {
+				"a": "2"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : par l'origine",
+			"variationIndex": 3,
+			"variables": {
+				"a": "2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

@@ -12,27 +12,27 @@
 	import { onMount } from 'svelte';
 	import { z } from 'zod';
 	import { page } from '$app/state';
-	import { assignmentCopiesReturn } from '$lib/navigation/return-links';
-	import BackLink from '$lib/components/navigation/BackLink.svelte';
-	import MySelect from '$lib/components/MySelect.svelte';
-	import PdfSvgView from '$lib/components/worksheets/PdfSvgView.svelte';
-	import { Button } from '$lib/components/ui/button';
-	import { Label } from '$lib/components/ui/label';
-	import { Progress } from '$lib/components/ui/progress';
-	import { toaster } from '$lib/stores/toaster.svelte';
+	import { assignmentCopiesReturn } from '#lib/navigation/return-links.ts';
+	import BackLink from '#lib/components/navigation/BackLink.svelte';
+	import MySelect from '#lib/components/MySelect.svelte';
+	import PdfSvgView from '#lib/components/worksheets/PdfSvgView.svelte';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import { Label } from '#lib/components/ui/label/index.ts';
+	import { Progress } from '#lib/components/ui/progress/index.ts';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
 	import { AlertCircle, Download, Printer, RefreshCw } from '@lucide/svelte';
-	import { getTypstCompiler, type TypstCompiler } from '$lib/typst/compiler';
+	import { getTypstCompiler, type TypstCompiler } from '#lib/typst/compiler/index.ts';
 	import {
 		compileTypstDocument,
 		fallbackWarning
-	} from '$lib/typst/compiler/correction-fonts-compiler';
-	import { fetchExternalImages } from '$lib/typst/image-loader';
-	import { pdfPageCount } from '$lib/typst/pdf-page-count';
+	} from '#lib/typst/compiler/correction-fonts-compiler.ts';
+	import { fetchExternalImages } from '#lib/typst/image-loader.ts';
+	import { pdfPageCount } from '#lib/typst/pdf-page-count.ts';
 	import {
 		clearTrackedExternalImages,
 		getTrackedExternalImages
-	} from '$lib/ubumark/generators/typst-generator';
-	import { worksheetPdfFileName } from '$lib/worksheets/pdf-file-name';
+	} from '#lib/ubumark/generators/typst-generator.ts';
+	import { worksheetPdfFileName } from '#lib/worksheets/pdf-file-name.ts';
 	import {
 		assembleStudentCopies,
 		copyRecipientName,
@@ -40,7 +40,7 @@
 		studentCopyTypst,
 		type StudentCopy,
 		type StudentCopyView
-	} from '$lib/worksheets/student-copies';
+	} from '#lib/worksheets/student-copies.ts';
 	import type { PageData } from './$types';
 
 	// ============================================================================

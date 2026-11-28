@@ -11,7 +11,7 @@
  *
  * @example
  * ```typescript
- * import { parse, createDefaultRegistry, startRepl } from '$lib/mathAST/cli';
+ * import { parse, createDefaultRegistry, startRepl } from '#lib/mathAST/cli/index.ts';
  *
  * // Parse an expression (auto-detects LaTeX or custom syntax)
  * const result = parse('\\frac{a}{b}');

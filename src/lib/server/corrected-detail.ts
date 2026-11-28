@@ -20,22 +20,22 @@ import {
 	validateAnswerDetailed,
 	type DetailedVerdict,
 	type StudentAnswer
-} from '$lib/utils/answer-validator';
-import type { QuestionInstance, ValidationStatus } from '$lib/questions/types';
-import { statusFromBlankStatuses } from '$lib/questions/grading';
+} from '#lib/utils/answer-validator.ts';
+import type { QuestionInstance, ValidationStatus } from '#lib/questions/types.ts';
+import { statusFromBlankStatuses } from '#lib/questions/grading.ts';
 // Case « figure » : le juge lit les positions des points dans ce registre (cf. questions/construction/positions)
-import '$lib/questions/construction/positions-setup';
+import '#lib/questions/construction/positions-setup.ts';
 import type {
 	CorrectedAnswer,
 	CorrectedDetail,
 	UnavailableDetail
-} from '$lib/types/evaluation-attempt';
+} from '#lib/types/evaluation-attempt.ts';
 import {
 	GRADING_BUDGET_EXCEEDED_FEEDBACK,
 	SUBMISSION_GRADING_BUDGET_MS,
 	SUBMITTED_COPY_DETAIL_BUDGET_MS
 } from './grading-budget';
-import { createServerLogger } from '$lib/utils/logger';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('server/corrected-detail');
 

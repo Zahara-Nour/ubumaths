@@ -9,7 +9,7 @@
 -->
 <script lang="ts">
 	import { AlertCircle, RefreshCw, Clock, CheckCircle, Circle } from '@lucide/svelte';
-	import type { CurriculumPointBadge } from '$lib/server/srs/curriculum-point-badge';
+	import type { CurriculumPointBadge } from '#lib/server/srs/curriculum-point-badge.ts';
 
 	interface Props {
 		badge: CurriculumPointBadge;

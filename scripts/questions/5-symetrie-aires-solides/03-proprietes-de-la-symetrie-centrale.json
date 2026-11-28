@@ -1,0 +1,142 @@
+{
+	"id": "b05fcd29-73ce-4b7f-8223-109ce7fd48a2",
+	"title": "Propriétés de la symétrie centrale",
+	"description": "La symétrie centrale conserve les longueurs et les angles ; le symétrique d'une droite est une droite parallèle",
+	"grades": ["5"],
+	"level": 3,
+	"delay": 60,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Le triangle $A'B'C'$ est le symétrique du triangle $ABC$ par rapport au point $O$. On sait que $AB = {{a}}$ cm et $AC = {{c}}$ cm.\n\n```figure\nfenetre: 0 ; 10 ; 0 ; 7\ndescription: Le triangle ABC et son symétrique A'B'C' par rapport au point O.\n---\nA = point(1, 1, etiquette=\"bas-gauche\")\nB = point(4, 1.5, etiquette=\"bas-droite\")\nC = point(2, 4, etiquette=\"haut-gauche\")\npolygone(A, B, C)\nAp = point(9, 6, etiquette=\"aucune\")\nBp = point(6, 5.5, etiquette=\"aucune\")\nCp = point(8, 3, etiquette=\"aucune\")\npolygone(Ap, Bp, Cp, couleur=\"bleu\")\ntexte(9.376, 6.329, \"A'\")\ntexte(5.536, 5.686, \"B'\")\ntexte(8.089, 2.508, \"C'\")\nO = point(5, 3.5, etiquette=\"haut\")\n```\n\nCombien mesure $A'B'$ ?\n\n$A'B' = ?$ cm",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "3..9"
+				},
+				{
+					"name": "w",
+					"expression": "1..3"
+				},
+				{
+					"name": "c",
+					"expression": "eval:a+w"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{a}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Propriété** (admise). La symétrie centrale **conserve** les longueurs, les angles, l'alignement et le parallélisme.",
+					"$[A'B']$ est le symétrique de $[AB]$ (et non de $[AC]$) : $A'B' = AB = \\textcolor{{{color:primary.0}}}{{{a}}}$ cm."
+				]
+			}
+		},
+		{
+			"statement": "Le triangle $A'B'C'$ est le symétrique du triangle $ABC$ par rapport au point $O$. On sait que $\\widehat{ABC} = {{g}}°$.\n\n```figure\nfenetre: 0 ; 10 ; 0 ; 7\ndescription: Le triangle ABC et son symétrique A'B'C' par rapport au point O ; les angles en B et en B' sont marqués.\n---\nA = point(1, 1, etiquette=\"bas-gauche\")\nB = point(4, 1.5, etiquette=\"bas-droite\")\nC = point(2, 4, etiquette=\"haut-gauche\")\npolygone(A, B, C)\nAp = point(9, 6, etiquette=\"aucune\")\nBp = point(6, 5.5, etiquette=\"aucune\")\nCp = point(8, 3, etiquette=\"aucune\")\npolygone(Ap, Bp, Cp, couleur=\"bleu\")\ntexte(9.376, 6.329, \"A'\")\ntexte(5.536, 5.686, \"B'\")\ntexte(8.089, 2.508, \"C'\")\nO = point(5, 3.5, etiquette=\"haut\")\nangle(A, B, C)\nangle(Ap, Bp, Cp, couleur=\"bleu\")\n```\n\nCombien mesure l'angle $\\widehat{A'B'C'}$ ?\n\n$\\widehat{A'B'C'} = ?°$",
+			"variables": [
+				{
+					"name": "g",
+					"expression": "25..140"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{g}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Propriété** (admise). La symétrie centrale **conserve** les longueurs, les angles, l'alignement et le parallélisme.",
+					"$\\widehat{A'B'C'}$ est le symétrique de $\\widehat{ABC}$ : $\\widehat{A'B'C'} = \\widehat{ABC} = \\textcolor{{{color:primary.0}}}{{{g}}°}$."
+				]
+			}
+		},
+		{
+			"statement": "La droite $(d)$ ne passe pas par le point $O$. Son symétrique par rapport à $O$ est une droite :\n\n```choix\n- parallèle à $(d)$\n- perpendiculaire à $(d)$\n- sécante à $(d)$ en $O$\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Propriété** (admise). Le symétrique d'une droite par rapport à un point est une droite **parallèle**.",
+					"Le symétrique de $(d)$ par rapport à $O$ est donc une droite $\\textcolor{{{color:primary.0}}}{\\text{parallèle à (d)}}$, de l'autre côté de $O$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "A'B' = AB = 6",
+			"variationIndex": 0,
+			"variables": {
+				"a": "6",
+				"w": "2",
+				"c": "8"
+			},
+			"answers": ["6"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : A'B' = AC",
+			"variationIndex": 0,
+			"variables": {
+				"a": "6",
+				"w": "2",
+				"c": "8"
+			},
+			"answers": ["8"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Angle conservé : 47°",
+			"variationIndex": 1,
+			"variables": {
+				"g": "47"
+			},
+			"answers": ["47"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 180 − l'angle",
+			"variationIndex": 1,
+			"variables": {
+				"g": "47"
+			},
+			"answers": ["133"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Droite parallèle",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : perpendiculaire",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

@@ -12,9 +12,13 @@ import { describe, it, expect, vi, afterEach } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import { page } from 'vitest/browser';
 import ReviewSession from '../ReviewSession.svelte';
-import { studentCache } from '$lib/stores/studentDashboardCache.svelte';
-import { toaster } from '$lib/stores/toaster.svelte';
-import type { BuddyState } from '$lib/types/buddy';
+import { studentCache } from '#lib/stores/studentDashboardCache.svelte.ts';
+import { toaster } from '#lib/stores/toaster.svelte.ts';
+import type { BuddyState } from '#lib/types/buddy.ts';
+import {
+	registerSeanceReactionHandler,
+	type SeanceReaction
+} from '#lib/components/buddy/seance-reactions.ts';
 
 const source = { kind: 'chapter', chapterId: 'c1' } as const;
 const texte = (container: HTMLElement) => container.textContent!.replace(/\s+/g, ' ').trim();
@@ -117,7 +121,7 @@ describe('ReviewSession — gain du Palotin en fin de séance', () => {
 		);
 		const { container } = await render(ReviewSession, { source: deck });
 		await page.getByRole('button', { name: 'Voir la réponse' }).click();
-		await page.getByRole('button', { name: /Bien/ }).click();
+		await page.getByRole('button', { name: 'Réussi', exact: true }).click();
 		await expect.poll(() => texte(container)).toContain('Session terminée');
 		return container;
 	}
@@ -207,7 +211,7 @@ describe('ReviewSession — nouveautés de la Chatterie en fin de séance', () =
 		);
 		const { container } = await render(ReviewSession, { source: deck });
 		await page.getByRole('button', { name: 'Voir la réponse' }).click();
-		await page.getByRole('button', { name: /Bien/ }).click();
+		await page.getByRole('button', { name: 'Réussi', exact: true }).click();
 		await expect
 			.poll(() => texte(container))
 			.toContain('Un chaton est né à la Chatterie : Pile-Poil !');
@@ -228,8 +232,188 @@ describe('ReviewSession — nouveautés de la Chatterie en fin de séance', () =
 		);
 		const { container } = await render(ReviewSession, { source: deck });
 		await page.getByRole('button', { name: 'Voir la réponse' }).click();
-		await page.getByRole('button', { name: /Bien/ }).click();
+		await page.getByRole('button', { name: 'Réussi', exact: true }).click();
 		await expect.poll(() => texte(container)).toContain('Session terminée');
 		expect(texte(container)).not.toContain('Chatterie');
+	});
+});
+
+describe('ReviewSession — deux boutons « Pas réussi / Réussi » (formes-de-serie, N7)', () => {
+	const deck = { kind: 'deck', deckId: 'd1' } as const;
+	const dueBody = {
+		cards: [
+			{ cardId: 'k1', cardType: 'custom', frontContent: 'Recto 1', backContent: 'Verso 1' },
+			{ cardId: 'k2', cardType: 'custom', frontContent: 'Recto 2', backContent: 'Verso 2' },
+			{ cardId: 'k3', cardType: 'custom', frontContent: 'Recto 3', backContent: 'Verso 3' }
+		],
+		skipped: 0
+	};
+
+	/** Notes envoyées au serveur, dans l'ordre. */
+	function stubSubmits(): number[] {
+		const grades: number[] = [];
+		vi.stubGlobal(
+			'fetch',
+			vi.fn(async (url: string, init?: RequestInit) => {
+				if (url.startsWith('/api/srs/review/due')) return respond(200, dueBody);
+				if (url === '/api/srs/review/submit') {
+					const body = JSON.parse(String(init?.body)) as { grade: number };
+					grades.push(body.grade);
+					return respond(200, { success: true });
+				}
+				return respond(404, {});
+			})
+		);
+		return grades;
+	}
+
+	it('après retournement : exactement deux boutons, plus aucun des quatre de FSRS', async () => {
+		stubSubmits();
+		const { container } = await render(ReviewSession, { source: deck });
+		await page.getByRole('button', { name: 'Voir la réponse' }).click();
+		await expect.element(page.getByRole('button', { name: 'Réussi', exact: true })).toBeVisible();
+		await expect.element(page.getByRole('button', { name: 'Pas réussi' })).toBeVisible();
+		for (const ancien of ['Encore', 'Difficile', 'Bien', 'Facile']) {
+			expect(texte(container)).not.toContain(ancien);
+		}
+	});
+
+	it('« Réussi » envoie Good (3), « Pas réussi » Again (1), clavier 1 / 2 compris', async () => {
+		const grades = stubSubmits();
+		const { container } = await render(ReviewSession, { source: deck });
+
+		await page.getByRole('button', { name: 'Voir la réponse' }).click();
+		await page.getByRole('button', { name: 'Réussi', exact: true }).click();
+		await expect.poll(() => grades.length).toBe(1);
+
+		await page.getByRole('button', { name: 'Voir la réponse' }).click();
+		await page.getByRole('button', { name: 'Pas réussi' }).click();
+		await expect.poll(() => grades.length).toBe(2);
+
+		await page.getByRole('button', { name: 'Voir la réponse' }).click();
+		await expect.element(page.getByRole('button', { name: 'Pas réussi' })).toBeVisible();
+		window.dispatchEvent(new KeyboardEvent('keydown', { key: '2' }));
+		await expect.poll(() => grades.length).toBe(3);
+
+		expect(grades).toEqual([3, 1, 3]);
+		await expect.poll(() => texte(container)).toContain('Session terminée');
+	});
+});
+
+describe('ReviewSession — coup de pouce (idée 5)', () => {
+	const deck = { kind: 'deck', deckId: 'd1' } as const;
+	const instance = (n: number) => ({
+		templateId: `t${n}`,
+		statement: `Question ${n}`,
+		hint: `Indice ${n}`,
+		grades: ['6'],
+		level: 1,
+		generatedAt: new Date().toISOString(),
+		correction: { steps: [`Correction ${n}`] }
+	});
+	const dueBody = {
+		cards: [1, 2].map((n) => ({
+			cardId: `k${n}`,
+			cardType: 'template',
+			templateId: `t${n}`,
+			instance: instance(n)
+		})),
+		skipped: 0
+	};
+
+	it('indice ouvert : le corps dit withHelp ; la carte suivante repart sans', async () => {
+		const bodies: Record<string, unknown>[] = [];
+		vi.stubGlobal(
+			'fetch',
+			vi.fn(async (url: string, init?: RequestInit) => {
+				if (url.startsWith('/api/srs/review/due')) return respond(200, dueBody);
+				if (url === '/api/srs/review/submit') {
+					bodies.push(JSON.parse(String(init?.body)) as Record<string, unknown>);
+					return respond(200, { success: true });
+				}
+				return respond(404, {});
+			})
+		);
+		await render(ReviewSession, { source: deck });
+
+		await page.getByRole('button', { name: 'Coup de pouce' }).click();
+		await expect.element(page.getByText('Indice 1')).toBeVisible();
+		await page.getByRole('button', { name: 'Voir la correction' }).click();
+		await page.getByRole('button', { name: 'Réussi', exact: true }).click();
+		await expect.poll(() => bodies.length).toBe(1);
+		expect(bodies[0]).toMatchObject({ cardId: 'k1', grade: 3, withHelp: true });
+
+		await page.getByRole('button', { name: 'Voir la correction' }).click();
+		await page.getByRole('button', { name: 'Réussi', exact: true }).click();
+		await expect.poll(() => bodies.length).toBe(2);
+		expect(bodies[1]).not.toHaveProperty('withHelp');
+	});
+});
+
+describe('ReviewSession — réactions du Palotin (chantier palotins, partie C)', () => {
+	const deck = { kind: 'deck', deckId: 'd1' } as const;
+	const customCards = (count: number) =>
+		Array.from({ length: count }, (_, i) => ({
+			cardId: `k${i + 1}`,
+			cardType: 'custom',
+			frontContent: `Recto ${i + 1}`,
+			backContent: `Verso ${i + 1}`
+		}));
+
+	async function openSession(count: number) {
+		vi.stubGlobal(
+			'fetch',
+			vi.fn(async (url: string) => {
+				if (url.startsWith('/api/srs/review/due')) {
+					return respond(200, { cards: customCards(count), skipped: 0 });
+				}
+				if (url === '/api/srs/review/submit') return respond(200, { success: true });
+				return respond(404, {});
+			})
+		);
+		return await render(ReviewSession, { source: deck });
+	}
+
+	async function grade(container: HTMLElement, label: string, position: number, count: number) {
+		await expect.poll(() => texte(container)).toContain(`Carte ${position} sur ${count}`);
+		await page.getByRole('button', { name: 'Voir la réponse' }).click();
+		await page.getByRole('button', { name: new RegExp(label) }).click();
+	}
+
+	it('5 « Réussi » d’affilée : le Palotin passe, la carte suivante attend son départ', async () => {
+		let finishPassage: () => void = () => {};
+		const handler = vi.fn(
+			(_reaction: SeanceReaction) =>
+				new Promise<void>((resolve) => {
+					finishPassage = resolve;
+				})
+		);
+		const unregister = registerSeanceReactionHandler(handler);
+		try {
+			const { container } = await openSession(7);
+			for (let i = 1; i <= 5; i++) await grade(container, '^Réussi$', i, 7);
+
+			await expect.poll(() => handler.mock.calls).toEqual([['streak']]);
+			await new Promise((resolve) => setTimeout(resolve, 300));
+			expect(texte(container)).toContain('Carte 5 sur 7');
+
+			finishPassage();
+			await expect.poll(() => texte(container)).toContain('Carte 6 sur 7');
+		} finally {
+			unregister();
+		}
+	});
+
+	it('cartes personnelles (sans notion) : 3 « Pas réussi » ne déclenchent rien', async () => {
+		const handler = vi.fn(() => Promise.resolve());
+		const unregister = registerSeanceReactionHandler(handler);
+		try {
+			const { container } = await openSession(5);
+			for (let i = 1; i <= 3; i++) await grade(container, '^Pas réussi$', i, 5);
+			await expect.poll(() => texte(container)).toContain('Carte 4 sur 5');
+			expect(handler).not.toHaveBeenCalled();
+		} finally {
+			unregister();
+		}
 	});
 });

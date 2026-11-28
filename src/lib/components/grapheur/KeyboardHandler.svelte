@@ -19,7 +19,7 @@
 	 * @component
 	 */
 
-	import { useGrapheurStore } from '$lib/stores/grapheur-context';
+	import { useGrapheurStore } from '#lib/stores/grapheur-context.ts';
 
 	// L'instance de l'atelier qui nous contient, ou celle par défaut.
 	const grapheurStore = useGrapheurStore();
@@ -36,6 +36,9 @@
 
 	/** Zoom out factor (expand viewport) */
 	const ZOOM_OUT_FACTOR = 1.25;
+
+	/** Touches de zoom et de déplacement, traitées en geste bref */
+	const BRIEF_KEYS = new Set(['+', '=', '-', 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown']);
 
 	/** Throttle time in milliseconds for held keys */
 	const THROTTLE_MS = 50;
@@ -145,6 +148,10 @@
 		}
 
 		if (handled) {
+			// Zoom et flèches sont des gestes brefs : une touche tenue ou des appuis
+			// enchaînés ne relancent les analyses (points remarquables,
+			// intersections) qu'une fois, après le dernier.
+			if (BRIEF_KEYS.has(event.key)) grapheurStore.briefGesture();
 			event.preventDefault();
 			lastKeyTime = now;
 		}

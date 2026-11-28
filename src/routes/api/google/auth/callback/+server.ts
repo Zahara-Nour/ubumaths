@@ -23,12 +23,12 @@
  */
 
 import { error, redirect } from '@sveltejs/kit';
-import { assertGoogleClassroomEnabled } from '$lib/server/google/feature-guard';
+import { assertGoogleClassroomEnabled } from '#lib/server/google/feature-guard.ts';
 import type { RequestHandler } from './$types';
-import { exchangeCodeForTokens, validateToken } from '$lib/server/google/oauth';
-import { encryptToken } from '$lib/server/google/encryption';
-import { requireRole } from '$lib/server/middleware/auth';
-import { createServerLogger } from '$lib/utils/logger';
+import { exchangeCodeForTokens, validateToken } from '#lib/server/google/oauth.ts';
+import { encryptToken } from '#lib/server/google/encryption.ts';
+import { requireRole } from '#lib/server/middleware/auth.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/google/auth/callback/+server');
 

@@ -9,12 +9,10 @@
   - user: Verified user from server (safe to display)
   - supabase: Supabase client for making authenticated requests
 
-  UI BEHAVIOR:
-  1. When logged OUT: Shows "Login" button
-  2. When logged IN: Shows user avatar with popup menu containing:
-     - User email
-     - Dashboard link
-     - Logout button
+  AFFICHAGE :
+  1. Déconnecté : bouton de connexion
+  2. Connecté : l'avatar est un lien direct vers /dashboard (Mon cabinet), sans menu ;
+     sur mobile, le menu latéral a une section « Compte » (Mon cabinet + déconnexion)
 
   REACTIVITY:
   - Props automatically update when auth state changes
@@ -26,31 +24,29 @@
   - Session and user have been authenticated via getUser()
   - Safe to trust and display to the user
 
-  LOGOUT FLOW:
-  1. POST /auth/logout (src/lib/utils/auth.ts): server-side signOut(), and the admin
-     elevation cookie is revoked and cleared
-  2. Call invalidate('supabase:auth') to trigger server re-verification
-  3. Navigate to home page
-  4. The invalidate triggers the reactive chain:
-     - +layout.ts re-runs → +layout.server.ts re-runs → safeGetSession() → returns null
-     - Updated props flow to this component → Login button appears
+  DÉCONNEXION (submitLogoutForm, src/lib/utils/auth.ts) :
+  1. Efface les données de travail du localStorage (tablette partagée, T17)
+  2. Soumet un vrai formulaire POST /auth/logout : signOut() côté serveur, cookie
+     d'élévation admin révoqué, puis redirection
+  3. Le navigateur recharge la page avec la nouvelle session : pas d'invalidate()
 -->
 <script lang="ts">
-	import { lore } from '$lib/config/lore';
-	import { Button } from '$lib/components/ui/button';
-	import UserAvatar from '$lib/components/UserAvatar.svelte';
-	import * as Sheet from '$lib/components/ui/sheet';
-	import { theme } from '$lib/stores/theme.svelte';
-	import { fontSize } from '$lib/stores/fontSize.svelte';
+	import { lore } from '#lib/config/lore.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import UserAvatar from '#lib/components/UserAvatar.svelte';
+	import * as Sheet from '#lib/components/ui/sheet/index.ts';
+	import { theme } from '#lib/stores/theme.svelte.ts';
+	import { fontSize } from '#lib/stores/fontSize.svelte.ts';
+	import EasyReadingToggle from '#lib/components/EasyReadingToggle.svelte';
 	import type { User } from '@supabase/supabase-js';
-	import type { Profile } from '$lib/types/database-helpers';
-	import type { LucideIcon } from '@lucide/svelte';
+	import type { Profile } from '#lib/types/database-helpers.ts';
+	import {
+		PUBLIC_NAV_ITEMS,
+		isNavItemActive,
+		type NavItem
+	} from '#lib/navigation/public-nav-items.ts';
 	import {
 		Menu,
-		FlaskConical,
-		Zap,
-		Newspaper,
-		KeyRound,
 		LogIn,
 		LogOut,
 		LayoutDashboard,
@@ -59,18 +55,13 @@
 		Minus,
 		Plus,
 		Maximize,
-		Minimize,
-		Home,
-		Gamepad2,
-		Terminal,
-		Calculator,
-		PenTool,
-		Laugh
+		Minimize
 	} from '@lucide/svelte';
-	import gidouille from '$lib/assets/images/gidouille.png';
+	import gidouille from '#lib/assets/images/gidouille.png';
 	import { resolve } from '$app/paths';
+	import { resolvePath } from '#lib/navigation/resolve-path.ts';
 	import { page } from '$app/state';
-	import { submitLogoutForm } from '$lib/utils/auth';
+	import { submitLogoutForm } from '#lib/utils/auth.ts';
 
 	// Fullscreen state
 	let isFullscreen = $state(false);
@@ -100,46 +91,13 @@
 		};
 	});
 
-	// Navigation item type
-	type NavItem = { label: string; href: string; icon: LucideIcon; roles?: string[] };
-
 	// Props received from parent layout (+layout.svelte)
 	// These are automatically reactive in Svelte 5
 	let {
 		title = 'Chiphre',
 		user = null,
 		profile = null,
-		sidebarItems = [
-			{ label: 'Accueil', href: '/', icon: Home },
-			// D14 (décision de David, 2026-10-12) : les deux pages publiques les plus vivantes
-			{ label: 'Automaths', href: '/automaths', icon: Zap },
-			{ label: 'Jeux', href: '/games', icon: Gamepad2 },
-			{
-				label: 'Python',
-				href: '/python',
-				icon: Terminal,
-				roles: ['student', 'teacher']
-			},
-			{ label: 'Upsilon', href: '/upsilon', icon: Calculator },
-			// Sans `roles` : ni l'atelier, ni Automaths, ni le Shtam ne lisent de
-			// donnée serveur réservée, ils sont donc ouverts, y compris hors connexion.
-			// G1 : l'atelier est l'entrée unique (`/grapheur` y mène encore).
-			{ label: 'Atelier', href: '/atelier', icon: FlaskConical },
-			// Le Cabinet Noir de Turingrad : public, aucune donnée serveur
-			{ label: 'Chiffrement', href: '/chiffrement', icon: KeyRound },
-			{ label: 'Le Shtam', href: '/shtam', icon: Newspaper },
-			{
-				label: 'Whiteboard',
-				href: '/whiteboard',
-				icon: PenTool,
-				roles: ['teacher']
-			},
-			{
-				label: 'Zygomatics',
-				href: '/presques-evaluations',
-				icon: Laugh
-			}
-		]
+		sidebarItems = PUBLIC_NAV_ITEMS
 	}: {
 		title?: string;
 		user?: User | null; // Verified user from server
@@ -158,12 +116,9 @@
 		})
 	);
 
-	// Check if a link is active
+	// Lien surligné : même règle que la barre latérale (écart V75)
 	function isActive(href: string): boolean {
-		const pathname = page.url.pathname;
-		if (pathname === href) return true;
-		if (href !== '/' && pathname.startsWith(href + '/')) return true;
-		return false;
+		return isNavItemActive(href, page.url.pathname);
 	}
 
 	// Mobile menu state
@@ -190,7 +145,7 @@
 
 		<!-- Gidouille + Title - centered on mobile, left-aligned on desktop -->
 		<a
-			href={resolve('/')}
+			href={resolve('')}
 			class="flex flex-1 items-center justify-center gap-2 transition-opacity hover:opacity-80 md:flex-none md:justify-start"
 		>
 			<img src={gidouille} alt="Gidouille" class="h-6 w-6" />
@@ -210,7 +165,7 @@
 			{#if user}
 				<div class="border-l pl-2">
 					<a
-						href={resolve('/dashboard')}
+						href={resolve('dashboard')}
 						class="relative block h-10 w-10 cursor-pointer rounded-full transition-all hover:ring-2 hover:ring-ring focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
 						aria-label="Aller à mon cabinet"
 					>
@@ -264,6 +219,8 @@
 					</Button>
 				</div>
 
+				<EasyReadingToggle />
+
 				<!-- Dark mode toggle -->
 				<Button
 					onclick={(e: MouseEvent) => {
@@ -310,7 +267,7 @@
 		<nav class="flex flex-1 flex-col py-2" aria-label="Navigation principale">
 			{#each visibleItems as item (item.href)}
 				<a
-					href={resolve(item.href as '/')}
+					href={resolvePath(item.href)}
 					data-sveltekit-preload-data="tap"
 					onclick={handleNavClick}
 					class="flex items-center gap-3 px-4 py-3 text-base transition-colors
@@ -364,6 +321,9 @@
 					</button>
 				</div>
 			</div>
+			<div class="mt-2">
+				<EasyReadingToggle variant="menu" />
+			</div>
 		</div>
 
 		{#if user}
@@ -372,7 +332,7 @@
 				<p class="mb-2 text-xs font-medium text-muted-foreground uppercase">Compte</p>
 				<div class="flex flex-col gap-1">
 					<a
-						href={resolve('/dashboard')}
+						href={resolve('dashboard')}
 						onclick={handleNavClick}
 						class="flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors hover:bg-muted"
 					>

@@ -13,7 +13,7 @@ import type {
 	HeapRef,
 	InlineValue,
 	TruncatedValue
-} from '$lib/shared/python/debug/types';
+} from '#lib/shared/python/debug/types.ts';
 
 /** Parsed top-level variable value (what we got after JSON.parse) */
 export type ParsedVariableValue = InlineValue | HeapRef | TruncatedValue;

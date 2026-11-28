@@ -4,11 +4,11 @@
 	`noindex` : la figure se partage par lien, elle ne se cherche pas sur le web.
 -->
 <script lang="ts">
-	import { browser } from '$app/environment';
-	import { Badge } from '$lib/components/ui/badge';
-	import StoredFigurePreview from '$lib/components/geometry/StoredFigurePreview.svelte';
-	import { evaluateStoredFigure } from '$lib/utils/geometry-figure-script';
-	import { GRADES, type GradeCode } from '$lib/types/grades';
+	import { browser } from '$app/env';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
+	import StoredFigurePreview from '#lib/components/geometry/StoredFigurePreview.svelte';
+	import { evaluateStoredFigure } from '#lib/utils/geometry-figure-script.ts';
+	import { GRADES, type GradeCode } from '#lib/types/grades.ts';
 	import type { PageData } from './$types';
 
 	let { data }: { data: PageData } = $props();

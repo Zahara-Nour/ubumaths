@@ -5,9 +5,9 @@ import {
 	DEFAULT_FIRST_TERM_MAX,
 	DEFAULT_FIRST_TERM_MIN,
 	parseSequence
-} from '$lib/grapheur/sequence';
-import { createTransformer } from '$lib/grapheur/viewport';
-import type { SequencePlottable, Viewport } from '$lib/grapheur/types';
+} from '#lib/grapheur/sequence.ts';
+import { createTransformer } from '#lib/grapheur/viewport.ts';
+import type { SequencePlottable, Viewport } from '#lib/grapheur/types.ts';
 
 /**
  * Le diagramme en escalier est la fonctionnalité qui justifie de greffer les

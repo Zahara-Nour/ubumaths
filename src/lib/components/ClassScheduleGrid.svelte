@@ -48,10 +48,10 @@
 -->
 
 <script lang="ts">
-	import type { Tables } from '$lib/types/database';
-	import { getDayName, formatScheduleDisplay, formatTimeDisplay } from '$lib/utils/schedule';
-	import { formatPeriodName, formatPeriodTimes, type SchoolPeriod } from '$lib/utils/timetable';
-	import { getOrderedSchoolDays, type WeekConfig } from '$lib/utils/week-config';
+	import type { Tables } from '#lib/types/database.ts';
+	import { getDayName, formatScheduleDisplay, formatTimeDisplay } from '#lib/utils/schedule.ts';
+	import { formatPeriodName, formatPeriodTimes, type SchoolPeriod } from '#lib/utils/timetable.ts';
+	import { getOrderedSchoolDays, type WeekConfig } from '#lib/utils/week-config.ts';
 
 	type ClassSchedule = Tables<'class_schedules'>;
 

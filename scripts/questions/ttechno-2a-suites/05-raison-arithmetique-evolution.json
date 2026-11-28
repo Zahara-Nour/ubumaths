@@ -1,0 +1,254 @@
+{
+	"id": "292f865b-8292-4b57-b717-e1ccba7d65a2",
+	"title": "Raison d'une suite arithmétique modélisant une évolution",
+	"description": "Lire la raison dans une situation d'évolution absolue constante, ou la calculer à partir de relevés",
+	"grades": ["T_TECHNO"],
+	"level": 1,
+	"delay": 45,
+	"status": "draft",
+	"shared": {},
+	"variations": [
+		{
+			"statement": "Un club de randonnée compte ${{a}}$ adhérents en 2024 et gagne ${{r}}$ adhérents chaque année. On note $u_n$ le nombre d'adhérents en $2024+n$ : la suite $(u_n)$ est arithmétique.\n\nQuelle est sa raison ?\n\n$r=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "80..300"
+				},
+				{
+					"name": "r",
+					"expression": "4..25"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{r}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Une grandeur qui augmente (ou diminue) chaque fois **du même nombre** est modélisée par une suite arithmétique ; ce nombre est la raison (négatif pour une baisse).",
+					"Chaque année, on ajoute ${{r}}$ adhérents : $r=\\textcolor{{{color:primary.0}}}{{{r}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Le stock d'un entrepôt est de ${{a}}$ cartons le 1er janvier ; il diminue de ${{r}}$ cartons chaque mois. On note $u_n$ le stock au bout de $n$ mois : la suite $(u_n)$ est arithmétique.\n\nQuelle est sa raison ?\n\n$r=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "900..2500"
+				},
+				{
+					"name": "r",
+					"expression": "30..120"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:-r}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Une grandeur qui augmente (ou diminue) chaque fois **du même nombre** est modélisée par une suite arithmétique ; ce nombre est la raison (négatif pour une baisse).",
+					"Chaque mois, on retire ${{r}}$ cartons : $r=\\textcolor{{{color:primary.0}}}{{{eval:-r}}}$ (une baisse donne une raison négative)."
+				]
+			}
+		},
+		{
+			"statement": "Le tableau donne la production d'une ferme solaire, en mégawattheures.\n\n| Année | 2021 | 2022 | 2023 | 2024 |\n| --- | --- | --- | --- | --- |\n| Production | ${{a}}$ | ${{eval:a+r}}$ | ${{eval:a+2*r}}$ | ${{eval:a+3*r}}$ |\n\nLa production est modélisée par une suite arithmétique. Quelle est sa raison ?\n\n$r=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "400..900"
+				},
+				{
+					"name": "r",
+					"expression": "-40..60"
+				}
+			],
+			"conditions": ["r*r >= 25"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{r}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Une grandeur qui augmente (ou diminue) chaque fois **du même nombre** est modélisée par une suite arithmétique ; ce nombre est la raison (négatif pour une baisse).",
+					"D'une année à la suivante : ${{eval:a+r}}-{{a}}={{r}}$, et de même pour les autres années. La raison est $r=\\textcolor{{{color:primary.0}}}{{{r}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Une commune comptait ${{a}}$ habitants en 2018 et ${{eval:a+n*r}}$ habitants en ${{eval:2018+n}}$. On suppose que la population a varié du même nombre d'habitants chaque année : elle est modélisée par une suite arithmétique.\n\nQuelle est sa raison ?\n\n$r=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1500..5000"
+				},
+				{
+					"name": "n",
+					"expression": "4..8"
+				},
+				{
+					"name": "r",
+					"expression": "-60..80"
+				}
+			],
+			"conditions": ["r*r >= 100"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{r}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Une grandeur qui augmente (ou diminue) chaque fois **du même nombre** est modélisée par une suite arithmétique ; ce nombre est la raison (négatif pour une baisse).",
+					"De 2018 à ${{eval:2018+n}}$, il y a ${{n}}$ années : la population a varié de ${{n}}$ fois la raison.",
+					"$r=\\dfrac{ {{eval:a+n*r}}-{{a}} }{ {{n}} }=\\dfrac{ {{eval:n*r}} }{ {{n}} }=\\textcolor{{{color:primary.0}}}{{{r}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "gagne 12 : 12",
+			"variationIndex": 0,
+			"variables": {
+				"a": "150",
+				"r": "12"
+			},
+			"answers": ["12"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : premier terme (150)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "150",
+				"r": "12"
+			},
+			"answers": ["150"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "diminue de 50 : −50",
+			"variationIndex": 1,
+			"variables": {
+				"a": "1200",
+				"r": "50"
+			},
+			"answers": ["-50"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : signe perdu (50)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "1200",
+				"r": "50"
+			},
+			"answers": ["50"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "tableau +35 : 35",
+			"variationIndex": 2,
+			"variables": {
+				"a": "500",
+				"r": "35"
+			},
+			"answers": ["35"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "tableau −20 : −20",
+			"variationIndex": 2,
+			"variables": {
+				"a": "500",
+				"r": "-20"
+			},
+			"answers": ["-20"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : signe perdu (20)",
+			"variationIndex": 2,
+			"variables": {
+				"a": "500",
+				"r": "-20"
+			},
+			"answers": ["20"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : écart sur trois ans (−60)",
+			"variationIndex": 2,
+			"variables": {
+				"a": "500",
+				"r": "-20"
+			},
+			"answers": ["-60"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "2018 → 2024, +360 : 60",
+			"variationIndex": 3,
+			"variables": {
+				"a": "2000",
+				"n": "6",
+				"r": "60"
+			},
+			"answers": ["60"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : non divisé (360)",
+			"variationIndex": 3,
+			"variables": {
+				"a": "2000",
+				"n": "6",
+				"r": "60"
+			},
+			"answers": ["360"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : divisé par 7 (51,4)",
+			"variationIndex": 3,
+			"variables": {
+				"a": "2000",
+				"n": "6",
+				"r": "60"
+			},
+			"answers": ["51,4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

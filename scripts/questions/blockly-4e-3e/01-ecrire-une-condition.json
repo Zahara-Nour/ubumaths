@@ -1,0 +1,180 @@
+{
+	"id": "c3db6174-0271-44cd-bb99-8dfd4b802824",
+	"title": "Écrire une condition",
+	"description": "Écrire en blocs la condition d'un « si » : multiple d'un nombre, âge minimum, gel.",
+	"grades": ["4"],
+	"level": 1,
+	"delay": 300,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Écris un programme qui affiche le nombre choisi s'il est un **multiple de ${{a}}$**, et qui affiche $0$ sinon.\n\n```calcul\nniveau: 4e\nattendu: si reste de nombre par {{a}} = 0 alors [ afficher nombre ] sinon [ afficher 0 ]\nessais: 1 ; 2 ; 3 ; 4 ; 5 ; 6 ; 10 ; 12 ; 15 ; 20 ; 21 ; 30\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..5"
+				}
+			],
+			"conditions": [],
+			"blanks": [],
+			"correction": {
+				"steps": [
+					"Un nombre est un multiple de ${{a}}$ quand le **reste** de sa division par ${{a}}$ vaut $0$.",
+					"La condition s'écrit donc : reste de nombre par ${{a}}$ $= 0$.",
+					"Si elle est vraie, on affiche le nombre ; **sinon**, on affiche $0$ : il faut le bloc « si … alors … sinon »."
+				]
+			}
+		},
+		{
+			"statement": "Un manège est autorisé à partir de ${{a}}$ ans. Le nombre choisi est l'âge d'un enfant.\n\nÉcris un programme qui affiche $1$ si l'enfant peut monter, et $0$ sinon.\n\n```calcul\nniveau: 4e\nattendu: si nombre ≥ {{a}} alors [ afficher 1 ] sinon [ afficher 0 ]\nessais: {{b}} ; {{a}} ; {{c}} ; 3 ; 20\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "8..12"
+				},
+				{
+					"name": "b",
+					"expression": "eval:a-1"
+				},
+				{
+					"name": "c",
+					"expression": "eval:a+1"
+				}
+			],
+			"conditions": [],
+			"blanks": [],
+			"correction": {
+				"steps": [
+					"« À partir de ${{a}}$ ans » : un enfant de **${{a}}$ ans** peut monter.",
+					"La condition est donc nombre $\\geq {{a}}$ (et non nombre $> {{a}}$, qui refuserait l'enfant de ${{a}}$ ans).",
+					"Si elle est vraie, on affiche $1$ ; sinon, on affiche $0$."
+				]
+			}
+		},
+		{
+			"statement": "Le nombre choisi est une température en degrés. Il gèle quand la température est **strictement inférieure** à $0$.\n\nÉcris un programme qui affiche $1$ s'il gèle, et $0$ sinon.\n\n```calcul\nniveau: 4e\nattendu: si nombre < 0 alors [ afficher 1 ] sinon [ afficher 0 ]\nessais: -5 ; -1 ; 0 ; 1 ; 12\n```",
+			"variables": [],
+			"conditions": [],
+			"blanks": [],
+			"correction": {
+				"steps": [
+					"« Strictement inférieure à $0$ » : la condition est nombre $< 0$.",
+					"À $0$ degré exactement, il ne gèle pas : la condition nombre $\\leq 0$ serait fausse pour ce cas.",
+					"Si la condition est vraie, on affiche $1$ ; sinon, on affiche $0$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Multiple de 3 : référence",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3"
+			},
+			"answers": ["si reste de nombre par 3 = 0 alors [ afficher nombre ] sinon [ afficher 0 ]"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Multiple de 3 : condition inversée, branches échangées",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3"
+			},
+			"answers": ["si reste de nombre par 3 ≠ 0 alors [ afficher 0 ] sinon [ afficher nombre ]"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : reste = 1 au lieu de 0",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3"
+			},
+			"answers": ["si reste de nombre par 3 = 1 alors [ afficher nombre ] sinon [ afficher 0 ]"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : pas de « sinon » (rien n'est affiché)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3"
+			},
+			"answers": ["si reste de nombre par 3 = 0 alors [ afficher nombre ]"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Âge : référence",
+			"variationIndex": 1,
+			"variables": {
+				"a": "10",
+				"b": "9",
+				"c": "11"
+			},
+			"answers": ["si nombre ≥ 10 alors [ afficher 1 ] sinon [ afficher 0 ]"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Âge : nombre > 9 (entiers)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "10",
+				"b": "9",
+				"c": "11"
+			},
+			"answers": ["si nombre > 9 alors [ afficher 1 ] sinon [ afficher 0 ]"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : strictement supérieur",
+			"variationIndex": 1,
+			"variables": {
+				"a": "10",
+				"b": "9",
+				"c": "11"
+			},
+			"answers": ["si nombre > 10 alors [ afficher 1 ] sinon [ afficher 0 ]"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Gel : référence",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["si nombre < 0 alors [ afficher 1 ] sinon [ afficher 0 ]"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Gel : 0 > nombre",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["si 0 > nombre alors [ afficher 1 ] sinon [ afficher 0 ]"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : inférieur ou égal",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["si nombre ≤ 0 alors [ afficher 1 ] sinon [ afficher 0 ]"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

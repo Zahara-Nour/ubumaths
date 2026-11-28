@@ -3,7 +3,12 @@
  */
 import { describe, it, expect } from 'vitest';
 import { resolveTestLaunch } from '../test-launch';
-import { ANCIEN_LIEN_MESSAGE, encodeSeriesParam, SERIES_LINK_PARAM } from '$lib/validation/series';
+import {
+	ANCIEN_LIEN_MESSAGE,
+	encodeSeriesParam,
+	SERIES_LINK_PARAM,
+	SERIES_SEED_PARAM
+} from '#lib/validation/series.ts';
 
 const ITEM = {
 	templateId: '11111111-1111-4111-8111-111111111111',
@@ -54,6 +59,12 @@ describe('resolveTestLaunch', () => {
 		).toEqual({ kind: 'start', mode: 'flash', lines: [ITEM], timeLimit: undefined });
 	});
 
+	it('forme Saisie (mode=typing) → démarrage direct', () => {
+		expect(
+			resolveTestLaunch(params({ [SERIES_LINK_PARAM]: encodeSeriesParam([ITEM]), mode: 'typing' }))
+		).toEqual({ kind: 'start', mode: 'typing', lines: [ITEM], timeLimit: undefined });
+	});
+
 	it('Course aux nombres : le temps de l’URL est gardé s’il est plausible', () => {
 		const launch = resolveTestLaunch(
 			params({ [SERIES_LINK_PARAM]: encodeSeriesParam([ITEM]), mode: 'course', time: '420' })
@@ -64,6 +75,43 @@ describe('resolveTestLaunch', () => {
 			params({ [SERIES_LINK_PARAM]: encodeSeriesParam([ITEM]), mode: 'course', time: '99999' })
 		);
 		expect(absurd).toMatchObject({ kind: 'start', timeLimit: undefined });
+	});
+
+	it('mêmes nombres pour tous : la graine de l’URL est gardée', () => {
+		const launch = resolveTestLaunch(
+			params({
+				[SERIES_LINK_PARAM]: encodeSeriesParam([ITEM]),
+				mode: 'display',
+				[SERIES_SEED_PARAM]: '123456'
+			})
+		);
+		expect(launch).toMatchObject({ kind: 'start', mode: 'display', seed: 123456 });
+	});
+
+	it.each(['', 'abc', '-1', '1.5', '2147483648', '1e3', ' 12'])(
+		'graine abîmée (%j) : ignorée, la série démarre au hasard',
+		(raw) => {
+			const launch = resolveTestLaunch(
+				params({
+					[SERIES_LINK_PARAM]: encodeSeriesParam([ITEM]),
+					mode: 'display',
+					[SERIES_SEED_PARAM]: raw
+				})
+			);
+			expect(launch).toMatchObject({ kind: 'start', mode: 'display' });
+			expect((launch as { seed?: number }).seed).toBeUndefined();
+		}
+	);
+
+	it('graine 0 : gardée (0 est une graine valide)', () => {
+		const launch = resolveTestLaunch(
+			params({
+				[SERIES_LINK_PARAM]: encodeSeriesParam([ITEM]),
+				mode: 'flash',
+				[SERIES_SEED_PARAM]: '0'
+			})
+		);
+		expect(launch).toMatchObject({ kind: 'start', seed: 0 });
 	});
 
 	it('B15 : une assignation l’emporte, le mode de l’URL est ignoré', () => {

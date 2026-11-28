@@ -12,7 +12,7 @@
 	 * - Visual indicators: pulsing dot for autosave, checkmark for saved confirmation
 	 */
 
-	import type { NotebookStore } from '$lib/stores/notebookStore.svelte';
+	import type { NotebookStore } from '#lib/stores/notebookStore.svelte.ts';
 	import { Circle, CheckCircle2, AlertCircle, Loader2 } from '@lucide/svelte';
 
 	// Props

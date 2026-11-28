@@ -1,11 +1,11 @@
 <script lang="ts">
-	import { Card } from '$lib/components/ui/card';
-	import { Button } from '$lib/components/ui/button';
-	import BackLink from '$lib/components/navigation/BackLink.svelte';
-	import { Badge } from '$lib/components/ui/badge';
-	import * as Dialog from '$lib/components/ui/dialog';
-	import GameStats from '$lib/components/game/minesweeper/GameStats.svelte';
-	import LeaderboardTable from '$lib/components/game/minesweeper/LeaderboardTable.svelte';
+	import { Card } from '#lib/components/ui/card/index.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import BackLink from '#lib/components/navigation/BackLink.svelte';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
+	import * as Dialog from '#lib/components/ui/dialog/index.ts';
+	import GameStats from '#lib/components/game/minesweeper/GameStats.svelte';
+	import LeaderboardTable from '#lib/components/game/minesweeper/LeaderboardTable.svelte';
 	import type { PageData } from './$types';
 
 	let showLeaderboard = $state(false);

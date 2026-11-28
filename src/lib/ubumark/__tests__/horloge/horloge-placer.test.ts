@@ -5,13 +5,13 @@
  */
 
 import { describe, expect, it } from 'vitest';
-import { parseMarkdown } from '$lib/ubumark';
-import { generateHorlogeTypst } from '$lib/ubumark/generators/horloge-typst';
+import { parseMarkdown } from '#lib/ubumark/index.ts';
+import { generateHorlogeTypst } from '#lib/ubumark/generators/horloge-typst.ts';
 import {
 	findHorlogesToPlace,
 	hasHorlogeToPlace,
 	parseHorlogeContent
-} from '$lib/ubumark/parser/horloge-parser';
+} from '#lib/ubumark/parser/horloge-parser.ts';
 import {
 	handsAnswer,
 	handsMistakes,
@@ -20,7 +20,7 @@ import {
 	timeText,
 	readHands,
 	timeOfAnswer
-} from '$lib/ubumark/utils/horloge-placer';
+} from '#lib/ubumark/utils/horloge-placer.ts';
 
 const parse = (...lines: string[]) => parseHorlogeContent(lines.join('\n'));
 const messages = (...lines: string[]) => parse(...lines).errors.map((e) => e.message);

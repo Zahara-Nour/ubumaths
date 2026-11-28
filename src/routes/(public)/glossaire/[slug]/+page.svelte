@@ -1,13 +1,14 @@
 <script lang="ts">
-	import SeoHead from '$lib/seo/SeoHead.svelte';
-	import BackLink from '$lib/components/navigation/BackLink.svelte';
-	import InlineMarkdown from '$lib/components/markdown/InlineMarkdown.svelte';
-	import { Badge } from '$lib/components/ui/badge';
-	import { Separator } from '$lib/components/ui/separator';
-	import { GRADES } from '$lib/types/grades';
-	import { termLabel } from '$lib/dictionary/glossary-page';
+	import SeoHead from '#lib/seo/SeoHead.svelte';
+	import BackLink from '#lib/components/navigation/BackLink.svelte';
+	import InlineMarkdown from '#lib/components/markdown/InlineMarkdown.svelte';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
+	import { Separator } from '#lib/components/ui/separator/index.ts';
+	import { GRADES } from '#lib/types/grades.ts';
+	import { termLabel } from '#lib/dictionary/glossary-page.ts';
 	import { resolve } from '$app/paths';
-	import type { GradedField } from '$lib/dictionary/model';
+	import { resolvePath } from '#lib/navigation/resolve-path.ts';
+	import type { GradedField } from '#lib/dictionary/model.ts';
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
@@ -29,7 +30,7 @@
 	let exemples = $derived(byGrade(term.exemples));
 </script>
 
-<SeoHead title="{termLabel(term)} : définition | Chiphre" description={data.description} />
+<SeoHead title="{termLabel(term)} : définition (maths) | Chiphre" description={data.description} />
 
 <div class="mx-auto max-w-3xl p-4 md:p-6">
 	<BackLink href="/glossaire" label="Retour au glossaire" />
@@ -54,7 +55,7 @@
 			<p class="text-muted-foreground">
 				Voir :
 				<a
-					href={resolve(`/glossaire/${data.cited.slug}`)}
+					href={resolve(`glossaire/${data.cited.slug}`)}
 					class="font-medium text-primary underline"
 				>
 					{termLabel(data.cited.term)}
@@ -109,7 +110,9 @@
 		{#if term.seeAlso}
 			<section>
 				<h2 class="mb-2 text-lg font-semibold">Voir aussi</h2>
-				<a href={resolve(term.seeAlso.path)} class="text-primary underline">{term.seeAlso.label}</a>
+				<a href={resolvePath(term.seeAlso.path)} class="text-primary underline"
+					>{term.seeAlso.label}</a
+				>
 			</section>
 		{/if}
 	</div>

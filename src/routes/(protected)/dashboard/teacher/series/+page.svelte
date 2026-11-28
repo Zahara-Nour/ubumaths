@@ -1,14 +1,14 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import * as Card from '$lib/components/ui/card';
-	import { Button } from '$lib/components/ui/button';
-	import { Badge } from '$lib/components/ui/badge';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
 	import { Copy, FileEdit, Lock, Plus, ShoppingCart, Trash2 } from '@lucide/svelte';
-	import { toaster } from '$lib/stores/toaster.svelte';
-	import { submitAction, refreshPageData } from '$lib/utils/form-action';
-	import SeriesLinkShare from '$lib/components/series/SeriesLinkShare.svelte';
-	import { countSeriesQuestions } from '$lib/types/evaluation';
-	import type { SeriesWithUsage } from '$lib/types/evaluation';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
+	import { submitAction, refreshPageData } from '#lib/utils/form-action.ts';
+	import SeriesLinkShare from '#lib/components/series/SeriesLinkShare.svelte';
+	import { countSeriesQuestions } from '#lib/types/evaluation.ts';
+	import type { SeriesWithUsage } from '#lib/types/evaluation.ts';
 	import type { PageData } from './$types';
 
 	let { data }: { data: PageData } = $props();
@@ -74,7 +74,7 @@
 			<Card.Content class="py-12 text-center text-muted-foreground">
 				<p>Aucune série pour l'instant.</p>
 				<p class="mt-2 text-sm">
-					Compose un panier dans Automaths, puis « Enregistrer comme série ».
+					Compose ta série dans Automaths, puis « Enregistrer comme série ».
 				</p>
 			</Card.Content>
 		</Card.Root>

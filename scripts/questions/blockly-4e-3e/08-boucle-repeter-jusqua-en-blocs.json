@@ -1,0 +1,179 @@
+{
+	"id": "ee87b7b1-5c23-465d-b506-d00d18bfc96b",
+	"title": "Boucle « répéter jusqu'à » en blocs",
+	"description": "Écrire en blocs une boucle conditionnelle : reste par soustractions, doublements, multiple.",
+	"grades": ["3"],
+	"level": 2,
+	"delay": 300,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Sans utiliser le bloc « reste », écris un programme qui affiche le reste de la division du nombre choisi (un entier positif) par ${{d}}$ : on retire ${{d}}$ **jusqu'à ce que** ce soit impossible.\n\n```calcul\nniveau: 3e\nattendu: mettre r à nombre ; répéter jusqu’à r < {{d}} [ mettre r à r − {{d}} ] ; afficher r\nessais: 0 ; 3 ; 7 ; 20 ; 45 ; 100\n```",
+			"variables": [
+				{
+					"name": "d",
+					"expression": "3..9"
+				}
+			],
+			"conditions": [],
+			"blanks": [],
+			"correction": {
+				"steps": [
+					"Une variable **r** vaut d'abord le nombre choisi.",
+					"On répète « mettre r à r $-\\ {{d}}$ » **jusqu'à ce que** r $< {{d}}$ : on ne peut plus retirer ${{d}}$.",
+					"Ce qui reste dans r est le reste de la division par ${{d}}$ ; on l'affiche."
+				]
+			}
+		},
+		{
+			"statement": "On double un nombre entier positif, puis on double le résultat, et ainsi de suite.\n\nÉcris un programme qui affiche **combien de fois** il faut doubler le nombre choisi pour dépasser ${{s}}$ (strictement).\n\n```calcul\nniveau: 3e\nattendu: mettre x à nombre ; mettre compteur à 0 ; répéter jusqu’à x > {{s}} [ mettre x à x × 2 ; ajouter 1 à compteur ] ; afficher compteur\nessais: 1 ; 3 ; 7 ; 25 ; 60 ; 1000\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..5"
+				},
+				{
+					"name": "s",
+					"expression": "eval:100*k"
+				}
+			],
+			"conditions": [],
+			"blanks": [],
+			"correction": {
+				"steps": [
+					"Deux variables : **x**, le nombre que l'on double, et **compteur**, qui vaut $0$ au départ.",
+					"On répète « x prend la valeur x $\\times 2$ ; ajouter $1$ à compteur » **jusqu'à ce que** x $> {{s}}$.",
+					"Si le nombre choisi dépasse déjà ${{s}}$, la boucle ne tourne pas : le programme affiche $0$."
+				]
+			}
+		},
+		{
+			"statement": "Écris un programme qui affiche le plus petit multiple de ${{a}}$ **strictement supérieur** au nombre choisi (un entier positif). Pars de $0$ et ajoute ${{a}}$ autant de fois qu'il le faut.\n\n```calcul\nniveau: 3e\nattendu: mettre m à 0 ; répéter jusqu’à m > nombre [ ajouter {{a}} à m ] ; afficher m\nessais: 0 ; 1 ; {{a}} ; 12 ; 30\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "3..9"
+				}
+			],
+			"conditions": [],
+			"blanks": [],
+			"correction": {
+				"steps": [
+					"Une variable **m** vaut $0$ au départ : c'est un multiple de ${{a}}$.",
+					"On lui ajoute ${{a}}$ **jusqu'à ce que** m $>$ nombre : m reste un multiple de ${{a}}$.",
+					"Le premier m qui dépasse le nombre choisi est le plus petit : on l'affiche."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Reste : référence",
+			"variationIndex": 0,
+			"variables": {
+				"d": "7"
+			},
+			"answers": ["mettre r à nombre ; répéter jusqu’à r < 7 [ mettre r à r − 7 ] ; afficher r"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Reste : avec le bloc reste (juste aussi)",
+			"variationIndex": 0,
+			"variables": {
+				"d": "7"
+			},
+			"answers": ["afficher reste de nombre par 7"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : condition r ≤ 7 (retire une fois de trop)",
+			"variationIndex": 0,
+			"variables": {
+				"d": "7"
+			},
+			"answers": ["mettre r à nombre ; répéter jusqu’à r ≤ 7 [ mettre r à r − 7 ] ; afficher r"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Doublements : référence",
+			"variationIndex": 1,
+			"variables": {
+				"k": "1",
+				"s": "100"
+			},
+			"answers": [
+				"mettre x à nombre ; mettre compteur à 0 ; répéter jusqu’à x > 100 [ mettre x à x × 2 ; ajouter 1 à compteur ] ; afficher compteur"
+			],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : jusqu'à x ≥ 100",
+			"variationIndex": 1,
+			"variables": {
+				"k": "1",
+				"s": "100"
+			},
+			"answers": [
+				"mettre x à nombre ; mettre compteur à 0 ; répéter jusqu’à x ≥ 100 [ mettre x à x × 2 ; ajouter 1 à compteur ] ; afficher compteur"
+			],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : affiche x au lieu du compteur",
+			"variationIndex": 1,
+			"variables": {
+				"k": "1",
+				"s": "100"
+			},
+			"answers": [
+				"mettre x à nombre ; mettre compteur à 0 ; répéter jusqu’à x > 100 [ mettre x à x × 2 ; ajouter 1 à compteur ] ; afficher x"
+			],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Multiple : référence",
+			"variationIndex": 2,
+			"variables": {
+				"a": "4"
+			},
+			"answers": ["mettre m à 0 ; répéter jusqu’à m > nombre [ ajouter 4 à m ] ; afficher m"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Multiple : par le reste",
+			"variationIndex": 2,
+			"variables": {
+				"a": "4"
+			},
+			"answers": ["afficher nombre − reste de nombre par 4 + 4"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : supérieur ou égal",
+			"variationIndex": 2,
+			"variables": {
+				"a": "4"
+			},
+			"answers": ["mettre m à 0 ; répéter jusqu’à m ≥ nombre [ ajouter 4 à m ] ; afficher m"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

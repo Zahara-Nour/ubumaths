@@ -3,9 +3,9 @@
  * erreur typique produit bien le message annoncé.
  */
 import { describe, it, expect } from 'vitest';
-import { parseMarkdown } from '$lib/ubumark';
+import { parseMarkdown } from '#lib/ubumark/index.ts';
 import { BLOCK_CATALOG } from '..';
-import { checkScratchProgram } from '$lib/ubumark/utils/scratch-check';
+import { checkScratchProgram } from '#lib/ubumark/utils/scratch-check.ts';
 
 /** Le seul bloc du document, et ses messages d'erreur */
 function parseSingleBlock(source: string): { type: string; messages: string[] } {
@@ -50,7 +50,8 @@ describe('catalogue des blocs', () => {
 
 		it('ouvre chaque exemple par l’un de ses mots de bloc', () => {
 			for (const { source } of [...entry.examples, ...entry.mistakes]) {
-				const language = source.split('\n')[0].slice(3);
+				// ```associer, ou ````associer quand un élément contient un bloc
+				const language = source.split('\n')[0].replace(/^`{3,}/, '');
 				expect(entry.fences).toContain(language);
 			}
 		});

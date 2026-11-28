@@ -9,10 +9,10 @@
  */
 import { describe, it, expect } from 'vitest';
 import { Atelier } from '../atelier.svelte';
-import { WebReplEngine } from '$lib/mathAST/cli/web/web-repl-engine';
+import { WebReplEngine } from '#lib/mathAST/cli/web/web-repl-engine.ts';
 import { runInput, runAction, type CalcSession } from '../calcul';
 import { derivativeAstOf } from '../engine';
-import { toLatex } from '$lib/mathAST/latex-generator';
+import { toLatex } from '#lib/mathAST/latex-generator.ts';
 
 function session(lines: readonly string[]): CalcSession {
 	const s: CalcSession = { atelier: new Atelier(), engine: new WebReplEngine() };

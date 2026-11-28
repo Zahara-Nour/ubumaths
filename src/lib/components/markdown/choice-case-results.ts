@@ -12,7 +12,7 @@
  */
 
 import { getContext, hasContext, setContext } from 'svelte';
-import type { ExpectedChoiceCase } from '$lib/questions/expected-result';
+import type { ExpectedChoiceCase } from '#lib/questions/expected-result.ts';
 
 const CHOICE_CASE_RESULTS_KEY = Symbol('markdown-choice-case-results');
 

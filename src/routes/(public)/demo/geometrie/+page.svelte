@@ -7,9 +7,9 @@
 	`/aide-ecriture/geometrie` (chantier demo-debug, PR 6f).
 -->
 <script lang="ts">
-	import { demoSeo } from '$lib/seo/demo-pages';
-	import SeoHead from '$lib/seo/SeoHead.svelte';
-	import BackLink from '$lib/components/navigation/BackLink.svelte';
+	import { demoSeo } from '#lib/seo/demo-pages.ts';
+	import SeoHead from '#lib/seo/SeoHead.svelte';
+	import BackLink from '#lib/components/navigation/BackLink.svelte';
 	import DemoFigureCard from './DemoFigureCard.svelte';
 	import { DEMO_FIGURES, DEMO_SECTIONS } from './figures';
 </script>

@@ -24,7 +24,7 @@ import {
 	transformAST,
 	type ASTVisitor,
 	type TransformVisitor
-} from '$lib/mathAST';
+} from '#lib/mathAST/index.ts';
 
 // Helper to create number nodes with string values
 function number(value: number): NumberNode;

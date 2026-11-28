@@ -22,7 +22,7 @@ couvre:
 
 Chaque eleve choisit un **Palotin** comme compagnon. Les Palotins sont les hommes de main du Pere Ubu dans l'oeuvre d'Alfred Jarry (_Ubu Roi_, 1896). Leurs noms viennent du vocabulaire heraldique (blason).
 
-Le buddy est **toujours visible** (coin de l'ecran), reagit aux actions de l'eleve, donne des encouragements et des indices, et **evolue avec l'activite de l'eleve** via un systeme d'XP permanent.
+Le buddy est **toujours la dans sa maison** (accueil eleve, Chatterie) et **passe** ailleurs (voir [Maison et passages](#maison-et-passages-2026-11-11)), reagit aux actions de l'eleve, donne des encouragements et des indices, et **evolue avec l'activite de l'eleve** via un systeme d'XP permanent.
 
 ---
 
@@ -238,13 +238,15 @@ Le mot affiche est celui du lore : **Constance Royale** (`lore.learning.streak`)
   a la place (`calculateConstanceBonus`). Les 4e a 7e jours se comptent sans nouvelle recompense.
 - **Constance** = semaines tenues d'affilee (`current_streak`, record `longest_streak`). La semaine
   en cours ne casse rien avant sa fin ; une semaine finie sous 3 jours (ou sautee) remet la
-  Constance a 0, avec une replique (`streak_lost`, « la semaine n'a pas eu ses trois jours »), sauf
-  au retour d'une longue absence : « tu m'as manque » la remplace (voir
-  [Retour apres une longue absence](#retour-apres-une-longue-absence-2026-10-21)).
-- **Affichage** (`BuddyStatusPanel`) : « Constance Royale : N semaines », « Cette semaine : x jours
-  sur 3 » (x plafonne a 3) et « Record : N semaines ». Le badge du widget montre N. La valeur
-  affichee est recalculee pour le jour courant (`displayedConstance`) : une Constance perdue mais
-  pas encore remise a zero s'affiche 0. Le tableau de bord prof affiche la meme valeur (`displayedConstance`), en « sem. ».
+  Constance a 0, **en silence** : aucune replique, rien ne la montre a l'eleve (decision R1 du
+  chantier `regularite`, David, 2026-11-12 : « aucune serie perdue » ; l'ancienne replique
+  `streak_lost` est retiree). Le bonus d'XP reste.
+- **Affichage** (`BuddyStatusPanel`) : « Constance Royale : N semaines » **seulement si N > 0**,
+  « Cette semaine : x jours sur 3 » (x plafonne a 3) et « Record : N semaines ». Le badge du widget
+  montre N, s'il est > 0. La valeur affichee est recalculee pour le jour courant
+  (`displayedConstance`) : une Constance perdue mais pas encore remise a zero vaut 0, donc ne
+  s'affiche pas. Le tableau de bord prof affiche la meme valeur (`displayedConstance`), en « sem. »,
+  0 compris.
 
 ### Mecanisme
 
@@ -256,8 +258,9 @@ Le mot affiche est celui du lore : **Constance Royale** (`lore.learning.streak`)
   (`buddy-queries.ts`) ecrit en UNE fois `constance_week_start`, `constance_days_this_week`,
   `current_streak`, `longest_streak` et `last_activity_date` (dernier jour compte), sous verrou
   optimiste : de deux credits simultanes, un seul compte le jour et touche la recompense.
-- Au chargement du tableau de bord eleve, `resetLostConstance` remet la Constance a 0 si la derniere
-  semaine enregistree est finie sans etre tenue (`streakLost` → replique).
+- A la lecture de presence (`GET /api/student/buddy/presence`, premiere page d'une zone du Palotin),
+  `resetLostConstance` remet la Constance a 0 si la derniere semaine enregistree est finie sans etre
+  tenue, sans rien transmettre au client.
 - **Ancienne serie en jours** (ligne sans `constance_week_start`, tout Palotin d'avant le
   2026-10-18) : `current_streak` et `longest_streak` comptaient des jours. Ils sont remis a 0 (record
   compris) au premier chargement du tableau de bord ou au premier jour travaille, sans replique ; le
@@ -269,7 +272,7 @@ Le mot affiche est celui du lore : **Constance Royale** (`lore.learning.streak`)
   le jour ; `newStreak` = la Constance apres lui ; `streakBonusXp` = la recompense de la semaine
   tenue ; `constanceWeekStart` / `constanceDaysThisWeek` en plus, quand le jour a ete compte, pour
   mettre le widget a jour sans rechargement (`updateBuddyConstanceOptimistic`).
-- **Perte** : le Palotin est determine (« on repart »), pas triste (il ne l'est qu'au retour d'une longue absence). Pas de punition mecanique : l'XP acquise reste.
+- **Perte** : le Palotin n'en dit rien. Pas de punition mecanique : l'XP acquise reste.
 - **La Constance est un bonus d'XP**, pas une condition.
 
 ### Protection du streak
@@ -299,40 +302,97 @@ Le buddy ne remplace pas les cartes VIP, il les **enrichit** :
 
 ---
 
-## Presence permanente
+## Maison et passages (2026-11-11)
 
-### Position et affichage
+Decide par David le 2026-11-11 (chantier `palotins`, journal archive `docs/archive/palotins-progress.md`) :
+le Palotin n'est plus affiche en permanence. **Un seul composant**, `PalotinPresence.svelte`, monte
+par le layout racine (`src/routes/+layout.svelte`, import dynamique, eleve connecte seulement : ni
+le visiteur ni le prof ne telechargent son code). La zone se lit dans l'adresse
+(`palotinZone`, `src/lib/components/buddy/palotin-presence.ts`) :
 
-**Desktop (>768px) :**
+| Zone        | Pages                                                                                             | Ce que voit l'eleve                                    |
+| ----------- | ------------------------------------------------------------------------------------------------- | ------------------------------------------------------ |
+| **maison**  | accueil eleve `/dashboard`, Chatterie `/dashboard/student/chatterie`                              | `BuddyWidget` : le Palotin toujours la, comme avant    |
+| **passage** | reste de `/dashboard/student/*`, `/dashboard/revisions/*` hors seance                             | l'ecusson ; le Palotin entre, dit une replique, repart |
+| **seance**  | `/automaths/test`, `/dashboard/revisions/decks/<id>/study`, `/dashboard/revisions/chapitres/<id>` | l'ecusson ; une reaction au plus (voir ci-dessous)     |
+| ailleurs    | tout le reste (site public, prof…)                                                                | rien, aucune requete                                   |
 
-- Buddy visible en bas a droite, ~80-100px
-- Bulle de parole au-dessus, disparait apres 4-5s
-- Animation idle quand inactif
+- **Lecture apres l'affichage** : a la premiere page d'une zone, `GET /api/student/buddy/presence`
+  (`loadBuddyPresence`, `src/lib/server/buddy-presence.ts`) rend le Palotin (Constance perdue deja
+  remise a zero par cette lecture) et le retour a feter (`returnAfterPause`), valides par Zod
+  (`parseBuddyPresence`). **Relecture apres une activite** : un gain de pansees non nul
+  (`receiveBuddyGain` → `notifyBuddyActivity`, `palotin-presence.ts` ; Entrainement, Course aux
+  nombres, revision, enigme) marque la presence a relire ; elle est relue en arrivant dans la maison
+  ou sur une page de passage (`afterNavigate`), pour feter un retour sans recharger. Un retour fete
+  (passage ou maison) ne l'est plus pendant ce chargement, meme si une relecture le rend encore ;
+  dans la maison, salutation et annonce de la Chatterie attendent la fin de sa bulle.
+  Le Palotin va dans `studentCache` (`hydrateBuddy`). Lecture en echec : pas de passage ; l'ecusson
+  reste si le Palotin est deja en cache (layout de l'espace eleve).
+- **Maison** : `BuddyWidget` (recree en passant de l'accueil a la Chatterie) : replique du retour
+  (au montage, ou plus tard si la presence relue l'apporte ; une fois par widget), annonce de la
+  Chatterie ou salutation, repliques `idle` / `idle_lore` toutes les 45 a 90 s, etat
+  au clic. La replique du retour dite, `onWelcomeBackSaid` l'efface : elle ne sera pas redite.
+- **Ecusson** (`PalotinBadge.svelte`) : blason immobile a la piece heraldique du Palotin (giron,
+  pile, cotice), bouton « Appeler <nom> » de 44 px. Un clic fait entrer le Palotin avec son etat
+  (`BuddyStatusPanel`) ; fermer, ou changer de page, le fait repartir.
+- **Passages** (pages de passage seulement) : le Palotin entre (glissement, aucun si
+  `prefers-reduced-motion`), dit sa replique pendant la duree de la bulle (`buddy-timing.ts`),
+  enchaine la suivante s'il y en a, puis repart. Changer de page vers une seance ou la maison
+  l'interrompt ; ce qui reste en file attend la page de passage suivante.
+  - **importants**, une fois chacun, hors plafond : retour apres une pause (acquitte a
+    l'affichage), puis nouveautes de la Chatterie (avec le lien) ;
+  - **spontanes**, au plus un toutes les **10 minutes** (`PASSAGE_COOLDOWN`), tous onglets
+    confondus : Mathoux en sieste (avec le lien). Heure du dernier passage
+    dans `localStorage` (`chiphre:palotin:dernier-passage`, `createPassageClock`) ; stockage
+    illisible : le plafond tient pour la page ouverte, jamais d'erreur.
+- L'annonce de la Chatterie est lue une fois par chargement, a la premiere page de passage
+  (`fetchChatterieAnnouncement`, `chatterie-announcement.ts`, partagee avec `BuddyWidget`) ; jamais
+  en seance (l'ecran de fin de seance montre deja les nouveautes).
+- Hors perimetre, chantier suivant : indices et rappels (devoirs, revisions dues).
 
-**Mobile (<768px) :**
+### Reactions en seance (2026-11-11)
 
-- Icone reduite ~60px en bas a droite (zone tactile 64px)
-- Bulle de parole au-dessus, largeur max ~70% de l'ecran, disparait apres 4-5s
-- Tap sur l'icone = affiche la derniere bulle ou l'etat du buddy (streak, niveau)
+Decide par David (journal `palotins`, C1 a C14). Logique pure dans
+`src/lib/components/buddy/seance-reactions.ts` :
 
-**Les deux :**
-
-- Reactions pendant les exercices (correct/incorrect/hint)
-
-### Interactions
-
-- Reactions aux reponses de l'eleve (expressions, messages)
-- Indices contextuels (debloques par niveau)
-- Encouragements adaptes a la personnalite du Palotin
-- Remarques entre Palotins (dans des contextes speciaux)
+- **Declencheurs** (`createSeanceTracker`) : **5 reussites d'affilee** (`STREAK_LENGTH`) →
+  exclamation, banque `correct` ; **3 erreurs sur la meme notion** (`STRUGGLE_COUNT`), pas
+  forcement consecutives → encouragement, banque `incorrect`, jamais d'indice. Notion = celle du
+  modele de questions (`classification_node_id`) ; question sans notion, carte personnelle : pas
+  comptee pour les erreurs (elle compte pour la serie). **Une reaction au plus par seance**, le
+  premier declencheur gagne ; **jamais sur la derniere question** (la fin de seance = `BuddyGainCard`).
+- **Jamais pendant une question** : la question suivante attend que le Palotin soit reparti
+  (`SEANCE_PASSAGE_DURATION`, 3 s, plus l'entree et la sortie). La seance appelle
+  `createSeanceReactions().afterAnswer(...)`, qui rend `null` (rien a jouer, la suite arrive
+  aussitot) ou une promesse resolue au depart du Palotin.
+- **Qui joue** : `PalotinPresence` s'inscrit au montage (`registerSeanceReactionHandler`) et ne
+  joue qu'en zone **seance**, Palotin lu, etat ferme, aucun autre passage en cours ; sinon la
+  promesse se resout aussitot. Demonte (changement de page) : la seance n'attend plus. Visiteur,
+  prof, Palotin illisible : personne n'est inscrit, rien n'attend.
+- **Ou** : Entrainement libre (`TestInteractive`, prop `palotinReactions` passee par
+  `/automaths/test` a un eleve connecte hors controle ; notion lue dans `questionTemplatesCache`)
+  et revisions (`ReviewSession` : reussite = note >= 3, notion jointe a chaque carte par
+  `GET /api/srs/review/due` et `GET /api/srs/chapters/<id>/due`, champ `notionId`). Jamais en
+  controle, en flash-cards de l'Entrainement, en Course aux nombres, ni sur une carte de cours.
+- Les passages de la partie « passages » (sieste, retour…) restent interdits en seance.
+- **Limites connues** (revue de la PR 2, gardees telles quelles) : une reaction qui ne peut pas etre
+  jouee (etat ouvert, presence pas encore lue) est perdue pour la seance, conforme a « une au plus » ;
+  le chrono de la question repondue continue pendant la pause du Palotin.
 
 ### Gain visible en fin de seance (2026-10-18)
 
-`api/tests/save` et `api/srs/review/submit` renvoient `buddy_xp` (meme forme, ou `null`).
+`api/tests/save` (fin d'un Contrôle blanc, d'une Course ou d'une Saisie : il ne fait plus que ce calcul, et la question longtemps ratée, voir plus bas) et `api/srs/review/submit` renvoient `buddy_xp` (meme forme, ou `null`).
 `parseBuddyGain` (`src/lib/components/buddy/buddy-gain.ts`) le valide avec Zod : absent, `null`,
 mal forme ou `xp_gained` = 0 → rien n'est affiche. `BuddyGainCard.svelte` montre l'avatar (`happy`,
 `excited` si montee), « Giron a gagne 12 pansees », une replique (`session_gain`, ou `daily_cap`
-quand le plafond du jour est atteint) et « Nouveau tour de panse : N ! ». Ou il apparait :
+quand le plafond du jour est atteint) et « Nouveau tour de panse : N ! ».
+
+`daily_cap_reached` est vrai des qu'une reponse a ete tronquee par le plafond du jour, que la
+troncature vienne du calcul local du service (`calculateXpGain` : la base ne voit alors aucun
+depassement, et n'est meme pas appelee si rien ne reste a crediter) ou de `add_buddy_xp`. Un
+palier de Constance hors plafond ne l'efface pas. Avec `xp_gained` = 0 et `daily_cap_reached`
+vrai, la carte s'affiche quand meme et dit « Sa panse est pleine pour aujourd'hui ». Une seance
+qui remplit le plafond au plus juste (rien de tronque) ne l'annonce pas. Ou la carte apparait :
 
 - `/automaths/test` (Entrainement, Course aux nombres) : sous la carte du score de `TestResults` ;
 - revision espacee : ecran « Session terminee » de `ReviewSession` (dernier gain non nul de la
@@ -350,7 +410,8 @@ Le Compendium interdit d'afficher « XP » et « niveau ». Mots choisis par Dav
 
 ### Gardien de la Chatterie
 
-Au montage, `BuddyWidget` demande `GET /api/student/mathoux` (après l'affichage, pas dans le
+Dans la maison, au montage, `BuddyWidget` demande `GET /api/student/mathoux` ; sur les pages de
+passage, `PalotinPresence` le demande une fois par chargement (voir [Maison et passages](#maison-et-passages-2026-11-11)) ; toujours après l'affichage, pas dans le
 layout : environ 39 requêtes pour un parcours de Tle spé). S'il y a une nouveauté (naissance,
 croissance, étoile qu'aucun écran de fin de séance n'a montrée), la bulle l'annonce d'abord, avec
 le même lien. Sinon, si au moins un Mathou fait la sieste,
@@ -359,9 +420,32 @@ la bulle dit « 2 Mathoux font la sieste. » avec le lien « Aller à la Chatter
 Palotin salue. La salutation attend la réponse, pour ne jamais précéder l'annonce. Sur la Chatterie
 elle-même, ni appel ni annonce. Durées : `buddy-timing.ts`. Détail : [mathoux.md](mathoux.md).
 
-### Retour apres une longue absence (2026-10-21)
+### Regularite : ce que le Palotin dit, et ne dit jamais (2026-11-12, chantier `regularite`)
 
-Decide par David le 2026-10-21 (presence notee partout : meme jour, apres #1588) :
+Besoin P5 valide par David le 2026-11-11, decisions R1-R7 du 2026-11-12. Le Palotin ne parle
+**qu'apres une activite**, jamais d'une absence ; **aucune serie perdue** n'est dite ni montree
+(Constance a 0 cachee, R1) ; **aucune comparaison** avec d'autres eleves ; **aucune notification**
+hors du site ; un retour apres une pause est fete **sans dire sa duree** (R2). Les moments fetes et
+ou ils vivent :
+
+- **1re activite de la semaine** et **3 / 5 / 10 semaines actives d'affilee** : § Semaine qui devient
+  active (semaine active = au moins un jour actif, meme regle que la grille du prof, R4).
+- **Retour apres une pause** : § Retour apres une pause.
+- **Question longtemps ratee enfin reussie** : § Question longtemps ratee enfin reussie (carte de
+  fin de serie).
+- **Notion acquise** : pas de replique neuve, l'annonce du Mathou (croissance, etoile) la couvre.
+- **Serie terminee, quel que soit le score** : la carte de gain la couvre (une reponse fausse
+  rapporte aussi des pansees) ; flash-cards sans carte, laissees telles.
+
+Cote prof, la meme regularite se lit dans la grille eleve x semaine (`analytique-prof.md`, widget C).
+Journal du chantier : `docs/archive/wip/regularite-progress.md`.
+
+### Retour apres une pause (2026-10-21, revu le 2026-11-12)
+
+Decide par David le 2026-10-21 (presence notee partout : meme jour, apres #1588). Revu le
+2026-11-12 (chantier `regularite`, R2) : le Palotin ne parle jamais d'une absence ; il fete le
+retour, joyeux, **apres la 1re activite**, sans en dire la duree. « Tu m'as manque » (triste, a
+l'arrivee, contexte `long_absence`) est retire.
 
 - **Presence** : l'eleve connecte qui voit une page, **n'importe laquelle** (lien de cours partage,
   Automaths, tableau de bord…), prechargement compris, est present ce jour-la. **Hors `/api/*`** :
@@ -377,16 +461,21 @@ Decide par David le 2026-10-21 (presence notee partout : meme jour, apres #1588)
   souvent detecte loin du Palotin : il reste **a feter pendant 7 jours** (`WELCOME_BACK_DAYS`,
   `isWelcomeBackDue`), puis il est oublie : **efface** au premier passage d'un jour suivant
   (`recordStudentPresence`, `welcome_back_on <= lastExpiredWelcomeBackDay`), sans tache planifiee.
-- **Bulle** : le layout `dashboard/student/+layout.server.ts` **lit** le retour a feter
-  (`isWelcomeBackPending`, sans rien ecrire : un prechargement au survol ne consomme rien) et ne
-  transmet que `longAbsence` (oui/non), jamais un jour ; faux sans Palotin (celui choisi ensuite
-  est tout neuf). Le Palotin est **triste** (`sad`) et dit « tu m'as manque » (contexte
-  `long_absence`, trois repliques par Palotin, neutres en genre), puis `BuddyWidget` l'acquitte
-  (`POST /api/student/buddy/welcome-back`, `acknowledgeWelcomeBack` : `welcome_back_on` remis a
-  NULL) : **une seule fois**. Acquittement en echec : la bulle revient au prochain chargement.
-- La Constance perdue pendant l'absence est remise a zero comme d'habitude, mais sa replique
-  `streak_lost` ne s'affiche pas : « tu m'as manque » la remplace. L'annonce de la Chatterie suit la
-  bulle, sans salutation (`BuddyWidget`, `welcomeBackContext`).
+- **Apres la 1re activite** : le retour n'est a feter que si l'eleve a **travaille** depuis
+  (`student_buddies.last_activity_date` >= `welcome_back_on`, `isReturnToCelebrate`,
+  `buddy-absence.ts`), dans les 7 jours. Travailler = gagner des pansees (Entrainement, Course aux
+  nombres, revision, enigme) : une seance de flash-cards seule ne fete rien.
+- **Bulle** : `GET /api/student/buddy/presence` (`loadBuddyPresence`) **lit** le retour a feter
+  (`isWelcomeBackPending(studentId, lastWorkedDay)`, sans rien ecrire : un prechargement au survol
+  ne consomme rien) et ne transmet que `returnAfterPause` (oui/non), jamais un jour ; faux sans
+  Palotin (celui choisi ensuite est tout neuf). La presence est relue apres un gain (voir
+  [Maison et passages](#maison-et-passages-2026-11-11)). Le Palotin est **joyeux** (`happy`) et
+  fete le retour (contexte `return_after_pause`, trois repliques par Palotin, neutres en genre,
+  sans duree ni absence), dans la maison (`BuddyWidget`) ou en passage important
+  (`PalotinPresence`), puis l'acquitte (`POST /api/student/buddy/welcome-back`,
+  `acknowledgeWelcomeBack` : `welcome_back_on` remis a NULL) : **une seule fois**. Acquittement en
+  echec : la bulle revient au prochain chargement.
+- L'annonce de la Chatterie suit la bulle, sans salutation (`BuddyWidget`).
 - Premier passage (aucun jour enregistre) : rien. Presence ou retour non ecrits : rien (journalise,
   la page s'affiche).
 - **Ecart accepte** (David, 2026-10-22) : `record_student_visit` puis la note de `welcome_back_on`
@@ -394,10 +483,61 @@ Decide par David le 2026-10-21 (presence notee partout : meme jour, apres #1588)
   le retour **n'est pas fete** (journalise). Pas de migration pour les reunir.
 - **Acces** : `student_last_visits` (jour du dernier passage, retour a feter) n'est lisible que par
   le serveur (RLS sans policy, droits retires a anon et authenticated) ; exportee dans l'export RGPD
-  (`dernier_passage`, `retour_a_feter`), supprimee avec le profil.
+  (`dernier_passage`, `retour_a_feter`, `semaine_fetee`), supprimee avec le profil.
 - Pourquoi une donnee neuve : `student_buddies.last_activity_date` est le dernier jour
   **travaille** (un eleve qui passe sans travailler ne la change pas) ; `auth.users.last_sign_in_at`
   ne bouge pas tant que la session reste ouverte.
+
+### Semaine qui devient active (2026-11-12, chantier `regularite`, B2)
+
+Le Palotin fete, **une fois par semaine**, la semaine qui devient active : au palier **3, 5 ou 10
+semaines actives d'affilee**, ce palier (`active_weeks_3`, `_5`, `_10`, `excited`) ; sinon la **1re
+activite de la semaine** (`week_first_activity`, `happy`). Trois repliques par Palotin et par
+moment, neutres en genre, sans nombre de jours ni Constance Royale.
+
+- **Memes regles que la grille du prof** (`stats/class-regularity.ts`) : jour actif = 5 traces
+  autonomes le meme jour de Paris (hors controle ; traces sans lieu comptees) ; semaine (lundi →
+  dimanche, Paris) active = au moins un jour actif. Une semaine de vacances (ecoles des classes
+  actives de l'eleve ; hors classe, aucune) sans activite est **sautee**, avec activite elle compte.
+  Le compte part de la rentree (`regularityFirstDay`) : l'ete le remet a zero. Compte coupe =
+  remis a zero **en silence**. Rien n'est stocke : le compte est recalcule (`buddy-weeks.ts`).
+- **Apres une activite seulement** : `loadWeekMoment` ne rend un moment que si **aujourd'hui**
+  est un jour actif et que la semaine n'est pas deja fetee (`student_last_visits.week_celebrated_on`
+  < lundi en cours). Le test leger (traces des deux derniers jours) passe d'abord ; la lecture des
+  traces (depuis la rentree, 20 semaines au plus : `streakFirstDay`) n'a lieu que tant que la
+  semaine n'est pas acquittee.
+- **Un moment a la fois** : un retour a feter passe d'abord (`weekMoment` nul) ; le retour
+  acquitte (`POST …/welcome-back`) marque aussi la semaine (`markWeekCelebrated`), cote serveur et
+  cote client (`markReturnCelebrated` → `markWeekCelebrated`).
+- **Bulle** : `GET /api/student/buddy/presence` transmet `weekMoment` (le nom du moment, jamais un
+  jour ni le compte) ; `BuddyWidget` (maison) ou `PalotinPresence` (passage important) le dit puis
+  l'acquitte (`POST /api/student/buddy/week-celebrated`, `markWeekCelebrated(…, 'celebrated')` :
+  semaine d'aujourd'hui s'il est actif, sinon d'hier — bulle dite dimanche soir, acquittee lundi :
+  `weekToMark`). Le retour ne marque la semaine en cours que s'il etait vraiment a feter. Sans ligne
+  de passage : rien d'ecrit, journalise. Deux onglets ouverts : double fete possible (accepte).
+  Acquittement en echec : la bulle revient a la prochaine activite. Lecture en echec : pas de fete.
+- Limite connue (comme le retour) : la presence se relit apres un gain ; des flash-cards seules
+  rendent la semaine active sans relecture immediate, la fete vient a la page de maison suivante.
+
+### Question longtemps ratee enfin reussie (2026-11-12, chantier `regularite`, B3)
+
+Sur la carte de fin de serie (Saisie, Controle blanc, Course aux nombres ; ni revision ni
+flash-cards : reussite declaree), la replique `long_struggle_won` (`excited`, 3 par Palotin, sans
+nombre, sans duree, sans rappeler les echecs) remplace `session_gain`, la replique de montee de tour
+et `daily_cap` ; « Nouveau tour de panse » et la panse pleine restent dits a part.
+
+- **Regle** (`src/lib/server/buddy-struggle.ts`, `isLongStruggleWon`) : pour un modele, la 1re
+  reussite **posterieure au debut de la serie** suit au moins **3 echecs sans reussite entre eux**,
+  le premier au moins **7 jours** avant (dates de Paris). Traces corrigees seulement
+  (`source = 'auto'`), controles compris pour les echecs. Cartes de cours exclues.
+- **Une seule fois, sans stockage** : une reussite plus tardive casse la regle d'elle-meme ; le
+  debut de serie empeche une 2e serie du meme jour de refeter. Le client envoie la **duree** de la
+  serie (`seriesElapsedMs`, 0 a 24 h), jamais une heure : le serveur en tire le debut avec sa
+  propre horloge. Sans duree (ancien client) : pas de fete.
+- **Lecture** : `api/tests/save` relit, avec le client de l'eleve (RLS) et l'`id` de la session, les
+  100 dernieres traces de chaque modele **reussi** de la serie (30 modeles au plus), seulement si
+  l'eleve a un Palotin (gain non nul). Champ `buddy_xp.longStruggleWon` ; lecture en echec → `false`,
+  le gain reste. Cote client, mal forme → ignore (la fete manque, jamais le gain).
 
 ### Images
 
@@ -407,9 +547,9 @@ gironne, pile d'or, cotice en echarpe). Generes par `scripts/palotins-svg/` (`no
 copier `final/*.svg`) ; journal : `docs/wip/palotins-svg-progress.md`.
 
 - **7 expressions** : `neutral`, `happy`, `sad`, `thinking`, `excited`, `encouraging`,
-  `determined`. Apres une erreur (`incorrect`) et une Constance perdue (`streak_lost`), le Palotin
-  est **determine** (sourire en coin ; Giron leve le poing, Pile rebat ses cartes, Cotice tourne la
-  page), pas triste. `sad` est reserve au retour d'une longue absence (`long_absence`).
+  `determined`. Apres une erreur (`incorrect`), le Palotin est **determine** (sourire en coin ;
+  Giron leve le poing, Pile rebat ses cartes, Cotice tourne la page), pas triste. Aucun contexte
+  n'utilise plus `sad` depuis le 2026-11-12 (le retour apres une pause est `happy`).
 - **Animation au repos dans le SVG** : respiration, clignement, chapeau, geste propre a chacun,
   rythmes differents par Palotin.
 - **Reaction quand l'expression arrive** (CSS du composant, rejouee par `{#key}`) : bond
@@ -545,9 +685,15 @@ student_buddies
 Toutes les ecritures de `student_buddies` passent par le client service (`src/lib/server/buddy-queries.ts`),
 avec l'identifiant de l'eleve tire de la SESSION, jamais du corps de la requete : choix
 (`createStudentBuddy`), changement (`changeStudentPalotin`), Constance Royale (`recordWorkedDay`,
-`resetLostConstance` depuis le layout du tableau de bord eleve), themes (`addExploredThemes`,
+`resetLostConstance` depuis `loadBuddyPresence`), themes (`addExploredThemes`,
 `removeExploredThemes`), XP (`add_buddy_xp`). Les fonctions d'ecriture ne recoivent pas le client de
 l'eleve ; la lecture (`getStudentBuddy`) reste sur son client (sa RLS).
+
+La lecture du prof (tableau Gamification › Palotins) passe par `fetchClassMembersWithBuddies`
+(`src/lib/server/buddy-class.ts`), au client du prof : `class_members` → `profiles` →
+`student_buddies`, le Palotin embarque A TRAVERS le profil (aucun lien direct entre
+`class_members` et `student_buddies`). Preuve contre PostgREST :
+`tests/integration/palotins-vue-prof.test.ts` (2026-11-22).
 
 RLS (migration `20261017090100_palotin_constance_et_ecritures_serveur.sql`) : l'eleve n'a plus
 AUCUNE policy d'ecriture sur `student_buddies` (« Students can create their own buddy » et
@@ -575,7 +721,8 @@ celui du plafond.
 student_last_visits
 ├── student_id (FK profiles, PK, ON DELETE CASCADE)
 ├── last_visit_date (date, jour UTC de la derniere page vue, hors API)
-└── welcome_back_on (date, NULL : jour du retour a feter, 2026-10-22)
+├── welcome_back_on (date, NULL : jour du retour a feter, 2026-10-22)
+└── week_celebrated_on (date, NULL : lundi de la derniere semaine fetee, 2026-11-12)
 ```
 
 Lisible par le serveur seul : RLS sans aucune policy, droits retires a `anon` et `authenticated`
@@ -584,8 +731,9 @@ INVOKER, `service_role` seul) enregistre le jour et rend le jour du passage prec
 premier) ; atomique, le jour enregistre ne recule jamais. Migration
 `20261021210000_palotin_dernier_passage.sql`, preuve `tests/integration/palotin-dernier-passage.test.ts` ;
 `welcome_back_on` : migration `20261022100000_palotin_retour_a_feter.sql`, preuve
-`tests/integration/palotin-retour-a-feter.test.ts`. Export RGPD : `gaming.dernier_passage` et
-`gaming.retour_a_feter` (`api/account/export`, lu au client service, filtre sur l'identite de la
+`tests/integration/palotin-retour-a-feter.test.ts` ; `week_celebrated_on` : migration
+`20261112131750_palotin_semaine_fetee.sql`, preuve `tests/integration/palotin-semaine-fetee.test.ts`.
+Export RGPD : `gaming.dernier_passage`, `gaming.retour_a_feter` et `gaming.semaine_fetee` (`api/account/export`, lu au client service, filtre sur l'identite de la
 session) ; mentionne dans `legal/confidentialite` (§ 3.2 et § 7).
 
 ### Table `buddy_skins`
@@ -642,7 +790,7 @@ Genere les messages au format JSON suivant :
   "streak_7": ["message1", ...],
   "streak_14": ["message1", ...],
   "streak_30": ["message1", ...],
-  "streak_lost": ["message1", ...],
+  "return_after_pause": ["message1", ...],
   "level_up": ["message1", ...],
   "theme_fractions": ["message1", ...],
   "theme_geometry": ["message1", ...],
@@ -664,7 +812,7 @@ Genere les messages au format JSON suivant :
 - incorrect : 15 messages
 - idle : 15 messages
 - streak_3, streak_7, streak_14, streak_30 : 3 messages chacun
-- streak_lost : 4 messages
+- return_after_pause : 3 messages (joyeux, sans duree ni absence, neutres en genre)
 - level_up : 20 messages (un par niveau, du 1 au 20, de plus en plus impressionnes)
 - theme_* : 2 messages par theme
 - vip_card_* : 2 messages par rarete
@@ -712,6 +860,9 @@ Jarry joue sur ces noms (quand Bougrelas coupe Giron en quatre, il devient un "g
 ### Quand
 
 A la **premiere connexion**, avant d'acceder au dashboard. Le choix du buddy est un moment fun qui cree un lien immediat.
+
+Depuis le 2026-11-11 (chantier `palotins`), le quiz `PalotinQuiz` s'ouvre **sur l'accueil eleve
+seulement** (`PalotinPresence`), plus sur toutes les pages de l'espace eleve.
 
 ### Comment — Quiz de personnalite + presentation
 

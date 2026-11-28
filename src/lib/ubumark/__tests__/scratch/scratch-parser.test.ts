@@ -6,9 +6,9 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { parseMarkdown, type BlockNode, type ListNode } from '$lib/ubumark';
-import { parseScratchContent } from '$lib/ubumark/parser/scratch-parser';
-import type { ScratchNode } from '$lib/ubumark/types/scratch';
+import { parseMarkdown, type BlockNode, type ListNode } from '#lib/ubumark/index.ts';
+import { parseScratchContent } from '#lib/ubumark/parser/scratch-parser.ts';
+import type { ScratchNode } from '#lib/ubumark/types/scratch.ts';
 
 const children = (markdown: string) => parseMarkdown(markdown).children as BlockNode[];
 const scratchOf = (markdown: string) =>

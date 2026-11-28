@@ -1,0 +1,234 @@
+{
+	"id": "74da1cd6-9220-4170-8419-5274fb8b4348",
+	"title": "Positivité et intégration des inégalités",
+	"description": "À savoir : f ⩾ 0 sur [a ; b], a ⩽ b ⇒ ∫ f ⩾ 0 ; f ⩽ g ⇒ ∫ f ⩽ ∫ g ; piège : bornes dans l'ordre décroissant, ∫₃⁰ f ⩽ 0",
+	"grades": ["T_SPE"],
+	"level": 2,
+	"delay": 30,
+	"status": "published",
+	"shared": {},
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"statement": "Soit $f$ une fonction continue sur $[a\\,;b]$, avec $a\\leqslant b$. Si $f(x)\\geqslant 0$ pour tout $x$ de $[a\\,;b]$, alors :\n\n```choix\n- $\\displaystyle\\int_a^bf(x)\\,\\mathrm{d}x\\geqslant 0$\n- $\\displaystyle\\int_a^bf(x)\\,\\mathrm{d}x\\leqslant 0$\n- $\\displaystyle\\int_a^bf(x)\\,\\mathrm{d}x=0$\n- on ne peut rien conclure\n```",
+			"variables": [],
+			"correction": {
+				"steps": [
+					"À connaître (positivité) : si $f$ est continue et positive sur $[a\\,;b]$, avec $a\\leqslant b$, alors $\\textcolor{{{color:primary.0}}}{\\displaystyle\\int_a^bf(x)\\,\\mathrm{d}x\\geqslant 0}$.",
+					"Pour $f$ positive, l'intégrale est l'aire du domaine entre la courbe, l'axe des abscisses et les droites $x=a$ et $x=b$ : une aire est positive."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"statement": "Soient $f$ et $g$ deux fonctions continues sur $[a\\,;b]$, avec $a\\leqslant b$. Si $f(x)\\leqslant g(x)$ pour tout $x$ de $[a\\,;b]$, alors :\n\n```choix\n- $\\displaystyle\\int_a^bf(x)\\,\\mathrm{d}x\\leqslant\\displaystyle\\int_a^bg(x)\\,\\mathrm{d}x$\n- $\\displaystyle\\int_a^bf(x)\\,\\mathrm{d}x\\geqslant\\displaystyle\\int_a^bg(x)\\,\\mathrm{d}x$\n- $\\displaystyle\\int_a^b\\big(f(x)-g(x)\\big)\\,\\mathrm{d}x\\geqslant 0$\n- on ne peut rien conclure\n```",
+			"variables": [],
+			"correction": {
+				"steps": [
+					"À connaître (intégration des inégalités) : si $f\\leqslant g$ sur $[a\\,;b]$, avec $a\\leqslant b$, alors $\\textcolor{{{color:primary.0}}}{\\displaystyle\\int_a^bf(x)\\,\\mathrm{d}x\\leqslant\\displaystyle\\int_a^bg(x)\\,\\mathrm{d}x}$.",
+					"Preuve : $g-f\\geqslant 0$ sur $[a\\,;b]$, donc par positivité $\\displaystyle\\int_a^b\\big(g(x)-f(x)\\big)\\,\\mathrm{d}x\\geqslant 0$, puis on utilise la linéarité. C'est l'intégrale de $f-g$ qui est négative, pas positive."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"statement": "Soit $f$ une fonction continue sur $[0\\,;3]$, avec $f(x)\\geqslant 0$ pour tout $x$ de $[0\\,;3]$. Alors :\n\n```choix\n- $\\displaystyle\\int_3^0f(x)\\,\\mathrm{d}x\\leqslant 0$\n- $\\displaystyle\\int_3^0f(x)\\,\\mathrm{d}x\\geqslant 0$\n- $\\displaystyle\\int_3^0f(x)\\,\\mathrm{d}x=0$\n- on ne peut rien conclure\n```",
+			"variables": [],
+			"correction": {
+				"steps": [
+					"La positivité demande des bornes dans l'ordre croissant : ici la borne du bas ($3$) est plus grande que celle du haut ($0$).",
+					"Or $\\displaystyle\\int_3^0f(x)\\,\\mathrm{d}x=-\\int_0^3f(x)\\,\\mathrm{d}x$, et $\\displaystyle\\int_0^3f(x)\\,\\mathrm{d}x\\geqslant 0$ par positivité, donc $\\textcolor{{{color:primary.0}}}{\\displaystyle\\int_3^0f(x)\\,\\mathrm{d}x\\leqslant 0}$."
+				]
+			}
+		},
+		{
+			"statement": "Soit $f$ la fonction définie sur $\\left[0\\,;{{eval:3*p}}\\right]$ par $f(x)=x-{{p}}$. On admet que $\\displaystyle\\int_0^{ {{eval:3*p}} }f(x)\\,\\mathrm{d}x={{eval:3*p*p/2}}$.\n\nQue peut-on affirmer ?\n\n```choix\n- $f$ n'est pas positive sur $\\left[0\\,;{{eval:3*p}}\\right]$, bien que son intégrale soit positive\n- $f$ est positive sur $\\left[0\\,;{{eval:3*p}}\\right]$, puisque son intégrale est positive\n- Il y a une erreur : une fonction qui prend des valeurs négatives a une intégrale négative\n- $f$ est négative sur $\\left[0\\,;{{eval:3*p}}\\right]$\n```",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "1..3"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$f(0)=-{{p}}<0$ : $f$ n'est pas positive sur $\\left[0\\,;{{eval:3*p}}\\right]$, alors que son intégrale est positive.",
+					"La positivité de l'intégrale ne marche que dans un sens : $f\\geqslant 0\\Rightarrow\\displaystyle\\int_a^bf\\geqslant 0$ (avec $a\\leqslant b$). La réciproque est fausse : ici l'aire au-dessus de l'axe (sur $\\left[{{p}}\\,;{{eval:3*p}}\\right]$) l'emporte sur l'aire en dessous (sur $\\left[0\\,;{{p}}\\right]$).",
+					"Réponse : $\\textcolor{{{color:primary.0}}}{f\\text{ n'est pas positive, bien que son intégrale le soit}}$."
+				]
+			},
+			"hint": "Calcule $f(0)$. Que dit exactement la propriété de positivité de l'intégrale, et dans quel sens ?"
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {},
+			"description": "∫ f ⩾ 0",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {},
+			"description": "Erreur : ∫ f ⩽ 0",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {},
+			"description": "Erreur : ∫ f = 0",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {},
+			"description": "Erreur : rien",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {},
+			"description": "∫ f ⩽ ∫ g",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {},
+			"description": "Erreur : sens inversé",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {},
+			"description": "Erreur : ∫ (f − g) ⩾ 0",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {},
+			"description": "Erreur : rien",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {},
+			"description": "∫₃⁰ f ⩽ 0",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {},
+			"description": "Erreur : positivité sans regarder les bornes",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {},
+			"description": "Erreur : = 0",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {},
+			"description": "Erreur : rien",
+			"variationIndex": 2
+		},
+		{
+			"description": "F8 : p = 2 → choix 0",
+			"variationIndex": 3,
+			"variables": {
+				"p": "2"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0"]
+		},
+		{
+			"description": "F8 : réciproque",
+			"variationIndex": 3,
+			"variables": {
+				"p": "2"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["1"]
+		},
+		{
+			"description": "F8 : erreur supposée",
+			"variationIndex": 3,
+			"variables": {
+				"p": "2"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["2"]
+		},
+		{
+			"description": "F8 : négative",
+			"variationIndex": 3,
+			"variables": {
+				"p": "1"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["3"]
+		}
+	]
+}

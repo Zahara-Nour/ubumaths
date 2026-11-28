@@ -8,9 +8,9 @@
  */
 
 import { error } from '@sveltejs/kit';
-import { getEnv } from '$lib/server/env';
+import { getEnv } from '#lib/server/env.ts';
 import { randomBytes, timingSafeEqual } from 'crypto';
-import { createServerLogger } from '$lib/utils/logger';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('server/auth/cron');
 
@@ -27,7 +27,7 @@ const logger = createServerLogger('server/auth/cron');
  *
  * @example
  * ```typescript
- * import { verifyCronAuth } from '$lib/server/auth/cron';
+ * import { verifyCronAuth } from '#lib/server/auth/cron.ts';
  *
  * export const POST: RequestHandler = async ({ request }) => {
  *   verifyCronAuth(request); // Throws 401 if invalid
@@ -124,7 +124,7 @@ export function verifyCronAuth(request: Request): void {
  *
  * @example
  * ```typescript
- * import { generateCronSecret } from '$lib/server/auth/cron';
+ * import { generateCronSecret } from '#lib/server/auth/cron.ts';
  *
  * const secret = generateCronSecret();
  * console.log(`CRON_SECRET=${secret}`);

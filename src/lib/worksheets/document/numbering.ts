@@ -12,9 +12,9 @@ import {
 	groupExercisesForDisplay,
 	type NumberableExercise,
 	type NumberableSection
-} from '$lib/worksheets/exercise-numbering';
-import { formatNumber } from '$lib/typst/utils';
-import type { NumberingStyle } from '$lib/types/worksheets';
+} from '#lib/worksheets/exercise-numbering.ts';
+import { formatNumber } from '#lib/typst/utils/index.ts';
+import type { NumberingStyle } from '#lib/types/worksheets.ts';
 
 /** Un exercice source, à sa place dans le document */
 export interface PlacedExercise<E> {

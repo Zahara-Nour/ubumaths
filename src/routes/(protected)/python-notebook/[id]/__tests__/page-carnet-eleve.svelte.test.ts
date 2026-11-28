@@ -10,7 +10,7 @@ import { render } from 'vitest-browser-svelte';
 const created = vi.hoisted(() => [] as Array<{ execute: ReturnType<typeof vi.fn> }>);
 
 // Le module réel de l'exécuteur, pas le baril (qui réexporte d'autres exécuteurs)
-vi.mock('$lib/shared/python/execution/notebook-executor.svelte', () => {
+vi.mock('#lib/shared/python/execution/notebook-executor.svelte.ts', () => {
 	class FakeNotebookExecutor {
 		isReady = true;
 		isExecuting = false;
@@ -45,13 +45,12 @@ const toaster = vi.hoisted(() => ({
 	warning: vi.fn(),
 	info: vi.fn()
 }));
-vi.mock('$lib/stores/toaster.svelte', () => ({ toaster }));
+vi.mock('#lib/stores/toaster.svelte.ts', () => ({ toaster }));
 
 const goto = vi.hoisted(() => vi.fn(async () => {}));
-vi.mock('$app/navigation', async (importOriginal) => ({
-	...(await importOriginal<typeof import('$app/navigation')>()),
-	goto
-}));
+vi.mock('$app/navigation', async () =>
+	(await import('#tests/helpers/app-navigation-mock.ts')).appNavigationMock({ goto })
+);
 
 import Page from '../+page.svelte';
 

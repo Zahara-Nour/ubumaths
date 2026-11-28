@@ -9,12 +9,12 @@
 	 * - Back navigation
 	 */
 
-	import { Button } from '$lib/components/ui/button';
-	import BackLink from '$lib/components/navigation/BackLink.svelte';
-	import * as Card from '$lib/components/ui/card';
-	import { Badge } from '$lib/components/ui/badge';
-	import JournalContent from '$lib/components/journal/JournalContent.svelte';
-	import { GRADES, type GradeCode } from '$lib/types/grades';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import BackLink from '#lib/components/navigation/BackLink.svelte';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
+	import JournalContent from '#lib/components/journal/JournalContent.svelte';
+	import { GRADES, type GradeCode } from '#lib/types/grades.ts';
 	import {
 		BookOpen,
 		ArrowLeft,

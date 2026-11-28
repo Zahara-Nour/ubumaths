@@ -39,13 +39,20 @@ const MINIMUM_PROPOSALS = 230;
 /**
  * Dossiers de `data/corrections/` qui ne sont PAS des lots du registre :
  * - `retouches` : instantané des retouches ciblées (retouches.test.ts) ;
+ * - `texte-colore` : instantané des retouches du chantier texte-colore (retouches-texte-colore.test.ts) ;
  * - `vague3-publies` : lot vide (RESUME.md seul) ;
  * - `vague4-cloture` : propositions sans instantané `_modeles.json`, reprises
  *   par les lots `cloture-*` ;
  * - `renvois-numerotation` : renvois des EXERCICES (pas des modèles de questions),
  *   appliqués par `scripts/fix-renvois-numerotation.ts`.
  */
-const NOT_LOTS = new Set(['retouches', 'vague3-publies', 'vague4-cloture', 'renvois-numerotation']);
+const NOT_LOTS = new Set([
+	'retouches',
+	'texte-colore',
+	'vague3-publies',
+	'vague4-cloture',
+	'renvois-numerotation'
+]);
 
 // ============================================================================
 // FIXTURES

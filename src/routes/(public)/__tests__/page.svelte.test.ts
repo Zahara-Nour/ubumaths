@@ -2,8 +2,8 @@ import { page } from 'vitest/browser';
 import { afterEach, describe, expect, it } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import Page from '../+page.svelte';
-import type { MonthIndex } from '$lib/almanach/calendar';
-import { MONTH_PALETTES } from '$lib/almanach/palettes';
+import type { MonthIndex } from '#lib/almanach/calendar.ts';
+import { MONTH_PALETTES } from '#lib/almanach/palettes.ts';
 
 const MONTHS: MonthIndex[] = [0, 1, 2, 3, 4, 5, 6];
 
@@ -38,6 +38,15 @@ describe('/+page.svelte', () => {
 
 		const heading = page.getByRole('heading', { level: 1 });
 		await expect.element(heading).toBeInTheDocument();
+	});
+
+	// Le nom du site est écrit dans le grand titre : c'est lui que les moteurs
+	// rapprochent d'une recherche du nom (2026-11-21).
+	it('le grand titre porte le nom du site', async () => {
+		await renderWith(5);
+
+		const heading = page.getByRole('heading', { level: 1 });
+		await expect.element(heading).toHaveTextContent('Chiphre, les maths de la chandelle verte');
 	});
 
 	it('Père Ubu mène au Tour du Royaume ; le lien texte a quitté l’accueil', async () => {
@@ -258,7 +267,7 @@ describe('Accueil — lisibilité du Shtam en mode sombre', () => {
 			.slice(0, 3)
 			.map(Number);
 		const hex = '#' + [r, g, b].map((v) => Math.round(v).toString(16).padStart(2, '0')).join('');
-		const { contrastRatio } = await import('$lib/theme/author-color');
+		const { contrastRatio } = await import('#lib/theme/author-color.ts');
 		expect(contrastRatio(hex, '#262624')).toBeGreaterThanOrEqual(7);
 	});
 });

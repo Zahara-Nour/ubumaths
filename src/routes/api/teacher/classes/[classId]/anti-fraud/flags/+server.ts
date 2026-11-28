@@ -7,12 +7,12 @@
  * Cf. spec TDD : docs/archive/wip/srs-anti-fraud-spec-tdd.md §B9
  */
 
-import { error, json } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireTeacherOfClass } from '$lib/server/stats/teacher-class-auth';
-import { classIdParamSchema } from '$lib/server/validation/teacher-analytics';
-import { flagsListQuerySchema } from '$lib/server/validation/anti-fraud';
-import { createServerLogger } from '$lib/utils/logger';
+import { requireTeacherOfClass } from '#lib/server/stats/teacher-class-auth.ts';
+import { classIdParamSchema } from '#lib/server/validation/teacher-analytics.ts';
+import { flagsListQuerySchema } from '#lib/server/validation/anti-fraud.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/teacher/classes/[classId]/anti-fraud/flags/+server');
 
@@ -22,7 +22,7 @@ const DEFAULT_SINCE_DAYS = 30;
 export const GET: RequestHandler = async ({ params, url, locals }) => {
 	const paramCheck = classIdParamSchema.safeParse(params);
 	if (!paramCheck.success) {
-		return json({ error: paramCheck.error.issues[0].message }, { status: 400 });
+		return Response.json({ error: paramCheck.error.issues[0].message }, { status: 400 });
 	}
 
 	const queryCheck = flagsListQuerySchema.safeParse({
@@ -32,7 +32,7 @@ export const GET: RequestHandler = async ({ params, url, locals }) => {
 		point: url.searchParams.get('point') ?? undefined
 	});
 	if (!queryCheck.success) {
-		return json({ error: queryCheck.error.issues[0].message }, { status: 400 });
+		return Response.json({ error: queryCheck.error.issues[0].message }, { status: 400 });
 	}
 
 	const { classId } = paramCheck.data;
@@ -55,7 +55,7 @@ export const GET: RequestHandler = async ({ params, url, locals }) => {
 
 	const studentIds = (memberRows ?? []).map((m) => m.student_id);
 	if (studentIds.length === 0) {
-		return json({ flags: [], total: 0, resolved_count: 0 });
+		return Response.json({ flags: [], total: 0, resolved_count: 0 });
 	}
 
 	// 2. Construit la query flags avec filtres.
@@ -65,7 +65,7 @@ export const GET: RequestHandler = async ({ params, url, locals }) => {
 	let q = locals.supabase
 		.from('srs_anti_fraud_flags')
 		.select(
-			'id, student_id, capacity_point_id, flag_type, severity, score, sample_size, details, resolved, resolved_by, resolved_at, created_at, profiles!srs_anti_fraud_flags_student_id_fkey(id, first_name, last_name), curriculum_points(id, name)'
+			'id, student_id, capacity_point_id, flag_type, severity, score, sample_size, details, resolved, resolved_by, resolved_at, created_at, profiles!srs_anti_fraud_flags_student_id_fkey(id, firstname, lastname), curriculum_points(id, name)'
 		)
 		.in('student_id', studentIds)
 		.gte('created_at', sinceIso)
@@ -79,27 +79,12 @@ export const GET: RequestHandler = async ({ params, url, locals }) => {
 
 	const { data: flagRows, error: flagErr } = await q;
 	if (flagErr) {
-		return json({ error: flagErr.message }, { status: 500 });
+		// Le message de la base (noms de colonnes) reste dans le journal du serveur.
+		logger.error('Signalements illisibles :', flagErr);
+		return Response.json({ error: 'Impossible de lire les signalements' }, { status: 500 });
 	}
 
-	type FlagRow = {
-		id: string;
-		student_id: string;
-		capacity_point_id: string | null;
-		flag_type: string;
-		severity: number;
-		score: number;
-		sample_size: number;
-		details: Record<string, unknown> | null;
-		resolved: boolean;
-		resolved_by: string | null;
-		resolved_at: string | null;
-		created_at: string;
-		profiles: { id: string; first_name: string | null; last_name: string | null } | null;
-		curriculum_points: { id: string; name: string } | null;
-	};
-
-	const flags = ((flagRows ?? []) as unknown as FlagRow[]).map((row) => ({
+	const flags = (flagRows ?? []).map((row) => ({
 		id: row.id,
 		student_id: row.student_id,
 		capacity_point_id: row.capacity_point_id,
@@ -115,8 +100,8 @@ export const GET: RequestHandler = async ({ params, url, locals }) => {
 		student: row.profiles
 			? {
 					id: row.profiles.id,
-					first_name: row.profiles.first_name,
-					last_name: row.profiles.last_name
+					first_name: row.profiles.firstname,
+					last_name: row.profiles.lastname
 				}
 			: { id: row.student_id, first_name: null, last_name: null },
 		point: row.curriculum_points
@@ -132,7 +117,7 @@ export const GET: RequestHandler = async ({ params, url, locals }) => {
 		.eq('resolved', true)
 		.gte('created_at', sinceIso);
 
-	return json({
+	return Response.json({
 		flags,
 		total: flags.length,
 		resolved_count: resolvedCount ?? 0

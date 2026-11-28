@@ -1,14 +1,12 @@
 <script lang="ts">
+	import SeoHead from '#lib/seo/SeoHead.svelte';
 	import Trio from './Trio.svelte';
 </script>
 
-<svelte:head>
-	<title>Trio - Jeu Mathématique | Chiphre</title>
-	<meta
-		name="description"
-		content="Trouvez trois nombres alignés qui satisfont une équation mathématique. Entraînez-vous au calcul mental tout en résolvant des puzzles !"
-	/>
-</svelte:head>
+<SeoHead
+	title="Trio : jeu de calcul mental en ligne | Chiphre"
+	description="Trouvez trois nombres alignés qui satisfont une équation mathématique. Entraînez-vous au calcul mental tout en résolvant des puzzles !"
+/>
 
 <div class="container mx-auto px-4 py-8">
 	<div class="mb-8 text-center">

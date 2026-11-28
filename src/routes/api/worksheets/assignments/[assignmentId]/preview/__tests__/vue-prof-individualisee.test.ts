@@ -13,9 +13,10 @@ import { describe, it, expect, vi } from 'vitest';
 import {
 	tableMock,
 	twoLevelExercise,
+	versionedLines,
 	type TableMock
-} from '$lib/server/worksheets/__tests__/table-mock';
-import { assignmentCopyScope, copyExerciseOrder } from '$lib/worksheets/worksheet-copy';
+} from '#lib/server/worksheets/__tests__/table-mock.ts';
+import { assignmentCopyScope, copyExerciseOrder } from '#lib/worksheets/worksheet-copy.ts';
 
 // ============================================================================
 // MOCKS
@@ -23,7 +24,7 @@ import { assignmentCopyScope, copyExerciseOrder } from '$lib/worksheets/workshee
 
 const currentUser = vi.hoisted(() => ({ id: '' }));
 
-vi.mock('$lib/server/middleware/auth', () => ({
+vi.mock('#lib/server/middleware/auth.ts', () => ({
 	requireRole: async () => ({ user: { id: currentUser.id } }),
 	// Garde commune simulée : la session vient de `locals.safeGetSession` (le prof)
 	requireAuth: async (locals: { safeGetSession: () => Promise<{ user: unknown }> }) => ({
@@ -31,14 +32,14 @@ vi.mock('$lib/server/middleware/auth', () => ({
 		profile: { role: 'teacher' }
 	})
 }));
-vi.mock('$lib/server/worksheets/assignment-access', () => ({
+vi.mock('#lib/server/worksheets/assignment-access.ts', () => ({
 	resolveAssignmentAccess: async () => ({ canRead: true, readOnly: false })
 }));
-vi.mock('$lib/server/worksheets/assignment-classes', () => ({
+vi.mock('#lib/server/worksheets/assignment-classes.ts', () => ({
 	fetchAssignmentClasses: async () => [],
 	formatClassNames: () => null
 }));
-vi.mock('$lib/server/worksheets/correction-visibility', () => ({
+vi.mock('#lib/server/worksheets/correction-visibility.ts', () => ({
 	getCorrectionVisibilityMap: async (_s: unknown, _a: unknown, ids: string[]) =>
 		new Map(ids.map((id) => [id, true]))
 }));
@@ -80,6 +81,12 @@ interface MockOptions {
 	notRecipient?: boolean;
 }
 
+/** Ancien contenu de la ligne d'`exercises` : périmé, il ne doit jamais sortir (ADR 0044) */
+const STALE = {
+	variations: [{ label: 'guided', statement_md: 'PERIME', solution_md: 'PERIME' }],
+	shared: null
+};
+
 function supabase(
 	individualized: boolean,
 	config: Record<string, unknown>,
@@ -116,18 +123,22 @@ function supabase(
 		worksheet_assignment_classes: { data: [], error: null },
 		worksheet_exercises: {
 			// Ordre de la base : `order('position')`, positions qui redémarrent par section
-			data: [...ROWS]
-				.sort((a, b) => a.position - b.position)
-				.map((row) => ({
-					...row,
-					points: null,
-					custom_instructions: null,
-					translations: null,
-					correction_visible: true,
-					variation_index: null,
-					is_essential: false,
-					exercise: row.id === options.orphanId ? null : twoLevelExercise()
-				})),
+			// Contenu sur la version de la ligne (ADR 0044) ; l'exercice garde un ancien contenu
+			data: versionedLines(
+				[...ROWS]
+					.sort((a, b) => a.position - b.position)
+					.map((row) => ({
+						...row,
+						points: null,
+						custom_instructions: null,
+						translations: null,
+						correction_visible: true,
+						variation_index: null,
+						is_essential: false,
+						exercise: row.id === options.orphanId ? null : twoLevelExercise()
+					})),
+				STALE
+			),
 			error: null
 		},
 		worksheet_sections: options.sectionsError

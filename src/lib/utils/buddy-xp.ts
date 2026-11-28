@@ -6,8 +6,8 @@
  * The XP table and daily cap are defined here as the single source of truth.
  */
 
-import type { PalotinType } from '$lib/config/buddy-messages';
-import type { BuddyQuizAnswer, BuddyQuizResult } from '$lib/types/buddy';
+import type { PalotinType } from '#lib/config/buddy-messages.ts';
+import type { BuddyQuizAnswer, BuddyQuizResult } from '#lib/types/buddy.ts';
 
 /** Cumulative XP required for each level (index = level, value = total XP) */
 export const XP_TABLE = [

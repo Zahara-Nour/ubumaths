@@ -1,0 +1,68 @@
+{
+	"id": "f5275c46-8806-46d8-b45e-dc2f3d0bf980",
+	"title": "Relecture — nombres décimaux, 10 modèles complétés",
+	"grade": "6",
+	"description": "Relecture dans /dev/modeles des 10 modèles publiés complétés par le lot « nombres décimaux » de 6e (nouvelles variations : les dernières de chaque modèle).",
+	"items": [
+		{
+			"modele": "Liens entre les unités de numération",
+			"templateId": "2c5bae8f-03e3-44c6-9dbd-6849c7177ceb",
+			"quantity": 1,
+			"delay": 20
+		},
+		{
+			"modele": "Calculer un produit",
+			"templateId": "819df2a9-5dd9-40c5-9525-c68e626c04b6",
+			"quantity": 1,
+			"delay": 20
+		},
+		{
+			"modele": "Calculer un quotient",
+			"templateId": "590169c4-e51d-4ea1-adaa-1cc38093442f",
+			"quantity": 1,
+			"delay": 15
+		},
+		{
+			"modele": "Calculer un produit",
+			"templateId": "571ca739-e3be-47de-b431-e888a9e46f18",
+			"quantity": 1,
+			"delay": 20
+		},
+		{
+			"modele": "Calculer un produit",
+			"templateId": "ddbce820-5e75-4a7a-832e-33980cd4b43a",
+			"quantity": 1,
+			"delay": 20
+		},
+		{
+			"modele": "Contrôler par un ordre de grandeur",
+			"templateId": "7deff4e0-61c6-42bd-8cfb-ddcad1c94b35",
+			"quantity": 1,
+			"delay": 30
+		},
+		{
+			"modele": "Problèmes de produits décimaux",
+			"templateId": "32b7a9bc-300c-44a1-af0d-a811ca688eb2",
+			"quantity": 1,
+			"delay": 60
+		},
+		{
+			"modele": "Problèmes de partage décimal",
+			"templateId": "87cfa41b-cd8c-4b53-9150-78f91dd71702",
+			"quantity": 1,
+			"delay": 60
+		},
+		{
+			"modele": "Problèmes de division euclidienne",
+			"templateId": "3f4bacc6-2ee4-48c7-8ea4-e5ac52af62d4",
+			"quantity": 1,
+			"delay": 60
+		},
+		{
+			"modele": "Additionner des nombres décimaux",
+			"templateId": "b586bdf8-0b7b-452b-9fe5-a7f3d6da456a",
+			"quantity": 1,
+			"delay": 30
+		}
+	]
+}

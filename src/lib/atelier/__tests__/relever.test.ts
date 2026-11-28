@@ -14,11 +14,11 @@
 
 import { describe, it, expect, vi } from 'vitest';
 import { Atelier } from '../atelier.svelte';
-import { WebReplEngine } from '$lib/mathAST/cli/web/web-repl-engine';
+import { WebReplEngine } from '#lib/mathAST/cli/web/web-repl-engine.ts';
 import { runInput, type CalcResult, type CalcSession } from '../calcul';
 import { CalcDesk } from '../desk.svelte';
-import { GrapheurStore } from '$lib/stores/grapheur.svelte';
-import { isScatter } from '$lib/grapheur/types';
+import { GrapheurStore } from '#lib/stores/grapheur.svelte.ts';
+import { isScatter } from '#lib/grapheur/types.ts';
 import { historyToJson } from '../history-export';
 import { readHistory } from '../history-import';
 import { isList, MAX_LISTS, type ListObject } from '../types';

@@ -8,20 +8,22 @@
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { isHttpError, isRedirect } from '@sveltejs/kit';
-import type { Database } from '$lib/types/database';
+import type { Database } from '#lib/types/database.ts';
+import type { ExerciseVersionContent } from '#lib/types/database-helpers.ts';
 
-type ExerciseRow = Database['public']['Tables']['exercises']['Row'];
+// Un exercice tel que le code le rend : fiche d'identité + contenu de sa version (ADR 0044)
+type ExerciseRow = Database['public']['Tables']['exercises']['Row'] & ExerciseVersionContent;
 
-vi.mock('$lib/server/exercises', () => ({
+vi.mock('#lib/server/exercises.ts', () => ({
 	getExerciseBySlug: vi.fn(),
 	getExercise: vi.fn()
 }));
-vi.mock('$lib/server/exercise-share-tokens', () => ({
+vi.mock('#lib/server/exercise-share-tokens.ts', () => ({
 	getExerciseByShareToken: vi.fn()
 }));
 
-const { getExerciseBySlug } = await import('$lib/server/exercises');
-const { getExerciseByShareToken } = await import('$lib/server/exercise-share-tokens');
+const { getExerciseBySlug } = await import('#lib/server/exercises.ts');
+const { getExerciseByShareToken } = await import('#lib/server/exercise-share-tokens.ts');
 const { load } = await import('../+page.server');
 
 function exerciseRow(overrides: Partial<ExerciseRow> = {}): ExerciseRow & { tags: string[] } {
@@ -40,9 +42,10 @@ function exerciseRow(overrides: Partial<ExerciseRow> = {}): ExerciseRow & { tags
 		distribution_mode: 'on_demand',
 		is_public: true,
 		search_indexed: true,
-		variables: null,
+		variables: [],
 		resources: null,
 		generic_functions: null,
+		translations: null,
 		shared: null,
 		variations: [{ label: 'default', statement_md: 'Q ?', solution_md: 'R' }],
 		tags: [],

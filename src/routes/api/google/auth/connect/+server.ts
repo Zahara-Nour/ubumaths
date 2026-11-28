@@ -26,12 +26,11 @@
  * }
  */
 
-import { json } from '@sveltejs/kit';
-import { assertGoogleClassroomEnabled } from '$lib/server/google/feature-guard';
+import { assertGoogleClassroomEnabled } from '#lib/server/google/feature-guard.ts';
 import type { RequestHandler } from './$types';
-import { getAuthUrl } from '$lib/server/google/oauth';
-import { requireRole } from '$lib/server/middleware/auth';
-import { createServerLogger } from '$lib/utils/logger';
+import { getAuthUrl } from '#lib/server/google/oauth.ts';
+import { requireRole } from '#lib/server/middleware/auth.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/google/auth/connect/+server');
 
@@ -69,5 +68,5 @@ export const POST: RequestHandler = async ({ locals, cookies }) => {
 
 	logger.info('[Google OAuth] Generated authorization URL');
 
-	return json({ url });
+	return Response.json({ url });
 };

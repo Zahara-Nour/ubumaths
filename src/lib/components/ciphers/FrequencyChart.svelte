@@ -4,8 +4,8 @@
 	là qu'on les casse.
 -->
 <script lang="ts">
-	import MyCheckbox from '$lib/components/MyCheckbox.svelte';
-	import { FRENCH_FREQUENCIES, formatPercent, letterFrequencies } from '$lib/ciphers/frequency';
+	import MyCheckbox from '#lib/components/MyCheckbox.svelte';
+	import { FRENCH_FREQUENCIES, formatPercent, letterFrequencies } from '#lib/ciphers/frequency.ts';
 
 	// Props
 	let { text }: { text: string } = $props();

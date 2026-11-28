@@ -7,7 +7,7 @@
 
 import { describe, it, expect } from 'vitest';
 import { Atelier } from '../atelier.svelte';
-import { WebReplEngine } from '$lib/mathAST/cli/web/web-repl-engine';
+import { WebReplEngine } from '#lib/mathAST/cli/web/web-repl-engine.ts';
 import { runInput, type CalcResult, type CalcSession } from '../calcul';
 import { ANGLE_UNIT_KEY, readAngleUnit, writeAngleUnit } from '../angle-unit';
 

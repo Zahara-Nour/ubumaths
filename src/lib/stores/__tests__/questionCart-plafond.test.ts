@@ -42,3 +42,58 @@ describe('questionCart — plafond de 99', () => {
 		]);
 	});
 });
+
+describe('questionCart — variations choisies (idée 2)', () => {
+	beforeEach(() => {
+		questionCart.clearCart();
+	});
+
+	it('setVariations enregistre le choix, trié', () => {
+		questionCart.addToCart(TEMPLATE, 3);
+		questionCart.setVariations(TEMPLATE, [2, 0]);
+		expect(questionCart.getItem(TEMPLATE)?.variations).toEqual([0, 2]);
+	});
+
+	it('setVariations sans choix (toutes) retire le champ', () => {
+		questionCart.addToCart(TEMPLATE, 3);
+		questionCart.setVariations(TEMPLATE, [1]);
+		questionCart.setVariations(TEMPLATE, undefined);
+		expect(questionCart.getItem(TEMPLATE)).toEqual({
+			templateId: TEMPLATE,
+			quantity: 3,
+			delay: 20
+		});
+	});
+
+	it('un lien de série garde le choix de ses lignes', () => {
+		questionCart.replaceWith([{ templateId: OTHER, quantity: 3, delay: 40, variations: [1] }]);
+		expect(questionCart.allItems).toEqual([
+			{ templateId: OTHER, quantity: 3, delay: 40, variations: [1] }
+		]);
+	});
+
+	it('fusion : la ligne déjà là garde son choix, comme sa durée', () => {
+		questionCart.addToCart(TEMPLATE, 2);
+		questionCart.setVariations(TEMPLATE, [0]);
+		questionCart.mergeItems([{ templateId: TEMPLATE, quantity: 1, delay: 20, variations: [1] }]);
+		expect(questionCart.getItem(TEMPLATE)?.variations).toEqual([0]);
+	});
+});
+
+describe('questionCart — durée par question (écart L92)', () => {
+	beforeEach(() => {
+		questionCart.clearCart();
+	});
+
+	it('une série à 10 min rechargée : « − » retire 5 s, pas 5 min', () => {
+		questionCart.replaceWith([{ templateId: TEMPLATE, quantity: 3, delay: 600 }]);
+		questionCart.updateDelay(TEMPLATE, 595);
+		expect(questionCart.allItems[0].delay).toBe(595);
+	});
+
+	it('bornée à 600 s, comme la série enregistrée', () => {
+		questionCart.addToCart(TEMPLATE, 1, 20);
+		questionCart.updateDelay(TEMPLATE, 900);
+		expect(questionCart.allItems[0].delay).toBe(600);
+	});
+});

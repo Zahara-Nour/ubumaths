@@ -4,15 +4,15 @@
  */
 
 import { describe, expect, it } from 'vitest';
-import { parseCollectionContent } from '$lib/ubumark/parser/collection-parser';
-import { generateCollectionTypst } from '$lib/ubumark/generators/collection-typst';
+import { parseCollectionContent } from '#lib/ubumark/parser/collection-parser.ts';
+import { generateCollectionTypst } from '#lib/ubumark/generators/collection-typst.ts';
 import {
 	buildCollectionScene,
 	COLLECTION_VIEW,
 	findCollectionItemAt,
 	type CollectionItem,
 	type CollectionScene
-} from '$lib/ubumark/utils/collection-scene';
+} from '#lib/ubumark/utils/collection-scene.ts';
 import {
 	addToBuild,
 	buildAnswer,
@@ -23,8 +23,8 @@ import {
 	reservePieces,
 	reserveScene,
 	solutionBuild
-} from '$lib/ubumark/utils/collection-construire';
-import type { CollectionNode, CollectionSpec } from '$lib/ubumark/types/collection';
+} from '#lib/ubumark/utils/collection-construire.ts';
+import type { CollectionNode, CollectionSpec } from '#lib/ubumark/types/collection.ts';
 
 const parse = (...lines: string[]) => parseCollectionContent(lines.join('\n'));
 const messages = (node: CollectionNode) => node.errors.map((e) => e.message);

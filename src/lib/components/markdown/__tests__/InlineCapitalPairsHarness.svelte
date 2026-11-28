@@ -5,7 +5,7 @@
 <script lang="ts">
 	import InlineMarkdown from '../InlineMarkdown.svelte';
 	import { provideCapitalPairs } from '../content-capital-pairs';
-	import type { CapitalPairs } from '$lib/mathAST/parser/types';
+	import type { CapitalPairs } from '#lib/mathAST/parser/types.ts';
 
 	interface Props {
 		content: string;

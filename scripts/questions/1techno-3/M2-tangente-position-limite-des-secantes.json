@@ -1,0 +1,161 @@
+{
+	"id": "5643abd0-1454-4b03-b612-3fd3b1a1ca33",
+	"title": "Tangente : position limite des sécantes",
+	"description": "La tangente en A est la position limite des sécantes (AM) quand M se rapproche de A",
+	"grades": ["1_TECHNO"],
+	"level": 1,
+	"delay": 30,
+	"status": "draft",
+	"options": {
+		"courseQuestion": true
+	},
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		},
+		"cleanCoefficients": true
+	},
+	"variations": [
+		{
+			"statement": "$A$ est un point de la courbe d'une fonction $f$, et $M$ un autre point de cette courbe. Quand $M$ se rapproche de $A$ sur la courbe, la sécante $(AM)$ se rapproche…\n\n```choix\n- de la tangente à la courbe en $A$\n- de l'axe des abscisses\n- de la droite qui passe par $A$ et l'origine\n- de la courbe elle-même\n```",
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"variables": [],
+			"correction": {
+				"steps": [
+					"La tangente en $A$ est, par définition, la **position limite** des sécantes $(AM)$ quand $M$ se rapproche de $A$."
+				]
+			}
+		},
+		{
+			"statement": "$f(x)=x^2$, $A$ est le point de sa courbe d'abscisse ${{a}}$ et $M$ celui d'abscisse ${{a}}+h$. Le tableau donne la pente de la sécante $(AM)$ pour des valeurs de $h$ de plus en plus proches de $0$.\n\n| $h$ | $1$ | $0{,}1$ | $0{,}01$ | $0{,}001$ |\n| --- | --- | --- | --- | --- |\n| Pente de $(AM)$ | ${{eval:2*a+1}}$ | ${{eval:2*a+0.1}}$ | ${{eval:2*a+0.01}}$ | ${{eval:2*a+0.001}}$ |\n\nQuelle est, d'après ce tableau, la pente de la tangente en $A$ ?\n\n$\\text{pente}=?$",
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:2*a}}"
+				}
+			],
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..5"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Quand $h$ se rapproche de $0$, $M$ se rapproche de $A$, et les pentes des sécantes se rapprochent de ${{eval:2*a}}$.",
+					"La tangente est la position limite des sécantes : sa pente vaut $\\textcolor{{{color:primary.0}}}{ {{eval:2*a}} }$."
+				]
+			}
+		},
+		{
+			"statement": "Vrai ou faux : « la tangente à une courbe en un point $A$ est la droite qui ne touche la courbe qu'en $A$ ».\n\n```choix\nmelanger: non\n- Vrai\n- Faux\n```",
+			"blanks": [
+				{
+					"expectedAnswer": "1"
+				}
+			],
+			"variables": [],
+			"correction": {
+				"steps": [
+					"**Faux.** La tangente est définie comme la position limite des sécantes $(AM)$ quand $M$ se rapproche de $A$.",
+					"Elle peut recouper la courbe ailleurs : la tangente à la courbe de $x\\mapsto x^3$ en son point d'abscisse $1$, $y=3x-2$, la recoupe au point d'abscisse $-2$."
+				]
+			}
+		},
+		{
+			"statement": "Vrai ou faux : « la tangente en $A$ est la sécante $(AM)$ obtenue en prenant $M$ très proche de $A$ ».\n\n```choix\nmelanger: non\n- Vrai\n- Faux\n```",
+			"blanks": [
+				{
+					"expectedAnswer": "1"
+				}
+			],
+			"variables": [],
+			"correction": {
+				"steps": [
+					"**Faux.** Une sécante $(AM)$, même avec $M$ très proche, n'est pas la tangente : la tangente est la **position limite** de ces sécantes quand $M$ se rapproche de $A$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Position limite : tangente",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : axe des abscisses",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "a = 3 : pente 6",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3"
+			},
+			"answers": ["6"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : dernière valeur du tableau",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3"
+			},
+			"answers": ["6.001"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Ne touche qu'en A : faux",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : vrai",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Sécante proche : faux",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : vrai",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

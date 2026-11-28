@@ -4,7 +4,7 @@
  * erreur, pour qu'une évolution du moteur ne casse pas une figure en silence.
  */
 import { describe, it, expect } from 'vitest';
-import { runDsl } from '$lib/geometry-core/dsl';
+import { runDsl } from '#lib/geometry-core/dsl/index.ts';
 import { DEMO_FIGURES, DEMO_SECTIONS } from '../figures';
 
 type Pt = { x: number; y: number };

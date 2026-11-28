@@ -1,0 +1,164 @@
+[
+	{
+		"id": "27bf3101-faf4-4d55-8233-ef8bb3548179",
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"grades": ["CE1"],
+		"delay": 15,
+		"level": 5,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{c}}"
+					}
+				],
+				"statement": "Complète.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..9"
+					},
+					{
+						"name": "b",
+						"expression": "1..8"
+					},
+					{
+						"name": "c",
+						"expression": "{{eval:b+1}}..9"
+					},
+					{
+						"name": "expression1",
+						"expression": "{{eval:a*10+b}} - ? = {{eval:a*10+b-c}}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$\\textcolor{{{color:primary.0}}}{{{eval:a*10+b}}} - ? = {{eval:a*10+b-c}}$. On cherche le nombre qu'il faut retrancher à $\\textcolor{{{color:primary.0}}}{{{eval:a*10+b}}}$ pour obtenir ${{eval:a*10+b-c}}$ : c'est l'écart entre $\\textcolor{{{color:primary.0}}}{{{eval:a*10+b}}}$ et ${{eval:a*10+b-c}}$, on $\\textcolor{{{color:primary.1}}}{\\text{soustrait}}$ ${{eval:a*10+b-c}}$ de $\\textcolor{{{color:primary.0}}}{{{eval:a*10+b}}}$.",
+						"$$\\begin{align} ? &= \\textcolor{{{color:primary.0}}}{{{eval:a*10+b}}} \\textcolor{{{color:primary.1}}}{-} {{eval:a*10+b-c}} \\\\ &= {{solution}} \\end{align}$$"
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "published",
+		"title": "Compléter une soustraction à trou",
+		"description": "Soustraire un nombre à un chiffre à un nombre à deux chiffres, avec franchissement de la dizaine",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["9"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "8",
+					"c": "9"
+				},
+				"description": "78-?=69 : 9",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["1"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "7",
+					"b": "8",
+					"c": "9"
+				},
+				"description": "Erreur : écart des unités 9-8",
+				"variationIndex": 0
+			}
+		],
+		"classification_node_id": "0cad3e5b-da0a-4b01-8529-1a6d9ab12c2f"
+	},
+	{
+		"id": "3d6def48-eefd-4015-9090-ec2396ec3483",
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"grades": ["CE1"],
+		"delay": 15,
+		"level": 7,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:d*100}}"
+					}
+				],
+				"statement": "Complète.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "2..9"
+					},
+					{
+						"name": "b",
+						"expression": "1..9"
+					},
+					{
+						"name": "c",
+						"expression": "1..9"
+					},
+					{
+						"name": "d",
+						"expression": "1..{{eval:a-1}}"
+					},
+					{
+						"name": "expression1",
+						"expression": "{{eval: a*100 + b*10 + c }} - ? =  {{eval:a*100 + b*10 + c - d*100}}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$\\textcolor{{{color:primary.0}}}{{{eval: a*100 + b*10 + c }}} - ? = {{eval:a*100 + b*10 + c - d*100}}$. On cherche le nombre qu'il faut retrancher à $\\textcolor{{{color:primary.0}}}{{{eval: a*100 + b*10 + c }}}$ pour obtenir ${{eval:a*100 + b*10 + c - d*100}}$ : c'est l'écart entre $\\textcolor{{{color:primary.0}}}{{{eval: a*100 + b*10 + c }}}$ et ${{eval:a*100 + b*10 + c - d*100}}$, on $\\textcolor{{{color:primary.1}}}{\\text{soustrait}}$ ${{eval:a*100 + b*10 + c - d*100}}$ de $\\textcolor{{{color:primary.0}}}{{{eval: a*100 + b*10 + c }}}$.",
+						"$$\\begin{align} ? &= \\textcolor{{{color:primary.0}}}{{{eval: a*100 + b*10 + c }}} \\textcolor{{{color:primary.1}}}{-} {{eval:a*100 + b*10 + c - d*100}} \\\\ &= {{solution}} \\end{align}$$"
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "published",
+		"title": "Compléter une soustraction à trou",
+		"description": "Soustraire des centaines entières à un nombre",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["400"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "9",
+					"d": "4"
+				},
+				"description": "799-?=399 : 400",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["4"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "9",
+					"d": "4"
+				},
+				"description": "Erreur : 4 au lieu de 400",
+				"variationIndex": 0
+			}
+		],
+		"classification_node_id": "0cad3e5b-da0a-4b01-8529-1a6d9ab12c2f"
+	}
+]

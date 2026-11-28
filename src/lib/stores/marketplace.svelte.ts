@@ -3,8 +3,8 @@
 // Main store for managing marketplace state with Svelte 5 runes
 
 import { get } from 'svelte/store';
-import { studentCache } from '$lib/stores/studentDashboardCache.svelte';
-import { vipCardTemplates } from '$lib/stores/vipCardTemplates.svelte';
+import { studentCache } from '#lib/stores/studentDashboardCache.svelte.ts';
+import { vipCardTemplates } from '#lib/stores/vipCardTemplates.svelte.ts';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type {
 	MarketplaceListing,
@@ -17,15 +17,15 @@ import type {
 	ListingsFilter,
 	VipCardWithLockStatus,
 	MarketplaceTradeChatMessage
-} from '$lib/types/marketplace';
-import { toaster } from '$lib/stores/toaster.svelte';
+} from '#lib/types/marketplace.ts';
+import { toaster } from '#lib/stores/toaster.svelte.ts';
 import {
 	createListingSchema,
 	createProposalSchema,
 	createTradeSchema,
 	// chatMessageSchema, // TODO Phase 6: Uncomment when trade chat is implemented
 	updateProposalSchema
-} from '$lib/validation/marketplace';
+} from '#lib/validation/marketplace.ts';
 
 class MarketplaceStore {
 	// State - Using Svelte 5 runes

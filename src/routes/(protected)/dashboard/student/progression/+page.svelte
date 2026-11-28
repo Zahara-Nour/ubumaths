@@ -7,10 +7,10 @@
 	 * de quel axe il parle — ce que deux tuiles côte à côte ne permettaient pas.
 	 */
 
-	import * as Tabs from '$lib/components/ui/tabs';
+	import * as Tabs from '#lib/components/ui/tabs/index.ts';
 	import { TrendingUp } from '@lucide/svelte';
-	import NotionsPanel from '$lib/components/progression/NotionsPanel.svelte';
-	import CompetencesPanel from '$lib/components/progression/CompetencesPanel.svelte';
+	import NotionsPanel from '#lib/components/progression/NotionsPanel.svelte';
+	import CompetencesPanel from '#lib/components/progression/CompetencesPanel.svelte';
 	import { replaceState } from '$app/navigation';
 	import { page } from '$app/state';
 	import type { PageData } from './$types';
@@ -34,7 +34,7 @@
 	);
 
 	function handleTabChange(value: string) {
-		const url = new URL(page.url);
+		const url = new URL(page.url.href);
 		url.searchParams.set('onglet', value);
 		replaceState(url, page.state);
 	}

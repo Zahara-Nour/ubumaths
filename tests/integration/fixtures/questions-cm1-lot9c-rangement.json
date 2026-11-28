@@ -1,0 +1,46 @@
+[
+	{
+		"id": "2e15c33a-d21b-449b-ba3b-b9591db2bd1c",
+		"noeudAvant": null,
+		"noeudApres": "Géométrie > Figures planes > constructions",
+		"gradesAvant": ["CM1", "CM2"],
+		"gradesApres": ["CM1", "CM2"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["CM1§CM1-104", "CM2§CM2-094"]
+	},
+	{
+		"id": "3a888b08-c7a1-495a-845b-c7540f351c74",
+		"noeudAvant": null,
+		"noeudApres": "Géométrie > Figures planes > constructions",
+		"gradesAvant": ["CM1", "CM2"],
+		"gradesApres": ["CM1", "CM2"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["CM1§CM1-104", "CM2§CM2-094"]
+	},
+	{
+		"id": "7d048525-862b-425b-9037-c455303bd68f",
+		"noeudAvant": null,
+		"noeudApres": "Géométrie > Figures planes > constructions",
+		"gradesAvant": ["CM1", "CM2"],
+		"gradesApres": ["CM1", "CM2"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["CM1§CM1-097", "CM2§CM2-087"]
+	},
+	{
+		"id": "82351474-f11f-430d-b74e-f850c00b684b",
+		"noeudAvant": null,
+		"noeudApres": "Géométrie > Figures planes > constructions",
+		"gradesAvant": ["CM1", "CM2"],
+		"gradesApres": ["CM1", "CM2"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["CM1§CM1-104", "CM2§CM2-094"]
+	}
+]

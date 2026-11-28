@@ -13,10 +13,10 @@ import { cleanup, render } from 'vitest-browser-svelte';
 import { page, userEvent } from 'vitest/browser';
 import type { MathfieldElement } from 'mathlive';
 import AtelierContainer from '../AtelierContainer.svelte';
-import { Atelier } from '$lib/atelier/atelier.svelte';
-import { GrapheurStore } from '$lib/stores/grapheur.svelte';
-import { INPUT_MODE_KEY } from '$lib/atelier/input-mode';
-import { CALC_HISTORY_STORAGE_KEY } from '$lib/atelier/history-storage';
+import { Atelier } from '#lib/atelier/atelier.svelte.ts';
+import { GrapheurStore } from '#lib/stores/grapheur.svelte.ts';
+import { INPUT_MODE_KEY } from '#lib/atelier/input-mode.ts';
+import { CALC_HISTORY_STORAGE_KEY } from '#lib/atelier/history-storage.ts';
 
 // =============================================================================
 // Décor

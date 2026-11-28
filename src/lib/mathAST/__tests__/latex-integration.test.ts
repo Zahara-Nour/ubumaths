@@ -111,9 +111,8 @@ describe('LaTeX Generator - Integration Tests', () => {
 			MathAST.parentheses(MathAST.fraction(MathAST.number('3'), MathAST.number('4')))
 		);
 
-		expect(toLatex(expr)).toBe(
-			'\\dfrac{\\left( \\dfrac{1}{2} \\right)}{\\left( \\dfrac{3}{4} \\right)}'
-		);
+		// La barre groupe : les parenthèses de groupement ne s'écrivent pas (E9, ecarts-verifs)
+		expect(toLatex(expr)).toBe('\\dfrac{\\dfrac{1}{2}}{\\dfrac{3}{4}}');
 	});
 
 	it('generates polynomial with Greek letters', () => {

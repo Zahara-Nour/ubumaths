@@ -13,7 +13,7 @@
  *              └── irrational_algebraic (√2, ∛5)
  */
 
-import type { IntervalDomain } from '$lib/math/intervals/types';
+import type { IntervalDomain } from '#lib/math/intervals/types.ts';
 
 // =============================================================================
 // Numeric Type Enum

@@ -25,7 +25,7 @@ import {
 	cleanupAllTestData
 } from '../helpers/database/trigger-test-helpers';
 import { TestData } from '../helpers/database/test-data-factory';
-import { getInstantiationWithStatus } from '$lib/server/chapter-templates';
+import { getInstantiationWithStatus } from '#lib/server/chapter-templates.ts';
 
 const service = createServiceRoleClient();
 

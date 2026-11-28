@@ -34,8 +34,24 @@ export const QUESTIONS_1SPE_APPRO8 =
 /** Point 2-496 (automatismes de 2de, rang 51 : les points de 2de suivants descendent d'un rang), chantier automatismes-1spe. */
 export const AUTOMATISMES_1SPE_POINT_2_496 =
 	'supabase/migrations/20261106162749_automatismes_1spe_point_application_numerique.sql';
+/** Sous-notion « Suites > Suites récurrentes > récurrence linéaire d'ordre 2 », lot 11 de terminale spé (approfondissements). */
+export const QUESTIONS_TSPE_APPRO11 =
+	'supabase/migrations/20261114021510_questions_tspe_approfondissements_11_rangement_tags.sql';
+/** Sous-notion « Probabilités > Autres lois > loi de Poisson », lot 15 de terminale spé (approfondissements). */
+export const QUESTIONS_TSPE_APPRO15 =
+	'supabase/migrations/20261114111511_questions_tspe_approfondissements_15_rangement_tags.sql';
+/** Sous-notion « Grandeurs et mesures > Aires > aires sur quadrillage », lot 8b du CM1. */
+export const QUESTIONS_CM1_LOT8B =
+	'supabase/migrations/20261118071618_questions_cm1_lot8b_rangement_tags.sql';
+/** Notion « Géométrie > Agrandissement et réduction », chantier idees-3e-thales. */
+export const NOTION_AGRANDISSEMENT =
+	'supabase/migrations/20261127110709_notion_agrandissement_et_reduction.sql';
 /** Du plus récent au plus ancien. */
 const LATER = [
+	NOTION_AGRANDISSEMENT,
+	QUESTIONS_CM1_LOT8B,
+	QUESTIONS_TSPE_APPRO15,
+	QUESTIONS_TSPE_APPRO11,
 	AUTOMATISMES_1SPE_POINT_2_496,
 	QUESTIONS_1SPE_APPRO8,
 	QUESTIONS_1SPE_APPRO5,

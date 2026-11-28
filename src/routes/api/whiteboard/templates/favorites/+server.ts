@@ -15,11 +15,11 @@
  * - Users can only manage their own favorites (enforced by RLS)
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireAuth } from '$lib/server/middleware/auth';
-import { templateFavoriteSchema } from '$lib/server/validation/whiteboard-templates';
-import { createServerLogger } from '$lib/utils/logger';
+import { requireAuth } from '#lib/server/middleware/auth.ts';
+import { templateFavoriteSchema } from '#lib/server/validation/whiteboard-templates.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/whiteboard/templates/favorites/+server');
 
@@ -48,7 +48,7 @@ export const GET: RequestHandler = async ({ locals }) => {
 			createdAt: f.created_at as string
 		}));
 
-		return json({ favorites });
+		return Response.json({ favorites });
 	} catch (err) {
 		if (err && typeof err === 'object' && 'status' in err) {
 			throw err;
@@ -113,7 +113,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			throw error(500, 'Impossible d’ajouter le modèle aux favoris');
 		}
 
-		return json({ success: true, templateId });
+		return Response.json({ success: true, templateId });
 	} catch (err) {
 		if (err && typeof err === 'object' && 'status' in err) {
 			throw err;
@@ -154,7 +154,7 @@ export const DELETE: RequestHandler = async ({ url, locals }) => {
 			throw error(500, 'Impossible de retirer le modèle des favoris');
 		}
 
-		return json({ success: true, templateId });
+		return Response.json({ success: true, templateId });
 	} catch (err) {
 		if (err && typeof err === 'object' && 'status' in err) {
 			throw err;

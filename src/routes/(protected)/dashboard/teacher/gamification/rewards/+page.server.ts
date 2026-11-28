@@ -6,11 +6,11 @@
  */
 
 import type { PageServerLoad } from './$types';
-import { requireRole } from '$lib/server/middleware/auth';
-import { asStudentVipCards } from '$lib/types/vip-card';
-import { getTemplateById, getAllTemplates } from '$lib/server/vip-card-queries';
-import { getActionDescription } from '$lib/utils/vip-cards';
-import { createServerLogger } from '$lib/utils/logger';
+import { requireRole } from '#lib/server/middleware/auth.ts';
+import { asStudentVipCards } from '#lib/types/vip-card.ts';
+import { getTemplateById, getAllTemplates } from '#lib/server/vip-card-queries.ts';
+import { getActionDescription } from '#lib/utils/vip-cards.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger(
 	'(protected)/dashboard/teacher/gamification/rewards/+page.server'

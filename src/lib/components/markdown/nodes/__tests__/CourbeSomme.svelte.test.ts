@@ -7,8 +7,8 @@
 import { describe, it, expect, afterEach } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import Courbe from '../Courbe.svelte';
-import BuildAnswer from '$lib/components/questions/BuildAnswer.svelte';
-import { parseCourbeContent } from '$lib/ubumark/parser/courbe-parser';
+import BuildAnswer from '#lib/components/questions/BuildAnswer.svelte';
+import { parseCourbeContent } from '#lib/ubumark/parser/courbe-parser.ts';
 
 let mains: HTMLElement[] = [];
 function mainElement(): HTMLElement {

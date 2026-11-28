@@ -16,7 +16,7 @@
  * @module questions/construction/segment-length
  */
 
-import type { LengthUnit, SegmentLengthCheck } from '$lib/ubumark/types/construction';
+import type { LengthUnit, SegmentLengthCheck } from '#lib/ubumark/types/construction.ts';
 import type { DrawnLine, DrawnObject, DrawnRegle } from './answer';
 import {
 	intersectTraits,
@@ -422,6 +422,27 @@ export function judgeSegmentLength(
 		return { status: 'incorrect', feedback: segmentEyeballedFeedback() };
 	if (graduations.includes(check.length)) return { status: 'correct' };
 	return { status: 'incorrect', feedback: wrongLengthFeedback(graduations[0], check) };
+}
+
+/**
+ * Figure composée (outil n° 45) : le bout du segment que l'élève voit depuis A, une
+ * fois l'étape juste — le point B des étapes suivantes ; null s'il n'y en a pas un seul
+ */
+export function segmentLengthEnd(
+	check: SegmentLengthCheck,
+	points: ReadonlyMap<string, Position>,
+	shapes: FigureShapes | undefined,
+	objects: readonly DrawnObject[]
+): Position | null {
+	const { a, ray } = settingOf(check, points, shapes);
+	const segments = objects.filter((obj): obj is DrawnLine => obj.kind === 'segment');
+	const seen = seenSegments(
+		segments,
+		a,
+		tolerance(a),
+		ray ? SAME_DIRECTION_ON_RAY : SAME_DIRECTION
+	).filter((s) => !s.throughA);
+	return seen.length === 1 ? seen[0].end : null;
 }
 
 /**

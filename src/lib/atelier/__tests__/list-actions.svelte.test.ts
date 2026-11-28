@@ -9,8 +9,8 @@
 import { describe, it, expect } from 'vitest';
 import { Atelier } from '../atelier.svelte';
 import { CalcDesk } from '../desk.svelte';
-import { GrapheurStore } from '$lib/stores/grapheur.svelte';
-import { isScatter } from '$lib/grapheur/types';
+import { GrapheurStore } from '#lib/stores/grapheur.svelte.ts';
+import { isScatter } from '#lib/grapheur/types.ts';
 
 function deskWith(lists: Record<string, string>) {
 	const atelier = new Atelier();

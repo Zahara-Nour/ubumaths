@@ -19,10 +19,10 @@
 
 import { describe, it, expect } from 'vitest';
 import { Atelier } from '../atelier.svelte';
-import { WebReplEngine } from '$lib/mathAST/cli/web/web-repl-engine';
+import { WebReplEngine } from '#lib/mathAST/cli/web/web-repl-engine.ts';
 import { runInput, runAction, type CalcSession } from '../calcul';
-import { parseLatex } from '$lib/mathAST/parser';
-import { compile } from '$lib/mathAST/eval/compile';
+import { parseLatex } from '#lib/mathAST/parser/index.ts';
+import { compile } from '#lib/mathAST/eval/compile.ts';
 
 function session(): CalcSession {
 	return { atelier: new Atelier(), engine: new WebReplEngine() };

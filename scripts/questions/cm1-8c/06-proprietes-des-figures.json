@@ -1,0 +1,163 @@
+{
+	"id": "20907b18-072c-417e-8a4b-7b863104cedc",
+	"title": "Côtés parallèles, côtés égaux : les figures usuelles",
+	"description": "Propriétés du rectangle, du losange, du carré et des triangles particuliers : phrase vraie, côté parallèle à un côté donné, côtés égaux du triangle isocèle",
+	"grades": ["CM1"],
+	"level": 2,
+	"delay": 90,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Quelle phrase est vraie ?\n\n```choix\n- {{if:f==1|Les côtés opposés d'un rectangle sont parallèles.|{{if:f==2|Les côtés opposés d'un losange sont parallèles.|{{if:f==3|Un carré a ses côtés opposés parallèles, quatre côtés de la même longueur et quatre angles droits.|{{if:f==4|Les trois côtés d'un triangle équilatéral ont la même longueur.|{{if:f==5|Un triangle isocèle a deux côtés de la même longueur.|Un triangle rectangle a un angle droit.}}}}}}}}}}\n- {{if:f==1|Les quatre côtés d'un rectangle ont toujours la même longueur.|{{if:f==2|Un losange a quatre angles droits.|{{if:f==3|Un carré n'a aucun côté parallèle à un autre.|{{if:f==4|Un triangle équilatéral a un angle droit.|{{if:f==5|Un triangle isocèle a toujours un angle droit.|Un triangle rectangle a deux angles droits.}}}}}}}}}}\n- {{if:f==1|Un rectangle a deux angles droits.|{{if:f==2|Un losange a seulement deux côtés de la même longueur.|{{if:f==3|Un carré a deux côtés longs et deux côtés courts.|{{if:f==4|Un triangle équilatéral a deux côtés parallèles.|{{if:f==5|Un triangle isocèle a deux côtés parallèles.|Un triangle rectangle a deux côtés parallèles.}}}}}}}}}}\n- {{if:f==1|Deux côtés qui se suivent dans un rectangle sont parallèles.|{{if:f==2|Deux côtés qui se suivent dans un losange sont toujours perpendiculaires.|{{if:f==3|Un carré a un seul angle droit.|{{if:f==4|Un triangle équilatéral a seulement deux côtés de la même longueur.|{{if:f==5|Les trois côtés d'un triangle isocèle ont toujours des longueurs différentes.|Les trois côtés d'un triangle rectangle ont toujours la même longueur.}}}}}}}}}}\n```",
+			"variables": [
+				{
+					"name": "f",
+					"expression": "1..6"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"{{if:f==1|Un rectangle a quatre angles droits ; ses côtés opposés sont parallèles et de la même longueur.|{{if:f==2|Un losange a quatre côtés de la même longueur ; ses côtés opposés sont parallèles.|{{if:f==3|Un carré est à la fois un rectangle et un losange.|{{if:f==4|Un triangle équilatéral a trois côtés de la même longueur.|{{if:f==5|Un triangle isocèle a (au moins) deux côtés de la même longueur.|Un triangle rectangle a un angle droit, et un seul.}}}}}}}}}}",
+					"La phrase vraie : **{{if:f==1|Les côtés opposés d'un rectangle sont parallèles.|{{if:f==2|Les côtés opposés d'un losange sont parallèles.|{{if:f==3|Un carré a ses côtés opposés parallèles, quatre côtés de la même longueur et quatre angles droits.|{{if:f==4|Les trois côtés d'un triangle équilatéral ont la même longueur.|{{if:f==5|Un triangle isocèle a deux côtés de la même longueur.|Un triangle rectangle a un angle droit.}}}}}}}}}}**"
+				]
+			}
+		},
+		{
+			"statement": "$ABCD$ est un {{if:q==1|rectangle|losange}}. Quel côté est parallèle au côté ${{if:s==0|[AB]|{{if:s==1|[BC]|{{if:s==2|[CD]|[DA]}}}}}}$ ?\n\n```figure\nfenetre: 0 ; 10 ; 0 ; 7\ndescription: Un quadrilatère ABCD.\n---\n{{if:q==1|A = point(2.22, 1.17, etiquette=\"bas-gauche\")\nB = point(8.48, 2.5, etiquette=\"droite\")\nC = point(7.78, 5.83, etiquette=\"haut-droite\")\nD = point(1.52, 4.5, etiquette=\"gauche\")\npolygone(A, B, C, D, couleur=\"bleu\", epaisseur=2)|A = point(4.35, 1.71, etiquette=\"bas\")\nB = point(8.01, 2.41, etiquette=\"droite\")\nC = point(5.65, 5.29, etiquette=\"haut\")\nD = point(1.99, 4.59, etiquette=\"gauche\")\npolygone(A, B, C, D, couleur=\"bleu\", epaisseur=2)}}\n```\n\n```choix\nmelanger: non\n- $[AB]$\n- $[BC]$\n- $[CD]$\n- $[DA]$\n```",
+			"variables": [
+				{
+					"name": "q",
+					"expression": "1..2"
+				},
+				{
+					"name": "s",
+					"expression": "0..3"
+				},
+				{
+					"name": "z",
+					"expression": "eval:(1-min(abs(s-0),1))*2+(1-min(abs(s-1),1))*3+(1-min(abs(s-2),1))*0+(1-min(abs(s-3),1))*1"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{z}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Dans un {{if:q==1|rectangle|losange}}, les **côtés opposés** sont parallèles.",
+					"Le côté opposé à ${{if:s==0|[AB]|{{if:s==1|[BC]|{{if:s==2|[CD]|[DA]}}}}}}$ est $\\textcolor{{{color:primary.0}}}{{{if:s==0|[CD]|{{if:s==1|[DA]|{{if:s==2|[AB]|[BC]}}}}}}}$."
+				]
+			}
+		},
+		{
+			"statement": "$ABC$ est un triangle isocèle en ${{if:v==0|A|{{if:v==1|B|C}}}}$. Quel côté a la même longueur que ${{if:v==0|[AB]|{{if:v==1|[BC]|[CA]}}}}$ ?\n\n```figure\nfenetre: 0 ; 10 ; 0 ; 7\ndescription: Un triangle ABC.\n---\n{{if:v==0|{{if:o==0|A = point(5.0, 5.8, etiquette=\"haut\")\nB = point(3.1, 1.2, etiquette=\"bas-gauche\")\nC = point(6.9, 1.2, etiquette=\"bas-droite\")\npolygone(A, B, C, couleur=\"bleu\", epaisseur=2)|{{if:o==1|A = point(2.9, 5.93, etiquette=\"haut-gauche\")\nB = point(3.98, 1.07, etiquette=\"bas\")\nC = point(7.1, 3.25, etiquette=\"droite\")\npolygone(A, B, C, couleur=\"bleu\", epaisseur=2)|A = point(3.43, 1.01, etiquette=\"bas\")\nB = point(6.79, 4.69, etiquette=\"droite\")\nC = point(3.21, 5.99, etiquette=\"haut-gauche\")\npolygone(A, B, C, couleur=\"bleu\", epaisseur=2)}}}}|{{if:v==1|{{if:o==0|B = point(5.0, 5.8, etiquette=\"haut\")\nC = point(3.1, 1.2, etiquette=\"bas-gauche\")\nA = point(6.9, 1.2, etiquette=\"bas-droite\")\npolygone(B, C, A, couleur=\"bleu\", epaisseur=2)|{{if:o==1|B = point(2.9, 5.93, etiquette=\"haut-gauche\")\nC = point(3.98, 1.07, etiquette=\"bas\")\nA = point(7.1, 3.25, etiquette=\"droite\")\npolygone(B, C, A, couleur=\"bleu\", epaisseur=2)|B = point(3.43, 1.01, etiquette=\"bas\")\nC = point(6.79, 4.69, etiquette=\"droite\")\nA = point(3.21, 5.99, etiquette=\"haut-gauche\")\npolygone(B, C, A, couleur=\"bleu\", epaisseur=2)}}}}|{{if:o==0|C = point(5.0, 5.8, etiquette=\"haut\")\nA = point(3.1, 1.2, etiquette=\"bas-gauche\")\nB = point(6.9, 1.2, etiquette=\"bas-droite\")\npolygone(C, A, B, couleur=\"bleu\", epaisseur=2)|{{if:o==1|C = point(2.9, 5.93, etiquette=\"haut-gauche\")\nA = point(3.98, 1.07, etiquette=\"bas\")\nB = point(7.1, 3.25, etiquette=\"droite\")\npolygone(C, A, B, couleur=\"bleu\", epaisseur=2)|C = point(3.43, 1.01, etiquette=\"bas\")\nA = point(6.79, 4.69, etiquette=\"droite\")\nB = point(3.21, 5.99, etiquette=\"haut-gauche\")\npolygone(C, A, B, couleur=\"bleu\", epaisseur=2)}}}}}}}}\n```\n\n```choix\nmelanger: non\n- $[AB]$\n- $[BC]$\n- $[CA]$\n```",
+			"variables": [
+				{
+					"name": "v",
+					"expression": "0..2"
+				},
+				{
+					"name": "o",
+					"expression": "0..2"
+				},
+				{
+					"name": "z",
+					"expression": "eval:(1-min(abs(v-0),1))*2+(1-min(abs(v-1),1))*0+(1-min(abs(v-2),1))*1"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{z}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Un triangle isocèle en ${{if:v==0|A|{{if:v==1|B|C}}}}$ a ses deux côtés qui partent de ${{if:v==0|A|{{if:v==1|B|C}}}}$ de la même longueur.",
+					"Ces deux côtés sont ${{if:v==0|[AB]|{{if:v==1|[BC]|[CA]}}}}$ et $\\textcolor{{{color:primary.0}}}{{{if:v==0|[AC]|{{if:v==1|[BA]|[CB]}}}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Phrase vraie du losange",
+			"variationIndex": 0,
+			"variables": {
+				"f": "2"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : le losange a 4 angles droits",
+			"variationIndex": 0,
+			"variables": {
+				"f": "2"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Rectangle : parallèle à [BC] = [DA]",
+			"variationIndex": 1,
+			"variables": {
+				"q": "1",
+				"s": "1",
+				"z": "3"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : côté consécutif",
+			"variationIndex": 1,
+			"variables": {
+				"q": "2",
+				"s": "0",
+				"z": "2"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Isocèle en B : [BA]",
+			"variationIndex": 2,
+			"variables": {
+				"v": "1",
+				"o": "0",
+				"z": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : la base",
+			"variationIndex": 2,
+			"variables": {
+				"v": "1",
+				"o": "0",
+				"z": "0"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

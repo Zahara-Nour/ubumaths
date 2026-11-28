@@ -1,0 +1,264 @@
+{
+	"id": "265ed3cc-fad4-4859-80ff-58abeb2912c1",
+	"title": "Ces droites sont-elles parallèles ?",
+	"description": "Reconnaître des droites parallèles : oui ou non, quel dessin, quelle droite parmi trois (dont une presque parallèle)",
+	"grades": ["CM1", "CM2"],
+	"level": 2,
+	"delay": 90,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Ces deux droites sont-elles parallèles ?\n\n```figure\nfenetre: -5 ; 5 ; -4 ; 4\ndescription: Une droite bleue et une droite rouge.\n---\nO = point(0, 0, visible=faux)\nM = point(O, longueur=1.2, angle={{eval:t+90}}, visible=faux)\nN = point(O, longueur=1.2, angle={{eval:t+270}}, visible=faux)\nU = point(M, longueur=3, angle={{eval:t}}, visible=faux)\nV = point(N, longueur=3, angle={{eval:t+g}}, visible=faux)\ndroite(M, U, couleur=\"bleu\", epaisseur=2)\ndroite(N, V, couleur=\"rouge\", epaisseur=2)\n```\n\n```choix\nmelanger: non\n- Oui, elles sont parallèles.\n- Non, elles ne sont pas parallèles.\n```",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "0..1"
+				},
+				{
+					"name": "s",
+					"expression": "0..1"
+				},
+				{
+					"name": "d",
+					"expression": "10..16"
+				},
+				{
+					"name": "t",
+					"expression": "0..179"
+				},
+				{
+					"name": "g",
+					"expression": "eval:c*(2*s-1)*d"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{c}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Deux droites **parallèles** ne se coupent jamais : l'écart entre elles reste le même partout.",
+					"On mesure l'écart entre les deux droites à deux endroits éloignés (avec la règle, ou en comptant à l'œil).",
+					"{{if:c==0|L'écart est le même partout : elles sont $\\textcolor{{{color:primary.0}}}{\\text{parallèles}}$.|L'écart change : les droites finiraient par se couper, elles ne sont $\\textcolor{{{color:primary.0}}}{\\text{pas parallèles}}$.}}"
+				]
+			}
+		},
+		{
+			"statement": "Sur quel dessin les deux droites sont-elles parallèles ?\n\n````choix\n- ```figure\n  fenetre: -5 ; 5 ; -4 ; 4\n  taille: grande\n  description: Deux droites.\n  ---\n  aO = point(0, 0, visible=faux)\n  aM = point(aO, longueur=1.2, angle={{eval:t0+90}}, visible=faux)\n  aN = point(aO, longueur=1.2, angle={{eval:t0+270}}, visible=faux)\n  aU = point(aM, longueur=3, angle={{eval:t0}}, visible=faux)\n  aV = point(aN, longueur=3, angle={{eval:t0+0}}, visible=faux)\n  droite(aM, aU, couleur=\"bleu\", epaisseur=2)\n  droite(aN, aV, couleur=\"rouge\", epaisseur=2)\n  ```\n- ```figure\n  fenetre: -5 ; 5 ; -4 ; 4\n  taille: grande\n  description: Deux droites.\n  ---\n  bO = point(0, 0, visible=faux)\n  bM = point(bO, longueur=1.2, angle={{eval:t1+90}}, visible=faux)\n  bN = point(bO, longueur=1.2, angle={{eval:t1+270}}, visible=faux)\n  bU = point(bM, longueur=3, angle={{eval:t1}}, visible=faux)\n  bV = point(bN, longueur=3, angle={{eval:t1+g1}}, visible=faux)\n  droite(bM, bU, couleur=\"bleu\", epaisseur=2)\n  droite(bN, bV, couleur=\"rouge\", epaisseur=2)\n  ```\n- ```figure\n  fenetre: -5 ; 5 ; -4 ; 4\n  taille: grande\n  description: Deux droites.\n  ---\n  cO = point(0, 0, visible=faux)\n  cM = point(cO, longueur=1.2, angle={{eval:t2+90}}, visible=faux)\n  cN = point(cO, longueur=1.2, angle={{eval:t2+270}}, visible=faux)\n  cU = point(cM, longueur=3, angle={{eval:t2}}, visible=faux)\n  cV = point(cN, longueur=3, angle={{eval:t2+g2}}, visible=faux)\n  droite(cM, cU, couleur=\"bleu\", epaisseur=2)\n  droite(cN, cV, couleur=\"rouge\", epaisseur=2)\n  ```\n````",
+			"variables": [
+				{
+					"name": "t0",
+					"expression": "0..179"
+				},
+				{
+					"name": "t1",
+					"expression": "0..179"
+				},
+				{
+					"name": "t2",
+					"expression": "0..179"
+				},
+				{
+					"name": "g1",
+					"expression": "12..16"
+				},
+				{
+					"name": "g2",
+					"expression": "-24..-18"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Deux droites **parallèles** ne se coupent jamais : l'écart entre elles reste le même partout.",
+					"On mesure l'écart entre les deux droites à deux endroits éloignés (avec la règle, ou en comptant à l'œil).",
+					"Sur un seul dessin, l'écart ne change pas : c'est lui. Sur les deux autres, les droites se rapprochent d'un côté."
+				]
+			}
+		},
+		{
+			"statement": "Quelle droite est parallèle à la droite noire ?\n\n```figure\nfenetre: -5 ; 5 ; -5 ; 5\ndescription: Une droite noire et trois droites de couleur, bleue, rouge et verte.\n---\nO = point(0, 0, visible=faux)\nU = point(O, longueur=3, angle={{t}}, visible=faux)\ndroite(O, U, couleur=\"noir\", epaisseur=3)\nX0 = point(O, longueur=2.6, angle={{eval:t+270}}, visible=faux)\nY0 = point(X0, longueur=3, angle={{eval:t+g0}}, visible=faux)\ndroite(X0, Y0, couleur=\"bleu\", epaisseur=2)\nX1 = point(O, longueur=1.4, angle={{eval:t+90}}, visible=faux)\nY1 = point(X1, longueur=3, angle={{eval:t+g1}}, visible=faux)\ndroite(X1, Y1, couleur=\"rouge\", epaisseur=2)\nX2 = point(O, longueur=3.3, angle={{eval:t+90}}, visible=faux)\nY2 = point(X2, longueur=3, angle={{eval:t+g2}}, visible=faux)\ndroite(X2, Y2, couleur=\"vert\", epaisseur=2)\n```\n\n```choix\nmelanger: non\n- la droite bleue\n- la droite rouge\n- la droite verte\n```",
+			"variables": [
+				{
+					"name": "w",
+					"expression": "0..2"
+				},
+				{
+					"name": "t",
+					"expression": "0..179"
+				},
+				{
+					"name": "d0",
+					"expression": "8..11"
+				},
+				{
+					"name": "s0",
+					"expression": "0..1"
+				},
+				{
+					"name": "g0",
+					"expression": "eval:(1-(1-min(abs(w-0),1)))*(2*s0-1)*d0"
+				},
+				{
+					"name": "d1",
+					"expression": "14..20"
+				},
+				{
+					"name": "s1",
+					"expression": "0..1"
+				},
+				{
+					"name": "g1",
+					"expression": "eval:(1-(1-min(abs(w-1),1)))*(2*s1-1)*d1"
+				},
+				{
+					"name": "d2",
+					"expression": "20..28"
+				},
+				{
+					"name": "s2",
+					"expression": "0..1"
+				},
+				{
+					"name": "g2",
+					"expression": "eval:(1-(1-min(abs(w-2),1)))*(2*s2-1)*d2"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{w}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On mesure, pour chaque droite de couleur, son écart avec la droite noire à deux endroits éloignés.",
+					"Seule la droite {{if:w==0|**bleue**|{{if:w==1|**rouge**|**verte**}}}} reste toujours à la même distance de la droite noire : c'est $\\textcolor{{{color:primary.0}}}{{{if:w==0|\\text{la droite bleue}|{{if:w==1|\\text{la droite rouge}|\\text{la droite verte}}}}}}$. Attention à celle qui est presque parallèle : son écart change un peu."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Parallèles",
+			"variationIndex": 0,
+			"variables": {
+				"c": "0",
+				"s": "0",
+				"d": "12",
+				"t": "20",
+				"g": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Non (écart 12)",
+			"variationIndex": 0,
+			"variables": {
+				"c": "1",
+				"s": "0",
+				"d": "12",
+				"t": "20",
+				"g": "-12"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : sécantes dites parallèles",
+			"variationIndex": 0,
+			"variables": {
+				"c": "1",
+				"s": "1",
+				"d": "10",
+				"t": "150",
+				"g": "10"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Le bon dessin",
+			"variationIndex": 1,
+			"variables": {
+				"t0": "10",
+				"t1": "80",
+				"t2": "130",
+				"g1": "14",
+				"g2": "-20"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : dessin à 14°",
+			"variationIndex": 1,
+			"variables": {
+				"t0": "10",
+				"t1": "80",
+				"t2": "130",
+				"g1": "14",
+				"g2": "-20"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "La verte",
+			"variationIndex": 2,
+			"variables": {
+				"w": "2",
+				"t": "30",
+				"d0": "9",
+				"s0": "1",
+				"g0": "9",
+				"d1": "16",
+				"s1": "0",
+				"g1": "-16",
+				"d2": "24",
+				"s2": "1",
+				"g2": "0"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : la presque parallèle (bleue)",
+			"variationIndex": 2,
+			"variables": {
+				"w": "2",
+				"t": "30",
+				"d0": "9",
+				"s0": "1",
+				"g0": "9",
+				"d1": "16",
+				"s1": "0",
+				"g1": "-16",
+				"d2": "24",
+				"s2": "1",
+				"g2": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

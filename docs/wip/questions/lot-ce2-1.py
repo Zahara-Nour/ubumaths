@@ -1,7 +1,7 @@
 """Écrit les 5 modèles du lot 1 du CE2 (calcul mental) dans scripts/questions/ce2-1/.
 
 Phase 0 validée par David le 2026-10-28 (« ok » aux recos, § 4 bis et § 5 du journal
-`docs/wip/questions-ce2-progress.md`). Plages : bornes `cycle2.json`, CE2 (tables d'addition
+`docs/archive/wip/questions-ce2-progress.md`). Plages : bornes `cycle2.json`, CE2 (tables d'addition
 A, B de 0 à 10 ; décompositions multiplicatives de 60 : 2 × 30 à 6 × 10, sans 1 × 60 ; n × 4 et n × 8 avec
 n < 100). Un point par modèle ; case seule, aucun QCM. CE2-077 (multiples de 25) réutilise le
 modèle du CE1 `03675b9b` : rien à écrire ici.

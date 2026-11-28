@@ -20,9 +20,9 @@
 
 import type { Atelier } from './atelier.svelte';
 import type { AtelierObject } from './types';
-import type { MathNode } from '$lib/mathAST/types';
-import type { GeoPoint } from '$lib/geometry-core/types/primitives';
-import { exact, isExact, type GeoValue } from '$lib/geometry-core/types/geo-value';
+import type { MathNode } from '#lib/mathAST/types.ts';
+import type { GeoPoint } from '#lib/geometry-core/types/primitives.ts';
+import { exact, isExact, type GeoValue } from '#lib/geometry-core/types/geo-value.ts';
 import {
 	geoAdd,
 	geoDiv,
@@ -32,19 +32,19 @@ import {
 	geoSqrt,
 	geoSub,
 	simplifyExact
-} from '$lib/geometry-core/compute/geo-arithmetic';
-import { geoEqual, geoIsZero } from '$lib/geometry-core/compute/compare';
-import { geoToNumber } from '$lib/geometry-core/compute/to-number';
-import { projectOnLine } from '$lib/geometry-core/geometry/transformations';
+} from '#lib/geometry-core/compute/geo-arithmetic.ts';
+import { geoEqual, geoIsZero } from '#lib/geometry-core/compute/compare.ts';
+import { geoToNumber } from '#lib/geometry-core/compute/to-number.ts';
+import { projectOnLine } from '#lib/geometry-core/geometry/transformations.ts';
 import {
 	conicCoefficientNodes,
 	curveShapeOf,
 	equationExpression,
 	expandedEquation,
 	quadraticOrImplicit
-} from '$lib/geometry-core/geometry/curve-nature';
-import { getVariables } from '$lib/mathAST/eval/substitute';
-import { isZeroExpression } from '$lib/mathAST/normal';
+} from '#lib/geometry-core/geometry/curve-nature.ts';
+import { getVariables } from '#lib/mathAST/eval/substitute.ts';
+import { isZeroExpression } from '#lib/mathAST/normal/index.ts';
 import {
 	GeometryFailure,
 	intersectionPoint,
@@ -55,7 +55,7 @@ import {
 import { intervalDomainOf } from './interval';
 import { constantOf } from './constant';
 import type { Slider } from './types';
-import { numericNode } from '$lib/mathAST/common/numeric';
+import { numericNode } from '#lib/mathAST/common/numeric.ts';
 import {
 	add,
 	divide,
@@ -66,10 +66,10 @@ import {
 	power,
 	subtract,
 	variable
-} from '$lib/mathAST/factory';
-import { number as mathNumber } from '$lib/mathAST/factory';
-import { toCustom } from '$lib/mathAST/custom-generator';
-import { toLatex } from '$lib/mathAST/latex-generator';
+} from '#lib/mathAST/factory.ts';
+import { number as mathNumber } from '#lib/mathAST/factory.ts';
+import { toCustom } from '#lib/mathAST/custom-generator.ts';
+import { toLatex } from '#lib/mathAST/latex-generator.ts';
 import { substitutedAstOf, substitutedTextOf } from './engine';
 import { astOf, pointCoordinatesOf, variablesOf, type Provenance } from './parse';
 import { decimalCommaLatex, decimalCommaText } from './decimal-comma';

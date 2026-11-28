@@ -20,7 +20,8 @@ import type { User } from '@supabase/supabase-js';
 import { DELETE as deleteSection } from '../../src/routes/api/worksheets/[id]/sections/[sectionId]/+server';
 import {
 	cleanupAllTestData,
-	createServiceRoleClient
+	createServiceRoleClient,
+	latestTestVersionId
 } from '../helpers/database/trigger-test-helpers';
 import { createAuthenticatedClient } from '../helpers/database/supabase-client';
 import { TestData } from '../helpers/database/test-data-factory';
@@ -59,6 +60,7 @@ describe('supprimer une section : ses exercices passent dans « Sans section »'
 			.insert({
 				worksheet_id: worksheetId,
 				exercise_id: exercise.id,
+				exercise_version_id: await latestTestVersionId(exercise.id),
 				section_id: section,
 				position
 			})

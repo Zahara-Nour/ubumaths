@@ -16,7 +16,7 @@
 
 import { describe, it, expect, vi } from 'vitest';
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { Database } from '$lib/types/database';
+import type { Database } from '#lib/types/database.ts';
 import {
 	buildPublicCourseView,
 	resolveCourseShareToken,
@@ -26,6 +26,13 @@ import {
 	rotateCourseShareToken,
 	type PublicCourse
 } from '../course-share-tokens';
+import { classSchoolYearExpiry } from '#lib/server/school-year.ts';
+
+// La règle de l'année scolaire a ses propres tests (school-year.test.ts) : ici,
+// seulement que la rotation la demande pour la classe et l'écrit telle quelle.
+vi.mock('#lib/server/school-year.ts', () => ({
+	classSchoolYearExpiry: vi.fn(async () => new Date('2027-07-15T23:59:59Z'))
+}));
 
 const JETON = 'AbCdEfGhJkMnPqRs';
 const CHAPITRE = '11111111-1111-4111-8111-111111111111';
@@ -199,6 +206,44 @@ describe('resolveCourseWorksheetByShareToken', () => {
 		expect(resultat).toEqual(fiche);
 	});
 
+	it('nom anglais d’une notion : tiré de ses traductions, pour le PDF anglais (ADR 0043)', async () => {
+		const notion = {
+			node_id: '66666666-6666-4666-8666-666666666666',
+			name: 'Suites arithmétiques',
+			kind: 'notion',
+			translations: { en: { name: 'Arithmetic sequences' } },
+			position: 0
+		};
+		const fiche = {
+			id: FICHE,
+			title: 'Suites arithmétiques · Entraînement technique',
+			description: null,
+			type: 'worksheet',
+			config: { language: 'en' },
+			status: 'published',
+			grades: null,
+			category: 'technical_practice',
+			custom_title: false,
+			classifications: [notion, { ...notion, node_id: FICHE, translations: {}, position: 1 }],
+			translations: null,
+			total_points: null,
+			estimated_duration_minutes: null,
+			sections: [],
+			exercises: []
+		};
+		// Deux notions : l'arbre est lu pour leur branche ; illisible ici → sans branche
+		const rpc = vi.fn(async () => ({ data: fiche, error: null }));
+		const from = vi.fn(() => {
+			throw new Error('arbre illisible');
+		});
+		const sb = { rpc, from } as unknown as SupabaseClient<Database>;
+		const resultat = await resolveCourseWorksheetByShareToken(sb, JETON, FICHE);
+		expect(resultat?.classifications?.map((n) => n.name_en)).toEqual([
+			'Arithmetic sequences',
+			null
+		]);
+	});
+
 	it('garde le style de la fiche et la mise en page de son auteur (lot 4b)', async () => {
 		const style = '55555555-5555-4555-8555-555555555555';
 		const fiche = {
@@ -325,7 +370,7 @@ describe('revokeCourseShareToken', () => {
 });
 
 describe('rotateCourseShareToken', () => {
-	it('révoque puis insère un jeton de 16 caractères expirant le 31 août', async () => {
+	it("révoque puis insère un jeton de 16 caractères expirant à la fin de l'année de l'école", async () => {
 		const inserted: Record<string, unknown>[] = [];
 		const ligne = { id: 'n', token: 'x' };
 		const chain = {
@@ -352,7 +397,19 @@ describe('rotateCourseShareToken', () => {
 		expect(chain.update).toHaveBeenCalledWith({ is_active: false });
 		expect(inserted[0]).toMatchObject({ class_id: 'classe', created_by: 'prof' });
 		expect(String(inserted[0].token)).toMatch(/^[A-Za-z0-9]{16}$/);
-		expect(String(inserted[0].expires_at)).toMatch(/-08-31T23:59:59/);
+		expect(inserted[0].expires_at).toBe('2027-07-15T23:59:59.000Z');
+		expect(classSchoolYearExpiry).toHaveBeenCalledWith(sb, 'classe');
+	});
+
+	it("fin d'année illisible : erreur, et l'ancien lien n'est pas révoqué", async () => {
+		vi.mocked(classSchoolYearExpiry).mockRejectedValueOnce(new Error('panne'));
+		const from = vi.fn();
+		const sb = { from } as unknown as SupabaseClient<Database>;
+		expect(await rotateCourseShareToken(sb, 'classe', 'prof')).toEqual({
+			token: null,
+			error: 'Impossible de créer le lien du cours'
+		});
+		expect(from).not.toHaveBeenCalled();
 	});
 });
 

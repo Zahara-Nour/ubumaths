@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import GridLines from '../GridLines.svelte';
-import { createTransformer } from '$lib/grapheur/viewport';
-import type { Viewport } from '$lib/grapheur/types';
+import { createTransformer } from '#lib/grapheur/viewport.ts';
+import type { Viewport } from '#lib/grapheur/types.ts';
 
 const WIDTH = 800;
 const HEIGHT = 400;

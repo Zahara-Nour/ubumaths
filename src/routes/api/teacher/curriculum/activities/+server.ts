@@ -8,15 +8,17 @@
  * an evaluation — reconciles the entry's AUTO coverage. Teacher/admin only.
  */
 
-import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireRoles } from '$lib/server/middleware/auth';
-import { createActivitySchema, activityListQuerySchema } from '$lib/server/validation/curriculum';
-import { curriculumDbError } from '$lib/server/curriculum';
-import { reconcileAutoCoverage } from '$lib/server/curriculum-coverage';
-import type { JournalEntryActivity } from '$lib/types/database-helpers';
-import type { TablesInsert } from '$lib/types/database';
-import { createServerLogger } from '$lib/utils/logger';
+import { requireRoles } from '#lib/server/middleware/auth.ts';
+import {
+	createActivitySchema,
+	activityListQuerySchema
+} from '#lib/server/validation/curriculum.ts';
+import { curriculumDbError } from '#lib/server/curriculum.ts';
+import { reconcileAutoCoverage } from '#lib/server/curriculum-coverage.ts';
+import type { JournalEntryActivity } from '#lib/types/database-helpers.ts';
+import type { TablesInsert } from '#lib/types/database.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/teacher/curriculum/activities/+server');
 
@@ -31,7 +33,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 
 	const parsed = activityListQuerySchema.safeParse({ entry_id: url.searchParams.get('entry_id') });
 	if (!parsed.success) {
-		return json({ error: parsed.error.issues[0].message }, { status: 400 });
+		return Response.json({ error: parsed.error.issues[0].message }, { status: 400 });
 	}
 
 	const { data, error: dbErr } = await locals.supabase
@@ -43,10 +45,10 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 
 	if (dbErr) {
 		logger.error('[curriculum] activities GET failed:', dbErr);
-		return json({ error: 'Échec du chargement des activités' }, { status: 500 });
+		return Response.json({ error: 'Échec du chargement des activités' }, { status: 500 });
 	}
 
-	return json({ activities: (data ?? []) as JournalEntryActivity[] });
+	return Response.json({ activities: (data ?? []) as JournalEntryActivity[] });
 };
 
 export const POST: RequestHandler = async ({ request, locals }) => {
@@ -56,12 +58,12 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	try {
 		body = await request.json();
 	} catch {
-		return json({ error: 'Corps JSON invalide' }, { status: 400 });
+		return Response.json({ error: 'Corps JSON invalide' }, { status: 400 });
 	}
 
 	const parsed = createActivitySchema.safeParse(body);
 	if (!parsed.success) {
-		return json({ error: parsed.error.issues[0].message }, { status: 400 });
+		return Response.json({ error: parsed.error.issues[0].message }, { status: 400 });
 	}
 	const input = parsed.data;
 
@@ -95,7 +97,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		const mapped = curriculumDbError(dbErr);
 		if (mapped) return mapped;
 		logger.error('[curriculum] activities POST failed:', dbErr);
-		return json({ error: dbErr.message }, { status: 500 });
+		return Response.json({ error: dbErr.message }, { status: 500 });
 	}
 
 	// Tagged activity → refresh auto coverage of the entry.
@@ -108,5 +110,5 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		}
 	}
 
-	return json({ activity: data as JournalEntryActivity }, { status: 201 });
+	return Response.json({ activity: data as JournalEntryActivity }, { status: 201 });
 };

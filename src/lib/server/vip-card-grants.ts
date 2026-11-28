@@ -16,11 +16,11 @@
  * session, la propriété des cartes et la conformité de la carte d'action.
  */
 import { z } from 'zod';
-import { createServiceRoleClient } from '$lib/server/serviceRoleClient';
-import type { Json } from '$lib/types/database';
-import { rpcNullable, toJson } from '$lib/types/database-helpers';
-import type { VipCardInstance } from '$lib/types/vip-card';
-import { createServerLogger } from '$lib/utils/logger';
+import { createServiceRoleClient } from '#lib/server/serviceRoleClient.ts';
+import type { Json } from '#lib/types/database.ts';
+import { rpcNullable, toJson } from '#lib/types/database-helpers.ts';
+import type { VipCardInstance } from '#lib/types/vip-card.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('server/vip-card-grants');
 

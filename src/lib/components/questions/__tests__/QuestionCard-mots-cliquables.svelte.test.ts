@@ -1,18 +1,20 @@
 /**
  * Mots cliquables dans une question (lot 2 du lexique, comportements 12 et 13,
- * validés par David le 2026-10-09) : au niveau de l'élève connecté, sinon au
- * plus petit niveau de la question ; jamais en évaluation notée.
+ * validés par David le 2026-10-09) : au niveau de l'élève connecté ; sinon
+ * soulignement au plus haut niveau de la question et fiche au plus petit (R3 et
+ * Q1 du chantier `mots-cliquables`) ; jamais en évaluation notée.
  */
 import { describe, it, expect, vi } from 'vitest';
 import { render } from 'vitest-browser-svelte';
+import { userEvent } from 'vitest/browser';
 import QuestionCard from '../QuestionCard.svelte';
 import ReaderGradeHarness from './ReaderGradeHarness.svelte';
-import { generateInstance } from '$lib/questions/generator/instance-generator';
-import type { QuestionInstance, QuestionTemplate } from '$lib/questions/types';
-import { templateMarkdown } from '$lib/ubumark';
+import { generateInstance } from '#lib/questions/generator/instance-generator.ts';
+import type { QuestionInstance, QuestionTemplate } from '#lib/questions/types.ts';
+import { templateMarkdown } from '#lib/ubumark/index.ts';
 
 // Le dictionnaire arrive de /api/dictionnaire (ADR 0022) : ici, le jeu de référence figé
-vi.mock('$lib/dictionary/fetch-dictionary', async () => {
+vi.mock('#lib/dictionary/fetch-dictionary.ts', async () => {
 	const { REFERENCE_DICTIONARY: entries } =
 		await import('../../../../../tests/fixtures/lexique/dictionnaire-reference');
 	return { fetchDictionary: async () => entries };
@@ -51,24 +53,26 @@ describe('mots cliquables dans une question', () => {
 	it('en entraînement, les mots de l’énoncé sont cliquables', async () => {
 		const { container } = await render(QuestionCard, {
 			interactive: true,
-			instance: instanceOf('Calcule l’aire du rectangle.', ['6'])
+			instance: instanceOf('Le quotient du pourcentage à l’échelle.', ['6'])
 		});
-		await expect.poll(() => lexiconButtons(container)).toEqual(['Calcule', 'aire', 'rectangle']);
+		await expect
+			.poll(() => lexiconButtons(container))
+			.toEqual(['quotient', 'pourcentage', 'échelle']);
 	});
 
 	it('13. en évaluation notée, aucun mot n’est souligné', async () => {
 		// Une carte d'entraînement d'abord : le dictionnaire est chargé, l'absence prouve le refus
 		const entrainement = await render(QuestionCard, {
 			interactive: true,
-			instance: instanceOf('Calcule l’aire.', ['6'])
+			instance: instanceOf('Le pourcentage.', ['6'])
 		});
-		await expect.poll(() => lexiconButtons(entrainement.container)).toEqual(['Calcule', 'aire']);
+		await expect.poll(() => lexiconButtons(entrainement.container)).toEqual(['pourcentage']);
 		const evaluation = await render(QuestionCard, {
 			interactive: true,
 			collectOnly: true,
-			instance: instanceOf('Calcule l’aire.', ['6'])
+			instance: instanceOf('Le pourcentage.', ['6'])
 		});
-		await expect.poll(() => evaluation.container.textContent).toContain('Calcule');
+		await expect.poll(() => evaluation.container.textContent).toContain('pourcentage');
 		expect(lexiconButtons(evaluation.container)).toEqual([]);
 	});
 
@@ -78,7 +82,8 @@ describe('mots cliquables dans une question', () => {
 			interactive: true,
 			instance: instanceOf(
 				'Quelle figure a quatre côtés égaux ?',
-				['6'],
+				// CP : « côté » et « triangle » sont des mots récents (R1)
+				['CP'],
 				['un losange', 'un triangle']
 			)
 		});
@@ -91,14 +96,29 @@ describe('mots cliquables dans une question', () => {
 			instance: instanceOf('Calcule la dérivée.', ['6']),
 			readerGrade: '1_SPE'
 		});
-		await expect.poll(() => lexiconButtons(container)).toEqual(['Calcule', 'dérivée']);
+		// « Calcule » (CE1) : trop ancien pour un élève de 1re (R1)
+		await expect.poll(() => lexiconButtons(container)).toEqual(['dérivée']);
 	});
 
-	it('12. sans élève connecté, le plus petit niveau de la question', async () => {
+	it('R3. sans élève connecté, le plus haut niveau de la question', async () => {
 		const { container } = await render(ReaderGradeHarness, {
 			instance: instanceOf('Calcule la dérivée.', ['6', '1_SPE']),
 			readerGrade: null
 		});
-		await expect.poll(() => lexiconButtons(container)).toEqual(['Calcule']);
+		await expect.poll(() => lexiconButtons(container)).toEqual(['dérivée']);
+	});
+
+	// N4 + Q1 : fiche au plus petit niveau (4e), mais « fonction » n'arrive qu'en 3e ;
+	// sans le niveau de secours de `lexiconCard`, sa fiche serait vide.
+	it('R3. professeur ou visiteur, question 4e + 3e : un mot de 3e souligné, sa fiche n’est pas vide', async () => {
+		const { container } = await render(ReaderGradeHarness, {
+			instance: instanceOf('Trace la fonction.', ['4', '3']),
+			readerGrade: null
+		});
+		await expect.poll(() => lexiconButtons(container)).toEqual(['fonction']);
+		await userEvent.click(container.querySelector<HTMLButtonElement>('button.lexicon-term')!);
+		await expect
+			.poll(() => document.querySelector('[role="dialog"]')?.textContent)
+			.toContain('Procédé qui, à chaque nombre');
 	});
 });

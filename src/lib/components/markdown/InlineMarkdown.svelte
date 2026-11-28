@@ -18,14 +18,14 @@
 	@see MarkdownRenderer.svelte for full markdown rendering
 -->
 <script lang="ts">
-	import { parseMarkdown } from '$lib/ubumark';
-	import type { InlineNode, ParagraphNode } from '$lib/ubumark';
-	import type { GenericFunctionConfig } from '$lib/mathAST/parser/types';
+	import { parseMarkdown } from '#lib/ubumark/index.ts';
+	import type { InlineNode, ParagraphNode } from '#lib/ubumark/index.ts';
+	import type { GenericFunctionConfig } from '#lib/mathAST/parser/types.ts';
 	import InlineRenderer from './InlineRenderer.svelte';
 	import { provideContentLocale } from './content-locale';
 	import { provideCapitalPairs } from './content-capital-pairs';
-	import type { ContentLocale } from '$lib/types/locale';
-	import type { CapitalPairs } from '$lib/mathAST/parser/types';
+	import type { ContentLocale } from '#lib/types/locale.ts';
+	import type { CapitalPairs } from '#lib/mathAST/parser/types.ts';
 
 	interface Props {
 		/** Markdown content to render inline */

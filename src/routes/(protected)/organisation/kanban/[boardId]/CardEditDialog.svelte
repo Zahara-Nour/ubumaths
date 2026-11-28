@@ -19,17 +19,17 @@
 -->
 
 <script lang="ts" module>
-	import { lore } from '$lib/config/lore';
+	import { lore } from '#lib/config/lore.ts';
 	// No module-level state — kept for symmetry with other dialogs in the
 	// project that expose imperative open helpers via module-scoped APIs.
 </script>
 
 <script lang="ts">
 	import { Trash2 } from '@lucide/svelte';
-	import * as Dialog from '$lib/components/ui/dialog';
-	import { Button } from '$lib/components/ui/button';
-	import { ConfirmDialog } from '$lib/components/ui/confirm-dialog';
-	import type { KanbanCard, KanbanTag, KanbanBoardMember } from '$lib/types/database-helpers';
+	import * as Dialog from '#lib/components/ui/dialog/index.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import { ConfirmDialog } from '#lib/components/ui/confirm-dialog/index.ts';
+	import type { KanbanCard, KanbanTag, KanbanBoardMember } from '#lib/types/database-helpers.ts';
 	import type { CardPatch } from './api';
 	import CardEditForm from './CardEditForm.svelte';
 

@@ -8,9 +8,9 @@
 
 import { describe, it, expect } from 'vitest';
 import { Atelier } from '../atelier.svelte';
-import { WebReplEngine } from '$lib/mathAST/cli/web/web-repl-engine';
+import { WebReplEngine } from '#lib/mathAST/cli/web/web-repl-engine.ts';
 import { runInput, type CalcSession } from '../calcul';
-import { evaluate } from '$lib/mathAST/eval/evaluate';
+import { evaluate } from '#lib/mathAST/eval/evaluate.ts';
 import { isList, type ListObject } from '../types';
 
 const A = 0;

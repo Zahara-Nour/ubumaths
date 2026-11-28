@@ -11,7 +11,7 @@
 import { describe, it, expect } from 'vitest';
 import { generateInstance } from '../instance-generator';
 import type { QuestionTemplate } from '../../types';
-import type { Variable } from '$lib/ubumark';
+import type { Variable } from '#lib/ubumark/index.ts';
 
 function statementOf(expression: string, variables: Variable[]): string {
 	const template = {

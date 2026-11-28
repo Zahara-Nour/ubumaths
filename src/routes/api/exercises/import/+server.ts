@@ -3,16 +3,16 @@
  * Import exercises from JSON or Markdown format
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import {
 	importExerciseFromJSON,
 	importExerciseFromMarkdown,
 	importExercisesFromJSON
-} from '$lib/server/exercise-import-export';
-import type { ImportOptions } from '$lib/exercises/types';
-import { importExercisesSchema } from '$lib/server/validation/exercises';
-import { requireRole } from '$lib/server/middleware/auth';
+} from '#lib/server/exercise-import-export.ts';
+import type { ImportOptions } from '#lib/exercises/types.ts';
+import { importExercisesSchema } from '#lib/server/validation/exercises.ts';
+import { requireRole } from '#lib/server/middleware/auth.ts';
 
 /**
  * POST /api/exercises/import
@@ -68,13 +68,13 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 		if (Array.isArray(data)) {
 			// Multiple exercises
 			const result = await importExercisesFromJSON(locals.supabase, data, user.id, importOptions);
-			return json(result);
+			return Response.json(result);
 		} else {
 			// Single exercise
 			const result = await importExerciseFromJSON(locals.supabase, data, user.id, importOptions);
 
 			// Convert single import result to ImportResult format
-			return json({
+			return Response.json({
 				success: result.success,
 				imported: result.success && !result.skipped ? 1 : 0,
 				skipped: result.skipped ? 1 : 0,
@@ -97,7 +97,7 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 		);
 
 		// Convert single import result to ImportResult format
-		return json({
+		return Response.json({
 			success: result.success,
 			imported: result.success && !result.skipped ? 1 : 0,
 			skipped: result.skipped ? 1 : 0,

@@ -3,12 +3,12 @@
  * ============================
  *
  * Provides validation functions for different question types,
- * en s'appuyant sur mathAST (`$lib/math`, `$lib/mathAST`) pour lire et comparer les expressions.
+ * en s'appuyant sur mathAST (`#lib/math/index.ts`, `#lib/mathAST/index.ts`) pour lire et comparer les expressions.
  *
  * @module utils/answer-validator
  */
 
-import { isCombinatorialNotationLatex } from '$lib/questions/combinatorial-notation';
+import { isCombinatorialNotationLatex } from '#lib/questions/combinatorial-notation.ts';
 import type {
 	QuestionInstance,
 	InstanceBlank,
@@ -19,17 +19,20 @@ import type {
 	ConstraintMode,
 	ConstraintOptions,
 	ValidationRule
-} from '$lib/questions/types';
+} from '#lib/questions/types.ts';
 import {
 	DEFAULT_CONSTRAINT_MODE,
 	DEFAULT_FORM_CONSTRAINT_MODE,
 	getQuestionType
-} from '$lib/questions/types';
-import type { ValidationResult } from '$lib/types/question-display';
-import { gradedPart } from '$lib/questions/graded-part';
-import { evaluateExpression, areEquivalent, type AnswerAssumptions } from '$lib/math';
-import { checkUnit } from '$lib/questions/constraint-validators';
-import { SUPERFLU_RULE_IDS } from '$lib/mathAST/superflu/rules';
+} from '#lib/questions/types.ts';
+import type { ValidationResult } from '#lib/types/question-display.ts';
+import { gradedPart } from '#lib/questions/graded-part.ts';
+import { evaluateExpression, areEquivalent, type AnswerAssumptions } from '#lib/math/index.ts';
+import { checkUnit } from '#lib/questions/constraint-validators.ts';
+import { SUPERFLU_RULE_IDS } from '#lib/mathAST/superflu/rules.ts';
+import { parseLatexSafe } from '#lib/mathAST/parser/index.ts';
+import { numberAfterFactorIn } from '#lib/mathAST/parser/number-after-factor.ts';
+import { bareDecimalCommaToPoint, expectsSeparatorComma } from '#lib/mathAST/decimal-comma.ts';
 import {
 	checkForm as checkFormUnified,
 	type CheckFormOptions,
@@ -41,65 +44,92 @@ import {
 	isQuantityValueLatex,
 	forgotPercentSign,
 	type ConstraintSeverity
-} from '$lib/mathAST/cosmetic-transforms';
-import { extractUnitFromLatex } from '$lib/questions/units/parser';
-import { normalizeStudentQuantity } from '$lib/questions/units/student-input';
-import { studentValueLatex } from '$lib/questions/units/student-calculation';
+} from '#lib/mathAST/cosmetic-transforms.ts';
+import { extractUnitFromLatex } from '#lib/questions/units/parser.ts';
+import { normalizeStudentQuantity } from '#lib/questions/units/student-input.ts';
+import { studentValueLatex } from '#lib/questions/units/student-calculation.ts';
 import {
 	CONSTRAINT_FEEDBACK,
 	FORGOTTEN_PERCENT_SIGN,
-	MISSING_CHOICES_FEEDBACK
-} from '$lib/questions/feedback';
-import { evaluateRule, type EvaluationContext } from '$lib/questions/validation-rule-evaluator';
-import { readingOf, type FormulaReading } from '$lib/questions/formula-reading';
-import { statusFromChoices } from '$lib/questions/choices';
+	MISSING_CHOICES_FEEDBACK,
+	numberAfterFactorFeedback
+} from '#lib/questions/feedback.ts';
+import { evaluateRule, type EvaluationContext } from '#lib/questions/validation-rule-evaluator.ts';
+import { readingOf, type FormulaReading } from '#lib/questions/formula-reading.ts';
+import { statusFromChoices } from '#lib/questions/choices.ts';
 import {
 	getRequiredFormFeedback,
 	REQUIRED_FORM_FEEDBACK,
 	requiredFormVerdict
-} from '$lib/questions/required-form-validator';
-import { validateQuantityAnswer } from '$lib/questions/units/validator';
-import type { DurationFormIssue } from '$lib/questions/units/composite-duration';
-import { rulesDecide } from '$lib/questions/rules-suffice';
-import { matchesAngleModulo2Pi } from '$lib/questions/angle-modulo';
+} from '#lib/questions/required-form-validator.ts';
+import { validateQuantityAnswer } from '#lib/questions/units/validator.ts';
+import type { DurationFormIssue } from '#lib/questions/units/composite-duration.ts';
+import { rulesDecide } from '#lib/questions/rules-suffice.ts';
+import { matchesAngleModulo2Pi } from '#lib/questions/angle-modulo.ts';
 import {
 	judgeIntervalAnswer,
 	DEFAULT_INTERVAL_FORM_MODE
-} from '$lib/questions/intervals/interval-answer';
-import { judgeEquationAnswer } from '$lib/questions/equations/equation-answer';
-import { coordinateTexts, judgeVectorAnswer } from '$lib/questions/vectors/vector-answer';
-import { judgeMatrixAnswer, matrixEntryTexts } from '$lib/questions/matrices/matrix-answer';
-import { judgePrimitiveAnswer } from '$lib/questions/calculus/primitive-answer';
-import { judgeDifferentialEquationAnswer } from '$lib/questions/calculus/differential-equation-answer';
-import type { CalculusVerdict } from '$lib/questions/calculus/calculus-reading';
-import { judgeRounding, roundingFeedback, roundToPrecision } from '$lib/questions/rounding';
-import { ANSWER_TOO_COMPLEX_FEEDBACK, isAnswerTooComplex } from '$lib/questions/answer-complexity';
-import { expectsValue, withoutVariablePrefix } from '$lib/questions/answer-variable-prefix';
-import { expectsUnitlessValue, withoutDegreeSuffix } from '$lib/questions/answer-degree-suffix';
-import { judgeConstruction } from '$lib/questions/construction/judge';
-import { isPlacedTimeCorrect } from '$lib/ubumark/utils/horloge-placer';
-import { isCourbeAnswerCorrect } from '$lib/ubumark/utils/courbe-tracer';
-import { isPlacedAngleCorrect } from '$lib/ubumark/utils/trig-placer';
+} from '#lib/questions/intervals/interval-answer.ts';
+import { judgeEquationAnswer } from '#lib/questions/equations/equation-answer.ts';
+import { coordinateTexts, judgeVectorAnswer } from '#lib/questions/vectors/vector-answer.ts';
+import { judgeMatrixAnswer, matrixEntryTexts } from '#lib/questions/matrices/matrix-answer.ts';
+import { judgePrimitiveAnswer } from '#lib/questions/calculus/primitive-answer.ts';
+import { judgeDifferentialEquationAnswer } from '#lib/questions/calculus/differential-equation-answer.ts';
+import type { CalculusVerdict } from '#lib/questions/calculus/calculus-reading.ts';
+import { judgeResolutionAnswer } from '#lib/questions/resolution/resolution-answer.ts';
+import { judgeParametricLineAnswer } from '#lib/questions/parametric/parametric-line-answer.ts';
+import { judgeRounding, roundingFeedback, roundToPrecision } from '#lib/questions/rounding.ts';
+import {
+	centsZerosMeaningful,
+	roundingZerosVerdict,
+	writtenRoundedValue,
+	type RoundingZerosVerdict
+} from '#lib/questions/meaningful-zeros.ts';
+import {
+	ANSWER_TOO_COMPLEX_FEEDBACK,
+	isAnswerTooComplex
+} from '#lib/questions/answer-complexity.ts';
+import { expectsValue, withoutVariablePrefix } from '#lib/questions/answer-variable-prefix.ts';
+import { expectsUnitlessValue, withoutDegreeSuffix } from '#lib/questions/answer-degree-suffix.ts';
+import { judgeConstruction } from '#lib/questions/construction/judge.ts';
+import { isPlacedTimeCorrect } from '#lib/ubumark/utils/horloge-placer.ts';
+import { isCourbeAnswerCorrect } from '#lib/ubumark/utils/courbe-tracer.ts';
+import { staircaseChains } from '#lib/ubumark/utils/courbe-construire.ts';
+import { isPlacedAngleCorrect } from '#lib/ubumark/utils/trig-placer.ts';
+import { isTortueAnswerCorrect, tortueAnswerVerdict } from '#lib/ubumark/utils/tortue-answer.ts';
+import { calculAnswerVerdict, isCalculAnswerCorrect } from '#lib/ubumark/utils/calcul-answer.ts';
+import { pythonAnswerVerdict } from '#lib/questions/python/python-answer.ts';
+import { isRobotAnswerCorrect, robotAnswerVerdict } from '#lib/ubumark/utils/robot-answer.ts';
+import {
+	isLabyrintheAnswerCorrect,
+	labyrintheAnswerVerdict
+} from '#lib/ubumark/utils/labyrinthe-answer.ts';
+import { isYohakuAnswerCorrect, yohakuAnswerVerdict } from '#lib/ubumark/utils/yohaku-answer.ts';
 import {
 	isLineToRepresentBlank,
 	isRepresentedIntervalCorrect
-} from '$lib/ubumark/utils/number-line-representer';
-import { isColoringCorrect } from '$lib/ubumark/utils/partage-colorier';
-import { isCubesAnswerCorrect } from '$lib/ubumark/utils/cubes-gestes';
-import { isPatronAnswerCorrect } from '$lib/ubumark/utils/patron-gestes';
-import { isSolideAnswerCorrect } from '$lib/ubumark/utils/solide-gestes';
+} from '#lib/ubumark/utils/number-line-representer.ts';
+import { isColoringCorrect } from '#lib/ubumark/utils/partage-colorier.ts';
+import { isCubesAnswerCorrect } from '#lib/ubumark/utils/cubes-gestes.ts';
+import { isPatronAnswerCorrect } from '#lib/ubumark/utils/patron-gestes.ts';
+import { isSolideAnswerCorrect } from '#lib/ubumark/utils/solide-gestes.ts';
 import {
 	constructionExpected,
 	constructionPositions,
 	constructionShapes
-} from '$lib/questions/construction/positions';
+} from '#lib/questions/construction/positions.ts';
 import {
 	correctChoiceIndexesOf,
 	displayedChoiceLetter,
 	isChoiceBlank,
 	parseChoiceAnswer
-} from '$lib/questions/choice-case';
-import { isSignCellCorrect, isSignTableCell } from '$lib/questions/sign-table-case';
+} from '#lib/questions/choice-case.ts';
+import {
+	infiniteCellVerdict,
+	isSignCellCorrect,
+	isSignTableCell
+} from '#lib/questions/sign-table-case.ts';
+import { isImpossibleAnswer, isImpossibleExpected } from '#lib/questions/impossible-answer.ts';
 
 // ============================================================================
 // CONSTRAINT CHECKING
@@ -426,6 +456,9 @@ function normalizeForFuzzy(s: string): string {
  */
 const FUZZY_MIN_LETTERS = 5;
 
+/** Nombre seul dont le séparateur décimal n'a pas de chiffre après (`58,`) ou avant (`,5`) */
+const MALFORMED_BARE_NUMBER = /^[+-]?(?:\d+(?: \d+)*[.,]|[.,]\d+)$/;
+
 /**
  * Fuzzy text matching: case insensitive, accents ignored ; Levenshtein distance
  * <= 1 only when the expected word has at least FUZZY_MIN_LETTERS letters.
@@ -547,6 +580,15 @@ function numericalVerdict(
 	return { result, roundingAtFault, onlyRoundingMissing };
 }
 
+/** Valeur de la saisie de l'élève, `undefined` si elle ne s'évalue pas */
+function evaluatedStudentNumber(answer: string): ReturnType<typeof evaluateExpression> | undefined {
+	try {
+		return evaluateExpression(answer);
+	} catch {
+		return undefined;
+	}
+}
+
 function numericalResult(
 	userAnswer: string | number,
 	correctAnswer: string,
@@ -556,8 +598,10 @@ function numericalResult(
 	// Convert to string if number
 	const userStr = typeof userAnswer === 'number' ? String(userAnswer) : userAnswer;
 
-	// Evaluate both answers
-	const userNum = evaluateExpression(userStr);
+	// Evaluate both answers. La saisie de l'élève peut ne pas s'évaluer (`58,5,`, `(`) :
+	// c'est une réponse non numérique, jamais une exception — elle ferait perdre le verdict
+	// des AUTRES cases (V126). L'attendu, lui, garde son exception (erreur de modèle)
+	const userNum = evaluatedStudentNumber(userStr);
 	const correctNum = evaluateExpression(correctAnswer);
 
 	// Check if evaluation succeeded
@@ -599,15 +643,16 @@ function numericalResult(
 				...(verdict.onlyRoundingMissing ? { onlyRoundingMissing: true } : {})
 			};
 		}
-		const correctRounded = roundToPrecision(correctNum, precision);
+		// Bonne réponse écrite avec les zéros de son arrondi (« 3,0 » au dixième)
+		const correctRounded = writtenRoundedValue(roundToPrecision(correctNum, precision), precision);
 		return {
 			isCorrect: verdict.isCorrect,
 			message: verdict.isCorrect ? 'Correct !' : 'Incorrect',
 			feedback: verdict.isCorrect
 				? undefined
 				: precision.type === 'decimal'
-					? `La réponse arrondie à ${precision.digits} décimales est ${correctRounded}`
-					: `La réponse avec ${precision.digits} chiffres significatifs est ${correctRounded}`
+					? `La réponse arrondie à ${precision.digits} ${precision.digits > 1 ? 'décimales' : 'décimale'} est ${correctRounded}`
+					: `La réponse avec ${precision.digits} ${precision.digits > 1 ? 'chiffres significatifs' : 'chiffre significatif'} est ${correctRounded}`
 		};
 	}
 
@@ -725,12 +770,21 @@ function checkSimpleNumberForm(
 	latex: string,
 	constraints: ConstraintOptions,
 	reading: FormulaReading = {},
-	allowFraction = false
+	allowFraction = false,
+	precision?: PrecisionType
 ): { status: ValidationStatus; violations: NonNullable<ValidationResult['constraintViolations']> } {
 	const severities = buildConstraintSeverities(constraints);
-	const formOptions = formOptionsOf(constraints, reading);
+	// Arrondi demandé : ses zéros finaux ne sont pas superflus (cf. questions/meaningful-zeros)
+	const roundingZeros = roundingZerosOf(latex, precision);
+	const formOptions = {
+		...formOptionsOf(constraints, reading),
+		...(roundingZeros.trailingZerosMeaningful && { meaningfulTrailingZeros: true })
+	};
 	const raw = cosmeticViolations(latex, severities, formOptions);
-	const { status, violations } = mapCosmeticViolations(raw, false);
+	const { status, violations } = withMissingRoundingZeros(
+		mapCosmeticViolations(raw, false),
+		roundingZeros
+	);
 
 	const isNumberWriting = allowFraction
 		? isNumberOrNumberFractionLatex(latex)
@@ -820,6 +874,9 @@ function validateBlankValue(
 	blank: InstanceBlank,
 	instance: QuestionInstance
 ): boolean {
+	// Bouton « impossible » ou tirage sans réponse : jugé sans rien lire
+	const impossible = impossibleVerdict(userAnswer, undefined, blank);
+	if (impossible !== undefined) return impossible;
 	// Droite à représenter : borne(s), côté et crochets
 	if (isLineToRepresentBlank(blank)) {
 		return isRepresentedIntervalCorrect(userAnswer, blank.expectedAnswer);
@@ -830,6 +887,19 @@ function validateBlankValue(
 	if (blank.construire === 'courbe') return isCourbeAnswerCorrect(userAnswer, blank.expectedAnswer);
 	// Point du cercle trigonométrique : le même cran, modulo 2π
 	if (blank.construire === 'trig') return isPlacedAngleCorrect(userAnswer, blank.expectedAnswer);
+	// Programme tortue : son tracé, rejoué par l'interpréteur, contre celui de l'attendu
+	if (blank.construire === 'tortue') return isTortueAnswerCorrect(userAnswer, blank.expectedAnswer);
+	// Programme de calcul : ses affichages, rejoués sur chaque essai, contre ceux de l'attendu
+	if (blank.construire === 'calcul') return isCalculAnswerCorrect(userAnswer, blank.expectedAnswer);
+	// Programme Python : le verdict calculé dans le navigateur avant la validation (rangé dans la valeur)
+	if (blank.construire === 'python') return pythonAnswerVerdict(userAnswer).juste;
+	// Robot à produire : le code de l'élève rejoué sur la scène, juste s'il finit sur l'arrivée
+	if (blank.construire === 'robot') return isRobotAnswerCorrect(userAnswer, blank.expectedAnswer);
+	// Grille yohaku : chaque ligne et chaque colonne donne son total, quel que soit le remplissage
+	if (blank.construire === 'yohaku') return isYohakuAnswerCorrect(userAnswer, blank.expectedAnswer);
+	// Labyrinthe : le chemin de l'élève, de l'entrée à une sortie par des cases qui suivent la règle
+	if (blank.construire === 'labyrinthe')
+		return isLabyrintheAnswerCorrect(userAnswer, blank.expectedAnswer);
 	// Figure à colorier : le nombre de parts coloriées, quelles qu'elles soient
 	if (blank.construire === 'partage') return isColoringCorrect(userAnswer, blank.expectedAnswer);
 	// Assemblage de cubes : la vue à une translation près, ou les mêmes vues
@@ -839,9 +909,18 @@ function validateBlankValue(
 	// Vecteur sur un solide : l'un des couples de points justes
 	if (blank.construire === 'solide') return isSolideAnswerCorrect(userAnswer, blank.expectedAnswer);
 	// Étiquettes à ranger : l'étiquette posée (sa position affichée), jamais sa valeur
-	if (blank.construire === 'ranger') return userAnswer.trim() === blank.expectedAnswer;
+	if (
+		blank.construire === 'ranger' ||
+		blank.construire === 'associer' ||
+		blank.construire === 'trous'
+	) {
+		return userAnswer.trim() === blank.expectedAnswer;
+	}
 	// Signe ou marque d'un tableau de signes : le même jeton
 	if (isSignTableCell(blank)) return isSignCellCorrect(userAnswer, blank.expectedAnswer);
+	// Limite infinie d'un tableau : le même infini, signe compris
+	const infinite = infiniteCellVerdict(blank, userAnswer);
+	if (infinite !== null) return infinite;
 
 	// Ensemble en notation intervalle : jugé sur l'ensemble (ni règles ni expression)
 	if (blank.answerKind === 'intervalles') {
@@ -852,6 +931,18 @@ function validateBlankValue(
 			{ openableBounds: blank.openableBounds }
 		);
 		return status !== 'incorrect' && status !== 'empty';
+	}
+
+	// Résolution ligne par ligne : lignes de mêmes solutions, conclusion « x = … »
+	// (garde de complexité appliquée à CHAQUE ligne par le juge)
+	if (blank.answerKind === 'resolution') {
+		return judgeResolutionAnswer(userAnswer, blank).status === 'correct';
+	}
+
+	// Droite paramétrique : même droite (point sur la droite, vecteur colinéaire) ; trois
+	// lignes dans une valeur, garde de complexité appliquée à CHAQUE ligne par le juge
+	if (blank.answerKind === 'droite-parametrique') {
+		return judgeParametricLineAnswer(userAnswer, blank.expectedAnswer).status === 'correct';
 	}
 
 	// Réponse hostile ou démesurée : fausse, sans être lue (garde Q58)
@@ -945,9 +1036,12 @@ function roundingOnlyFeedback(
 ): string | undefined {
 	if (
 		!blank.precision ||
+		impossibleVerdict(userAnswer, undefined, blank) !== undefined ||
 		blank.answerKind === 'intervalles' ||
 		blank.answerKind === 'vecteur' ||
 		blank.answerKind === 'matrice' ||
+		blank.answerKind === 'resolution' ||
+		blank.answerKind === 'droite-parametrique' ||
 		isCalculusBlank(blank) ||
 		blank.type === 'text'
 	) {
@@ -1009,6 +1103,39 @@ function withDurationFormIssue(
 	const worse: ValidationStatus =
 		issue.severity === 'error' ? 'bad_form' : status === 'correct' ? 'unoptimal_form' : status;
 	return { status: worse, violations: [violation, ...violations] };
+}
+
+/**
+ * Zéros finaux d'une réponse à arrondir (`precision` decimal / significant) :
+ * utiles ou manquants (cf. questions/meaningful-zeros). Autre précision : rien à dire.
+ */
+function roundingZerosOf(
+	latex: string,
+	precision: PrecisionType | undefined
+): RoundingZerosVerdict {
+	return precision?.type === 'decimal' || precision?.type === 'significant'
+		? roundingZerosVerdict(latex, precision)
+		: { trailingZerosMeaningful: false };
+}
+
+/**
+ * Arrondi juste, mais des décimales manquent (« 3 » au dixième de 3,04) : perfectible,
+ * avec le message de l'arrondi en tête (décision de l'auteur, 2026-11-26).
+ */
+function withMissingRoundingZeros(
+	form: {
+		status: ValidationStatus;
+		violations: NonNullable<ValidationResult['constraintViolations']>;
+	},
+	roundingZeros: RoundingZerosVerdict
+): { status: ValidationStatus; violations: NonNullable<ValidationResult['constraintViolations']> } {
+	const feedback = roundingZeros.missingFeedback;
+	if (feedback === undefined) return form;
+	const violation = { constraint: 'rounding' as const, severity: 'warning' as const, feedback };
+	if (form.status === 'bad_form') {
+		return { status: form.status, violations: [...form.violations, violation] };
+	}
+	return { status: 'unoptimal_form', violations: [violation, ...form.violations] };
 }
 
 /** Message d'un résultat : celui d'une ERREUR s'il est refusé, jamais un avertissement */
@@ -1238,6 +1365,61 @@ function calculusBlankResult(
 }
 
 /**
+ * Case « résolution » : verdict de `questions/resolution/` dans la forme de
+ * `validateSingleBlank`. Lignes justes et conclusion « x = valeur » : la valeur est
+ * ensuite jugée comme une case ordinaire (`x = \frac{12}{3}` : fraction à simplifier, ½).
+ */
+function resolutionBlankResult(
+	answer: string,
+	blank: InstanceBlank,
+	instance: QuestionInstance
+): ReturnType<typeof validateSingleBlank> {
+	const { status, feedback, finalValue } = judgeResolutionAnswer(answer, blank);
+	if (status === 'empty') return { isCorrect: false, status: 'empty' };
+	if (status !== 'correct' || finalValue === undefined) {
+		return feedback
+			? { isCorrect: false, status: 'incorrect', feedback }
+			: { isCorrect: false, status: 'incorrect' };
+	}
+	// La valeur finale est une case ordinaire : comparée au membre droit de l'attendue
+	// (`x={{s}}` → `{{s}}`), avec les réglages de la case (`acceptDecimal`, règles, forme
+	// exigée…). `x = 7+5` (calcul non fait), `x = 0,5` sans `acceptDecimal` : `bad_form`
+	const {
+		answerKind: _kind,
+		equation: _equation,
+		variable: _variable,
+		minLines: _minLines,
+		...rest
+	} = blank;
+	const sign = blank.expectedAnswer.indexOf('=');
+	const expectedValue =
+		sign < 0 ? blank.expectedAnswer : blank.expectedAnswer.slice(sign + 1).trim();
+	return validateSingleBlank(
+		finalValue,
+		{ ...rest, expectedAnswer: expectedValue },
+		finalValue,
+		instance
+	);
+}
+
+/**
+ * Case « droite paramétrique » : verdict de `questions/parametric/` dans la forme de
+ * `validateSingleBlank`. Seule la droite est jugée, jamais l'écriture (décision de
+ * David, 2026-11-28) : pas de forme à juger ensuite.
+ */
+function parametricLineBlankResult(
+	answer: string,
+	blank: InstanceBlank
+): ReturnType<typeof validateSingleBlank> {
+	const { status, feedback } = judgeParametricLineAnswer(answer, blank.expectedAnswer);
+	if (status === 'correct') return { isCorrect: true, status: 'correct' };
+	if (status === 'empty') return { isCorrect: false, status: 'empty' };
+	return feedback
+		? { isCorrect: false, status: 'incorrect', feedback }
+		: { isCorrect: false, status: 'incorrect' };
+}
+
+/**
  * Case « figure » : verdict de `questions/construction/` dans la forme de
  * `validateSingleBlank`. Positions des points lues dans le registre (inscrit
  * par l'écran de l'élève et la correction serveur) ; sans lui, une erreur.
@@ -1252,7 +1434,8 @@ function constructionBlankResult(
 		points,
 		answer,
 		constructionShapes(construction.source),
-		constructionExpected(construction.source)
+		constructionExpected(construction.source),
+		construction.source
 	);
 	if (status === 'empty') return { isCorrect: false, status: 'empty' };
 	if (status === 'correct') return { isCorrect: true, status: 'correct' };
@@ -1292,28 +1475,150 @@ function choiceBlankResult(
 	return wrong;
 }
 
+/**
+ * Case à bouton « impossible » (`impossibleLabel`), jugée AVANT toute lecture mathématique :
+ * bouton ET tirage sans réponse → juste ; l'un sans l'autre → faux (ni message de forme ni
+ * « trop complexe ») ; ni l'un ni l'autre → `undefined`, la chaîne habituelle juge.
+ * L'attendue `impossible` n'atteint ainsi jamais le parseur.
+ */
+function impossibleVerdict(
+	userAnswer: string,
+	userAnswerLatex: string | undefined,
+	blank: InstanceBlank
+): boolean | undefined {
+	const label = blank.impossibleLabel;
+	if (label === undefined) return undefined;
+	const pressed = isImpossibleAnswer(userAnswer) || isImpossibleAnswer(userAnswerLatex);
+	const expected = isImpossibleExpected(blank.expectedAnswer);
+	if (!pressed && !expected) return undefined;
+	return pressed && expected;
+}
+
 /** Garde Q58 sur la réponse ET sur son LaTeX (celui qui juge la forme) */
 function isBlankAnswerTooComplex(answer: string, latex: string | undefined): boolean {
 	return isAnswerTooComplex(answer) || (latex !== undefined && isAnswerTooComplex(latex));
 }
 
 /**
- * Full per-blank pipeline: validationRules -> inferred mode -> requiredForm -> constraints.
+ * Nombre SEUL mal écrit : séparateur décimal sans chiffre après (`58,`, `58{,}`) ou sans
+ * chiffre avant (`,5`). Rend le nombre RELU (`58`, `0.5`), null pour toute autre saisie.
+ * Lecture seulement : l'appelant refuse toujours la saisie (forme ou valeur).
+ */
+function malformedBareNumber(answer: string): string | null {
+	const cleaned = answer
+		.replace(/\{,\}/g, ',')
+		.replace(/\\[,;: ]/g, ' ')
+		.trim();
+	if (!MALFORMED_BARE_NUMBER.test(cleaned)) return null;
+	return cleaned
+		.replace(/\s/g, '')
+		.replace(',', '.')
+		.replace(/\.$/, '')
+		.replace(/^([+-]?)\./, (_, sign: string) => `${sign}0.`);
+}
+
+/**
+ * Message à l'élève si la réponse est refusée par le parseur pour un nombre collé derrière
+ * un facteur (`(n+2)4^n`, `x2` : règle du 2026-10-08), `undefined` pour toute autre saisie.
+ * Lecture seulement : le verdict (faux) ne change pas.
+ */
+function numberAfterFactorRefusal(answer: string, instance: QuestionInstance): string | undefined {
+	const num = numberAfterFactorOf(answer, instance);
+	if (num === null) return undefined;
+	// `12 500`, `1 2` : une espace entre deux nombres n'est pas un facteur suivi d'un
+	// nombre ; sans ses espaces, la saisie doit être refusée pour la même raison
+	const withoutSpaces = answer.replace(/\\[,;: ]|\s/g, '');
+	if (numberAfterFactorOf(withoutSpaces, instance) === null) return undefined;
+	return numberAfterFactorFeedback(num.replace('.', ','));
+}
+
+/** Nombre mis en cause par le refus « nombre après un facteur » du parseur, sinon `null` */
+function numberAfterFactorOf(answer: string, instance: QuestionInstance): string | null {
+	// Virgule nue décimale (`x0,5`), comme pour le juge de valeur
+	const latex = expectsSeparatorComma(answer) ? answer : bareDecimalCommaToPoint(answer);
+	const { errors } = parseLatexSafe(latex, readingOf(instance));
+	for (const error of errors) {
+		const num = error.code === 'MISSING_OPERATOR' ? numberAfterFactorIn(error.message) : null;
+		if (num !== null) return num;
+	}
+	return null;
+}
+
+/** Case de formule nue : ni unité, ni figure, ni réponse écrite par un composant */
+function isBareFormulaBlank(blank: InstanceBlank): boolean {
+	return blank.type === 'math' && !blank.unit && !blank.construction && !blank.construire;
+}
+
+/**
+ * Jugement d'une case. Un nombre seul mal écrit (`58,`, `,5`) dans une case sans unité,
+ * refusé par la chaîne, est relu : valeur relue juste → mauvaise forme et message de
+ * forme (même règle que devant une unité, `numberWritingAtFault`) ; sinon le refus reste.
  */
 function validateSingleBlank(
 	userAnswer: string,
 	blank: InstanceBlank,
 	userAnswerLatex: string | undefined,
 	instance: QuestionInstance
-): {
+): SingleBlankVerdict {
+	const rereadable = isBareFormulaBlank(blank);
+	const repaired = rereadable ? malformedBareNumber(userAnswer) : null;
+	let verdict: SingleBlankVerdict;
+	try {
+		verdict = judgeSingleBlank(userAnswer, blank, userAnswerLatex, instance);
+	} catch (thrown) {
+		// Nombre seul mal écrit que la chaîne ne sait pas lire → un refus, relu comme les
+		// autres ; toute autre exception (erreur de modèle) reste visible
+		if (repaired === null) throw thrown;
+		verdict = { isCorrect: false };
+	}
+	if (verdict.isCorrect || verdict.status === 'bad_form' || verdict.status === 'empty') {
+		return verdict;
+	}
+	if (repaired === null) {
+		// Faux sans un mot : si l'écriture est refusée pour un nombre collé derrière un
+		// facteur, le dire (écart E76)
+		if (!rereadable || verdict.status !== undefined || verdict.feedback !== undefined) {
+			return verdict;
+		}
+		const feedback = numberAfterFactorRefusal(userAnswerLatex || userAnswer, instance);
+		return feedback === undefined ? verdict : { ...verdict, feedback };
+	}
+	const reread = judgeSingleBlank(repaired, blank, repaired, instance);
+	if (!reread.isCorrect) return verdict;
+	const feedback = CONSTRAINT_FEEDBACK['form'].single;
+	return {
+		isCorrect: false,
+		status: 'bad_form',
+		feedback,
+		constraintViolations: [{ constraint: 'form', severity: 'error', feedback }]
+	};
+}
+
+interface SingleBlankVerdict {
 	isCorrect: boolean;
 	status?: ValidationStatus;
 	feedback?: string;
 	constraintViolations?: NonNullable<ValidationResult['constraintViolations']>;
-} {
+}
+
+/**
+ * Full per-blank pipeline: validationRules -> inferred mode -> requiredForm -> constraints.
+ */
+function judgeSingleBlank(
+	userAnswer: string,
+	blank: InstanceBlank,
+	userAnswerLatex: string | undefined,
+	instance: QuestionInstance
+): SingleBlankVerdict {
 	// 0. Empty answer — skip all checks
 	if (!userAnswer.trim()) {
 		return { isCorrect: false, status: 'empty' };
+	}
+
+	// Bouton « impossible » ou tirage sans réponse : jugé sans rien lire
+	const impossible = impossibleVerdict(userAnswer, userAnswerLatex, blank);
+	if (impossible !== undefined) {
+		return impossible ? { isCorrect: true, status: 'correct' } : { isCorrect: false };
 	}
 
 	// Case « figure » (bloc ```figure-a-completer) : chaîne à part, cf. questions/construction/
@@ -1340,6 +1645,52 @@ function validateSingleBlank(
 		return isCourbeAnswerCorrect(userAnswer, blank.expectedAnswer)
 			? { isCorrect: true, status: 'correct' }
 			: { isCorrect: false };
+	}
+
+	// Programme tortue : son tracé contre celui de l'attendu ; un programme qui ne se lit pas ou
+	// ne s'arrête pas dit pourquoi
+	if (blank.construire === 'tortue') {
+		const verdict = tortueAnswerVerdict(userAnswer, blank.expectedAnswer);
+		if (verdict.juste) return { isCorrect: true, status: 'correct' };
+		return verdict.message ? { isCorrect: false, feedback: verdict.message } : { isCorrect: false };
+	}
+
+	// Robot à produire : le code rejoué sur la scène ; faux, il dit pourquoi (sortie, case
+	// grise, arrivée manquée, instruction inconnue)
+	if (blank.construire === 'robot') {
+		const verdict = robotAnswerVerdict(userAnswer, blank.expectedAnswer);
+		if (verdict.juste) return { isCorrect: true, status: 'correct' };
+		return verdict.message ? { isCorrect: false, feedback: verdict.message } : { isCorrect: false };
+	}
+
+	// Labyrinthe : faux, le chemin dit pourquoi (entrée, case sautée, intrus, sortie manquée)
+	if (blank.construire === 'labyrinthe') {
+		const verdict = labyrintheAnswerVerdict(userAnswer, blank.expectedAnswer);
+		if (verdict.juste) return { isCorrect: true, status: 'correct' };
+		return verdict.message ? { isCorrect: false, feedback: verdict.message } : { isCorrect: false };
+	}
+
+	// Grille yohaku : faux, le message dit quelles lignes ou colonnes ne donnent pas leur total
+	if (blank.construire === 'yohaku') {
+		const verdict = yohakuAnswerVerdict(userAnswer, blank.expectedAnswer);
+		if (verdict.juste) return { isCorrect: true, status: 'correct' };
+		return verdict.message ? { isCorrect: false, feedback: verdict.message } : { isCorrect: false };
+	}
+
+	// Programme de calcul : ses affichages sur chaque essai contre ceux de l'attendu ; un
+	// programme illisible, muet ou en erreur sur un essai dit pourquoi
+	if (blank.construire === 'calcul') {
+		const verdict = calculAnswerVerdict(userAnswer, blank.expectedAnswer);
+		if (verdict.juste) return { isCorrect: true, status: 'correct' };
+		return verdict.message ? { isCorrect: false, feedback: verdict.message } : { isCorrect: false };
+	}
+
+	// Programme Python : le verdict rangé dans la valeur par la case, qui a fait tourner le
+	// programme dans le navigateur avant la validation ; sans verdict (temps écoulé) : faux
+	if (blank.construire === 'python') {
+		const verdict = pythonAnswerVerdict(userAnswer);
+		if (verdict.juste) return { isCorrect: true, status: 'correct' };
+		return verdict.message ? { isCorrect: false, feedback: verdict.message } : { isCorrect: false };
 	}
 
 	// Point du cercle trigonométrique : le même cran, modulo 2π
@@ -1377,8 +1728,13 @@ function validateSingleBlank(
 			: { isCorrect: false };
 	}
 
-	// Étiquettes à ranger : l'étiquette posée (sa position affichée), jamais sa valeur
-	if (blank.construire === 'ranger') {
+	// Étiquettes à ranger, éléments à associer, texte à trous : l'étiquette posée (sa position
+	// affichée), jamais sa valeur
+	if (
+		blank.construire === 'ranger' ||
+		blank.construire === 'associer' ||
+		blank.construire === 'trous'
+	) {
 		return userAnswer.trim() === blank.expectedAnswer
 			? { isCorrect: true, status: 'correct' }
 			: { isCorrect: false };
@@ -1391,6 +1747,12 @@ function validateSingleBlank(
 			: { isCorrect: false };
 	}
 
+	// Limite infinie d'un tableau de variations : le même infini, signe compris (∞ seul : faux)
+	const infinite = infiniteCellVerdict(blank, userAnswerLatex || userAnswer);
+	if (infinite !== null) {
+		return infinite ? { isCorrect: true, status: 'correct' } : { isCorrect: false };
+	}
+
 	// Case « choix » (bloc ```choix) : indices cochés, barème du QCM
 	if (isChoiceBlank(blank)) {
 		return choiceBlankResult(userAnswer, blank);
@@ -1399,6 +1761,19 @@ function validateSingleBlank(
 	// Ensemble en notation intervalle (inéquation) : chaîne à part, cf. interval-answer.ts
 	if (blank.answerKind === 'intervalles') {
 		return intervalBlankResult(userAnswerLatex || userAnswer, blank, instance);
+	}
+
+	// Résolution ligne par ligne : chaîne à part, cf. resolution/resolution-answer.ts.
+	// Avant la garde de complexité : plusieurs lignes dépassent vite la longueur d'UNE
+	// réponse ; le juge mesure chaque ligne
+	if (blank.answerKind === 'resolution') {
+		return resolutionBlankResult(userAnswerLatex || userAnswer, blank, instance);
+	}
+
+	// Droite paramétrique : chaîne à part, cf. parametric/parametric-line-answer.ts. Avant la
+	// garde de complexité, comme la résolution : le juge mesure chaque ligne
+	if (blank.answerKind === 'droite-parametrique') {
+		return parametricLineBlankResult(userAnswerLatex || userAnswer, blank);
 	}
 
 	// Réponse hostile ou démesurée : fausse AVANT toute lecture (garde Q58, cf.
@@ -1469,6 +1844,17 @@ function validateSingleBlank(
 		// Trop de chiffres mais bon arrondi : mauvaise forme (cf. questions/rounding)
 		if (!result.isCorrect && result.onlyRoundingMissing && result.feedback) {
 			return roundingBadForm(result.feedback);
+		}
+		// Nombre mal écrit devant l'unité (`36, mm`, `36{,}\mathrm{mm}`, `,036 m`), valeur
+		// relue juste : mauvaise forme (une valeur fausse arrive ici `incorrect`, sans ce drapeau)
+		if (!result.isCorrect && result.numberWritingAtFault) {
+			const feedback = CONSTRAINT_FEEDBACK['form'].single;
+			return {
+				isCorrect: false,
+				status: 'bad_form',
+				feedback,
+				constraintViolations: [{ constraint: 'form', severity: 'error', feedback }]
+			};
 		}
 		if (
 			!result.isCorrect &&
@@ -1590,8 +1976,20 @@ function validateSingleBlank(
 		const numericLatex =
 			studentValueLatex(effectiveLatex) ??
 			extractNumericLatexPart(normalizeStudentQuantity(effectiveLatex));
-		const raw = cosmeticViolations(numericLatex, severities, formOptions);
-		const cosmetic = mapCosmeticViolations(raw, false);
+		// Zéros finaux utiles : arrondi demandé, ou centimes d'une somme en euros
+		// (cf. questions/meaningful-zeros)
+		const roundingZeros = roundingZerosOf(numericLatex, blank.precision);
+		const meaningfulTrailingZeros =
+			roundingZeros.trailingZerosMeaningful ||
+			centsZerosMeaningful(
+				numericLatex,
+				extractUnitFromLatex(normalizeStudentQuantity(effectiveLatex))
+			);
+		const raw = cosmeticViolations(numericLatex, severities, {
+			...formOptions,
+			...(meaningfulTrailingZeros && { meaningfulTrailingZeros: true })
+		});
+		const cosmetic = withMissingRoundingZeros(mapCosmeticViolations(raw, false), roundingZeros);
 		const { status, violations } = durationFormIssue
 			? withDurationFormIssue(cosmetic.status, cosmetic.violations, durationFormIssue)
 			: cosmetic;
@@ -1625,7 +2023,8 @@ function validateSingleBlank(
 			effectiveLatex,
 			constraints,
 			reading,
-			allowsNumberFraction(blank)
+			allowsNumberFraction(blank),
+			blank.precision
 		);
 		return {
 			isCorrect: status !== 'bad_form',
@@ -1828,9 +2227,14 @@ function validateGradedBlanks(
 		return validateBlanksOrderIndependent(userAnswers, instance, userAnswersLatex);
 	}
 
+	// Escalier à construire : toutes ses cases jugées sur la chaîne de sa dernière case
+	const judged = staircaseChains(
+		userAnswers,
+		blanks.map((b) => b.expectedAnswer)
+	);
 	return aggregateOrderedBlanks(
 		blanks.map((blank, i) =>
-			validateSingleBlank(userAnswers[i], blank, userAnswersLatex?.[i], instance)
+			validateSingleBlank(judged[i], blank, userAnswersLatex?.[i], instance)
 		),
 		blanks
 	);
@@ -2033,43 +2437,68 @@ function maximumMatching(accepts: boolean[][], blankCount: number, initial?: num
 	return matching;
 }
 
+/** Réponse appariée sans être juste telle quelle : ce qui lui manque, et son message */
+interface LooseMatch {
+	constraint: 'rounding' | 'form';
+	feedback: string;
+}
+
+/**
+ * Réponse acceptée par cette case à un défaut d'écriture près, sinon `undefined` :
+ * - trop de chiffres, mais la réponse arrondie redonne l'attendu (cf. questions/rounding) ;
+ * - nombre seul mal écrit (`58,`, `,5`) dont la valeur relue est juste (même règle qu'en
+ *   ordre fixé, cf. `validateSingleBlank`).
+ */
+function looseMatchOf(
+	answer: string,
+	blank: InstanceBlank,
+	instance: QuestionInstance
+): LooseMatch | undefined {
+	const repaired = isBareFormulaBlank(blank) ? malformedBareNumber(answer) : null;
+	if (repaired !== null) {
+		return validateBlankValue(repaired, blank, instance)
+			? { constraint: 'form', feedback: CONSTRAINT_FEEDBACK['form'].single }
+			: undefined;
+	}
+	const feedback = roundingOnlyFeedback(answer, blank, instance);
+	return feedback === undefined ? undefined : { constraint: 'rounding', feedback };
+}
+
 /**
  * Appariement réponses → cases (`orderIndependent`), en deux temps : d'abord les
  * réponses justes, puis — sans en détacher aucune — celles qui ne sont justes
- * qu'à l'arrondi près (trop de chiffres, cf. questions/rounding). Une réponse
- * exacte passe donc avant une trop précise pour la même case.
+ * qu'à un défaut d'écriture près (trop de chiffres, nombre mal écrit : `looseMatchOf`).
+ * Une réponse exacte passe donc avant une mal écrite pour la même case.
  *
  * @returns `matching[a]` = case de la réponse `a` (`-1` si aucune) ;
- *   `roundingFeedback[a]` = message d'arrondi si elle n'y est juste qu'à l'arrondi près
+ *   `looseMatch[a]` = son défaut d'écriture si elle n'y est juste qu'à ce défaut près
  */
 function matchAnswersToBlanks(
 	userAnswers: string[],
 	instance: QuestionInstance
-): { matching: number[]; roundingFeedback: (string | undefined)[] } {
+): { matching: number[]; looseMatch: (LooseMatch | undefined)[] } {
 	const blanks = instance.blanks ?? [];
 	const accepts = userAnswers.map((answer) =>
 		blanks.map((blank) => answer.trim() !== '' && validateBlankValue(answer, blank, instance))
 	);
 	const exactMatching = maximumMatching(accepts, blanks.length);
 	if (exactMatching.every((b, a) => b !== -1 || !userAnswers[a].trim())) {
-		return { matching: exactMatching, roundingFeedback: userAnswers.map(() => undefined) };
+		return { matching: exactMatching, looseMatch: userAnswers.map(() => undefined) };
 	}
 
-	const roundingFeedbacks = userAnswers.map((answer, a) =>
+	const looseMatches = userAnswers.map((answer, a) =>
 		blanks.map((blank, b) =>
-			answer.trim() !== '' && !accepts[a][b]
-				? roundingOnlyFeedback(answer, blank, instance)
-				: undefined
+			answer.trim() !== '' && !accepts[a][b] ? looseMatchOf(answer, blank, instance) : undefined
 		)
 	);
 	const looseAccepts = accepts.map((row, a) =>
-		row.map((ok, b) => ok || roundingFeedbacks[a][b] !== undefined)
+		row.map((ok, b) => ok || looseMatches[a][b] !== undefined)
 	);
 	const matching = maximumMatching(looseAccepts, blanks.length, exactMatching);
 	return {
 		matching,
-		roundingFeedback: matching.map((b, a) =>
-			b !== -1 && !accepts[a][b] ? roundingFeedbacks[a][b] : undefined
+		looseMatch: matching.map((b, a) =>
+			b !== -1 && !accepts[a][b] ? looseMatches[a][b] : undefined
 		)
 	};
 }
@@ -2083,18 +2512,23 @@ function matchedAnswerForm(
 	blankLatex: string | undefined,
 	blank: InstanceBlank,
 	instance: QuestionInstance,
-	roundingFeedback?: string
+	looseMatch?: LooseMatch
 ): { status: ValidationStatus; violations: NonNullable<ValidationResult['constraintViolations']> } {
-	// Appariée à l'arrondi près : mauvaise forme, violation `rounding` (cf. questions/rounding)
-	if (roundingFeedback) {
+	// Appariée à un défaut d'écriture près (arrondi non fait, nombre mal écrit) : mauvaise
+	// forme, violation `rounding` ou `form` (cf. `looseMatchOf`)
+	if (looseMatch) {
 		return {
 			status: 'bad_form',
-			violations: roundingBadForm(roundingFeedback).constraintViolations
+			violations: [{ ...looseMatch, severity: 'error' }]
 		};
 	}
 
 	// Case à construire appariée : valeur écrite par le composant, forme jamais jugée
 	if (blank.construire) return { status: 'correct', violations: [] };
+	// Bouton « impossible » apparié (tirage sans réponse) : rien à lire ni à mettre en forme
+	if (impossibleVerdict(userAnswer, blankLatex, blank) === true) {
+		return { status: 'correct', violations: [] };
+	}
 
 	// Case « intervalles » appariée (valeur déjà juste) : écriture jugée par son propre module,
 	// jamais par la comparaison d'expressions (qui la dirait de mauvaise forme)
@@ -2115,6 +2549,16 @@ function matchedAnswerForm(
 	// Case « matrice » appariée : même jugement que seule (écriture des coefficients)
 	if (blank.answerKind === 'matrice') {
 		const result = matrixBlankResult(blankLatex || userAnswer, blank, instance);
+		return { status: result.status ?? 'incorrect', violations: result.constraintViolations ?? [] };
+	}
+	// Case « droite paramétrique » appariée : même jugement que seule
+	if (blank.answerKind === 'droite-parametrique') {
+		const result = parametricLineBlankResult(blankLatex || userAnswer, blank);
+		return { status: result.status ?? 'incorrect', violations: result.constraintViolations ?? [] };
+	}
+	// Case « résolution » appariée : même jugement que seule
+	if (blank.answerKind === 'resolution') {
+		const result = resolutionBlankResult(blankLatex || userAnswer, blank, instance);
 		return { status: result.status ?? 'incorrect', violations: result.constraintViolations ?? [] };
 	}
 	// Case « primitive » / « solution-ed » appariée : même jugement que seule
@@ -2170,7 +2614,8 @@ function matchedAnswerForm(
 						blankLatex,
 						instance.options?.constraints ?? {},
 						reading,
-						allowsNumberFraction(blank)
+						allowsNumberFraction(blank),
+						blank.precision
 					)
 				: applyConstraints(
 						[userAnswer],
@@ -2209,11 +2654,25 @@ function validateBlanksOrderIndependent(
 	}
 
 	// Réponse hostile ou démesurée (garde Q58) : fausse, avec son message. Les cases
-	// « intervalles » ont leur propre garde (dans `validateBlankValue`).
-	const ordinaryBlanks = blanks.every((blank) => blank.answerKind !== 'intervalles');
+	// « intervalles » ont leur propre garde (dans `validateBlankValue`) ; les cases à
+	// plusieurs lignes (« resolution », « droite-parametrique ») mesurent chaque ligne.
+	const ordinaryBlanks = blanks.every(
+		(blank) =>
+			blank.answerKind !== 'intervalles' &&
+			blank.answerKind !== 'resolution' &&
+			blank.answerKind !== 'droite-parametrique'
+	);
+	// Le bouton « impossible » (sa marque) n'est pas une expression : jamais mesuré
+	const isButton = (answer: string, latex: string | undefined) =>
+		blanks.some((blank) => blank.impossibleLabel !== undefined) &&
+		(isImpossibleAnswer(answer) || isImpossibleAnswer(latex));
 	if (
 		ordinaryBlanks &&
-		userAnswers.some((answer, i) => isBlankAnswerTooComplex(answer, userAnswersLatex?.[i]))
+		userAnswers.some(
+			(answer, i) =>
+				!isButton(answer, userAnswersLatex?.[i]) &&
+				isBlankAnswerTooComplex(answer, userAnswersLatex?.[i])
+		)
 	) {
 		return { isCorrect: false, feedback: ANSWER_TOO_COMPLEX_FEEDBACK };
 	}
@@ -2221,7 +2680,7 @@ function validateBlanksOrderIndependent(
 	// Compatibilités réponse × case (valeur seule), puis appariement MAXIMAL.
 	// Un appariement glouton (première case libre qui accepte) pouvait prendre
 	// la seule case d'une autre réponse et refuser une copie juste.
-	const { matching, roundingFeedback } = matchAnswersToBlanks(userAnswers, instance);
+	const { matching, looseMatch } = matchAnswersToBlanks(userAnswers, instance);
 	const used = new Set(matching.filter((b) => b !== -1));
 
 	// Count unmatched non-empty answers
@@ -2244,6 +2703,18 @@ function validateBlanksOrderIndependent(
 				)
 		);
 		if (forgotPercent) return { isCorrect: false, feedback: FORGOTTEN_PERCENT_SIGN };
+		// Nombre collé derrière un facteur sur une réponse non appariée : même message
+		// qu'en mode positionnel
+		const refusal = userAnswers
+			.map((answer, i) =>
+				answer.trim() &&
+				matching[i] === -1 &&
+				blanks.some((blank, b) => !used.has(b) && isBareFormulaBlank(blank))
+					? numberAfterFactorRefusal(userAnswersLatex?.[i] || answer, instance)
+					: undefined
+			)
+			.find((feedback) => feedback !== undefined);
+		if (refusal !== undefined) return { isCorrect: false, feedback: refusal };
 		return { isCorrect: false, message: 'Incorrect' };
 	}
 
@@ -2270,7 +2741,7 @@ function validateBlanksOrderIndependent(
 			userAnswersLatex?.[a],
 			blanks[matching[a]],
 			instance,
-			roundingFeedback[a]
+			looseMatch[a]
 		);
 		if (form.status === 'bad_form') worstStatus = 'bad_form';
 		else if (form.status === 'unoptimal_form' && worstStatus === 'correct')
@@ -2423,8 +2894,13 @@ function detailGradedBlanks(
 	const answers = userAnswers.map((answer, i) => userAnswersLatex?.[i] || answer);
 
 	if (!instance.options?.orderIndependent) {
+		// Escalier à construire : toutes ses cases jugées sur la chaîne de sa dernière case
+		const judged = staircaseChains(
+			userAnswers,
+			blanks.map((b) => b.expectedAnswer)
+		);
 		const results = blanks.map((blank, i) =>
-			validateSingleBlank(userAnswers[i], blank, userAnswersLatex?.[i], instance)
+			validateSingleBlank(judged[i], blank, userAnswersLatex?.[i], instance)
 		);
 		return {
 			result: aggregateOrderedBlanks(results, blanks),
@@ -2451,7 +2927,7 @@ function orderIndependentDetails(
 ): { status: ValidationStatus; remarks: string[] }[] {
 	const blanks = instance.blanks ?? [];
 
-	const { matching, roundingFeedback } = matchAnswersToBlanks(userAnswers, instance);
+	const { matching, looseMatch } = matchAnswersToBlanks(userAnswers, instance);
 	const used = new Set(matching.filter((b) => b !== -1));
 	const freeBlanks = blanks.filter((_, b) => !used.has(b));
 	return userAnswers.map((answer, a) => {
@@ -2467,7 +2943,7 @@ function orderIndependentDetails(
 			userAnswersLatex?.[a],
 			blanks[matching[a]],
 			instance,
-			roundingFeedback[a]
+			looseMatch[a]
 		);
 		return { status: form.status, remarks: remarksOf(undefined, form.violations) };
 	});

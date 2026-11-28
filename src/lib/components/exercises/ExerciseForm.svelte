@@ -1,38 +1,38 @@
 <script lang="ts">
-	import { lore } from '$lib/config/lore';
-	import { Button } from '$lib/components/ui/button';
-	import { Input } from '$lib/components/ui/input';
-	import { Label } from '$lib/components/ui/label';
-	import * as Card from '$lib/components/ui/card';
-	import * as Tabs from '$lib/components/ui/tabs';
-	import * as Collapsible from '$lib/components/ui/collapsible';
+	import { lore } from '#lib/config/lore.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import { Input } from '#lib/components/ui/input/index.ts';
+	import { Label } from '#lib/components/ui/label/index.ts';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import * as Tabs from '#lib/components/ui/tabs/index.ts';
+	import * as Collapsible from '#lib/components/ui/collapsible/index.ts';
 	import ExerciseResourceEditor from './ExerciseResourceEditor.svelte';
 	import VariationEditor from './VariationEditor.svelte';
 	import BareGreekWarning from './BareGreekWarning.svelte';
 	import ExerciseVisibilityFields from './ExerciseVisibilityFields.svelte';
-	import { hasEnglishStatement } from '$lib/exercises/translation-draft';
+	import { hasEnglishStatement } from '#lib/exercises/translation-draft.ts';
 	import LaTeXImportDialog from './LaTeXImportDialog.svelte';
 	import GenericFunctionInput from './GenericFunctionInput.svelte';
-	import GradeBadgeSelector from '$lib/components/GradeBadgeSelector.svelte';
-	import TagBadgeSelector from '$lib/components/TagBadgeSelector.svelte';
-	import MySelect from '$lib/components/MySelect.svelte';
-	import { toaster } from '$lib/stores/toaster.svelte';
-	import type { Database } from '$lib/types/database';
+	import GradeBadgeSelector from '#lib/components/GradeBadgeSelector.svelte';
+	import TagBadgeSelector from '#lib/components/TagBadgeSelector.svelte';
+	import MySelect from '#lib/components/MySelect.svelte';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
+	import type { Database } from '#lib/types/database.ts';
 	import type { SupabaseClient } from '@supabase/supabase-js';
-	import type { TranspileWarning } from '$lib/ubumark/importers/latex';
-	import type { GradeCode } from '$lib/types/grades';
+	import type { TranspileWarning } from '#lib/ubumark/importers/latex/index.ts';
+	import type { GradeCode } from '#lib/types/grades.ts';
 	import type {
 		ExerciseResource,
 		ExerciseVariation,
 		SharedExerciseDefaults,
 		Exercise,
 		ExerciseCategory
-	} from '$lib/exercises/types';
-	import { EXERCISE_CATEGORIES } from '$lib/exercises/types';
-	import type { Variable } from '$lib/ubumark';
+	} from '#lib/exercises/types.ts';
+	import { EXERCISE_CATEGORIES } from '#lib/exercises/types.ts';
+	import type { Variable } from '#lib/ubumark/index.ts';
 	import { Save, Loader2 } from '@lucide/svelte';
-	import { provideCapitalPairs } from '$lib/components/markdown/content-capital-pairs';
-	import { exerciseCapitalPairs } from '$lib/questions/capital-pairs';
+	import { provideCapitalPairs } from '#lib/components/markdown/content-capital-pairs.ts';
+	import { exerciseCapitalPairs } from '#lib/questions/capital-pairs.ts';
 
 	type ExerciseInsert = Database['public']['Tables']['exercises']['Insert'];
 
@@ -64,6 +64,9 @@
 
 	// Form state
 	let title = $state(initialExercise?.title || '');
+	// Titre des fiches en anglais ; vide = le titre français y est imprimé
+	const storedEnglishTitle = initialExercise?.translations?.en?.title;
+	let englishTitle = $state(typeof storedEnglishTitle === 'string' ? storedEnglishTitle : '');
 	let slug = $state(initialExercise?.slug || '');
 	let source = $state(initialExercise?.source || '');
 	let category = $state<ExerciseCategory | ''>(initialExercise?.category || '');
@@ -83,7 +86,7 @@
 
 	/**
 	 * Generic function names for math expression parsing.
-	 * Now properly typed via Exercise interface from $lib/exercises/types.
+	 * Now properly typed via Exercise interface from #lib/exercises/types.
 	 */
 	let genericFunctions = $state<string[]>(initialExercise?.generic_functions ?? []);
 
@@ -256,7 +259,7 @@
 	 */
 	function addVariation() {
 		if (variations.length >= 10) {
-			toaster.warning('Maximum 10 variations autorisees');
+			toaster.warning('10 niveaux de guidage au plus');
 			return;
 		}
 
@@ -269,7 +272,7 @@
 
 		variations = [...variations, newVariation];
 		activeVariationTab = String(variations.length - 1);
-		toaster.success('Variation ajoutee');
+		toaster.success('Niveau de guidage ajouté');
 	}
 
 	/**
@@ -277,7 +280,7 @@
 	 */
 	function removeVariation(index: number) {
 		if (variations.length <= 1) {
-			toaster.warning('Au moins une variation est requise');
+			toaster.warning('Il faut au moins un niveau de guidage');
 			return;
 		}
 
@@ -297,7 +300,7 @@
 	 */
 	function duplicateVariation(index: number) {
 		if (variations.length >= 10) {
-			toaster.warning('Maximum 10 variations autorisees');
+			toaster.warning('10 niveaux de guidage au plus');
 			return;
 		}
 
@@ -322,7 +325,7 @@
 
 		// Switch to the new duplicate
 		activeVariationTab = String(index + 1);
-		toaster.success('Variation dupliquee');
+		toaster.success('Niveau de guidage dupliqué');
 	}
 
 	/**
@@ -368,10 +371,10 @@
 		for (let i = 0; i < variations.length; i++) {
 			const v = variations[i];
 			if (!v.statement_md.trim()) {
-				errors[`variation_${i}_statement`] = `L'enonce de la variation ${i + 1} est requis`;
+				errors[`variation_${i}_statement`] = `L’énoncé du niveau de guidage ${i + 1} est requis`;
 			}
 			if (!v.solution_md.trim()) {
-				errors[`variation_${i}_solution`] = `La solution de la variation ${i + 1} est requise`;
+				errors[`variation_${i}_solution`] = `La solution du niveau de guidage ${i + 1} est requise`;
 			}
 		}
 
@@ -409,7 +412,7 @@
 				if (match) {
 					activeVariationTab = match[1];
 				}
-				toaster.error('Veuillez corriger les erreurs dans les variations');
+				toaster.error('Corrige les erreurs dans les niveaux de guidage');
 			}
 			return;
 		}
@@ -422,6 +425,8 @@
 			tags?: string[] | null;
 		} = {
 			title: title.trim() || null,
+			// null efface la traduction : le titre français reprend sa place
+			translations: englishTitle.trim() ? { en: { title: englishTitle.trim() } } : null,
 			slug: slug.trim() || null,
 			source: source.trim() || null,
 			category: category as ExerciseCategory,
@@ -436,11 +441,10 @@
 
 		// Always use variations - they are the single source of truth
 		// Legacy statement_md/solution_md fields are no longer saved
-		// @ts-expect-error - ExerciseVariation[] is compatible with Json at runtime
 		data.variations = variations;
 		data.shared =
 			shared && (shared.variables?.length || shared.statement_md || shared.solution_md)
-				? (shared as unknown as ExerciseInsert['shared'])
+				? shared
 				: undefined;
 
 		await onsubmit(data);
@@ -464,7 +468,7 @@
 		const hasExistingSolution = currentVariation?.solution_md.trim().length > 0;
 
 		if (hasExistingStatement || hasExistingSolution) {
-			const confirmMsg = 'Le contenu existant de cette variation sera remplace. Continuer ?';
+			const confirmMsg = 'Le contenu existant de ce niveau de guidage sera remplacé. Continuer ?';
 			if (!confirm(confirmMsg)) {
 				return;
 			}
@@ -564,6 +568,18 @@
 							/>
 						</div>
 						<div class="space-y-2">
+							<Label for="english-title">Titre en anglais</Label>
+							<Input
+								id="english-title"
+								type="text"
+								placeholder="Ex: Linear equations"
+								bind:value={englishTitle}
+							/>
+							<p class="text-xs text-muted-foreground">
+								Imprimé dans les fiches en anglais ; vide, c’est le titre français.
+							</p>
+						</div>
+						<div class="space-y-2">
 							<Label for="source">Source</Label>
 							<Input
 								id="source"
@@ -641,7 +657,7 @@
 	<!-- Variations Editor -->
 	<Card.Root>
 		<Card.Header>
-			<Card.Title>Variations</Card.Title>
+			<Card.Title>Niveaux de guidage</Card.Title>
 		</Card.Header>
 		<Card.Content>
 			<Tabs.Root bind:value={activeVariationTab}>
@@ -673,7 +689,7 @@
 											}
 										}}
 										class="absolute top-1/2 right-1 -translate-y-1/2 cursor-pointer rounded-full p-0.5 text-muted-foreground hover:bg-destructive/20 hover:text-destructive"
-										title="Supprimer cette variation"
+										title="Supprimer ce niveau de guidage"
 									>
 										<svg class="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 											<path
@@ -694,7 +710,7 @@
 						size="sm"
 						onclick={() => duplicateVariation(parseInt(activeVariationTab))}
 						disabled={variations.length >= 10}
-						title="Dupliquer la variation active"
+						title="Dupliquer le niveau de guidage affiché"
 					>
 						<svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 							<path
@@ -711,7 +727,7 @@
 						size="sm"
 						onclick={addVariation}
 						disabled={variations.length >= 10}
-						title="Ajouter une variation vide"
+						title="Ajouter un niveau de guidage vide"
 					>
 						+
 					</Button>
@@ -924,10 +940,10 @@
 		>
 		<Button type="submit" disabled={submitting}>
 			{submitting
-				? 'Enregistrement...'
+				? 'Enregistrement…'
 				: exercise
-					? 'Mettre a jour'
-					: `Creer la ${lore.learning.exercise}`}
+					? 'Mettre à jour'
+					: `Créer la ${lore.learning.exercise}`}
 		</Button>
 	</div>
 </form>

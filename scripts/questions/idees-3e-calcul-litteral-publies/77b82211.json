@@ -1,0 +1,498 @@
+{
+	"id": "77b82211-31f1-43c2-a2f4-04a55efb066e",
+	"title": "Réduire une somme",
+	"description": "Coefficients relatifs",
+	"grades": ["3"],
+	"level": 6,
+	"delay": 30,
+	"status": "published",
+	"shared": {
+		"variables": [
+			{
+				"name": "p",
+				"expression": "a|b|c"
+			},
+			{
+				"name": "q",
+				"expression": "1..9;±"
+			},
+			{
+				"name": "r",
+				"expression": "1..9;±"
+			},
+			{
+				"name": "s",
+				"expression": "a|b|c!p"
+			},
+			{
+				"name": "t",
+				"expression": "1..9;±"
+			},
+			{
+				"name": "u",
+				"expression": "1..9;±"
+			}
+		]
+	},
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:{{expression1}}}}"
+				}
+			],
+			"statement": "Réduis :\n\n$${{expression1}}$$",
+			"variables": [
+				{
+					"name": "expression1",
+					"expression": "{{eval:qp}}{{eval:rp;+}}{{eval:ts;+}}{{eval:us;+}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$$\\begin{align}               {{eval:qp}}{{eval:rp;+}}{{eval:ts;+}}{{eval:us;+}}               &= ({{q}}{{eval:r;+}}) \\times {{p}} + ({{t}}{{eval:u;+}}) \\times {{s}} \\\\               &= {{eval:q+(r)}} \\times {{p}} {{eval:t+(u);+}} \\times {{s}} \\\\               &= {{solution}}                \\end{align}$$"
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:{{expression2}}}}"
+				}
+			],
+			"statement": "Réduis :\n\n$${{expression2}}$$",
+			"variables": [
+				{
+					"name": "expression2",
+					"expression": "{{eval:qp}}{{eval:rs;+}}{{eval:tp;+}}{{eval:us;+}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$$\\begin{align}               {{eval:qp}}{{eval:rs;+}}{{eval:tp;+}}{{eval:us;+}}               &= ({{q}}{{eval:t;+}}) \\times {{p}} + ({{r}}{{eval:u;+}}) \\times {{s}} \\\\               &= {{eval:q+(t)}} \\times {{p}} {{eval:r+(u);+}} \\times {{s}} \\\\               &= {{solution}}                \\end{align}$$"
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:{{expression3}}}}"
+				}
+			],
+			"statement": "Réduis :\n\n$${{expression3}}$$",
+			"variables": [
+				{
+					"name": "expression3",
+					"expression": "{{eval:qp}}{{eval:rs;+}}{{eval:ts;+}}{{eval:up;+}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$$\\begin{align}               {{eval:qp}}{{eval:rs;+}}{{eval:ts;+}}{{eval:up;+}}               &= ({{q}}{{eval:u;+}}) \\times {{p}} + ({{r}}{{eval:t;+}}) \\times {{s}} \\\\               &= {{eval:q+(u)}} \\times {{p}} {{eval:r+(t);+}} \\times {{s}} \\\\               &= {{solution}}                \\end{align}$$"
+				]
+			}
+		},
+		{
+			"statement": "Réduis :\n\n$${{eval:a*x^2}}{{eval:b*x;+}}{{eval:c;+}}{{eval:d*x;+}}{{eval:f*x^2;+}}{{eval:g;+}}$$\n\n$?$",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "a",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "b",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "c",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "d",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "f",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "g",
+					"expression": "1..9;±"
+				}
+			],
+			"conditions": ["a+(f) != 0", "b+(d) != 0", "c+(g) != 0", "a+(f)+(b)+(d) != 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(a+(f))*x^2+(b+(d))*x+(c+(g))}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:(a+(f)+(b)+(d))*x^3+(c+(g))}}",
+							"message": "$x^2$ et $x$ ne sont pas des termes semblables : on ne les additionne pas (et $x^2 + x$ ne fait pas $x^3$).",
+							"label": "x² + x = x³"
+						},
+						{
+							"answer": "{{eval:(a+(f)+(b)+(d))*x^2+(c+(g))}}",
+							"message": "$x^2$ et $x$ ne sont pas des termes semblables : on ne les regroupe pas.",
+							"label": "x² et x regroupés"
+						},
+						{
+							"answer": "{{eval:(a+(f))*x^2+(b+(d))*x}}",
+							"message": "Tu as oublié les nombres sans $x$ : ils se regroupent entre eux.",
+							"label": "Nombres oubliés"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"On regroupe les termes semblables : les termes en $x^2$, les termes en $x$, puis les nombres.",
+					"$$\\begin{align} {{eval:a*x^2}}{{eval:b*x;+}}{{eval:c;+}}{{eval:d*x;+}}{{eval:f*x^2;+}}{{eval:g;+}} &= \\textcolor{{{color:primary.0}}}{({{a}}{{eval:f;+}})x^2} + \\textcolor{{{color:primary.1}}}{({{b}}{{eval:d;+}})x} + ({{c}}{{eval:g;+}}) \\\\ &= {{solution}} \\end{align}$$"
+				]
+			},
+			"hint": "Repère les termes en $x^2$, les termes en $x$ et les nombres : on n'additionne que des termes de même nature."
+		},
+		{
+			"statement": "Réduis, si c'est possible :\n\n$${{eval:a*x}}{{eval:b*x^2;+}}$$\n\n$?$",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "a",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "b",
+					"expression": "1..9;±"
+				}
+			],
+			"conditions": ["a+(b) != 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(b)*x^2+(a)*x}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:(a+(b))*x^3}}",
+							"message": "$x^2$ et $x$ ne sont pas des termes semblables : on ne les additionne pas (et $x^2 + x$ ne fait pas $x^3$).",
+							"label": "x² + x = x³"
+						},
+						{
+							"answer": "{{eval:(a+(b))*x^2}}",
+							"message": "$x^2$ et $x$ ne sont pas des termes semblables : on ne les regroupe pas.",
+							"label": "x² et x regroupés"
+						},
+						{
+							"answer": "{{eval:(a+(b))*x}}",
+							"message": "$x^2$ et $x$ ne sont pas des termes semblables : on ne les regroupe pas.",
+							"label": "x² et x regroupés en x"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"Un terme en $x$ et un terme en $x^2$ ne sont pas semblables : ils ne se regroupent pas.",
+					"L'expression est déjà réduite : $$\\textcolor{{{color:primary.0}}}{{{solution}}}$$"
+				]
+			},
+			"hint": "Avant de regrouper, demande-toi si les termes sont semblables : $x$ et $x^2$ le sont-ils ?"
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["7b-13c"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"p": "c|c",
+				"q": "-7",
+				"r": "-6",
+				"s": "b|b",
+				"t": "4",
+				"u": "3"
+			},
+			"description": "bonne réponse 7b-13c",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["-7c-6c+4b+3b"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			},
+			"variables": {
+				"p": "c|c",
+				"q": "-7",
+				"r": "-6",
+				"s": "b|b",
+				"t": "4",
+				"u": "3"
+			},
+			"description": "expression recopiée -7c-6c+4b+3b",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["-13c+7b"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"p": "c|c",
+				"q": "-7",
+				"r": "-6",
+				"s": "b|b",
+				"t": "4",
+				"u": "3"
+			},
+			"description": "-13c+7b",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["-3b-3c"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"p": "c|c",
+				"q": "-7",
+				"r": "-6",
+				"s": "b|b",
+				"t": "4",
+				"u": "3"
+			},
+			"description": "bonne réponse -3b-3c",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["-7c-6b+4c+3b"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			},
+			"variables": {
+				"p": "c|c",
+				"q": "-7",
+				"r": "-6",
+				"s": "b|b",
+				"t": "4",
+				"u": "3"
+			},
+			"description": "expression recopiée -7c-6b+4c+3b",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["-2b-4c"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"p": "c|c",
+				"q": "-7",
+				"r": "-6",
+				"s": "b|b",
+				"t": "4",
+				"u": "3"
+			},
+			"description": "bonne réponse -2b-4c",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["-7c-6b+4b+3c"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			},
+			"variables": {
+				"p": "c|c",
+				"q": "-7",
+				"r": "-6",
+				"s": "b|b",
+				"t": "4",
+				"u": "3"
+			},
+			"description": "expression recopiée -7c-6b+4b+3c",
+			"variationIndex": 2
+		},
+		{
+			"description": "F4a : 2x² + 5x − 3",
+			"variationIndex": 3,
+			"variables": {
+				"a": "3",
+				"b": "-2",
+				"c": "5",
+				"d": "7",
+				"f": "-1",
+				"g": "-8"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["2x^2+5x-3"]
+		},
+		{
+			"description": "F4a : ordre libre",
+			"variationIndex": 3,
+			"variables": {
+				"a": "3",
+				"b": "-2",
+				"c": "5",
+				"d": "7",
+				"f": "-1",
+				"g": "-8"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["-3+5x+2x^2"]
+		},
+		{
+			"description": "F4a : non réduite",
+			"variationIndex": 3,
+			"variables": {
+				"a": "3",
+				"b": "-2",
+				"c": "5",
+				"d": "7",
+				"f": "-1",
+				"g": "-8"
+			},
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			},
+			"answers": ["3x^2-x^2+5x-3"]
+		},
+		{
+			"description": "F4a : x² + x = x³",
+			"variationIndex": 3,
+			"variables": {
+				"a": "3",
+				"b": "-2",
+				"c": "5",
+				"d": "7",
+				"f": "-1",
+				"g": "-8"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "$x^2$ et $x$ ne sont pas des termes semblables : on ne les additionne pas (et $x^2 + x$ ne fait pas $x^3$)."
+			},
+			"answers": ["7x^3-3"]
+		},
+		{
+			"description": "F4a : x² et x regroupés",
+			"variationIndex": 3,
+			"variables": {
+				"a": "3",
+				"b": "-2",
+				"c": "5",
+				"d": "7",
+				"f": "-1",
+				"g": "-8"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "$x^2$ et $x$ ne sont pas des termes semblables : on ne les regroupe pas."
+			},
+			"answers": ["7x^2-3"]
+		},
+		{
+			"description": "F4a : nombres oubliés",
+			"variationIndex": 3,
+			"variables": {
+				"a": "3",
+				"b": "-2",
+				"c": "5",
+				"d": "7",
+				"f": "-1",
+				"g": "-8"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as oublié les nombres sans $x$ : ils se regroupent entre eux."
+			},
+			"answers": ["2x^2+5x"]
+		},
+		{
+			"description": "F4b : 3x + 5x² déjà réduite",
+			"variationIndex": 4,
+			"variables": {
+				"a": "3",
+				"b": "5"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["3x+5x^2"]
+		},
+		{
+			"description": "F4b : 5x² + 3x",
+			"variationIndex": 4,
+			"variables": {
+				"a": "3",
+				"b": "5"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["5x^2+3x"]
+		},
+		{
+			"description": "F4b : 8x³",
+			"variationIndex": 4,
+			"variables": {
+				"a": "3",
+				"b": "5"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "$x^2$ et $x$ ne sont pas des termes semblables : on ne les additionne pas (et $x^2 + x$ ne fait pas $x^3$)."
+			},
+			"answers": ["8x^3"]
+		},
+		{
+			"description": "F4b : 8x²",
+			"variationIndex": 4,
+			"variables": {
+				"a": "3",
+				"b": "5"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "$x^2$ et $x$ ne sont pas des termes semblables : on ne les regroupe pas."
+			},
+			"answers": ["8x^2"]
+		},
+		{
+			"description": "F4b : 8x",
+			"variationIndex": 4,
+			"variables": {
+				"a": "3",
+				"b": "5"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "$x^2$ et $x$ ne sont pas des termes semblables : on ne les regroupe pas."
+			},
+			"answers": ["8x"]
+		},
+		{
+			"description": "F4b : −4x − 2x²",
+			"variationIndex": 4,
+			"variables": {
+				"a": "-4",
+				"b": "-2"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["-2x^2-4x"]
+		}
+	]
+}

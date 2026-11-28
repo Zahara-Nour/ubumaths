@@ -12,9 +12,9 @@ import {
 	parseChoiceBody,
 	replaceChoiceBlocks,
 	serializeChoiceBlock
-} from '$lib/ubumark/parser/choix-parser';
-import { parseMarkdown } from '$lib/ubumark';
-import { generateTypst } from '$lib/ubumark/generators/typst-generator';
+} from '#lib/ubumark/parser/choix-parser.ts';
+import { parseMarkdown } from '#lib/ubumark/index.ts';
+import { generateTypst } from '#lib/ubumark/generators/typst-generator.ts';
 
 const lines = (text: string) => text.split('\n');
 

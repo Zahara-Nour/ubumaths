@@ -16,7 +16,7 @@ function pageData(user: { id: string } | null): PageData {
 }
 
 // Le vrai chat appelle l'API et l'IA : seul compte ici s'il est rendu ou non.
-vi.mock('$lib/components/ChatBot.svelte', async () => ({
+vi.mock('#lib/components/ChatBot.svelte', async () => ({
 	default: (await import('./ChatBotStub.svelte')).default
 }));
 

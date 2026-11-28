@@ -1,7 +1,7 @@
 """Écrit les 10 modèles du lot 4 du CE2 (fractions) dans scripts/questions/ce2-4/.
 
 Phase 0 validée par David le 2026-10-29 (« tes recos ? » puis « ok », § 8 du journal
-`docs/wip/questions-ce2-progress.md`). Bornes `cycle2.json`, CE2-011, 013, 014 et 089 : fractions
+`docs/archive/wip/questions-ce2-progress.md`). Bornes `cycle2.json`, CE2-011, 013, 014 et 089 : fractions
 ≤ 1 de dénominateur ≤ 12 ; comparer : strictement < 1, trois cas (même dénominateur, même
 numérateur, un dénominateur multiple de l'autre) ; + et − : même dénominateur ou un multiple de
 l'autre, résultat ≤ 1. Exemples du BO (p.20-21) : 6/8 = 3/4 ; ?/8 = 1/2 ; 5/12 et 7/12, 5/12 et

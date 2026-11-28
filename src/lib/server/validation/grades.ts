@@ -1,6 +1,6 @@
 import { z } from 'zod';
-import { GRADE_CODES, type GradeCode } from '$lib/types/grades';
-import { parseGradeCode, hasAccessToGrade } from '$lib/utils/grades';
+import { GRADE_CODES, type GradeCode } from '#lib/types/grades.ts';
+import { parseGradeCode, hasAccessToGrade } from '#lib/utils/grades.ts';
 
 /**
  * Strict schema - only accepts canonical codes

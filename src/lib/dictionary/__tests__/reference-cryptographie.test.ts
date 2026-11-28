@@ -1,6 +1,6 @@
 import { existsSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
-import { resolveGradedField } from '$lib/dictionary/model';
+import { resolveGradedField } from '#lib/dictionary/model.ts';
 import { REFERENCE_DICTIONARY } from '../../../../tests/fixtures/lexique/dictionnaire-reference';
 
 const crypto = REFERENCE_DICTIONARY.filter((t) => t.tags.includes('cryptographie'));

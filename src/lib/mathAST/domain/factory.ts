@@ -10,7 +10,7 @@
 // =============================================================================
 
 // Bound value constructors
-export { bound } from '$lib/math/intervals/factory';
+export { bound } from '#lib/math/intervals/factory.ts';
 
 // Endpoint factories
 export {
@@ -19,7 +19,7 @@ export {
 	closedEndpoint,
 	negInfinityEndpoint,
 	posInfinityEndpoint
-} from '$lib/math/intervals/factory';
+} from '#lib/math/intervals/factory.ts';
 
 // Interval factories
 export {
@@ -33,17 +33,17 @@ export {
 	greaterThanInterval,
 	greaterThanOrEqualInterval,
 	realLine
-} from '$lib/math/intervals/factory';
+} from '#lib/math/intervals/factory.ts';
 
 // Domain constants (with aliases for backward compatibility)
-export { EMPTY_SET, UNIVERSAL_SET } from '$lib/math/intervals/factory';
-export { EMPTY_SET as EMPTY_DOMAIN } from '$lib/math/intervals/factory';
-export { UNIVERSAL_SET as UNIVERSAL_DOMAIN } from '$lib/math/intervals/factory';
+export { EMPTY_SET, UNIVERSAL_SET } from '#lib/math/intervals/factory.ts';
+export { EMPTY_SET as EMPTY_DOMAIN } from '#lib/math/intervals/factory.ts';
+export { UNIVERSAL_SET as UNIVERSAL_DOMAIN } from '#lib/math/intervals/factory.ts';
 
 // Domain factories (with aliases for backward compatibility)
-export { emptySet, universalSet } from '$lib/math/intervals/factory';
-export { emptySet as emptyDomain } from '$lib/math/intervals/factory';
-export { universalSet as universalDomain } from '$lib/math/intervals/factory';
+export { emptySet, universalSet } from '#lib/math/intervals/factory.ts';
+export { emptySet as emptyDomain } from '#lib/math/intervals/factory.ts';
+export { universalSet as universalDomain } from '#lib/math/intervals/factory.ts';
 
 // =============================================================================
 // Domain-specific factories (conditions)
@@ -64,8 +64,8 @@ import {
 	greaterThanOrEqualInterval as intervalsGreaterThanOrEqual,
 	closedInterval as intervalsClosedInterval,
 	realLine as intervalsRealLine
-} from '$lib/math/intervals/factory';
-import { number, opposite } from '$lib/mathAST/factory';
+} from '#lib/math/intervals/factory.ts';
+import { number, opposite } from '#lib/mathAST/factory.ts';
 
 /**
  * Creates a condition-based domain.

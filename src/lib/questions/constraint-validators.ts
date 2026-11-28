@@ -24,8 +24,8 @@ import {
 	visitAST,
 	type MathNode,
 	type DivisionNode
-} from '$lib/mathAST';
-import { gcd } from '$lib/mathAST/normal';
+} from '#lib/mathAST/index.ts';
+import { gcd } from '#lib/mathAST/normal/index.ts';
 
 // ============================================================================
 // REDUCED FRACTIONS VALIDATOR

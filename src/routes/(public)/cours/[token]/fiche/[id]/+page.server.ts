@@ -15,7 +15,7 @@ import {
 	courseShareTokenSchema,
 	INVALID_COURSE_LINK,
 	resolveCourseWorksheetByShareToken
-} from '$lib/server/course-share-tokens';
+} from '#lib/server/course-share-tokens.ts';
 
 export const load: PageServerLoad = async ({ params, locals, setHeaders }) => {
 	setHeaders({ 'X-Robots-Tag': 'noindex, nofollow' });

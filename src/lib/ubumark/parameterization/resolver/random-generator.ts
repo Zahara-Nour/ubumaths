@@ -17,8 +17,8 @@ import type {
 	ResolvedVariable,
 	NumberOrVariable
 } from '../../types';
-import { randomIndex, type RandomSource } from '$lib/utils/random';
-import { evalResultToNumber } from '$lib/mathAST/eval';
+import { randomIndex, type RandomSource } from '#lib/utils/random.ts';
+import { evalResultToNumber } from '#lib/mathAST/eval/index.ts';
 import { detectExpressionType } from '../parser/expression-normalizer';
 
 /**

@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { exact, numeric, isExact, isNumeric, type GeoValue } from '../geo-value';
-import { number, sqrt, fraction, add, opposite, multiply, piConstant } from '$lib/mathAST';
+import { number, sqrt, fraction, add, opposite, multiply, piConstant } from '#lib/mathAST/index.ts';
 
 describe('GeoValue constructors', () => {
 	it('exact() creates an exact value from a MathNode', () => {

@@ -3,26 +3,32 @@
  * Load error logs and statistics for admin dashboard
  */
 
+import { error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
-import { getErrorStats, getErrorOccurrences } from '$lib/server/errorMonitoring';
-import { requireAdmin } from '$lib/server/middleware/auth';
+import { getErrorStats, getErrorOccurrences } from '#lib/server/errorMonitoring.ts';
+import { requireAdmin } from '#lib/server/middleware/auth.ts';
+import { adminErrorsFiltersSchema } from '#lib/server/validation/errors.ts';
 
 export const load: PageServerLoad = async ({ locals, url }) => {
 	// Admin gate (admin login OR step-up elevation)
 	const { supabase } = await requireAdmin(locals);
 
-	// Parse filters from query params
+	// Filtres de l'adresse : vide = pas de filtre ; valeur inconnue = 400
+	const parsed = adminErrorsFiltersSchema.safeParse({
+		type: url.searchParams.get('type') || undefined,
+		severity: url.searchParams.get('severity') || undefined,
+		resolved: url.searchParams.get('resolved') || undefined,
+		search: url.searchParams.get('search') || undefined
+	});
+	if (!parsed.success) {
+		throw error(400, 'Filtres invalides');
+	}
+	const { type: error_type, severity, resolved, search } = parsed.data;
+
 	const filters: Record<string, string | boolean | number> = {};
-	const error_type = url.searchParams.get('type');
 	if (error_type) filters.error_type = error_type;
-
-	const severity = url.searchParams.get('severity');
 	if (severity) filters.severity = severity;
-
-	const resolved = url.searchParams.get('resolved');
-	if (resolved !== null) filters.resolved = resolved === 'true';
-
-	const search = url.searchParams.get('search');
+	if (resolved !== undefined) filters.resolved = resolved === 'true';
 	if (search) filters.search = search;
 
 	filters.limit = 50;
@@ -39,10 +45,10 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 		occurrences: occurrencesResult.success ? occurrencesResult.data : [],
 		count: occurrencesResult.count || 0,
 		filters: {
-			type: error_type,
-			severity,
+			type: error_type ?? null,
+			severity: severity ?? null,
 			resolved: resolved === 'true' ? true : resolved === 'false' ? false : null,
-			search
+			search: search ?? null
 		}
 	};
 };

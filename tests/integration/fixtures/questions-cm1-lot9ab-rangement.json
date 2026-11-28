@@ -1,0 +1,90 @@
+[
+	{
+		"id": "19b2b250-35c8-451d-b4fe-51374dbd2c13",
+		"noeudAvant": null,
+		"noeudApres": "Probabilités > Expériences aléatoires",
+		"gradesAvant": ["CM1"],
+		"gradesApres": ["CM1"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["CM1§CM1-123"]
+	},
+	{
+		"id": "1dd68bdd-2c62-4dd5-8908-b82b6a013a7d",
+		"noeudAvant": null,
+		"noeudApres": "Proportionnalité > Situations de proportionnalité",
+		"gradesAvant": ["CM1"],
+		"gradesApres": ["CM1"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["CM1§CM1-130"]
+	},
+	{
+		"id": "41e84aa6-9a14-4108-9dbe-b8d061cfc1e0",
+		"noeudAvant": null,
+		"noeudApres": "Probabilités > Expériences aléatoires > équiprobabilité",
+		"gradesAvant": ["CM1"],
+		"gradesApres": ["CM1"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["CM1§CM1-127"]
+	},
+	{
+		"id": "5081e180-a313-4003-b57a-3f51316b93d5",
+		"noeudAvant": null,
+		"noeudApres": "Probabilités > Expériences aléatoires > événements",
+		"gradesAvant": ["CM1", "CM2"],
+		"gradesApres": ["CM1", "CM2"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["CM1§CM1-124", "CM2§CM2-109"]
+	},
+	{
+		"id": "63675a23-2b10-4881-b096-66ed5e7da700",
+		"noeudAvant": null,
+		"noeudApres": "Probabilités > Expériences aléatoires > probabilité simple",
+		"gradesAvant": ["CM1"],
+		"gradesApres": ["CM1"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["CM1§CM1-126"]
+	},
+	{
+		"id": "78940a45-009a-442c-9d4c-f5eb37252a30",
+		"noeudAvant": null,
+		"noeudApres": "Probabilités > Expériences aléatoires > équiprobabilité",
+		"gradesAvant": ["CM1"],
+		"gradesApres": ["CM1"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["CM1§CM1-128"]
+	},
+	{
+		"id": "833b120a-b1a7-456f-b8cd-c194865deed3",
+		"noeudAvant": null,
+		"noeudApres": "Proportionnalité > Situations de proportionnalité > caractérisation",
+		"gradesAvant": ["CM1"],
+		"gradesApres": ["CM1"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["CM1§CM1-129"]
+	},
+	{
+		"id": "ae90499d-8da4-43e3-9d5b-bd387fd03e3a",
+		"noeudAvant": null,
+		"noeudApres": "Probabilités > Expériences aléatoires > probabilité simple",
+		"gradesAvant": ["CM1"],
+		"gradesApres": ["CM1"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["CM1§CM1-125"]
+	}
+]

@@ -1,7 +1,7 @@
 <script lang="ts">
 	// Banc d'essai : un instrument de constructions-v2 dans un <svg> réel
-	import Compass from '$lib/constructions-v2/instruments/components/Compass.svelte';
-	import Ruler from '$lib/constructions-v2/instruments/components/Ruler.svelte';
+	import Compass from '#lib/constructions-v2/instruments/components/Compass.svelte';
+	import Ruler from '#lib/constructions-v2/instruments/components/Ruler.svelte';
 
 	let { instrument }: { instrument: 'compass' | 'ruler' } = $props();
 </script>

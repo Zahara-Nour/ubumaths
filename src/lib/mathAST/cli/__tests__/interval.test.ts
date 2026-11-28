@@ -7,7 +7,7 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { parseLatex } from '$lib/mathAST/parser';
+import { parseLatex } from '#lib/mathAST/parser/index.ts';
 import { enclosure, compareEnclosures } from '../interval';
 
 /** Le signe de l'encadrement : −1, 1, ou null s'il contient 0. */

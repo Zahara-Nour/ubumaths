@@ -1,0 +1,166 @@
+{
+	"id": "2b3be6d7-e950-4211-912d-6ac42ff79246",
+	"title": "Placer les points d'un tableau de valeurs",
+	"description": "Placer dans un repère donné les points qui représentent un tableau de valeurs (hauteur d'eau selon le temps, prix selon le nombre de séances), axes gradués de 1 en 1 puis de 5 en 5",
+	"grades": ["5"],
+	"level": 12,
+	"delay": 180,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "On remplit un bassin. Le tableau donne la hauteur d'eau selon le temps écoulé.\n\n| Point | A | B | C | D |\n|---|---|---|---|---|\n| Temps (min) | ${{x1}}$ | ${{x2}}$ | ${{x3}}$ | ${{x4}}$ |\n| Hauteur (cm) | ${{eval:a*x1+b}}$ | ${{eval:a*x2+b}}$ | ${{eval:a*x3+b}}$ | ${{eval:a*x4+b}}$ |\n\nPlace les points A, B, C et D : le temps en abscisse, la hauteur en ordonnée.\n\n```courbe\nx: -1 ; 7\ny: -1 ; 15\ngrille: 1 ; 1\naxes: x = Temps (min) ; y = Hauteur (cm)\nplacer: A=({{x1}} ; {{eval:a*x1+b}}) ; B=({{x2}} ; {{eval:a*x2+b}}) ; C=({{x3}} ; {{eval:a*x3+b}}) ; D=({{x4}} ; {{eval:a*x4+b}})\ntaille: moyenne\ndescription: Repère : temps en abscisse, de 1 en 1 ; hauteur en ordonnée, de 1 en 1.\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..2"
+				},
+				{
+					"name": "b",
+					"expression": "1..2"
+				},
+				{
+					"name": "x1",
+					"expression": "0"
+				},
+				{
+					"name": "x2",
+					"expression": "1..2"
+				},
+				{
+					"name": "x3",
+					"expression": "3..4"
+				},
+				{
+					"name": "x4",
+					"expression": "5..6"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Chaque colonne du tableau donne un point : (temps ; hauteur). L'abscisse se lit sur l'axe horizontal, l'ordonnée sur l'axe vertical.",
+					"$A\\textcolor{{{color:primary.0}}}{({{x1}} ; {{eval:a*x1+b}})}$, $B\\textcolor{{{color:primary.0}}}{({{x2}} ; {{eval:a*x2+b}})}$, $C\\textcolor{{{color:primary.0}}}{({{x3}} ; {{eval:a*x3+b}})}$, $D\\textcolor{{{color:primary.0}}}{({{x4}} ; {{eval:a*x4+b}})}$."
+				]
+			}
+		},
+		{
+			"statement": "Au cinéma de la ville, on achète une carte à ${{q}}$ €, puis chaque séance coûte ${{p}}$ €. Le tableau donne le prix payé selon le nombre de séances.\n\n| Point | A | B | C | D |\n|---|---|---|---|---|\n| Séances | ${{x1}}$ | ${{x2}}$ | ${{x3}}$ | ${{x4}}$ |\n| Prix (€) | ${{eval:p*x1+q}}$ | ${{eval:p*x2+q}}$ | ${{eval:p*x3+q}}$ | ${{eval:p*x4+q}}$ |\n\nPlace les points A, B, C et D : le nombre de séances en abscisse, le prix en ordonnée.\n\n```courbe\nx: -1 ; 7\ny: -5 ; 80\ngrille: 1 ; 5\naxes: x = Séances ; y = Prix (€)\nplacer: A=({{x1}} ; {{eval:p*x1+q}}) ; B=({{x2}} ; {{eval:p*x2+q}}) ; C=({{x3}} ; {{eval:p*x3+q}}) ; D=({{x4}} ; {{eval:p*x4+q}})\ntaille: moyenne\ndescription: Repère : séances en abscisse, de 1 en 1 ; prix en ordonnée, de 5 en 5.\n```",
+			"variables": [
+				{
+					"name": "u",
+					"expression": "1..3"
+				},
+				{
+					"name": "q",
+					"expression": "eval:5*u"
+				},
+				{
+					"name": "v",
+					"expression": "1..2"
+				},
+				{
+					"name": "p",
+					"expression": "eval:5*v"
+				},
+				{
+					"name": "x1",
+					"expression": "0"
+				},
+				{
+					"name": "x2",
+					"expression": "1..2"
+				},
+				{
+					"name": "x3",
+					"expression": "3..4"
+				},
+				{
+					"name": "x4",
+					"expression": "5..6"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Chaque colonne du tableau donne un point : (séances ; prix). Sur l'axe vertical, une graduation vaut $5$ €.",
+					"$A\\textcolor{{{color:primary.0}}}{({{x1}} ; {{eval:p*x1+q}})}$, $B\\textcolor{{{color:primary.0}}}{({{x2}} ; {{eval:p*x2+q}})}$, $C\\textcolor{{{color:primary.0}}}{({{x3}} ; {{eval:p*x3+q}})}$, $D\\textcolor{{{color:primary.0}}}{({{x4}} ; {{eval:p*x4+q}})}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Bassin : (0 ; 2), (2 ; 6), (3 ; 8), (5 ; 12)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"b": "2",
+				"x2": "2",
+				"x3": "3",
+				"x4": "5"
+			},
+			"answers": ["0;2", "2;6", "3;8", "5;12"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : B avec abscisse et ordonnée échangées",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"b": "2",
+				"x2": "2",
+				"x3": "3",
+				"x4": "5"
+			},
+			"answers": ["0;2", "6;2", "3;8", "5;12"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : D une graduation trop bas",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"b": "2",
+				"x2": "2",
+				"x3": "3",
+				"x4": "5"
+			},
+			"answers": ["0;2", "2;6", "3;8", "5;11"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Cinéma : carte 10 €, (0 ; 10), (1 ; 15), (4 ; 30), (6 ; 40)",
+			"variationIndex": 1,
+			"variables": {
+				"u": "2",
+				"v": "1",
+				"x2": "1",
+				"x3": "4",
+				"x4": "6"
+			},
+			"answers": ["0;10", "1;15", "4;30", "6;40"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : C placé une graduation trop haut (35)",
+			"variationIndex": 1,
+			"variables": {
+				"u": "2",
+				"v": "1",
+				"x2": "1",
+				"x3": "4",
+				"x4": "6"
+			},
+			"answers": ["0;10", "1;15", "4;35", "6;40"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

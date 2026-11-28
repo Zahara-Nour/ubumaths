@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import { parseLatex } from '$lib/mathAST';
-import { areEquivalent } from '$lib/math';
+import { parseLatex } from '#lib/mathAST/index.ts';
+import { areEquivalent } from '#lib/math/index.ts';
 
 // `\le`, `\ge`, `\ne` (abréviations LaTeX, produites par MathLive) et les caractères
 // `≤`, `≥`, `≠` : mêmes relations que `\leq`, `\geq`, `\neq`

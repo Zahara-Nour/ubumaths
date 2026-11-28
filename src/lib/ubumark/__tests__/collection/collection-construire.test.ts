@@ -4,8 +4,8 @@
  */
 
 import { describe, expect, it } from 'vitest';
-import { parseCollectionContent } from '$lib/ubumark/parser/collection-parser';
-import { generateCollectionTypst } from '$lib/ubumark/generators/collection-typst';
+import { parseCollectionContent } from '#lib/ubumark/parser/collection-parser.ts';
+import { generateCollectionTypst } from '#lib/ubumark/generators/collection-typst.ts';
 import {
 	addToBuild,
 	BUILD_LIMITS,
@@ -16,8 +16,8 @@ import {
 	EMPTY_BUILD,
 	removeFromBuild,
 	solutionBuild
-} from '$lib/ubumark/utils/collection-construire';
-import { COLLECTION_UNAVAILABLE, type CollectionNode } from '$lib/ubumark/types/collection';
+} from '#lib/ubumark/utils/collection-construire.ts';
+import { COLLECTION_UNAVAILABLE, type CollectionNode } from '#lib/ubumark/types/collection.ts';
 
 const parse = (...lines: string[]) => parseCollectionContent(lines.join('\n'));
 const messages = (node: CollectionNode) => node.errors.map((e) => e.message);
@@ -161,7 +161,7 @@ describe('construire: — PDF (Q9)', () => {
 // Revue de la PR 2 (monnaie) : les collections à lire ne changent pas
 describe('```collection à lire : inchangé', () => {
 	it('bloc non fermé : un paragraphe « Construire… » reste du texte', async () => {
-		const { parseMarkdown } = await import('$lib/ubumark');
+		const { parseMarkdown } = await import('#lib/ubumark/index.ts');
 		const doc = parseMarkdown(
 			['```collection', 'unités: 3', '', 'Construire une tour.', '', '```js', 'x', '```'].join('\n')
 		);

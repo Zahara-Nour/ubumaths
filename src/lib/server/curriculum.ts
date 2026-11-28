@@ -3,10 +3,8 @@
  *
  * Centralizes the Postgres-error → HTTP-status mapping shared by the
  * curriculum CRUD endpoints. L'arbre du programme se lit dans
- * `$lib/server/programme-tree` (branche > notion > points).
+ * `#lib/server/programme-tree.ts` (branche > notion > points).
  */
-
-import { json } from '@sveltejs/kit';
 
 /** Minimal shape of a PostgREST/Postgres error (code is what we branch on). */
 export interface DbErrorLike {
@@ -21,15 +19,15 @@ export interface DbErrorLike {
 export function curriculumDbError(err: DbErrorLike, uniqueMsg = 'Doublon'): Response | null {
 	switch (err.code) {
 		case '23505': // unique_violation
-			return json({ error: uniqueMsg }, { status: 409 });
+			return Response.json({ error: uniqueMsg }, { status: 409 });
 		case '42501': // insufficient_privilege (RLS)
-			return json({ error: 'Accès refusé' }, { status: 403 });
+			return Response.json({ error: 'Accès refusé' }, { status: 403 });
 		case '23514': // check_violation
-			return json({ error: 'Valeur invalide' }, { status: 400 });
+			return Response.json({ error: 'Valeur invalide' }, { status: 400 });
 		case '23503': // foreign_key_violation (ex. point inconnu)
-			return json({ error: 'Référence introuvable' }, { status: 400 });
+			return Response.json({ error: 'Référence introuvable' }, { status: 400 });
 		case '22P02': // invalid_text_representation (e.g. malformed UUID path param)
-			return json({ error: 'Identifiant invalide' }, { status: 400 });
+			return Response.json({ error: 'Identifiant invalide' }, { status: 400 });
 		default:
 			return null;
 	}

@@ -1,0 +1,427 @@
+{
+	"id": "da157de6-0283-42bb-9886-a5c7c3fe3ec5",
+	"rangement": {
+		"noeud": "Fonctions > Dérivation > fonctions composées",
+		"point": "TSPE-413"
+	},
+	"title": "Équation de la tangente à la courbe d'une fonction composée",
+	"description": "Équation réduite de la tangente au point d'abscisse a à la courbe de uⁿ, eᵘ ou √u (u du second degré) : calculer u(a), u′(a), puis f(a) et f′(a) (pièges : u′ oublié, signe de a, f(a) pris égal à u(a), 2 de 2√u oublié)",
+	"grades": ["T_SPE"],
+	"level": 1,
+	"delay": 60,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true
+	},
+	"variations": [
+		{
+			"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=\\left({{eval:x^2+b*x+c}}\\right)^{ {{n}} }$, de courbe $\\mathcal{C}_f$.\n\nDonne l'équation réduite de la tangente $T$ à $\\mathcal{C}_f$ au point d'abscisse ${{a}}$.\n\n$y=?$",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "a",
+					"expression": "-3..3"
+				},
+				{
+					"name": "U",
+					"expression": "1|-1|2"
+				},
+				{
+					"name": "D",
+					"expression": "1..3;±"
+				},
+				{
+					"name": "n",
+					"expression": "2..4"
+				},
+				{
+					"name": "b",
+					"expression": "eval:D-2*a"
+				},
+				{
+					"name": "c",
+					"expression": "eval:U-a^2-a*b"
+				},
+				{
+					"name": "m",
+					"expression": "eval:n*U^(n-1)*D"
+				},
+				{
+					"name": "p",
+					"expression": "eval:U^n-n*U^(n-1)*D*a"
+				}
+			],
+			"conditions": ["abs(m) <= 32", "a != 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:m*x+p}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:n*U^(n-1)*x+U^n-n*U^(n-1)*a}}",
+							"message": "Tu as oublié de multiplier par $u'({{a}})$ : $(u^{n})'=n\\,u'\\,u^{n-1}$.",
+							"label": "u′ oublié"
+						},
+						{
+							"answer": "{{eval:m*x+U^n+m*a}}",
+							"message": "La tangente au point d'abscisse $a$ a pour équation $y=f'(a)(x-a)+f(a)$ : ici $x-a$ s'écrit $x{{eval:-a;+}}$.",
+							"label": "Signe de a"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"$f=u^{ {{n}} }$ avec $u(x)={{eval:x^2+b*x+c}}$, donc $f'={{n}}\\,u'\\,u^{ {{eval:n-1}} }$, avec $u'(x)={{eval:2*x+b}}$.",
+					"$u({{a}})={{U}}$ et $u'({{a}})={{D}}$, donc $f({{a}})={{U;()}}^{ {{n}} }={{eval:U^n}}$ et $f'({{a}})={{n}}\\times{{D;()}}\\times{{U;()}}^{ {{eval:n-1}} }={{m}}$.",
+					"$T$ : $y={{m}}(x{{eval:-a;+}}){{eval:U^n;+}}$, soit $y=\\textcolor{{{color:primary.0}}}{ {{eval:m*x+p}} }$."
+				]
+			},
+			"hint": "Calcule d'abord $u({{a}})$ et $u'({{a}})$, puis $f({{a}})$ et $f'({{a}})$ avec la formule de la dérivée de $u^{ {{n}} }$."
+		},
+		{
+			"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=e^{{{eval:x^2+b*x+c}}}$, de courbe $\\mathcal{C}_f$.\n\nDonne l'équation réduite de la tangente $T$ à $\\mathcal{C}_f$ au point d'abscisse ${{a}}$.\n\n$y=?$",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "a",
+					"expression": "-3..3"
+				},
+				{
+					"name": "q",
+					"expression": "1..4;±"
+				},
+				{
+					"name": "b",
+					"expression": "eval:q-2*a"
+				},
+				{
+					"name": "c",
+					"expression": "eval:a^2-q*a"
+				}
+			],
+			"conditions": ["a != 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:q*x+1-q*a}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:q*x-q*a}}",
+							"message": "$f({{a}})=e^{u({{a}})}=e^{0}=1$ : tu as pris $u({{a}})=0$ pour $f({{a}})$.",
+							"label": "f(a) = u(a)"
+						},
+						{
+							"answer": "{{eval:x+1-a}}",
+							"message": "Tu as oublié de multiplier par $u'({{a}})$ : $(e^{u})'=u'e^{u}$.",
+							"label": "u′ oublié"
+						},
+						{
+							"answer": "{{eval:q*x+1+q*a}}",
+							"message": "La tangente au point d'abscisse $a$ a pour équation $y=f'(a)(x-a)+f(a)$ : ici $x-a$ s'écrit $x{{eval:-a;+}}$.",
+							"label": "Signe de a"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"$f=e^{u}$ avec $u(x)={{eval:x^2+b*x+c}}$, donc $f'=u'e^{u}$, avec $u'(x)={{eval:2*x+b}}$.",
+					"$u({{a}})=0$ et $u'({{a}})={{q}}$, donc $f({{a}})=e^{0}=1$ et $f'({{a}})={{q}}\\times e^{0}={{q}}$.",
+					"$T$ : $y={{q}}(x{{eval:-a;+}})+1$, soit $y=\\textcolor{{{color:primary.0}}}{ {{eval:q*x+1-q*a}} }$."
+				]
+			},
+			"hint": "Calcule $u({{a}})$ : la valeur de $f({{a}})$ en découle. Puis $f'({{a}})$ avec la formule de la dérivée de $e^{u}$."
+		},
+		{
+			"statement": "Soit $f$ la fonction définie par $f(x)=\\sqrt{{{eval:x^2+b*x+c}}}$, de courbe $\\mathcal{C}_f$. On admet que $f$ est dérivable en ${{a}}$.\n\nDonne l'équation réduite de la tangente $T$ à $\\mathcal{C}_f$ au point d'abscisse ${{a}}$. Écris ses coefficients sous forme de fractions irréductibles.\n\n$y=?$",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "a",
+					"expression": "-3..3"
+				},
+				{
+					"name": "m",
+					"expression": "1..3"
+				},
+				{
+					"name": "q",
+					"expression": "1..4;±"
+				},
+				{
+					"name": "b",
+					"expression": "eval:q-2*a"
+				},
+				{
+					"name": "c",
+					"expression": "eval:m^2-a^2-a*b"
+				}
+			],
+			"conditions": ["a != 0", "q*q != 4*m*m"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:q/(2*m)*x+m-q*a/(2*m)}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:q/m*x+m-q*a/m}}",
+							"message": "La dérivée de $\\sqrt{u}$ est $\\dfrac{u'}{2\\sqrt{u}}$ : tu as oublié le $2$ du dénominateur.",
+							"label": "2 oublié"
+						},
+						{
+							"answer": "{{eval:1/(2*m)*x+m-a/(2*m)}}",
+							"message": "Tu as oublié de multiplier par $u'({{a}})$ : $(\\sqrt{u})'=\\dfrac{u'}{2\\sqrt{u}}$.",
+							"label": "u′ oublié"
+						},
+						{
+							"answer": "{{eval:q/(2*m)*x+m^2-q*a/(2*m)}}",
+							"message": "$f({{a}})=\\sqrt{u({{a}})}=\\sqrt{ {{eval:m^2}} }={{m}}$ : tu as oublié la racine carrée.",
+							"label": "Racine oubliée"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"$f=\\sqrt{u}$ avec $u(x)={{eval:x^2+b*x+c}}$, donc $f'=\\dfrac{u'}{2\\sqrt{u}}$, avec $u'(x)={{eval:2*x+b}}$.",
+					"$u({{a}})={{eval:m^2}}$ et $u'({{a}})={{q}}$, donc $f({{a}})=\\sqrt{ {{eval:m^2}} }={{m}}$ et $f'({{a}})=\\dfrac{ {{q}} }{2\\times{{m}}}={{eval:q/(2*m)}}$.",
+					"$T$ : $y={{eval:q/(2*m)}}\\left(x{{eval:-a;+}}\\right)+{{m}}$, soit $y=\\textcolor{{{color:primary.0}}}{ {{eval:q/(2*m)*x+m-q*a/(2*m)}} }$."
+				]
+			},
+			"hint": "Calcule $u({{a}})$ et $u'({{a}})$, puis $f({{a}})$ et $f'({{a}})$ avec la formule de la dérivée de $\\sqrt{u}$."
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "a : (x² − 3x + 4)³ en 1",
+			"variationIndex": 0,
+			"variables": {
+				"a": "1",
+				"U": "2",
+				"D": "-1",
+				"n": "3",
+				"b": "-3",
+				"c": "4",
+				"m": "-12",
+				"p": "20"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["-12x+20"]
+		},
+		{
+			"description": "a : « y = » recopié",
+			"variationIndex": 0,
+			"variables": {
+				"a": "1",
+				"U": "2",
+				"D": "-1",
+				"n": "3",
+				"b": "-3",
+				"c": "4",
+				"m": "-12",
+				"p": "20"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["y=-12x+20"]
+		},
+		{
+			"description": "a : forme non réduite",
+			"variationIndex": 0,
+			"variables": {
+				"a": "1",
+				"U": "2",
+				"D": "-1",
+				"n": "3",
+				"b": "-3",
+				"c": "4",
+				"m": "-12",
+				"p": "20"
+			},
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			},
+			"answers": ["-12(x-1)+8"]
+		},
+		{
+			"description": "a : u′ oublié",
+			"variationIndex": 0,
+			"variables": {
+				"a": "1",
+				"U": "2",
+				"D": "-1",
+				"n": "3",
+				"b": "-3",
+				"c": "4",
+				"m": "-12",
+				"p": "20"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as oublié de multiplier par $u'\\left( 1 \\right)$ : $(u^{n})'=n\\,u'\\,u^{n-1}$."
+			},
+			"answers": ["12x-4"]
+		},
+		{
+			"description": "a : signe de a",
+			"variationIndex": 0,
+			"variables": {
+				"a": "1",
+				"U": "2",
+				"D": "-1",
+				"n": "3",
+				"b": "-3",
+				"c": "4",
+				"m": "-12",
+				"p": "20"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["-12x-4"]
+		},
+		{
+			"description": "b : e^(x² − x − 2) en 2",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"q": "3",
+				"b": "-1",
+				"c": "-2"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["3x-5"]
+		},
+		{
+			"description": "b : f(a) = u(a)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"q": "3",
+				"b": "-1",
+				"c": "-2"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["3x-6"]
+		},
+		{
+			"description": "b : u′ oublié",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"q": "3",
+				"b": "-1",
+				"c": "-2"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["x-1"]
+		},
+		{
+			"description": "b : signe de a",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"q": "3",
+				"b": "-1",
+				"c": "-2"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["3x+7"]
+		},
+		{
+			"description": "c : √(x² + x + 2) en 1",
+			"variationIndex": 2,
+			"variables": {
+				"a": "1",
+				"m": "2",
+				"q": "3",
+				"b": "1",
+				"c": "2"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["\\frac{3}{4}x+\\frac{5}{4}"]
+		},
+		{
+			"description": "c : décimaux refusés (fractions demandées)",
+			"variationIndex": 2,
+			"variables": {
+				"a": "1",
+				"m": "2",
+				"q": "3",
+				"b": "1",
+				"c": "2"
+			},
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			},
+			"answers": ["0.75x+1.25"]
+		},
+		{
+			"description": "c : 2 oublié",
+			"variationIndex": 2,
+			"variables": {
+				"a": "1",
+				"m": "2",
+				"q": "3",
+				"b": "1",
+				"c": "2"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["\\frac{3}{2}x+\\frac{1}{2}"]
+		},
+		{
+			"description": "c : u′ oublié",
+			"variationIndex": 2,
+			"variables": {
+				"a": "1",
+				"m": "2",
+				"q": "3",
+				"b": "1",
+				"c": "2"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["\\frac{1}{4}x+\\frac{7}{4}"]
+		},
+		{
+			"description": "c : racine oubliée",
+			"variationIndex": 2,
+			"variables": {
+				"a": "1",
+				"m": "2",
+				"q": "3",
+				"b": "1",
+				"c": "2"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["\\frac{3}{4}x+\\frac{13}{4}"]
+		}
+	]
+}

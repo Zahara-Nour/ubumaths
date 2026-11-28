@@ -16,28 +16,28 @@
 -->
 
 <script lang="ts">
-	import { lore } from '$lib/config/lore';
+	import { lore } from '#lib/config/lore.ts';
 	import { enhance } from '$app/forms';
-	import { goto, invalidateAll } from '$app/navigation';
+	import { goto, refreshAll } from '$app/navigation';
 	import type { PageData, ActionData } from './$types';
-	import { Button } from '$lib/components/ui/button';
-	import BackLink from '$lib/components/navigation/BackLink.svelte';
-	import { Badge } from '$lib/components/ui/badge';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import BackLink from '#lib/components/navigation/BackLink.svelte';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
 	import {
 		Card,
 		CardContent,
 		CardDescription,
 		CardHeader,
 		CardTitle
-	} from '$lib/components/ui/card';
-	import * as Dialog from '$lib/components/ui/dialog';
-	import MySelect from '$lib/components/MySelect.svelte';
-	import MyCheckbox from '$lib/components/MyCheckbox.svelte';
-	import { Label } from '$lib/components/ui/label';
-	import { Input } from '$lib/components/ui/input';
-	import { Textarea } from '$lib/components/ui/textarea';
-	import { ChapterAddDialogs, ChapterSectionsEditor } from '$lib/components/cours/teacher';
-	import { toaster } from '$lib/stores/toaster.svelte';
+	} from '#lib/components/ui/card/index.ts';
+	import * as Dialog from '#lib/components/ui/dialog/index.ts';
+	import MySelect from '#lib/components/MySelect.svelte';
+	import MyCheckbox from '#lib/components/MyCheckbox.svelte';
+	import { Label } from '#lib/components/ui/label/index.ts';
+	import { Input } from '#lib/components/ui/input/index.ts';
+	import { Textarea } from '#lib/components/ui/textarea/index.ts';
+	import { ChapterAddDialogs, ChapterSectionsEditor } from '#lib/components/cours/teacher/index.ts';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
 	import {
 		FileText,
 		CheckSquare,
@@ -50,7 +50,7 @@
 		PlayCircle,
 		Pencil
 	} from '@lucide/svelte';
-	import { formatGradeShort } from '$lib/utils/grades';
+	import { formatGradeShort } from '#lib/utils/grades.ts';
 
 	let { data, form }: { data: PageData; form: ActionData } = $props();
 
@@ -185,7 +185,7 @@
 			}
 
 			if (form.action === 'update') showEditDialog = false;
-			invalidateAll();
+			refreshAll();
 		} else if (form?.error) {
 			toaster.error(form.error);
 		}
@@ -404,7 +404,7 @@
 	takenExerciseIds={data.content.exercises.map((e) => e.exerciseId)}
 	takenWorksheetIds={data.content.worksheets.map((w) => w.worksheetId)}
 	takenSeriesIds={data.content.series.map((s) => s.seriesId)}
-	onDocumentAdded={() => invalidateAll()}
+	onDocumentAdded={() => refreshAll()}
 />
 
 <!-- Modifier le titre et la description -->

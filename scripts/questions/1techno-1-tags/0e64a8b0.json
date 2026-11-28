@@ -1,0 +1,199 @@
+{
+	"id": "0e64a8b0-92c1-4c74-be3f-5894d7b7eba6",
+	"title": "Cours : sens de variation d'une suite arithmétique",
+	"description": "Signe de la raison et sens de variation, sans calcul",
+	"grades": ["1_TECHNO"],
+	"level": 1,
+	"delay": 30,
+	"status": "draft",
+	"shared": {},
+	"options": {
+		"courseQuestion": true
+	},
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"statement": "$(u(n))$ est une suite arithmétique de raison $r>0$. Alors la suite $(u(n))$ est…\n\n```choix\nmelanger: non\n- croissante\n- décroissante\n- constante\n- on ne peut pas savoir\n```",
+			"variables": [],
+			"correction": {
+				"steps": [
+					"$u(n+1)-u(n)=r$ et $r>0$ : chaque terme est plus grand que le précédent, la suite est croissante."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "1"
+				}
+			],
+			"statement": "$(u(n))$ est une suite arithmétique de raison $r<0$. Alors la suite $(u(n))$ est…\n\n```choix\nmelanger: non\n- croissante\n- décroissante\n- constante\n- on ne peut pas savoir\n```",
+			"variables": [],
+			"correction": {
+				"steps": [
+					"$u(n+1)-u(n)=r$ et $r<0$ : chaque terme est plus petit que le précédent, la suite est décroissante."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "2"
+				}
+			],
+			"statement": "$(u(n))$ est une suite arithmétique de raison $r=0$. Alors la suite $(u(n))$ est…\n\n```choix\nmelanger: non\n- croissante\n- décroissante\n- constante\n- on ne peut pas savoir\n```",
+			"variables": [],
+			"correction": {
+				"steps": ["$u(n+1)-u(n)=r=0$ : tous les termes sont égaux, la suite est constante."]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"statement": "Le sens de variation d'une suite arithmétique dépend…\n\n```choix\n- du signe de sa raison seulement\n- de son premier terme seulement\n- de son premier terme et de sa raison\n```",
+			"variables": [],
+			"correction": {
+				"steps": [
+					"$u(n+1)-u(n)=r$ : seul le signe de la raison $r$ compte, quel que soit le premier terme $u(0)$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "1"
+				}
+			],
+			"statement": "La suite arithmétique de premier terme $u(0)=-{{a}}$ et de raison $r={{r}}$ est décroissante.\n\n```choix\nmelanger: non\n- Vrai\n- Faux\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..20"
+				},
+				{
+					"name": "r",
+					"expression": "1..9"
+				}
+			],
+			"correction": {
+				"steps": [
+					"{{solution:html}} : $u(n+1)-u(n)=r={{r}}>0$, la suite est **croissante**, même si son premier terme est négatif. Le signe de $u(0)$ ne compte pas."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {},
+			"description": "croissante",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {},
+			"description": "Erreur : décroissante",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {},
+			"description": "Erreur : on ne peut pas savoir",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {},
+			"description": "décroissante",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {},
+			"description": "Erreur : croissante",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {},
+			"description": "constante",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {},
+			"description": "Erreur : croissante",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {},
+			"description": "raison seulement",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {},
+			"description": "Erreur : premier terme et raison",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "5",
+				"r": "3"
+			},
+			"description": "Faux",
+			"variationIndex": 4
+		},
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "5",
+				"r": "3"
+			},
+			"description": "Erreur : lire le signe de u(0)",
+			"variationIndex": 4
+		}
+	]
+}

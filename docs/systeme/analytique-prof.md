@@ -3,13 +3,16 @@ couvre:
   - 'src/lib/server/stats/**'
   - src/lib/server/validation/teacher-analytics.ts
   - 'src/lib/components/teacher/analytics/**'
+  - src/lib/types/point-errors.ts
   - 'src/routes/(protected)/dashboard/teacher/classes/*/analytics/**'
   - 'src/routes/api/teacher/classes/*/analytics/**'
+  - 'src/routes/(protected)/dashboard/teacher/students/*/+page.*'
+  - 'src/routes/(protected)/dashboard/teacher/students/*/__tests__/**'
 ---
 
 # Analytique prof — la page « analytics » d'une classe
 
-> Vérifié contre le code le 2026-10-21 ; filtres de l'ancienne génération retirés le 2026-10-22. Historique du chantier (V2.0, juin 2026) :
+> Vérifié contre le code le 2026-10-21 ; page de suivi d'un élève (`suivi-eleve`, PR 1) le 2026-11-14 ; onglet « Erreurs » du widget E (`erreurs-frequentes`, PR 2) le 2026-11-14 ; `duration-signals.ts` (`durees-trop-courtes`, PR 2) le 2026-11-14, durée observée (`durees-ajustees`) le 2026-11-15 ; widget C remplacé par la régularité le 2026-11-12 ; filtres de l'ancienne génération retirés le 2026-10-22. Historique du chantier (V2.0, juin 2026) :
 > [teacher-analytics-progress.md](../archive/wip/teacher-analytics-progress.md) (archivé, ne décrit
 > pas le code actuel).
 
@@ -47,11 +50,13 @@ s'élève quand il a besoin de l'admin ; l'élévation laisse le rôle de sessio
 Onglet 📘 Connaissances :
 
 - **A — Grille élève × point** (`ClassCurriculumPointGrid.svelte`) : une colonne par point **non
-  archivé** tagué sur un modèle que la classe a tenté (via `question_template_points`, sans `!inner` ;
+  archivé** tagué sur un modèle que la classe a tenté (essais `skill_attempts` lus par pages de 1000,
+  `readAllRows` : plafond `max_rows`, V123 ; via `question_template_points`, sans `!inner` ;
   points sans niveau et archivés écartés en mémoire par `isLivePoint`). Carte tagguée dans plusieurs
   programmes : seuls ses points du **niveau de la classe** comptent, s'il en a (`keepLinksOfGrade`,
   niveau lu sur le point). Colonnes dans l'**ordre de l'arbre** (branche, notion, puis ordre du BO,
-  `placeInTree`) ; sous chaque nom (rendu par `InlineMarkdown`, LaTeX compris), la **notion** du
+  `placeInTree`) ; sous chaque nom (rendu par `InlineMarkdown`, LaTeX compris ; l'infobulle de la
+  colonne et des cases le donne en texte simple, `toPlainText`, V122), la **notion** du
   point ; un point qu'on ne sait pas placer garde sa colonne, en dernier, sans notion. Cellule = badge
   FSRS agrégé 🆘 / 🔁 / ⏳ / ✅ / ◯ (`templateToBadge` + `BADGE_PRIORITY`,
   `src/lib/server/srs/curriculum-point-badge.ts`). Bascule « Tout le niveau » : ajoute les points non
@@ -61,16 +66,71 @@ Onglet 📘 Connaissances :
   dans le programme du niveau de la classe (points non archivés de ce niveau dont la branche,
   lue en remontant sous-notion → notion → branche, est celle choisie). Retrievability moyenne par
   semaine (8 par défaut), lue dans `srs_card_stats.review_history`. Rien n'est tracé sous 3 révisions.
-- **C — Heatmap d'activité** (`ClassActivityHeatmap.svelte`) : élève × jour (30 j), nombre de
-  tentatives ; alerte au-delà de 5 jours sans activité. Les cartes de cours comptent comme activité
-  mais pas dans le taux de réussite (`success_pct` à `null` un jour sans question notée).
-- **D — Histogramme des notes** (`StudentGradeHistogram.svelte`) : Again/Hard/Good/Easy sur 7 jours,
-  avec stabilité moyenne.
+- **C — Régularité** (`ClassRegularityGrid.svelte`, `getClassRegularityGrid` dans
+  `class-regularity.ts`, chantier `regularite`, 2026-11-12) : élève × **semaine** (lundi → dimanche,
+  heure de Paris), de la rentrée (`start_date` de l'année scolaire active de l'école ; à défaut, ou
+  rentrée à venir, le 1er septembre écoulé) à la semaine en cours. Case = **palier** de jours actifs :
+  0 (vide), 1, 2-3, 4+, une seule couleur (`--color-primary`) en quatre intensités ; survol ou appui
+  = le palier en toutes lettres. **Le serveur n'envoie que le palier** (ni nombre de jours, ni dates,
+  ni compte de traces). Jour actif = au moins 5 traces le même jour de Paris, écrites par l'élève
+  (sources `auto` / `srs` / `student_self`), hors contrôle (lieu `evaluation`) ; une trace sans lieu
+  (antérieure à `formes-de-serie`) compte. Semaine qui touche un jour de `school_holidays` : repère
+  dans l'en-tête, colorée comme les autres. Jours actifs **comptés par la base**
+  (`class_regularity_weeks`, chantier `regularite-sql`, 2026-11-12 : une ligne par élève × semaine,
+  avec les droits du prof ; le serveur ne lit plus une trace) ; une lecture en échec rend une erreur, affichée dans le cadre du widget. Remplace l'ancienne carte élève × jour
+  (30 j, nombres de traces, alerte après 5 jours sans activité), jugée trop précise (besoin P5).
+- **D — Histogramme des notes** : **retiré** le 2026-11-11 (chantier `formes-de-serie`) — avec deux
+  boutons « Pas réussi / Réussi », la grille A dit déjà réussi / raté.
 - **E — Top à remédier** (`TopCurriculumPointsToRemediate.svelte`) : points triés par % 🆘 + 🔁 ; clic →
-  `AnalyticsModal.svelte` (élèves concernés).
+  `PointDetailsModal.svelte`, deux onglets : **élèves concernés** (badge) et **Erreurs** (voir plus bas).
+- **Taux de réussite** (`ClassSuccessRates.svelte`, `getClassSuccessRates` dans
+  `class-success-rate.ts`, chantier `taux-par-point`, besoin P3, 2026-11-14), après E : les
+  **notions** travaillées depuis la rentrée (même règle que C), dans l'ordre de l'arbre (branche ›
+  notion, `placeInTree`), chacune avec son taux (« 64 % · 18 élèves ») ; un clic déplie ses
+  **points**. Ne compte que le **prouvé** (sources `auto` + `teacher` : séries corrigées, contrôles,
+  prof) ; flash-cards et révision (déclaré) hors du taux, mention « Seulement déclaré » quand un point
+  ou une notion n'a que du déclaré. **Chaque élève pèse autant** : taux de chaque élève (justes /
+  faites), puis moyenne des élèves ayant au moins une réponse prouvée. Moins de **3** élèves → « Pas
+  assez de réponses » (`MIN_STUDENTS_FOR_RATE`). L'effectif reste affiché sous le seuil (voulu : il ne dit rien du résultat, et le prof lit déjà chaque réponse). Points : liens modèle → point vivants, niveau de la
+  classe (`keepLinksOfGrade`), comme A. Notion : chaque modèle compté une fois (un modèle lié à deux
+  points de la même notion ne double pas l'élève) ; points qu'on ne sait pas placer → groupe « Points
+  sans notion », en dernier. Comptes **faits par la base** (`class_template_success`, une ligne par
+  élève × modèle, lue par pages de 1000 : plafond `max_rows`) ; le serveur n'envoie ni nom d'élève ni
+  date. Classe sans réponse → « Aucune réponse depuis la rentrée. » ; rien de prouvé → message au-dessus
+  de la liste ; lecture en échec → erreur dans le cadre du widget.
 
-Les widgets B et D apparaissent dans « Détail par élève », après choix d'un élève ; B demande en plus
-une branche. Le sélecteur ne propose que les branches du niveau de la classe, dans l'ordre de l'arbre
+**Onglet « Erreurs » du widget E** (chantier `erreurs-frequentes`, besoin P4, PR 2 ;
+`getClassPointErrors` dans `src/lib/server/stats/point-errors.ts`, route `point-errors?point=<uuid>`) : lu à
+la première ouverture de l'onglet (un échec se relit à l'ouverture suivante). Pour chaque modèle du point
+ayant au moins une réponse écrite, du plus de réponses fausses au moins, les mêmes blocs que le bilan d'un
+contrôle (`QuestionErrorsPanel.svelte`, partagé avec [evaluations.md](evaluations.md) § Résultats) :
+
+- **Élèves** : membres actifs de la classe (`class_members`) ; noms en texte, nominatif (décision Q2).
+- **Contrôles** : réponses `test_answers` des séances de contrôle (`evaluation_id` non nul), meilleure
+  copie de chaque élève **pour chaque contrôle** (`bestCopies`), énoncé tiré lu tel quel.
+- **Séries** (Saisie, Contrôle blanc, Course aux nombres : lieux `typing`, `mock_test`, `number_race`) :
+  traces `skill_attempts` avec graine, **postérieures à `question_templates.updated_at`** ; énoncé rejoué
+  par `generateInstance(modèle, graine)` (une génération par graine) ; trace réussie = juste, ratée =
+  faux ; verdict par case = `part_verdicts` stocké, jamais recalculé (longueur différente des réponses →
+  détail indisponible) ; rien de tapé = sans réponse. Les `POINT_ERRORS_TRACE_CAP` (200) traces les plus
+  récentes par modèle, plafond posé par la base (tri `created_at` décroissant, `range`). Trace « répondu en
+  QCM » (`answered_as_choice`, chantier `idees-format`, idée 4) : rejouée en QCM (`asChoiceInstance`, même
+  graine, mêmes choix dans le même ordre) ; un tirage qui ne se pose plus en QCM est écarté. Traces en saisie
+  et en QCM d'un même modèle mêlées, chaque groupe posé en QCM porte la mention « en QCM » (`asChoice`,
+  décision Q3 du 2026-11-22). Trace « avec indice » (`with_help`, coup de pouce ouvert, idée 5) : le nom
+  de l'élève est suivi de « (avec indice) » (`seriesTraceAnswer`).
+- **Budget de temps** (`REQUEST_BUDGET_MS`, 5 s) partagé par toute la requête : rejeu des énoncés et verdicts
+  recalculés des contrôles. Au-delà : plus aucun énoncé rejoué, verdict « indisponible ». Un modèle dont des
+  traces ne sont pas montrées (plafond ou budget) le dit (« seules les réponses les plus récentes »).
+- **Écart connu** : les copies de contrôle de la classe sont lues sans borne de date (règle du bilan :
+  copie avec réponses, tous modèles confondus) ; sans effet à l'échelle mono-prof.
+- **Exclus** : flash-cards (aucune réponse tapée), traces de contrôle (ni réponse ni graine, déjà dans
+  `test_answers`), anciennes séries libres (`test_answers` d'une séance sans contrôle, circuit fermé le
+  2026-11-11, décision Q7).
+- Aucune réponse écrite → « Pas encore de réponse écrite sur ce point (les flash-cards ne gardent pas de
+  réponse). » ; lecture en échec → message dans l'onglet, les élèves restent.
+
+Le widget B apparaît dans « Détail par élève », après choix d'un élève et d'une branche. Le sélecteur ne propose que les branches du niveau de la classe, dans l'ordre de l'arbre
 (`getProgrammeTree`). Classe sans niveau : pas de sélecteur, B est remplacé par « Le niveau de votre
 … n'est pas renseigné. » (et l'API rend une courbe vide).
 
@@ -86,6 +146,49 @@ En-tête : bouton **Export compétences** (→ [export-competences.md](export-co
 **Mode projection** (noms anonymisés « Élève 1… »), **Actualiser** (incrémente `refreshNonce`, que
 chaque widget suit dans son `$effect` de chargement).
 
+## Suivi d'un élève (page à part)
+
+Chantier `suivi-eleve` (besoins P8 et P9, 2026-11-14). Une page par élève,
+`/dashboard/teacher/students/[studentId]`, ouverte depuis la liste des classes (nom de l'élève, en classe
+comme dans « Élèves non assignés ») et depuis la grille A de l'analytique (nom en tête de ligne,
+`?depuis=analytique&classe=<uuid>` : le retour ramène à l'analytique de cette classe ; **aucun lien en mode
+projection**, le suivi afficherait le vrai nom). Elle rassemble ce que l'analytique de classe montre d'un
+élève ; le journal des récompenses reste à part (`…/journal?depuis=suivi`, retour vers le suivi).
+
+- **Accès** : `requireRole('teacher')` (admin refusé, comme l'analytique), UUID par Zod (400),
+  `verifyTeacherStudent` (403 si la cible n'est pas un élève). Aucune garde de classe : mono-prof, la RLS
+  (`is_my_student`) borne les lectures. Lecture seule.
+- **Bloc « Points du programme »** (`getStudentPointFollowUp`, `src/lib/server/stats/student-follow-up.ts` ;
+  calcul pur `buildStudentPointFollowUp`) : les points vivants **du niveau de l'élève** (`profiles.grade`,
+  `keepLinksOfGrade` comme la grille A) dont il a tenté un modèle, dans l'ordre de l'arbre (branche →
+  notion → point, `placeInTree`). Par point :
+  - le **badge** de la grille A (pire badge des modèles du point, déclaré compris : ADR 0016) ;
+  - deux comptes de traces (P9) : **corrigé** = origines `auto` + `teacher` (l'appli ou un adulte a jugé),
+    **déclaré** = `student_self` + anciennes `srs` ; chacun « réussies sur faites » ; une moitié vide
+    n'est pas affichée ;
+  - la marque **« seulement déclaré »** quand rien n'est corrigé.
+    Trace sans verdict (`success` NULL) ou d'origine inconnue : comptée nulle part (l'origine inconnue est
+    journalisée, une fois). **Aucune date** (vie privée, comme la régularité). Traces lues **paginées**
+    (`readInBatches`). Une lecture en échec : le bloc le dit, la page reste.
+- **Bloc « Contrôles »** (`getStudentEvaluations`) : `getStudentAssignments` (celle de l'écran de l'élève)
+  appelée avec le **client du prof** (RLS : ses contrôles, ses classes, les séances de ses élèves). Un
+  contrôle publié assigné deux fois (classe et nommément) : une ligne. Par ligne : titre, **meilleure note
+  sur 20** (Q36) ou statut (« Pas commencé », « En cours », « Rendu », « Non rendu, date limite passée »),
+  lien vers les résultats (`?depuis=suivi&eleve=<uuid>`, retour vers le suivi). Du plus récent au plus
+  ancien (création du contrôle), **sans date affichée** ; ni contenu de série ni tentatives envoyés.
+- **Bloc « Régularité »** (`getStudentRegularity`) : la ligne de l'élève, **mêmes règles que la grille C**
+  (palier par semaine, repère de vacances, jamais de nombre ni de date de jour actif), affichée par le même
+  tableau (`RegularityTable.svelte`). Rentrée = année scolaire active de **l'école de l'élève**
+  (`profiles.school_id`, `readSchoolYearOfSchool`) ; sans école, le 1er septembre écoulé. Comptée en
+  TypeScript (`countActiveWeeks`, même règle que `class_regularity_weeks`) sur **ses** traces autonomes
+  depuis la veille de la rentrée, paginées : la fonction de base compte par classe, l'élève peut être hors
+  classe (décision R1, 2026-11-14).
+- **Bloc « Compétences »** (`getStudentCompetences`) : toutes les lignes de `math_competences`
+  (`display_order`) avec le niveau de l'élève (`student_competence_level`) ou « pas encore évaluée » ; sans
+  date de dernière saisie.
+- Les quatre blocs sont lus en parallèle (`Promise.allSettled`) : un bloc en échec le dit (journalisé), les
+  autres restent.
+
 ## Carte du code
 
 - Page : `src/routes/(protected)/dashboard/teacher/classes/[classId]/analytics/+page.svelte` et
@@ -93,19 +196,27 @@ chaque widget suit dans son `$effect` de chargement).
   chargent leurs données eux-mêmes, côté client.
 - Agrégations (`src/lib/server/stats/`, barrel `index.ts`) :
   - `class-knowledge.ts` : `getClassCurriculumPointGrid`, `getClassTopCurriculumPointsToRemediate`,
-    `getStudentRetentionCurve`, `getClassActivityHeatmap`, `getStudentGradeHistogram` ;
-  - `class-competence.ts` : `getClassCompetenceGrid`, `getClassTopObservablesToConsolidate`.
+    `getStudentRetentionCurve` ;
+  - `point-errors.ts` : `getClassPointErrors` (onglet « Erreurs » du widget E ; hors barrel) ;
+  - `duration-signals.ts` : `getDurationSignals` (durées trop courtes et durées observées du panier et
+    de l'éditeur de série, hors barrel ; décrit dans [evaluations.md](evaluations.md)) ;
+  - `class-regularity.ts` : `getClassRegularityGrid` (et ses fonctions pures, testées seules, dont
+    `countActiveWeeks` pour le suivi d'un élève ; `readSchoolYearOfSchool`) ;
+  - `class-success-rate.ts` : `getClassSuccessRates` (et ses fonctions pures `pointsOfTemplates`,
+    `buildClassSuccessRates`) ;
+  - `class-competence.ts` : `getClassCompetenceGrid`, `getClassTopObservablesToConsolidate` ;
+  - `student-follow-up.ts` : `getStudentPointFollowUp`, `getStudentEvaluations`, `getStudentRegularity`,
+    `getStudentCompetences` (page de suivi d'un élève ; hors barrel).
     Requêtes groupées (pas une requête par élève) ; les listes de modèles sont découpées par
     `fetchInChunks`.
 - Endpoints `GET` sous `src/routes/api/teacher/classes/[classId]/analytics/` : `knowledge-grid`
   (`?includeAllCycle`), `knowledge-top-remediate` (`?topN`), `knowledge-retention/[studentId]`
-  (`?branch=<uuid>&weeks`), `knowledge-heatmap` (`?days&alertThresholdDays`), `knowledge-grades/[studentId]`
-  (`?days`), `competence-grid`, `competence-top-consolidate` (`?topN`). Tous : Zod puis
-  `requireTeacherOfClass` ; les deux routes par élève vérifient en plus l'appartenance à la classe
+  (`?branch=<uuid>&weeks`), `regularity` et `success-rate` (sans paramètre), `competence-grid`,
+  `competence-top-consolidate` (`?topN`), `point-errors` (`?point=<uuid>`). Tous : Zod puis `requireTeacherOfClass` ; la route par élève vérifie en plus l'appartenance à la classe
   dans `class_members`.
-- Zod : `src/lib/server/validation/teacher-analytics.ts` (7 schémas, bornes : `topN` 1-30,
-  `weeks` 1-26, `days` 1-60 / 1-30).
-- Composants : `src/lib/components/teacher/analytics/` (7 widgets + `AnalyticsModal`) ; onglet
+- Zod : `src/lib/server/validation/teacher-analytics.ts` (5 schémas, bornes : `topN` 1-30,
+  `weeks` 1-26).
+- Composants : `src/lib/components/teacher/analytics/` (`curriculum-point-badge-meta.ts` : icône, couleur et libellé d'un badge, partagés avec la page de suivi ; `RegularityTable.svelte` : tableau de régularité, partagé par la grille C, le suivi et le carnet de liaison (une rangée, sans colonne de nom, en « jours de travail ») ; 7 widgets, `AnalyticsModal` du widget G, `PointDetailsModal` du widget E) ; onglet
   Surveillance : `src/lib/components/teacher/anti-fraud/`.
 
 ## Invariants
@@ -119,10 +230,12 @@ chaque widget suit dans son `$effect` de chargement).
 ## Tests
 
 Serveur : `src/lib/server/stats/__tests__/class-knowledge.test.ts` (28),
-`class-competence.test.ts` (12). Composants : un `*.svelte.test.ts` par widget dans
-`src/lib/components/teacher/analytics/__tests__/` (29 au total). Garde : `src/lib/server/stats/__tests__/teacher-class-auth.test.ts` (prof accepté,
+`class-competence.test.ts` (12), `point-errors.test.ts` (18), `student-follow-up.test.ts` (13), `student-follow-up-blocs.test.ts` (9), `class-success-rate.test.ts` (20) ; routes `point-errors` et
+`success-rate` : `analytics/<route>/__tests__/server.test.ts`. Composants : un `*.svelte.test.ts` par widget dans
+`src/lib/components/teacher/analytics/__tests__/` (44 au total). Garde : `src/lib/server/stats/__tests__/teacher-class-auth.test.ts` (prof accepté,
 admin et élève refusés). Loader : `classes/[classId]/analytics/__tests__/page.server.test.ts`
-(compteur de signalements illisible → `null`, pas 0). Aucun test d'intégration base.
+(compteur de signalements illisible → `null`, pas 0). Suivi d'un élève : `students/[studentId]/__tests__/` (loader : 400, 403, admin refusé, chaque bloc en échec seul ; rendu de la page, quatre blocs, retour selon l'origine) ; retours dans `src/lib/navigation/__tests__/return-links.test.ts`. Intégration base : `tests/integration/regularite-comptee-en-base.test.ts` et
+`taux-par-point-compte-en-base.test.ts` (fonctions de comptage).
 
 ## Décisions
 
@@ -134,8 +247,10 @@ admin et élève refusés). Loader : `classes/[classId]/analytics/__tests__/page
 
 ## Écarts connus
 
-- **Nom d'un point en LaTeX brut** dans les infobulles (`title`) de la grille et dans le titre de la
-  fenêtre des élèves concernés (Top) : un attribut ou un titre texte ne rend pas les formules.
+Les écarts de cette zone sont au [registre des écarts](../ecarts/registre.md) : `pnpm ecarts`. Un écart s'écrit là-bas, jamais ici.
+
+### Points non vérifiés
+
 - **Deux « acquis » différents** : la grille A calcule un badge **FSRS** depuis `srs_card_stats` ;
   elle ne lit pas `student_point_state` (régime d'acquisition `fluence` / `diversite`). Un point
   peut être « acquis » pour l'un et pas pour l'autre ; la page ne montre pas le second. Tranché le

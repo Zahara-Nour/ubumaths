@@ -8,11 +8,11 @@
  */
 
 import { describe, expect, it } from 'vitest';
-import { parseOperationContent } from '$lib/ubumark/parser/operation-parser';
+import { parseOperationContent } from '#lib/ubumark/parser/operation-parser.ts';
 import {
 	buildDivisionScene,
 	type DivisionScene
-} from '$lib/ubumark/utils/operation-division-scene';
+} from '#lib/ubumark/utils/operation-division-scene.ts';
 import {
 	divisionCaseCount,
 	divisionExpectedAnswers,
@@ -23,7 +23,7 @@ import {
 	wrongQuotientComma,
 	wrongQuotientDigits,
 	wrongRemainderDigits
-} from '$lib/ubumark/utils/operation-division-answer';
+} from '#lib/ubumark/utils/operation-division-answer.ts';
 
 function spec(...lines: string[]) {
 	const node = parseOperationContent(lines.join('\n'));

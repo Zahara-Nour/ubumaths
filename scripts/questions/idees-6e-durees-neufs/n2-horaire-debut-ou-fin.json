@@ -1,0 +1,517 @@
+{
+	"id": "c98a5fc6-7336-481e-9b56-c60016fd17d0",
+	"rangement": {
+		"noeud": "Grandeurs et mesures > Durées > calcul de durées",
+		"point": "6-157"
+	},
+	"title": "Calculer un horaire de début ou de fin",
+	"description": "Horaire de fin (début + durée), horaire de début (fin − durée, emprunt d'une heure), durée qui passe minuit, horaire de fin après minuit ; film, train, match, émission ; pièges : retenue ou emprunt de 100, heure au-delà de 24 h",
+	"grades": ["6"],
+	"level": 10,
+	"delay": 60,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "{{if:c==0|Un film commence|{{if:c==1|Un train part|{{if:c==2|Un match de rugby commence|Une émission commence}}}}}} à ${{h}}~\\unit{h}~{{if:m<10|0{{m}}|{{m}}}}~\\unit{min}$. {{if:c==0|Le film dure|{{if:c==1|Le trajet dure|{{if:c==2|Le match, mi-temps comprise, dure|L'émission dure}}}}}} {{if:dh==0|${{dm}}~\\unit{min}$|${{dh}}~\\unit{h}~{{dm}}~\\unit{min}$}}.\n\n{{if:c==0|À quelle heure se termine-t-il ?|{{if:c==1|À quelle heure arrive-t-il ?|{{if:c==2|À quelle heure se termine-t-il ?|À quelle heure se termine-t-elle ?}}}}}}\n\nRéponse : à $?~\\unit{h}~?~\\unit{min}$.",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "0..3"
+				},
+				{
+					"name": "h",
+					"expression": "9..19"
+				},
+				{
+					"name": "m",
+					"expression": "20..55"
+				},
+				{
+					"name": "dh",
+					"expression": "0..3"
+				},
+				{
+					"name": "dm",
+					"expression": "25..55"
+				},
+				{
+					"name": "mm",
+					"expression": "eval:m+dm"
+				},
+				{
+					"name": "mf",
+					"expression": "eval:m+dm-60"
+				},
+				{
+					"name": "hf",
+					"expression": "eval:h+dh+1"
+				}
+			],
+			"conditions": ["m+dm>60", "dh*60+dm<=235", "h+dh+1<=23"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{hf}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:h+dh}}",
+							"message": "Plus de $60$ min : n'oublie pas l'heure de retenue.",
+							"label": "Retenue de l'heure oubliée"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{mf}}",
+					"expectedErrors": [
+						{
+							"answer": "{{mm}}",
+							"message": "Plus de $60$ min : $60$ min font $1$ h, garde le reste en minutes.",
+							"label": "Minutes non converties"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Les minutes.** ${{m}} + {{dm}} = {{mm}}$ min, soit $1~\\unit{h}~{{eval:mm-60}}~\\unit{min}$.",
+					"**Les heures.** ${{h}} + {{dh}} + 1 = {{hf}}$ h.",
+					"Fin : à $\\textcolor{{{color:primary.0}}}{{{hf}}~\\unit{h}~{{if:mf<10|0{{mf}}|{{mf}}}}~\\unit{min}}$."
+				]
+			},
+			"hint": "Ajoute la durée à l'horaire de début : les minutes d'abord, puis les heures."
+		},
+		{
+			"statement": "{{if:c==0|Le film dure|{{if:c==1|Le trajet dure|{{if:c==2|Le match, mi-temps comprise, dure|L'émission dure}}}}}} {{if:dh==0|${{dm}}~\\unit{min}$|${{dh}}~\\unit{h}~{{dm}}~\\unit{min}$}}. {{if:c==0|Il se termine|{{if:c==1|Il arrive|{{if:c==2|Il se termine|Elle se termine}}}}}} à ${{H}}~\\unit{h}~{{if:M<10|0{{M}}|{{M}}}}~\\unit{min}$.\n\n{{if:c==0|À quelle heure a-t-il commencé ?|{{if:c==1|À quelle heure est-il parti ?|{{if:c==2|À quelle heure a-t-il commencé ?|À quelle heure a-t-elle commencé ?}}}}}}\n\nRéponse : à $?~\\unit{h}~?~\\unit{min}$.",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "0..3"
+				},
+				{
+					"name": "H",
+					"expression": "12..22"
+				},
+				{
+					"name": "M",
+					"expression": "0..30"
+				},
+				{
+					"name": "dh",
+					"expression": "0..3"
+				},
+				{
+					"name": "dm",
+					"expression": "25..55"
+				},
+				{
+					"name": "hd",
+					"expression": "eval:H-dh-1"
+				},
+				{
+					"name": "md",
+					"expression": "eval:M+60-dm"
+				}
+			],
+			"conditions": ["dm>M", "H-dh-1>=8", "dh*60+dm<=235", "dm-M!=M+60-dm"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{hd}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:H-dh}}",
+							"message": "Tu as emprunté $1$ h pour les minutes : retire-la aussi des heures.",
+							"label": "Emprunt non retiré des heures"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{md}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:M+100-dm}}",
+							"message": "Une heure fait $60$ min, pas $100$ : en empruntant $1$ h, ajoute $60$ min.",
+							"label": "Emprunt de 100 au lieu de 60"
+						},
+						{
+							"answer": "{{eval:dm-M}}",
+							"message": "Tu as soustrait les minutes à l'envers : on part de ${{M}}$ min, et on en retire ${{dm}}$.",
+							"label": "Minutes soustraites à l'envers"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Les minutes.** On ne peut pas retirer ${{dm}}$ min de ${{M}}$ min : on emprunte $1$ h. ${{H}}~\\unit{h}~{{if:M<10|0{{M}}|{{M}}}}~\\unit{min} = {{eval:H-1}}~\\unit{h}~{{eval:M+60}}~\\unit{min}$.",
+					"**Soustraire.** ${{eval:M+60}} - {{dm}} = {{md}}$ min et ${{eval:H-1}} - {{dh}} = {{hd}}$ h.",
+					"Début : à $\\textcolor{{{color:primary.0}}}{{{hd}}~\\unit{h}~{{if:md<10|0{{md}}|{{md}}}}~\\unit{min}}$."
+				]
+			},
+			"hint": "Retire la durée à l'horaire de fin. S'il n'y a pas assez de minutes, échange $1$ h contre $60$ min."
+		},
+		{
+			"statement": "{{if:c==0|Un film commence|{{if:c==1|Un train part|{{if:c==2|Un match de rugby commence|Une émission commence}}}}}} à ${{h}}~\\unit{h}~{{if:m<10|0{{m}}|{{m}}}}~\\unit{min}$. {{if:c==0|Il se termine|{{if:c==1|Il arrive|{{if:c==2|Il se termine|Elle se termine}}}}}} à ${{H}}~\\unit{h}~{{if:M<10|0{{M}}|{{M}}}}~\\unit{min}$, après minuit.\n\n{{if:c==0|Combien de temps dure le film ?|{{if:c==1|Combien de temps dure le trajet ?|{{if:c==2|Combien de temps dure le match ?|Combien de temps dure l'émission ?}}}}}}\n\nRéponse : $?~\\unit{h}~?~\\unit{min}$.",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "0..3"
+				},
+				{
+					"name": "h",
+					"expression": "21..23"
+				},
+				{
+					"name": "km",
+					"expression": "1..11"
+				},
+				{
+					"name": "m",
+					"expression": "eval:5*km"
+				},
+				{
+					"name": "H",
+					"expression": "0..1"
+				},
+				{
+					"name": "kM",
+					"expression": "0..11"
+				},
+				{
+					"name": "M",
+					"expression": "eval:5*kM"
+				},
+				{
+					"name": "t",
+					"expression": "eval:(24*60+60*H+M)-(60*h+m)"
+				}
+			],
+			"conditions": ["t>=25", "t<=235", "mod(t,60)!=0", "floor((60*h+m-60*H-M)/60)!=floor(t/60)"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:floor(t/60)}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:floor((60*h+m-60*H-M)/60)}}",
+							"message": "Tu as soustrait l'horaire de fin à celui de début : compte d'abord jusqu'à minuit, puis après minuit.",
+							"label": "Horaires soustraits à l'envers"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{eval:mod(t,60)}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:mod(60*h+m-60*H-M,60)}}",
+							"message": "Tu as soustrait l'horaire de fin à celui de début : compte d'abord jusqu'à minuit, puis après minuit.",
+							"label": "Horaires soustraits à l'envers"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Jusqu'à minuit.** De ${{h}}~\\unit{h}~{{if:m<10|0{{m}}|{{m}}}}~\\unit{min}$ à $24~\\unit{h}$ : ${{eval:floor((24*60-60*h-m)/60)}}~\\unit{h}~{{eval:mod(24*60-60*h-m,60)}}~\\unit{min}$.",
+					"**Après minuit.** De $0~\\unit{h}$ à ${{H}}~\\unit{h}~{{if:M<10|0{{M}}|{{M}}}}~\\unit{min}$ : ${{H}}~\\unit{h}~{{M}}~\\unit{min}$.",
+					"**Ajouter.** Durée : $\\textcolor{{{color:primary.0}}}{{{eval:floor(t/60)}}~\\unit{h}~{{eval:mod(t,60)}}~\\unit{min}}$."
+				]
+			},
+			"hint": "Coupe la durée en deux : jusqu'à minuit, puis après minuit."
+		},
+		{
+			"statement": "{{if:c==0|Un film commence|{{if:c==1|Un train part|{{if:c==2|Un match de rugby commence|Une émission commence}}}}}} à ${{h}}~\\unit{h}~{{if:m<10|0{{m}}|{{m}}}}~\\unit{min}$. {{if:c==0|Le film dure|{{if:c==1|Le trajet dure|{{if:c==2|Le match, mi-temps comprise, dure|L'émission dure}}}}}} {{if:dh==0|${{dm}}~\\unit{min}$|${{dh}}~\\unit{h}~{{dm}}~\\unit{min}$}}.\n\n{{if:c==0|À quelle heure se termine-t-il ?|{{if:c==1|À quelle heure arrive-t-il ?|{{if:c==2|À quelle heure se termine-t-il ?|À quelle heure se termine-t-elle ?}}}}}}\n\nRéponse : à $?~\\unit{h}~?~\\unit{min}$.",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "0..3"
+				},
+				{
+					"name": "h",
+					"expression": "21..23"
+				},
+				{
+					"name": "km",
+					"expression": "1..11"
+				},
+				{
+					"name": "m",
+					"expression": "eval:5*km"
+				},
+				{
+					"name": "dh",
+					"expression": "1..3"
+				},
+				{
+					"name": "kd",
+					"expression": "1..11"
+				},
+				{
+					"name": "dm",
+					"expression": "eval:5*kd"
+				},
+				{
+					"name": "t",
+					"expression": "eval:60*h+m+60*dh+dm-24*60"
+				},
+				{
+					"name": "mf",
+					"expression": "eval:mod(t,60)"
+				}
+			],
+			"conditions": ["t>=0", "t<120", "m+dm>60"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:floor(t/60)}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:floor(t/60)+24}}",
+							"message": "Après minuit, on repart de $0$ h.",
+							"label": "Heure au-delà de 24 h"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{eval:mod(t,60)}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:m+dm}}",
+							"message": "Plus de $60$ min : $60$ min font $1$ h, garde le reste en minutes.",
+							"label": "Minutes non converties"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Ajouter.** ${{h}}~\\unit{h}~{{if:m<10|0{{m}}|{{m}}}}~\\unit{min} + {{dh}}~\\unit{h}~{{dm}}~\\unit{min} = {{eval:floor(t/60)+24}}~\\unit{h}~{{eval:mod(t,60)}}~\\unit{min}$.",
+					"**Après minuit, on repart de $0$ h.** $24~\\unit{h}$, c'est minuit : on retire $24~\\unit{h}$.",
+					"Fin : à $\\textcolor{{{color:primary.0}}}{{{eval:floor(t/60)}}~\\unit{h}~{{if:mf<10|0{{mf}}|{{mf}}}}~\\unit{min}}$."
+				]
+			},
+			"hint": "Ajoute la durée comme d'habitude, puis souviens-toi qu'à minuit, l'horloge repart de $0$ h."
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "14 h 40 + 1 h 35 = 16 h 15",
+			"variationIndex": 0,
+			"variables": {
+				"c": "0",
+				"h": "14",
+				"m": "40",
+				"dh": "1",
+				"dm": "35",
+				"mm": "75",
+				"mf": "15",
+				"hf": "16"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["16", "15"]
+		},
+		{
+			"description": "Retenue de l'heure oubliée (15 h 15)",
+			"variationIndex": 0,
+			"variables": {
+				"c": "0",
+				"h": "14",
+				"m": "40",
+				"dh": "1",
+				"dm": "35",
+				"mm": "75",
+				"mf": "15",
+				"hf": "16"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Plus de $60$ min : n'oublie pas l'heure de retenue."
+			},
+			"answers": ["15", "15"]
+		},
+		{
+			"description": "Minutes non converties (75)",
+			"variationIndex": 0,
+			"variables": {
+				"c": "0",
+				"h": "14",
+				"m": "40",
+				"dh": "1",
+				"dm": "35",
+				"mm": "75",
+				"mf": "15",
+				"hf": "16"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Plus de $60$ min : $60$ min font $1$ h, garde le reste en minutes."
+			},
+			"answers": ["16", "75"]
+		},
+		{
+			"description": "11 h 15 − 1 h 35 = 9 h 40",
+			"variationIndex": 1,
+			"variables": {
+				"c": "1",
+				"H": "11",
+				"M": "15",
+				"dh": "1",
+				"dm": "35",
+				"hd": "9",
+				"md": "40"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["9", "40"]
+		},
+		{
+			"description": "Emprunt de 100 (9 h 80)",
+			"variationIndex": 1,
+			"variables": {
+				"c": "1",
+				"H": "11",
+				"M": "15",
+				"dh": "1",
+				"dm": "35",
+				"hd": "9",
+				"md": "40"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Une heure fait $60$ min, pas $100$ : en empruntant $1$ h, ajoute $60$ min."
+			},
+			"answers": ["9", "80"]
+		},
+		{
+			"description": "Emprunt non retiré (10 h 40)",
+			"variationIndex": 1,
+			"variables": {
+				"c": "1",
+				"H": "11",
+				"M": "15",
+				"dh": "1",
+				"dm": "35",
+				"hd": "9",
+				"md": "40"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as emprunté $1$ h pour les minutes : retire-la aussi des heures."
+			},
+			"answers": ["10", "40"]
+		},
+		{
+			"description": "Minutes à l'envers (20)",
+			"variationIndex": 1,
+			"variables": {
+				"c": "1",
+				"H": "11",
+				"M": "15",
+				"dh": "1",
+				"dm": "35",
+				"hd": "9",
+				"md": "40"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as soustrait les minutes à l'envers : on part de $15$ min, et on en retire $35$."
+			},
+			"answers": ["9", "20"]
+		},
+		{
+			"description": "21 h 50 → 0 h 35 : 2 h 45 min",
+			"variationIndex": 2,
+			"variables": {
+				"c": "3",
+				"h": "21",
+				"km": "10",
+				"m": "50",
+				"H": "0",
+				"kM": "7",
+				"M": "35",
+				"t": "165"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["2", "45"]
+		},
+		{
+			"description": "Soustraction à l'envers (21 h 15)",
+			"variationIndex": 2,
+			"variables": {
+				"c": "3",
+				"h": "21",
+				"km": "10",
+				"m": "50",
+				"H": "0",
+				"kM": "7",
+				"M": "35",
+				"t": "165"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as soustrait l'horaire de fin à celui de début : compte d'abord jusqu'à minuit, puis après minuit."
+			},
+			"answers": ["21", "15"]
+		},
+		{
+			"description": "22 h 40 + 1 h 55 = 0 h 35",
+			"variationIndex": 3,
+			"variables": {
+				"c": "2",
+				"h": "22",
+				"km": "8",
+				"m": "40",
+				"dh": "1",
+				"kd": "11",
+				"dm": "55",
+				"t": "35",
+				"mf": "35"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0", "35"]
+		},
+		{
+			"description": "24 h 35 refusé (Q3)",
+			"variationIndex": 3,
+			"variables": {
+				"c": "2",
+				"h": "22",
+				"km": "8",
+				"m": "40",
+				"dh": "1",
+				"kd": "11",
+				"dm": "55",
+				"t": "35",
+				"mf": "35"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Après minuit, on repart de $0$ h."
+			},
+			"answers": ["24", "35"]
+		},
+		{
+			"description": "Minutes non converties (95)",
+			"variationIndex": 3,
+			"variables": {
+				"c": "2",
+				"h": "22",
+				"km": "8",
+				"m": "40",
+				"dh": "1",
+				"kd": "11",
+				"dm": "55",
+				"t": "35",
+				"mf": "35"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Plus de $60$ min : $60$ min font $1$ h, garde le reste en minutes."
+			},
+			"answers": ["0", "95"]
+		}
+	]
+}

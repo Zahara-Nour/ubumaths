@@ -3,11 +3,11 @@
  * GET - List Python files created by students (for teachers)
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireRole } from '$lib/server/middleware/auth';
-import { studentFilesQuerySchema } from '$lib/server/validation/python-files';
-import { createServerLogger } from '$lib/utils/logger';
+import { requireRole } from '#lib/server/middleware/auth.ts';
+import { studentFilesQuerySchema } from '#lib/server/validation/python-files.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/python-files/students/+server');
 
@@ -67,7 +67,7 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 	}
 
 	if (!classMembers || classMembers.length === 0) {
-		return json({
+		return Response.json({
 			files: [],
 			pagination: {
 				page,
@@ -155,7 +155,7 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 
 	const totalPages = count ? Math.ceil(count / limit) : 0;
 
-	return json({
+	return Response.json({
 		files: filesWithClasses,
 		pagination: {
 			page,

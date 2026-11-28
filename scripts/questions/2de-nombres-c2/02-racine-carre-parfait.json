@@ -1,0 +1,352 @@
+{
+	"id": "5ddd58db-f08b-44d4-bc9c-67ee47250ace",
+	"title": "Racine d'un carré parfait",
+	"description": "Calculer √144, √0,09, √0,0049 ou le nombre positif de carré 144 (pièges : √0,09 = 0,03, la réponse négative)",
+	"grades": ["2"],
+	"level": 5,
+	"delay": 30,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"spacesFromFourDigits": true
+		}
+	},
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Calcule.\n\n$$\\sqrt{ {{eval:k^2}} }=?$$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "2..15"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{k}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:k^2/2;d}}",
+							"message": "Tu as pris la moitié du nombre : la racine carrée, ce n'est pas la moitié.",
+							"label": "Moitié au lieu de la racine"
+						},
+						{
+							"answer": "{{eval:-k}}",
+							"message": "Une racine carrée n'est jamais négative.",
+							"label": "Racine négative"
+						},
+						{
+							"answer": "{{eval:k^4}}",
+							"message": "Tu as élevé le nombre au carré au lieu de chercher sa racine carrée.",
+							"label": "Carré au lieu de la racine"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\sqrt{ {{eval:k^2}} }$ est le nombre **positif** dont le carré vaut ${{eval:k^2}}$.",
+					"${{k}}^2={{eval:k^2}}$, donc $\\sqrt{ {{eval:k^2}} }=\\textcolor{{{color:primary.0}}}{{{k}}}$."
+				]
+			},
+			"hintFromFirstStep": true
+		},
+		{
+			"statement": "Calcule. Donne le résultat en écriture décimale.\n\n$$\\sqrt{ {{eval:k^2/10^(2*p);d}} }=?$$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "2|3|4|5|6|7|8|9|11|12"
+				},
+				{
+					"name": "p",
+					"expression": "1..2"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:k/10^p;d}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:k/10^(2*p);d}}",
+							"message": "Tu as gardé autant de chiffres après la virgule que sous la racine : élève ta réponse au carré pour vérifier.",
+							"label": "Autant de décimales que sous la racine"
+						},
+						{
+							"answer": "{{eval:-k/10^p;d}}",
+							"message": "Une racine carrée n'est jamais négative.",
+							"label": "Racine négative"
+						},
+						{
+							"answer": "{{eval:k^2/(2*10^(2*p));d}}",
+							"message": "Tu as pris la moitié du nombre : la racine carrée, ce n'est pas la moitié.",
+							"label": "Moitié au lieu de la racine"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"On cherche le nombre positif dont le carré vaut ${{eval:k^2/10^(2*p);d}}$.",
+					"${{eval:k/10^p;d}}^2={{eval:k/10^p;d}}\\times{{eval:k/10^p;d}}={{eval:k^2/10^(2*p);d}}$ : en élevant au carré, le nombre de chiffres après la virgule **double**.",
+					"Donc $\\sqrt{ {{eval:k^2/10^(2*p);d}} }=\\textcolor{{{color:primary.0}}}{{{eval:k/10^p;d}}}$."
+				]
+			},
+			"hint": "Cherche d'abord la racine carrée du nombre sans la virgule. Souviens-toi : quand on élève un décimal au carré, le nombre de chiffres après la virgule double."
+		},
+		{
+			"statement": "Quel nombre **positif** a pour carré ${{eval:k^2}}$ ?\n\n$$?$$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "2..15"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{k}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:-k}}",
+							"message": "Ton nombre a le bon carré, mais il est négatif : relis la question.",
+							"label": "Nombre négatif"
+						},
+						{
+							"answer": "{{eval:k^2/2;d}}",
+							"message": "Tu as pris la moitié : le carré d'un nombre, ce n'est pas son double.",
+							"label": "Moitié au lieu de la racine"
+						},
+						{
+							"answer": "{{eval:k^4}}",
+							"message": "Tu as calculé le carré de ce nombre, pas le nombre dont il est le carré.",
+							"label": "Carré au lieu de la racine"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"${{k}}^2={{eval:k^2}}$ et ${{k}}$ est positif.",
+					"Le nombre cherché est $\\sqrt{ {{eval:k^2}} }=\\textcolor{{{color:primary.0}}}{{{k}}}$. ($-{{k}}$ a aussi pour carré ${{eval:k^2}}$, mais il est négatif.)"
+				]
+			},
+			"hint": "Cherche un nombre qui, multiplié par lui-même, donne ${{eval:k^2}}$, et garde celui qui est positif."
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "√144 = 12",
+			"variationIndex": 0,
+			"variables": {
+				"k": "12"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["12"]
+		},
+		{
+			"description": "Erreur : √144 = 72 (moitié)",
+			"variationIndex": 0,
+			"variables": {
+				"k": "12"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as pris la moitié du nombre : la racine carrée, ce n'est pas la moitié."
+			},
+			"answers": ["72"]
+		},
+		{
+			"description": "Erreur : √144 = −12",
+			"variationIndex": 0,
+			"variables": {
+				"k": "12"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Une racine carrée n'est jamais négative."
+			},
+			"answers": ["-12"]
+		},
+		{
+			"description": "√0,09 = 0,3",
+			"variationIndex": 1,
+			"variables": {
+				"k": "3",
+				"p": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0,3"]
+		},
+		{
+			"description": "Erreur : √0,09 = 0,03",
+			"variationIndex": 1,
+			"variables": {
+				"k": "3",
+				"p": "1"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as gardé autant de chiffres après la virgule que sous la racine : élève ta réponse au carré pour vérifier."
+			},
+			"answers": ["0,03"]
+		},
+		{
+			"description": "√1,44 = 1,2",
+			"variationIndex": 1,
+			"variables": {
+				"k": "12",
+				"p": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["1,2"]
+		},
+		{
+			"description": "√0,0049 = 0,07",
+			"variationIndex": 1,
+			"variables": {
+				"k": "7",
+				"p": "2"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0,07"]
+		},
+		{
+			"description": "Erreur : √0,0049 = 0,007",
+			"variationIndex": 1,
+			"variables": {
+				"k": "7",
+				"p": "2"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["0,007"]
+		},
+		{
+			"description": "Carré 144 → 12",
+			"variationIndex": 2,
+			"variables": {
+				"k": "12"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["12"]
+		},
+		{
+			"description": "Erreur : −12 (négatif)",
+			"variationIndex": 2,
+			"variables": {
+				"k": "12"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Ton nombre a le bon carré, mais il est négatif : relis la question."
+			},
+			"answers": ["-12"]
+		},
+		{
+			"description": "Erreur : √144 = 20 736 (carré au lieu de la racine)",
+			"variationIndex": 0,
+			"variables": {
+				"k": "12"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as élevé le nombre au carré au lieu de chercher sa racine carrée."
+			},
+			"answers": ["20736"]
+		},
+		{
+			"description": "Erreur : √0,09 = −0,3",
+			"variationIndex": 1,
+			"variables": {
+				"k": "3",
+				"p": "1"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Une racine carrée n'est jamais négative."
+			},
+			"answers": ["-0,3"]
+		},
+		{
+			"description": "Erreur : √0,09 = 0,045 (moitié)",
+			"variationIndex": 1,
+			"variables": {
+				"k": "3",
+				"p": "1"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as pris la moitié du nombre : la racine carrée, ce n'est pas la moitié."
+			},
+			"answers": ["0,045"]
+		},
+		{
+			"description": "Erreur : √0,0049 = 0,0007 (autant de décimales)",
+			"variationIndex": 1,
+			"variables": {
+				"k": "7",
+				"p": "2"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as gardé autant de chiffres après la virgule que sous la racine : élève ta réponse au carré pour vérifier."
+			},
+			"answers": ["0,0007"]
+		},
+		{
+			"description": "Erreur : carré 144 → 72 (moitié)",
+			"variationIndex": 2,
+			"variables": {
+				"k": "12"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as pris la moitié : le carré d'un nombre, ce n'est pas son double."
+			},
+			"answers": ["72"]
+		},
+		{
+			"description": "Erreur : carré 144 → 20 736",
+			"variationIndex": 2,
+			"variables": {
+				"k": "12"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as calculé le carré de ce nombre, pas le nombre dont il est le carré."
+			},
+			"answers": ["20736"]
+		},
+		{
+			"description": "√0,09 = 3/10 : juste en valeur, refusé pour la forme (la consigne demande l'écriture décimale)",
+			"variationIndex": 1,
+			"variables": {
+				"k": "3",
+				"p": "1"
+			},
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			},
+			"answers": ["\\frac{3}{10}"]
+		}
+	]
+}

@@ -11,7 +11,7 @@
  */
 
 import type { MathNode } from '../../types';
-import { number, euler, superscript } from '$lib/mathAST/factory';
+import { number, euler, superscript } from '#lib/mathAST/factory.ts';
 import { mapNode } from '../../transforms';
 import { parseLatexSafe } from '../../parser';
 import { parseCustom } from '../../parser/custom';
@@ -100,7 +100,7 @@ export function parseStudentDomainPieces(
 	const parsers: Array<() => ParseStudentDomainPiecesResult> = [
 		() => asSinglePiece(normalizedInput, parseSetNotation(normalizedInput)),
 		() => parseIntervalNotation(normalizedInput, options),
-		() => asSinglePiece(normalizedInput, parseConditionNotation(normalizedInput, variable))
+		() => asSinglePiece(normalizedInput, parseConditionNotation(normalizedInput, variable, options))
 	];
 
 	for (const parser of parsers) {
@@ -125,6 +125,14 @@ export function parseStudentDomainPieces(
  */
 export interface StudentDomainOptions {
 	readonly intersections?: boolean;
+	/**
+	 * Les bornes à paramètre de l'atelier (`f(x) = x sur [k;5]`, chantier
+	 * fonctions-morceaux ; `pour x > k`, chantier fonctions-domaines) : chaque
+	 * borne lue, d'un ensemble ou d'une condition, passe par cette fonction AVANT d'être
+	 * jugée « nombre réel » — l'atelier y remplace `k` par sa valeur. `null` :
+	 * la borne n'est pas lisible. Sans elle, une lettre dans une borne est refusée.
+	 */
+	readonly bound?: (node: MathNode) => MathNode | null;
 }
 
 /** Un résultat d'un seul tenant (ensemble, condition) vu comme un morceau unique */
@@ -341,7 +349,8 @@ function parseSetNotation(input: string): ParseStudentDomainResult {
  * is parsed as two French-decimal points), fall back to `,` otherwise.
  */
 function parseExcludedPoints(
-	input: string
+	input: string,
+	options: StudentDomainOptions = {}
 ): { success: true; points: MathNode[] } | { success: false } {
 	// Virgule ENTRE DEUX CHIFFRES = virgule décimale (MathLive : `{0,5}`) ; toute autre
 	// virgule sépare (écriture historique `{0, 1}`) ; le point-virgule l'emporte.
@@ -353,7 +362,7 @@ function parseExcludedPoints(
 	const points: MathNode[] = [];
 
 	for (const part of parts) {
-		const value = parseEndpointValue(part);
+		const value = parseEndpointValue(part, options);
 		if (value === null) {
 			return { success: false };
 		}
@@ -390,7 +399,8 @@ function parseIntervalNotation(
 	let result: Domain = emptyDomain();
 	for (const part of parts) {
 		// `∩` lie plus fort que `∪`, comme en classe : A ∪ B ∩ C = A ∪ (B ∩ C)
-		const piece = options.intersections === true ? parseIntersection(part) : parsePiece(part);
+		const piece =
+			options.intersections === true ? parseIntersection(part, options) : parsePiece(part, options);
 		if (!piece.success) return piece;
 		pieces.push(piece.piece);
 		// `union` ignore les points exclus : les développer d'abord (]0;5[ \ {2} → ]0;2[ ∪ ]2;5[)
@@ -402,16 +412,17 @@ function parseIntervalNotation(
 
 /** Un morceau d'une réunion fait d'intersections : `]0;+∞[ ∩ ]-∞;5]`. */
 function parseIntersection(
-	part: string
+	part: string,
+	options: StudentDomainOptions
 ): { success: true; piece: StudentDomainPiece } | { success: false; error: string } {
 	const factors = part.split('∩').map((s) => s.trim());
-	if (factors.length === 1) return parsePiece(part);
+	if (factors.length === 1) return parsePiece(part, options);
 	if (factors.some((factor) => factor.length === 0)) {
 		return { success: false, error: 'Intersection incomplète' };
 	}
 	let domain: Domain = universalDomain();
 	for (const factor of factors) {
-		const piece = parsePiece(factor);
+		const piece = parsePiece(factor, options);
 		if (!piece.success) return piece;
 		domain = intersectDomains(domain, expandExcludedPoints(piece.piece.domain));
 	}
@@ -420,7 +431,8 @@ function parseIntersection(
 
 /** Un morceau d'une réunion : intervalle, intervalle privé de points, ensemble */
 function parsePiece(
-	part: string
+	part: string,
+	options: StudentDomainOptions
 ): { success: true; piece: StudentDomainPiece } | { success: false; error: string } {
 	const set = parseSetNotation(part);
 	if (set.success) return { success: true, piece: { source: part, domain: set.domain } };
@@ -428,10 +440,10 @@ function parsePiece(
 	// Domain with excluded points: ]0, +∞[ \ {1}
 	const withExcludedMatch = part.match(/^(.+?)\s*(?:∖|\\(?![a-zA-Z]))\s*\{(.+)\}$/);
 	if (withExcludedMatch) {
-		const intervalResult = parseSingleInterval(withExcludedMatch[1].trim());
+		const intervalResult = parseSingleInterval(withExcludedMatch[1].trim(), options);
 		if (!intervalResult.success) return intervalResult;
 
-		const pointsResult = parseExcludedPoints(withExcludedMatch[2]);
+		const pointsResult = parseExcludedPoints(withExcludedMatch[2], options);
 		if (!pointsResult.success) {
 			return { success: false, error: 'Points exclus non reconnus' };
 		}
@@ -445,7 +457,7 @@ function parsePiece(
 		};
 	}
 
-	return parseSingleInterval(part);
+	return parseSingleInterval(part, options);
 }
 
 /**
@@ -457,7 +469,8 @@ function parsePiece(
  * separator (legacy / English style).
  */
 function parseSingleInterval(
-	input: string
+	input: string,
+	options: StudentDomainOptions = {}
 ): { success: true; piece: StudentDomainPiece } | { success: false; error: string } {
 	const trimmed = input.trim();
 
@@ -482,8 +495,8 @@ function parseSingleInterval(
 	const [, leftBracket, leftValueStr, rightValueStr, rightBracket] = match;
 
 	// Parse endpoint values
-	const leftValue = parseEndpointValue(leftValueStr.trim());
-	const rightValue = parseEndpointValue(rightValueStr.trim());
+	const leftValue = parseEndpointValue(leftValueStr.trim(), options);
+	const rightValue = parseEndpointValue(rightValueStr.trim(), options);
 
 	if (leftValue === null) {
 		return { success: false, error: `Borne gauche non reconnue: ${leftValueStr}` };
@@ -528,7 +541,11 @@ function parseSingleInterval(
 /**
  * Parse condition notation: x > 0, x >= 0 et x != 1, 0 < x <= 5
  */
-function parseConditionNotation(input: string, variable: string): ParseStudentDomainResult {
+function parseConditionNotation(
+	input: string,
+	variable: string,
+	options: StudentDomainOptions = {}
+): ParseStudentDomainResult {
 	const trimmed = input.trim();
 
 	// Check for compound conditions (et/ou)
@@ -540,7 +557,7 @@ function parseConditionNotation(input: string, variable: string): ParseStudentDo
 		let result: Domain = universalDomain();
 
 		for (const part of parts) {
-			const partResult = parseSingleCondition(part, variable);
+			const partResult = parseSingleCondition(part, variable, options);
 			if (!partResult.success) {
 				return partResult;
 			}
@@ -559,7 +576,7 @@ function parseConditionNotation(input: string, variable: string): ParseStudentDo
 		let result: Domain = emptyDomain();
 
 		for (const part of parts) {
-			const partResult = parseSingleCondition(part, variable);
+			const partResult = parseSingleCondition(part, variable, options);
 			if (!partResult.success) {
 				return partResult;
 			}
@@ -570,13 +587,17 @@ function parseConditionNotation(input: string, variable: string): ParseStudentDo
 		return { success: true, domain: result, format: 'condition' };
 	}
 
-	return parseSingleCondition(trimmed, variable);
+	return parseSingleCondition(trimmed, variable, options);
 }
 
 /**
  * Parse a single condition.
  */
-function parseSingleCondition(input: string, variable: string): ParseStudentDomainResult {
+function parseSingleCondition(
+	input: string,
+	variable: string,
+	options: StudentDomainOptions = {}
+): ParseStudentDomainResult {
 	const trimmed = input.trim();
 
 	// Pattern: a < x <= b (double inequality)
@@ -587,8 +608,8 @@ function parseSingleCondition(input: string, variable: string): ParseStudentDoma
 			return { success: false, error: `Variable attendue: ${variable}, trouvée: ${varName}` };
 		}
 
-		const leftValue = parseEndpointValue(leftStr.trim());
-		const rightValue = parseEndpointValue(rightStr.trim());
+		const leftValue = parseEndpointValue(leftStr.trim(), options);
+		const rightValue = parseEndpointValue(rightStr.trim(), options);
 
 		if (leftValue === null || rightValue === null) {
 			return { success: false, error: 'Bornes non reconnues' };
@@ -619,7 +640,7 @@ function parseSingleCondition(input: string, variable: string): ParseStudentDoma
 	const neqMatch = trimmed.match(new RegExp(`^${variable}\\s*!=\\s*(.+)$`));
 	if (neqMatch) {
 		const valueStr = neqMatch[1].trim();
-		const value = parseEndpointValue(valueStr);
+		const value = parseEndpointValue(valueStr, options);
 		if (value === null) {
 			return { success: false, error: `Valeur non reconnue: ${valueStr}` };
 		}
@@ -635,7 +656,7 @@ function parseSingleCondition(input: string, variable: string): ParseStudentDoma
 	const simpleMatch = trimmed.match(new RegExp(`^${variable}\\s*(>=|<=|>|<)\\s*(.+)$`));
 	if (simpleMatch) {
 		const [, op, valueStr] = simpleMatch;
-		const value = parseEndpointValue(valueStr.trim());
+		const value = parseEndpointValue(valueStr.trim(), options);
 		if (value === null) {
 			return { success: false, error: `Valeur non reconnue: ${valueStr}` };
 		}
@@ -674,7 +695,7 @@ function parseSingleCondition(input: string, variable: string): ParseStudentDoma
 			return { success: false, error: `Variable attendue: ${variable}, trouvée: ${varName}` };
 		}
 
-		const value = parseEndpointValue(valueStr.trim());
+		const value = parseEndpointValue(valueStr.trim(), options);
 		if (value === null) {
 			return { success: false, error: `Valeur non reconnue: ${valueStr}` };
 		}
@@ -723,7 +744,7 @@ function parseSingleCondition(input: string, variable: string): ParseStudentDoma
  *
  * Une borne qui n'est pas un nombre réel (variable, texte) → null.
  */
-function parseEndpointValue(input: string): MathNode | null {
+function parseEndpointValue(input: string, options: StudentDomainOptions = {}): MathNode | null {
 	const trimmed = input.trim();
 
 	// Infinity
@@ -750,7 +771,9 @@ function parseEndpointValue(input: string): MathNode | null {
 	if (latex.length === 0) return null;
 
 	const parsed = latex.includes('\\') ? parseLatexBound(latex) : parseCustomBound(latex);
-	const node = parsed && withEulerConstant(parsed);
+	const read = parsed && withEulerConstant(parsed);
+	// Une borne à paramètre (`k`) : sa valeur, donnée par l'appelant
+	const node = read && options.bound !== undefined ? options.bound(read) : read;
 	return node && isRealConstant(node) ? node : null;
 }
 

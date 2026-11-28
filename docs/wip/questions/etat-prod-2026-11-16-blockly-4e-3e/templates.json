@@ -1,0 +1,1900 @@
+[
+	{
+		"id": "01109f75-71fd-4d1f-b093-844c896f1984",
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"grades": ["4"],
+		"delay": 300,
+		"level": 2,
+		"variations": [
+			{
+				"blanks": [],
+				"statement": "Le nombre choisi est un nombre de cahiers à ${{a}}$ € l'un ; la livraison coûte ${{b}}$ €.\n\nCrée une variable **prix**. Le programme met dans prix le prix des cahiers, ajoute la livraison à prix, puis affiche prix.\n\n```calcul\nniveau: 4e\nattendu: mettre prix à nombre × {{a}} ; ajouter {{b}} à prix ; afficher prix\nessais: 1 ; 2 ; 5 ; 10\n```",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "2..6"
+					},
+					{
+						"name": "b",
+						"expression": "3..9"
+					}
+				],
+				"conditions": [],
+				"correction": {
+					"steps": [
+						"« Mettre prix à nombre $\\times {{a}}$ » : prix contient le prix des cahiers.",
+						"« Ajouter ${{b}}$ à prix » : prix contient maintenant prix $+\\ {{b}}$ ; l'ancienne valeur est remplacée.",
+						"On termine par « afficher prix »."
+					]
+				}
+			},
+			{
+				"blanks": [],
+				"statement": "Écris un programme qui affiche, l'un après l'autre, les premiers nombres de la table de ${{a}}$ : ${{a}}$, ${{a2}}$, ${{a3}}$… Il en affiche autant que le nombre choisi (pour $3$, il affiche ${{a}}$, ${{a2}}$ et ${{a3}}$).\n\nUtilise une variable **total** qui vaut $0$ au départ.\n\n```calcul\nniveau: 4e\nattendu: mettre total à 0 ; répéter nombre [ ajouter {{a}} à total ; afficher total ]\nessais: 1 ; 3 ; 5\n```",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "3..9"
+					},
+					{
+						"name": "a2",
+						"expression": "eval:2*a"
+					},
+					{
+						"name": "a3",
+						"expression": "eval:3*a"
+					}
+				],
+				"conditions": [],
+				"correction": {
+					"steps": [
+						"Au départ, total vaut $0$.",
+						"À chaque tour, on **ajoute ${{a}}$ à total**, puis on affiche total : ${{a}}$, puis ${{a2}}$, puis ${{a3}}$…",
+						"On répète « nombre choisi » fois : le bloc répéter accepte le nombre choisi comme nombre de tours."
+					]
+				}
+			},
+			{
+				"blanks": [],
+				"statement": "Une bactérie se divise en deux toutes les heures. Le nombre choisi est le nombre de bactéries au départ.\n\nAvec une variable **compte**, écris un programme qui affiche le nombre de bactéries au bout de ${{n}}$ heures.\n\n```calcul\nniveau: 4e\nattendu: mettre compte à nombre ; répéter {{n}} [ mettre compte à compte × 2 ] ; afficher compte\nessais: 1 ; 3 ; 10\n```",
+				"variables": [
+					{
+						"name": "n",
+						"expression": "3..6"
+					}
+				],
+				"conditions": [],
+				"correction": {
+					"steps": [
+						"Au départ, compte vaut le nombre choisi.",
+						"Chaque heure, le nombre de bactéries double : on met compte à compte $\\times 2$.",
+						"On répète ${{n}}$ fois, puis on affiche compte."
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "draft",
+		"title": "Utiliser une variable",
+		"description": "Écrire en blocs un programme qui range, modifie et affiche une variable.",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["mettre prix à nombre × 3 ; ajouter 5 à prix ; afficher prix"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "3",
+					"b": "5"
+				},
+				"description": "Prix : référence",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["afficher nombre × 3 + 5"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "3",
+					"b": "5"
+				},
+				"description": "Prix : sans variable",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["mettre prix à nombre × 3 ; afficher prix ; ajouter 5 à prix"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "3",
+					"b": "5"
+				},
+				"description": "Erreur : affiche avant d'ajouter",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["mettre total à 0 ; répéter nombre [ ajouter 4 à total ; afficher total ]"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "4",
+					"a2": "8",
+					"a3": "12"
+				},
+				"description": "Table : référence",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["mettre k à 0 ; répéter nombre [ ajouter 1 à k ; afficher k × 4 ]"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "4",
+					"a2": "8",
+					"a3": "12"
+				},
+				"description": "Table : avec un compteur",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["mettre total à 0 ; répéter nombre [ afficher total ; ajouter 4 à total ]"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "4",
+					"a2": "8",
+					"a3": "12"
+				},
+				"description": "Erreur : affiche avant d'ajouter (commence à 0)",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["mettre total à 0 ; répéter nombre [ ajouter 4 à total ] ; afficher total"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "4",
+					"a2": "8",
+					"a3": "12"
+				},
+				"description": "Erreur : affiche seulement le dernier",
+				"variationIndex": 1
+			},
+			{
+				"answers": [
+					"mettre compte à nombre ; répéter 4 [ mettre compte à compte × 2 ] ; afficher compte"
+				],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"n": "4"
+				},
+				"description": "Bactéries : référence",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["afficher nombre × 16"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"n": "4"
+				},
+				"description": "Bactéries : × 16",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["mettre compte à nombre ; répéter 4 [ ajouter 2 à compte ] ; afficher compte"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"n": "4"
+				},
+				"description": "Erreur : ajoute 2 au lieu de doubler",
+				"variationIndex": 2
+			}
+		],
+		"classification_node_id": null
+	},
+	{
+		"id": "6e99d291-aa1e-4abe-8813-f8f0e8deac32",
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"grades": ["3"],
+		"delay": 600,
+		"level": 3,
+		"variations": [
+			{
+				"blanks": [],
+				"statement": "Écris un programme qui affiche le **nombre de chiffres** du nombre choisi (un entier positif) : pour $2026$, il affiche $4$.\n\n```calcul\nniveau: 3e\nattendu: mettre x à nombre ; mettre chiffres à 1 ; répéter jusqu’à x < 10 [ mettre x à (x − reste de x par 10) ÷ 10 ; ajouter 1 à chiffres ] ; afficher chiffres\nessais: 0 ; 7 ; 10 ; 99 ; 100 ; 2026 ; 12345\n```",
+				"variables": [],
+				"conditions": [],
+				"correction": {
+					"steps": [
+						"Retirer le dernier chiffre d'un nombre, c'est lui retirer son chiffre des unités (le reste de sa division par $10$) puis diviser par $10$ : $2026 \\to 202$.",
+						"On compte les chiffres dans une variable qui vaut $1$ au départ, et on retire un chiffre **jusqu'à ce qu'**il n'en reste qu'un (x $< 10$).",
+						"Pour $2026$ : $2026 \\to 202 \\to 20 \\to 2$, trois chiffres retirés, plus le dernier : $4$."
+					]
+				}
+			},
+			{
+				"blanks": [],
+				"statement": "Écris un programme qui affiche combien de fois on peut diviser le nombre choisi (un entier positif non nul) par $2$ en obtenant à chaque fois un **nombre entier** : pour $12$, il affiche $2$ ($12 \\to 6 \\to 3$).\n\n```calcul\nniveau: 3e\nattendu: mettre x à nombre ; mettre fois à 0 ; répéter jusqu’à reste de x par 2 ≠ 0 [ mettre x à x ÷ 2 ; ajouter 1 à fois ] ; afficher fois\nessais: 1 ; 6 ; 7 ; 8 ; 12 ; 40 ; 96\n```",
+				"variables": [],
+				"conditions": [],
+				"correction": {
+					"steps": [
+						"On peut diviser par $2$ en restant entier tant que le nombre est **pair**.",
+						"On divise donc par $2$ **jusqu'à ce que** le nombre soit impair (reste par $2$ $\\neq 0$), en comptant les divisions.",
+						"Pour un nombre impair, la boucle ne tourne pas : le programme affiche $0$."
+					]
+				}
+			},
+			{
+				"blanks": [],
+				"statement": "Une tirelire contient ${{d}}$ € ; chaque mois, on y ajoute ${{m}}$ €.\n\nLe nombre choisi est un montant en euros. Écris un programme qui affiche au bout de **combien de mois** la tirelire contiendra au moins ce montant.\n\n```calcul\nniveau: 3e\nattendu: mettre tirelire à {{d}} ; mettre mois à 0 ; répéter jusqu’à tirelire ≥ nombre [ ajouter {{m}} à tirelire ; ajouter 1 à mois ] ; afficher mois\nessais: 5 ; {{d}} ; {{f}} ; 100 ; 250\n```",
+				"variables": [
+					{
+						"name": "d",
+						"expression": "10..50"
+					},
+					{
+						"name": "m",
+						"expression": "5..20"
+					},
+					{
+						"name": "f",
+						"expression": "eval:d+m"
+					}
+				],
+				"conditions": [],
+				"correction": {
+					"steps": [
+						"Deux variables : **tirelire** (${{d}}$ € au départ) et **mois** ($0$ au départ).",
+						"Chaque mois : ajouter ${{m}}$ à tirelire et $1$ à mois.",
+						"On répète **jusqu'à ce que** tirelire $\\geq$ nombre, puis on affiche mois."
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "draft",
+		"title": "Écrire un programme pour résoudre un problème (3e)",
+		"description": "Écrire en blocs un programme avec boucle conditionnelle : chiffres, moitiés, épargne.",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": [
+					"mettre x à nombre ; mettre chiffres à 1 ; répéter jusqu’à x < 10 [ mettre x à (x − reste de x par 10) ÷ 10 ; ajouter 1 à chiffres ] ; afficher chiffres"
+				],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {},
+				"description": "Chiffres : référence",
+				"variationIndex": 0
+			},
+			{
+				"answers": [
+					"mettre x à nombre ; mettre chiffres à 1 ; répéter jusqu’à x < 10 [ mettre x à x ÷ 10 ; ajouter 1 à chiffres ] ; afficher chiffres"
+				],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {},
+				"description": "Chiffres : en divisant par 10 sans arrondir",
+				"variationIndex": 0
+			},
+			{
+				"answers": [
+					"mettre x à nombre ; mettre chiffres à 0 ; répéter jusqu’à x < 10 [ mettre x à x ÷ 10 ; ajouter 1 à chiffres ] ; afficher chiffres"
+				],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {},
+				"description": "Erreur : compteur à 0 au départ",
+				"variationIndex": 0
+			},
+			{
+				"answers": [
+					"mettre x à nombre ; mettre fois à 0 ; répéter jusqu’à reste de x par 2 ≠ 0 [ mettre x à x ÷ 2 ; ajouter 1 à fois ] ; afficher fois"
+				],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {},
+				"description": "Moitiés : référence",
+				"variationIndex": 1
+			},
+			{
+				"answers": [
+					"mettre x à nombre ; mettre fois à 0 ; répéter jusqu’à reste de x par 2 = 1 [ mettre x à x ÷ 2 ; ajouter 1 à fois ] ; afficher fois"
+				],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {},
+				"description": "Moitiés : jusqu'à reste = 1",
+				"variationIndex": 1
+			},
+			{
+				"answers": [
+					"mettre x à nombre ; mettre fois à 0 ; répéter jusqu’à reste de x par 2 ≠ 0 [ mettre x à x ÷ 2 ; ajouter 1 à fois ] ; afficher x"
+				],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {},
+				"description": "Erreur : affiche x",
+				"variationIndex": 1
+			},
+			{
+				"answers": [
+					"mettre tirelire à 20 ; mettre mois à 0 ; répéter jusqu’à tirelire ≥ nombre [ ajouter 15 à tirelire ; ajouter 1 à mois ] ; afficher mois"
+				],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"d": "20",
+					"f": "35",
+					"m": "15"
+				},
+				"description": "Épargne : référence",
+				"variationIndex": 2
+			},
+			{
+				"answers": [
+					"mettre tirelire à 20 ; mettre mois à 0 ; répéter jusqu’à tirelire > nombre [ ajouter 15 à tirelire ; ajouter 1 à mois ] ; afficher mois"
+				],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"d": "20",
+					"f": "35",
+					"m": "15"
+				},
+				"description": "Erreur : strictement plus que le montant",
+				"variationIndex": 2
+			},
+			{
+				"answers": [
+					"mettre tirelire à 0 ; mettre mois à 0 ; répéter jusqu’à tirelire ≥ nombre [ ajouter 15 à tirelire ; ajouter 1 à mois ] ; afficher mois"
+				],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"d": "20",
+					"f": "35",
+					"m": "15"
+				},
+				"description": "Erreur : tirelire vide au départ",
+				"variationIndex": 2
+			}
+		],
+		"classification_node_id": null
+	},
+	{
+		"id": "81ab97a2-6bfc-496b-a089-15164dc22da1",
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"grades": ["4"],
+		"delay": 300,
+		"level": 1,
+		"variations": [
+			{
+				"blanks": [],
+				"statement": "Au cinéma, une place coûte ${{p}}$ € ; à partir de ${{s}}$ places achetées ensemble, chaque place ne coûte plus que ${{q}}$ €.\n\nLe nombre choisi est le nombre de places. Écris un programme qui affiche le prix à payer.\n\n```calcul\nniveau: 4e\nattendu: si nombre < {{s}} alors [ afficher nombre × {{p}} ] sinon [ afficher nombre × {{q}} ]\nessais: 1 ; 2 ; {{t}} ; {{s}} ; {{u}}\n```",
+				"variables": [
+					{
+						"name": "p",
+						"expression": "8..12"
+					},
+					{
+						"name": "d",
+						"expression": "1..3"
+					},
+					{
+						"name": "q",
+						"expression": "eval:p-d"
+					},
+					{
+						"name": "s",
+						"expression": "5..10"
+					},
+					{
+						"name": "t",
+						"expression": "eval:s-1"
+					},
+					{
+						"name": "u",
+						"expression": "eval:s+3"
+					}
+				],
+				"conditions": [],
+				"correction": {
+					"steps": [
+						"Deux cas : moins de ${{s}}$ places, ou au moins ${{s}}$ places.",
+						"Condition : nombre $< {{s}}$. Si elle est vraie, le prix est nombre $\\times {{p}}$.",
+						"**Sinon** (${{s}}$ places ou plus), le prix est nombre $\\times {{q}}$."
+					]
+				}
+			},
+			{
+				"blanks": [],
+				"statement": "Écris un programme qui suit ces règles :\n\n- si le nombre choisi est plus grand que ${{a}}$, il affiche nombre $-\\ {{a}}$ ;\n- sinon, il affiche ${{a}} -$ nombre.\n\n```calcul\nniveau: 4e\nattendu: si nombre > {{a}} alors [ afficher nombre − {{a}} ] sinon [ afficher {{a}} − nombre ]\nessais: 0 ; 2 ; {{a}} ; {{b}} ; 20\n```",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "5..9"
+					},
+					{
+						"name": "b",
+						"expression": "eval:a+2"
+					}
+				],
+				"conditions": [],
+				"correction": {
+					"steps": [
+						"La condition est nombre $> {{a}}$.",
+						"Dans « alors » : afficher nombre $-\\ {{a}}$ ; dans « sinon » : afficher ${{a}} -$ nombre.",
+						"Le programme affiche ainsi la **distance** entre le nombre choisi et ${{a}}$ : elle n'est jamais négative."
+					]
+				}
+			},
+			{
+				"blanks": [],
+				"statement": "Écris un programme qui affiche le nombre choisi ; mais si ce nombre est **impair**, il lui ajoute d'abord ${{a}}$.\n\n```calcul\nniveau: 4e\nattendu: mettre valeur à nombre ; si reste de nombre par 2 = 1 alors [ ajouter {{a}} à valeur ] ; afficher valeur\nessais: 1 ; 2 ; 3 ; 4 ; 7 ; 10\n```",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..9"
+					}
+				],
+				"conditions": [],
+				"correction": {
+					"steps": [
+						"Un nombre est impair quand le reste de sa division par $2$ vaut $1$.",
+						"On range le nombre choisi dans une variable, on lui ajoute ${{a}}$ **seulement si** il est impair (un « si » sans « sinon »), puis on affiche la variable.",
+						"Autre écriture juste : si le nombre est pair, afficher nombre ; sinon, afficher nombre $+\\ {{a}}$."
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "draft",
+		"title": "Programme avec « si … sinon »",
+		"description": "Écrire en blocs un programme à deux cas : tarif de groupe, distance à un nombre, impair.",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["si nombre < 6 alors [ afficher nombre × 9 ] sinon [ afficher nombre × 7 ]"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"d": "2",
+					"p": "9",
+					"q": "7",
+					"s": "6",
+					"t": "5",
+					"u": "9"
+				},
+				"description": "Tarif : référence",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["si nombre ≥ 6 alors [ afficher nombre × 7 ] sinon [ afficher nombre × 9 ]"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"d": "2",
+					"p": "9",
+					"q": "7",
+					"s": "6",
+					"t": "5",
+					"u": "9"
+				},
+				"description": "Tarif : condition ≥, branches échangées",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["si nombre > 6 alors [ afficher nombre × 7 ] sinon [ afficher nombre × 9 ]"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"d": "2",
+					"p": "9",
+					"q": "7",
+					"s": "6",
+					"t": "5",
+					"u": "9"
+				},
+				"description": "Erreur : strictement plus de 6 places",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["si nombre < 6 alors [ afficher nombre × 7 ] sinon [ afficher nombre × 9 ]"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"d": "2",
+					"p": "9",
+					"q": "7",
+					"s": "6",
+					"t": "5",
+					"u": "9"
+				},
+				"description": "Erreur : prix échangés",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["si nombre > 7 alors [ afficher nombre − 7 ] sinon [ afficher 7 − nombre ]"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9"
+				},
+				"description": "Distance : référence",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["si nombre < 7 alors [ afficher 7 − nombre ] sinon [ afficher nombre − 7 ]"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9"
+				},
+				"description": "Distance : condition nombre < 7",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["afficher nombre − 7"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9"
+				},
+				"description": "Erreur : un seul cas",
+				"variationIndex": 1
+			},
+			{
+				"answers": [
+					"mettre valeur à nombre ; si reste de nombre par 2 = 1 alors [ ajouter 4 à valeur ] ; afficher valeur"
+				],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "4"
+				},
+				"description": "Impair : référence",
+				"variationIndex": 2
+			},
+			{
+				"answers": [
+					"si reste de nombre par 2 = 0 alors [ afficher nombre ] sinon [ afficher nombre + 4 ]"
+				],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "4"
+				},
+				"description": "Impair : si … sinon",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["afficher nombre + 4"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "4"
+				},
+				"description": "Erreur : ajoute toujours",
+				"variationIndex": 2
+			},
+			{
+				"answers": [
+					"mettre valeur à nombre ; si reste de nombre par 2 = 0 alors [ ajouter 4 à valeur ] ; afficher valeur"
+				],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "4"
+				},
+				"description": "Erreur : ajoute aux pairs",
+				"variationIndex": 2
+			}
+		],
+		"classification_node_id": null
+	},
+	{
+		"id": "a63f24b7-f21c-4ac9-8c54-6f57e01d2397",
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"grades": ["3"],
+		"delay": 300,
+		"level": 2,
+		"variations": [
+			{
+				"blanks": [],
+				"statement": "Écris un programme qui affiche $1$ si le nombre choisi est **entre ${{a}}$ et ${{b}}$** (${{a}}$ et ${{b}}$ compris), et $0$ sinon.\n\n```calcul\nniveau: 3e\nattendu: si nombre ≥ {{a}} et nombre ≤ {{b}} alors [ afficher 1 ] sinon [ afficher 0 ]\nessais: {{c}} ; {{a}} ; {{m}} ; {{b}} ; {{d}}\n```",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "2..10"
+					},
+					{
+						"name": "l",
+						"expression": "5..10"
+					},
+					{
+						"name": "b",
+						"expression": "eval:a+l"
+					},
+					{
+						"name": "c",
+						"expression": "eval:a-1"
+					},
+					{
+						"name": "d",
+						"expression": "eval:b+1"
+					},
+					{
+						"name": "m",
+						"expression": "eval:a+2"
+					}
+				],
+				"conditions": [],
+				"correction": {
+					"steps": [
+						"« Entre ${{a}}$ et ${{b}}$ » : le nombre doit être $\\geq {{a}}$ **et** $\\leq {{b}}$.",
+						"Les deux conditions doivent être vraies en même temps : on les relie par le bloc **et**.",
+						"Avec **ou**, tous les nombres conviendraient (chacun est $\\geq {{a}}$ ou $\\leq {{b}}$)."
+					]
+				}
+			},
+			{
+				"blanks": [],
+				"statement": "Écris un programme qui affiche le nombre choisi s'il est un multiple de $3$ **ou** un multiple de $5$, et $0$ sinon.\n\n```calcul\nniveau: 3e\nattendu: si reste de nombre par 3 = 0 ou reste de nombre par 5 = 0 alors [ afficher nombre ] sinon [ afficher 0 ]\nessais: 1 ; 3 ; 5 ; 7 ; 9 ; 10 ; 14 ; 15\n```",
+				"variables": [],
+				"conditions": [],
+				"correction": {
+					"steps": [
+						"Multiple de $3$ : reste de nombre par $3$ $= 0$. Multiple de $5$ : reste de nombre par $5$ $= 0$.",
+						"Il suffit que **l'une** des deux conditions soit vraie : on les relie par **ou**.",
+						"$15$ est multiple des deux : la condition « ou » est vraie aussi."
+					]
+				}
+			},
+			{
+				"blanks": [],
+				"statement": "Écris un programme qui affiche $1$ si le nombre choisi est **pair et** plus grand que ${{a}}$, et $0$ sinon.\n\n```calcul\nniveau: 3e\nattendu: si reste de nombre par 2 = 0 et nombre > {{a}} alors [ afficher 1 ] sinon [ afficher 0 ]\nessais: {{b}} ; {{a}} ; {{c}} ; {{d}} ; 1 ; 2\n```",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "6..14"
+					},
+					{
+						"name": "b",
+						"expression": "eval:a-2"
+					},
+					{
+						"name": "c",
+						"expression": "eval:a+1"
+					},
+					{
+						"name": "d",
+						"expression": "eval:a+2"
+					}
+				],
+				"conditions": [],
+				"correction": {
+					"steps": [
+						"Pair : reste de nombre par $2$ $= 0$. Plus grand que ${{a}}$ : nombre $> {{a}}$.",
+						"Les deux doivent être vraies : on les relie par **et**.",
+						"Un nombre pair plus petit, ou un nombre impair plus grand, donne $0$."
+					]
+				}
+			},
+			{
+				"blanks": [],
+				"statement": "Écris un programme qui affiche $1$ si le nombre choisi n'est **ni** un multiple de $2$, **ni** un multiple de $3$, et $0$ sinon.\n\n```calcul\nniveau: 3e\nattendu: si non (reste de nombre par 2 = 0 ou reste de nombre par 3 = 0) alors [ afficher 1 ] sinon [ afficher 0 ]\nessais: 1 ; 2 ; 3 ; 5 ; 6 ; 7 ; 9 ; 25\n```",
+				"variables": [],
+				"conditions": [],
+				"correction": {
+					"steps": [
+						"« Ni multiple de $2$, ni multiple de $3$ », c'est le contraire de « multiple de $2$ **ou** multiple de $3$ » : on utilise le bloc **non**.",
+						"Autre écriture : reste par $2$ $\\neq 0$ **et** reste par $3$ $\\neq 0$.",
+						"Exemples : $5$ et $7$ donnent $1$ ; $6$, $9$ et $2$ donnent $0$."
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "draft",
+		"title": "Conditions composées en blocs",
+		"description": "Écrire en blocs des conditions avec et, ou, non : intervalle, multiples, pair et grand.",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["si nombre ≥ 4 et nombre ≤ 10 alors [ afficher 1 ] sinon [ afficher 0 ]"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "4",
+					"b": "10",
+					"c": "3",
+					"d": "11",
+					"l": "6",
+					"m": "6"
+				},
+				"description": "Entre : référence",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["si non (nombre < 4 ou nombre > 10) alors [ afficher 1 ] sinon [ afficher 0 ]"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "4",
+					"b": "10",
+					"c": "3",
+					"d": "11",
+					"l": "6",
+					"m": "6"
+				},
+				"description": "Entre : par non",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["si nombre ≥ 4 ou nombre ≤ 10 alors [ afficher 1 ] sinon [ afficher 0 ]"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "4",
+					"b": "10",
+					"c": "3",
+					"d": "11",
+					"l": "6",
+					"m": "6"
+				},
+				"description": "Erreur : ou au lieu de et",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["si nombre > 4 et nombre < 10 alors [ afficher 1 ] sinon [ afficher 0 ]"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "4",
+					"b": "10",
+					"c": "3",
+					"d": "11",
+					"l": "6",
+					"m": "6"
+				},
+				"description": "Erreur : bornes exclues",
+				"variationIndex": 0
+			},
+			{
+				"answers": [
+					"si reste de nombre par 3 = 0 ou reste de nombre par 5 = 0 alors [ afficher nombre ] sinon [ afficher 0 ]"
+				],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {},
+				"description": "Multiples : référence",
+				"variationIndex": 1
+			},
+			{
+				"answers": [
+					"si reste de nombre par 3 = 0 alors [ afficher nombre ] sinon [ si reste de nombre par 5 = 0 alors [ afficher nombre ] sinon [ afficher 0 ] ]"
+				],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {},
+				"description": "Multiples : deux « si » imbriqués",
+				"variationIndex": 1
+			},
+			{
+				"answers": [
+					"si reste de nombre par 3 = 0 et reste de nombre par 5 = 0 alors [ afficher nombre ] sinon [ afficher 0 ]"
+				],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {},
+				"description": "Erreur : et au lieu de ou",
+				"variationIndex": 1
+			},
+			{
+				"answers": [
+					"si reste de nombre par 2 = 0 et nombre > 10 alors [ afficher 1 ] sinon [ afficher 0 ]"
+				],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "10",
+					"b": "8",
+					"c": "11",
+					"d": "12"
+				},
+				"description": "Pair et grand : référence",
+				"variationIndex": 2
+			},
+			{
+				"answers": [
+					"si reste de nombre par 2 = 0 ou nombre > 10 alors [ afficher 1 ] sinon [ afficher 0 ]"
+				],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "10",
+					"b": "8",
+					"c": "11",
+					"d": "12"
+				},
+				"description": "Erreur : ou au lieu de et",
+				"variationIndex": 2
+			},
+			{
+				"answers": [
+					"si non (reste de nombre par 2 = 0 ou reste de nombre par 3 = 0) alors [ afficher 1 ] sinon [ afficher 0 ]"
+				],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {},
+				"description": "Ni … ni : référence",
+				"variationIndex": 3
+			},
+			{
+				"answers": [
+					"si reste de nombre par 2 ≠ 0 et reste de nombre par 3 ≠ 0 alors [ afficher 1 ] sinon [ afficher 0 ]"
+				],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {},
+				"description": "Ni … ni : deux ≠ reliés par et",
+				"variationIndex": 3
+			},
+			{
+				"answers": [
+					"si non (reste de nombre par 2 = 0) ou reste de nombre par 3 = 0 alors [ afficher 1 ] sinon [ afficher 0 ]"
+				],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {},
+				"description": "Erreur : non porté sur la première condition seulement",
+				"variationIndex": 3
+			}
+		],
+		"classification_node_id": null
+	},
+	{
+		"id": "c3db6174-0271-44cd-bb99-8dfd4b802824",
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"grades": ["4"],
+		"delay": 300,
+		"level": 1,
+		"variations": [
+			{
+				"blanks": [],
+				"statement": "Écris un programme qui affiche le nombre choisi s'il est un **multiple de ${{a}}$**, et qui affiche $0$ sinon.\n\n```calcul\nniveau: 4e\nattendu: si reste de nombre par {{a}} = 0 alors [ afficher nombre ] sinon [ afficher 0 ]\nessais: 1 ; 2 ; 3 ; 4 ; 5 ; 6 ; 10 ; 12 ; 15 ; 20 ; 21 ; 30\n```",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "2..5"
+					}
+				],
+				"conditions": [],
+				"correction": {
+					"steps": [
+						"Un nombre est un multiple de ${{a}}$ quand le **reste** de sa division par ${{a}}$ vaut $0$.",
+						"La condition s'écrit donc : reste de nombre par ${{a}}$ $= 0$.",
+						"Si elle est vraie, on affiche le nombre ; **sinon**, on affiche $0$ : il faut le bloc « si … alors … sinon »."
+					]
+				}
+			},
+			{
+				"blanks": [],
+				"statement": "Un manège est autorisé à partir de ${{a}}$ ans. Le nombre choisi est l'âge d'un enfant.\n\nÉcris un programme qui affiche $1$ si l'enfant peut monter, et $0$ sinon.\n\n```calcul\nniveau: 4e\nattendu: si nombre ≥ {{a}} alors [ afficher 1 ] sinon [ afficher 0 ]\nessais: {{b}} ; {{a}} ; {{c}} ; 3 ; 20\n```",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "8..12"
+					},
+					{
+						"name": "b",
+						"expression": "eval:a-1"
+					},
+					{
+						"name": "c",
+						"expression": "eval:a+1"
+					}
+				],
+				"conditions": [],
+				"correction": {
+					"steps": [
+						"« À partir de ${{a}}$ ans » : un enfant de **${{a}}$ ans** peut monter.",
+						"La condition est donc nombre $\\geq {{a}}$ (et non nombre $> {{a}}$, qui refuserait l'enfant de ${{a}}$ ans).",
+						"Si elle est vraie, on affiche $1$ ; sinon, on affiche $0$."
+					]
+				}
+			},
+			{
+				"blanks": [],
+				"statement": "Le nombre choisi est une température en degrés. Il gèle quand la température est **strictement inférieure** à $0$.\n\nÉcris un programme qui affiche $1$ s'il gèle, et $0$ sinon.\n\n```calcul\nniveau: 4e\nattendu: si nombre < 0 alors [ afficher 1 ] sinon [ afficher 0 ]\nessais: -5 ; -1 ; 0 ; 1 ; 12\n```",
+				"variables": [],
+				"conditions": [],
+				"correction": {
+					"steps": [
+						"« Strictement inférieure à $0$ » : la condition est nombre $< 0$.",
+						"À $0$ degré exactement, il ne gèle pas : la condition nombre $\\leq 0$ serait fausse pour ce cas.",
+						"Si la condition est vraie, on affiche $1$ ; sinon, on affiche $0$."
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "draft",
+		"title": "Écrire une condition",
+		"description": "Écrire en blocs la condition d'un « si » : multiple d'un nombre, âge minimum, gel.",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["si reste de nombre par 3 = 0 alors [ afficher nombre ] sinon [ afficher 0 ]"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "3"
+				},
+				"description": "Multiple de 3 : référence",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["si reste de nombre par 3 ≠ 0 alors [ afficher 0 ] sinon [ afficher nombre ]"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "3"
+				},
+				"description": "Multiple de 3 : condition inversée, branches échangées",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["si reste de nombre par 3 = 1 alors [ afficher nombre ] sinon [ afficher 0 ]"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "3"
+				},
+				"description": "Erreur : reste = 1 au lieu de 0",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["si reste de nombre par 3 = 0 alors [ afficher nombre ]"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "3"
+				},
+				"description": "Erreur : pas de « sinon » (rien n'est affiché)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["si nombre ≥ 10 alors [ afficher 1 ] sinon [ afficher 0 ]"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "10",
+					"b": "9",
+					"c": "11"
+				},
+				"description": "Âge : référence",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["si nombre > 9 alors [ afficher 1 ] sinon [ afficher 0 ]"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "10",
+					"b": "9",
+					"c": "11"
+				},
+				"description": "Âge : nombre > 9 (entiers)",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["si nombre > 10 alors [ afficher 1 ] sinon [ afficher 0 ]"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "10",
+					"b": "9",
+					"c": "11"
+				},
+				"description": "Erreur : strictement supérieur",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["si nombre < 0 alors [ afficher 1 ] sinon [ afficher 0 ]"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {},
+				"description": "Gel : référence",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["si 0 > nombre alors [ afficher 1 ] sinon [ afficher 0 ]"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {},
+				"description": "Gel : 0 > nombre",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["si nombre ≤ 0 alors [ afficher 1 ] sinon [ afficher 0 ]"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {},
+				"description": "Erreur : inférieur ou égal",
+				"variationIndex": 2
+			}
+		],
+		"classification_node_id": null
+	},
+	{
+		"id": "d43fda5a-4526-4ae8-b628-293ff7292899",
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"grades": ["4"],
+		"delay": 300,
+		"level": 2,
+		"variations": [
+			{
+				"blanks": [],
+				"statement": "Le programme posé dans l'espace de travail affiche de combien le nombre choisi dépasse ${{p}}$ (et $0$ s'il ne le dépasse pas).\n\nModifie-le pour qu'il affiche de combien le nombre choisi dépasse ${{a}}$.\n\n```calcul\nniveau: 4e\nattendu: si nombre > {{a}} alors [ afficher nombre − {{a}} ] sinon [ afficher 0 ]\nessais: 3 ; {{p}} ; {{a}} ; {{b}} ; 30\ndépart: si nombre > {{p}} alors [ afficher nombre − {{p}} ] sinon [ afficher 0 ]\n```",
+				"variables": [
+					{
+						"name": "p",
+						"expression": "5..8"
+					},
+					{
+						"name": "a",
+						"expression": "10..14"
+					},
+					{
+						"name": "b",
+						"expression": "eval:a+3"
+					}
+				],
+				"conditions": [],
+				"correction": {
+					"steps": [
+						"Le nombre ${{p}}$ apparaît **deux fois** : dans la condition et dans le calcul.",
+						"Il faut changer les deux : nombre $> {{a}}$, puis afficher nombre $-\\ {{a}}$.",
+						"Le « sinon » ne change pas : il affiche toujours $0$."
+					]
+				}
+			},
+			{
+				"blanks": [],
+				"statement": "Le programme posé dans l'espace de travail affiche $1$ quand le nombre choisi est **strictement** supérieur à ${{a}}$, et $0$ sinon.\n\nModifie-le pour qu'il affiche aussi $1$ quand le nombre choisi est **égal** à ${{a}}$.\n\n```calcul\nniveau: 4e\nattendu: si nombre ≥ {{a}} alors [ afficher 1 ] sinon [ afficher 0 ]\nessais: {{b}} ; {{a}} ; {{c}}\ndépart: si nombre > {{a}} alors [ afficher 1 ] sinon [ afficher 0 ]\n```",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "5..15"
+					},
+					{
+						"name": "b",
+						"expression": "eval:a-1"
+					},
+					{
+						"name": "c",
+						"expression": "eval:a+1"
+					}
+				],
+				"conditions": [],
+				"correction": {
+					"steps": [
+						"Seul le cas nombre $= {{a}}$ doit changer.",
+						"On remplace la comparaison $>$ par $\\geq$ (« supérieur ou égal ») : nombre $\\geq {{a}}$.",
+						"Les deux branches, $1$ et $0$, ne changent pas."
+					]
+				}
+			},
+			{
+				"blanks": [],
+				"statement": "Le programme posé dans l'espace de travail affiche l'opposé du nombre choisi quand il est négatif, mais n'affiche **rien** sinon.\n\nModifie-le pour qu'il affiche le nombre lui-même quand il n'est pas négatif.\n\n```calcul\nniveau: 4e\nattendu: si nombre < 0 alors [ afficher 0 − nombre ] sinon [ afficher nombre ]\nessais: -7 ; -2 ; 0 ; 3 ; 12\ndépart: si nombre < 0 alors [ afficher 0 − nombre ]\n```",
+				"variables": [],
+				"conditions": [],
+				"correction": {
+					"steps": [
+						"Il manque un cas : quand la condition nombre $< 0$ est fausse.",
+						"On remplace le bloc « si … alors » par le bloc « si … alors … sinon » (on y glisse la condition et l'instruction déjà écrites).",
+						"Dans « sinon » : afficher nombre. Le programme affiche ainsi la distance du nombre à $0$."
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "draft",
+		"title": "Modifier un programme avec condition",
+		"description": "Changer le seuil ou la comparaison d'un « si », ou lui ajouter un « sinon ».",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["si nombre > 12 alors [ afficher nombre − 12 ] sinon [ afficher 0 ]"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "12",
+					"b": "15",
+					"p": "6"
+				},
+				"description": "Seuil : référence",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["si nombre > 12 alors [ afficher nombre − 6 ] sinon [ afficher 0 ]"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "12",
+					"b": "15",
+					"p": "6"
+				},
+				"description": "Erreur : seuil changé dans la condition seulement",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["si nombre > 6 alors [ afficher nombre − 6 ] sinon [ afficher 0 ]"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "12",
+					"b": "15",
+					"p": "6"
+				},
+				"description": "Erreur : programme de départ",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["si nombre ≥ 9 alors [ afficher 1 ] sinon [ afficher 0 ]"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "9",
+					"b": "8",
+					"c": "10"
+				},
+				"description": "Égal : référence",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["si nombre > 8 alors [ afficher 1 ] sinon [ afficher 0 ]"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "9",
+					"b": "8",
+					"c": "10"
+				},
+				"description": "Égal : nombre > 8 (entiers)",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["si nombre = 9 alors [ afficher 1 ] sinon [ afficher 0 ]"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "9",
+					"b": "8",
+					"c": "10"
+				},
+				"description": "Erreur : = au lieu de ≥",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["si nombre < 0 alors [ afficher 0 − nombre ] sinon [ afficher nombre ]"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {},
+				"description": "Sinon : référence",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["si nombre ≥ 0 alors [ afficher nombre ] sinon [ afficher −1 × nombre ]"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {},
+				"description": "Sinon : autre écriture",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["si nombre < 0 alors [ afficher 0 − nombre ] sinon [ afficher 0 ]"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {},
+				"description": "Erreur : « sinon » qui affiche 0",
+				"variationIndex": 2
+			}
+		],
+		"classification_node_id": null
+	},
+	{
+		"id": "dbab36af-697d-4734-ae52-468cca749db2",
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"grades": ["3"],
+		"delay": 300,
+		"level": 2,
+		"variations": [
+			{
+				"blanks": [],
+				"statement": "Le programme crée deux variables : **a** vaut le nombre choisi et **b** vaut le nombre choisi $+\\ {{k}}$.\n\nÉcris-le, puis ajoute ce qu'il faut pour **échanger** les valeurs de a et de b. Termine en affichant a, puis b.\n\n```calcul\nniveau: 3e\nattendu: mettre a à nombre ; mettre b à nombre + {{k}} ; mettre c à a ; mettre a à b ; mettre b à c ; afficher a ; afficher b\nessais: 0 ; 3 ; 10\n```",
+				"variables": [
+					{
+						"name": "k",
+						"expression": "2..9"
+					}
+				],
+				"conditions": [],
+				"correction": {
+					"steps": [
+						"« Mettre a à b » efface l'ancienne valeur de a : on la perd si on ne l'a pas rangée.",
+						"On utilise une troisième variable **c** : mettre c à a, puis a à b, puis b à c.",
+						"Pour le nombre $3$ : a vaut $3$ et b vaut ${{k}} + 3$ au départ ; à la fin, a et b ont échangé leurs valeurs."
+					]
+				}
+			},
+			{
+				"blanks": [],
+				"statement": "On écrit une suite de nombres : le premier vaut $1$, le deuxième est le nombre choisi, et chaque nombre suivant est la **somme des deux précédents**.\n\nAvec deux variables, écris un programme qui affiche les ${{n}}$ nombres qui suivent les deux premiers.\n\n```calcul\nniveau: 3e\nattendu: mettre a à 1 ; mettre b à nombre ; répéter {{n}} [ mettre c à a + b ; mettre a à b ; mettre b à c ; afficher b ]\nessais: 1 ; 2 ; 5\n```",
+				"variables": [
+					{
+						"name": "n",
+						"expression": "4..6"
+					}
+				],
+				"conditions": [],
+				"correction": {
+					"steps": [
+						"Deux variables gardent les deux derniers nombres : **a** (l'avant-dernier) et **b** (le dernier). Au départ, a vaut $1$ et b le nombre choisi.",
+						"À chaque tour : c prend la valeur a $+$ b, puis a prend l'ancienne valeur de b, et b prend c. On affiche b.",
+						"Pour $1$, la suite est $1, 1, 2, 3, 5, 8, 13$… : le programme affiche $2, 3, 5, 8$…"
+					]
+				}
+			},
+			{
+				"blanks": [],
+				"statement": "Écris un programme qui calcule les deux nombres nombre $\\times {{a}} - {{b}}$ et nombre $+\\ {{c}}$, puis qui affiche **le plus grand** des deux.\n\n```calcul\nniveau: 3e\nattendu: mettre x à nombre × {{a}} − {{b}} ; mettre y à nombre + {{c}} ; si x > y alors [ afficher x ] sinon [ afficher y ]\nessais: -3 ; 0 ; 5 ; 20\n```",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "2..4"
+					},
+					{
+						"name": "b",
+						"expression": "1..9"
+					},
+					{
+						"name": "c",
+						"expression": "1..9"
+					}
+				],
+				"conditions": [],
+				"correction": {
+					"steps": [
+						"On range les deux calculs dans deux variables, **x** et **y**.",
+						"On les compare : si x $>$ y, on affiche x ; sinon, on affiche y.",
+						"Selon le nombre choisi, c'est tantôt l'un, tantôt l'autre qui est le plus grand."
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "draft",
+		"title": "Plusieurs variables en blocs",
+		"description": "Écrire en blocs un programme à plusieurs variables : échange, suite, plus grand de deux.",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": [
+					"mettre a à nombre ; mettre b à nombre + 4 ; mettre c à a ; mettre a à b ; mettre b à c ; afficher a ; afficher b"
+				],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"k": "4"
+				},
+				"description": "Échange : référence",
+				"variationIndex": 0
+			},
+			{
+				"answers": [
+					"mettre a à nombre ; mettre b à nombre + 4 ; mettre a à a + b ; mettre b à a − b ; mettre a à a − b ; afficher a ; afficher b"
+				],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"k": "4"
+				},
+				"description": "Échange : par différence",
+				"variationIndex": 0
+			},
+			{
+				"answers": [
+					"mettre a à nombre ; mettre b à nombre + 4 ; mettre a à b ; mettre b à a ; afficher a ; afficher b"
+				],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"k": "4"
+				},
+				"description": "Erreur : échange sans variable de plus",
+				"variationIndex": 0
+			},
+			{
+				"answers": [
+					"mettre a à 1 ; mettre b à nombre ; répéter 4 [ mettre c à a + b ; mettre a à b ; mettre b à c ; afficher b ]"
+				],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"n": "4"
+				},
+				"description": "Suite : référence",
+				"variationIndex": 1
+			},
+			{
+				"answers": [
+					"mettre a à 1 ; mettre b à nombre ; répéter 4 [ mettre b à a + b ; mettre a à b − a ; afficher b ]"
+				],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"n": "4"
+				},
+				"description": "Suite : sans troisième variable",
+				"variationIndex": 1
+			},
+			{
+				"answers": [
+					"mettre a à 1 ; mettre b à nombre ; répéter 4 [ mettre a à b ; mettre b à a + b ; afficher b ]"
+				],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"n": "4"
+				},
+				"description": "Erreur : a mis à jour trop tôt",
+				"variationIndex": 1
+			},
+			{
+				"answers": [
+					"mettre x à nombre × 3 − 5 ; mettre y à nombre + 4 ; si x > y alors [ afficher x ] sinon [ afficher y ]"
+				],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "3",
+					"b": "5",
+					"c": "4"
+				},
+				"description": "Plus grand : référence",
+				"variationIndex": 2
+			},
+			{
+				"answers": [
+					"si nombre × 3 − 5 < nombre + 4 alors [ afficher nombre + 4 ] sinon [ afficher nombre × 3 − 5 ]"
+				],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "3",
+					"b": "5",
+					"c": "4"
+				},
+				"description": "Plus grand : comparaison directe",
+				"variationIndex": 2
+			},
+			{
+				"answers": [
+					"mettre x à nombre × 3 − 5 ; mettre y à nombre + 4 ; si x < y alors [ afficher x ] sinon [ afficher y ]"
+				],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "3",
+					"b": "5",
+					"c": "4"
+				},
+				"description": "Erreur : affiche le plus petit",
+				"variationIndex": 2
+			}
+		],
+		"classification_node_id": null
+	},
+	{
+		"id": "ee87b7b1-5c23-465d-b506-d00d18bfc96b",
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"grades": ["3"],
+		"delay": 300,
+		"level": 2,
+		"variations": [
+			{
+				"blanks": [],
+				"statement": "Sans utiliser le bloc « reste », écris un programme qui affiche le reste de la division du nombre choisi (un entier positif) par ${{d}}$ : on retire ${{d}}$ **jusqu'à ce que** ce soit impossible.\n\n```calcul\nniveau: 3e\nattendu: mettre r à nombre ; répéter jusqu’à r < {{d}} [ mettre r à r − {{d}} ] ; afficher r\nessais: 0 ; 3 ; 7 ; 20 ; 45 ; 100\n```",
+				"variables": [
+					{
+						"name": "d",
+						"expression": "3..9"
+					}
+				],
+				"conditions": [],
+				"correction": {
+					"steps": [
+						"Une variable **r** vaut d'abord le nombre choisi.",
+						"On répète « mettre r à r $-\\ {{d}}$ » **jusqu'à ce que** r $< {{d}}$ : on ne peut plus retirer ${{d}}$.",
+						"Ce qui reste dans r est le reste de la division par ${{d}}$ ; on l'affiche."
+					]
+				}
+			},
+			{
+				"blanks": [],
+				"statement": "On double un nombre entier positif, puis on double le résultat, et ainsi de suite.\n\nÉcris un programme qui affiche **combien de fois** il faut doubler le nombre choisi pour dépasser ${{s}}$ (strictement).\n\n```calcul\nniveau: 3e\nattendu: mettre x à nombre ; mettre compteur à 0 ; répéter jusqu’à x > {{s}} [ mettre x à x × 2 ; ajouter 1 à compteur ] ; afficher compteur\nessais: 1 ; 3 ; 7 ; 25 ; 60 ; 1000\n```",
+				"variables": [
+					{
+						"name": "k",
+						"expression": "1..5"
+					},
+					{
+						"name": "s",
+						"expression": "eval:100*k"
+					}
+				],
+				"conditions": [],
+				"correction": {
+					"steps": [
+						"Deux variables : **x**, le nombre que l'on double, et **compteur**, qui vaut $0$ au départ.",
+						"On répète « x prend la valeur x $\\times 2$ ; ajouter $1$ à compteur » **jusqu'à ce que** x $> {{s}}$.",
+						"Si le nombre choisi dépasse déjà ${{s}}$, la boucle ne tourne pas : le programme affiche $0$."
+					]
+				}
+			},
+			{
+				"blanks": [],
+				"statement": "Écris un programme qui affiche le plus petit multiple de ${{a}}$ **strictement supérieur** au nombre choisi (un entier positif). Pars de $0$ et ajoute ${{a}}$ autant de fois qu'il le faut.\n\n```calcul\nniveau: 3e\nattendu: mettre m à 0 ; répéter jusqu’à m > nombre [ ajouter {{a}} à m ] ; afficher m\nessais: 0 ; 1 ; {{a}} ; 12 ; 30\n```",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "3..9"
+					}
+				],
+				"conditions": [],
+				"correction": {
+					"steps": [
+						"Une variable **m** vaut $0$ au départ : c'est un multiple de ${{a}}$.",
+						"On lui ajoute ${{a}}$ **jusqu'à ce que** m $>$ nombre : m reste un multiple de ${{a}}$.",
+						"Le premier m qui dépasse le nombre choisi est le plus petit : on l'affiche."
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "draft",
+		"title": "Boucle « répéter jusqu'à » en blocs",
+		"description": "Écrire en blocs une boucle conditionnelle : reste par soustractions, doublements, multiple.",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["mettre r à nombre ; répéter jusqu’à r < 7 [ mettre r à r − 7 ] ; afficher r"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"d": "7"
+				},
+				"description": "Reste : référence",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["afficher reste de nombre par 7"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"d": "7"
+				},
+				"description": "Reste : avec le bloc reste (juste aussi)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["mettre r à nombre ; répéter jusqu’à r ≤ 7 [ mettre r à r − 7 ] ; afficher r"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"d": "7"
+				},
+				"description": "Erreur : condition r ≤ 7 (retire une fois de trop)",
+				"variationIndex": 0
+			},
+			{
+				"answers": [
+					"mettre x à nombre ; mettre compteur à 0 ; répéter jusqu’à x > 100 [ mettre x à x × 2 ; ajouter 1 à compteur ] ; afficher compteur"
+				],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"k": "1",
+					"s": "100"
+				},
+				"description": "Doublements : référence",
+				"variationIndex": 1
+			},
+			{
+				"answers": [
+					"mettre x à nombre ; mettre compteur à 0 ; répéter jusqu’à x ≥ 100 [ mettre x à x × 2 ; ajouter 1 à compteur ] ; afficher compteur"
+				],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"k": "1",
+					"s": "100"
+				},
+				"description": "Erreur : jusqu'à x ≥ 100",
+				"variationIndex": 1
+			},
+			{
+				"answers": [
+					"mettre x à nombre ; mettre compteur à 0 ; répéter jusqu’à x > 100 [ mettre x à x × 2 ; ajouter 1 à compteur ] ; afficher x"
+				],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"k": "1",
+					"s": "100"
+				},
+				"description": "Erreur : affiche x au lieu du compteur",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["mettre m à 0 ; répéter jusqu’à m > nombre [ ajouter 4 à m ] ; afficher m"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "4"
+				},
+				"description": "Multiple : référence",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["afficher nombre − reste de nombre par 4 + 4"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "4"
+				},
+				"description": "Multiple : par le reste",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["mettre m à 0 ; répéter jusqu’à m ≥ nombre [ ajouter 4 à m ] ; afficher m"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "4"
+				},
+				"description": "Erreur : supérieur ou égal",
+				"variationIndex": 2
+			}
+		],
+		"classification_node_id": null
+	},
+	{
+		"id": "f91149f2-27c0-45c0-80aa-737e317e9d67",
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"grades": ["4"],
+		"delay": 300,
+		"level": 2,
+		"variations": [
+			{
+				"blanks": [],
+				"statement": "Un magasin fait des photocopies : chacune des ${{s}}$ premières coûte ${{p}}$ centimes ; les suivantes ne coûtent que ${{q}}$ centimes chacune.\n\nLe nombre choisi est le nombre de photocopies. Écris un programme qui affiche le prix à payer, en centimes.\n\n```calcul\nniveau: 4e\nattendu: si nombre ≤ {{s}} alors [ afficher nombre × {{p}} ] sinon [ afficher {{s}} × {{p}} + (nombre − {{s}}) × {{q}} ]\nessais: 1 ; 5 ; {{s}} ; {{t}} ; 100\n```",
+				"variables": [
+					{
+						"name": "s",
+						"expression": "10..30"
+					},
+					{
+						"name": "p",
+						"expression": "15..25"
+					},
+					{
+						"name": "d",
+						"expression": "5..10"
+					},
+					{
+						"name": "q",
+						"expression": "eval:p-d"
+					},
+					{
+						"name": "t",
+						"expression": "eval:s+1"
+					}
+				],
+				"conditions": [],
+				"correction": {
+					"steps": [
+						"Jusqu'à ${{s}}$ photocopies, toutes coûtent ${{p}}$ centimes : nombre $\\times {{p}}$.",
+						"Au-delà, les ${{s}}$ premières coûtent ${{s}} \\times {{p}}$ centimes, et les nombre $-\\ {{s}}$ suivantes ${{q}}$ centimes chacune.",
+						"Programme : si nombre $\\leq {{s}}$, afficher nombre $\\times {{p}}$ ; sinon, afficher ${{s}} \\times {{p}} + ($nombre $-\\ {{s}}) \\times {{q}}$."
+					]
+				}
+			},
+			{
+				"blanks": [],
+				"statement": "Sur un site, la livraison coûte ${{f}}$ € pour une commande de moins de ${{s}}$ € ; elle est gratuite à partir de ${{s}}$ €.\n\nLe nombre choisi est le montant de la commande, en euros. Écris un programme qui affiche le prix total à payer.\n\n```calcul\nniveau: 4e\nattendu: si nombre < {{s}} alors [ afficher nombre + {{f}} ] sinon [ afficher nombre ]\nessais: 10 ; {{t}} ; {{s}} ; 100\n```",
+				"variables": [
+					{
+						"name": "f",
+						"expression": "3..8"
+					},
+					{
+						"name": "s",
+						"expression": "30..60"
+					},
+					{
+						"name": "t",
+						"expression": "eval:s-1"
+					}
+				],
+				"conditions": [],
+				"correction": {
+					"steps": [
+						"Moins de ${{s}}$ € : on paie la commande **et** la livraison, nombre $+\\ {{f}}$.",
+						"À partir de ${{s}}$ € : on ne paie que la commande.",
+						"Condition : nombre $< {{s}}$, avec un bloc « si … alors … sinon »."
+					]
+				}
+			},
+			{
+				"blanks": [],
+				"statement": "Écris un programme qui affiche la somme de tous les entiers de $1$ jusqu'au nombre choisi : pour $4$, il affiche $1 + 2 + 3 + 4 = 10$.\n\n```calcul\nniveau: 4e\nattendu: mettre somme à 0 ; mettre k à 0 ; répéter nombre [ ajouter 1 à k ; ajouter k à somme ] ; afficher somme\nessais: 1 ; 2 ; 4 ; 10 ; 20\n```",
+				"variables": [],
+				"conditions": [],
+				"correction": {
+					"steps": [
+						"Une variable **somme** vaut $0$ au départ ; une variable **k** compte $1$, $2$, $3$…",
+						"À chaque tour : on ajoute $1$ à k, puis on ajoute k à somme.",
+						"On répète « nombre choisi » fois, puis on affiche somme."
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "draft",
+		"title": "Écrire un programme pour résoudre un problème (4e)",
+		"description": "Écrire en blocs le programme d'une situation : photocopies, livraison, somme des entiers.",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": [
+					"si nombre ≤ 20 alors [ afficher nombre × 20 ] sinon [ afficher 20 × 20 + (nombre − 20) × 12 ]"
+				],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"d": "8",
+					"p": "20",
+					"q": "12",
+					"s": "20",
+					"t": "21"
+				},
+				"description": "Copies : référence",
+				"variationIndex": 0
+			},
+			{
+				"answers": [
+					"mettre prix à nombre × 20 ; si nombre > 20 alors [ mettre prix à 400 + (nombre − 20) × 12 ] ; afficher prix"
+				],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"d": "8",
+					"p": "20",
+					"q": "12",
+					"s": "20",
+					"t": "21"
+				},
+				"description": "Copies : avec une variable",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["si nombre ≤ 20 alors [ afficher nombre × 20 ] sinon [ afficher nombre × 12 ]"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"d": "8",
+					"p": "20",
+					"q": "12",
+					"s": "20",
+					"t": "21"
+				},
+				"description": "Erreur : toutes les copies au tarif réduit",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["si nombre < 40 alors [ afficher nombre + 5 ] sinon [ afficher nombre ]"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"f": "5",
+					"s": "40",
+					"t": "39"
+				},
+				"description": "Livraison : référence",
+				"variationIndex": 1
+			},
+			{
+				"answers": [
+					"mettre total à nombre ; si nombre < 40 alors [ ajouter 5 à total ] ; afficher total"
+				],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"f": "5",
+					"s": "40",
+					"t": "39"
+				},
+				"description": "Livraison : avec une variable",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["si nombre ≤ 40 alors [ afficher nombre + 5 ] sinon [ afficher nombre ]"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"f": "5",
+					"s": "40",
+					"t": "39"
+				},
+				"description": "Erreur : livraison offerte au-dessus de 40 seulement",
+				"variationIndex": 1
+			},
+			{
+				"answers": [
+					"mettre somme à 0 ; mettre k à 0 ; répéter nombre [ ajouter 1 à k ; ajouter k à somme ] ; afficher somme"
+				],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {},
+				"description": "Somme : référence",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["afficher nombre × (nombre + 1) ÷ 2"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {},
+				"description": "Somme : formule",
+				"variationIndex": 2
+			},
+			{
+				"answers": [
+					"mettre somme à 0 ; mettre k à 0 ; répéter nombre [ ajouter k à somme ; ajouter 1 à k ] ; afficher somme"
+				],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {},
+				"description": "Erreur : ajoute k avant de l'augmenter (oublie le dernier)",
+				"variationIndex": 2
+			}
+		],
+		"classification_node_id": null
+	}
+]

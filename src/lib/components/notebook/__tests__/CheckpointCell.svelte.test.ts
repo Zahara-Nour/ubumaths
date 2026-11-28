@@ -7,11 +7,11 @@
  */
 
 import { describe, it, expect, vi } from 'vitest';
-import { lore } from '$lib/config/lore';
+import { lore } from '#lib/config/lore.ts';
 import { render } from 'vitest-browser-svelte';
 import { page } from 'vitest/browser';
 import CheckpointCell from '../CheckpointCell.svelte';
-import type { CheckpointCell as CheckpointCellType } from '$lib/types/notebook';
+import type { CheckpointCell as CheckpointCellType } from '#lib/types/notebook.ts';
 
 function makeAssertCell(overrides: Partial<CheckpointCellType> = {}): CheckpointCellType {
 	return {

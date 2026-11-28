@@ -1,0 +1,210 @@
+{
+	"id": "ef8ade24-f79c-4bd8-b51c-77852ed0496c",
+	"title": "Interpolation ou extrapolation ?",
+	"description": "Reconnaître une interpolation, une extrapolation, et la prudence qu'appelle une extrapolation lointaine",
+	"grades": ["1_GEN"],
+	"level": 1,
+	"delay": 30,
+	"status": "draft",
+	"shared": {},
+	"variations": [
+		{
+			"statement": "On a relevé tous les deux ans, de 2014 à 2024, la population d'une ville, puis ajusté le nuage obtenu par une droite. On utilise cette droite pour estimer la population en {{Y}}.\n\nCette estimation est :\n\n```choix\nmelanger: non\n- une interpolation\n- une extrapolation\n```",
+			"variables": [
+				{
+					"name": "Y",
+					"expression": "2015|2017|2019|2021|2023"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On **interpole** quand on estime une valeur **à l'intérieur** de la période observée (ici de 2014 à 2024), on **extrapole** quand on estime une valeur **en dehors**.",
+					"{{Y}} est entre 2014 et 2024 (entre deux relevés) : c'est une **interpolation**."
+				]
+			}
+		},
+		{
+			"statement": "On a relevé tous les deux ans, de 2014 à 2024, la population d'une ville, puis ajusté le nuage obtenu par une droite. On utilise cette droite pour estimer la population en {{Y}}.\n\nCette estimation est :\n\n```choix\nmelanger: non\n- une interpolation\n- une extrapolation\n```",
+			"variables": [
+				{
+					"name": "Y",
+					"expression": "2026..2035"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "1"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On **interpole** quand on estime une valeur **à l'intérieur** de la période observée (ici de 2014 à 2024), on **extrapole** quand on estime une valeur **en dehors**.",
+					"{{Y}} est après 2024, hors de la période observée : c'est une **extrapolation**."
+				]
+			}
+		},
+		{
+			"statement": "Une série statistique à deux variables a été observée pour $x$ allant de ${{a}}$ à ${{b}}$. On l'a ajustée par une droite.\n\nLaquelle de ces estimations est une interpolation ?\n\n```choix\n- L'estimation de $y$ pour $x={{c}}$\n- L'estimation de $y$ pour $x={{eval:b+d}}$\n- L'estimation de $y$ pour $x={{eval:a-d}}$\n- L'estimation de $y$ pour $x={{eval:2*b}}$\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "3..6"
+				},
+				{
+					"name": "L",
+					"expression": "6..10"
+				},
+				{
+					"name": "b",
+					"expression": "eval:a+L"
+				},
+				{
+					"name": "c",
+					"expression": "{{eval:a+1}}..{{eval:b-1}}"
+				},
+				{
+					"name": "d",
+					"expression": "1..2"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On interpole quand la valeur de $x$ est **dans** l'intervalle observé $[{{a}}\\,;{{b}}]$.",
+					"Seul $x={{c}}$ est entre ${{a}}$ et ${{b}}$ : l'estimation pour $\\textcolor{{{color:primary.0}}}{x={{c}}}$ est une interpolation ; les trois autres sont des extrapolations."
+				]
+			}
+		},
+		{
+			"statement": "Le nombre d'abonnés à un service a été relevé chaque année de 2015 à 2024 ; le nuage est bien ajusté par une droite. On utilise cette droite pour estimer le nombre d'abonnés en {{Y}}.\n\nQue penser de cette estimation ?\n\n```choix\n- C'est une extrapolation lointaine : elle est peu fiable, rien ne dit que la tendance va durer\n- C'est une interpolation : elle est fiable\n- Elle est exacte, car la droite passe par le point moyen\n- Elle est fiable, puisque le nuage est bien ajusté\n```",
+			"variables": [
+				{
+					"name": "Y",
+					"expression": "2060..2090"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"{{Y}} est bien au-delà de 2024 : c'est une **extrapolation**, et une extrapolation lointaine.",
+					"Un bon ajustement sur 2015-2024 ne dit rien de l'évolution des décennies suivantes : la tendance peut changer. L'estimation est **peu fiable**."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "2019 : interpolation",
+			"variationIndex": 0,
+			"variables": {
+				"Y": "2019"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : extrapolation",
+			"variationIndex": 0,
+			"variables": {
+				"Y": "2019"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "2030 : extrapolation",
+			"variationIndex": 1,
+			"variables": {
+				"Y": "2030"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : interpolation",
+			"variationIndex": 1,
+			"variables": {
+				"Y": "2030"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "x = 7 dans [4 ; 12]",
+			"variationIndex": 2,
+			"variables": {
+				"a": "4",
+				"L": "8",
+				"b": "12",
+				"c": "7",
+				"d": "2"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : x = 14",
+			"variationIndex": 2,
+			"variables": {
+				"a": "4",
+				"L": "8",
+				"b": "12",
+				"c": "7",
+				"d": "2"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "2075 : peu fiable",
+			"variationIndex": 3,
+			"variables": {
+				"Y": "2075"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : fiable car bien ajusté",
+			"variationIndex": 3,
+			"variables": {
+				"Y": "2075"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

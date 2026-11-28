@@ -18,19 +18,19 @@
 -->
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { chatStore } from '$lib/stores/chat.svelte';
+	import { chatStore } from '#lib/stores/chat.svelte.ts';
 	import ChatConversationList from './ChatConversationList.svelte';
 	import ChatMessageList from './ChatMessageList.svelte';
 	import ChatComposer from './ChatComposer.svelte';
 	import NewChatDialog from './NewChatDialog.svelte';
 	import ReportMessageDialog from './ReportMessageDialog.svelte';
-	import RestrictedUserBanner from '$lib/components/moderation/RestrictedUserBanner.svelte';
-	import { Button } from '$lib/components/ui/button';
-	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
-	import UserAvatar from '$lib/components/UserAvatar.svelte';
+	import RestrictedUserBanner from '#lib/components/moderation/RestrictedUserBanner.svelte';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import * as DropdownMenu from '#lib/components/ui/dropdown-menu/index.ts';
+	import UserAvatar from '#lib/components/UserAvatar.svelte';
 	import { ArrowLeft, MoreVertical, Users, UserPlus } from '@lucide/svelte';
-	import { toaster } from '$lib/stores/toaster.svelte';
-	import { uploadMultipleAttachments } from '$lib/utils/file-upload';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
+	import { uploadMultipleAttachments } from '#lib/utils/file-upload.ts';
 	import type { SupabaseClient } from '@supabase/supabase-js';
 
 	// Component Props
@@ -201,8 +201,8 @@
 			attachmentRecords
 		);
 
-		// Refus « lecture seule » : le store a déjà affiché le message explicite.
-		if (!message && !chatStore.lastSendRefusedForConsent) {
+		// Refus déjà expliqué par le store (lecture seule, message trop long).
+		if (!message && !chatStore.lastSendRefusalShown) {
 			toaster.error("Erreur lors de l'envoi du message");
 		}
 	}

@@ -1,6 +1,6 @@
 ---
 couvre:
-  - 'src/lib/server/{chapter*,chapters*,content-owner,template-content,template-guard,class-sessions,course-share-tokens,curriculum*,journal*,programme-tree,programme-tags}.ts'
+  - 'src/lib/server/{chapter*,chapters*,content-owner,template-content,template-guard,class-sessions,course-share-tokens,curriculum*,journal*,programme-tree,programme-tags,school-year}.ts'
   - 'src/lib/server/validation/{chapter*,chapters,curriculum,journal,academic}.ts'
   - 'src/lib/server/progression/**'
   - 'src/lib/server/programmes/**'
@@ -11,14 +11,17 @@ couvre:
   - 'src/lib/components/templates/{Chapter,Template}*.svelte'
   - 'src/lib/components/templates/{index.ts,__tests__/**}'
   - 'src/lib/components/{ClassScheduleGrid,ScheduleEntryModal}.svelte'
-  - 'src/lib/types/{chapter*,chapters,journal,academic_periods_types}.ts'
+  - 'src/lib/types/{chapter*,chapters,journal}.ts'
   - 'src/lib/utils/{academic-period,class-sessions,schedule,timetable,week-config,timeMatching,programme-tree,programme-map,template-select-items}.ts'
-  - 'src/routes/api/teacher/{chapters,chapter-templates,curriculum,periods}/**'
+  - 'src/routes/api/teacher/{chapter-templates,curriculum,periods}/**'
+  - src/routes/api/teacher/chapters/+server.ts
+  - 'src/routes/api/teacher/chapters/*/+server.ts'
+  - 'src/routes/api/teacher/chapters/*/{checklist,document-upload-url,documents,exercises,progress,reorder,sections}/**'
   - 'src/routes/api/student/{chapters,checklist}/**'
   - 'src/routes/(protected)/dashboard/teacher/{cours,cahier-texte,avancement,programme}/**'
   - 'src/routes/(protected)/dashboard/teacher/contenu/templates/**'
   - 'src/routes/(protected)/dashboard/student/{cours,cahier-texte,progression,notions}/**'
-  - 'src/routes/(public)/cahier/**'
+  - 'src/routes/(public)/cahier/*/+page.{server.ts,svelte}'
   - 'src/routes/(public)/cours/**'
 ---
 
@@ -73,7 +76,7 @@ Docs voisines, à lire plutôt que recopier :
 
 | Fichier                    | Rôle                                                                                                                                                                                                                                                                                                      |
 | -------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `chapters.ts`              | CRUD des chapitres et de leurs contenus (documents, objectifs, exercices, fiches) ; lectures élève `getStudentChapters`, `getChapterWithContent`, `toggleChecklistItem`, `getMyChecklistProgress`.                                                                                                        |
+| `chapters.ts`              | CRUD des chapitres et de leurs contenus (documents, objectifs, exercices, fiches) ; lectures élève `getChapterWithContent`, `toggleChecklistItem`.                                                                                                                                                        |
 | `chapters-publication.ts`  | `setContentPublication` : écrit `published_at` sur un contenu, via la table de correspondance **fermée** `TABLES` (type de contenu → table) ; `listDistributedWorksheetIds`.                                                                                                                              |
 | `chapter-sections.ts`      | Sections : `listSections`, `createSection`, `renameSection`, `deleteSection`, `reorderSections`, `assignToSection`, `placeInSection`.                                                                                                                                                                     |
 | `chapter-series.ts`        | Séries rattachées : `linkSeries`, `setSeriesForm`, `unlinkSeries`, `listChapterSeries`, `listAvailableSeries` ; erreurs typées `ChapterSeriesError` (→ 404 / 409 / 500).                                                                                                                                  |
@@ -109,8 +112,18 @@ modèle relié, `null` si propre) et `hidden` (masqué dans ce chapitre).
   `ChapterSeriesCard`, `ChapterRevisionButton` → `/dashboard/revisions/chapitres/[chapterId]`) et
   `cours/teacher/` (`ChapterSectionsEditor` + `section-dnd.ts`, `ChapterAddDialogs`,
   `DocumentUpload`, `PublicationToggle`, `StudentProgressTable`, `CourseShareLinkCard`).
-  `DocumentCard` accepte des adresses imposées (`hrefs`) et `ChapterSeriesCard` ne demande que
-  titre, forme, nombre de questions et lien : la page publique les réutilise. Modèles :
+  `ChapterSeriesCard` ne demande que titre, forme, nombre de questions et lien : la page publique
+  la réutilise.
+- **Rendu du plan côté élève** (lien de consultation et `dashboard/student/cours/[chapterId]`,
+  même rendu depuis le 2026-11-23) : chapitre en bandeau (surtitre « Chapitre », titre, trait),
+  section en petite étiquette en majuscules, documents (et fiches publiques, exercices) en
+  lignes compactes `ResourceRow` (pastille du type, titre tel que saisi, bouton de
+  téléchargement), regroupées dans un même cadre par `groupPlanItems` (`plan-groups.ts`) ;
+  la ligne d'un exercice, côté élève connecté, mène à sa page avec `?depuis=cours&chapitre=<uuid>`
+  (`studentExerciseHref`) : « Quitter » y ramène au chapitre ;
+  objectifs, séries et fiches de l'élève connecté restent des blocs. ⚠️ Le titre d'un document
+  n'est pas un titre HTML : la règle globale `main h3` de `app.css` (`!important`) lui donnerait
+  la taille d'une section. `DocumentCard` ne sert plus qu'au prof. Modèles :
   `ChapterTemplateIndicator` dans `src/lib/components/templates/`.
 - **Éditeur partagé chapitre / modèle** (ADR 0029, étape 3c) : `ChapterSectionsEditor`,
   `DocumentUpload` et `ChapterAddDialogs` (les boîtes d'ajout : objectif, exercice, fiche, série,
@@ -155,19 +168,20 @@ modèle relié, `null` si propre) et `hidden` (masqué dans ce chapitre).
   `api/teacher/chapters/[id]/document-upload-url` et `…/documents` (dépôt d'un fichier), et leur
   miroir pour un modèle : `api/teacher/chapter-templates/[id]/sections/**`,
   `…/document-upload-url`, `…/documents` (seules routes restantes sous
-  `api/teacher/chapter-templates/`). Le reste de `api/teacher/chapters/**`,
-  `api/student/chapters/**` et `api/student/checklist/**` n'a pas d'appelant dans `src/` (voir
-  « Écarts connus »).
+  `api/teacher/chapter-templates/`). Ce sont aussi les seules sous `api/teacher/chapters/` :
+  le reste du travail passe par les actions de formulaire des pages (les routes sans appelant ont
+  été retirées le 2026-11-28).
 
 ### Cahier de texte
 
-| Fichier (`src/lib/server/`) | Rôle                                                                                                                                                      |
-| --------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `journal.ts`                | Séances : `createJournalEntry`, `updateJournalEntry`, `deleteJournalEntry`, `getJournalEntriesForWeek` (vue semaine prof), `getUpcomingHomework` (élève). |
-| `journal-homework.ts`       | Travaux à faire : `resolveHomeworkItems` (règle des échéances), `prepareHomeworkForEntry`, `setHomeworkForEntry` (RPC `set_journal_entry_homework`).      |
-| `journal-activities.ts`     | `parsePendingActivities` : activités choisies sur une séance pas encore enregistrée, relues à l'action `create`.                                          |
-| `journal-share-tokens.ts`   | Lien de partage : `rotateShareToken`, `revokeShareToken`, `getActiveShareToken`, `resolveShareToken`, `resolveWorksheetByShareToken`.                     |
-| `class-sessions.ts`         | `getClassSessionCalendar`, `getUpcomingSessionDates` : les jours où la classe a cours (emploi du temps moins vacances).                                   |
+| Fichier (`src/lib/server/`) | Rôle                                                                                                                                                                                                                                                                                                                                                                               |
+| --------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `journal.ts`                | Séances : `createJournalEntry`, `updateJournalEntry`, `deleteJournalEntry`, `getJournalEntriesForWeek` (vue semaine prof), `getUpcomingHomework` (élève).                                                                                                                                                                                                                          |
+| `journal-homework.ts`       | Travaux à faire : `resolveHomeworkItems` (règle des échéances), `prepareHomeworkForEntry`, `setHomeworkForEntry` (RPC `set_journal_entry_homework`).                                                                                                                                                                                                                               |
+| `journal-activities.ts`     | `parsePendingActivities` : activités choisies sur une séance pas encore enregistrée, relues à l'action `create`.                                                                                                                                                                                                                                                                   |
+| `journal-share-tokens.ts`   | Lien de partage : `rotateShareToken`, `revokeShareToken`, `getActiveShareToken`, `resolveShareToken`, `resolveWorksheetByShareToken`.                                                                                                                                                                                                                                              |
+| `school-year.ts`            | Année scolaire, **une règle** (L38) : `currentSchoolYear` (dates de l'école par la fonction SQL `current_school_year`, sinon 1er sept. → 31 août ; page Avancement), `schoolYearExpiry` / `classSchoolYearExpiry` (expiration des liens : dernier jour de cette même année, 23:59:59 UTC ; une fin d'année à plus de 18 mois du jour d'émission retombe sur le 31 août qui vient). |
+| `class-sessions.ts`         | `getClassSessionCalendar`, `getUpcomingSessionDates` : les jours où la classe a cours (emploi du temps moins vacances).                                                                                                                                                                                                                                                            |
 
 Calcul pur : `src/lib/utils/class-sessions.ts` (`computeSessionDates`, `isSessionDate`,
 `DEFAULT_SESSION_LIMIT`). Validation : `src/lib/server/validation/journal.ts`. Types :
@@ -309,6 +323,13 @@ de `content_snapshot` / `current_version` sur le modèle, ni de numéros de vers
 lié ; la règle de stockage élève de prod (`chapters/…`) est retirée — le serveur sert les fichiers
 après la garde de publication.
 
+- **Sections par défaut** : un chapitre créé à la main reçoit six sections (Préparation, Le cours,
+  Les exercices, Méthodes, Résumé, Bilan) par le déclencheur `seed_default_chapter_sections`. Un
+  modèle créé **de zéro** (`createChapterTemplate`, page « Nouveau modèle ») reçoit les mêmes,
+  posées par le code (`DEFAULT_SECTION_TITLES` dans `chapter-sections.ts`, miroir du déclencheur ;
+  test `tests/integration/modele-sections-par-defaut.test.ts`). Un modèle fait **depuis un
+  chapitre** (`createTemplateFromChapter`) copie les sections du chapitre, sans les six en plus.
+  Un chapitre créé depuis un modèle reçoit les sections du modèle et peut en ajouter de propres.
 - **Contenu du modèle** : les fonctions du chapitre prennent un propriétaire `ContentOwner`
   (sections : `chapter-sections.ts` ; insertions : `insertDocument`, `insertChecklistItem`,
   `insertExercise`, `insertWorksheet` ; séries : `linkSeries`, `setSeriesForm`). Les fichiers d'un
@@ -440,7 +461,7 @@ Le bloc « Programme travaillé » de l'éditeur de séance coche les points du 
 classe, rangés branche > notion (la sous-notion nommée à côté du point) ; un compteur par branche, un
 « cochés / total » par notion.
 
-La page Avancement compte, par point, les séances de l'année (1ᵉʳ septembre → 1ᵉʳ septembre) qui
+La page Avancement compte, par point, les séances de l'année scolaire (`currentSchoolYear` : dates de l'école, sinon 1ᵉʳ septembre → 31 août) qui
 le couvrent, sur le même arbre. Ses « vus / total » et pourcentages ne comptent que les points
 actifs (`coverageStats`) : un archivé travaillé est affiché mais n'y entre pas, et une notion qui
 n'a que des archivés n'affiche pas de ratio.
@@ -453,7 +474,7 @@ un archivé (400 « Point archivé ») ; décocher et retirer un tag restent per
 ### Lien de partage du cahier
 
 `class_journal_share_tokens` : un jeton **actif** par classe (`rotateShareToken` révoque l'ancien),
-expirant à la fin de l'année scolaire (`endOfSchoolYear`, 31 août). La page publique passe par
+expirant à la fin de l'année scolaire de l'école de la classe (`classSchoolYearExpiry` de `school-year.ts` : ses dates saisies, sinon le 31 août ; jamais plus de 18 mois après l'émission ; lue avant la révocation, une lecture en panne laisse l'ancien lien ; un lien émis avant cette règle, le 2026-11-28, garde son 31 août). La page publique passe par
 les RPC `get_class_journal_by_share_token` et `get_worksheet_by_share_token` ; elle ne donne
 que les séances publiées, et seulement les fiches **citées** dans une séance visible (imprimées
 dans le style de la fiche, lot 4b). Jeton
@@ -464,7 +485,7 @@ invalide, expiré ou révoqué → **même 404**.
 [ADR 0025](../adr/0025-cours-lisible-par-lien-sans-compte.md). `class_course_share_tokens`, **calque
 distinct** de la table du cahier : le jeton du cahier n'ouvre pas le cours, et inversement. Mêmes
 règles de vie : un jeton actif par classe (`rotateCourseShareToken` révoque l'ancien), expiration
-au 31 août, révoquer = désactiver. Le professeur le gère sur la page Cours d'une classe
+à la fin de l'année scolaire de l'école, révoquer = désactiver. Le professeur le gère sur la page Cours d'une classe
 (`CourseShareLinkCard` : copier, renouveler, révoquer ; consultations et expiration affichées).
 Révoquer relit ses lignes : zéro ligne désactivée → 404 « Aucun lien actif », pas un faux succès.
 
@@ -478,8 +499,15 @@ Ce que lit un visiteur sans compte, par trois portes seulement :
   révisions, progression.
 - `/cours/[token]/fiche/[id]` — RPC `get_course_worksheet_by_share_token` : fiche publiée dans un
   chapitre visible **et** distribuée à la classe ; PDF `reader`, sans correction, dans le style de
-  la fiche (lot 4b : `style_id`, mise en page d'un style de l'auteur ; voir
-  [fiches-et-pdf.md](fiches-et-pdf.md)).
+  la fiche (lot 4b : `style_id`, mise en page d'un style de l'auteur), avec son niveau, sa
+  catégorie, sa case « titre libre » et ses notions (ADR 0041 : `publicWorksheetSchema` les garde,
+  sinon le PDF du lien ne serait pas celui de la classe ; voir [fiches-et-pdf.md](fiches-et-pdf.md)).
+  La branche de chaque notion est ajoutée après la RPC (`withBranches`, lecture publique de
+  l'arbre ; en échec, les notions sans branche) : deux notions d'une même branche impriment la
+  branche en titre, comme le PDF de la classe. `withBranches` y joint aussi les noms anglais de la
+  notion et de sa branche (`name_en`, `branch_en`, ADR 0043) : le PDF anglais du lien a le même
+  titre que celui de la classe. Même ajout pour la fiche du cahier de textes
+  (`resolveWorksheetByShareToken`).
 - `/cours/[token]/document/[id]` — RPC `get_course_document_by_share_token`, **réservée au service
   role** (le chemin de stockage ne sort jamais vers le navigateur) ; fichier → URL signée de
   **60 s** (téléchargement forcé hors PDF et images), Drive → l'URL Drive si elle est en `https:`.
@@ -592,57 +620,22 @@ Jeton ou identifiant mal formé (Zod) → 404 **sans** appel à la base ; `null`
 
 ## Écarts connus
 
-1. **Le cahier de texte publie autrement que le reste** : `class_journal_entries.is_published` a le
-   **troisième sens** de « publier » de [CONTEXT.md](../../CONTEXT.md) (mis à disposition des élèves),
-   mais par un booléen, plus `entry_date <= current_date` dans la policy élève, et non par une date
-   `published_at` testée `<= now()` comme le veut l'[ADR 0005](../adr/0005-publication-par-element-acces-herite-de-la-classe.md).
-2. _(Résolu le 2026-10-15 : les colonnes de l'ancien système de versions sont supprimées,
-   migration `20261016103800`.)_
-3. _(Résolu le 2026-10-15 : « Faire un modèle » compte les séries, comme `templateHasContent` —
-   `chapterHasTemplateContent`, `src/lib/components/cours/teacher/chapter-has-template-content.ts`.
-   La règle Q128 venait de l'ancien modèle « snapshot ».)_
-4. **API REST sans appelant dans `src/`** (grep du 2026-10-14) : `api/teacher/chapters` (racine,
-   `[id]`, `checklist`, `exercises`, `worksheets`, `progress`, `reorder`),
-   `api/student/chapters/**`, `api/student/checklist/**`. L'interface passe par les actions de
-   formulaire des pages. Doublons à surveiller : une règle corrigée d'un côté ne l'est pas de
-   l'autre. (Les routes de l'ancien système de modèles — `chapter-templates` racine, `[id]`,
-   `publish`, `versions`, `instantiate`, et `chapters/[id]/{create-template,detach,migrate,template-updates}` —
-   ont été supprimées à l'étape 5A.)
-5. **`src/lib/components/templates/`** ne garde que `ChapterTemplateIndicator` pour les modèles de
-   chapitre (les composants de l'ancien système ont été supprimés à l'étape 5A) ; il héberge aussi
-   `VariableAutocomplete`, `TagsInput`, `FiltersHelp`, qui servent les **modèles de message**
-   (hors de cette zone, donc hors `couvre:`).
-6. **Fonctions sans appelant hors tests** : `reorderDocuments`, `reorderExercises`
-   (`chapters.ts`, aucun appelant du tout) ; `getTeacherJournalEntries`, `getJournalStatistics`,
-   `getNextClassDate` (`journal.ts`) ; `getTimeSlots`, `findScheduleAtSlot`, `calculateSlotSpan`,
-   `isScheduleStart`, `isValidTimeRange`, `getDefaultStartTime`, `getDefaultEndTime`
-   (`schedule.ts`) ; `findMatchingPeriod`, `isTimetableEmpty`, `getNextTimePeriod`
-   (`timetable.ts`). L'action `reorder` de `dashboard/teacher/cours/[classId]/` n'est appelée par
-   aucun formulaire de la page.
-7. **`src/lib/types/academic_periods_types.ts` est mort** : aucun import, et il déclare sa propre
-   interface `Database` (« à ajouter à database.ts ») — en contradiction avec la règle « types
-   dérivés dans `database-helpers.ts` ».
-8. **Trois définitions de l'année scolaire** : la page Avancement la calcule (1ᵉʳ septembre →
-   1ᵉʳ septembre), `endOfSchoolYear` en a une autre (31 août), les tables `school_years` /
-   `academic_periods` une troisième, propre à l'école. Elles concordent pour une école française,
-   pas au-delà.
-9. **Chevauchement avec [fiches-et-pdf.md](fiches-et-pdf.md)** : `src/routes/(public)/cahier/*/fiche/**`
-   et `api/teacher/chapters/*/worksheets/**` sont couverts par les deux docs.
-10. L'en-tête de l'éditeur de chapitre (`[classId]/[chapterId]/+page.server.ts`) annonce un
-    réordonnancement des documents, objectifs et exercices qui n'a pas d'action.
-11. **Un modèle ne se modifiait qu'en passant par un chapitre** (un chapitre de classe, puis
-    « Mettre à jour depuis un chapitre » : un geste que personne n'avait choisi, bouche-trou du
-    2026-09-14). Tranché par l'[ADR 0029](../adr/0029-le-modele-possede-son-contenu-le-chapitre-le-relie.md) :
-    le modèle s'édite sur sa page — serveur livré à l'étape 3b, interface à l'étape 3c
-    ([journal](../archive/wip/refonte-modeles-chapitre-progress.md)). Le bouton « Mettre à jour depuis un
-    chapitre » a disparu, et l'ancien circuit des versions a été supprimé à l'étape 5A.
-12. _(Résolu le 2026-11-06, décision de David : au cahier, `JournalContent` passe
-    `projectMediaOnly` ; une vidéo hors de notre stockage — YouTube compris — devient un lien
-    « Vidéo : … », aucune requête tierce à l'affichage. Le reste de l'application est inchangé.)_
-    _(Même traitement pour les formules, décision de David du 2026-11-08 : une formule qui
-    porte une commande MathLive à attributs — `\htmlStyle`, `\href`, `\color`… — s'affiche en
-    texte ; un bloc spécial qui en porte une devient un bloc de code. Prod au 2026-11-08 :
-    aucune formule au cahier.)_
-    _(Et pour les images, décision de David du 2026-11-09 : une image hors de notre stockage
-    devient un lien « Image : … » (`ImageDisplay`). Un nom de fichier seul reste une image du
-    stockage des questions. Prod au 2026-11-09 : aucune image au cahier.)_
+Les écarts de cette zone sont au [registre des écarts](../ecarts/registre.md) : `pnpm ecarts`. Un écart s'écrit là-bas, jamais ici.
+
+### À savoir (voulu)
+
+- Au cahier, `JournalContent` passe `projectMediaOnly` (décision du 2026-11-06) : une vidéo hors de
+  notre stockage, YouTube compris, devient un lien « Vidéo : … », sans requête tierce à l'affichage.
+  Le reste de l'application est inchangé.
+- Même traitement pour les formules (décision du 2026-11-08) : une formule qui porte une commande
+  MathLive à attributs (`\htmlStyle`, `\href`, `\color`…) s'affiche en texte, et un bloc spécial qui
+  en porte une devient un bloc de code. Prod au 2026-11-08 : aucune formule au cahier.
+- Et pour les images (décision du 2026-11-09) : une image hors de notre stockage devient un lien
+  « Image : … » (`ImageDisplay`). Un nom de fichier seul reste une image du stockage des questions.
+  Prod au 2026-11-09 : aucune image au cahier.
+
+### Points non vérifiés
+
+- **`src/lib/components/templates/`** ne garde que `ChapterTemplateIndicator` pour les modèles de
+  chapitre (les composants de l'ancien système ont été supprimés à l'étape 5A) ; il héberge aussi
+  `TagsInput` (page de conversion des constructions, hors de cette zone, donc hors `couvre:`).

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { lore } from '$lib/config/lore';
+	import { lore } from '#lib/config/lore.ts';
 	/**
 	 * CheckpointEditor — Teacher-facing editor for a checkpoint cell.
 	 *
@@ -16,14 +16,14 @@
 	 * modes' fields would clutter the UI and pollute the JSONB).
 	 */
 
-	import type { CheckpointCell, CheckpointMode } from '$lib/types/notebook';
-	import type { NotebookStore } from '$lib/stores/notebookStore.svelte';
+	import type { CheckpointCell, CheckpointMode } from '#lib/types/notebook.ts';
+	import type { NotebookStore } from '#lib/stores/notebookStore.svelte.ts';
 	import CheckpointCellPreview from './CheckpointCell.svelte';
-	import MySelect from '$lib/components/MySelect.svelte';
-	import { Input } from '$lib/components/ui/input';
-	import { Label } from '$lib/components/ui/label';
-	import { Textarea } from '$lib/components/ui/textarea';
-	import { Button } from '$lib/components/ui/button';
+	import MySelect from '#lib/components/MySelect.svelte';
+	import { Input } from '#lib/components/ui/input/index.ts';
+	import { Label } from '#lib/components/ui/label/index.ts';
+	import { Textarea } from '#lib/components/ui/textarea/index.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
 	import { Plus, Trash2, AlertCircle } from '@lucide/svelte';
 
 	// Props

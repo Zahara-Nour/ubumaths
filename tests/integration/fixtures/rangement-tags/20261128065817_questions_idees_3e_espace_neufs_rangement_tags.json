@@ -1,0 +1,15 @@
+{
+	"migration": "supabase/migrations/20261128065817_questions_idees_3e_espace_neufs_rangement_tags.sql",
+	"ranges": [
+		{
+			"id": "58f04074-dcf6-448f-b862-dc1486988794",
+			"title": "Calculer une longueur dans un solide avec Pythagore",
+			"fichier": "f1-longueur-solide-pythagore.json",
+			"branche": "Géométrie",
+			"notion": "Théorème de Pythagore",
+			"sousNotion": "calcul de longueurs",
+			"point": "4-034"
+		}
+	],
+	"niveaux": []
+}

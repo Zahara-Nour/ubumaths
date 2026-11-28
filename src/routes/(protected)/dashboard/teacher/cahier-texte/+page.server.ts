@@ -13,14 +13,14 @@ import {
 	getActiveShareToken,
 	revokeShareToken,
 	rotateShareToken
-} from '$lib/server/journal-share-tokens';
+} from '#lib/server/journal-share-tokens.ts';
 
 const classIdSchema = z.string().uuid('Identifiant de classe invalide');
 import { error } from '@sveltejs/kit';
-import { requireRole } from '$lib/server/middleware/auth';
-import { getJournalEntriesForWeek } from '$lib/server/journal';
-import type { JournalWeekView } from '$lib/types/journal';
-import { createServerLogger } from '$lib/utils/logger';
+import { requireRole } from '#lib/server/middleware/auth.ts';
+import { getJournalEntriesForWeek } from '#lib/server/journal.ts';
+import type { JournalWeekView } from '#lib/types/journal.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('(protected)/dashboard/teacher/cahier-texte/+page.server');
 

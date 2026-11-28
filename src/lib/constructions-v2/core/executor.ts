@@ -5,13 +5,13 @@
  * state, instructions, pause durations, and speed factors.
  */
 
-import { parseDsl, createStepper } from '$lib/geometry-core/dsl';
-import type { DslStepper, DirectiveHandler } from '$lib/geometry-core/dsl';
-import type { DslStatement, DslFunctionCallExpr } from '$lib/geometry-core/dsl/types';
-import { DslRuntimeError } from '$lib/geometry-core/dsl/errors';
-import type { DslRuntimeErrorDetails } from '$lib/geometry-core/dsl/errors';
-import { Figure } from '$lib/geometry-core/graph/figure';
-import type { GeoElement } from '$lib/geometry-core/types/elements';
+import { parseDsl, createStepper } from '#lib/geometry-core/dsl/index.ts';
+import type { DslStepper, DirectiveHandler } from '#lib/geometry-core/dsl/index.ts';
+import type { DslStatement, DslFunctionCallExpr } from '#lib/geometry-core/dsl/types.ts';
+import { DslRuntimeError } from '#lib/geometry-core/dsl/errors.ts';
+import type { DslRuntimeErrorDetails } from '#lib/geometry-core/dsl/errors.ts';
+import { Figure } from '#lib/geometry-core/graph/figure.ts';
+import type { GeoElement } from '#lib/geometry-core/types/elements.ts';
 import {
 	isCircleByRadius,
 	isCircleByPoint,
@@ -21,16 +21,16 @@ import {
 	isLine,
 	isSegment,
 	isRay
-} from '$lib/geometry-core/types/elements';
-import { SymbolTable } from '$lib/geometry-core/dsl/symbol-table';
-import type { ResolvedArgs, ResolvedValue } from '$lib/geometry-core/dsl/builtins';
+} from '#lib/geometry-core/types/elements.ts';
+import { SymbolTable } from '#lib/geometry-core/dsl/symbol-table.ts';
+import type { ResolvedArgs, ResolvedValue } from '#lib/geometry-core/dsl/builtins.ts';
 import type { InstrumentType, InstrumentState, InstrumentMove, InstrumentPose } from '../types';
 import { createDefaultInstrumentState, DRAWABLE_TYPES } from '../types';
 import { rulerPosition, compassPosition } from '../instruments/positioning';
 import { compassDrawAngle } from './render-helpers';
-import { geoToNumber } from '$lib/geometry-core/compute/to-number';
-import type { ScalarParam } from '$lib/geometry-core/types/geo-value';
-import { isScalarRef, isInfinityParam } from '$lib/geometry-core/types/geo-value';
+import { geoToNumber } from '#lib/geometry-core/compute/to-number.ts';
+import type { ScalarParam } from '#lib/geometry-core/types/geo-value.ts';
+import { isScalarRef, isInfinityParam } from '#lib/geometry-core/types/geo-value.ts';
 import { resolveDecorators, lookupVoie, DecoratorResolveError } from './choreographies/resolve';
 import type {
 	DecoratorTriple,
@@ -80,7 +80,8 @@ import {
 	INSTRUMENT_RAMP_MS,
 	INSTRUMENT_MOVE_SPEED_FACTOR,
 	COMPASS_RAISE_MS,
-	COMPASS_LOWER_MS
+	COMPASS_LOWER_MS,
+	PIXELS_PER_UNIT
 } from '../constants';
 
 /** French instrument name to InstrumentType mapping. */
@@ -173,6 +174,15 @@ function expandSegmentArgument(
 export function readingPauseMs(instruction: string | undefined): number {
 	const reading = (instruction?.length ?? 0) * READING_MS_PER_CHAR;
 	return Math.min(MAX_READING_PAUSE, Math.max(AUTO_PAUSE_BETWEEN_STEPS, reading));
+}
+
+/** Instruction `masque(…)` ou `montre(…)` seule sur sa ligne (sans affectation). */
+function isVisibilityCall(stmt: DslStatement): boolean {
+	return (
+		stmt.kind === 'exprStatement' &&
+		stmt.expr.kind === 'call' &&
+		(stmt.expr.name === 'masque' || stmt.expr.name === 'montre')
+	);
 }
 
 /**
@@ -290,6 +300,10 @@ export class ConstructionExecutor {
 	 * indexing.
 	 */
 	private _plan: PlanEntry[] = [];
+	/** Vrai quand un `seekTo` a été interrompu par une erreur (cf. `seekTo`). */
+	private _seekNeedsReset = false;
+	/** Éléments de la figure à la fin du dernier `seekTo` (cf. `figureChangedSinceSeek`). */
+	private _seekElements: readonly GeoElement[] = [];
 	/** Current position in `_plan` (-1 before first step). */
 	private _timelineIndex = -1;
 	/**
@@ -735,15 +749,47 @@ export class ConstructionExecutor {
 		this._moveDurationMs = 0;
 		this._lastCompassRadius = 0;
 		this._compassCurRadius = 0;
-		this._stepPhases = [];
-		this._plan = [];
+		// Frise, phases et durées viennent de la pré-simulation de `load()` :
+		// elles ne dépendent que du script, on les garde.
 		this._timelineIndex = -1;
 		this._currentSubStep = null;
 		this._pendingVisibility = null;
 		this._currentDecoratorTriple = null;
 		this._currentVoie = null;
 		this._lastChoreographyResult = null;
-		this._stepDurations = this.calculateStepDurations();
+		this._seekNeedsReset = false;
+	}
+
+	/**
+	 * Amène la lecture au pas `stepIndex` de la frise. En avant, ne joue que
+	 * les pas qui manquent ; en arrière (ou sur place), repart du début. Repart
+	 * aussi du début quand la figure a changé hors de `step()` (point déplacé à
+	 * la souris en mode `interactive`) : les pas suivants sont pré-simulés sur
+	 * la figure d'origine. Un pas qui lève une erreur laisse l'état à moitié
+	 * avancé : le déplacement suivant repart alors du début.
+	 */
+	seekTo(stepIndex: number): void {
+		if (this._seekNeedsReset || stepIndex <= this._timelineIndex || this.figureChangedSinceSeek()) {
+			this.reset();
+		}
+		this._seekNeedsReset = true;
+		while (this._timelineIndex < stepIndex && this.step()) {
+			// continue
+		}
+		this._seekNeedsReset = false;
+		this._seekElements = this.figure.getAllElements();
+	}
+
+	/**
+	 * La figure remplace l'objet d'un élément à chaque modification : un objet
+	 * différent de ceux laissés par le dernier `seekTo` = figure touchée ailleurs.
+	 */
+	private figureChangedSinceSeek(): boolean {
+		const current = this.figure.getAllElements();
+		return (
+			current.length !== this._seekElements.length ||
+			current.some((el, i) => el !== this._seekElements[i])
+		);
 	}
 
 	// ─── Accessors ───────────────────────────────────────────
@@ -1450,7 +1496,7 @@ export class ConstructionExecutor {
 		};
 		newInstrumentPos: { type: InstrumentType; x: number; y: number; rotation: number } | null;
 	} {
-		const PPU = 40;
+		const PPU = PIXELS_PER_UNIT;
 
 		// Fade-in sub-steps (no instrument, no progressive trace) : short fade,
 		// then the reading pause. The fade ends at `drawPhaseEnd` ; the canvas
@@ -1472,10 +1518,10 @@ export class ConstructionExecutor {
 			};
 		}
 
-		// Draw duration from explicit geometric distance. For `compass-measure`,
-		// no arc is drawn — the step is purely a move + pause to visualize
-		// the compass taking a measure between two points.
-		const isMeasure = subStep.kind === 'compass-measure';
+		// Draw duration from explicit geometric distance. For `compass-measure`
+		// and `instrument-move`, nothing is drawn — the step is purely a move +
+		// pause (the compass takes a measure, or another instrument is placed).
+		const isMeasure = subStep.kind === 'compass-measure' || subStep.kind === 'instrument-move';
 		const rawDraw = isMeasure ? 0 : Math.round(subStep.geometricDistance * PPU * MS_PER_PIXEL);
 		const drawDuration = isMeasure
 			? 0
@@ -1573,7 +1619,7 @@ export class ConstructionExecutor {
 		instrumentPos: Record<string, { x: number; y: number; rotation: number }>,
 		durations: number[]
 	): void {
-		const PPU = 40;
+		const PPU = PIXELS_PER_UNIT;
 		const newElements = fig.getAllElements().slice(sizeBefore);
 
 		const hasDrawable = newElements.some(
@@ -1586,9 +1632,14 @@ export class ConstructionExecutor {
 		if (!hasDrawable) {
 			const adjusted = Math.round(DEFAULT_STEP_DURATION / speedFactor);
 			const needsPause = hasPoint || hasFadeInLine;
-			const stepDur = needsPause
-				? Math.max(100, Math.min(MAX_STEP_DURATION, adjusted)) + AUTO_PAUSE_BETWEEN_STEPS
-				: Math.max(100, Math.min(MAX_STEP_DURATION, adjusted));
+			// `masque(…)` / `montre(…)` qui ne crée rien : instantané, comme une
+			// directive ; des effacements à la suite tombent au même instant (V76).
+			const instantaneous = newElements.length === 0 && isVisibilityCall(stmt);
+			const stepDur = instantaneous
+				? 0
+				: needsPause
+					? Math.max(100, Math.min(MAX_STEP_DURATION, adjusted)) + AUTO_PAUSE_BETWEEN_STEPS
+					: Math.max(100, Math.min(MAX_STEP_DURATION, adjusted));
 			durations.push(stepDur);
 			this._stepPhases.push({
 				movePhaseEnd: 0,

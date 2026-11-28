@@ -12,11 +12,11 @@
 -->
 
 <script lang="ts">
-	import { Button } from '$lib/components/ui/button';
+	import { Button } from '#lib/components/ui/button/index.ts';
 	import { X, Star, Plus, ArrowRight, Trash2 } from '@lucide/svelte';
-	import { modalStack } from '$lib/stores/modalStack.svelte';
-	import { toaster } from '$lib/stores/toaster.svelte';
-	import { studentCache } from '$lib/stores/studentDashboardCache.svelte';
+	import { modalStack } from '#lib/stores/modalStack.svelte.ts';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
+	import { studentCache } from '#lib/stores/studentDashboardCache.svelte.ts';
 
 	// Type for bonus history entries (matches API response)
 	interface BonusHistoryEntry {

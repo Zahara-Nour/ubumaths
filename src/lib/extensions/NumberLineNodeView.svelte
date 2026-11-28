@@ -12,7 +12,7 @@
 	@see NumberLine.svelte for the rendering component
 -->
 <script lang="ts">
-	import { lore } from '$lib/config/lore';
+	import { lore } from '#lib/config/lore.ts';
 	import { NodeViewWrapper } from 'svelte-tiptap';
 	import type { Editor } from '@tiptap/core';
 
@@ -25,10 +25,10 @@
 		selected: boolean;
 	}
 	import { Pencil, Trash2, Check, X, AlertCircle } from '@lucide/svelte';
-	import { Button } from '$lib/components/ui/button';
-	import * as Dialog from '$lib/components/ui/dialog';
-	import NumberLine from '$lib/components/markdown/nodes/NumberLine.svelte';
-	import { parseNumberLineContent } from '$lib/ubumark/parser/number-line-parser';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import * as Dialog from '#lib/components/ui/dialog/index.ts';
+	import NumberLine from '#lib/components/markdown/nodes/NumberLine.svelte';
+	import { parseNumberLineContent } from '#lib/ubumark/parser/number-line-parser.ts';
 	import { NUMBER_LINE_TEMPLATE } from './number-line-extension';
 
 	let { node, updateAttributes, deleteNode, selected, editor, getPos }: NodeViewProps = $props();

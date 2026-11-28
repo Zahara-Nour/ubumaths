@@ -11,7 +11,7 @@ import { render } from 'vitest-browser-svelte';
 import { userEvent } from 'vitest/browser';
 import GeometryCanvas from '../GeometryCanvas.svelte';
 import InstrumentHarness from './InstrumentHarness.svelte';
-import { runDsl } from '$lib/geometry-core';
+import { runDsl } from '#lib/geometry-core/index.ts';
 
 // Valeurs attendues (app.css)
 const ROUGE = { light: 'rgb(220, 38, 38)', dark: 'rgb(255, 98, 87)' };

@@ -26,7 +26,7 @@
 	import type { Snippet } from 'svelte';
 	import SheetPortal from './sheet-portal.svelte';
 	import SheetOverlay from './sheet-overlay.svelte';
-	import { cn, type WithoutChildrenOrChild } from '$lib/utils.js';
+	import { cn, type WithoutChildrenOrChild } from '#lib/utils.ts';
 	import type { ComponentProps } from 'svelte';
 
 	let {
@@ -52,8 +52,9 @@
 		{...restProps}
 	>
 		{@render children?.()}
+		<!-- Zone de toucher de 44 px, l'icône à la même place (écart E22) -->
 		<SheetPrimitive.Close
-			class="absolute end-4 top-4 rounded-xs opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-hidden disabled:pointer-events-none"
+			class="absolute end-0.5 top-0.5 inline-flex size-11 items-center justify-center rounded-xs opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-hidden disabled:pointer-events-none"
 		>
 			<XIcon class="size-4" />
 			<span class="sr-only">Fermer</span>

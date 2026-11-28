@@ -14,7 +14,7 @@
  * @module qr/qr-target
  */
 
-import { canonicalUrl } from '$lib/seo/site';
+import { canonicalUrl } from '#lib/seo/site.ts';
 
 // ============================================================================
 // TYPES

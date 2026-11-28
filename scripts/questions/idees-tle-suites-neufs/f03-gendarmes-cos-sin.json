@@ -1,0 +1,290 @@
+{
+	"id": "ab0f98c4-e01e-4b9b-8bb9-fd38c1c374cc",
+	"title": "Limite par encadrement avec cos n ou sin n",
+	"description": "Gendarmes : L + a·cos n / n (ou sin n) → L ; (an + c·sin n)/(bn) → a/b. Spécialité seule : pas de fonctions trigonométriques en complémentaire",
+	"grades": ["T_SPE"],
+	"level": 2,
+	"delay": 60,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		},
+		"cleanCoefficients": true
+	},
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{L}}",
+					"expectedErrors": [
+						{
+							"answer": "0",
+							"message": "Tu as donné la limite de la fraction seule, sans le terme constant ${{L}}$.",
+							"label": "Terme constant oublié"
+						},
+						{
+							"answer": "{{eval:L+a}}",
+							"message": "Tu as remplacé ${{if:t==0|\\cos n|\\sin n}}$ par $1$ et $n$ par $1$ : il faut faire tendre $n$ vers $+\\infty$.",
+							"label": "Valeur pour n = 1 (cos ou sin pris égal à 1)"
+						},
+						{
+							"answer": "{{eval:L-a}}",
+							"message": "Tu as remplacé ${{if:t==0|\\cos n|\\sin n}}$ par $-1$ et $n$ par $1$ : il faut faire tendre $n$ vers $+\\infty$.",
+							"label": "Valeur pour n = 1 (cos ou sin pris égal à −1)"
+						}
+					]
+				}
+			],
+			"statement": "Pour tout entier $n\\geqslant1$, on pose $u_n={{if:L==0||{{L}}+}}\\dfrac{ {{if:a==1||{{a}}}}{{if:t==0|\\cos n|\\sin n}} }{n}$.\n\nDétermine la limite de la suite $(u_n)$.\n\n$\\displaystyle\\lim_{n\\to+\\infty}u_n=?$",
+			"variables": [
+				{
+					"name": "L",
+					"expression": "-9..9"
+				},
+				{
+					"name": "a",
+					"expression": "1..9"
+				},
+				{
+					"name": "t",
+					"expression": "0..1"
+				}
+			],
+			"conditions": ["L+a != 0", "L-a != 0"],
+			"hint": "Encadre ${{if:t==0|\\cos n|\\sin n}}$ entre $-1$ et $1$, puis déduis-en un encadrement de $u_n$.",
+			"correction": {
+				"steps": [
+					"Pour tout $n\\geqslant1$, $-1\\leqslant{{if:t==0|\\cos n|\\sin n}}\\leqslant1$, donc $-\\dfrac{ {{a}} }{n}\\leqslant\\dfrac{ {{if:a==1||{{a}}}}{{if:t==0|\\cos n|\\sin n}} }{n}\\leqslant\\dfrac{ {{a}} }{n}$ et {{if:L==0|$-\\dfrac{ {{a}} }{n}\\leqslant u_n\\leqslant\\dfrac{ {{a}} }{n}$|${{L}}-\\dfrac{ {{a}} }{n}\\leqslant u_n\\leqslant{{L}}+\\dfrac{ {{a}} }{n}$}}.",
+					"$\\displaystyle\\lim_{n\\to+\\infty}\\dfrac{ {{a}} }{n}=0$ : les deux membres tendent vers ${{L}}$. Par le théorème des gendarmes, $\\displaystyle\\lim_{n\\to+\\infty}u_n=\\textcolor{{{color:primary.0}}}{ {{L}} }$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a/b}}",
+					"expectedErrors": [
+						{
+							"answer": "{{a}}",
+							"message": "Tu as gardé le coefficient de $n$ du numérateur sans diviser par ${{b}}$.",
+							"label": "Division par b oubliée"
+						},
+						{
+							"answer": "{{eval:(a+c)/b}}",
+							"message": "Tu as remplacé $\\sin n$ par $1$ : $\\sin n$ n'a pas de limite, il faut l'encadrer.",
+							"label": "sin n remplacé par 1"
+						},
+						{
+							"answer": "{{eval:(a-c)/b}}",
+							"message": "Tu as remplacé $\\sin n$ par $-1$ : $\\sin n$ n'a pas de limite, il faut l'encadrer.",
+							"label": "sin n remplacé par −1"
+						}
+					]
+				}
+			],
+			"statement": "Pour tout entier $n\\geqslant1$, on pose $u_n=\\dfrac{ {{a}}n+{{c}}\\sin n}{ {{b}}n}$.\n\nDétermine la limite de la suite $(u_n)$.\n\n$\\displaystyle\\lim_{n\\to+\\infty}u_n=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9;±"
+				},
+				{
+					"name": "b",
+					"expression": "2..5"
+				},
+				{
+					"name": "c",
+					"expression": "2..5"
+				}
+			],
+			"conditions": ["a != b", "a+c != a*b", "a-c != a*b"],
+			"hint": "Écris $u_n$ comme une somme de deux fractions, puis encadre $\\sin n$ entre $-1$ et $1$.",
+			"correction": {
+				"steps": [
+					"$u_n=\\dfrac{ {{a}}n}{ {{b}}n}+\\dfrac{ {{c}}\\sin n}{ {{b}}n}={{eval:a/b}}+\\dfrac{ {{c}}\\sin n}{ {{b}}n}$.",
+					"$-1\\leqslant\\sin n\\leqslant1$, donc $-\\dfrac{ {{c}} }{ {{b}}n}\\leqslant\\dfrac{ {{c}}\\sin n}{ {{b}}n}\\leqslant\\dfrac{ {{c}} }{ {{b}}n}$ : les deux membres tendent vers $0$, donc $\\dfrac{ {{c}}\\sin n}{ {{b}}n}$ aussi (théorème des gendarmes).",
+					"$\\displaystyle\\lim_{n\\to+\\infty}u_n=\\textcolor{{{color:primary.0}}}{ {{eval:a/b}} }$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["3"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"L": "3",
+				"a": "2",
+				"t": "0"
+			},
+			"description": "v4 : 3 + 2cos n / n → 3",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["-4"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"L": "-4",
+				"a": "7",
+				"t": "1"
+			},
+			"description": "v4 : −4 + 7sin n / n → −4",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"L": "0",
+				"a": "5",
+				"t": "1"
+			},
+			"description": "v4 : 5 sin n / n → 0",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as donné la limite de la fraction seule, sans le terme constant $3$."
+			},
+			"variables": {
+				"L": "3",
+				"a": "2",
+				"t": "0"
+			},
+			"description": "v4 : terme constant oublié",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["5"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as remplacé $\\cos n$ par $1$ et $n$ par $1$ : il faut faire tendre $n$ vers $+\\infty$."
+			},
+			"variables": {
+				"L": "3",
+				"a": "2",
+				"t": "0"
+			},
+			"description": "v4 : L + a",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as remplacé $\\cos n$ par $-1$ et $n$ par $1$ : il faut faire tendre $n$ vers $+\\infty$."
+			},
+			"variables": {
+				"L": "3",
+				"a": "2",
+				"t": "0"
+			},
+			"description": "v4 : L − a",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["\\frac{3}{4}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "3",
+				"b": "4",
+				"c": "2"
+			},
+			"description": "v5 : (3n + 2sin n)/(4n) → 3/4",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["0.75"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "3",
+				"b": "4",
+				"c": "2"
+			},
+			"description": "v5 : 0,75",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["-\\frac{3}{2}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "-6",
+				"b": "4",
+				"c": "3"
+			},
+			"description": "v5 : −6/4 → −3/2",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["-\\frac{6}{4}"],
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["reducedFractions"]
+			},
+			"variables": {
+				"a": "-6",
+				"b": "4",
+				"c": "3"
+			},
+			"description": "v5 : fraction non simplifiée",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as gardé le coefficient de $n$ du numérateur sans diviser par $4$."
+			},
+			"variables": {
+				"a": "3",
+				"b": "4",
+				"c": "2"
+			},
+			"description": "v5 : a",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["\\frac{5}{4}"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as remplacé $\\sin n$ par $1$ : $\\sin n$ n'a pas de limite, il faut l'encadrer."
+			},
+			"variables": {
+				"a": "3",
+				"b": "4",
+				"c": "2"
+			},
+			"description": "v5 : (a + c)/b",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["\\frac{1}{4}"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as remplacé $\\sin n$ par $-1$ : $\\sin n$ n'a pas de limite, il faut l'encadrer."
+			},
+			"variables": {
+				"a": "3",
+				"b": "4",
+				"c": "2"
+			},
+			"description": "v5 : (a − c)/b",
+			"variationIndex": 1
+		}
+	]
+}

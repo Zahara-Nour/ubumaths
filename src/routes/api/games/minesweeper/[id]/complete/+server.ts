@@ -1,11 +1,11 @@
 import type { RequestHandler } from './$types';
-import { error, json } from '@sveltejs/kit';
-import { requireRoles } from '$lib/server/middleware/auth';
-import { completeGameSchema, validateGridState } from '$lib/server/validation/minesweeper';
-import { sanitizeRPCError, sanitizePostgresError } from '$lib/server/utils/error-handler';
-import { validateUuidParam } from '$lib/server/validation/params';
+import { error } from '@sveltejs/kit';
+import { requireRoles } from '#lib/server/middleware/auth.ts';
+import { completeGameSchema, validateGridState } from '#lib/server/validation/minesweeper.ts';
+import { sanitizeRPCError, sanitizePostgresError } from '#lib/server/utils/error-handler.ts';
+import { validateUuidParam } from '#lib/server/validation/params.ts';
 
-import { completeGameResultSchema } from '$lib/server/validation/minesweeper-rpc';
+import { completeGameResultSchema } from '#lib/server/validation/minesweeper-rpc.ts';
 
 /**
  * Type for the complete_minesweeper_game RPC response
@@ -133,7 +133,7 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 		const response = completeGameResultSchema.parse(data);
 
 		// ✅ Return success with gidouilles (decimal), points, achievements, and breakdown
-		return json({
+		return Response.json({
 			success: true,
 			gidouilles: response.gidouilles_earned, // Decimal: e.g., 1.3, 5.2
 			points: response.points_earned, // Integer for leaderboard

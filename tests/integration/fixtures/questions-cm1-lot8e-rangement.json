@@ -1,0 +1,57 @@
+[
+	{
+		"id": "281ad02d-63ea-440e-a27b-7dcc382536ea",
+		"noeudAvant": null,
+		"noeudApres": "Géométrie > Solides > propriétés",
+		"gradesAvant": ["CM1"],
+		"gradesApres": ["CM1"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["CM1§CM1-111"]
+	},
+	{
+		"id": "af2d7e03-048a-4540-aa28-3e0a1baf3812",
+		"noeudAvant": null,
+		"noeudApres": "Géométrie > Solides > propriétés",
+		"gradesAvant": ["CM1", "CM2"],
+		"gradesApres": ["CM1", "CM2"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["CM1§CM1-110", "CM2§CM2-099"]
+	},
+	{
+		"id": "b423785d-cfe4-4387-a617-d71ab18838a1",
+		"noeudAvant": null,
+		"noeudApres": "Géométrie > Solides > propriétés",
+		"gradesAvant": ["CM1"],
+		"gradesApres": ["CM1"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["CM1§CM1-112"]
+	},
+	{
+		"id": "b80d1619-1738-4a0e-ba1a-4d13fc9f2507",
+		"noeudAvant": null,
+		"noeudApres": "Géométrie > Solides > propriétés",
+		"gradesAvant": ["CM1", "CM2"],
+		"gradesApres": ["CM1", "CM2"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["CM1§CM1-109", "CM2§CM2-098"]
+	},
+	{
+		"id": "f83c0424-7010-43e0-9ae0-ac7da1d948d5",
+		"noeudAvant": null,
+		"noeudApres": "Géométrie > Solides > propriétés",
+		"gradesAvant": ["CM1"],
+		"gradesApres": ["CM1"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["CM1§CM1-113"]
+	}
+]

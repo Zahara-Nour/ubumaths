@@ -1,15 +1,12 @@
 /**
  * Health Statistics Utilities
  * Fetches and caches expensive admin dashboard statistics
- *
- * NOTE: This file uses type assertions for new tables/views (server_cache, admin_* views, background_job_runs)
- * that are not yet in the generated database.ts types. Run `pnpm db:types` after migrations are pushed.
  */
 
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { Database } from '$lib/types/database';
+import type { Database } from '#lib/types/database.ts';
 import type { HealthStatsResponse } from './validation/health';
-import { createServerLogger } from '$lib/utils/logger';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('server/healthStats');
 

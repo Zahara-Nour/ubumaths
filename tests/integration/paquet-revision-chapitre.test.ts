@@ -28,17 +28,17 @@ import {
 } from '../helpers/database/trigger-test-helpers';
 import { DEFAULT_TEST_PASSWORD } from '../helpers/database/supabase-client';
 import { TestData } from '../helpers/database/test-data-factory';
-import type { Database } from '$lib/types/database';
+import type { Database } from '#lib/types/database.ts';
 
 // Le Programme est écrit par le client service : le brancher sur la base LOCALE.
-vi.mock('$lib/server/serviceRoleClient', async () => {
+vi.mock('#lib/server/serviceRoleClient.ts', async () => {
 	const helpers = await import('../helpers/database/trigger-test-helpers');
 	return { createServiceRoleClient: helpers.createServiceRoleClient };
 });
 
 import { GET as dueRoute } from '../../src/routes/api/srs/chapters/[chapterId]/due/+server';
 import { POST as submitRoute } from '../../src/routes/api/srs/chapters/[chapterId]/submit/+server';
-import { summarizeChapterDecks } from '$lib/server/srs/chapter-deck';
+import { summarizeChapterDecks } from '#lib/server/srs/chapter-deck.ts';
 
 // Types
 type Person = { id: string; client: SupabaseClient<Database> };
@@ -191,7 +191,7 @@ function templateRow(id: string, level: number, status: string, options = {}) {
 async function attempts(studentId: string, templateId: string) {
 	const { data, error } = await service
 		.from('skill_attempts')
-		.select('success, grade, source, with_help')
+		.select('success, grade, source, place, with_help')
 		.eq('student_id', studentId)
 		.eq('template_id', templateId);
 	expect(error).toBeNull();
@@ -426,9 +426,10 @@ describe('paquet de révision calculé du chapitre', () => {
 
 			const stats = await memory(student.id, T.regular);
 			expect(stats?.total_reviews).toBe(1);
-			// Q169 (a) : la même trace que le Programme, exactement une
+			// Q169 (a) : la même trace que le Programme, exactement une ; « déclaré »
+			// au lieu révision (ADR 0038 : `srs` n'est plus écrit)
 			expect(await attempts(student.id, T.regular)).toEqual([
-				{ success: true, grade: 3, source: 'srs', with_help: false }
+				{ success: true, grade: 3, source: 'student_self', place: 'review', with_help: false }
 			]);
 			expect(new Date(stats!.next_review).getTime()).toBeGreaterThan(Date.now());
 
@@ -447,7 +448,7 @@ describe('paquet de révision calculé du chapitre', () => {
 			expect((await memory(student.id, T.course))?.total_reviews).toBe(1);
 			// Trace comme au Programme (Q113 ne porte que sur l'entrée dans le paquet)
 			expect(await attempts(student.id, T.course)).toEqual([
-				{ success: true, grade: 4, source: 'srs', with_help: false }
+				{ success: true, grade: 4, source: 'student_self', place: 'review', with_help: false }
 			]);
 
 			const { data: cards, error } = await service

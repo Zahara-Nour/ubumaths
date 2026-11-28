@@ -9,7 +9,7 @@ import { describe, it, expect } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import CapitalPairsProviderHarness from './CapitalPairsProviderHarness.svelte';
 import InlineCapitalPairsHarness from './InlineCapitalPairsHarness.svelte';
-import type { CapitalPairs } from '$lib/mathAST/parser/types';
+import type { CapitalPairs } from '#lib/mathAST/parser/types.ts';
 
 const contenu = 'Dans le triangle ~ABC~, ~AB^2=AC^2+BC^2~.';
 

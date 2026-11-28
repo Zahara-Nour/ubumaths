@@ -1,8 +1,8 @@
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireAuth } from '$lib/server/middleware/auth';
-import { validateUuidParam } from '$lib/server/validation/params';
-import { createServerLogger } from '$lib/utils/logger';
+import { requireAuth } from '#lib/server/middleware/auth.ts';
+import { validateUuidParam } from '#lib/server/validation/params.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/messages/drafts/[id]/+server');
 
@@ -28,7 +28,7 @@ export const GET: RequestHandler = async ({ params, locals }) => {
 			throw error(404, 'Brouillon non trouvé');
 		}
 
-		return json({ draft });
+		return Response.json({ draft });
 	} catch (err) {
 		logger.error('Error in get draft API:', err);
 		if (err && typeof err === 'object' && 'status' in err) {
@@ -59,7 +59,7 @@ export const DELETE: RequestHandler = async ({ params, locals }) => {
 			throw error(500, 'Erreur lors de la suppression du brouillon');
 		}
 
-		return json({ success: true });
+		return Response.json({ success: true });
 	} catch (err) {
 		logger.error('Error in delete draft API:', err);
 		if (err && typeof err === 'object' && 'status' in err) {

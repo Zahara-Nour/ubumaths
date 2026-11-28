@@ -1,0 +1,319 @@
+{
+	"id": "dd7065d9-700a-4df4-af1c-ef0a2deab347",
+	"title": "Résous un problème avec un tableau ou un diagramme en barres",
+	"description": "En une ou deux étapes : le prix d'une semaine de cantine (repas et goûters, décimaux), le détour par une ville (tableau des distances), les visiteurs qui manquent à un musée (barres de 100 en 100)",
+	"grades": ["CM2"],
+	"level": 4,
+	"delay": 180,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"spacesFromFourDigits": true,
+			"zeros": "off"
+		}
+	},
+	"variations": [
+		{
+			"statement": "Voici les prix de la cantine.\n\n| | Prix |\n|---|---|\n| Repas de midi | ${{eval:a/100;d}}$ € |\n| Goûter | ${{eval:b/100;d}}$ € |\n\nCette semaine, Léo mange ${{r}}$ fois à la cantine à midi et prend ${{g}}$ goûter{{if:g>1|s|}}. Combien paie-t-il pour la semaine ?\n\n$?$ €",
+			"variables": [
+				{
+					"name": "ua",
+					"expression": "30..44"
+				},
+				{
+					"name": "ub",
+					"expression": "8..14"
+				},
+				{
+					"name": "r",
+					"expression": "3..4"
+				},
+				{
+					"name": "g",
+					"expression": "1..3"
+				},
+				{
+					"name": "a",
+					"expression": "eval:10*ua+5"
+				},
+				{
+					"name": "b",
+					"expression": "eval:10*ub+5"
+				},
+				{
+					"name": "pa",
+					"expression": "eval:r*a"
+				},
+				{
+					"name": "pb",
+					"expression": "eval:g*b"
+				},
+				{
+					"name": "n",
+					"expression": "eval:pa+pb"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:n/100;d}}",
+					"requiredForm": {
+						"pattern": "a:number"
+					}
+				}
+			],
+			"correction": {
+				"steps": [
+					"Les repas : ${{r}} \\times {{eval:a/100;d}} = {{eval:pa/100;d}}$ €.",
+					"Les goûters : ${{g}} \\times {{eval:b/100;d}} = {{eval:pb/100;d}}$ €.",
+					"En tout : ${{eval:pa/100;d}} + {{eval:pb/100;d}} = \\textcolor{{{color:primary.0}}}{{{eval:n/100;d}}}$ €."
+				]
+			}
+		},
+		{
+			"statement": "Ce tableau donne les distances par la route, en kilomètres, entre quatre villes.\n\n| | Brumeval | Castelroc | Pontaval | Mirelande |\n|---|---|---|---|---|\n| **Brumeval** | — | ${{d12}}$ | ${{d13}}$ | ${{d14}}$ |\n| **Castelroc** | ${{d12}}$ | — | ${{d23}}$ | ${{d24}}$ |\n| **Pontaval** | ${{d13}}$ | ${{d23}}$ | — | ${{d34}}$ |\n| **Mirelande** | ${{d14}}$ | ${{d24}}$ | ${{d34}}$ | — |\n\nOn va de Brumeval à Pontaval. Combien de kilomètres de plus fait-on en passant par Castelroc, plutôt qu'en y allant directement ?\n\n$?$ km de plus",
+			"variables": [
+				{
+					"name": "d12",
+					"expression": "15..60"
+				},
+				{
+					"name": "d23",
+					"expression": "15..60"
+				},
+				{
+					"name": "d13",
+					"expression": "20..90"
+				},
+				{
+					"name": "d14",
+					"expression": "15..90"
+				},
+				{
+					"name": "d24",
+					"expression": "15..90"
+				},
+				{
+					"name": "d34",
+					"expression": "15..90"
+				},
+				{
+					"name": "s",
+					"expression": "eval:d12+d23"
+				},
+				{
+					"name": "n",
+					"expression": "eval:s-d13"
+				}
+			],
+			"conditions": ["n >= 5", "d13 > abs(d12-d23)"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{n}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Par Castelroc : Brumeval → Castelroc ${{d12}}$ km, puis Castelroc → Pontaval ${{d23}}$ km, soit ${{d12}} + {{d23}} = {{s}}$ km.",
+					"Directement : Brumeval → Pontaval, ${{d13}}$ km.",
+					"La différence : ${{s}} - {{d13}} = \\textcolor{{{color:primary.0}}}{{{n}}}$ km de plus."
+				]
+			}
+		},
+		{
+			"statement": "Ce diagramme donne le nombre de visiteurs d'un musée, chaque mois.\n\n```barres\ntitre: Visiteurs du musée\naxes: Mois ; Visiteurs\nJanvier = {{a1}}\nFévrier = {{a2}}\nMars = {{a3}}\nAvril = {{a4}}\nMai = {{a5}}\naxe: 0 à 1000, de 100 en 100\n```\n\nLe musée espérait ${{T}}$ visiteurs de janvier à mars. Combien de visiteurs lui a-t-il manqué ?\n\n$?$ visiteurs",
+			"variables": [
+				{
+					"name": "u1",
+					"expression": "1..10"
+				},
+				{
+					"name": "u2",
+					"expression": "1..10"
+				},
+				{
+					"name": "u3",
+					"expression": "1..10"
+				},
+				{
+					"name": "u4",
+					"expression": "1..10"
+				},
+				{
+					"name": "u5",
+					"expression": "1..10"
+				},
+				{
+					"name": "a1",
+					"expression": "eval:100*u1"
+				},
+				{
+					"name": "a2",
+					"expression": "eval:100*u2"
+				},
+				{
+					"name": "a3",
+					"expression": "eval:100*u3"
+				},
+				{
+					"name": "a4",
+					"expression": "eval:100*u4"
+				},
+				{
+					"name": "a5",
+					"expression": "eval:100*u5"
+				},
+				{
+					"name": "w",
+					"expression": "1..9"
+				},
+				{
+					"name": "s",
+					"expression": "eval:a1+a2+a3"
+				},
+				{
+					"name": "n",
+					"expression": "eval:50*w"
+				},
+				{
+					"name": "T",
+					"expression": "eval:s+n"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{n}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"De janvier à mars : ${{a1}} + {{a2}} + {{a3}} = {{s}}$ visiteurs.",
+					"Ce qui manque pour aller à ${{T}}$ : ${{T}} - {{s}} = \\textcolor{{{color:primary.0}}}{{{n}}}$ visiteurs."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "4 × 3,85 + 2 × 1,25 = 17,9",
+			"variationIndex": 0,
+			"variables": {
+				"ua": "38",
+				"ub": "12",
+				"r": "4",
+				"g": "2",
+				"a": "385",
+				"b": "125",
+				"pa": "1540",
+				"pb": "250",
+				"n": "1790"
+			},
+			"answers": ["17,9"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : les repas seuls (15,4)",
+			"variationIndex": 0,
+			"variables": {
+				"ua": "38",
+				"ub": "12",
+				"r": "4",
+				"g": "2",
+				"a": "385",
+				"b": "125",
+				"pa": "1540",
+				"pb": "250",
+				"n": "1790"
+			},
+			"answers": ["15,4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "34 + 41 − 52 = 23",
+			"variationIndex": 1,
+			"variables": {
+				"d12": "34",
+				"d23": "41",
+				"d13": "52",
+				"d14": "70",
+				"d24": "28",
+				"d34": "45",
+				"s": "75",
+				"n": "23"
+			},
+			"answers": ["23"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : le trajet par Castelroc (75)",
+			"variationIndex": 1,
+			"variables": {
+				"d12": "34",
+				"d23": "41",
+				"d13": "52",
+				"d14": "70",
+				"d24": "28",
+				"d34": "45",
+				"s": "75",
+				"n": "23"
+			},
+			"answers": ["75"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "2 250 − 2 000 = 250",
+			"variationIndex": 2,
+			"variables": {
+				"u1": "4",
+				"u2": "7",
+				"u3": "9",
+				"u4": "3",
+				"u5": "6",
+				"a1": "400",
+				"a2": "700",
+				"a3": "900",
+				"a4": "300",
+				"a5": "600",
+				"w": "5",
+				"s": "2000",
+				"n": "250",
+				"T": "2250"
+			},
+			"answers": ["250"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : mars oublié (1 150)",
+			"variationIndex": 2,
+			"variables": {
+				"u1": "4",
+				"u2": "7",
+				"u3": "9",
+				"u4": "3",
+				"u5": "6",
+				"a1": "400",
+				"a2": "700",
+				"a3": "900",
+				"a4": "300",
+				"a5": "600",
+				"w": "5",
+				"s": "2000",
+				"n": "250",
+				"T": "2250"
+			},
+			"answers": ["1 150"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

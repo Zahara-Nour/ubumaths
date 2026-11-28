@@ -24,15 +24,15 @@
 	Otherwise, selectedCardIds is mutated directly via binding.
 -->
 <script lang="ts">
-	import VipCard from '$lib/components/VipCard.svelte';
+	import VipCard from '#lib/components/VipCard.svelte';
 	import {
 		vipCardTemplates,
 		getTemplateById,
 		templateToVipCard
-	} from '$lib/stores/vipCardTemplates.svelte';
-	import { getRarityPoints } from '$lib/types/vip-card';
-	import type { VipCardInstance, VipCard as VipCardType } from '$lib/types/vip-card';
-	import { cn } from '$lib/utils';
+	} from '#lib/stores/vipCardTemplates.svelte.ts';
+	import { getRarityPoints } from '#lib/types/vip-card.ts';
+	import type { VipCardInstance, VipCard as VipCardType } from '#lib/types/vip-card.ts';
+	import { cn } from '#lib/utils.ts';
 
 	// Extended type for cards with instanceId
 	type TradeCard = VipCardInstance & { instanceId: string };

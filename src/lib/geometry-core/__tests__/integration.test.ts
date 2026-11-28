@@ -25,8 +25,8 @@ import {
 	geoValueSchema,
 	figureStateSchema
 } from '../types/schemas';
-import { number, sqrt, fraction } from '$lib/mathAST';
-import { numericNode } from '$lib/mathAST/common/numeric';
+import { number, sqrt, fraction } from '#lib/mathAST/index.ts';
+import { numericNode } from '#lib/mathAST/common/numeric.ts';
 
 // Standard viewport and transformer
 const viewport = { xMin: -10, xMax: 10, yMin: -10, yMax: 10 };

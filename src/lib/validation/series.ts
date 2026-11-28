@@ -2,7 +2,9 @@
  * Composition d'une série : schémas partagés client / serveur.
  *
  * Une série (et le panier) est une liste de lignes `{ templateId, quantity,
- * delay }` : tel MODÈLE, tant de fois, tant de secondes par question (ADR 0035).
+ * delay, variations?, choiceVariations? }` : tel MODÈLE, tant de fois, tant de secondes
+ * par question (ADR 0035), dans les variations choisies par le prof (toutes si absent),
+ * certaines répondues en QCM (idée 4, aucune si absent).
  * Les mêmes bornes valent pour l'enregistrement d'une série (serveur, B11) et
  * pour un lien `/automaths/panier?modeles=…` relu par le navigateur (C19, Q45) :
  * un lien abîmé ou fabriqué ne doit jamais faire planter la page.
@@ -12,7 +14,8 @@
  */
 
 import { z } from 'zod';
-import type { TestMode } from '$lib/types/test';
+import type { TestMode } from '#lib/types/test.ts';
+import type { ReadonlyURLSearchParams } from '$app/state';
 
 /** Nombre de lignes d'une série */
 export const MAX_SERIES_ITEMS = 50;
@@ -35,6 +38,9 @@ export const MAX_SERIES_QUESTIONS = 500;
 /** Paramètre d'un lien de série : la composition, en JSON */
 export const SERIES_LINK_PARAM = 'modeles';
 
+/** Paramètre du lien de série « Mêmes nombres pour tous » : la graine de la série */
+export const SERIES_SEED_PARAM = 'graine';
+
 /** Nombre de questions d'une ligne */
 export const itemQuantitySchema = z
 	.number()
@@ -49,11 +55,43 @@ export const itemDelaySchema = z
 	.nonnegative('Durée invalide')
 	.max(MAX_QUESTION_DELAY_SECONDS, `Durée trop longue (${MAX_QUESTION_DELAY_SECONDS} s au plus)`);
 
-/** Une ligne de série : un modèle, son nombre de questions et sa durée par question */
+/** Variations d'un modèle (le plus grand en prod en a 126, mesuré le 2026-11-21) */
+export const MAX_TEMPLATE_VARIATIONS = 200;
+
+/**
+ * Variations choisies par le prof sur une ligne (chantier `idees-format`, idée 2) :
+ * leurs numéros, distincts, rangés dans l'ordre. Absent = toutes les variations.
+ * Un numéro qui n'existe plus dans le modèle est ignoré au tirage (`allowedVariations`).
+ */
+export const itemVariationsSchema = z
+	.array(
+		z
+			.number()
+			.int('Numéro de variation entier attendu')
+			.nonnegative('Numéro de variation invalide')
+			.max(MAX_TEMPLATE_VARIATIONS - 1, 'Numéro de variation invalide')
+	)
+	.min(1, 'Choisis au moins une variation')
+	.max(MAX_TEMPLATE_VARIATIONS, 'Trop de variations')
+	.refine((indexes) => new Set(indexes).size === indexes.length, 'Variation choisie deux fois')
+	.transform((indexes) => [...indexes].sort((a, b) => a - b));
+
+/**
+ * Variations « en QCM » d'une ligne (chantier `idees-format`, idée 4) : leur case
+ * se répond en choisissant parmi la bonne réponse et les erreurs prévues. Mêmes
+ * règles que `itemVariationsSchema` ; absent = aucune. Une variation qui ne peut
+ * pas être en QCM (plusieurs cases, veto de l'auteur, aucune erreur prévue) reste
+ * en saisie au tirage (`questions/choice-from-errors.ts`).
+ */
+export const itemChoiceVariationsSchema = itemVariationsSchema;
+
+/** Une ligne de série : un modèle, son nombre de questions, sa durée par question, ses variations */
 export const seriesItemSchema = z.object({
 	templateId: z.string().uuid('Modèle invalide'),
 	quantity: itemQuantitySchema,
-	delay: itemDelaySchema
+	delay: itemDelaySchema,
+	variations: itemVariationsSchema.optional(),
+	choiceVariations: itemChoiceVariationsSchema.optional()
 });
 
 export type SeriesItem = z.infer<typeof seriesItemSchema>;
@@ -110,10 +148,14 @@ export function encodeSeriesParam(items: readonly SeriesItem[]): string {
 	return encodeURIComponent(JSON.stringify(items));
 }
 
-/** Forme portée par un lien de série (Q44) ; `timeLimit` en secondes, Course seulement */
+/**
+ * Forme portée par un lien de série (Q44) ; `timeLimit` en secondes, Course
+ * seulement ; `seed` : « Mêmes nombres pour tous », la graine de la série.
+ */
 export interface SeriesLinkForm {
 	mode: TestMode;
 	timeLimit?: number;
+	seed?: number;
 }
 
 /**
@@ -121,7 +163,8 @@ export interface SeriesLinkForm {
  *
  * - sans forme : ouvre le PANIER du destinataire, qui y met la série (Q44, Q45) ;
  * - avec une forme : lance directement la série sous cette forme ; une Course
- *   aux nombres porte son temps limite.
+ *   aux nombres porte son temps limite ; avec une graine, tous ceux qui
+ *   l'ouvrent ont les mêmes questions (« Mêmes nombres pour tous »).
  */
 export function buildSeriesLink(
 	origin: string,
@@ -136,6 +179,9 @@ export function buildSeriesLink(
 	params.set('mode', form.mode);
 	if (form.mode === 'course' && form.timeLimit !== undefined) {
 		params.set('time', String(form.timeLimit));
+	}
+	if (form.seed !== undefined) {
+		params.set(SERIES_SEED_PARAM, String(form.seed));
 	}
 	return `${origin}/automaths/test?${params.toString()}`;
 }
@@ -157,7 +203,7 @@ export type SeriesLinkResult =
  * Relit la composition d'un lien de série `?modeles=…`. Un ancien lien
  * `?categories=…` (sans `modeles`) n'est plus relu : message dédié.
  */
-export function parseSeriesLink(searchParams: URLSearchParams): SeriesLinkResult {
+export function parseSeriesLink(searchParams: ReadonlyURLSearchParams): SeriesLinkResult {
 	const raw = searchParams.get(SERIES_LINK_PARAM);
 	if (raw === null && searchParams.has(ANCIEN_LIEN_PARAM)) {
 		return { success: false, error: ANCIEN_LIEN_MESSAGE };
@@ -185,7 +231,7 @@ export function parseSeriesLink(searchParams: URLSearchParams): SeriesLinkResult
 }
 
 /** Le lien porte-t-il une composition (ou un ancien lien, à signaler) ? */
-export function hasSeriesLink(searchParams: URLSearchParams): boolean {
+export function hasSeriesLink(searchParams: ReadonlyURLSearchParams): boolean {
 	return searchParams.has(SERIES_LINK_PARAM) || searchParams.has(ANCIEN_LIEN_PARAM);
 }
 

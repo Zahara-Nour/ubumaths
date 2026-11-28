@@ -14,17 +14,17 @@
  * @module atelier/simplify-steps
  */
 
-import type { RenderedStep } from '$lib/mathAST/common/step-renderer-base';
-import { PedagogicalSimplifyRenderer } from '$lib/mathAST/pedagogical-simplify/renderer';
-import { toLatex } from '$lib/mathAST/latex-generator';
-import { displayUnitsInLatex } from '$lib/mathAST/units/display';
-import type { MathNode } from '$lib/mathAST/types';
-import { degreeSignWritten } from '$lib/mathAST/cli/core/degrees';
+import type { RenderedStep } from '#lib/mathAST/common/step-renderer-base.ts';
+import { PedagogicalSimplifyRenderer } from '#lib/mathAST/pedagogical-simplify/renderer.ts';
+import { toLatex } from '#lib/mathAST/latex-generator.ts';
+import { displayUnitsInLatex } from '#lib/mathAST/units/display.ts';
+import type { MathNode } from '#lib/mathAST/types.ts';
+import { degreeSignWritten } from '#lib/mathAST/cli/core/degrees.ts';
 import { astOf } from './parse';
 import { summaryOf } from './steps-summary';
 import { engineAlternative, type DomainAlternative } from './domain-guard';
-import { simplifiedKeepingDomain } from '$lib/mathAST/pedagogical-simplify/keep-domain';
-import type { PedagogicalSimplifyResult } from '$lib/mathAST/pedagogical-simplify/types';
+import { simplifiedKeepingDomain } from '#lib/mathAST/pedagogical-simplify/keep-domain.ts';
+import type { PedagogicalSimplifyResult } from '#lib/mathAST/pedagogical-simplify/types.ts';
 
 // =============================================================================
 // Types

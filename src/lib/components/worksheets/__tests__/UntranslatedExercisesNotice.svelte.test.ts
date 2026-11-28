@@ -2,7 +2,7 @@ import { page } from 'vitest/browser';
 import { describe, expect, it } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import Notice from '../UntranslatedExercisesNotice.svelte';
-import type { WorksheetExerciseWithExercise } from '$lib/types/worksheets';
+import type { WorksheetExerciseWithExercise } from '#lib/types/worksheets.ts';
 
 /**
  * The notice is the only thing standing between a teacher and a silently

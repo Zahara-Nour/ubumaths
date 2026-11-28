@@ -11,8 +11,8 @@
 -->
 
 <script lang="ts">
-	import { lore } from '$lib/config/lore';
-	import { generateInstance } from '$lib/questions/generator/instance-generator';
+	import { lore } from '#lib/config/lore.ts';
+	import { generateInstance } from '#lib/questions/generator/instance-generator.ts';
 	import {
 		additionGroupingDemo,
 		arithmeticFromBlankDemo,
@@ -35,12 +35,12 @@
 		rationalInequalityQuadDenomDemo,
 		simplifyDistributionDemo,
 		simplifyTrigDemo
-	} from '$lib/questions/__tests__/fixtures/generated-steps-demo';
-	import CorrectionCard from '$lib/components/questions/CorrectionCard.svelte';
-	import GeneratedStepsCorrection from '$lib/components/questions/GeneratedStepsCorrection.svelte';
-	import * as Card from '$lib/components/ui/card';
-	import { Button } from '$lib/components/ui/button';
-	import type { TestAnswerResult } from '$lib/types/test';
+	} from '#lib/questions/__tests__/fixtures/generated-steps-demo.ts';
+	import CorrectionCard from '#lib/components/questions/CorrectionCard.svelte';
+	import GeneratedStepsCorrection from '#lib/components/questions/GeneratedStepsCorrection.svelte';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import type { TestAnswerResult } from '#lib/types/test.ts';
 
 	// ============================================================================
 	// Generate instances from fixtures (deterministic via seed)

@@ -10,12 +10,11 @@
  * - DELETE /api/srs/decks/[id] - Delete deck (non-assigned only)
  */
 
-import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { updateDeckSchema, uuidParamSchema } from '$lib/server/validation/srs';
-import { requireAuth } from '$lib/server/middleware/auth';
-import type { TablesUpdate } from '$lib/types/database';
-import { createServerLogger } from '$lib/utils/logger';
+import { updateDeckSchema, uuidParamSchema } from '#lib/server/validation/srs.ts';
+import { requireAuth } from '#lib/server/middleware/auth.ts';
+import type { TablesUpdate } from '#lib/types/database.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/srs/decks/[id]/+server');
 
@@ -33,7 +32,7 @@ export const GET: RequestHandler = async ({ params, locals }) => {
 	// ✅ SECURITY: Validate UUID parameter
 	const paramValidation = uuidParamSchema.safeParse(params);
 	if (!paramValidation.success) {
-		return json({ error: 'Identifiant de deck invalide' }, { status: 400 });
+		return Response.json({ error: 'Identifiant de deck invalide' }, { status: 400 });
 	}
 
 	const { id } = paramValidation.data;
@@ -48,7 +47,7 @@ export const GET: RequestHandler = async ({ params, locals }) => {
 			.single();
 
 		if (deckError || !deck) {
-			return json({ error: 'Deck introuvable' }, { status: 404 });
+			return Response.json({ error: 'Deck introuvable' }, { status: 404 });
 		}
 
 		// Get deck stats
@@ -65,7 +64,7 @@ export const GET: RequestHandler = async ({ params, locals }) => {
 			review_count: 0
 		};
 
-		return json({
+		return Response.json({
 			deck: {
 				...deck,
 				stats: deckStats
@@ -73,7 +72,7 @@ export const GET: RequestHandler = async ({ params, locals }) => {
 		});
 	} catch (error) {
 		logger.error('Unexpected error in GET /api/srs/decks/[id]:', error);
-		return json({ error: 'Une erreur inattendue s’est produite' }, { status: 500 });
+		return Response.json({ error: 'Une erreur inattendue s’est produite' }, { status: 500 });
 	}
 };
 
@@ -102,7 +101,7 @@ export const PUT: RequestHandler = async ({ params, request, locals }) => {
 	// ✅ SECURITY: Validate UUID parameter
 	const paramValidation = uuidParamSchema.safeParse(params);
 	if (!paramValidation.success) {
-		return json({ error: 'Identifiant de deck invalide' }, { status: 400 });
+		return Response.json({ error: 'Identifiant de deck invalide' }, { status: 400 });
 	}
 
 	const { id } = paramValidation.data;
@@ -117,12 +116,12 @@ export const PUT: RequestHandler = async ({ params, request, locals }) => {
 			.single();
 
 		if (fetchError || !existingDeck) {
-			return json({ error: 'Deck introuvable' }, { status: 404 });
+			return Response.json({ error: 'Deck introuvable' }, { status: 404 });
 		}
 
 		// Check if deck is assigned (read-only)
 		if (existingDeck.is_assigned) {
-			return json(
+			return Response.json(
 				{ error: 'Impossible de modifier un deck assigné : il est en lecture seule.' },
 				{ status: 403 }
 			);
@@ -133,7 +132,7 @@ export const PUT: RequestHandler = async ({ params, request, locals }) => {
 		const validation = updateDeckSchema.safeParse(bodyRaw);
 
 		if (!validation.success) {
-			return json({ error: validation.error.issues[0].message }, { status: 400 });
+			return Response.json({ error: validation.error.issues[0].message }, { status: 400 });
 		}
 
 		const body = validation.data;
@@ -163,13 +162,13 @@ export const PUT: RequestHandler = async ({ params, request, locals }) => {
 
 		if (updateError) {
 			logger.error('Error updating deck:', updateError);
-			return json({ error: 'Impossible de modifier le deck' }, { status: 500 });
+			return Response.json({ error: 'Impossible de modifier le deck' }, { status: 500 });
 		}
 
-		return json({ deck });
+		return Response.json({ deck });
 	} catch (error) {
 		logger.error('Unexpected error in PUT /api/srs/decks/[id]:', error);
-		return json({ error: 'Une erreur inattendue s’est produite' }, { status: 500 });
+		return Response.json({ error: 'Une erreur inattendue s’est produite' }, { status: 500 });
 	}
 };
 
@@ -189,7 +188,7 @@ export const DELETE: RequestHandler = async ({ params, locals }) => {
 	// ✅ SECURITY: Validate UUID parameter
 	const paramValidation = uuidParamSchema.safeParse(params);
 	if (!paramValidation.success) {
-		return json({ error: 'Identifiant de deck invalide' }, { status: 400 });
+		return Response.json({ error: 'Identifiant de deck invalide' }, { status: 400 });
 	}
 
 	const { id } = paramValidation.data;
@@ -204,12 +203,12 @@ export const DELETE: RequestHandler = async ({ params, locals }) => {
 			.single();
 
 		if (fetchError || !existingDeck) {
-			return json({ error: 'Deck introuvable' }, { status: 404 });
+			return Response.json({ error: 'Deck introuvable' }, { status: 404 });
 		}
 
 		// Check if deck is assigned (cannot delete)
 		if (existingDeck.is_assigned) {
-			return json(
+			return Response.json(
 				{ error: 'Impossible de supprimer un deck assigné : il est en lecture seule.' },
 				{ status: 403 }
 			);
@@ -225,19 +224,19 @@ export const DELETE: RequestHandler = async ({ params, locals }) => {
 
 		if (deleteError) {
 			logger.error('Error deleting deck:', deleteError);
-			return json({ error: 'Impossible de supprimer le deck' }, { status: 500 });
+			return Response.json({ error: 'Impossible de supprimer le deck' }, { status: 500 });
 		}
 
 		// La RLS refuse EN SILENCE (0 ligne, aucune erreur) : paquet assigné ou géré
 		// automatiquement (paquet de chapitre). Sans ce contrôle, la route annonçait
 		// « supprimé » (constat E20, 2026-10-10).
 		if (!deletedDecks || deletedDecks.length === 0) {
-			return json({ error: 'Ce paquet ne peut pas être supprimé.' }, { status: 403 });
+			return Response.json({ error: 'Ce paquet ne peut pas être supprimé.' }, { status: 403 });
 		}
 
-		return json({ success: true, message: 'Deck supprimé' });
+		return Response.json({ success: true, message: 'Deck supprimé' });
 	} catch (error) {
 		logger.error('Unexpected error in DELETE /api/srs/decks/[id]:', error);
-		return json({ error: 'Une erreur inattendue s’est produite' }, { status: 500 });
+		return Response.json({ error: 'Une erreur inattendue s’est produite' }, { status: 500 });
 	}
 };

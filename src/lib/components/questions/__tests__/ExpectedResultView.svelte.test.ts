@@ -10,9 +10,9 @@
 import { describe, it, expect } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import ExpectedResultView from '../ExpectedResultView.svelte';
-import { buildExpectedResult, type ExpectedResult } from '$lib/questions/expected-result';
-import type { QuestionInstance } from '$lib/questions/types';
-import type { ResolvedMarkdown } from '$lib/ubumark';
+import { buildExpectedResult, type ExpectedResult } from '#lib/questions/expected-result.ts';
+import type { QuestionInstance } from '#lib/questions/types.ts';
+import type { ResolvedMarkdown } from '#lib/ubumark/index.ts';
 
 // Fixtures
 function instance(statement: string, blanks: QuestionInstance['blanks']): QuestionInstance {

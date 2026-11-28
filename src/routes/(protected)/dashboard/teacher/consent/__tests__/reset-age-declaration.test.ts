@@ -10,7 +10,7 @@
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
-vi.mock('$lib/server/email/brevo', () => ({ isBrevoConfigured: () => true }));
+vi.mock('#lib/server/email/brevo.ts', () => ({ isBrevoConfigured: () => true }));
 
 import { actions } from '../+page.server';
 

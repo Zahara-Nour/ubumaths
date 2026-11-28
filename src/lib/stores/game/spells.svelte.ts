@@ -2,7 +2,7 @@
 // Author: Claude Code
 // Date: 2025-10-15
 
-import type { GameSpell, GameSpellDeck, GameElement } from '$lib/types/game';
+import type { GameSpell, GameSpellDeck, GameElement } from '#lib/types/game.ts';
 
 class SpellsStore {
 	private _spells = $state<GameSpell[]>([]);

@@ -1,0 +1,222 @@
+{
+	"id": "b4c9a2a1-320b-4f3c-86c6-dfa43908d31b",
+	"title": "Perspective et patron",
+	"description": "Associer un pavé, un prisme droit, un cylindre en perspective cavalière à son patron",
+	"grades": ["5"],
+	"level": 3,
+	"delay": 75,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Voici un pavé droit.\n\n```solide\nforme: pave {{l}} {{p}} {{h}}\ncotes: cm\n```\n\nLequel de ces dessins est un patron de ce pavé ?\n\n````choix\n- ```patron\n  solide: pave {{l}} {{p}} {{h}}\n  forme: {{f}}\n  cotes: cm\n  ```\n- ```patron\n  solide: pave {{l}} {{eval:p+1}} {{h}}\n  forme: {{f}}\n  cotes: cm\n  ```\n- ```patron\n  solide: pave {{l}} {{p}} {{h}}\n  forme: faux {{m}}\n  cotes: cm\n  ```\n````",
+			"variables": [
+				{
+					"name": "l",
+					"expression": "4..5"
+				},
+				{
+					"name": "p",
+					"expression": "2..3"
+				},
+				{
+					"name": "h",
+					"expression": "2..4"
+				},
+				{
+					"name": "f",
+					"expression": "1..11"
+				},
+				{
+					"name": "m",
+					"expression": "1..8"
+				}
+			],
+			"conditions": ["l!=p", "p!=h", "l!=h", "l!=p+1", "h!=p+1"],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Un patron d'un pavé a $6$ rectangles, deux à deux identiques, qui se replient sans se chevaucher, avec les **mêmes dimensions** que le pavé.",
+					"L'un des dessins a une dimension différente ; un autre, en se repliant, met deux faces au même endroit.",
+					"Le patron du pavé est donc $\\textcolor{{{color:primary.0}}}{\\text{celui qui a ses trois dimensions et se replie}}$."
+				]
+			}
+		},
+		{
+			"statement": "Voici un patron.\n\n```patron\nsolide: {{if:k==1|prisme triangle 3 2.5 4|{{if:k==2|cylindre 1 3|{{if:k==3|pave 4 2 3|pyramide carree 3 3}}}}}}\nforme: 1\n```\n\nC'est le patron :\n\n```choix\n- d'un prisme droit\n- d'un cylindre\n- d'un pavé droit\n- d'une pyramide\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..4"
+				},
+				{
+					"name": "j",
+					"expression": "eval:k-1"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{j}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"{{if:k==1|Deux triangles identiques et trois rectangles : en se repliant, ils forment un prisme droit à base triangulaire.|{{if:k==2|Deux disques et un rectangle qui s'enroule autour : c'est un cylindre.|{{if:k==3|Six rectangles, deux à deux identiques : c'est un pavé droit.|Un carré et quatre triangles qui se rejoignent en un sommet : c'est une pyramide.}}}}}}",
+					"C'est le patron {{if:k==1|$\\textcolor{{{color:primary.0}}}{\\text{d'un prisme droit}}$|{{if:k==2|$\\textcolor{{{color:primary.0}}}{\\text{d'un cylindre}}$|{{if:k==3|$\\textcolor{{{color:primary.0}}}{\\text{d'un pavé droit}}$|$\\textcolor{{{color:primary.0}}}{\\text{d'une pyramide}}$}}}}}}."
+				]
+			}
+		},
+		{
+			"statement": "Voici le pavé $ABCDEFGH$ et un de ses patrons ; sur le patron, seuls $A$, $B$, $C$, $D$ et un point d'interrogation sont écrits.\n\n```solide\nforme: pave 4 2 3\nsommets: A B C D E F G H\n```\n\n```patron\nsolide: pave 4 2 3\nforme: 1\nsommets: {{if:k==1|A B C D - ? - -|{{if:k==2|A B C D - - ? -|{{if:k==3|A B C D - - - ?|A B C D ? - - -}}}}}}\n```\n\nQuelle lettre doit-on écrire à la place du point d'interrogation ?\n\n```choix\n- ${{if:k==1|F|{{if:k==2|G|{{if:k==3|H|E}}}}}}$\n- ${{if:k==1|G|{{if:k==2|H|{{if:k==3|E|F}}}}}}$\n- ${{if:k==1|E|{{if:k==2|F|{{if:k==3|G|H}}}}}}$\n- ${{if:k==1|H|{{if:k==2|E|{{if:k==3|F|G}}}}}}$\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..4"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On replie le patron autour de la face $ABCD$ : chaque sommet du dessus vient au-dessus d'un sommet du dessous ($E$ sur $A$, $F$ sur $B$, $G$ sur $C$, $H$ sur $D$).",
+					"En repliant le patron, le point d'interrogation vient sur le sommet {{if:k==1|$\\textcolor{{{color:primary.0}}}{\\text{F}}$|{{if:k==2|$\\textcolor{{{color:primary.0}}}{\\text{G}}$|{{if:k==3|$\\textcolor{{{color:primary.0}}}{\\text{H}}$|$\\textcolor{{{color:primary.0}}}{\\text{E}}$}}}}}} du pavé."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Le bon patron",
+			"variationIndex": 0,
+			"variables": {
+				"l": "5",
+				"p": "2",
+				"h": "4",
+				"f": "1",
+				"m": "3"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : dimensions différentes",
+			"variationIndex": 0,
+			"variables": {
+				"l": "5",
+				"p": "2",
+				"h": "4",
+				"f": "7",
+				"m": "3"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : faux patron",
+			"variationIndex": 0,
+			"variables": {
+				"l": "4",
+				"p": "3",
+				"h": "2",
+				"f": "11",
+				"m": "5"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Prisme",
+			"variationIndex": 1,
+			"variables": {
+				"k": "1",
+				"j": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Cylindre",
+			"variationIndex": 1,
+			"variables": {
+				"k": "2",
+				"j": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : cylindre pris pour un prisme",
+			"variationIndex": 1,
+			"variables": {
+				"k": "2",
+				"j": "1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Pyramide",
+			"variationIndex": 1,
+			"variables": {
+				"k": "4",
+				"j": "3"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : pyramide prise pour un prisme",
+			"variationIndex": 1,
+			"variables": {
+				"k": "4",
+				"j": "3"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Lettre juste",
+			"variationIndex": 2,
+			"variables": {
+				"k": "1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : sommet voisin",
+			"variationIndex": 2,
+			"variables": {
+				"k": "2"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

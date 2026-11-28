@@ -9,7 +9,7 @@
  */
 
 import { error } from '@sveltejs/kit';
-import { checkEndpointRateLimit } from '$lib/server/rateLimiter';
+import { checkEndpointRateLimit } from '#lib/server/rateLimiter.ts';
 
 /**
  * @param key - Clé du seau (ex. `search:${user.id}`, `error-log:${ip}`)

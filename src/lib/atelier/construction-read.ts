@@ -28,7 +28,7 @@
  * @module atelier/construction-read
  */
 
-import { BUILTIN_NAMES } from '$lib/geometry-core/dsl/builtins';
+import { BUILTIN_NAMES } from '#lib/geometry-core/dsl/builtins.ts';
 import type { Provenance } from './parse';
 
 // =============================================================================

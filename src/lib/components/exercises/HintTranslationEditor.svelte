@@ -15,15 +15,15 @@
 	 * <HintTranslationEditor hints={variation.hints} bind:translations={variation.translations} />
 	 */
 
-	import { Input } from '$lib/components/ui/input';
-	import { Label } from '$lib/components/ui/label';
-	import { Textarea } from '$lib/components/ui/textarea';
+	import { Input } from '#lib/components/ui/input/index.ts';
+	import { Label } from '#lib/components/ui/label/index.ts';
+	import { Textarea } from '#lib/components/ui/textarea/index.ts';
 	import {
 		translatedHintField,
 		withTranslatedHint,
 		type TranslatableHintField
-	} from '$lib/exercises/translation-draft';
-	import type { ExerciseHint, ExerciseTranslations } from '$lib/exercises/types';
+	} from '#lib/exercises/translation-draft.ts';
+	import type { ExerciseHint, ExerciseTranslations } from '#lib/exercises/types.ts';
 
 	let {
 		hints = [],

@@ -21,9 +21,9 @@
  */
 
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { WorksheetAssignmentRow } from '$lib/types/worksheets';
+import type { WorksheetAssignmentRow } from '#lib/types/worksheets.ts';
 import { canAccessCorrections } from './correction-release';
-import { createServerLogger } from '$lib/utils/logger';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('server/worksheets/correction-visibility');
 

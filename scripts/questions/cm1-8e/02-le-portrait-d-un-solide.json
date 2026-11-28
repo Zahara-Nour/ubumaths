@@ -1,0 +1,251 @@
+{
+	"id": "af2d7e03-048a-4540-aa28-3e0a1baf3812",
+	"title": "Le portrait d'un solide",
+	"description": "Retrouver un solide d'après ses faces (prismes à base triangle, pentagone, hexagone ; pyramides ; cube, pavé) ; sommets et arêtes d'un prisme (6, 9)",
+	"grades": ["CM1", "CM2"],
+	"level": 15,
+	"delay": 60,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "{{if:p==1|J'ai $5$ faces : $2$ triangles pareils, face à face, et $3$ rectangles.|{{if:p==2|J'ai $7$ faces : $2$ pentagones pareils, face à face, et $5$ rectangles.|{{if:p==3|J'ai $5$ faces : $1$ carré, et $4$ triangles qui se rejoignent en un même sommet.|{{if:p==4|J'ai $4$ faces, toutes des triangles ; trois d'entre eux se rejoignent en un même sommet.|J'ai $8$ faces : $2$ hexagones pareils, face à face, et $6$ rectangles.}}}}}}}} Qui suis-je ?\n\n```choix\n- C'est un cube.\n- C'est un pavé.\n- C'est une boule.\n- C'est un cône.\n- C'est une pyramide.\n- C'est un cylindre.\n- C'est un prisme droit.\n```",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "1..5"
+				},
+				{
+					"name": "r",
+					"expression": "{{if:p==1|6|{{if:p==2|6|{{if:p==3|4|{{if:p==4|4|6}}}}}}}}"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{r}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"{{if:p==1|Deux bases pareilles face à face, reliées par des rectangles : c'est $\\textcolor{{{color:primary.0}}}{\\text{un prisme droit}}$, à base triangulaire.|{{if:p==2|Deux bases pareilles face à face, reliées par des rectangles : c'est $\\textcolor{{{color:primary.0}}}{\\text{un prisme droit}}$, à base pentagonale ($5$ côtés, donc $5$ rectangles).|{{if:p==3|Des triangles qui se rejoignent en un sommet, sur une base : c'est $\\textcolor{{{color:primary.0}}}{\\text{une pyramide}}$, à base carrée.|{{if:p==4|Des triangles qui se rejoignent en un sommet : c'est $\\textcolor{{{color:primary.0}}}{\\text{une pyramide}}$, dont la base est elle aussi un triangle.|Deux bases pareilles face à face, reliées par des rectangles : c'est $\\textcolor{{{color:primary.0}}}{\\text{un prisme droit}}$, à base hexagonale ($6$ côtés, donc $6$ rectangles).}}}}}}}}"
+				]
+			}
+		},
+		{
+			"statement": "{{if:c==1|J'ai $6$ faces, toutes des carrés pareils ; $8$ sommets et $12$ arêtes.|J'ai $6$ faces rectangulaires, qui ne sont pas toutes des carrés ; $8$ sommets et $12$ arêtes.}} Qui suis-je ?\n\n```choix\n- C'est un cube.\n- C'est un pavé.\n- C'est une pyramide.\n- C'est un cylindre.\n```",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "1..2"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:c-1}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"{{if:c==1|Six faces carrées toutes pareilles : c'est $\\textcolor{{{color:primary.0}}}{\\text{un cube}}$.|Six faces rectangulaires, pas toutes carrées : c'est $\\textcolor{{{color:primary.0}}}{\\text{un pavé}}$.}}"
+				]
+			}
+		},
+		{
+			"statement": "Combien ce prisme droit a-t-il de sommets, et combien d'arêtes ?\n\n```solide\nforme: prisme {{if:o==1|triangle 3 2.5 4|{{if:o==2|triangle-rectangle 3 2 4.5|triangle 4 2 3}}}}\n```\n\n[_] sommets et [_] arêtes",
+			"variables": [
+				{
+					"name": "o",
+					"expression": "1..3"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "6"
+				},
+				{
+					"expectedAnswer": "9"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Les traits en pointillés sont les arêtes cachées : elles comptent aussi.",
+					"Sommets : $3$ sur la base de devant et $3$ sur celle de derrière, $\\textcolor{{{color:primary.0}}}{6}$.",
+					"Arêtes : $3$ autour de chaque base, et $3$ qui les relient : $3 + 3 + 3 = \\textcolor{{{color:primary.0}}}{9}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Prisme à base triangle",
+			"variationIndex": 0,
+			"variables": {
+				"p": "1",
+				"r": "6"
+			},
+			"answers": ["6"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : prisme pris pour une pyramide",
+			"variationIndex": 0,
+			"variables": {
+				"p": "1",
+				"r": "6"
+			},
+			"answers": ["4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Prisme à base pentagone",
+			"variationIndex": 0,
+			"variables": {
+				"p": "2",
+				"r": "6"
+			},
+			"answers": ["6"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Pyramide à base carrée",
+			"variationIndex": 0,
+			"variables": {
+				"p": "3",
+				"r": "4"
+			},
+			"answers": ["4"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : pyramide prise pour un prisme",
+			"variationIndex": 0,
+			"variables": {
+				"p": "3",
+				"r": "4"
+			},
+			"answers": ["6"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Pyramide à base triangle",
+			"variationIndex": 0,
+			"variables": {
+				"p": "4",
+				"r": "4"
+			},
+			"answers": ["4"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Prisme à base hexagone",
+			"variationIndex": 0,
+			"variables": {
+				"p": "5",
+				"r": "6"
+			},
+			"answers": ["6"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Cube",
+			"variationIndex": 1,
+			"variables": {
+				"c": "1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : cube pris pour un pavé",
+			"variationIndex": 1,
+			"variables": {
+				"c": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Pavé",
+			"variationIndex": 1,
+			"variables": {
+				"c": "2"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : pavé pris pour un cube",
+			"variationIndex": 1,
+			"variables": {
+				"c": "2"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Prisme : 6 sommets, 9 arêtes",
+			"variationIndex": 2,
+			"variables": {
+				"o": "1"
+			},
+			"answers": ["6", "9"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : arêtes cachées oubliées",
+			"variationIndex": 2,
+			"variables": {
+				"o": "1"
+			},
+			"answers": ["6", "7"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : sommets et arêtes échangés",
+			"variationIndex": 2,
+			"variables": {
+				"o": "2"
+			},
+			"answers": ["9", "6"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : compté comme un pavé",
+			"variationIndex": 2,
+			"variables": {
+				"o": "3"
+			},
+			"answers": ["8", "12"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

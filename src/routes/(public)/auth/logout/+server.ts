@@ -30,12 +30,12 @@
  */
 import { redirect } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { createServerLogger } from '$lib/utils/logger';
+import { createServerLogger } from '#lib/utils/logger.ts';
 import {
 	ADMIN_ELEVATION_COOKIE,
 	createAdminClient,
 	decodeElevationCookie
-} from '$lib/server/adminElevation';
+} from '#lib/server/adminElevation.ts';
 
 const logger = createServerLogger('auth/logout');
 

@@ -1,0 +1,164 @@
+{
+	"id": "11a01460-f201-44f5-83fc-18041c5c585d",
+	"title": "Place le nombre sur la demi-droite",
+	"description": "Placer un nombre sur une demi-droite graduée de un en un : de 0 à 10 ; de 0 à 20 (11 à 19) ; un morceau de dix, de 10 à 100",
+	"grades": ["CP"],
+	"level": 1,
+	"delay": 60,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Place le nombre ${{x}}$ sur la demi-droite graduée.\n\n```line\nstart: 0\nend: 10\nstep: 1\nmajor: 5\nlabels: 0, 5, 10\nplacer: {{x}}\n```",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "1..9"
+				}
+			],
+			"conditions": ["x != 5"],
+			"blanks": [],
+			"correction": {
+				"steps": [
+					"La demi-droite est graduée de un en un : d'un trait au suivant, on avance de $1$.",
+					"On part de $0$ et on compte ${{x}}$ traits."
+				]
+			}
+		},
+		{
+			"statement": "Place le nombre ${{x}}$ sur la demi-droite graduée.\n\n```line\nstart: 0\nend: 20\nstep: 1\nmajor: 5\nlabels: 0, 10, 20\nplacer: {{x}}\n```",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "11..19"
+				}
+			],
+			"conditions": ["x != 15"],
+			"blanks": [],
+			"correction": {
+				"steps": [
+					"La demi-droite est graduée de un en un : d'un trait au suivant, on avance de $1$.",
+					"On part de $10$ et on compte encore ${{eval:x-10}}$ traits : $10 + {{eval:x-10}} = {{x}}$."
+				]
+			}
+		},
+		{
+			"statement": "Place le nombre ${{x}}$ sur la demi-droite graduée.\n\n```line\nstart: {{lo}}\nend: {{hi}}\nstep: 1\nmajor: 5\nlabels: {{lo}}, {{hi}}\nplacer: {{x}}\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9"
+				},
+				{
+					"name": "k",
+					"expression": "1..9"
+				},
+				{
+					"name": "lo",
+					"expression": "eval:10*a"
+				},
+				{
+					"name": "hi",
+					"expression": "eval:lo+10"
+				},
+				{
+					"name": "x",
+					"expression": "eval:lo+k"
+				}
+			],
+			"blanks": [],
+			"correction": {
+				"steps": [
+					"On ne voit qu'un morceau de la demi-droite, de ${{lo}}$ à ${{hi}}$, graduée de un en un.",
+					"On part de ${{lo}}$ et on compte ${{k}}$ traits : ${{lo}} + {{k}} = {{x}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "7 sur la demi-droite de 0 à 10",
+			"variationIndex": 0,
+			"variables": {
+				"x": "7"
+			},
+			"answers": ["7"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : un trait de trop (8)",
+			"variationIndex": 0,
+			"variables": {
+				"x": "7"
+			},
+			"answers": ["8"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Rien placé : case vide",
+			"variationIndex": 0,
+			"variables": {
+				"x": "7"
+			},
+			"answers": [""],
+			"expected": {
+				"status": "empty"
+			}
+		},
+		{
+			"description": "13 sur la demi-droite de 0 à 20",
+			"variationIndex": 1,
+			"variables": {
+				"x": "13"
+			},
+			"answers": ["13"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 3 (compté depuis 0, sans la dizaine)",
+			"variationIndex": 1,
+			"variables": {
+				"x": "13"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "37, entre 30 et 40",
+			"variationIndex": 2,
+			"variables": {
+				"a": "3",
+				"k": "7",
+				"lo": "30",
+				"hi": "40",
+				"x": "37"
+			},
+			"answers": ["37"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 36 (le trait de départ compté)",
+			"variationIndex": 2,
+			"variables": {
+				"a": "3",
+				"k": "7",
+				"lo": "30",
+				"hi": "40",
+				"x": "37"
+			},
+			"answers": ["36"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

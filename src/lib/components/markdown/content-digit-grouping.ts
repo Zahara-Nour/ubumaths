@@ -19,8 +19,8 @@ import { getContext, hasContext, setContext } from 'svelte';
 import {
 	MIN_DIGITS_FOR_GROUPING,
 	SCHOOL_MIN_DIGITS_FOR_GROUPING
-} from '$lib/mathAST/digit-grouping';
-import type { QuestionInstance } from '$lib/questions/types';
+} from '#lib/mathAST/digit-grouping.ts';
+import type { QuestionInstance } from '#lib/questions/types.ts';
 
 const DIGIT_GROUPING_KEY = Symbol('markdown-digit-grouping');
 

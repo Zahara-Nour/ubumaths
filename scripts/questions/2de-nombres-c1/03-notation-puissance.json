@@ -1,0 +1,336 @@
+{
+	"id": "f8736002-2920-444f-973f-b365e1c429d5",
+	"title": "Notation puissance",
+	"description": "Écrire un produit de facteurs égaux, ou son inverse, sous la forme aⁿ ou a⁻ⁿ (pièges : 4⁷ pour 7⁴, −2⁴ pour (−2)⁴, 5³ pour 1/5³)",
+	"grades": ["2"],
+	"level": 6,
+	"delay": 30,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Écris sous la forme d'une puissance.\n\n$${{if:n==3|{{a}}\\times {{a}}\\times {{a}}|{{if:n==4|{{a}}\\times {{a}}\\times {{a}}\\times {{a}}|{{if:n==5|{{a}}\\times {{a}}\\times {{a}}\\times {{a}}\\times {{a}}|{{if:n==6|{{a}}\\times {{a}}\\times {{a}}\\times {{a}}\\times {{a}}\\times {{a}}|{{a}}\\times {{a}}\\times {{a}}\\times {{a}}\\times {{a}}\\times {{a}}\\times {{a}}}}}}}}}}=?$$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9"
+				},
+				{
+					"name": "n",
+					"expression": "3..7"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{a}}^{ {{n}} }",
+					"expectedErrors": [
+						{
+							"answer": "{{n}}^{ {{a}} }",
+							"message": "Tu as échangé la base et l'exposant : la base est le facteur répété.",
+							"label": "Base et exposant échangés"
+						},
+						{
+							"answer": "{{eval:(a)*(n)}}",
+							"message": "Tu as multiplié le facteur par le nombre de facteurs : ce n'est pas une puissance.",
+							"label": "a × n"
+						},
+						{
+							"answer": "{{a}}^{ {{eval:(n)-1}} }",
+							"message": "Tu as compté les signes × au lieu de compter les facteurs.",
+							"label": "Exposant = nombre de signes ×"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"$a^n$ est le produit de $n$ facteurs tous égaux à $a$ : la base est le facteur répété, l'exposant est le nombre de facteurs.",
+					"Le facteur ${{a}}$ est répété ${{n}}$ fois : ${{if:n==3|{{a}}\\times {{a}}\\times {{a}}|{{if:n==4|{{a}}\\times {{a}}\\times {{a}}\\times {{a}}|{{if:n==5|{{a}}\\times {{a}}\\times {{a}}\\times {{a}}\\times {{a}}|{{if:n==6|{{a}}\\times {{a}}\\times {{a}}\\times {{a}}\\times {{a}}\\times {{a}}|{{a}}\\times {{a}}\\times {{a}}\\times {{a}}\\times {{a}}\\times {{a}}\\times {{a}}}}}}}}}}=\\textcolor{{{color:primary.0}}}{{{a}}^{ {{n}} }}$."
+				]
+			},
+			"hint": "Repère le facteur répété (la base) et compte combien de fois il apparaît (l'exposant)."
+		},
+		{
+			"statement": "Écris sous la forme d'une puissance de $(-{{a}})$.\n\n$${{if:n==2|(-{{a}})\\times (-{{a}})|{{if:n==3|(-{{a}})\\times (-{{a}})\\times (-{{a}})|{{if:n==4|(-{{a}})\\times (-{{a}})\\times (-{{a}})\\times (-{{a}})|(-{{a}})\\times (-{{a}})\\times (-{{a}})\\times (-{{a}})\\times (-{{a}})}}}}}}=?$$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9"
+				},
+				{
+					"name": "n",
+					"expression": "2..5"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "(-{{a}})^{ {{n}} }",
+					"expectedErrors": [
+						{
+							"answer": "-{{a}}^{ {{n}} }",
+							"message": "Sans parenthèses, l'exposant ne porte pas sur le signe « − » : le facteur répété doit rester entre parenthèses.",
+							"label": "Parenthèses oubliées (−aⁿ)"
+						},
+						{
+							"answer": "{{a}}^{ {{n}} }",
+							"message": "Tu as perdu le signe « − » : le facteur répété est un nombre négatif.",
+							"label": "Signe oublié (aⁿ)"
+						},
+						{
+							"answer": "(-{{a}})^{ {{eval:(n)-1}} }",
+							"message": "Tu as compté les signes × au lieu de compter les facteurs.",
+							"label": "Exposant = nombre de signes ×"
+						},
+						{
+							"answer": "{{eval:-(a)*(n)}}",
+							"message": "Tu as multiplié le facteur par le nombre de facteurs : ce n'est pas une puissance.",
+							"label": "(−a) × n"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"$a^n$ est le produit de $n$ facteurs tous égaux à $a$ ; ici le facteur répété est $-{{a}}$, il reste entre parenthèses.",
+					"Le facteur $(-{{a}})$ est répété ${{n}}$ fois : ${{if:n==2|(-{{a}})\\times (-{{a}})|{{if:n==3|(-{{a}})\\times (-{{a}})\\times (-{{a}})|{{if:n==4|(-{{a}})\\times (-{{a}})\\times (-{{a}})\\times (-{{a}})|(-{{a}})\\times (-{{a}})\\times (-{{a}})\\times (-{{a}})\\times (-{{a}})}}}}}}=\\textcolor{{{color:primary.0}}}{(-{{a}})^{ {{n}} }}$.",
+					"Sans parenthèses, $-{{a}}^{ {{n}} }$ serait l'opposé de ${{a}}^{ {{n}} }$ : ce n'est pas le même nombre quand l'exposant est pair."
+				]
+			},
+			"hint": "Repère le facteur répété et compte combien de fois il apparaît ; attention, ce facteur est négatif."
+		},
+		{
+			"statement": "Écris sous la forme d'une puissance de ${{a}}$.\n\n$$\\dfrac{1}{{{if:n==2|{{a}}\\times {{a}}|{{if:n==3|{{a}}\\times {{a}}\\times {{a}}|{{if:n==4|{{a}}\\times {{a}}\\times {{a}}\\times {{a}}|{{a}}\\times {{a}}\\times {{a}}\\times {{a}}\\times {{a}}}}}}}}}=?$$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9"
+				},
+				{
+					"name": "n",
+					"expression": "2..5"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{a}}^{-{{n}} }",
+					"expectedErrors": [
+						{
+							"answer": "{{a}}^{ {{n}} }",
+							"message": "Tu as oublié la fraction : l'inverse d'une puissance s'écrit avec un exposant négatif.",
+							"label": "Inverse oublié (aⁿ)"
+						},
+						{
+							"answer": "-{{a}}^{ {{n}} }",
+							"message": "Le signe « − » ne se met pas devant le nombre : un inverse n'est pas un nombre négatif.",
+							"label": "−aⁿ au lieu de a⁻ⁿ"
+						},
+						{
+							"answer": "{{a}}^{-{{eval:(n)-1}} }",
+							"message": "Tu as compté les signes × au lieu de compter les facteurs.",
+							"label": "Exposant = nombre de signes ×"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"$a^{-n}=\\dfrac{1}{a^n}$ : l'inverse d'une puissance s'écrit avec un exposant négatif.",
+					"$$\\dfrac{1}{{{if:n==2|{{a}}\\times {{a}}|{{if:n==3|{{a}}\\times {{a}}\\times {{a}}|{{if:n==4|{{a}}\\times {{a}}\\times {{a}}\\times {{a}}|{{a}}\\times {{a}}\\times {{a}}\\times {{a}}\\times {{a}}}}}}}}}=\\dfrac{1}{ {{a}}^{ {{n}} } }=\\textcolor{{{color:primary.0}}}{{{a}}^{-{{n}} }}$$"
+				]
+			},
+			"hint": "Écris d'abord le dénominateur comme une puissance de ${{a}}$, puis pense à l'écriture de l'inverse d'une puissance."
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "7 × 7 × 7 × 7 = 7⁴",
+			"variationIndex": 0,
+			"variables": {
+				"a": "7",
+				"n": "4"
+			},
+			"answers": ["7^4"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : base et exposant échangés (4⁷)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "7",
+				"n": "4"
+			},
+			"answers": ["4^7"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as échangé la base et l'exposant : la base est le facteur répété."
+			}
+		},
+		{
+			"description": "Erreur : 7 × 4 = 28",
+			"variationIndex": 0,
+			"variables": {
+				"a": "7",
+				"n": "4"
+			},
+			"answers": ["28"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as multiplié le facteur par le nombre de facteurs : ce n'est pas une puissance."
+			}
+		},
+		{
+			"description": "Forme : 2 401 calculé",
+			"variationIndex": 0,
+			"variables": {
+				"a": "7",
+				"n": "4"
+			},
+			"answers": ["2\\,401"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		},
+		{
+			"description": "(−2) × (−2) × (−2) × (−2) = (−2)⁴",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"n": "4"
+			},
+			"answers": ["(-2)^4"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : parenthèses oubliées (−2⁴)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"n": "4"
+			},
+			"answers": ["-2^4"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Sans parenthèses, l'exposant ne porte pas sur le signe « − » : le facteur répété doit rester entre parenthèses."
+			}
+		},
+		{
+			"description": "(−3) × (−3) × (−3) = (−3)³",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3",
+				"n": "3"
+			},
+			"answers": ["(-3)^3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "1/(5 × 5 × 5) = 5⁻³",
+			"variationIndex": 2,
+			"variables": {
+				"a": "5",
+				"n": "3"
+			},
+			"answers": ["5^{-3}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 5³ (inverse oublié)",
+			"variationIndex": 2,
+			"variables": {
+				"a": "5",
+				"n": "3"
+			},
+			"answers": ["5^3"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as oublié la fraction : l'inverse d'une puissance s'écrit avec un exposant négatif."
+			}
+		},
+		{
+			"description": "Erreur : −5³",
+			"variationIndex": 2,
+			"variables": {
+				"a": "5",
+				"n": "3"
+			},
+			"answers": ["-5^3"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Le signe « − » ne se met pas devant le nombre : un inverse n'est pas un nombre négatif."
+			}
+		},
+		{
+			"description": "Erreur prévue : Exposant = nombre de signes ×",
+			"variationIndex": 0,
+			"variables": {
+				"a": "7",
+				"n": "4"
+			},
+			"answers": ["7^3"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as compté les signes × au lieu de compter les facteurs."
+			}
+		},
+		{
+			"description": "Erreur prévue : Signe oublié (aⁿ)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3",
+				"n": "3"
+			},
+			"answers": ["3^3"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as perdu le signe « − » : le facteur répété est un nombre négatif."
+			}
+		},
+		{
+			"description": "Erreur prévue : Exposant = nombre de signes ×",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"n": "4"
+			},
+			"answers": ["(-2)^3"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as compté les signes × au lieu de compter les facteurs."
+			}
+		},
+		{
+			"description": "Erreur prévue : (−a) × n",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3",
+				"n": "3"
+			},
+			"answers": ["-9"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as multiplié le facteur par le nombre de facteurs : ce n'est pas une puissance."
+			}
+		},
+		{
+			"description": "Erreur prévue : Exposant = nombre de signes ×",
+			"variationIndex": 2,
+			"variables": {
+				"a": "5",
+				"n": "3"
+			},
+			"answers": ["5^{-2}"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as compté les signes × au lieu de compter les facteurs."
+			}
+		}
+	]
+}

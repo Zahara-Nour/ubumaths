@@ -31,11 +31,12 @@ import { describe, it, expect, beforeAll, afterAll, vi } from 'vitest';
 import { createClient, type SupabaseClient, type User } from '@supabase/supabase-js';
 import {
 	createServiceRoleClient,
-	cleanupAllTestData
+	cleanupAllTestData,
+	latestTestVersionId
 } from '../helpers/database/trigger-test-helpers';
 import { DEFAULT_TEST_PASSWORD } from '../helpers/database/supabase-client';
 import { TestData } from '../helpers/database/test-data-factory';
-import type { Database } from '$lib/types/database';
+import type { Database } from '#lib/types/database.ts';
 import { GET as listerFichesEleve } from '../../src/routes/api/student/worksheets/+server';
 import { load as chargerSuivi } from '../../src/routes/(protected)/dashboard/teacher/contenu/worksheets/[id]/assignments/[assignmentId]/progress/+page.server';
 
@@ -136,6 +137,7 @@ describe('affectation visant une seconde classe', () => {
 		await insert('worksheet_exercises', {
 			worksheet_id: worksheetId,
 			exercise_id: exercise.id,
+			exercise_version_id: await latestTestVersionId(exercise.id),
 			position: 1
 		});
 

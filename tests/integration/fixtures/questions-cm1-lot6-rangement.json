@@ -1,0 +1,112 @@
+[
+	{
+		"id": "03bd034d-5c4e-49d4-8da4-5e621089c12b",
+		"noeudAvant": null,
+		"noeudApres": "Nombres et calculs > Problèmes arithmétiques > optimisation",
+		"gradesAvant": ["CM1"],
+		"gradesApres": ["CM1"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["CM1§CM1-060"]
+	},
+	{
+		"id": "24db415b-40ab-47d4-86c7-98bf42a9bab3",
+		"noeudAvant": null,
+		"noeudApres": "Nombres et calculs > Problèmes arithmétiques > comparaison",
+		"gradesAvant": ["CM1"],
+		"gradesApres": ["CM1"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["CM1§CM1-134"]
+	},
+	{
+		"id": "30c6f9d4-1485-437d-ba3e-ae400a7d7156",
+		"noeudAvant": null,
+		"noeudApres": "Nombres et calculs > Problèmes arithmétiques > en deux étapes ou plus",
+		"gradesAvant": ["CM1"],
+		"gradesApres": ["CM1"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["CM1§CM1-058"]
+	},
+	{
+		"id": "559aa5fc-10ec-4b7e-bd49-c054bb242b34",
+		"noeudAvant": null,
+		"noeudApres": "Nombres et calculs > Problèmes arithmétiques > parties-tout",
+		"gradesAvant": ["CM1"],
+		"gradesApres": ["CM1"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["CM1§CM1-054"]
+	},
+	{
+		"id": "67cb8e74-fa1a-4171-8ae2-ab1e62ded92c",
+		"noeudAvant": null,
+		"noeudApres": "Nombres et calculs > Problèmes arithmétiques > produits cartésiens",
+		"gradesAvant": ["CM1"],
+		"gradesApres": ["CM1"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["CM1§CM1-059"]
+	},
+	{
+		"id": "8a1d9a4a-cc92-4559-9a57-d1a746b5382d",
+		"noeudAvant": null,
+		"noeudApres": "Nombres et calculs > Problèmes arithmétiques > parties-tout",
+		"gradesAvant": ["CM1"],
+		"gradesApres": ["CM1"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["CM1§CM1-054"]
+	},
+	{
+		"id": "9666ca34-ce4b-4a16-b87b-693a2bcb3827",
+		"noeudAvant": null,
+		"noeudApres": "Nombres et calculs > Problèmes arithmétiques > en deux étapes ou plus",
+		"gradesAvant": ["CM1"],
+		"gradesApres": ["CM1"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["CM1§CM1-055"]
+	},
+	{
+		"id": "b3771f79-7df9-4a4a-b03b-5d8ae11ba6d1",
+		"noeudAvant": null,
+		"noeudApres": "Nombres et calculs > Problèmes arithmétiques > multiplicatifs",
+		"gradesAvant": ["CM1"],
+		"gradesApres": ["CM1"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["CM1§CM1-056"]
+	},
+	{
+		"id": "e55366fc-b2f5-4b37-9938-6a8a01938829",
+		"noeudAvant": null,
+		"noeudApres": "Nombres et calculs > Problèmes arithmétiques > multiplicatifs",
+		"gradesAvant": ["CM1"],
+		"gradesApres": ["CM1"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["CM1§CM1-056"]
+	},
+	{
+		"id": "edb36f84-112f-4586-b2b7-b436ccdc2029",
+		"noeudAvant": null,
+		"noeudApres": "Nombres et calculs > Problèmes arithmétiques > comparaison",
+		"gradesAvant": ["CM1"],
+		"gradesApres": ["CM1"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["CM1§CM1-057"]
+	}
+]

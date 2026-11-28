@@ -3,16 +3,16 @@
  * pointillés (lot 3 bis de la refonte de l'Atelier).
  */
 import { describe, expect, it } from 'vitest';
-import { createTransformer } from '$lib/grapheur/viewport';
-import { parseFunction } from '$lib/grapheur/evaluator';
+import { createTransformer } from '#lib/grapheur/viewport.ts';
+import { parseFunction } from '#lib/grapheur/evaluator.ts';
 import {
 	readingAt,
 	readingGeometry,
 	readingNumber,
 	readingSentence,
 	snapReading
-} from '$lib/grapheur/image-reading';
-import type { ExplicitFunction } from '$lib/grapheur/types';
+} from '#lib/grapheur/image-reading.ts';
+import type { ExplicitFunction } from '#lib/grapheur/types.ts';
 
 /** Une courbe minimale, comme le grapheur la tient. */
 function curve(latex: string, restriction?: ExplicitFunction['restriction']): ExplicitFunction {

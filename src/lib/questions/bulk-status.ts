@@ -3,7 +3,7 @@
  * ==========================================
  *
  * Partagée entre l'endpoint `POST /api/questions/templates/bulk-status` et la
- * page admin qui l'appelle (hors de `$lib/server`, donc importable côté client).
+ * page admin qui l'appelle (hors de `#lib/server`, donc importable côté client).
  */
 
 export type BulkTemplateStatus = 'published' | 'draft';

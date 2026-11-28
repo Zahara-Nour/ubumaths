@@ -19,10 +19,10 @@ const requireRole = vi.fn();
 const rotate = vi.fn();
 const revoke = vi.fn();
 
-vi.mock('$lib/server/middleware/auth', () => ({
+vi.mock('#lib/server/middleware/auth.ts', () => ({
 	requireRole: (...a: unknown[]) => requireRole(...a)
 }));
-vi.mock('$lib/server/course-share-tokens', () => ({
+vi.mock('#lib/server/course-share-tokens.ts', () => ({
 	rotateCourseShareToken: (...a: unknown[]) => rotate(...a),
 	revokeCourseShareToken: (...a: unknown[]) => revoke(...a),
 	getActiveCourseShareToken: vi.fn()

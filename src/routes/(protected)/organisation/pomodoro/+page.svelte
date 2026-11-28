@@ -9,9 +9,9 @@
 -->
 
 <script lang="ts">
-	import * as Card from '$lib/components/ui/card';
-	import { pomodoroStore } from '$lib/stores/pomodoro/pomodoro.svelte';
-	import type { PomodoroPhase } from '$lib/stores/pomodoro/logic';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import { pomodoroStore } from '#lib/stores/pomodoro/pomodoro.svelte.ts';
+	import type { PomodoroPhase } from '#lib/stores/pomodoro/logic.ts';
 
 	import PomodoroDisplay from './PomodoroDisplay.svelte';
 	import PomodoroControls from './PomodoroControls.svelte';

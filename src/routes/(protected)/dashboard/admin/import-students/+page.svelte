@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { lore } from '$lib/config/lore';
+	import { lore } from '#lib/config/lore.ts';
 	/**
 	 * Student Import Page
 	 *
@@ -18,15 +18,15 @@
 
 	import type { PageData } from './$types';
 	import { enhance } from '$app/forms';
-	import { Button } from '$lib/components/ui/button';
-	// import { Input } from '$lib/components/ui/input'; // Unused - for future features
-	import { Textarea } from '$lib/components/ui/textarea';
-	import * as Card from '$lib/components/ui/card';
-	import { Badge } from '$lib/components/ui/badge';
-	import { Label } from '$lib/components/ui/label';
-	import { Separator } from '$lib/components/ui/separator';
-	import { toaster } from '$lib/stores/toaster.svelte';
-	import MySelect from '$lib/components/MySelect.svelte';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	// import { Input } from '#lib/components/ui/input/index.ts'; // Unused - for future features
+	import { Textarea } from '#lib/components/ui/textarea/index.ts';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
+	import { Label } from '#lib/components/ui/label/index.ts';
+	import { Separator } from '#lib/components/ui/separator/index.ts';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
+	import MySelect from '#lib/components/MySelect.svelte';
 
 	let { data }: { data: PageData } = $props();
 

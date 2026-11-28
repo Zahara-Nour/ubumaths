@@ -12,7 +12,7 @@
 		smoothStroke,
 		pointsToSvgPath,
 		doStrokesIntersect
-	} from '$lib/whiteboard/core/stroke-smoothing';
+	} from '#lib/whiteboard/core/stroke-smoothing.ts';
 	import type {
 		Point,
 		AnnotationElement,
@@ -22,7 +22,7 @@
 		AnnotationShapeType,
 		FillMode,
 		StrokeStyle
-	} from '$lib/whiteboard/types/document';
+	} from '#lib/whiteboard/types/document.ts';
 
 	// ==========================================================================
 	// Types

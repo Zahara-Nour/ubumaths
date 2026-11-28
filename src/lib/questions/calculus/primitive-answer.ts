@@ -20,8 +20,8 @@
  * @module questions/calculus/primitive-answer
  */
 
-import type { MathNode } from '$lib/mathAST/types';
-import type { CalculusBlankFields } from '$lib/questions/types';
+import type { MathNode } from '#lib/mathAST/types.ts';
+import type { CalculusBlankFields } from '#lib/questions/types.ts';
 import {
 	type CalculusVerdict,
 	type ExpectedCheck,

@@ -3,7 +3,7 @@
  * ville connue → ses données ; adresse inconnue → 404.
  */
 import { error } from '@sveltejs/kit';
-import { capitalTitle, cityBySlug } from '$lib/kingdom-tour/cities';
+import { capitalTitle, cityBySlug } from '#lib/kingdom-tour/cities.ts';
 import type { PageLoad } from './$types';
 
 // Constantes

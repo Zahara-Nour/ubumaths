@@ -11,15 +11,15 @@
 import { describe, it, expect, afterEach, beforeEach, vi } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import AtelierContainer from '../AtelierContainer.svelte';
-import { Atelier } from '$lib/atelier/atelier.svelte';
-import { CalcDesk } from '$lib/atelier/desk.svelte';
+import { Atelier } from '#lib/atelier/atelier.svelte.ts';
+import { CalcDesk } from '#lib/atelier/desk.svelte.ts';
 import {
 	MAX_ATELIER_FILE_BYTES,
 	MAX_ATELIER_FILE_LENGTH,
 	atelierFileToJson
-} from '$lib/atelier/atelier-file';
-import { CALC_HISTORY_STORAGE_KEY, saveCalcHistory } from '$lib/atelier/history-storage';
-import { SET_ASIDE_STORAGE_KEY } from '$lib/atelier/persistence';
+} from '#lib/atelier/atelier-file.ts';
+import { CALC_HISTORY_STORAGE_KEY, saveCalcHistory } from '#lib/atelier/history-storage.ts';
+import { SET_ASIDE_STORAGE_KEY } from '#lib/atelier/persistence.ts';
 
 // =============================================================================
 // Décor
@@ -113,7 +113,7 @@ function atelierFile(build: (atelier: Atelier, desk: CalcDesk) => void): File {
 // =============================================================================
 
 describe('la barre d’icônes', () => {
-	it('des icônes seules, nommées : à gauche annuler et les fichiers, à droite la console, partager et régler', async () => {
+	it('des icônes seules, nommées : à gauche annuler et les fichiers, à droite la console, partager, régler et le plein écran', async () => {
 		const atelier = new Atelier();
 		atelier.create({ kind: 'function', name: 'f', definition: 'x^2' }, 'text');
 		const { container } = await render(AtelierContainer, { atelier });
@@ -129,7 +129,7 @@ describe('la barre d’icônes', () => {
 				'Charger un atelier',
 				'Enregistrer l’atelier'
 			],
-			['Console', 'Partager', 'Réglages']
+			['Console', 'Partager', 'Réglages', 'Plein écran']
 		]);
 		// Icône seule : aucun texte visible, l'infobulle porte le nom
 		for (const button of toolbar(container).querySelectorAll('button')) {
@@ -252,7 +252,8 @@ describe('la barre d’icônes', () => {
 			'Rétablir',
 			'Enregistrer l’atelier',
 			'Console',
-			'Réglages'
+			'Réglages',
+			'Plein écran'
 		]);
 		// Le bandeau et « Garder dans mon atelier » restent
 		expect(container.textContent).toContain('Le tien n’a pas été modifié.');

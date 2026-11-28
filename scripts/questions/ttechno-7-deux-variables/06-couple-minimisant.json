@@ -1,0 +1,297 @@
+{
+	"id": "43f1fd84-e598-416a-9df0-1fbeda3ffeba",
+	"title": "Chercher le couple (a ; b) qui minimise la somme des carrés",
+	"description": "Parmi des couples (a ; b), garder celui de plus petite somme des carrés des écarts : lecture d'un tableau, calcul pour deux couples, balayage Python, formule de tableur",
+	"grades": ["T_TECHNO"],
+	"level": 2,
+	"delay": 90,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Pour ajuster une série statistique par une droite $y=ax+b$, on a calculé la somme des carrés des écarts $S=\\sum_i\\left(y_i-(ax_i+b)\\right)^2$ pour quatre couples $(a\\,;b)$.\n\n| $(a\\,;b)$ | $(1{,}5\\,;2)$ | $(2\\,;1)$ | $(2\\,;1{,}5)$ | $(2{,}5\\,;0{,}5)$ |\n|---|---|---|---|---|\n| $S$ | ${{eval:s1/10;d}}$ | ${{eval:s2/10;d}}$ | ${{eval:s3/10;d}}$ | ${{eval:s4/10;d}}$ |\n\nQuel couple faut-il garder ?\n\n```choix\nmelanger: non\n- $(1{,}5\\,;2)$\n- $(2\\,;1)$\n- $(2\\,;1{,}5)$\n- $(2{,}5\\,;0{,}5)$\n```",
+			"variables": [
+				{
+					"name": "s1",
+					"expression": "30..90"
+				},
+				{
+					"name": "s2",
+					"expression": "30..90"
+				},
+				{
+					"name": "s3",
+					"expression": "10..40"
+				},
+				{
+					"name": "s4",
+					"expression": "30..90"
+				}
+			],
+			"conditions": ["s3 < s1", "s3 < s2", "s3 < s4"],
+			"blanks": [
+				{
+					"expectedAnswer": "2"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La meilleure droite parmi celles essayées est celle dont les points sont le plus près : celle de **plus petite** somme $S$.",
+					"Ici la plus petite somme est ${{eval:s3/10;d}}$ : on garde le couple $\\textcolor{{{color:primary.0}}}{(2\\,;1{,}5)}$."
+				]
+			}
+		},
+		{
+			"statement": "On considère la série statistique suivante.\n\n| $x_i$ | $1$ | $2$ | $3$ |\n|---|---|---|---|\n| $y_i$ | ${{eval:3+d1}}$ | ${{eval:5+d2}}$ | ${{eval:7+d3}}$ |\n\nOn hésite entre deux droites : $y=2x+1$ et $y=3x-1$. Calcule la somme des carrés des écarts $S_1$ pour la première et $S_2$ pour la seconde.\n\n$S_1=?$\n\n$S_2=?$",
+			"variables": [
+				{
+					"name": "d1",
+					"expression": "-1..1"
+				},
+				{
+					"name": "d2",
+					"expression": "-1..1"
+				},
+				{
+					"name": "d3",
+					"expression": "-1..1"
+				}
+			],
+			"conditions": ["abs((d1^2+d2^2+d3^2)-((1+d1)^2+d2^2+(d3-1)^2)) > 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:d1^2+d2^2+d3^2}}"
+				},
+				{
+					"expectedAnswer": "{{eval:(1+d1)^2+d2^2+(d3-1)^2}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Pour $y=2x+1$, les valeurs de la droite sont $3$, $5$, $7$ : les écarts sont ${{d1}}$, ${{d2}}$, ${{d3}}$ et $S_1=\\textcolor{{{color:primary.0}}}{{{eval:d1^2+d2^2+d3^2}}}$.",
+					"Pour $y=3x-1$, les valeurs de la droite sont $2$, $5$, $8$ : les écarts sont ${{eval:1+d1}}$, ${{d2}}$, ${{eval:d3-1}}$ et $S_2=\\textcolor{{{color:primary.0}}}{{{eval:(1+d1)^2+d2^2+(d3-1)^2}}}$.",
+					"On garde la droite de plus petite somme."
+				]
+			}
+		},
+		{
+			"statement": "La fonction `S(X, Y, a, b)` renvoie la somme des carrés des écarts d'une série à la droite $y=ax+b$. Le programme suivant essaie plusieurs couples $(a\\,;b)$ et garde le meilleur.\n\n```python\nmeilleur = (0, 0)\nsmin = S(X, Y, 0, 0)\nfor a in [1, 1.5, 2, 2.5, 3]:\n    for b in [0, 0.5, 1, 1.5]:\n        s = S(X, Y, a, b)\n        if ...:\n            smin = s\n            meilleur = (a, b)\nprint(meilleur)\n```\n\nQue faut-il écrire à la place des points de suspension ?\n\n```choix\nmelanger: non\n- `s > smin`\n- `s == smin`\n- `a < b`\n- `s < smin`\n```",
+			"variables": [],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "3"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le programme parcourt tous les couples (c'est un balayage). `smin` garde la plus petite somme trouvée jusqu'ici.",
+					"On remplace `smin` et `meilleur` seulement quand la nouvelle somme est plus petite : la condition est `s < smin`, la $\\textcolor{{{color:primary.0}}}{\\text{quatrième}}$ proposition.",
+					"Avec `s > smin`, le programme garderait la plus mauvaise droite."
+				]
+			}
+		},
+		{
+			"statement": "Dans une feuille de calcul, on a calculé en B2:E5 la somme des carrés des écarts pour des valeurs de $a$ (ligne 1) et de $b$ (colonne A).\n\n|   | A | B | C | D | E |\n|---|---|---|---|---|---|\n| 1 | b ↓, a → | 1 | 1,5 | 2 | 2,5 |\n| 2 | 0 | … | … | … | … |\n| 3 | 0,5 | … | … | … | … |\n| 4 | 1 | … | … | … | … |\n| 5 | 1,5 | … | … | … | … |\n\nQuelle formule donne la plus petite de ces sommes ?\n\n```choix\nmelanger: non\n- =SOMME(B2:E5)\n- =MIN(B2:E5)\n- =MAX(B2:E5)\n- =MOYENNE(B2:E5)\n```",
+			"variables": [],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "1"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On cherche le couple $(a\\,;b)$ dont la somme des carrés est **la plus petite**.",
+					"La fonction MIN donne la plus petite valeur d'une plage : « =MIN(B2:E5) », la $\\textcolor{{{color:primary.0}}}{\\text{deuxième}}$ proposition. On lit ensuite $a$ en haut de sa colonne et $b$ au début de sa ligne."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "choix : bonne réponse 2",
+			"variationIndex": 0,
+			"variables": {
+				"s1": "52",
+				"s2": "47",
+				"s3": "21",
+				"s4": "64"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : premier couple",
+			"variationIndex": 0,
+			"variables": {
+				"s1": "52",
+				"s2": "47",
+				"s3": "21",
+				"s4": "64"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : deuxième couple",
+			"variationIndex": 0,
+			"variables": {
+				"s1": "52",
+				"s2": "47",
+				"s3": "21",
+				"s4": "64"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : quatrième couple",
+			"variationIndex": 0,
+			"variables": {
+				"s1": "52",
+				"s2": "47",
+				"s3": "21",
+				"s4": "64"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "écarts 1, 0, −1 : S1 = 2, S2 = 8",
+			"variationIndex": 1,
+			"variables": {
+				"d1": "1",
+				"d2": "0",
+				"d3": "-1"
+			},
+			"answers": ["2", "8"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : S1 et S2 inversés",
+			"variationIndex": 1,
+			"variables": {
+				"d1": "1",
+				"d2": "0",
+				"d3": "-1"
+			},
+			"answers": ["8", "2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : écarts sans carré (0, 0)",
+			"variationIndex": 1,
+			"variables": {
+				"d1": "1",
+				"d2": "0",
+				"d3": "-1"
+			},
+			"answers": ["0", "0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "écarts −1, 1, 1 : S1 = 3, S2 = 1",
+			"variationIndex": 1,
+			"variables": {
+				"d1": "-1",
+				"d2": "1",
+				"d3": "1"
+			},
+			"answers": ["3", "1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "choix : bonne réponse 3",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : plus grande",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : égale",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : a < b",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "choix : bonne réponse 1",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : SOMME",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : MAX",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : MOYENNE",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

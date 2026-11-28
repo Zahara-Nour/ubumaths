@@ -15,7 +15,7 @@
 import { describe, it, expect } from 'vitest';
 import { parseRandomSpec } from '../../../parameterization/parser/random-parser';
 import { generateRandomNumber } from '../../../parameterization/resolver/random-generator';
-import { createRandomSource } from '$lib/utils/random';
+import { createRandomSource } from '#lib/utils/random.ts';
 import type { RandomSpec, ResolvedVariable } from '../../../types';
 
 // ============================================================================

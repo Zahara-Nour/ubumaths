@@ -18,7 +18,7 @@ import type { RequestEvent } from '@sveltejs/kit';
 // ----------------------------------------------------------------------------
 
 const requireAuthMock = vi.fn();
-vi.mock('$lib/server/middleware/auth', () => ({
+vi.mock('#lib/server/middleware/auth.ts', () => ({
 	requireAuth: (...args: unknown[]) => requireAuthMock(...args)
 }));
 
@@ -32,7 +32,7 @@ interface UpdateChain {
 let serviceChain: UpdateChain;
 const serviceFrom = vi.fn();
 const createServiceRoleClientMock = vi.fn(() => ({ from: serviceFrom }));
-vi.mock('$lib/server/serviceRoleClient', () => ({
+vi.mock('#lib/server/serviceRoleClient.ts', () => ({
 	createServiceRoleClient: () => createServiceRoleClientMock()
 }));
 

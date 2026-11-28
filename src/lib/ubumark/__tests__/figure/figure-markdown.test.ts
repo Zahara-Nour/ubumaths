@@ -2,10 +2,10 @@
  * Bloc ```figure dans un document : analyseur markdown et éditeur riche
  */
 import { describe, it, expect } from 'vitest';
-import { parseMarkdown, type BlockNode, type ListNode } from '$lib/ubumark';
+import { parseMarkdown, type BlockNode, type ListNode } from '#lib/ubumark/index.ts';
 import type { FigureNode } from '../../types/figure';
-import { markdownToTipTap } from '$lib/components/rich-text/markdown-import';
-import { tipTapToMarkdown } from '$lib/components/rich-text/markdown-export';
+import { markdownToTipTap } from '#lib/components/rich-text/markdown-import.ts';
+import { tipTapToMarkdown } from '#lib/components/rich-text/markdown-export.ts';
 
 const BLOCK = [
 	'```figure',

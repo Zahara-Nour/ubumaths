@@ -14,7 +14,7 @@
  *
  * @module lib/error-page/suggestions
  */
-import { SITEMAP_PAGES, type SitemapPage } from '$lib/seo/sitemap-pages';
+import { SITEMAP_PAGES, type SitemapPage } from '#lib/seo/sitemap-pages.ts';
 
 export interface PageSuggestion {
 	path: string;

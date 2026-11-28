@@ -1,0 +1,185 @@
+{
+	"id": "ef117fcd-d836-4f38-a72b-f3d6ef81f8c2",
+	"title": "Produire un tableau de valeurs",
+	"description": "Compléter un tableau de valeurs à partir d'une situation décrite en mots (prix avec livraison) ou d'un programme de calcul, sans formule donnée",
+	"grades": ["5"],
+	"level": 10,
+	"delay": 120,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Un fleuriste vend ses tulipes ${{a}}$ € pièce. Pour toute commande, la livraison coûte ${{b}}$ €.\n\n| Nombre de tulipes | ${{x1}}$ | ${{x2}}$ | ${{x3}}$ | ${{x4}}$ |\n|---|---|---|---|---|\n| Prix payé (€) | $?$ | $?$ | $?$ | $?$ |\n\nComplète le tableau.",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..5"
+				},
+				{
+					"name": "b",
+					"expression": "3..8"
+				},
+				{
+					"name": "x1",
+					"expression": "1..3"
+				},
+				{
+					"name": "x2",
+					"expression": "4..6"
+				},
+				{
+					"name": "x3",
+					"expression": "7..9"
+				},
+				{
+					"name": "x4",
+					"expression": "eval:10"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a*x1+b}}"
+				},
+				{
+					"expectedAnswer": "{{eval:a*x2+b}}"
+				},
+				{
+					"expectedAnswer": "{{eval:a*x3+b}}"
+				},
+				{
+					"expectedAnswer": "{{eval:a*x4+b}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Pour un nombre de tulipes, on multiplie par ${{a}}$ (le prix des tulipes), puis on ajoute ${{b}}$ (la livraison, payée une seule fois).",
+					"Par exemple, pour ${{x1}}$ tulipes : ${{x1}} \\times {{a}} + {{b}} = \\textcolor{{{color:primary.0}}}{{{eval:a*x1+b}}}$ €.",
+					"Les autres prix : $\\textcolor{{{color:primary.0}}}{{{eval:a*x2+b}}}$, $\\textcolor{{{color:primary.0}}}{{{eval:a*x3+b}}}$ et $\\textcolor{{{color:primary.0}}}{{{eval:a*x4+b}}}$ €."
+				]
+			}
+		},
+		{
+			"statement": "Voici un programme de calcul :\n\n- choisir un nombre ;\n- le multiplier par ${{a}}$ ;\n- soustraire ${{b}}$ au résultat.\n\n| Nombre choisi | $0$ | $1$ | ${{x3}}$ | $10$ |\n|---|---|---|---|---|\n| Résultat | $?$ | $?$ | $?$ | $?$ |\n\nComplète le tableau.",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..5"
+				},
+				{
+					"name": "b",
+					"expression": "3..9"
+				},
+				{
+					"name": "x3",
+					"expression": "3..6"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:-b}}"
+				},
+				{
+					"expectedAnswer": "{{eval:a-b}}"
+				},
+				{
+					"expectedAnswer": "{{eval:a*x3-b}}"
+				},
+				{
+					"expectedAnswer": "{{eval:10*a-b}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On applique le programme à chaque nombre : d'abord $\\times {{a}}$, puis $- {{b}}$.",
+					"$0 \\times {{a}} - {{b}} = \\textcolor{{{color:primary.0}}}{{{eval:-b}}}$ ; $1 \\times {{a}} - {{b}} = \\textcolor{{{color:primary.0}}}{{{eval:a-b}}}$.",
+					"${{x3}} \\times {{a}} - {{b}} = \\textcolor{{{color:primary.0}}}{{{eval:a*x3-b}}}$ ; $10 \\times {{a}} - {{b}} = \\textcolor{{{color:primary.0}}}{{{eval:10*a-b}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "3 € la tulipe, livraison 5 € : 2, 5, 8, 10 → 11, 20, 29, 35",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "5",
+				"x1": "2",
+				"x2": "5",
+				"x3": "8"
+			},
+			"answers": ["11", "20", "29", "35"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : livraison oubliée",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "5",
+				"x1": "2",
+				"x2": "5",
+				"x3": "8"
+			},
+			"answers": ["6", "15", "24", "30"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : livraison payée par tulipe",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "5",
+				"x1": "2",
+				"x2": "5",
+				"x3": "8"
+			},
+			"answers": ["16", "40", "64", "80"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "×4 − 7 : 0, 1, 5, 10 → −7, −3, 13, 33",
+			"variationIndex": 1,
+			"variables": {
+				"a": "4",
+				"b": "7",
+				"x3": "5"
+			},
+			"answers": ["-7", "-3", "13", "33"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 7 − 0 (soustraction retournée)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "4",
+				"b": "7",
+				"x3": "5"
+			},
+			"answers": ["7", "3", "13", "33"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : (n − 7) × 4",
+			"variationIndex": 1,
+			"variables": {
+				"a": "4",
+				"b": "7",
+				"x3": "5"
+			},
+			"answers": ["-28", "-24", "-8", "12"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

@@ -20,13 +20,17 @@
 	jamais. Mode tactile : détecté (`any-pointer: coarse`), sauf si `touch` est donné.
 -->
 <script lang="ts">
-	import '$lib/utils/mathlive-styles';
+	import '#lib/utils/mathlive-styles.ts';
 	import { onMount, untrack } from 'svelte';
-	import { Button } from '$lib/components/ui/button';
-	import { needsParenthesesAdvice } from '$lib/lexicon/parentheses-advice-grade';
-	import { readReaderGrade } from '$lib/lexicon/reader-grade';
-	import type { CapitalPairs } from '$lib/mathAST/parser';
-	import { parenthesesAdvice, readingOf, structureFromLatex } from '$lib/mathAST/structure';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import { needsParenthesesAdvice } from '#lib/dictionary/parentheses-advice-grade.ts';
+	import { readReaderGrade } from '#lib/dictionary/reader-grade.ts';
+	import type { CapitalPairs } from '#lib/mathAST/parser/index.ts';
+	import {
+		parenthesesAdvice,
+		readingOf,
+		structureFromLatex
+	} from '#lib/mathAST/structure/index.ts';
 	import InteractiveFormula from './InteractiveFormula.svelte';
 	import StructureReading from './StructureReading.svelte';
 

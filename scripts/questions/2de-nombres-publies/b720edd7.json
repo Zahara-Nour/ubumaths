@@ -1,0 +1,747 @@
+{
+	"id": "b720edd7-fe00-4ff7-a26a-f23b4dbd72ec",
+	"title": "Inégalités et intervalles",
+	"description": "Écrire −2 < x ⩽ 5, x ⩾ 3 ou {x ∈ ℝ | x > 4} sous forme d'intervalle ; lire un intervalle sur la droite ; l'inégalité qui traduit x ∈ [a ; b[ ; écrire l'encadrement qui traduit x ∈ ]−2 ; 3]",
+	"grades": ["2"],
+	"level": 1,
+	"delay": 60,
+	"status": "published",
+	"shared": {
+		"cleanCoefficients": true
+	},
+	"variations": [
+		{
+			"blanks": [
+				{
+					"answerKind": "intervalles",
+					"expectedAnswer": "{{if:sa==1|[|]}}{{a}};{{b}}{{if:sb==1|]|[}}",
+					"expectedErrors": [
+						{
+							"answer": "{{if:sa==1|]|[}}{{a}};{{b}}{{if:sb==1|]|[}}",
+							"message": "Revois le crochet de la borne de gauche : ce nombre est-il compris ou exclu ?",
+							"label": "Crochet de gauche à l'envers"
+						},
+						{
+							"answer": "{{if:sa==1|[|]}}{{a}};{{b}}{{if:sb==1|[|]}}",
+							"message": "Revois le crochet de la borne de droite : ce nombre est-il compris ou exclu ?",
+							"label": "Crochet de droite à l'envers"
+						},
+						{
+							"answer": "{{if:sa==1|]|[}}{{a}};{{b}}{{if:sb==1|[|]}}",
+							"message": "Tes deux crochets sont à l'envers : un crochet tourné vers le nombre veut dire qu'il est compris.",
+							"label": "Les deux crochets à l'envers"
+						}
+					]
+				}
+			],
+			"statement": "Écris l'ensemble des réels $x$ tels que ${{a}}{{if:sa==1|\\leqslant|<}}x{{if:sb==1|\\leqslant|<}}{{b}}$ sous la forme d'un intervalle.\n\n$$?$$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "-9..5"
+				},
+				{
+					"name": "l",
+					"expression": "2..9"
+				},
+				{
+					"name": "b",
+					"expression": "eval:a+l"
+				},
+				{
+					"name": "sa",
+					"expression": "0|1"
+				},
+				{
+					"name": "sb",
+					"expression": "0|1"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le crochet est **tourné vers le nombre** quand il est compris ($\\leqslant$), **tourné vers l'extérieur** quand il est exclu ($<$). Du côté de $\\pm\\infty$, le crochet est toujours ouvert.",
+					"${{a}}$ est {{if:sa==1|compris|exclu}}, ${{b}}$ est {{if:sb==1|compris|exclu}} :",
+					"$$x\\in\\textcolor{{{color:primary.0}}}{{{if:sa==1|[|]}}{{a}}\\,;\\,{{b}}{{if:sb==1|]|[}}}$$"
+				]
+			},
+			"hintFromFirstStep": true
+		},
+		{
+			"blanks": [
+				{
+					"answerKind": "intervalles",
+					"expectedAnswer": "{{if:d==1|{{if:s==1|[|]}}{{a}};+\\infty[|]-\\infty;{{a}}{{if:s==1|]|[}}}}",
+					"expectedErrors": [
+						{
+							"answer": "{{if:d==1|{{if:s==1|]|[}}{{a}};+\\infty[|]-\\infty;{{a}}{{if:s==1|[|]}}}}",
+							"message": "Revois le crochet du nombre : est-il compris ou exclu ?",
+							"label": "Crochet du nombre à l'envers"
+						},
+						{
+							"answer": "{{if:d==1|]-\\infty;{{a}}{{if:s==1|]|[}}|{{if:s==1|[|]}}{{a}};+\\infty[}}",
+							"message": "Tu t'es trompé de côté : regarde le sens de l'inégalité.",
+							"label": "Mauvais côté"
+						},
+						{
+							"answer": "{{if:d==1|]-\\infty;{{a}}{{if:s==1|[|]}}|{{if:s==1|]|[}}{{a}};+\\infty[}}",
+							"message": "Tu t'es trompé de côté, et le crochet du nombre est aussi à revoir.",
+							"label": "Mauvais côté et crochet à l'envers"
+						}
+					]
+				}
+			],
+			"statement": "Écris l'ensemble des réels $x$ tels que $x{{if:d==1|{{if:s==1|\\geqslant|>}}|{{if:s==1|\\leqslant|<}}}}{{a}}$ sous la forme d'un intervalle.\n\n$$?$$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "-9..9"
+				},
+				{
+					"name": "d",
+					"expression": "0|1"
+				},
+				{
+					"name": "s",
+					"expression": "0|1"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le crochet est **tourné vers le nombre** quand il est compris ($\\leqslant$), **tourné vers l'extérieur** quand il est exclu ($<$). Du côté de $\\pm\\infty$, le crochet est toujours ouvert.",
+					"Les solutions sont {{if:d==1|à droite|à gauche}} de ${{a}}$, qui est {{if:s==1|compris|exclu}} :",
+					"$$x\\in\\textcolor{{{color:primary.0}}}{{{if:d==1|{{if:s==1|[|]}}{{a}}\\,;\\,+\\infty[|]-\\infty\\,;\\,{{a}}{{if:s==1|]|[}}}}}$$"
+				]
+			},
+			"hintFromFirstStep": true
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"statement": "Quelle inégalité traduit $x\\in[{{a}}\\,;\\,{{b}}[$ ?\n\n```choix\n- ${{a}}\\leqslant x<{{b}}$\n- ${{a}}<x\\leqslant{{b}}$\n- ${{a}}\\leqslant x\\leqslant{{b}}$\n- ${{a}}<x<{{b}}$\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "-9..5"
+				},
+				{
+					"name": "l",
+					"expression": "2..9"
+				},
+				{
+					"name": "b",
+					"expression": "eval:a+l"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le crochet est **tourné vers le nombre** quand il est compris ($\\leqslant$), **tourné vers l'extérieur** quand il est exclu ($<$). Du côté de $\\pm\\infty$, le crochet est toujours ouvert.",
+					"Le crochet de ${{a}}$ est tourné vers lui (compris), celui de ${{b}}$ vers l'extérieur (exclu) :",
+					"$$\\textcolor{{{color:primary.0}}}{{{a}}\\leqslant x<{{b}}}$$"
+				]
+			},
+			"hintFromFirstStep": true
+		},
+		{
+			"blanks": [
+				{
+					"answerKind": "intervalles",
+					"expectedAnswer": "{{if:sa==1|[|]}}{{a}};{{b}}{{if:sb==1|]|[}}",
+					"expectedErrors": [
+						{
+							"answer": "{{if:sa==1|]|[}}{{a}};{{b}}{{if:sb==1|]|[}}",
+							"message": "Revois le crochet de la borne de gauche : ce nombre est-il compris ou exclu ?",
+							"label": "Crochet de gauche à l'envers"
+						},
+						{
+							"answer": "{{if:sa==1|[|]}}{{a}};{{b}}{{if:sb==1|[|]}}",
+							"message": "Revois le crochet de la borne de droite : ce nombre est-il compris ou exclu ?",
+							"label": "Crochet de droite à l'envers"
+						},
+						{
+							"answer": "{{if:sa==1|]|[}}{{a}};{{b}}{{if:sb==1|[|]}}",
+							"message": "Tes deux crochets sont à l'envers : un crochet tourné vers le nombre veut dire qu'il est compris.",
+							"label": "Les deux crochets à l'envers"
+						}
+					]
+				}
+			],
+			"statement": "Écris sous la forme d'un intervalle l'ensemble des réels représenté sur la droite graduée.\n\n```line\nstart: -6\nend: 6\nstep: 1\nsegments: {{if:sa==1|[|]}}{{a}}, {{b}}{{if:sb==1|]|[}}\n```\n\n$$?$$",
+			"variables": [
+				{
+					"name": "a0",
+					"expression": "0..7"
+				},
+				{
+					"name": "a",
+					"expression": "eval:(a0)-5"
+				},
+				{
+					"name": "l",
+					"expression": "2..6"
+				},
+				{
+					"name": "b",
+					"expression": "eval:(a)+(l)"
+				},
+				{
+					"name": "sa",
+					"expression": "0|1"
+				},
+				{
+					"name": "sb",
+					"expression": "0|1"
+				}
+			],
+			"conditions": ["b <= 5"],
+			"correction": {
+				"steps": [
+					"Le crochet est **tourné vers le nombre** quand il est compris ($\\leqslant$), **tourné vers l'extérieur** quand il est exclu ($<$). Du côté de $\\pm\\infty$, le crochet est toujours ouvert.",
+					"Le crochet en ${{a}}$ est tourné {{if:sa==1|vers l'intervalle : ${{a}}$ est compris|vers l'extérieur : ${{a}}$ est exclu}} ; celui en ${{b}}$ est tourné {{if:sb==1|vers l'intervalle : ${{b}}$ est compris|vers l'extérieur : ${{b}}$ est exclu}}.",
+					"$$\\textcolor{{{color:primary.0}}}{{{if:sa==1|[|]}}{{a}}\\,;\\,{{b}}{{if:sb==1|]|[}}}$$"
+				]
+			},
+			"hintFromFirstStep": true
+		},
+		{
+			"blanks": [
+				{
+					"answerKind": "intervalles",
+					"expectedAnswer": "{{if:d==1|{{if:s==1|[|]}}{{a}};+\\infty[|]-\\infty;{{a}}{{if:s==1|]|[}}}}",
+					"expectedErrors": [
+						{
+							"answer": "{{if:d==1|{{if:s==1|]|[}}{{a}};+\\infty[|]-\\infty;{{a}}{{if:s==1|[|]}}}}",
+							"message": "Revois le crochet du nombre : est-il compris ou exclu ?",
+							"label": "Crochet du nombre à l'envers"
+						},
+						{
+							"answer": "{{if:d==1|]-\\infty;{{a}}{{if:s==1|]|[}}|{{if:s==1|[|]}}{{a}};+\\infty[}}",
+							"message": "Tu t'es trompé de côté : regarde le sens de l'inégalité.",
+							"label": "Mauvais côté"
+						},
+						{
+							"answer": "{{if:d==1|]-\\infty;{{a}}{{if:s==1|[|]}}|{{if:s==1|]|[}}{{a}};+\\infty[}}",
+							"message": "Tu t'es trompé de côté, et le crochet du nombre est aussi à revoir.",
+							"label": "Mauvais côté et crochet à l'envers"
+						}
+					]
+				}
+			],
+			"statement": "Écris l'ensemble $\\{x\\in\\mathbb{R}\\mid x{{if:d==1|{{if:s==1|\\geqslant|>}}|{{if:s==1|\\leqslant|<}}}}{{a}}\\}$ sous la forme d'un intervalle.\n\n$$?$$",
+			"variables": [
+				{
+					"name": "a0",
+					"expression": "0..18"
+				},
+				{
+					"name": "a",
+					"expression": "eval:(a0)-9"
+				},
+				{
+					"name": "d",
+					"expression": "0|1"
+				},
+				{
+					"name": "s",
+					"expression": "0|1"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\{x\\in\\mathbb{R}\\mid x{{if:d==1|{{if:s==1|\\geqslant|>}}|{{if:s==1|\\leqslant|<}}}}{{a}}\\}$ se lit « l'ensemble des réels $x$ tels que $x{{if:d==1|{{if:s==1|\\geqslant|>}}|{{if:s==1|\\leqslant|<}}}}{{a}}$ ».",
+					"Le crochet est **tourné vers le nombre** quand il est compris ($\\leqslant$), **tourné vers l'extérieur** quand il est exclu ($<$). Du côté de $\\pm\\infty$, le crochet est toujours ouvert.",
+					"Les solutions sont {{if:d==1|à droite|à gauche}} de ${{a}}$, qui est {{if:s==1|compris|exclu}} :",
+					"$$\\textcolor{{{color:primary.0}}}{{{if:d==1|{{if:s==1|[|]}}{{a}}\\,;\\,+\\infty[|]-\\infty\\,;\\,{{a}}{{if:s==1|]|[}}}}}$$"
+				]
+			},
+			"hint": "Le crochet est **tourné vers le nombre** quand il est compris ($\\leqslant$), **tourné vers l'extérieur** quand il est exclu ($<$). Du côté de $\\pm\\infty$, le crochet est toujours ouvert."
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{a}}{{if:sa==1|\\leqslant |<}}x{{if:sb==1|\\leqslant|<}}{{b}}",
+					"expectedErrors": [
+						{
+							"answer": "{{a}}{{if:sa==1|<|\\leqslant }}x{{if:sb==1|\\leqslant|<}}{{b}}",
+							"message": "Revois le signe du côté de ${{a}}$ : regarde vers où est tourné son crochet.",
+							"label": "Signe de gauche à l'envers"
+						},
+						{
+							"answer": "{{a}}{{if:sa==1|\\leqslant |<}}x{{if:sb==1|<|\\leqslant}}{{b}}",
+							"message": "Revois le signe du côté de ${{b}}$ : regarde vers où est tourné son crochet.",
+							"label": "Signe de droite à l'envers"
+						},
+						{
+							"answer": "{{a}}{{if:sa==1|<|\\leqslant }}x{{if:sb==1|<|\\leqslant}}{{b}}",
+							"message": "Tes deux signes sont à l'envers : un crochet tourné vers le nombre veut dire qu'il est compris ($\\leqslant$).",
+							"label": "Les deux signes à l'envers"
+						}
+					]
+				}
+			],
+			"statement": "Traduis $x\\in{{if:sa==1|[|]}}{{a}}\\,;\\,{{b}}{{if:sb==1|]|[}}$ par un encadrement de $x$.\n\n$$?$$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "-9..5"
+				},
+				{
+					"name": "l",
+					"expression": "2..9"
+				},
+				{
+					"name": "b",
+					"expression": "eval:a+l"
+				},
+				{
+					"name": "sa",
+					"expression": "0|1"
+				},
+				{
+					"name": "sb",
+					"expression": "0|1"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le crochet est **tourné vers le nombre** quand il est compris ($\\leqslant$), **tourné vers l'extérieur** quand il est exclu ($<$).",
+					"${{a}}$ est {{if:sa==1|compris|exclu}}, ${{b}}$ est {{if:sb==1|compris|exclu}} :",
+					"$$\\textcolor{{{color:primary.0}}}{{{a}}{{if:sa==1|\\leqslant |<}}x{{if:sb==1|\\leqslant|<}}{{b}}}$$"
+				]
+			},
+			"hintFromFirstStep": true
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["]-2;5]"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "-2",
+				"b": "5",
+				"l": "7",
+				"sa": "0",
+				"sb": "1"
+			},
+			"description": "−2 < x ⩽ 5 : ]−2 ; 5]",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["[-2;5]"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Revois le crochet de la borne de gauche : ce nombre est-il compris ou exclu ?"
+			},
+			"variables": {
+				"a": "-2",
+				"b": "5",
+				"l": "7",
+				"sa": "0",
+				"sb": "1"
+			},
+			"description": "Erreur : crochet de −2 tourné vers lui",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["]5;-2]"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "-2",
+				"b": "5",
+				"l": "7",
+				"sa": "0",
+				"sb": "1"
+			},
+			"description": "Erreur : bornes inversées",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["[3;+\\infty["],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "3",
+				"d": "1",
+				"s": "1"
+			},
+			"description": "x ⩾ 3 : [3 ; +∞[",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["[3;+\\infty]"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "3",
+				"d": "1",
+				"s": "1"
+			},
+			"description": "Erreur : crochet fermé sur l'infini",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["]-\\infty;-1["],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "-1",
+				"d": "0",
+				"s": "0"
+			},
+			"description": "x < −1 : ]−∞ ; −1[",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["]-1;+\\infty["],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu t'es trompé de côté : regarde le sens de l'inégalité."
+			},
+			"variables": {
+				"a": "-1",
+				"d": "0",
+				"s": "0"
+			},
+			"description": "Erreur : mauvais côté",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "-2",
+				"b": "5",
+				"l": "7"
+			},
+			"description": "[−2 ; 5[ : −2 ⩽ x < 5",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "-2",
+				"b": "5",
+				"l": "7"
+			},
+			"description": "Erreur : crochets lus à l'envers",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["[-2;3["],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a0": "3",
+				"a": "-2",
+				"l": "5",
+				"b": "3",
+				"sa": "1",
+				"sb": "0"
+			},
+			"description": "Droite de −2 (fermé) à 3 (ouvert) : [−2 ; 3[",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["]-2;3]"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tes deux crochets sont à l'envers : un crochet tourné vers le nombre veut dire qu'il est compris."
+			},
+			"variables": {
+				"a0": "3",
+				"a": "-2",
+				"l": "5",
+				"b": "3",
+				"sa": "1",
+				"sb": "0"
+			},
+			"description": "Erreur : crochets lus à l'envers",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["[-2;3]"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Revois le crochet de la borne de droite : ce nombre est-il compris ou exclu ?"
+			},
+			"variables": {
+				"a0": "3",
+				"a": "-2",
+				"l": "5",
+				"b": "3",
+				"sa": "1",
+				"sb": "0"
+			},
+			"description": "Erreur : 3 compris",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["]4;+\\infty["],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a0": "13",
+				"a": "4",
+				"d": "1",
+				"s": "0"
+			},
+			"description": "{x ∈ ℝ | x > 4} = ]4 ; +∞[",
+			"variationIndex": 4
+		},
+		{
+			"answers": ["[4;+\\infty["],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Revois le crochet du nombre : est-il compris ou exclu ?"
+			},
+			"variables": {
+				"a0": "13",
+				"a": "4",
+				"d": "1",
+				"s": "0"
+			},
+			"description": "Erreur : 4 compris",
+			"variationIndex": 4
+		},
+		{
+			"answers": ["]-\\infty;4["],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu t'es trompé de côté : regarde le sens de l'inégalité."
+			},
+			"variables": {
+				"a0": "13",
+				"a": "4",
+				"d": "1",
+				"s": "0"
+			},
+			"description": "Erreur : mauvais côté",
+			"variationIndex": 4
+		},
+		{
+			"answers": ["]-\\infty;-3]"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a0": "6",
+				"a": "-3",
+				"d": "0",
+				"s": "1"
+			},
+			"description": "{x ∈ ℝ | x ⩽ −3} = ]−∞ ; −3]",
+			"variationIndex": 4
+		},
+		{
+			"answers": ["]-2;5["],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Revois le crochet de la borne de droite : ce nombre est-il compris ou exclu ?"
+			},
+			"variables": {
+				"a": "-2",
+				"l": "7",
+				"sa": "0",
+				"sb": "1"
+			},
+			"description": "Erreur prévue : ]−2 ; 5[",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["[-2;5["],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tes deux crochets sont à l'envers : un crochet tourné vers le nombre veut dire qu'il est compris."
+			},
+			"variables": {
+				"a": "-2",
+				"l": "7",
+				"sa": "0",
+				"sb": "1"
+			},
+			"description": "Erreur prévue : [−2 ; 5[",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["]3;+\\infty["],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Revois le crochet du nombre : est-il compris ou exclu ?"
+			},
+			"variables": {
+				"a": "3",
+				"d": "1",
+				"s": "1"
+			},
+			"description": "Erreur prévue : ]3 ; +∞[",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["[-1;+\\infty["],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu t'es trompé de côté, et le crochet du nombre est aussi à revoir."
+			},
+			"variables": {
+				"a": "-1",
+				"d": "0",
+				"s": "0"
+			},
+			"description": "Erreur prévue : [−1 ; +∞[",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["]-2;3["],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Revois le crochet de la borne de gauche : ce nombre est-il compris ou exclu ?"
+			},
+			"variables": {
+				"a0": "3",
+				"l": "5",
+				"sa": "1",
+				"sb": "0"
+			},
+			"description": "Erreur prévue : ]−2 ; 3[",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["]-\\infty;4]"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu t'es trompé de côté, et le crochet du nombre est aussi à revoir."
+			},
+			"variables": {
+				"a0": "13",
+				"d": "1",
+				"s": "0"
+			},
+			"description": "Erreur prévue : ]−∞ ; 4]",
+			"variationIndex": 4
+		},
+		{
+			"answers": ["-2<x\\leqslant3"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "-2",
+				"l": "5",
+				"b": "3",
+				"sa": "0",
+				"sb": "1"
+			},
+			"description": "x ∈ ]−2 ; 3] : −2 < x ⩽ 3",
+			"variationIndex": 5
+		},
+		{
+			"answers": ["-2<x\\le3"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "-2",
+				"l": "5",
+				"b": "3",
+				"sa": "0",
+				"sb": "1"
+			},
+			"description": "x ∈ ]−2 ; 3] : écrit avec \\le",
+			"variationIndex": 5
+		},
+		{
+			"answers": ["-2\\leqslant x\\leqslant3"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Revois le signe du côté de $-2$ : regarde vers où est tourné son crochet."
+			},
+			"variables": {
+				"a": "-2",
+				"l": "5",
+				"b": "3",
+				"sa": "0",
+				"sb": "1"
+			},
+			"description": "Erreur prévue : −2 ⩽ x ⩽ 3",
+			"variationIndex": 5
+		},
+		{
+			"answers": ["-2<x<3"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Revois le signe du côté de $3$ : regarde vers où est tourné son crochet."
+			},
+			"variables": {
+				"a": "-2",
+				"l": "5",
+				"b": "3",
+				"sa": "0",
+				"sb": "1"
+			},
+			"description": "Erreur prévue : −2 < x < 3",
+			"variationIndex": 5
+		},
+		{
+			"answers": ["-2\\leqslant x<3"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tes deux signes sont à l'envers : un crochet tourné vers le nombre veut dire qu'il est compris ($\\leqslant$)."
+			},
+			"variables": {
+				"a": "-2",
+				"l": "5",
+				"b": "3",
+				"sa": "0",
+				"sb": "1"
+			},
+			"description": "Erreur prévue : −2 ⩽ x < 3",
+			"variationIndex": 5
+		},
+		{
+			"answers": ["x\\leqslant3"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "-2",
+				"l": "5",
+				"b": "3",
+				"sa": "0",
+				"sb": "1"
+			},
+			"description": "Erreur : une seule inégalité",
+			"variationIndex": 5
+		},
+		{
+			"answers": ["4\\leqslant x<7"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "4",
+				"l": "3",
+				"b": "7",
+				"sa": "1",
+				"sb": "0"
+			},
+			"description": "x ∈ [4 ; 7[ : 4 ⩽ x < 7",
+			"variationIndex": 5
+		}
+	]
+}

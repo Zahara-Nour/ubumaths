@@ -13,12 +13,20 @@
  * - Privacy-aware (no sensitive data)
  */
 
-import { browser } from '$app/environment';
+import { browser, dev } from '$app/env';
 import {
 	firstHiddenTime,
 	isPaintAfterHidden,
 	type VisibilityEntry
-} from '$lib/utils/web-vitals-visibilite';
+} from '#lib/utils/web-vitals-visibilite.ts';
+import { createInpTracker, type InteractionEntry } from '#lib/utils/inp-tracker.ts';
+import {
+	createClsTracker,
+	createSampleCollector,
+	WEB_VITALS_ENDPOINT,
+	type SampleCollector,
+	type WebVitalSample
+} from '#lib/utils/web-vitals-mesures.ts';
 
 // =====================================================
 // TYPES
@@ -283,14 +291,17 @@ async function sendErrorBatch(): Promise<void> {
 
 /**
  * Queue error for sending
+ *
+ * Rend `true` si l'erreur est en file ou déjà envoyée (doublon), `false` si elle
+ * est abandonnée (suivi désactivé, limite par minute atteinte).
  */
-function queueError(error: ClientErrorData): void {
-	if (!CONFIG.ENABLED) return;
+function queueError(error: ClientErrorData): boolean {
+	if (!CONFIG.ENABLED) return false;
 
 	// Check rate limit
 	if (!isWithinRateLimit()) {
 		console.warn('[Error Monitoring] Rate limit exceeded, skipping error');
-		return;
+		return false;
 	}
 
 	const hash = generateErrorHash(error);
@@ -298,7 +309,7 @@ function queueError(error: ClientErrorData): void {
 	// Check for duplicates
 	if (isDuplicate(hash)) {
 		console.debug('[Error Monitoring] Duplicate error, skipping');
-		return;
+		return true;
 	}
 
 	// Add to queue
@@ -319,6 +330,7 @@ function queueError(error: ClientErrorData): void {
 			batchTimer = setTimeout(sendErrorBatch, CONFIG.BATCH_TIMEOUT);
 		}
 	}
+	return true;
 }
 
 // =====================================================
@@ -549,6 +561,10 @@ type WebVitalMetric = keyof typeof WEB_VITALS_THRESHOLDS;
 // Module-level state for Web Vitals
 let webVitalsInitialized = false;
 const webVitalsObservers: PerformanceObserver[] = [];
+/** Route SvelteKit de la page affichée (`noteWebVitalsRoute`) */
+let currentRouteId: string | null = null;
+/** Mesures de la visite à remettre à notre serveur ; `null` hors collecte */
+let sampleCollector: SampleCollector | null = null;
 
 /**
  * Sanitize URL by removing sensitive query parameters
@@ -583,24 +599,28 @@ function getWebVitalSeverity(metric: WebVitalMetric, value: number): 'info' | 'w
 
 /**
  * Report a Web Vital metric
+ *
+ * Rend `true` si la mesure est partie (en file), `false` sinon (sous le seuil,
+ * ou abandonnée par `queueError`).
  */
 function reportWebVital(
 	metric: WebVitalMetric,
 	value: number,
-	context?: Record<string, unknown>
-): void {
+	context?: Record<string, unknown>,
+	url: string = window.location.href
+): boolean {
 	const severity = getWebVitalSeverity(metric, value);
 	const threshold = WEB_VITALS_THRESHOLDS[metric];
 
 	// Only report metrics that need improvement or are poor
 	// Good metrics are not worth logging to reduce noise
-	if (severity === 'info') return;
+	if (severity === 'info') return false;
 
 	const errorData: ClientErrorData = {
 		error_type: 'performance',
 		severity,
 		message: `Web Vital ${metric}: ${metric === 'CLS' ? value.toFixed(3) : Math.round(value)}${metric === 'CLS' ? '' : 'ms'} (threshold: ${threshold.good}${metric === 'CLS' ? '' : 'ms'})`,
-		url: sanitizeUrl(window.location.href),
+		url: sanitizeUrl(url),
 		...getBrowserContext(),
 		context: {
 			metric,
@@ -612,7 +632,13 @@ function reportWebVital(
 		tags: ['web_vitals', metric.toLowerCase()]
 	};
 
-	queueError(errorData);
+	return queueError(errorData);
+}
+
+/** Nombre d'interactions de la visite, quand le navigateur le donne (Chrome) */
+function readInteractionCount(): number | undefined {
+	const count = (performance as Performance & { interactionCount?: number }).interactionCount;
+	return typeof count === 'number' ? count : undefined;
 }
 
 /** Premier passage en arrière-plan, lu dans l'historique de visibilité s'il existe */
@@ -627,21 +653,82 @@ function readFirstHiddenTime(): number {
 }
 
 /**
+ * Page affichée, par son identifiant de route SvelteKit (« /(public)/cours/[token] ») :
+ * appelé par le layout racine à l'arrivée et à chaque navigation interne. Les mesures
+ * gardées chez nous sont rattachées à cet identifiant, jamais à l'adresse réelle.
+ */
+export function noteWebVitalsRoute(routeId: string | null): void {
+	currentRouteId = routeId;
+	sampleCollector?.noteRoute(routeId);
+}
+
+/**
+ * Envoie les mesures à notre serveur, sans attendre de réponse : la page est en train
+ * d'être quittée. Un envoi raté est perdu, sans nouvel essai.
+ */
+export function sendSamplesToServer(samples: WebVitalSample[]): void {
+	const body = JSON.stringify({
+		device_type: parseBrowserInfo(navigator.userAgent).device_type,
+		samples
+	});
+	try {
+		const blob = new Blob([body], { type: 'application/json' });
+		if (navigator.sendBeacon?.(WEB_VITALS_ENDPOINT, blob)) return;
+	} catch {
+		// sendBeacon indisponible : on essaie fetch
+	}
+	fetch(WEB_VITALS_ENDPOINT, {
+		method: 'POST',
+		headers: { 'Content-Type': 'application/json' },
+		body,
+		keepalive: true
+	}).catch(() => {});
+}
+
+/** Vrai si le navigateur sait observer ce type d'entrée de performance */
+function supportsEntryType(type: string): boolean {
+	return PerformanceObserver.supportedEntryTypes?.includes(type) ?? false;
+}
+
+/**
  * Initialize Web Vitals collection using PerformanceObserver
  * Captures LCP, FID, CLS, FCP, TTFB, INP metrics
  *
+ * Deux destinations : les mauvaises mesures vont dans le journal des erreurs
+ * (`reportWebVital`) ; toutes, bonnes comprises, vont à notre table des mesures
+ * (`sendSamples`), sauf en développement.
+ *
+ * @param options.sendSamples - Remise des mesures (par défaut : envoi à notre serveur)
  * @see https://web.dev/vitals/
  */
-export function initWebVitals(): void {
+export function initWebVitals(
+	options: { sendSamples?: (samples: WebVitalSample[]) => void } = {}
+): void {
 	if (!CONFIG.ENABLED || typeof PerformanceObserver === 'undefined') return;
 	if (webVitalsInitialized) return; // Prevent duplicate initialization
+
+	const collector = createSampleCollector(
+		options.sendSamples ?? (dev ? () => {} : sendSamplesToServer)
+	);
+	sampleCollector = collector;
 
 	// Track CLS across page lifecycle
 	let clsValue = 0;
 	let clsShiftCount = 0;
+	// CLS de la table des mesures : pire rafale (définition de Google), pas le cumul.
+	// Sans prise en charge (Safari), aucun CLS ne part : 0 voudrait dire « page stable »
+	const clsTracker = createClsTracker();
+	const clsSupported = supportsEntryType('layout-shift');
 
-	// Track INP across session
-	let inpValue = 0;
+	// INP de la visite : interactions seules, adresse de la page où chacune a commencé
+	const inpTracker = createInpTracker();
+	let removeInpListeners = () => {};
+
+	// Dernières valeurs envoyées : INP et CLS partent à chaque passage en arrière-plan,
+	// mais une valeur déjà envoyée ne repart pas (un onglet ouvert des jours renvoyait
+	// sinon le même INP toutes les 5 minutes d'absence, fin de la fenêtre anti-doublon)
+	let reportedCls = 0;
+	let reportedInp = 0;
 
 	// Premier passage en arrière-plan : FCP et LCP mesurés après lui sont écartés
 	// (onglet ouvert en arrière-plan → « LCP » de plusieurs heures, cf. web-vitals-visibilite.ts)
@@ -659,6 +746,7 @@ export function initWebVitals(): void {
 			const lastEntry = entries[entries.length - 1] as PerformanceEntry & { startTime: number };
 			if (lastEntry && !isPaintAfterHidden(lastEntry.startTime, hiddenTime)) {
 				reportWebVital('LCP', lastEntry.startTime);
+				collector.recordLoad('LCP', lastEntry.startTime);
 			}
 		});
 		lcpObserver.observe({ type: 'largest-contentful-paint', buffered: true });
@@ -694,6 +782,7 @@ export function initWebVitals(): void {
 				if (!layoutShift.hadRecentInput) {
 					clsValue += layoutShift.value;
 					clsShiftCount++;
+					clsTracker.add(layoutShift.value, layoutShift.startTime);
 				}
 			}
 		});
@@ -710,6 +799,7 @@ export function initWebVitals(): void {
 			const fcpEntry = entries.find((e) => e.name === 'first-contentful-paint');
 			if (fcpEntry && !isPaintAfterHidden(fcpEntry.startTime, hiddenTime)) {
 				reportWebVital('FCP', fcpEntry.startTime);
+				collector.recordLoad('FCP', fcpEntry.startTime);
 			}
 		});
 		fcpObserver.observe({ type: 'paint', buffered: true });
@@ -726,6 +816,8 @@ export function initWebVitals(): void {
 			if (navEntry && navEntry.responseStart > 0) {
 				const ttfb = navEntry.responseStart - navEntry.requestStart;
 				reportWebVital('TTFB', ttfb);
+				// Table des mesures : TTFB au sens de Google, depuis le début de la navigation
+				collector.recordLoad('TTFB', navEntry.responseStart);
 			}
 		});
 		navObserver.observe({ type: 'navigation', buffered: true });
@@ -737,14 +829,11 @@ export function initWebVitals(): void {
 	// INP (Interaction to Next Paint) - aggregated across session
 	try {
 		const inpObserver = new PerformanceObserver((entryList) => {
-			for (const entry of entryList.getEntries()) {
-				const eventTiming = entry as PerformanceEventTiming;
-				const duration = eventTiming.duration;
-				// Track the worst interaction
-				if (duration > inpValue) {
-					inpValue = duration;
-				}
-			}
+			inpTracker.add(
+				entryList.getEntries() as unknown as InteractionEntry[],
+				window.location.href,
+				currentRouteId
+			);
 		});
 		// durationThreshold is a valid option for event entries but not in TS types
 		inpObserver.observe({
@@ -753,6 +842,16 @@ export function initWebVitals(): void {
 			durationThreshold: 16
 		} as PerformanceObserverInit);
 		webVitalsObservers.push(inpObserver);
+		// Début de chaque interaction : l'adresse de la page à cet instant (un clic
+		// qui navigue est observé après la navigation)
+		const recordStart = (event: Event) =>
+			inpTracker.recordStart(event.timeStamp, window.location.href, currentRouteId);
+		window.addEventListener('pointerdown', recordStart, { capture: true, passive: true });
+		window.addEventListener('keydown', recordStart, { capture: true, passive: true });
+		removeInpListeners = () => {
+			window.removeEventListener('pointerdown', recordStart, { capture: true });
+			window.removeEventListener('keydown', recordStart, { capture: true });
+		};
 	} catch {
 		// INP not supported
 	}
@@ -761,15 +860,28 @@ export function initWebVitals(): void {
 	// Report on page hide (when user leaves or switches tabs)
 	document.addEventListener('visibilitychange', () => {
 		if (document.visibilityState === 'hidden') {
-			// Report CLS if any shifts occurred
-			if (clsValue > 0) {
-				reportWebVital('CLS', clsValue, { shift_count: clsShiftCount });
+			// Report CLS if it grew since the last report (une mesure abandonnée retente)
+			if (
+				clsValue > reportedCls &&
+				reportWebVital('CLS', clsValue, { shift_count: clsShiftCount })
+			) {
+				reportedCls = clsValue;
 			}
 
-			// Report INP if any interactions occurred
-			if (inpValue > 0) {
-				reportWebVital('INP', inpValue);
+			// Report INP if a slower interaction occurred since the last report
+			const inp = inpTracker.current(readInteractionCount());
+			if (
+				inp &&
+				inp.value > reportedInp &&
+				reportWebVital('INP', inp.value, { event_name: inp.eventName, target: inp.target }, inp.url)
+			) {
+				reportedInp = inp.value;
 			}
+
+			// Table des mesures : tout, bon ou mauvais, une seule fois par visite
+			if (clsSupported) collector.recordCls(clsTracker.value());
+			if (inp) collector.recordInp(inp.value, inp.routeId);
+			collector.flush();
 
 			// Note: We don't reset values - cumulative metrics continue across tab switches
 		}
@@ -779,6 +891,10 @@ export function initWebVitals(): void {
 	window.addEventListener('beforeunload', () => {
 		webVitalsObservers.forEach((observer) => observer.disconnect());
 		webVitalsObservers.length = 0;
+		removeInpListeners();
+		// Le collecteur reste en place : si la sortie est annulée ou la page reprise du
+		// cache du navigateur, l'écouteur de passage en arrière-plan envoie encore, et
+		// il lui faut la route courante
 		webVitalsInitialized = false;
 	});
 

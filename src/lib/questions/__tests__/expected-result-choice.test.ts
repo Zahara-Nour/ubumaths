@@ -16,7 +16,7 @@ import {
 	type ExpectedLine
 } from '../expected-result';
 import type { QuestionInstance, QuestionTemplate } from '../types';
-import { templateMarkdown } from '$lib/ubumark';
+import { templateMarkdown } from '#lib/ubumark/index.ts';
 
 function generate(statement: string, expected: string[]): QuestionInstance {
 	const result = generateInstance(

@@ -16,7 +16,7 @@
 
 import { describe, it, expect } from 'vitest';
 import { generateCorrection } from '../correction-generator';
-import { resolvedMarkdown } from '$lib/ubumark';
+import { resolvedMarkdown } from '#lib/ubumark/index.ts';
 import type { GeneratedSteps, QuestionInstance } from '../../types';
 
 // =============================================================================
@@ -184,8 +184,14 @@ describe('finalForm — primitive factorisée', () => {
 		expect(antiderivative('x^2 + 1', 'factorisee')).toEqual(antiderivative('x^2 + 1'));
 	});
 
-	it('Q34 et S1 : 0,6x + 1,2 reste développée', () => {
-		expect(antiderivative('0,6x + 1,2', 'factorisee')).toEqual(antiderivative('0,6x + 1,2'));
+	// Ce test disait « 0,6x + 1,2 reste développée » : il passait à vide (la virgule ne rendait
+	// aucune étape, des deux côtés). Virgule lue (E35, #1708) : elle se comporte comme le point,
+	// et 0,3x² + 1,2x se factorise en 0,3x(x + 4) — un décimal devant, pas une fraction (Q34).
+	it('S1 : 0,6x + 1,2 (virgule) se lit comme 0.6x + 1.2, sans fraction', () => {
+		const comma = antiderivative('0,6x + 1,2', 'factorisee');
+		expect(comma).toEqual(antiderivative('0.6x + 1.2', 'factorisee'));
+		expect(comma.result).toBe('0.3 x \\left( x + 4 \\right)');
+		expect(comma.result).not.toContain('frac');
 	});
 });
 

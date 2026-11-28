@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { resolve } from '$app/paths';
-	import SeoHead from '$lib/seo/SeoHead.svelte';
+	import { resolvePath } from '#lib/navigation/resolve-path.ts';
+	import SeoHead from '#lib/seo/SeoHead.svelte';
 
 	// Constantes
 	const COLLEGE_CIPHERS = [
@@ -69,7 +70,7 @@
 </script>
 
 <SeoHead
-	title="Le Cabinet Noir de Turingrad : chiffrer et déchiffrer — Chiphre"
+	title="Le Cabinet Noir de Turingrad : chiffrer et déchiffrer | Chiphre"
 	description="Chiffrer, déchiffrer et décrypter des messages secrets : chiffre de César, Atbash, substitution, scytale, carré de Polybe, Vigenère, chiffre affine, chiffre de Hill et RSA, avec les calculs pas à pas et l’analyse de fréquences."
 />
 
@@ -84,7 +85,7 @@
 </header>
 
 <a
-	href={resolve('/chiffrement/depeches')}
+	href={resolve('chiffrement/depeches')}
 	class="flex flex-col gap-1 rounded-xl border-2 border-primary bg-primary/10 p-5 transition-colors hover:bg-primary/15"
 	data-testid="depeches-card"
 >
@@ -125,7 +126,7 @@
 		{#each list as cipher (cipher.path)}
 			<li>
 				<a
-					href={resolve(cipher.path)}
+					href={resolvePath(cipher.path)}
 					class="flex h-full flex-col gap-1 rounded-xl border bg-card p-5 text-card-foreground transition-colors hover:border-primary"
 				>
 					<span class="text-xs tracking-wide text-muted-foreground uppercase">{cipher.kind}</span>

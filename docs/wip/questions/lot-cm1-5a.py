@@ -1,7 +1,7 @@
 """Écrit les 7 modèles du lot 5a du CM1 (longueurs) dans scripts/questions/cm1-5a/.
 
 Phase 0 validée par David le 2026-11-02 (§ 14 et 14 bis du journal
-`docs/wip/questions-cm1-progress.md`). Bornes `cycle3.json`, CM1-067 à 072 :
+`docs/archive/wip/questions-cm1-progress.md`). Bornes `cycle3.json`, CM1-067 à 072 :
 - 067 : unités du millimètre au kilomètre (mm, cm, dm, m, dam, hm, km) et leurs symboles ;
 - 068 : relations entre unités successives, sans tableau (1 cm = 1/10 dm = 0,1 dm ;
   215 cm = 2,15 m ; 1/2 km = 500 m ; 3/4 m = 75 cm) ;

@@ -14,7 +14,7 @@
  * @module atelier/decimal-comma
  */
 
-import type { RenderedStep } from '$lib/mathAST/common/step-renderer-base';
+import type { RenderedStep } from '#lib/mathAST/common/step-renderer-base.ts';
 
 // =============================================================================
 // Constantes

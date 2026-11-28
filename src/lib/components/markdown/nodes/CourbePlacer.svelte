@@ -34,8 +34,8 @@
 -->
 <script lang="ts">
 	import { untrack } from 'svelte';
-	import type { CourbeNode, CourbeTarget } from '$lib/ubumark/types/courbe';
-	import { COURBE_PAD, courbeFrame } from '$lib/ubumark/utils/courbe-scene';
+	import type { CourbeNode, CourbeTarget } from '#lib/ubumark/types/courbe.ts';
+	import { COURBE_PAD, courbeFrame } from '#lib/ubumark/utils/courbe-scene.ts';
 	import {
 		moveByStep,
 		nearestNode,
@@ -45,7 +45,7 @@
 		readPointAnswer,
 		startNode,
 		type CourbePlacedPoint
-	} from '$lib/ubumark/utils/courbe-placer';
+	} from '#lib/ubumark/utils/courbe-placer.ts';
 	import {
 		correctionPoints,
 		lineCoefficients,
@@ -56,13 +56,13 @@
 		tracedLineMistake,
 		type LineCoefficients,
 		type TracedLineMistake
-	} from '$lib/ubumark/utils/courbe-tracer';
+	} from '#lib/ubumark/utils/courbe-tracer.ts';
 	import {
 		solutionVector,
 		tracedVectorMistake,
 		type TracedVectorMistake
-	} from '$lib/ubumark/utils/courbe-vecteur';
-	import { constructionTraces } from '$lib/ubumark/utils/courbe-combinaison';
+	} from '#lib/ubumark/utils/courbe-vecteur.ts';
+	import { constructionTraces } from '#lib/ubumark/utils/courbe-combinaison.ts';
 	import InlineMarkdown from '../InlineMarkdown.svelte';
 	import Courbe, { type CourbeMark, type CourbeTrace } from './Courbe.svelte';
 	import MathInline from './MathInline.svelte';

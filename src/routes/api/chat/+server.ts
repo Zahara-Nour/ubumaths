@@ -1,20 +1,20 @@
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { checkChatbotRateLimit } from '$lib/server/rateLimiter';
-import { checkTutorRateLimit, incrementTutorUsage } from '$lib/server/tutor/tutor-rate-limiter';
-import { getEnv } from '$lib/server/env';
-import { chatRequestSchema, tutorRequestSchema } from '$lib/server/validation/chat';
-import { requireAuth } from '$lib/server/middleware/auth';
-import { requireConsent } from '$lib/server/middleware/consent';
-import { buildTutorPrompt, type HelpMethodId, type MathTopic } from '$lib/config/tutor-prompts';
-import { selectHelpMethod } from '$lib/config/tutor-help-methods';
-import { getAdaptationForGrade } from '$lib/config/tutor-grade-adaptations';
-import { analyzeMessage } from '$lib/server/tutor/cheat-detector';
-import { analyzeStudentMessages, calculateEffortScore } from '$lib/server/tutor/help-escalation';
-import { hybridSearch, formatResultsForPrompt } from '$lib/server/rag';
-import type { GradeCode } from '$lib/types/grades';
-import { personalities } from '$lib/config/personalities';
-import { createServerLogger } from '$lib/utils/logger';
+import { checkChatbotRateLimit } from '#lib/server/rateLimiter.ts';
+import { checkTutorRateLimit, incrementTutorUsage } from '#lib/server/tutor/tutor-rate-limiter.ts';
+import { getEnv } from '#lib/server/env.ts';
+import { chatRequestSchema, tutorRequestSchema } from '#lib/server/validation/chat.ts';
+import { requireAuth } from '#lib/server/middleware/auth.ts';
+import { requireConsent } from '#lib/server/middleware/consent.ts';
+import { buildTutorPrompt, type HelpMethodId, type MathTopic } from '#lib/config/tutor-prompts.ts';
+import { selectHelpMethod } from '#lib/config/tutor-help-methods.ts';
+import { getAdaptationForGrade } from '#lib/config/tutor-grade-adaptations.ts';
+import { analyzeMessage } from '#lib/server/tutor/cheat-detector.ts';
+import { analyzeStudentMessages, calculateEffortScore } from '#lib/server/tutor/help-escalation.ts';
+import { hybridSearch, formatResultsForPrompt } from '#lib/server/rag/index.ts';
+import type { GradeCode } from '#lib/types/grades.ts';
+import { personalities } from '#lib/config/personalities.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/chat/+server');
 
@@ -42,7 +42,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			// Validate with tutor schema
 			const validation = tutorRequestSchema.safeParse(rawBody);
 			if (!validation.success) {
-				throw error(400, { message: validation.error.issues[0].message });
+				throw error(400, validation.error.issues[0].message);
 			}
 
 			const { messages, exerciseContext, conversationId, helpLevel } = validation.data;
@@ -50,9 +50,10 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			// 1. Tutor-specific rate limiting
 			const rateLimitResult = await checkTutorRateLimit(user.id, exerciseContext?.exerciseId);
 			if (!rateLimitResult.allowed) {
-				throw error(429, {
-					message: rateLimitResult.message || 'Limite de tuteur dépassée. Réessayer plus tard.'
-				});
+				throw error(
+					429,
+					rateLimitResult.message || 'Limite de tuteur dépassée. Réessayer plus tard.'
+				);
 			}
 
 			// 2. Get last user message for cheat detection
@@ -67,7 +68,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			// 3. Analyze for cheat attempts
 			const cheatAnalysis = analyzeMessage(userMessageContent);
 			if (cheatAnalysis.recommendation === 'refuse') {
-				return json({
+				return Response.json({
 					message: cheatAnalysis.isCheatAttempt.suggestedResponse,
 					tutorMetadata: {
 						cheatDetected: true,
@@ -169,7 +170,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			// Check if API key is configured
 			if (!env.GROQ_API_KEY) {
 				logger.error('GROQ_API_KEY not configured');
-				return json(
+				return Response.json(
 					{
 						error: 'Service temporairement indisponible',
 						details: 'API key not configured'
@@ -287,7 +288,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 				}
 			}
 
-			return json({
+			return Response.json({
 				message: responseMessage,
 				tutorMetadata: {
 					cheatDetected: false,
@@ -306,16 +307,14 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		const rateLimitResult = await checkChatbotRateLimit(user.id);
 
 		if (!rateLimitResult.allowed) {
-			throw error(429, {
-				message: rateLimitResult.message || 'Trop de requêtes. Réessayer plus tard.'
-			});
+			throw error(429, rateLimitResult.message || 'Trop de requêtes. Réessayer plus tard.');
 		}
 
 		// SECURITY: Input Validation with Zod
 		const validation = chatRequestSchema.safeParse(rawBody);
 
 		if (!validation.success) {
-			throw error(400, { message: validation.error.issues[0].message });
+			throw error(400, validation.error.issues[0].message);
 		}
 
 		const { messages, personality } = validation.data;
@@ -323,7 +322,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		// Check if API key is configured (type-safe optional check)
 		if (!env.GROQ_API_KEY) {
 			logger.error('GROQ_API_KEY not configured');
-			return json(
+			return Response.json(
 				{
 					error: 'Service temporairement indisponible',
 					details: 'API key not configured'
@@ -384,7 +383,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		// Journalisation de l'usage IA : RETIRÉE, `ai_chat_usage` n'existe pas.
 		// Voir le commentaire du premier site plus haut dans ce fichier.
 
-		return json({
+		return Response.json({
 			message: responseMessage
 		});
 	} catch (err) {
@@ -401,8 +400,6 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			throw err; // Re-throw SvelteKit errors (401, 429, 400)
 		}
 
-		throw error(500, {
-			message: "Erreur lors de la communication avec l'IA"
-		});
+		throw error(500, "Erreur lors de la communication avec l'IA");
 	}
 };

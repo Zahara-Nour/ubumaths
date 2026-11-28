@@ -8,7 +8,8 @@
  * @module server/redirectHandle
  */
 
-import { redirect, type Handle } from '@sveltejs/kit';
+import { redirect } from '@sveltejs/kit';
+import type { Handle } from '@sveltejs/kit/hooks';
 
 /**
  * Pages de démo et de debug rangées sous `/dev` (chantier demo-debug, PR 2) :
@@ -20,7 +21,6 @@ const MOVED_PAGES: Record<string, string> = {
 	'/test-saisie': '/dev/saisie-naturelle',
 	'/test-cadres': '/dev/cadres',
 	'/test-erreur': '/dev/erreurs/page',
-	'/blockly/playground': '/dev/blockly',
 	'/dashboard/admin/errors/test': '/dev/erreurs/surveillance',
 	'/dashboard/admin/debug/session': '/dev/session',
 	'/dashboard/admin/debug/rls': '/dev/rls',

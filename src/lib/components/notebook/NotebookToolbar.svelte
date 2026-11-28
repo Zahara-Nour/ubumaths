@@ -11,11 +11,11 @@
 	 * - Reset kernel
 	 */
 
-	import type { NotebookStore } from '$lib/stores/notebookStore.svelte';
-	import type { PythonNotebook } from '$lib/types/notebook';
-	import type { NotebookExportOptions } from '$lib/typst/generators/notebook-generator';
-	import { Button } from '$lib/components/ui/button';
-	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
+	import type { NotebookStore } from '#lib/stores/notebookStore.svelte.ts';
+	import type { PythonNotebook } from '#lib/types/notebook.ts';
+	import type { NotebookExportOptions } from '#lib/typst/generators/notebook-generator.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import * as DropdownMenu from '#lib/components/ui/dropdown-menu/index.ts';
 	import {
 		Square,
 		Save,
@@ -34,8 +34,8 @@
 	import KeyboardShortcutsHelp from './KeyboardShortcutsHelp.svelte';
 	import NotebookPdfDialog from './NotebookPdfDialog.svelte';
 	import SaveAsTemplateDialog from './templates/SaveAsTemplateDialog.svelte';
-	import { generateAndDownloadNotebookPdf } from '$lib/typst/notebook-pdf';
-	import { toaster } from '$lib/stores/toaster.svelte';
+	import { generateAndDownloadNotebookPdf } from '#lib/typst/notebook-pdf.ts';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
 
 	// Props
 	let {

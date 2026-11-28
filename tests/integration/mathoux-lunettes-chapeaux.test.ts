@@ -39,7 +39,7 @@ import {
 	MATHOU_GLASSES_IDS,
 	MATHOU_HATS,
 	MATHOU_HAT_IDS
-} from '$lib/mathoux/decorations';
+} from '#lib/mathoux/decorations.ts';
 
 // Types
 type Student = { id: string; client: SupabaseClient };

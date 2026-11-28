@@ -1,0 +1,150 @@
+{
+	"id": "d6415687-a82d-40dc-affd-1ef7f0ac37c1",
+	"title": "Poser une division décimale : dividende décimal",
+	"description": "Division posée d'un décimal d'au plus cinq chiffres par un nombre à un chiffre, quotient qui s'arrête au centième : 45,36 ÷ 4 ; 2,45 ÷ 7 ; un zéro à ajouter (148,2 ÷ 5)",
+	"grades": ["CM2"],
+	"level": 10,
+	"delay": 240,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Pose et effectue la division. Continue après la virgule jusqu'à ce que le reste soit nul.\n\n```operation\ncalcul: {{eval:M/100;d}} ÷ {{d}}\nquotient: décimal\n```",
+			"variables": [
+				{
+					"name": "d",
+					"expression": "2..9"
+				},
+				{
+					"name": "M",
+					"expression": "100..99999"
+				}
+			],
+			"conditions": ["mod(M,d) == 0", "mod(M,10) != 0"],
+			"blanks": [],
+			"correction": {
+				"steps": [
+					"On divise d'abord la partie entière ; quand on abaisse le chiffre des dixièmes, on écrit la virgule au quotient.",
+					"Le reste devient nul au chiffre des centièmes.",
+					"$${{eval:M/100;d}} \\div {{d}} = \\textcolor{{{color:primary.0}}}{{{eval:M/d/100;d}}}$$",
+					"On vérifie : ${{d}} \\times {{eval:M/d/100;d}} = {{eval:M/100;d}}$."
+				]
+			}
+		},
+		{
+			"statement": "Pose et effectue la division. Continue après la virgule jusqu'à ce que le reste soit nul.\n\n```operation\ncalcul: {{eval:T/10;d}} ÷ {{d}}\nquotient: décimal\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..5"
+				},
+				{
+					"name": "d",
+					"expression": "{{if:k==1|2|{{if:k==2|4|{{if:k==3|5|{{if:k==4|6|8}}}}}}}}"
+				},
+				{
+					"name": "T",
+					"expression": "101..9999"
+				}
+			],
+			"conditions": ["mod(T,10) != 0", "mod(T,d) != 0", "mod(10*T,d) == 0"],
+			"blanks": [],
+			"correction": {
+				"steps": [
+					"On divise d'abord la partie entière ; quand on abaisse le chiffre des dixièmes, on écrit la virgule au quotient.",
+					"Après les dixièmes, il reste ${{eval:mod(T,d)}}$ : on ajoute un zéro au dividende (${{eval:T/10;d}} = {{eval:T/10;d}}0$) et on continue jusqu'aux centièmes.",
+					"$${{eval:T/10;d}} \\div {{d}} = \\textcolor{{{color:primary.0}}}{{{eval:T/d/10;d}}}$$",
+					"On vérifie : ${{d}} \\times {{eval:T/d/10;d}} = {{eval:T/10;d}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "45,36 ÷ 4 = 11,34",
+			"variationIndex": 0,
+			"variables": {
+				"d": "4",
+				"M": "4536"
+			},
+			"answers": ["11,34"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : virgule oubliée, 1 134",
+			"variationIndex": 0,
+			"variables": {
+				"d": "4",
+				"M": "4536"
+			},
+			"answers": ["1 134"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "2,45 ÷ 7 = 0,35",
+			"variationIndex": 0,
+			"variables": {
+				"d": "7",
+				"M": "245"
+			},
+			"answers": ["0,35"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 3,5 (zéro des unités oublié)",
+			"variationIndex": 0,
+			"variables": {
+				"d": "7",
+				"M": "245"
+			},
+			"answers": ["3,5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "BO : 148,2 ÷ 5 = 29,64",
+			"variationIndex": 1,
+			"variables": {
+				"k": "3",
+				"d": "5",
+				"T": "1482"
+			},
+			"answers": ["29,64"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : arrêtée au dixième, 29,6",
+			"variationIndex": 1,
+			"variables": {
+				"k": "3",
+				"d": "5",
+				"T": "1482"
+			},
+			"answers": ["29,6"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "BO : 986,3 ÷ 5 = 197,26",
+			"variationIndex": 1,
+			"variables": {
+				"k": "3",
+				"d": "5",
+				"T": "9863"
+			},
+			"answers": ["197,26"],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}

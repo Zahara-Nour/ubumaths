@@ -13,23 +13,23 @@
  */
 
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { Database, TablesUpdate } from '$lib/types/database';
+import type { Database, TablesUpdate } from '#lib/types/database.ts';
 import type {
 	ChapterTemplate,
 	ChapterTemplateInstantiation,
 	TemplateSummary,
 	InstantiationWithStatus,
 	DbChapterTemplate
-} from '$lib/types/chapter-templates';
-import { dbTemplateToApp, dbInstantiationToApp } from '$lib/types/chapter-templates';
+} from '#lib/types/chapter-templates.ts';
+import { dbTemplateToApp, dbInstantiationToApp } from '#lib/types/chapter-templates.ts';
 import type {
 	CreateChapterTemplateInput,
 	CreateTemplateFromChapterInput,
 	UpdateChapterTemplateInput,
 	InstantiateTemplateInput,
 	ListTemplatesQuery
-} from '$lib/server/validation/chapter-templates';
-import { createServerLogger } from '$lib/utils/logger';
+} from '#lib/server/validation/chapter-templates.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 import { CHAPTER_DOCUMENTS_BUCKET, ownerStoragePrefix } from './content-owner';
 import {
 	copyStoredFile,
@@ -39,6 +39,7 @@ import {
 	templateHasContent
 } from './template-content';
 import { createServiceRoleClient } from './serviceRoleClient';
+import { DEFAULT_SECTION_TITLES } from './chapter-sections';
 import {
 	LINKED_TABLES_SECTIONS_LAST,
 	adoptMappedRows,
@@ -102,7 +103,16 @@ interface ListResult<T> {
 // ============================================================================
 
 /**
- * Create a new chapter template from scratch
+ * Créer un modèle de zéro.
+ *
+ * Le modèle reçoit les six sections par défaut (`DEFAULT_SECTION_TITLES`), comme
+ * un chapitre de classe créé à la main ; le professeur peut ensuite les
+ * renommer, les réordonner, les supprimer. Un modèle fait depuis un chapitre
+ * (`createTemplateFromChapter`) ne passe pas par ici : il copie les sections du
+ * chapitre.
+ *
+ * Si les sections ne peuvent pas être posées, le modèle est gardé quand même :
+ * un modèle sans section reste utilisable, le professeur en ajoute à la main.
  *
  * @param input - Template creation data
  * @param userId - Creator's user ID
@@ -132,6 +142,25 @@ export async function createChapterTemplate(
 		if (error) {
 			logger.error('[createChapterTemplate] Error:', error);
 			return { data: null, error: new Error(error.message) };
+		}
+
+		// Sous RLS : un refus rend zéro ligne sans erreur, d'où le compte.
+		const { data: sections, error: sectionsError } = await supabase
+			.from('chapter_sections')
+			.insert(
+				DEFAULT_SECTION_TITLES.map((title, index) => ({
+					template_id: template.id,
+					title,
+					display_order: index + 1
+				}))
+			)
+			.select('id');
+
+		if (sectionsError || sections?.length !== DEFAULT_SECTION_TITLES.length) {
+			logger.error(
+				'[createChapterTemplate] Sections par défaut non posées :',
+				sectionsError ?? `${sections?.length ?? 0} section(s)`
+			);
 		}
 
 		return { data: dbTemplateToApp(template as DbChapterTemplate), error: null };

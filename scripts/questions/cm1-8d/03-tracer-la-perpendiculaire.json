@@ -1,0 +1,337 @@
+{
+	"id": "66b4d4ed-f238-4075-b339-5c09c1e89592",
+	"title": "Tracer la perpendiculaire à une droite par un point",
+	"description": "Sur quadrillage, à l'équerre ou en comptant les carreaux : droite horizontale ou verticale, en diagonale, oblique ; point hors de la droite ou sur la droite",
+	"grades": ["CM1", "CM2"],
+	"level": 1,
+	"delay": 180,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Trace la droite $p$, perpendiculaire à la droite $d$ et qui passe par le point $A$.\n\n```figure-a-completer\nfenetre: 0 ; 14 ; 0 ; 10\ngrille: 1\noutils: droite, equerre\nverifier: droite p = perpendiculaire(A, d)\n---\n{{if:k==1|m = point(0, 3, visible=faux)\nn = point(14, 3, visible=faux)\nd = droite(m, n)\ntexte(13.6, 3.4, \"d\")\nA = point(6, 7, etiquette=\"haut-gauche\")|{{if:k==2|m = point(4, 0, visible=faux)\nn = point(4, 10, visible=faux)\nd = droite(m, n)\ntexte(4.4, 9.5, \"d\")\nA = point(9, 6, etiquette=\"droite\")|{{if:k==3|m = point(0, 6, visible=faux)\nn = point(14, 6, visible=faux)\nd = droite(m, n)\ntexte(13.6, 6.4, \"d\")\nA = point(8, 2, etiquette=\"bas-droite\")|m = point(10, 0, visible=faux)\nn = point(10, 10, visible=faux)\nd = droite(m, n)\ntexte(10.4, 9.5, \"d\")\nA = point(4, 4, etiquette=\"gauche\")}}}}}}\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..4"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On pose un côté de l'angle droit de l'équerre le long de $d$, et on la fait glisser jusqu'à $A$ : l'autre côté trace la $\\textcolor{{{color:primary.0}}}{\\text{perpendiculaire}}$.",
+					"Ici $d$ suit les lignes du quadrillage : la perpendiculaire suit l'autre sens des lignes, et passe par $A$."
+				]
+			}
+		},
+		{
+			"statement": "Trace la droite $p$, perpendiculaire à la droite $d$ et qui passe par le point $A$.\n\n```figure-a-completer\nfenetre: 0 ; 14 ; 0 ; 10\ngrille: 1\noutils: droite, equerre\nverifier: droite p = perpendiculaire(A, d)\n---\n{{if:k==1|m = point(0, 0, visible=faux)\nn = point(10, 10, visible=faux)\nd = droite(m, n)\ntexte(10.4, 9.5, \"d\")\nA = point(4, 7, etiquette=\"haut-gauche\")|{{if:k==2|m = point(1, 10, visible=faux)\nn = point(11, 0, visible=faux)\nd = droite(m, n)\ntexte(11.4, 0.4, \"d\")\nA = point(10, 7, etiquette=\"haut-droite\")|{{if:k==3|m = point(4, 0, visible=faux)\nn = point(14, 10, visible=faux)\nd = droite(m, n)\ntexte(13.6, 9.5, \"d\")\nA = point(11, 3, etiquette=\"bas-droite\")|m = point(1, 10, visible=faux)\nn = point(11, 0, visible=faux)\nd = droite(m, n)\ntexte(11.4, 0.4, \"d\")\nA = point(4, 2, etiquette=\"bas-gauche\")}}}}}}\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..4"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On pose un côté de l'angle droit de l'équerre le long de $d$, et on la fait glisser jusqu'à $A$ : l'autre côté trace la $\\textcolor{{{color:primary.0}}}{\\text{perpendiculaire}}$.",
+					"Sur le quadrillage, on peut aussi compter : si $d$ avance de $a$ carreaux et monte de $b$, la perpendiculaire $\\textcolor{{{color:primary.0}}}{\\text{avance de } b \\text{ et descend de } a}$ (les deux nombres sont échangés)."
+				]
+			}
+		},
+		{
+			"statement": "Trace la droite $p$, perpendiculaire à la droite $d$ et qui passe par le point $A$.\n\n```figure-a-completer\nfenetre: 0 ; 14 ; 0 ; 10\ngrille: 1\noutils: droite, equerre\nverifier: droite p = perpendiculaire(A, d)\n---\n{{if:k==1|m = point(1, 2, visible=faux)\nn = point(13, 8, visible=faux)\nd = droite(m, n)\ntexte(12.6, 8.4, \"d\")\nA = point(5, 8, etiquette=\"haut\")|{{if:k==2|m = point(3, 0, visible=faux)\nn = point(8, 10, visible=faux)\nd = droite(m, n)\ntexte(8.4, 9.5, \"d\")\nA = point(10, 4, etiquette=\"droite\")|{{if:k==3|m = point(0, 3, visible=faux)\nn = point(12, 7, visible=faux)\nd = droite(m, n)\ntexte(12.4, 7.4, \"d\")\nA = point(8, 9, etiquette=\"haut\")|m = point(5, 10, visible=faux)\nn = point(10, 0, visible=faux)\nd = droite(m, n)\ntexte(10.4, 0.4, \"d\")\nA = point(11, 6, etiquette=\"droite\")}}}}}}\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..4"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On pose un côté de l'angle droit de l'équerre le long de $d$, et on la fait glisser jusqu'à $A$ : l'autre côté trace la $\\textcolor{{{color:primary.0}}}{\\text{perpendiculaire}}$.",
+					"Sur le quadrillage, on peut aussi compter : si $d$ avance de $a$ carreaux et monte de $b$, la perpendiculaire $\\textcolor{{{color:primary.0}}}{\\text{avance de } b \\text{ et descend de } a}$ (les deux nombres sont échangés)."
+				]
+			}
+		},
+		{
+			"statement": "Trace la droite $p$, perpendiculaire à la droite $d$ et qui passe par le point $A$.\n\n```figure-a-completer\nfenetre: 0 ; 14 ; 0 ; 10\ngrille: 1\noutils: droite, equerre\nverifier: droite p = perpendiculaire(A, d)\n---\n{{if:k==1|m = point(0, 4, visible=faux)\nn = point(14, 4, visible=faux)\nd = droite(m, n)\ntexte(13.6, 4.4, \"d\")\nA = point(6, 4, etiquette=\"bas-gauche\")|{{if:k==2|m = point(1, 0, visible=faux)\nn = point(11, 10, visible=faux)\nd = droite(m, n)\ntexte(11.4, 9.5, \"d\")\nA = point(6, 5, etiquette=\"droite\")|{{if:k==3|m = point(1, 3, visible=faux)\nn = point(13, 9, visible=faux)\nd = droite(m, n)\ntexte(12.6, 8.5, \"d\")\nA = point(7, 6, etiquette=\"bas-droite\")|m = point(6, 0, visible=faux)\nn = point(6, 10, visible=faux)\nd = droite(m, n)\ntexte(6.4, 9.5, \"d\")\nA = point(6, 5, etiquette=\"gauche\")}}}}}}\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..4"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On pose un côté de l'angle droit de l'équerre le long de $d$, et on la fait glisser jusqu'à $A$ : l'autre côté trace la $\\textcolor{{{color:primary.0}}}{\\text{perpendiculaire}}$.",
+					"Sur le quadrillage, on peut aussi compter : si $d$ avance de $a$ carreaux et monte de $b$, la perpendiculaire $\\textcolor{{{color:primary.0}}}{\\text{avance de } b \\text{ et descend de } a}$ (les deux nombres sont échangés)."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "V1, 1 : juste",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1"
+			},
+			"answers": ["droite(6;7;6;8)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "V1, 2 : juste",
+			"variationIndex": 0,
+			"variables": {
+				"k": "2"
+			},
+			"answers": ["droite(9;6;8;6)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "V1, 3 : juste",
+			"variationIndex": 0,
+			"variables": {
+				"k": "3"
+			},
+			"answers": ["droite(8;2;8;3)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "V1, 4 : juste",
+			"variationIndex": 0,
+			"variables": {
+				"k": "4"
+			},
+			"answers": ["droite(4;4;3;4)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur V1 : la parallèle par A",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1"
+			},
+			"answers": ["droite(6;7;7;7)"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur V1 : perpendiculaire à d, pas par A",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1"
+			},
+			"answers": ["droite(7;7;7;8)"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "V2, 1 : juste",
+			"variationIndex": 1,
+			"variables": {
+				"k": "1"
+			},
+			"answers": ["droite(4;7;3;8)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "V2, 2 : juste",
+			"variationIndex": 1,
+			"variables": {
+				"k": "2"
+			},
+			"answers": ["droite(10;7;11;8)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "V2, 3 : juste",
+			"variationIndex": 1,
+			"variables": {
+				"k": "3"
+			},
+			"answers": ["droite(11;3;10;4)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "V2, 4 : juste",
+			"variationIndex": 1,
+			"variables": {
+				"k": "4"
+			},
+			"answers": ["droite(4;2;5;3)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur V2 : la parallèle par A",
+			"variationIndex": 1,
+			"variables": {
+				"k": "1"
+			},
+			"answers": ["droite(4;7;5;8)"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur V2 : perpendiculaire à d, pas par A",
+			"variationIndex": 1,
+			"variables": {
+				"k": "1"
+			},
+			"answers": ["droite(5;8;4;9)"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "V3, 1 : juste",
+			"variationIndex": 2,
+			"variables": {
+				"k": "1"
+			},
+			"answers": ["droite(5;8;4;10)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "V3, 2 : juste",
+			"variationIndex": 2,
+			"variables": {
+				"k": "2"
+			},
+			"answers": ["droite(10;4;8;5)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "V3, 3 : juste",
+			"variationIndex": 2,
+			"variables": {
+				"k": "3"
+			},
+			"answers": ["droite(8;9;7;12)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "V3, 4 : juste",
+			"variationIndex": 2,
+			"variables": {
+				"k": "4"
+			},
+			"answers": ["droite(11;6;13;7)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur V3 : la parallèle par A",
+			"variationIndex": 2,
+			"variables": {
+				"k": "1"
+			},
+			"answers": ["droite(5;8;7;9)"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur V3 : perpendiculaire à d, pas par A",
+			"variationIndex": 2,
+			"variables": {
+				"k": "1"
+			},
+			"answers": ["droite(7;9;6;11)"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur V3 : nombres échangés sans changer le sens",
+			"variationIndex": 2,
+			"variables": {
+				"k": "1"
+			},
+			"answers": ["droite(5;8;6;10)"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "V4, 1 : juste",
+			"variationIndex": 3,
+			"variables": {
+				"k": "1"
+			},
+			"answers": ["droite(6;4;6;5)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "V4, 2 : juste",
+			"variationIndex": 3,
+			"variables": {
+				"k": "2"
+			},
+			"answers": ["droite(6;5;5;6)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "V4, 3 : juste",
+			"variationIndex": 3,
+			"variables": {
+				"k": "3"
+			},
+			"answers": ["droite(7;6;6;8)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "V4, 4 : juste",
+			"variationIndex": 3,
+			"variables": {
+				"k": "4"
+			},
+			"answers": ["droite(6;5;5;5)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur V4 : perpendiculaire à d, pas par A",
+			"variationIndex": 3,
+			"variables": {
+				"k": "1"
+			},
+			"answers": ["droite(7;4;7;5)"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

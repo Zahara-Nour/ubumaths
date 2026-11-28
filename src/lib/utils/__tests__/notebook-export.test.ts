@@ -6,7 +6,7 @@
 import { describe, it, expect } from 'vitest';
 import { exportToIpynb } from '../notebook-export';
 import { importIpynb } from '../notebook-import';
-import type { NotebookContent } from '$lib/types/notebook';
+import type { NotebookContent } from '#lib/types/notebook.ts';
 
 describe('exportToIpynb', () => {
 	it('should export basic notebook with code cell', () => {

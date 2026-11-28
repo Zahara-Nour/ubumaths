@@ -13,11 +13,11 @@
 	 * <WeekConfigEditor bind:config={weekConfig} />
 	 */
 
-	import { Label } from '$lib/components/ui/label';
-	import { Button } from '$lib/components/ui/button';
-	import MyCheckbox from '$lib/components/MyCheckbox.svelte';
-	import MySelect from '$lib/components/MySelect.svelte';
-	import { DEFAULT_WEEK_CONFIG, type WeekConfig } from '$lib/utils/week-config';
+	import { Label } from '#lib/components/ui/label/index.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import MyCheckbox from '#lib/components/MyCheckbox.svelte';
+	import MySelect from '#lib/components/MySelect.svelte';
+	import { DEFAULT_WEEK_CONFIG, type WeekConfig } from '#lib/utils/week-config.ts';
 
 	let {
 		config = $bindable<WeekConfig>(structuredClone(DEFAULT_WEEK_CONFIG)),

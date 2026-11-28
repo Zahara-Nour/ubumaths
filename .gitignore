@@ -83,3 +83,6 @@ tools/shantell-math/venv/
 
 # Transcriptions de sessions Claude (skill exporter-session) : locales, jamais publiées
 docs/session-transcripts/
+
+# Courriels capturés en local (src/lib/server/email/capture.ts) et captures de vérification
+/.captures/

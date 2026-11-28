@@ -1,8 +1,8 @@
 import { error, redirect } from '@sveltejs/kit';
-import { fetchTagNamesForResources } from '$lib/server/resource-tags';
+import { fetchTagNamesForResources } from '#lib/server/resource-tags.ts';
 import type { PageServerLoad } from './$types';
-import type { PythonExercise } from '$lib/types/python-exercises';
-import { createServerLogger } from '$lib/utils/logger';
+import type { PythonExercise } from '#lib/types/python-exercises.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('(public)/python-exercises/mine/+page.server');
 

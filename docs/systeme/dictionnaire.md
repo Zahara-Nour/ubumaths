@@ -1,10 +1,11 @@
 ---
 couvre:
   - 'src/lib/dictionary/**'
-  - 'src/lib/lexicon/**'
+  - 'src/lib/dictionary/**'
   - 'src/lib/server/dictionary/**'
   - src/lib/components/markdown/lexicon-context.ts
   - src/lib/components/markdown/nodes/LexiconTerm.svelte
+  - src/lib/components/questions/LexiconToggle.svelte
   - tests/fixtures/lexique/dictionnaire-reference.ts
   - 'src/routes/api/dictionnaire/**'
   - 'src/routes/api/admin/dictionnaire/**'
@@ -31,7 +32,7 @@ cliquables** des énoncés (un clic ouvre la fiche du mot, au niveau de l'élèv
 Termes ([CONTEXT.md](../../CONTEXT.md), § « Le dictionnaire ») : Dictionnaire, Glossaire, Mot
 cliquable. ⚠️ « lexique » désigne le **lore** (`src/lib/config/lore.ts`, voir
 [univers-chiphre.md](univers-chiphre.md)), pas les mots mathématiques — même si le module des mots
-cliquables s'appelle `src/lib/lexicon/` (nom historique du chantier « lexique »).
+cliquables s'appelle `src/lib/dictionary/` (nom historique du chantier « lexique »).
 
 ## Carte du code
 
@@ -47,12 +48,15 @@ cliquables s'appelle `src/lib/lexicon/` (nom historique du chantier « lexique �
 | `src/lib/dictionary/glossary-page.ts`                                 | `termKey`, `pageSlugFor`, `isBareRedirect`, `glossaryDescription` (pages du glossaire)   |
 | `src/lib/server/sitemap-glossary.ts`                                  | `fetchGlossaryPages` : les pages du glossaire du plan du site, lues en anonyme           |
 | `src/routes/(public)/games/mathemo/dictionary-words.ts`               | `playableTerms` : mots jouables réduits à nom / niveau / filières                        |
-| `src/lib/lexicon/linker.ts`                                           | `createLinker` : repérage des mots dans l'AST d'ubumark (`TextNode.terms`)               |
-| `src/lib/lexicon/card.ts`                                             | `lexiconCard`, `findPrincipal` : contenu de la fiche d'un mot                            |
-| `src/lib/lexicon/runtime.ts`, `runtime-store.svelte.ts`               | Chargement à la demande (dictionnaire + repérage) au premier énoncé qui en a besoin      |
-| `src/lib/lexicon/grade.ts`, `reader-grade.ts`                         | Niveau de lecture (`lexiconGrade`, `provideReaderGrade`)                                 |
+| `src/lib/dictionary/linker.ts`                                        | `createLinker` : repérage des mots dans l'AST d'ubumark (`TextNode.terms`)               |
+| `src/lib/dictionary/card.ts`                                          | `lexiconCard`, `findPrincipal` : contenu de la fiche d'un mot                            |
+| `src/lib/dictionary/runtime.ts`, `runtime-store.svelte.ts`            | Chargement à la demande (dictionnaire + repérage) au premier énoncé qui en a besoin      |
+| `src/lib/dictionary/grade.ts`, `reader-grade.ts`                      | Niveau de lecture (`lexiconGrade`, `questionReadingGrades`, `provideReaderGrade`)        |
 | `src/lib/components/markdown/lexicon-context.ts`                      | `provideLexicon`, `provideQuestionLexicon` : qui active les mots cliquables              |
+| `src/lib/components/markdown/LexiconOff.svelte`                       | Coupe les mots dans ce qu'il contient (correction, résultat attendu)                     |
 | `src/lib/components/markdown/nodes/LexiconTerm.svelte`                | Le mot souligné et sa fiche (dialogue accessible)                                        |
+| `src/lib/dictionary/visibility.svelte.ts`, `card-terms.svelte.ts`     | Mots affichés ou masqués sur les cartes (appareil), mots repérés d'une carte             |
+| `src/lib/components/questions/LexiconToggle.svelte`                   | Bouton « Mots du dictionnaire » d'une carte de question                                  |
 | `src/lib/dictionary/consistency.ts`                                   | `checkDictionary`, `newProblems` : règles de cohérence (enregistrement admin et tests)   |
 | `src/lib/dictionary/admin-draft.ts`                                   | Brouillon d'une entrée sur la page d'admin ↔ saisie envoyée au serveur                   |
 | `src/lib/server/dictionary/admin.ts`                                  | `loadAdminDictionary`, `createEntry`, `updateEntry`, `loadVersions`                      |
@@ -120,7 +124,7 @@ personne n'écrit directement dans l'historique.
 - `/glossaire` liste les termes ; chaque terme est un **lien** vers sa page (plus de fenêtre,
   choix B1 de David). Un renvoi nu (sans définition, exemple ni histoire : « multiplier ») mène
   droit à la page du terme cité (`pageSlugFor`).
-- `/glossaire/<slug>` : titre « terme (sens) : définition », description = première définition
+- `/glossaire/<slug>` : titre d'onglet « terme (sens) : définition (maths) », description = première définition
   en texte brut (≤ 155 caractères), toutes les définitions et tous les exemples **chacun avec son
   niveau** (la page ne suit pas le filtre de niveau de la liste), histoire, synonymes, « Voir
   aussi », `BackLink` vers `/glossaire`. Un renvoi qui a sa propre définition (« Thalès », 6 en
@@ -143,11 +147,40 @@ personne n'écrit directement dans l'historique.
 - Marquage d'auteur dans ubumark (`TextNode.lexicon`, `LexiconMark`) : `[mot]{.def}` force,
   `{.def=carré (géométrie)}` tranche un homonyme, `{.nodef}` bloque. Homonyme non tranché → la
   fiche montre les deux sens.
-- Niveau de lecture (`lexiconGrade`) : celui de l'élève connecté (`readReaderGrade`, posé par le
-  layout racine), sinon le plus petit niveau de la question (visiteur, professeur).
+- Lecture posée par `provideLexicon` (`LexiconReading`) : `grade` (définitions de la fiche),
+  `linkGrade` (choix des mots soulignés), `link` (options de `linkDocument`). Un niveau seul vaut
+  pour les deux, sans option (démo, structure, programmes).
+- Sur une carte (`provideQuestionLexicon`, chantier `mots-cliquables`, 2026-11-17) :
+  - **Élève** : son niveau (`readReaderGrade`, posé par le layout racine) pour les deux.
+    **Professeur ou visiteur** (`questionReadingGrades`) : soulignement au **plus haut** niveau de
+    la question (R3), fiche au **plus petit** (définitions les plus simples) ; un mot souligné que
+    le plus petit niveau ne voit pas se lit au plus haut (`lexiconCard`, `fallbackGrade`).
+    Un homonyme ouvre tous ses sens visibles, chacun lu ainsi : sur une question de translation
+    4e + 3e, « image » montre « image (transformation) » et « image (fonction) », comme pour un
+    élève de 3e ; pas de choix du sens selon le contexte (décidé par David le 2026-11-17).
+    Niveau inconnu : aucun mot.
+  - **Mots récents** (R1, `recentOnly`) : un mot n'est souligné d'office que s'il est rencontré
+    (`gradeMetBy`, filières comprises) à l'année scolaire du lecteur ou à celle d'avant
+    (`schoolYear`). Un nom trop ancien reste dans le motif : il occupe son texte, et l'occurrence
+    suivante ne prend pas le relais. `{.def}` force toujours un mot ancien.
+  - **Question de cours** (R4, `isCourseQuestion` : carte de cours ou `options.courseQuestion`) :
+    aucun mot repéré d'office (`auto: false`, il donnerait la réponse) ; `{.def}` reste possible.
+  - **Correction** (R2) : aucun mot. `LexiconOff` entoure le verso de `FlashCard` (résultat
+    attendu, énoncé rempli, correction), le résultat attendu et le verso de `CorrectionCard` ;
+    `CourseCardBack` coupe lui-même.
 - Qui active : `QuestionCard`, `FlashCard`, `CorrectionCard` via `provideQuestionLexicon`.
   `null` coupe les mots : **évaluation notée** (`collectOnly`), fiche d'un mot déjà ouverte, choix
-  de QCM (un choix est un bouton). Sans fournisseur (chat, fiches, aperçus) : aucun mot souligné.
+  de QCM (un choix est un bouton), correction. Sans fournisseur (chat, fiches, aperçus) : aucun mot
+  souligné.
+- **Soulignement masqué par défaut sur une carte** (R6, chantier `mots-cliquables`, 2026-11-17) :
+  `provideQuestionLexicon` pose aussi le compteur des mots de la carte (`card-terms.svelte.ts`) ;
+  chaque `LexiconTerm` repéré s'y annonce. `LexiconToggle` (bouton « Mots du dictionnaire »,
+  `aria-pressed`) n'apparaît que si le compteur est non nul, et bascule `setLexiconShown`
+  (`visibility.svelte.ts`) : choix valable pour toutes les cartes, mémorisé sur l'appareil
+  (`chiphre:mots-du-dictionnaire`), masqué si le stockage est illisible. Masqué : à la souris, le
+  mot reste cliquable et se souligne au survol ; au doigt (`canHover`, `(hover: hover)`), il reste
+  du texte ; au clavier, `tabindex=-1`. Hors d'une carte (démo, structure, programmes), les mots
+  restent soulignés.
 
 ## Invariants
 
@@ -183,7 +216,7 @@ personne n'écrit directement dans l'historique.
 - **Activer les mots cliquables dans un nouveau cadre** : appeler `provideLexicon` (ou
   `provideQuestionLexicon`) pendant l'initialisation du composant ; ne pas passer le niveau de
   composant en composant.
-- **Nouvelle colonne** : migration additive, puis `db:types` (génère depuis la prod : deux PR),
+- **Nouvelle colonne** : migration additive, puis `pnpm db:types` (même PR),
   `DICTIONARY_COLUMNS` et `dictionaryRowSchema` dans `entry-schema.ts`, `MathTerm` dans `model.ts`.
 
 ## Tests
@@ -193,14 +226,18 @@ personne n'écrit directement dans l'historique.
 | `tests/integration/dictionnaire-en-base.test.ts`                                  | Droits et RLS : lecture anon, écriture admin seul, pas de DELETE, trigger |
 | `tests/integration/dictionnaire-lecture.test.ts`                                  | Lecture : base locale = référence + ajouts, filtre `hidden`, mémoire 90 s |
 | `tests/integration/dictionnaire-mots-lecture.test.ts`                             | Les 4 mots de la lecture : lus par un visiteur, cohérents                 |
+| `tests/integration/dictionnaire-verbes-consigne.test.ts`                          | Les 10 verbes de consigne jamais soulignés : migration, garde, rollback   |
+| `tests/integration/dictionnaire-exemples-seo.test.ts`                             | Les 14 exemples du chantier seo : migration, garde, rollback              |
+| `tests/integration/dictionnaire-exemples-seo-lot2.test.ts`                        | Les 42 exemples du lot 2 (seo) : migration, garde, rollback               |
 | `tests/integration/dictionnaire-admin.test.ts`                                    | Enregistrement admin : refus de cohérence, historique, masquage           |
 | `tests/integration/dictionnaire-slug.test.ts`                                     | Adresse fixe : calcul, figée au renommage, suffixe `-2`, masquée cachée   |
 | `src/lib/server/dictionary/__tests__/load.test.ts`                                | Mémoire, repli, lecture unique                                            |
 | `src/routes/api/dictionnaire/__tests__/server.test.ts`                            | Cache public, `?frais` réservé à l'admin                                  |
+| `src/lib/components/questions/__tests__/mots-du-dictionnaire.svelte.test.ts`      | R6 : masqué par défaut, bouton, survol, doigt, clavier, stockage bloqué   |
 | `src/lib/dictionary/__tests__/entry-schema.test.ts`                               | Toutes les entrées relues à l'identique par le schéma                     |
 | `src/lib/dictionary/__tests__/reference*.test.ts`                                 | Jeu de référence : cohérence, lots 0b → 0h au mot près, chiffrement       |
 | `src/lib/dictionary/__tests__/consistency.test.ts`                                | Règles de cohérence : référence sans problème, chaque refus 10 → 16       |
-| `src/lib/lexicon/__tests__/`                                                      | Repérage (`linker`), fiche (`card`), chargement à la demande              |
+| `src/lib/dictionary/__tests__/`                                                   | Repérage (`linker`), fiche (`card`), chargement à la demande              |
 | `src/lib/components/questions/__tests__/QuestionCard-champ-stable.svelte.test.ts` | Le champ de réponse n'est pas recréé à l'arrivée du repérage              |
 
 Copies figées des lots validés par David : `tests/fixtures/lexique/` (aucun test ne lit `docs/`).
@@ -214,6 +251,10 @@ Copies figées des lots validés par David : `tests/fixtures/lexique/` (aucun te
   [lot2-mots-cliquables-spec.md](../wip/lexique/lot2-mots-cliquables-spec.md).
 
 ## Écarts connus
+
+Les écarts de cette zone sont au [registre des écarts](../ecarts/registre.md) : `pnpm ecarts`. Un écart s'écrit là-bas, jamais ici.
+
+### Points non vérifiés
 
 - **Le jeu de référence s'éloigne de la base** à mesure que l'admin modifie le dictionnaire :
   c'est voulu (les tests ne dépendent pas des données vivantes). Une base locale fraîche

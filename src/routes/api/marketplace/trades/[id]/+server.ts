@@ -1,16 +1,30 @@
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireAuth } from '$lib/server/middleware/auth';
+import { requireAuth } from '#lib/server/middleware/auth.ts';
 // Supabase client is now accessed via locals.supabase
 import {
 	unlockCardsForEntity,
 	createMarketplaceNotification,
 	enrichWithUsernames
-} from '$lib/server/marketplace/helpers';
+} from '#lib/server/marketplace/helpers.ts';
 import { z } from 'zod';
-import { createServerLogger } from '$lib/utils/logger';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/marketplace/trades/[id]/+server');
+
+/**
+ * Ce que GET lit de l'échange. Écrit à la main : la requête (trois niveaux de
+ * jointures) est trop profonde pour que le typage tiré de la chaîne `select`
+ * tienne selon l'ordre de vérification des fichiers (cliquet des types rouge
+ * sans que ce fichier ait changé, #3188). Les autres colonnes passent telles
+ * quelles dans la réponse.
+ */
+interface TradeDetails extends Record<string, unknown> {
+	initiator_id: string;
+	partner_id: string;
+	offers: Array<{ created_at: string }> | null;
+	chat_messages: Array<{ created_at: string }> | null;
+}
 
 // ID validation schema
 const idSchema = z.string().uuid("ID d'échange invalide");
@@ -71,7 +85,8 @@ export const GET: RequestHandler = async ({ params, locals }) => {
     `
 		)
 		.eq('id', tradeId)
-		.single();
+		.single()
+		.overrideTypes<TradeDetails, { merge: false }>();
 
 	if (tradeError || !trade) {
 		throw error(404, 'Échange non trouvé');
@@ -97,7 +112,7 @@ export const GET: RequestHandler = async ({ params, locals }) => {
 		);
 	}
 
-	return json(enrichWithUsernames(trade));
+	return Response.json(enrichWithUsernames(trade));
 };
 
 /**
@@ -164,5 +179,5 @@ export const DELETE: RequestHandler = async ({ params, locals }) => {
 		cancelled_by: userId
 	});
 
-	return json({ success: true });
+	return Response.json({ success: true });
 };

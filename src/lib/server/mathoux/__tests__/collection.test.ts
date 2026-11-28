@@ -9,14 +9,14 @@
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
-vi.mock('$lib/server/srs/curriculum-point-badge', () => ({
+vi.mock('#lib/server/srs/curriculum-point-badge.ts', () => ({
 	computePointBadges: vi.fn()
 }));
 
 // Écriture de la mémoire : le client service et `rememberMathoux` sont simulés ; la
 // lecture (`readMathouMemory`) reste la vraie, au client de l'élève simulé ci-dessous.
 const SERVICE_CLIENT = { service: true };
-vi.mock('$lib/server/serviceRoleClient', () => ({
+vi.mock('#lib/server/serviceRoleClient.ts', () => ({
 	createServiceRoleClient: vi.fn(() => SERVICE_CLIENT)
 }));
 vi.mock('../memory', async (importOriginal) => ({
@@ -26,8 +26,8 @@ vi.mock('../memory', async (importOriginal) => ({
 // Versement des gidouilles des étapes : simulé (la fonction SQL est prouvée en intégration)
 vi.mock('../gidouilles', () => ({ payMathouMilestones: vi.fn() }));
 
-import { computePointBadges } from '$lib/server/srs/curriculum-point-badge';
-import { createServiceRoleClient } from '$lib/server/serviceRoleClient';
+import { computePointBadges } from '#lib/server/srs/curriculum-point-badge.ts';
+import { createServiceRoleClient } from '#lib/server/serviceRoleClient.ts';
 import { MathouMemoryWriteError, rememberMathoux } from '../memory';
 import { payMathouMilestones } from '../gidouilles';
 import {
@@ -35,8 +35,8 @@ import {
 	loadMathouCollectionWithNews,
 	readMathouCollection
 } from '../collection';
-import { resolveTestLaunch } from '$lib/utils/test-launch';
-import { trainingQuery } from '$lib/mathoux/collection-logic';
+import { resolveTestLaunch } from '#lib/utils/test-launch.ts';
+import { trainingQuery } from '#lib/mathoux/collection-logic.ts';
 
 // =============================================================================
 // Mock Supabase : chaque requête enregistre ses filtres, le handler y répond

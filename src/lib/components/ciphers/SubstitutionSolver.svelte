@@ -3,11 +3,11 @@
 	propose « cette lettre chiffrée cache un E » et voit le message se révéler.
 -->
 <script lang="ts">
-	import { Button } from '$lib/components/ui/button';
-	import { Input } from '$lib/components/ui/input';
-	import { lettersOnly } from '$lib/ciphers/alphabet';
-	import { letterFrequencies } from '$lib/ciphers/frequency';
-	import { applyGuesses, guessConflicts } from '$lib/ciphers/solver';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import { Input } from '#lib/components/ui/input/index.ts';
+	import { lettersOnly } from '#lib/ciphers/alphabet.ts';
+	import { letterFrequencies } from '#lib/ciphers/frequency.ts';
+	import { applyGuesses, guessConflicts } from '#lib/ciphers/solver.ts';
 	import FrequencyChart from './FrequencyChart.svelte';
 
 	// Props

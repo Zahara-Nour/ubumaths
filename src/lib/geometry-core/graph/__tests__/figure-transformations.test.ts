@@ -3,8 +3,8 @@ import { Figure } from '../figure';
 import { exact, numeric, isExact } from '../../types/geo-value';
 import { geoToNumber } from '../../compute/to-number';
 import { geoFromNumber, geoFromFraction } from '../../compute/geo-arithmetic';
-import { divide, piConstant } from '$lib/mathAST';
-import { numericNode } from '$lib/mathAST/common/numeric';
+import { divide, piConstant } from '#lib/mathAST/index.ts';
+import { numericNode } from '#lib/mathAST/common/numeric.ts';
 import type { GeoPoint } from '../../types/primitives';
 
 function pt(x: number, y: number): GeoPoint {

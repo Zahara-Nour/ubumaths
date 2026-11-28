@@ -11,7 +11,7 @@
  * Reference : `docs/systeme/geometrie/constructions.md`.
  */
 
-import type { Figure } from '$lib/geometry-core/graph/figure';
+import type { Figure } from '#lib/geometry-core/graph/figure.ts';
 import type { InstrumentType } from '../../types';
 
 /** Decorator categories. */
@@ -55,9 +55,16 @@ export interface DecoratorTriple {
  *   No arc is drawn ; only the compass moves and opens. Typically inserted
  *   BEFORE a `compass-draw` sub-step to show "I measure |AB|, then I draw
  *   an arc of this radius at a different center".
+ * - `instrument-move` : un autre instrument (équerre, règle, rapporteur,
+ *   crayon) se place ou glisse, sans rien tracer : déplacement puis pause.
  */
 export type SubStepKind =
-	'compass-measure' | 'compass-draw' | 'ruler-trace' | 'point-fade-in' | 'line-fade-in';
+	| 'compass-measure'
+	| 'instrument-move'
+	| 'compass-draw'
+	| 'ruler-trace'
+	| 'point-fade-in'
+	| 'line-fade-in';
 
 /**
  * A single sub-step of a decorated statement's choreography.

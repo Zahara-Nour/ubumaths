@@ -33,8 +33,18 @@ MathLive (tableau : `\begin{array}{|c|c|}` sans `\hline`).
 | ce que l'on conclut    | `primary.2` (vert)   | le signe du résultat, le choix de QCM                                            |
 
 La réponse finale `{{solution}}` reste **en noir** (usage des corrections existantes). Écriture :
-`\textcolor{{{color:primary.0}}}{…}` (palettes : `src/lib/questions/colors.ts`). Une couleur garde
-le même rôle dans la prose et dans le calcul d'une même correction.
+
+- **dans une formule** : `\textcolor{{{color:primary.0}}}{…}` (palettes : `src/lib/questions/colors.ts`) ;
+- **dans la prose, hors `$…$`** : `[le terme qu'on transforme]{.orange}`, avec les noms de la palette
+  des figures (orange, bleu, vert… : [ADR 0042](../adr/0042-texte-colore-dans-la-prose.md)) —
+  jamais `\textcolor` hors formule (l'élève lirait du LaTeX ; `pnpm question:specs` le refuse).
+  Équivalences : `primary.0` → `orange`, `primary.1` → `bleu`, `primary.2` → `vert`.
+
+Une couleur garde le même rôle dans la prose et dans le calcul d'une même correction.
+
+**La couleur ne porte jamais le sens seule** : une fiche imprimée en noir et blanc la perd. Elle
+souligne un mot qui dit déjà ce qu'il désigne : « le terme [qu'on transforme]{.orange} », jamais
+« le terme orange ».
 
 ### Exemple 1 — R-PASS, compléter à la dizaine (`26 + 5`)
 
@@ -102,7 +112,10 @@ réponse`, et la valeur trouvée vérifie l'égalité posée ; plusieurs cases :
   tableau de numération, chiffre et valeur en orange, zéros ajoutés en bleu).
 - Stratégies générées : `R-PASS` (`lib/r-pass.ts`), `R-INV` (`lib/r-inv.ts` : `a + ? = s → ? = s − a`,
   `a × ? = s → ? = s : a`, `? : a = s → ? = s × a`…).
-- Retouches ponctuelles hors lots : `pnpm corrections:retouches` (`lib/retouches.ts`) ; marquage
+- Retouches ponctuelles hors lots : `pnpm corrections:retouches` (`lib/retouches.ts`) ; autre liste par
+  `--lot texte-colore` (`lib/retouches-texte-colore.ts` : `\textcolor` hors formule réécrit en `[…]{.nom}`,
+  ADR 0042) ; une retouche hors des classes du vérificateur peut le sauter en donnant sa raison
+  (`skipVerifier`, affichée ; `checkTemplate` toujours exigé) ; marquage
   « Espaces dès 4 chiffres » des modèles qui gardent la règle de l'école :
   `pnpm corrections:marquage-espaces` (`lib/marquage-espaces.ts` : 51 modèles marqués, specs de
   5 brouillons de 1re spé corrigées au BIPM ; listes figées, que la règle doit retrouver sur la

@@ -8,14 +8,14 @@
  *     il ne doit pas passer pour un succès (404).
  */
 import { describe, it, expect, vi } from 'vitest';
-import { createFakeSupabase } from '$lib/server/__tests__/helpers/fake-supabase';
+import { createFakeSupabase } from '#lib/server/__tests__/helpers/fake-supabase.ts';
 import {
 	answerProgramme,
 	P_FRACTION,
 	P_TRIANGLE_ARCHIVE
-} from '$lib/server/__tests__/helpers/fake-programme';
+} from '#lib/server/__tests__/helpers/fake-programme.ts';
 
-vi.mock('$lib/server/middleware/auth', () => ({ requireRoles: async () => ({}) }));
+vi.mock('#lib/server/middleware/auth.ts', () => ({ requireRoles: async () => ({}) }));
 
 import { POST, DELETE } from '../+server';
 

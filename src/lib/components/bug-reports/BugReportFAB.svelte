@@ -5,7 +5,7 @@
 	 * A small ant icon button fixed in the bottom-right corner.
 	 * Clicking it opens the bug report dialog.
 	 */
-	import { cn } from '$lib/utils';
+	import { cn } from '#lib/utils.ts';
 	import { Bug } from '@lucide/svelte';
 
 	interface Props {

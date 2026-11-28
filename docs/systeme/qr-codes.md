@@ -118,7 +118,18 @@ ou une fiche, vers l'adresse de son choix. Syntaxe et pipeline : [ubumark](ubuma
 - PDF (`qr-typst.ts`) : le SVG de `qrSvg` posé en image vectorielle,
   `#image(bytes("<svg…>"), format: "svg", width: …cm)` — ni fichier, ni réseau ; légende en chaîne
   Typst littérale (aucun balisage interprété). Compilation réelle testée
-  (`qr-typst-compilation.test.ts`).
+  (`qr-typst-compilation.test.ts`). `qrImageTypst(url, largeur)` rend l'image seule (sans légende),
+  partagée avec l'en-tête des fiches.
+
+## Le QR de Chiphre sur les fiches imprimées
+
+En tête de la page 1 des PDF des styles « Fiche élève » et « 2 colonnes - paysage », un QR vers
+**l'accueil** `https://www.chiph.re` (`src/lib/typst/templates/site-mark.ts`, David, 2026-11-19).
+Seconde destination admise après les séries : une adresse fixe et courte, sans lien court ni jeton,
+la même sur toutes les fiches. `gidouilleSvg()` (`qr-code.ts`) rend la même spirale seule, sans
+fond, pour le pied de page des fiches. Décodé depuis le PDF rendu (jsQR, 150 dpi) le 2026-11-19. Détail de
+la mise en page : [fiches-et-pdf.md](fiches-et-pdf.md).
+
 - Poids de `uqr` (build du 2026-10-19) : 4,4 Ko gzip, chargé d'office par 16 pages sur 330 —
   celles qui génèrent des PDF (`typst-generator.ts` l'importe statiquement) et celles qui ont le
   bouton. L'écran le charge à la demande. Charger `uqr` à la demande dans les PDF aussi a été écarté
@@ -128,6 +139,9 @@ ou une fiche, vers l'adresse de son choix. Syntaxe et pipeline : [ubumark](ubuma
 
 ## Écarts connus
 
-- Pas de QR pour l'Atelier : décision de David, seulement vers un atelier sauvegardé et public, qui
-  n'existe pas encore. Pas encore de bouton QR sur les fiches (le QR automatique dans l'en-tête des
-  PDF, choix (a), n'est pas retenu à ce jour).
+Les écarts de cette zone sont au [registre des écarts](../ecarts/registre.md) : `pnpm ecarts`. Un écart s'écrit là-bas, jamais ici.
+
+### À savoir (voulu)
+
+- Pas de QR pour l'Atelier : décision de David, seulement vers un atelier sauvegardé et public, qui n'existe pas encore.
+- Pas de bouton QR sur les fiches : le QR automatique dans l'en-tête des PDF (choix (a)) n'est pas retenu à ce jour.

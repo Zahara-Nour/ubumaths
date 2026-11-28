@@ -3,7 +3,7 @@
  *
  * Généré plutôt que statique : les URL restent synchronisées avec les routes
  * sans qu'on ait à penser à un fichier séparé. La liste des pages fixes vit dans
- * `$lib/seo/sitemap-pages` — SvelteKit n'autorise ici que les exports de
+ * `#lib/seo/sitemap-pages.ts` — SvelteKit n'autorise ici que les exports de
  * méthodes HTTP, et l'y déclarer casse le build.
  *
  * Les URL partent du domaine canonique (`SITE_URL`), même servies depuis une
@@ -25,14 +25,14 @@
  *
  * @module routes/sitemap.xml
  */
-import { SITEMAP_PAGES } from '$lib/seo/sitemap-pages';
-import { CITIES, cityPath } from '$lib/kingdom-tour/cities';
-import { absoluteUrl } from '$lib/seo/site';
-import { allArticles, publishedArticles } from '$lib/server/shtam/articles';
-import { todayIsoInParis } from '$lib/server/shtam/present';
-import { createAnonymousSupabase } from '$lib/server/anonymous-supabase';
-import { fetchIndexedExercises } from '$lib/server/sitemap-exercises';
-import { fetchGlossaryPages } from '$lib/server/sitemap-glossary';
+import { SITEMAP_PAGES } from '#lib/seo/sitemap-pages.ts';
+import { CITIES, cityPath } from '#lib/kingdom-tour/cities.ts';
+import { absoluteUrl } from '#lib/seo/site.ts';
+import { allArticles, publishedArticles } from '#lib/server/shtam/articles.ts';
+import { todayIsoInParis } from '#lib/server/shtam/present.ts';
+import { createAnonymousSupabase } from '#lib/server/anonymous-supabase.ts';
+import { fetchIndexedExercises } from '#lib/server/sitemap-exercises.ts';
+import { fetchGlossaryPages } from '#lib/server/sitemap-glossary.ts';
 import type { RequestHandler } from './$types';
 
 interface Entry {

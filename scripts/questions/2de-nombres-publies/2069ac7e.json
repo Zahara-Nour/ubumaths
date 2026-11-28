@@ -1,0 +1,371 @@
+{
+	"id": "2069ac7e-ce15-41f3-9b8d-b0ff52fdcb68",
+	"title": "Représenter un intervalle sur la droite graduée",
+	"description": "Représenter x ⩾ a, x < a (demi-droites), un intervalle borné [a ; b[ et deux inégalités à la fois (x ⩾ −1 et x < 5) : bornes, côté, crochets ; les réels tels que |x − 1| ⩽ 2",
+	"grades": ["2"],
+	"level": 4,
+	"delay": 90,
+	"status": "published",
+	"shared": {
+		"cleanCoefficients": true
+	},
+	"variations": [
+		{
+			"statement": "Représente sur la droite graduée l'ensemble des réels $x$ tels que $x{{if:s==1|\\geqslant|>}}{{a}}$.\n\n```line\nstart: -6\nend: 6\nstep: 1\nrepresenter: {{if:s==1|[|]}}{{a}}, +inf[\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "-4..4"
+				},
+				{
+					"name": "s",
+					"expression": "0|1"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Une borne comprise a un crochet **tourné vers l'intervalle**, une borne exclue un crochet **tourné vers l'extérieur** ; vers $\\pm\\infty$, le trait va jusqu'au bout de la droite.",
+					"$x{{if:s==1|\\geqslant|>}}{{a}}$ : $x\\in\\textcolor{{{color:primary.0}}}{{{if:s==1|[|]}}{{a}}\\,;\\,+\\infty[}$, à droite de ${{a}}$, {{if:s==1|compris|exclu}}."
+				]
+			},
+			"hintFromFirstStep": true
+		},
+		{
+			"statement": "Représente sur la droite graduée l'ensemble des réels $x$ tels que $x{{if:s==1|\\leqslant|<}}{{a}}$.\n\n```line\nstart: -6\nend: 6\nstep: 1\nrepresenter: ]-inf, {{a}}{{if:s==1|]|[}}\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "-4..4"
+				},
+				{
+					"name": "s",
+					"expression": "0|1"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Une borne comprise a un crochet **tourné vers l'intervalle**, une borne exclue un crochet **tourné vers l'extérieur** ; vers $\\pm\\infty$, le trait va jusqu'au bout de la droite.",
+					"$x{{if:s==1|\\leqslant|<}}{{a}}$ : $x\\in\\textcolor{{{color:primary.0}}}{]-\\infty\\,;\\,{{a}}{{if:s==1|]|[}}}$, à gauche de ${{a}}$, {{if:s==1|compris|exclu}}."
+				]
+			},
+			"hintFromFirstStep": true
+		},
+		{
+			"statement": "Représente sur la droite graduée l'intervalle ${{if:sa==1|[|]}}{{a}}\\,;\\,{{b}}{{if:sb==1|]|[}}$.\n\n```line\nstart: -6\nend: 6\nstep: 1\nrepresenter: {{if:sa==1|[|]}}{{a}}, {{b}}{{if:sb==1|]|[}}\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "-5..2"
+				},
+				{
+					"name": "l",
+					"expression": "2..6"
+				},
+				{
+					"name": "b",
+					"expression": "eval:a+l"
+				},
+				{
+					"name": "sa",
+					"expression": "0|1"
+				},
+				{
+					"name": "sb",
+					"expression": "0|1"
+				}
+			],
+			"conditions": ["b <= 5"],
+			"correction": {
+				"steps": [
+					"Une borne comprise a un crochet **tourné vers l'intervalle**, une borne exclue un crochet **tourné vers l'extérieur** ; vers $\\pm\\infty$, le trait va jusqu'au bout de la droite.",
+					"${{a}}$ est {{if:sa==1|compris|exclu}}, ${{b}}$ est {{if:sb==1|compris|exclu}}."
+				]
+			},
+			"hintFromFirstStep": true
+		},
+		{
+			"statement": "Représente sur la droite graduée l'ensemble des réels $x$ tels que $x{{if:sa==1|\\geqslant|>}}{{a}}$ et $x{{if:sb==1|\\leqslant|<}}{{b}}$.\n\n```line\nstart: -6\nend: 6\nstep: 1\nrepresenter: {{if:sa==1|[|]}}{{a}}, {{b}}{{if:sb==1|]|[}}\n```",
+			"variables": [
+				{
+					"name": "a0",
+					"expression": "0..7"
+				},
+				{
+					"name": "a",
+					"expression": "eval:(a0)-5"
+				},
+				{
+					"name": "l",
+					"expression": "2..6"
+				},
+				{
+					"name": "b",
+					"expression": "eval:(a)+(l)"
+				},
+				{
+					"name": "sa",
+					"expression": "0|1"
+				},
+				{
+					"name": "sb",
+					"expression": "0|1"
+				}
+			],
+			"conditions": ["b <= 5"],
+			"correction": {
+				"steps": [
+					"Une borne comprise a un crochet **tourné vers l'intervalle**, une borne exclue un crochet **tourné vers l'extérieur** ; vers $\\pm\\infty$, le trait va jusqu'au bout de la droite.",
+					"$x{{if:sa==1|\\geqslant|>}}{{a}}$ : à droite de ${{a}}$, {{if:sa==1|compris|exclu}} ; $x{{if:sb==1|\\leqslant|<}}{{b}}$ : à gauche de ${{b}}$, {{if:sb==1|compris|exclu}}. Les deux à la fois : entre ${{a}}$ et ${{b}}$.",
+					"$$x\\in\\textcolor{{{color:primary.0}}}{{{if:sa==1|[|]}}{{a}}\\,;\\,{{b}}{{if:sb==1|]|[}}}$$"
+				]
+			},
+			"hintFromFirstStep": true
+		},
+		{
+			"statement": "Représente sur la droite graduée l'ensemble des réels $x$ tels que $\\left|x{{if:a>0|-{{a}}|{{if:a<0|+{{eval:-(a)}}|}}}}\\right|\\leqslant{{r}}$.\n\n```line\nstart: -6\nend: 6\nstep: 1\nrepresenter: [{{eval:(a)-(r)}}, {{eval:(a)+(r)}}]\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "-3..3"
+				},
+				{
+					"name": "r",
+					"expression": "1..3"
+				}
+			],
+			"conditions": ["a - r >= -5", "a + r <= 5"],
+			"correction": {
+				"steps": [
+					"**Distance** : $|x-a|$ est la distance entre $x$ et $a$. $|x-a|\\leqslant r$ : les réels à une distance d'au plus $r$ de $a$, c'est l'intervalle $[a-r\\,;\\,a+r]$, bornes comprises.",
+					"{{if:a<0|$\\left|x{{if:a>0|-{{a}}|{{if:a<0|+{{eval:-(a)}}|}}}}\\right|=\\left|x-({{a}})\\right|$ : |}}$\\left|x{{if:a>0|-{{a}}|{{if:a<0|+{{eval:-(a)}}|}}}}\\right|$ est la distance entre $x$ et ${{a}}$, au plus ${{r}}$ :",
+					"$$x\\in\\textcolor{{{color:primary.0}}}{[{{eval:(a)-(r)}}\\,;\\,{{eval:(a)+(r)}}]}$$"
+				]
+			},
+			"hintFromFirstStep": true
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["[2 ; +∞["],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "2",
+				"s": "1"
+			},
+			"description": "x ⩾ 2 : [2 ; +∞[",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["]2 ; +∞["],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "2",
+				"s": "1"
+			},
+			"description": "Erreur : crochet exclu",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["]-∞ ; 2]"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "2",
+				"s": "1"
+			},
+			"description": "Erreur : mauvais côté",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["]-∞ ; -1["],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "-1",
+				"s": "0"
+			},
+			"description": "x < −1 : ]−∞ ; −1[",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["]-∞ ; -1]"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "-1",
+				"s": "0"
+			},
+			"description": "Erreur : −1 compris",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["]-1 ; 3]"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "-1",
+				"b": "3",
+				"l": "4",
+				"sa": "0",
+				"sb": "1"
+			},
+			"description": "]−1 ; 3]",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["[-1 ; 3["],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "-1",
+				"b": "3",
+				"l": "4",
+				"sa": "0",
+				"sb": "1"
+			},
+			"description": "Erreur : crochets échangés",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["[-1 ; 5["],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a0": "4",
+				"a": "-1",
+				"l": "6",
+				"b": "5",
+				"sa": "1",
+				"sb": "0"
+			},
+			"description": "x ⩾ −1 et x < 5 : [−1 ; 5[",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["[-1 ; 5]"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a0": "4",
+				"a": "-1",
+				"l": "6",
+				"b": "5",
+				"sa": "1",
+				"sb": "0"
+			},
+			"description": "Erreur : 5 compris",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["[-1 ; +∞["],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a0": "4",
+				"a": "-1",
+				"l": "6",
+				"b": "5",
+				"sa": "1",
+				"sb": "0"
+			},
+			"description": "Erreur : seulement x ⩾ −1",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["[-1 ; 3]"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "1",
+				"r": "2"
+			},
+			"description": "|x − 1| ⩽ 2 : [−1 ; 3]",
+			"variationIndex": 4
+		},
+		{
+			"answers": ["]-1 ; 3["],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "1",
+				"r": "2"
+			},
+			"description": "Erreur : bornes exclues",
+			"variationIndex": 4
+		},
+		{
+			"answers": ["[-1 ; 3["],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "1",
+				"r": "2"
+			},
+			"description": "Erreur : une borne exclue",
+			"variationIndex": 4
+		},
+		{
+			"answers": ["[-2 ; 2]"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "1",
+				"r": "2"
+			},
+			"description": "Erreur : centre pris en 0",
+			"variationIndex": 4
+		},
+		{
+			"answers": ["[-3 ; -1]"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "-2",
+				"r": "1"
+			},
+			"description": "|x + 2| ⩽ 1 : [−3 ; −1]",
+			"variationIndex": 4
+		},
+		{
+			"answers": ["[1 ; 3]"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "-2",
+				"r": "1"
+			},
+			"description": "Erreur : signe du centre (|x + 2| lu comme la distance à 2)",
+			"variationIndex": 4
+		},
+		{
+			"answers": ["[-3 ; 3]"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "0",
+				"r": "3"
+			},
+			"description": "|x| ⩽ 3 : [−3 ; 3]",
+			"variationIndex": 4
+		}
+	]
+}

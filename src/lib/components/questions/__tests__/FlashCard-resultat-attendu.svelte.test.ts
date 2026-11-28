@@ -19,10 +19,10 @@ import { userEvent } from 'vitest/browser';
 import { flushSync, tick } from 'svelte';
 import FlashCard from '../FlashCard.svelte';
 import { TILE_CARD_HEIGHT } from '../tile-card';
-import type { QuestionInstance } from '$lib/questions/types';
-import { generateInstance } from '$lib/questions/generator/instance-generator';
-import { REAL_TEMPLATES } from '$lib/server/validation/__tests__/fixtures/real-templates';
-import { resolvedMarkdown } from '$lib/ubumark';
+import type { QuestionInstance } from '#lib/questions/types.ts';
+import { generateInstance } from '#lib/questions/generator/instance-generator.ts';
+import { REAL_TEMPLATES } from '#lib/server/validation/__tests__/fixtures/real-templates.ts';
+import { resolvedMarkdown } from '#lib/ubumark/index.ts';
 import type { MathfieldElement } from 'mathlive';
 
 // Fixtures

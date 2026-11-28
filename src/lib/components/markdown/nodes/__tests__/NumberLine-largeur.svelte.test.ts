@@ -7,8 +7,8 @@
 import { describe, it, expect, afterEach } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import NumberLine from '../NumberLine.svelte';
-import { parseNumberLineContent } from '$lib/ubumark/parser/number-line-parser';
-import { NL_LAYOUT } from '$lib/ubumark/utils/number-line-render';
+import { parseNumberLineContent } from '#lib/ubumark/parser/number-line-parser.ts';
+import { NL_LAYOUT } from '#lib/ubumark/utils/number-line-render.ts';
 
 let mains: HTMLElement[] = [];
 /** Un <main> de la largeur voulue (écran de téléphone, d'ordinateur) */

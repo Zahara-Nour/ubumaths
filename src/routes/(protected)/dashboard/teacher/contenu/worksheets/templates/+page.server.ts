@@ -6,15 +6,15 @@
 
 import type { PageServerLoad, Actions } from './$types';
 import { fail, redirect } from '@sveltejs/kit';
-import { requireRoles } from '$lib/server/middleware/auth';
-import { DEFAULT_TEMPLATES } from '$lib/typst/templates';
-import { toJson } from '$lib/types/database-helpers';
+import { requireRoles } from '#lib/server/middleware/auth.ts';
+import { DEFAULT_TEMPLATES } from '#lib/typst/templates/index.ts';
+import { toJson } from '#lib/types/database-helpers.ts';
 import {
 	countWorksheetsUsingTemplate,
 	deleteTemplateWithStyle,
 	insertTemplateWithStyle
-} from '$lib/server/worksheets/worksheet-styles';
-import { createServerLogger } from '$lib/utils/logger';
+} from '#lib/server/worksheets/worksheet-styles.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger(
 	'(protected)/dashboard/teacher/contenu/worksheets/templates/+page.server'

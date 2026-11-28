@@ -1,6 +1,6 @@
 /**
- * Succès : gidouilles versées, succès rejoué ignoré, copie d'un modèle
- * ===================================================================
+ * Succès : gidouilles versées, succès rejoué ignoré
+ * =================================================
  *
  * Migration `20261003220000_succes_gidouilles_copie_modele.sql`.
  *
@@ -9,15 +9,13 @@
  * `gidouilles_activity` (→ `reward_events`) comme les autres gains.
  * Q153 : un second événement identique ne plante plus sur l'index unique ;
  * le succès déjà obtenu est ignoré, sans second versement.
- * Q154 (a) : `duplicate_template` crée un modèle PERSONNEL (scope 'class',
- * sans classe) au lieu d'échouer sur `message_templates_check`.
  * Q156 : les jalons de jeux (route 2048) versent leurs gidouilles par la
  * version à 5 arguments de `update_student_gidouilles`, une seule fois.
  * Q157 : une défaite au démineur ne débloque pas un succès « victoire ».
  * Audit A : une difficulté inventée ne débloque rien.
  * Audit B : un compte connecté sans profil ne crédite pas de gidouilles.
- * Audit C : un élève de la classe ne voit pas un modèle personnel du prof.
- * Q158 : le prof supprime son modèle ; la trace 'deleted' existe.
+ * Q154, audit C et Q158 portaient sur les modèles de message, supprimés par
+ * `20261126224009_suppression_modeles_de_message.sql`.
  *
  * Chaque affirmation est relue AU CLIENT SERVICE (la RLS échoue en silence).
  *
@@ -31,20 +29,20 @@ import {
 } from '../helpers/database/trigger-test-helpers';
 import { DEFAULT_TEST_PASSWORD } from '../helpers/database/supabase-client';
 import { TestData } from '../helpers/database/test-data-factory';
-import type { Database } from '$lib/types/database';
+import type { Database } from '#lib/types/database.ts';
 
 // Le client service des modules serveur lit process.env (qui peut viser la prod
 // via .env) : on le branche explicitement sur la base LOCALE de test.
-vi.mock('$lib/server/serviceRoleClient', async () => {
+vi.mock('#lib/server/serviceRoleClient.ts', async () => {
 	const helpers = await import('../helpers/database/trigger-test-helpers');
 	return { createServiceRoleClient: helpers.createServiceRoleClient };
 });
 
 // Le consentement parental est hors sujet ici (testé ailleurs).
-vi.mock('$lib/server/middleware/consent', () => ({ requireConsent: vi.fn() }));
+vi.mock('#lib/server/middleware/consent.ts', () => ({ requireConsent: vi.fn() }));
 
 import type { User } from '@supabase/supabase-js';
-import { processEvent } from '$lib/server/achievements/service';
+import { processEvent } from '#lib/server/achievements/service.ts';
 import { POST as soumettreScore2048 } from '../../src/routes/api/games/2048/scores/+server';
 
 const SUPABASE_URL = process.env.SUPABASE_TEST_URL || 'http://localhost:54321';
@@ -247,154 +245,6 @@ describe('Succès : gidouilles versées une seule fois (Q146, Q153)', () => {
 		expect(error?.code).toBe(REFUS);
 		expect(await compteSucces(eleveId, SUCCES_GID)).toBe(0);
 		expect(await solde(eleveId)).toBe(avant);
-	});
-});
-
-describe('Modèles de message : copie personnelle, visibilité, suppression (Q154, C, Q158)', () => {
-	let prof: SupabaseClient<Database>;
-	let eleve: SupabaseClient<Database>;
-	let profId: string;
-	let eleveId: string;
-	let classe: string;
-	let modele: string;
-	let modeleDeClasse: string;
-	let copie: string;
-	const modelesCrees: string[] = [];
-
-	beforeAll(async () => {
-		await cleanupAllTestData();
-		const p = await TestData.profile().withRole('teacher').create();
-		profId = p.id;
-		const e = await TestData.profile().withRole('student').create();
-		eleveId = e.id;
-
-		classe = await insert('classes', {
-			name: 'Classe modèles SG',
-			join_code: `SM${crypto.randomUUID().slice(0, 6).toUpperCase()}`,
-			grade: '2'
-		});
-		const { error: membreError } = await service
-			.from('class_members')
-			.insert({ class_id: classe, student_id: eleveId, status: 'active' });
-		expect(membreError).toBeNull();
-
-		modele = await insert('message_templates', {
-			title: 'Modèle succès-gidouilles',
-			subject_template: 'Sujet',
-			body_template: 'Corps',
-			trigger_type: 'general',
-			scope: 'system',
-			created_by: profId
-		});
-		modelesCrees.push(modele);
-		modeleDeClasse = await insert('message_templates', {
-			title: 'Modèle de classe SG',
-			subject_template: 'Sujet',
-			body_template: 'Corps',
-			trigger_type: 'general',
-			scope: 'class',
-			class_id: classe,
-			created_by: profId
-		});
-		modelesCrees.push(modeleDeClasse);
-
-		prof = await clientFor(p.email);
-		eleve = await clientFor(e.email);
-	}, 120_000);
-
-	afterAll(async () => {
-		const { data } = await service
-			.from('message_templates')
-			.select('id')
-			.like('title', 'SG copie%');
-		for (const r of data ?? []) modelesCrees.push(r.id);
-		// Possible depuis Q158 (avant, toute suppression de modèle échouait).
-		await service.from('message_templates').delete().in('id', modelesCrees);
-		await service.from('template_audit_log').delete().in('performed_by', [profId, eleveId]);
-		await service.from('class_members').delete().eq('class_id', classe);
-		await service.from('classes').delete().eq('id', classe);
-		await cleanupAllTestData();
-	});
-
-	it('le prof duplique : un modèle personnel, sans classe, à son nom', async () => {
-		const { data, error } = await rpc(prof, 'duplicate_template', {
-			p_template_id: modele,
-			p_user_id: profId,
-			p_new_title: 'SG copie prof'
-		});
-		expect(error).toBeNull();
-		copie = data as string;
-		modelesCrees.push(copie);
-
-		const { data: ligne, error: lectureError } = await service
-			.from('message_templates')
-			.select('title, scope, class_id, created_by')
-			.eq('id', copie)
-			.single();
-		expect(lectureError).toBeNull();
-		expect(ligne).toEqual({
-			title: 'SG copie prof',
-			scope: 'class',
-			class_id: null,
-			created_by: profId
-		});
-
-		const { data: vueProf } = await prof.from('message_templates').select('id').eq('id', copie);
-		expect(vueProf).toHaveLength(1);
-	});
-
-	it('C : un élève de la classe ne voit pas le modèle personnel (SELECT direct)', async () => {
-		const { data, error } = await eleve
-			.from('message_templates')
-			.select('id')
-			.in('id', [copie, modeleDeClasse]);
-		expect(error).toBeNull();
-		// Témoin : le modèle de SA classe lui est visible ; la copie personnelle non.
-		expect((data ?? []).map((r) => r.id)).toEqual([modeleDeClasse]);
-	});
-
-	it("l'élève est refusé et aucun modèle n'est créé", async () => {
-		const { error } = await rpc(eleve, 'duplicate_template', {
-			p_template_id: modele,
-			p_user_id: eleveId,
-			p_new_title: 'SG copie élève'
-		});
-		expect(error?.code).toBe(REFUS);
-		const { count } = await service
-			.from('message_templates')
-			.select('*', { count: 'exact', head: true })
-			.eq('title', 'SG copie élève');
-		expect(count).toBe(0);
-	});
-
-	it('Q158 : le prof supprime son modèle, et la trace « deleted » existe', async () => {
-		const { data, error } = await prof
-			.from('message_templates')
-			.delete()
-			.eq('id', modeleDeClasse)
-			.select('id');
-		expect(error).toBeNull();
-		expect(data).toEqual([{ id: modeleDeClasse }]);
-
-		const { count } = await service
-			.from('message_templates')
-			.select('*', { count: 'exact', head: true })
-			.eq('id', modeleDeClasse);
-		expect(count).toBe(0);
-
-		const { data: traces, error: traceError } = await service
-			.from('template_audit_log')
-			.select('template_id, performed_by, metadata')
-			.eq('action', 'deleted')
-			.eq('metadata->>template_id', modeleDeClasse);
-		expect(traceError).toBeNull();
-		expect(traces).toEqual([
-			{
-				template_id: null,
-				performed_by: profId,
-				metadata: { template_id: modeleDeClasse, title: 'Modèle de classe SG' }
-			}
-		]);
 	});
 });
 

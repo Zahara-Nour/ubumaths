@@ -11,21 +11,21 @@ import { isHttpError } from '@sveltejs/kit';
 import {
 	SEARCH_INDEXED_REQUIRES_PUBLIC_MESSAGE,
 	SearchIndexedRequiresPublicError
-} from '$lib/server/exercise-search-indexed';
+} from '#lib/server/exercise-search-indexed.ts';
 
 // Mocks
 
 const TEACHER_ID = '550e8400-e29b-41d4-a716-446655440001';
 const EXERCISE_ID = '550e8400-e29b-41d4-a716-446655440003';
 
-vi.mock('$lib/server/middleware/auth', () => ({
+vi.mock('#lib/server/middleware/auth.ts', () => ({
 	requireRole: vi.fn().mockResolvedValue({
 		user: { id: '550e8400-e29b-41d4-a716-446655440001' },
 		profile: { role: 'teacher' }
 	})
 }));
 
-vi.mock('$lib/server/exercises', () => ({
+vi.mock('#lib/server/exercises.ts', () => ({
 	getExercises: vi.fn(),
 	getExercise: vi.fn(),
 	createExercise: vi.fn(),
@@ -33,7 +33,7 @@ vi.mock('$lib/server/exercises', () => ({
 	deleteExercise: vi.fn()
 }));
 
-const { createExercise, updateExercise } = await import('$lib/server/exercises');
+const { createExercise, updateExercise } = await import('#lib/server/exercises.ts');
 const { POST } = await import('../+server');
 const { PUT } = await import('../[id]/+server');
 
@@ -135,7 +135,8 @@ describe('PUT /api/exercises/[id] — privé + Google', () => {
 			undefined, // locals.supabase : sans objet ici, `updateExercise` est simulé
 			EXERCISE_ID,
 			expect.objectContaining({ search_indexed: true }),
-			TEACHER_ID
+			TEACHER_ID,
+			undefined // sans `version_id` : la dernière version (ADR 0044)
 		);
 	});
 

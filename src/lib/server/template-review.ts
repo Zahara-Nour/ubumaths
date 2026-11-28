@@ -3,24 +3,27 @@
  * ================================================================================
  *
  * Vue d'ensemble : tous les modèles (sans leurs variations), leurs points, leurs verdicts et
- * l'arbre des notions. Fiches : les lignes complètes des modèles d'un nœud, avec le libellé et
- * les bornes de leurs points. Client de l'admin seulement (`requireAdmin`) : la table des
- * verdicts n'est lisible et modifiable que par lui (RLS).
+ * l'arbre des notions ; les séries enregistrées, pour le filtre par série. Fiches : les lignes
+ * complètes des modèles choisis, avec le libellé et les bornes de leurs points. Client de l'admin
+ * seulement (`requireAdmin`) : la table des verdicts n'est lisible et modifiable que par lui (RLS).
  *
  * PostgREST plafonne une lecture à 1000 lignes : chaque table entière est lue par pages.
  */
 
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { Database } from '$lib/types/database';
-import type { QuestionTemplateRow } from '$lib/types/question-template';
+import type { Database } from '#lib/types/database.ts';
+import type { QuestionTemplateRow } from '#lib/types/question-template.ts';
 import type {
+	PointSummary,
+	SeriesLine,
 	SheetPoint,
 	TemplateReview,
 	TemplateSummary,
 	TreeNodeRow,
 	Verdict
-} from '$lib/questions/template-review';
-import { POINT_BOUNDS } from '$lib/server/point-bounds';
+} from '#lib/questions/template-review.ts';
+import { POINT_BOUNDS } from '#lib/server/point-bounds.ts';
+import { parseStoredSeries } from '#lib/server/series-lines.ts';
 
 // Types
 
@@ -29,6 +32,17 @@ type Client = SupabaseClient<Database>;
 export interface ReviewOverview {
 	templates: TemplateSummary[];
 	nodes: Map<string, TreeNodeRow>;
+	/** Codes de tous les points en base : un filtre sur un code absent dit « point inconnu » */
+	pointCodes: Set<string>;
+	/** Tous les points en base, avec leur nœud et s'ils ont un modèle (parcours d'une série) */
+	points: PointSummary[];
+}
+
+/** Une série enregistrée, telle que le sélecteur la montre */
+export interface ReviewSeries {
+	id: string;
+	title: string;
+	grade: string;
 }
 
 // Constantes
@@ -87,7 +101,11 @@ export async function loadReviewOverview(supabase: Client): Promise<ReviewOvervi
 		),
 		readAll(
 			(from, to) =>
-				supabase.from('curriculum_points').select('id, code, grade').order('id').range(from, to),
+				supabase
+					.from('curriculum_points')
+					.select('id, code, grade, name, node_id, archived_at')
+					.order('id')
+					.range(from, to),
 			'des points'
 		),
 		readAll(
@@ -111,6 +129,7 @@ export async function loadReviewOverview(supabase: Client): Promise<ReviewOvervi
 	]);
 
 	const pointById = new Map(points.map((p) => [p.id, { code: p.code, grade: p.grade }]));
+	const taggedPointIds = new Set(tags.map((t) => t.point_id));
 	const pointsByTemplate = new Map<string, { code: string; grade: string | null }[]>();
 	for (const t of tags) {
 		const point = pointById.get(t.point_id);
@@ -140,8 +159,42 @@ export async function loadReviewOverview(supabase: Client): Promise<ReviewOvervi
 			points: (pointsByTemplate.get(t.id) ?? []).sort((a, b) => a.code.localeCompare(b.code)),
 			review: reviewByTemplate.get(t.id) ?? null
 		})),
-		nodes: new Map(nodes.map((n) => [n.id, n]))
+		nodes: new Map(nodes.map((n) => [n.id, n])),
+		pointCodes: new Set(points.map((p) => p.code)),
+		points: points.map((p) => ({
+			code: p.code,
+			grade: p.grade,
+			name: p.name,
+			nodeId: p.node_id,
+			archived: p.archived_at !== null,
+			tagged: taggedPointIds.has(p.id)
+		}))
 	};
+}
+
+/** Toutes les séries enregistrées, sans leur composition (le sélecteur) */
+export async function loadReviewSeries(supabase: Client): Promise<ReviewSeries[]> {
+	return readAll(
+		(from, to) => supabase.from('series').select('id, title, grade').order('id').range(from, to),
+		'des séries'
+	);
+}
+
+/**
+ * La composition d'une série, lue par `series-lines` ; `null` si la série n'existe pas,
+ * `lines: null` si sa composition est illisible.
+ */
+export async function loadSeriesLines(
+	supabase: Client,
+	seriesId: string
+): Promise<{ lines: SeriesLine[] | null } | null> {
+	const { data, error } = await supabase
+		.from('series')
+		.select('id, items')
+		.eq('id', seriesId)
+		.maybeSingle();
+	if (error) throw new Error(`lecture de la série impossible — ${error.message}`);
+	return data ? { lines: parseStoredSeries(data.id, data.items) } : null;
 }
 
 /** Les lignes complètes des modèles `ids` (dans cet ordre) et les points de chacun */

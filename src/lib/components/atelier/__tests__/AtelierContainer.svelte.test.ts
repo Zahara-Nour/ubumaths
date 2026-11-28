@@ -5,7 +5,7 @@
 import { describe, it, expect, afterEach, vi } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import AtelierContainer from '../AtelierContainer.svelte';
-import { Atelier } from '$lib/atelier/atelier.svelte';
+import { Atelier } from '#lib/atelier/atelier.svelte.ts';
 import { chooseCardAction, menuItemOf, openFunctionMenu } from './harness/function-card';
 import { onDesktopScreen } from './harness/desktop-screen';
 

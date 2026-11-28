@@ -13,7 +13,7 @@
  * @module components/markdown/detail-styles
  */
 
-import type { CalloutKind, DetailKind } from '$lib/ubumark';
+import type { CalloutKind, DetailKind } from '#lib/ubumark/index.ts';
 
 /** Classes de l'encadré typé (bord, fond). */
 export const CALLOUT_CLASSES: Record<CalloutKind, string> = {

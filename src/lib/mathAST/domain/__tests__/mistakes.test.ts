@@ -20,7 +20,7 @@ import {
 	greaterThanInterval,
 	greaterThanOrEqualInterval
 } from '../factory';
-import { number } from '$lib/mathAST/factory';
+import { number } from '#lib/mathAST/factory.ts';
 import { excludePoints } from '../algebra';
 import type { MathNode } from '../../types';
 

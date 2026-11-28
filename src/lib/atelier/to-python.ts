@@ -21,9 +21,9 @@ import type { AtelierObject, FunctionObject, ListObject, SequenceObject } from '
 import { isQualitative } from './types';
 import { derivativeOf, reciprocalOf } from './names';
 import { astOf, readListValue } from './parse';
-import type { FunctionNode, MathNode } from '$lib/mathAST/types';
-import { inverseNotationAsFunction } from '$lib/mathAST/common/function-power';
-import { INDEX_VARIABLE } from '$lib/grapheur/sequence';
+import type { FunctionNode, MathNode } from '#lib/mathAST/types.ts';
+import { inverseNotationAsFunction } from '#lib/mathAST/common/function-power.ts';
+import { INDEX_VARIABLE } from '#lib/grapheur/sequence.ts';
 import LZString from 'lz-string';
 
 // =============================================================================

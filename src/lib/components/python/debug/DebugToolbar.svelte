@@ -14,9 +14,9 @@
 	 * Only rendered when debug mode is active.
 	 */
 
-	import { debugStore } from '$lib/stores/pythonDebug.svelte';
-	import { Button } from '$lib/components/ui/button';
-	import { Slider } from '$lib/components/ui/slider';
+	import { debugStore } from '#lib/stores/pythonDebug.svelte.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import { Slider } from '#lib/components/ui/slider/index.ts';
 	import Play from '@lucide/svelte/icons/play';
 	import Pause from '@lucide/svelte/icons/pause';
 	import ChevronLeft from '@lucide/svelte/icons/chevron-left';

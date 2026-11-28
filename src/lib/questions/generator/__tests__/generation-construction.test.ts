@@ -1,19 +1,19 @@
 /**
  * Question à bloc ```figure-a-completer (case « figure ») : génération et jugement
- * de bout en bout (`docs/wip/geometrie-validation-progress.md` § 3 et § 4).
+ * de bout en bout (`docs/archive/wip/geometrie-validation-progress.md` § 3 et § 4).
  *
  * Le bloc porte sa case, comme ```operation : `blanks[]` peut l'omettre. La
  * réponse attendue est symbolique (`droite(A;B)`) ; le juge lit les positions
  * dans le registre (inscrit ici comme à l'écran de l'élève).
  */
 import { describe, it, expect } from 'vitest';
-import '$lib/questions/construction/positions-setup';
+import '#lib/questions/construction/positions-setup.ts';
 import { generateInstance } from '../instance-generator';
 import type { QuestionTemplate, QuestionVariation } from '../../types';
-import { templateMarkdown } from '$lib/ubumark';
-import { validateAnswer } from '$lib/utils/answer-validator';
-import { toPublicQuestion } from '$lib/questions/public-question';
-import { validateTemplate } from '$lib/questions/validators/template-validator';
+import { templateMarkdown } from '#lib/ubumark/index.ts';
+import { validateAnswer } from '#lib/utils/answer-validator.ts';
+import { toPublicQuestion } from '#lib/questions/public-question.ts';
+import { validateTemplate } from '#lib/questions/validators/template-validator.ts';
 
 function template(variation: Omit<QuestionVariation, 'statement'> & { statement: string }) {
 	return {

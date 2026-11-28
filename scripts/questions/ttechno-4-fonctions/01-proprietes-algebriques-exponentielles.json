@@ -1,0 +1,309 @@
+{
+	"id": "5e810e16-609e-487c-ad08-c91b52d7947a",
+	"title": "Propriétés algébriques des fonctions exponentielles",
+	"description": "À savoir : aˣ × aʸ = aˣ⁺ʸ, aˣ ÷ aʸ = aˣ⁻ʸ, (aˣ)ʸ = aˣʸ, a⁰ = 1, a⁻ˣ = 1/aˣ, parmi des erreurs typiques ; aˣ + aʸ n'est pas aˣ⁺ʸ",
+	"grades": ["T_TECHNO"],
+	"level": 1,
+	"delay": 30,
+	"status": "draft",
+	"shared": {},
+	"variations": [
+		{
+			"statement": "Pour tout réel $a>0$ et tous réels $x$ et $y$, $a^x\\times a^y$ est égal à :\n\n```choix\nmelanger: non\n- $a^{xy}$\n- $a^{x+y}$\n- $\\left(a^2\\right)^{x+y}$\n- $2a^{x+y}$\n```",
+			"variables": [],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "1"
+				}
+			],
+			"correction": {
+				"steps": [
+					"À connaître : un produit de puissances de même base, c'est la base à la **somme** des exposants.",
+					"Pour tout réel $a>0$ et tous réels $x$ et $y$, $a^x\\times a^y=\\textcolor{{{color:primary.0}}}{a^{x+y}}$. Ces propriétés prolongent celles des puissances entières, par exemple $2^3\\times2^2=2^5$ : on les admet pour tous les exposants réels."
+				]
+			}
+		},
+		{
+			"statement": "Pour tout réel $a>0$ et tous réels $x$ et $y$, $\\dfrac{a^x}{a^y}$ est égal à :\n\n```choix\nmelanger: non\n- $a^{y-x}$\n- $a^{\\frac{x}{y}}$\n- $a^{x-y}$\n- $1^{x-y}$\n```",
+			"variables": [],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "2"
+				}
+			],
+			"correction": {
+				"steps": [
+					"À connaître : un quotient de puissances de même base, c'est la base à la **différence** des exposants, celui du numérateur moins celui du dénominateur.",
+					"Pour tout réel $a>0$ et tous réels $x$ et $y$, $\\dfrac{a^x}{a^y}=\\textcolor{{{color:primary.0}}}{a^{x-y}}$. Par exemple $\\dfrac{2^5}{2^3}=2^2$."
+				]
+			}
+		},
+		{
+			"statement": "Pour tout réel $a>0$ et tous réels $x$ et $y$, $\\left(a^x\\right)^y$ est égal à :\n\n```choix\nmelanger: non\n- $a^{xy}$\n- $a^{x+y}$\n- $a^{x^y}$\n- $y\\,a^x$\n```",
+			"variables": [],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"À connaître : une puissance de puissance, c'est la base au **produit** des exposants.",
+					"Pour tout réel $a>0$ et tous réels $x$ et $y$, $\\left(a^x\\right)^y=\\textcolor{{{color:primary.0}}}{a^{xy}}$. Par exemple $\\left(2^3\\right)^2=2^3\\times2^3=2^6$."
+				]
+			}
+		},
+		{
+			"statement": "Pour tout réel $a>0$, $a^0$ est égal à :\n\n```choix\nmelanger: non\n- $0$\n- $a$\n- $1$\n- il n'existe pas\n```",
+			"variables": [],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "2"
+				}
+			],
+			"correction": {
+				"steps": [
+					"À connaître : pour tout réel $a>0$, $a^0=\\textcolor{{{color:primary.0}}}{1}$.",
+					"Ainsi la courbe de toute fonction $x\\mapsto a^x$ passe par le point $(0\\,;1)$."
+				]
+			}
+		},
+		{
+			"statement": "Pour tout réel $a>0$ et tout réel $x$, $a^{-x}$ est égal à :\n\n```choix\nmelanger: non\n- $-a^x$\n- $\\dfrac{1}{a^x}$\n- $(-a)^x$\n- $-\\dfrac{1}{a^x}$\n```",
+			"variables": [],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "1"
+				}
+			],
+			"correction": {
+				"steps": [
+					"À connaître : pour tout réel $a>0$ et tout réel $x$, $a^{-x}=\\textcolor{{{color:primary.0}}}{\\dfrac{1}{a^x}}$.",
+					"Un exposant négatif ne rend pas le nombre négatif : $a^{-x}$ est l'inverse de $a^x$, donc strictement positif. Par exemple $2^{-3}=\\dfrac{1}{2^3}=\\dfrac{1}{8}$."
+				]
+			}
+		},
+		{
+			"statement": "Vrai ou faux ? Pour tout réel $a>0$ et tous réels $x$ et $y$, $a^x+a^y=a^{x+y}$.\n\n```choix\nmelanger: non\n- Vrai, pour tous réels $x$ et $y$.\n- Faux en général.\n```",
+			"variables": [],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "1"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La propriété porte sur le **produit** : $a^x\\times a^y=a^{x+y}$. Il n'y a pas de propriété pour la somme $a^x+a^y$.",
+					"Contre-exemple : $a=2$, $x=0$, $y=0$ : $2^0+2^0=1+1=2$, alors que $2^{0+0}=1$.",
+					"L'égalité est donc $\\textcolor{{{color:primary.0}}}{\\text{fausse en général}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "choix : bonne réponse 1",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : a^(xy)",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : (a²)^(x+y)",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 2a^(x+y)",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "choix : bonne réponse 2",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : a^(y−x)",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : a^(x/y)",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 1^(x−y)",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "choix : bonne réponse 0",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : a^(x+y)",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : a^(x^y)",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : y·a^x",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "choix : bonne réponse 2",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 0",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : a",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : n'existe pas",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "choix : bonne réponse 1",
+			"variationIndex": 4,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : −a^x",
+			"variationIndex": 4,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : (−a)^x",
+			"variationIndex": 4,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : −1/a^x",
+			"variationIndex": 4,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "choix : bonne réponse 1",
+			"variationIndex": 5,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : vrai",
+			"variationIndex": 5,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

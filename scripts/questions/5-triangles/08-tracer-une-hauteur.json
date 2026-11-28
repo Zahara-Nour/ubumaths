@@ -1,0 +1,155 @@
+{
+	"id": "9dc37ad2-1b22-40dc-ade2-8b486328a66b",
+	"title": "Tracer une hauteur d'un triangle",
+	"description": "Sur quadrillage, à la règle et à l'équerre : tracer la droite qui passe par un sommet et qui est perpendiculaire au côté opposé, prolongé si le triangle a un angle obtus",
+	"grades": ["5"],
+	"level": 7,
+	"delay": 240,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Trace la **hauteur issue de $A$** du triangle $ABC$.\n\n```figure-a-completer\nfenetre: 0 ; 10 ; 0 ; 8\ngrille: 1\noutils: droite, equerre\nverifier: droite h = hauteur(A, B, C)\n---\n{{if:k==1|A = point(3, 7, etiquette=\"haut-gauche\")\nB = point(5, 1, etiquette=\"bas-gauche\")\nC = point(8, 7, etiquette=\"haut-droite\")\ntriangle(A, B, C)|{{if:k==2|A = point(2, 3, etiquette=\"bas-gauche\")\nB = point(8, 1, etiquette=\"bas-droite\")\nC = point(5, 7, etiquette=\"haut\")\ntriangle(A, B, C)|A = point(8, 6, etiquette=\"haut-droite\")\nB = point(2, 4, etiquette=\"haut-gauche\")\nC = point(8, 1, etiquette=\"bas-droite\")\ntriangle(A, B, C)}}}}\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..3"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**La hauteur issue de $A$** est la droite qui passe par $A$ et qui est **perpendiculaire** au côté opposé $(BC)$.",
+					"On pose l'équerre le long de $[BC]$ et on la fait glisser jusqu'à $A$ (sur le quadrillage, on peut aussi compter les carreaux : si $(BC)$ avance de $p$ carreaux et monte de $q$, la perpendiculaire avance de $q$ et descend de $p$).",
+					"On trace la droite qui passe par $A$ et par le pied $H$ : c'est la $\\textcolor{{{color:primary.0}}}{\\text{hauteur issue de }A}$."
+				]
+			}
+		},
+		{
+			"statement": "Le triangle $ABC$ a un angle obtus en $B$. Trace la **hauteur issue de $A$**.\n\n```figure-a-completer\nfenetre: 0 ; 10 ; 0 ; 8\ngrille: 1\noutils: droite, equerre\nverifier: droite h = hauteur(A, B, C)\n---\n{{if:k==1|A = point(1, 5, etiquette=\"haut-gauche\")\nB = point(5, 2, etiquette=\"bas\")\nC = point(9, 4, etiquette=\"haut-droite\")\ntriangle(A, B, C)|{{if:k==2|A = point(9, 5, etiquette=\"droite\")\nB = point(5, 3, etiquette=\"bas\")\nC = point(1, 7, etiquette=\"haut-gauche\")\ntriangle(A, B, C)|A = point(9, 3, etiquette=\"bas-droite\")\nB = point(6, 2, etiquette=\"bas-droite\")\nC = point(1, 7, etiquette=\"haut-gauche\")\ntriangle(A, B, C)}}}}\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..3"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**La hauteur issue de $A$** est la droite qui passe par $A$ et qui est **perpendiculaire** au côté opposé $(BC)$.",
+					"On pose l'équerre le long de $[BC]$ et on la fait glisser jusqu'à $A$ (sur le quadrillage, on peut aussi compter les carreaux : si $(BC)$ avance de $p$ carreaux et monte de $q$, la perpendiculaire avance de $q$ et descend de $p$).",
+					"Le triangle a un angle obtus en $B$ : le pied $H$ est **hors** du segment $[BC]$, sur son prolongement. On prolonge $[BC]$, puis on trace la droite $(AH)$ : c'est la $\\textcolor{{{color:primary.0}}}{\\text{hauteur issue de }A}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Aigu 1 : (AH)",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1"
+			},
+			"answers": ["droite(3;7;7;5)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Aigu 2 : (AH)",
+			"variationIndex": 0,
+			"variables": {
+				"k": "2"
+			},
+			"answers": ["droite(2;3;6;5)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Aigu 3 : (AH)",
+			"variationIndex": 0,
+			"variables": {
+				"k": "3"
+			},
+			"answers": ["droite(8;6;6;2)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : la médiane issue de A",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1"
+			},
+			"answers": ["droite(3;7;6.5;4)"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : la médiatrice de [BC]",
+			"variationIndex": 0,
+			"variables": {
+				"k": "2"
+			},
+			"answers": ["droite(6.5;4;0.5;1)"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Obtus 1 : pied hors de [BC]",
+			"variationIndex": 1,
+			"variables": {
+				"k": "1"
+			},
+			"answers": ["droite(1;5;3;1)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Obtus 2",
+			"variationIndex": 1,
+			"variables": {
+				"k": "2"
+			},
+			"answers": ["droite(9;5;6;2)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Obtus 3",
+			"variationIndex": 1,
+			"variables": {
+				"k": "3"
+			},
+			"answers": ["droite(9;3;7;1)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur obtus : perpendiculaire à (BC) passant par B",
+			"variationIndex": 1,
+			"variables": {
+				"k": "1"
+			},
+			"answers": ["droite(5;2;3;6)"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : rien de tracé",
+			"variationIndex": 1,
+			"variables": {
+				"k": "2"
+			},
+			"answers": [""],
+			"expected": {
+				"status": "empty"
+			}
+		}
+	]
+}

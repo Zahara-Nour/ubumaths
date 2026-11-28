@@ -34,14 +34,16 @@
  * @module worksheets/document/answer-frames
  */
 
-import { parseMarkdown } from '$lib/ubumark';
-import type { ASTNode, DocumentNode, InlineNode, ListItemNode } from '$lib/ubumark/types';
+import { parseMarkdown } from '#lib/ubumark/index.ts';
+import { associerItemHasBlock } from '#lib/ubumark/parser/associer-parser.ts';
+import { TROUS_RESERVE_COLUMNS } from '#lib/ubumark/utils/trous.ts';
+import type { ASTNode, DocumentNode, InlineNode, ListItemNode } from '#lib/ubumark/types/index.ts';
 import {
 	ANSWER_FRAME_MAX_QUESTIONS,
 	type AnswerFrameEstimate,
 	type AnswerFrameSize,
 	type ExerciseFrameCm
-} from '$lib/types/worksheets';
+} from '#lib/types/worksheets.ts';
 
 // ============================================================================
 // CONSTANTES
@@ -136,12 +138,20 @@ function nodeLines(node: ASTNode): number {
 		case 'figure':
 		case 'stat-chart':
 		case 'qr':
+		case 'engrenages':
 		case 'horloge':
+		case 'tortue':
+		case 'calcul':
+		case 'robot':
+		case 'labyrinthe':
+		case 'yohaku':
+		case 'python-a-ecrire':
 		case 'partage':
 		case 'espace':
 		case 'operation':
 		case 'collection':
 		case 'monnaie':
+		case 'schema-barres':
 			return FIGURE_LINES;
 		case 'choice':
 			// Bloc ```choix : une ligne par choix
@@ -150,6 +160,17 @@ function nodeLines(node: ASTNode): number {
 			// Bloc ```ranger : la ligne des étiquettes, puis celle des places ; en étapes
 			// (`signe: aucun`), une ligne par étiquette, puis une par place
 			return node.sign === 'aucun' ? 2 * node.labels.length : 2;
+		case 'associer': {
+			// Bloc ```associer : une ligne par rangée des deux colonnes ; une rangée à courbe
+			// (lot 2) compte pour une figure
+			const rows = Math.max(node.items.length, node.labels.length);
+			const withBlock = node.items.filter(associerItemHasBlock).length;
+			return rows - withBlock + withBlock * FIGURE_LINES;
+		}
+		case 'trous':
+			// Bloc ```trous : les rangées de la réserve (au plus 6 étiquettes par rangée, comme
+			// `generateTrousTypst`), puis une ligne par ligne du texte
+			return Math.ceil(node.labels.length / TROUS_RESERVE_COLUMNS) + node.lines.length;
 		default:
 			// Nœud en ligne isolé : une ligne de texte
 			return inlineLines([node]);

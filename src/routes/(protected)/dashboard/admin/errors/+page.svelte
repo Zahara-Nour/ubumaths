@@ -1,17 +1,17 @@
 <!-- eslint-disable custom/require-zod-validation -->
 <script lang="ts">
-	import { goto, invalidateAll } from '$app/navigation';
-	import { Button } from '$lib/components/ui/button';
-	import * as Card from '$lib/components/ui/card';
-	import { Badge } from '$lib/components/ui/badge';
-	import { Label } from '$lib/components/ui/label';
-	import MySelect from '$lib/components/MySelect.svelte';
-	import { Input } from '$lib/components/ui/input';
-	import { Separator } from '$lib/components/ui/separator';
-	import * as Dialog from '$lib/components/ui/dialog';
-	import { Textarea } from '$lib/components/ui/textarea';
-	import * as Alert from '$lib/components/ui/alert';
-	import { toaster } from '$lib/stores/toaster.svelte';
+	import { goto, refreshAll } from '$app/navigation';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
+	import { Label } from '#lib/components/ui/label/index.ts';
+	import MySelect from '#lib/components/MySelect.svelte';
+	import { Input } from '#lib/components/ui/input/index.ts';
+	import { Separator } from '#lib/components/ui/separator/index.ts';
+	import * as Dialog from '#lib/components/ui/dialog/index.ts';
+	import { Textarea } from '#lib/components/ui/textarea/index.ts';
+	import * as Alert from '#lib/components/ui/alert/index.ts';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
 
 	let { data } = $props();
 
@@ -168,7 +168,7 @@
 
 			// Close dialog and refresh data
 			bulkResolveDialogOpen = false;
-			await invalidateAll();
+			await refreshAll();
 		} catch (err) {
 			// Show error toast
 			const errorMessage = err instanceof Error ? err.message : 'Erreur inconnue';
@@ -201,7 +201,7 @@
 
 			// Close dialog and refresh data
 			deleteResolvedDialogOpen = false;
-			await invalidateAll();
+			await refreshAll();
 		} catch (err) {
 			// Show error toast
 			const errorMessage = err instanceof Error ? err.message : 'Erreur inconnue';
@@ -355,6 +355,7 @@
 						id="error-search"
 						type="text"
 						placeholder="Message d'erreur..."
+						maxlength={200}
 						bind:value={searchInput}
 						onkeydown={(e) => e.key === 'Enter' && applyFilters()}
 					/>

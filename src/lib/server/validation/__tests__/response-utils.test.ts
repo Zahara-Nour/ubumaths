@@ -73,29 +73,26 @@ describe('response validation utilities', () => {
 			}).toThrow('Erreur interne : réponse du serveur mal formée');
 		});
 
-		it('should log detailed error without exposing to client', () => {
+		it('journalise les champs fautifs, jamais le contenu de la réponse', () => {
 			const schema = z.object({
-				secret: z.string()
+				messages: z.array(z.object({ sender_id: z.string(), body: z.string() }))
 			});
 
 			const invalidData = {
-				secret: 123 // Wrong type
+				messages: [{ sender_id: 987654321, body: 'CONTENU-PRIVE-A-NE-PAS-JOURNALISER' }]
 			};
 
-			try {
-				validateResponse(schema, invalidData, 'GET /api/test');
-			} catch {
-				// Expected to throw
-			}
+			expect(() => validateResponse(schema, invalidData, 'GET /api/test')).toThrow();
 
-			expect(consoleErrorSpy).toHaveBeenCalledWith(
-				expect.stringContaining('[server/validation/response-utils]'),
-				expect.stringContaining('[RESPONSE VALIDATION ERROR]'),
-				expect.objectContaining({
-					issues: expect.any(Array),
-					data: expect.any(String)
-				})
-			);
+			expect(consoleErrorSpy).toHaveBeenCalledTimes(1);
+			const logged = JSON.stringify(consoleErrorSpy.mock.calls[0]);
+			// Le journal dit quel champ est fautif…
+			expect(logged).toContain('[RESPONSE VALIDATION ERROR] GET /api/test');
+			expect(logged).toContain('messages.0.sender_id');
+			expect(logged).toContain('invalid_type');
+			// … et ne porte ni le contenu, ni la valeur fautive.
+			expect(logged).not.toContain('CONTENU-PRIVE-A-NE-PAS-JOURNALISER');
+			expect(logged).not.toContain('987654321');
 		});
 
 		it('should handle missing required fields', () => {

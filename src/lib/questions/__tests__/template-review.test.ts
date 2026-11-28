@@ -8,6 +8,11 @@ import {
 	templatesUnder,
 	changedSinceReview,
 	findReviewNode,
+	isDefaultFilters,
+	normalizeSearch,
+	parsePointCode,
+	seriesOptions,
+	seriesSelection,
 	type TemplateSummary,
 	type TreeNodeRow
 } from '../template-review';
@@ -152,10 +157,111 @@ describe('summaryAlerts, matchesFilters, parseFilters', () => {
 
 	it("lit les filtres de l'adresse, valeur inconnue = défaut", () => {
 		expect(parseFilters(new URLSearchParams('verdict=a_revoir&statut=draft&alertes=1'))).toEqual({
+			...DEFAULT_FILTERS,
 			verdict: 'a_revoir',
 			status: 'draft',
 			alertsOnly: true
 		});
 		expect(parseFilters(new URLSearchParams('verdict=ok&statut=x'))).toEqual(DEFAULT_FILTERS);
+	});
+});
+
+describe('recherche dans le titre et point du programme', () => {
+	const cours = modele('c', {
+		title: 'Cours : définition d’une suite Géométrique',
+		points: [{ code: '1SPE-216', grade: '1_SPE' }]
+	});
+
+	it('normalise sans casse, sans accents, espaces resserrés', () => {
+		expect(normalizeSearch('  Géométrique   À  ')).toBe('geometrique a');
+		expect(normalizeSearch('   ')).toBe('');
+	});
+
+	it('garde les modèles dont le titre contient le texte, sans casse ni accents', () => {
+		expect(matchesFilters(cours, { ...DEFAULT_FILTERS, title: 'geometrique' })).toBe(true);
+		expect(matchesFilters(cours, { ...DEFAULT_FILTERS, title: 'COURS :' })).toBe(true);
+		expect(matchesFilters(cours, { ...DEFAULT_FILTERS, title: 'arithmétique' })).toBe(false);
+	});
+
+	it('garde les modèles tagués sur le point', () => {
+		expect(matchesFilters(cours, { ...DEFAULT_FILTERS, point: '1SPE-216' })).toBe(true);
+		expect(matchesFilters(cours, { ...DEFAULT_FILTERS, point: '1SPE-213' })).toBe(false);
+	});
+
+	it('se combine avec les autres filtres', () => {
+		const f = {
+			...DEFAULT_FILTERS,
+			title: 'cours',
+			point: '1SPE-216',
+			status: 'published' as const
+		};
+		expect(matchesFilters(cours, f)).toBe(false);
+		expect(matchesFilters(cours, { ...f, status: 'draft' })).toBe(true);
+	});
+
+	it("lit titre et point dans l'adresse : titre rogné, point en majuscules", () => {
+		expect(parseFilters(new URLSearchParams('titre=%20Cours%20:%20&point=1spe-213'))).toEqual({
+			...DEFAULT_FILTERS,
+			title: 'Cours :',
+			point: '1SPE-213'
+		});
+		expect(parseFilters(new URLSearchParams('titre=%20%20'))).toEqual(DEFAULT_FILTERS);
+	});
+
+	it('reconnaît le format des codes de point', () => {
+		expect(parsePointCode('1spe-213')).toBe('1SPE-213');
+		expect(parsePointCode('CP-058')).toBe('CP-058');
+		expect(parsePointCode('6-1')).toBe('6-1');
+		expect(parsePointCode('1SPE')).toBeNull();
+		expect(parsePointCode('1SPE-21a')).toBeNull();
+		expect(parsePointCode("x'; drop")).toBeNull();
+	});
+
+	it('filtres par défaut : aucun filtre posé', () => {
+		expect(isDefaultFilters(DEFAULT_FILTERS)).toBe(true);
+		expect(isDefaultFilters({ ...DEFAULT_FILTERS, title: 'x' })).toBe(false);
+		expect(isDefaultFilters({ ...DEFAULT_FILTERS, point: '6-001' })).toBe(false);
+	});
+});
+
+describe('série', () => {
+	const a = modele('a', { status: 'published' });
+	const b = modele('b');
+	const byId = new Map([
+		['a', a],
+		['b', b]
+	]);
+	const items = [
+		{ templateId: 'b', quantity: 3, delay: 60 },
+		{ templateId: 'a', quantity: 1, delay: 20 },
+		{ templateId: 'disparu', quantity: 2, delay: 30 },
+		{ templateId: 'b', quantity: 1, delay: 10 }
+	];
+
+	it("suit l'ordre de la série, doublons compris, avec quantité et délai", () => {
+		const entries = seriesSelection(items, byId, DEFAULT_FILTERS);
+		expect(entries.map((e) => [e.templateId, e.quantity, e.delay, e.found])).toEqual([
+			['b', 3, 60, true],
+			['a', 1, 20, true],
+			['disparu', 2, 30, false],
+			['b', 1, 10, true]
+		]);
+		// Une clé d'affichage par ligne, même pour un modèle présent deux fois
+		expect(new Set(entries.map((e) => e.key)).size).toBe(4);
+	});
+
+	it('applique les autres filtres ; un modèle introuvable reste signalé', () => {
+		const entries = seriesSelection(items, byId, { ...DEFAULT_FILTERS, status: 'published' });
+		expect(entries.map((e) => e.templateId)).toEqual(['a', 'disparu']);
+	});
+
+	it('liste les séries par niveau (année scolaire) puis titre', () => {
+		const options = seriesOptions([
+			{ id: '1', title: 'Limites', grade: 'T_SPE' },
+			{ id: '2', title: 'Essai', grade: '6' },
+			{ id: '3', title: 'Bilan', grade: 'T_SPE' }
+		]);
+		expect(options.map((o) => o.value)).toEqual(['2', '3', '1']);
+		expect(options[0].label).toBe('Essai · 6ème');
 	});
 });

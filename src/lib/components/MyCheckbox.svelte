@@ -12,8 +12,8 @@
 	 */
 
 	import type { Snippet } from 'svelte';
-	import { Checkbox } from '$lib/components/ui/checkbox';
-	import { Label } from '$lib/components/ui/label';
+	import { Checkbox } from '#lib/components/ui/checkbox/index.ts';
+	import { Label } from '#lib/components/ui/label/index.ts';
 	import { useId, type WithoutChildrenOrChild } from 'bits-ui';
 	import type { Checkbox as CheckboxPrimitive } from 'bits-ui';
 

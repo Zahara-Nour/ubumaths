@@ -6,6 +6,7 @@ couvre:
   - 'src/lib/navigation/return-links.ts'
   - 'src/lib/components/rich-text/{RichTextEditor,RichTextDisplay}.svelte'
   - 'src/lib/stores/{toaster,theme,fontSize}.svelte.ts'
+  - src/lib/components/AppToaster.svelte
 ---
 
 # UI Components
@@ -16,7 +17,7 @@ Référence synthétique pour Claude : **composants UI obligatoires**, imports S
 
 ## MySelect — sélecteurs (OBLIGATOIRE)
 
-**Règle n°2** : toujours `MySelect` — jamais `<select>` natif, jamais `import * as Select from '$lib/components/ui/select'`.
+**Règle n°2** : toujours `MySelect` — jamais `<select>` natif, jamais `import * as Select from '#lib/components/ui/select'`.
 
 **Fichier** : `src/lib/components/MySelect.svelte` (construit sur Bits UI `Select`, SSR-compatible, touch-friendly 44 px).
 
@@ -34,6 +35,11 @@ Référence synthétique pour Claude : **composants UI obligatoires**, imports S
 | `onValueChange`                                                              | `(value) => void`                                        | —             | Callback à préférer                      |
 | `onchange`                                                                   | `(value) => void`                                        | —             | Alias rétro-compatible                   |
 | `disabled`, `required`, `name`, `id`, `open`, `onOpenChange`, `contentProps` | —                                                        | —             | Passés à Bits UI                         |
+
+**Nom accessible et tests.** Le déclencheur a le rôle `combobox` (Bits UI ≥ 2.20) : son nom ne vient
+jamais de son contenu. Il vaut `triggerAriaLabel`, sinon `placeholder`, sinon la valeur affichée.
+`triggerAriaLabel` doit contenir la valeur choisie (« Avec la liste M ») : le `placeholder` seul ne
+l'annonce pas. Dans un test : `page.getByRole('combobox', { name: … })`, jamais `'button'`.
 
 ### Usages canoniques
 
@@ -65,7 +71,7 @@ Exemples réels : `ScheduleEntryModal.svelte` (single + triggerClass), `Workshee
 
 ## MyCheckbox — cases à cocher (OBLIGATOIRE)
 
-**Règle n°2** : toujours `MyCheckbox` — jamais `<input type="checkbox">` natif, jamais `import { Checkbox } from '$lib/components/ui/checkbox'` en direct.
+**Règle n°2** : toujours `MyCheckbox` — jamais `<input type="checkbox">` natif, jamais `import { Checkbox } from '#lib/components/ui/checkbox/index.ts'` en direct.
 
 **Fichier** : `src/lib/components/MyCheckbox.svelte` (wrapper Shadcn Checkbox + Label auto-connecté, touch-friendly 44 px).
 
@@ -121,7 +127,7 @@ Règle tranchée par David le 2026-10-11. **Fichier** : `src/lib/components/navi
 
 **Où** : en haut de la page, **au-dessus du `h1`**, sur sa propre ligne. Le titre reste aligné avec le contenu et rien ne déborde sur mobile.
 
-**Où il mène** : à la **page parente, lue dans l'adresse de la page** — jamais `history.back()`, jamais `goto()` dans un `onclick`. Une page qui a deux parents possibles le dit dans son adresse : un exercice ouvert depuis une fiche porte `?fiche=<uuid>` (`worksheetReturnHref`, `src/lib/worksheets/exercise-edit-link.ts`) ; le journal d'un élève ouvert depuis l'accueil porte `?depuis=accueil`, une session de révision lancée depuis le Programme `?depuis=programme`, la page d'une notion ouverte depuis le deck « Programme » aussi, l'aperçu « vue élève » d'une affectation ouvert depuis un signalement `?depuis=signalement&signalement=<uuid>`, les copies par élève d'une affectation ouvertes depuis son aperçu `?depuis=apercu` (`src/lib/navigation/return-links.ts`, qui écrit le lien et le relit).
+**Où il mène** : à la **page parente, lue dans l'adresse de la page** — jamais `history.back()`, jamais `goto()` dans un `onclick`. Une page qui a deux parents possibles le dit dans son adresse : un exercice ouvert depuis une fiche porte `?fiche=<uuid>` (`worksheetReturnHref`, `src/lib/worksheets/exercise-edit-link.ts`) ; le journal d'un élève ouvert depuis l'accueil porte `?depuis=accueil`, depuis son suivi `?depuis=suivi`, le suivi d'un élève ouvert depuis l'analytique `?depuis=analytique&classe=<uuid>`, les résultats d'un contrôle ouverts depuis ce suivi `?depuis=suivi&eleve=<uuid>`, une session de révision lancée depuis le Programme `?depuis=programme`, la page d'une notion ouverte depuis le deck « Programme » aussi, l'aperçu « vue élève » d'une affectation ouvert depuis un signalement `?depuis=signalement&signalement=<uuid>`, les copies par élève d'une affectation ouvertes depuis son aperçu `?depuis=apercu`, l'exercice hors fiche d'un élève ouvert depuis un chapitre de cours `?depuis=cours&chapitre=<uuid>` (`src/lib/navigation/return-links.ts`, qui écrit le lien et le relit).
 
 Pourquoi : la destination écrite dans le lien est la même après un lien partagé, dans un nouvel onglet ou après un rechargement, et le libellé peut l'annoncer avant le clic. Revenir là où on était, c'est le rôle du bouton retour du navigateur, que ce lien ne double pas.
 
@@ -158,17 +164,21 @@ Pourquoi : la destination écrite dans le lien est la même après un lien parta
 
 ```svelte
 <!-- Named import for atomic components -->
-import {Button} from '$lib/components/ui/button'; import {Input} from '$lib/components/ui/input'; import
-{Label} from '$lib/components/ui/label'; import {Badge} from '$lib/components/ui/badge'; import {Switch}
-from '$lib/components/ui/switch'; import {Textarea} from '$lib/components/ui/textarea'; import {Separator}
-from '$lib/components/ui/separator'; import {Skeleton} from '$lib/components/ui/skeleton'; import {Progress}
-from '$lib/components/ui/progress';
+import {Button} from '#lib/components/ui/button/index.ts'; import {Input} from '#lib/components/ui/input/index.ts';
+import
+{Label} from '#lib/components/ui/label/index.ts'; import {Badge} from '#lib/components/ui/badge/index.ts';
+import {Switch}
+from '#lib/components/ui/switch/index.ts'; import {Textarea} from '#lib/components/ui/textarea/index.ts';
+import {Separator}
+from '#lib/components/ui/separator/index.ts'; import {Skeleton} from '#lib/components/ui/skeleton/index.ts';
+import {Progress}
+from '#lib/components/ui/progress/index.ts';
 
 <!-- Namespace import for compound components -->
-import * as Card from '$lib/components/ui/card'; import * as Dialog from '$lib/components/ui/dialog';
-import * as DropdownMenu from '$lib/components/ui/dropdown-menu'; import * as Sheet from '$lib/components/ui/sheet';
-import * as Tabs from '$lib/components/ui/tabs'; import * as Collapsible from '$lib/components/ui/collapsible';
-import * as Avatar from '$lib/components/ui/avatar'; import * as Accordion from '$lib/components/ui/accordion';
+import * as Card from '#lib/components/ui/card/index.ts'; import * as Dialog from '#lib/components/ui/dialog/index.ts';
+import * as DropdownMenu from '#lib/components/ui/dropdown-menu/index.ts'; import * as Sheet from '#lib/components/ui/sheet/index.ts';
+import * as Tabs from '#lib/components/ui/tabs/index.ts'; import * as Collapsible from '#lib/components/ui/collapsible/index.ts';
+import * as Avatar from '#lib/components/ui/avatar/index.ts'; import * as Accordion from '#lib/components/ui/accordion/index.ts';
 ```
 
 **Composants disponibles** (dossiers dans `src/lib/components/ui/`) : accordion · alert · avatar · badge · breadcrumb · button · calendar · card · checkbox · collapsible · confirm-dialog · dialog · dropdown-menu · input · label · popover · progress · radio-group · scroll-area · separator · sheet · skeleton · slider · switch · table · tabs · textarea · tooltip.
@@ -199,14 +209,16 @@ import * as Avatar from '$lib/components/ui/avatar'; import * as Accordion from 
 
 Les croix de `Dialog.Content` et de `Sheet.Content` sont nommées **« Fermer »** pour les lecteurs
 d'écran (« Close » jusqu'au 2026-10-14, relevé par la revue a11y des réglages de l'atelier).
+La croix de `Sheet.Content` (menu du site au téléphone) se touche sur 44 × 44 px, l'icône de
+16 px au même endroit (écart E22, 2026-11-24 : 16 px, sous le minimum de 24 px de WCAG 2.5.8).
 
 ### ConfirmDialog (composant custom)
 
 Boîte de confirmation réutilisable (titre + description + variante destructive).
 
 ```svelte
-import ConfirmDialog from '$lib/components/ui/confirm-dialog/ConfirmDialog.svelte'; // ou : import {ConfirmDialog}
-from '$lib/components/ui/confirm-dialog';
+import ConfirmDialog from '#lib/components/ui/confirm-dialog/ConfirmDialog.svelte'; // ou : import {ConfirmDialog}
+from '#lib/components/ui/confirm-dialog/index.ts';
 
 <ConfirmDialog
 	bind:open={showConfirm}
@@ -224,7 +236,7 @@ from '$lib/components/ui/confirm-dialog';
 Ne pas utiliser directement les primitives Shadcn Avatar. Utiliser **`UserAvatar`** :
 
 ```svelte
-import UserAvatar from '$lib/components/UserAvatar.svelte';
+import UserAvatar from '#lib/components/UserAvatar.svelte';
 
 <UserAvatar
   avatar_url={user.avatar_url}
@@ -245,7 +257,7 @@ import UserAvatar from '$lib/components/UserAvatar.svelte';
 **Composant** : `src/lib/components/rich-text/RichTextEditor.svelte` — unifié form + chat.
 
 ```svelte
-import RichTextEditor from '$lib/components/rich-text/RichTextEditor.svelte';
+import RichTextEditor from '#lib/components/rich-text/RichTextEditor.svelte';
 
 <!-- Form mode (default) — bidirectionnel via htmlValue -->
 let content = $state('');
@@ -256,6 +268,7 @@ let content = $state('');
 ```
 
 Props clés : `preset` (`'full'` par défaut), `toolbar`, `minHeight`, `maxHeight`, `disabled`, `imageUpload`, `onchange`.  
+`bind:jsonValue` (mode form) : le document de l'éditeur, à envoyer à un serveur qui attend du jsonb (messagerie). L'initialiser à `null`, pas à `undefined` : il suit alors chaque frappe, et il est aussi rempli quand le contenu vient de `htmlValue` sans frappe (brouillon repris). Ne jamais envoyer `htmlValue` à sa place.  
 Section « Insertion » de la barre : droite graduée, tableau de variation, arbre de probabilité, cercle trigonométrique, QR code (bloc ubumark ` ```qr ` prérempli, sans nœud TipTap dédié).  
 Section « Formule » : formule en ligne, modèles, bloc `$$...$$`, et **« Calcul aligné »** (calcul centré `array{rcl}` d'une ligne, curseur dedans ; Cmd+Entrée y ajoute une ligne — voir [ubumark § Formules](../systeme/ubumark.md#formules)).  
 Création : l'éditeur TipTap naît dans `onMount`, après `await import('mathlive')` (le créer dès le montage changeait le moment où il apparaît : essayé et retiré, #2423) ; d’ici là la barre (et le bouton markdown) est inerte et « Chargement de l’éditeur… » s’affiche, annoncé par une région `role="status"` toujours présente. Import NU de MathLive en tête (`import 'mathlive'`, jamais d’import nommé) : côté serveur `mathlive` résout vers `mathlive-ssr`, sans `MathfieldElement` — garde : `__tests__/mathlive-imports-ssr.test.ts`. Si la création lève, la barre reste inerte et « L'éditeur n'a pas pu se charger » propose de recharger la page (`role="alert"`) au lieu d'un éditeur muet.  
@@ -267,19 +280,19 @@ Pour l'affichage seul : `RichTextDisplay.svelte` (pas d'éditeur).
 ## Notifications toast
 
 ```svelte
-import {toaster} from '$lib/stores/toaster.svelte'; toaster.success('Évaluation créée'); toaster.error('Erreur
+import {toaster} from '#lib/stores/toaster.svelte.ts'; toaster.success('Évaluation créée'); toaster.error('Erreur
 lors de la sauvegarde'); toaster.warning('Aucun élève sélectionné'); toaster.info('Synchronisation en
 cours…'); toaster.message('Message neutre'); // sans icône de statut
 ```
 
-Wrapper sur `svelte-sonner`. Le Toaster est monté dans le layout racine.
+Wrapper sur `svelte-sonner`. Le Toaster est monté dans le layout racine (`AppToaster.svelte`) : cinq annonces visibles au plus sur ordinateur, une seule (la plus récente) au téléphone.
 
 ---
 
 ## Thème & taille de police
 
 ```svelte
-import {theme} from '$lib/stores/theme.svelte'; import {fontSize} from '$lib/stores/fontSize.svelte';
+import {theme} from '#lib/stores/theme.svelte.ts'; import {fontSize} from '#lib/stores/fontSize.svelte.ts';
 theme.toggle(); // bascule clair/sombre (via mode-watcher) theme.dark; // boolean réactif fontSize.increase();
 // +12,5 % (max 150 %) fontSize.decrease(); // −12,5 % (min 75 %) fontSize.reset(); // 100 % fontSize.size;
 // scale actuelle (0.75–1.5) fontSize.canIncrease; // boolean
@@ -296,7 +309,7 @@ La variable CSS `--font-scale` est appliquée sur `<html>`. Le scaling n'affecte
 - **`cn()` pour les classes conditionnelles** :
 
 ```svelte
-import {cn} from '$lib/utils';
+import {cn} from '#lib/utils.ts';
 
 <div class={cn('flex gap-2', isActive && 'bg-accent', className)}>…</div>
 ```

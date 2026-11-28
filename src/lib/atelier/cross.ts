@@ -15,9 +15,9 @@
 import type { Atelier } from './atelier.svelte';
 import { isList, isQualitative, type ListObject } from './types';
 import { categoriesOn, commonRows, droppedNote } from './pairs';
-import type { StatChartSpec } from '$lib/ubumark/types/stat-chart';
-import type { CrossTableDisplay } from '$lib/ubumark/types/stat-chart';
-import { buildStatChartScene, type StatChartScene } from '$lib/ubumark/utils/stat-chart-scene';
+import type { StatChartSpec } from '#lib/ubumark/types/stat-chart.ts';
+import type { CrossTableDisplay } from '#lib/ubumark/types/stat-chart.ts';
+import { buildStatChartScene, type StatChartScene } from '#lib/ubumark/utils/stat-chart-scene.ts';
 
 // =============================================================================
 // Types

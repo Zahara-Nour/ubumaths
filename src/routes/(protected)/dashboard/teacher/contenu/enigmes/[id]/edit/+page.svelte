@@ -4,16 +4,16 @@
 -->
 
 <script lang="ts">
-	import BackLink from '$lib/components/navigation/BackLink.svelte';
+	import BackLink from '#lib/components/navigation/BackLink.svelte';
 	import type { PageData } from './$types';
-	import type { CreateRiddleData } from '$lib/types/riddle';
-	import RiddleForm from '$lib/components/riddles/RiddleForm.svelte';
+	import type { CreateRiddleData } from '#lib/types/riddle.ts';
+	import RiddleForm from '#lib/components/riddles/RiddleForm.svelte';
 	import { goto } from '$app/navigation';
-	import { toaster } from '$lib/stores/toaster.svelte';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
 	import {
 		buildRiddleFormBody,
 		submitRiddleForm
-	} from '$lib/components/riddles/submit-riddle-form';
+	} from '#lib/components/riddles/submit-riddle-form.ts';
 
 	let { data }: { data: PageData } = $props();
 

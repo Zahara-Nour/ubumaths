@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { lore } from '$lib/config/lore';
+	import { lore } from '#lib/config/lore.ts';
 	/**
 	 * PythonFileManager - Dialog for managing Python files
 	 *
@@ -10,9 +10,9 @@
 	 */
 
 	// Imports
-	import * as Dialog from '$lib/components/ui/dialog';
-	import * as Tabs from '$lib/components/ui/tabs';
-	import { Button } from '$lib/components/ui/button';
+	import * as Dialog from '#lib/components/ui/dialog/index.ts';
+	import * as Tabs from '#lib/components/ui/tabs/index.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
 	import {
 		FileCode,
 		FolderOpen,
@@ -23,12 +23,12 @@
 		BookOpen,
 		Library
 	} from '@lucide/svelte';
-	import { pythonStore, type PythonFile } from '$lib/stores/pythonPlayground.svelte';
-	import { toaster } from '$lib/stores/toaster.svelte';
+	import { pythonStore, type PythonFile } from '#lib/stores/pythonPlayground.svelte.ts';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
 	import LibraryBrowser from './library/LibraryBrowser.svelte';
-	import ConfirmDialog from '$lib/components/ui/confirm-dialog/ConfirmDialog.svelte';
-	import type { PythonExample } from '$lib/data/python-examples/types';
-	import type { Database } from '$lib/types/database';
+	import ConfirmDialog from '#lib/components/ui/confirm-dialog/ConfirmDialog.svelte';
+	import type { PythonExample } from '#lib/data/python-examples/types.ts';
+	import type { Database } from '#lib/types/database.ts';
 
 	// Types
 	type Profile = Database['public']['Tables']['profiles']['Row'];

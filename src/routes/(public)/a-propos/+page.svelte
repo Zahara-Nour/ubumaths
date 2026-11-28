@@ -11,11 +11,11 @@
 	textes plus petits ou plus grands que le corps passent par des `<div>`.
 -->
 <script lang="ts">
-	import SeoHead from '$lib/seo/SeoHead.svelte';
+	import SeoHead from '#lib/seo/SeoHead.svelte';
 </script>
 
 <SeoHead
-	title="Chiphre, c’est quoi ? - Chiphre"
+	title="Chiphre, c’est quoi ? | Chiphre"
 	description="Chiphre en quelques mots, pour les parents : un royaume imaginaire à traverser, les mathématiques rigoureuses des programmes officiels, sans publicité ni revente de données."
 />
 
@@ -86,6 +86,28 @@
 			<li>Une préparation conforme au programme français.</li>
 			<li>Conformité RGPD : l’utilisation de vos données personnelles est encadrée.</li>
 			<li>Un décor savoureux ; une pédagogie rigoureuse.</li>
+		</ul>
+	</section>
+
+	<section class="mb-10 flex flex-col gap-3" aria-labelledby="polices">
+		<h2 id="polices" class="font-semibold">Polices</h2>
+		<ul class="flex list-disc flex-col gap-1.5 ps-6 marker:text-muted-foreground">
+			<li>
+				<a href="https://www.luciole-vision.com/" class="underline" rel="noopener">Luciole</a>,
+				police du réglage « Lecture facilitée », © Laurent Bourcellier et Jonathan Fabreguettes
+				(typographies.fr), sous licence
+				<a
+					href="https://creativecommons.org/licenses/by/4.0/deed.fr"
+					class="underline"
+					rel="noopener">CC BY 4.0</a
+				>. Ses formules utilisent Luciole Math, de Daniel Flipo, Laurent Bourcellier et Jonathan
+				Fabreguettes, sous licence SIL Open Font License 1.1.
+			</li>
+			<li>
+				<a href="https://github.com/arrowtype/shantell-sans" class="underline" rel="noopener"
+					>Shantell Sans</a
+				>, des auteurs du projet Shantell Sans, sous licence SIL Open Font License 1.1.
+			</li>
 		</ul>
 	</section>
 

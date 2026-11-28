@@ -5,14 +5,15 @@
  * for creating and managing exercise assignments.
  */
 
+import { withLatestVersion } from '#lib/server/exercise-versions.ts';
 import { error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
-import { getAssignmentTargets } from '$lib/server/students';
-import { validateUuidParam } from '$lib/server/validation/params';
+import { getAssignmentTargets } from '#lib/server/students.ts';
+import { validateUuidParam } from '#lib/server/validation/params.ts';
 import {
 	getAssignmentCompletionStats,
 	type AssignmentCompletionStats
-} from '$lib/server/exercise-assignments';
+} from '#lib/server/exercise-assignments.ts';
 
 export const load: PageServerLoad = async ({ params, locals, fetch }) => {
 	const supabase = locals.supabase;
@@ -25,15 +26,17 @@ export const load: PageServerLoad = async ({ params, locals, fetch }) => {
 	const exerciseId = validateUuidParam(params.id);
 
 	// Fetch exercise details
-	const { data: exercise, error: exerciseError } = await supabase
+	const { data: exerciseRow, error: exerciseError } = await supabase
 		.from('exercises')
 		.select('*')
 		.eq('id', exerciseId)
 		.single();
 
-	if (exerciseError || !exercise) {
+	if (exerciseError || !exerciseRow) {
 		throw error(404, 'Exercice introuvable');
 	}
+	// Contenu : la DERNIÈRE version (hors fiche, ADR 0044)
+	const exercise = await withLatestVersion(supabase, exerciseRow);
 
 	// Check ownership
 	if (exercise.created_by !== user.id) {

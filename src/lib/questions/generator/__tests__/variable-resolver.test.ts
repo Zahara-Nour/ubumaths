@@ -8,7 +8,7 @@
 
 import { describe, it, expect } from 'vitest';
 import { resolveVariables } from '../variable-resolver';
-import { createRandomSource } from '$lib/utils/random';
+import { createRandomSource } from '#lib/utils/random.ts';
 import type { QuestionVariable, ResolvedVariable } from '../../types';
 
 /**

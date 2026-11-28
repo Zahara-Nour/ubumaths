@@ -8,7 +8,7 @@
 import { describe, it, expect } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import ExpectedResultView from '../ExpectedResultView.svelte';
-import type { ExpectedResult, ExpectedSignCell } from '$lib/questions/expected-result';
+import type { ExpectedResult, ExpectedSignCell } from '#lib/questions/expected-result.ts';
 
 // Fixtures
 const SOURCE = [

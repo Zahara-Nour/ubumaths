@@ -4,7 +4,7 @@
  *
  * `options.answerAssumptions` : { x: 'positive', n: 'natural' }. Déclarées
  * pour le modèle entier, explicites seulement, transmises telles quelles à
- * `areEquivalent` (`$lib/math`) par la correction.
+ * `areEquivalent` (`#lib/math/index.ts`) par la correction.
  *
  * Ce module porte ce que mathAST ne vérifie pas : le vocabulaire fermé, le
  * nom de variable admis, la limite de 10, et l'interdiction de viser une
@@ -15,7 +15,7 @@
  */
 
 import { z } from 'zod';
-import type { AnswerAssumptionKind, AnswerAssumptions } from '$lib/math';
+import type { AnswerAssumptionKind, AnswerAssumptions } from '#lib/math/index.ts';
 
 // ============================================================================
 // Types

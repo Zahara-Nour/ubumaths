@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { numericNode } from '$lib/mathAST/common/numeric';
+import { numericNode } from '#lib/mathAST/common/numeric.ts';
 import { snapToGrid, snapToPoint } from '../snap';
 import { Figure } from '../../graph/figure';
 import { exact, isExact } from '../../types/geo-value';

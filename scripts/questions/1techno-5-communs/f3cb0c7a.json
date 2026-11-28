@@ -1,0 +1,197 @@
+{
+	"id": "f3cb0c7a-5fa9-4578-ba55-769581dcc64b",
+	"title": "Représenter une série à deux variables par un nuage de points",
+	"description": "Placer les points (xᵢ ; yᵢ) d'un tableau : série brute, diamètre et masse de pommes, adhérents d'un club selon le rang de l'année",
+	"grades": ["1_GEN"],
+	"level": 1,
+	"delay": 90,
+	"status": "published",
+	"shared": {},
+	"variations": [
+		{
+			"statement": "On considère la série statistique à deux variables suivante.\n\n| $x_i$ | 1 | 2 | 3 | 4 | 5 |\n|---|---|---|---|---|---|\n| $y_i$ | ${{y1}}$ | ${{y2}}$ | ${{y3}}$ | ${{y4}}$ | ${{y5}}$ |\n\nReprésente cette série par un nuage de points : place les points $A$, $B$, $C$, $D$ et $E$, dans l'ordre du tableau (le point $A$ représente le premier couple).\n\n```courbe\nx: -1 ; 6\ny: -1 ; 11\ngrille: 1 ; 1\nplacer: A=(1 ; {{y1}}) ; B=(2 ; {{y2}}) ; C=(3 ; {{y3}}) ; D=(4 ; {{y4}}) ; E=(5 ; {{y5}})\ntaille: moyenne\ndescription: Repère gradué de 1 en 1 : x de −1 à 6, y de −1 à 11.\n```",
+			"variables": [
+				{
+					"name": "y1",
+					"expression": "0..10"
+				},
+				{
+					"name": "y2",
+					"expression": "0..10"
+				},
+				{
+					"name": "y3",
+					"expression": "0..10"
+				},
+				{
+					"name": "y4",
+					"expression": "0..10"
+				},
+				{
+					"name": "y5",
+					"expression": "0..10"
+				}
+			],
+			"conditions": ["y1 != y2", "y2 != y3", "y3 != y4", "y4 != y5"],
+			"correction": {
+				"steps": [
+					"Chaque colonne du tableau donne un point : l'abscisse est la valeur de $x$, l'ordonnée celle de $y$. On place $A\\textcolor{{{color:primary.0}}}{(1\\,;{{y1}})}$, $B\\textcolor{{{color:primary.0}}}{(2\\,;{{y2}})}$, $C\\textcolor{{{color:primary.0}}}{(3\\,;{{y3}})}$, $D\\textcolor{{{color:primary.0}}}{(4\\,;{{y4}})}$, $E\\textcolor{{{color:primary.0}}}{(5\\,;{{y5}})}$."
+				]
+			}
+		},
+		{
+			"statement": "Le tableau donne le diamètre $x_i$ (en cm) et la masse $y_i$ (en g) de cinq pommes.\n\n| Diamètre $x_i$ (cm) | 5 | 6 | 7 | 8 | 9 |\n|---|---|---|---|---|---|\n| Masse $y_i$ (g) | ${{eval:20*k1}}$ | ${{eval:20*k2}}$ | ${{eval:20*k3}}$ | ${{eval:20*k4}}$ | ${{eval:20*k5}}$ |\n\nReprésente cette série par un nuage de points : place les points $A$, $B$, $C$, $D$ et $E$, dans l'ordre du tableau (le point $A$ représente le premier couple).\n\n```courbe\nx: 4 ; 10\ny: 40 ; 300\ngrille: 1 ; 20\naxes: x = Diamètre (cm) ; y = Masse (g)\nplacer: A=(5 ; {{eval:20*k1}}) ; B=(6 ; {{eval:20*k2}}) ; C=(7 ; {{eval:20*k3}}) ; D=(8 ; {{eval:20*k4}}) ; E=(9 ; {{eval:20*k5}})\ntaille: moyenne\ndescription: Repère : diamètre de 4 à 10 cm, de 1 en 1 ; masse de 40 à 300 g, de 20 en 20.\n```",
+			"variables": [
+				{
+					"name": "k1",
+					"expression": "4..6"
+				},
+				{
+					"name": "k2",
+					"expression": "{{eval:k1+1}}..{{eval:k1+2}}"
+				},
+				{
+					"name": "k3",
+					"expression": "{{eval:k2+1}}..{{eval:k2+2}}"
+				},
+				{
+					"name": "k4",
+					"expression": "{{eval:k3+1}}..{{eval:k3+2}}"
+				},
+				{
+					"name": "k5",
+					"expression": "{{eval:k4+1}}..{{eval:k4+2}}"
+				}
+			],
+			"conditions": ["k5 <= 14"],
+			"correction": {
+				"steps": [
+					"Chaque colonne du tableau donne un point : l'abscisse est la valeur de $x$, l'ordonnée celle de $y$. L'axe des abscisses commence à $4$ : on repère bien chaque diamètre avant de placer le point. $A\\textcolor{{{color:primary.0}}}{(5\\,;{{eval:20*k1}})}$, $B\\textcolor{{{color:primary.0}}}{(6\\,;{{eval:20*k2}})}$, $C\\textcolor{{{color:primary.0}}}{(7\\,;{{eval:20*k3}})}$, $D\\textcolor{{{color:primary.0}}}{(8\\,;{{eval:20*k4}})}$, $E\\textcolor{{{color:primary.0}}}{(9\\,;{{eval:20*k5}})}$."
+				]
+			}
+		},
+		{
+			"statement": "Le tableau donne le nombre $y_i$ d'adhérents d'un club selon le rang $x_i$ de l'année (rang $1$ pour 2019).\n\n| Rang $x_i$ | 1 | 2 | 3 | 4 | 5 |\n|---|---|---|---|---|---|\n| Adhérents $y_i$ | ${{eval:5*k1}}$ | ${{eval:5*k2}}$ | ${{eval:5*k3}}$ | ${{eval:5*k4}}$ | ${{eval:5*k5}}$ |\n\nReprésente cette série par un nuage de points : place les points $A$, $B$, $C$, $D$ et $E$, dans l'ordre du tableau (le point $A$ représente le premier couple).\n\n```courbe\nx: -1 ; 6\ny: -5 ; 65\ngrille: 1 ; 5\naxes: x = Rang ; y = Adhérents\nplacer: A=(1 ; {{eval:5*k1}}) ; B=(2 ; {{eval:5*k2}}) ; C=(3 ; {{eval:5*k3}}) ; D=(4 ; {{eval:5*k4}}) ; E=(5 ; {{eval:5*k5}})\ntaille: moyenne\ndescription: Repère : rang de −1 à 6, de 1 en 1 ; adhérents de −5 à 65, de 5 en 5.\n```",
+			"variables": [
+				{
+					"name": "k1",
+					"expression": "2..4"
+				},
+				{
+					"name": "k2",
+					"expression": "{{eval:k1+1}}..{{eval:k1+2}}"
+				},
+				{
+					"name": "k3",
+					"expression": "{{eval:k2+1}}..{{eval:k2+2}}"
+				},
+				{
+					"name": "k4",
+					"expression": "{{eval:k3+1}}..{{eval:k3+2}}"
+				},
+				{
+					"name": "k5",
+					"expression": "{{eval:k4+1}}..{{eval:k4+2}}"
+				}
+			],
+			"conditions": ["k5 <= 12"],
+			"correction": {
+				"steps": [
+					"Chaque colonne du tableau donne un point : l'abscisse est la valeur de $x$, l'ordonnée celle de $y$. L'ordonnée est graduée de $5$ en $5$. $A\\textcolor{{{color:primary.0}}}{(1\\,;{{eval:5*k1}})}$, $B\\textcolor{{{color:primary.0}}}{(2\\,;{{eval:5*k2}})}$, $C\\textcolor{{{color:primary.0}}}{(3\\,;{{eval:5*k3}})}$, $D\\textcolor{{{color:primary.0}}}{(4\\,;{{eval:5*k4}})}$, $E\\textcolor{{{color:primary.0}}}{(5\\,;{{eval:5*k5}})}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["1;3", "2;7", "3;2", "4;9", "5;5"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"y1": "3",
+				"y2": "7",
+				"y3": "2",
+				"y4": "9",
+				"y5": "5"
+			},
+			"description": "Série brute : les cinq points",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["1;3", "2;7", "2;3", "4;9", "5;5"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"y1": "3",
+				"y2": "7",
+				"y3": "2",
+				"y4": "9",
+				"y5": "5"
+			},
+			"description": "Erreur : C avec abscisse et ordonnée échangées",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["5;80", "6;100", "7;140", "8;160", "9;200"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"k1": "4",
+				"k2": "5",
+				"k3": "7",
+				"k4": "8",
+				"k5": "10"
+			},
+			"description": "Pommes : 80, 100, 140, 160, 200 g",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["1;80", "2;100", "3;140", "4;160", "5;200"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"k1": "4",
+				"k2": "5",
+				"k3": "7",
+				"k4": "8",
+				"k5": "10"
+			},
+			"description": "Erreur : diamètres placés à partir de 1",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["1;15", "2;20", "3;30", "4;35", "5;45"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"k1": "3",
+				"k2": "4",
+				"k3": "6",
+				"k4": "7",
+				"k5": "9"
+			},
+			"description": "Club : 15, 20, 30, 35, 45",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["1;3", "2;4", "3;6", "4;7", "5;9"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"k1": "3",
+				"k2": "4",
+				"k3": "6",
+				"k4": "7",
+				"k5": "9"
+			},
+			"description": "Erreur : ordonnées lues de 1 en 1 au lieu de 5 en 5",
+			"variationIndex": 2
+		}
+	]
+}

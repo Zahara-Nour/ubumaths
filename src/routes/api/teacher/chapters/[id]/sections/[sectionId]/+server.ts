@@ -7,12 +7,12 @@
  * `on delete set null (section_id)`, elles retombent en « Non classé ».
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireRole } from '$lib/server/middleware/auth';
-import { renameSection, deleteSection } from '$lib/server/chapter-sections';
-import { updateSectionSchema } from '$lib/server/validation/chapter-sections';
-import { uuidSchema } from '$lib/server/validation/common';
+import { requireRole } from '#lib/server/middleware/auth.ts';
+import { renameSection, deleteSection } from '#lib/server/chapter-sections.ts';
+import { updateSectionSchema } from '#lib/server/validation/chapter-sections.ts';
+import { uuidSchema } from '#lib/server/validation/common.ts';
 
 type ZodIssue = { path: (string | number)[]; message: string };
 
@@ -65,7 +65,7 @@ export const PATCH: RequestHandler = async ({ locals, params, request }) => {
 		throw error(404, 'Section introuvable');
 	}
 
-	return json({ section: data });
+	return Response.json({ section: data });
 };
 
 export const DELETE: RequestHandler = async ({ locals, params }) => {
@@ -81,5 +81,5 @@ export const DELETE: RequestHandler = async ({ locals, params }) => {
 		throw error(404, 'Section introuvable');
 	}
 
-	return json({ success: true });
+	return Response.json({ success: true });
 };

@@ -5,9 +5,9 @@
 	 *
 	 * Refusés avec leur raison (E1) : tout passe par l'atelier (`setSlider`).
 	 */
-	import { useAtelier } from '$lib/atelier/context';
-	import type { Slider, ValueObject } from '$lib/atelier/types';
-	import { Input } from '$lib/components/ui/input';
+	import { useAtelier } from '#lib/atelier/context.ts';
+	import type { Slider, ValueObject } from '#lib/atelier/types.ts';
+	import { Input } from '#lib/components/ui/input/index.ts';
 
 	interface Props {
 		object: ValueObject;

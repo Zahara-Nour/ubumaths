@@ -52,17 +52,19 @@ sous-traitants **incomplet** (IA tierce non listée) + des **docts datés** à r
 
 ### 1. Rétention des données (`run_cleanup_expired_data()`, cron `rgpd-retention-cleanup`, dim. 03:00 UTC)
 
-| Donnée                                  | Doc janv.             | **Code actuel** | Drift                                       |
-| --------------------------------------- | --------------------- | --------------- | ------------------------------------------- |
-| error_logs                              | 90 j (resolved)       | **30 j (tous)** | modifié (24/05)                             |
-| user_presence                           | 30 j                  | 30 j            | ✓                                           |
-| friendships (rejected)                  | 2 ans                 | 2 ans           | ✓                                           |
-| messages                                | 3 ans (hard delete)   | 3 ans           | ✓                                           |
-| private_messages                        | 3 ans                 | 3 ans           | ✓                                           |
-| audit_logs                              | —                     | **60 j**        | ajouté (24/05)                              |
-| error_occurrences                       | —                     | **30 j**        | ajouté                                      |
-| background_job_runs                     | —                     | **7 j**         | ajouté                                      |
-| **student_attempts / student_progress** | 5 ans + inactif 2 ans | **🔴 RETIRÉS**  | tables « mortes », cleanup supprimé (24/05) |
+| Donnée                                       | Doc janv.             | **Code actuel**                                    | Drift                                                                                    |
+| -------------------------------------------- | --------------------- | -------------------------------------------------- | ---------------------------------------------------------------------------------------- |
+| error_logs                                   | 90 j (resolved)       | **30 j (tous)**                                    | modifié (24/05)                                                                          |
+| user_presence                                | 30 j                  | 30 j                                               | ✓                                                                                        |
+| friendships (rejected)                       | 2 ans                 | 2 ans                                              | ✓                                                                                        |
+| messages                                     | 3 ans (hard delete)   | 3 ans                                              | ✓                                                                                        |
+| private_messages                             | 3 ans                 | 3 ans                                              | ✓                                                                                        |
+| audit_logs                                   | —                     | **60 j**                                           | ajouté (24/05)                                                                           |
+| error_occurrences                            | —                     | **30 j**                                           | ajouté                                                                                   |
+| background_job_runs                          | —                     | **7 j**                                            | ajouté                                                                                   |
+| **student_attempts / student_progress**      | 5 ans + inactif 2 ans | **🔴 RETIRÉS**                                     | tables « mortes », cleanup supprimé (24/05)                                              |
+| skill_attempts : réponse et verdict par case | —                     | **avant le 1er août de l'année scolaire en cours** | ajouté (L6, 2026-11-11, `purge_trace_answers`)                                           |
+| private_lesson_invitations                   | —                     | **30 j après la fin** (utilisée, annulée, expirée) | ajouté (2026-11-25, cron `invitations-cours-particulier`) ; écrit dans la politique v1.5 |
 
 > 🔴 **Trou n°1 — rétention pédagogique non appliquée.** Le cron ne nettoie **plus aucune donnée
 > pédagogique**. Les tables ont été renommées (`exercise_completions`, `student_exercise_mastery`
@@ -117,6 +119,22 @@ l'export ne plante pas mais renvoie ces catégories **systématiquement vides**.
 > (`student_mathoux`, meilleur stade et étoiles par notion) et le Palotin de l'élève
 > (`student_buddies`, décision de David) ; une lecture en échec rend 500, jamais un export
 > incomplet. `format_version` inchangé (`1.4`). Tableau des catégories : [rgpd.md § 7.3](rgpd.md).
+>
+> ➕ **2026-11-11.** `gaming.avatars` exporte la collection de la boutique d'avatars
+> (`student_avatars` : clé, prix payé, date) ; le profil exporté dit l'avatar porté
+> (`worn_avatar`) et la photo Google gardée (`google_avatar_url`). Une lecture en échec rend 500.
+> `format_version` inchangé (`1.4`).
+>
+> ➕ **2026-11-18.** `gaming.descente` exporte La Descente de la Vistule : les Bêtes de l'élève
+> (`student_beasts`, vivantes, reparties et vaincues, donc son carnet ; lues par pages, au-delà
+> du plafond de 1 000 lignes) et ses coups gagnés (`student_combat_moves`). Une lecture en échec
+> rend 500. `format_version` inchangé (`1.4`).
+>
+> ➕ **2026-11-22.** Les traces (`skill_attempts`) exportent aussi « répondu en QCM »
+> (`answered_as_choice`, chantier `idees-format`, idée 4). `format_version` inchangé.
+>
+> ➕ **2026-11-11.** Les traces (`skill_attempts`) exportent aussi lieu, durées, graine, réponse
+> tapée et verdict par case (ADR 0038, chantier `formes-de-serie`). `format_version` inchangé.
 >
 > ➕ **2026-10-22.** `gaming` exporte aussi la présence de l'élève (`student_last_visits` :
 > `dernier_passage`, jour de la dernière page vue, et `retour_a_feter`, retour après une longue
@@ -179,7 +197,7 @@ anonymise les emails avant insertion.
 | ------------------------------------ | ------------------------- | ----------------------------------------------------------------------------- | ------------------------ |
 | Supabase                             | UE                        | **UE — France eu-west-3**                                                     | ✓ (migration)            |
 | Google (OAuth/Classroom/Drive/Gmail) | 7 scopes                  | **+`classroom.topics.readonly`, `courseworkmaterials`**                       | scopes élargis           |
-| Brevo                                | emails parents            | identique                                                                     | ✓                        |
+| Brevo                                | emails parents            | + carnet de liaison (2026-11, politique v1.4 ; expiration du lien v1.6)       | ✓ documenté (2026-11-17) |
 | Gmail API                            | emails élèves (scolaires) | identique (stratégie hybride)                                                 | ✓                        |
 | **Groq** (LLM tuteur/chat)           | « à vérifier »            | **🟠 actif en prod** (`/api/chat`, llama-3.3-70b ; msg élève dits anonymisés) | à documenter             |
 | **HuggingFace** (embeddings RAG)     | **absent**                | **non activé** (`HF_API_KEY` absente)                                         | ✓ documenté (2026-11-03) |
@@ -197,15 +215,13 @@ anonymise les emails avant insertion.
 
 ## Écarts à traiter (priorisés)
 
-| #   | Écart                                                                                                            | Priorité   | Article   | Piste                                                                                                                             |
-| --- | ---------------------------------------------------------------------------------------------------------------- | ---------- | --------- | --------------------------------------------------------------------------------------------------------------------------------- |
-| 1   | Rétention pédagogique non appliquée (cron ne couvre plus exercise_completions/mastery)                           | 🔴 Haute   | 5.1.e     | Réintégrer au cron OU ajuster la politique                                                                                        |
-| 2   | ~~Export Art. 20 : tables inexistantes → données pédagogiques vides~~ ✅ **CORRIGÉ (2026-06-15)**                | ✔️ Fait    | 20        | Repointé sur `exercise_completions`/`student_exercise_mastery`/`srs_decks` (+ private_messages/notifications/game_players) + test |
-| 3   | Registre sous-traitants : ~~HuggingFace absent, Vercel Analytics non détaillé~~ ✅ 2026-11-03 ; reste Groq (CCT) | 🟠 Moyenne | 28        | Compléter le registre + CCT/zero-retention                                                                                        |
-| 4   | ~~Période de grâce consentement expire 2026-06-30~~ ✅ 30 jours glissants (confirmé 2026-11-03)                  | ✔️ Fait    | 8         | —                                                                                                                                 |
-| 5   | Docs datées (hébergement US, email Gmail, durées)                                                                | 🟡 Basse   | —         | Bandeaux ajoutés ; rafraîchir au besoin                                                                                           |
-| 6   | `[A COMPLÉTER]` mentions légales (identité, statut, directeur publication)                                       | 🟠 Moyenne | LCEN      | Saisir les infos éditeur                                                                                                          |
-| 7   | AIPD à finaliser ; DSA (signalement) ; DPA signés                                                                | 🟠 Moyenne | 35/DSA/28 | Cf. `aipd-dpia.md`                                                                                                                |
+Les écarts de cette zone sont au [registre des écarts](../../ecarts/registre.md) : `pnpm ecarts`. Un écart s'écrit là-bas, jamais ici.
+
+### Points non vérifiés
+
+| #   | Écart                                             | Priorité | Article | Piste                                   |
+| --- | ------------------------------------------------- | -------- | ------- | --------------------------------------- |
+| 5   | Docs datées (hébergement US, email Gmail, durées) | 🟡 Basse | —       | Bandeaux ajoutés ; rafraîchir au besoin |
 
 ---
 

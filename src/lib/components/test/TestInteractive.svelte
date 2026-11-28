@@ -1,7 +1,8 @@
 <!--
 	TestInteractive Component
 	=========================
-	Forme « Entraînement » d'une série (spécification de David, 2026-09-30).
+	Forme « Contrôle blanc » d'une série (ex-« Entraînement », spécification de
+	David, 2026-09-30 ; renommée le 2026-11-11, chantier `formes-de-serie`).
 
 	Une question à la fois, chacune avec SON chrono (durée portée par la
 	question, `ClassroomItem.delaySeconds`) :
@@ -10,7 +11,13 @@
 	  la question compte fausse. Une seule avance par question, même si le
 	  chrono expire pendant les 300 ms qui suivent une validation.
 	Pas de chrono global (Q19). Fin : `TestResults` ; « Recommencer » demande
-	de nouvelles questions à la page (`onRestart`).
+	de nouvelles questions à la page (`onRestart`), qui remonte le composant.
+
+	Entraînement libre : page d'attente d'abord (`SeriesStartScreen`, « 10
+	questions · environ 4 min ») ; le chrono de la question 1 part au clic sur
+	« C'est parti ! ». Contrôle assigné : pas de page d'attente ici (la page
+	`automaths/test` affiche la sienne AVANT que le serveur démarre la tentative ;
+	chantier `diaporama-reglages`, PR 2b).
 
 	Props:
 	- items: ClassroomItem[] - Questions de la série, chacune avec sa durée
@@ -18,7 +25,8 @@
 	- loginNote?: boolean - false : pas de message « Connecte-toi… » (vitrine `/demo/questions`)
 	- onComplete: (result: TestResult) => void - Appelé à la fin de la série
 	- onRestart: () => void - Nouvelles questions (la page régénère)
-	- onBack: () => void - Retour au panier (à « Mes évaluations » pour une évaluation)
+	- onStart?: () => void - « C'est parti ! » cliqué sur la page d'attente (la page y fait partir la durée de série)
+	- onBack: () => void - Retour à ma série (à « Mes évaluations » pour une évaluation)
 	- inEvaluation: évaluation assignée → pas de « Recommencer »
 	- assessmentTitle?: string - Titre d'une évaluation assignée
 	- collectOnly: évaluation notée → réponses collectées SANS correction (le
@@ -27,25 +35,37 @@
 	  la correction du serveur) ; « Envoi de ta copie… » en attendant
 	- buddyGain: gain du Palotin, affiché sur l'écran de résultats (`null` → rien)
 	- mathouNews: nouveautés de la Chatterie, affichées sur l'écran de résultats (`null` → rien)
+	- traceRecorder: série libre d'un élève connecté → une trace par question,
+	  envoyée dès la réponse (lieu `mock_test`, durée de réponse, durée allouée,
+	  fin, réponse case par case ; ADR 0038) ; `null` → rien (contrôle, visiteur)
+	- palotinReactions: Contrôle blanc libre d'un élève connecté → le Palotin réagit
+	  (5 réussites d'affilée, 3 erreurs sur une notion), une fois au plus, et la
+	  question suivante attend son départ ; `null` → jamais (contrôle, visiteur).
+	  Chantier `palotins`, partie C (docs/wip/palotins-progress.md).
 -->
 
 <script lang="ts">
-	import { computeTestScore } from '$lib/utils/test-score';
-	import type { ClassroomItem, TestResult, TestAnswerResult } from '$lib/types/test';
-	import type { AnswerData } from '$lib/types/question-display';
-	import QuestionCard from '$lib/components/questions/QuestionCard.svelte';
+	import { computeTestScore } from '#lib/utils/test-score.ts';
+	import type { ClassroomItem, TestResult, TestAnswerResult } from '#lib/types/test.ts';
+	import type { AnswerData } from '#lib/types/question-display.ts';
+	import QuestionCard from '#lib/components/questions/QuestionCard.svelte';
 	import TestResults from './TestResults.svelte';
-	import type { BuddyGainView } from '$lib/components/buddy/buddy-gain';
-	import type { MathouNews } from '$lib/mathoux/news';
+	import SeriesStartScreen from './SeriesStartScreen.svelte';
+	import { seriesSummary } from './series-summary.ts';
+	import type { BuddyGainView } from '#lib/components/buddy/buddy-gain.ts';
+	import type { MathouNews } from '#lib/mathoux/news.ts';
 	import TestTimer from './TestTimer.svelte';
-	import { Progress } from '$lib/components/ui/progress';
-	import { Button } from '$lib/components/ui/button';
-	import BackLink from '$lib/components/navigation/BackLink.svelte';
-	import { automathsQuitLink } from '$lib/navigation/return-links';
-	import * as Card from '$lib/components/ui/card';
+	import { Progress } from '#lib/components/ui/progress/index.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import BackLink from '#lib/components/navigation/BackLink.svelte';
+	import { automathsQuitLink } from '#lib/navigation/return-links.ts';
+	import * as Card from '#lib/components/ui/card/index.ts';
 	import { ArrowLeft, LogIn } from '@lucide/svelte';
 	import { SvelteMap } from 'svelte/reactivity';
-	import { slideFromRight, slideToLeft } from '$lib/transitions/slide-transition';
+	import { slideFromRight, slideToLeft } from '#lib/transitions/slide-transition.ts';
+	import { isCourseCard } from '#lib/questions/types.ts';
+	import { createSeanceReactions } from '#lib/components/buddy/seance-reactions.ts';
+	import { buildSeriesTrace, type TraceRecorder } from '#lib/questions/series-trace.ts';
 
 	// Types
 	interface Props {
@@ -54,6 +74,10 @@
 		loginNote?: boolean;
 		onComplete: (result: TestResult) => void;
 		onRestart: () => void;
+		/** « C'est parti ! » cliqué sur la page d'attente */
+		onStart?: () => void;
+		/** « Mêmes nombres pour tous » : Recommencer redonne les mêmes questions */
+		sameQuestions?: boolean;
 		onBack: () => void;
 		inEvaluation?: boolean;
 		assessmentTitle?: string;
@@ -61,6 +85,8 @@
 		showResults?: boolean;
 		buddyGain?: BuddyGainView | null;
 		mathouNews?: MathouNews | null;
+		palotinReactions?: { notionOf: (templateId: string) => string | null } | null;
+		traceRecorder?: TraceRecorder | null;
 	}
 
 	// Constants
@@ -73,16 +99,20 @@
 		loginNote = true,
 		onComplete,
 		onRestart,
+		onStart,
+		sameQuestions = false,
 		onBack,
 		assessmentTitle,
 		inEvaluation = false,
 		collectOnly = false,
 		showResults = true,
 		buddyGain = null,
-		mathouNews = null
+		mathouNews = null,
+		palotinReactions = null,
+		traceRecorder = null
 	}: Props = $props();
 
-	let backLabel = $derived(inEvaluation ? 'Mes contrôles' : 'Retour au panier');
+	let backLabel = $derived(inEvaluation ? 'Mes contrôles' : 'Retour à ma série');
 	// « Quitter » : « Mes contrôles » (avec confirmation) en contrôle, le panier sinon
 	const quit = $derived(
 		automathsQuitLink({ inEvaluation, attemptOpen: collectOnly, timed: false })
@@ -91,17 +121,42 @@
 	// Variables
 	let currentIndex = $state(0);
 	let answers = new SvelteMap<number, AnswerData>();
+	// Fin de chaque question (validée, temps écoulé) : envoyée avec la copie d'un contrôle (PR 4 bis)
+	const endReasons = new SvelteMap<number, 'validated' | 'timeout'>();
 	let testResult = $state<TestResult | null>(null);
 	// Carte en cours : sa réponse tapée est validée à l'expiration du chrono
 	let currentCard = $state<ReturnType<typeof QuestionCard>>();
 	let pendingAdvance: ReturnType<typeof setTimeout> | undefined;
+	// Réactions du Palotin : une série (Recommencer = nouveau composant)
+	const seanceReactions = createSeanceReactions();
+	let destroyed = false;
 
-	const startTime = Date.now();
+	// « C'est parti ! » cliqué (entraînement libre) : la série et son chrono démarrent
+	let started = $state(false);
+	let startTime = Date.now();
+	// Affichage de la question en cours : début de sa durée de réponse
+	let questionShownAt = Date.now();
 
 	const currentItem = $derived(items[currentIndex]);
 	const progressPercentage = $derived(((currentIndex + 1) / items.length) * 100);
+	const showStartScreen = $derived(!inEvaluation && !started);
+	const startSummary = $derived(
+		seriesSummary(
+			items.length,
+			items.reduce((total, item) => total + item.delaySeconds, 0),
+			{ approximate: true }
+		)
+	);
 
 	// Functions
+	/** « C'est parti ! » : la question 1 s'affiche, son chrono part */
+	function handleStart() {
+		startTime = Date.now();
+		questionShownAt = startTime;
+		started = true;
+		onStart?.();
+	}
+
 	/**
 	 * Passe à la question suivante depuis `fromIndex`. Ignoré si la question a
 	 * déjà changé : validation et expiration ne font avancer qu'une fois.
@@ -116,13 +171,64 @@
 			return;
 		}
 		currentIndex += 1;
+		questionShownAt = Date.now();
+	}
+
+	/**
+	 * Trace de la question (N9, N12) : envoyée dès la réponse, le verdict reste
+	 * caché jusqu'à la fin de la série. Jamais en contrôle (`traceRecorder` nul).
+	 */
+	function recordTrace(index: number, answerData: AnswerData, endReason: 'validated' | 'timeout') {
+		if (!traceRecorder || collectOnly) return;
+		const item = items[index];
+		const trace = buildSeriesTrace({
+			place: 'mock_test',
+			instance: item.instance,
+			// Rien de tapé au temps écoulé : ratée, sans réponse
+			answer: answerData,
+			timing: {
+				responseMs: Date.now() - questionShownAt,
+				allottedMs: item.delaySeconds * 1000,
+				endReason
+			}
+		});
+		if (trace) traceRecorder.record(trace);
+	}
+
+	/**
+	 * Le Palotin réagit-il à cette réponse ? `null` : non, la suite arrive
+	 * aussitôt. Jamais en contrôle, ni sur une carte de cours (hors score).
+	 */
+	function reactTo(index: number, answerData: AnswerData): Promise<void> | null {
+		const item = items[index];
+		if (!palotinReactions || collectOnly || isCourseCard(item.instance)) return null;
+		return seanceReactions.afterAnswer({
+			correct: answerData.isCorrect,
+			notionId: palotinReactions.notionOf(item.templateId),
+			isLast: index + 1 >= items.length
+		});
+	}
+
+	/** Lance `next` une fois le Palotin reparti (aussitôt s'il ne passe pas). */
+	function afterReaction(waiting: Promise<void> | null, next: () => void) {
+		if (!waiting) {
+			next();
+			return;
+		}
+		void waiting.then(() => {
+			if (!destroyed) next();
+		});
 	}
 
 	function handleAnswerSubmit(answerData: AnswerData) {
 		const index = currentIndex;
 		if (answers.has(index)) return;
 		answers.set(index, answerData);
-		pendingAdvance = setTimeout(() => advanceFrom(index), ADVANCE_DELAY_MS);
+		endReasons.set(index, 'validated');
+		recordTrace(index, answerData, 'validated');
+		afterReaction(reactTo(index, answerData), () => {
+			pendingAdvance = setTimeout(() => advanceFrom(index), ADVANCE_DELAY_MS);
+		});
 	}
 
 	/**
@@ -134,17 +240,17 @@
 		if (answers.has(index)) return;
 
 		const pending = currentCard?.submitPendingAnswer() ?? null;
-		answers.set(
-			index,
-			pending ?? {
-				value: '',
-				isCorrect: false,
-				timeSpent: items[index].delaySeconds,
-				attempts: 0,
-				submittedAt: new Date().toISOString()
-			}
-		);
-		advanceFrom(index);
+		const answerData = pending ?? {
+			value: '',
+			isCorrect: false,
+			timeSpent: items[index].delaySeconds,
+			attempts: 0,
+			submittedAt: new Date().toISOString()
+		};
+		answers.set(index, answerData);
+		endReasons.set(index, 'timeout');
+		recordTrace(index, answerData, 'timeout');
+		afterReaction(reactTo(index, answerData), () => advanceFrom(index));
 	}
 
 	function completeTest() {
@@ -158,7 +264,8 @@
 				userAnswer,
 				isCorrect: userAnswer?.isCorrect || false,
 				timeSpent: userAnswer?.timeSpent,
-				attempts: userAnswer?.attempts
+				attempts: userAnswer?.attempts,
+				endReason: endReasons.get(index)
 			};
 		});
 
@@ -185,7 +292,10 @@
 
 	// Une avance en attente ne doit pas survivre au composant
 	$effect(() => {
-		return () => clearTimeout(pendingAdvance);
+		return () => {
+			destroyed = true;
+			clearTimeout(pendingAdvance);
+		};
 	});
 </script>
 
@@ -211,10 +321,19 @@
 		<TestResults
 			result={testResult}
 			{onRestart}
+			{sameQuestions}
 			onBackToCart={onBack}
 			{inEvaluation}
 			{buddyGain}
 			{mathouNews}
+		/>
+	{:else if currentItem && showStartScreen}
+		<SeriesStartScreen
+			title="Contrôle blanc"
+			summary={startSummary}
+			hints={[]}
+			quitHref={quit.href}
+			onstart={handleStart}
 		/>
 	{:else if currentItem}
 		<!-- Header with progress -->
@@ -227,7 +346,7 @@
 							{#if assessmentTitle}
 								Contrôle : {assessmentTitle}
 							{:else}
-								Entraînement
+								Contrôle blanc
 							{/if}
 						</h1>
 						<p class="text-sm text-muted-foreground" data-testid="interactive-position">

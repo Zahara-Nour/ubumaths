@@ -51,7 +51,7 @@
 
 import { describe, it, expect, beforeAll, afterAll, beforeEach, vi } from 'vitest';
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { Database } from '$lib/types/database';
+import type { Database } from '#lib/types/database.ts';
 import type { User } from '@supabase/supabase-js';
 
 import { POST } from '../../src/routes/api/skill-attempts/+server';
@@ -125,11 +125,14 @@ function buildLocals(
 	};
 }
 
-function buildRequest(body: unknown): Request {
+// Lieu exigé par l'API (ADR 0038) : Saisie par défaut (corrigée par l'application,
+// source `auto`), sauf lieu donné. `flash_cards` est « déclaré » (`student_self`) :
+// couvert par `srs-memoire-serveur.test.ts`.
+function buildRequest(body: Record<string, unknown>): Request {
 	return new Request('http://localhost/api/skill-attempts', {
 		method: 'POST',
 		headers: { 'Content-Type': 'application/json' },
-		body: JSON.stringify(body)
+		body: JSON.stringify({ place: 'typing', ...body })
 	});
 }
 
@@ -392,6 +395,83 @@ describe('POST /api/skill-attempts — comportement', () => {
 		expect(row.source).toBe('auto');
 		// Mapping success → grade : false → 1 (Again)
 		expect(row.grade).toBe(1);
+	});
+
+	it('coup de pouce (idée 5) : réussite avec indice en Saisie → « Difficile » (2), trace « avec indice »', async () => {
+		const student = await TestData.profile().withRole('student').create();
+		const templateId = await createFakeTemplate(service, student.id);
+
+		const locals = buildLocals(service, { id: student.id } as User);
+		const request = buildRequest({ template_id: templateId, success: true, with_help: true });
+		const response = await POST({ request, locals } as never);
+		expect(response.status).toBe(200);
+
+		const { data: rows } = await service
+			.from('skill_attempts')
+			.select('success, with_help, grade, place')
+			.eq('template_id', templateId)
+			.eq('student_id', student.id);
+		expect(rows).toEqual([{ success: true, with_help: true, grade: 2, place: 'typing' }]);
+	});
+
+	it('ADR 0038 : écrit lieu, graine, durées, fin, réponse et verdict par case (CHECK de la base passés)', async () => {
+		const student = await TestData.profile().withRole('student').create();
+		const templateId = await createFakeTemplate(service, student.id);
+
+		const locals = buildLocals(service, { id: student.id } as User);
+		const request = buildRequest({
+			template_id: templateId,
+			success: false,
+			place: 'number_race',
+			seed: 2147483647,
+			response_ms: 10000,
+			allotted_ms: 10000,
+			end_reason: 'timeout',
+			answer_parts: ['12', ''],
+			part_verdicts: [true, false]
+		});
+		const response = await POST({ request, locals } as never);
+		expect(response.status).toBe(200);
+
+		const { data: rows } = await service
+			.from('skill_attempts')
+			.select('place, seed, response_ms, allotted_ms, end_reason, answer_parts, part_verdicts')
+			.eq('template_id', templateId)
+			.eq('student_id', student.id);
+		expect(rows).toEqual([
+			{
+				place: 'number_race',
+				seed: 2147483647,
+				response_ms: 10000,
+				allotted_ms: 10000,
+				end_reason: 'timeout',
+				answer_parts: ['12', ''],
+				part_verdicts: [true, false]
+			}
+		]);
+	});
+
+	it('ADR 0038 : aucune case → answer_parts et part_verdicts NULL (la base refuse `[]`)', async () => {
+		const student = await TestData.profile().withRole('student').create();
+		const templateId = await createFakeTemplate(service, student.id);
+
+		const locals = buildLocals(service, { id: student.id } as User);
+		const request = buildRequest({
+			template_id: templateId,
+			success: false,
+			place: 'typing',
+			answer_parts: [],
+			part_verdicts: []
+		});
+		const response = await POST({ request, locals } as never);
+		expect(response.status).toBe(200);
+
+		const { data: rows } = await service
+			.from('skill_attempts')
+			.select('place, answer_parts, part_verdicts')
+			.eq('template_id', templateId)
+			.eq('student_id', student.id);
+		expect(rows).toEqual([{ place: 'typing', answer_parts: null, part_verdicts: null }]);
 	});
 
 	it('stores phase_blocage when provided', async () => {
@@ -1045,5 +1125,134 @@ describe('callSkillAttemptsEndpoint helper', () => {
 
 		expect(result.status).toBe(200);
 		expect(result.body).toHaveProperty('inserted');
+	});
+});
+
+// ============================================================================
+// Idée 4 (chantier `idees-format`, PR 3) : réponse en QCM = demi-réussite
+// ============================================================================
+
+describe('POST /api/skill-attempts — répondu en QCM', () => {
+	it('réussi en QCM : trace « en QCM », note 2 (Difficile), révision plus tôt qu’en saisie', async () => {
+		const student = await TestData.profile().withRole('student').create();
+		const tplQcm = await createFakeTemplate(service, student.id);
+		const tplSaisie = await createFakeTemplate(service, student.id);
+
+		const locals = buildLocals(service, { id: student.id } as User);
+		const qcm = await POST({
+			request: buildRequest({ template_id: tplQcm, success: true, answered_as_choice: true }),
+			locals
+		} as never);
+		expect(qcm.status).toBe(200);
+		await POST({
+			request: buildRequest({ template_id: tplSaisie, success: true }),
+			locals
+		} as never);
+
+		const { data: rows } = await service
+			.from('skill_attempts')
+			.select('template_id, grade, answered_as_choice')
+			.eq('student_id', student.id)
+			.in('template_id', [tplQcm, tplSaisie]);
+		const byTemplate = new Map((rows ?? []).map((r) => [r.template_id, r]));
+		expect(byTemplate.get(tplQcm)).toMatchObject({ grade: 2, answered_as_choice: true });
+		expect(byTemplate.get(tplSaisie)).toMatchObject({ grade: 3, answered_as_choice: false });
+
+		const { data: stats } = await service
+			.from('srs_card_stats')
+			.select('card_reference_id, next_review')
+			.eq('user_id', student.id)
+			.eq('card_reference_type', 'template')
+			.in('card_reference_id', [tplQcm, tplSaisie]);
+		const next = new Map(
+			(stats ?? []).map((s) => [s.card_reference_id, new Date(s.next_review ?? 0).getTime()])
+		);
+		expect(next.get(tplQcm)).toBeLessThan(next.get(tplSaisie) ?? 0);
+	});
+
+	it('client de l’élève (RLS réelle) : la colonne et la note s’écrivent', async () => {
+		const student = await TestData.profile().withRole('student').create();
+		const templateId = await createFakeTemplate(service, student.id);
+		const studentSupabase = await createAuthenticatedClient(student.email);
+		const locals = buildLocals(
+			studentSupabase as unknown as SupabaseClient<Database>,
+			{ id: student.id } as User
+		);
+		const response = await POST({
+			request: buildRequest({ template_id: templateId, success: true, answered_as_choice: true }),
+			locals
+		} as never);
+		expect(response.status).toBe(200);
+
+		const { data: rows } = await service
+			.from('skill_attempts')
+			.select('grade, answered_as_choice')
+			.eq('student_id', student.id)
+			.eq('template_id', templateId);
+		expect(rows).toEqual([{ grade: 2, answered_as_choice: true }]);
+	});
+
+	it('carte de cours déclarée « en QCM » : ignoré (Good, trace sans QCM), jamais un 500', async () => {
+		const student = await TestData.profile().withRole('student').create();
+		const templateId = await createFakeTemplate(service, student.id);
+		const { error: cardError } = await service
+			.from('question_templates')
+			.update({ type: 'course_card', options: { courseCard: true } })
+			.eq('id', templateId);
+		expect(cardError).toBeNull();
+
+		const locals = buildLocals(service, { id: student.id } as User);
+		const response = await POST({
+			request: buildRequest({ template_id: templateId, success: true, answered_as_choice: true }),
+			locals
+		} as never);
+		expect(response.status).toBe(200);
+
+		const { data: rows } = await service
+			.from('skill_attempts')
+			.select('grade, source, answered_as_choice')
+			.eq('student_id', student.id)
+			.eq('template_id', templateId);
+		expect(rows).toEqual([{ grade: 3, source: 'student_self', answered_as_choice: false }]);
+	});
+
+	it('raté en QCM : reste un échec (note 1), trace « en QCM »', async () => {
+		const student = await TestData.profile().withRole('student').create();
+		const templateId = await createFakeTemplate(service, student.id);
+		const locals = buildLocals(service, { id: student.id } as User);
+		await POST({
+			request: buildRequest({ template_id: templateId, success: false, answered_as_choice: true }),
+			locals
+		} as never);
+
+		const { data: rows } = await service
+			.from('skill_attempts')
+			.select('grade, success, answered_as_choice')
+			.eq('student_id', student.id)
+			.eq('template_id', templateId);
+		expect(rows).toEqual([{ grade: 1, success: false, answered_as_choice: true }]);
+	});
+
+	it('Flash-cards « en QCM » : 400, rien d’écrit', async () => {
+		const student = await TestData.profile().withRole('student').create();
+		const templateId = await createFakeTemplate(service, student.id);
+		const locals = buildLocals(service, { id: student.id } as User);
+		await expect(
+			POST({
+				request: buildRequest({
+					template_id: templateId,
+					success: true,
+					place: 'flash_cards',
+					answered_as_choice: true
+				}),
+				locals
+			} as never)
+		).rejects.toMatchObject({ status: 400 });
+
+		const { data: rows } = await service
+			.from('skill_attempts')
+			.select('id')
+			.eq('student_id', student.id);
+		expect(rows).toEqual([]);
 	});
 });

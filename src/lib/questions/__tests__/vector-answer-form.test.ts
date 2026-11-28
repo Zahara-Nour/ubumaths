@@ -8,9 +8,9 @@
  * réponses) : seule une fraction simplifiable est signalée.
  */
 import { describe, it, expect } from 'vitest';
-import { validateAnswer } from '$lib/utils/answer-validator';
+import { validateAnswer } from '#lib/utils/answer-validator.ts';
 import type { InstanceBlank, QuestionInstance, VectorMode } from '../types';
-import type { ResolvedMarkdown } from '$lib/ubumark';
+import type { ResolvedMarkdown } from '#lib/ubumark/index.ts';
 
 function instanceWith(blanks: InstanceBlank[]): QuestionInstance {
 	return {

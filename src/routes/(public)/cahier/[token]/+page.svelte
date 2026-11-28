@@ -7,15 +7,15 @@
 	l'application, pas de connexion suggérée, pas de liste d'élèves.
 
 	Page volontairement autonome plutôt que réutilisant les composants de
-	`$lib/components/journal` : ceux-ci portent les types et les attentes de
+	`#lib/components/journal/index.ts` : ceux-ci portent les types et les attentes de
 	l'espace authentifié, et cette page doit rester lisible même quand tout le
 	reste change. Seule exception : `JournalContent`, le rendu du contenu, qui ne
 	dépend que du texte et du lecteur.
 -->
 <script lang="ts">
-	import * as Card from '$lib/components/ui/card';
-	import { Badge } from '$lib/components/ui/badge';
-	import JournalContent from '$lib/components/journal/JournalContent.svelte';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
+	import JournalContent from '#lib/components/journal/JournalContent.svelte';
 	import { BookOpen, ClipboardList, CalendarDays } from '@lucide/svelte';
 	import type { PageData } from './$types';
 

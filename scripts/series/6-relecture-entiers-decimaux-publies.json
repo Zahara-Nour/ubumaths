@@ -1,0 +1,86 @@
+{
+	"id": "f9db7096-7f19-4ac6-ba0f-c7a62a1bcffc",
+	"title": "Relecture — entiers et décimaux, 13 modèles complétés",
+	"grade": "6",
+	"description": "Relecture dans /dev/modeles des 13 modèles publiés complétés par le lot « nombres entiers et décimaux » de 6e (nouvelles variations : les dernières de chaque modèle).",
+	"items": [
+		{
+			"modele": "Placer un nombre décimal",
+			"templateId": "0ce253ea-fd79-4810-81c3-5a0dc2e9d38d",
+			"quantity": 1,
+			"delay": 45
+		},
+		{
+			"modele": "Liens entre les unités de numération",
+			"templateId": "2c5bae8f-03e3-44c6-9dbd-6849c7177ceb",
+			"quantity": 1,
+			"delay": 20
+		},
+		{
+			"modele": "Intercaler un nombre décimal",
+			"templateId": "2e982062-0fc9-473f-8aa2-affaf55c567d",
+			"quantity": 1,
+			"delay": 20
+		},
+		{
+			"modele": "Arrondir un quotient, arrondir π",
+			"templateId": "36991abb-b704-4c0f-9165-c5de5e18f70b",
+			"quantity": 1,
+			"delay": 20
+		},
+		{
+			"modele": "Le nombre de dizaines, de centièmes…",
+			"templateId": "4bcbbaae-a01d-43c2-903c-1b365a438761",
+			"quantity": 1,
+			"delay": 20
+		},
+		{
+			"modele": "Le chiffre d'un rang",
+			"templateId": "4d825d44-928a-4461-9df0-3b3c3fdc74fc",
+			"quantity": 1,
+			"delay": 20
+		},
+		{
+			"modele": "Repérer un nombre décimal",
+			"templateId": "8adac6d1-3537-48b8-9bc4-dcf41eb27590",
+			"quantity": 1,
+			"delay": 45
+		},
+		{
+			"modele": "Grands nombres jusqu'aux milliards",
+			"templateId": "8d7edbde-d1d0-4a9d-bb6e-7e516ef1381d",
+			"quantity": 1,
+			"delay": 20
+		},
+		{
+			"modele": "Définition d'un pourcentage",
+			"templateId": "8fd459da-05ef-4053-a52e-5bd2f2ac1a44",
+			"quantity": 1,
+			"delay": 10
+		},
+		{
+			"modele": "Comparer deux nombres décimaux",
+			"templateId": "a1b46489-4566-449e-a4e9-e1e144a0b11d",
+			"quantity": 1,
+			"delay": 20
+		},
+		{
+			"modele": "Fraction décimale et écriture décimale",
+			"templateId": "a2ae7206-64c7-4c16-bd37-92f43fe5d60b",
+			"quantity": 1,
+			"delay": 45
+		},
+		{
+			"modele": "Reconnaître un nombre décimal",
+			"templateId": "d7781eed-7930-4619-9b00-caade882a637",
+			"quantity": 1,
+			"delay": 20
+		},
+		{
+			"modele": "Arrondir un nombre décimal",
+			"templateId": "e75cb1a3-56f6-4498-b6bf-06e852b3252d",
+			"quantity": 1,
+			"delay": 20
+		}
+	]
+}

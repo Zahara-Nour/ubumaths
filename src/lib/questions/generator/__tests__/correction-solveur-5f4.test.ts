@@ -6,9 +6,9 @@
 
 import { describe, it, expect } from 'vitest';
 import { generateCorrection } from '../correction-generator';
-import { resolvedMarkdown } from '$lib/ubumark';
+import { resolvedMarkdown } from '#lib/ubumark/index.ts';
 import type { QuestionInstance } from '../../types';
-import type { GradeCode } from '$lib/types/grades';
+import type { GradeCode } from '#lib/types/grades.ts';
 
 // =============================================================================
 // Décor

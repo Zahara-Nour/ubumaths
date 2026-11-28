@@ -1,6 +1,6 @@
 """Écrit les 5 modèles du lot 5a du CM2 (fractions : sens et écritures) dans scripts/questions/cm2-5a/.
 
-Phase 0 du 2026-11-01 (§ 10 du journal `docs/wip/questions-cm2-progress.md`), recommandations
+Phase 0 du 2026-11-01 (§ 10 du journal `docs/archive/wip/questions-cm2-progress.md`), recommandations
 suivies par David (« tes recos ? » puis « go ») : découpage 5a (sens : 013, 015, 016, 019) / 5b
 (calculs) ; toute fraction égale acceptée (`reducedFractions: off`, le CM2 ne simplifie pas).
 Bornes : `cycle3.json`, CM2 (dénominateurs au plus 60 ; 58/7 = 8 + 2/7 ; 43/8 entre 5 et 6 ;

@@ -11,8 +11,9 @@ import { describe, it, expect, vi } from 'vitest';
 import {
 	tableMock,
 	twoLevelExercise,
+	versionedLine,
 	type TableMock
-} from '$lib/server/worksheets/__tests__/table-mock';
+} from '#lib/server/worksheets/__tests__/table-mock.ts';
 
 // ============================================================================
 // MOCKS
@@ -20,16 +21,16 @@ import {
 
 const visibility = vi.hoisted(() => ({ visible: true }));
 
-vi.mock('$lib/server/middleware/auth', () => ({
+vi.mock('#lib/server/middleware/auth.ts', () => ({
 	requireRole: async () => ({ user: { id: '550e8400-e29b-41d4-a716-446655440021' } })
 }));
-vi.mock('$lib/server/worksheets/assignment-access', () => ({
+vi.mock('#lib/server/worksheets/assignment-access.ts', () => ({
 	resolveAssignmentAccess: async () => ({ canRead: true, readOnly: false })
 }));
-vi.mock('$lib/server/worksheets/assignment-classes', () => ({
+vi.mock('#lib/server/worksheets/assignment-classes.ts', () => ({
 	fetchAssignmentClasses: async () => []
 }));
-vi.mock('$lib/server/worksheets/correction-visibility', () => ({
+vi.mock('#lib/server/worksheets/correction-visibility.ts', () => ({
 	getCorrectionVisibilityMap: async (_s: unknown, _a: unknown, ids: string[]) =>
 		new Map(ids.map((id) => [id, visibility.visible]))
 }));
@@ -76,18 +77,27 @@ function supabase(): TableMock {
 		},
 		worksheet_exercises: {
 			data: [
-				{
-					id: WE_ID,
-					position: 1,
-					points: null,
-					custom_instructions: null,
-					translations: null,
-					correction_visible: visibility.visible,
-					variation_index: null,
-					section_id: null,
-					is_essential: false,
-					exercise: exerciseWithAnswers()
-				}
+				// Réponses lues sur la version de la ligne ; l'exercice garde d'anciennes réponses
+				versionedLine(
+					{
+						id: WE_ID,
+						position: 1,
+						points: null,
+						custom_instructions: null,
+						translations: null,
+						correction_visible: visibility.visible,
+						variation_index: null,
+						section_id: null,
+						is_essential: false
+					},
+					exerciseWithAnswers(),
+					{
+						variations: exerciseWithAnswers().variations.map((v) => ({
+							...v,
+							answers_md: 'PERIME'
+						}))
+					}
+				)
 			],
 			error: null
 		},
@@ -119,6 +129,7 @@ describe('API élève : les réponses suivent la visibilité de la correction', 
 		const view = await fetchCopy();
 		expect(view.exercises[0].correction).not.toBeNull();
 		expect(view.exercises[0].answers).toMatch(/^Réponse : \d+$/);
+		expect(JSON.stringify(view)).not.toContain('PERIME');
 	});
 
 	it('correction masquée : aucune réponse servie', async () => {

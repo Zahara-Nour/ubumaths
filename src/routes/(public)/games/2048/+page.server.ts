@@ -6,8 +6,8 @@
  */
 
 import type { PageServerLoad } from './$types';
-import { asStudentVipCards } from '$lib/types/vip-card';
-import { countAvailableConsumableUses } from '$lib/utils/vip-cards';
+import { asStudentVipCards } from '#lib/types/vip-card.ts';
+import { countAvailableConsumableUses } from '#lib/utils/vip-cards.ts';
 
 // VIP card IDs for 2048 powers
 const UNDO_CARD_IDS = ['2048-undo'];

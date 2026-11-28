@@ -26,7 +26,7 @@
 -->
 
 <script lang="ts">
-	import { lore } from '$lib/config/lore';
+	import { lore } from '#lib/config/lore.ts';
 	import type {
 		QuestionTemplate,
 		QuestionVariation,
@@ -40,55 +40,55 @@
 		SharedVariationDefaults,
 		ConstraintMode,
 		TestSpec
-	} from '$lib/questions/types';
-	import { COMPLEX_FORMS, EQUATION_FORMS, getQuestionType } from '$lib/questions/types';
-	import type { DisplayOptions } from '$lib/ubumark/parameterization/display-options';
-	import { questionTemplateSchema } from '$lib/questions/template-schema';
+	} from '#lib/questions/types.ts';
+	import { COMPLEX_FORMS, EQUATION_FORMS, getQuestionType } from '#lib/questions/types.ts';
+	import type { DisplayOptions } from '#lib/ubumark/parameterization/display-options.ts';
+	import { questionTemplateSchema } from '#lib/questions/template-schema.ts';
 	import {
 		formatGenericFunctionNames,
 		genericFunctionNamesSchema,
 		parseGenericFunctionNames
-	} from '$lib/questions/generic-functions';
+	} from '#lib/questions/generic-functions.ts';
 	import {
 		capitalPairsChoiceItems,
 		capitalPairsContextOf,
 		capitalPairsToWrite,
 		capitalPairsChoiceOf,
 		type CapitalPairsChoice
-	} from '$lib/questions/capital-pairs';
-	import { figureNameWarnings } from '$lib/questions/figure-name-check';
-	import { CONSTRAINT_IDS } from '$lib/questions/constraint-constants';
+	} from '#lib/questions/capital-pairs.ts';
+	import { figureNameWarnings } from '#lib/questions/figure-name-check.ts';
+	import { CONSTRAINT_IDS } from '#lib/questions/constraint-constants.ts';
 	import {
 		ACCEPTABLE_PLACEHOLDER,
 		REQUIRED_FORM_OPTIONS,
 		acceptableOf,
 		customRequiredForm
-	} from '$lib/questions/form-options';
+	} from '#lib/questions/form-options.ts';
 	import {
 		applyCourseQuestionOption,
 		readCourseQuestionOption
-	} from '$lib/questions/course-question';
-	import { GRADE_CODES, GRADES } from '$lib/types/grades';
-	import { Button } from '$lib/components/ui/button';
-	import { Input } from '$lib/components/ui/input';
-	import { Label } from '$lib/components/ui/label';
-	import { Badge } from '$lib/components/ui/badge';
-	import * as Card from '$lib/components/ui/card';
+	} from '#lib/questions/course-question.ts';
+	import { GRADE_CODES, GRADES } from '#lib/types/grades.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import { Input } from '#lib/components/ui/input/index.ts';
+	import { Label } from '#lib/components/ui/label/index.ts';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
+	import * as Card from '#lib/components/ui/card/index.ts';
 
 	import VariableEditor from './VariableEditor.svelte';
-	import { MarkdownEditor } from '$lib/components/markdown';
+	import { MarkdownEditor } from '#lib/components/markdown/index.ts';
 	import AnswerEditor from './AnswerEditor.svelte';
 	import MySelect from './MySelect.svelte';
 	import MyCheckbox from './MyCheckbox.svelte';
 	import CourseQuestionToggle from './CourseQuestionToggle.svelte';
 	import PrecisionEditor from './PrecisionEditor.svelte';
-	import { templateMarkdown, type TemplateMarkdown } from '$lib/ubumark';
+	import { templateMarkdown, type TemplateMarkdown } from '#lib/ubumark/index.ts';
 	import ClassificationNodePicker from './questions/ClassificationNodePicker.svelte';
-	import { indexNodes, placeOfNode, type TreeNode } from '$lib/questions/classification-tree';
-	import * as Dialog from '$lib/components/ui/dialog';
-	import * as Collapsible from '$lib/components/ui/collapsible';
+	import { indexNodes, placeOfNode, type TreeNode } from '#lib/questions/classification-tree.ts';
+	import * as Dialog from '#lib/components/ui/dialog/index.ts';
+	import * as Collapsible from '#lib/components/ui/collapsible/index.ts';
 	import { onMount } from 'svelte';
-	import { toaster } from '$lib/stores/toaster.svelte';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
 
 	// Lazy-loaded heavy components to reduce initial bundle size
 	let RichTextEditor = $state<any>(null); // eslint-disable-line @typescript-eslint/no-explicit-any
@@ -120,10 +120,11 @@
 	import {
 		calculusBlankDefaults,
 		calculusEditorState
-	} from '$lib/questions/calculus/calculus-editor';
+	} from '#lib/questions/calculus/calculus-editor.ts';
 	import TestSpecEditor from './questions/TestSpecEditor.svelte';
 	import AnswerAssumptionsEditor from './questions/AnswerAssumptionsEditor.svelte';
-	import { choiceAnswerCountErrors } from '$lib/questions/validators/choice-answer-count';
+	import { DEFAULT_IMPOSSIBLE_LABEL } from '#lib/questions/impossible-answer.ts';
+	import { choiceAnswerCountErrors } from '#lib/questions/validators/choice-answer-count.ts';
 	import {
 		assumptionsToRows,
 		duplicateAssumptionMessage,
@@ -131,7 +132,7 @@
 		templateDrawnVariableNames,
 		validateAssumptionRows,
 		type AnswerAssumptionRow
-	} from '$lib/questions/answer-assumptions';
+	} from '#lib/questions/answer-assumptions.ts';
 
 	interface Props {
 		template?: QuestionTemplate;
@@ -205,7 +206,7 @@
 
 	async function loadJsonEditor() {
 		if (!loadedComponents.jsonEditor) {
-			const module = await import('$lib/constructions/components/JsonEditor.svelte');
+			const module = await import('#lib/components/JsonEditor.svelte');
 			JsonEditorComponent = module.default;
 			loadedComponents.jsonEditor = true;
 		}
@@ -361,6 +362,13 @@
 		initialTemplate?.shared?.blankDefaults?.vectorMode === 'colineaire'
 	);
 	let sharedBlankMatrix = $state(initialTemplate?.shared?.blankDefaults?.answerKind === 'matrice');
+	// Bouton « impossible » d'une case ordinaire (la réponse peut ne pas exister)
+	let sharedBlankImpossible = $state(
+		initialTemplate?.shared?.blankDefaults?.impossibleLabel !== undefined
+	);
+	let sharedBlankImpossibleLabel = $state(
+		initialTemplate?.shared?.blankDefaults?.impossibleLabel ?? DEFAULT_IMPOSSIBLE_LABEL
+	);
 	// Primitive, solution d'équation différentielle : nature et champs de la case
 	let sharedBlankCalculus = $state(calculusEditorState(initialTemplate?.shared?.blankDefaults));
 	let sharedValidationRulesJson = $state(
@@ -513,7 +521,7 @@
 	let currentVariationIndex = $state(0);
 
 	// Available grade levels - use GRADE_CODES from unified system
-	// GRADE_CODES is already imported from '$lib/types/grades'
+	// GRADE_CODES is already imported from '#lib/types/grades.ts'
 
 	// Question type options
 	const QUESTION_TYPES: { value: QuestionType; label: string }[] = [
@@ -591,7 +599,10 @@
 				...(sourceVariation.blankDefaults
 					? ($state.snapshot(sourceVariation.blankDefaults) as BlankDefaults)
 					: {})
-			}
+			},
+			// Coup de pouce (idée 5)
+			...(sourceVariation.hint !== undefined && { hint: sourceVariation.hint }),
+			...(sourceVariation.hintFromFirstStep && { hintFromFirstStep: true })
 		};
 
 		// Replace the current variation with the duplicated content
@@ -601,6 +612,16 @@
 			i === currentVariationIndex ? { ...variationExtras[duplicateSourceIndex] } : extra
 		);
 		showDuplicateDialog = false;
+	}
+
+	// Coup de pouce (idée 5) : texte de l'indice, vide = pas d'indice
+	function setHint(index: number, text: string) {
+		variations[index].hint = text === '' ? undefined : templateMarkdown(text);
+	}
+
+	// Coup de pouce = première étape de la correction (le texte écrit est gardé, ignoré)
+	function setHintFromFirstStep(index: number, checked: boolean) {
+		variations[index].hintFromFirstStep = checked ? true : undefined;
 	}
 
 	// Build template object
@@ -632,6 +653,12 @@
 					? { blanks: variation.blanks }
 					: {}),
 				...(cleanedBlankDefaults ? { blankDefaults: cleanedBlankDefaults } : {}),
+				// Coup de pouce (idée 5) : la case « première étape » l'emporte sur un texte resté
+				...(variation.hintFromFirstStep
+					? { hintFromFirstStep: true }
+					: variation.hint?.trim()
+						? { hint: templateMarkdown(variation.hint.trim()) }
+						: {}),
 				correction: stringToCorrection(
 					extra.correctionString,
 					variation.correction
@@ -745,6 +772,9 @@
 			const calculus = calculusBlankDefaults(sharedBlankCalculus);
 			if (calculus) Object.assign(blankDefaults, calculus);
 		}
+		// Case ordinaire seulement (aucune nature de réponse)
+		if (!blankDefaults.answerKind && sharedBlankImpossible && sharedBlankImpossibleLabel.trim())
+			blankDefaults.impossibleLabel = sharedBlankImpossibleLabel.trim();
 		if (Object.keys(blankDefaults).length > 0) shared.blankDefaults = blankDefaults;
 		try {
 			const rules = JSON.parse(sharedValidationRulesJson);
@@ -899,6 +929,9 @@
 		sharedBlankVector = t.shared?.blankDefaults?.answerKind === 'vecteur';
 		sharedBlankVectorCollinear = t.shared?.blankDefaults?.vectorMode === 'colineaire';
 		sharedBlankMatrix = t.shared?.blankDefaults?.answerKind === 'matrice';
+		sharedBlankImpossible = t.shared?.blankDefaults?.impossibleLabel !== undefined;
+		sharedBlankImpossibleLabel =
+			t.shared?.blankDefaults?.impossibleLabel ?? DEFAULT_IMPOSSIBLE_LABEL;
 		sharedBlankCalculus = calculusEditorState(t.shared?.blankDefaults);
 		sharedValidationRulesJson = JSON.stringify(t.shared?.validationRules || [], null, 2);
 		sharedAnswerFormatsJson = JSON.stringify(t.shared?.answerFormats || {}, null, 2);
@@ -1162,7 +1195,9 @@
 			variations: variations.map((v) => ({
 				statement: v.statement,
 				variables: v.variables?.length,
-				blanks: v.blanks?.length
+				blanks: v.blanks?.length,
+				hint: v.hint,
+				hintFromFirstStep: v.hintFromFirstStep
 			})),
 			sharedVariables: sharedVariables.length,
 			variationExtras,
@@ -1646,6 +1681,8 @@
 			bind:sharedBlankVector
 			bind:sharedBlankVectorCollinear
 			bind:sharedBlankMatrix
+			bind:sharedBlankImpossible
+			bind:sharedBlankImpossibleLabel
 			bind:sharedBlankCalculus
 			bind:sharedValidationRulesJson
 			bind:sharedAnswerFormatsJson
@@ -1894,6 +1931,38 @@
 									</Collapsible.Root>
 								</Card.Header>
 							</Card.Root>
+
+							<!-- Coup de pouce (idée 5) : indice que l'élève ouvre s'il est bloqué -->
+							{#if questionType === 'fill_in_blanks'}
+								<Card.Root>
+									<Card.Header>
+										<Card.Title>Coup de pouce (optionnel)</Card.Title>
+										<Card.Description id="hint-help-{index}">
+											Un indice que l’élève ouvre s’il est bloqué, jamais en évaluation. Il ne donne
+											pas la réponse : {'{{solution}}'} y est refusé.
+										</Card.Description>
+									</Card.Header>
+									<Card.Content class="space-y-3">
+										<MyCheckbox
+											bind:checked={
+												() => variation.hintFromFirstStep === true,
+												(checked) => setHintFromFirstStep(index, checked)
+											}
+											label="La première étape de la correction sert de coup de pouce"
+											aria-describedby="hint-help-{index}"
+										/>
+										{#if !variation.hintFromFirstStep}
+											<MarkdownEditor
+												bind:value={() => variation.hint ?? '', (text) => setHint(index, text)}
+												showParameterization={true}
+												variables={variation.variables}
+												placeholder="Indice (optionnel) : par exemple « Pense à la table de {'{{a}}'}. »"
+												rows={3}
+											/>
+										{/if}
+									</Card.Content>
+								</Card.Root>
+							{/if}
 
 							<!-- Per-variation overrides -->
 							<Card.Root>

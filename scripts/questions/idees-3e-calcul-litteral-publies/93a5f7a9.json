@@ -1,0 +1,1183 @@
+{
+	"id": "93a5f7a9-61f2-4553-a529-6f89c37b569c",
+	"title": "Réduire un produit",
+	"description": "Coefficients relatifs",
+	"grades": ["3"],
+	"level": 7,
+	"delay": 30,
+	"status": "published",
+	"shared": {
+		"variables": [
+			{
+				"name": "p",
+				"expression": "a|b|c|x|y|z"
+			},
+			{
+				"name": "q",
+				"expression": "2..9"
+			},
+			{
+				"name": "r",
+				"expression": "2..9"
+			}
+		]
+	},
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:{{expression1}}}}"
+				}
+			],
+			"statement": "Réduis :\n\n$${{expression1}}$$",
+			"variables": [
+				{
+					"name": "expression1",
+					"expression": "p*(-q)*r"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$$\\begin{align}               {{p}} \\times \\bold{\\textcolor{{{color:primary.0}}}{(-{{q}}) \\times {{r}}}}               &= {{p}} \\times \\bold{\\textcolor{{{color:primary.0}}}{(-{{eval:q*r}})}} \\\\               &= {{solution}}                \\end{align}$$"
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:{{expression2}}}}"
+				}
+			],
+			"statement": "Réduis :\n\n$${{expression2}}$$",
+			"variables": [
+				{
+					"name": "expression2",
+					"expression": "(-q)*p*r"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$$\\begin{align}               (-{{q}}) \\times {{p}} \\times {{r}}               &= \\bold{\\textcolor{{{color:primary.0}}}{(-{{q}}) \\times {{r}}}} \\times {{p}} \\\\               &=  \\bold{\\textcolor{{{color:primary.0}}}{(-{{eval:q*r}})}} \\times {{p}} \\\\               &= {{solution}}                \\end{align}$$"
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:{{expression3}}}}"
+				}
+			],
+			"statement": "Réduis :\n\n$${{expression3}}$$",
+			"variables": [
+				{
+					"name": "expression3",
+					"expression": "r*(-q)*p"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$$\\begin{align}               \\bold{\\textcolor{{{color:primary.0}}}{{{r}} \\times (-{{q}})}} \\times {{p}}               &=  \\bold{\\textcolor{{{color:primary.0}}}{(-{{eval:q*r}})}} \\times {{p}} \\\\               &= {{solution}}                \\end{align}$$"
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:{{expression4}}}}"
+				}
+			],
+			"statement": "Réduis :\n\n$${{expression4}}$$",
+			"variables": [
+				{
+					"name": "expression4",
+					"expression": "p*q*(-r)"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$$\\begin{align}               {{p}} \\times \\bold{\\textcolor{{{color:primary.0}}}{{{q}} \\times (-{{r}})}}               &= {{p}} \\times \\bold{\\textcolor{{{color:primary.0}}}{(-{{eval:q*r}})}} \\\\               &= {{solution}}                \\end{align}$$"
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:{{expression5}}}}"
+				}
+			],
+			"statement": "Réduis :\n\n$${{expression5}}$$",
+			"variables": [
+				{
+					"name": "expression5",
+					"expression": "q*p*(-r)"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$$\\begin{align}               {{q}} \\times {{p}} \\times (-{{r}})               &= \\bold{\\textcolor{{{color:primary.0}}}{{{q}} \\times (-{{r}})}} \\times {{p}} \\\\               &=  \\bold{\\textcolor{{{color:primary.0}}}{(-{{eval:q*r}})}} \\times {{p}} \\\\               &= {{solution}}                \\end{align}$$"
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:{{expression6}}}}"
+				}
+			],
+			"statement": "Réduis :\n\n$${{expression6}}$$",
+			"variables": [
+				{
+					"name": "expression6",
+					"expression": "(-r)*q*p"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$$\\begin{align}               \\bold{\\textcolor{{{color:primary.0}}}{(-{{r}}) \\times {{q}}}} \\times {{p}}               &=  \\bold{\\textcolor{{{color:primary.0}}}{(-{{eval:q*r}})}} \\times {{p}} \\\\               &= {{solution}}                \\end{align}$$"
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:{{expression7}}}}"
+				}
+			],
+			"statement": "Réduis :\n\n$${{expression7}}$$",
+			"variables": [
+				{
+					"name": "expression7",
+					"expression": "p*(-q)*(-r)"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$$\\begin{align}               {{p}} \\times \\bold{\\textcolor{{{color:primary.0}}}{(-{{q}}) \\times (-{{r}})}}               &= {{p}} \\times \\bold{\\textcolor{{{color:primary.0}}}{{{eval:q*r}}}} \\\\               &= {{solution}}                \\end{align}$$"
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:{{expression8}}}}"
+				}
+			],
+			"statement": "Réduis :\n\n$${{expression8}}$$",
+			"variables": [
+				{
+					"name": "expression8",
+					"expression": "(-q)*p*(-r)"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$$\\begin{align}               (-{{q}}) \\times {{p}} \\times (-{{r}})               &=  \\bold{\\textcolor{{{color:primary.0}}}{(-{{q}}) \\times (-{{r}})}} \\times {{p}} \\\\               &=  \\bold{\\textcolor{{{color:primary.0}}}{{{eval:q*r}}}} \\times {{p}} \\\\               &= {{solution}}                \\end{align}$$"
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:{{expression9}}}}"
+				}
+			],
+			"statement": "Réduis :\n\n$${{expression9}}$$",
+			"variables": [
+				{
+					"name": "expression9",
+					"expression": "(-r)*(-q)*p"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$$\\begin{align}               \\bold{\\textcolor{{{color:primary.0}}}{(-{{r}}) \\times (-{{q}})}} \\times {{p}}               &=  \\bold{\\textcolor{{{color:primary.0}}}{{{eval:q*r}}}} \\times {{p}} \\\\               &= {{solution}}                \\end{align}$$"
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:{{expression10}}}}"
+				}
+			],
+			"statement": "Réduis :\n\n$${{expression10}}$$",
+			"variables": [
+				{
+					"name": "expression10",
+					"expression": "(-p)*(-q)*r"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$$\\begin{align}               (-{{p}}) \\times \\bold{\\textcolor{{{color:primary.0}}}{(-{{q}}) \\times {{r}}}}               &=  (-{{p}}) \\times \\bold{\\textcolor{{{color:primary.0}}}{({{eval:-q*r}})}} \\\\               &= {{solution}}                \\end{align}$$"
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:{{expression11}}}}"
+				}
+			],
+			"statement": "Réduis :\n\n$${{expression11}}$$",
+			"variables": [
+				{
+					"name": "expression11",
+					"expression": "(-q)*(-p)*r"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$$\\begin{align}               (-{{q}}) \\times (-{{p}}) \\times {{r}}               &=  \\bold{\\textcolor{{{color:primary.0}}}{(-{{q}}) \\times {{r}}}} \\times (-{{p}}) \\\\               &=  \\bold{\\textcolor{{{color:primary.0}}}{({{eval:-q*r}})}} \\times (-{{p}}) \\\\               &= {{solution}}                \\end{align}$$"
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:{{expression12}}}}"
+				}
+			],
+			"statement": "Réduis :\n\n$${{expression12}}$$",
+			"variables": [
+				{
+					"name": "expression12",
+					"expression": "r*(-q)*(-p)"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$$\\begin{align}               \\bold{\\textcolor{{{color:primary.0}}}{{{r}} \\times (-{{q}})}} \\times (-{{p}})               &=  \\bold{\\textcolor{{{color:primary.0}}}{({{eval:-q*r}})}} \\times (-{{p}}) \\\\               &= {{solution}}                \\end{align}$$"
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:{{expression13}}}}"
+				}
+			],
+			"statement": "Réduis :\n\n$${{expression13}}$$",
+			"variables": [
+				{
+					"name": "expression13",
+					"expression": "(-p)*q*(-r)"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$$\\begin{align}               (-{{p}}) \\times \\bold{\\textcolor{{{color:primary.0}}}{{{q}} \\times (-{{r}})}}               &=  (-{{p}}) \\times \\bold{\\textcolor{{{color:primary.0}}}{({{eval:-q*r}})}} \\\\               &= {{solution}}                \\end{align}$$"
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:{{expression14}}}}"
+				}
+			],
+			"statement": "Réduis :\n\n$${{expression14}}$$",
+			"variables": [
+				{
+					"name": "expression14",
+					"expression": "q*(-p)*(-r)"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$$\\begin{align}               {{q}} \\times (-{{p}}) \\times (-{{r}})               &=  \\bold{\\textcolor{{{color:primary.0}}}{{{q}} \\times (-{{r}})}} \\times (-{{p}}) \\\\               &=  \\bold{\\textcolor{{{color:primary.0}}}{({{eval:-q*r}})}} \\times (-{{p}}) \\\\               &= {{solution}}                \\end{align}$$"
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:{{expression15}}}}"
+				}
+			],
+			"statement": "Réduis :\n\n$${{expression15}}$$",
+			"variables": [
+				{
+					"name": "expression15",
+					"expression": "(-r)*q*(-p)"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$$\\begin{align}               \\bold{\\textcolor{{{color:primary.0}}}{(-{{r}}) \\times {{q}}}} \\times (-{{p}})               &=  \\bold{\\textcolor{{{color:primary.0}}}{({{eval:-q*r}})}} \\times (-{{p}}) \\\\               &= {{solution}}                \\end{align}$$"
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:{{expression16}}}}"
+				}
+			],
+			"statement": "Réduis :\n\n$${{expression16}}$$",
+			"variables": [
+				{
+					"name": "expression16",
+					"expression": "(-p)*(-q)*(-r)"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$$\\begin{align}               (-{{p}}) \\times \\bold{\\textcolor{{{color:primary.0}}}{(-{{q}}) \\times (-{{r}})}}               &=  (-{{p}}) \\times  \\bold{\\textcolor{{{color:primary.0}}}{{{eval:q*r}}}} \\\\               &= {{solution}}                \\end{align}$$"
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:{{expression17}}}}"
+				}
+			],
+			"statement": "Réduis :\n\n$${{expression17}}$$",
+			"variables": [
+				{
+					"name": "expression17",
+					"expression": "(-q)*(-p)*(-r)"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$$\\begin{align}               (-{{q}}) \\times (-{{p}}) \\times (-{{r}})               &=  \\bold{\\textcolor{{{color:primary.0}}}{(-{{q}}) \\times (-{{r}})}} \\times (-{{p}}) \\\\               &=  \\bold{\\textcolor{{{color:primary.0}}}{{{eval:q*r}}}} \\times (-{{p}}) \\\\               &= {{solution}}                \\end{align}$$"
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:{{expression18}}}}"
+				}
+			],
+			"statement": "Réduis :\n\n$${{expression18}}$$",
+			"variables": [
+				{
+					"name": "expression18",
+					"expression": "(-r)*(-q)*(-p)"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$$\\begin{align}               \\bold{\\textcolor{{{color:primary.0}}}{(-{{r}}) \\times (-{{q}})}} \\times (-{{p}})               &=  \\bold{\\textcolor{{{color:primary.0}}}{{{eval:q*r}}}} \\times (-{{p}}) \\\\               &= {{solution}}                \\end{align}$$"
+				]
+			}
+		},
+		{
+			"statement": "Réduis :\n\n$${{eval:a*x^g}} \\times {{if:b<0|({{eval:b*x}})|{{eval:b*x}}}}$$\n\n$?$",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "g",
+					"expression": "1..2"
+				},
+				{
+					"name": "a",
+					"expression": "2..9;±"
+				},
+				{
+					"name": "b",
+					"expression": "2..9;±"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(a*b)*x^(g+1)}}",
+					"expectedErrors": [
+						{
+							"answer": "{{if:g==1|{{eval:2*(a)*(b)*x}}|{{eval:(a)*(b)*x^2}}}}",
+							"message": "{{if:g==1|$x \\times x = x^2$, et non $2 x$.|$x^2 \\times x = x^3$ : les exposants s'ajoutent.}}",
+							"label": "Puissances de x mal multipliées"
+						},
+						{
+							"answer": "{{eval:((a)+(b))*x^(g+1)}}",
+							"message": "Dans un produit, les coefficients se multiplient, ils ne s'additionnent pas.",
+							"label": "Coefficients additionnés"
+						},
+						{
+							"answer": "{{eval:(-(a)*(b))*x^(g+1)}}",
+							"message": "Vérifie le signe : applique la règle des signes au produit des coefficients.",
+							"label": "Signe du produit"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"On multiplie les nombres entre eux, puis les puissances de $x$ entre elles.",
+					"$$\\begin{align} {{eval:a*x^g}} \\times {{if:b<0|({{eval:b*x}})|{{eval:b*x}}}} &= \\textcolor{{{color:primary.0}}}{{{if:a<0|({{a}})|{{a}}}} \\times {{if:b<0|({{b}})|{{b}}}}} \\times \\textcolor{{{color:primary.1}}}{{{if:g==1|x \\times x|x^2 \\times x}}} \\\\ &= {{solution}} \\end{align}$$"
+				]
+			},
+			"hint": "Multiplie les coefficients entre eux (règle des signes), puis les puissances de $x$ : $x \\times x = x^2$."
+		},
+		{
+			"statement": "Réduis :\n\n$$({{eval:m*a^u*b}}) \\times ({{eval:n*b*c^v}})$$\n\n$?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "a|a"
+				},
+				{
+					"name": "b",
+					"expression": "b|b"
+				},
+				{
+					"name": "c",
+					"expression": "c|c"
+				},
+				{
+					"name": "m",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "n",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "u",
+					"expression": "1..2"
+				},
+				{
+					"name": "v",
+					"expression": "0..1"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(m*n)*a^u*b^2*c^v}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:(2*(m)*(n))*a^u*b*c^v}}",
+							"message": "$b \\times b = b^2$, et non $2 b$.",
+							"label": "b × b = 2b"
+						},
+						{
+							"answer": "{{eval:((m)+(n))*a^u*b^2*c^v}}",
+							"message": "Dans un produit, les coefficients se multiplient, ils ne s'additionnent pas.",
+							"label": "Coefficients additionnés"
+						},
+						{
+							"answer": "{{eval:(-(m)*(n))*a^u*b^2*c^v}}",
+							"message": "Vérifie le signe : applique la règle des signes au produit des coefficients.",
+							"label": "Signe du produit"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"On regroupe les nombres, puis chaque lettre avec elle-même : l'ordre des facteurs d'un produit ne compte pas.",
+					"$$\\begin{align} ({{eval:m*a^u*b}}) \\times ({{eval:n*b*c^v}}) &= \\textcolor{{{color:primary.0}}}{{{if:m<0|({{m}})|{{m}}}} \\times {{if:n<0|({{n}})|{{n}}}}} \\times {{eval:a^u}} \\times \\textcolor{{{color:primary.1}}}{b \\times b}{{if:v==1| \\times c|}} \\\\ &= {{solution}} \\end{align}$$"
+				]
+			},
+			"hint": "Multiplie les coefficients entre eux, puis regroupe chaque lettre avec elle-même : $b \\times b = b^2$."
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["-9z"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"p": "z|z",
+				"q": "3",
+				"r": "3"
+			},
+			"description": "bonne réponse -9z",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["z*(-3)*3"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["signs", "products", "form"]
+			},
+			"variables": {
+				"p": "z|z",
+				"q": "3",
+				"r": "3"
+			},
+			"description": "expression recopiée z*(-3)*3",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["-9z"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"p": "z|z",
+				"q": "3",
+				"r": "3"
+			},
+			"description": "bonne réponse -9z",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["(-3)*z*3"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["brackets", "products", "form"]
+			},
+			"variables": {
+				"p": "z|z",
+				"q": "3",
+				"r": "3"
+			},
+			"description": "expression recopiée (-3)*z*3",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["-9z"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"p": "z|z",
+				"q": "3",
+				"r": "3"
+			},
+			"description": "bonne réponse -9z",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["3*(-3)*z"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["signs", "products", "form"]
+			},
+			"variables": {
+				"p": "z|z",
+				"q": "3",
+				"r": "3"
+			},
+			"description": "expression recopiée 3*(-3)*z",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["-9z"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"p": "z|z",
+				"q": "3",
+				"r": "3"
+			},
+			"description": "bonne réponse -9z",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["z*3*(-3)"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["signs", "products", "form"]
+			},
+			"variables": {
+				"p": "z|z",
+				"q": "3",
+				"r": "3"
+			},
+			"description": "expression recopiée z*3*(-3)",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["-9z"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"p": "z|z",
+				"q": "3",
+				"r": "3"
+			},
+			"description": "bonne réponse -9z",
+			"variationIndex": 4
+		},
+		{
+			"answers": ["3*z*(-3)"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["signs", "products", "form"]
+			},
+			"variables": {
+				"p": "z|z",
+				"q": "3",
+				"r": "3"
+			},
+			"description": "expression recopiée 3*z*(-3)",
+			"variationIndex": 4
+		},
+		{
+			"answers": ["-9z"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"p": "z|z",
+				"q": "3",
+				"r": "3"
+			},
+			"description": "bonne réponse -9z",
+			"variationIndex": 5
+		},
+		{
+			"answers": ["(-3)*3*z"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["brackets", "products", "form"]
+			},
+			"variables": {
+				"p": "z|z",
+				"q": "3",
+				"r": "3"
+			},
+			"description": "expression recopiée (-3)*3*z",
+			"variationIndex": 5
+		},
+		{
+			"answers": ["9z"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"p": "z|z",
+				"q": "3",
+				"r": "3"
+			},
+			"description": "bonne réponse 9z",
+			"variationIndex": 6
+		},
+		{
+			"answers": ["z*(-3)*(-3)"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["signs", "products", "form"]
+			},
+			"variables": {
+				"p": "z|z",
+				"q": "3",
+				"r": "3"
+			},
+			"description": "expression recopiée z*(-3)*(-3)",
+			"variationIndex": 6
+		},
+		{
+			"answers": ["9z"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"p": "z|z",
+				"q": "3",
+				"r": "3"
+			},
+			"description": "bonne réponse 9z",
+			"variationIndex": 7
+		},
+		{
+			"answers": ["(-3)*z*(-3)"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["brackets", "signs", "products", "form"]
+			},
+			"variables": {
+				"p": "z|z",
+				"q": "3",
+				"r": "3"
+			},
+			"description": "expression recopiée (-3)*z*(-3)",
+			"variationIndex": 7
+		},
+		{
+			"answers": ["9z"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"p": "z|z",
+				"q": "3",
+				"r": "3"
+			},
+			"description": "bonne réponse 9z",
+			"variationIndex": 8
+		},
+		{
+			"answers": ["(-3)*(-3)*z"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["brackets", "signs", "products", "form"]
+			},
+			"variables": {
+				"p": "z|z",
+				"q": "3",
+				"r": "3"
+			},
+			"description": "expression recopiée (-3)*(-3)*z",
+			"variationIndex": 8
+		},
+		{
+			"answers": ["9z"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"p": "z|z",
+				"q": "3",
+				"r": "3"
+			},
+			"description": "bonne réponse 9z",
+			"variationIndex": 9
+		},
+		{
+			"answers": ["(-z)*(-3)*3"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["brackets", "signs", "products", "form"]
+			},
+			"variables": {
+				"p": "z|z",
+				"q": "3",
+				"r": "3"
+			},
+			"description": "expression recopiée (-z)*(-3)*3",
+			"variationIndex": 9
+		},
+		{
+			"answers": ["9z"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"p": "z|z",
+				"q": "3",
+				"r": "3"
+			},
+			"description": "bonne réponse 9z",
+			"variationIndex": 10
+		},
+		{
+			"answers": ["(-3)*(-z)*3"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["brackets", "signs", "products", "form"]
+			},
+			"variables": {
+				"p": "z|z",
+				"q": "3",
+				"r": "3"
+			},
+			"description": "expression recopiée (-3)*(-z)*3",
+			"variationIndex": 10
+		},
+		{
+			"answers": ["9z"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"p": "z|z",
+				"q": "3",
+				"r": "3"
+			},
+			"description": "bonne réponse 9z",
+			"variationIndex": 11
+		},
+		{
+			"answers": ["3*(-3)*(-z)"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["signs", "products", "form"]
+			},
+			"variables": {
+				"p": "z|z",
+				"q": "3",
+				"r": "3"
+			},
+			"description": "expression recopiée 3*(-3)*(-z)",
+			"variationIndex": 11
+		},
+		{
+			"answers": ["9z"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"p": "z|z",
+				"q": "3",
+				"r": "3"
+			},
+			"description": "bonne réponse 9z",
+			"variationIndex": 12
+		},
+		{
+			"answers": ["(-z)*3*(-3)"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["brackets", "signs", "products", "form"]
+			},
+			"variables": {
+				"p": "z|z",
+				"q": "3",
+				"r": "3"
+			},
+			"description": "expression recopiée (-z)*3*(-3)",
+			"variationIndex": 12
+		},
+		{
+			"answers": ["9z"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"p": "z|z",
+				"q": "3",
+				"r": "3"
+			},
+			"description": "bonne réponse 9z",
+			"variationIndex": 13
+		},
+		{
+			"answers": ["3*(-z)*(-3)"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["signs", "products", "form"]
+			},
+			"variables": {
+				"p": "z|z",
+				"q": "3",
+				"r": "3"
+			},
+			"description": "expression recopiée 3*(-z)*(-3)",
+			"variationIndex": 13
+		},
+		{
+			"answers": ["9z"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"p": "z|z",
+				"q": "3",
+				"r": "3"
+			},
+			"description": "bonne réponse 9z",
+			"variationIndex": 14
+		},
+		{
+			"answers": ["(-3)*3*(-z)"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["brackets", "signs", "products", "form"]
+			},
+			"variables": {
+				"p": "z|z",
+				"q": "3",
+				"r": "3"
+			},
+			"description": "expression recopiée (-3)*3*(-z)",
+			"variationIndex": 14
+		},
+		{
+			"answers": ["-9z"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"p": "z|z",
+				"q": "3",
+				"r": "3"
+			},
+			"description": "bonne réponse -9z",
+			"variationIndex": 15
+		},
+		{
+			"answers": ["(-z)*(-3)*(-3)"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["brackets", "signs", "products", "form"]
+			},
+			"variables": {
+				"p": "z|z",
+				"q": "3",
+				"r": "3"
+			},
+			"description": "expression recopiée (-z)*(-3)*(-3)",
+			"variationIndex": 15
+		},
+		{
+			"answers": ["-9z"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"p": "z|z",
+				"q": "3",
+				"r": "3"
+			},
+			"description": "bonne réponse -9z",
+			"variationIndex": 16
+		},
+		{
+			"answers": ["(-3)*(-z)*(-3)"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["brackets", "signs", "products", "form"]
+			},
+			"variables": {
+				"p": "z|z",
+				"q": "3",
+				"r": "3"
+			},
+			"description": "expression recopiée (-3)*(-z)*(-3)",
+			"variationIndex": 16
+		},
+		{
+			"answers": ["-9z"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"p": "z|z",
+				"q": "3",
+				"r": "3"
+			},
+			"description": "bonne réponse -9z",
+			"variationIndex": 17
+		},
+		{
+			"answers": ["(-3)*(-3)*(-z)"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["brackets", "signs", "products", "form"]
+			},
+			"variables": {
+				"p": "z|z",
+				"q": "3",
+				"r": "3"
+			},
+			"description": "expression recopiée (-3)*(-3)*(-z)",
+			"variationIndex": 17
+		},
+		{
+			"description": "F3a : 3x × (−4x) = −12x²",
+			"variationIndex": 18,
+			"variables": {
+				"g": "1",
+				"a": "3",
+				"b": "-4"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["-12x^2"]
+		},
+		{
+			"description": "F3a : recopiée",
+			"variationIndex": 18,
+			"variables": {
+				"g": "1",
+				"a": "3",
+				"b": "-4"
+			},
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["signs", "products", "form"]
+			},
+			"answers": ["3x\\times(-4x)"]
+		},
+		{
+			"description": "F3a : x × x = 2x",
+			"variationIndex": 18,
+			"variables": {
+				"g": "1",
+				"a": "3",
+				"b": "-4"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "$x \\times x = x^2$, et non $2 x$."
+			},
+			"answers": ["-24x"]
+		},
+		{
+			"description": "F3a : coefficients additionnés",
+			"variationIndex": 18,
+			"variables": {
+				"g": "1",
+				"a": "3",
+				"b": "-4"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Dans un produit, les coefficients se multiplient, ils ne s'additionnent pas."
+			},
+			"answers": ["-x^2"]
+		},
+		{
+			"description": "F3a : signe",
+			"variationIndex": 18,
+			"variables": {
+				"g": "1",
+				"a": "3",
+				"b": "-4"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Vérifie le signe : applique la règle des signes au produit des coefficients."
+			},
+			"answers": ["12x^2"]
+		},
+		{
+			"description": "F3a : −2x² × 5x = −10x³",
+			"variationIndex": 18,
+			"variables": {
+				"g": "2",
+				"a": "-2",
+				"b": "5"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["-10x^3"]
+		},
+		{
+			"description": "F3a : x² × x = x²",
+			"variationIndex": 18,
+			"variables": {
+				"g": "2",
+				"a": "-2",
+				"b": "5"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "$x^2 \\times x = x^3$ : les exposants s'ajoutent."
+			},
+			"answers": ["-10x^2"]
+		},
+		{
+			"description": "F3b : (a²b) × (bc) = a²b²c",
+			"variationIndex": 19,
+			"variables": {
+				"m": "1",
+				"n": "1",
+				"u": "2",
+				"v": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["a^2b^2c"]
+		},
+		{
+			"description": "F3b : recopiée",
+			"variationIndex": 19,
+			"variables": {
+				"m": "1",
+				"n": "1",
+				"u": "2",
+				"v": "1"
+			},
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["products", "form"]
+			},
+			"answers": ["a^2b\\times bc"]
+		},
+		{
+			"description": "F3b : (2a²b) × (−3bc) = −6a²b²c",
+			"variationIndex": 19,
+			"variables": {
+				"m": "2",
+				"n": "-3",
+				"u": "2",
+				"v": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["-6a^2b^2c"]
+		},
+		{
+			"description": "F3b : autre ordre des lettres",
+			"variationIndex": 19,
+			"variables": {
+				"m": "2",
+				"n": "-3",
+				"u": "2",
+				"v": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["-6b^2a^2c"]
+		},
+		{
+			"description": "F3b : b × b = 2b",
+			"variationIndex": 19,
+			"variables": {
+				"m": "2",
+				"n": "-3",
+				"u": "2",
+				"v": "1"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "$b \\times b = b^2$, et non $2 b$."
+			},
+			"answers": ["-12a^2bc"]
+		},
+		{
+			"description": "F3b : coefficients additionnés",
+			"variationIndex": 19,
+			"variables": {
+				"m": "2",
+				"n": "-3",
+				"u": "2",
+				"v": "1"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Dans un produit, les coefficients se multiplient, ils ne s'additionnent pas."
+			},
+			"answers": ["-a^2b^2c"]
+		},
+		{
+			"description": "F3b : signe",
+			"variationIndex": 19,
+			"variables": {
+				"m": "2",
+				"n": "-3",
+				"u": "2",
+				"v": "1"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Vérifie le signe : applique la règle des signes au produit des coefficients."
+			},
+			"answers": ["6a^2b^2c"]
+		},
+		{
+			"description": "F3b : (−4ab) × (−5b) = 20ab²",
+			"variationIndex": 19,
+			"variables": {
+				"m": "-4",
+				"n": "-5",
+				"u": "1",
+				"v": "0"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["20ab^2"]
+		}
+	]
+}

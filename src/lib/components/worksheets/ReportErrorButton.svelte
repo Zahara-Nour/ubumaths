@@ -1,14 +1,14 @@
 <script lang="ts">
-	import RestrictedRichText from '$lib/components/rich-text/RestrictedRichText.svelte';
-	import { lore } from '$lib/config/lore';
-	import { Button } from '$lib/components/ui/button';
-	import * as Popover from '$lib/components/ui/popover';
-	import { Separator } from '$lib/components/ui/separator';
+	import RestrictedRichText from '#lib/components/rich-text/RestrictedRichText.svelte';
+	import { lore } from '#lib/config/lore.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import * as Popover from '#lib/components/ui/popover/index.ts';
+	import { Separator } from '#lib/components/ui/separator/index.ts';
 	import { AlertTriangle } from '@lucide/svelte';
 	import ReportStatusBadge from './ReportStatusBadge.svelte';
 	import ReportErrorDialog from './ReportErrorDialog.svelte';
-	import RichTextDisplay from '$lib/components/rich-text/RichTextDisplay.svelte';
-	import type { StudentErrorReportView } from '$lib/types/worksheets';
+	import RichTextDisplay from '#lib/components/rich-text/RichTextDisplay.svelte';
+	import type { StudentErrorReportView } from '#lib/types/worksheets.ts';
 
 	const MAX_REPORTS = 10;
 

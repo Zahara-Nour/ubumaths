@@ -1,16 +1,16 @@
 <script lang="ts">
 	import { onMount, onDestroy } from 'svelte';
 	import { goto } from '$app/navigation';
-	import { minesweeperStore } from '$lib/stores/minesweeper.svelte';
-	import { multiplayerStore } from '$lib/stores/multiplayer.svelte';
-	import { toaster } from '$lib/stores/toaster.svelte';
-	import MultiplayerLobby from '$lib/components/minesweeper/multiplayer/MultiplayerLobby.svelte';
-	import MultiplayerMatchScreen from '$lib/components/minesweeper/multiplayer/MultiplayerMatchScreen.svelte';
-	import MultiplayerResultScreen from '$lib/components/minesweeper/multiplayer/MultiplayerResultScreen.svelte';
-	import MinesweeperBoard from '$lib/components/game/minesweeper/MinesweeperBoard.svelte';
-	import { Card } from '$lib/components/ui/card';
-	import { Button } from '$lib/components/ui/button';
-	import BackLink from '$lib/components/navigation/BackLink.svelte';
+	import { minesweeperStore } from '#lib/stores/minesweeper.svelte.ts';
+	import { multiplayerStore } from '#lib/stores/multiplayer.svelte.ts';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
+	import MultiplayerLobby from '#lib/components/minesweeper/multiplayer/MultiplayerLobby.svelte';
+	import MultiplayerMatchScreen from '#lib/components/minesweeper/multiplayer/MultiplayerMatchScreen.svelte';
+	import MultiplayerResultScreen from '#lib/components/minesweeper/multiplayer/MultiplayerResultScreen.svelte';
+	import MinesweeperBoard from '#lib/components/game/minesweeper/MinesweeperBoard.svelte';
+	import { Card } from '#lib/components/ui/card/index.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import BackLink from '#lib/components/navigation/BackLink.svelte';
 
 	// Get Supabase client and user from page data
 	let { data } = $props();

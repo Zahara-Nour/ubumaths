@@ -11,8 +11,8 @@
  * Uses the math dictionary as word source instead of a hardcoded word list:
  * the page hands the playable words over (`init`) before the first game.
  */
-import { browser } from '$app/environment';
-import { isGradeCode, type GradeCode } from '$lib/types/grades';
+import { browser } from '$app/env';
+import { isGradeCode, type GradeCode } from '#lib/types/grades.ts';
 import type { GameState, FeedbackType } from './types';
 import {
 	allPlayableWords,

@@ -15,12 +15,12 @@
  * @module atelier/evaluate-steps-check
  */
 
-import type { RenderedStep } from '$lib/mathAST/common/step-renderer-base';
-import type { MathNode } from '$lib/mathAST/types';
-import { evaluate } from '$lib/mathAST/eval';
-import { isEvalValue } from '$lib/mathAST/eval/types';
-import { subtract } from '$lib/mathAST/factory';
-import { findNodes } from '$lib/mathAST/transforms';
+import type { RenderedStep } from '#lib/mathAST/common/step-renderer-base.ts';
+import type { MathNode } from '#lib/mathAST/types.ts';
+import { evaluate } from '#lib/mathAST/eval/index.ts';
+import { isEvalValue } from '#lib/mathAST/eval/types.ts';
+import { subtract } from '#lib/mathAST/factory.ts';
+import { findNodes } from '#lib/mathAST/transforms.ts';
 
 // =============================================================================
 // Constantes

@@ -2,7 +2,7 @@
  * Re-exports from geometry-core/rendering/bezier.
  *
  * This file maintains backward compatibility — all existing imports
- * from '$lib/grapheur/bezier' continue to work.
+ * from '#lib/grapheur/bezier.ts' continue to work.
  */
 
 export {
@@ -11,4 +11,4 @@ export {
 	curveToSVGPath,
 	curveToPolylinePath,
 	createMathToSVGTransformer
-} from '$lib/geometry-core/rendering/bezier';
+} from '#lib/geometry-core/rendering/bezier.ts';

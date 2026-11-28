@@ -1,25 +1,27 @@
 <script lang="ts">
-	import { lore } from '$lib/config/lore';
-	import { marketplaceStore } from '$lib/stores/marketplace.svelte';
-	import { vipCardTemplates, type VipCardTemplate } from '$lib/stores/vipCardTemplates.svelte';
-	import type { CreateListingData } from '$lib/types/marketplace';
-	import type { VipCard as VipCardType } from '$lib/types/vip-card';
-	import * as Dialog from '$lib/components/ui/dialog';
-	import { Button } from '$lib/components/ui/button';
-	import { Input } from '$lib/components/ui/input';
-	import { Label } from '$lib/components/ui/label';
-	import { Badge } from '$lib/components/ui/badge';
-	import MySelect from '$lib/components/MySelect.svelte';
+	import { lore } from '#lib/config/lore.ts';
+	import { marketplaceStore } from '#lib/stores/marketplace.svelte.ts';
+	import { vipCardTemplates, type VipCardTemplate } from '#lib/stores/vipCardTemplates.svelte.ts';
+	import type { CreateListingData } from '#lib/types/marketplace.ts';
+	import type { VipCard as VipCardType } from '#lib/types/vip-card.ts';
+	import * as Dialog from '#lib/components/ui/dialog/index.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import { Input } from '#lib/components/ui/input/index.ts';
+	import { Label } from '#lib/components/ui/label/index.ts';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
+	import MySelect from '#lib/components/MySelect.svelte';
 	import TradeCardSelector from './trade/TradeCardSelector.svelte';
-	import VipCard from '$lib/components/VipCard.svelte';
-	import { RARITY_COLORS, RARITY_LABELS } from '$lib/constants/vip-card-ui';
+	import VipCard from '#lib/components/VipCard.svelte';
+	import { RARITY_COLORS, RARITY_LABELS } from '#lib/constants/vip-card-ui.ts';
 	import { Info, Check } from '@lucide/svelte';
-	import { cn } from '$lib/utils';
+	import { cn } from '#lib/utils.ts';
 
 	// Props
-	let { open = $bindable(false) } = $props<{
+	let {
+		open = $bindable(false)
+	}: {
 		open?: boolean;
-	}>();
+	} = $props();
 
 	// Form state
 	let listingType = $state<'sell' | 'buy'>('sell');

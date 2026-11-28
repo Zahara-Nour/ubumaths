@@ -19,7 +19,7 @@ import {
 } from '../enhanced-step-types';
 import type { DomainRule } from '../enhanced-step-types';
 import { intervalDomain, greaterThanOrEqualInterval } from '../factory';
-import { number } from '$lib/mathAST/factory';
+import { number } from '#lib/mathAST/factory.ts';
 
 // =============================================================================
 // Step Descriptions Tests

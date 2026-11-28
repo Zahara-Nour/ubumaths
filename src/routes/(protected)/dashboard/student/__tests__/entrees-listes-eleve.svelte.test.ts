@@ -10,7 +10,7 @@
 import { describe, expect, it } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import { page } from 'vitest/browser';
-import type { WorkItem } from '$lib/types/student-inbox';
+import type { WorkItem } from '#lib/types/student-inbox.ts';
 import WorkPage from '../work/+page.svelte';
 import WorksheetsPage from '../worksheets/+page.svelte';
 import AssessmentsPage from '../assessments/+page.svelte';

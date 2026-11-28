@@ -1,0 +1,270 @@
+{
+	"id": "13388e8f-e662-4f28-97b6-934afaeead31",
+	"title": "Placer les premiers termes d'une suite géométrique",
+	"description": "Représenter u₀ à u₃ (termes positifs) par des points (n ; uₙ) : forme explicite, récurrence, bactéries",
+	"grades": ["1_GEN"],
+	"level": 2,
+	"delay": 90,
+	"status": "published",
+	"shared": {},
+	"variations": [
+		{
+			"statement": "La suite $(u_n)$ est définie, pour tout entier naturel $n$, par $u_n={{u}}\\times{{q}}^n$.\n\nPlace les points $A$, $B$, $C$ et $D$ qui représentent $u_0$, $u_1$, $u_2$ et $u_3$ : le point d'abscisse $n$ a pour ordonnée $u_n$.\n\n```courbe\nx: -1 ; 4\ny: -{{u}} ; {{eval:u*q^3+u}}\ngrille: 1 ; {{u}}\nplacer: A=(0 ; {{eval:u*q^0}}) ; B=(1 ; {{eval:u*q^1}}) ; C=(2 ; {{eval:u*q^2}}) ; D=(3 ; {{eval:u*q^3}})\ntaille: moyenne\ndescription: Repère : n de −1 à 4 en abscisse, de 1 en 1 ; ordonnée graduée de {{u}} en {{u}}.\n```",
+			"variables": [
+				{
+					"name": "u",
+					"expression": "1..3"
+				},
+				{
+					"name": "q",
+					"expression": "2|3"
+				}
+			],
+			"conditions": ["u*q^3 <= 27"],
+			"correction": {
+				"steps": [
+					"On remplace $n$ par $0$, $1$, $2$, $3$ : $u_0={{u}}\\times{{q}}^0={{u}}$, puis on multiplie par ${{q}}$ à chaque rang : $u_1={{u}}\\times{{q}}={{eval:u*q}}$, $u_2={{eval:u*q}}\\times{{q}}={{eval:u*q^2}}$, $u_3={{eval:u*q^2}}\\times{{q}}={{eval:u*q^3}}$.",
+					"On place $A\\textcolor{{{color:primary.0}}}{(0\\,;{{u}})}$, $B\\textcolor{{{color:primary.0}}}{(1\\,;{{eval:u*q}})}$, $C\\textcolor{{{color:primary.0}}}{(2\\,;{{eval:u*q^2}})}$, $D\\textcolor{{{color:primary.0}}}{(3\\,;{{eval:u*q^3}})}$. Les points ne sont **pas alignés** : les écarts grandissent, car on multiplie par ${{q}}$ à chaque rang."
+				]
+			}
+		},
+		{
+			"statement": "La suite $(u_n)$ est définie, pour tout entier naturel $n$, par $u_n={{u}}\\times\\left(\\dfrac{1}{{{d}}}\\right)^n$.\n\nPlace les points $A$, $B$, $C$ et $D$ qui représentent $u_0$, $u_1$, $u_2$ et $u_3$ : le point d'abscisse $n$ a pour ordonnée $u_n$.\n\n```courbe\nx: -1 ; 4\ny: -{{t}} ; {{eval:u+t}}\ngrille: 1 ; {{t}}\nplacer: A=(0 ; {{eval:u/d^0}}) ; B=(1 ; {{eval:u/d^1}}) ; C=(2 ; {{eval:u/d^2}}) ; D=(3 ; {{eval:u/d^3}})\ntaille: moyenne\ndescription: Repère : n de −1 à 4 en abscisse, de 1 en 1 ; ordonnée graduée de {{t}} en {{t}}.\n```",
+			"variables": [
+				{
+					"name": "d",
+					"expression": "2|3"
+				},
+				{
+					"name": "m",
+					"expression": "1|2"
+				},
+				{
+					"name": "t",
+					"expression": "eval:2*m-(d-2)"
+				},
+				{
+					"name": "u",
+					"expression": "eval:t*d^3"
+				}
+			],
+			"conditions": [],
+			"correction": {
+				"steps": [
+					"On remplace $n$ par $0$, $1$, $2$, $3$ : $u_0={{u}}$, puis multiplier par $\\dfrac{1}{{{d}}}$, c'est diviser par ${{d}}$ : $u_1=\\dfrac{{{u}}}{{{d}}}={{eval:u/d}}$, $u_2=\\dfrac{{{eval:u/d}}}{{{d}}}={{eval:u/d^2}}$, $u_3=\\dfrac{{{eval:u/d^2}}}{{{d}}}={{eval:u/d^3}}$.",
+					"On place $A\\textcolor{{{color:primary.0}}}{(0\\,;{{u}})}$, $B\\textcolor{{{color:primary.0}}}{(1\\,;{{eval:u/d}})}$, $C\\textcolor{{{color:primary.0}}}{(2\\,;{{eval:u/d^2}})}$, $D\\textcolor{{{color:primary.0}}}{(3\\,;{{eval:u/d^3}})}$. Les points ne sont **pas alignés** : les écarts rétrécissent, car on divise par ${{d}}$ à chaque rang."
+				]
+			}
+		},
+		{
+			"statement": "La suite $(u_n)$ est définie par $u_0={{u}}$ et, pour tout entier naturel $n$, $u_{n+1}={{q}}\\times u_n$.\n\nPlace les points $A$, $B$, $C$ et $D$ qui représentent $u_0$, $u_1$, $u_2$ et $u_3$ : le point d'abscisse $n$ a pour ordonnée $u_n$.\n\n```courbe\nx: -1 ; 4\ny: -{{u}} ; {{eval:u*q^3+u}}\ngrille: 1 ; {{u}}\nplacer: A=(0 ; {{eval:u*q^0}}) ; B=(1 ; {{eval:u*q^1}}) ; C=(2 ; {{eval:u*q^2}}) ; D=(3 ; {{eval:u*q^3}})\ntaille: moyenne\ndescription: Repère : n de −1 à 4 en abscisse, de 1 en 1 ; ordonnée graduée de {{u}} en {{u}}.\n```",
+			"variables": [
+				{
+					"name": "u",
+					"expression": "1..3"
+				},
+				{
+					"name": "q",
+					"expression": "2|3"
+				}
+			],
+			"conditions": ["u*q^3 <= 27"],
+			"correction": {
+				"steps": [
+					"On part de $u_0={{u}}$ et on multiplie par ${{q}}$ à chaque rang : $u_1={{u}}\\times{{q}}={{eval:u*q}}$, $u_2={{eval:u*q}}\\times{{q}}={{eval:u*q^2}}$, $u_3={{eval:u*q^2}}\\times{{q}}={{eval:u*q^3}}$.",
+					"On place $A\\textcolor{{{color:primary.0}}}{(0\\,;{{u}})}$, $B\\textcolor{{{color:primary.0}}}{(1\\,;{{eval:u*q}})}$, $C\\textcolor{{{color:primary.0}}}{(2\\,;{{eval:u*q^2}})}$, $D\\textcolor{{{color:primary.0}}}{(3\\,;{{eval:u*q^3}})}$. Les points ne sont **pas alignés** : les écarts grandissent, car on multiplie par ${{q}}$ à chaque rang."
+				]
+			}
+		},
+		{
+			"statement": "La suite $(u_n)$ est définie par $u_0={{u}}$ et, pour tout entier naturel $n$, $u_{n+1}=\\dfrac{u_n}{{{d}}}$.\n\nPlace les points $A$, $B$, $C$ et $D$ qui représentent $u_0$, $u_1$, $u_2$ et $u_3$ : le point d'abscisse $n$ a pour ordonnée $u_n$.\n\n```courbe\nx: -1 ; 4\ny: -{{t}} ; {{eval:u+t}}\ngrille: 1 ; {{t}}\nplacer: A=(0 ; {{eval:u/d^0}}) ; B=(1 ; {{eval:u/d^1}}) ; C=(2 ; {{eval:u/d^2}}) ; D=(3 ; {{eval:u/d^3}})\ntaille: moyenne\ndescription: Repère : n de −1 à 4 en abscisse, de 1 en 1 ; ordonnée graduée de {{t}} en {{t}}.\n```",
+			"variables": [
+				{
+					"name": "d",
+					"expression": "2|3"
+				},
+				{
+					"name": "m",
+					"expression": "1|2"
+				},
+				{
+					"name": "t",
+					"expression": "eval:2*m-(d-2)"
+				},
+				{
+					"name": "u",
+					"expression": "eval:t*d^3"
+				}
+			],
+			"conditions": [],
+			"correction": {
+				"steps": [
+					"On part de $u_0={{u}}$ et on divise par ${{d}}$ à chaque rang : $u_1=\\dfrac{{{u}}}{{{d}}}={{eval:u/d}}$, $u_2=\\dfrac{{{eval:u/d}}}{{{d}}}={{eval:u/d^2}}$, $u_3=\\dfrac{{{eval:u/d^2}}}{{{d}}}={{eval:u/d^3}}$.",
+					"On place $A\\textcolor{{{color:primary.0}}}{(0\\,;{{u}})}$, $B\\textcolor{{{color:primary.0}}}{(1\\,;{{eval:u/d}})}$, $C\\textcolor{{{color:primary.0}}}{(2\\,;{{eval:u/d^2}})}$, $D\\textcolor{{{color:primary.0}}}{(3\\,;{{eval:u/d^3}})}$. Les points ne sont **pas alignés** : les écarts rétrécissent, car on divise par ${{d}}$ à chaque rang."
+				]
+			}
+		},
+		{
+			"statement": "Une culture compte ${{u}}$ milliers de bactéries ; leur nombre double chaque heure. On note $u_n$ le nombre de bactéries, en milliers, au bout de $n$ heures.\n\nPlace les points $A$, $B$, $C$ et $D$ qui représentent $u_0$, $u_1$, $u_2$ et $u_3$ : le point d'abscisse $n$ a pour ordonnée $u_n$.\n\n```courbe\nx: -1 ; 4\ny: -{{u}} ; {{eval:u*q^3+u}}\ngrille: 1 ; {{u}}\naxes: x = Heures ; y = Milliers\nplacer: A=(0 ; {{eval:u*q^0}}) ; B=(1 ; {{eval:u*q^1}}) ; C=(2 ; {{eval:u*q^2}}) ; D=(3 ; {{eval:u*q^3}})\ntaille: moyenne\ndescription: Repère : n de −1 à 4 en abscisse, de 1 en 1 ; ordonnée graduée de {{u}} en {{u}}.\n```",
+			"variables": [
+				{
+					"name": "u",
+					"expression": "1..3"
+				},
+				{
+					"name": "q",
+					"expression": "2"
+				}
+			],
+			"conditions": [],
+			"correction": {
+				"steps": [
+					"Doubler, c'est multiplier par $2$ : $(u_n)$ est géométrique de raison $2$ et $u_0={{u}}$. $u_1={{u}}\\times{{q}}={{eval:u*q}}$, $u_2={{eval:u*q}}\\times{{q}}={{eval:u*q^2}}$, $u_3={{eval:u*q^2}}\\times{{q}}={{eval:u*q^3}}$.",
+					"On place $A\\textcolor{{{color:primary.0}}}{(0\\,;{{u}})}$, $B\\textcolor{{{color:primary.0}}}{(1\\,;{{eval:u*q}})}$, $C\\textcolor{{{color:primary.0}}}{(2\\,;{{eval:u*q^2}})}$, $D\\textcolor{{{color:primary.0}}}{(3\\,;{{eval:u*q^3}})}$. Les points ne sont **pas alignés** : les écarts grandissent, car on multiplie par ${{q}}$ à chaque rang."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["0;1", "1;3", "2;9", "3;27"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"q": "3",
+				"u": "1"
+			},
+			"description": "u_n = 1 × 3ⁿ : 1, 3, 9, 27",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["0;1", "1;4", "2;7", "3;10"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"q": "3",
+				"u": "1"
+			},
+			"description": "Erreur : on ajoute la raison (1, 4, 7, 10)",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["0;0", "1;3", "2;6", "3;9"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"q": "3",
+				"u": "1"
+			},
+			"description": "Erreur : u_n = 3n (0, 3, 6, 9)",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["0;32", "1;16", "2;8", "3;4"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"d": "2",
+				"m": "2",
+				"t": "4",
+				"u": "32"
+			},
+			"description": "u_n = 32 × (1/2)ⁿ : 32, 16, 8, 4",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["0;32", "1;16", "8;2", "3;4"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"d": "2",
+				"m": "2",
+				"t": "4",
+				"u": "32"
+			},
+			"description": "Erreur : C avec abscisse et ordonnée échangées",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["0;3", "1;6", "2;12", "3;24"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"q": "2",
+				"u": "3"
+			},
+			"description": "u₀ = 3, ×2 : 3, 6, 12, 24",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["0;3", "1;5", "2;7", "3;9"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"q": "2",
+				"u": "3"
+			},
+			"description": "Erreur : +2 (3, 5, 7, 9)",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["0;27", "1;9", "2;3", "3;1"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"d": "3",
+				"m": "1",
+				"t": "1",
+				"u": "27"
+			},
+			"description": "u₀ = 27, ÷3 : 27, 9, 3, 1",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["0;27", "1;24", "2;21", "3;18"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"d": "3",
+				"m": "1",
+				"t": "1",
+				"u": "27"
+			},
+			"description": "Erreur : on retire 3 (27, 24, 21, 18)",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["0;2", "1;4", "2;8", "3;16"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"q": "2",
+				"u": "2"
+			},
+			"description": "Bactéries : 2, 4, 8, 16",
+			"variationIndex": 4
+		},
+		{
+			"answers": ["0;4", "1;8", "2;16", "3;32"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"q": "2",
+				"u": "2"
+			},
+			"description": "Erreur : décalage (4, 8, 16, 32)",
+			"variationIndex": 4
+		}
+	]
+}

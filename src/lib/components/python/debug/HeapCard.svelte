@@ -10,8 +10,8 @@
 		HeapEntry,
 		InlineValue,
 		TruncatedValue
-	} from '$lib/shared/python/debug/types';
-	import { cn } from '$lib/utils';
+	} from '#lib/shared/python/debug/types.ts';
+	import { cn } from '#lib/utils.ts';
 	import {
 		shortHeapId,
 		colorForHeapId,

@@ -7,7 +7,7 @@
  * `auth/disconnect` (le prof doit pouvoir révoquer l'accès) et `auth/status` (lecture).
  */
 import { error } from '@sveltejs/kit';
-import { GOOGLE_CLASSROOM_ENABLED } from '$lib/config/google-classroom';
+import { GOOGLE_CLASSROOM_ENABLED } from '#lib/config/google-classroom.ts';
 
 export function assertGoogleClassroomEnabled(): void {
 	if (!GOOGLE_CLASSROOM_ENABLED) throw error(403, 'Google Classroom est désactivé');

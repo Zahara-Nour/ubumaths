@@ -18,13 +18,13 @@
  */
 
 import type { AtelierObject } from './types';
-import type { MathNode } from '$lib/mathAST/types';
+import type { MathNode } from '#lib/mathAST/types.ts';
 import { astOf, readingMode, renameInDefinition, type Provenance } from './parse';
 import { RESERVED_NAMES, derivativeOf, reciprocalOf } from './names';
-import { transformAST, visitAST } from '$lib/mathAST/visitor';
-import { nodesEqual } from '$lib/mathAST/normal/hash';
-import { toCustom } from '$lib/mathAST/custom-generator';
-import { toLatex } from '$lib/mathAST/latex-generator';
+import { transformAST, visitAST } from '#lib/mathAST/visitor.ts';
+import { nodesEqual } from '#lib/mathAST/normal/hash.ts';
+import { toCustom } from '#lib/mathAST/custom-generator.ts';
+import { toLatex } from '#lib/mathAST/latex-generator.ts';
 import type { CellValue } from './formula';
 import { listEntriesOf } from './list-preview';
 

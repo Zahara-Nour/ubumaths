@@ -9,18 +9,17 @@
  * endpoint manages the teacher's manual checks/unchecks. Teacher/admin only.
  */
 
-import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireRoles } from '$lib/server/middleware/auth';
+import { requireRoles } from '#lib/server/middleware/auth.ts';
 import {
 	coveragePointSchema,
 	coverageListQuerySchema,
 	coveragePointQuerySchema
-} from '$lib/server/validation/curriculum';
-import { curriculumDbError } from '$lib/server/curriculum';
-import { readPointStatus } from '$lib/server/curriculum-point-status';
-import type { JournalEntryPoint } from '$lib/types/database-helpers';
-import { createServerLogger } from '$lib/utils/logger';
+} from '#lib/server/validation/curriculum.ts';
+import { curriculumDbError } from '#lib/server/curriculum.ts';
+import { readPointStatus } from '#lib/server/curriculum-point-status.ts';
+import type { JournalEntryPoint } from '#lib/types/database-helpers.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/teacher/curriculum/coverage/+server');
 
@@ -31,7 +30,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 
 	const parsed = coverageListQuerySchema.safeParse({ entry_id: url.searchParams.get('entry_id') });
 	if (!parsed.success) {
-		return json({ error: parsed.error.issues[0].message }, { status: 400 });
+		return Response.json({ error: parsed.error.issues[0].message }, { status: 400 });
 	}
 
 	const { data, error: dbErr } = await locals.supabase
@@ -41,10 +40,10 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 
 	if (dbErr) {
 		logger.error('[curriculum] coverage GET failed:', dbErr);
-		return json({ error: 'Échec du chargement de la couverture' }, { status: 500 });
+		return Response.json({ error: 'Échec du chargement de la couverture' }, { status: 500 });
 	}
 
-	return json({ coverage: (data ?? []) as JournalEntryPoint[] });
+	return Response.json({ coverage: (data ?? []) as JournalEntryPoint[] });
 };
 
 export const POST: RequestHandler = async ({ request, locals }) => {
@@ -54,12 +53,12 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	try {
 		body = await request.json();
 	} catch {
-		return json({ error: 'Corps JSON invalide' }, { status: 400 });
+		return Response.json({ error: 'Corps JSON invalide' }, { status: 400 });
 	}
 
 	const parsed = coveragePointSchema.safeParse(body);
 	if (!parsed.success) {
-		return json({ error: parsed.error.issues[0].message }, { status: 400 });
+		return Response.json({ error: parsed.error.issues[0].message }, { status: 400 });
 	}
 
 	// B3 : un point archivé ne se coche pas (décocher reste permis, par le DELETE).
@@ -68,13 +67,13 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		status = await readPointStatus(locals.supabase, parsed.data.point_id);
 	} catch (e) {
 		logger.error('[curriculum] coverage POST point read failed:', e);
-		return json({ error: 'Erreur serveur' }, { status: 500 });
+		return Response.json({ error: 'Erreur serveur' }, { status: 500 });
 	}
 	if (status === 'introuvable') {
-		return json({ error: 'Référence introuvable' }, { status: 400 });
+		return Response.json({ error: 'Référence introuvable' }, { status: 400 });
 	}
 	if (status === 'archive') {
-		return json({ error: 'Point archivé' }, { status: 400 });
+		return Response.json({ error: 'Point archivé' }, { status: 400 });
 	}
 
 	const { data, error: dbErr } = await locals.supabase
@@ -101,17 +100,17 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 				.single();
 			if (upErr) {
 				logger.error('[curriculum] coverage POST promote failed:', upErr);
-				return json({ error: 'Erreur serveur' }, { status: 500 });
+				return Response.json({ error: 'Erreur serveur' }, { status: 500 });
 			}
-			return json({ coverage: promoted as JournalEntryPoint, promoted: true });
+			return Response.json({ coverage: promoted as JournalEntryPoint, promoted: true });
 		}
 		const mapped = curriculumDbError(dbErr);
 		if (mapped) return mapped;
 		logger.error('[curriculum] coverage POST failed:', dbErr);
-		return json({ error: 'Erreur serveur' }, { status: 500 });
+		return Response.json({ error: 'Erreur serveur' }, { status: 500 });
 	}
 
-	return json({ coverage: data as JournalEntryPoint }, { status: 201 });
+	return Response.json({ coverage: data as JournalEntryPoint }, { status: 201 });
 };
 
 export const DELETE: RequestHandler = async ({ url, locals }) => {
@@ -122,7 +121,7 @@ export const DELETE: RequestHandler = async ({ url, locals }) => {
 		point_id: url.searchParams.get('point_id')
 	});
 	if (!parsed.success) {
-		return json({ error: 'entry_id et point_id requis (UUID)' }, { status: 400 });
+		return Response.json({ error: 'entry_id et point_id requis (UUID)' }, { status: 400 });
 	}
 
 	// `.select()` : un refus RLS rend zéro ligne sans erreur, il ne doit pas passer pour un succès.
@@ -139,11 +138,11 @@ export const DELETE: RequestHandler = async ({ url, locals }) => {
 		const mapped = curriculumDbError(dbErr);
 		if (mapped) return mapped;
 		logger.error('[curriculum] coverage DELETE failed:', dbErr);
-		return json({ error: 'Erreur serveur' }, { status: 500 });
+		return Response.json({ error: 'Erreur serveur' }, { status: 500 });
 	}
 	if (!deleted || deleted.length === 0) {
-		return json({ error: 'Point non coché pour cette séance' }, { status: 404 });
+		return Response.json({ error: 'Point non coché pour cette séance' }, { status: 404 });
 	}
 
-	return json({ success: true });
+	return Response.json({ success: true });
 };

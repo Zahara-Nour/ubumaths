@@ -1,10 +1,10 @@
 <script lang="ts">
-	import { Button } from '$lib/components/ui/button';
-	import { Input } from '$lib/components/ui/input';
-	import { Label } from '$lib/components/ui/label';
-	import MySelect from '$lib/components/MySelect.svelte';
-	import { toaster } from '$lib/stores/toaster.svelte';
-	import type { ExerciseResource, ExerciseResourceType } from '$lib/exercises/types';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import { Input } from '#lib/components/ui/input/index.ts';
+	import { Label } from '#lib/components/ui/label/index.ts';
+	import MySelect from '#lib/components/MySelect.svelte';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
+	import type { ExerciseResource, ExerciseResourceType } from '#lib/exercises/types.ts';
 
 	/** Maximum number of resources allowed per exercise (enforced limit) */
 	const MAX_RESOURCES = 20;

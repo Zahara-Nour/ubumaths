@@ -1,11 +1,11 @@
-import { error, json } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { drawVipCardsSchema } from '$lib/server/validation/draw-vip-cards';
-import { requireConsent, hasConsentFields } from '$lib/server/middleware/consent';
-import { requireAuth } from '$lib/server/middleware/auth';
-import { verifyTeacherStudentWithRole } from '$lib/server/middleware/student-access';
-import { VIP_CARD_COST } from '$lib/utils/vip-cards';
-import { createServerLogger } from '$lib/utils/logger';
+import { drawVipCardsSchema } from '#lib/server/validation/draw-vip-cards.ts';
+import { requireConsent, hasConsentFields } from '#lib/server/middleware/consent.ts';
+import { requireAuth } from '#lib/server/middleware/auth.ts';
+import { verifyTeacherStudentWithRole } from '#lib/server/middleware/student-access.ts';
+import { VIP_CARD_COST } from '#lib/utils/vip-cards.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/rewards/draw-vip-cards/+server');
 
@@ -141,7 +141,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		// inside the draw_multiple_vip_cards RPC (no separate INSERT needed)
 
 		// 7. Success response
-		return json(result);
+		return Response.json(result);
 	} catch (err) {
 		logger.error('Error drawing VIP cards:', err);
 

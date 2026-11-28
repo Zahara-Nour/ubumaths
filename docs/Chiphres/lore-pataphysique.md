@@ -1042,7 +1042,7 @@ Trois niveaux à phaser plus tard :
 
 Chiphre adopte un **système de progression à deux dimensions** :
 
-1. **L'Ordre de la Grande Passoire (OGP)** — système **transversal**, fondé sur le **mérite pataphysique** (gidouilles cumulées, achievements, défis réussis). Le grade suit le **parcours de gloire**, pas l'âge.
+1. **L'Ordre de la Grande Passoire (OGP)** — système **transversal**, fondé sur le **travail réel** du Galopin : les points du programme qu'il a acquis, jamais les gidouilles. Le grade raconte son **voyage**, de son arrivée à la Phinalle, pas son âge.
 2. **L'Échelle du Décervelage** — système **administratif**, strictement aligné sur les niveaux scolaires réels (6ᵉ → Terminale). Le Galopin gravit l'Eschelle, échelon après échelon, **un par année scolaire**, automatiquement à chaque rentrée. **Attention à ne pas tomber** : tout Galopin qui redouble son année descend d'un eschelon — ce qui est canoniquement appelé un _« retombage pataphysique »_.
 
 Les deux dimensions **coexistent** et s'affichent ensemble dans les cinématiques solennelles :
@@ -1101,11 +1101,29 @@ C'est une **progression de la naïveté à la sagesse**, du voyageur novice au c
 
 #### Mécanique d'attribution
 
-Le passage d'un grade au grade suivant se fait **par seuil de gidouilles cumulées**. Les **achievements** (défis réussis, fêtes provinciales validées, examens passés, cartes légendaires obtenues, exercices résolus, etc.) donnent des **gidouilles** qui s'accumulent dans la **bouzine** du Galopin (compteur permanent de gidouilles cumulées).
+Règle validée par David le 2026-11-17 (le détail et les situations : `docs/archive/wip/ordre-grande-passoire-progress.md`).
 
-**Note d'implémentation** : les **valeurs numériques précises des seuils** ainsi que l'**échelle de gain par activité** restent à calibrer en conditions réelles (test pédagogique). À ce stade, ce document fixe **les noms et l'ordre des 7 grades** ; les paramètres mathématiques seront déterminés ultérieurement en fonction de la **philosophie pédagogique** (sprint vs marathon) et de la **fréquence d'engagement** observée chez les Galopins.
+**Le grade se gagne par le travail réel.** Il se fonde sur les **points du programme acquis** par le Galopin. Il ne s'achète pas, ne se distribue pas à la main et ne s'obtient pas en jouant. Les gidouilles restent une **monnaie** qu'on dépense en boutique : elles ne font monter dans aucun grade.
 
-**Décrets royaux exceptionnels** : le Père Ubu peut toujours **décréter un saut de grade** pour récompenser un achievement exceptionnel hors barème (concours national de mathématiques, performance brillante au brevet ou au bac, contribution marquante au Royaume). Ces décrets restent **rares** et **publiquement célébrés**.
+**Le voyage.** Tout Galopin qui arrive pour la première fois dans Chiphre est **Embarqué Phollet**, quelle que soit sa classe, primaire compris. Son voyage va de sa classe d'arrivée jusqu'à la **Phinalle** (toutes les Terminales). Les grades qui lui restent se répartissent sur les années qui lui restent ; le partage est refait à chaque rentrée et à chaque retour.
+
+**Chaque année a ses grades à gagner.** Ce sont des parts du programme de sa classe à acquérir : la moitié pour un seul grade ; 30 % puis 60 % pour deux ; même étalement au-delà. Un grade manqué n'est pas perdu : il est reporté sur les années suivantes, et le Galopin peut rattraper.
+
+**Patanaute Yllustre ne se gagne qu'en Phinalle** : c'est la fin du voyage. Il faut être déjà Cartographe Royal et avoir acquis au moins les **trois quarts du programme** de sa Terminale.
+
+**Les galons.** Une année qui n'a aucun grade à donner donne un **galon** dans le grade, gagné par le travail de l'année (« Matelot Phlibustier, 1 galon »). C'est une marque, pas un 8e grade. Le Galopin progresse ainsi chaque année, même sur un long voyage commencé à l'école.
+
+**Le grade ne redescend jamais.** Départ puis retour : le Galopin garde son grade, et les grades restants se répartissent sur les années restantes. Redoublement : il garde son grade, et les grades s'étalent sur une année de plus (le _retombage pataphysique_ ne touche que l'Eschelle du Décervelage). Saut de classe : les grades se resserrent. Phinalle finie sans Patanaute : le voyage s'arrête au grade atteint.
+
+| Arrivée         | Le voyage                                                                                                       |
+| --------------- | --------------------------------------------------------------------------------------------------------------- |
+| Syz'esme (6ᵉ)   | 6ᵉ Moussaillon · 5ᵉ Matelot · 4ᵉ Marinier · 3ᵉ Quartier-Maître · 2ᵈʳᵉ Cartographe · 1ᵃˡᵉ galon · φᵃˡᵉ Patanaute |
+| Quatr'esme (4ᵉ) | 4ᵉ Moussaillon et Matelot · 3ᵉ Marinier · 2ᵈʳᵉ Quartier-Maître · 1ᵃˡᵉ Cartographe · φᵃˡᵉ Patanaute              |
+| Phinalle (Tle)  | les six grades dans l'année, Patanaute compris                                                                  |
+
+**Note d'implémentation** : les parts (50 %, 30/60 %, 75 %) sont un **pari** : les données d'acquisition ne remplissent que depuis novembre 2026. Elles seront revues après une année d'usage. L'Ordre n'existe pas encore dans le code.
+
+**Pas de décret royal.** Le Père Ubu ne saute aucun grade à la main : seul le travail fait monter dans l'Ordre.
 
 ### L'Eschelle du Décervelage (système administratif)
 
@@ -1986,7 +2004,7 @@ Ces deux symboles peuvent **coexister visuellement** : la spirale ubuesque et la
 
 ### Iconographie
 
-À constituer en kit graphique réutilisable (SVG dans `$lib/assets/icons/ubu/`) :
+À constituer en kit graphique réutilisable (SVG dans `#lib/assets/icons/ubu/`) :
 
 #### Icônes ubuesques principales
 

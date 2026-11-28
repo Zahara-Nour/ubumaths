@@ -6,14 +6,14 @@
 
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { RequestEvent } from '@sveltejs/kit';
-import type { DictionaryEntryInput } from '$lib/dictionary/entry-schema';
+import type { DictionaryEntryInput } from '#lib/dictionary/entry-schema.ts';
 
-vi.mock('$lib/server/dictionary/load', async (importOriginal) => ({
-	...(await importOriginal<typeof import('$lib/server/dictionary/load')>()),
+vi.mock('#lib/server/dictionary/load.ts', async (importOriginal) => ({
+	...(await importOriginal<typeof import('#lib/server/dictionary/load.ts')>()),
 	forgetDictionary: vi.fn()
 }));
 
-const { forgetDictionary } = await import('$lib/server/dictionary/load');
+const { forgetDictionary } = await import('#lib/server/dictionary/load.ts');
 const { POST } = await import('../+server');
 const { PATCH } = await import('../[id]/+server');
 

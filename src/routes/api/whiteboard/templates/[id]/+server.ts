@@ -14,12 +14,12 @@
  * - DELETE: Template owner or Admin (system templates cannot be deleted)
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireAuth, requireRoles } from '$lib/server/middleware/auth';
-import { templateIdParamSchema } from '$lib/server/validation/whiteboard-templates';
-import { toWhiteboardTemplateRow, rowToTemplate } from '$lib/whiteboard/types/templates';
-import { createServerLogger } from '$lib/utils/logger';
+import { requireAuth, requireRoles } from '#lib/server/middleware/auth.ts';
+import { templateIdParamSchema } from '#lib/server/validation/whiteboard-templates.ts';
+import { toWhiteboardTemplateRow, rowToTemplate } from '#lib/whiteboard/types/templates.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/whiteboard/templates/[id]/+server');
 
@@ -62,7 +62,7 @@ export const GET: RequestHandler = async ({ params, locals }) => {
 		}
 		const template = rowToTemplate(validatedRow);
 
-		return json({ template });
+		return Response.json({ template });
 	} catch (err) {
 		// Re-throw SvelteKit errors
 		if (err && typeof err === 'object' && 'status' in err) {
@@ -133,7 +133,7 @@ export const DELETE: RequestHandler = async ({ params, locals }) => {
 			throw error(500, 'Impossible de supprimer le modèle');
 		}
 
-		return json({ success: true });
+		return Response.json({ success: true });
 	} catch (err) {
 		// Re-throw SvelteKit errors
 		if (err && typeof err === 'object' && 'status' in err) {

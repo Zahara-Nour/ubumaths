@@ -7,7 +7,7 @@
 	 * dans les @keyframes, ce que Safari ne gère pas avant 17.5. Les teintes sont résolues
 	 * hors keyframe, par la classe .dark de mode-watcher.
 	 */
-	import type { MonthPalette } from '$lib/almanach/palettes';
+	import type { MonthPalette } from '#lib/almanach/palettes.ts';
 
 	let {
 		ambiance,

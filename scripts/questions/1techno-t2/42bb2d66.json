@@ -1,0 +1,125 @@
+{
+	"id": "42bb2d66-4559-4a1b-8124-de6977fbb0b1",
+	"title": "Arbre de trois épreuves de Bernoulli",
+	"description": "Arbre de trois épreuves de Bernoulli indépendantes et identiques : compléter les branches d'échec et calculer un chemin ; compter les chemins à exactement j succès (sans coefficient binomial)",
+	"grades": ["1_SPE"],
+	"level": 2,
+	"delay": 90,
+	"status": "published",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		},
+		"cleanCoefficients": true
+	},
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:1-a/10}}"
+				},
+				{
+					"expectedAnswer": "{{eval:(a/10)^2*(1-a/10)}}"
+				}
+			],
+			"statement": "On répète trois fois, de façon indépendante, une même épreuve de Bernoulli dont la probabilité de succès est $p={{eval:a/10;d}}$. On note $S$ le succès et $\\overline{S}$ l'échec. Dans l'arbre ci-dessous, les pondérations des branches $\\overline{S}$ ont été effacées.\n\n```probtree\nS:{{eval:a/10;d}}\n  S:{{eval:a/10;d}}\n    S:{{eval:a/10;d}}\n    \\overline{S}:?\n  \\overline{S}:?\n    S:{{eval:a/10;d}}\n    \\overline{S}:?\n\\overline{S}:?\n  S:{{eval:a/10;d}}\n    S:{{eval:a/10;d}}\n    \\overline{S}:?\n  \\overline{S}:?\n    S:{{eval:a/10;d}}\n    \\overline{S}:?\n```\n\nRéponds par une fraction irréductible ou par un nombre décimal exact.\n\nPondération de chaque branche $\\overline{S}$ : $?$\n\nProbabilité du chemin $S\\,\\overline{S}\\,S$ : $?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9"
+				}
+			],
+			"conditions": ["a != 5"],
+			"correction": {
+				"steps": [
+					"Les épreuves sont identiques et indépendantes : à chaque nœud, la branche $\\overline{S}$ porte $1-p=1-{{eval:a/10;d}}=\\textcolor{{{color:primary.0}}}{{{eval:1-a/10;d}}}$.\n\n```probtree\nS:{{eval:a/10;d}}\n  S:{{eval:a/10;d}}\n    S:{{eval:a/10;d}}\n    \\overline{S}:{{eval:1-a/10;d}}\n  \\overline{S}:{{eval:1-a/10;d}}\n    S:{{eval:a/10;d}}\n    \\overline{S}:{{eval:1-a/10;d}}\n\\overline{S}:{{eval:1-a/10;d}}\n  S:{{eval:a/10;d}}\n    S:{{eval:a/10;d}}\n    \\overline{S}:{{eval:1-a/10;d}}\n  \\overline{S}:{{eval:1-a/10;d}}\n    S:{{eval:a/10;d}}\n    \\overline{S}:{{eval:1-a/10;d}}\n```",
+					"Le chemin $S\\,\\overline{S}\\,S$ a pour probabilité le produit de ses branches : ${{eval:a/10;d}}\\times{{eval:1-a/10;d}}\\times{{eval:a/10;d}}=\\textcolor{{{color:primary.0}}}{{{eval:(a/10)^2*(1-a/10);d}}}$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:1+j*(3-j)}}"
+				}
+			],
+			"statement": "On répète trois fois, de façon indépendante, une même épreuve de Bernoulli dont la probabilité de succès est $p={{eval:a/10;d}}$. On note $S$ le succès et $\\overline{S}$ l'échec. L'arbre ci-dessous représente cette expérience.\n\n```probtree\nS:{{eval:a/10;d}}\n  S:{{eval:a/10;d}}\n    S:{{eval:a/10;d}}\n    \\overline{S}:{{eval:1-a/10;d}}\n  \\overline{S}:{{eval:1-a/10;d}}\n    S:{{eval:a/10;d}}\n    \\overline{S}:{{eval:1-a/10;d}}\n\\overline{S}:{{eval:1-a/10;d}}\n  S:{{eval:a/10;d}}\n    S:{{eval:a/10;d}}\n    \\overline{S}:{{eval:1-a/10;d}}\n  \\overline{S}:{{eval:1-a/10;d}}\n    S:{{eval:a/10;d}}\n    \\overline{S}:{{eval:1-a/10;d}}\n```\n\nCombien de chemins de l'arbre conduisent à exactement ${{eval:j}}$ succès ?\n\n$?$ chemin(s)",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9"
+				},
+				{
+					"name": "j",
+					"expression": "0..3"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On parcourt les $8$ chemins de l'arbre et on compte, pour chacun, le nombre de branches $S$ : $SSS$ ($3$ succès), $SS\\overline{S}$, $S\\overline{S}S$, $\\overline{S}SS$ ($2$ succès), $S\\overline{S}\\,\\overline{S}$, $\\overline{S}S\\overline{S}$, $\\overline{S}\\,\\overline{S}S$ ($1$ succès), $\\overline{S}\\,\\overline{S}\\,\\overline{S}$ ($0$ succès).",
+					"Exactement ${{eval:j}}$ succès : $\\textcolor{{{color:primary.0}}}{{{eval:1+j*(3-j)}}}$ chemin(s)."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["0{,}7", "0{,}063"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "3"
+			},
+			"description": "p = 0,3 : 0,7 et 0,063",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["0{,}3", "0{,}027"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "3"
+			},
+			"description": "Erreur : p sur les échecs",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["3"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "4",
+				"j": "2"
+			},
+			"description": "2 succès : 3 chemins",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "4",
+				"j": "0"
+			},
+			"description": "0 succès : 1 chemin",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "4",
+				"j": "2"
+			},
+			"description": "Erreur : 2 succès, 2 chemins",
+			"variationIndex": 1
+		}
+	]
+}

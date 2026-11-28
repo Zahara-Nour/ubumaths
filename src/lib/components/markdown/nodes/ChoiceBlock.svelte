@@ -10,7 +10,7 @@
 	@module components/markdown/nodes/ChoiceBlock
 -->
 <script lang="ts">
-	import type { ChoiceNode } from '$lib/ubumark/types/choix';
+	import type { ChoiceNode } from '#lib/ubumark/types/choix.ts';
 	import { readChoiceCaseResults } from '../choice-case-results';
 	import ChoiceList from './ChoiceList.svelte';
 

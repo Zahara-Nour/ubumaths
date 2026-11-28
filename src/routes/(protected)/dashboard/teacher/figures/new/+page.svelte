@@ -1,6 +1,6 @@
 <script lang="ts">
-	import BackLink from '$lib/components/navigation/BackLink.svelte';
-	import StoredFigureForm from '$lib/components/geometry/StoredFigureForm.svelte';
+	import BackLink from '#lib/components/navigation/BackLink.svelte';
+	import StoredFigureForm from '#lib/components/geometry/StoredFigureForm.svelte';
 
 	const LIST_HREF = '/dashboard/teacher/figures';
 	const STARTER_SCRIPT =

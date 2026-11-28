@@ -1,5 +1,5 @@
 <script lang="ts">
-	import '$lib/utils/mathlive-styles';
+	import '#lib/utils/mathlive-styles.ts';
 	/**
 	 * La console de l'atelier (l'ancienne vue Calcul).
 	 *
@@ -16,39 +16,40 @@
 	 * réglages (`docs/archive/wip/atelier-reglages-phase0.md`).
 	 */
 	import { convertLatexToMarkup, type MathfieldElement } from 'mathlive';
-	import type { CalcDesk, Entry } from '$lib/atelier/desk.svelte';
+	import type { CalcDesk, Entry } from '#lib/atelier/desk.svelte.ts';
 	import {
 		commandBeingWritten,
 		commandCatalog,
 		plain,
 		type AtelierCommand
-	} from '$lib/atelier/commands';
+	} from '#lib/atelier/commands.ts';
 	import { tick } from 'svelte';
-	import { SvelteMap } from 'svelte/reactivity';
-	import { Button } from '$lib/components/ui/button';
-	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
+	import { MediaQuery, SvelteMap } from 'svelte/reactivity';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import * as DropdownMenu from '#lib/components/ui/dropdown-menu/index.ts';
 	import ChevronDown from '@lucide/svelte/icons/chevron-down';
-	import { answerToCopy } from '$lib/atelier/copy-text';
-	import { insertProposal, proposalsFor, type Proposal } from '$lib/atelier/completion';
-	import GeneratedStepsCorrection from '$lib/components/questions/GeneratedStepsCorrection.svelte';
-	import VariationTable from '$lib/components/markdown/nodes/VariationTable.svelte';
-	import StatChart from '$lib/components/markdown/nodes/StatChart.svelte';
+	import { answerToCopy } from '#lib/atelier/copy-text.ts';
+	import { insertProposal, proposalsFor, type Proposal } from '#lib/atelier/completion.ts';
+	import VariationTable from '#lib/components/markdown/nodes/VariationTable.svelte';
+	import StatChart from '#lib/components/markdown/nodes/StatChart.svelte';
 	import FormulaText from './FormulaText.svelte';
-	import { definedName } from '$lib/atelier/desk.svelte';
+	import StepsOnDemand from './StepsOnDemand.svelte';
+	import { definedName } from '#lib/atelier/desk.svelte.ts';
 	import {
 		readStepsVerbosity,
 		writeStepsVerbosity,
 		type StepsVerbosity
-	} from '$lib/atelier/steps-summary';
-	import type { InputMode } from '$lib/atelier/input-mode';
+	} from '#lib/atelier/steps-summary.ts';
+	import type { InputMode } from '#lib/atelier/input-mode.ts';
 	import {
 		calcTextOf,
 		commandWords,
 		draftTextOf,
 		fieldLatexFromText
-	} from '$lib/atelier/natural-input';
+	} from '#lib/atelier/natural-input.ts';
 	import NaturalField from './NaturalField.svelte';
-	import { isSafeLatex } from '$lib/atelier/safe-latex';
+	import { isSafeLatex } from '#lib/atelier/safe-latex.ts';
+	import { definitionHint, type DraftHint } from '#lib/atelier/draft-hint.ts';
 
 	/** Les étapes d'une ligne et leur résumé, celles de la ligne ou de son bouton. */
 	type LineSteps = { readonly steps?: Entry['steps']; readonly summary?: Entry['summary'] };
@@ -200,7 +201,7 @@
 	 * Le champ « Écriture mathématique » (phase 0 `atelier-reglages-phase0.md`).
 	 *
 	 * `desk.draft` reste la ligne en cours, en TEXTE, quel que soit le champ :
-	 * le bouton « Calculer », les commandes préparées par une carte et le retour
+	 * l'envoi du formulaire, les commandes préparées par une carte et le retour
 	 * au mode texte la lisent. Le champ mathématique l'écrit à chaque frappe
 	 * (`draftTextOf`) ; la reprend quand elle change du dehors
 	 * (`fieldLatexFromText`).
@@ -253,6 +254,84 @@
 	 * champ texte, sans le point des commandes.
 	 */
 	const MATH_PLACEHOLDER = String.raw`f(x)=x^2-3x+1\text{, ou }12\,\mathrm{km}+300\,\mathrm{m}\text{, ou résoudre }x^2=4`;
+
+	/** Au téléphone, une consigne courte : la longue était coupée (écart E23). */
+	const SHORT_MATH_PLACEHOLDER = String.raw`f(x)=x^2-3x+1\text{, ou un calcul}`;
+	const TEXT_PLACEHOLDER = 'f(x) = x^2 − 3x + 1, ou 12 km + 300 m, ou un point pour les commandes';
+	const SHORT_TEXT_PLACEHOLDER = 'f(x) = x^2 − 3x + 1, ou un calcul';
+
+	/** Écran de téléphone : en dessous du point `sm` de Tailwind (640 px). */
+	const phone = new MediaQuery('(max-width: 639px)', false);
+
+	/**
+	 * Place gardée sous le champ, au-dessus du clavier, pour le bouton « Fermer
+	 * le clavier » (`MathKeyboardClose` : 40 px de haut, 6 px au-dessus du clavier).
+	 */
+	const KEYBOARD_CLOSE_SPACE = 52;
+
+	/**
+	 * Distance du bas de l'écran à laquelle la saisie est épinglée, au-dessus du
+	 * clavier virtuel de MathLive et de son bouton « Fermer le clavier » ; 0 :
+	 * la saisie reste à sa place. Au téléphone seulement : sur grand écran, la
+	 * console flotte dans un panneau qu'on déplace, une barre en pleine largeur
+	 * n'y a pas sa place. Épinglée seulement quand le clavier couvrirait
+	 * le bas de la console et que son champ a le focus (écart E24 : au
+	 * téléphone, l'élève tapait sans voir le champ ; à 659 px de haut, la
+	 * console n'a pas la place de remonter au-dessus du clavier).
+	 */
+	let keyboardLift = $state(0);
+
+	/**
+	 * Le clavier (`window.mathVirtualKeyboard`) n'existe qu'une fois MathLive
+	 * chargé : on s'y accroche au premier focus venu, comme `MathKeyboardClose`.
+	 * Le bas de `root` ne bouge pas quand la saisie est épinglée : la mesure
+	 * reste juste.
+	 */
+	$effect(() => {
+		if (inputMode !== 'math') {
+			keyboardLift = 0;
+			return;
+		}
+		let keyboard: typeof window.mathVirtualKeyboard | undefined;
+		const update = () => {
+			const focusedHere = root !== null && root.contains(document.activeElement);
+			if (!phone.current || !keyboard?.visible || !focusedHere || root === null) {
+				keyboardLift = 0;
+				return;
+			}
+			const lift = keyboard.boundingRect.height + KEYBOARD_CLOSE_SPACE;
+			const covered = root.getBoundingClientRect().bottom > window.innerHeight - lift;
+			keyboardLift = covered ? Math.round(lift) : 0;
+		};
+		const attach = () => {
+			if (!keyboard && window.mathVirtualKeyboard) {
+				keyboard = window.mathVirtualKeyboard;
+				keyboard.addEventListener('virtual-keyboard-toggle', update);
+				keyboard.addEventListener('geometrychange', update);
+			}
+			update();
+		};
+		// D'un champ de la console à l'autre, le focus passe un instant sur `body` :
+		// la saisie ne doit pas se désépingler entre les deux. `focusout` part aussi
+		// quand Svelte retire du DOM le champ qui a le focus : l'état ne peut pas
+		// changer pendant ce retrait (`state_unsafe_mutation`), on attend sa fin
+		const leave = (event: FocusEvent) => {
+			const next = event.relatedTarget;
+			if (next instanceof Node && root !== null && root.contains(next)) return;
+			queueMicrotask(attach);
+		};
+		attach();
+		document.addEventListener('focusin', attach);
+		document.addEventListener('focusout', leave);
+		window.addEventListener('resize', update);
+		return () => {
+			document.removeEventListener('focusin', attach);
+			document.removeEventListener('focusout', leave);
+			window.removeEventListener('resize', update);
+			keyboard?.removeEventListener('virtual-keyboard-toggle', update);
+			keyboard?.removeEventListener('geometrychange', update);
+		};
+	});
 
 	/**
 	 * La saisie écrite dans le champ mathématique, composée — ou `null` : la
@@ -392,9 +471,17 @@
 		highlightedProposal = proposals[next].insert;
 	}
 
-	/** La commande dont l'élève tape la suite, et son modèle sous le champ. */
+	/**
+	 * Le modèle sous le champ : celui de la commande dont l'élève tape la suite,
+	 * sinon, pour une définition de fonction, l'écriture « sur [a;b] » (phase 0
+	 * `docs/wip/modele-definition-progress.md`, dans les deux champs).
+	 */
 	const writing = $derived(inputMode === 'math' ? null : commandBeingWritten(catalog, desk.draft));
-	const model = $derived(writing === null ? null : (writing.example ?? writing.description));
+	const hint = $derived<DraftHint | null>(
+		writing !== null
+			? { model: writing.example ?? writing.description }
+			: definitionHint(desk.draft, inputMode)
+	);
 
 	/**
 	 * Une frappe rouvre la liste et remet le surlignage sur la première
@@ -509,6 +596,19 @@
 	}
 
 	/**
+	 * La note montrée : sans la phrase que l'autre écriture, une fois basculée,
+	 * rend caduque (« On peut simplifier davantage… » sous la simplification).
+	 */
+	function shownNote(entry: Entry): string | undefined {
+		const outdated = entry.alternative?.outdatedNote;
+		if (entry.note === undefined || outdated === undefined || !toggled.includes(entry.id)) {
+			return entry.note;
+		}
+		const rest = entry.note.replace(outdated, '').trim();
+		return rest === '' ? undefined : rest;
+	}
+
+	/**
 	 * Le rendu mathématique d'une ligne, ou `null` s'il n'y en a pas de sûr.
 	 *
 	 * Le repli est le TEXTE, échappé par Svelte : si la conversion échoue, on
@@ -558,9 +658,13 @@
 
 	function submit(event: SubmitEvent) {
 		event.preventDefault();
-		// Le bouton « Calculer » sous le champ mathématique : le même chemin qu'Entrée
+		// Pas de bouton « Calculer » (David, 2026-11-14) : Entrée, ou la touche ↵
+		// d'un clavier virtuel, valide. Le champ texte envoie le formulaire (seul
+		// champ : envoi implicite) ; le champ mathématique valide lui-même, et un
+		// envoi du formulaire en mode mathématique prend le même chemin
 		if (inputMode === 'math') naturalField?.submit();
-		else desk.submit(desk.draft);
+		// Ligne vide : rien (le bouton grisé bloquait aussi l'envoi par Entrée)
+		else if (desk.draft.trim() !== '') desk.submit(desk.draft);
 	}
 
 	/** Remplacer la commande en cours par celle que l'élève vient de choisir. */
@@ -639,9 +743,9 @@
 					{:else}
 						<span class="texte">{entry.text}</span>
 					{/if}
-					{#if entry.note !== undefined}
+					{#if shownNote(entry) !== undefined}
 						<!-- Montrée même quand la réponse est composée en mathématiques -->
-						<span class="note">{entry.note}</span>
+						<span class="note">{shownNote(entry)}</span>
 					{/if}
 					<!-- Les boutons de la ligne : au survol ou au focus, toujours au toucher -->
 					<span class="outils-ligne">
@@ -741,7 +845,7 @@
 								>
 							</div>
 						{/if}
-						<GeneratedStepsCorrection
+						<StepsOnDemand
 							steps={shownSteps(entry, { steps: lineSteps.steps, summary: lineSteps.summary })}
 						/>
 					</div>
@@ -828,50 +932,57 @@
 		</ul>
 	{/if}
 
-	{#if model !== null}
-		<p class="modele" id="{uid}-modele">Modèle : <code>{model}</code></p>
-	{/if}
-
-	<form onsubmit={submit}>
-		{#if inputMode === 'math'}
-			<div class="champ-math">
-				<NaturalField
-					bind:this={naturalField}
-					bind:latex={() => mathLatex, setMathLatex}
-					{words}
-					history={recallableLatex}
-					onsubmit={submitMath}
-					label="Calcul, définition ou commande"
-					placeholder={MATH_PLACEHOLDER}
-				/>
-			</div>
-		{:else}
-			<input
-				bind:this={field}
-				bind:value={desk.draft}
-				type="text"
-				autocomplete="off"
-				spellcheck="false"
-				role="combobox"
-				aria-autocomplete="list"
-				aria-expanded={listOpen || proposalsOpen}
-				aria-controls={listOpen
-					? `${uid}-commandes`
-					: proposalsOpen
-						? `${uid}-propositions`
-						: undefined}
-				aria-activedescendant={activeDescendant}
-				aria-describedby={model !== null ? `${uid}-modele` : undefined}
-				onkeydown={handleKeydown}
-				onkeyup={handleKeyup}
-				onclick={syncCaret}
-				oninput={handleInput}
-				aria-label="Calcul, définition ou commande"
-				placeholder="f(x) = x^2 − 3x + 1, ou 12 km + 300 m, ou un point pour les commandes"
-			/>
+	<div
+		class="saisie-bas"
+		class:epinglee={keyboardLift > 0}
+		style:bottom={keyboardLift > 0 ? `${keyboardLift}px` : undefined}
+	>
+		{#if hint !== null}
+			<p class="modele" id="{uid}-modele">
+				Modèle : <code>{hint.model}</code>{#if hint.note !== undefined}&nbsp;— {hint.note}{/if}
+			</p>
 		{/if}
-		<Button type="submit" disabled={desk.draft.trim() === ''}>Calculer</Button>
-	</form>
+
+		<form onsubmit={submit}>
+			{#if inputMode === 'math'}
+				<div class="champ-math">
+					<NaturalField
+						bind:this={naturalField}
+						bind:latex={() => mathLatex, setMathLatex}
+						{words}
+						history={recallableLatex}
+						onsubmit={submitMath}
+						label="Calcul, définition ou commande"
+						placeholder={phone.current ? SHORT_MATH_PLACEHOLDER : MATH_PLACEHOLDER}
+					/>
+				</div>
+			{:else}
+				<input
+					bind:this={field}
+					bind:value={desk.draft}
+					type="text"
+					autocomplete="off"
+					spellcheck="false"
+					role="combobox"
+					aria-autocomplete="list"
+					aria-expanded={listOpen || proposalsOpen}
+					aria-controls={listOpen
+						? `${uid}-commandes`
+						: proposalsOpen
+							? `${uid}-propositions`
+							: undefined}
+					aria-activedescendant={activeDescendant}
+					aria-describedby={hint !== null ? `${uid}-modele` : undefined}
+					onkeydown={handleKeydown}
+					onkeyup={handleKeyup}
+					onclick={syncCaret}
+					oninput={handleInput}
+					aria-label="Calcul, définition ou commande"
+					placeholder={phone.current ? SHORT_TEXT_PLACEHOLDER : TEXT_PLACEHOLDER}
+				/>
+			{/if}
+		</form>
+	</div>
 </div>
 
 <style>
@@ -1130,6 +1241,21 @@
 	form {
 		display: flex;
 		gap: 0.5rem;
+	}
+	.saisie-bas {
+		display: flex;
+		flex-direction: column;
+		gap: 0.5rem;
+	}
+	/* Au-dessus du clavier virtuel (écart E24), sous lui dans l'empilement
+	   (z-index 105 de MathLive) */
+	.saisie-bas.epinglee {
+		position: fixed;
+		inset-inline: 0;
+		z-index: 100;
+		padding: 0.5rem 0.75rem;
+		background: var(--color-background);
+		border-top: 1px solid var(--color-border);
 	}
 	.champ-math {
 		flex: 1;

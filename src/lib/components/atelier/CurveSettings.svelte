@@ -12,24 +12,30 @@
 	 *
 	 * Un réglage n'est pas une action : il n'écrit rien dans Calcul (S5).
 	 */
-	import { useAtelier } from '$lib/atelier/context';
-	import { areaRefusal, tangentRefusal } from '$lib/atelier/interval';
-	import { useGrapheurStore } from '$lib/stores/grapheur-context';
-	import { curveOf } from '$lib/atelier/plot-sync';
-	import type { CurveDisplay, FunctionObject } from '$lib/atelier/types';
-	import { isFunction } from '$lib/atelier/types';
-	import type { LineStyle } from '$lib/grapheur/types';
-	import { arcLengthBetween, curvatureAt, integralUnder, tangentAt } from '$lib/grapheur/analysis';
-	import { fromSliderIndex, SLIDER_STEPS, toSliderIndex } from '$lib/grapheur/slider';
-	import ColorPicker from '$lib/components/grapheur/ColorPicker.svelte';
-	import LineWidthPicker from '$lib/components/grapheur/LineWidthPicker.svelte';
-	import LineStylePicker from '$lib/components/grapheur/LineStylePicker.svelte';
-	import MyCheckbox from '$lib/components/MyCheckbox.svelte';
-	import { Slider } from '$lib/components/ui/slider';
-	import { isCurveColor } from '$lib/grapheur/colors';
-	import { Input } from '$lib/components/ui/input';
-	import { integralToggle, tangentToggle } from '$lib/atelier/curve-toggles';
-	import { gestureHandlers } from '$lib/atelier/gesture';
+	import { useAtelier } from '#lib/atelier/context.ts';
+	import { areaRefusal, tangentRefusal } from '#lib/atelier/interval.ts';
+	import { useGrapheurStore } from '#lib/stores/grapheur-context.ts';
+	import { curveOf } from '#lib/atelier/plot-sync.ts';
+	import type { CurveDisplay, FunctionObject } from '#lib/atelier/types.ts';
+	import { isFunction } from '#lib/atelier/types.ts';
+	import type { LineStyle } from '#lib/grapheur/types.ts';
+	import {
+		arcLengthBetween,
+		curvatureAt,
+		integralRefusal,
+		integralUnder,
+		tangentAt
+	} from '#lib/grapheur/analysis.ts';
+	import { fromSliderIndex, SLIDER_STEPS, toSliderIndex } from '#lib/grapheur/slider.ts';
+	import ColorPicker from '#lib/components/grapheur/ColorPicker.svelte';
+	import LineWidthPicker from '#lib/components/grapheur/LineWidthPicker.svelte';
+	import LineStylePicker from '#lib/components/grapheur/LineStylePicker.svelte';
+	import MyCheckbox from '#lib/components/MyCheckbox.svelte';
+	import { Slider } from '#lib/components/ui/slider/index.ts';
+	import { isCurveColor } from '#lib/grapheur/colors.ts';
+	import { Input } from '#lib/components/ui/input/index.ts';
+	import { integralToggle, tangentToggle } from '#lib/atelier/curve-toggles.ts';
+	import { gestureHandlers } from '#lib/atelier/gesture.ts';
 
 	interface Props {
 		object: FunctionObject;
@@ -106,6 +112,12 @@
 		curve && display.integral && areaRefused === null
 			? integralUnder(curve, display.integral.from, display.integral.to)
 			: undefined
+	);
+	// E2 : sans aire (un pôle entre les bornes), la phrase qui dit pourquoi
+	const areaFailure = $derived(
+		curve && display.integral && areaRefused === null && area === undefined
+			? integralRefusal(curve, display.integral.from, display.integral.to)
+			: null
 	);
 	const length = $derived(
 		curve && display.integral && display.showArcLength && areaRefused === null
@@ -332,7 +344,7 @@
 					aria-invalid={boundRefusal?.edge === 'to'}
 				/>
 			</div>
-			<p class="refus" role="alert">{boundRefusal?.message ?? areaRefused ?? ''}</p>
+			<p class="refus" role="alert">{boundRefusal?.message ?? areaRefused ?? areaFailure ?? ''}</p>
 			<div class="ligne">
 				<span class="nombre aire">aire = {area ? formatNumber(area.value) : '—'}</span>
 				<MyCheckbox

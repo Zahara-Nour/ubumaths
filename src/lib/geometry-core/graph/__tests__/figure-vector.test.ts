@@ -3,7 +3,7 @@ import { Figure } from '../figure';
 import { numeric, exact } from '../../types/geo-value';
 import { geoToNumber } from '../../compute/to-number';
 import { isVector, isVectorByPoints, isFreeVector } from '../../types/elements';
-import type { NumberNode } from '$lib/mathAST/types';
+import type { NumberNode } from '#lib/mathAST/types.ts';
 
 describe('Figure vector support', () => {
 	// ─── VectorByPoints ─────────────────────────────────────────────

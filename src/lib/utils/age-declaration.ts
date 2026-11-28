@@ -7,7 +7,7 @@
  * (POST /api/student/age-declaration) ; annulation : par le professeur.
  */
 
-import type { AgeDeclaration } from '$lib/types/database-helpers';
+import type { AgeDeclaration } from '#lib/types/database-helpers.ts';
 
 /** Seul niveau où la question est posée. */
 export const AGE_QUESTION_GRADE = '2';

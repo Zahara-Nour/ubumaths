@@ -1,0 +1,492 @@
+{
+	"id": "8fb1a23a-6e98-4b58-8745-caf5fec3dc88",
+	"title": "Valeur d'une puissance",
+	"description": "Calculer (−a)ⁿ, a⁻ⁿ, 0,dⁿ et a⁰ (pièges : (−2)³ = 8, 5⁻² = −25, 0,3² = 0,6, 7⁰ = 0)",
+	"grades": ["2"],
+	"level": 4,
+	"delay": 45,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Calcule.\n\n$$(-{{a}})^{ {{n}} }=?$$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..5"
+				},
+				{
+					"name": "n",
+					"expression": "2..5"
+				},
+				{
+					"name": "p",
+					"expression": "eval:(-(a))^(n)"
+				}
+			],
+			"conditions": ["(a)^(n) <= 700"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{p}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:-(p)}}",
+							"message": "Ton signe n'est pas le bon : compte combien de facteurs négatifs tu multiplies.",
+							"label": "Signe faux"
+						},
+						{
+							"answer": "{{eval:-(a)*(n)}}",
+							"message": "Tu as multiplié la base par l'exposant : une puissance est un produit de facteurs égaux.",
+							"label": "(−a) × n au lieu de (−a)ⁿ"
+						},
+						{
+							"answer": "{{eval:(a)*(n)}}",
+							"message": "Tu as multiplié le nombre par l'exposant et perdu le signe : une puissance est un produit de facteurs égaux.",
+							"label": "a × n, signe perdu"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Définition** : pour $n\\geqslant 1$, $a^n=a\\times a\\times\\cdots\\times a$ ($n$ facteurs) ; $a^0=1$ et $a^{-n}=\\dfrac{1}{a^n}$ (pour $a\\neq0$).",
+					"$$(-{{a}})^{ {{n}} }={{if:n==2|(-{{a}})\\times (-{{a}})|{{if:n==3|(-{{a}})\\times (-{{a}})\\times (-{{a}})|{{if:n==4|(-{{a}})\\times (-{{a}})\\times (-{{a}})\\times (-{{a}})|(-{{a}})\\times (-{{a}})\\times (-{{a}})\\times (-{{a}})\\times (-{{a}})}}}}}}$$",
+					"Il y a ${{n}}$ facteurs négatifs, un nombre {{if:n==3|impair|{{if:n==5|impair|pair}}}} : le résultat est {{if:p<0|négatif|positif}}.",
+					"$$(-{{a}})^{ {{n}} }=\\textcolor{{{color:primary.0}}}{{{p}}}$$"
+				]
+			},
+			"hint": "Écris $(-{{a}})^{ {{n}} }$ comme un produit de ${{n}}$ facteurs égaux à $-{{a}}$, puis compte les facteurs négatifs pour trouver le signe."
+		},
+		{
+			"statement": "Calcule. Donne le résultat sous la forme d'une fraction, ou d'un nombre décimal quand c'est possible.\n\n$${{a}}^{-{{n}} }=?$$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2|3|4|5|10"
+				},
+				{
+					"name": "n",
+					"expression": "2..3"
+				},
+				{
+					"name": "q",
+					"expression": "eval:(a)^(n)"
+				}
+			],
+			"conditions": ["(a)^(n) <= 1000"],
+			"blanks": [
+				{
+					"expectedAnswer": "\\frac{1}{ {{q}} }",
+					"acceptDecimal": true,
+					"expectedErrors": [
+						{
+							"answer": "-{{q}}",
+							"message": "Un exposant négatif ne rend pas le nombre négatif : relis ce que signifie $a^{-n}$.",
+							"label": "a⁻ⁿ = −aⁿ"
+						},
+						{
+							"answer": "\\frac{1}{ {{eval:(a)*(n)}} }",
+							"message": "Au dénominateur, tu as multiplié le nombre par l'exposant au lieu de calculer la puissance.",
+							"label": "1/(a × n)"
+						},
+						{
+							"answer": "{{q}}",
+							"message": "Tu as calculé la puissance sans tenir compte du signe « − » de l'exposant.",
+							"label": "Inverse oublié (aⁿ)"
+						},
+						{
+							"answer": "{{eval:-(a)*(n)}}",
+							"message": "Tu as multiplié le nombre par l'exposant : une puissance n'est pas un produit par l'exposant.",
+							"label": "a × (−n)"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Définition** : pour $n\\geqslant 1$, $a^n=a\\times a\\times\\cdots\\times a$ ($n$ facteurs) ; $a^0=1$ et $a^{-n}=\\dfrac{1}{a^n}$ (pour $a\\neq0$). Un exposant négatif ne rend pas le nombre négatif.",
+					"$${{a}}^{-{{n}} }=\\dfrac{1}{ {{a}}^{ {{n}} } }=\\dfrac{1}{{{if:n==2|{{a}}\\times {{a}}|{{a}}\\times {{a}}\\times {{a}}}}}=\\textcolor{{{color:primary.0}}}{\\dfrac{1}{ {{q}} }}$$"
+				]
+			},
+			"hint": "Un exposant négatif donne un inverse : écris ${{a}}^{-{{n}} }$ comme une fraction de numérateur $1$."
+		},
+		{
+			"statement": "Calcule. Donne le résultat en écriture décimale.\n\n$$0{,}{{d}}^{ {{n}} }=?$$",
+			"variables": [
+				{
+					"name": "d",
+					"expression": "1..9"
+				},
+				{
+					"name": "n",
+					"expression": "2..3"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(d)^(n)/10^(n);d}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:(d)*(n)/10;d}}",
+							"message": "Tu as multiplié par l'exposant : une puissance est un produit de facteurs égaux.",
+							"label": "0,d × n"
+						},
+						{
+							"answer": "{{eval:(d)^(n)/10;d}}",
+							"message": "La virgule est mal placée : compte les chiffres après la virgule dans tous les facteurs.",
+							"label": "Un seul chiffre après la virgule"
+						},
+						{
+							"answer": "{{eval:(d)^(n)}}",
+							"message": "Tu as oublié la virgule : le résultat est plus petit que 1.",
+							"label": "Virgule oubliée"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Définition** : pour $n\\geqslant 1$, $a^n=a\\times a\\times\\cdots\\times a$ ($n$ facteurs) ; $a^0=1$ et $a^{-n}=\\dfrac{1}{a^n}$ (pour $a\\neq0$).",
+					"$$0{,}{{d}}^{ {{n}} }={{if:n==2|0{,}{{d}}\\times 0{,}{{d}}|0{,}{{d}}\\times 0{,}{{d}}\\times 0{,}{{d}}}}=\\textcolor{{{color:primary.0}}}{{{eval:(d)^(n)/10^(n);d}}}$$",
+					"${{d}}^{ {{n}} }={{eval:(d)^(n)}}$, puis on place la virgule : il y a ${{eval:(n)}}$ chiffres après la virgule dans les facteurs, donc ${{eval:(n)}}$ dans le résultat.",
+					"Attention : $0{,}{{d}}^{ {{n}} }$ n'est pas $0{,}{{d}}\\times{{n}}$."
+				]
+			},
+			"hint": "Écris le produit de ${{n}}$ facteurs égaux à $0{,}{{d}}$, puis compte les chiffres après la virgule."
+		},
+		{
+			"statement": "Calcule.\n\n$${{if:t==0|{{a}}|(-{{a}})}}^{0}=?$$",
+			"variables": [
+				{
+					"name": "t",
+					"expression": "0|1"
+				},
+				{
+					"name": "a",
+					"expression": "2..15"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "1",
+					"expectedErrors": [
+						{
+							"answer": "0",
+							"message": "Une puissance d'exposant $0$ ne vaut pas $0$ : relis la définition de $a^0$.",
+							"label": "a⁰ = 0"
+						},
+						{
+							"answer": "{{eval:(1-2*(t))*(a)}}",
+							"message": "L'exposant $0$ ne laisse pas le nombre inchangé : c'est l'exposant $1$ qui fait cela.",
+							"label": "a⁰ = a"
+						},
+						{
+							"answer": "-1",
+							"message": "Une puissance d'exposant $0$ n'est jamais négative.",
+							"label": "a⁰ = −1"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Définition** : pour $n\\geqslant 1$, $a^n=a\\times a\\times\\cdots\\times a$ ($n$ facteurs) ; $a^0=1$ et $a^{-n}=\\dfrac{1}{a^n}$ (pour $a\\neq0$).",
+					"Tout nombre non nul élevé à la puissance $0$ vaut $1$ : ${{if:t==0|{{a}}|(-{{a}})}}^{0}=\\textcolor{{{color:primary.0}}}{1}$.",
+					"Pourquoi ? ${{a}}^{1}\\div {{a}}^{1}={{a}}^{1-1}={{a}}^{0}$, et un nombre divisé par lui-même vaut $1$."
+				]
+			},
+			"hint": "Que vaut ${{a}}^{1}\\div{{a}}^{1}$ ? Avec les règles des exposants, c'est aussi ${{a}}^{0}$."
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "(−2)³ = −8",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"n": "3"
+			},
+			"answers": ["-8"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : signe oublié, (−2)³ = 8",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"n": "3"
+			},
+			"answers": ["8"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Ton signe n'est pas le bon : compte combien de facteurs négatifs tu multiplies."
+			}
+		},
+		{
+			"description": "Erreur : (−2) × 3 = −6",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"n": "3"
+			},
+			"answers": ["-6"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as multiplié la base par l'exposant : une puissance est un produit de facteurs égaux."
+			}
+		},
+		{
+			"description": "(−3)⁴ = 81",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"n": "4"
+			},
+			"answers": ["81"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : (−3)⁴ = −81",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"n": "4"
+			},
+			"answers": ["-81"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "5⁻² = 1/25",
+			"variationIndex": 1,
+			"variables": {
+				"a": "5",
+				"n": "2"
+			},
+			"answers": ["\\frac{1}{25}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "5⁻² = 0,04 (décimal exact)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "5",
+				"n": "2"
+			},
+			"answers": ["0,04"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 5⁻² = −25",
+			"variationIndex": 1,
+			"variables": {
+				"a": "5",
+				"n": "2"
+			},
+			"answers": ["-25"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Un exposant négatif ne rend pas le nombre négatif : relis ce que signifie $a^{-n}$."
+			}
+		},
+		{
+			"description": "Erreur : 5⁻² = −10",
+			"variationIndex": 1,
+			"variables": {
+				"a": "5",
+				"n": "2"
+			},
+			"answers": ["-10"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as multiplié le nombre par l'exposant : une puissance n'est pas un produit par l'exposant."
+			}
+		},
+		{
+			"description": "Erreur : 5⁻² = 1/10",
+			"variationIndex": 1,
+			"variables": {
+				"a": "5",
+				"n": "2"
+			},
+			"answers": ["\\frac{1}{10}"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Au dénominateur, tu as multiplié le nombre par l'exposant au lieu de calculer la puissance."
+			}
+		},
+		{
+			"description": "0,3² = 0,09",
+			"variationIndex": 2,
+			"variables": {
+				"d": "3",
+				"n": "2"
+			},
+			"answers": ["0,09"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 0,3² = 0,9",
+			"variationIndex": 2,
+			"variables": {
+				"d": "3",
+				"n": "2"
+			},
+			"answers": ["0,9"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "La virgule est mal placée : compte les chiffres après la virgule dans tous les facteurs."
+			}
+		},
+		{
+			"description": "Erreur : 0,3² = 0,6",
+			"variationIndex": 2,
+			"variables": {
+				"d": "3",
+				"n": "2"
+			},
+			"answers": ["0,6"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as multiplié par l'exposant : une puissance est un produit de facteurs égaux."
+			}
+		},
+		{
+			"description": "0,2³ = 0,008",
+			"variationIndex": 2,
+			"variables": {
+				"d": "2",
+				"n": "3"
+			},
+			"answers": ["0,008"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "7⁰ = 1",
+			"variationIndex": 3,
+			"variables": {
+				"t": "0",
+				"a": "7"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 7⁰ = 0",
+			"variationIndex": 3,
+			"variables": {
+				"t": "0",
+				"a": "7"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Une puissance d'exposant $0$ ne vaut pas $0$ : relis la définition de $a^0$."
+			}
+		},
+		{
+			"description": "Erreur : 7⁰ = 7",
+			"variationIndex": 3,
+			"variables": {
+				"t": "0",
+				"a": "7"
+			},
+			"answers": ["7"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "L'exposant $0$ ne laisse pas le nombre inchangé : c'est l'exposant $1$ qui fait cela."
+			}
+		},
+		{
+			"description": "(−4)⁰ = 1",
+			"variationIndex": 3,
+			"variables": {
+				"t": "1",
+				"a": "4"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : (−4)⁰ = −1",
+			"variationIndex": 3,
+			"variables": {
+				"t": "1",
+				"a": "4"
+			},
+			"answers": ["-1"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Une puissance d'exposant $0$ n'est jamais négative."
+			}
+		},
+		{
+			"description": "Erreur prévue : a × n, signe perdu",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"n": "3"
+			},
+			"answers": ["6"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as multiplié le nombre par l'exposant et perdu le signe : une puissance est un produit de facteurs égaux."
+			}
+		},
+		{
+			"description": "Erreur prévue : Inverse oublié (aⁿ)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "5",
+				"n": "2"
+			},
+			"answers": ["25"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as calculé la puissance sans tenir compte du signe « − » de l'exposant."
+			}
+		},
+		{
+			"description": "Erreur prévue : Virgule oubliée",
+			"variationIndex": 2,
+			"variables": {
+				"d": "3",
+				"n": "2"
+			},
+			"answers": ["9"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as oublié la virgule : le résultat est plus petit que 1."
+			}
+		},
+		{
+			"description": "Forme : 0,3² = 9/100 (écriture décimale demandée)",
+			"variationIndex": 2,
+			"variables": {
+				"d": "3",
+				"n": "2"
+			},
+			"answers": ["\\frac{9}{100}"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		}
+	]
+}

@@ -13,12 +13,12 @@
 	@module components/cours/DocumentCard
 -->
 <script lang="ts">
-	import type { ChapterDocument } from '$lib/types/chapters';
-	import { formatFileSize, getFileTypeLabel } from '$lib/types/chapters';
-	import { Button } from '$lib/components/ui/button';
-	import * as Card from '$lib/components/ui/card';
-	import { Badge } from '$lib/components/ui/badge';
-	import { cn } from '$lib/utils';
+	import type { ChapterDocument } from '#lib/types/chapters.ts';
+	import { formatFileSize, getFileTypeLabel } from '#lib/types/chapters.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
+	import { cn } from '#lib/utils.ts';
 	import {
 		FileText,
 		FileImage,

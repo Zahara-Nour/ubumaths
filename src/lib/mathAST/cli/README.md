@@ -243,6 +243,14 @@ Goodbye!
 | `.unset <name>`          | Remove a single variable                |
 | `.mode [exact\|decimal]` | Show or set evaluation mode             |
 
+### Couleurs : terminal seulement
+
+Les commandes servent aussi à l'atelier, dans le navigateur. Elles écrivent leurs mises en valeur
+par la palette de `core/terminal-colors.ts` (`colors.bold`, `colors.cyan`…), qui rend le **texte
+brut** par défaut. Seuls les points d'entrée du terminal (`cli.ts`, `repl.ts`) y branchent `chalk`
+par `useChalkColors()` (`terminal-palette.ts`). Ne jamais importer `chalk` ailleurs : il partirait
+dans le code de l'atelier (garde : `__tests__/core/terminal-colors.test.ts`).
+
 ## Variable Bindings
 
 The REPL supports defining and using variables through an evaluation state system. Variables can be defined, listed, evaluated, and removed during your REPL session.

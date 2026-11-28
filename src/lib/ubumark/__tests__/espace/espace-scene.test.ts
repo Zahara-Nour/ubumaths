@@ -2,9 +2,9 @@
  * Bloc ```cubes : la scène (calcul pur, partagé écran / PDF)
  */
 import { describe, expect, it } from 'vitest';
-import { parseEspaceContent } from '$lib/ubumark/parser/espace-parser';
-import { buildEspaceScene, espaceLabel } from '$lib/ubumark/utils/espace-scene';
-import type { CubesSpec, CubesView } from '$lib/ubumark/types/espace';
+import { parseEspaceContent } from '#lib/ubumark/parser/espace-parser.ts';
+import { buildEspaceScene, espaceLabel } from '#lib/ubumark/utils/espace-scene.ts';
+import type { CubesSpec, CubesView } from '#lib/ubumark/types/espace.ts';
 
 const spec = (heights: string, view: CubesView = 'perspective'): CubesSpec => {
 	const node = parseEspaceContent(`hauteurs: ${heights}\nvue: ${view}`);

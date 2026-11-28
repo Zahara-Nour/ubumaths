@@ -1,0 +1,248 @@
+{
+	"id": "fd017309-11d0-429f-b776-5bbdabbb3f6b",
+	"title": "Problèmes de comparaison additive",
+	"description": "Le plus grand, l'écart (« combien de plus ? »), le plus petit quand l'énoncé dit « de plus », avec des nombres de sept chiffres ; deux unités (2,345 kg, 85 g de plus) ; une étape",
+	"grades": ["CM2"],
+	"level": 6,
+	"delay": 120,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"spacesFromFourDigits": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "L'an dernier, une usine a fabriqué ${{a}}$ bouteilles. Cette année, elle en a fabriqué ${{d}}$ de plus.\n\nCombien de bouteilles l'usine a-t-elle fabriquées cette année ?\n\nElle en a fabriqué $?$.",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1200000..8500000"
+				},
+				{
+					"name": "d",
+					"expression": "15000..900000"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a+d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Cette année, l'usine en a fabriqué autant que l'an dernier, et encore ${{d}}$ de plus : on ajoute l'écart.\n\n```schema-barres\nL'an dernier : {{eval:floor((a)/1000000)}} {{eval:floor(mod((floor((a)/1000)),1000)/100)}}{{eval:floor(mod((floor((a)/1000)),100)/10)}}{{eval:mod((floor((a)/1000)),10)}} {{eval:floor(mod((a),1000)/100)}}{{eval:floor(mod((a),100)/10)}}{{eval:mod((a),10)}} (6)\nCette année : {{eval:floor((a)/1000000)}} {{eval:floor(mod((floor((a)/1000)),1000)/100)}}{{eval:floor(mod((floor((a)/1000)),100)/10)}}{{eval:mod((floor((a)/1000)),10)}} {{eval:floor(mod((a),1000)/100)}}{{eval:floor(mod((a),100)/10)}}{{eval:mod((a),10)}} (6) ; {{eval:floor((d)/1000)}} {{eval:floor(mod((d),1000)/100)}}{{eval:floor(mod((d),100)/10)}}{{eval:mod((d),10)}} (2) = ?\n```",
+					"$${{a}} + {{d}} = \\textcolor{{{color:primary.0}}}{{{eval:a+d}}}$$",
+					"L'usine a fabriqué ${{eval:a+d}}$ bouteilles cette année.",
+					"C'est plus que l'an dernier, et ${{eval:a+d}} - {{a}} = {{d}}$."
+				]
+			}
+		},
+		{
+			"statement": "La ville d'Arlan compte ${{f}}$ habitants ; la ville de Bério en compte ${{g}}$.\n\nCombien d'habitants Arlan compte-t-elle de plus que Bério ?\n\nArlan en compte $?$ de plus.",
+			"variables": [
+				{
+					"name": "f",
+					"expression": "1100000..9800000"
+				},
+				{
+					"name": "g",
+					"expression": "1000000..9700000"
+				}
+			],
+			"conditions": ["f - g >= 12000", "f - g <= 900000"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:f-g}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On cherche **l'écart** : ce qu'il faut ajouter à ${{g}}$ pour arriver à ${{f}}$. C'est une soustraction, même si la question dit « de plus ».\n\n```schema-barres\nBério : {{eval:floor((g)/1000000)}} {{eval:floor(mod((floor((g)/1000)),1000)/100)}}{{eval:floor(mod((floor((g)/1000)),100)/10)}}{{eval:mod((floor((g)/1000)),10)}} {{eval:floor(mod((g),1000)/100)}}{{eval:floor(mod((g),100)/10)}}{{eval:mod((g),10)}} (6)\nArlan : {{eval:floor((g)/1000000)}} {{eval:floor(mod((floor((g)/1000)),1000)/100)}}{{eval:floor(mod((floor((g)/1000)),100)/10)}}{{eval:mod((floor((g)/1000)),10)}} {{eval:floor(mod((g),1000)/100)}}{{eval:floor(mod((g),100)/10)}}{{eval:mod((g),10)}} (6) ; ? (2) = {{eval:floor((f)/1000000)}} {{eval:floor(mod((floor((f)/1000)),1000)/100)}}{{eval:floor(mod((floor((f)/1000)),100)/10)}}{{eval:mod((floor((f)/1000)),10)}} {{eval:floor(mod((f),1000)/100)}}{{eval:floor(mod((f),100)/10)}}{{eval:mod((f),10)}}\n```",
+					"$${{f}} - {{g}} = \\textcolor{{{color:primary.0}}}{{{eval:f-g}}}$$",
+					"Arlan compte ${{eval:f-g}}$ habitants de plus que Bério.",
+					"On vérifie : ${{g}} + {{eval:f-g}} = {{f}}$."
+				]
+			}
+		},
+		{
+			"statement": "Le département du Valmont compte ${{a}}$ habitants. Il en compte ${{d}}$ de plus que le département du Sorbier.\n\nCombien d'habitants le département du Sorbier compte-t-il ?\n\nLe Sorbier compte $?$ habitants.",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "520000..2600000"
+				},
+				{
+					"name": "d",
+					"expression": "12000..300000"
+				}
+			],
+			"conditions": ["a - d >= 400000"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a-d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le Valmont a plus d'habitants : c'est le Sorbier qui en a ${{d}}$ de **moins**. On enlève l'écart, même si l'énoncé dit « de plus ».",
+					"$${{a}} - {{d}} = \\textcolor{{{color:primary.0}}}{{{eval:a-d}}}$$",
+					"Le département du Sorbier compte ${{eval:a-d}}$ habitants.",
+					"On vérifie : ${{eval:a-d}} + {{d}} = {{a}}$ ; le Valmont en a bien ${{d}}$ de plus."
+				]
+			}
+		},
+		{
+			"statement": "Le sac de Nina pèse ${{eval:A/1000;d}}~\\unit{kg}$. Il pèse ${{d}}~\\unit{g}$ de plus que le sac de Yanis.\n\nCombien pèse le sac de Yanis ?\n\nIl pèse $?~\\text{kg}$.",
+			"variables": [
+				{
+					"name": "A",
+					"expression": "1250..4800"
+				},
+				{
+					"name": "d",
+					"expression": "35..480"
+				}
+			],
+			"conditions": ["mod(A,10) != 0", "mod(A-d,10) != 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(A-d)/1000;d}}",
+					"requiredForm": {
+						"pattern": "a:number"
+					}
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le sac de Nina est le plus lourd : celui de Yanis pèse ${{d}}~\\unit{g}$ de **moins**. On enlève l'écart, après avoir tout écrit dans la **même unité** : ${{d}}~\\unit{g} = {{eval:d/1000;d}}~\\unit{kg}$.",
+					"$${{eval:A/1000;d}} - {{eval:d/1000;d}} = \\textcolor{{{color:primary.0}}}{{{eval:(A-d)/1000;d}}}$$",
+					"Le sac de Yanis pèse ${{eval:(A-d)/1000;d}}~\\unit{kg}$.",
+					"Les deux sacs ont des masses proches, à quelques centaines de grammes près : c'est vraisemblable."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "plus grand : 3 450 200 + 125 600 = 3 575 800",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3450200",
+				"d": "125600"
+			},
+			"answers": ["3\\,575\\,800"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : plus grand, l'écart enlevé (3 324 600)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3450200",
+				"d": "125600"
+			},
+			"answers": ["3\\,324\\,600"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "écart : 4 215 300 − 3 987 450 = 227 850",
+			"variationIndex": 1,
+			"variables": {
+				"f": "4215300",
+				"g": "3987450"
+			},
+			"answers": ["227\\,850"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : écart, « de plus » lu addition (8 202 750)",
+			"variationIndex": 1,
+			"variables": {
+				"f": "4215300",
+				"g": "3987450"
+			},
+			"answers": ["8\\,202\\,750"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : écart, soustraction chiffre à chiffre (1 772 150)",
+			"variationIndex": 1,
+			"variables": {
+				"f": "4215300",
+				"g": "3987450"
+			},
+			"answers": ["1\\,772\\,150"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "plus petit : 1 248 500 − 86 250 = 1 162 250",
+			"variationIndex": 2,
+			"variables": {
+				"a": "1248500",
+				"d": "86250"
+			},
+			"answers": ["1\\,162\\,250"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : plus petit, « de plus » lu addition (1 334 750)",
+			"variationIndex": 2,
+			"variables": {
+				"a": "1248500",
+				"d": "86250"
+			},
+			"answers": ["1\\,334\\,750"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "deux unités : 2,345 kg − 87 g = 2,258 kg",
+			"variationIndex": 3,
+			"variables": {
+				"A": "2345",
+				"d": "87"
+			},
+			"answers": ["2,258"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : deux unités, 87 g lu 0,87 kg (1,475)",
+			"variationIndex": 3,
+			"variables": {
+				"A": "2345",
+				"d": "87"
+			},
+			"answers": ["1,475"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : deux unités, écart ajouté (2,432)",
+			"variationIndex": 3,
+			"variables": {
+				"A": "2345",
+				"d": "87"
+			},
+			"answers": ["2,432"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

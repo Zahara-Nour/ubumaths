@@ -12,11 +12,12 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import BuddyGainCard from '../BuddyGainCard.svelte';
 import BuddyStatusPanel from '../BuddyStatusPanel.svelte';
-import { parseBuddyGain, receiveBuddyGain, toBuddyGainView } from '../buddy-gain';
-import { buddyMessages } from '$lib/config/buddy-messages';
-import { studentCache } from '$lib/stores/studentDashboardCache.svelte';
-import type { BuddyState } from '$lib/types/buddy';
-import { utcDay, weekStartOf } from '$lib/utils/buddy-constance';
+import { parseBuddyGain, receiveBuddyGain, seriesElapsedMs, toBuddyGainView } from '../buddy-gain';
+import { registerBuddyActivityListener } from '../palotin-presence';
+import { buddyMessages } from '#lib/config/buddy-messages.ts';
+import { studentCache } from '#lib/stores/studentDashboardCache.svelte.ts';
+import type { BuddyState } from '#lib/types/buddy.ts';
+import { utcDay, weekStartOf } from '#lib/utils/buddy-constance.ts';
 
 // Constantes
 /** Lundi de la semaine en cours (UTC) et celui d'il y a deux semaines. */
@@ -283,8 +284,25 @@ describe('BuddyStatusPanel — Constance Royale en semaines', () => {
 			constance_week_start: TWO_WEEKS_AGO,
 			constance_days_this_week: 3
 		});
-		expect(shown).toContain('Constance Royale : 0 semaine');
+		// R1 (2026-11-12) : la remise à zéro n'est pas montrée, ni « 0 semaine »
+		expect(shown).not.toContain('Constance Royale');
 		expect(shown).toContain('Cette semaine : 0 jour sur 3');
+		expect(shown).toContain('Record : 5 semaines');
+	});
+});
+
+describe('receiveBuddyGain — activité signalée au Palotin (retour après une pause)', () => {
+	it('gain non nul : la présence du Palotin est prévenue ; gain nul : non', async () => {
+		const listener = vi.fn();
+		const unregister = registerBuddyActivityListener(listener);
+		try {
+			await receiveBuddyGain(saveResponse({ xp_gained: 0, daily_cap_reached: true }));
+			expect(listener).not.toHaveBeenCalled();
+			await receiveBuddyGain(saveResponse());
+			expect(listener).toHaveBeenCalledTimes(1);
+		} finally {
+			unregister();
+		}
 	});
 });
 
@@ -318,12 +336,94 @@ describe('receiveBuddyGain — Constance Royale à jour sans recharger', () => {
 	});
 });
 
-describe('répliques de Constance perdue — en semaines', () => {
-	it('chaque Palotin parle de la semaine manquée, jamais d’une série de jours', () => {
+describe('répliques du retour après une pause (R2, 2026-11-12)', () => {
+	it('ni durée, ni absence, ni tristesse, ni genre', () => {
 		for (const palotin of ['giron', 'pile', 'cotice'] as const) {
-			const lines = buddyMessages[palotin].streak_lost;
-			expect(lines.length).toBeGreaterThan(0);
-			for (const line of lines) expect(line).toMatch(/semaine|Constance/i);
+			const lines = buddyMessages[palotin].return_after_pause;
+			expect(lines.length).toBeGreaterThanOrEqual(3);
+			for (const line of lines) {
+				expect(line).not.toMatch(
+					/manqu|absen|longtemps|jours?\b|semaines?|mois|oubli|seul|triste/i
+				);
+				// Neutre en genre : pas d'accord au masculin ou au féminin sur l'élève
+				expect(line).not.toMatch(/\b(content|contente|revenu|revenue|prêt|prête)\b/i);
+			}
 		}
+	});
+
+	it('plus aucune réplique de Constance perdue (R1, 2026-11-12)', () => {
+		for (const palotin of ['giron', 'pile', 'cotice'] as const) {
+			expect(Object.keys(buddyMessages[palotin])).not.toContain('streak_lost');
+			expect(Object.keys(buddyMessages[palotin])).not.toContain('long_absence');
+		}
+	});
+});
+
+describe('question longtemps ratée enfin réussie (B3, 2026-11-12)', () => {
+	function withStruggle(
+		longStruggleWon: unknown,
+		xpResult: Parameters<typeof saveResponse>[0] = {}
+	) {
+		const payload = saveResponse(xpResult);
+		return { ...payload, buddy_xp: { ...payload.buddy_xp, longStruggleWon } };
+	}
+
+	it('fêtée : la réplique du moment remplace celle du gain, Palotin ravi', async () => {
+		const gain = viewOf(withStruggle(true));
+		expect(gain?.expression).toBe('excited');
+		const { container } = await render(BuddyGainCard, { gain });
+		const shown = texte(container);
+		expect(shown).toContain('Giron a gagné 12 pansées');
+		expect(buddyMessages.giron.long_struggle_won.some((m) => shown.includes(m))).toBe(true);
+		expect(buddyMessages.giron.session_gain.some((m) => shown.includes(m))).toBe(false);
+	});
+
+	it('avec une montée de tour de panse : la réplique du moment, le nouveau tour reste annoncé', async () => {
+		const { container } = await render(BuddyGainCard, {
+			gain: viewOf(withStruggle(true, { leveled_up: true, new_level: 4 }))
+		});
+		const shown = texte(container);
+		expect(shown).toContain('Nouveau tour de panse : 4 !');
+		expect(buddyMessages.giron.long_struggle_won.some((m) => shown.includes(m))).toBe(true);
+	});
+
+	it('panse pleine : la réplique du moment, la panse pleine reste dite', async () => {
+		const { container } = await render(BuddyGainCard, {
+			gain: viewOf(withStruggle(true, { xp_gained: 0, daily_cap_reached: true }))
+		});
+		const shown = texte(container);
+		expect(shown).toContain('Sa panse est pleine');
+		expect(buddyMessages.giron.long_struggle_won.some((m) => shown.includes(m))).toBe(true);
+	});
+
+	it('faux, absent ou mal formé : la réplique habituelle', () => {
+		for (const value of [false, undefined, 'oui']) {
+			const gain = viewOf(withStruggle(value));
+			expect(gain, String(value)).not.toBeNull();
+			expect(buddyMessages.giron.session_gain).toContain(gain?.message);
+		}
+	});
+
+	it('répliques : 3 par Palotin, ni nombre, ni durée, ni échec rappelé', () => {
+		for (const palotin of ['giron', 'pile', 'cotice'] as const) {
+			const lines = buddyMessages[palotin].long_struggle_won;
+			expect(lines.length).toBe(3);
+			for (const line of lines) {
+				expect(line).not.toMatch(/\d|jours?\b|semaines?|fois|rat[ée]|échec|erreur|faux/i);
+				expect(line).not.toMatch(/\b(content|contente|prêt|prête|fier|fière)\b/i);
+			}
+		}
+	});
+});
+
+describe('seriesElapsedMs — durée envoyée en fin de série (B3)', () => {
+	it('durée de la série, bornée entre 0 et 24 h comme le serveur l’accepte', () => {
+		expect(seriesElapsedMs(1_000, 61_000)).toBe(60_000);
+		// Horloge qui recule
+		expect(seriesElapsedMs(61_000, 1_000)).toBe(0);
+		// Page laissée ouverte deux jours
+		expect(seriesElapsedMs(0, 48 * 3600 * 1000)).toBe(24 * 3600 * 1000);
+		// Début inconnu : 0, jamais NaN (envoyé en null)
+		expect(seriesElapsedMs(Number.NaN, 1_000)).toBe(0);
 	});
 });

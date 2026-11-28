@@ -1,0 +1,184 @@
+{
+	"id": "137195bd-8a98-4078-8032-deb715133090",
+	"title": "Quelle fraction décimale de la figure est coloriée ?",
+	"description": "Lire une fraction décimale sur une grille de 100 cases (37/100) ; au-delà de 1, sur 2 ou 3 bandes de 10 (23/10) ou sur 2 grilles (137/100)",
+	"grades": ["CM2"],
+	"level": 14,
+	"delay": 45,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"reducedFractions": "off"
+		}
+	},
+	"variations": [
+		{
+			"statement": "Quelle fraction de la figure est coloriée ? Écris-la sous la forme d'une fraction décimale.\n\n```partage\nforme: grille 10×10\ngris: {{g}}\n```\n\n$$?$$",
+			"variables": [
+				{
+					"name": "g",
+					"expression": "11..99"
+				}
+			],
+			"conditions": ["mod(g,10)!=0"],
+			"blanks": [
+				{
+					"expectedAnswer": "\\frac{{{g}}}{100}",
+					"requiredForm": "fraction"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La grille a $10 \\times 10 = 100$ cases : une case, c'est un **centième**.",
+					"On compte les lignes entières de $10$ cases, puis les cases qui restent : ${{g}}$ cases sont coloriées.",
+					"$$\\textcolor{{{color:primary.0}}}{\\frac{{{g}}}{100}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Chaque bande est une unité. Quelle fraction de l'unité est coloriée ? Écris-la sous la forme d'une fraction décimale.\n\n```partage\nforme: bande 10\nunites: {{u}}\ngris: {{g}}\n```\n\n$$?$$",
+			"variables": [
+				{
+					"name": "u",
+					"expression": "2..3"
+				},
+				{
+					"name": "g",
+					"expression": "11..{{eval:10*u-1}}"
+				}
+			],
+			"conditions": ["mod(g,10)!=0"],
+			"blanks": [
+				{
+					"expectedAnswer": "\\frac{{{g}}}{10}",
+					"requiredForm": "fraction"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Chaque bande est partagée en $10$ parts égales : une part, c'est un **dixième**.",
+					"On compte toutes les parts coloriées, sur toutes les bandes : il y en a ${{g}}$.",
+					"$$\\textcolor{{{color:primary.0}}}{\\frac{{{g}}}{10}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Chaque grille est une unité. Quelle fraction de l'unité est coloriée ? Écris-la sous la forme d'une fraction décimale.\n\n```partage\nforme: grille 10×10\nunites: 2\ngris: {{g}}\n```\n\n$$?$$",
+			"variables": [
+				{
+					"name": "g",
+					"expression": "101..199"
+				}
+			],
+			"conditions": ["mod(g,10)!=0"],
+			"blanks": [
+				{
+					"expectedAnswer": "\\frac{{{g}}}{100}",
+					"requiredForm": "fraction"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Chaque grille a $100$ cases : une case, c'est un **centième**.",
+					"La première grille est entièrement coloriée : $100$ cases. Sur la deuxième, ${{eval:g-100}}$ cases. En tout, ${{g}}$ cases.",
+					"$$\\textcolor{{{color:primary.0}}}{\\frac{{{g}}}{100}}$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "37 cases : 37/100",
+			"variationIndex": 0,
+			"variables": {
+				"g": "37"
+			},
+			"answers": ["\\frac{37}{100}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 37/10",
+			"variationIndex": 0,
+			"variables": {
+				"g": "37"
+			},
+			"answers": ["\\frac{37}{10}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Forme : 0,37 (écriture à virgule)",
+			"variationIndex": 0,
+			"variables": {
+				"g": "37"
+			},
+			"answers": ["0.37"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		},
+		{
+			"description": "Deux bandes, 14 parts : 14/10",
+			"variationIndex": 1,
+			"variables": {
+				"u": "2",
+				"g": "14"
+			},
+			"answers": ["\\frac{14}{10}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 14/20 (les deux bandes prises pour l'unité)",
+			"variationIndex": 1,
+			"variables": {
+				"u": "2",
+				"g": "14"
+			},
+			"answers": ["\\frac{14}{20}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Forme : 1 + 4/10 refusé",
+			"variationIndex": 1,
+			"variables": {
+				"u": "2",
+				"g": "14"
+			},
+			"answers": ["1+\\frac{4}{10}"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		},
+		{
+			"description": "Deux grilles, 137 cases : 137/100",
+			"variationIndex": 2,
+			"variables": {
+				"g": "137"
+			},
+			"answers": ["\\frac{137}{100}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 37/100 (la grille pleine oubliée)",
+			"variationIndex": 2,
+			"variables": {
+				"g": "137"
+			},
+			"answers": ["\\frac{37}{100}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

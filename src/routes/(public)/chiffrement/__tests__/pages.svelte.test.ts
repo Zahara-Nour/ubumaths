@@ -15,18 +15,18 @@ import Affine from '../affine/+page.svelte';
 import Vigenere from '../vigenere/+page.svelte';
 import Hill from '../hill/+page.svelte';
 import Rsa from '../rsa/+page.svelte';
-import { modPow } from '$lib/ciphers/rsa';
-import { affineEncrypt } from '$lib/ciphers/affine';
-import { vigenereEncrypt } from '$lib/ciphers/vigenere';
-import { caesarEncrypt } from '$lib/ciphers/caesar';
-import { normalizeText } from '$lib/ciphers/alphabet';
+import { modPow } from '#lib/ciphers/rsa.ts';
+import { affineEncrypt } from '#lib/ciphers/affine.ts';
+import { vigenereEncrypt } from '#lib/ciphers/vigenere.ts';
+import { caesarEncrypt } from '#lib/ciphers/caesar.ts';
+import { normalizeText } from '#lib/ciphers/alphabet.ts';
 
 function text(container: HTMLElement, testid: string): string {
 	return container.querySelector(`[data-testid="${testid}"]`)?.textContent ?? '';
 }
 
-async function chooseOption(buttonName: RegExp, option: string) {
-	await page.getByRole('button', { name: buttonName }).click();
+async function chooseOption(triggerName: RegExp, option: string) {
+	await page.getByRole('combobox', { name: triggerName }).click();
 	await page.getByRole('option', { name: option, exact: true }).click();
 }
 
@@ -232,7 +232,8 @@ describe('chiffre affine', () => {
 		// CVC INI : C et I, les plus fréquentes, sont pré-remplies face à E et A
 		await expect
 			.poll(
-				() => page.getByRole('button', { name: /^Première lettre chiffrée/ }).element().textContent
+				() =>
+					page.getByRole('combobox', { name: /^Première lettre chiffrée/ }).element().textContent
 			)
 			.toContain('C');
 		await expect
@@ -399,7 +400,7 @@ describe('RSA de poche', () => {
 		await render(Rsa);
 		// p = 29 : φ = 28 × 36 = 1008, multiple de 7 ; le premier exposant valide est 5
 		await chooseOption(/^p : 31/, '29');
-		await expect.element(page.getByRole('button', { name: 'e : 5' })).toBeInTheDocument();
+		await expect.element(page.getByRole('combobox', { name: 'e : 5' })).toBeInTheDocument();
 	});
 
 	it('décrypter : n et e saisis survivent à un changement de message', async () => {
@@ -447,11 +448,11 @@ describe('hypothèses de décryptage conservées', () => {
 		await chooseOption(/^Seconde lettre claire/, 'T');
 		await page.getByLabelText('Message intercepté').fill(affineEncrypt(LONG_TEXT, 5, 8).text);
 		await expect
-			.element(page.getByRole('button', { name: 'Seconde lettre claire : T' }))
+			.element(page.getByRole('combobox', { name: 'Seconde lettre claire : T' }))
 			.toBeInTheDocument();
 		// E (4) → 5 × 4 + 8 = 28 ≡ 2 : C, la plus fréquente du nouveau message
 		await expect
-			.element(page.getByRole('button', { name: 'Première lettre chiffrée : C' }))
+			.element(page.getByRole('combobox', { name: 'Première lettre chiffrée : C' }))
 			.toBeInTheDocument();
 	});
 
@@ -463,11 +464,11 @@ describe('hypothèses de décryptage conservées', () => {
 			.getByLabelText('Message intercepté')
 			.fill(vigenereEncrypt(LONG_TEXT, 'ROI').text + ' ');
 		await expect
-			.element(page.getByRole('button', { name: 'Longueur de clé : 3' }))
+			.element(page.getByRole('combobox', { name: 'Longueur de clé : 3' }))
 			.toBeInTheDocument();
 		await page.getByLabelText('Message intercepté').fill(vigenereEncrypt(LONG_TEXT, 'UBUROI').text);
 		await expect
-			.element(page.getByRole('button', { name: 'Longueur de clé : 3' }))
+			.element(page.getByRole('combobox', { name: 'Longueur de clé : 3' }))
 			.toBeInTheDocument();
 		await page.getByRole('button', { name: /Revenir à la longueur proposée/ }).click();
 		await expect.poll(() => text(screen.container, 'cracked-key')).toBe('UBUROI');

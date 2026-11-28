@@ -1,11 +1,11 @@
 <script lang="ts">
-	import MySelect from '$lib/components/MySelect.svelte';
-	import { Button } from '$lib/components/ui/button';
-	import { Card } from '$lib/components/ui/card';
-	import { Separator } from '$lib/components/ui/separator';
-	import { multiplayerStore } from '$lib/stores/multiplayer.svelte';
-	import { toaster } from '$lib/stores/toaster.svelte';
-	import { cn } from '$lib/utils';
+	import MySelect from '#lib/components/MySelect.svelte';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import { Card } from '#lib/components/ui/card/index.ts';
+	import { Separator } from '#lib/components/ui/separator/index.ts';
+	import { multiplayerStore } from '#lib/stores/multiplayer.svelte.ts';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
+	import { cn } from '#lib/utils.ts';
 	import { Loader2 } from '@lucide/svelte';
 
 	// Types

@@ -1,11 +1,11 @@
-import type { Handle } from '@sveltejs/kit';
+import type { Handle } from '@sveltejs/kit/hooks';
 import { redirect } from '@sveltejs/kit';
 import { createHash, timingSafeEqual } from 'node:crypto';
-import { building, dev } from '$app/environment';
-import { env } from '$env/dynamic/private';
-import avatarPereUbu from '$lib/assets/images/avatar-pereubu.png?inline';
-import { frenchOrdinal, PI_STATUS_OCCURRENCES } from '$lib/error-page/pi-status';
-import { piSpiralSvg } from '$lib/error-page/pi-spiral-svg';
+import { building, dev } from '$app/env';
+import * as env from '$app/env/private';
+import avatarPereUbu from '#lib/assets/images/avatar-pereubu.png?inline';
+import { frenchOrdinal, PI_STATUS_OCCURRENCES } from '#lib/error-page/pi-status.ts';
+import { piSpiralSvg } from '#lib/error-page/pi-spiral-svg.ts';
 
 /**
  * Maintenance mode — serves a self-contained 503 page while the app is being
@@ -19,7 +19,7 @@ import { piSpiralSvg } from '$lib/error-page/pi-spiral-svg';
  * - **Operator bypass**: visiting `/?bypass=<MAINTENANCE_BYPASS_SECRET>` sets a
  *   signed-by-secret cookie so the operator can test the migrated site.
  *
- * Env vars (read via $env/dynamic/private, all optional, OFF by default):
+ * Env vars (read via $app/env/private, all optional, OFF by default):
  * - `MAINTENANCE_MODE`        : 'true' enables maintenance mode.
  * - `MAINTENANCE_BYPASS_SECRET`: secret for the operator bypass (required for bypass).
  * - `MAINTENANCE_UNTIL`       : optional ISO datetime shown to users + drives Retry-After.
@@ -218,7 +218,7 @@ export function renderMaintenancePage(opts: { until?: string } = {}): string {
 
 /**
  * Builds the maintenance Handle. The env reader is injected so the handle is
- * unit-testable without mocking the `$env/dynamic/private` virtual module.
+ * unit-testable without mocking the `$app/env/private` virtual module.
  */
 export function createMaintenanceHandle(
 	readEnv: () => MaintenanceEnv,

@@ -18,9 +18,9 @@
 import { describe, it, expect } from 'vitest';
 import { tipTapToMarkdown } from '../markdown-export';
 import { markdownToTipTap } from '../markdown-import';
-import { NUMBER_LINE_TEMPLATE } from '$lib/extensions/number-line-extension';
-import { PROBABILITY_TREE_TEMPLATE } from '$lib/extensions/probability-tree-extension';
-import { TRIG_CIRCLE_TEMPLATE } from '$lib/extensions/trig-circle-extension';
+import { NUMBER_LINE_TEMPLATE } from '#lib/extensions/number-line-extension.ts';
+import { PROBABILITY_TREE_TEMPLATE } from '#lib/extensions/probability-tree-extension.ts';
+import { TRIG_CIRCLE_TEMPLATE } from '#lib/extensions/trig-circle-extension.ts';
 
 const UUID = '3f2a1b4c-5d6e-4f7a-8b9c-0d1e2f3a4b5c';
 

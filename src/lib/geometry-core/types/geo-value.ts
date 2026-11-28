@@ -9,8 +9,8 @@
  * Any operation involving a numeric value produces a numeric result.
  */
 
-import type { MathNode } from '$lib/mathAST/types';
-import { numericNode } from '$lib/mathAST/common/numeric';
+import type { MathNode } from '#lib/mathAST/types.ts';
+import { numericNode } from '#lib/mathAST/common/numeric.ts';
 
 export interface GeoExact {
 	readonly kind: 'exact';

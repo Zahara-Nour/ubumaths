@@ -1,19 +1,24 @@
 import type { PageServerLoad } from './$types';
-import { requireAdmin } from '$lib/server/middleware/auth';
-import { scanDocumentation } from '$lib/server/docs-scanner';
-import { parseMarkdown } from '$lib/server/markdown-parser';
+import { error } from '@sveltejs/kit';
+import { z } from 'zod';
+import { requireAdmin } from '#lib/server/middleware/auth.ts';
+import { filterDocCategories, scanDocumentation } from '#lib/server/docs-scanner.ts';
+import { parseMarkdown } from '#lib/server/markdown-parser.ts';
 import { readFile } from 'fs/promises';
 import { join } from 'path';
+
+const searchQuerySchema = z.string().trim().max(100);
 
 export const load: PageServerLoad = async ({ locals, url }) => {
 	// Admin gate (admin login OR step-up elevation)
 	await requireAdmin(locals);
 
-	// Scan all documentation
-	const categories = await scanDocumentation();
-
-	// Get search query if present
-	const searchQuery = url.searchParams.get('q');
+	// Recherche : filtre sur le titre et le chemin des docs (V116), bornée
+	// comme le champ de saisie
+	const parsed = searchQuerySchema.safeParse(url.searchParams.get('q') ?? '');
+	if (!parsed.success) error(400, 'Recherche trop longue (100 caractères au plus)');
+	const searchQuery = parsed.data || null;
+	const categories = filterDocCategories(await scanDocumentation(), searchQuery);
 
 	// Load main README as default content
 	const readmePath = join(process.cwd(), 'docs', 'README.md');

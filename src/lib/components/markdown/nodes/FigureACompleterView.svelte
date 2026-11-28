@@ -4,7 +4,7 @@
 
 	La figure de départ (`FigureBlockView`, même SVG qu'en statique et qu'au PDF)
 	et, par-dessus, le tracé de l'élève. Comportements validés par David le
-	2026-10-25 (`docs/wip/geometrie-validation-progress.md` § 5) :
+	2026-10-25 (`docs/archive/wip/geometrie-validation-progress.md` § 5) :
 
 	- toucher un point puis un autre trace la droite, qui va jusqu'aux bords ;
 	  près d'un point, le toucher est aimanté (`SNAP_RADIUS_PX` à l'écran) ;
@@ -48,20 +48,23 @@
 	@module components/markdown/nodes/FigureACompleterView
 -->
 <script lang="ts">
-	import type { FigureNode } from '$lib/ubumark/types/figure';
-	import type { FigureScene } from '$lib/ubumark/utils/figure-scene';
-	import { createTransformer } from '$lib/geometry-core/viewport/viewport';
+	import type { FigureNode } from '#lib/ubumark/types/figure.ts';
+	import type { FigureScene } from '#lib/ubumark/utils/figure-scene.ts';
+	import { createTransformer } from '#lib/geometry-core/viewport/viewport.ts';
 	// Inscrit aussi le calcul des positions du juge (effet de bord voulu, cf. positions.ts)
 	import {
 		allNamedPointPositions,
 		figureShapes,
 		namedPointPositions
-	} from '$lib/questions/construction/positions-setup';
+	} from '#lib/questions/construction/positions-setup.ts';
 	import {
 		CHECK_TOOL,
 		INSTRUMENT_TOOLS,
+		isCompositeFigure,
+		isDiagonalRectangleCheck,
+		type ConstructionCheck,
 		type ConstructionTool
-	} from '$lib/ubumark/types/construction';
+	} from '#lib/ubumark/types/construction.ts';
 	import {
 		intersectionsOf,
 		isInFrame,
@@ -75,7 +78,7 @@
 		type SnapTargets,
 		type StraightTrait,
 		type Trait
-	} from '$lib/questions/construction/instruments';
+	} from '#lib/questions/construction/instruments.ts';
 	import {
 		isDrawnCircle,
 		isDrawnLine,
@@ -88,13 +91,15 @@
 		splitMeasuredAnswer,
 		type DrawnLine,
 		type DrawnRegle
-	} from '$lib/questions/construction/answer';
-	import type { Position } from '$lib/questions/construction/judge';
+	} from '#lib/questions/construction/answer.ts';
+	import type { Position } from '#lib/questions/construction/judge.ts';
 	import {
 		constructionExpected,
 		constructionPositions
-	} from '$lib/questions/construction/positions';
-	import type { ExpectedPoints, PointSolution } from '$lib/questions/construction/point';
+	} from '#lib/questions/construction/positions.ts';
+	import type { ExpectedPoints, PointSolution } from '#lib/questions/construction/point.ts';
+	import { compositeSteps, type CompositeStep } from '#lib/questions/construction/composite.ts';
+	import type { FigureShapes } from '#lib/questions/construction/symmetry.ts';
 	import {
 		SNAP_RADIUS_PX,
 		addTap,
@@ -120,19 +125,22 @@
 		solutionAngle,
 		solutionBissectrices,
 		solutionRulers,
+		solutionSegmentMeasure,
+		solutionThroughLines,
 		solutionTriangle,
 		type ConstructionAnswerInput,
 		type Drawing,
-		type Protractor as PosedProtractor
-	} from '$lib/questions/construction/drawing';
-	import { PROTRACTOR_RADIUS } from '$lib/constructions-v2/constants';
-	import { protractorRadiusOf } from '$lib/questions/construction/angle';
-	import { posedProtractorOf } from '$lib/questions/construction/measure';
-	import Protractor from '$lib/constructions-v2/instruments/components/Protractor.svelte';
-	import Ruler from '$lib/constructions-v2/instruments/components/Ruler.svelte';
-	import { formatLength, rulerLengthOf } from '$lib/questions/construction/segment-length';
-	import { Button } from '$lib/components/ui/button';
-	import { Input } from '$lib/components/ui/input';
+		type Protractor as PosedProtractor,
+		type RulerShape
+	} from '#lib/questions/construction/drawing.ts';
+	import { PROTRACTOR_RADIUS } from '#lib/constructions-v2/constants.ts';
+	import { protractorRadiusOf } from '#lib/questions/construction/angle.ts';
+	import { posedProtractorOf } from '#lib/questions/construction/measure.ts';
+	import Protractor from '#lib/constructions-v2/instruments/components/Protractor.svelte';
+	import Ruler from '#lib/constructions-v2/instruments/components/Ruler.svelte';
+	import { formatLength, rulerLengthOf } from '#lib/questions/construction/segment-length.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import { Input } from '#lib/components/ui/input/index.ts';
 	import FigureBlockView from './FigureBlockView.svelte';
 
 	interface Props {
@@ -174,14 +182,20 @@
 	let interactive = $derived(answer !== undefined && !answer.disabled);
 	/** Angle à mesurer (lot 6, § 19) : la mesure se tape sous la figure, à part des repères */
 	let measureCheck = $derived(node.construction?.checks.find((c) => c.kind === 'mesure') ?? null);
-	let measured = $derived(measureCheck ? splitMeasuredAnswer(answer?.value ?? '') : null);
+	/** Segment à mesurer (n° 26) : la longueur se tape sous la figure, à part des règles posées */
+	let segmentMeasure = $derived(
+		node.construction?.checks.find((c) => c.kind === 'mesure_segment') ?? null
+	);
+	/** Une case à taper sous la figure (angle ou segment) : la réponse finit par `mesure(n)` */
+	let typed = $derived(measureCheck !== null || segmentMeasure !== null);
+	let measured = $derived(typed ? splitMeasuredAnswer(answer?.value ?? '') : null);
 	let typedMeasure = $derived(measured?.measure ?? null);
 	/** Rapporteur déjà posé (lot 8, § 23) : figé, aucun outil ; l'élève tape seulement la mesure */
 	let posedMeasure = $derived(measureCheck?.posed === true);
 	/** L'élève peut-il tracer ? (pas quand le rapporteur est déjà posé) */
 	let drawable = $derived(interactive && !posedMeasure);
 	let objects = $derived(
-		parseConstructionAnswer(measureCheck ? (measured?.drawn ?? '') : (answer?.value ?? '')) ?? []
+		parseConstructionAnswer(typed ? (measured?.drawn ?? '') : (answer?.value ?? '')) ?? []
 	);
 	let lines = $derived(objects.filter(isDrawnLine));
 	let placedPoints = $derived(objects.filter(isDrawnPoint));
@@ -214,18 +228,37 @@
 	let corrected = $derived(answer?.isCorrect === false || showSolution);
 	let checks = $derived(node.construction?.checks ?? []);
 	let tools = $derived<ConstructionTool[]>(node.construction?.tools ?? ['droite']);
-	/** Le trait que mène la règle : le cercle au compas (PR 3), sinon le segment */
-	let rulerShape = $derived<'segment' | 'cercle'>(
-		tools.includes('compas') && !tools.includes('segment') ? 'cercle' : 'segment'
+	/** Palette au compas sans segment : le cercle de rayon donné en cm (PR 3) */
+	/**
+	 * Outil n° 38 : la règle graduée marque un point (le milieu), sans Segment dans la
+	 * palette ; ‹ › y déplacent le point, quel que soit l'outil choisi (revue)
+	 */
+	let rulerMarksPoint = $derived(
+		tools.includes('regle') && tools.includes('point') && !tools.includes('segment')
+	);
+	let compassOnly = $derived(
+		tools.includes('compas') && !tools.includes('segment') && !rulerMarksPoint
 	);
 	/** Outil de départ : celui de la vérification s'il est dans la palette (le point, le segment) */
 	let firstTool = $derived.by((): ConstructionTool => {
 		// Cercle de rayon donné en cm (PR 3) : on pose la règle avant d'ouvrir le compas
-		if (rulerShape === 'cercle' && tools.includes('regle')) return 'regle';
+		if (compassOnly && tools.includes('regle')) return 'regle';
 		const own = checks[0] ? CHECK_TOOL[checks[0].kind] : null;
 		return own && tools.includes(own) ? own : (tools[0] ?? 'droite');
 	});
 	let tool = $derived(chosen?.node === node ? chosen.tool : firstTool);
+	/**
+	 * Le trait que mène la règle : le cercle au compas (PR 3 ; ou le Compas choisi
+	 * dans une palette qui a aussi le segment, triangle coté en cm), sinon le segment
+	 */
+	let rulerShape = $derived<RulerShape>(
+		compassOnly || (tools.includes('compas') && tool === 'compas')
+			? 'cercle'
+			: // Outil n° 38 : le milieu marqué au Point sur la règle
+				tool === 'point' || rulerMarksPoint
+				? 'point'
+				: 'segment'
+	);
 	/** Palette avec équerre ou compas : aimantation des instruments (hors quadrillage) */
 	let instruments = $derived(tools.some((t) => INSTRUMENT_TOOLS.includes(t)));
 	/** Report : ce qu'attend le prochain toucher (dont : reprendre Report pour une autre longueur) */
@@ -250,6 +283,24 @@
 			if (ruler && rulerShape === 'cercle') {
 				return 'Règle posée : touche Compas pour l’ouvrir sur la règle. Pour la reposer, touche où mettre le 0.';
 			}
+			// Outil n° 38 : le milieu se marque au Point sur une graduation
+			if (ruler && rulerMarksPoint) {
+				return 'Règle posée : touche Point pour marquer une graduation. Pour la reposer, touche où mettre le 0.';
+			}
+			// Triangle coté en cm : le compas s'ouvre sur la règle ; avec l'angle (rapporteur), le
+			// côté se trace aussi le long de la règle (revue de #2658), comme au rectangle sans
+			// équerre (O à 3 cm, D à 6 cm de B)
+			if (ruler && tools.includes('compas')) {
+				// Figure composée (outil n° 45) : une étape peut tracer le long de la règle
+				return tools.includes('rapporteur') ||
+					checks.some(isDiagonalRectangleCheck) ||
+					isCompositeFigure(checks)
+					? 'Règle posée : touche Compas pour l’ouvrir sur la règle, ou Segment pour tracer le long de la règle. Pour la reposer, touche où mettre le 0.'
+					: 'Règle posée : touche Compas pour l’ouvrir sur la règle. Pour la reposer, touche où mettre le 0.';
+			}
+			if (ruler && segmentMeasure) {
+				return 'Règle posée : lis la longueur du segment, puis tape-la sous la figure. Pour la reposer, touche où mettre le 0.';
+			}
 			if (ruler) {
 				return 'Règle posée : touche Segment pour tracer le long de la règle. Pour la reposer, touche où mettre le 0.';
 			}
@@ -257,6 +308,9 @@
 		}
 		if (tool === 'segment' && ruler) {
 			return 'Trace le segment le long de la règle : son bout s’arrête sur une graduation, ‹ › pour l’ajuster d’un millimètre.';
+		}
+		if (tool === 'point' && ruler) {
+			return 'Marque le point sur une graduation de la règle, ‹ › pour l’ajuster d’un millimètre.';
 		}
 		if (tool === 'compas' && ruler && rulerShape === 'cercle') {
 			return 'Pique le compas au 0 de la règle, puis ouvre-le sur une graduation, ‹ › pour l’ajuster d’un millimètre.';
@@ -274,9 +328,57 @@
 	let grid = $derived(
 		tool === 'segment' || tool === 'point' || lineCheck ? node.header.grid : null
 	);
+	/**
+	 * Figure composée (outil n° 45) : les étapes de la correction, chacune avec ses points
+	 * (ceux construits aux étapes d'avant, du côté où l'élève a tracé) ; null sinon
+	 */
+	let compositeCorrection = $derived.by((): CompositeStep[] | null => {
+		if (!corrected || !isCompositeFigure(checks)) return null;
+		try {
+			return compositeSteps(checks, node.source, tools, objects);
+		} catch (error) {
+			// Figure qui ne se construit pas (la garde de l'auteur l'aurait refusée) : la
+			// correction d'ensemble, et l'erreur dans la console (revue)
+			console.error('Figure composée : correction impossible', error);
+			return null;
+		}
+	});
+	/** Ce que dessine la correction : la figure entière, ou chaque étape d'une figure composée */
+	interface CorrectionStep {
+		checks: ConstructionCheck[];
+		points: ReadonlyMap<string, Position>;
+		shapes: FigureShapes;
+		expected: ExpectedPoints | undefined;
+	}
+	function correctionSteps(
+		scene: FigureScene,
+		allPoints: ReadonlyMap<string, Position>
+	): CorrectionStep[] {
+		if (compositeCorrection) {
+			return compositeCorrection.map((step) => ({
+				checks: [step.check],
+				points: step.points,
+				shapes: step.shapes,
+				expected: step.expected
+			}));
+		}
+		return [
+			{
+				checks,
+				points: allPoints,
+				shapes: figureShapes(scene, node.header),
+				expected: expectedOf()
+			}
+		];
+	}
 	/** Points à placer, montrés à la correction (calculés à part : jamais aimantés) */
 	let pointSolutions = $derived.by((): PointSolution[] => {
 		if (!corrected || !checks.some((c) => c.kind === 'point')) return [];
+		if (compositeCorrection) {
+			return compositeCorrection.flatMap((step) =>
+				step.check.kind === 'point' ? solutionPoints([step.check], step.expected, step.points) : []
+			);
+		}
 		try {
 			return solutionPoints(
 				checks,
@@ -313,7 +415,7 @@
 		hint = null;
 		if (next.objects !== drawing.objects) {
 			answer?.onChange(
-				measureCheck
+				typed
 					? serializeMeasuredAnswer(next.objects, typedMeasure)
 					: serializeConstructionAnswer(next.objects)
 			);
@@ -357,7 +459,8 @@
 
 	/** ‹ › et flèches : décaler d'un millimètre le bout du segment le long de la règle */
 	function nudgeRuler(delta: number) {
-		if (!drawable) return;
+		// Segment à mesurer (n° 26) : rien à tracer, la règle seule
+		if (!drawable || segmentMeasure) return;
 		apply(
 			nudgeRulerEnd(drawing, delta, {
 				rulerLength,
@@ -490,6 +593,31 @@
 			y: c.y + (mid.y / midLength) * (r + 16)
 		};
 		return { d, label, text: `${arc.measure}°` };
+	}
+
+	/** Écart (px) entre le segment mesuré et sa longueur écrite à la correction */
+	const SEGMENT_LABEL_SVG = 14;
+
+	/**
+	 * Longueur du segment mesuré à la correction (n° 26) : au milieu de [AB], du
+	 * côté opposé au corps de la règle posée en A (local y > 0 de `Ruler`)
+	 */
+	function segmentLabel(
+		segment: { from: Position; to: Position },
+		scene: FigureScene,
+		width: number,
+		height: number
+	): Position {
+		const transformer = createTransformer(scene.viewport, width, height);
+		const a = transformer.mathToSvg(segment.from.x, segment.from.y);
+		const b = transformer.mathToSvg(segment.to.x, segment.to.y);
+		const length = Math.hypot(b.x - a.x, b.y - a.y) || 1;
+		const u = { x: (b.x - a.x) / length, y: (b.y - a.y) / length };
+		// Corps de la règle : la normale (-u.y, u.x) ; la longueur de l'autre côté
+		return {
+			x: (a.x + b.x) / 2 + u.y * SEGMENT_LABEL_SVG,
+			y: (a.y + b.y) / 2 - u.x * SEGMENT_LABEL_SVG
+		};
 	}
 
 	/**
@@ -649,8 +777,32 @@
 				{ points: targets.points, intersections: [], traits: [] },
 				radius
 			);
-			const first = drawing.start ? (onRuler ?? onPoint) : (onPoint ?? onRuler);
+			// Bout d'un segment : tout croisement de traits (arcs, droites, segments ; par exemple deux
+			// arcs du triangle coté en cm) passe avant la graduation de la dernière règle posée, sauf
+			// au départ (revue de #2658)
+			const start = drawing.start;
+			const crossing =
+				tool === 'segment' && start
+					? snapInstrument(
+							math,
+							{
+								points: [],
+								intersections: targets.intersections.filter(
+									(p) => Math.hypot(p.x - start.x, p.y - start.y) > radius
+								),
+								traits: []
+							},
+							radius
+						)
+					: null;
+			const first = start ? (crossing ?? onRuler ?? onPoint) : (onPoint ?? onRuler);
 			tapAt(first ?? snapWithInstruments(math, targets, radius));
+			return;
+		}
+		// Outil n° 38 : règle posée, le Point marque une graduation (le milieu de [AB])
+		if (tool === 'point' && ruler) {
+			const onRuler = rulerGraduationNear(math, ruler, rulerLength, radius, scene.viewport);
+			tapAt(onRuler ?? snapWithInstruments(math, targets, radius));
 			return;
 		}
 		if (tool === 'equerre' && !drawing.guide) {
@@ -723,6 +875,7 @@
 			if (drawing.start && tool === 'regle') return 'Règle : 0 choisi';
 			if (ruler) {
 				if (rulerMm === null) return 'Règle posée';
+				if (rulerShape === 'point') return `Règle posée, point à ${formatLength(rulerMm, 'cm-mm')}`;
 				return rulerShape === 'cercle'
 					? `Règle posée, compas ouvert à ${formatLength(rulerMm, 'cm-mm')}`
 					: `Règle posée, segment de ${formatLength(rulerMm, 'cm-mm')}`;
@@ -992,7 +1145,26 @@
 				<Protractor x={p.x} y={p.y} rotation={p.rotation} pixelsPerUnit={p.pixelsPerUnit} />
 			</g>
 		{/if}
-		{#if ruler}
+		{#if ruler && segmentMeasure}
+			{@const r = rulerOnScreen(ruler, scene, width, height)}
+			<!-- Segment à mesurer (n° 26) : la règle posée, rien à régler au clavier -->
+			<g
+				data-testid="regle"
+				data-sens={ruler.sens}
+				class="rapporteur"
+				role="img"
+				aria-label="Règle graduée posée"
+			>
+				<Ruler
+					x={r.x}
+					y={r.y}
+					rotation={r.rotation}
+					length={rulerLength}
+					pixelsPerUnit={r.pixelsPerUnit}
+					mirrored={r.mirrored}
+				/>
+			</g>
+		{:else if ruler}
 			{@const r = rulerOnScreen(ruler, scene, width, height)}
 			<!-- Clavier : la règle a le focus, les flèches mènent le bout du segment -->
 			<g
@@ -1003,7 +1175,9 @@
 				tabindex="0"
 				aria-label={rulerShape === 'cercle'
 					? 'Règle graduée : flèches pour régler l’ouverture du compas'
-					: 'Règle graduée : flèches pour régler la longueur du segment'}
+					: rulerShape === 'point'
+						? 'Règle graduée : flèches pour déplacer le point d’un millimètre'
+						: 'Règle graduée : flèches pour régler la longueur du segment'}
 				aria-valuemin={0}
 				aria-valuemax={rulerLength * 10}
 				aria-valuenow={rulerMm ?? 0}
@@ -1031,189 +1205,226 @@
 				<line data-testid="droite-choisie" class="droite-choisie" {...g} />
 			{/if}
 		{/if}
-		{#if corrected}
-			<!-- Segment de longueur donnée (ou cercle de rayon donné en cm) : la règle posée en A (ou en O) -->
-			{#each solutionRulers(checks, allPoints, figureShapes(scene, node.header), objects) as goodRuler, i (i)}
-				{@const r = rulerOnScreen(goodRuler, scene, width, height)}
-				<g data-testid="bonne-regle" class="bonne-regle" aria-hidden="true">
-					<Ruler
-						x={r.x}
-						y={r.y}
-						rotation={r.rotation}
-						length={rulerLength}
-						pixelsPerUnit={r.pixelsPerUnit}
-						mirrored={r.mirrored}
-					/>
-				</g>
-			{/each}
-			{#each solutionLines(checks, allPoints, objects, figureShapes(scene, node.header), expectedOf()) as line, i (i)}
-				{@const s = toScreen(line, scene, width, height)}
-				{#if s}
-					<line
-						data-testid={line.kind === 'segment' ? 'bon-segment' : 'bonne-droite'}
-						class="bonne-droite"
-						x1={s.x1}
-						y1={s.y1}
-						x2={s.x2}
-						y2={s.y2}
-					/>
-				{/if}
-			{/each}
-		{/if}
-		{#if corrected}
-			{#each solutionCodages(checks, allPoints) as m, i (i)}
-				{@const c = codage(
-					{ name: '', at: m.to, from: m.from, foot: m.foot, axial: true },
-					scene,
-					width,
-					height
-				)}
-				{#if c}
-					<g data-testid="codage-mediatrice" class="bon-point">
-						{#if c.corner}<path class="bon-point-codage" d={c.corner} />{/if}
-						{#each c.ticks as t, j (j)}<line class="bon-point-codage" {...t} />{/each}
+		<!-- Figure composée (outil n° 45) : la correction de chaque étape, avec ses points -->
+		{#each correctionSteps(scene, allPoints) as step, k (k)}
+			{#if corrected}
+				<!-- Segment de longueur donnée (ou cercle de rayon donné en cm) : la règle posée en A (ou en O) -->
+				{#each solutionRulers(step.checks, step.points, step.shapes, objects) as goodRuler, i (i)}
+					{@const r = rulerOnScreen(goodRuler, scene, width, height)}
+					<g data-testid="bonne-regle" class="bonne-regle" aria-hidden="true">
+						<Ruler
+							x={r.x}
+							y={r.y}
+							rotation={r.rotation}
+							length={rulerLength}
+							pixelsPerUnit={r.pixelsPerUnit}
+							mirrored={r.mirrored}
+						/>
+					</g>
+				{/each}
+				{#each solutionLines(step.checks, step.points, objects, step.shapes, step.expected) as line, i (i)}
+					{@const s = toScreen(line, scene, width, height)}
+					{#if s}
+						<line
+							data-testid={line.kind === 'segment' ? 'bon-segment' : 'bonne-droite'}
+							class="bonne-droite"
+							x1={s.x1}
+							y1={s.y1}
+							x2={s.x2}
+							y2={s.y2}
+						/>
+					{/if}
+				{/each}
+			{/if}
+			{#if corrected}
+				{#each solutionCodages(step.checks, step.points) as m, i (i)}
+					{@const c = codage(
+						{ name: '', at: m.to, from: m.from, foot: m.foot, axial: true },
+						scene,
+						width,
+						height
+					)}
+					{#if c}
+						<g data-testid="codage-mediatrice" class="bon-point">
+							{#if c.corner}<path class="bon-point-codage" d={c.corner} />{/if}
+							{#each c.ticks as t, j (j)}<line class="bon-point-codage" {...t} />{/each}
+						</g>
+					{/if}
+				{/each}
+			{/if}
+			{#if corrected}
+				<!-- Perpendiculaire ou parallèle par un point (outil n° 40) : l'angle droit codé au pied ;
+			     pour la parallèle, la perpendiculaire par le point en trait fin -->
+				{#each solutionThroughLines(step.checks, step.points, step.shapes) as solution, i (i)}
+					<g data-testid="bonne-droite-equerre" class="bon-point">
+						{#each solution.guides as guide, j (j)}
+							{@const s = toScreen(guide, scene, width, height)}
+							{#if s}
+								<line
+									data-testid="bonne-droite-perpendiculaire"
+									class="bon-cercle-mediatrice"
+									x1={s.x1}
+									y1={s.y1}
+									x2={s.x2}
+									y2={s.y2}
+								/>
+							{/if}
+						{/each}
+						{#each solution.rightAngles as corner, j (j)}
+							{@const d = rightCorner(corner, scene, width, height)}
+							{#if d}
+								<path data-testid="bonne-droite-angle-droit" class="bon-point-codage" {d} />
+							{/if}
+						{/each}
+					</g>
+				{/each}
+			{/if}
+			{#if corrected}
+				<!-- Cercle à construire (lot 3b) : le cercle, son centre, deux médiatrices en traits fins -->
+				{#each solutionCircles(step.checks, step.expected, step.points, step.shapes) as solution (solution.name)}
+					{@const center = transformer.mathToSvg(solution.center.x, solution.center.y)}
+					{@const edge = transformer.mathToSvg(
+						solution.center.x + solution.radius,
+						solution.center.y
+					)}
+					<g data-testid="bon-cercle" class="bon-cercle">
+						{#each solution.mediatrices as line, i (i)}
+							{@const s = toScreen(line, scene, width, height)}
+							{#if s}
+								<line
+									data-testid="bon-cercle-mediatrice"
+									class="bon-cercle-mediatrice"
+									x1={s.x1}
+									y1={s.y1}
+									x2={s.x2}
+									y2={s.y2}
+								/>
+							{/if}
+						{/each}
+						<circle
+							class="bon-cercle-trait"
+							cx={center.x}
+							cy={center.y}
+							r={Math.hypot(edge.x - center.x, edge.y - center.y)}
+						/>
+						<circle class="bon-cercle-centre" cx={center.x} cy={center.y} r="3.5" />
+					</g>
+				{/each}
+			{/if}
+			{#if corrected}
+				<!-- Triangle à construire (lot 4) : arcs de report en traits fins, longueurs codées ;
+			     lot 7 : angles donnés codés -->
+				{@const triangle = solutionTriangle(step.checks, step.points, step.shapes, lines)}
+				{#if triangle}
+					<g data-testid="bon-triangle" class="bon-cercle">
+						{#each triangle.arcs as arc, i (i)}
+							{@const center = transformer.mathToSvg(arc.center.x, arc.center.y)}
+							{@const edge = transformer.mathToSvg(arc.center.x + arc.radius, arc.center.y)}
+							<circle
+								data-testid="bon-triangle-arc"
+								class="bon-triangle-arc"
+								cx={center.x}
+								cy={center.y}
+								r={Math.hypot(edge.x - center.x, edge.y - center.y)}
+							/>
+						{/each}
+						{#each triangle.marks as mark, i (i)}
+							{#each lengthTicks(mark, scene, width, height) as t, j (j)}
+								<line data-testid="bon-triangle-marque" class="bon-point-codage" {...t} />
+							{/each}
+						{/each}
+						<!-- Angles donnés (lot 7) : l'arc codé de leur mesure, comme au lot 5 -->
+						{#each triangle.angles as angle, i (i)}
+							{@const a = angleArc(angle, scene, width, height)}
+							<g data-testid="bon-triangle-angle" class="bon-point">
+								<path class="bon-point-codage" d={a.d} />
+								<text x={a.label.x} y={a.label.y} text-anchor="middle" dominant-baseline="middle"
+									>{a.text}</text
+								>
+							</g>
+						{/each}
+						<!-- Triangle rectangle (n° 20) : la perpendiculaire à l'équerre en trait fin,
+					     l'angle droit codé d'un petit carré -->
+						{#each triangle.guides as guide, i (i)}
+							{@const s = toScreen(guide, scene, width, height)}
+							{#if s}
+								<line
+									data-testid="bon-triangle-perpendiculaire"
+									class="bon-cercle-mediatrice"
+									x1={s.x1}
+									y1={s.y1}
+									x2={s.x2}
+									y2={s.y2}
+								/>
+							{/if}
+						{/each}
+						{#each triangle.rightAngles as corner, i (i)}
+							{@const d = rightCorner(corner, scene, width, height)}
+							{#if d}
+								<path data-testid="bon-triangle-angle-droit" class="bon-point-codage" {d} />
+							{/if}
+						{/each}
 					</g>
 				{/if}
-			{/each}
-		{/if}
-		{#if corrected}
-			<!-- Cercle à construire (lot 3b) : le cercle, son centre, deux médiatrices en traits fins -->
-			{#each solutionCircles(checks, expectedOf(), allPoints, figureShapes(scene, node.header)) as solution (solution.name)}
-				{@const center = transformer.mathToSvg(solution.center.x, solution.center.y)}
-				{@const edge = transformer.mathToSvg(
-					solution.center.x + solution.radius,
-					solution.center.y
-				)}
-				<g data-testid="bon-cercle" class="bon-cercle">
-					{#each solution.mediatrices as line, i (i)}
-						{@const s = toScreen(line, scene, width, height)}
-						{#if s}
-							<line
-								data-testid="bon-cercle-mediatrice"
-								class="bon-cercle-mediatrice"
-								x1={s.x1}
-								y1={s.y1}
-								x2={s.x2}
-								y2={s.y2}
-							/>
-						{/if}
-					{/each}
-					<circle
-						class="bon-cercle-trait"
-						cx={center.x}
-						cy={center.y}
-						r={Math.hypot(edge.x - center.x, edge.y - center.y)}
-					/>
-					<circle class="bon-cercle-centre" cx={center.x} cy={center.y} r="3.5" />
-				</g>
-			{/each}
-		{/if}
-		{#if corrected}
-			<!-- Triangle à construire (lot 4) : arcs de report en traits fins, longueurs codées ;
-			     lot 7 : angles donnés codés -->
-			{@const triangle = solutionTriangle(
-				checks,
-				allPoints,
-				figureShapes(scene, node.header),
-				lines
-			)}
-			{#if triangle}
-				<g data-testid="bon-triangle" class="bon-cercle">
-					{#each triangle.arcs as arc, i (i)}
-						{@const center = transformer.mathToSvg(arc.center.x, arc.center.y)}
-						{@const edge = transformer.mathToSvg(arc.center.x + arc.radius, arc.center.y)}
-						<circle
-							data-testid="bon-triangle-arc"
-							class="bon-triangle-arc"
-							cx={center.x}
-							cy={center.y}
-							r={Math.hypot(edge.x - center.x, edge.y - center.y)}
-						/>
-					{/each}
-					{#each triangle.marks as mark, i (i)}
-						{#each lengthTicks(mark, scene, width, height) as t, j (j)}
-							<line data-testid="bon-triangle-marque" class="bon-point-codage" {...t} />
-						{/each}
-					{/each}
-					<!-- Angles donnés (lot 7) : l'arc codé de leur mesure, comme au lot 5 -->
-					{#each triangle.angles as angle, i (i)}
-						{@const a = angleArc(angle, scene, width, height)}
-						<g data-testid="bon-triangle-angle" class="bon-point">
-							<path class="bon-point-codage" d={a.d} />
-							<text x={a.label.x} y={a.label.y} text-anchor="middle" dominant-baseline="middle"
-								>{a.text}</text
-							>
-						</g>
-					{/each}
-					<!-- Triangle rectangle (n° 20) : la perpendiculaire à l'équerre en trait fin,
-					     l'angle droit codé d'un petit carré -->
-					{#each triangle.guides as guide, i (i)}
-						{@const s = toScreen(guide, scene, width, height)}
-						{#if s}
-							<line
-								data-testid="bon-triangle-perpendiculaire"
-								class="bon-cercle-mediatrice"
-								x1={s.x1}
-								y1={s.y1}
-								x2={s.x2}
-								y2={s.y2}
-							/>
-						{/if}
-					{/each}
-					{#each triangle.rightAngles as corner, i (i)}
-						{@const d = rightCorner(corner, scene, width, height)}
-						{#if d}
-							<path data-testid="bon-triangle-angle-droit" class="bon-point-codage" {d} />
-						{/if}
-					{/each}
-				</g>
 			{/if}
-		{/if}
-		{#if corrected}
-			<!-- Bissectrice à construire (lot 9) : l'arc en O et les deux arcs égaux en traits fins,
+			{#if corrected}
+				<!-- Bissectrice à construire (lot 9) : l'arc en O et les deux arcs égaux en traits fins,
 			     les deux demi-angles codés du même signe -->
-			{#each solutionBissectrices(checks, allPoints) as solution, i (i)}
-				<g data-testid="bonne-bissectrice" class="bon-point">
-					{#each solution.arcs as arc, j (j)}
-						{@const center = transformer.mathToSvg(arc.center.x, arc.center.y)}
-						{@const edge = transformer.mathToSvg(arc.center.x + arc.radius, arc.center.y)}
-						<circle
-							data-testid="bonne-bissectrice-arc"
-							class="bon-triangle-arc"
-							cx={center.x}
-							cy={center.y}
-							r={Math.hypot(edge.x - center.x, edge.y - center.y)}
-						/>
-					{/each}
-					{#each [[solution.from, solution.middle], [solution.middle, solution.to]] as [from, to], j (j)}
-						{@const h = halfAngleCodage(
-							solution.center,
-							from,
-							to,
-							solution.sens,
-							scene,
-							width,
-							height
-						)}
-						<path data-testid="bonne-bissectrice-demi-angle" class="bon-point-codage" d={h.d} />
-						<line class="bon-point-codage" {...h.tick} />
-					{/each}
-				</g>
-			{/each}
-		{/if}
-		{#if corrected}
-			<!-- Angle à construire (lot 5) : l'arc de l'angle, codé de sa mesure -->
-			{@const arc = solutionAngle(checks, allPoints, figureShapes(scene, node.header), lines)}
-			{#if arc}
-				{@const a = angleArc(arc, scene, width, height)}
-				<g data-testid="bon-angle" class="bon-point">
-					<path class="bon-point-codage" d={a.d} />
-					<text x={a.label.x} y={a.label.y} text-anchor="middle" dominant-baseline="middle"
-						>{a.text}</text
-					>
-				</g>
+				{#each solutionBissectrices(step.checks, step.points) as solution, i (i)}
+					<g data-testid="bonne-bissectrice" class="bon-point">
+						{#each solution.arcs as arc, j (j)}
+							{@const center = transformer.mathToSvg(arc.center.x, arc.center.y)}
+							{@const edge = transformer.mathToSvg(arc.center.x + arc.radius, arc.center.y)}
+							<circle
+								data-testid="bonne-bissectrice-arc"
+								class="bon-triangle-arc"
+								cx={center.x}
+								cy={center.y}
+								r={Math.hypot(edge.x - center.x, edge.y - center.y)}
+							/>
+						{/each}
+						{#each [[solution.from, solution.middle], [solution.middle, solution.to]] as [from, to], j (j)}
+							{@const h = halfAngleCodage(
+								solution.center,
+								from,
+								to,
+								solution.sens,
+								scene,
+								width,
+								height
+							)}
+							<path data-testid="bonne-bissectrice-demi-angle" class="bon-point-codage" d={h.d} />
+							<line class="bon-point-codage" {...h.tick} />
+						{/each}
+					</g>
+				{/each}
 			{/if}
-		{/if}
+			{#if corrected}
+				<!-- Segment à mesurer (n° 26) : sa longueur, écrite du côté opposé au corps de la règle -->
+				{@const measuredSegment = solutionSegmentMeasure(step.checks, step.points, step.shapes)}
+				{#if measuredSegment}
+					{@const l = segmentLabel(measuredSegment, scene, width, height)}
+					<g data-testid="bonne-longueur" class="bon-point">
+						<text x={l.x} y={l.y} text-anchor="middle" dominant-baseline="middle"
+							>{measuredSegment.text}</text
+						>
+					</g>
+				{/if}
+			{/if}
+			{#if corrected}
+				<!-- Angle à construire (lot 5) : l'arc de l'angle, codé de sa mesure -->
+				{@const arc = solutionAngle(step.checks, step.points, step.shapes, lines)}
+				{#if arc}
+					{@const a = angleArc(arc, scene, width, height)}
+					<g data-testid="bon-angle" class="bon-point">
+						<path class="bon-point-codage" d={a.d} />
+						<text x={a.label.x} y={a.label.y} text-anchor="middle" dominant-baseline="middle"
+							>{a.text}</text
+						>
+					</g>
+				{/if}
+			{/if}
+		{/each}
 		{#each pointSolutions as solution (solution.name)}
 			{@const p = transformer.mathToSvg(solution.at.x, solution.at.y)}
 			{@const c = codage(solution, scene, width, height)}
@@ -1386,24 +1597,30 @@
 			{/if}
 			{#if ruler}
 				<div class="palette" role="group" aria-label="Règle graduée">
-					<Button
-						variant="outline"
-						size="sm"
-						data-testid="regle-moins"
-						aria-label={rulerShape === 'cercle'
-							? 'Compas : un millimètre de moins'
-							: 'Segment : un millimètre de moins'}
-						onclick={() => nudgeRuler(-1)}>‹ 1 mm</Button
-					>
-					<Button
-						variant="outline"
-						size="sm"
-						data-testid="regle-plus"
-						aria-label={rulerShape === 'cercle'
-							? 'Compas : un millimètre de plus'
-							: 'Segment : un millimètre de plus'}
-						onclick={() => nudgeRuler(1)}>1 mm ›</Button
-					>
+					{#if !segmentMeasure}
+						<Button
+							variant="outline"
+							size="sm"
+							data-testid="regle-moins"
+							aria-label={rulerShape === 'cercle'
+								? 'Compas : un millimètre de moins'
+								: rulerShape === 'point'
+									? 'Point : un millimètre de moins'
+									: 'Segment : un millimètre de moins'}
+							onclick={() => nudgeRuler(-1)}>‹ 1 mm</Button
+						>
+						<Button
+							variant="outline"
+							size="sm"
+							data-testid="regle-plus"
+							aria-label={rulerShape === 'cercle'
+								? 'Compas : un millimètre de plus'
+								: rulerShape === 'point'
+									? 'Point : un millimètre de plus'
+									: 'Segment : un millimètre de plus'}
+							onclick={() => nudgeRuler(1)}>1 mm ›</Button
+						>
+					{/if}
 					<Button variant="outline" size="sm" data-testid="regle-retourner" onclick={flipTheRuler}>
 						Retourner
 					</Button>
@@ -1442,6 +1659,32 @@
 		{#if interactive && measureHint === node}
 			<p class="figure-a-completer-consigne" data-testid="mesure-consigne">
 				Au degré près : tape un nombre entier.
+			</p>
+		{/if}
+	{/if}
+	{#if segmentMeasure && answer !== undefined}
+		{@const name = segmentMeasure.points.join('')}
+		<!-- Segment à mesurer (n° 26) : la longueur lue sur la règle, en cm (ou mm) entiers -->
+		<label class="figure-a-completer-mesure">
+			<span>Longueur du segment [{name}] :</span>
+			<Input
+				class="w-20 text-center"
+				type="text"
+				inputmode="numeric"
+				autocomplete="off"
+				maxlength={3}
+				data-testid="mesure-segment"
+				aria-label="Longueur du segment [{name}], en {segmentMeasure.unit}"
+				value={typedMeasure === null ? '' : String(typedMeasure)}
+				disabled={!interactive}
+				aria-invalid={answer.isCorrect === false || undefined}
+				oninput={typeMeasure}
+			/>
+			<span aria-hidden="true">{segmentMeasure.unit}</span>
+		</label>
+		{#if interactive && measureHint === node}
+			<p class="figure-a-completer-consigne" data-testid="mesure-consigne">
+				Tape un nombre entier de {segmentMeasure.unit}.
 			</p>
 		{/if}
 	{/if}
@@ -1658,7 +1901,10 @@
 		opacity: 0.6;
 	}
 
-	.bon-triangle-arc {
+	/* Le second sélecteur : dans un groupe `.bon-point` (bissectrice), `.bon-point circle`
+	   l'emporterait et l'arc aurait l'épaisseur du tracé attendu */
+	.bon-triangle-arc,
+	.bon-point circle.bon-triangle-arc {
 		fill: none;
 		stroke: var(--color-success);
 		stroke-width: 1;

@@ -136,6 +136,7 @@ son article (« **Tangentin**, le Chartreux de Yoyolande »).
 | Géométrie                 | Rotations                                | Toupie                                              |
 | Géométrie                 | Homothéties                              | Loupe                                               |
 | Géométrie                 | Triangles semblables                     | Sosie                                               |
+| Géométrie                 | Agrandissement et réduction              | Maquette                                            |
 | Géométrie                 | Repérage dans l'espace                   | Altitude                                            |
 | Géométrie                 | Vecteurs                                 | Chasles                                             |
 | Géométrie                 | Géométrie repérée                        | Abscisse                                            |

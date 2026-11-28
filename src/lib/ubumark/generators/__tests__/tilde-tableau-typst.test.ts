@@ -8,7 +8,7 @@
  * d'auteur reste un tilde de texte.
  */
 import { describe, it, expect } from 'vitest';
-import { parseMarkdown } from '$lib/ubumark';
+import { parseMarkdown } from '#lib/ubumark/index.ts';
 import { generateTypst, processTableCellContent } from '../typst-generator';
 
 const body = (md: string, language?: string) =>

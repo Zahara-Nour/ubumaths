@@ -8,13 +8,13 @@
  * la sienne (`source_id` mis à vide par la base).
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireRole } from '$lib/server/middleware/auth';
-import { requireOwnedTemplate } from '$lib/server/template-guard';
-import { renameSection, deleteSection } from '$lib/server/chapter-sections';
-import { updateSectionSchema } from '$lib/server/validation/chapter-sections';
-import { uuidSchema } from '$lib/server/validation/common';
+import { requireRole } from '#lib/server/middleware/auth.ts';
+import { requireOwnedTemplate } from '#lib/server/template-guard.ts';
+import { renameSection, deleteSection } from '#lib/server/chapter-sections.ts';
+import { updateSectionSchema } from '#lib/server/validation/chapter-sections.ts';
+import { uuidSchema } from '#lib/server/validation/common.ts';
 
 function parseSectionId(raw: string | undefined): string {
 	const validation = uuidSchema.safeParse(raw);
@@ -56,7 +56,7 @@ export const PATCH: RequestHandler = async ({ locals, params, request }) => {
 		throw error(404, 'Section introuvable');
 	}
 
-	return json({ section: data });
+	return Response.json({ section: data });
 };
 
 export const DELETE: RequestHandler = async ({ locals, params }) => {
@@ -77,5 +77,5 @@ export const DELETE: RequestHandler = async ({ locals, params }) => {
 		throw error(404, 'Section introuvable');
 	}
 
-	return json({ success: true });
+	return Response.json({ success: true });
 };

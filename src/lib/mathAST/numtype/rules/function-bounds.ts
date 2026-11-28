@@ -17,13 +17,13 @@
  */
 
 import type { MathNode } from '../../types';
-import type { IntervalDomain, EndpointType, Endpoint } from '$lib/math/intervals/types';
+import type { IntervalDomain, EndpointType, Endpoint } from '#lib/math/intervals/types.ts';
 import {
 	isPositiveInfinityEndpoint,
 	isNegativeInfinityEndpoint,
 	getEndpoints,
 	buildInterval
-} from '$lib/math/intervals';
+} from '#lib/math/intervals/index.ts';
 import {
 	func as funcNode,
 	sqrt as sqrtNode,

@@ -6,9 +6,9 @@
 
 import { error, redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
-import type { BugReportWithAuthor } from '$lib/types/bug-reports';
-import { signBugReportScreenshots } from '$lib/server/bug-report-screenshots';
-import { createServerLogger } from '$lib/utils/logger';
+import type { BugReportWithAuthor } from '#lib/types/bug-reports.ts';
+import { signBugReportScreenshots } from '#lib/server/bug-report-screenshots.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('(protected)/dashboard/bug-reports/+page.server');
 

@@ -1,15 +1,15 @@
 <script lang="ts">
-	import { Button } from '$lib/components/ui/button';
-	import * as Dialog from '$lib/components/ui/dialog';
-	import * as Tabs from '$lib/components/ui/tabs';
-	import { Label } from '$lib/components/ui/label';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import * as Dialog from '#lib/components/ui/dialog/index.ts';
+	import * as Tabs from '#lib/components/ui/tabs/index.ts';
+	import { Label } from '#lib/components/ui/label/index.ts';
 	import ExerciseMarkdownPreview from './ExerciseMarkdownPreview.svelte';
 	import {
 		transpileLatexToMarkdown,
 		splitStatementAndSolution,
 		detectSplitMethod,
 		type TranspileWarning
-	} from '$lib/ubumark/importers/latex';
+	} from '#lib/ubumark/importers/latex/index.ts';
 
 	// Types
 	type SplitMode = 'statement-only' | 'auto' | 'solution-only';
@@ -433,7 +433,7 @@
 				<Tabs.Root bind:value={activeTab}>
 					<Tabs.List class="grid w-full grid-cols-2">
 						<Tabs.Trigger value="statement" disabled={!convertedStatement}>
-							Enonce
+							Énoncé
 							{#if convertedStatement}
 								<span class="ml-1 text-xs text-muted-foreground">
 									({convertedStatement.length} car.)

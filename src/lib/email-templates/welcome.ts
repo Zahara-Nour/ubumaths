@@ -8,8 +8,11 @@
  * (already logged in → "file au Cabinet…") and manually-added ones (invitation to come).
  */
 
+import { absoluteUrl } from '#lib/seo/site.ts';
+
 export const WELCOME_EMAIL_SUBJECT = 'Cornegidouille, bienvenue sur Chiphre !';
-export const SITE_URL = 'https://www.chiph.re/';
+// Adresse du site lue dans `#lib/seo/site.ts`, seule constante du domaine (écart L55)
+const HOME_URL = absoluteUrl('/');
 
 /**
  * Get the greeting for the email
@@ -27,7 +30,7 @@ export function getWelcomeEmailText(firstname: string | null | undefined): strin
 
 Te voilà enrôlé dans ton Bataillon, Galopin ! Ton compte est scellé et bien vivant.
 
-File au Cabinet des Phynances sur ${SITE_URL} : des Corvées à dompter, des Gidouilles à empocher, et quelques Médailles de la Gidouille à décrocher.
+File au Cabinet des Phynances sur ${HOME_URL} : des Corvées à dompter, des Gidouilles à empocher, et quelques Médailles de la Gidouille à décrocher.
 
 Bonne année de Mathres — et gare au Décervelage !`;
 }
@@ -45,7 +48,7 @@ export function getWelcomeEmailHtml(firstname: string | null | undefined): strin
 <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
   <p>Bonjour ${greeting},</p>
   <p>Te voilà enrôlé dans ton <strong>Bataillon</strong>, Galopin ! Ton compte est scellé et bien vivant.</p>
-  <p>File au <strong>Cabinet des Phynances</strong> sur <a href="${SITE_URL}" style="color: #2563eb; text-decoration: underline;">${SITE_URL}</a> : des <strong>Corvées</strong> à dompter, des <strong>Gidouilles</strong> à empocher, et quelques <strong>Médailles de la Gidouille</strong> à décrocher.</p>
+  <p>File au <strong>Cabinet des Phynances</strong> sur <a href="${HOME_URL}" style="color: #2563eb; text-decoration: underline;">${HOME_URL}</a> : des <strong>Corvées</strong> à dompter, des <strong>Gidouilles</strong> à empocher, et quelques <strong>Médailles de la Gidouille</strong> à décrocher.</p>
   <p>Bonne année de <strong>Mathres</strong> — et gare au Décervelage&nbsp;! ⚙️</p>
 </body>
 </html>`;

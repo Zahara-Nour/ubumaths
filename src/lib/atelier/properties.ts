@@ -24,8 +24,8 @@ import { substitutedAstOf } from './engine';
 import { intervalDomainOf, intervalText } from './interval';
 import { INTERNAL_LETTER } from './letter';
 import { displayName } from './names';
-import { computeDomain } from '$lib/mathAST/domain/compute';
-import { intersect } from '$lib/mathAST/domain/algebra';
+import { computeDomain } from '#lib/mathAST/domain/compute.ts';
+import { intersect } from '#lib/mathAST/domain/algebra.ts';
 
 export type { PropertyRow } from './figure-properties';
 

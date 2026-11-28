@@ -12,15 +12,15 @@
  */
 
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { Database, Json } from '$lib/types/database';
+import type { Database, Json } from '#lib/types/database.ts';
 import type {
 	Achievement,
 	StudentAchievement,
 	AchievementProgress,
 	AchievementContext,
 	UnlockedAchievementResponse
-} from '$lib/types/achievements';
-import { createServiceRoleClient } from '$lib/server/serviceRoleClient';
+} from '#lib/types/achievements.ts';
+import { createServiceRoleClient } from '#lib/server/serviceRoleClient.ts';
 
 // ============================================================================
 // TYPES

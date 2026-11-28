@@ -19,6 +19,7 @@ import {
 	Sparkles,
 	Bug,
 	MessageCircle,
+	Mail,
 	BookOpen,
 	FileText,
 	Book,
@@ -40,16 +41,20 @@ import {
 	LibraryBig,
 	Shapes,
 	DatabaseCheck,
-	Cat
+	Cat,
+	NotebookText,
+	UserPlus
 } from '@lucide/svelte';
 import type { LucideIcon } from '@lucide/svelte';
-import { lore } from '$lib/config/lore';
+import { lore } from '#lib/config/lore.ts';
 
 export type DashboardNavLink = {
 	href: string;
 	label: string;
 	icon: LucideIcon;
 	badge?: number;
+	/** Ce que compte la pastille, lu par les lecteurs d'écran (« 3 messages non lus »). */
+	badgeLabel?: string;
 	/** Marks footer items (Mon profil, Déconnexion) rendered after a separator. */
 	footer?: boolean;
 	/** When true, the link triggers logout instead of navigation. */
@@ -74,10 +79,22 @@ const footerLinks: DashboardNavLink[] = [
 	{ href: '/auth/logout', label: lore.nav.logout, icon: LogOut, footer: true, logout: true }
 ];
 
+/** Lien « Messages » : la pastille compte les messages privés non lus (V104). */
+function messagesLink(unreadMessagesCount: number): DashboardNavLink {
+	const link: DashboardNavLink = { href: '/messages', label: 'Messages', icon: Mail };
+	if (unreadMessagesCount > 0) {
+		link.badge = unreadMessagesCount;
+		link.badgeLabel =
+			unreadMessagesCount === 1 ? '1 message non lu' : `${unreadMessagesCount} messages non lus`;
+	}
+	return link;
+}
+
 export function getNavLinks(
 	role: DashboardRole | string,
 	pendingVipRequestsCount: number = 0,
-	marketplaceEnabled: boolean = false
+	marketplaceEnabled: boolean = false,
+	unreadMessagesCount: number = 0
 ): DashboardNavLink[] {
 	const common: DashboardNavLink[] = [
 		{ href: '/dashboard', label: lore.nav.dashboard, icon: LayoutDashboard }
@@ -96,6 +113,10 @@ export function getNavLinks(
 				label: 'Cahier de textes',
 				icon: BookOpen
 			},
+			// Ce que voient ses parents (ADR 0040, Q3) : toujours visible, même carnet fermé
+			{ href: '/dashboard/student/carnet', label: 'Carnet de liaison', icon: NotebookText },
+			// Messagerie privée élève ↔ prof (V104) : avant les amis et le chat
+			messagesLink(unreadMessagesCount),
 			{ href: '/dashboard/friends', label: lore.entities.friends, icon: Users },
 			{ href: '/dashboard/chat', label: 'Chat', icon: MessageCircle }
 		];
@@ -150,9 +171,14 @@ export function getNavLinks(
 				href: '/dashboard/teacher/gamification',
 				label: 'Récompenses',
 				icon: Gift,
-				badge: pendingVipRequestsCount > 0 ? pendingVipRequestsCount : undefined
+				badge: pendingVipRequestsCount > 0 ? pendingVipRequestsCount : undefined,
+				badgeLabel:
+					pendingVipRequestsCount > 0
+						? `${pendingVipRequestsCount} ${pendingVipRequestsCount === 1 ? 'demande' : 'demandes'} en attente`
+						: undefined
 			},
 			{ href: '/dashboard/teacher/moderation', label: 'Modération', icon: ShieldAlert },
+			messagesLink(unreadMessagesCount),
 			{ href: '/dashboard/friends', label: lore.entities.friends, icon: Users },
 			{ href: '/dashboard/chat', label: 'Chat', icon: MessageCircle },
 			// Entry point to the admin section. Visible to teachers (who step up via
@@ -168,6 +194,7 @@ export function getNavLinks(
 			...common,
 			{ href: '/dashboard/admin', label: 'Administration', icon: ShieldCheck },
 			{ href: '/dashboard/admin/schools', label: 'Schools', icon: School },
+			{ href: '/dashboard/admin/cours-particuliers', label: 'Cours particuliers', icon: UserPlus },
 			{ href: '/dashboard/admin/users', label: 'Users', icon: Users },
 			{ href: '/dashboard/admin/classes', label: 'Classes', icon: GraduationCap },
 			{ href: '/dashboard/admin/questions', label: 'Questions', icon: BookOpen },
@@ -214,7 +241,9 @@ const ACTIVE_PREFIXES: Record<string, string[]> = {
 		'/dashboard/student/worksheets',
 		'/dashboard/student/assessments'
 	],
-	'/dashboard/bug-reports': ['/dashboard/bug-reports']
+	'/dashboard/bug-reports': ['/dashboard/bug-reports'],
+	// `/messages` renvoie à `/messages/inbox` : toute la messagerie surligne le lien
+	'/messages': ['/messages']
 };
 
 /** Le lien `href` de la barre latérale est-il celui de la page `pathname` ? */

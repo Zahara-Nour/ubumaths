@@ -26,8 +26,8 @@ import {
 	type Voie
 } from './types';
 import { capitalize, de, nom, role, type Role } from './names';
-import type { Figure } from '$lib/geometry-core/graph/figure';
-import { isSegment } from '$lib/geometry-core/types/elements';
+import type { Figure } from '#lib/geometry-core/graph/figure.ts';
+import { isSegment } from '#lib/geometry-core/types/elements.ts';
 
 /** Longueur de la règle (`Ruler.svelte`, `length = 15`), en unités = cm. */
 const RULER_LENGTH = 15;
@@ -124,7 +124,7 @@ export function measureSegment(
 	return {
 		subSteps: [
 			{
-				kind: 'compass-measure',
+				kind: 'instrument-move',
 				instrument: 'ruler',
 				instrumentTarget: { x: O.x, y: O.y, rotation },
 				compassRadius: 0,
@@ -135,7 +135,7 @@ export function measureSegment(
 				instruction: `On place le 0 de la règle sur ${nom(nameO)} et on lit ${reading}`
 			},
 			{
-				kind: 'compass-measure',
+				kind: 'instrument-move',
 				instrument: 'pencil',
 				secondaryInstrument: 'ruler',
 				instrumentTarget: { x: mid.x, y: mid.y, rotation: 0 },

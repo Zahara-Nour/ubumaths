@@ -4,7 +4,7 @@
  * Clears all variable bindings from the evaluation state.
  */
 
-import chalk from 'chalk';
+import { colors } from '../core/terminal-colors';
 import { BaseCommand } from './base-command';
 import type { CommandContext, CommandResult } from '../types';
 import { clearBindings, getBindingCount } from '../core/eval-state';
@@ -50,14 +50,14 @@ export class ClearCommand extends BaseCommand {
 		if (count === 0) {
 			return {
 				success: true,
-				output: chalk.dim('No variables to clear')
+				output: colors.dim('No variables to clear')
 			};
 		}
 
 		clearBindings(ctx.evalState);
 
 		const output =
-			chalk.green('Cleared ') + chalk.bold(count.toString()) + chalk.green(' variable(s)');
+			colors.green('Cleared ') + colors.bold(count.toString()) + colors.green(' variable(s)');
 
 		return {
 			success: true,

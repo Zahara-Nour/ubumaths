@@ -1,11 +1,11 @@
 import { describe, it, expect } from 'vitest';
-import { numericNode } from '$lib/mathAST/common/numeric';
+import { numericNode } from '#lib/mathAST/common/numeric.ts';
 import { translate, rotate, reflectPoint, reflectOverLine, dilate } from '../transformations';
 import { exact, numeric, isExact, isNumeric } from '../../types/geo-value';
 import { geoToNumber } from '../../compute/to-number';
 import { geoEqual } from '../../compute/compare';
 import { geoFromNumber, geoFromFraction } from '../../compute/geo-arithmetic';
-import { number, divide, multiply, piConstant, opposite } from '$lib/mathAST';
+import { number, divide, multiply, piConstant, opposite } from '#lib/mathAST/index.ts';
 import type { GeoPoint } from '../../types/primitives';
 
 function pt(x: number, y: number): GeoPoint {

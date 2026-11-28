@@ -22,7 +22,7 @@
  *
  * @example Button in exercise
  * ```svelte
- * import { TutorHelpButton } from '$lib/components/tutor';
+ * import { TutorHelpButton } from '#lib/components/tutor/index.ts';
  *
  * <TutorHelpButton
  *   exerciseContext={{
@@ -35,14 +35,14 @@
  *
  * @example Standalone chat
  * ```svelte
- * import { TutorChat } from '$lib/components/tutor';
+ * import { TutorChat } from '#lib/components/tutor/index.ts';
  *
  * <TutorChat />
  * ```
  *
  * @example Floating widget
  * ```svelte
- * import { TutorWidget } from '$lib/components/tutor';
+ * import { TutorWidget } from '#lib/components/tutor/index.ts';
  *
  * <TutorWidget />
  * ```

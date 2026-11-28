@@ -6,26 +6,27 @@
 
 	- `revealed` : verso visible d'emblée (aperçus) ;
 	- `interactive` : recto → « Voir la réponse » → verso ; avec `onSelfAssess`,
-	  l'élève s'auto-évalue ensuite (« Je savais » / « Je ne savais pas »), une fois ;
+	  l'élève s'auto-évalue ensuite (« Pas réussi » / « Réussi »), une fois ;
 	- ni l'un ni l'autre (vue d'ensemble, mode display) : recto seul, sans interaction.
 	- `size` : même échelle que la QuestionCard qui l'héberge.
 -->
 
 <script lang="ts">
-	import type { QuestionInstance } from '$lib/questions/types';
-	import { courseCardFront } from '$lib/questions/course-card';
-	import { templateGenericFunctions } from '$lib/questions/generic-functions';
-	import { provideCapitalPairs } from '$lib/components/markdown/content-capital-pairs';
+	import type { QuestionInstance } from '#lib/questions/types.ts';
+	import { courseCardFront } from '#lib/questions/course-card.ts';
+	import { templateGenericFunctions } from '#lib/questions/generic-functions.ts';
+	import { provideCapitalPairs } from '#lib/components/markdown/content-capital-pairs.ts';
 	import {
 		digitGroupingOf,
 		provideDigitGrouping
-	} from '$lib/components/markdown/content-digit-grouping';
-	import { MarkdownRenderer } from '$lib/components/markdown';
-	import { Button } from '$lib/components/ui/button';
-	import { Badge } from '$lib/components/ui/badge';
-	import { Check, Eye, X } from '@lucide/svelte';
-	import { cn } from '$lib/utils';
+	} from '#lib/components/markdown/content-digit-grouping.ts';
+	import { MarkdownRenderer } from '#lib/components/markdown/index.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
+	import { Eye } from '@lucide/svelte';
+	import { cn } from '#lib/utils.ts';
 	import CourseCardBack from './CourseCardBack.svelte';
+	import SelfAssessButtons from './SelfAssessButtons.svelte';
 
 	interface Props {
 		instance: QuestionInstance;
@@ -101,23 +102,10 @@
 
 		{#if interactive && onSelfAssess}
 			{#if assessment === null}
-				<div class="flex flex-wrap justify-center gap-3">
-					<Button
-						variant="outline"
-						size={sizeClasses.button}
-						onclick={() => handleSelfAssess(false)}
-					>
-						<X class="mr-2 h-4 w-4" />
-						Je ne savais pas
-					</Button>
-					<Button size={sizeClasses.button} onclick={() => handleSelfAssess(true)}>
-						<Check class="mr-2 h-4 w-4" />
-						Je savais
-					</Button>
-				</div>
+				<SelfAssessButtons onAssess={handleSelfAssess} size={sizeClasses.button} />
 			{:else}
 				<p class="text-center text-sm text-muted-foreground" role="status">
-					{assessment ? 'Noté : vous saviez.' : 'Noté : à revoir.'}
+					{assessment ? 'Noté : réussi.' : 'Noté : pas réussi.'}
 				</p>
 			{/if}
 		{/if}

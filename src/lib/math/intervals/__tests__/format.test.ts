@@ -36,7 +36,7 @@ import {
 	implicitMultiply,
 	piConstant,
 	opposite
-} from '$lib/mathAST/factory';
+} from '#lib/mathAST/factory.ts';
 
 describe('formatEndpointValue', () => {
 	it('formats positive infinity', () => {
@@ -251,7 +251,7 @@ describe('formatDomainFull', () => {
 // Edge Cases
 // =============================================================================
 
-import { greek, euler } from '$lib/mathAST/factory';
+import { greek, euler } from '#lib/mathAST/factory.ts';
 
 describe('formatEndpointValue edge cases', () => {
 	it('formats integer zero', () => {

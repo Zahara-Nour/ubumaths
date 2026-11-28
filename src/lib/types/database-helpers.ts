@@ -64,7 +64,7 @@
  */
 
 import type { Database, Json, Tables, TablesUpdate } from './database';
-import type { GradeCode } from '$lib/types/grades';
+import type { GradeCode } from '#lib/types/grades.ts';
 
 // ============================================================================
 // Table Row Type Aliases
@@ -619,9 +619,21 @@ export type JournalEntryPoint = Omit<Tables<'journal_entry_points'>, 'source'> &
  * would perform anyway: `undefined` fields disappear, `Date` becomes a string,
  * and a cyclic structure throws here rather than at the network boundary.
  */
-export function toJson<T>(value: T): Json {
-	return JSON.parse(JSON.stringify(value ?? null)) as Json;
+export function toJson<T>(value: T): JsonDe<T> {
+	return JSON.parse(JSON.stringify(value ?? null)) as JsonDe<T>;
 }
+
+/**
+ * Valeur d'une colonne jsonb obligatoire (`NOT NULL`) : tout JSON sauf `null`. C'est le type que
+ * `pnpm db:types` donne à ces colonnes.
+ */
+export type JsonRequis = NonNullable<Json>;
+
+/**
+ * Ce que `toJson` rend pour une valeur de type `T` : `JsonRequis` quand `T` ne peut être ni `null`
+ * ni `undefined` (la conversion ne fabrique pas de `null`), `Json` sinon, et pour `unknown`.
+ */
+export type JsonDe<T> = unknown extends T ? Json : T extends null | undefined ? Json : JsonRequis;
 
 // =============================================================================
 // RPC PARAMETERS
@@ -678,4 +690,26 @@ export interface GeometryFigureSummary extends Omit<GeometryFigureRow, 'dsl_scri
 export type PublicGeometryFigure = Pick<
 	GeometryFigureRow,
 	'id' | 'title' | 'description' | 'dsl_script' | 'grades'
+>;
+
+// ============================================================================
+// Versions d'un exercice (ADR 0044)
+// ============================================================================
+
+type ExerciseVersionRow = Tables<'exercise_versions'>;
+
+/** Le contenu d'une version : ce qui change d'une version à l'autre. */
+export type ExerciseVersionContent = Pick<
+	ExerciseVersionRow,
+	'variations' | 'shared' | 'generic_functions'
+>;
+
+/** Une version telle que les lectures la rendent. */
+export type ExerciseVersionRead = Pick<ExerciseVersionRow, 'id' | 'number' | 'exercise_id'> &
+	ExerciseVersionContent;
+
+/** Une version vue par l'éditeur : numéro, note, dates (sans le contenu) */
+export type ExerciseVersionSummary = Pick<
+	ExerciseVersionRow,
+	'id' | 'number' | 'note' | 'created_at' | 'updated_at'
 >;
