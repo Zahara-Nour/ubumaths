@@ -1904,8 +1904,13 @@ Tests : `FlashCard-coup-de-pouce.svelte.test.ts`, les tests des trois formes.
    juste. Une course finie ignore une validation tardive (programme qui tournait encore), et `findUnmaskedAnswers` la compte comme fuite. Combats de la
    Descente : écartée par `isCombatInstance` (bloc inconnu, `construire`). Série d'automatismes
    (fiche) : refusée comme les autres questions à programme. La solution part au navigateur
-   (Q2 : accepté, entraînement seulement). `checkTemplate` n'exige pas de spec (aucune ne pourrait
-   juger le programme côté serveur) : le modèle est vérifié par ses tirages.
+   (Q2 : accepté, entraînement seulement). `checkTemplate` n'exige pas de spec d'un modèle dont
+   toutes les cases sont des programmes Python (aucune ne pourrait juger le programme côté serveur :
+   il est vérifié par ses tirages) ; s'il a aussi une case ordinaire (le rang après la fonction
+   `seuil`), la spec est exigée (`hasOrdinaryCase`, premier tirage de chaque variation). Dans une
+   spec, la case Python laissée vide (`""`) est comptée juste d'office (`withPythonCasesJudged`,
+   `test-spec-runner.ts`) : la spec vérifie les autres cases ; une réponse écrite est gardée telle
+   quelle. La spec donne une réponse par case, dans l'ordre (`""` à la place de la case Python). Limites : seul le premier tirage est examiné (une case ordinaire derrière un `{{if:…}}` absent de ce tirage n'exige pas de spec) ; dans un modèle mixte, la spec « correct » d'une variation en Python seul réussit à vide. Décision de David, 2026-11-28.
 10. **Plusieurs bonnes réponses** : réglage de la case choix (`plusieurs: oui`), jamais du modèle.
 11. **`cleanCoefficients`** nettoie `1x-1y+0=0` en `x-y=0` partout (énoncé, attendu, choix,
     étapes) sans jamais toucher une fonction ni un facteur non premier d'un produit. La

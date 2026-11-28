@@ -2,18 +2,19 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-23 : idées 1 à 5 d'`idees-format` mergées et en prod (0.102.0)._
+_Mis à jour le 2026-11-28, chantier clos._
 
-- **État** : lot « nombres et calculs » publié. Sa revue (étape 2) est **reprise par `idees-format`** (worktree `ubumaths-wt-idees-format-revue-2de`, pas de PR) : passe 1 commitée (erreurs prévues, coups de pouce, specs), passe 2 (forme) sur une page à cocher, les 6 choix du 2026-11-20 compris. Pause des rubriques levée le 2026-11-22.
-- **Reste ici** : (1) quand la revue est mergée et jouée en prod, lever les 16 réservations de modèles publiés (`idees-ailleurs-repartition.md`) ; (2) fiches en attente 16, 17, 34, 52 ; (3) versement du chantier (journal archivé, relevé gardé).
-- **En attente de David** : la page à cocher de la revue (session `idees-format`) ; ses verdicts dans `/dev/modeles` (un seul en base, « Arrondir »).
-- **Pièges** : aucune trace du nom de la plateforme ; exercices lus dans `extern/banque-exercices/` ; ne pas toucher aux fichiers du lot pendant la revue de l'autre session.
-- **Worktree** : `../ubumaths-wt-ensembles-2de`, détaché sur `origin/main`, à retirer.
+- **État** : clos. Lot « nombres et calculs » de Seconde publié (2026-11-20), puis revu par
+  `idees-format` (#3319, en prod, relecture validée par David le 2026-11-28). Les 16 réservations
+  de modèles publiés sont levées. Fiches « plus tard » : 34 et 52 faites (#3319), 16 refusée, 17
+  dans « Idées en attente » d'`idees-ailleurs-repartition.md` (outil n° 49).
+- **Prochaine action** : aucune. Le relevé reste ici, cité par la skill `idees-rubrique`.
+- **Worktree / branche** : aucun.
 
 ## Parallélisation, gardes du nom, idées de format (2026-11-21)
 
 - Déploiement 0.99.0 (#2948 verdict de `/dev/modeles`, #2949 formulaires SvelteKit 3).
-- Skill `idees-rubrique` + tableau [idees-ailleurs-repartition.md](idees-ailleurs-repartition.md) (rubriques et modèles publiés réservés ; les 16 publiés du lot réservés ici).
+- Skill `idees-rubrique` + tableau [idees-ailleurs-repartition.md](../../../wip/idees-ailleurs-repartition.md) (rubriques et modèles publiés réservés ; les 16 publiés du lot réservés ici).
 - Copie locale nettoyée des exercices : `extern/banque-exercices/` (sans `.git`, nom remplacé partout).
 - Gardes du nom : #2951 (empreintes), puis #2952 (noms lus hors du dépôt, messages + fichiers + chemins, secret CI). Une racine trop courte attrapait une phrase ordinaire : racines allongées.
 - Skills harmonisés : relecture et verdicts dans `/dev/modeles` ; la page à cocher ne sert qu'en phase 0 ; `idees-rubrique` exige la meilleure forme de notre format, des `testSpecs`, le bon point et les bornes.
@@ -150,3 +151,5 @@ Cinq agents (`pedagogy-expert`), un par dossier ; specs à 300 tirages par varia
 - Deux séries (50 modèles au plus par série) enregistrées par David : `54d77552-9438-40f3-8773-e3d848a5e219` (36 nouveaux), `d580e46d-d9c7-4505-a158-b42335883050` (16 complétés) ; vérifiées en base.
 - Bug signalé par David : « Enregistrer le verdict » faisait quitter la série (SvelteKit 3 : `update()` navigue vers `?/saveReview`, perd `?serie=`). Verdict pourtant enregistré. Correctif `navigate: false`, reproduit puis vérifié en Playwright sur la base locale (série d'essai « Essai verdict » en local) ; #2948 mergé ; en prod au prochain `deploy:prod`. Autres formulaires `?/` + `use:enhance` sur page à recherche (6 composants de cours) : question posée à David.
 - Vérification demandée par David : relevé des 91 formulaires `use:enhance` (agent, lecture seule). Cassés : cahier de texte (lien de partage), modèles de fiches (dupliquer / supprimer), mot de passe (`?depuis=profil` sur erreur), mot de passe parent (jeton sur erreur) ; à risque : connexion (`?error=`). Correctif `stayOnPage` (`#lib/utils/enhance-stay-on-page.ts`) ; Playwright local avant → après sur mot de passe et cahier de texte ; doc `svelte-typescript.md` § SvelteKit 3. #2949 mergé (code-reviewer et security-auditor sans bloquant ; connexion : l'erreur du formulaire passe avant `?error=`). En prod au prochain `deploy:prod`.
+
+- 2026-11-28 : chantier clos (revue faite par `idees-format`, #3319), réservations levées, journal archivé.

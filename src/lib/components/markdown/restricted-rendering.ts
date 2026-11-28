@@ -160,6 +160,37 @@ export const REVIEWED_SAFE_MATH_COMMANDS = [
 	'smash'
 ] as const;
 
+/**
+ * Macros par défaut de MathLive (0.111.4) dont le DÉVELOPPEMENT contient une commande
+ * interdite, EXAMINÉES et sûres : les valeurs y sont fixes (`\enclose{actuarial}`,
+ * `\enclose{phasorangle}`, `\mkern-1.2mu`, `\rule` et `\raise` de dimensions fixes) ;
+ * `#1` n'est que le contenu de la formule, jamais un style ni un attribut. Le filtre
+ * lit le texte écrit, pas le développement : une macro nouvelle à valeur libre
+ * passerait sous son nom. Un seul niveau de développement est regardé : chaque macro
+ * listée doit être sûre quel que soit son argument (une macro qui en appelle une autre
+ * de la liste l'est aussi). Garde : `restricted-rendering-macros.test.ts` échoue si
+ * MathLive ajoute une telle macro absente de cette liste (ancien écart T26).
+ */
+export const REVIEWED_SAFE_MATHLIVE_MACROS = [
+	'strut',
+	'phase',
+	'angl',
+	'angln',
+	'anglr',
+	'anglk',
+	'colondash',
+	'Colondash',
+	'dashcolon',
+	'Dashcolon',
+	'simcolon',
+	'Simcolon',
+	'simcoloncolon',
+	'approxcolon',
+	'Approxcolon',
+	'approxcoloncolon',
+	'tripledash'
+] as const;
+
 // `\nom` suivi d'autre chose qu'une lettre (`\displaystyle` ≠ `\style`)
 // Les noms peuvent contenir `*` (`hspace*`) : échappés pour la regex
 const escapeRegex = (name: string): string => name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
