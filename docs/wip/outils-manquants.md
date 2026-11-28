@@ -9,6 +9,9 @@
 > geste qui le couvre ; un chantier d'outil qui merge passe sa ligne dans « Livré » avec sa PR.
 > Un geste n'est « fait » que mergé ; les modèles qui s'en servent restent aux sessions
 > « questions ».
+>
+> **Sessions en parallèle** : les outils « À faire » sont rangés en lots dans
+> [outils-lots.md](outils-lots.md) (`pnpm outils lancer`, skill `/prendre-outil`).
 
 _Ménage du 2026-11-28 : n° 41 et 46 passés au § 4 ; #2914 vérifié dans la branche `production` (0.116.0, 2026-11-27) ; l'état de prod des autres lignes du § 4 n'est pas revérifié. Relevé initial du 2026-11-02 : sections de classement de tous les journaux `questions-*` (wip et archive), `points-repere`, `couvrir-un-niveau.md`, `questions.md` § Écarts connus, transcriptions et bornes du BO ; vérifié dans le code (`construction.ts`, `collection-parser.ts`, `courbe-parser.ts`)._
 
