@@ -595,6 +595,13 @@ domaine (`\sqrt{\ln x - 1}` → [e ; +∞[, `\ln(e^x-2)` → ]ln 2 ; +∞[). San
 `analysis/__tests__/continuity-denominateurs-transcendants.test.ts` (discontinuité `infinite` à
 la valeur exacte) ; oracle : `comp-16` (1/(1 − ln x)) n'est plus un refus connu.
 
+**Pôle isolé à côté d'une famille périodique** (L60, 2026-11-28). `intersect` ne sait pas écrire
+« famille périodique + points isolés » (`isUniversalInterval` ignore les points exclus) : le domaine
+de tan(x) + 1/(x − 3) perd x = 3. `analyzeContinuity` (`analysis/continuity.ts`,
+`isolatedPointsBesidePeriodic`) le rattrape quand le domaine est une exclusion périodique : les
+points exclus des plus grandes sous-expressions sans fonction périodique deviennent candidats
+(x = 3 → `infinite`). Le domaine lui-même reste incomplet. Tests : `analysis/__tests__/continuity.test.ts`.
+
 Écart V45 (2026-10-13, en partie) : quand `computeDomain` ne résout pas une contrainte
 (`unresolved` : `x^5 − x + 1 ≠ 0`, deux exclusions périodiques croisées), `solve` le dit dans
 `SolveResult.domainUnresolved` (absent si le domaine est exact) et la console refuse une

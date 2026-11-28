@@ -1015,7 +1015,9 @@ function roundDraft(spec: SolideSpec): Draft {
 				// Distance à l'axe : en tirets, du centre de la base du bas au bord de la section
 				if (spec.cotes && cut.distance > 0) {
 					lines.push(segment({ x: 0, y: 0 }, { x: 0, y: low }, true));
-					cotes.push({ at: { x: 0, y: -ry }, value: cut.distance, side: 'dessous' });
+					// Contre le trait, en haut à gauche de son bout au centre de la base : sous la
+					// base, il était loin du trait court ; à mi-hauteur, sur le bord de la coupe (V110)
+					cotes.push({ at: { x: 0, y: 0 }, value: cut.distance, side: 'haut-gauche' });
 				}
 			}
 			if (section !== null) lines.push(sectionOutline(section));
@@ -1192,7 +1194,8 @@ function turnedRoundDraft(spec: SolideSpec, vue: EspaceVue): TurnedDraft {
 				];
 				if (spec.cotes && cut.distance > 0) {
 					lines.push(segment(place(0, 0, 0), place(0, 0, -cut.distance), true));
-					cotes.push({ at: place(0, 0, -r), value: cut.distance, side: 'dessous' });
+					// Contre le trait, comme la vue fixe (V110)
+					cotes.push({ at: place(0, 0, 0), value: cut.distance, side: 'haut-gauche' });
 				}
 			}
 			if (section !== null) lines.push(sectionOutline(section));

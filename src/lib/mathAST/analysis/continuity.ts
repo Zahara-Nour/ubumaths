@@ -52,7 +52,7 @@ import { classifyWithSign, type SignedLimitValue } from '../limits/sign-tracking
 import { substitute } from '../eval/substitute';
 import { evaluateNodeToApproximatedNumber } from '../eval/evaluate';
 import { isInfinity, isFunction } from '../guards';
-import { findNodes } from '../transforms';
+import { findNodes, getChildren } from '../transforms';
 import { shouldIncludeStep } from '../common/verbosity';
 import { formatNumber } from '../common/format';
 import { ZERO_TOLERANCE } from '../common/constants';
@@ -160,7 +160,12 @@ export function analyzeContinuity(
 		'detailed'
 	);
 
-	const { candidates, unresolved } = collectDiscontinuityCandidates(expr, variable, domain, opts);
+	const { candidates, unresolved, excludedIsolated } = collectDiscontinuityCandidates(
+		expr,
+		variable,
+		domain,
+		opts
+	);
 
 	// Step 3: Analyze each candidate
 	const discontinuities: Discontinuity[] = [];
@@ -190,7 +195,8 @@ export function analyzeContinuity(
 	// Step 4: Determine if continuous on domain
 	// ⚠️ Des sauts de sign(u) peuvent manquer quand u = 0 n'est pas résolue :
 	// la continuité n'est alors pas établie.
-	const isContinuousOnDomain = !unresolved && checkContinuousOnDomain(discontinuities, domain);
+	const isContinuousOnDomain =
+		!unresolved && checkContinuousOnDomain(discontinuities, domain, excludedIsolated);
 
 	// Add summary step
 	if (opts.verbosity !== 'result') {
@@ -247,10 +253,15 @@ function collectDiscontinuityCandidates(
 	variable: string,
 	domain?: Domain,
 	options: ContinuityOptions = {}
-): { readonly candidates: DiscontinuityCandidate[]; readonly unresolved: boolean } {
+): {
+	readonly candidates: DiscontinuityCandidate[];
+	readonly unresolved: boolean;
+	readonly excludedIsolated: ReadonlySet<string>;
+} {
 	const opts: Required<ContinuityOptions> = { ...DEFAULT_OPTIONS, ...options };
 	const candidates: DiscontinuityCandidate[] = [];
 	const seenPoints = new Set<string>();
+	const excludedIsolated = new Set<string>();
 
 	// Get domain if not provided
 	const actualDomain = domain ?? computeDomain(expr, variable).domain;
@@ -311,6 +322,21 @@ function collectDiscontinuityCandidates(
 				candidates.push(pc);
 			}
 		}
+
+		// 2a. Le type `Domain` ne sait pas écrire « famille + points » : intersect
+		// garde la famille seule, et le 3 de tan(x) + 1/(x − 3) disparaît (L60).
+		// On relit donc les points exclus des sous-expressions sans fonction
+		// périodique.
+		// Ces points sont hors du domaine réel, même si la famille « contient » :
+		// un point effaçable n'y casse pas la continuité. Un point de la famille
+		// (1/(x − π/2) à côté de tan) y est déjà, sous une autre écriture.
+		for (const point of isolatedPointsBesidePeriodic(expr, variable)) {
+			const key = getPointKey(point);
+			if (seenPoints.has(key) || onPeriodicFamily(periodic, point)) continue;
+			seenPoints.add(key);
+			excludedIsolated.add(key);
+			candidates.push({ point, source: detectSourceFromExpression(expr, point, variable) });
+		}
 	}
 
 	// 2b. Fallback: detect periodic functions when domain didn't capture them
@@ -334,7 +360,7 @@ function collectDiscontinuityCandidates(
 		}
 	}
 
-	return { candidates, unresolved: piecewise.unresolved };
+	return { candidates, unresolved: piecewise.unresolved, excludedIsolated };
 }
 
 /**
@@ -815,6 +841,39 @@ function findPeriodicFunctionDiscontinuities(
 	return candidates;
 }
 
+/** Le point est-il un membre base + k·période de la famille ? */
+function onPeriodicFamily(periodic: PeriodicExclusion, point: MathNode): boolean {
+	const value = computeNumericValue(point);
+	const base = computeNumericValue(periodic.basePoint);
+	const period = computeNumericValue(periodic.period);
+	if (value === null || base === null || period === null || period === 0) return false;
+	const k = (value - base) / period;
+	return Math.abs(k - Math.round(k)) < ZERO_TOLERANCE;
+}
+
+/**
+ * Les points exclus des plus grandes sous-expressions qui ne contiennent
+ * aucune fonction périodique (1/(x − 3) dans tan(x) + 1/(x − 3)). Appelé
+ * seulement quand le domaine est une exclusion périodique : il couvre alors
+ * tout ℝ hors de la famille, et ses points isolés ont été perdus.
+ */
+function isolatedPointsBesidePeriodic(expr: MathNode, variable: string): MathNode[] {
+	const points: MathNode[] = [];
+	const visit = (node: MathNode): void => {
+		const hasPeriodic =
+			findNodes(node, (n) => isFunction(n) && isPeriodicTrigFunction(n.name)).length > 0;
+		if (hasPeriodic) {
+			for (const child of getChildren(node)) visit(child);
+			return;
+		}
+		const { domain } = computeDomain(node, variable);
+		if (domain.kind !== 'interval_set') return;
+		for (const ep of domain.excludedPoints) points.push(ep.value);
+	};
+	visit(expr);
+	return points;
+}
+
 /**
  * Find zeros of an argument expression.
  *
@@ -915,15 +974,18 @@ function normalizeSolutionToNumber(node: MathNode): MathNode {
  */
 function checkContinuousOnDomain(
 	discontinuities: readonly Discontinuity[],
-	domain: Domain
+	domain: Domain,
+	excludedIsolated: ReadonlySet<string> = new Set()
 ): boolean {
 	if (isEmpty(domain)) {
 		return true; // Vacuously continuous on empty domain
 	}
 
 	for (const disc of discontinuities) {
-		// Check if the discontinuity point is IN the domain
-		const pointInDomain = containsNode(domain, disc.point);
+		// Check if the discontinuity point is IN the domain (les points isolés
+		// lus à côté d'une famille périodique en sont exclus, cf. étape 2a)
+		const pointInDomain =
+			!excludedIsolated.has(getPointKey(disc.point)) && containsNode(domain, disc.point);
 
 		if (pointInDomain) {
 			// Discontinuity is inside the domain - function is not continuous on its domain

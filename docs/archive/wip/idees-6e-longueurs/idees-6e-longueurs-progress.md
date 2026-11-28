@@ -2,18 +2,16 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-28, après #3269._
+_Mis à jour le 2026-11-28, chantier clos._
 
-- **État** : tout le lot est en prod (#3262, #3265, `db:migrate`) ; série de relecture `aa16caa1` publiée, id
-  commité (#3269 mergée, worktree retiré). Les 6 neufs sont encore brouillons en prod (MCP) ; **aucun verdict en
-  base** (`question_template_reviews` vide depuis le 2026-11-27) : seul « je valide » de David.
-- **Prochaine action** : après la publication par David, vérifier les 6 `published` par MCP ; lever les
-  réservations des 6 publiés, rubrique « publiée » dans `idees-ailleurs-repartition.md`, versement du journal.
-- **En attente de David** : confirmer que « je valide » couvre les 12 modèles, puis lancer lui-même (le
-  classifieur refuse même la simulation en prod) `publier-lot.ts --dir scripts/questions/idees-6e-longueurs-neufs`,
-  puis `--publier`.
-- **Pièges en cours** : `conditions: []` écrase les conditions partagées.
-- **Worktree / branche** : aucun (travail restant = doc sur `main`).
+- **État** : **clos**. Les 6 neufs (c26b4d4c, 0d55c1de, 8ac28cf5, 84648b3b, 0031e3ea, 10dc7b1c) sont **publiés** en
+  prod (publication lancée par David, statut relu par MCP) ; les 11 variations ajoutées aux 6 publiés sont en prod,
+  série de relecture `aa16caa1` validée (« je valide »). Réservations levées, journal archivé.
+- **Prochaine action** : aucune.
+- **En attente de David** : rien.
+- **Pièges notés** : `conditions: []` écrase les conditions partagées ; le pre-commit laisse l'index d'une fixture
+  JSON dans sa forme d'avant prettier (`MM`).
+- **Worktree / branche** : aucun.
 
 ## Phase 0 (2026-11-27)
 
@@ -110,6 +108,8 @@ Page à cocher : https://claude.ai/artifact/6bCd5vw2yxYQ7pQvQUJ7uV (Oui / Non / 
   CM1-068, plages réduites à deux chiffres après la virgule.
 
 ## Historique
+
+- 2026-11-28 : David publie les 6 neufs (`publier-lot.ts --publier`), statut relu par MCP ; chantier clos.
 
 - 2026-11-28 : David publie la série `aa16caa1` (id → #3269), puis « je valide ».
 

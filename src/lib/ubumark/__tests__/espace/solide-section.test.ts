@@ -6,6 +6,7 @@ import { generateEspaceTypst } from '#lib/ubumark/generators/espace-typst.ts';
 import { parseEspaceContent } from '#lib/ubumark/parser/espace-parser.ts';
 import type { SolideSpec } from '#lib/ubumark/types/espace.ts';
 import { buildSolideScene, labelBox, solideLabel } from '#lib/ubumark/utils/espace-solides.ts';
+import { VUE_DE_DEPART } from '#lib/ubumark/utils/espace-vue.ts';
 
 const read = (...lines: string[]) => parseEspaceContent(lines.join('\n'), 'solide');
 const errors = (...lines: string[]) => read(...lines).errors;
@@ -338,5 +339,34 @@ describe('section: — nom accessible et PDF', () => {
 		const out = generateEspaceTypst(read('forme: pave 6 4 3', 'section: parallele dessous 1'));
 		expect(out).toContain('fill: rgb(');
 		expect(out.split('curve(').length - 1).toBe(16);
+	});
+});
+
+// Écart V110 : la distance à l'axe était écrite sous la base, loin du trait court
+// qu'elle mesure. Décision du 2026-11-28 (David a suivi la recommandation) : à côté
+// du trait ; posée en haut à gauche de son bout au centre de la base, pour ne pas
+// tomber sur le bord de la coupe quand la distance est petite.
+describe('cylindre coupé parallèlement à l’axe : la distance contre son trait (V110)', () => {
+	const LINES = ['forme: cylindre 4 5', 'section: parallele 1', 'cotes: cm', 'tourner: oui'];
+
+	it.each([
+		['vue fixe', undefined],
+		['vue que l’on peut tourner', VUE_DE_DEPART]
+	])('%s : « 1 cm » au-dessus du bout du trait, à moins de 6 mm', (_, vue) => {
+		const drawn = buildSolideScene(specOf(...LINES), vue);
+		const label = drawn.labels.find((l) => l.text === '1 cm');
+		const trait = drawn.lines
+			.filter((l) => l.dashed && l.points.length === 2 && near(l.points[0].x, l.points[1].x))
+			.map((l) => l.points.toSorted((a, b) => a.y - b.y))
+			.find(([a, b]) => b.y - a.y < 0.5);
+		expect(label).toBeDefined();
+		expect(trait).toBeDefined();
+		const [, max] = labelBox(label!);
+		const top = trait![0];
+
+		// Le texte ne touche ni le trait ni le bord de la coupe, en dessous : il est au-dessus
+		expect(max.y).toBeLessThanOrEqual(top.y + 1e-9);
+		// Et tout près (avant : 9 mm plus bas, sous la base)
+		expect(Math.hypot(label!.at.x - top.x, label!.at.y - top.y)).toBeLessThan(0.6);
 	});
 });
