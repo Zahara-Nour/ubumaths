@@ -160,6 +160,13 @@ export const listBugReportsQuerySchema = z.object({
 
 export type ListBugReportsQuery = z.infer<typeof listBugReportsQuerySchema>;
 
+/** Filtres de la page admin des rapports de bug ; un paramètre absent ou vide ne filtre pas. */
+export const adminBugReportsFiltersSchema = z.object({
+	status: bugReportStatusSchema.optional(),
+	category: bugReportCategorySchema.optional(),
+	severity: bugReportSeveritySchema.optional()
+});
+
 // =============================================================================
 // Screenshot Upload Schema
 // =============================================================================

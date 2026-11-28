@@ -157,11 +157,15 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 		// L'ancienne capture ne part qu'une fois la nouvelle rattachée au rapport :
 		// retirée avant, un refus de la base laissait le rapport sans capture.
 		if (report.screenshot_path && report.screenshot_path !== storagePath) {
-			const { error: removeError } = await locals.supabase.storage
+			const { data: removed, error: removeError } = await locals.supabase.storage
 				.from(BUCKET_NAME)
 				.remove([report.screenshot_path]);
 			if (removeError) {
 				logger.warn('[API] Ancienne capture non effacée :', removeError.message);
+			} else if (!removed || removed.length === 0) {
+				// Un refus des règles du stockage ne rend pas d'erreur : il rend zéro
+				// fichier, et l'ancienne capture resterait orpheline sans trace.
+				logger.warn('[API] Ancienne capture non effacée (aucun fichier rendu) :', params.reportId);
 			}
 		}
 

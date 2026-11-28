@@ -41,16 +41,6 @@ const RPC_ROW = {
 	is_group: true
 };
 
-const TABLE_ROW = {
-	id: RPC_ROW.id,
-	conversation_id: RPC_ROW.conversation_id,
-	plain_text: 'un message grossier',
-	flag_reason: 'Profanité détectée automatiquement',
-	created_at: RPC_ROW.created_at,
-	sender: { firstname: 'Camille', lastname: 'Exemple' },
-	conversation: { name: 'Groupe fictif', is_group: true }
-};
-
 const RENDU = {
 	id: RPC_ROW.id,
 	conversationId: RPC_ROW.conversation_id,
@@ -63,15 +53,13 @@ const RENDU = {
 	deletedBy: null
 };
 
-/** `flagged` : ce que rend la fonction (prof) ou la lecture de `messages` (admin). */
+/** `flagged` : ce que rend la fonction du prof. */
 async function runLoad(role: 'teacher' | 'admin', flagged: FakeResult) {
 	const { client, chains } = createWriteVerdictSupabase({
 		user_restrictions: { awaited: { data: [], error: null } },
 		moderation_logs: { awaited: { data: [], error: null } },
 		// Le prof ne lit jamais `messages` directement : une lecture rendrait une erreur.
-		messages: {
-			awaited: role === 'admin' ? flagged : { data: null, error: { message: 'inattendue' } }
-		}
+		messages: { awaited: { data: null, error: { message: 'inattendue' } } }
 	});
 	client.rpc.mockImplementation(async (name: string) => {
 		if (name === 'get_reports_for_moderation') return { data: [], error: null };
@@ -103,7 +91,6 @@ describe('modération : messages marqués automatiquement', () => {
 			const { data, rpc, chains } = await runLoad('teacher', { data: [RPC_ROW], error: null });
 
 			expect(data.flaggedMessagesLoadFailed).toBe(false);
-			expect(data.flaggedMessagesExtended).toBe(true);
 			expect(data.flaggedMessages).toEqual([RENDU]);
 			expect(rpc).toHaveBeenCalledWith('get_flagged_messages_for_teacher', { p_limit: 100 });
 			// Le prof ne lit pas `messages` directement.
@@ -168,36 +155,11 @@ describe('modération : messages marqués automatiquement', () => {
 		});
 	});
 
-	describe('admin : accès inchangés (lecture de `messages` par la RLS)', () => {
-		it('nominal : lit `messages`, sans appeler la fonction du prof', async () => {
-			const { data, rpc, chains } = await runLoad('admin', { data: [TABLE_ROW], error: null });
-
-			expect(data.flaggedMessagesExtended).toBe(false);
-			expect(data.flaggedMessages).toEqual([RENDU]);
-			expect(chains.messages?.eq).toHaveBeenCalledWith('is_flagged', true);
-			expect(rpc).not.toHaveBeenCalledWith('get_flagged_messages_for_teacher', expect.anything());
-		});
-
-		it('auteur ou conversation masqués : la ligne reste, sans nom', async () => {
-			const { data } = await runLoad('admin', {
-				data: [{ ...TABLE_ROW, sender: null, conversation: null, plain_text: null }],
-				error: null
+	describe('admin', () => {
+		it('refusé : la page est réservée au prof (403)', async () => {
+			await expect(runLoad('admin', { data: [], error: null })).rejects.toMatchObject({
+				status: 403
 			});
-
-			expect(data.flaggedMessages).toHaveLength(1);
-			expect(data.flaggedMessages[0]).toMatchObject({
-				senderName: null,
-				conversationName: null,
-				isGroup: null,
-				text: ''
-			});
-		});
-
-		it('lecture en échec : l’échec est annoncé, jamais « aucun message »', async () => {
-			const { data } = await runLoad('admin', { data: null, error: { message: 'refusée' } });
-
-			expect(data.flaggedMessagesLoadFailed).toBe(true);
-			expect(data.flaggedMessages).toEqual([]);
 		});
 	});
 });

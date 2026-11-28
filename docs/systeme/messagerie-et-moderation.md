@@ -394,9 +394,11 @@ La modération porte sur la table `messages` **du chat**, pas sur `private_messa
 - Signalements : tous, via `get_reports_for_moderation` (`is_teacher_or_admin()`), triés
   `pending` d'abord.
 - Messages marqués automatiquement : onglet « Messages marqués » de `gestion/`
-  (`FlaggedMessagesList.svelte`), 100 plus récents, lecture seule. Deux lectures selon le rôle
-  (`loadFlaggedMessages` dans `+page.server.ts`) :
-  - **prof** : fonction `get_flagged_messages_for_teacher` (`SECURITY DEFINER`, réservée au rôle
+  (`FlaggedMessagesList.svelte`), 100 plus récents, lecture seule, **prof seulement** : l'admin
+  reçoit un 403 du layout de `dashboard/teacher/moderation/` (gardé par David le 2026-11-25 ; la
+  branche de lecture admin, morte, est retirée, M59). Lecture (`loadFlaggedMessages` dans
+  `+page.server.ts`) :
+  - fonction `get_flagged_messages_for_teacher` (`SECURITY DEFINER`, réservée au rôle
     `teacher` : élève, admin et visiteur refusés en `42501`). Décision de David du 2026-11-25.
     Elle rend les messages `is_flagged`, **et eux seuls**, de ses conversations, des chats de
     groupe et des **conversations à deux entre deux élèves** (en classe ou hors-classe) : texte,
@@ -414,8 +416,6 @@ La modération porte sur la table `messages` **du chat**, pas sur `private_messa
     policy SELECT nomme les conversations à deux, mais lit `conversation_participants` sous la
     RLS du prof, qui n'y voit que les siennes). Test :
     `tests/integration/messages-marques-prof.test.ts`.
-  - **admin** : accès inchangés. Lecture de `messages` (`is_flagged = true`) avec son client,
-    bornée par la RLS : conversations qu'il peut ouvrir, messages non supprimés.
 
   Une lecture en échec rend `flaggedMessagesLoadFailed` et une alerte, jamais « aucun message ».
   Pas de lien direct vers la conversation, pas d'état « traité ».
