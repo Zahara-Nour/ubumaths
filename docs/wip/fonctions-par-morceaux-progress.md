@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-28, PR 1 (moteur) revue faite, PR ouverte._
+_Mis à jour le 2026-11-28, après #3335 (PR 1, moteur)._
 
-- **État** : découpage validé (« c'est bon »). PR 1 (moteur) codée, revue (`code-reviewer` Opus) corrigée, 36 tests verts.
-- **Prochaine action** : PR 1 ouverte et mergée, puis PR 2 (Atelier).
+- **État** : PR 1 mergée — `f(3)` exact sur un nœud par morceaux, lecture de `\begin{cases}`. Rien de visible dans l'Atelier.
+- **Prochaine action** : PR 2 (Atelier) — nouveau worktree `../ubumaths-wt-fonctions-par-morceaux-2`, branche `feat/fonctions-par-morceaux-2` ; phase 0 et Q1-Q4 déjà tranchées (ci-dessous), tests d'abord.
 - **En attente de David** : rien.
-- **Pièges en cours** : l'aller-retour texte de `expressionOf` / `syncEngine` perd un nœud par morceaux (syntaxe maison `{ v si c }` illisible, ambiguë : `si` = s·i) → PR 2 passe l'arbre ou relit en LaTeX.
-- **Worktree / branche** : `../ubumaths-wt-fonctions-par-morceaux` · `feat/fonctions-par-morceaux`.
+- **Pièges en cours** : `expressionOf` / `syncEngine` (`engine.ts`) font arbre → texte maison → arbre : un nœud par morceaux s'y perd (`{ v si c }` illisible, `si` = s·i) → passer l'arbre, ou relire en LaTeX. `simplify` ne réduit pas un nœud par morceaux, seul `evaluate`. Refus `ONE_FORMULA` à retirer (`interval.ts` ~282). Graphe = PR 3 (une formule par courbe aujourd'hui).
+- **Worktree / branche** : aucun (celui de PR 1 retiré par `pr:merger`).
 
 ## Demande
 
