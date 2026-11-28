@@ -21,9 +21,10 @@ export const MASKED_VALUE = '?';
 
 /**
  * Ligne de la réponse d'un bloc à geste : `placer:`, `tracer:`, `construire:`,
- * `colorier:`, `representer:`, `attendu:` (programme tortue)
+ * `colorier:`, `representer:`, `graduer:` (nombre de parts), `attendu:` (programme tortue)
  */
-const ANSWER_KEY_LINE = /^(?:placer|tracer|construire|colorier|representer|attendu)\s*:(.*)$/i;
+const ANSWER_KEY_LINE =
+	/^(?:placer|tracer|construire|colorier|representer|graduer|attendu)\s*:(.*)$/i;
 
 /**
  * Donnée masquée : une barre (`Natation = ?`) ou une boîte à moustaches
