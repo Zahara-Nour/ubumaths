@@ -10,7 +10,7 @@
  * noms, le nombre de points ou de barres, la forme. La correction ne change pas :
  * le serveur juge sur l'instance complète.
  *
- * Masqué : ```tortue (`attendu:`, la figure seule en `figure:`), ```calcul (`attendu:`), ```line, ```courbe et ```trig (`placer:`), ```courbe (`tracer:` : l'équation
+ * Masqué : ```tortue (`attendu:`, la figure seule en `figure:`), ```calcul (`attendu:`), ```line, ```courbe et ```trig (`placer:`), ```line (`representer:`, `graduer:`), ```courbe (`tracer:` : l'équation
  * de la droite devient `tracer: ?`), ```horloge (`placer:`), ```collection et
  * ```monnaie (`construire:`, avec sa réserve par défaut écrite : `maskMonnaie`), ```partage (`colorier:`), ```barres (effectifs des
  * barres de `placer:`, `axe: à choisir` compris : l'échelle ne se déduit plus),
@@ -114,6 +114,7 @@ type MaskLine = (line: string, rank: number) => string | string[] | null;
 // Constantes
 const PLACER_LINE = /^(placer\s*:)(.*)$/i;
 const REPRESENTER_LINE = /^(representer\s*:)(.*)$/i;
+const GRADUER_LINE = /^(graduer\s*:)(.*)$/i;
 const TRACER_LINE = /^(tracer\s*:)(.*)$/i;
 const BUILD_LINE = /^(construire\s*:)(.*)$/i;
 const COLORIER_LINE = /^(colorier\s*:)(.*)$/i;
@@ -691,7 +692,7 @@ export function findUnmaskedAnswers(statement: string): string[] {
 	const keyMasked = (keys: string[]) => (block: FoundBlock) =>
 		valuesOf(block.body, keys).every(allMasked);
 	return [
-		...leaks('line', findLinesToPlace(statement), keyMasked(['placer', 'representer'])),
+		...leaks('line', findLinesToPlace(statement), keyMasked(['placer', 'representer', 'graduer'])),
 		...leaks(
 			'courbe',
 			findCourbesToPlace(statement),
@@ -758,9 +759,11 @@ export function maskGestureAnswers(statement: string): string {
 		);
 	const placer = keyLine(PLACER_LINE, maskLineTargets);
 	const representer = keyLine(REPRESENTER_LINE, maskRepresenter);
+	// Droite à graduer : le nombre de parts (le geste reste : − / +)
+	const graduer = keyLine(GRADUER_LINE, () => MASKED_VALUE);
 	maskBlocks(
 		findLinesToPlace(statement),
-		() => (line, rank) => placer(line, rank) ?? representer(line, rank)
+		() => (line, rank) => placer(line, rank) ?? representer(line, rank) ?? graduer(line, rank)
 	);
 	const courbePoints = keyLine(PLACER_LINE, maskCourbeTargets);
 	// Droite : l'équation entière ; vecteur : ses coordonnées seules (nom, origine gardés)

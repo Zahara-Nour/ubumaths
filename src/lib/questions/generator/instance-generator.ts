@@ -353,7 +353,7 @@ function trousLabelsCollide(
 /** Ce qui donne la réponse d'un bloc qui porte sa case, pour les messages au prof */
 function blockAnswerName(kind: BuildKind): string {
 	if (kind === 'line')
-		return 'la graduation ou l’intervalle de la droite graduée (placer:, representer:)';
+		return 'la graduation, l’intervalle ou le partage de la droite graduée (placer:, representer:, graduer:)';
 	if (kind === 'horloge') return 'l’heure de l’horloge (placer:)';
 	if (kind === 'barres') return 'l’effectif de la barre (placer:)';
 	if (kind === 'boite-a-moustaches') return 'les valeurs de la boîte (placer:)';
@@ -494,13 +494,15 @@ function normalizeAnswerExpression(
 /** Champs propres à chaque case de calcul (cf. `CalculusBlankFields`) */
 const CALCULUS_FIELDS: Partial<Record<AnswerKind, readonly (keyof CalculusBlankFields)[]>> = {
 	primitive: ['integrand', 'variable', 'interval'],
-	'solution-ed': ['equation', 'solutionMode', 'variable', 'function', 'initial']
+	'solution-ed': ['equation', 'solutionMode', 'variable', 'function', 'initial'],
+	resolution: ['equation', 'variable', 'minLines']
 };
 
 /** Champ sans lequel la case ne peut pas être jugée */
 const CALCULUS_REQUIRED_FIELD: Partial<Record<AnswerKind, keyof CalculusBlankFields>> = {
 	primitive: 'integrand',
-	'solution-ed': 'equation'
+	'solution-ed': 'equation',
+	resolution: 'equation'
 };
 
 /** Champs dont les variables tirées sont résolues (`{{a}}x^2` → `3x^2`) */
@@ -512,7 +514,7 @@ const CALCULUS_TEMPLATED_FIELDS = new Set<keyof CalculusBlankFields>([
 ]);
 
 /**
- * Champs d'une case « primitive » ou « solution-ed » : case > blankDefaults,
+ * Champs d'une case « primitive », « solution-ed » ou « resolution » : case > blankDefaults,
  * variables tirées résolues. Seuls ceux de son `answerKind` sont recopiés.
  * Lève une erreur si le champ indispensable manque (`integrand`, `equation`).
  */
@@ -525,11 +527,11 @@ function resolveCalculusFields(
 ): CalculusBlankFields {
 	const fields = answerKind ? CALCULUS_FIELDS[answerKind] : undefined;
 	if (!answerKind || !fields) return {};
-	const resolved: Record<string, string> = {};
+	const resolved: Record<string, string | number> = {};
 	for (const field of fields) {
 		const raw = blank[field] ?? defaults?.[field];
 		if (raw === undefined) continue;
-		if (!CALCULUS_TEMPLATED_FIELDS.has(field)) {
+		if (typeof raw !== 'string' || !CALCULUS_TEMPLATED_FIELDS.has(field)) {
 			resolved[field] = raw;
 			continue;
 		}
@@ -539,7 +541,8 @@ function resolveCalculusFields(
 			: text;
 	}
 	const required = CALCULUS_REQUIRED_FIELD[answerKind];
-	if (required && !resolved[required]?.trim()) {
+	const requiredValue = required ? resolved[required] : undefined;
+	if (required && (typeof requiredValue !== 'string' || !requiredValue.trim())) {
 		throw new Error(`Case « ${answerKind} » sans champ « ${required} »`);
 	}
 	return resolved as CalculusBlankFields;
@@ -1207,6 +1210,10 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 						if (child.type === 'number-line') {
 							const first = child.caseIndex;
 							if (child.representer !== undefined && first !== undefined) return [first];
+							// Droite à graduer : la case des parts, puis une par point
+							if (child.graduer !== undefined && first !== undefined) {
+								return [first, ...(child.placer ?? []).map((_, k) => first + 1 + k)];
+							}
 							if (child.placer === undefined || first === undefined) return [];
 							return child.placer.map((_, k) => first + k);
 						}
@@ -1663,10 +1670,11 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 						// `equation`, jamais sur l'attendu — une erreur prévue n'y serait jamais vue
 						resolved.answerKind === 'primitive' ||
 						resolved.answerKind === 'solution-ed' ||
+						resolved.answerKind === 'resolution' ||
 						template.options?.orderIndependent === true
 					) {
 						throw new Error(
-							`Case ${i + 1} : une erreur prévue ne va que dans une case à écriture mathématique ordinaire (ni texte, ni geste, ni primitive, ni solution d'équation différentielle, ni case jugée par ses règles seules, ni cases appariées librement)`
+							`Case ${i + 1} : une erreur prévue ne va que dans une case à écriture mathématique ordinaire (ni texte, ni geste, ni primitive, ni solution d'équation différentielle, ni résolution ligne par ligne, ni case jugée par ses règles seules, ni cases appariées librement)`
 						);
 					}
 					resolved.expectedErrors = expectedErrors.map((error, k) => {

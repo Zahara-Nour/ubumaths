@@ -4,7 +4,8 @@
  *
  * Lit le texte du bloc (variables résolues, sans clôtures) : la valeur de
  * `construire:` (```collection, ```monnaie) ou la graduation d'un point de
- * `placer:` (```line, écrite par `placerAnswer`, comme la réponse de l'élève),
+ * `placer:` (```line, écrite par `placerAnswer`, comme la réponse de l'élève ; droite
+ * à graduer, `graduer: 3` : le nombre de parts `3`, puis la valeur de chaque point),
  * ou l'heure de `placer:` (```horloge, sur le cadran de 12 : `9 h 25`), ou
  * l'effectif d'une barre de `placer:` (```barres, `12` ; avec `axe: à choisir`,
  * la première case est l'échelle, `5`), ou une des cinq valeurs d'une boîte de
@@ -51,6 +52,11 @@ import { expectedPatronAnswer } from '#lib/ubumark/utils/patron-gestes.ts';
 import { expectedSolideAnswer } from '#lib/ubumark/utils/solide-gestes.ts';
 import { timeText } from '#lib/ubumark/utils/horloge-placer.ts';
 import { indexOfValue, placerAnswer } from '#lib/ubumark/utils/number-line-placer.ts';
+import {
+	graduerCaseCount,
+	graduerPointAnswer,
+	partsAnswer
+} from '#lib/ubumark/utils/number-line-graduer.ts';
 import { expectedInterval, representerAnswer } from '#lib/ubumark/utils/number-line-representer.ts';
 import { numVal } from '#lib/ubumark/utils/number-line-render.ts';
 import { parseCourbeContent } from '#lib/ubumark/parser/courbe-parser.ts';
@@ -98,7 +104,12 @@ const CASE_IS_AUTOMATIC = 'case: est posée automatiquement, retirer cette ligne
  * une ; un bloc illisible compte une case (refusé au générateur avec ses messages)
  */
 export function buildCaseCount(kind: BuildKind, source: string): number {
-	if (kind === 'line') return Math.max(1, parseNumberLineContent(source).node?.placer?.length ?? 1);
+	if (kind === 'line') {
+		const node = parseNumberLineContent(source).node;
+		// Droite à graduer : la case des parts, puis une par point
+		if (node?.graduer) return graduerCaseCount(node);
+		return Math.max(1, node?.placer?.length ?? 1);
+	}
 	if (kind === 'ranger') return Math.max(1, parseRangerContent(source).labels.length);
 	if (kind === 'associer') return Math.max(1, parseAssocierContent(source).items.length);
 	if (kind === 'trous') return Math.max(1, parseTrousContent(source).answers.length);
@@ -172,6 +183,17 @@ export function buildAnswerOf(
 		const { node, errors } = parseNumberLineContent(source);
 		if (node === null) return { errors: errors.map((e) => e.message) };
 		if (node.caseIndex !== undefined) return { errors: [CASE_IS_AUTOMATIC] };
+		// Droite à graduer : case 0 = le nombre de parts, case 1 + k = le point k (sa valeur
+		// sur la droite partagée, écrite comme la réponse de l'élève)
+		if (node.graduer) {
+			const parts = node.graduer.parts;
+			if (parts === null) return { errors: [MASKED_IN_TEMPLATE] };
+			if (point === 0) return { answer: partsAnswer(parts) };
+			const target = node.placer?.[point - 1];
+			const answer = target ? graduerPointAnswer(node.config, parts, numVal(target.value)) : null;
+			if (answer === null) return { errors: ['placer: absent ou hors graduation'] };
+			return { answer };
+		}
 		// Droite à représenter : l'intervalle, écrit comme la réponse de l'élève
 		if (node.representer?.interval) {
 			const state = expectedInterval(node.config, node.representer.interval);

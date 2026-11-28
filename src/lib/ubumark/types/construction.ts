@@ -83,6 +83,28 @@ export function bissectriceOf(expression: string): [string, string, string] | nu
 }
 
 /**
+ * Perpendiculaire ou parallèle à un trait droit par un point (outil n° 40, chantier
+ * `outil-equerre-uni`) : `perpendiculaire(A, d)`, `parallele(A, d)` ; à l'équerre
+ * sur papier uni
+ */
+export interface ThroughLine {
+	kind: 'perpendiculaire' | 'parallele';
+	point: string;
+	line: string;
+}
+
+const THROUGH_LINE_REGEX =
+	/^(perpendiculaire|parall[eè]le)\(\s*([A-Za-z][A-Za-z0-9_]*)\s*,\s*([A-Za-z][A-Za-z0-9_']*)\s*\)$/;
+
+/** Le point et le trait d'une perpendiculaire ou d'une parallèle ; null pour une autre expression */
+export function throughLineOf(expression: string): ThroughLine | null {
+	const match = THROUGH_LINE_REGEX.exec(expression.trim());
+	if (!match) return null;
+	const kind = match[1] === 'perpendiculaire' ? 'perpendiculaire' : 'parallele';
+	return { kind, point: match[2], line: match[3] };
+}
+
+/**
  * Cercle de centre donné (chantier `cercle-triangle-rectangle`, n° 19, 2026-11-08) :
  * `cercle(O, passant=A)` (centre O passant par A) ou `cercle(O, rayon=distance(D, E))`
  * (rayon pris sur [DE], au Report) ; `cercle(O, rayon=4 cm)` (chantier

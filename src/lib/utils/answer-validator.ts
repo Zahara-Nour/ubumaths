@@ -76,6 +76,7 @@ import { judgeMatrixAnswer, matrixEntryTexts } from '#lib/questions/matrices/mat
 import { judgePrimitiveAnswer } from '#lib/questions/calculus/primitive-answer.ts';
 import { judgeDifferentialEquationAnswer } from '#lib/questions/calculus/differential-equation-answer.ts';
 import type { CalculusVerdict } from '#lib/questions/calculus/calculus-reading.ts';
+import { judgeResolutionAnswer } from '#lib/questions/resolution/resolution-answer.ts';
 import { judgeRounding, roundingFeedback, roundToPrecision } from '#lib/questions/rounding.ts';
 import {
 	centsZerosMeaningful,
@@ -924,6 +925,12 @@ function validateBlankValue(
 		return status !== 'incorrect' && status !== 'empty';
 	}
 
+	// Résolution ligne par ligne : lignes de mêmes solutions, conclusion « x = … »
+	// (garde de complexité appliquée à CHAQUE ligne par le juge)
+	if (blank.answerKind === 'resolution') {
+		return judgeResolutionAnswer(userAnswer, blank).status === 'correct';
+	}
+
 	// Réponse hostile ou démesurée : fausse, sans être lue (garde Q58)
 	if (isAnswerTooComplex(userAnswer)) return false;
 
@@ -1019,6 +1026,7 @@ function roundingOnlyFeedback(
 		blank.answerKind === 'intervalles' ||
 		blank.answerKind === 'vecteur' ||
 		blank.answerKind === 'matrice' ||
+		blank.answerKind === 'resolution' ||
 		isCalculusBlank(blank) ||
 		blank.type === 'text'
 	) {
@@ -1339,6 +1347,44 @@ function calculusBlankResult(
 	);
 	// Autre verdict (réponse lue autrement qu'en expression) : celui du calcul fait foi
 	return form.status === 'bad_form' || form.status === 'unoptimal_form' ? form : correct;
+}
+
+/**
+ * Case « résolution » : verdict de `questions/resolution/` dans la forme de
+ * `validateSingleBlank`. Lignes justes et conclusion « x = valeur » : la valeur est
+ * ensuite jugée comme une case ordinaire (`x = \frac{12}{3}` : fraction à simplifier, ½).
+ */
+function resolutionBlankResult(
+	answer: string,
+	blank: InstanceBlank,
+	instance: QuestionInstance
+): ReturnType<typeof validateSingleBlank> {
+	const { status, feedback, finalValue } = judgeResolutionAnswer(answer, blank);
+	if (status === 'empty') return { isCorrect: false, status: 'empty' };
+	if (status !== 'correct' || finalValue === undefined) {
+		return feedback
+			? { isCorrect: false, status: 'incorrect', feedback }
+			: { isCorrect: false, status: 'incorrect' };
+	}
+	// La valeur finale est une case ordinaire : comparée au membre droit de l'attendue
+	// (`x={{s}}` → `{{s}}`), avec les réglages de la case (`acceptDecimal`, règles, forme
+	// exigée…). `x = 7+5` (calcul non fait), `x = 0,5` sans `acceptDecimal` : `bad_form`
+	const {
+		answerKind: _kind,
+		equation: _equation,
+		variable: _variable,
+		minLines: _minLines,
+		...rest
+	} = blank;
+	const sign = blank.expectedAnswer.indexOf('=');
+	const expectedValue =
+		sign < 0 ? blank.expectedAnswer : blank.expectedAnswer.slice(sign + 1).trim();
+	return validateSingleBlank(
+		finalValue,
+		{ ...rest, expectedAnswer: expectedValue },
+		finalValue,
+		instance
+	);
 }
 
 /**
@@ -1667,6 +1713,13 @@ function judgeSingleBlank(
 	// Ensemble en notation intervalle (inéquation) : chaîne à part, cf. interval-answer.ts
 	if (blank.answerKind === 'intervalles') {
 		return intervalBlankResult(userAnswerLatex || userAnswer, blank, instance);
+	}
+
+	// Résolution ligne par ligne : chaîne à part, cf. resolution/resolution-answer.ts.
+	// Avant la garde de complexité : plusieurs lignes dépassent vite la longueur d'UNE
+	// réponse ; le juge mesure chaque ligne
+	if (blank.answerKind === 'resolution') {
+		return resolutionBlankResult(userAnswerLatex || userAnswer, blank, instance);
 	}
 
 	// Réponse hostile ou démesurée : fausse AVANT toute lecture (garde Q58, cf.
@@ -2437,6 +2490,11 @@ function matchedAnswerForm(
 	// Case « matrice » appariée : même jugement que seule (écriture des coefficients)
 	if (blank.answerKind === 'matrice') {
 		const result = matrixBlankResult(blankLatex || userAnswer, blank, instance);
+		return { status: result.status ?? 'incorrect', violations: result.constraintViolations ?? [] };
+	}
+	// Case « résolution » appariée : même jugement que seule
+	if (blank.answerKind === 'resolution') {
+		const result = resolutionBlankResult(blankLatex || userAnswer, blank, instance);
 		return { status: result.status ?? 'incorrect', violations: result.constraintViolations ?? [] };
 	}
 	// Case « primitive » / « solution-ed » appariée : même jugement que seule
