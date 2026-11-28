@@ -1653,6 +1653,17 @@ export function parseCourbeContent(source: string): CourbeNode {
 		}
 	}
 
+	// Escalier à construire : aucune autre suite en escalier, elle dessinerait la réponse
+	const drawnStaircase =
+		build === undefined ? undefined : sequences.find((q) => q.staircase && !q.staircase.build);
+	if (errors.length === 0 && drawnStaircase !== undefined) {
+		errors.push({
+			message: `Ligne ${drawnStaircase.line} : suite ${drawnStaircase.name} : pas d'${STAIRCASE_WORD} (ni de ${TERMS_WORD}) dans un repère où l'élève doit ${BUILD_WORD} un escalier : il dessinerait la réponse`,
+			line: drawnStaircase.line,
+			content: lines[drawnStaircase.line - 1].trim()
+		});
+	}
+
 	// Escalier à construire : seul geste du repère, coins visibles, termes discernables
 	let construire: CourbeStaircaseToBuild | undefined;
 	if (errors.length === 0 && build !== undefined) {

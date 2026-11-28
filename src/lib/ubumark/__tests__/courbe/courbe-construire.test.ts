@@ -15,6 +15,7 @@ import {
 	readStaircaseExpected,
 	snapAbscissa,
 	staircaseAnswer,
+	staircaseChains,
 	staircaseExpected,
 	staircaseMistake,
 	studentCobweb
@@ -153,6 +154,17 @@ describe('construire N — refus d’auteur', () => {
 		).toMatch(/Ligne 4 : .*une seule suite/);
 	});
 
+	it('une autre suite en escalier (avec ou sans termes) : elle dessinerait la réponse', () => {
+		const other = (options: string) =>
+			`v(0) = 0 ; v(n+1) = sqrt(2*v(n)+3) pour n de 0 à 3 ${options}`;
+		expect(errorsOf(block(...WINDOW, RACINE, other('escalier')))).toMatch(
+			/Ligne 4 : .*escalier.*construire/
+		);
+		expect(errorsOf(block(...WINDOW, other('escalier termes'), RACINE))).toMatch(
+			/Ligne 3 : .*escalier.*construire/
+		);
+	});
+
 	it('avec placer:, tracer:, données: dans le même repère', () => {
 		expect(errorsOf(block(...WINDOW, 'grille: 1', RACINE, 'placer: A=(1 ; 1)'))).toMatch(
 			/Ligne 4 : .*placer:/
@@ -245,6 +257,24 @@ describe('construire N — réponse et juge', () => {
 		expect(isStaircaseTermCorrect('3;1.5', e(2))).toBe(true);
 		expect(isStaircaseTermCorrect('3;1.5;2.2', e(3))).toBe(true);
 		expect(isStaircaseTermCorrect('3;1.5;2.5', e(3))).toBe(false);
+	});
+});
+
+describe('construire N — une seule construction par repère', () => {
+	const e = (k: number) => staircaseExpected({ k, start: 0, margin: 0.12, relation: 'x' });
+	it('chaque case reprend le début de la chaîne de la dernière case de son repère', () => {
+		expect(
+			staircaseChains(
+				['1.73', '0;1.73', '0;0;1.73', '7', '5', '5;6'],
+				[e(1), e(2), e(3), '7', e(1), e(2)]
+			)
+		).toEqual(['0', '0;0', '0;0;1.73', '7', '5', '5;6']);
+		expect(staircaseChains(['1.84', '1.84;', '1.84;;'], [e(1), e(2), e(3)])).toEqual([
+			'1.84',
+			'1.84;',
+			'1.84;;'
+		]);
+		expect(staircaseChains(['9', '9;9', ''], [e(1), e(2), e(3)])).toEqual(['', '', '']);
 	});
 });
 

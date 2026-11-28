@@ -106,6 +106,35 @@ export function readStaircaseAnswer(answer: string): (number | null)[] {
 	});
 }
 
+/**
+ * Les réponses d'une question, chaque case d'un escalier à construire remplacée par
+ * le début (termes 1 à k) de la chaîne de la DERNIÈRE case de son repère : une seule
+ * construction fait foi, une requête forgée ne peut pas juger chaque case sur des
+ * termes différents. Un repère = une suite de cases d'attendu `escalier k=1`, `k=2`…
+ * L'écran envoie déjà ces chaînes (case k = début de la dernière) : rien ne change pour lui.
+ */
+export function staircaseChains(
+	answers: readonly string[],
+	expectedAnswers: readonly string[]
+): string[] {
+	const result = [...answers];
+	let i = 0;
+	while (i < expectedAnswers.length) {
+		if (readStaircaseExpected(expectedAnswers[i] ?? '')?.k !== 1) {
+			i++;
+			continue;
+		}
+		let end = i;
+		while (readStaircaseExpected(expectedAnswers[end + 1] ?? '')?.k === end + 2 - i) end++;
+		const last = readStaircaseAnswer(answers[end] ?? '');
+		for (let j = i; j <= end; j++) {
+			result[j] = staircaseAnswer(last.slice(0, j - i + 1), j - i + 1);
+		}
+		i = end + 1;
+	}
+	return result;
+}
+
 /** f, lue dans la syntaxe maison ; null si elle ne se lit pas ou porte une autre variable que x */
 export function relationEvaluator(relation: string): ((x: number) => number | null) | null {
 	let evaluate: (env: Record<string, number>) => number;

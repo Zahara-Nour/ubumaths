@@ -13,7 +13,11 @@ import { generateInstance } from '../instance-generator';
 import { assignBlankIndices } from '../assign-blank-indices';
 import type { QuestionTemplate, QuestionVariation } from '../../types';
 import { templateMarkdown } from '#lib/ubumark/index.ts';
-import { isBlankValueCorrect } from '#lib/utils/answer-validator.ts';
+import {
+	isBlankValueCorrect,
+	validateAnswer,
+	validateAnswerDetailed
+} from '#lib/utils/answer-validator.ts';
 import { findUnmaskedAnswers, maskGestureAnswers } from '../../masked-statement';
 import { toPublicQuestion } from '../../public-question';
 
@@ -61,6 +65,28 @@ describe('escalier à construire : les cases et leurs réponses', () => {
 		expect(isBlankValueCorrect('1;2.24', b2, instance)).toBe(true);
 		// Terme absent
 		expect(isBlankValueCorrect('1.73;', b2, instance)).toBe(false);
+	});
+
+	it('requête forgée : chaque case est jugée depuis la chaîne de la dernière case du repère', () => {
+		const instance = generate(template({ statement: courbe(...WINDOW, RACINE) }));
+		// Case 2 qui ne prolonge pas la case 1 : avant, les trois étaient justes
+		const forged = ['1.73', '0;1.73', '0;0;1.73'];
+		expect(validateAnswer(forged, instance, forged).status).not.toBe('correct');
+		const statuses = validateAnswerDetailed(instance, { values: forged }).blanks.map(
+			(b) => b.status
+		);
+		// Chaîne retenue : 0 ; 0 ; 1.73 → u₁ = 0 faux, u₂ = 0 faux, u₃ = 1.73 juste depuis u₂ = 0
+		expect(statuses).toEqual(['incorrect', 'incorrect', 'correct']);
+	});
+
+	it('ce que l’écran envoie reste jugé pareil, termes non posés compris', () => {
+		const instance = generate(template({ statement: courbe(...WINDOW, RACINE) }));
+		const full = ['1.73', '1.73;2.54', '1.73;2.54;2.84'];
+		expect(validateAnswer(full, instance, full).status).toBe('correct');
+		const partial = ['1.84', '1.84;', '1.84;;'];
+		expect(
+			validateAnswerDetailed(instance, { values: partial }).blanks.map((b) => b.status)
+		).toEqual(['correct', 'incorrect', 'incorrect']);
 	});
 
 	it('variables : u₀ et la relation viennent du tirage', () => {

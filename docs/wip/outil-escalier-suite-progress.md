@@ -1,7 +1,7 @@
 ---
 title: Lot d'outils escalier-suite — journal
 date: 2026-11-28
-status: phase 0 de l'outil 48 validée, code en cours
+status: outil 48 codé, revu, PR à ouvrir
 ---
 
 # Lot `escalier-suite` (outil 48)
@@ -10,9 +10,13 @@ status: phase 0 de l'outil 48 validée, code en cours
 
 _Mis à jour le 2026-11-28, avant toute PR._
 
-- **État** : phase 0 de l'outil 48 validée par David (geste A, jugé depuis le point de l'élève,
-  marge 3 % de la largeur) · **Prochaine action** : tests rouges puis code · **En attente de David** :
-  rien · **Pièges en cours** : aucun · **Worktree / branche** :
+- **État** : outil 48 codé (geste, juge, correction, PDF, catalogue, doc), revu (code-reviewer Opus :
+  A chaînes forgées → cases jugées sur la chaîne de la dernière case, C escalier d'une autre suite
+  refusé, E clic droit / aria corrigés), vérifié à l'écran (`e2e/verifs/bloc-courbe-construire.spec.ts`,
+  4 verts) · **Prochaine action** : PR, CI, merge, puis § 4 « Livré » d'`outils-manquants.md` et
+  clôture du lot · **En attente de David** : point B (élève qui pose tout sur le point fixe : N−1/N ;
+  laissé tel quel sauf avis contraire) · **Pièges en cours** : `construire 4` avec √(2x+3), u₀ = 0,
+  fenêtre 0..4 est refusé (u₃, u₄ trop proches) → `construire 3` · **Worktree / branche** :
   `../ubumaths-wt-outil-escalier-suite`, `feat/outil-escalier-suite`.
 
 ## Outil 48 — construire l'escalier (ou la spirale) de uₙ₊₁ = f(uₙ)

@@ -141,6 +141,38 @@ describe('Escalier à construire — le geste', () => {
 		expect(strokes(root)).toBe(0);
 	});
 
+	it('clic droit ou du milieu : rien n’est posé', async () => {
+		const { values, answers } = probes(3);
+		const screen = await render(Courbe, {
+			target: mainElement(),
+			props: { node: node(...WINDOW, RACINE), answers }
+		});
+		const root = screen.container;
+		for (const button of [1, 2]) {
+			const init = { bubbles: true, ...screenAt(root, 1.73, 0), pointerId: 1, button };
+			zone(root).dispatchEvent(new PointerEvent('pointerdown', init));
+			zone(root).dispatchEvent(new PointerEvent('pointerup', init));
+		}
+		await new Promise((resolve) => setTimeout(resolve, 50));
+		expect(values).toEqual(['', '', '']);
+		expect(posed(root)).toBe(0);
+	});
+
+	it('aria-valuenow : avant toute pose, le terme d’où partirait la flèche (sans rien poser)', async () => {
+		const { values, answers } = probes(3);
+		const screen = await render(Courbe, {
+			target: mainElement(),
+			props: { node: node(...WINDOW, RACINE), answers }
+		});
+		const root = screen.container;
+		expect(zone(root).getAttribute('aria-valuenow')).toBe('0');
+		expect(zone(root).getAttribute('aria-valuetext')).toBe('u₁ pas placé');
+		expect(values).toEqual(['', '', '']);
+		tapAt(root, 1.73, 0);
+		await expect.poll(() => zone(root).getAttribute('aria-valuetext')).toBe('u₂ pas placé');
+		expect(zone(root).getAttribute('aria-valuenow')).toBe(values[0]);
+	});
+
 	it('spirale : même geste', async () => {
 		const { values, answers } = probes(4);
 		const screen = await render(Courbe, {

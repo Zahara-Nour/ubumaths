@@ -17,7 +17,8 @@
 	  dessin. Elle ne dit pas la réponse : un coin hors de la courbe se voit, comme au
 	  crayon.
 	- Clavier : flèches gauche / droite = un pas d'arrondi ; sans terme, la première
-	  flèche le pose sur le terme précédent.
+	  flèche le pose sur le terme précédent, valeur que donne aussi `aria-valuenow`
+	  tant qu'il n'est pas posé. Seul le bouton principal de la souris pose un terme.
 	- Dans une question (`answers`, une case par terme) : la case k porte la chaîne
 	  des termes de l'élève jusqu'à k (`staircaseAnswer`), jugée depuis SON terme
 	  k − 1. Faux : une phrase par terme faux et le vrai escalier en vert.
@@ -141,6 +142,15 @@
 		})
 	);
 
+	/**
+	 * Point de départ du terme actif : le terme précédent (u₀ pour le premier), là où la
+	 * première flèche du clavier le poserait. Sert d'`aria-valuenow` tant qu'il n'est pas
+	 * posé (un curseur a toujours une valeur ; le texte dit « pas placé »)
+	 */
+	let startOfActive = $derived(
+		snapAbscissa(spec.window, active === 0 ? build.start : (positions[active - 1] ?? build.start))
+	);
+
 	let valueText = $derived.by(() => {
 		const x = positions[active] ?? null;
 		const name = slots[active] ?? '';
@@ -237,7 +247,8 @@
 	}
 
 	function handlePointerDown(event: PointerEvent) {
-		if (locked) return;
+		// Clic droit, clic du milieu : pas un geste de pose
+		if (locked || event.button !== 0) return;
 		const grabbed = grabbedAt(event);
 		if (grabbed !== null) {
 			chosen = grabbed;
@@ -267,8 +278,7 @@
 			place(moveAbscissa(spec.window, current, direction));
 			return;
 		}
-		const previous = active === 0 ? build.start : (positions[active - 1] ?? build.start);
-		place(snapAbscissa(spec.window, previous));
+		place(startOfActive);
 	}
 
 	function handleKeyDown(event: KeyboardEvent) {
@@ -296,7 +306,7 @@
 		aria-label="Repère : les termes de ton escalier, sur l’axe des abscisses"
 		aria-valuemin={spec.window.xMin}
 		aria-valuemax={spec.window.xMax}
-		aria-valuenow={positions[active] ?? undefined}
+		aria-valuenow={positions[active] ?? startOfActive}
 		aria-valuetext={valueText}
 		aria-disabled={locked}
 		onpointerdown={handlePointerDown}
