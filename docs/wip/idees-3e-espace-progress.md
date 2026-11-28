@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-27, après #3253 et les séries de relecture (#3256)._
+_Mis à jour le 2026-11-28, après #3264 (outil n° 72 livré)._
 
 - **État** : lot 1 en prod (5 variations de 5 modèles publiés, migration appliquée par David),
   relecture validée par David (« je valide », dans la conversation, aucun verdict en base) ;
   réservations levées · **Prochaine action** : F1, modèle neuf de 4e « Calculer une longueur dans
-  un solide avec Pythagore », dès que l'outil n° 72 de `outils-manquants.md` est livré par
-  `solides-3d` · **En attente de David** : rien · **Pièges en cours** : F1 est un modèle de 4e
+  un solide avec Pythagore » ; l'outil n° 72 est livré (#3264 : `segments:`, `angles-droits:`),
+  diagonale du cube **[DF]**, jamais [AG] (note sous F1) · **En attente de David** : rien · **Pièges en cours** : F1 est un modèle de 4e
   (4-034) ; nouveau worktree sur `origin/main` · **Worktree / branche** : aucun
 
 ## Rubrique
