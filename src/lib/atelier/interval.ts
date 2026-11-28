@@ -48,6 +48,7 @@ import {
 	readNumber,
 	referencesOf,
 	variablesOf,
+	withIndexedNames,
 	type ReadingMode
 } from './parse';
 import type { Provenance } from './parse';
@@ -68,6 +69,13 @@ export interface SplitDefinition {
 export type ReadInterval =
 	| { readonly ok: true; readonly domain: Domain | null }
 	| { readonly ok: false; readonly message: string };
+
+/**
+ * Les valeurs d'un intervalle à paramètre (`[k;5]`, chantier fonctions-morceaux) :
+ * l'arbre de chaque nom cité, déjà substitué (`k` → `6`). Le refus dit avec
+ * quelles valeurs l'ensemble est impossible (« (k = 6) »).
+ */
+export type IntervalValues = ReadonlyMap<string, MathNode>;
 
 /** L'écriture à ranger (`undefined` pour ℝ), ou le refus. */
 export type CheckedInterval =
@@ -157,12 +165,69 @@ export function splitInterval(typed: string, mode: ReadingMode): SplitDefinition
 	return { body: word.before.trim(), written: word.after.trim() };
 }
 
-/** Lire l'ensemble écrit après « sur ». */
-export function readInterval(written: string, letter: string = INTERNAL_LETTER): ReadInterval {
+/** L'écriture lue par `parseStudentDomain` : `ℝ\{1}` collé devient une différence. */
+function domainText(written: string): string {
+	return written.replace(GLUED_SETMINUS, '$1 \\ {$2}');
+}
+
+/**
+ * Les noms d'objets cités dans les BORNES d'un ensemble (`[k;5]` → `k`, `[-a;2b]`
+ * → `a`, `b`), dans l'ordre ; vide pour un ensemble numérique. Ni la lettre de
+ * la fonction (`[t;5]` dans `f(t)`) ni `x` : une borne ne dépend pas de
+ * l'inconnue, l'ensemble reste illisible.
+ */
+export function intervalNamesOf(written: string, letter: string = INTERNAL_LETTER): string[] {
+	if (written.trim() === '' || written.length > MAX_INTERVAL_LENGTH) return [];
+	const names: string[] = [];
+	// Chaque borne lue rend ses lettres, puis vaut 1 : la lecture va jusqu'au bout
+	const collect = (node: MathNode): MathNode => {
+		const indexed = withIndexedNames(node, undefined);
+		const found = [...variablesOf(node, undefined)];
+		for (const name of found) if (!names.includes(name)) names.push(name);
+		return substitute(indexed, Object.fromEntries(found.map((name) => [name, number('1')])));
+	};
+	const read = parseStudentDomain(domainText(written), letter, { bound: collect });
+	if (!read.success) return [];
+	return names.filter((name) => name !== letter && name !== INTERNAL_LETTER);
+}
+
+/**
+ * L'ensemble écrit, la valeur `from` renommée en `to` dans ses bornes
+ * (`[k;5]` → `[m;5]`) ; tel quel s'il ne la cite pas.
+ */
+export function renamedInInterval(
+	written: string,
+	from: string,
+	to: string,
+	letter: string = INTERNAL_LETTER
+): string {
+	if (!intervalNamesOf(written, letter).includes(from)) return written;
+	const shape = /^([A-Za-z])(?:_(\d+))?$/.exec(from);
+	if (shape === null) return written;
+	const [, base, index] = shape;
+	const pattern =
+		index === undefined
+			? new RegExp(`(?<![A-Za-z\\\\])${base}(?![A-Za-z_])`, 'g')
+			: new RegExp(`(?<![A-Za-z\\\\])${base}_(?:\\{${index}\\}|${index})(?![0-9])`, 'g');
+	const renamed = written.replace(pattern, to);
+	return intervalNamesOf(renamed, letter).includes(to) ? renamed : written;
+}
+
+/** Lire l'ensemble écrit après « sur », bornes à paramètre remplacées par `values`. */
+export function readInterval(
+	written: string,
+	letter: string = INTERNAL_LETTER,
+	values?: IntervalValues
+): ReadInterval {
 	if (written.trim() === '' || written.length > MAX_INTERVAL_LENGTH) {
 		return { ok: false, message: UNREADABLE_INTERVAL };
 	}
-	const read = parseStudentDomain(written.replace(GLUED_SETMINUS, '$1 \\ {$2}'), letter);
+	const bound =
+		values === undefined || values.size === 0
+			? undefined
+			: (node: MathNode) =>
+					substitute(withIndexedNames(node, undefined), Object.fromEntries(values));
+	const read = parseStudentDomain(domainText(written), letter, bound && { bound });
 	if (!read.success) return { ok: false, message: UNREADABLE_INTERVAL };
 	const domain = read.domain;
 	if (isUniversal(domain)) return { ok: true, domain: null };
@@ -185,9 +250,40 @@ export function checkInterval(
 	definition: string,
 	provenance: Provenance,
 	functionNames: readonly string[],
-	letter: string = INTERNAL_LETTER
+	letter: string = INTERNAL_LETTER,
+	values?: IntervalValues
 ): CheckedInterval {
-	const read = readInterval(written, letter);
+	const checked = checkReadInterval(written, definition, provenance, functionNames, letter, values);
+	if (checked.ok || values === undefined || values.size === 0) return checked;
+	// Illisible avec des valeurs : la lettre n'est pas le souci, le refus reste celui d'avant
+	if (checked.message === UNREADABLE_INTERVAL) return checked;
+	return { ok: false, message: withValues(checked.message, values) };
+}
+
+/** « L'intervalle est vide. » → « L'intervalle est vide (k = 6). » */
+function withValues(message: string, values: IntervalValues): string {
+	const shown = [...values].map(([name, value]) => `${name} = ${valueText(value)}`).join(', ');
+	return `${message.replace(/\.$/, '')} (${shown}).`;
+}
+
+/** La valeur d'un paramètre à l'écran : `6`, `5,5`, `−1` (au plus 4 décimales). */
+function valueText(value: MathNode): string {
+	const numeric = computeNumericValue(value);
+	if (numeric === null || !Number.isFinite(numeric)) return toCustom(value).replace(/-/g, '−');
+	return String(Number(numeric.toFixed(4)))
+		.replace('.', ',')
+		.replace(/-/g, '−');
+}
+
+function checkReadInterval(
+	written: string,
+	definition: string,
+	provenance: Provenance,
+	functionNames: readonly string[],
+	letter: string,
+	values: IntervalValues | undefined
+): CheckedInterval {
+	const read = readInterval(written, letter, values);
 	if (!read.ok) return read;
 	if (read.domain === null) return { ok: true, interval: undefined };
 
@@ -224,7 +320,8 @@ export function intervalDomainOf(object: AtelierObject | undefined): Domain | nu
 		object.interval === undefined
 			? null
 			: readInterval(object.interval, object.letter ?? INTERNAL_LETTER);
-	const own = read?.ok ? read.domain : null;
+	// Un ensemble à paramètre (`[k;5]`) : celui que le dernier recalcul a lu avec les valeurs
+	const own = object.parameterInterval ?? (read?.ok ? read.domain : null);
 	const inherited = object.inheritedInterval ?? null;
 	if (own === null || inherited === null) return own ?? inherited;
 	return intersect(own, inherited);
@@ -442,6 +539,15 @@ export function intervalLabelOf(object: AtelierObject): string | null {
 export function intervalFieldLatex(object: AtelierObject): string | null {
 	if (object.kind !== 'function' || object.interval === undefined) return null;
 	if (readingMode(object.provenance ?? 'url') === 'latex') return object.interval;
+	// À paramètre (`[k;5]`) : l'écriture, jamais les valeurs du moment (le champ relu les figerait)
+	if (intervalNamesOf(object.interval, object.letter ?? INTERNAL_LETTER).length > 0) {
+		return object.interval
+			.replace(/∞/g, '\\infty ')
+			.replace(/−/g, '-')
+			.replace(/ℝ/g, '\\R ')
+			.replace(/∪/g, '\\cup ')
+			.replace(/\s+/g, '');
+	}
 	// L'ensemble PROPRE, jamais l'héritage (décision d) : le champ relu le rangerait
 	const read = readInterval(object.interval, object.letter ?? INTERNAL_LETTER);
 	const domain = read.ok ? read.domain : null;

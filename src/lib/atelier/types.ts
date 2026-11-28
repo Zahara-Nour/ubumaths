@@ -175,6 +175,13 @@ export interface FunctionObject extends AtelierObjectBase {
 	 */
 	readonly inheritedInterval?: Domain;
 	/**
+	 * L'ensemble `interval` LU avec les valeurs du moment quand ses bornes citent
+	 * des valeurs (`[k;5]` avec k = 2 → [2 ; 5], chantier fonctions-morceaux) :
+	 * recalculé à chaque passage, jamais sauvegardé. Absent sans paramètre, ou
+	 * quand une valeur manque (la fonction attend).
+	 */
+	readonly parameterInterval?: Domain;
+	/**
 	 * Les conditions des composées qui ont donné `inheritedInterval`
 	 * (`g(x) = f(2x)` → « 2x doit être dans [0 ; +∞[ », chantier composees,
 	 * Q2), dites par `.domaine g`. Recalculées avec lui, jamais sauvegardées.
