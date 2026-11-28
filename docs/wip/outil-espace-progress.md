@@ -58,3 +58,7 @@ les coordonnées (ces dernières seulement avec `repere:`). Sans repère, un poi
 arête ne se déclare pas ; un quart = milieu d'un milieu. Pas de graduation d'arête.
 Proposition : `M tel que AM = 1/3 AB` (fraction strictement entre 0 et 1, deux points distincts
 quelconques) ; graduations en question. Questions posées à David dans le message de la session.
+
+Réponse de David (2026-11-28) : « je te suis » → Q1 : `M tel que AM = 1/3 AB` ; Q2 : graduations
+dans la même PR, `graduer: AB 3` ; Q3 : deux points distincts quelconques ; Q4 : la variation
+« au tiers » de N3 (TSPE-332) laissée aux sessions « questions ».

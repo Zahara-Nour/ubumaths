@@ -132,6 +132,12 @@ export interface SolideScene {
 	 */
 	segments?: SolideLine[];
 	/**
+	 * Graduations (`graduer:`) : un petit trait par graduation intérieure, en
+	 * travers du segment, dans l'ordre écrit puis depuis le premier bout. Absent :
+	 * aucun segment gradué.
+	 */
+	ticks?: [EspacePoint, EspacePoint][];
+	/**
 	 * Plans donnés (`plans:`), dans l'ordre écrit : la partie du plan dans le
 	 * solide, teintée après les faces marquées, et son bord en couleur, en tirets
 	 * là où une face du solide passe devant. Absent : le bloc n'a pas de plans.
@@ -275,6 +281,9 @@ export const DROITE_OVERHANG = 0.18;
 
 /** Le côté du carré d'un angle droit codé, en part de la plus grande dimension du solide */
 const RIGHT_ANGLE_SIZE = 0.1;
+
+/** Demi-longueur d'un trait de graduation (`graduer:`), sur l'écran (cm) */
+const TICK_HALF = 0.09;
 
 /** Nom d'un point déclaré sur une figure à droites : second tour de places, à cette part de l'écart habituel */
 const POINT_NAME_FAR = 1.7;
@@ -513,7 +522,7 @@ export function meetPoint(a: Point3, b: Point3, other: Point3[]): Point3 {
 export function solidePoints3(
 	form: SolideForm,
 	dims: number[],
-	points: Pick<SolidePoint, 'of' | 'coords' | 'meet'>[]
+	points: Pick<SolidePoint, 'of' | 'coords' | 'meet' | 'along'>[]
 ): Point3[] {
 	const all = polyhedronVertices(form, dims);
 	for (const point of points) {
@@ -526,6 +535,14 @@ export function solidePoints3(
 					other.map((i) => all[i])
 				)
 			);
+			continue;
+		}
+		// Sur un segment : from + p/q × (to − from)
+		if (point.along !== undefined) {
+			const { from, to, ratio } = point.along;
+			const t = ratio[0] / ratio[1];
+			const [a, b] = [all[from], all[to]];
+			all.push({ x: a.x + (b.x - a.x) * t, y: a.y + (b.y - a.y) * t, z: a.z + (b.z - a.z) * t });
 			continue;
 		}
 		// Par ses coordonnées : origine + x × premier vecteur + y × deuxième + z × troisième
@@ -627,6 +644,8 @@ interface Draft {
 	droites?: SolideLine[][];
 	/** Segments donnés, puis carrés des angles droits codés, en morceaux ; polyèdres seulement */
 	segments?: SolideLine[];
+	/** Segments gradués, leurs bouts projetés ; polyèdres seulement */
+	graduations?: { from: EspacePoint; to: EspacePoint; parts: number }[];
 	/**
 	 * Plans donnés (`plans:`) ; `spots` : les points du plan où écrire le nom d'un plan
 	 * nommé, du plus dégagé au moins dégagé sur le dessin de départ ; `borderSpots` : des
@@ -922,6 +941,13 @@ function polyhedronDraft(spec: SolideSpec, vue: EspaceVue = VUE_DE_DEPART): Turn
 		),
 		...(droites !== undefined && { droites }),
 		...(givenSegments !== undefined && { segments: givenSegments }),
+		...(spec.graduations !== undefined && {
+			graduations: spec.graduations.map((g) => ({
+				from: project(named3[g.from]),
+				to: project(named3[g.to]),
+				parts: g.parts
+			}))
+		}),
 		...(plans !== undefined && { plans }),
 		lines,
 		fills,
@@ -1603,6 +1629,25 @@ function layoutSolide(
 		pieces.map((l) => ({ ...l, points: l.points.map(toScreen) }))
 	);
 	const givenSegments = draft.segments?.map((l) => ({ ...l, points: l.points.map(toScreen) }));
+	// Graduations : un petit trait en travers du segment, de longueur fixe sur l'écran ;
+	// aucun quand le segment se voit par le bout (vu de face, il n'a plus de longueur)
+	const ticks = draft.graduations?.flatMap((g): [EspacePoint, EspacePoint][] => {
+		const [from, to] = [toScreen(g.from), toScreen(g.to)];
+		const length = Math.hypot(to.x - from.x, to.y - from.y);
+		if (length < 1e-6) return [];
+		const across = {
+			x: (-(to.y - from.y) / length) * TICK_HALF,
+			y: ((to.x - from.x) / length) * TICK_HALF
+		};
+		return Array.from({ length: g.parts - 1 }, (_, i) => {
+			const t = (i + 1) / g.parts;
+			const at = { x: from.x + (to.x - from.x) * t, y: from.y + (to.y - from.y) * t };
+			return [
+				{ x: at.x - across.x, y: at.y - across.y },
+				{ x: at.x + across.x, y: at.y + across.y }
+			];
+		});
+	});
 	const givenSegmentEnds = (givenSegments ?? []).map((l): [EspacePoint, EspacePoint] => [
 		l.points[0],
 		l.points[1]
@@ -2032,6 +2077,9 @@ function layoutSolide(
 		...(givenSegments !== undefined && {
 			segments: givenSegments.map((l) => ({ ...l, points: l.points.map(shift) }))
 		}),
+		...(ticks !== undefined && {
+			ticks: ticks.map(([p, q]): [EspacePoint, EspacePoint] => [shift(p), shift(q)])
+		}),
 		...(plans !== undefined && {
 			plans: plans.map((plan) => ({
 				fill: plan.fill.map(shift),
@@ -2085,6 +2133,9 @@ export function solideLabel(spec: SolideSpec): string {
 	}
 	for (const angle of spec.rightAngles ?? []) {
 		parts.push(`angle droit en ${known[angle.at]}`);
+	}
+	for (const g of spec.graduations ?? []) {
+		parts.push(`[${known[g.from]}${known[g.to]}] partagé en ${g.parts} parts égales`);
 	}
 	// Plans donnés : leurs points seulement, jamais une position relative (la réponse)
 	for (const plan of spec.plans ?? []) {

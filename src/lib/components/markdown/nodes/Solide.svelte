@@ -200,6 +200,17 @@
 				stroke-dasharray={piece.dashed ? SOLIDE_DASH.join(' ') : undefined}
 			/>
 		{/each}
+		{#each scene.ticks ?? [] as [from, to], i (i)}
+			<line
+				class="solide-trait"
+				x1={from.x + ESPACE_MARGIN}
+				y1={from.y + ESPACE_MARGIN}
+				x2={to.x + ESPACE_MARGIN}
+				y2={to.y + ESPACE_MARGIN}
+				stroke-width={ESPACE_STROKE}
+				stroke-linecap="butt"
+			/>
+		{/each}
 		{#each scene.arrows as arrow, i (i)}
 			<line
 				class="solide-trait"
