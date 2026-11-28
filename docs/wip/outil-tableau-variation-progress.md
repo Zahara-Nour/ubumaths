@@ -1,20 +1,22 @@
 ---
 title: Chantier outil-tableau-variation — outils 63 puis 59
 date: 2026-11-28
-status: outil 63 livré (#3286), outil 59 en phase 0
+status: outil 63 livré (#3286), outil 59 codé, PR à ouvrir
 ---
 
 # Chantier `outil-tableau-variation`
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-28, phase 0 de l'outil 59 écrite._
+_Mis à jour le 2026-11-28, outil 59 codé, revue en cours, PR à ouvrir._
 
-- **État** : outil 63 livré (#3286) ; outil 59 en phase 0 (§ Outil 59) · **Prochaine action** :
-  tests rouges puis code, après le go de David · **En attente de David** : go sur les comportements
-  C1 à C6 · **Pièges en cours** : `work-figure-editor.ts:36` (décalage possible, hors 59, non
-  vérifié) · **Worktree / branche** : `../ubumaths-wt-outil-tableau-variation-59`,
-  `feat/outil-tableau-variation-59`
+- **État** : outil 63 livré (#3286) ; outil 59 codé, testé (21 621 tests verts, 0 erreur de
+  types), commité et mergé d'`origin/main` sur la branche, **pas poussé** ; revue `code-reviewer`
+  (Opus) lancée, rapport non lu · **Prochaine action** : relancer la revue si la session a été
+  vidée (diff `origin/main...HEAD -- src`), corriger, pousser, ouvrir la PR, CI verte →
+  `pnpm pr:merger`, puis clore le lot dans `outils-lots.md` · **En attente de David** : rien ·
+  **Pièges en cours** : `work-figure-editor.ts:36` (hors lot, non vérifié) · **Worktree /
+  branche** : `../ubumaths-wt-outil-tableau-variation-59`, `feat/outil-tableau-variation-59`
 
 Lot pris par `pnpm outils lancer` le 2026-11-28 ([outils-lots.md](outils-lots.md)) : 63, puis 59.
 
@@ -50,6 +52,23 @@ de gauche en arrivant sur la barre, limite de droite en repartant).
 Hors outil : la correction montre le vrai tableau (inchangé). Ensuite, à comparer (David,
 2026-11-24) : F7 b de Tle (74d73d4e, choix de quatre tableaux) et N1 de 1re (choix des variations) ;
 c'est le travail de leurs chantiers, pas de celui-ci.
+
+**Fait** (2026-11-28, go de David sur C1 à C6) :
+
+- Parseur : `heightOf` lit le côté de la marque (`limitPositionOn` : limite de gauche en arrivant,
+  de droite en repartant ; rien du côté vide d'une limite seule, ni pour `|h|` / `d`) ;
+  `variationRowForDisplay` met au milieu la limite du côté d'une flèche cachée (`centerLimit`, copie).
+- Énoncé masqué d'évaluation (`masked-statement.ts`) : la ligne d'une double barre touchée par une
+  flèche cachée est réécrite en hauteurs explicites, ce côté en `center` ; la garde `variationMasked`
+  vérifie le côté touché (`heightShown`).
+- PDF (Typst) : passe déjà par `variationRowForDisplay`, testé (`(center, center, "||", …)`).
+- Catalogue des blocs : exemple « Flèches à compléter autour d'une valeur interdite » ; phrase
+  périmée « Ni un infini ni une limite autour de || ne se cachent » corrigée (c'est permis depuis
+  `variation-limite-infinie`).
+- Vu à l'écran : `/aide-ecriture/blocs/variations` (pnpm voir, ordi, Safari), deux cases de flèche,
+  aucune flèche dessinée, barre seule.
+- Tests : parseur (C1 à C6), rendu (`VariationTable-variations-a-completer`), génération et masquage
+  (`generation-tableau-variations`), Typst. Rouges avant le code.
 
 ## Outil 63 — case choix et tableau à compléter dans la même variation
 
