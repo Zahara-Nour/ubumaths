@@ -54,6 +54,8 @@ import {
 	bissectriceCorrections,
 	isLineCheck,
 	lineCodages,
+	throughLineCorrections,
+	type ThroughLineCorrection,
 	lineSolution,
 	type BissectriceCorrection,
 	type LineCodage
@@ -573,6 +575,18 @@ export function solutionBissectrices(
 	points: ReadonlyMap<string, Position>
 ): BissectriceCorrection[] {
 	return bissectriceCorrections(checks.filter(isLineCheck), points);
+}
+
+/**
+ * Perpendiculaire ou parallèle par un point (outil n° 40) : angles droits codés,
+ * perpendiculaire intermédiaire de la parallèle en trait fin
+ */
+export function solutionThroughLines(
+	checks: readonly ConstructionCheck[],
+	points: ReadonlyMap<string, Position>,
+	shapes?: FigureShapes
+): ThroughLineCorrection[] {
+	return throughLineCorrections(checks.filter(isLineCheck), points, shapes);
 }
 
 /** Les cercles à construire (lot 3b) : le cercle, son centre, deux médiatrices */

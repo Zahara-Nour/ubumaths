@@ -122,6 +122,7 @@
 		solutionBissectrices,
 		solutionRulers,
 		solutionSegmentMeasure,
+		solutionThroughLines,
 		solutionTriangle,
 		type ConstructionAnswerInput,
 		type Drawing,
@@ -1161,6 +1162,33 @@
 						{#each c.ticks as t, j (j)}<line class="bon-point-codage" {...t} />{/each}
 					</g>
 				{/if}
+			{/each}
+		{/if}
+		{#if corrected}
+			<!-- Perpendiculaire ou parallèle par un point (outil n° 40) : l'angle droit codé au pied ;
+			     pour la parallèle, la perpendiculaire par le point en trait fin -->
+			{#each solutionThroughLines(checks, allPoints, figureShapes(scene, node.header)) as solution, i (i)}
+				<g data-testid="bonne-droite-equerre" class="bon-point">
+					{#each solution.guides as guide, j (j)}
+						{@const s = toScreen(guide, scene, width, height)}
+						{#if s}
+							<line
+								data-testid="bonne-droite-perpendiculaire"
+								class="bon-cercle-mediatrice"
+								x1={s.x1}
+								y1={s.y1}
+								x2={s.x2}
+								y2={s.y2}
+							/>
+						{/if}
+					{/each}
+					{#each solution.rightAngles as corner, j (j)}
+						{@const d = rightCorner(corner, scene, width, height)}
+						{#if d}
+							<path data-testid="bonne-droite-angle-droit" class="bon-point-codage" {d} />
+						{/if}
+					{/each}
+				</g>
 			{/each}
 		{/if}
 		{#if corrected}

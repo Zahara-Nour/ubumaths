@@ -903,7 +903,8 @@ ou à une longueur nommée autre que [BC], `readDiagonalRectangle`),
 accentué admis ; `d` = droite, segment ou point nommé, le centre d'une symétrie centrale) — un seul carré,
 rectangle ou symétrique, jamais mêlé à `droite_par` ; `point A' = <expression>`, outil point, une ligne par
 point à placer, expression du langage des figures au plus 200 caractères, nom unique ; `droite m = <expression>`,
-même forme, une droite à construire, jamais mêlée à une autre vérification (`bissectrice(A, O, B)`, lot 9 : `bissectriceOf`, la seule droite qui admet le rapporteur dans `outils:`) ; `cercle c = <expression>`, de même,
+même forme, une droite à construire, jamais mêlée à une autre vérification (`bissectrice(A, O, B)`, lot 9 : `bissectriceOf`, la seule droite qui admet le rapporteur dans `outils:` ;
+`perpendiculaire(A, d)` / `parallele(A, d)`, outil n° 40 : `throughLineOf`, sur papier uni `equerre` exigé dans `outils:`) ; `cercle c = <expression>`, de même,
 un cercle à construire sur papier uni (cercle circonscrit), ou de centre donné (`cercle(O, passant=A)`, aussi
 sur quadrillage ; `cercle(O, rayon=distance(D, E))`, papier uni, `report` exigé dans `outils:` ;
 `cercle(O, rayon=4 cm)`, papier uni, palette `regle, compas` exactement, mêlé seulement à d'autres
