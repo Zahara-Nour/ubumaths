@@ -10,29 +10,26 @@
  * studentCache with this data, avoiding redundant API calls.
  *
  * WORKFLOW:
- * 1. Server: Fetch profile + classes from database
- * 2. Server: Fetch rewards (gidouilles + VIP cards) from database
- * 3. Server: Return both as layout data
- * 4. Client: Hydrate studentCache with server data
- * 5. Child pages: Access cached data instantly (no API calls)
+ * 1. Server: Fetch rewards (gidouilles + VIP cards) and buddy from database
+ * 2. Server: Return them as layout data
+ * 3. Client: Hydrate studentCache with server data
+ * 4. Child pages: Access cached data instantly (no API calls)
  *
  * DATA LOADED:
- * - Student profile (id, email, name, avatar, etc.)
- * - Class memberships (classes student is enrolled in)
  * - Rewards (gidouilles balance + VIP cards)
+ * - Buddy (Palotin state, null before the choice quiz)
  *
  * PERFORMANCE:
- * - 2 database queries on server (profile + rewards)
+ * - 2 database queries on server (rewards + buddy)
  * - 0 API calls on client (data already available)
- * - Instant page loads for student dashboard
  *
  * ERROR HANDLING:
- * - Non-critical failures (memberships, rewards) don't crash the page
+ * - Non-critical failures (rewards, buddy) don't crash the page
  * - Returns minimal data to ensure dashboard remains functional
  */
 
 import type { LayoutServerLoad } from './$types';
-import type { StudentProfile, ClassMembership, StudentRewards } from '#lib/types/student-cache.ts';
+import type { StudentRewards } from '#lib/types/student-cache.ts';
 import { asStudentVipCards } from '#lib/types/vip-card.ts';
 import { error } from '@sveltejs/kit';
 import { toBuddyState } from '#lib/types/buddy.ts';
@@ -49,57 +46,6 @@ export const load: LayoutServerLoad = async ({ locals }) => {
 	}
 
 	try {
-		// Fetch class memberships with class details.
-		const { data: memberships, error: membershipError } = await supabase
-			.from('class_members')
-			.select(
-				`
-				class_id,
-				joined_at,
-				classes:class_id (
-					id,
-					name,
-					is_active
-				)
-			`
-			)
-			.eq('student_id', user.id)
-			.eq('status', 'active')
-			.order('joined_at', { ascending: false });
-
-		if (membershipError) {
-			logger.error('[Layout] Error fetching class memberships:', membershipError);
-			// Non-critical - continue with empty classes
-		}
-
-		// Transform to ClassMembership[]
-		const classes: ClassMembership[] = (memberships || [])
-			.filter((m) => m.classes)
-			.map((m) => {
-				// Handle case where classes might be an array
-				const classData = Array.isArray(m.classes) ? m.classes[0] : m.classes;
-				return {
-					class_id: m.class_id,
-					class_name: classData.name,
-					joined_at: m.joined_at,
-					is_active: classData.is_active
-				};
-			});
-
-		// Build student profile
-		const studentProfile: StudentProfile = {
-			id: profile.id,
-			email: profile.email,
-			firstname: profile.firstname,
-			lastname: profile.lastname,
-			full_name: profile.full_name,
-			avatar_url: profile.avatar_url,
-			grade: profile.grade,
-			is_test: profile.is_test,
-			school_id: profile.school_id,
-			classes
-		};
-
 		// Fetch student rewards
 		const { data: rewardsData, error: rewardsError } = await supabase
 			.from('profiles')
@@ -109,19 +55,21 @@ export const load: LayoutServerLoad = async ({ locals }) => {
 
 		if (rewardsError) {
 			logger.error('[Layout] Error fetching rewards:', rewardsError);
-			// Non-critical - continue with default rewards
+			// Non-critical : pas de valeur de repli (`null`). Le layout la verserait au
+			// cache à chaque relecture et effacerait des récompenses connues ; sans
+			// elles, l'accueil relit l'API (`studentCache.getRewards()`).
 		}
 
 		// Parse VIP cards
 		// Le `try/catch` d'origine ne pouvait jamais se déclencher : un cast ne
 		// lève rien. La forme est désormais réellement vérifiée.
-		const vipCards = asStudentVipCards(rewardsData?.vip_cards);
-
-		const rewards: StudentRewards = {
-			gidouilles: rewardsData?.gidouilles || 0,
-			bonus: rewardsData?.bonus || 0,
-			vip_cards: vipCards
-		};
+		const rewards: StudentRewards | null = rewardsData
+			? {
+					gidouilles: rewardsData.gidouilles || 0,
+					bonus: rewardsData.bonus || 0,
+					vip_cards: asStudentVipCards(rewardsData.vip_cards)
+				}
+			: null;
 
 		// Fetch buddy data (may not exist yet if quiz not completed)
 		const { data: buddyData, error: buddyDataError } = await supabase
@@ -137,38 +85,28 @@ export const load: LayoutServerLoad = async ({ locals }) => {
 		}
 
 		// Return data for cache hydration on client
-		// The +layout.svelte will call studentCache.hydrateProfile(), hydrateRewards(), hydrateBuddy()
+		// The +layout.svelte will call studentCache.hydrateRewards(), hydrateBuddy()
 		return {
-			studentProfile,
 			rewards,
 			// `palotin_type` est du texte simple en base : le rétrécir ici évite que
 			// chaque consommateur ait à le faire, et garantit un compagnon parlant.
 			// La Constance perdue et le retour à fêter sont lus après l'affichage par le
 			// composant de présence (GET /api/student/buddy/presence, chantier `palotins`).
-			buddy: buddyData ? toBuddyState(buddyData) : null
+			// `undefined` = lecture en échec : le cache garde le Palotin connu
+			// (`null` = pas encore de Palotin, versé au cache).
+			buddy:
+				buddyDataError && buddyDataError.code !== 'PGRST116'
+					? undefined
+					: buddyData
+						? toBuddyState(buddyData)
+						: null
 		};
 	} catch (err) {
 		logger.error('[Layout] Unexpected error loading student dashboard:', err);
-		// Return minimal data to prevent crashes
+		// Rien à verser au cache (voir `rewardsError`) : l'accueil relit l'API
 		return {
-			studentProfile: {
-				id: profile.id,
-				email: profile.email,
-				firstname: profile.firstname,
-				lastname: profile.lastname,
-				full_name: profile.full_name,
-				avatar_url: profile.avatar_url,
-				grade: profile.grade,
-				is_test: profile.is_test,
-				school_id: profile.school_id,
-				classes: []
-			},
-			rewards: {
-				gidouilles: 0,
-				bonus: 0,
-				vip_cards: {}
-			},
-			buddy: null
+			rewards: null,
+			buddy: undefined
 		};
 	}
 };

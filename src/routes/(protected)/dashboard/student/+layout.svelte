@@ -11,15 +11,15 @@
 	 * studentCache store. This avoids redundant API calls and ensures instant
 	 * data availability for child pages.
 	 *
-	 * WHY ONMOUNT:
-	 * - Runs once when layout mounts
+	 * WHY AN EFFECT:
+	 * - Runs when layout mounts, then when its own data is reloaded
 	 * - Ensures cache is populated before child pages render
 	 * - Data persists across navigation within student dashboard
 	 *
 	 * WORKFLOW:
 	 * 1. Server (+layout.server.ts): Fetch data from database
 	 * 2. Server: Pass data via layout props
-	 * 3. Client (this file): Hydrate cache in onMount
+	 * 3. Client (this file): Hydrate cache in an $effect
 	 * 4. Child pages: Access data via studentCache getters
 	 *
 	 * CE QUE ÇA APPORTE :
@@ -36,7 +36,7 @@
 	 * @example
 	 * // Example usage in child page
 	 * import { studentCache } from '#lib/stores/studentDashboardCache.svelte.ts';
-	 * let profile = $derived(studentCache.getProfileSync());
+	 * let rewards = $derived(studentCache.getRewardsSync());
 	 */
 
 	import { studentCache } from '#lib/stores/studentDashboardCache.svelte.ts';
@@ -44,10 +44,14 @@
 	import ConsentBanner from '#lib/components/ConsentBanner.svelte';
 	import AgeQuestionDialog from '#lib/components/AgeQuestionDialog.svelte';
 	import { refreshAll } from '$app/navigation';
-	import { onMount } from 'svelte';
+	import { untrack } from 'svelte';
 
 	// Get server data (includes consentStatus from parent protected layout)
 	let { data, children } = $props();
+
+	// Dernières données du layout versées au cache (comparées par référence, pas réactives).
+	let hydratedRewards: typeof data.rewards = null;
+	let hydratedBuddy: typeof data.buddy = undefined;
 
 	// Réponse enregistrée : recharge le profil et l'état du consentement (bandeau).
 	async function handleAgeAnswered() {
@@ -56,33 +60,41 @@
 	}
 
 	/**
-	 * Hydrate cache on mount
+	 * Hydrate cache au montage ET à chaque relecture du layout
 	 *
 	 * TIMING:
-	 * - Runs once when layout component mounts
+	 * - Runs when the layout mounts, then again when its data is reloaded
+	 *   (`refreshAll()` après une action de formulaire : écart L45)
 	 * - Data is available immediately for child components
 	 * - No loading states needed in child pages
 	 */
-	onMount(() => {
-		// Hydrate profile cache (2h TTL)
-		if (data.studentProfile) {
-			studentCache.hydrateProfile(data.studentProfile);
-		}
+	$effect(() => {
+		const { rewards, buddy, consentStatus } = data;
+		untrack(() => {
+			// Seulement des données NEUVES : `data` change aussi quand un layout parent
+			// est relu, et réécrire le cache avec l'ancienne lecture effacerait les
+			// mises à jour optimistes faites depuis.
+			// Hydrate rewards cache (10min TTL)
+			// `null` = lecture en échec : rien n'est versé, le cache garde ce qu'il a.
+			if (rewards && rewards !== hydratedRewards) {
+				studentCache.hydrateRewards(rewards);
+				hydratedRewards = rewards;
+			}
 
-		// Hydrate rewards cache (10min TTL)
-		if (data.rewards) {
-			studentCache.hydrateRewards(data.rewards);
-		}
+			// Hydrate buddy cache (10min TTL). Le Palotin lui-même (maison, écusson,
+			// passages, quiz de choix) est montré par `PalotinPresence`, monté par le
+			// layout racine (chantier `palotins`).
+			// `undefined` = lecture en échec ; `null` = pas encore de Palotin (versé).
+			if (buddy !== undefined && buddy !== hydratedBuddy) {
+				studentCache.hydrateBuddy(buddy);
+				hydratedBuddy = buddy;
+			}
 
-		// Hydrate buddy cache (10min TTL). Le Palotin lui-même (maison, écusson,
-		// passages, quiz de choix) est montré par `PalotinPresence`, monté par le
-		// layout racine (chantier `palotins`).
-		studentCache.hydrateBuddy(data.buddy);
-
-		// Hydrate consent store for UI disabling
-		if (data.consentStatus) {
-			consent.set(data.consentStatus);
-		}
+			// Hydrate consent store for UI disabling
+			if (consentStatus) {
+				consent.set(consentStatus);
+			}
+		});
 	});
 </script>
 

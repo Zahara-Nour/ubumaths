@@ -67,10 +67,10 @@ export const solideEntry: BlockCatalogEntry = {
 				{
 					key: 'points',
 					values:
-						'I milieu AE | O centre ABCD | O centre ABCDEFGH | M (1 ; 0,5 ; 1) (séparés par des virgules)',
+						'I milieu AE | O centre ABCD | O centre ABCDEFGH | M (1 ; 0,5 ; 1) | K intersection (IG) (BDE) (séparés par des virgules)',
 					defaultValue: null,
 					description:
-						'Cube, pavé, prisme, pyramide : des points de plus, marqués d’un point et nommés (une majuscule, puis éventuellement ’ ou un nombre). milieu : le milieu de deux points, sommets ou points déjà déclarés (J milieu IG). centre : le centre d’une face, ou pour un cube ou un pavé ses huit sommets, le centre du solide. M (1 ; 0,5 ; 1) : le point par ses coordonnées dans le repère de repere: (nombres séparés par des points-virgules, virgule ou point pour les décimales, au plus 3 chiffres après la virgule, négatifs permis) ; il doit rester dans le solide, ou tout près. Les sommets doivent être nommés ; au plus 8 points.'
+						'Cube, pavé, prisme, pyramide : des points de plus, marqués d’un point et nommés (une majuscule, puis éventuellement ’ ou un nombre). milieu : le milieu de deux points, sommets ou points déjà déclarés (J milieu IG). centre : le centre d’une face, ou pour un cube ou un pavé ses huit sommets, le centre du solide. M (1 ; 0,5 ; 1) : le point par ses coordonnées dans le repère de repere: (nombres séparés par des points-virgules, virgule ou point pour les décimales, au plus 3 chiffres après la virgule, négatifs permis) ; il doit rester dans le solide, ou tout près. K intersection (IG) (BDE) : le point où la droite (IG) perce le plan (BDE) ; K intersection (AG) (BH) : le point où deux droites se croisent. La droite et le plan n’ont pas besoin d’être dessinés ; refusé quand ils ne se coupent pas en un seul point (parallèles, droite dans le plan, droites qui ne se rencontrent pas), quand le point tombe loin du solide, et avec section: ou tracer:. Les sommets doivent être nommés ; au plus 8 points.'
 				},
 				{
 					key: 'vecteurs',
@@ -358,6 +358,20 @@ export const solideEntry: BlockCatalogEntry = {
 				'Dans le repère (A ; AB, AD, AE), M a pour coordonnées (1 ; 0,5 ; 1) : c’est le milieu de [FG]. Les trois flèches partent de A ; le point sert à la droite (AM) comme un sommet.'
 		},
 		{
+			title: 'Le point où une droite perce un plan',
+			source: fence(
+				'solide',
+				'forme: cube 3',
+				'sommets: A B C D E F G H',
+				'points: I milieu AE, K intersection (IG) (BDE)',
+				'droites: (IG)',
+				'plans: P = (BDE)',
+				'tourner: oui'
+			),
+			explanation:
+				'Pour un corrigé, ou une question qui part de K : le point d’intersection de la droite (IG) et du plan (BDE) est marqué et nommé. Sans intersection dans points:, il n’est jamais dessiné.'
+		},
+		{
 			title: 'Une diagonale du cube et son triangle rectangle',
 			source: fence(
 				'solide',
@@ -498,6 +512,17 @@ export const solideEntry: BlockCatalogEntry = {
 			message: 'même plan',
 			explanation:
 				'AB, AD et AC sont tous les trois dans la face ABCD : il faut un vecteur qui en sort, comme AE.'
+		},
+		{
+			title: 'Une droite parallèle au plan',
+			source: fence(
+				'solide',
+				'forme: cube 2',
+				'sommets: A B C D E F G H',
+				'points: K intersection (EG) (ABC)'
+			),
+			message: 'ne se coupent pas en un seul point',
+			explanation: 'La droite (EG) est parallèle au plan (ABC) : il n’y a pas de point à marquer.'
 		},
 		{
 			title: 'Des coordonnées sans repère',

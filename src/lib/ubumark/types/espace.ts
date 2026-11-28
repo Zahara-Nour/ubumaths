@@ -397,13 +397,19 @@ export type SolideSection =
  * `label` : sa lecture (« milieu de [AE] », « centre de ABCD », « centre du cube »).
  *
  * Point donné par ses coordonnées (`M (1 ; 0,5 ; 1)`, lot 7c) : `of` est vide et
- * `coords` porte le repère où elles se lisent ; `label` : « de coordonnées (1 ; 0,5 ; 1) »
+ * `coords` porte le repère où elles se lisent ; `label` : « de coordonnées (1 ; 0,5 ; 1) ».
+ *
+ * Point d'intersection (`K intersection (IG) (BDE)`, lot 7e) : `of` est vide et
+ * `meet` porte la droite `line` (deux points) et ce qu'elle coupe, `other` : un plan
+ * (trois points) ou une autre droite (deux points) — indices des points : sommets,
+ * puis points déclarés avant lui ; `label` : « intersection de la droite (IG) et du plan (BDE) »
  */
 export interface SolidePoint {
 	name: string;
 	of: number[];
 	label: string;
 	coords?: SolideRepere & { values: [number, number, number] };
+	meet?: { line: [number, number]; other: number[] };
 }
 
 /**

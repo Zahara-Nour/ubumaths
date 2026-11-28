@@ -335,8 +335,6 @@ le compte et la classe (page du lien : § « Page du parent » ci-dessous). Tabl
 
 ### Élève et tous les comptes
 
-- `src/routes/api/student/profile/+server.ts` : profil de l'élève connecté et ses classes actives
-  (lu par `src/lib/stores/studentDashboardCache.svelte.ts`).
 - **Question d'âge en 2nde** : `src/lib/components/AgeQuestionDialog.svelte` (monté dans
   `src/routes/(protected)/dashboard/student/+layout.svelte`), règles dans
   `src/lib/utils/age-declaration.ts`, écriture par `src/routes/api/student/age-declaration/+server.ts`.

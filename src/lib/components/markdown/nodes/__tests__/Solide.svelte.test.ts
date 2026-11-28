@@ -128,6 +128,25 @@ describe('Solide — figure', () => {
 		expect(label).toContain('point M de coordonnées (1 ; 0,5 ; 1)');
 	});
 
+	it('point d’intersection : un disque et son nom, sans droite ni plan dessinés (lot 7e)', async () => {
+		const screen = await render(Espace, {
+			target: mainElement(),
+			props: {
+				node: node(
+					'forme: cube 2',
+					'sommets: A B C D E F G H',
+					'points: I milieu AE, K intersection (IG) (BDE)'
+				)
+			}
+		});
+		const texts = [...screen.container.querySelectorAll('text')].map((t) => t.textContent);
+		expect(texts).toContain('K');
+		expect(screen.container.querySelectorAll('polygon.solide-plan')).toHaveLength(0);
+		expect(screen.container.querySelectorAll('polyline.solide-droite')).toHaveLength(0);
+		const label = screen.container.querySelector('svg')!.getAttribute('aria-label');
+		expect(label).toContain('point K intersection de la droite (IG) et du plan (BDE)');
+	});
+
 	it('plans donnés : teintés, bord en couleur, tirets pour le bord caché, nom entre parenthèses', async () => {
 		const screen = await render(Espace, {
 			target: mainElement(),

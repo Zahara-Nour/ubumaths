@@ -45,7 +45,8 @@
 	import {
 		getSelectedClassId,
 		setSelectedClass,
-		clearSelectedClass
+		clearSelectedClass,
+		reconcileSelectedClass
 	} from '#lib/stores/selectedClass.svelte.ts';
 	import { getSelectedPeriodId, setSelectedPeriod } from '#lib/stores/selectedPeriod.svelte.ts';
 	import {
@@ -207,13 +208,13 @@
 				throw new Error(`HTTP ${response.status}: ${response.statusText}`);
 			}
 
-			const { classes: fetchedClasses } = await response.json();
+			const { classes: fetchedClasses } = (await response.json()) as { classes: ClassWithData[] };
 
 			// STEP 3: Hydrate cache
 			teacherCache.hydrateAllClasses(fetchedClasses);
 
 			console.log(`[TeacherDashboard] ✅ API SUCCESS: Loaded ${fetchedClasses.length} classes`);
-			initializeSelectedClass();
+			initializeSelectedClass(fetchedClasses.map((c) => c.id));
 		} catch (err) {
 			console.error('[TeacherDashboard] ❌ Failed to load classes:', err);
 			toaster.error(`Erreur lors du chargement des ${lore.entities.class}s`);
@@ -221,19 +222,17 @@
 	}
 
 	/**
-	 * Initialize selectedClassId if not already set
-	 * Auto-selects first class if no selection exists
+	 * Confronte la classe retenue à la liste lue (écart L47)
+	 *
+	 * L'identifiant gardé dans localStorage peut désigner une classe supprimée ou
+	 * désactivée : il est remplacé par la première classe, ou vidé sans classe.
+	 * La copie locale suit le store, sinon le sélecteur garderait l'ancienne.
+	 *
+	 * @param classIds - Identifiants de la liste COMPLÈTE lue au serveur
 	 */
-	function initializeSelectedClass() {
-		const currentSelectedId = getSelectedClassId();
-		const classes = teacherCache.getAllClassesSync();
-
-		if (!currentSelectedId && classes.length > 0) {
-			// No class selected - auto-select first class
-			const firstClassId = classes[0].id;
-			setSelectedClass(firstClassId);
-			console.log(`[TeacherDashboard] 🎯 Auto-selected first class: ${classes[0].name}`);
-		}
+	function initializeSelectedClass(classIds: readonly string[]) {
+		reconcileSelectedClass(classIds);
+		selectedClassId = getSelectedClassId();
 	}
 
 	/**

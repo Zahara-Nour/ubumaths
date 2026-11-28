@@ -714,6 +714,12 @@ clavier. ⚠️ Ni `blur()` sur le champ, ni `mathVirtualKeyboard.hide()` (MathL
 clavier. Sous 500 px de haut (téléphone en paysage), les touches passent de 42 à 32 px
 (`--keycap-height`, `src/app.css`) : le clavier passe de 242 à 202 px.
 
+Case dans une cellule de tableau markdown (`| $?$ |`, cadre `table-with-blanks` de
+`FillBlanksInput.svelte`, outil n° 57) : sur écran tactile (`pointer: coarse`), pas de bouton
+clavier dans la case — la toucher ouvre le clavier, comme la case de valeur d'un ` ```variation `
+(`ubumark.md`) ; sous 30 rem de large, cellules (`0.25em`) et cases (`2px`) resserrées. Un tableau
+de 5 colonnes à cases tient dans un iPhone ; plus large, il défile de côté dans son cadre.
+
 Natures de réponse :
 
 | Nature                            | Déclaration                                                                                                                                     | Jugée par                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
