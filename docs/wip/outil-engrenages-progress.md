@@ -10,13 +10,12 @@ dentées en texte seul.
 
 _Mis à jour le 2026-11-28, PR 1 codée, pas encore ouverte._
 
-- **État** : bloc ` ```engrenages ` codé et commité sur la branche (parseur, moteur, écran avec
-  animation au corrigé, PDF, catalogue, docs système) ; tests verts, `check:incremental` 0 erreur,
-  cliquet tenu, `lint:fast` propre, `docs:check-a-jour` vert, rendu vu à l'écran et au PDF ·
-  **Prochaine action** : revue `code-reviewer` (Sonnet) lancée, résultat perdu au `/clear` →
-  la relancer sur `git diff origin/main...HEAD -- src`, corriger, puis pousser, ouvrir la PR et
-  `pnpm pr:merger <n>` · **En attente de David** : rien · **Pièges en cours** : serveur de dev
-  du worktree sur le port 5177 (à arrêter) · **Worktree / branche** :
+- **État** : PR 1 prête (bloc, écran, animation au corrigé, PDF, catalogue, docs) ; revue
+  Sonnet faite, constats 1 à 4 corrigés (animation aussi dans l'aperçu du modèle et la
+  « Solution » d'un exercice par `InCorrection.svelte`, têtes de dents affinées, légendes du PDF
+  gardées dans la figure, animation remise au départ quand le bloc change) · **Prochaine
+  action** : PR ouverte → `pnpm pr:merger <n>`, puis outil 52 au § 4 « Livré » et lot clos · **En
+  attente de David** : rien · **Pièges en cours** : aucun · **Worktree / branche** :
   `../ubumaths-wt-outil-engrenages`, `feat/outil-engrenages`.
 
 ## Phase 0 (envoyée le 2026-11-28)
