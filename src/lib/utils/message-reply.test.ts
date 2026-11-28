@@ -52,6 +52,40 @@ describe('replyRecipientId', () => {
 	});
 });
 
+describe('replyRecipientId — seulement vers un compte à qui l’on peut écrire (écart V135)', () => {
+	const ADMIN = 'admin';
+
+	it('élève, message reçu de l’admin : pas de « Répondre »', () => {
+		const message = { sender_id: ADMIN, sender_role: 'admin', recipients: [{ id: ELEVE }] };
+		expect(replyRecipientId([message], ELEVE, 'student')).toBeNull();
+	});
+
+	it('élève, message reçu du prof : « Répondre » au prof', () => {
+		const message = { sender_id: PROF, sender_role: 'teacher', recipients: [{ id: ELEVE }] };
+		expect(replyRecipientId([message], ELEVE, 'student')).toBe(PROF);
+	});
+
+	it('prof, message reçu de l’admin : pas de « Répondre »', () => {
+		const message = { sender_id: ADMIN, sender_role: 'admin', recipients: [{ id: PROF }] };
+		expect(replyRecipientId([message], PROF, 'teacher')).toBeNull();
+	});
+
+	it('admin : répond à tout le monde', () => {
+		const message = { sender_id: PROF, sender_role: 'teacher', recipients: [{ id: ADMIN }] };
+		expect(replyRecipientId([message], ADMIN, 'admin')).toBe(PROF);
+	});
+
+	it('mon message sans réponse : le rôle de son destinataire décide', () => {
+		const message = { sender_id: ELEVE, recipients: [{ id: ADMIN, role: 'admin' }] };
+		expect(replyRecipientId([message], ELEVE, 'student')).toBeNull();
+	});
+
+	it('rôle inconnu : la page propose, le serveur décide', () => {
+		expect(replyRecipientId([{ sender_id: PROF }], ELEVE, 'student')).toBe(PROF);
+		expect(replyRecipientId([{ sender_id: ADMIN, sender_role: 'admin' }], ELEVE)).toBe(ADMIN);
+	});
+});
+
 describe('messageRoleLabel', () => {
 	it('le rôle dans les mots du Royaume, jamais le nom technique', () => {
 		expect(messageRoleLabel('teacher')).toBe(lore.entities.teacher);
