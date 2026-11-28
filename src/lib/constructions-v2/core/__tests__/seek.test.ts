@@ -7,6 +7,7 @@
 
 import { describe, it, expect, vi } from 'vitest';
 import { ConstructionExecutor } from '../executor';
+import { numeric } from '#lib/geometry-core/types/geo-value.ts';
 
 const SCRIPT = [
 	'@instruction("On trace la médiatrice")',
@@ -94,6 +95,21 @@ describe('seekTo', () => {
 		exec.seekTo(2);
 		expect(exec.plan).toBe(plan);
 		expect(exec.stepDurations).toBe(durations);
+	});
+
+	it('un point déplacé à la souris : le pas suivant repart du début', () => {
+		const exec = new ConstructionExecutor();
+		exec.load(SCRIPT);
+		const last = exec.totalSteps - 1;
+		exec.seekTo(last - 1);
+		const C = exec.figure.getAllElements().find((el) => el.label === 'C');
+		expect(C).toBeDefined();
+		exec.figure.movePoint(C!.id, numeric(-4), numeric(5));
+		const step = vi.spyOn(exec, 'step');
+		exec.seekTo(last);
+		expect(step.mock.calls.length).toBe(last + 1);
+		step.mockRestore();
+		expect(snapshot(exec)).toEqual(replay(last));
 	});
 
 	it('un pas qui échoue : le déplacement suivant repart du début', () => {

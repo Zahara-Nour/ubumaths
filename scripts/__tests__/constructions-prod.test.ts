@@ -144,12 +144,12 @@ describe('V76 : les arcs de compas du carré s’effacent', () => {
 		expect(script).not.toMatch(/@cacher\("arc_/);
 	});
 
-	it('avant : les 44 arcs restent ; après : tous s’effacent, en trois temps', () => {
+	it('avant : les 44 arcs restent ; après : tous s’effacent, un par un (un pas chacun)', () => {
 		expect(visibleArcsByStep(before.dslScript).at(-1)).toBe(44);
 		const counts = visibleArcsByStep(script);
 		expect(Math.max(...counts)).toBeGreaterThan(0);
 		expect(counts.at(-1)).toBe(0);
-		// Un arc effacé ne revient pas : chaque baisse vient d'un masque, sans remontée après
+		// 44 baisses : un pas `masque` par arc (500 ms chacun)
 		const drops = counts.filter((c, i) => i > 0 && c < counts[i - 1]).length;
 		expect(drops).toBe(44);
 	});

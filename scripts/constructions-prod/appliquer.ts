@@ -20,8 +20,9 @@
  * 1. sauvegarde des lignes lues dans le fichier du lot (`scripts/constructions-prod/avant-<lot>.json`)
  *    (à commiter : c'est le retour arrière ; hors de `data/`, que git ignore) ; `--publier`
  *    refuse si la sauvegarde ne contient pas l'état d'avant de chaque ligne à écrire ;
- * 2. chaque ligne doit porter son titre d'avant, et son script d'avant quand le lot le donne
- *    (sinon : déjà faite → sautée, ou modifiée entre-temps → lot refusé en entier) ;
+ * 2. chaque ligne doit porter son titre d'avant ; quand le lot donne le script d'avant (lot qui
+ *    ne change que le script), aussi ce script, sa description et sa publication (sinon : déjà
+ *    faite → sautée, ou modifiée entre-temps → lot refusé en entier) ;
  * 3. écriture sous condition `updated_at` inchangé, ligne rendue relue et comparée aux
  *    valeurs voulues (une garde qui échoue rend 0 ligne, sans erreur). Une écriture
  *    interrompue se relance telle quelle : les lignes déjà faites sont sautées.
@@ -152,8 +153,14 @@ function rowState(row: Row | undefined, change: ConstructionChange): 'todo' | 'd
 		row.is_public === change.isPublic;
 	if (done) return 'done';
 	if (row.title !== change.titreAvant) return `titre inattendu « ${row.title} »`;
-	if (change.dslAvant !== undefined && row.dsl_script !== change.dslAvant) {
-		return 'script modifié depuis la sauvegarde dont le nouveau est tiré';
+	if (change.dslAvant !== undefined) {
+		// Lot qui ne change que le script : description et publication doivent être
+		// celles qu'il réécrit, sinon il écraserait un changement fait entre-temps.
+		if (row.dsl_script !== change.dslAvant) {
+			return 'script modifié depuis la sauvegarde dont le nouveau est tiré';
+		}
+		if (row.description !== change.description) return 'description modifiée entre-temps';
+		if (row.is_public !== change.isPublic) return 'publication modifiée entre-temps';
 	}
 	return 'todo';
 }

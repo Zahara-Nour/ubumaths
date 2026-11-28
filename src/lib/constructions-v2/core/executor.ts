@@ -293,6 +293,8 @@ export class ConstructionExecutor {
 	private _plan: PlanEntry[] = [];
 	/** Vrai quand un `seekTo` a été interrompu par une erreur (cf. `seekTo`). */
 	private _seekNeedsReset = false;
+	/** Éléments de la figure à la fin du dernier `seekTo` (cf. `figureChangedSinceSeek`). */
+	private _seekElements: readonly GeoElement[] = [];
 	/** Current position in `_plan` (-1 before first step). */
 	private _timelineIndex = -1;
 	/**
@@ -751,17 +753,34 @@ export class ConstructionExecutor {
 
 	/**
 	 * Amène la lecture au pas `stepIndex` de la frise. En avant, ne joue que
-	 * les pas qui manquent ; en arrière (ou sur place), repart du début. Un
-	 * pas qui lève une erreur laisse l'état à moitié avancé : le déplacement
-	 * suivant repart alors du début.
+	 * les pas qui manquent ; en arrière (ou sur place), repart du début. Repart
+	 * aussi du début quand la figure a changé hors de `step()` (point déplacé à
+	 * la souris en mode `interactive`) : les pas suivants sont pré-simulés sur
+	 * la figure d'origine. Un pas qui lève une erreur laisse l'état à moitié
+	 * avancé : le déplacement suivant repart alors du début.
 	 */
 	seekTo(stepIndex: number): void {
-		if (this._seekNeedsReset || stepIndex <= this._timelineIndex) this.reset();
+		if (this._seekNeedsReset || stepIndex <= this._timelineIndex || this.figureChangedSinceSeek()) {
+			this.reset();
+		}
 		this._seekNeedsReset = true;
 		while (this._timelineIndex < stepIndex && this.step()) {
 			// continue
 		}
 		this._seekNeedsReset = false;
+		this._seekElements = this.figure.getAllElements();
+	}
+
+	/**
+	 * La figure remplace l'objet d'un élément à chaque modification : un objet
+	 * différent de ceux laissés par le dernier `seekTo` = figure touchée ailleurs.
+	 */
+	private figureChangedSinceSeek(): boolean {
+		const current = this.figure.getAllElements();
+		return (
+			current.length !== this._seekElements.length ||
+			current.some((el, i) => el !== this._seekElements[i])
+		);
 	}
 
 	// ─── Accessors ───────────────────────────────────────────

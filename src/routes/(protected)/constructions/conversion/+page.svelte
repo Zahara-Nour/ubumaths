@@ -139,13 +139,13 @@
 			if (result.success && result.dsl) {
 				dslOutput = result.dsl;
 				warnings = result.warnings;
-				toaster.success('Conversion reussie');
+				toaster.success('Conversion réussie');
 				showPreview = true;
 			} else {
 				dslOutput = '';
 				conversionErrors =
 					result.errors.length > 0 ? result.errors : ['La conversion n’a produit aucun script'];
-				toaster.error('La conversion a echoue');
+				toaster.error('La conversion a échoué');
 			}
 		} catch (err) {
 			dslOutput = '';
@@ -153,6 +153,15 @@
 			toaster.error('Erreur de conversion');
 		} finally {
 			isConverting = false;
+		}
+	}
+
+	async function handleCopyDsl() {
+		try {
+			await navigator.clipboard.writeText(dslOutput);
+			toaster.success('Script DSL copié');
+		} catch {
+			toaster.error('Copie impossible : sélectionnez le script à la main');
 		}
 	}
 
@@ -178,7 +187,7 @@
 
 			if (response.ok) {
 				const { construction } = await response.json();
-				toaster.success('Construction enregistree');
+				toaster.success('Construction enregistrée');
 				await goto(`/constructions/${construction.id}`);
 			} else {
 				const errorData = await response.json();
@@ -326,7 +335,7 @@
 					Script DSL
 				</Card.Title>
 				<Card.Description>
-					Resultat de la conversion, modifiable ensuite dans l'editeur de constructions
+					Résultat de la conversion, modifiable ensuite dans l’éditeur de constructions
 				</Card.Description>
 			</Card.Header>
 			<Card.Content class="space-y-4">
@@ -336,15 +345,7 @@
 							class="max-h-[400px] overflow-auto bg-muted p-4 font-mono text-sm">{dslOutput}</pre>
 					</div>
 
-					<Button
-						variant="outline"
-						onclick={() => {
-							navigator.clipboard.writeText(dslOutput);
-							toaster.success('Script DSL copie');
-						}}
-					>
-						Copier le DSL
-					</Button>
+					<Button variant="outline" onclick={handleCopyDsl}>Copier le DSL</Button>
 				{:else}
 					<div
 						class="flex flex-col items-center justify-center rounded-lg border border-dashed border-muted-foreground/25 py-12 text-center"
@@ -390,7 +391,7 @@
 						>
 							<div class="flex items-center gap-2">
 								<Play class="h-4 w-4" />
-								<span class="font-medium">Apercu</span>
+								<span class="font-medium">Aperçu</span>
 							</div>
 							<ChevronDown class="h-4 w-4 transition-transform {showPreview ? 'rotate-180' : ''}" />
 						</Collapsible.Trigger>
