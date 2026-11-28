@@ -8,7 +8,7 @@ couvre:
   - src/lib/components/teacher/TestModeToggle.svelte
   - src/lib/stores/classroomSettings.svelte.ts
   - src/lib/utils/chime.ts
-  - 'src/lib/server/{evaluations,evaluation-attempts,evaluation-breakdown,evaluation-question-errors,evaluation-trace,series,series-lines,chapter-series,test-mode}.ts'
+  - 'src/lib/server/{evaluations,evaluation-attempts,evaluation-breakdown,evaluation-question-errors,evaluation-trace,series,series-lines,series-python-cases,chapter-series,test-mode}.ts'
   - 'src/lib/server/validation/{evaluations,tests,parody-evaluations,chapter-series}.ts'
   - 'src/lib/types/{evaluation,evaluation-attempt,evaluation-breakdown,duration-signals,test,skills}.ts'
   - 'src/lib/utils/{test-launch,test-score,duration-signals}.ts'
