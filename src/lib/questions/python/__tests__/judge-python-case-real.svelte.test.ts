@@ -67,21 +67,21 @@ describe('judgePythonCase — vrai Pyodide', () => {
 		const faux = SOLUTION.replace('while u <= A', 'while u < A');
 		expect(await judgePythonCase(faux, ATTENDU, executor)).toEqual({
 			juste: false,
-			message: '`seuil(2)` : ta fonction rend 0, on attendait 1.'
+			message: 'seuil(2) : ta fonction rend 0, on attendait 1.'
 		});
 	}, 30_000);
 
 	it('`return` oublié, erreur de syntaxe, fonction absente, sans boucle', async () => {
 		const sansReturn = SOLUTION.replace('    return n', '    n = n');
 		expect((await judgePythonCase(sansReturn, ATTENDU, executor)).message).toBe(
-			'`seuil(2)` : ta fonction ne rend rien (as-tu écrit `return` ?), on attendait 1.'
+			'seuil(2) : ta fonction ne rend rien (as-tu écrit return ?), on attendait 1.'
 		);
 		const syntaxe = SOLUTION.replace('while u <= A:', 'while u <= A');
 		expect((await judgePythonCase(syntaxe, ATTENDU, executor)).message).toBe(
 			'Erreur de syntaxe ligne 4 : il manque « : ».'
 		);
 		expect((await judgePythonCase('def rang(A):\n    return 1', ATTENDU, executor)).message).toBe(
-			'Il faut écrire la fonction `seuil`.'
+			'Il faut écrire la fonction seuil.'
 		);
 		expect((await judgePythonCase('def seuil(A):\n    return 1', ATTENDU, executor)).message).toBe(
 			'Ta fonction doit utiliser une boucle (`while` ou `for`).'
@@ -91,7 +91,7 @@ describe('judgePythonCase — vrai Pyodide', () => {
 	it('erreur à l’exécution : l’essai, la ligne, l’erreur Python', async () => {
 		const erreur = SOLUTION.replace('u = 1.5 * u', 'u = q * u');
 		expect((await judgePythonCase(erreur, ATTENDU, executor)).message).toBe(
-			"`seuil(2)` : ton programme s’arrête sur une erreur ligne 5 : NameError: name 'q' is not defined."
+			"seuil(2) : ton programme s’arrête sur une erreur ligne 5 : NameError: name 'q' is not defined."
 		);
 	}, 30_000);
 

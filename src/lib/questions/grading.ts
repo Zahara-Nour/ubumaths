@@ -98,11 +98,6 @@ export function gradeOutOf20(pointsEarned: number, totalQuestions: number): numb
 }
 
 function gradeBlanks(fullInstance: QuestionInstance, answer: SubmittedAnswer): QuestionVerdict {
-	// Case Python : son verdict vient du navigateur, jamais cru par la note (Q1 de l'outil 49 ;
-	// le modèle n'entre pas dans une évaluation, cette garde le compte faux s'il y arrivait)
-	if ((fullInstance.blanks ?? []).some((b) => b.construire === 'python')) {
-		return { status: 'incorrect', points: 0, isCorrect: false, partial: false };
-	}
 	const allValues = answer.values ?? (fullInstance.blanks ?? []).map(() => '');
 	// Nombre de cases différent : réponse fabriquée ou périmée, jamais une exception
 	if (allValues.length !== (fullInstance.blanks ?? []).length) {

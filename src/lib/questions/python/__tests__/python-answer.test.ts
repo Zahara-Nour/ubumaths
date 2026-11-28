@@ -6,6 +6,7 @@ import { describe, it, expect } from 'vitest';
 import {
 	expectedPythonAnswer,
 	PYTHON_NOT_RUN,
+	pythonAnswerForTrace,
 	pythonAnswerVerdict,
 	readExpectedPythonAnswer,
 	readPythonAnswer,
@@ -54,5 +55,33 @@ describe('réponse attendue', () => {
 		expect(
 			readExpectedPythonAnswer(expectedPythonAnswer({ ...ATTENDU, exiger: ['récursif' as never] }))
 		).toBeNull();
+	});
+});
+
+describe('pythonAnswerForTrace : la trace tient sous la borne de la base (2 000 caractères par case)', () => {
+	it('une réponse courte reste telle quelle', () => {
+		const value = writePythonAnswer({ code: 'def f(x):\n    return x', verdict: { juste: true } });
+		expect(pythonAnswerForTrace(value, 2000)).toBe(value);
+	});
+
+	it('un long programme est raccourci, verdict gardé, toujours lisible', () => {
+		const code = 'def f(x):\n' + '    x = "a" + x\n'.repeat(300) + '    return x';
+		const value = writePythonAnswer({
+			code,
+			verdict: { juste: false, message: '`f(1)` : ta fonction rend 2, on attendait 1.' }
+		});
+		expect(value.length).toBeGreaterThan(2000);
+		const trace = pythonAnswerForTrace(value, 2000);
+		expect(trace.length).toBeLessThanOrEqual(2000);
+		const lu = readPythonAnswer(trace);
+		expect(lu?.verdict).toEqual({
+			juste: false,
+			message: '`f(1)` : ta fonction rend 2, on attendait 1.'
+		});
+		expect(code.startsWith(lu?.code.replace(/…$/, '') ?? 'x')).toBe(true);
+	});
+
+	it('une valeur qui n’est pas une réponse Python est coupée à la borne', () => {
+		expect(pythonAnswerForTrace('x'.repeat(3000), 2000)).toHaveLength(2000);
 	});
 });

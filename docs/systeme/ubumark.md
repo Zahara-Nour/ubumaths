@@ -1511,7 +1511,19 @@ appartient au bloc littéral au-dessus. `{{…}}` résolus au tirage comme parto
 inconnue ou en double, ligne non comprise, les trois clés obligatoires manquantes, nom de fonction
 invalide, solution sans `def <fonction>(`, essai qui n'appelle pas la fonction, exigence inconnue.
 La solution ne s'exécute PAS au tirage (pas de Python côté serveur) : une solution qui plante n'est
-vue qu'à l'écran (« Cette question a un problème… »).
+vue qu'à l'écran (« Cette question a un problème… ») ; une solution qui boucle sans fin sur un essai
+donne à l'élève « Ton programme ne s'arrête pas » (piège d'auteur, à essayer dans l'aperçu).
+
+Pièges d'auteur : `{{…}}` est collé tel quel dans le code, sans calcul ni parenthèses (`{{q}} * u`
+avec `q = 0.5+1` donne `0.5+1 * u`) : tirer des nombres simples, ou écrire `({{q}}) * u`. Un
+`{{` littéral (f-string Python) serait pris pour une variable. Les essais sont coupés sur `;` (pas
+de `;` dans une chaîne d'un essai), et seuls les arguments par position sont compris
+(`seuil(100)`, pas `seuil(A=100)`). Un départ laissé tel quel n'est pas une réponse (« Valider »
+reste grisé) : le départ ne doit pas être déjà juste.
+
+Boucle sans fin de l'élève : le worker ne peut pas interrompre un programme qui tourne ; le fil
+principal abandonne au bout de ~10 s (délai de 5 s + marge), puis le worker est recréé (Pyodide
+rechargé, quelques secondes).
 
 Écran (`PythonCaseInput.svelte`) : l'éditeur CodeMirror des exercices Python (`PythonEditor`, sans
 autocomplétion), prérempli par `depart:`, librement modifiable ; « Python se charge… » tant que

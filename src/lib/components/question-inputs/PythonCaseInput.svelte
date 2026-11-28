@@ -51,8 +51,11 @@
 	const initialCode = readPythonAnswer(value)?.code ?? spec.depart;
 	let code = $state(initialCode);
 	let running = $state(false);
+	// Runtime partagé chargé à la demande (absent du contexte) : « Valider » l'attend
+	let runtimeLoading: Promise<void> | null = null;
+	let importFailed = $state(false);
 
-	let status = $derived(runtime?.status ?? 'idle');
+	let status = $derived(importFailed ? 'error' : (runtime?.status ?? 'idle'));
 	let locked = $derived(disabled || running || isCorrect !== null);
 	let message = $derived(
 		isCorrect === false ? readPythonAnswer(value)?.verdict?.message : undefined
@@ -68,6 +71,7 @@
 
 	/** Avant la validation : le programme tourne, la valeur reçoit son verdict */
 	async function prepare(): Promise<void> {
+		if (runtime === null && runtimeLoading !== null) await runtimeLoading;
 		if (disabled || isCorrect !== null || runtime === null) return;
 		const answer = readPythonAnswer(value);
 		const attendu = expected === undefined ? null : readExpectedPythonAnswer(expected);
@@ -87,10 +91,16 @@
 			runtime.start();
 		} else {
 			// Runtime partagé chargé à la demande : l'exécuteur et Pyodide ne viennent qu'ici
-			import('./python-case-runtime.svelte.ts').then(({ sharedPythonCaseRuntime }) => {
-				runtime = sharedPythonCaseRuntime;
-				sharedPythonCaseRuntime.start();
-			});
+			runtimeLoading = import('./python-case-runtime.svelte.ts')
+				.then(({ sharedPythonCaseRuntime }) => {
+					runtime = sharedPythonCaseRuntime;
+					sharedPythonCaseRuntime.start();
+				})
+				.catch((error: unknown) => {
+					// Hors ligne, déploiement changé : la case le dit, la carte reste utilisable
+					console.error('[PythonCaseInput] Chargement de Python en échec :', error);
+					importFailed = true;
+				});
 		}
 		return () => unregister?.();
 	});

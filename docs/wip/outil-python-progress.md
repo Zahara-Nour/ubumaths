@@ -1,21 +1,22 @@
 ---
 title: Lot d'outils `python` — case « programme Python exécuté » (outil 49)
 date: 2026-11-28
-status: phase 0 validée le 2026-11-28, code écrit (branche), revue et PR à faire
+status: outil 49 en PR (2026-11-28)
 ---
 
 # Lot `python` : outil 49
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-28, avant toute PR._
+_Mis à jour le 2026-11-28, avant l'ouverture de la PR._
 
-- **État** : code, tests et doc commités sur la branche (§ Code), pas encore poussés ni de PR.
-- **Prochaine action** : revue (`code-reviewer` en opus : correction des réponses), vérification à
-  l'écran (`pnpm voir` d'une question Python, page « Nouveau contrôle »), puis PR.
-- **En attente de David** : rien ; à lui signaler : un modèle Python n'exige pas de spec (§ Code).
-- **Pièges en cours** : Python ne tourne que dans le navigateur (Pyodide) ; `validateAnswer` est
-  synchrone et une évaluation notée est corrigée par le serveur (ADR 0015).
+- **État** : outil 49 codé, revu (code + sécurité), vu à l'écran (`e2e/verifs/case-python.spec.ts`,
+  3 cas verts) ; PR ouverte, merge par `pnpm pr:merger`.
+- **Prochaine action** : après le merge, ligne 49 au § 4 « Livré » d'`outils-manquants.md`, puis
+  clore le lot (`fait (#PR, date)` dans `outils-lots.md`, journal archivé).
+- **En attente de David** : rien de bloquant ; signalé : un modèle Python n'exige pas de spec (§ Code).
+- **Pièges en cours** : la note du serveur (`gradeWithinBudget`) compte faux une case Python, PAS
+  `gradeQuestion` (partagé avec le badge d'entraînement).
 - **Worktree / branche** : `../ubumaths-wt-outil-python` · `feat/outil-python`.
 
 ## L'outil
@@ -154,3 +155,20 @@ Typst `ubumark/generators/python-a-ecrire-typst.ts`, `questions/python/` (valeur
 `serie-automatismes`, `markdown-parser`, éditeur riche. Tests : parseur + Typst, valeur, juge simulé,
 juge avec le vrai Pyodide (`*-real`, hors CI ordinaire), génération, éditeur riche, avertissement
 serveur, montage dans `FillBlanksInput`, `QuestionCard` / `FlashCard`.
+
+## Revue et vérification à l'écran (2026-11-28)
+
+- **Vu à l'écran** (`e2e/verifs/case-python.spec.ts`, aperçu admin, Chrome, clair et sombre) : la
+  carte disait « Faux » sur un programme juste, alors que la case disait « juste ». Cause : la
+  garde « case Python = faux » posée dans `gradeQuestion`, qui donne aussi le badge
+  d'entraînement (`trainingStatus`). Garde déplacée dans `gradeWithinBudget` (correction du serveur
+  seule), test rouge puis vert (`generation-python.test.ts`). Messages sans accents graves (texte
+  brut : la valeur rendue par la fonction de l'élève y figure).
+- **Revue de code (opus)** : badge (ci-dessus) ; course finie pendant qu'un programme tourne →
+  `TestCourse` ignore la validation tardive (sans test dédié : harnais trop lourd) ; « plus de
+  5 secondes » retiré du message (l'abandon réel est à ~10 s) ; `import()` du runtime attendu par
+  « Valider » et son échec affiché. Pièges d'auteur documentés (`ubumark.md`) : `{{…}}` collé sans
+  parenthèses, `;` dans un essai, arguments nommés, départ déjà juste, solution qui boucle.
+- **Audit de sécurité (opus)** : aucun bloquant ni important. Mineur corrigé : un long programme
+  dépassait la borne de 2 000 caractères de `answer_parts` (tentative refusée sans bruit) →
+  `pythonAnswerForTrace` raccourcit le code, verdict gardé.

@@ -56,7 +56,7 @@ const NOT_READY_ERROR = "Pyodide n'est pas prêt";
 
 export const PYTHON_EMPTY = 'Tu n’as écrit aucun programme.';
 export const PYTHON_NEVER_STOPS =
-	'Ton programme ne s’arrête pas (plus de 5 secondes) : vérifie la condition de ta boucle.';
+	'Ton programme ne s’arrête pas : vérifie la condition de ta boucle.';
 export const PYTHON_NOT_STARTED = 'Python n’a pas pu se lancer : réessaie dans un instant.';
 
 /** Exigences de `exiger:` → exigences des exercices Python */
@@ -134,7 +134,7 @@ const isTeacherError = (error: string) =>
 
 /** Message de l'essai raté (résultat du worker pour cet essai) */
 function failureMessage(essai: string, result: TestCaseResult): string {
-	const cited = `\`${essai}\``;
+	const cited = essai;
 	if (result.error !== undefined) {
 		if (isTeacherError(result.error)) {
 			return `Cette question a un problème (la solution de l’auteur ne marche pas sur ${cited}) : signale-le à ton professeur.`;
@@ -146,7 +146,7 @@ function failureMessage(essai: string, result: TestCaseResult): string {
 			: `${cited} : ${message}.`;
 	}
 	if (result.actual === 'None') {
-		return `${cited} : ta fonction ne rend rien (as-tu écrit \`return\` ?), on attendait ${result.expected ?? '?'}.`;
+		return `${cited} : ta fonction ne rend rien (as-tu écrit return ?), on attendait ${result.expected ?? '?'}.`;
 	}
 	return `${cited} : ta fonction rend ${result.actual ?? '?'}, on attendait ${result.expected ?? '?'}.`;
 }
@@ -178,7 +178,7 @@ function configFor(
 				{
 					type: 'defines_function',
 					name: expected.fonction,
-					message: `Il faut écrire la fonction \`${expected.fonction}\`.`
+					message: `Il faut écrire la fonction ${expected.fonction}.`
 				},
 				...expected.exiger.map((name) => REQUIREMENTS[name])
 			]

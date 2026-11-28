@@ -71,7 +71,7 @@ describe('judgePythonCase — nominal', () => {
 				{
 					type: 'defines_function',
 					name: 'seuil',
-					message: 'Il faut écrire la fonction `seuil`.'
+					message: 'Il faut écrire la fonction seuil.'
 				},
 				{ type: 'uses_loop', message: 'Ta fonction doit utiliser une boucle (`while` ou `for`).' }
 			],
@@ -113,7 +113,7 @@ describe('judgePythonCase — limite : premier essai raté', () => {
 		]);
 		expect(await judgePythonCase(CODE, ATTENDU, exec)).toEqual({
 			juste: false,
-			message: '`seuil(2)` : ta fonction rend 0, on attendait 1.'
+			message: 'seuil(2) : ta fonction rend 0, on attendait 1.'
 		});
 		expect(calls).toHaveLength(1);
 	});
@@ -124,7 +124,7 @@ describe('judgePythonCase — limite : premier essai raté', () => {
 			behaviorFailure({ passed: false, input: 'seuil((100,))', expected: '7', actual: '6' })
 		]);
 		expect((await judgePythonCase(CODE, ATTENDU, exec)).message).toBe(
-			'`seuil(100)` : ta fonction rend 6, on attendait 7.'
+			'seuil(100) : ta fonction rend 6, on attendait 7.'
 		);
 	});
 
@@ -133,7 +133,7 @@ describe('judgePythonCase — limite : premier essai raté', () => {
 			behaviorFailure({ passed: false, input: 'seuil((2,))', expected: '1', actual: 'None' })
 		]);
 		expect((await judgePythonCase(CODE, ATTENDU, exec)).message).toBe(
-			'`seuil(2)` : ta fonction ne rend rien (as-tu écrit `return` ?), on attendait 1.'
+			'seuil(2) : ta fonction ne rend rien (as-tu écrit return ?), on attendait 1.'
 		);
 	});
 });
@@ -162,9 +162,9 @@ describe('judgePythonCase — erreurs', () => {
 	});
 
 	it('fonction absente, exigence manquée : le message de l’exigence', async () => {
-		const { exec } = executor([astFailure(['Il faut écrire la fonction `seuil`.'])]);
+		const { exec } = executor([astFailure(['Il faut écrire la fonction seuil.'])]);
 		expect((await judgePythonCase('x = 1', ATTENDU, exec)).message).toBe(
-			'Il faut écrire la fonction `seuil`.'
+			'Il faut écrire la fonction seuil.'
 		);
 	});
 
@@ -173,8 +173,7 @@ describe('judgePythonCase — erreurs', () => {
 		const { exec } = executor([new Error("Délai d'exécution dépassé")]);
 		expect(await judgePythonCase(CODE, ATTENDU, exec, { onStuck })).toEqual({
 			juste: false,
-			message:
-				'Ton programme ne s’arrête pas (plus de 5 secondes) : vérifie la condition de ta boucle.'
+			message: 'Ton programme ne s’arrête pas : vérifie la condition de ta boucle.'
 		});
 		expect(onStuck).toHaveBeenCalledOnce();
 	});
@@ -205,7 +204,7 @@ describe('judgePythonCase — erreurs', () => {
 			behaviorFailure({ passed: false, input: 'seuil((2,))', error: trace })
 		]);
 		expect((await judgePythonCase(CODE, ATTENDU, exec)).message).toBe(
-			"`seuil(2)` : ton programme s’arrête sur une erreur ligne 5 : NameError: name 'q' is not defined."
+			"seuil(2) : ton programme s’arrête sur une erreur ligne 5 : NameError: name 'q' is not defined."
 		);
 	});
 
@@ -224,7 +223,7 @@ describe('judgePythonCase — erreurs', () => {
 			})
 		]);
 		expect((await judgePythonCase(CODE, ATTENDU, exec)).message).toBe(
-			'Cette question a un problème (la solution de l’auteur ne marche pas sur `seuil(2)`) : signale-le à ton professeur.'
+			'Cette question a un problème (la solution de l’auteur ne marche pas sur seuil(2)) : signale-le à ton professeur.'
 		);
 	});
 });

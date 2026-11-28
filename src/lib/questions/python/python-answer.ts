@@ -102,6 +102,28 @@ export function readPythonAnswer(value: string): PythonAnswer | null {
 	return readPrefixed(value, ANSWER_PREFIX, answerSchema);
 }
 
+/**
+ * La valeur de la case pour la trace de la tentative (`answer_parts`, borne de la base par
+ * case) : telle quelle si elle tient ; sinon le code raccourci (fini par « … »), le verdict
+ * gardé, toujours lisible par `readPythonAnswer`. Sans cela, un long programme ferait refuser
+ * toute la tentative (400), perdue sans bruit.
+ */
+export function pythonAnswerForTrace(value: string, maxLength: number): string {
+	if (value.length <= maxLength) return value;
+	const answer = readPythonAnswer(value);
+	if (answer === null) return value.slice(0, maxLength);
+	let code = answer.code;
+	let encoded = value;
+	// Le JSON échappe retours à la ligne et guillemets : on raccourcit jusqu'à ce que ça tienne
+	while (encoded.length > maxLength && code.length > 0) {
+		const surplus = encoded.length - maxLength;
+		code = code.slice(0, Math.max(0, code.length - Math.max(surplus, 1)));
+		encoded = writePythonAnswer({ code: `${code}…`, verdict: answer.verdict });
+	}
+	// Code vide : il reste le verdict (message ≤ 1 000 caractères), qui tient sous la borne
+	return encoded;
+}
+
 /** Réponse attendue d'une case Python */
 export function expectedPythonAnswer(expected: PythonExpected): string {
 	return `${EXPECTED_PREFIX}${JSON.stringify(expected)}`;

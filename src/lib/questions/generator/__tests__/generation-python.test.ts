@@ -17,7 +17,8 @@ import { templateMarkdown } from '#lib/ubumark/index.ts';
 import { validateAnswer } from '#lib/utils/answer-validator.ts';
 import { buildExpectedResult, EMPTY_PROGRAM_TEXT } from '../../expected-result';
 import { findUnmaskedAnswers, maskGestureAnswers } from '../../masked-statement';
-import { gradeQuestion } from '../../grading';
+import { trainingStatus } from '../../correction-card-verdict';
+import { gradeWithinBudget } from '#lib/server/grading-budget.ts';
 import { checkTemplate } from '../../review/check-template';
 import { drawSeriesQuestions } from '../../series-items';
 import { isCombatInstance } from '#lib/descente/combat-templates.ts';
@@ -241,13 +242,17 @@ describe('jamais corrigé par le serveur (Q1)', () => {
 		expect(findUnmaskedAnswers(maskGestureAnswers(String(instance.statement)))).toContain('python');
 	});
 
-	it('note serveur (`gradeQuestion`) : un verdict « juste » venu du navigateur n’est jamais cru', () => {
+	it('entraînement (carte de correction, `trainingStatus`) : le verdict « juste » de la case donne Juste', () => {
+		// Vu à l'écran : la garde serveur posée dans `gradeQuestion` rendait toute carte
+		// d'entraînement « Faux » alors que la case disait « juste »
 		const instance = generate(template({ statement: ENONCE }));
-		expect(gradeQuestion(instance, { values: [juste] })).toMatchObject({
-			status: 'incorrect',
-			points: 0,
-			isCorrect: false
-		});
+		expect(trainingStatus(instance, { values: [juste] })).toBe('correct');
+	});
+
+	it('note serveur (`gradeWithinBudget`) : un verdict « juste » venu du navigateur n’est jamais cru', () => {
+		const instance = generate(template({ statement: ENONCE }));
+		const { verdicts } = gradeWithinBudget([{ instance, answer: { values: [juste] } }]);
+		expect(verdicts[0]).toMatchObject({ status: 'incorrect', points: 0, isCorrect: false });
 	});
 
 	it('combat de la Descente : jamais une question Python', () => {
