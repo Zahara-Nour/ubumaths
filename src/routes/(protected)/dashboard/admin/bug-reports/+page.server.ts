@@ -12,6 +12,7 @@ import { attachReportErrors } from '#lib/server/bug-report-errors.ts';
 import { requireAdmin } from '#lib/server/middleware/auth.ts';
 import { error } from '@sveltejs/kit';
 import { createServerLogger } from '#lib/utils/logger.ts';
+import { adminBugReportsFiltersSchema } from '#lib/server/validation/bug-reports.ts';
 
 const logger = createServerLogger('(protected)/dashboard/admin/bug-reports/+page.server');
 
@@ -19,10 +20,16 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 	// Admin gate (admin login OR step-up elevation)
 	const { supabase } = await requireAdmin(locals);
 
-	// Parse filters from query params
-	const status = url.searchParams.get('status') || undefined;
-	const category = url.searchParams.get('category') || undefined;
-	const severity = url.searchParams.get('severity') || undefined;
+	// Filtres de l'adresse : vide = pas de filtre ; valeur inconnue = 400
+	const parsed = adminBugReportsFiltersSchema.safeParse({
+		status: url.searchParams.get('status') || undefined,
+		category: url.searchParams.get('category') || undefined,
+		severity: url.searchParams.get('severity') || undefined
+	});
+	if (!parsed.success) {
+		throw error(400, 'Filtres invalides');
+	}
+	const { status, category, severity } = parsed.data;
 
 	// Fetch all bug reports with author info
 	let query = supabase

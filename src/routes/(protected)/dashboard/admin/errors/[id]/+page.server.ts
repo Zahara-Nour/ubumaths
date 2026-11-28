@@ -6,6 +6,7 @@ import { error, fail } from '@sveltejs/kit';
 import type { PageServerLoad, Actions } from './$types';
 import { getErrorLog, resolveError } from '#lib/server/errorMonitoring.ts';
 import { requireAdmin } from '#lib/server/middleware/auth.ts';
+import { resolveErrorFormSchema } from '#lib/server/validation/errors.ts';
 
 export const load: PageServerLoad = async ({ params, locals }) => {
 	const { id } = params;
@@ -36,7 +37,13 @@ export const actions: Actions = {
 		const { supabase, adminUserId } = await requireAdmin(locals);
 
 		const formData = await request.formData();
-		const notes = formData.get('notes') as string;
+		const parsed = resolveErrorFormSchema.safeParse({
+			notes: formData.get('notes') ?? undefined
+		});
+		if (!parsed.success) {
+			return fail(400, { error: 'Note invalide (2 000 caractères au plus)' });
+		}
+		const { notes } = parsed.data;
 
 		// adminUserId is the acting admin recorded as the resolver (audit).
 		const result = await resolveError(supabase, id, adminUserId, notes);
