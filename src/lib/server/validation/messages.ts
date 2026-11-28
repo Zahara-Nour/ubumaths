@@ -87,7 +87,12 @@ export function messageDocumentProblem(value: unknown): string | null {
  * Schema for sending a message
  */
 export const sendMessageSchema = z.object({
-	recipientIds: z.array(z.string().uuid()).max(100).optional(),
+	// Un destinataire coché deux fois n'en fait qu'un (écart L134 : sinon 500)
+	recipientIds: z
+		.array(z.string().uuid())
+		.max(100)
+		.transform((ids) => [...new Set(ids)])
+		.optional(),
 	subject: z
 		.string()
 		.trim()
@@ -330,35 +335,6 @@ export const recipientsListResponseSchema = z.object({
  */
 export const unreadCountResponseSchema = z.object({
 	count: z.number().int().nonnegative()
-});
-
-// ============================================================================
-// SEARCH SCHEMAS
-// ============================================================================
-
-/**
- * Schema for search query parameters (GET /api/messages/search)
- */
-export const searchMessagesQuerySchema = z.object({
-	q: z.string().trim().min(1, 'Requête de recherche requise').max(200, 'Requête trop longue'),
-	searchIn: z.enum(['inbox', 'sent', 'all']).default('all').optional(),
-	hasAttachments: z
-		.string()
-		.optional()
-		.transform((val) => (val === 'true' ? true : val === 'false' ? false : undefined)),
-	senderName: z.string().max(200).optional(),
-	dateFrom: z.string().datetime('Date invalide').optional(),
-	dateTo: z.string().datetime('Date invalide').optional(),
-	limit: z.coerce.number().int().positive().max(100, 'Maximum 100 résultats').default(50),
-	offset: z.coerce.number().int().nonnegative().default(0)
-});
-
-/**
- * Search messages response schema (GET /api/messages/search)
- */
-export const searchMessagesResponseSchema = z.object({
-	messages: z.array(messageResponseSchema),
-	total: z.number().int().nonnegative()
 });
 
 // ============================================================================

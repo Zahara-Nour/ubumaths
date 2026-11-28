@@ -69,6 +69,10 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 					`Ce ${lore.entities.class} n'a aucun ${lore.entities.student} actif : personne à qui écrire.`
 				);
 			}
+			// Réponse à un message ni envoyé ni reçu (écarts L127, L131)
+			if (sendError.code === '42501' && sendError.message?.includes('parent message')) {
+				throw error(403, 'Vous ne pouvez pas répondre à ce message.');
+			}
 			if (sendError.code === '42501' || sendError.message?.includes('do not have permission')) {
 				throw error(
 					403,
