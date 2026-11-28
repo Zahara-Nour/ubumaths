@@ -1,21 +1,20 @@
 ---
 title: Lot d'écarts « cache »
 date: 2026-11-28
-status: en cours
+status: clos
 ---
 
 # Lot d'écarts `cache`
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-28, #3277 mergée, PR 2 (L43) ouverte._
+_Mis à jour le 2026-11-28, après #3280. Lot clos._
 
-- **État** : #3277 mergée (8 écarts). PR 2 (L43), branche `fix/ecarts-cache-l43`, revue faite.
-- **Prochaine action** : merger la PR 2 ; puis, depuis le dépôt principal, barrer les 9 lignes au
-  registre, « fait » dans `ecarts-lots.md`, archiver ce journal (clôture du lot).
-- **En attente de David** : rien (L43 : option 1 suivie le 2026-11-28).
-- **Pièges en cours** : `schedule-write-verdict.test.ts` instable en lot (passe seul).
-- **Worktree / branche** : `../ubumaths-wt-ecarts-cache-l43` (`fix/ecarts-cache-l43`).
+- **État** : lot clos. #3277 (M28, M29, M30, L44, L45, L47, L48, L54) et #3280 (L43) mergées ;
+  les 9 lignes sont barrées au registre ; `ecarts-lots.md` dit « fait ».
+- **Prochaine action** : aucune. **En attente de David** : rien.
+- **Hors du lot** : `getBuddySync` et les getters du cache prof ne réagissent toujours pas au
+  temps (piège écrit dans `docs/systeme/coquille-et-caches.md`), sans écart au registre.
 
 ## Lot
 
