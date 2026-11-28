@@ -22,6 +22,7 @@
 		splitInterval
 	} from '#lib/atelier/interval.ts';
 	import { parseDefinition } from '#lib/atelier/parse.ts';
+	import { cardWordAtCaret } from '#lib/atelier/natural-input.ts';
 	import { displayName } from '#lib/atelier/names.ts';
 	import type { AtelierObject } from '#lib/atelier/types.ts';
 	import { isConstruction } from '#lib/atelier/construction.ts';
@@ -210,6 +211,35 @@
 		timer = setTimeout(flush, TYPING_DELAY_MS);
 	}
 
+	/**
+	 * L'espace après « pour », « sur » (et « ou », « et » après « pour ») fait du
+	 * mot un MOT (`\text{ pour }`), comme dans la console : MathLive ignore
+	 * l'espace et collait sinon les lettres à ce qui précède (`xpourx>2`, en
+	 * italique, comme un produit) jusqu'à la validation. Carte d'une fonction
+	 * seulement, au niveau 0 (pas dans une fraction ni un exposant).
+	 */
+	function finishWordOnSpace(event: KeyboardEvent) {
+		if (!element || event.key !== ' ' || event.isComposing) return;
+		if (event.ctrlKey || event.metaKey || event.altKey) return;
+		if ((element.getElementInfo(element.position)?.depth ?? 0) > 0) return;
+		const found = cardWordAtCaret(element.getValue(0, element.position, 'latex'));
+		if (found === null) return;
+		event.preventDefault();
+		const end = element.position;
+		element.selection = { ranges: [[end - found.atoms, end]] };
+		element.insert(found.latex, {
+			insertionMode: 'replaceSelection',
+			selectionMode: 'after',
+			format: 'latex',
+			mode: 'math'
+		});
+		// Mesuré : le curseur reste sinon en mode texte, `x>2` partait dans le mot
+		element.executeCommand(['switchMode', 'math']);
+		latex = element.value;
+		handleInput();
+		updateSmartFence();
+	}
+
 	/** Revenir à la définition rangée : la frappe en cours est oubliée. */
 	function restore() {
 		dirty = false;
@@ -296,6 +326,9 @@
 		// Mode `validate` : Entrée et la sortie du champ rangent (lot 3). Lus sur
 		// la touche et sur `blur` plutôt que sur le `change` de MathLive, qui ne
 		// part pas toujours (champ vide au départ : mesuré)
+		if (element && object.kind === 'function') {
+			stops.push(on(element, 'keydown', finishWordOnSpace, { capture: true }));
+		}
 		if (element && commit === 'validate') {
 			stops.push(on(element, 'keydown', handleKeydown, { capture: true }));
 			stops.push(on(element, 'blur', commitNow));

@@ -11,6 +11,7 @@ import { runInput, type CalcResult } from '#lib/atelier/calcul.ts';
 import { commandCatalog } from '#lib/atelier/commands.ts';
 import {
 	calcTextOf,
+	cardWordAtCaret,
 	cleanedShortcuts,
 	commandWords,
 	denominatorOf,
@@ -282,5 +283,32 @@ describe('dans l’atelier, le mode texte et le mode mathématique se passent la
 		expect(draftTextOf(template, words)).toBe('.intégrer de');
 		expect(draftTextOf(String.raw`\frac14+\frac13`, words)).toBe('(1/4)+(1/3)');
 		expect(draftTextOf('', words)).toBe('');
+	});
+});
+
+// Chantier carte-pour-mot : la carte ignore l'espace, MathLive colle le mot (`xpour`)
+describe('la carte : le mot qui finit la suite de lettres', () => {
+	it.each([
+		['xpour', 'pour'],
+		['x^2sur', 'sur'],
+		['\\frac{1}{x}pour', 'pour'],
+		['x\\text{ pour }x<0ou', 'ou'],
+		['x\\text{ pour }x>kou', 'ou'],
+		['x\\text{ pour }x>2et', 'et']
+	])('%s → « %s »', (before, word) => {
+		expect(cardWordAtCaret(before)).toEqual({
+			latex: `\\text{ ${word} }`,
+			atoms: word.length
+		});
+	});
+
+	it.each([
+		['et', 'sans « pour », e·t'],
+		['x<0ou', 'sans « pour », o·u'],
+		['surface', 'un autre mot'],
+		['x\\text{ pour }x<\\infty', 'les lettres d’une commande'],
+		['x+1', 'pas de lettres au bout']
+	])('%s : rien (%s)', (before) => {
+		expect(cardWordAtCaret(before)).toBeNull();
 	});
 });

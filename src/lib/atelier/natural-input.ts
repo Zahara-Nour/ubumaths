@@ -258,6 +258,26 @@ function definitionWord(word: string, lineLatex: string): boolean {
 	return (word === 'ou' || word === 'et') && /\\text\{\s*pour\s*\}/.test(lineLatex);
 }
 
+/** Les mots d'une définition, le plus long d'abord : « pour » avant son « ou ». */
+const CARD_WORDS = ['pour', 'sur', 'ou', 'et'] as const;
+
+/**
+ * Dans la CARTE d'une fonction, le mot qui finit au curseur, à l'espace qui le
+ * suit : son LaTeX (`\text{ pour }`, l'écriture que la carte réaffiche) et le
+ * nombre de lettres qu'il remplace ; `null` sinon. La carte ignore l'espace :
+ * MathLive y colle le mot à ce qui précède (`xpour`, `x<0ou`), le mot est
+ * donc la FIN de la suite de lettres. « ou », « et » seulement après « pour »,
+ * comme dans la console (`definitionWord`) : `f(x) = e t` reste e·t.
+ */
+export function cardWordAtCaret(before: string): { latex: string; atoms: number } | null {
+	// Les lettres d'une commande (`\infty`) ne sont pas un mot
+	const run = new RegExp(`(?<![\\\\${LETTER}])[${LETTER}]+$`).exec(before)?.[0];
+	if (run === undefined) return null;
+	const word = CARD_WORDS.find((candidate) => run.endsWith(candidate));
+	if (word === undefined || !definitionWord(word, before)) return null;
+	return { latex: String.raw`\text{ ${word} }`, atoms: word.length };
+}
+
 /**
  * La liste de complétion (décision 9) pour le mot commencé au curseur :
  * commandes dès 2 lettres en tête de ligne, unités après « nombre + espace ».
