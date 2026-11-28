@@ -1,7 +1,7 @@
 ---
 title: Écarts — lot cours-evaluations
 date: 2026-11-28
-status: en cours — écarts vérifiés, phase 0 posée à David
+status: en cours — PR 1 en revue, L39 en attente de David
 ---
 
 # Écarts — lot `cours-evaluations`
@@ -10,11 +10,20 @@ status: en cours — écarts vérifiés, phase 0 posée à David
 
 _Mis à jour le 2026-11-28, avant la première PR._
 
-- **État** : les 7 écarts (V72, L37, L38, L39, L40, L112, L113) sont vérifiés et toujours vrais. Aucun code.
-- **Prochaine action** : coder ce qui ne demande pas de choix (L37, L39, L40) ; V72, L38, L112, L113 attendent la phase 0.
-- **En attente de David** : les réponses de la phase 0 (ci-dessous).
-- **Pièges en cours** : L112 et L113 sont des migrations : la question d'accès d'abord, puis les tests d'intégration (`.fails` à retirer) et `security-auditor`.
+- **État** : PR 1 (V72, L37, L38, L40, L112, L113) codée, testée (unitaires et intégration ; L112/L113 vérifiés rouges sans la migration), en revue. L39 n'est pas commencé.
+- **Prochaine action** : ouvrir la PR 1, la merger au vert, puis `db:migrate` (migration additive `20261128072151`, 4 conditions). Ensuite L39 en PR 2.
+- **En attente de David** : la question d'accès de L39 (aucune policy DELETE prof sur `skill_attempts`, donc chaque enregistrement de la saisie ajoute une grille).
+- **Pièges en cours** : `createEvaluation` des tests d'intégration est maintenant SANS mélange par défaut (sinon l'ordre est tiré au hasard).
 - **Worktree / branche** : `../ubumaths-wt-ecarts-cours-evaluations` · `fix/ecarts-cours-evaluations`.
+
+## Décisions (2026-11-28)
+
+David, « je te suis » sur les quatre propositions de la phase 0 :
+
+- **V72** : case cochée → ordre tiré au hasard par tentative, gardé à la reprise ; décochée → ordre de la série.
+- **L38** : une règle, les dates de l'école sinon 1er sept. → 31 août. Mise en œuvre : `src/lib/server/school-year.ts` réutilise la fonction SQL `current_school_year` (déjà celle des avertissements). Les liens envoyés aux familles gardent le 31 août (`endOfSchoolYear`), même module : choix de Claude, signalé à David (un lien ne meurt pas avant la date annoncée).
+- **L112** : supprimer un point travaillé par un élève est refusé. Étendu à la couverture du cahier de texte (`journal_entry_points`), que la ligne du registre cite aussi.
+- **L113** : choix (b), refus avec un message qui compte les séances.
 
 ## Vérification des écarts (2026-11-28)
 
