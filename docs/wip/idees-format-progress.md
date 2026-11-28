@@ -6,19 +6,19 @@ Mettre en œuvre les idées retenues dans [idees-format-exercices.md](idees-form
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-28, PR de la passe 2 ouverte (n° au § « Passe 2 appliquée »)._
+_Mis à jour le 2026-11-28, après #3319._
 
-- **État** : passe 1 + passe 2 (66 fiches) commitées, 5 migrations de contenu générées, intégration
-  verte, base locale à jour, blocs neufs vus à l'écran. PR ouverte.
-- **Prochaine action** : CI verte → `pnpm pr:merger` → `migration list --linked` (seules nos 5 en
-  attente) → `db:migrate` → `migration-contenu.ts` doit dire « inchangé » → série de relecture des
-  52 modèles dans `/dev/modeles` (`scripts/series/creer-serie.ts`, ≤ 50 : deux séries).
-- **En attente de David** : rien. Après la PR : 7 fiches attendent un outil (n° 75, 76, 77, 79) ;
-  **n° 78 déjà livré** sur main (« zéros utiles », 4075445c98, 2026-11-26) → a-01-0 couverte, lot
-  `arrondi-court` à retirer d'`outils-lots.md`.
-- **Pièges** : rejeu `checkTemplate` ne sait pas rejouer une erreur prévue « impossible » (retirée
-  de 04 v7 et b-09 v4) ; capture WebKit coupe le bas du labyrinthe (Chromium : entier).
-- **Worktree / branche** : `ubumaths-wt-idees-format-revue-2de` (`feat/idees-format-revue-2de`).
+- **État** : #3319 mergée (passes 1 et 2, 66 fiches). Ses 5 migrations de contenu
+  (`20261128151748` à `…151803`) sont les SEULES en attente en prod ; `db:migrate` refusé à la
+  session (écriture en prod = David).
+- **Prochaine action** : après le `db:migrate` de David → `migration-contenu.ts --dir` sur les 5
+  dossiers = 52 « inchangé » ; puis deux séries de relecture (≤ 50) dans `/dev/modeles`
+  (`scripts/series/creer-serie.ts`), David les publie ; lire les verdicts « À revoir ».
+- **En attente de David** : `! pnpm db:migrate` depuis le dépôt principal. Ensuite : 7 fiches à
+  outil (n° 75, 76, 77, 79) ; **n° 78 déjà livré** (4075445c98) → lot `arrondi-court` à retirer.
+- **Pièges** : diff trop gros pour `pr:merger` (> 20 000 lignes) → merge à la main ; rejeu
+  `checkTemplate` ne sait pas rejouer une erreur prévue « impossible ».
+- **Worktree / branche** : aucun (retirés après #3319).
 
 ## Idée 1 — phase 0 validée (David, 2026-11-21)
 
