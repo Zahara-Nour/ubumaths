@@ -2,15 +2,17 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-28, migrations générées (PR ouverte)._
+_Mis à jour le 2026-11-28, après #3334._
 
-- **État** : migrations générées et commitées sur `feat/idees-6e-cercles-migrations` : rangement de N1 c9bc598a
-  (niveau 3) et N2 10d20825 (niveau 2) sur `Géométrie > Figures planes > cercle`, tag 6-162 ; contenu des 3
-  publiés (+3 variations chacun). Intégration rouge sans (9 échecs), verte avec ; garde des niveaux sans écart.
-- **Prochaine action** : `security-auditor` sur la PR, CI verte → merge ; puis depuis `main` à jour
-  `migration list --linked` (une autre en attente → stop) et `db:migrate` ; vérifier en base ; relecture des
-  brouillons dans `/dev/modeles?noeud=` et série de relecture des 3 publiés.
-- **En attente de David** : rien.
+- **État** : #3334 mergée (migrations 20261128171523 rangement N1/N2, 20261128171531 contenu des 3 publiés) ;
+  **pas encore jouées en prod**. Conditions 1 à 4 réunies (accès : personne ; rouge sans / vert avec ;
+  `security-auditor` sans bloquant ; additives, rollback en commentaire).
+- **Prochaine action** : `migration list --linked` ; si seules nos 2 migrations sont en attente → `db:migrate`
+  depuis `main`, vérifier en base (N1/N2 sur `cercle` + 6-162, publiés à 6/6/7 variations) ; puis relecture
+  `/dev/modeles?noeud=` et série de relecture des 3 publiés.
+- **En attente de David** : `db:migrate` bloqué : 20261128163026 (avertissements L82/L79, chantier
+  `ecarts-carnet-notifications`, #3333) est aussi en attente. Attendre que sa session la pousse, ou que David
+  dise de tout pousser.
 - **Pièges en cours** : deux `verifier:` de la même famille (deux cercles) ne font pas une figure composée, et
   la garde de la règle graduée refuse alors le cercle « passant par » : N1 c commence par le segment [CD].
 - **Worktree / branche** : `../ubumaths-wt-idees-6e-cercles`, `feat/idees-6e-cercles-migrations` (poussée).
@@ -75,6 +77,8 @@ Page à cocher : https://claude.ai/artifact/WtKPymyPCYikJrmezzon8f (Oui / Non / 
 
 ## Journal
 
+- 2026-11-28 : #3334 mergée (CI : E28 de `lecture-graphique` rouge une fois, sans lien, vert au rejeu).
+  `db:migrate` non lancé : 20261128163026 d'une autre session aussi en attente.
 - 2026-11-28 : migrations générées (rangement 20261128171523, contenu 20261128171531). Nœud `cercle` revérifié
   en prod (sous-notion active ; publiés 1/1/2/2/3, N2 en 2 et N1 en 3, rien de neuf depuis le relevé).
   Intégration : 9 échecs avec les SQL vidés, 622 verts avec ; `garde-niveaux-tags` sans écart.
