@@ -7,18 +7,26 @@
  *   pnpm outils reserver <lot> [--essai]
  *
  * Les lots et leurs règles : docs/wip/outils-lots.md. La réservation est un
- * commit de ce seul fichier sur `main`, depuis le dépôt principal, poussé avant
- * tout travail (comme /prendre-lot pour les écarts). `lancer` crée ensuite,
- * pour chaque lot pris, le worktree `../ubumaths-wt-outil-<lot>` (branche
- * `feat/outil-<lot>`) et une fenêtre tmux dans la session `main` : Claude avec
- * Remote Control, nommé `outil-<lot>`, qui commence par `/prendre-outil <lot>`.
+ * commit de ce seul fichier sur `main`, poussé avant tout travail (comme
+ * /prendre-lot pour les écarts). `lancer` crée ensuite, pour chaque lot pris,
+ * le worktree `../ubumaths-wt-outil-<lot>` (branche `feat/outil-<lot>`) et une
+ * fenêtre tmux dans la session `main` : Claude avec Remote Control, nommé
+ * `outil-<lot>`, qui commence par `/prendre-outil <lot>`.
  *
- * Pull ou push en échec, fichier des lots modifié dans le dépôt principal :
- * arrêt, rien n'est lancé (règle de CLAUDE.md : prévenir David).
+ * Le dépôt principal est partagé par toutes les sessions : son arbre et sa
+ * branche `main` locale ne sont **jamais touchés** (une autre session peut y
+ * avoir un fichier modifié, un pull ou un rebase serait refusé ou laissé à
+ * moitié). Le commit de réservation est construit sur `origin/main` dans un
+ * index temporaire (`read-tree`, `update-index`, `commit-tree`) puis poussé
+ * vers `main` ; push refusé = une autre session a poussé entre-temps → on
+ * relit `origin/main` et on recommence le choix (trois essais). Le `main`
+ * local du dépôt principal le reçoit au prochain `git pull --rebase`.
  */
 
 import { execFileSync, spawnSync } from 'node:child_process';
-import { copyFileSync, existsSync, readFileSync, writeFileSync } from 'node:fs';
+import { copyFileSync, existsSync, mkdtempSync, rmSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { fileURLToPath } from 'node:url';
 import { dirname, join, resolve } from 'node:path';
 import {
 	OutilsError,
@@ -37,20 +45,30 @@ import {
 const FICHIER = 'docs/wip/outils-lots.md';
 const SESSION_TMUX = process.env.OUTILS_TMUX ?? 'main';
 const FICHIERS_ENV = ['.env', '.env.local'];
+const ESSAIS_DE_PUSH = 3;
+const RACINE_DU_SCRIPT = fileURLToPath(new URL('../..', import.meta.url));
+const PRETTIER = join(RACINE_DU_SCRIPT, 'node_modules/.bin/prettier');
 
 // Functions
 
-function git(dossier: string, args: string[], montrer = false): string {
-	return execFileSync('git', ['-C', dossier, ...args], {
+/** `git …` dont l'échec n'est pas une exception : code et sortie. */
+function essayerGit(
+	dossier: string,
+	args: string[],
+	options: { entree?: string; env?: NodeJS.ProcessEnv } = {}
+): { ok: boolean; sortie: string; erreur: string } {
+	const r = spawnSync('git', ['-C', dossier, ...args], {
 		encoding: 'utf8',
-		stdio: montrer ? ['ignore', 'inherit', 'inherit'] : ['ignore', 'pipe', 'pipe']
+		input: options.entree,
+		env: options.env ?? process.env
 	});
+	return { ok: r.status === 0, sortie: r.stdout.trim(), erreur: r.stderr.trim() };
 }
 
-/** `git … ` dont l'échec n'est pas une exception : code et sortie. */
-function essayerGit(dossier: string, args: string[]): { ok: boolean; sortie: string } {
-	const r = spawnSync('git', ['-C', dossier, ...args], { encoding: 'utf8' });
-	return { ok: r.status === 0, sortie: `${r.stdout}${r.stderr}`.trim() };
+function git(dossier: string, args: string[], options: Parameters<typeof essayerGit>[2] = {}) {
+	const r = essayerGit(dossier, args, options);
+	if (!r.ok) throw new OutilsError(`git ${args[0]} refusé :\n${r.erreur}`);
+	return r.sortie;
 }
 
 function depotPrincipal(): string {
@@ -71,56 +89,70 @@ function afficherLots(lots: Lot[]): void {
 	}
 }
 
-/**
- * Réserve dans le dépôt principal : pull, écriture, prettier, commit de ce seul
- * fichier, push. Un push refusé = une autre session a écrit : un pull, puis on
- * vérifie que les lots sont toujours à nous avant de repousser.
- */
-function reserverDansLePrincipal(principal: string, noms: string[], essai: boolean): Lot[] {
-	const chemin = join(principal, FICHIER);
-	if (git(principal, ['status', '--porcelain', '--', FICHIER]).trim() !== '') {
-		throw new OutilsError(`${FICHIER} est modifié dans le dépôt principal : rien n'est réservé.`);
-	}
-	if (!essai) {
-		const pull = essayerGit(principal, ['pull', '--rebase']);
-		if (!pull.ok) throw new OutilsError(`Pull refusé, rien n'est réservé :\n${pull.sortie}`);
-	}
-	const texte = readFileSync(chemin, 'utf8');
-	const lots = lireLots(texte);
-	const { pris, refus } = choisir(lots, noms);
-	for (const r of refus) console.log(`- ${r.nom} : ${r.raison}`);
-	if (pris.length === 0) {
-		console.log('Aucun lot à prendre.');
-		return [];
-	}
-	console.log(`Lots pris : ${pris.map((l) => l.nom).join(', ')}`);
-	if (essai) return pris;
+function recupererMain(principal: string): void {
+	const r = essayerGit(principal, ['fetch', 'origin', 'main']);
+	if (!r.ok) throw new OutilsError(`Fetch refusé, rien n'est réservé :\n${r.erreur}`);
+}
 
-	writeFileSync(chemin, reserver(texte, pris, aujourdhui()));
-	execFileSync('pnpm', ['exec', 'prettier', '--write', FICHIER], {
-		cwd: principal,
-		stdio: 'ignore'
+function lireOrigine(principal: string): string {
+	return git(principal, ['show', `origin/main:${FICHIER}`]);
+}
+
+/** Le commit de réservation, fait sur `origin/main` sans toucher l'arbre ni l'index du dépôt. */
+function commitDeReservation(principal: string, contenu: string, message: string): string {
+	// Config et plugins de prettier : ceux du dépôt du script (même dépôt que `principal`).
+	const formate = execFileSync(PRETTIER, ['--stdin-filepath', FICHIER], {
+		cwd: RACINE_DU_SCRIPT,
+		input: contenu,
+		encoding: 'utf8'
 	});
-	git(principal, ['commit', '-m', messageDeCommit(pris), '--', FICHIER], true);
-	if (!essayerGit(principal, ['push']).ok) {
-		const pull = essayerGit(principal, ['pull', '--rebase']);
-		if (!pull.ok) {
-			throw new OutilsError(`Push refusé puis pull refusé : prévenir David.\n${pull.sortie}`);
-		}
-		const relus = lireLots(readFileSync(chemin, 'utf8'));
-		const perdus = pris.filter(
-			(p) => !relus.find((l) => l.nom === p.nom)?.prisPar.startsWith(sujet(p.nom))
-		);
-		if (perdus.length > 0) {
-			throw new OutilsError(
-				`Une autre session a écrit en même temps (${perdus.map((l) => l.nom).join(', ')}) : relire ${FICHIER}.`
-			);
-		}
-		const push = essayerGit(principal, ['push']);
-		if (!push.ok) throw new OutilsError(`Push refusé deux fois : prévenir David.\n${push.sortie}`);
+	const blob = git(principal, ['hash-object', '-w', '--stdin'], { entree: formate });
+	const dossier = mkdtempSync(join(tmpdir(), 'outils-index-'));
+	try {
+		const env = { ...process.env, GIT_INDEX_FILE: join(dossier, 'index') };
+		git(principal, ['read-tree', 'origin/main'], { env });
+		git(principal, ['update-index', '--cacheinfo', `100644,${blob},${FICHIER}`], { env });
+		const arbre = git(principal, ['write-tree'], { env });
+		return git(principal, ['commit-tree', arbre, '-p', 'origin/main', '-m', message]);
+	} finally {
+		rmSync(dossier, { recursive: true, force: true });
 	}
-	console.log('Réservation poussée.');
-	return pris;
+}
+
+/**
+ * Choisit et réserve. Rien n'est écrit tant que le push n'a pas réussi : un
+ * échec laisse au plus un objet git orphelin, jamais un fichier modifié ni un
+ * commit local à pousser.
+ */
+function reserverSurMain(principal: string, noms: string[], essai: boolean): Lot[] {
+	for (let essaiDePush = 1; essaiDePush <= ESSAIS_DE_PUSH; essaiDePush++) {
+		recupererMain(principal);
+		const texte = lireOrigine(principal);
+		const { pris, refus } = choisir(lireLots(texte), noms);
+		for (const r of refus) console.log(`- ${r.nom} : ${r.raison}`);
+		if (pris.length === 0) {
+			console.log('Aucun lot à prendre.');
+			return [];
+		}
+		console.log(`Lots pris : ${pris.map((l) => l.nom).join(', ')}`);
+		if (essai) return pris;
+
+		const commit = commitDeReservation(
+			principal,
+			reserver(texte, pris, aujourdhui()),
+			messageDeCommit(pris)
+		);
+		const push = essayerGit(principal, ['push', 'origin', `${commit}:refs/heads/main`]);
+		if (push.ok) {
+			console.log('Réservation poussée sur main.');
+			return pris;
+		}
+		if (!/rejected|fetch first|non-fast-forward/i.test(push.erreur)) {
+			throw new OutilsError(`Push refusé, rien n'est réservé : prévenir David.\n${push.erreur}`);
+		}
+		console.log('main a bougé pendant la réservation : relecture.');
+	}
+	throw new OutilsError(`Push refusé ${ESSAIS_DE_PUSH} fois, rien n'est réservé : prévenir David.`);
 }
 
 function tmux(args: string[]): boolean {
@@ -144,7 +176,7 @@ function ouvrirSession(principal: string, lot: Lot, essai: boolean): boolean {
 	}
 	const ajout = essayerGit(principal, ['worktree', 'add', '-b', branche, worktree, 'origin/main']);
 	if (!ajout.ok) {
-		console.log(`[${lot.nom}] worktree refusé : session non lancée.\n${ajout.sortie}`);
+		console.log(`[${lot.nom}] worktree refusé : session non lancée.\n${ajout.erreur}`);
 		return false;
 	}
 	for (const f of FICHIERS_ENV) {
@@ -162,7 +194,6 @@ function ouvrirSession(principal: string, lot: Lot, essai: boolean): boolean {
 		console.log(`[${lot.nom}] fenêtre tmux refusée ; worktree prêt : ${worktree}`);
 		return false;
 	}
-	tmux(['set-option', '-w', '-t', `${SESSION_TMUX}:${nom}`, 'remain-on-exit', 'on']);
 	console.log(`[${lot.nom}] session ${nom} lancée (tmux ${SESSION_TMUX}:${nom}).`);
 	return true;
 }
@@ -171,16 +202,17 @@ function main(): void {
 	const commande = parseArgs(process.argv.slice(2));
 	const principal = process.env.OUTILS_DEPOT ?? depotPrincipal();
 	if (commande.action === 'liste') {
-		afficherLots(lireLots(readFileSync(join(principal, FICHIER), 'utf8')));
+		recupererMain(principal);
+		afficherLots(lireLots(lireOrigine(principal)));
 		return;
 	}
 	if (commande.action === 'reserver') {
-		reserverDansLePrincipal(principal, [commande.lot], commande.essai);
+		reserverSurMain(principal, [commande.lot], commande.essai);
 		return;
 	}
-	const pris = reserverDansLePrincipal(principal, commande.lots, commande.essai);
+	const pris = reserverSurMain(principal, commande.lots, commande.essai);
 	if (pris.length === 0) return;
-	if (!commande.essai) essayerGit(principal, ['fetch', 'origin', 'main']);
+	if (!commande.essai) recupererMain(principal);
 	const ratees = pris.filter((lot) => !ouvrirSession(principal, lot, commande.essai));
 	if (ratees.length > 0) {
 		console.log(

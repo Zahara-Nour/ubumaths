@@ -53,19 +53,27 @@ describe('lireLots', () => {
 			fichier([
 				'| `a` | 1 | figure |  |  |',
 				'| `b` | 2 | mathAST | outil-b (2026-11-28) |  |',
-				'| `c` | 3 | bloc | fait (#12, 2026-11-29) | attend rien |'
+				'| `c` | 3 | bloc | fait (#12, 2026-11-29) | attend la PR 12 |',
+				'| `d` | 4 | bloc |  | n’attend rien |'
 			])
 		);
 		expect(lots.map((l) => [l.nom, l.etat, l.mathast])).toEqual([
 			['a', 'libre', false],
 			['b', 'en-cours', true],
-			['c', 'fait', false]
+			['c', 'fait', false],
+			['d', 'libre', false]
 		]);
 		expect(lots[2].attend).toBe(true);
+		expect(lots[3].attend).toBe(false);
 	});
 
 	it("ignore l'en-tête et le séparateur", () => {
 		expect(lireLots(LIBRES)).toHaveLength(8);
+	});
+
+	it('une ligne de lot mal formée est une erreur, jamais un lot perdu en silence', () => {
+		expect(() => lireLots(fichier(['| `a` | 1 | x \\| y |  |  |']))).toThrow(/6 cellules/);
+		expect(() => lireLots(fichier(['| `a` | 1 | x | abandonné |  |']))).toThrow(/illisible/);
 	});
 
 	it('un fichier sans lot est une erreur', () => {
@@ -153,7 +161,8 @@ describe('commandeDeSession', () => {
 	it('installe dans le worktree, lance Claude depuis le dépôt principal, chemins cités', () => {
 		expect(commandeDeSession('equerre-uni', "/d/ubu's", '/d/wt')).toBe(
 			"cd '/d/wt' && pnpm install --prefer-offline && cd '/d/ubu'\\''s' && " +
-				"exec claude '/prendre-outil equerre-uni' -n 'outil-equerre-uni' --remote-control 'outil-equerre-uni'"
+				"exec claude '/prendre-outil equerre-uni' -n 'outil-equerre-uni' --remote-control 'outil-equerre-uni'; " +
+				"echo '⛔ lancement de outil-equerre-uni raté'; exec zsh -l"
 		);
 	});
 });

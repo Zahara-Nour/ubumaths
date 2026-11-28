@@ -20,7 +20,7 @@ export interface Lot {
 	notes: string;
 	etat: Etat;
 	mathast: boolean;
-	/** « Notes » dit que le lot attend quelque chose */
+	/** « Notes » commence par « attend » : le lot attend quelque chose */
 	attend: boolean;
 	/** Index de la ligne dans le fichier */
 	ligne: number;
@@ -65,10 +65,15 @@ function cellules(ligne: string): string[] | null {
 		.map((c) => c.trim());
 }
 
-function etatDe(prisPar: string): Etat {
+const PRIS_PAR = /^outil-[a-z0-9-]+ \(\d{4}-\d{2}-\d{2}\)$/;
+
+function etatDe(nom: string, prisPar: string): Etat {
 	if (prisPar === '') return 'libre';
 	if (/^fait\b/i.test(prisPar)) return 'fait';
-	return 'en-cours';
+	if (PRIS_PAR.test(prisPar)) return 'en-cours';
+	throw new OutilsError(
+		`Lot ${nom} : « Pris par » illisible (${prisPar}) ; attendu vide, « outil-<lot> (AAAA-MM-JJ) » ou « fait (#PR, date) ».`
+	);
 }
 
 /** Les lignes du tableau dont la première cellule est un nom de lot entre accents graves. */
@@ -76,9 +81,14 @@ export function lireLots(texte: string): Lot[] {
 	const lots: Lot[] = [];
 	texte.split('\n').forEach((ligne, i) => {
 		const c = cellules(ligne);
-		if (c === null || c.length !== 5) return;
+		if (c === null) return;
 		const nom = /^`([^`]+)`$/.exec(c[0])?.[1];
 		if (nom === undefined || !NOM_DE_LOT.test(nom)) return;
+		if (c.length !== 5) {
+			throw new OutilsError(
+				`Lot ${nom} : ${c.length} cellules au lieu de 5 (un « | » dans une cellule ?).`
+			);
+		}
 		const [, outils, module, prisPar, notes] = c;
 		lots.push({
 			nom,
@@ -86,9 +96,9 @@ export function lireLots(texte: string): Lot[] {
 			module,
 			prisPar,
 			notes,
-			etat: etatDe(prisPar),
+			etat: etatDe(nom, prisPar),
 			mathast: /mathast/i.test(module),
-			attend: /\battend/i.test(notes),
+			attend: /^attend\b/i.test(notes),
 			ligne: i
 		});
 	});
@@ -215,10 +225,12 @@ export function commandeDeSession(lot: string, principal: string, worktree: stri
 		'--remote-control',
 		citer(nom)
 	].join(' ');
-	return [
+	// Un échec avant Claude laisse la fenêtre ouverte sur un shell, l'erreur visible.
+	const etapes = [
 		`cd ${citer(worktree)}`,
 		'pnpm install --prefer-offline',
 		`cd ${citer(principal)}`,
 		`exec ${claude}`
 	].join(' && ');
+	return `${etapes}; echo ${citer(`⛔ lancement de ${nom} raté`)}; exec zsh -l`;
 }
