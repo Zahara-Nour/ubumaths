@@ -195,7 +195,7 @@ describe('preuves des écarts — messagerie, avertissements, carnet (base local
 			expect(chezLui).toBe(1);
 		});
 
-		it.fails('écart L82 : dans une autre classe, aucun avertissement n’est écrit', () => {
+		it('dans une autre classe, aucun avertissement n’est écrit (L82)', () => {
 			expect(ailleurs).toBe(0);
 		});
 	});
@@ -331,7 +331,7 @@ describe('preuves des écarts — messagerie, avertissements, carnet (base local
 			expect(parLeLien).toBe(1);
 		});
 
-		it.fails('écart L79 : ouvrir par le jeton d’un courriel ne compte pas pour le lien', () => {
+		it('ouvrir par le jeton d’un courriel ne compte pas pour le lien (L79)', () => {
 			expect(parLeCourriel).toBe(0);
 		});
 	});

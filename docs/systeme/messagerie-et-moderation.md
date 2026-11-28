@@ -235,7 +235,12 @@ La modération porte sur la table `messages` **du chat**, pas sur `private_messa
   seuls les chemins du site (`/…`, jamais `//…`) sont suivis.
 - Envoi manuel : `src/routes/(protected)/dashboard/teacher/notifications/` et
   `dashboard/admin/notifications/` (form actions, `createNotificationSchema`, limite de débit).
-- Types : `src/lib/types/notification.ts` ; validation `src/lib/server/validation/notifications.ts`.
+- Types : `src/lib/types/notification.ts` (`NotificationType` = les quatre sortes de
+  `notifications_type_check` : `info`, `alert`, `announcement`, `reminder`) ; validation
+  `src/lib/server/validation/notifications.ts`.
+- Ordre des non lues (`getUnreadNotifications`) : urgentes, importantes, normales, puis la plus
+  récente d'abord ; tri en mémoire sur toute la liste avant la pagination (la colonne texte
+  triée en SQL rangeait « important » après « normal », V107).
 
 ### Modèles de messages
 
@@ -440,7 +445,9 @@ La modération porte sur la table `messages` **du chat**, pas sur `private_messa
 - Messages privés : la policy « Teachers can view messages for moderation » laisse le prof lire
   tout message impliquant un élève (`can_moderate_message`) ; l'admin lit tout.
 - Avertissements : seuls prof et admin écrivent (RPC SECURITY DEFINER gardées par
-  `is_class_teacher`, 20 avertissements actifs au plus par élève, classe et période). L'élève
+  `is_class_teacher`, 20 avertissements actifs au plus par élève, classe et période), et
+  seulement pour un élève inscrit dans la classe (adhésion active : fonctions et policy
+  d'insertion, `20261128163026_avertissement_adhesion_active_compteur_lien_parent.sql`, L82). L'élève
   ne lit que les siens, non supprimés (policy « Students can view their own active warnings »).
 
 ### Notifications
@@ -451,8 +458,8 @@ La modération porte sur la table `messages` **du chat**, pas sur `private_messa
   `tests/integration/notifications-systeme-serveur.test.ts`.
 - **Notification d'un compte = à son nom, figée après envoi** (seul `deleted_at` bouge) :
   trigger `guard_notification_authorship_trg` (`20261001220000_securite_points_mineurs.sql`, Q77).
-- **Un prof ne cible que des classes ou des élèves inscrits**, jamais `all` ni `role`
-  (`createNotification`).
+- **Un prof ne cible que des classes ou des élèves inscrits** (adhésion active : un élève qui
+  a quitté toutes les classes est refusé, L83), jamais `all` ni `role` (`createNotification`).
 - **Élève archivé** : ne voit plus les notifications de la classe quittée
   (`20260912200000_archived_members_lose_class_notifications.sql`, test
   `tests/integration/archived-member-class-notifications.test.ts`).

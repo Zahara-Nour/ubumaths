@@ -392,12 +392,14 @@ export const FONCTIONS_DEFINER_VERIFIEES: Record<string, FonctionDefinerVerifiee
 	'add_warning(p_student_id uuid, p_class_id uuid, p_academic_period_id uuid, p_warning_type text)':
 		{
 			categorie: 'prof',
-			justification: 'is_class_teacher(p_class_id) (= is_teacher_or_admin)'
+			justification:
+				'is_class_teacher(p_class_id) (= is_teacher_or_admin), puis élève inscrit (adhésion active) dans la classe (L82)'
 		},
 	'add_warnings_bulk(p_student_id uuid, p_class_id uuid, p_academic_period_id uuid, p_warning_types text[])':
 		{
 			categorie: 'prof',
-			justification: 'is_class_teacher(p_class_id) (= is_teacher_or_admin)'
+			justification:
+				'is_class_teacher(p_class_id) (= is_teacher_or_admin), puis élève inscrit (adhésion active) dans la classe (L82)'
 		},
 	'approve_vip_card(p_student_id uuid, p_instance_id text)': {
 		categorie: 'prof',

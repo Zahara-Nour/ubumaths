@@ -155,7 +155,6 @@ formulaire sans `Origin` de notre site (Q39).
 
 - Les rejets définitifs que Brevo signale **après** l'envoi ne marquent pas l'adresse
   `invalid` (pas de webhook Brevo) ; seuls les échecs immédiats sont journalisés.
-- `access_count` du lien compte aussi les ouvertures par le jeton d'un courriel.
 - Le plafond d'un courriel par semaine vaut par adresse **et par élève** : un parent de deux
   élèves peut recevoir deux courriels le même jour ; un lien et un courriel d'exception peuvent
   partir le même jour (Q33 : les liens ne comptent pas).
