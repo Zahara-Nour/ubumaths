@@ -38,6 +38,14 @@ async function sanitizeMessage(html: string): Promise<string> {
 }
 
 type SupabaseClientType = SupabaseClient<Database>;
+
+/** Rang d'affichage d'une priorité : urgente d'abord, puis importante, puis normale. */
+const PRIORITY_RANK: Record<NotificationPriority, number> = { urgent: 0, important: 1, normal: 2 };
+
+/** Une priorité inconnue passe en dernier, avec les normales. */
+function priorityRank(priority: string): number {
+	return priority in PRIORITY_RANK ? PRIORITY_RANK[priority as NotificationPriority] : 2;
+}
 type NotificationInsert = Database['public']['Tables']['notifications']['Insert'];
 
 /**
@@ -103,10 +111,13 @@ export async function createNotification(
 
 			if (data.target_type === 'users' && data.target_user_ids) {
 				// Mono-teacher: every enrolled student is "ours". Targets just have to be
-				// students enrolled in some class.
+				// students enrolled in some class — d'une adhésion ACTIVE : un élève dont
+				// toutes les adhésions sont archivées a quitté les classes du professeur
+				// (écart L83).
 				const { data: teacherStudents, error: teacherStudentsError } = await supabase
 					.from('class_members')
-					.select('student_id');
+					.select('student_id')
+					.eq('status', 'active');
 
 				// Même contrôle, même piège : la liste vide accusait le professeur de
 				// cibler des élèves qui ne sont pas les siens.
@@ -333,7 +344,6 @@ export async function getUnreadNotifications(
 			// heure de Node en avance cachait une notification pas encore expirée.
 			.gt('expires_at', 'now')
 			.or(conditions.join(','))
-			.order('priority', { ascending: false })
 			.order('created_at', { ascending: false });
 
 		if (error) {
@@ -368,8 +378,14 @@ export async function getUnreadNotifications(
 
 		const readSet = new Set(reads?.map((r) => r.notification_id) || []);
 
-		// Step 3: Filter to unread only (in-memory)
-		const allUnreadNotifications = allNotifications.filter((n) => !readSet.has(n.id));
+		// Step 3: Filter to unread only (in-memory), puis tri par priorité.
+		// Le tri se fait ici et non en SQL : `order('priority')` rangeait la colonne
+		// texte par ordre alphabétique (urgent > normal > important), si bien qu'une
+		// notification « importante » passait après les « normales » (écart V107).
+		// `sort` est stable : à priorité égale, l'ordre par date de la requête reste.
+		const allUnreadNotifications = allNotifications
+			.filter((n) => !readSet.has(n.id))
+			.sort((a, b) => priorityRank(a.priority) - priorityRank(b.priority));
 
 		// Step 4: Calculate pagination metadata
 		const total = allUnreadNotifications.length;
