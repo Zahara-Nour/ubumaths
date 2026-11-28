@@ -1,0 +1,104 @@
+{
+	"id": "17a884aa-e3cd-4770-a62d-36f5fbf5d6cd",
+	"title": "Relecture — revue de forme, modèles publiés de nombres de 2de (16 modèles)",
+	"grade": "2",
+	"description": "Relecture dans /dev/modeles des 16 modèles publiés de longue date revus par le chantier idees-format (#3319) : zooms, labyrinthe, case « impossible », correctifs de puissances.",
+	"items": [
+		{
+			"modele": "Puissance d'un produit",
+			"templateId": "04b1cc7f-8630-4ff2-981c-95c2f57d1161",
+			"quantity": 1,
+			"delay": 60
+		},
+		{
+			"modele": "Représenter un intervalle sur la droite graduée",
+			"templateId": "2069ac7e-ce15-41f3-9b8d-b0ff52fdcb68",
+			"quantity": 1,
+			"delay": 60
+		},
+		{
+			"modele": "Calculer le tout connaissant une partie",
+			"templateId": "39b4823d-0241-408b-b04e-1fb6620b1951",
+			"quantity": 1,
+			"delay": 60
+		},
+		{
+			"modele": "Placer un réel sur une droite graduée",
+			"templateId": "3b0a04c0-1af8-4040-9537-0aef99b31dd0",
+			"quantity": 1,
+			"delay": 60
+		},
+		{
+			"modele": "À quels ensembles de nombres appartient ce nombre ?",
+			"templateId": "5b20321f-e86a-4a13-b478-1cf4f441e920",
+			"quantity": 1,
+			"delay": 60
+		},
+		{
+			"modele": "Écrire sous la forme d'une seule puissance",
+			"templateId": "634b55b8-c626-4689-96e0-4fce37a14218",
+			"quantity": 1,
+			"delay": 60
+		},
+		{
+			"modele": "Puissance d'un quotient",
+			"templateId": "73514cdb-b018-4aa9-b379-586fa8cd1d74",
+			"quantity": 1,
+			"delay": 60
+		},
+		{
+			"modele": "Encadrement d'amplitude donnée",
+			"templateId": "7d411132-aecc-4788-bb06-9c9d27012e1f",
+			"quantity": 1,
+			"delay": 60
+		},
+		{
+			"modele": "Comparer deux nombres par leur différence",
+			"templateId": "9660771f-b3e2-47ad-8f11-9afc4a0f3927",
+			"quantity": 1,
+			"delay": 60
+		},
+		{
+			"modele": "Lire l'abscisse d'un point",
+			"templateId": "a692569a-ec38-413b-a774-4991d8c88b94",
+			"quantity": 1,
+			"delay": 60
+		},
+		{
+			"modele": "Inégalités et intervalles",
+			"templateId": "b720edd7-fe00-4ff7-a26a-f23b4dbd72ec",
+			"quantity": 1,
+			"delay": 60
+		},
+		{
+			"modele": "Le plus petit ensemble de nombres",
+			"templateId": "bfcbf381-d454-41f3-9097-939f72c0df16",
+			"quantity": 1,
+			"delay": 60
+		},
+		{
+			"modele": "Encadrement décimal à 10⁻ⁿ près",
+			"templateId": "c99ae1e8-25bd-4cf4-b2ed-dbcf2b3c672d",
+			"quantity": 1,
+			"delay": 60
+		},
+		{
+			"modele": "Calculer la valeur d'une valeur absolue",
+			"templateId": "d03e49c0-ba65-4e1b-80ef-c595bba65d10",
+			"quantity": 1,
+			"delay": 60
+		},
+		{
+			"modele": "Pair ou impair : écrire 2k ou 2k + 1",
+			"templateId": "d264f7aa-1867-43cc-93e1-f66912786117",
+			"quantity": 1,
+			"delay": 60
+		},
+		{
+			"modele": "Multiple : a = k × b",
+			"templateId": "fa65910d-147f-447f-b846-8e7348e58ed0",
+			"quantity": 1,
+			"delay": 60
+		}
+	]
+}
