@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-28, avant la PR (tout commité sur la branche, rien poussé)._
+_Mis à jour le 2026-11-28, après #3321. Chantier clos, journal archivé._
 
-- **État** : PR #3321 ouverte ; ajout « les espaces se voient » (demande de David) commité dessus.
-- **Prochaine action** : CI verte → merge à la main (`gh pr merge 3321 --merge`, PAS `pr:merger` tant que le serveur d'essai 8446 tourne sur ce worktree) ; puis archiver ce journal.
-- **En attente de David** : son essai sur https://serveur.tail99357e.ts.net:8446/atelier (serveur 5179 de ce worktree). Lien 8445 (port 5178, worktree `ubumaths-wt-fonctions-domaines-essai`, sur main) à arrêter (`pnpm lien --stop` + kill du port) et worktree à retirer quand David a fini.
+- **État** : « pour » en mot et espaces visibles dans la carte d'une fonction, mergés (#3321), essayés par David (« ça marche ») ; pas encore en prod.
+- **Prochaine action** : aucune ; doc durable dans `docs/systeme/atelier.md`.
+- **En attente de David** : rien.
 - **Pièges en cours** : `pnpm test:client` sur ~90 fichiers d'un coup en perd au chargement (`wrapDynamicImport`) → lots de 10.
-- **Worktree / branche** : `ubumaths-wt-carte-pour-mot` / `feat/carte-pour-mot`.
+- **Worktree / branche** : aucun ; serveurs d'essai 8445 et 8446 arrêtés.
 
 ## Demande
 
