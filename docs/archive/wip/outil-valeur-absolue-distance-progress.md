@@ -1,20 +1,17 @@
 ---
 title: Lot d'outils valeur-absolue-distance (n° 79)
 date: 2026-11-28
-status: n° 79 codé, PR à ouvrir
+status: clos (#3331, 2026-11-28)
 ---
 
 # Lot `valeur-absolue-distance`
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-28, avant la première PR._
+_Mis à jour le 2026-11-28, après #3331._
 
-- **État** : n° 79 codé (équivalence `normalize.ts` + écriture `checkForm`), tests verts ; PR à ouvrir.
-- **Prochaine action** : ouvrir la PR puis `pnpm pr:merger` (revue faite, fraction entre barres corrigée, suites vertes).
-- **En attente de David** : rien (phase 0 tranchée : « je te suis »).
-- **Pièges en cours** : lot mathAST (un seul à la fois) ; rendu des primitives en `ln|…|` changé (orienté).
-- **Worktree / branche** : `../ubumaths-wt-outil-valeur-absolue-distance` · `feat/outil-valeur-absolue-distance`.
+- **État** : lot clos, n° 79 livré (#3331). Journal archivé.
+- **Prochaine action** : aucune. **En attente de David** : rien.
 
 ## Outil n° 79 : |a − b| = |b − a| dans l'équivalence
 
