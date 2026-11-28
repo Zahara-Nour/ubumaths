@@ -576,11 +576,14 @@
 							height={sy(0) - sy(bar.value)}
 							class:stat-barre-hachuree={bar.series === 1}
 							class:stat-rectangle-hors={bar.highlighted === false}
+							class:stat-barre-solution={bar.solved}
 							style:fill={bar.series === 1
 								? `url(#${hatchId})`
-								: bar.highlighted === false
-									? 'var(--color-muted-foreground)'
-									: COLOR_VAR[bars.color]}
+								: bar.solved
+									? COLOR_VAR.vert
+									: bar.highlighted === false
+										? 'var(--color-muted-foreground)'
+										: COLOR_VAR[bars.color]}
 							style:stroke={bar.series === 1 && bars.secondColor
 								? COLOR_VAR[bars.secondColor]
 								: undefined}

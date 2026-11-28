@@ -1020,6 +1020,13 @@ Danse = 7            ```                                     ```
   `scaleMistake` (« Avec 2 par graduation, la barre Alphaville (42) ne rentre pas. », « … rentre, mais
   avec 5 il serait plus grand et plus lisible. ») ; diagramme juste à cette échelle (`solvedSpec`).
   PDF : axe muet et une ligne « Une graduation vaut : ____ » où l'enfant écrit l'échelle.
+  **Corrigé dessiné** (`solution: oui`, V109, décision de David du 2026-11-28) —
+  `barres-solution.test.ts`, `HorlogeBarresSolution.svelte.test.ts` : avec `placer:` (refusé sans, ou
+  avec `case:`), les barres à construire sont dessinées en vert (nœud : `spec.solvedBars`, leurs rangs ;
+  `spec.toPlace` null : `findBarsToPlace` saute le bloc, aucune case). Échelle à choisir : l'axe juste
+  (`adaptedScale`), plus de ligne « Une graduation vaut ». Scène : barres `solved` ; écran `StatChart`
+  (classe `stat-barre-solution`) et PDF (`// barre solution`) en vert. Seul écrivain : le corrigé d'une
+  série d'automatismes.
 - ` ```boite-a-moustaches ` (chantier [boite-a-moustaches](../archive/wip/boite-a-moustaches-progress.md),
   palier 1 : affichage, pour 3-062 et la 2de) — `src/lib/ubumark/__tests__/stat-chart/boite-a-moustaches.test.ts`,
   `StatChart-boite-a-moustaches.svelte.test.ts` : une ligne par boîte `Nautic = 28 ; 30 ; 37 ; 45 ; 58`
@@ -1157,6 +1164,12 @@ l'enfant les dessine. **Trotteuse** (CM2-083, chantier [cercle-trotteuse](../arc
 petite, trotteuse ; ◀ ▶ d'une seconde) ; réponse `'47 25 40'`, attendue `'9 h 25 min 40 s'` (`timeText`), la
 trotteuse jugée à la seconde exacte ; phrases en plus : trotteuse pas posée, grande aiguille et trotteuse
 inversées. Masquée : `placer: ? s` (`maskedPlacerValue`), pour que la trotteuse reste à poser.
+**Corrigé dessiné** (`solution: oui`, V109, décision de David du 2026-11-28) — `horloge-solution.test.ts`,
+`HorlogeBarresSolution.svelte.test.ts` : avec `placer:` (refusé sans, ou avec `case:`), le cadran montre
+l'heure attendue, ses aiguilles (trotteuse comprise) en vert, à la taille de l'horloge à placer ; ce
+n'est plus un geste (`findHorlogesToPlace` saute le bloc). Écran `Horloge.svelte` (classe
+`horloge-solution`, pas `HorlogePlacer`), PDF `horloge-typst.ts` (`// solution`). Seul écrivain : le
+corrigé d'une série d'automatismes.
 
 **Programme tortue** (chantier [blockly](../archive/wip/blockly-progress.md), PR 4) —
 `src/lib/ubumark/__tests__/tortue/tortue-parser.test.ts` :

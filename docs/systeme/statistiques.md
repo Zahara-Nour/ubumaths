@@ -11,7 +11,7 @@ couvre:
 
 # Statistiques et probabilités (`src/lib/statistics/`)
 
-> Vérifié contre le code le 2026-10-10 ; espaces de groupement le 2026-10-23 ; barres à construire le 2026-10-28 ; échelle à choisir le 2026-10-29 ; boîte à moustaches le 2026-11-01, à construire le 2026-11-01. Usage dans l'atelier : [atelier.md](atelier.md)
+> Vérifié contre le code le 2026-10-10 ; espaces de groupement le 2026-10-23 ; barres à construire le 2026-10-28 ; échelle à choisir le 2026-10-29 ; boîte à moustaches le 2026-11-01, à construire le 2026-11-01 ; barres dessinées au corrigé (`solution: oui`) le 2026-11-28. Usage dans l'atelier : [atelier.md](atelier.md)
 > (§ « Liens avec `mathAST` et `statistics` ») ; syntaxe des blocs statistiques :
 > [ubumark.md](ubumark.md) (genres de `stat-chart`). Cette doc ne décrit que le **calcul**.
 
@@ -232,6 +232,9 @@ continue après 1000) rend `beyond: true` au lieu d'annoncer un faux « plus gra
   invariant 12). Une boîte à moustaches à construire (` ```boite-a-moustaches ` + `placer:`) de même :
   cinq cases par boîte, valeurs lues par `parseStatChartContent`, `findBoxPlotsToPlace`, énoncé
   masqué `Notes = ? ; ? ; ? ; ? ; ?`.
+  Corrigé imprimé d'une série d'automatismes (V109) : le même bloc avec `solution: oui`, barres à
+  construire dessinées en vert (`spec.solvedBars`, plus de `toPlace` : `findBarsToPlace` le saute),
+  échelle à choisir remplacée par la juste (`adaptedScale`) — [ubumark.md](ubumark.md).
 
 ## Invariants
 

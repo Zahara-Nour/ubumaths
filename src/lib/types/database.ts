@@ -16702,6 +16702,37 @@ export type Database = {
 					isSetofReturn: false;
 				};
 			};
+			save_worksheet_classification: {
+				Args: { p_fields: Json; p_notions?: string[]; p_worksheet_id: string };
+				Returns: {
+					archived_at: string | null;
+					category: string | null;
+					config: Json | null;
+					created_at: string;
+					created_by: string;
+					custom_title: boolean;
+					description: string | null;
+					estimated_duration_minutes: number | null;
+					grades: string[] | null;
+					id: string;
+					published_at: string | null;
+					school_id: string | null;
+					status: string;
+					style_id: string | null;
+					title: string;
+					total_points: number | null;
+					translations: Json | null;
+					type: string;
+					updated_at: string;
+					version: number | null;
+				}[];
+				SetofOptions: {
+					from: '*';
+					to: 'worksheets';
+					isOneToOne: false;
+					isSetofReturn: true;
+				};
+			};
 			search_private_messages: {
 				Args: {
 					p_date_from?: string;
