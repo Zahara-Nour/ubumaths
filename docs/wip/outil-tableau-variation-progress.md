@@ -1,21 +1,20 @@
 ---
 title: Chantier outil-tableau-variation — outils 63 puis 59
 date: 2026-11-28
-status: outil 63 en PR
+status: outil 63 livré (#3286), outil 59 à faire
 ---
 
 # Chantier `outil-tableau-variation`
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-28, revue du 63 appliquée, PR en cours d'ouverture._
+_Mis à jour le 2026-11-28, après #3286._
 
-- **État** : outil 63 codé, revue appliquée, PR ouverte sur `feat/outil-tableau-variation` ·
-  **Prochaine action** : merge de la PR du 63 (`pnpm pr:merger`), puis outil 59 (phase 0) ·
-  **En attente de David** : rien · **Pièges en cours** : le défaut ne se voit que si `blanks[]`
-  liste aussi les cellules du tableau ET que les signes portent des variables (`?{{if:…}}` ; un
-  domaine `{{al}}` seul se lit) ; `work-figure-editor.ts:36` même décalage possible (non vérifié) ·
-  **Worktree / branche** : `../ubumaths-wt-outil-tableau-variation`, `feat/outil-tableau-variation`
+- **État** : outil 63 livré (#3286 mergée, pas encore en prod) ; outil 59 pas commencé ·
+  **Prochaine action** : outil 59, phase 0 (comportements en français, attendre le go de David),
+  dans un nouveau worktree `../ubumaths-wt-outil-tableau-variation-59` · **En attente de David** :
+  rien · **Pièges en cours** : `work-figure-editor.ts:36` même décalage possible qu'au 63 (non
+  vérifié) · **Worktree / branche** : aucun (celui du 63 retiré)
 
 Lot pris par `pnpm outils lancer` le 2026-11-28 ([outils-lots.md](outils-lots.md)) : 63, puis 59.
 
