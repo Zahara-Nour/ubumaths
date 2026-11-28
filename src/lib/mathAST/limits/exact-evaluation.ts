@@ -11,8 +11,9 @@
 import type { MathNode } from '../types';
 import type { ExtendedNormalizeResult, NormalForm } from '../normal/types';
 import type { LimitDirection } from './types';
-import { normalize, normalizeExtended, isConstantPolynomial, rationalToNumber } from '../normal';
-import { denormalize, denormalizeExtended } from '../normal/denormalize';
+import { normalizeExtended, isConstantPolynomial, rationalToNumber } from '../normal';
+import { denormalizeExtended } from '../normal/denormalize';
+import { canonicalForm } from '../normal/canonical-form';
 import { getVariables, substitute } from '../eval/substitute';
 import { zeroPlus, zeroMinus, number, euler, power } from '../factory';
 import { findNodes, mapNode } from '../transforms';
@@ -435,7 +436,7 @@ export function writeLimitValue(value: MathNode): MathNode {
 /**
  * V125 : une valeur à paramètre dont les lettres se simplifient est un
  * nombre — `(x + k)/(x² + k)` en 0 donne k/k, écrit 1. `normalizeExtended`
- * (substitution au point) ne simplifie pas les facteurs communs ; `normalize`
+ * (substitution au point) ne simplifie pas les facteurs communs ; `canonicalForm`
  * le fait. Seul le cas où plus aucune lettre ne reste est repris : `1/k`,
  * `ln k` gardent leur écriture. La condition sur la lettre (k ≠ 0) reste
  * celle de l'énoncé (`parametric.ts`), pas celle de la valeur simplifiée.
@@ -443,7 +444,7 @@ export function writeLimitValue(value: MathNode): MathNode {
 function withCancelledLetters(value: MathNode): MathNode {
 	if (getVariables(value).size === 0) return value;
 	try {
-		const simplified = denormalize(normalize(value));
+		const simplified = canonicalForm(value);
 		return getVariables(simplified).size === 0 ? simplified : value;
 	} catch {
 		return value;

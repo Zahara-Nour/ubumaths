@@ -11,7 +11,7 @@ status: en cours
 _Mis à jour le 2026-11-28, avant l'ouverture de la PR._
 
 - **État** : corrigés sur la branche : V125, L28 bis, L74, L75, L76, L77, L118, L119, L121 ; L117 en partie (π déjà un kπ) ; V138 reformulé (l'Atelier refuse déjà, `intersect` perd le point).
-- **Prochaine action** : revue `code-reviewer` (Opus), PR, merge.
+- **Prochaine action** : revue faite ; PR, CI, merge.
 - **En attente de David** : type de domaine à plusieurs familles et points (reste de L117 et V138).
 - **Pièges en cours** : sondes par `runInput`, jamais `pnpm math` ; preuves par `ECARTS_PREUVES=1 pnpm exec vitest run --project ecarts …`.
 - **Worktree / branche** : `../ubumaths-wt-ecarts-mathast-limites` · `fix/ecarts-mathast-limites`.
@@ -43,3 +43,10 @@ Lot pris. Preuves déjà écrites par #3230 pour L117 à L121 et V125 ; L75, L77
   x²/e^{√x}) ; `identite-dans-intervalle` : 2tan x / 2tan x = 1 rend S = ℝ ∖ {kπ/2}, juste.
 - Suites `src/lib/mathAST`, `src/lib/atelier`, `src/lib/grapheur` : 34 044 tests verts ;
   `check:incremental` 0 erreur ; preuves du lot : 3 rouges attendues (L117 × 2, V138).
+
+### 2026-11-28 — revue (code-reviewer, Opus)
+
+Aucune valeur fausse (≈ 180 sondes, branche contre `main`). Bloquant corrigé : `canonicalForm`
+au lieu de `denormalize(normalize(…))` (lint). Laissés, voulus : condition « k ≠ 0 » non redite
+quand l'expression tapée n'existe pas pour k = 0 (`k(x+1)/k` en 0 → 1, `x/k` en 0⁺ → 0 : règle
+écrite de `limitParameterCondition`) ; `k²/k` non simplifié en k (une lettre reste).
