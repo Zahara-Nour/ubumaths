@@ -1,16 +1,16 @@
 ---
 title: Chantier ecarts-morts-interface
 date: 2026-11-28
-status: en cours (M48 restant)
+status: clos (#3260, #3268 ; M48 passé au lot interface-prof)
 ---
 
 # Chantier `ecarts-morts-interface`
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-28, après #3268._
+_Mis à jour le 2026-11-28, chantier clos._
 
-- **État** : M32, M33, M34, M47, M49, M52 (#3260) et M58 (#3268) mergés ; la tâche de nuit barrera leurs lignes · **Prochaine action** : M48 seulement quand V118 est tranché ; sinon rien · **En attente** : M48 attend V118 (lot `interface-prof`) : brancher ou retirer `isTrivialHtmlWrapper` · **Pièges en cours** : la règle CSS `.exercise-content` de `app.css` n'est PAS morte (texte des exercices en Inter) ; un module de `src/lib` importé nu doit être dans `scripts/side-effect-modules.ts` · **Worktree / branche** : aucun (retirés par `pr:merger`)
+- **État** : clos. M32, M33, M34, M47, M49, M52 (#3260) et M58 (#3268) faits · **M48** passé au lot `interface-prof` (décision de David, 2026-11-28) : `isTrivialHtmlWrapper` sera branchée par le correctif de V118, pas retirée · **Worktree / branche** : aucun
 
 ## Lot
 
