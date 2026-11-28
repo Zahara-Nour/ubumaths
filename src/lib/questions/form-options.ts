@@ -24,9 +24,23 @@ export function acceptableOf(requiredForm: RequiredForm | undefined): string {
 	return requiredForm && typeof requiredForm === 'object' ? (requiredForm.acceptable ?? '') : '';
 }
 
-/** Forme exigée par motif, avec son motif `acceptable` s'il est renseigné */
-export function customRequiredForm(pattern: string, acceptable: string): RequiredForm {
-	return acceptable.trim()
-		? { pattern: pattern.trim(), acceptable: acceptable.trim() }
-		: { pattern: pattern.trim() };
+export const FORM_MESSAGE_PLACEHOLDER =
+	'Message si la forme n’est pas respectée (ex: le reste doit être plus petit que {{b}}) — facultatif';
+
+/** Message de forme écrit par l'auteur ('' s'il n'y en a pas, outils-manquants n° 75) */
+export function messageOf(requiredForm: RequiredForm | undefined): string {
+	return requiredForm && typeof requiredForm === 'object' ? (requiredForm.message ?? '') : '';
+}
+
+/** Forme exigée par motif, avec son motif `acceptable` et son message s'ils sont renseignés */
+export function customRequiredForm(
+	pattern: string,
+	acceptable: string,
+	message = ''
+): RequiredForm {
+	return {
+		pattern: pattern.trim(),
+		...(acceptable.trim() && { acceptable: acceptable.trim() }),
+		...(message.trim() && { message: message.trim() })
+	};
 }

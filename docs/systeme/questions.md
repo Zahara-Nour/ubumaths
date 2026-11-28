@@ -1479,8 +1479,14 @@ cercle(O, passant=A)` (palette : le compas ; papier uni ou quadrillage, O et A s
    nombre devant, ou mets un signe × entre les deux. »), en ordre fixé (`validateSingleBlank`)
    comme en ordre libre ; le verdict reste faux (écart E76).
 4. **`requiredForm`** : `product`, `sum`, `additionOnly`, `fraction`, `power`, formes d'équation,
-   formes complexes (`exponentielle`, `algebrique`), ou motif `{ pattern, acceptable? }`
+   formes complexes (`exponentielle`, `algebrique`), ou motif `{ pattern, acceptable?, message? }`
    (motifs `mathAST/pattern`). Violée → `bad_form` ; forme `acceptable` → `unoptimal_form`.
+   `message` (outils-manquants n° 75, motif seulement, 500 caractères au plus) : la phrase que
+   l'élève lit quand le motif n'est pas respecté, à la place de « La réponse ne respecte pas la forme
+   demandée. » (`getRequiredFormFeedback`) ; la forme `acceptable` garde sa phrase. Résolu au tirage
+   comme le message d'une erreur prévue (variables, `{{solution}}`, source de hasard à part : aucun
+   tirage ne bouge). Éditeur : champ « Message si la forme n'est pas respectée » sous le motif
+   (`messageOf`, `customRequiredForm` de `form-options.ts`).
    Exemple, « un seul quotient simplifié » : `{ pattern: '($n+2)/v', acceptable: 'u/v' }`, le
    quotient juste dont le numérateur n'est pas `n+2` (`4^n(n+2)/(4^{n+1}(n+1))`) vaut ½ point
    (écart E77, modèle `cdb5a1cf`).
@@ -1598,9 +1604,15 @@ Erreurs prévues (chantier `idees-format`, idée 3, `expected-errors.ts`) : une 
 réponse **fausse** a la même valeur qu'une erreur prévue (même juge de valeur que la correction,
 `isBlankValueCorrect`, sans forme exigée ni règles : `8/6` déclenche `4/3`) lit son message en tête
 des remarques de la case, à la place de la phrase du type deviné ; les autres remarques (unité,
-arrondi) suivent. La note ne change pas ; une mauvaise forme ou une réponse juste n'est jamais une
-erreur prévue (celle qui tombe sur la bonne réponse d'un tirage est donc ignorée) ; deux erreurs de
-même valeur : la première écrite. Le générateur résout réponses et messages (variables,
+arrondi) suivent. La note ne change pas ; une réponse juste n'est jamais une erreur prévue (celle
+qui tombe sur la bonne réponse d'un tirage est donc ignorée) ; deux erreurs de même valeur : la
+première écrite. **Mauvaise forme d'une case à forme exigée** (n° 75, 2026-11-28) : l'erreur prévue
+de même valeur que la bonne réponse se lit quand l'élève l'a écrite telle quelle (même arbre,
+`nodesEqual` : `7/5` et `\frac{7}{5}`, pas `14/10`, sinon toute mauvaise forme la déclencherait) ;
+son message remplace celui de la forme (virgule décimale nue relue : `1,4` = `1{,}4`), et elle compte
+dans les « Types d'erreur » du prof (`answerErrorKinds`). Formes nommées comprises (`fraction` :
+l'erreur prévue `1,4`). Sans forme exigée, une mauvaise forme n'est jamais une
+erreur prévue. Le générateur résout réponses et messages (variables,
 `{{solution}}`) sur une **source de hasard à part** (graine mélangée) : aucun tirage de l'instance
 ne bouge. Une erreur prévue qui ne se calcule pas sur un tirage (`1/(a-5)` pour `a = 5`) fait
 échouer ce tirage : le rejeu le voit, l'auteur pose une condition. Case autre qu'une écriture mathématique ordinaire (choix, geste, figure, case signe / marque / flèche
@@ -1608,7 +1620,7 @@ d'un tableau, `rulesSuffice`, `orderIndependent`) : génération refusée, messa
 d'un tableau à compléter (valeur, limite ; chantier `variation-limite-infinie`) : erreurs prévues
 résolues comme pour une case de calcul, un infini écrit en LaTeX par `infinityToken`. Le rejeu de
 `checkTemplate` répond chaque erreur prévue de chaque tirage et refuse le modèle si elle n'est pas
-jugée fausse avec son message ; une spec peut nommer le message attendu
+jugée fausse (ou de mauvaise forme, case à forme exigée) avec son message ; une spec peut nommer le message attendu
 (`expected.expectedErrorMessage`). La question publique d'une évaluation notée ne les porte pas
 (liste blanche de `public-question.ts`). Côté prof, l'erreur prévue compte sous son nom dans la
 ligne « Types d'erreur » des erreurs d'une question ([evaluations.md](evaluations.md)).

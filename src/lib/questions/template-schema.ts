@@ -40,6 +40,16 @@ import { RESOLUTION_MAX_LINES } from './resolution/resolution-lines';
 
 export const constraintModeSchema = z.enum(['strict', 'warn', 'off']);
 
+/** Longueur maximale du message de forme écrit par l'auteur (outils-manquants n° 75) */
+const REQUIRED_FORM_MESSAGE_MAX = 500;
+
+/** Message de forme : non vide, borné */
+const requiredFormMessageSchema = z
+	.string()
+	.trim()
+	.min(1, 'Message de forme vide')
+	.max(REQUIRED_FORM_MESSAGE_MAX);
+
 export const requiredFormSchema = z.union([
 	z.enum([
 		'product',
@@ -50,7 +60,11 @@ export const requiredFormSchema = z.union([
 		...EQUATION_FORMS,
 		...COMPLEX_FORMS
 	]),
-	z.object({ pattern: z.string(), acceptable: z.string().optional() })
+	z.object({
+		pattern: z.string(),
+		acceptable: z.string().optional(),
+		message: requiredFormMessageSchema.optional()
+	})
 ]);
 
 export const unitSchema = z.object({ expected: z.boolean(), required: z.string().optional() });
@@ -445,7 +459,13 @@ const requiredFormStrictZ = z.union([
 		...EQUATION_FORMS,
 		...COMPLEX_FORMS
 	]),
-	z.object({ pattern: z.string(), acceptable: z.string().optional() }).strict()
+	z
+		.object({
+			pattern: z.string(),
+			acceptable: z.string().optional(),
+			message: requiredFormMessageSchema.optional()
+		})
+		.strict()
 ]);
 
 const unitStrictZ = unitSchema.strict();

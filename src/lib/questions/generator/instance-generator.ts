@@ -484,9 +484,27 @@ function resolveRequiredForm(
 			}).trim();
 			return /^\d+(?:\.\d+)?$/.test(value) ? value : `(${value})`;
 		});
-	return requiredForm.acceptable === undefined
-		? { pattern: resolve(requiredForm.pattern) }
-		: { pattern: resolve(requiredForm.pattern), acceptable: resolve(requiredForm.acceptable) };
+	// Le message de l'auteur (n° 75) est résolu plus tard, comme celui d'une erreur prévue
+	return {
+		pattern: resolve(requiredForm.pattern),
+		...(requiredForm.acceptable !== undefined && {
+			acceptable: resolve(requiredForm.acceptable)
+		}),
+		...(requiredForm.message !== undefined && { message: requiredForm.message })
+	};
+}
+
+/** La forme sans son message (n° 75) */
+function withoutFormMessage(requiredForm: RequiredForm | undefined): RequiredForm | undefined {
+	if (typeof requiredForm !== 'object' || requiredForm.message === undefined) return requiredForm;
+	const { message: _message, ...rest } = requiredForm;
+	void _message;
+	return rest;
+}
+
+/** Message de forme écrit par l'auteur (n° 75) : présent seulement sur un motif */
+function hasFormMessage(requiredForm: RequiredForm | undefined): boolean {
+	return typeof requiredForm === 'object' && requiredForm.message !== undefined;
 }
 
 /**
@@ -1943,25 +1961,35 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 			}
 		}
 
-		// 7 bis. Messages des erreurs prévues, résolus comme le corrigé (variables,
-		// `{{solution}}`), sur leur propre source de hasard
-		if (resolvedBlanks?.some((blank) => blank.expectedErrors)) {
+		// 7 bis. Messages des erreurs prévues et de la forme exigée (n° 75), résolus
+		// comme le corrigé (variables, `{{solution}}`), sur leur propre source de hasard
+		if (
+			resolvedBlanks?.some((blank) => blank.expectedErrors || hasFormMessage(blank.requiredForm))
+		) {
 			const errorContext = buildCorrectionContext(resolvedBlanks, resolvedVariables);
+			const resolveMessage = (message: string) =>
+				String(
+					resolveCorrectionContent(
+						templateMarkdown(message),
+						resolvedVariables,
+						errorContext,
+						errorRandom,
+						genericFunctions,
+						cleanCoefficients,
+						capitalPairs
+					)
+				).trim();
 			for (const blank of resolvedBlanks) {
-				blank.expectedErrors = blank.expectedErrors?.map((error) => ({
-					...error,
-					message: String(
-						resolveCorrectionContent(
-							templateMarkdown(error.message),
-							resolvedVariables,
-							errorContext,
-							errorRandom,
-							genericFunctions,
-							cleanCoefficients,
-							capitalPairs
-						)
-					).trim()
-				}));
+				if (blank.expectedErrors) {
+					blank.expectedErrors = blank.expectedErrors.map((error) => ({
+						...error,
+						message: resolveMessage(error.message)
+					}));
+				}
+				const form = blank.requiredForm;
+				if (typeof form === 'object' && form.message !== undefined) {
+					blank.requiredForm = { ...form, message: resolveMessage(form.message) };
+				}
 			}
 		}
 
@@ -2001,7 +2029,11 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 			...(hint !== undefined && { hint }),
 			blanks: resolvedBlanks,
 			expressions: expressionsArray,
-			requiredForm: resolveRequiredForm(resolvedVariation.requiredForm, resolvedVariables, random),
+			// Forme de la variation (lue par le moteur de correction pour sa structure seule) :
+			// sans le message, qui n'est résolu que sur les cases (étape 7 bis)
+			requiredForm: withoutFormMessage(
+				resolveRequiredForm(resolvedVariation.requiredForm, resolvedVariables, random)
+			),
 			generatedAt: new Date().toISOString(),
 			seed,
 			selectedVariationIndex: variationIndex

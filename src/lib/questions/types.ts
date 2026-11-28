@@ -1309,6 +1309,11 @@ export type RequiredForm =
 			pattern: string;
 			/** Forme juste mais pas celle demandée : perfectible (`(z-7)(z-7)` pour un carré) */
 			acceptable?: string;
+			/**
+			 * Message de l'auteur quand le motif n'est pas respecté (outils-manquants n° 75),
+			 * à la place de la phrase générale ; variables résolues au tirage
+			 */
+			message?: string;
 	  };
 
 /** Réponse d'angle « à … près » (cf. `TemplateBlank.angleModulo`) */
