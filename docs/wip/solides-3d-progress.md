@@ -772,3 +772,59 @@ Outil n° 72 d'`outils-manquants.md`, fait par la session `outils` dans son prop
 `angles-droits: DHF` (polyèdres, ni `section:` ni `tracer:`, rotation et PDF compris). Reprend
 `hiddenStretches` comme les droites. Piège : en cavalière, la diagonale [AG] d'un cube se dessine sur
 l'arête [FG].
+
+## 23. Lot 7e — point d'intersection : comportements (validés par David le 2026-11-28)
+
+Exemple suivi : cube ABCDEFGH, I milieu de [AE], `points: I milieu AE, K intersection (IG) (BDE)`.
+
+### Nominal
+
+84. **Droite et plan.** `K intersection (IG) (BDE)` : K est marqué d'un point et nommé, là où la droite
+    perce le plan.
+85. **Deux droites.** `K intersection (AG) (BH)` : K est le point où elles se croisent.
+86. K sert ensuite comme un autre point : milieu, vecteur, droite, plan.
+87. La droite et le plan n'ont pas besoin d'être dessinés.
+88. Avec `tourner: oui`, K et son nom suivent la rotation ; sur la fiche PDF, c'est la vue de départ.
+
+### Limites
+
+89. Rien n'est dessiné sans que l'auteur le demande (le comportement 76 reste vrai).
+90. K qui tombe sur un sommet est accepté, deux noms au même endroit.
+91. K compte dans les 8 points au plus ; les points qu'il utilise sont déclarés avant lui.
+92. Lecteur d'écran : « point K intersection de la droite (IG) et du plan (BDE) ».
+93. Une figure sans `intersection` reste strictement celle d'aujourd'hui.
+
+### Erreurs (message pour l'auteur, jamais de figure fausse)
+
+94. Droite parallèle au plan, ou contenue dans le plan.
+95. Deux droites parallèles, confondues, ou non coplanaires.
+96. Point inconnu, trois points alignés pour le plan, nom déjà pris.
+97. K hors de la figure : même règle que pour un point à coordonnées.
+98. `intersection` sur un cylindre, un cône ou une boule, ou avec `section:` ou `tracer:`.
+
+### Questions pour David (réponse du 2026-11-28 : « je te suis » — (1) aux trois)
+
+- **(a) Deux plans** (leur intersection est une droite) : (1) pas dans ce lot. Retenu.
+- **(b) Écrire avec les noms** (`K intersection d P`) : (1) non, toujours les points entre parenthèses. Retenu.
+- **(c) K hors du solide mais dans la marge** : (1) accepté, comme un point à coordonnées. Retenu.
+
+## 24. Lot 7e — ce qui est fait (2026-11-28)
+
+- **Écriture** `points: K intersection (IG) (BDE)` ou `K intersection (AG) (BH)` (`SolidePoint.meet` : `line`,
+  `other`), le plan ou la droite en premier, indifféremment. Lecture : `readMeet` (`solide-parser.ts`) ;
+  position : `meetPoint`, appelé par `solidePoints3` (`espace-solides.ts`). Rien de neuf dans la scène, dans
+  `Solide.svelte` ni dans le PDF : c'est un point déclaré de plus.
+- **Erreurs** des comportements 94 à 98, plus : deux plans (« se coupent selon une droite, pas en un
+  point »), écriture non comprise (sans parenthèses, un ou trois groupes, un ou quatre points dans un groupe).
+- **Écart avec la phase 0, à dire à David** : le comportement 86 disait aussi « point à toucher dans un
+  geste », le 98 refuse `tracer:` — or `tracer:` est le seul geste du bloc. Le 98 est appliqué (comme pour
+  `droites:`, `plans:`, `repere:`) : K n'est pas un point à toucher tant que `tracer:` est refusé.
+- Catalogue (`block-catalog/solide.ts` : réglage `points` complété, exemple « Le point où une droite perce un
+  plan », erreur « Une droite parallèle au plan »), doc `docs/systeme/ubumark.md` (paragraphe « Point
+  d'intersection »).
+- Tests : `solide-intersection.test.ts` (24, rouges avant le code : 22 sur 24), `Solide.svelte.test.ts` (+1).
+- Vu à l'écran par la session (captures Chromium du composant) : cube avec K, (IG) et (BDE), à la vue de
+  départ et tourné au clavier ; K seul ; (AG) et (BH) avec leur point O ; K sur le sommet A (deux noms côte à
+  côte) ; pyramide avec O = (AC) ∩ (BD), K = (AI) ∩ (SBD), tournée ; K dans la marge, juste à gauche de E (son
+  nom touche celui de E, comme tout point posé contre un sommet). **Pas vu** : la fiche PDF imprimée (le
+  Typst est testé, pas compilé), le thème sombre, le doigt sur un vrai téléphone.

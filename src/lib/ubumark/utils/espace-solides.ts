@@ -476,17 +476,58 @@ export function polyhedronVertices(form: SolideForm, dims: number[]): Point3[] {
 }
 
 /**
+ * Le point où la droite (a b) coupe `other` : un plan (trois points) ou une autre
+ * droite (deux points, dans un même plan que la première). Le lecteur du bloc a
+ * déjà refusé les cas sans point unique (parallèles, droite dans le plan…)
+ */
+export function meetPoint(a: Point3, b: Point3, other: Point3[]): Point3 {
+	const minus = (p: Point3, q: Point3) => ({ x: p.x - q.x, y: p.y - q.y, z: p.z - q.z });
+	const cross = (u: Point3, v: Point3) => ({
+		x: u.y * v.z - u.z * v.y,
+		y: u.z * v.x - u.x * v.z,
+		z: u.x * v.y - u.y * v.x
+	});
+	const dot = (u: Point3, v: Point3) => u.x * v.x + u.y * v.y + u.z * v.z;
+	const u = minus(b, a);
+	const [p, q, r] = other;
+	let t: number;
+	if (r !== undefined) {
+		// Plan : n · (a + t u − p) = 0
+		const n = cross(minus(q, p), minus(r, p));
+		t = dot(n, minus(p, a)) / dot(n, u);
+	} else {
+		// Droite (p q) : a + t u = p + s v, lu le long de u × v
+		const v = minus(q, p);
+		const n = cross(u, v);
+		t = dot(cross(minus(p, a), v), n) / dot(n, n);
+	}
+	return { x: a.x + t * u.x, y: a.y + t * u.y, z: a.z + t * u.z };
+}
+
+/**
  * Les points nommables d'un polyèdre, en 3D : les sommets, puis chaque point
  * déclaré (isobarycentre de ses points `of`, sommets ou points déclarés avant lui ;
- * ou point donné par ses coordonnées dans le repère du solide, `coords`)
+ * ou point donné par ses coordonnées dans le repère du solide, `coords` ; ou point
+ * d'intersection, `meet`)
  */
 export function solidePoints3(
 	form: SolideForm,
 	dims: number[],
-	points: Pick<SolidePoint, 'of' | 'coords'>[]
+	points: Pick<SolidePoint, 'of' | 'coords' | 'meet'>[]
 ): Point3[] {
 	const all = polyhedronVertices(form, dims);
 	for (const point of points) {
+		if (point.meet !== undefined) {
+			const { line, other } = point.meet;
+			all.push(
+				meetPoint(
+					all[line[0]],
+					all[line[1]],
+					other.map((i) => all[i])
+				)
+			);
+			continue;
+		}
 		// Par ses coordonnées : origine + x × premier vecteur + y × deuxième + z × troisième
 		if (point.coords !== undefined) {
 			const { origin, axes, values } = point.coords;

@@ -144,6 +144,8 @@ const COORDINATE_REGEX = /^-?\d+(?:[.,]\d+)?$/;
 
 const REPERE_USAGE = 'ex. repere: A ; AB, AD, AE';
 
+const MEET_USAGE = 'ex. K intersection (IG) (BDE)';
+
 /** Un angle est droit quand son cosinus est, en valeur absolue, sous ce seuil (arrondis des calculs) */
 const RIGHT_ANGLE_COS = 1e-9;
 
@@ -607,6 +609,88 @@ function readRepere(
 }
 
 /**
+ * Le point d'intersection de `K intersection (IG) (BDE)` (lot 7e) : une droite et
+ * un plan, ou deux droites, dans un ordre ou dans l'autre ; une phrase d'erreur
+ * quand ils ne se coupent pas en un seul point. `at` : les points connus, en 3D
+ */
+function readMeet(
+	name: string,
+	text: string,
+	known: string[],
+	at: Point3[],
+	size: number
+): Pick<SolidePoint, 'label' | 'meet'> | string {
+	const misread = `${name} : l’intersection d’une droite et d’un plan, ou de deux droites (${MEET_USAGE})`;
+	const groups = /^\(([^()]*)\)\s*\(([^()]*)\)$/.exec(text.trim());
+	if (groups === null) return misread;
+	const first = namedPoints(groups[1], known);
+	if (typeof first === 'string') return first;
+	const second = namedPoints(groups[2], known);
+	if (typeof second === 'string') return second;
+	if (first.length === 3 && second.length === 3) {
+		return `${name} : deux plans se coupent selon une droite, pas en un point (${MEET_USAGE})`;
+	}
+	// La droite d'abord ; ce qu'elle coupe ensuite (plan ou autre droite)
+	const [line, other] = first.length === 2 ? [first, second] : [second, first];
+	if (line.length !== 2 || (other.length !== 2 && other.length !== 3)) return misread;
+	const written = (refs: number[]) => `(${refs.map((i) => known[i]).join('')})`;
+	const minus = (p: Point3, q: Point3) => ({ x: p.x - q.x, y: p.y - q.y, z: p.z - q.z });
+	const cross = (u: Point3, v: Point3) => ({
+		x: u.y * v.z - u.z * v.y,
+		y: u.z * v.x - u.x * v.z,
+		z: u.x * v.y - u.y * v.x
+	});
+	const dot = (u: Point3, v: Point3) => u.x * v.x + u.y * v.y + u.z * v.z;
+	const length = (u: Point3) => Math.hypot(u.x, u.y, u.z);
+	/** Le vecteur de longueur 1 ; null : trop court devant `scale` */
+	const unit = (u: Point3, scale: number): Point3 | null =>
+		length(u) < scale * SAME_LINE
+			? null
+			: { x: u.x / length(u), y: u.y / length(u), z: u.z / length(u) };
+	for (const refs of [line, ...(other.length === 2 ? [other] : [])]) {
+		if (samePosition(at[refs[0]], at[refs[1]])) {
+			return `${written(refs)} : une droite passe par deux points distincts`;
+		}
+	}
+	const a = at[line[0]];
+	const u = unit(minus(at[line[1]], a), size);
+	if (u === null) return `${written(line)} : une droite passe par deux points distincts`;
+	const both = `${written(line)} et ${written(other)}`;
+	const [p, q, r] = other.map((i) => at[i]);
+	if (other.length === 3) {
+		const n = unit(cross(minus(q, p), minus(r, p)), size * size);
+		if (n === null) {
+			return `${written(other)} : les trois points sont alignés, ils ne donnent pas un plan`;
+		}
+		if (Math.abs(dot(n, u)) < SAME_LINE) {
+			const within = Math.abs(dot(n, minus(a, p))) < size * SAME_LINE;
+			return `${both} ne se coupent pas en un seul point : la droite est ${within ? 'dans le plan' : 'parallèle au plan'}`;
+		}
+		return {
+			label: `intersection de la droite ${written(line)} et du plan ${written(other)}`,
+			meet: { line: [line[0], line[1]], other }
+		};
+	}
+	const v = unit(minus(q, p), size);
+	if (v === null) return `${written(other)} : une droite passe par deux points distincts`;
+	const n = cross(u, v);
+	const gap = minus(p, a);
+	if (length(n) < SAME_LINE) {
+		const same = length(cross(gap, u)) < size * SAME_LINE;
+		return same
+			? `${both} : c’est la même droite, pas un seul point d’intersection`
+			: `${both} ne se coupent pas : les droites sont parallèles`;
+	}
+	if (Math.abs(dot(gap, n)) / length(n) > size * SAME_LINE) {
+		return `${both} ne se coupent pas : les deux droites ne sont pas dans un même plan`;
+	}
+	return {
+		label: `intersection des droites ${written(line)} et ${written(other)}`,
+		meet: { line: [line[0], line[1]], other }
+	};
+}
+
+/**
  * Les points de `points:` ; une phrase d'erreur sinon. `frame` : le repère, lu
  * avec les points déclarés jusque-là ; `'absent'` : pas de `repere:` ; `'failed'` :
  * mal écrit, erreur déjà dite (rendu : null, sans phrase de plus)
@@ -624,6 +708,8 @@ function readPoints(
 	const points: SolidePoint[] = [];
 	const usage = 'ex. I milieu AE, O centre ABCD';
 	const coordsUsage = 'ex. M (1 ; 0,5 ; 1)';
+	const size = Math.max(...shape.dims);
+	const at3 = () => solidePoints3(shape.form, shape.dims, points);
 	// Le solide est convexe : un point en est à plus de la marge dès qu'il dépasse
 	// d'autant le plan d'une de ses faces (la boîte des sommets ne suffit pas : une
 	// pyramide est mince en haut, un prisme n'occupe que la moitié de la sienne)
@@ -651,7 +737,10 @@ function readPoints(
 		const match = byCoords === null ? /^(\S+)\s+(\S+)\s*(.*)$/.exec(item.trim()) : null;
 		const name = byCoords?.[1] ?? match?.[1] ?? item.trim();
 		const kind = plain(match?.[2] ?? '');
-		if (byCoords === null && (match === null || (kind !== 'milieu' && kind !== 'centre'))) {
+		if (
+			byCoords === null &&
+			(match === null || (kind !== 'milieu' && kind !== 'centre' && kind !== 'intersection'))
+		) {
 			return `point « ${item.trim()} » non compris (${usage})`;
 		}
 		if (byCoords !== null && !byCoords[2].trim().endsWith(')')) {
@@ -703,6 +792,19 @@ function readPoints(
 			continue;
 		}
 		if (match === null) continue;
+		if (kind === 'intersection') {
+			const read = readMeet(name, match[3], known, at3(), size);
+			if (typeof read === 'string') return read;
+			const point: SolidePoint = { name, of: [], ...read };
+			const at = solidePoints3(shape.form, shape.dims, [...points, point]);
+			const p = at[at.length - 1];
+			if (topology.faces.some((face) => beyondFace(p, face) > margin)) {
+				return `${name} tombe hors de la figure : un point reste dans le solide, ou tout près`;
+			}
+			points.push(point);
+			known.push(name);
+			continue;
+		}
 		if (match[3].trim() === '') return `${kind} de quels points ? (${usage})`;
 		const refs = namedPoints(match[3], known);
 		if (typeof refs === 'string') return refs;
@@ -1234,6 +1336,12 @@ export function parseSolideContent(source: string): {
 				points = read;
 				pointsRead = true;
 			}
+		}
+	}
+	// Point d'intersection (lot 7e) : pas encore avec le plan de coupe ni le geste (comportement 98)
+	if (pointsEntry !== undefined && points.some((p) => p.meet !== undefined)) {
+		for (const other of ['section', 'tracer'] as const) {
+			if (seen.has(other)) fail(pointsEntry.line, `intersection ne va pas encore avec ${other}:`);
 		}
 	}
 	// Des points faux rendent le repère illisible : une seule erreur, celle des points
