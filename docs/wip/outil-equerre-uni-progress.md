@@ -1,21 +1,22 @@
 ---
 title: Lot d'outils equerre-uni — journal
 date: 2026-11-28
-status: outil 40 livré (#3290) ; 38 en PR ; 45 à faire
+status: outils 40 (#3290) et 38 (#3299) livrés ; 45 à faire
 ---
 
 # Lot `equerre-uni` (outils 40, puis 38, puis 45)
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-28, outil 38 en PR._
+_Mis à jour le 2026-11-28, après #3299._
 
-- **État** : outil 38 codé, revu, PR ouverte depuis `feat/outil-equerre-uni-38` (§ 2, § 2 bis) · **Prochaine
-  action** : CI verte → `pnpm pr:merger` ; puis sur `main` : n° de PR dans la ligne « Livré » de
-  `outils-manquants.md`, ce bloc ; ensuite outil 45 (figure composée), nouveau worktree · **En attente de
-  David** : rien · **Pièges en cours** : à dire à David : la correction de l'outil 40 s'affiche aussi sur
-  quadrillage, (d) segment → pied possible hors du segment ; outil 38 : `droite` reste exigée dans `outils:` ·
-  **Worktree / branche** : `../ubumaths-wt-outil-equerre-uni`, `feat/outil-equerre-uni-38`.
+- **État** : outils 40 (#3290) et 38 (#3299) livrés ; reste 45 (figure composée : plusieurs constructions
+  vérifiées dans une même figure, CM1-105, CM2-095) · **Prochaine action** : nouveau worktree
+  `../ubumaths-wt-outil-equerre-uni` (branche `feat/outil-equerre-uni-45`), outil 45 vérifié dans le code, puis
+  sa phase 0 · **En attente de David** : rien · **Pièges en cours** : à dire à David : la correction de l'outil 40
+  s'affiche aussi sur quadrillage, (d) segment → pied possible hors du segment (aucun cas réel) ; outil 38 :
+  `droite` reste exigée dans `outils:` (`droite, regle, point, equerre`) · **Worktree / branche** : aucun
+  (retirés par `pr:merger`).
 
 ## 1. Outil 40 — phase 0 (2026-11-28)
 

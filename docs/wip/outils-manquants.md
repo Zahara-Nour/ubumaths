@@ -106,7 +106,7 @@ Résoudre une équation ligne par ligne (ancien n° 55 : case `answerKind: 'reso
 
 Perpendiculaire et parallèle par un point, à l'équerre, sur papier uni (ancien n° 40 : `droite p = perpendiculaire(A, d)` / `parallele(A, d)` sans quadrillage, équerre exigée dans `outils:` ; messages qui disent la cause, aussi sur quadrillage (CM1-167, 168 en prod) ; correction : angle droit codé, perpendiculaire intermédiaire de la parallèle en trait fin ; #3290, 2026-11-28, lot `equerre-uni`).
 
-Médiatrice et milieu à la règle graduée et à l'équerre, sur papier uni (ancien n° 38 : `outils: droite, regle, point, equerre` + `droite m = mediatrice(A, B)`, ou `outils: regle, point` + `point M = milieu(A, B)` ; la règle posée sur [AB] (0 en A ou B), le Point aimanté aux graduations et déplacé par ‹ ›, puis l'équerre par ce point ; [AB] en nombre pair de mm ; message du milieu à l'œil ; chantier `outil-equerre-uni`, 2026-11-28).
+Médiatrice et milieu à la règle graduée et à l'équerre, sur papier uni (ancien n° 38 : `outils: droite, regle, point, equerre` + `droite m = mediatrice(A, B)`, ou `outils: regle, point` + `point M = milieu(A, B)` ; la règle posée sur [AB] (0 en A ou B), le Point aimanté aux graduations et déplacé par ‹ ›, puis l'équerre par ce point ; [AB] en nombre pair de mm ; message du milieu à l'œil ; chantier `outil-equerre-uni`, #3299, 2026-11-28).
 
 Triangle quelconque à reproduire sur quadrillage (ancien n° 47 : `verifier: triangle ABC : reproduit DEF`, le modèle DEF tracé, ABC = DEF déplacé, au segment seul ; [AB] tracé ou seul A placé ; messages du sommet mal placé, du mauvais coin, du triangle retourné ; `construction/triangle-copy.ts` ; #3289, 2026-11-28, lot `triangle-quadrillage`).
 
