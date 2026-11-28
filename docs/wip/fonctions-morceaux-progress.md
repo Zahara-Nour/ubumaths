@@ -2,12 +2,12 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-28, avant la PR._
+_Mis à jour le 2026-11-28, à l'ouverture de la PR._
 
-- **État** : phase 0 validée ; code + tests (`intervalle-parametre.test.ts`, 18) verts, suites atelier + domaines + grapheur vertes (8 532), `check:incremental` 0 erreur ; doc `atelier.md` et `mathast/README.md` à jour ; branche poussée (commits `05c3628539`, `2e9510c2f1`), **pas encore de PR**.
-- **Prochaine action** : rendu à l'écran (Playwright sur un serveur 5177+ du worktree : `k = 2`, `f(x)=x sur [k;5]`, tracer, bouger le curseur ; Claude dans Chrome demande de choisir entre 2 navigateurs, l'éviter), `pnpm types:cliquet`, merge d'`origin/main` (43 commits de retard), revue `code-reviewer` en `model: opus` (parseur de mathAST touché), puis PR et `pnpm pr:merger`.
-- **En attente de David** : rien.
-- **Pièges en cours** : `recomputeAll` lit les ensembles à paramètre avec les valeurs du passage d'avant et repasse UNE fois s'ils changent (`#recomputingAgain`).
+- **État** : `origin/main` fusionné ; rendu vérifié à l'écran (`e2e/verifs/atelier-intervalle-parametre.spec.ts`, vert sur les 5 navigateurs de `test:verifs:tout`) ; revue `code-reviewer` (Opus) faite, findings 1, 2, 6 corrigés (22 tests) ; `check:incremental` 0, cliquet tenu ; PR ouverte, `pnpm pr:merger` lancé.
+- **Prochaine action** : après le merge, archiver ce journal (versement : la doc durable est déjà dans `docs/systeme/atelier.md`).
+- **En attente de David** : (a) `j = f(3)` reste juste quand le curseur sort 3 de l'ensemble de f (trou d'avant la PR, contrôle seulement à la création) : à corriger ? (b) `ℝ \ {k}` refusé (la phase 0 parle de bornes) : à couvrir ?
+- **Pièges en cours** : `recomputeAll` repasse UNE fois si les ensembles à paramètre changent (`#recomputingAgain`) ; une relecture (`#restoringObjects`) ou un ensemble gardé par `update` n'est pas jugé sur les valeurs du moment.
 - **Worktree / branche** : `../ubumaths-wt-fonctions-morceaux` · `feat/fonctions-morceaux`.
 
 ## Demande
@@ -40,3 +40,9 @@ redessine la courbe.
   `recomputeAll`, refus en erreur propre, renommage de k suivi dans l'intervalle.
 - `FunctionObject.parameterInterval` (transitoire, jamais sauvegardé) ; mémos `engine.ts` et
   `formula.ts` le comptent.
+
+## Revue (2026-11-28, `code-reviewer` Opus)
+
+- **Corrigé** : (1) Annuler / rechargement avec k qui rend l'ensemble impossible effaçait `sur [k;5]` → `#restoringObjects`, l'écriture fait foi ; (6) formule de f non modifiable dans ce cas → ensemble gardé par `update` non rejugé ; (2) le champ de la carte écrivait `]0;k]\{1}`, illisible → mêmes réécritures que l'ensemble numérique (`\setminus`, `\{ \}`, `\pi`).
+- **Laissé, question à David** : (3) `ℝ \ {k}` refusé (points exclus de `parseSetNotation` sans l'option `bound`) ; (4) `j = f(3)` reste juste quand le curseur sort 3 de l'ensemble (existait avant).
+- **Laissé, mineur** : (5) borne non calculable (`[1/k;5]`, k = 0) → refus générique « Je n'ai pas su lire l'intervalle », sans la valeur.
