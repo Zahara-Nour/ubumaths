@@ -8,12 +8,12 @@ status: en cours — PR 1 mergée (#3291), PR 2 (L39) en cours
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-28, PR 2 (L39) en cours._
+_Mis à jour le 2026-11-28, PR 2 (L39) #3300 ouverte._
 
-- **État** : PR 1 #3291 mergée. PR 2 (L39) codée sur `fix/ecarts-cours-evaluations-l39` : policy `skill_attempts_delete_teacher_task`, trigger `trg_skill_attempts_after_delete` (cache des cases effacées), fonction `save_evaluation_task_grid` ; 9 tests d'intégration (5 rouges sans la migration ; archivé et suppression de compte trouvés par les revues, corrigés).
-- **Prochaine action** : revue faite (`code-reviewer` + `security-auditor` : suppression de compte bloquée, observations d'archivés effacées → corrigés) ; PR, merge ; puis `db:migrate` des DEUX migrations du chantier (`20261128072151`, `20261128135334`) quand `migration list --linked` ne montre plus que les nôtres, ou sur l'accord de David (l'autre en attente : `20261128132651`, algorithmique 3e).
-- **En attente de David** : pousser ou non avec la migration de l'autre session ; liens des familles sur les dates de l'école (aujourd'hui toujours le 31 août).
-- **Pièges** : `update_student_observable_state` est fermée à `authenticated` (passe SECURITY DEFINER) : le cache des cases effacées passe par un trigger. `chk_attempt_regime` exclut déjà une observation sans tâche. Supprimer un point travaillé est refusé depuis L112.
+- **État** : PR 1 #3291 mergée ; sa migration `20261128072151` **en prod** (2026-11-28, `supabase db push --include-all` par David, avec `20261128132651` d'`idees-3e-algorithmique`). PR 2 (L39) #3300 : policy `skill_attempts_delete_teacher_task`, trigger `trg_skill_attempts_after_delete`, fonction `save_evaluation_task_grid` ; 9 tests d'intégration (5 rouges sans la migration).
+- **Prochaine action** : merge de #3300, puis `db:migrate` de `20261128135334` (vérifier `migration list --linked` : elle seule en attente) ; vérifier les contraintes de PR 1 en prod (MCP en lecture).
+- **En attente de David** : les liens des familles doivent-ils suivre les dates de l'école (aujourd'hui toujours le 31 août) ?
+- **Pièges** : `update_student_observable_state` est fermée à `authenticated` : le cache des cases effacées passe par un trigger, qui saute un élève supprimé (sinon la suppression d'un compte échoue, FK du cache). La saisie n'efface que les élèves de la grille (archivés préservés). Supprimer un point travaillé est refusé depuis L112.
 - **Worktree / branche** : `ubumaths-wt-ecarts-cours-evaluations` · `fix/ecarts-cours-evaluations-l39`.
 
 ## Décisions (2026-11-28)

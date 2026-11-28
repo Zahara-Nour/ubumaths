@@ -310,29 +310,35 @@ principe, chaque bloc ``figure passé au moteur de l'appli (`parseFigure` puis
 
    ```json
    "rangement": { "noeud": "Nombres et calculs > Décimaux : calculs > multiplication", "point": "6-115" }
+   "rangement": { "noeud": "Probabilités > Variables aléatoires > loi", "point": ["1SPE-355", "1TECHNO-095"] }
    "rangement": { "niveauxAjoutes": ["6"] }
+   "rangement": { "niveauxAjoutes": ["1_TECHNO"], "pointsAjoutes": ["1TECHNO-095"] }
    ```
 
-   Première forme : modèle neuf (la sous-notion du chemin est facultative ; `"point": null` =
-   rangé sans tag, à écrire en clair). Seconde forme : modèle déjà rangé qui gagne un niveau. Le
+   Modèle neuf : `noeud` + `point` (la sous-notion du chemin est facultative ; `"point": null` =
+   rangé sans tag, à écrire en clair ; une liste = **un point par programme**, pour un modèle
+   rangé dans plusieurs programmes). Modèle déjà rangé : `niveauxAjoutes`, `pointsAjoutes`, ou
+   les deux (le niveau et le tag d'un programme gagnés ensemble). Chaque point doit être d'un
+   niveau du modèle (ses niveaux en prod, plus ceux du même fichier). Le
    champ n'est pas un champ du modèle : `create-questions` l'ignore et ne l'écrit jamais en base.
    Plusieurs `--dir` = une seule migration (modèles neufs et publiés d'un même chantier) ; le
    lot porte le nom du premier dossier, ou `--nom <lot>`.
    Le script relève en prod (lecture seule) chaque modèle du lot, apparié par l'`id` de son
    fichier (titre et niveau concordants), l'arbre des notions et les points. Modèle neuf sans
-   nœud ni tag → rangé ; déjà exactement sur ce nœud avec ce seul point → ignoré (relancer ne
-   refait rien) ; fichier sans `rangement` d'un modèle déjà rangé → ignoré. **Un refus refuse
+   nœud ni tag → rangé ; déjà exactement sur ce nœud avec ces points → ignoré (relancer ne
+   refait rien) ; point ajouté déjà posé → ignoré ; fichier sans `rangement` d'un modèle déjà rangé → ignoré. **Un refus refuse
    tout le lot, rien n'est écrit** : fichier sans id, id absent de la prod, titre ou niveau
    différents, `rangement` illisible, chemin ou point introuvable, nœud archivé, point ni sur le
-   nœud ni sur sa notion, modèle déjà rangé ou tagué autrement, modèle sans nœud dont le fichier
-   n'a pas de `rangement` (modèle oublié), `niveauxAjoutes` sur un modèle sans nœud ou avec un
-   niveau inconnu, deux fichiers de même nom dans le lot.
+   nœud ni sur sa notion, deux points du même programme (tags déjà posés compris), point d'un
+   niveau que le modèle n'a pas, modèle déjà rangé ou tagué autrement, modèle sans nœud dont le
+   fichier n'a pas de `rangement` (modèle oublié), `niveauxAjoutes` ou `pointsAjoutes` sur un
+   modèle sans nœud, niveau inconnu, deux fichiers de même nom dans le lot.
    Sortie : `supabase/migrations/<horodatage>_questions_<lot>_rangement_tags.sql` (l'heure
    réelle, prise par le script ; réponse à la question d'accès écrite en en-tête ; nœud résolu
-   strictement par son chemin, gardes « encore sans nœud ni tag » et « niveaux exactement ceux
-   du relevé », tout ou rien, `updated_at` préservé, modèle absent toléré, rollback en
+   strictement par son chemin, gardes « encore sans nœud ni tag », « niveaux exactement ceux
+   du relevé » et « tags exactement ceux du relevé », tout ou rien, `updated_at` préservé, modèle absent toléré, rollback en
    commentaire, gardé lui aussi : il ne retire le nœud et ne rend les niveaux que s'ils sont
-   encore ceux posés par la migration) et sa fixture `tests/integration/fixtures/rangement-tags/<même nom>.json`,
+   encore ceux posés par la migration, il ne retire que les tags qu'elle a posés) et sa fixture `tests/integration/fixtures/rangement-tags/<même nom>.json`,
    rejouée par `tests/integration/migrations-rangement-tags.test.ts` : **aucun test à écrire**.
    Règles : `scripts/lib/migration-rangement.ts`.
    **PR de rangement courte** : si elle ne contient que la migration **ajoutée**, sa fixture
@@ -356,7 +362,7 @@ Relevé MCP (contenu complet, md5, nœuds, points, tags, **0 donnée d'élève**
 `docs/wip/<chantier>/etat-prod-<date>/` (ses md5 = prod) ; nouveau contenu écrit par le script
 de lot, `checkTemplate` vert ; **David** lance `create-questions --publier --mettre-a-jour`
 (remplace contenu, description et délai). Le script de lot réécrit les fichiers **sans leur `id`** :
-le remettre (`git diff`) avant de lancer, sinon le lot est bloqué (homonyme en base). Niveau **ajouté** à un modèle déjà rangé → `rangement: { niveauxAjoutes }` et la migration générée du § 6 ; retrait de tag ou de niveau → migration à la main.
+le remettre (`git diff`) avant de lancer, sinon le lot est bloqué (homonyme en base). Niveau ou tag **ajouté** à un modèle déjà rangé → `rangement: { niveauxAjoutes, pointsAjoutes }` et la migration générée du § 6 ; retrait de tag ou de niveau → migration à la main.
 
 Modèle **publié** (`--mettre-a-jour` ne le touche pas) : **contenu** (variations, specs,
 description) → migration **générée** pour tout le lot, jamais écrite à la main :
