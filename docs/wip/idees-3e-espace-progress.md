@@ -155,3 +155,5 @@ grades 4, niveau 2 à côté de 22d947f4).
   7 variations (relu en prod). Migration `20261128065817_questions_idees_3e_espace_neufs_rangement_tags`
   générée par `migration-rangement.ts` (nœud « Géométrie > Théorème de Pythagore > calcul de
   longueurs », point 4-034), fixture comprise.
+- `security-auditor` (2026-11-28) : aucun finding bloquant ; gardes vérifiées sur l'état de la prod
+  (modèle sans nœud ni tag, nœud et point uniques). Test `migrations-rangement-tags` vert.
