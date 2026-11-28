@@ -4,7 +4,7 @@
 	A customizable spinning wheel component for randomly selecting students.
 
 	FEATURES:
-	- Smooth spinning animation with ease-out easing (4 seconds)
+	- Smooth spinning animation with ease-out easing (spinDuration, 4 seconds by default)
 	- Confetti celebration on winner selection (3 seconds, dual-origin)
 	- Optional gidouille rewards integration
 	- Customizable colors and wheel size
@@ -75,6 +75,7 @@
 -->
 <script lang="ts">
 	import confetti from 'canvas-confetti';
+	import { tirerAngleArret } from './wheel-landing.ts';
 
 	/**
 	 * Student interface for wheel participants
@@ -172,8 +173,7 @@
 		secondaryColor = '#3a507e',
 		accentColor = '#788bb2',
 		addJokerIfOdd = false,
-		// eslint-disable-next-line @typescript-eslint/no-unused-vars
-		spinDuration = 4, // Prop defined but duration is hardcoded in CSS (4s)
+		spinDuration = 4,
 		showConfetti = true,
 		confettiZIndex = 0,
 		gidouilleReward,
@@ -263,9 +263,6 @@
 	});
 
 	/** Angle in degrees per slice (e.g., 45° for 8 students) */
-	// eslint-disable-next-line @typescript-eslint/no-unused-vars
-	let sliceAngle = $derived(360 / wheelData().length);
-
 	/**
 	 * Angle in radians per slice (used for stroke-dasharray calculation)
 	 * The SVG stroke-dasharray technique creates alternating colored slices
@@ -335,16 +332,8 @@
 		// Notify that spin is starting
 		onSpinStart?.();
 
-		/**
-		 * Calculate random landing angle
-		 * Ensures we don't land exactly on a slice boundary (causes ambiguity)
-		 * Minimum 2° away from boundaries for clear winner determination
-		 */
-		let randomAngle;
-		const sliceSize = Math.floor(360 / wheelData().length);
-		do {
-			randomAngle = Math.floor(Math.random() * 360) + 1;
-		} while (randomAngle % sliceSize < 2); // Avoid boundary ±2°
+		// Angle d'arrêt tiré loin des frontières de case (wheel-landing.ts)
+		const randomAngle = tirerAngleArret(angle, wheelData().length);
 
 		/**
 		 * Calculate total rotation
@@ -359,7 +348,7 @@
 
 		/**
 		 * Handle when spin animation completes
-		 * The CSS transition ends after 4 seconds (default spinDuration)
+		 * The CSS transition ends after spinDuration seconds
 		 */
 		const handleTransitionEnd = (e: TransitionEvent) => {
 			// Ignore transitions from child elements (text highlights)
@@ -501,8 +490,8 @@
 			height="{2 * wheelRadius + 3}em"
 			width="{2 * wheelRadius + 3}em"
 			style="transform: rotate(-{angle + 90}deg); transition: {isSpinning
-				? 'all 4s ease-out'
-				: 'none'};"
+				? `all ${spinDuration}s ease-out`
+				: 'none'}; --spin-duration: {spinDuration}s;"
 		>
 			<!-- Filters for shadows and winner glow -->
 			<defs>
@@ -639,7 +628,7 @@
 
 <style>
 	.blur-wheel {
-		animation: blur 4s;
+		animation: blur var(--spin-duration, 4s);
 	}
 
 	@keyframes blur {

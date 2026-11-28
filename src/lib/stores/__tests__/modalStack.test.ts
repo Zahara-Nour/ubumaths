@@ -3,7 +3,7 @@ import { modalStack } from '#lib/stores/modalStack.svelte.ts';
 import type { Component } from 'svelte';
 
 // Mock component for testing
-const MockComponent: Component = {} as Component;
+const MockComponent = {} as Component<{ modal?: number }>;
 
 describe('ModalStack Store', () => {
 	beforeEach(() => {
@@ -128,23 +128,30 @@ describe('ModalStack Store', () => {
 		expect(modalStack.current?.id).toBe(id1);
 	});
 
-	it('should call onReturn when using popTo', () => {
-		const onReturn = vi.fn();
+	// Écart L50 : comme `pop`, `popTo` prévient les modales RETIRÉES, pas celle gardée.
+	it('popTo calls onReturn of each popped modal, top first, not of the kept one', () => {
+		const calls: number[] = [];
 
 		const id1 = modalStack.push({
 			component: MockComponent,
 			props: { modal: 1 },
-			onReturn
+			onReturn: () => calls.push(1)
 		});
-
 		modalStack.push({
 			component: MockComponent,
-			props: { modal: 2 }
+			props: { modal: 2 },
+			onReturn: () => calls.push(2)
+		});
+		modalStack.push({
+			component: MockComponent,
+			props: { modal: 3 },
+			onReturn: () => calls.push(3)
 		});
 
 		modalStack.popTo(id1);
 
-		expect(onReturn).toHaveBeenCalledTimes(1);
+		expect(calls).toEqual([3, 2]);
+		expect(modalStack.current?.id).toBe(id1);
 	});
 
 	it('should handle popTo with non-existent id gracefully', () => {

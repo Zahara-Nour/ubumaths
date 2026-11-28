@@ -1,6 +1,6 @@
 /**
  * Écarts de la coquille qui demandent un navigateur (docs/ecarts/registre.md) :
- * L41, L43, L52 (L45 corrigé : test ordinaire).
+ * L41, L43 (L45, L52 corrigés : tests ordinaires).
  *
  * Le projet vitest `ecarts` n'a pas de navigateur : chaque écart est ici en
  * `it.fails`, et son nom porte le marqueur « écart L41 » que la preuve du
@@ -207,8 +207,8 @@ describe('roue : durée de rotation', () => {
 		expect(await dureeDeRotation({})).toBe('4s');
 	});
 
-	// Aujourd'hui : 4 secondes quelle que soit la durée demandée.
-	it.fails('écart L52 : avec spinDuration = 2, la roue tourne 2 secondes', async () => {
+	// L52 corrigé : la durée demandée est celle de la transition.
+	it('avec spinDuration = 2, la roue tourne 2 secondes', async () => {
 		expect(await dureeDeRotation({ spinDuration: 2 })).toBe('2s');
 	});
 });

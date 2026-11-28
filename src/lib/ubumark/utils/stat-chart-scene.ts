@@ -686,8 +686,9 @@ const CROSS_TABLE_SPOKEN: Record<
 
 /** Arrondi à `decimals` décimales, zéros inutiles retirés, séparateur selon la langue. */
 function formatRounded(value: number, decimals: number, locale: ContentLocale): string {
-	const factor = 10 ** decimals;
-	return formatTick(Math.round(value * factor) / factor, locale);
+	// `roundNumber` lit le décimal écrit : 100 × 23 / 80 = 28,749999… en flottant s'arrondit
+	// à 28,8 comme 28,75 (écart L114).
+	return formatTick(roundNumber(value, decimals), locale);
 }
 
 /** `= 15,75` / `≈ 14,44` : la règle du module statistique (Q13) */

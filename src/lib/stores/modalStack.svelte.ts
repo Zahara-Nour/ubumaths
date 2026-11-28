@@ -38,11 +38,13 @@ import type { Component } from 'svelte';
  * ```
  */
 
+/** Props d'une modale, vues par la pile : la paire composant / props est vérifiée à `push`. */
+type ModalProps = Record<string, unknown>;
+
 export interface ModalEntry {
 	id: string; // UUID for identifying this modal instance
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	component: Component<any, any, any>; // The Svelte component to render
-	props: Record<string, unknown>; // Props to pass to the component
+	component: Component<ModalProps>; // The Svelte component to render
+	props: ModalProps; // Props to pass to the component
 	onReturn?: () => void; // Callback fired when THIS modal is popped/closed (used as onComplete)
 	canDismiss?: boolean; // If false, block Escape/backdrop clicks
 }
@@ -55,10 +57,18 @@ class ModalStackStore {
 	 * @param entry Modal configuration (without id)
 	 * @returns Generated UUID for this modal instance
 	 */
-	push(entry: Omit<ModalEntry, 'id'>): string {
+	push<P extends ModalProps>(
+		entry: Omit<ModalEntry, 'id' | 'component' | 'props'> & {
+			component: Component<P>;
+			props: NoInfer<P>;
+		}
+	): string {
 		const id = crypto.randomUUID();
 		const modalEntry: ModalEntry = {
 			...entry,
+			// Les props ont été vérifiées contre le composant dans la signature ci-dessus ; la
+			// pile, qui mêle des modales différentes, ne garde que la forme commune.
+			component: entry.component as unknown as Component<ModalProps>,
 			id
 		};
 		this.stack.push(modalEntry);
@@ -87,26 +97,16 @@ class ModalStackStore {
 	/**
 	 * Pop modals until we reach the modal with the given ID
 	 * That modal remains in the stack as the new top
+	 * Comme `pop` : chaque modale RETIRÉE reçoit son `onReturn`, de la plus haute à la
+	 * plus basse ; la modale gardée n'en reçoit aucun (écart L50).
 	 * @param id The ID of the modal to pop back to
 	 */
 	popTo(id: string): void {
-		// Find the index of the modal with this ID
 		const index = this.stack.findIndex((entry) => entry.id === id);
+		if (index === -1) return;
 
-		if (index === -1) {
-			// Modal not found, do nothing
-			return;
-		}
-
-		// Remove all modals after this one
-		this.stack.splice(index + 1);
-
-		// Call onReturn callback of the modal we popped to
-		if (this.stack.length > 0) {
-			const target = this.stack[this.stack.length - 1];
-			if (target.onReturn) {
-				target.onReturn();
-			}
+		while (this.stack.length > index + 1) {
+			this.pop();
 		}
 	}
 

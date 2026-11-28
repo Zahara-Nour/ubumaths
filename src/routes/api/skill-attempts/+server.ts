@@ -54,7 +54,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	try {
 		bodyRaw = await request.json();
 	} catch {
-		throw error(400, 'Invalid JSON body');
+		throw error(400, 'Corps de requête JSON invalide');
 	}
 
 	const validation = skillAttemptInputSchema.safeParse(bodyRaw);
