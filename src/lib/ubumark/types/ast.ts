@@ -570,6 +570,7 @@ export type { CourbeNode } from './courbe';
 export type { FigureNode } from './figure';
 export type { StatChartNode } from './stat-chart';
 export type { QrNode } from './qr';
+export type { EngrenagesNode } from './engrenages';
 export type { ScratchNode } from './scratch';
 export type { HorlogeNode } from './horloge';
 export type { TortueNode } from './tortue';
@@ -597,6 +598,7 @@ import type { CourbeNode } from './courbe';
 import type { FigureNode } from './figure';
 import type { StatChartNode } from './stat-chart';
 import type { QrNode } from './qr';
+import type { EngrenagesNode } from './engrenages';
 import type { ScratchNode } from './scratch';
 import type { HorlogeNode } from './horloge';
 import type { TortueNode } from './tortue';
@@ -637,6 +639,7 @@ export type BlockNode =
 	| FigureNode
 	| StatChartNode
 	| QrNode
+	| EngrenagesNode
 	| ScratchNode
 	| HorlogeNode
 	| TortueNode
