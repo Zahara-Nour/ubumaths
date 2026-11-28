@@ -38,7 +38,24 @@
 			"conditions": ["u>v", "gcd(u,v)==1", "g*u<=200"],
 			"blanks": [
 				{
-					"expectedAnswer": "{{g}}"
+					"expectedAnswer": "{{g}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:g*u*v}}",
+							"message": "Tu as cherché un multiple commun : ici, le nombre de sachets doit diviser les deux nombres.",
+							"label": "PPCM au lieu du PGCD"
+						},
+						{
+							"answer": "{{eval:u+v}}",
+							"message": "Tu as donné le nombre d'objets dans un sachet, pas le nombre de sachets.",
+							"label": "Contenu d'un sachet"
+						},
+						{
+							"answer": "{{B}}",
+							"message": "Avec un sachet par bonbon, les billes ne se partagent pas toutes de la même façon.",
+							"label": "Un sachet par bonbon"
+						}
+					]
 				}
 			],
 			"correction": {
@@ -47,7 +64,8 @@
 					"${{A}}={{g}}\\times{{u}}$ et ${{B}}={{g}}\\times{{v}}$, et ${{u}}$ et ${{v}}$ n'ont aucun diviseur commun autre que $1$ : on ne peut pas faire plus grand que ${{g}}$.",
 					"On fait $\\textcolor{{{color:primary.0}}}{{{g}}}$ sachets de ${{u}}$ billes et ${{v}}$ bonbons."
 				]
-			}
+			},
+			"hintFromFirstStep": true
 		},
 		{
 			"statement": "On coupe deux rubans de ${{A}}~\\unit{cm}$ et de ${{B}}~\\unit{cm}$ en morceaux **tous de même longueur**, sans aucune chute, les plus longs possible.\n\nQuelle est la longueur d'un morceau ?\n\n$?~\\unit{cm}$",
@@ -80,7 +98,24 @@
 			"conditions": ["u>v", "gcd(u,v)==1", "g*u<=200"],
 			"blanks": [
 				{
-					"expectedAnswer": "{{g}}"
+					"expectedAnswer": "{{g}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:g*u*v}}",
+							"message": "Tu as cherché un multiple commun : ici, la longueur d'un morceau doit diviser les deux longueurs.",
+							"label": "PPCM au lieu du PGCD"
+						},
+						{
+							"answer": "{{eval:u+v}}",
+							"message": "Tu as donné le nombre de morceaux, pas la longueur d'un morceau.",
+							"label": "Nombre de morceaux"
+						},
+						{
+							"answer": "{{B}}",
+							"message": "Le grand ruban ne se coupe pas en morceaux de cette longueur sans chute.",
+							"label": "Petit ruban gardé entier"
+						}
+					]
 				}
 			],
 			"correction": {
@@ -89,7 +124,8 @@
 					"${{A}}={{g}}\\times{{u}}$ et ${{B}}={{g}}\\times{{v}}$, et ${{u}}$ et ${{v}}$ n'ont aucun diviseur commun autre que $1$ : on ne peut pas faire plus grand que ${{g}}$.",
 					"Chaque morceau mesure $\\textcolor{{{color:primary.0}}}{{{g}}~\\unit{cm}}$ : on obtient ${{u}}$ et ${{v}}$ morceaux."
 				]
-			}
+			},
+			"hintFromFirstStep": true
 		},
 		{
 			"statement": "Deux phares s'allument en même temps. Le premier se rallume toutes les ${{A}}~\\unit{s}$, le second toutes les ${{B}}~\\unit{s}$.\n\nAu bout de combien de secondes se rallumeront-ils de nouveau **ensemble**, pour la première fois ?\n\nAu bout de $?$ secondes.",
@@ -122,7 +158,24 @@
 			"conditions": ["u>v", "gcd(u,v)==1", "g*u*v<=200"],
 			"blanks": [
 				{
-					"expectedAnswer": "{{L}}"
+					"expectedAnswer": "{{L}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:A*B}}",
+							"message": "Tu as multiplié les deux durées : c'est un multiple commun, mais pas le plus petit.",
+							"label": "Produit des deux durées"
+						},
+						{
+							"answer": "{{g}}",
+							"message": "Tu as cherché un diviseur commun : ici, on veut un multiple commun aux deux durées.",
+							"label": "PGCD au lieu du PPCM"
+						},
+						{
+							"answer": "{{eval:A+B}}",
+							"message": "Tu as additionné les deux durées : ce n'est pas un multiple commun.",
+							"label": "Somme des deux durées"
+						}
+					]
 				}
 			],
 			"correction": {
@@ -131,7 +184,235 @@
 					"On parcourt les multiples de ${{A}}$ : ${{A}}\\times{{v}}={{L}}={{B}}\\times{{u}}$ est le premier qui est aussi un multiple de ${{B}}$.",
 					"Ils se rallument ensemble au bout de $\\textcolor{{{color:primary.0}}}{{{L}}~\\unit{s}}$."
 				]
-			}
+			},
+			"hintFromFirstStep": true
+		},
+		{
+			"statement": "{{if:w==0|Mehdi|{{if:w==1|Clara|Louis}}}} a ${{A}}$ billes et ${{B}}$ bonbons. {{if:w==1|Elle|Il}} veut faire des sachets **tous identiques** (même nombre de billes, même nombre de bonbons), en utilisant toutes les billes et tous les bonbons.\n\nDonne un nombre de sachets possible, autre que $1$.\n\n$?$ sachets",
+			"variables": [
+				{
+					"name": "w",
+					"expression": "0..2"
+				},
+				{
+					"name": "g",
+					"expression": "4|6|8|9|10|12|14|15"
+				},
+				{
+					"name": "u",
+					"expression": "2..9"
+				},
+				{
+					"name": "v",
+					"expression": "2..9"
+				},
+				{
+					"name": "A",
+					"expression": "eval:g*u"
+				},
+				{
+					"name": "B",
+					"expression": "eval:g*v"
+				},
+				{
+					"name": "p",
+					"expression": "eval:3-(1-mod(g,2))"
+				}
+			],
+			"conditions": ["u>v", "gcd(u,v)==1", "g*u<=200"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{g}}",
+					"rulesSuffice": true,
+					"validationRules": [
+						{
+							"type": "divisor",
+							"dividend": "{{A}}"
+						},
+						{
+							"type": "divisor",
+							"dividend": "{{B}}"
+						},
+						{
+							"type": "range",
+							"min": "1",
+							"max": "{{A}}",
+							"inclusive": false
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le nombre de sachets doit diviser ${{A}}$ (les billes) et ${{B}}$ (les bonbons) : c'est un **diviseur commun** de ${{A}}$ et ${{B}}$.",
+					"${{A}}={{g}}\\times{{u}}$ et ${{B}}={{g}}\\times{{v}}$ : tout diviseur de ${{g}}$ autre que $1$ convient.",
+					"Par exemple $\\textcolor{{{color:primary.0}}}{{{p}}}$ sachets, ou $\\textcolor{{{color:primary.0}}}{{{g}}}$ sachets, le plus grand nombre possible."
+				]
+			},
+			"hint": "Le nombre de sachets doit diviser à la fois ${{A}}$ et ${{B}}$."
+		},
+		{
+			"statement": "{{if:w==0|Mehdi|{{if:w==1|Clara|Louis}}}} a ${{A}}$ billes et ${{B}}$ bonbons. {{if:w==1|Elle|Il}} veut faire des sachets **tous identiques** (même nombre de billes, même nombre de bonbons), en utilisant toutes les billes et tous les bonbons.\n\nQuel est le plus grand nombre de sachets possible ? Que contient alors chaque sachet ?\n\n$?$ sachets\n\nDans chaque sachet : $?$ billes et $?$ bonbons",
+			"variables": [
+				{
+					"name": "w",
+					"expression": "0..2"
+				},
+				{
+					"name": "g",
+					"expression": "3..15"
+				},
+				{
+					"name": "u",
+					"expression": "2..9"
+				},
+				{
+					"name": "v",
+					"expression": "2..9"
+				},
+				{
+					"name": "A",
+					"expression": "eval:g*u"
+				},
+				{
+					"name": "B",
+					"expression": "eval:g*v"
+				}
+			],
+			"conditions": ["u>v", "gcd(u,v)==1", "g*u<=200", "g!=u", "g!=v"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{g}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:g*u*v}}",
+							"message": "Tu as cherché un multiple commun : ici, le nombre de sachets doit diviser les deux nombres.",
+							"label": "PPCM au lieu du PGCD"
+						},
+						{
+							"answer": "{{eval:u+v}}",
+							"message": "Tu as donné le nombre d'objets dans un sachet, pas le nombre de sachets.",
+							"label": "Contenu d'un sachet"
+						},
+						{
+							"answer": "{{B}}",
+							"message": "Avec un sachet par bonbon, les billes ne se partagent pas toutes de la même façon.",
+							"label": "Un sachet par bonbon"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{u}}",
+					"expectedErrors": [
+						{
+							"answer": "{{v}}",
+							"message": "Tu as échangé les billes et les bonbons.",
+							"label": "Billes et bonbons échangés"
+						},
+						{
+							"answer": "{{A}}",
+							"message": "Tu as donné toutes les billes : partage-les entre les sachets.",
+							"label": "Total des billes"
+						},
+						{
+							"answer": "{{g}}",
+							"message": "Tu as donné le nombre de sachets, pas le nombre de billes dans un sachet.",
+							"label": "Nombre de sachets"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{v}}",
+					"expectedErrors": [
+						{
+							"answer": "{{u}}",
+							"message": "Tu as échangé les billes et les bonbons.",
+							"label": "Billes et bonbons échangés"
+						},
+						{
+							"answer": "{{B}}",
+							"message": "Tu as donné tous les bonbons : partage-les entre les sachets.",
+							"label": "Total des bonbons"
+						},
+						{
+							"answer": "{{g}}",
+							"message": "Tu as donné le nombre de sachets, pas le nombre de bonbons dans un sachet.",
+							"label": "Nombre de sachets"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le nombre cherché doit diviser ${{A}}$ et ${{B}}$ : c'est un **diviseur commun**. On cherche le plus grand : le PGCD.",
+					"${{A}}={{g}}\\times{{u}}$ et ${{B}}={{g}}\\times{{v}}$, et ${{u}}$ et ${{v}}$ n'ont aucun diviseur commun autre que $1$ : on ne peut pas faire plus grand que ${{g}}$.",
+					"On fait $\\textcolor{{{color:primary.0}}}{{{g}}}$ sachets. Chacun contient ${{A}}\\div{{g}}=\\textcolor{{{color:primary.0}}}{{{u}}}$ billes et ${{B}}\\div{{g}}=\\textcolor{{{color:primary.0}}}{{{v}}}$ bonbons."
+				]
+			},
+			"hintFromFirstStep": true
+		},
+		{
+			"statement": "Deux phares s'allument en même temps. Le premier se rallume toutes les ${{A}}~\\unit{s}$, le second toutes les ${{B}}~\\unit{s}$.\n\nAu bout de combien de temps se rallumeront-ils de nouveau **ensemble**, pour la première fois ?\n\n$?$",
+			"variables": [
+				{
+					"name": "g",
+					"expression": "2..10"
+				},
+				{
+					"name": "u",
+					"expression": "2..7"
+				},
+				{
+					"name": "v",
+					"expression": "2..7"
+				},
+				{
+					"name": "A",
+					"expression": "eval:g*u"
+				},
+				{
+					"name": "B",
+					"expression": "eval:g*v"
+				},
+				{
+					"name": "L",
+					"expression": "eval:g*u*v"
+				}
+			],
+			"conditions": ["u>v", "gcd(u,v)==1", "g*u*v<=300", "g*u*v>60"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{L}}\\unit{s}",
+					"unit": {
+						"expected": true
+					},
+					"expectedErrors": [
+						{
+							"answer": "{{eval:A*B}}\\unit{s}",
+							"message": "Tu as multiplié les deux durées : c'est un multiple commun, mais pas le plus petit.",
+							"label": "Produit des deux durées"
+						},
+						{
+							"answer": "{{g}}\\unit{s}",
+							"message": "Tu as cherché un diviseur commun : ici, on veut un multiple commun aux deux durées.",
+							"label": "PGCD au lieu du PPCM"
+						},
+						{
+							"answer": "{{eval:A+B}}\\unit{s}",
+							"message": "Tu as additionné les deux durées : ce n'est pas un multiple commun.",
+							"label": "Somme des deux durées"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le premier phare se rallume aux multiples de ${{A}}$, le second aux multiples de ${{B}}$. On cherche le plus petit **multiple commun** : le PPCM.",
+					"On parcourt les multiples de ${{A}}$ : ${{A}}\\times{{v}}={{L}}={{B}}\\times{{u}}$ est le premier qui est aussi un multiple de ${{B}}$.",
+					"Ils se rallument ensemble au bout de $\\textcolor{{{color:primary.0}}}{{{L}}~\\unit{s}}$, soit ${{eval:floor(L/60)}}~\\unit{min}{{if:mod(L,60)>0|~{{eval:mod(L,60)}}~\\unit{s}}}$."
+				]
+			},
+			"hintFromFirstStep": true
 		}
 	],
 	"testSpecs": [
@@ -228,6 +509,478 @@
 			"answers": ["6"],
 			"expected": {
 				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur prévue : PPCM 420",
+			"variationIndex": 0,
+			"variables": {
+				"w": "0",
+				"g": "12",
+				"u": "7",
+				"v": "5"
+			},
+			"answers": ["420"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as cherché un multiple commun : ici, le nombre de sachets doit diviser les deux nombres."
+			}
+		},
+		{
+			"description": "Erreur prévue : 8 objets par sachet (30 billes, 18 bonbons)",
+			"variationIndex": 0,
+			"variables": {
+				"w": "0",
+				"g": "6",
+				"u": "5",
+				"v": "3"
+			},
+			"answers": ["8"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as donné le nombre d'objets dans un sachet, pas le nombre de sachets."
+			}
+		},
+		{
+			"description": "Erreur prévue : 60 sachets",
+			"variationIndex": 0,
+			"variables": {
+				"w": "0",
+				"g": "12",
+				"u": "7",
+				"v": "5"
+			},
+			"answers": ["60"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Avec un sachet par bonbon, les billes ne se partagent pas toutes de la même façon."
+			}
+		},
+		{
+			"description": "Erreur prévue : PPCM 90 pour 30 et 18 cm",
+			"variationIndex": 1,
+			"variables": {
+				"w": "0",
+				"g": "6",
+				"u": "5",
+				"v": "3"
+			},
+			"answers": ["90"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as cherché un multiple commun : ici, la longueur d'un morceau doit diviser les deux longueurs."
+			}
+		},
+		{
+			"description": "Erreur prévue : 8 morceaux",
+			"variationIndex": 1,
+			"variables": {
+				"w": "0",
+				"g": "6",
+				"u": "5",
+				"v": "3"
+			},
+			"answers": ["8"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as donné le nombre de morceaux, pas la longueur d'un morceau."
+			}
+		},
+		{
+			"description": "Erreur prévue : 18 cm",
+			"variationIndex": 1,
+			"variables": {
+				"w": "0",
+				"g": "6",
+				"u": "5",
+				"v": "3"
+			},
+			"answers": ["18"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Le grand ruban ne se coupe pas en morceaux de cette longueur sans chute."
+			}
+		},
+		{
+			"description": "Erreur prévue : 12 × 18",
+			"variationIndex": 2,
+			"variables": {
+				"g": "6",
+				"u": "3",
+				"v": "2"
+			},
+			"answers": ["216"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as multiplié les deux durées : c'est un multiple commun, mais pas le plus petit."
+			}
+		},
+		{
+			"description": "Erreur prévue : PGCD 6",
+			"variationIndex": 2,
+			"variables": {
+				"g": "6",
+				"u": "3",
+				"v": "2"
+			},
+			"answers": ["6"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as cherché un diviseur commun : ici, on veut un multiple commun aux deux durées."
+			}
+		},
+		{
+			"description": "Erreur prévue : 12 + 18",
+			"variationIndex": 2,
+			"variables": {
+				"g": "6",
+				"u": "3",
+				"v": "2"
+			},
+			"answers": ["30"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as additionné les deux durées : ce n'est pas un multiple commun."
+			}
+		},
+		{
+			"description": "Un nombre possible : 12",
+			"variationIndex": 3,
+			"variables": {
+				"w": "0",
+				"g": "12",
+				"u": "7",
+				"v": "5"
+			},
+			"answers": ["12"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Un nombre possible : 2",
+			"variationIndex": 3,
+			"variables": {
+				"w": "0",
+				"g": "12",
+				"u": "7",
+				"v": "5"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Un nombre possible : 3",
+			"variationIndex": 3,
+			"variables": {
+				"w": "0",
+				"g": "12",
+				"u": "7",
+				"v": "5"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Un nombre possible : 4",
+			"variationIndex": 3,
+			"variables": {
+				"w": "0",
+				"g": "12",
+				"u": "7",
+				"v": "5"
+			},
+			"answers": ["4"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Un nombre possible : 6",
+			"variationIndex": 3,
+			"variables": {
+				"w": "0",
+				"g": "12",
+				"u": "7",
+				"v": "5"
+			},
+			"answers": ["6"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "1 refusé",
+			"variationIndex": 3,
+			"variables": {
+				"w": "0",
+				"g": "12",
+				"u": "7",
+				"v": "5"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "5 refusé (ne divise pas 84)",
+			"variationIndex": 3,
+			"variables": {
+				"w": "0",
+				"g": "12",
+				"u": "7",
+				"v": "5"
+			},
+			"answers": ["5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "7 refusé (ne divise pas 60)",
+			"variationIndex": 3,
+			"variables": {
+				"w": "0",
+				"g": "12",
+				"u": "7",
+				"v": "5"
+			},
+			"answers": ["7"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "24 refusé",
+			"variationIndex": 3,
+			"variables": {
+				"w": "0",
+				"g": "12",
+				"u": "7",
+				"v": "5"
+			},
+			"answers": ["24"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "12 sachets de 7 billes et 5 bonbons",
+			"variationIndex": 4,
+			"variables": {
+				"w": "0",
+				"g": "12",
+				"u": "7",
+				"v": "5"
+			},
+			"answers": ["12", "7", "5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur prévue : 420 sachets",
+			"variationIndex": 4,
+			"variables": {
+				"w": "0",
+				"g": "12",
+				"u": "7",
+				"v": "5"
+			},
+			"answers": ["420", "7", "5"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as cherché un multiple commun : ici, le nombre de sachets doit diviser les deux nombres."
+			}
+		},
+		{
+			"description": "Erreur prévue : 5 billes par sachet",
+			"variationIndex": 4,
+			"variables": {
+				"w": "0",
+				"g": "12",
+				"u": "7",
+				"v": "5"
+			},
+			"answers": ["12", "5", "5"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as échangé les billes et les bonbons."
+			}
+		},
+		{
+			"description": "Erreur prévue : 84 billes par sachet",
+			"variationIndex": 4,
+			"variables": {
+				"w": "0",
+				"g": "12",
+				"u": "7",
+				"v": "5"
+			},
+			"answers": ["12", "84", "5"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as donné toutes les billes : partage-les entre les sachets."
+			}
+		},
+		{
+			"description": "Erreur prévue : 12 billes par sachet",
+			"variationIndex": 4,
+			"variables": {
+				"w": "0",
+				"g": "12",
+				"u": "7",
+				"v": "5"
+			},
+			"answers": ["12", "12", "5"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as donné le nombre de sachets, pas le nombre de billes dans un sachet."
+			}
+		},
+		{
+			"description": "Erreur prévue : 7 bonbons par sachet",
+			"variationIndex": 4,
+			"variables": {
+				"w": "0",
+				"g": "12",
+				"u": "7",
+				"v": "5"
+			},
+			"answers": ["12", "7", "7"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as échangé les billes et les bonbons."
+			}
+		},
+		{
+			"description": "Erreur prévue : 60 bonbons par sachet",
+			"variationIndex": 4,
+			"variables": {
+				"w": "0",
+				"g": "12",
+				"u": "7",
+				"v": "5"
+			},
+			"answers": ["12", "7", "60"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as donné tous les bonbons : partage-les entre les sachets."
+			}
+		},
+		{
+			"description": "Erreur prévue : 12 bonbons par sachet",
+			"variationIndex": 4,
+			"variables": {
+				"w": "0",
+				"g": "12",
+				"u": "7",
+				"v": "5"
+			},
+			"answers": ["12", "7", "12"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as donné le nombre de sachets, pas le nombre de bonbons dans un sachet."
+			}
+		},
+		{
+			"description": "Phares 30 s et 25 s : 150 s",
+			"variationIndex": 5,
+			"variables": {
+				"g": "5",
+				"u": "6",
+				"v": "5"
+			},
+			"answers": ["150\\,s"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Phares 30 s et 25 s : 2 min 30 s",
+			"variationIndex": 5,
+			"variables": {
+				"g": "5",
+				"u": "6",
+				"v": "5"
+			},
+			"answers": ["2\\,\\min\\,30\\,s"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Phares : 150 sans unité",
+			"variationIndex": 5,
+			"variables": {
+				"g": "5",
+				"u": "6",
+				"v": "5"
+			},
+			"answers": ["150"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur prévue : 750 s",
+			"variationIndex": 5,
+			"variables": {
+				"g": "5",
+				"u": "6",
+				"v": "5"
+			},
+			"answers": ["750\\,s"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as multiplié les deux durées : c'est un multiple commun, mais pas le plus petit."
+			}
+		},
+		{
+			"description": "Erreur prévue : 12 min 30 s (= 750 s)",
+			"variationIndex": 5,
+			"variables": {
+				"g": "5",
+				"u": "6",
+				"v": "5"
+			},
+			"answers": ["12\\,\\min\\,30\\,s"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as multiplié les deux durées : c'est un multiple commun, mais pas le plus petit."
+			}
+		},
+		{
+			"description": "Erreur prévue : 5 s",
+			"variationIndex": 5,
+			"variables": {
+				"g": "5",
+				"u": "6",
+				"v": "5"
+			},
+			"answers": ["5\\,s"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as cherché un diviseur commun : ici, on veut un multiple commun aux deux durées."
+			}
+		},
+		{
+			"description": "Erreur prévue : 55 s",
+			"variationIndex": 5,
+			"variables": {
+				"g": "5",
+				"u": "6",
+				"v": "5"
+			},
+			"answers": ["55\\,s"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as additionné les deux durées : ce n'est pas un multiple commun."
 			}
 		}
 	]

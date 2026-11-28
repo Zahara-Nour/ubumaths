@@ -50,7 +50,24 @@
 			"conditions": ["gcd(a,b)==1", "gcd(c,d)==1", "c>1", "a*d!=b*c", "D!=1"],
 			"blanks": [
 				{
-					"expectedAnswer": "\\frac{ {{N}} }{ {{D}} }"
+					"expectedAnswer": "\\frac{ {{N}} }{ {{D}} }",
+					"expectedErrors": [
+						{
+							"answer": "\\frac{ {{eval:a*c}} }{ {{eval:b*d}} }",
+							"message": "Tu as multiplié les deux fractions : diviser par une fraction, c'est multiplier par son inverse.",
+							"label": "Multiplication au lieu de division"
+						},
+						{
+							"answer": "\\frac{ {{eval:b*c}} }{ {{eval:a*d}} }",
+							"message": "Tu as inversé la première fraction : c'est celle par laquelle on divise qu'il faut inverser.",
+							"label": "Première fraction inversée"
+						},
+						{
+							"answer": "\\frac{ {{eval:b*d}} }{ {{eval:a*c}} }",
+							"message": "Tu as inversé les deux fractions : seule celle par laquelle on divise s'inverse.",
+							"label": "Les deux fractions inversées"
+						}
+					]
 				}
 			],
 			"correction": {
@@ -59,7 +76,8 @@
 					"$$\\dfrac{ {{a}} }{ {{b}} }\\div\\dfrac{ {{c}} }{ {{d}} }=\\dfrac{ {{a}} }{ {{b}} }\\times\\dfrac{ {{d}} }{ {{c}} }=\\dfrac{ {{a}}\\times{{d}} }{ {{b}}\\times{{c}} }=\\dfrac{ {{X}} }{ {{Y}} }$$",
 					"{{if:g>1|On simplifie par ${{g}}$ : ${{if:X<0|-}}\\dfrac{ {{eval:abs(X)}} }{ {{Y}} }=\\textcolor{{{color:primary.0}}}{{{if:N<0|-}}\\dfrac{ {{eval:abs(N)}} }{ {{D}} }}$.|Le résultat $\\textcolor{{{color:primary.0}}}{{{if:N<0|-}}\\dfrac{ {{eval:abs(N)}} }{ {{D}} }}$ ne se simplifie pas.}}"
 				]
-			}
+			},
+			"hintFromFirstStep": true
 		},
 		{
 			"statement": "Donne le résultat sous la forme d'une fraction irréductible.\n\n${{n}}\\div\\dfrac{ {{a}} }{ {{b}} }=?$",
@@ -97,10 +115,27 @@
 					"expression": "eval:(Y)/(g)"
 				}
 			],
-			"conditions": ["gcd(a,b)==1", "b<a+4", "D!=1"],
+			"conditions": ["gcd(a,b)==1", "b>1", "b<a+4", "D!=1"],
 			"blanks": [
 				{
-					"expectedAnswer": "\\frac{ {{N}} }{ {{D}} }"
+					"expectedAnswer": "\\frac{ {{N}} }{ {{D}} }",
+					"expectedErrors": [
+						{
+							"answer": "\\frac{ {{eval:n*a}} }{ {{b}} }",
+							"message": "Tu as multiplié par la fraction : diviser par une fraction, c'est multiplier par son inverse.",
+							"label": "Multiplication au lieu de division"
+						},
+						{
+							"answer": "\\frac{ {{a}} }{ {{eval:n*b}} }",
+							"message": "Tu as divisé la fraction par l'entier : ici, c'est l'entier qu'on divise par la fraction.",
+							"label": "Division dans le mauvais sens"
+						},
+						{
+							"answer": "\\frac{ {{n}} }{ {{eval:a*b}} }",
+							"message": "Tu as divisé l'entier par le numérateur puis par le dénominateur : diviser par une fraction, c'est multiplier par son inverse.",
+							"label": "Divisé par le numérateur et le dénominateur"
+						}
+					]
 				}
 			],
 			"correction": {
@@ -109,7 +144,8 @@
 					"$${{n}}\\div\\dfrac{ {{a}} }{ {{b}} }={{n}}\\times\\dfrac{ {{b}} }{ {{a}} }=\\dfrac{ {{n}}\\times{{b}} }{ {{a}} }=\\dfrac{ {{X}} }{ {{Y}} }$$",
 					"{{if:g>1|On simplifie par ${{g}}$ : ${{if:X<0|-}}\\dfrac{ {{eval:abs(X)}} }{ {{Y}} }=\\textcolor{{{color:primary.0}}}{{{if:N<0|-}}\\dfrac{ {{eval:abs(N)}} }{ {{D}} }}$.|Le résultat $\\textcolor{{{color:primary.0}}}{{{if:N<0|-}}\\dfrac{ {{eval:abs(N)}} }{ {{D}} }}$ ne se simplifie pas.}}"
 				]
-			}
+			},
+			"hintFromFirstStep": true
 		},
 		{
 			"statement": "Donne le résultat sous la forme d'une fraction irréductible.\n\nCalcule {{if:k==2|la moitié|{{if:k==3|le tiers|le quart}}}} de $\\dfrac{ {{a}} }{ {{b}} }$.\n\n$$?$$",
@@ -150,7 +186,19 @@
 			"conditions": ["gcd(a,b)==1"],
 			"blanks": [
 				{
-					"expectedAnswer": "\\frac{ {{N}} }{ {{D}} }"
+					"expectedAnswer": "\\frac{ {{N}} }{ {{D}} }",
+					"expectedErrors": [
+						{
+							"answer": "\\frac{ {{eval:a*k}} }{ {{b}} }",
+							"message": "Tu as multiplié au lieu de diviser : la moitié, le tiers ou le quart d'un nombre est plus petit que lui.",
+							"label": "Multiplié au lieu de divisé"
+						},
+						{
+							"answer": "\\frac{ {{a}} }{ {{b}} }",
+							"message": "Tu as divisé le numérateur et le dénominateur par le même nombre : la fraction n'a pas changé de valeur.",
+							"label": "Numérateur et dénominateur divisés"
+						}
+					]
 				}
 			],
 			"correction": {
@@ -159,7 +207,76 @@
 					"$$\\dfrac{ {{a}} }{ {{b}} }\\div{{k}}=\\dfrac{ {{a}} }{ {{b}} }\\times\\dfrac{ 1 }{ {{k}} }=\\dfrac{ {{a}} }{ {{b}}\\times{{k}} }=\\dfrac{ {{X}} }{ {{Y}} }$$",
 					"{{if:g>1|On simplifie par ${{g}}$ : ${{if:X<0|-}}\\dfrac{ {{eval:abs(X)}} }{ {{Y}} }=\\textcolor{{{color:primary.0}}}{{{if:N<0|-}}\\dfrac{ {{eval:abs(N)}} }{ {{D}} }}$.|Le résultat $\\textcolor{{{color:primary.0}}}{{{if:N<0|-}}\\dfrac{ {{eval:abs(N)}} }{ {{D}} }}$ ne se simplifie pas.}}"
 				]
-			}
+			},
+			"hintFromFirstStep": true
+		},
+		{
+			"statement": "Donne le résultat sous la forme d'une fraction irréductible.\n\n$\\dfrac{ {{a}} }{ {{b}} }\\div{{n}}=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9"
+				},
+				{
+					"name": "b",
+					"expression": "2..9"
+				},
+				{
+					"name": "n",
+					"expression": "2..9"
+				},
+				{
+					"name": "X",
+					"expression": "eval:a"
+				},
+				{
+					"name": "Y",
+					"expression": "eval:b*n"
+				},
+				{
+					"name": "g",
+					"expression": "eval:gcd(abs(X),Y)"
+				},
+				{
+					"name": "N",
+					"expression": "eval:(X)/(g)"
+				},
+				{
+					"name": "D",
+					"expression": "eval:(Y)/(g)"
+				}
+			],
+			"conditions": ["gcd(a,b)==1"],
+			"blanks": [
+				{
+					"expectedAnswer": "\\frac{ {{N}} }{ {{D}} }",
+					"expectedErrors": [
+						{
+							"answer": "\\frac{ {{eval:a*n}} }{ {{b}} }",
+							"message": "Tu as multiplié par ${{n}}$ au lieu de diviser : le résultat doit être plus petit que la fraction de départ.",
+							"label": "Multiplication au lieu de division"
+						},
+						{
+							"answer": "\\frac{ {{b}} }{ {{eval:a*n}} }",
+							"message": "Tu as inversé la fraction : c'est le nombre par lequel on divise, ${{n}}$, qu'il faut inverser.",
+							"label": "Fraction inversée"
+						},
+						{
+							"answer": "\\frac{ {{eval:n*b}} }{ {{a}} }",
+							"message": "Tu as divisé ${{n}}$ par la fraction : ici, c'est la fraction qu'on divise par ${{n}}$.",
+							"label": "Division dans le mauvais sens"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"Diviser par ${{n}}$, c'est multiplier par son **inverse**, $\\dfrac{ 1 }{ {{n}} }$.",
+					"$$\\dfrac{ {{a}} }{ {{b}} }\\div{{n}}=\\dfrac{ {{a}} }{ {{b}} }\\times\\dfrac{ 1 }{ {{n}} }=\\dfrac{ {{a}} }{ {{b}}\\times{{n}} }=\\dfrac{ {{X}} }{ {{Y}} }$$",
+					"{{if:g>1|On simplifie par ${{g}}$ : ${{if:X<0|-}}\\dfrac{ {{eval:abs(X)}} }{ {{Y}} }=\\textcolor{{{color:primary.0}}}{{{if:N<0|-}}\\dfrac{ {{eval:abs(N)}} }{ {{D}} }}$.|Le résultat $\\textcolor{{{color:primary.0}}}{{{if:N<0|-}}\\dfrac{ {{eval:abs(N)}} }{ {{D}} }}$ ne se simplifie pas.}}"
+				]
+			},
+			"hintFromFirstStep": true
 		}
 	],
 	"testSpecs": [
@@ -281,6 +398,203 @@
 				"b": "3"
 			},
 			"answers": ["\\frac{5}{6}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur prévue : 3/4 × 9/8",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "4",
+				"c": "9",
+				"d": "8"
+			},
+			"answers": ["\\frac{27}{32}"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as multiplié les deux fractions : diviser par une fraction, c'est multiplier par son inverse."
+			}
+		},
+		{
+			"description": "Erreur prévue : 4/3 × 9/8 = 3/2",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "4",
+				"c": "9",
+				"d": "8"
+			},
+			"answers": ["\\frac{3}{2}"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as inversé la première fraction : c'est celle par laquelle on divise qu'il faut inverser."
+			}
+		},
+		{
+			"description": "Erreur prévue : 4/3 × 8/9 = 32/27",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "4",
+				"c": "9",
+				"d": "8"
+			},
+			"answers": ["\\frac{32}{27}"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as inversé les deux fractions : seule celle par laquelle on divise s'inverse."
+			}
+		},
+		{
+			"description": "Erreur prévue : 5 × 2/3 = 10/3",
+			"variationIndex": 1,
+			"variables": {
+				"n": "5",
+				"a": "2",
+				"b": "3"
+			},
+			"answers": ["\\frac{10}{3}"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as multiplié par la fraction : diviser par une fraction, c'est multiplier par son inverse."
+			}
+		},
+		{
+			"description": "Erreur prévue : 2/3 ÷ 5 = 2/15",
+			"variationIndex": 1,
+			"variables": {
+				"n": "5",
+				"a": "2",
+				"b": "3"
+			},
+			"answers": ["\\frac{2}{15}"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as divisé la fraction par l'entier : ici, c'est l'entier qu'on divise par la fraction."
+			}
+		},
+		{
+			"description": "Erreur prévue : 5 ÷ 2 ÷ 3 = 5/6",
+			"variationIndex": 1,
+			"variables": {
+				"n": "5",
+				"a": "2",
+				"b": "3"
+			},
+			"answers": ["\\frac{5}{6}"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as divisé l'entier par le numérateur puis par le dénominateur : diviser par une fraction, c'est multiplier par son inverse."
+			}
+		},
+		{
+			"description": "Erreur prévue : le double de 7/3",
+			"variationIndex": 2,
+			"variables": {
+				"k": "2",
+				"a": "7",
+				"b": "3"
+			},
+			"answers": ["\\frac{14}{3}"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as multiplié au lieu de diviser : la moitié, le tiers ou le quart d'un nombre est plus petit que lui."
+			}
+		},
+		{
+			"description": "Erreur prévue : fraction de départ 7/3",
+			"variationIndex": 2,
+			"variables": {
+				"k": "2",
+				"a": "7",
+				"b": "3"
+			},
+			"answers": ["\\frac{7}{3}"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as divisé le numérateur et le dénominateur par le même nombre : la fraction n'a pas changé de valeur."
+			}
+		},
+		{
+			"description": "2/3 ÷ 5 = 2/15",
+			"variationIndex": 3,
+			"variables": {
+				"a": "2",
+				"b": "3",
+				"n": "5"
+			},
+			"answers": ["\\frac{2}{15}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "2/3 ÷ 5 : 4/30 non simplifiée",
+			"variationIndex": 3,
+			"variables": {
+				"a": "2",
+				"b": "3",
+				"n": "5"
+			},
+			"answers": ["\\frac{4}{30}"],
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["reducedFractions"]
+			}
+		},
+		{
+			"description": "Erreur prévue : 2/3 × 5 = 10/3",
+			"variationIndex": 3,
+			"variables": {
+				"a": "2",
+				"b": "3",
+				"n": "5"
+			},
+			"answers": ["\\frac{10}{3}"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as multiplié par $5$ au lieu de diviser : le résultat doit être plus petit que la fraction de départ."
+			}
+		},
+		{
+			"description": "Erreur prévue : 3/2 ÷ 5 = 3/10",
+			"variationIndex": 3,
+			"variables": {
+				"a": "2",
+				"b": "3",
+				"n": "5"
+			},
+			"answers": ["\\frac{3}{10}"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as inversé la fraction : c'est le nombre par lequel on divise, $5$, qu'il faut inverser."
+			}
+		},
+		{
+			"description": "Erreur prévue : 5 ÷ 2/3 = 15/2",
+			"variationIndex": 3,
+			"variables": {
+				"a": "2",
+				"b": "3",
+				"n": "5"
+			},
+			"answers": ["\\frac{15}{2}"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as divisé $5$ par la fraction : ici, c'est la fraction qu'on divise par $5$."
+			}
+		},
+		{
+			"description": "6/7 ÷ 4 = 3/14",
+			"variationIndex": 3,
+			"variables": {
+				"a": "6",
+				"b": "7",
+				"n": "4"
+			},
+			"answers": ["\\frac{3}{14}"],
 			"expected": {
 				"status": "correct"
 			}

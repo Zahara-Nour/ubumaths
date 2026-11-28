@@ -1,7 +1,7 @@
 {
 	"id": "c99ae1e8-25bd-4cf4-b2ed-dbcf2b3c672d",
 	"title": "Encadrement décimal à 10⁻ⁿ près",
-	"description": "Encadrer √2, √3, √5, √7, π, 2/7 ou 5/3, développement donné, à 10⁻¹, 10⁻² ou 10⁻³ près ; un entier à la dizaine ou à la centaine",
+	"description": "Encadrer √2, √3, √5, √7, π, 2/7 ou 5/3, développement donné, à 10⁻¹, 10⁻² ou 10⁻³ près ; un entier à la dizaine ou à la centaine ; l'encadrement au centième lu sur deux zooms",
 	"grades": ["2"],
 	"level": 8,
 	"delay": 60,
@@ -16,10 +16,34 @@
 		{
 			"blanks": [
 				{
-					"expectedAnswer": "{{eval:floor((x)*10^(n))/10^(n)}}"
+					"expectedAnswer": "{{eval:floor((x)*10^(n))/10^(n)}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:(floor((x)*10^(n))+1)/10^(n)}}",
+							"message": "Tu as échangé les bornes : la plus petite va à gauche.",
+							"label": "Bornes échangées"
+						},
+						{
+							"answer": "{{eval:floor((x)*10^((n)-1))/10^((n)-1)}}",
+							"message": "Regarde la précision demandée : ta borne n'a pas le bon nombre de chiffres après la virgule.",
+							"label": "Une décimale de moins"
+						}
+					]
 				},
 				{
-					"expectedAnswer": "{{eval:(floor((x)*10^(n))+1)/10^(n)}}"
+					"expectedAnswer": "{{eval:(floor((x)*10^(n))+1)/10^(n)}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:floor((x)*10^(n))/10^(n)}}",
+							"message": "Tes deux bornes doivent être différentes : celle du haut est plus grande que le nombre.",
+							"label": "Même borne en bas et en haut (arrondi)"
+						},
+						{
+							"answer": "{{eval:(floor((x)*10^((n)-1))+1)/10^((n)-1)}}",
+							"message": "Regarde la précision demandée : ta borne n'a pas le bon nombre de chiffres après la virgule.",
+							"label": "Une décimale de moins"
+						}
+					]
 				}
 			],
 			"statement": "On donne ${{if:m==0|\\sqrt{2}|{{if:m==1|\\sqrt{2}|{{if:m==2|\\sqrt{2}|{{if:m==3|\\sqrt{3}|{{if:m==4|\\sqrt{3}|{{if:m==5|\\sqrt{3}|{{if:m==6|\\sqrt{5}|{{if:m==7|\\sqrt{5}|{{if:m==8|\\sqrt{5}|{{if:m==9|\\sqrt{7}|{{if:m==10|\\sqrt{7}|{{if:m==11|\\sqrt{7}|{{if:m==12|\\pi|{{if:m==13|\\pi|{{if:m==14|\\pi|{{if:m==15|\\dfrac{2}{7}|{{if:m==16|\\dfrac{2}{7}|{{if:m==17|\\dfrac{2}{7}|{{if:m==18|\\dfrac{5}{3}|{{if:m==19|\\dfrac{5}{3}|\\dfrac{5}{3}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}={{if:m==0|1{,}414213\\ldots|{{if:m==1|1{,}414213\\ldots|{{if:m==2|1{,}414213\\ldots|{{if:m==3|1{,}732050\\ldots|{{if:m==4|1{,}732050\\ldots|{{if:m==5|1{,}732050\\ldots|{{if:m==6|2{,}236067\\ldots|{{if:m==7|2{,}236067\\ldots|{{if:m==8|2{,}236067\\ldots|{{if:m==9|2{,}645751\\ldots|{{if:m==10|2{,}645751\\ldots|{{if:m==11|2{,}645751\\ldots|{{if:m==12|3{,}141592\\ldots|{{if:m==13|3{,}141592\\ldots|{{if:m==14|3{,}141592\\ldots|{{if:m==15|0{,}285714\\ldots|{{if:m==16|0{,}285714\\ldots|{{if:m==17|0{,}285714\\ldots|{{if:m==18|1{,}666666\\ldots|{{if:m==19|1{,}666666\\ldots|1{,}666666\\ldots}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}$. Donne son encadrement décimal à $10^{-{{if:m==0|1|{{if:m==1|2|{{if:m==2|3|{{if:m==3|1|{{if:m==4|2|{{if:m==5|3|{{if:m==6|1|{{if:m==7|2|{{if:m==8|3|{{if:m==9|1|{{if:m==10|2|{{if:m==11|3|{{if:m==12|1|{{if:m==13|2|{{if:m==14|3|{{if:m==15|1|{{if:m==16|2|{{if:m==17|3|{{if:m==18|1|{{if:m==19|2|3}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}$ près.\n\n$$?<{{if:m==0|\\sqrt{2}|{{if:m==1|\\sqrt{2}|{{if:m==2|\\sqrt{2}|{{if:m==3|\\sqrt{3}|{{if:m==4|\\sqrt{3}|{{if:m==5|\\sqrt{3}|{{if:m==6|\\sqrt{5}|{{if:m==7|\\sqrt{5}|{{if:m==8|\\sqrt{5}|{{if:m==9|\\sqrt{7}|{{if:m==10|\\sqrt{7}|{{if:m==11|\\sqrt{7}|{{if:m==12|\\pi|{{if:m==13|\\pi|{{if:m==14|\\pi|{{if:m==15|\\dfrac{2}{7}|{{if:m==16|\\dfrac{2}{7}|{{if:m==17|\\dfrac{2}{7}|{{if:m==18|\\dfrac{5}{3}|{{if:m==19|\\dfrac{5}{3}|\\dfrac{5}{3}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}<?$$",
@@ -46,15 +70,50 @@
 					"À $10^{-{{if:m==0|1|{{if:m==1|2|{{if:m==2|3|{{if:m==3|1|{{if:m==4|2|{{if:m==5|3|{{if:m==6|1|{{if:m==7|2|{{if:m==8|3|{{if:m==9|1|{{if:m==10|2|{{if:m==11|3|{{if:m==12|1|{{if:m==13|2|{{if:m==14|3|{{if:m==15|1|{{if:m==16|2|{{if:m==17|3|{{if:m==18|1|{{if:m==19|2|3}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}$ près : deux décimaux à {{if:m==0|un chiffre|{{if:m==1|deux chiffres|{{if:m==2|trois chiffres|{{if:m==3|un chiffre|{{if:m==4|deux chiffres|{{if:m==5|trois chiffres|{{if:m==6|un chiffre|{{if:m==7|deux chiffres|{{if:m==8|trois chiffres|{{if:m==9|un chiffre|{{if:m==10|deux chiffres|{{if:m==11|trois chiffres|{{if:m==12|un chiffre|{{if:m==13|deux chiffres|{{if:m==14|trois chiffres|{{if:m==15|un chiffre|{{if:m==16|deux chiffres|{{if:m==17|trois chiffres|{{if:m==18|un chiffre|{{if:m==19|deux chiffres|trois chiffres}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}} après la virgule, qui se suivent (écart $10^{-{{if:m==0|1|{{if:m==1|2|{{if:m==2|3|{{if:m==3|1|{{if:m==4|2|{{if:m==5|3|{{if:m==6|1|{{if:m==7|2|{{if:m==8|3|{{if:m==9|1|{{if:m==10|2|{{if:m==11|3|{{if:m==12|1|{{if:m==13|2|{{if:m==14|3|{{if:m==15|1|{{if:m==16|2|{{if:m==17|3|{{if:m==18|1|{{if:m==19|2|3}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}$). On **tronque** le développement pour la borne du bas, on ajoute $10^{-{{if:m==0|1|{{if:m==1|2|{{if:m==2|3|{{if:m==3|1|{{if:m==4|2|{{if:m==5|3|{{if:m==6|1|{{if:m==7|2|{{if:m==8|3|{{if:m==9|1|{{if:m==10|2|{{if:m==11|3|{{if:m==12|1|{{if:m==13|2|{{if:m==14|3|{{if:m==15|1|{{if:m==16|2|{{if:m==17|3|{{if:m==18|1|{{if:m==19|2|3}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}$ pour celle du haut.",
 					"$$\\textcolor{{{color:primary.0}}}{{{if:m==0|1{,}4|{{if:m==1|1{,}41|{{if:m==2|1{,}414|{{if:m==3|1{,}7|{{if:m==4|1{,}73|{{if:m==5|1{,}732|{{if:m==6|2{,}2|{{if:m==7|2{,}23|{{if:m==8|2{,}236|{{if:m==9|2{,}6|{{if:m==10|2{,}64|{{if:m==11|2{,}645|{{if:m==12|3{,}1|{{if:m==13|3{,}14|{{if:m==14|3{,}141|{{if:m==15|0{,}2|{{if:m==16|0{,}28|{{if:m==17|0{,}285|{{if:m==18|1{,}6|{{if:m==19|1{,}66|1{,}666}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}<{{if:m==0|\\sqrt{2}|{{if:m==1|\\sqrt{2}|{{if:m==2|\\sqrt{2}|{{if:m==3|\\sqrt{3}|{{if:m==4|\\sqrt{3}|{{if:m==5|\\sqrt{3}|{{if:m==6|\\sqrt{5}|{{if:m==7|\\sqrt{5}|{{if:m==8|\\sqrt{5}|{{if:m==9|\\sqrt{7}|{{if:m==10|\\sqrt{7}|{{if:m==11|\\sqrt{7}|{{if:m==12|\\pi|{{if:m==13|\\pi|{{if:m==14|\\pi|{{if:m==15|\\dfrac{2}{7}|{{if:m==16|\\dfrac{2}{7}|{{if:m==17|\\dfrac{2}{7}|{{if:m==18|\\dfrac{5}{3}|{{if:m==19|\\dfrac{5}{3}|\\dfrac{5}{3}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}<\\textcolor{{{color:primary.1}}}{{{if:m==0|1{,}5|{{if:m==1|1{,}42|{{if:m==2|1{,}415|{{if:m==3|1{,}8|{{if:m==4|1{,}74|{{if:m==5|1{,}733|{{if:m==6|2{,}3|{{if:m==7|2{,}24|{{if:m==8|2{,}237|{{if:m==9|2{,}7|{{if:m==10|2{,}65|{{if:m==11|2{,}646|{{if:m==12|3{,}2|{{if:m==13|3{,}15|{{if:m==14|3{,}142|{{if:m==15|0{,}3|{{if:m==16|0{,}29|{{if:m==17|0{,}286|{{if:m==18|1{,}7|{{if:m==19|1{,}67|1{,}667}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}$$"
 				]
-			}
+			},
+			"hintFromFirstStep": true
 		},
 		{
 			"blanks": [
 				{
-					"expectedAnswer": "{{eval:10*(q)}}"
+					"expectedAnswer": "{{eval:10*(q)}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:10*(q)+10}}",
+							"message": "Tu as échangé les bornes : la plus petite va à gauche.",
+							"label": "Bornes échangées"
+						},
+						{
+							"answer": "{{eval:100*floor((q)/10)}}",
+							"message": "Regarde la précision demandée : à la dizaine, l'écart entre les bornes est $10$.",
+							"label": "Encadrement à la centaine"
+						},
+						{
+							"answer": "{{eval:(n)-1}}",
+							"message": "Regarde la précision demandée : à la dizaine, l'écart entre les bornes est $10$.",
+							"label": "Encadrement à l'unité"
+						}
+					]
 				},
 				{
-					"expectedAnswer": "{{eval:10*(q)+10}}"
+					"expectedAnswer": "{{eval:10*(q)+10}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:10*(q)}}",
+							"message": "Tu as échangé les bornes : la plus petite va à gauche.",
+							"label": "Bornes échangées"
+						},
+						{
+							"answer": "{{eval:100*floor((q)/10)+100}}",
+							"message": "Regarde la précision demandée : à la dizaine, l'écart entre les bornes est $10$.",
+							"label": "Encadrement à la centaine"
+						},
+						{
+							"answer": "{{eval:(n)+1}}",
+							"message": "Regarde la précision demandée : à la dizaine, l'écart entre les bornes est $10$.",
+							"label": "Encadrement à l'unité"
+						}
+					]
 				}
 			],
 			"statement": "Donne l'encadrement de ${{n}}$ à la dizaine.\n\n$$?<{{n}}<?$$",
@@ -77,15 +136,50 @@
 					"À la dizaine : deux **multiples de $10$ consécutifs** (écart $10$). On remplace le chiffre des unités par $0$ pour la borne du bas, on ajoute $10$ pour celle du haut.",
 					"$$\\textcolor{{{color:primary.0}}}{{{eval:10*(q)}}}<{{n}}<\\textcolor{{{color:primary.1}}}{{{eval:10*(q)+10}}}$$"
 				]
-			}
+			},
+			"hint": "À la dizaine : cherche les deux multiples de $10$ consécutifs entre lesquels se trouve ${{n}}$."
 		},
 		{
 			"blanks": [
 				{
-					"expectedAnswer": "{{eval:100*(q)}}"
+					"expectedAnswer": "{{eval:100*(q)}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:100*(q)+100}}",
+							"message": "Tu as échangé les bornes : la plus petite va à gauche.",
+							"label": "Bornes échangées"
+						},
+						{
+							"answer": "{{eval:10*floor((n)/10)}}",
+							"message": "Regarde la précision demandée : à la centaine, l'écart entre les bornes est $100$.",
+							"label": "Encadrement à la dizaine"
+						},
+						{
+							"answer": "{{eval:1000*floor((q)/10)}}",
+							"message": "Regarde la précision demandée : à la centaine, l'écart entre les bornes est $100$.",
+							"label": "Encadrement au millier"
+						}
+					]
 				},
 				{
-					"expectedAnswer": "{{eval:100*(q)+100}}"
+					"expectedAnswer": "{{eval:100*(q)+100}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:100*(q)}}",
+							"message": "Tu as échangé les bornes : la plus petite va à gauche.",
+							"label": "Bornes échangées"
+						},
+						{
+							"answer": "{{eval:10*floor((n)/10)+10}}",
+							"message": "Regarde la précision demandée : à la centaine, l'écart entre les bornes est $100$.",
+							"label": "Encadrement à la dizaine"
+						},
+						{
+							"answer": "{{eval:1000*floor((q)/10)+1000}}",
+							"message": "Regarde la précision demandée : à la centaine, l'écart entre les bornes est $100$.",
+							"label": "Encadrement au millier"
+						}
+					]
 				}
 			],
 			"statement": "Donne l'encadrement de ${{n}}$ à la centaine.\n\n$$?<{{n}}<?$$",
@@ -108,7 +202,95 @@
 					"À la centaine : deux **multiples de $100$ consécutifs** (écart $100$). On remplace les chiffres des dizaines et des unités par $0$ pour la borne du bas, on ajoute $100$ pour celle du haut.",
 					"$$\\textcolor{{{color:primary.0}}}{{{eval:100*(q)}}}<{{n}}<\\textcolor{{{color:primary.1}}}{{{eval:100*(q)+100}}}$$"
 				]
-			}
+			},
+			"hint": "À la centaine : cherche les deux multiples de $100$ consécutifs entre lesquels se trouve ${{n}}$."
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{H}}",
+					"expectedErrors": [
+						{
+							"answer": "{{G}}",
+							"message": "Au centième, les deux bornes ont deux chiffres après la virgule : lis-les sur le zoom où une graduation vaut $0{,}01$.",
+							"label": "Encadrement au dixième"
+						},
+						{
+							"answer": "{{K}}",
+							"message": "Tu as échangé les bornes : la plus petite va à gauche.",
+							"label": "Bornes échangées"
+						},
+						{
+							"answer": "{{M}}",
+							"message": "Au centième, l'écart entre les bornes est $0{,}01$ : tu as lu le dernier zoom, où une graduation vaut $0{,}001$.",
+							"label": "Encadrement au millième"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{K}}",
+					"expectedErrors": [
+						{
+							"answer": "{{D}}",
+							"message": "Au centième, les deux bornes ont deux chiffres après la virgule : lis-les sur le zoom où une graduation vaut $0{,}01$.",
+							"label": "Encadrement au dixième"
+						},
+						{
+							"answer": "{{H}}",
+							"message": "Tu as échangé les bornes : la plus grande va à droite.",
+							"label": "Bornes échangées"
+						},
+						{
+							"answer": "{{eval:(1000*(M)+1)/1000;d}}",
+							"message": "Au centième, l'écart entre les bornes est $0{,}01$ : tu as lu le dernier zoom, où une graduation vaut $0{,}001$.",
+							"label": "Encadrement au millième"
+						}
+					]
+				}
+			],
+			"statement": "Le point $A$ repère le nombre ${{if:t==0|\\sqrt{2}|{{if:t==1|\\sqrt{3}|{{if:t==2|\\sqrt{5}|{{if:t==3|\\sqrt{7}|\\pi}}}}}}}}$, sur la droite graduée et sur deux droites agrandies. Donne l'encadrement de ${{if:t==0|\\sqrt{2}|{{if:t==1|\\sqrt{3}|{{if:t==2|\\sqrt{5}|{{if:t==3|\\sqrt{7}|\\pi}}}}}}}}$ au centième.\n\n```line\nstart: {{E}}\nend: {{eval:(E)+1}}\nstep: 0.1\nlabels: {{E}}, {{eval:(E)+1}}\npoints: A={{x}}\nzoom: {{G}} ; {{D}} ; step 0.01\nzoom: {{H}} ; {{K}} ; step 0.001\n```\n\n$$?<{{if:t==0|\\sqrt{2}|{{if:t==1|\\sqrt{3}|{{if:t==2|\\sqrt{5}|{{if:t==3|\\sqrt{7}|\\pi}}}}}}}}<?$$",
+			"variables": [
+				{
+					"name": "t",
+					"expression": "0..4"
+				},
+				{
+					"name": "x",
+					"expression": "eval:(1-min(abs(t-0),1))*1.41421356+(1-min(abs(t-1),1))*1.73205080+(1-min(abs(t-2),1))*2.23606797+(1-min(abs(t-3),1))*2.64575131+(1-min(abs(t-4),1))*3.14159265"
+				},
+				{
+					"name": "E",
+					"expression": "eval:floor(x)"
+				},
+				{
+					"name": "G",
+					"expression": "eval:floor(10*(x))/10;d"
+				},
+				{
+					"name": "D",
+					"expression": "eval:(floor(10*(x))+1)/10;d"
+				},
+				{
+					"name": "H",
+					"expression": "eval:floor(100*(x))/100;d"
+				},
+				{
+					"name": "K",
+					"expression": "eval:(floor(100*(x))+1)/100;d"
+				},
+				{
+					"name": "M",
+					"expression": "eval:floor(1000*(x))/1000;d"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Au centième** : deux décimaux à deux chiffres après la virgule, qui se suivent (écart $0{,}01$). Ce sont les deux graduations qui entourent $A$ sur le zoom où une graduation vaut $0{,}01$.",
+					"Sur la première droite, $A$ est entre ${{G}}$ et ${{D}}$ ; sur le premier zoom, entre ${{H}}$ et ${{K}}$.\n\n```line\nstart: {{E}}\nend: {{eval:(E)+1}}\nstep: 0.1\nlabels: {{E}}, {{eval:(E)+1}}\npoints: A={{x}}\nzoom: {{G}} ; {{D}} ; step 0.01 ; labels {{G}}, {{D}}\nzoom: {{H}} ; {{K}} ; step 0.001 ; labels {{H}}, {{K}}\n```",
+					"$$\\textcolor{{{color:primary.0}}}{{{H}}}<{{if:t==0|\\sqrt{2}|{{if:t==1|\\sqrt{3}|{{if:t==2|\\sqrt{5}|{{if:t==3|\\sqrt{7}|\\pi}}}}}}}}<\\textcolor{{{color:primary.1}}}{{{K}}}$$"
+				]
+			},
+			"hint": "Cherche la droite où une graduation vaut $0{,}01$, puis les deux graduations qui entourent $A$."
 		}
 	],
 	"testSpecs": [
@@ -129,7 +311,8 @@
 		{
 			"answers": ["1.73", "1.73"],
 			"expected": {
-				"status": "incorrect"
+				"status": "incorrect",
+				"expectedErrorMessage": "Tes deux bornes doivent être différentes : celle du haut est plus grande que le nombre."
 			},
 			"variables": {
 				"m": "4",
@@ -285,6 +468,369 @@
 			},
 			"description": "407 à la centaine : 400 et 500",
 			"variationIndex": 2
+		},
+		{
+			"answers": ["1.7", "1.74"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Regarde la précision demandée : ta borne n'a pas le bon nombre de chiffres après la virgule."
+			},
+			"variables": {
+				"n": "2",
+				"t": "1"
+			},
+			"description": "Erreur prévue : 1,7 en bas",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["1.73", "1.8"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Regarde la précision demandée : ta borne n'a pas le bon nombre de chiffres après la virgule."
+			},
+			"variables": {
+				"n": "2",
+				"t": "1"
+			},
+			"description": "Erreur prévue : 1,8 en haut",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["1.667", "1.667"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as échangé les bornes : la plus petite va à gauche."
+			},
+			"variables": {
+				"n": "3",
+				"t": "6"
+			},
+			"description": "Erreur prévue : 1,667 en bas",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["350", "350"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as échangé les bornes : la plus petite va à gauche."
+			},
+			"variables": {
+				"q": "34",
+				"r": "7"
+			},
+			"description": "Erreur prévue : 350 en bas",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["300", "350"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Regarde la précision demandée : à la dizaine, l'écart entre les bornes est $10$."
+			},
+			"variables": {
+				"q": "34",
+				"r": "7"
+			},
+			"description": "Erreur prévue : 300 en bas",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["346", "350"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Regarde la précision demandée : à la dizaine, l'écart entre les bornes est $10$."
+			},
+			"variables": {
+				"q": "34",
+				"r": "7"
+			},
+			"description": "Erreur prévue : 346 en bas",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["340", "400"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Regarde la précision demandée : à la dizaine, l'écart entre les bornes est $10$."
+			},
+			"variables": {
+				"q": "34",
+				"r": "7"
+			},
+			"description": "Erreur prévue : 400 en haut",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["340", "348"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Regarde la précision demandée : à la dizaine, l'écart entre les bornes est $10$."
+			},
+			"variables": {
+				"q": "34",
+				"r": "7"
+			},
+			"description": "Erreur prévue : 348 en haut",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["3\\,500", "3\\,500"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as échangé les bornes : la plus petite va à gauche."
+			},
+			"variables": {
+				"q": "34",
+				"r": "62"
+			},
+			"description": "Erreur prévue : 3 500 en bas",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["3\\,460", "3\\,500"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Regarde la précision demandée : à la centaine, l'écart entre les bornes est $100$."
+			},
+			"variables": {
+				"q": "34",
+				"r": "62"
+			},
+			"description": "Erreur prévue : 3 460 en bas",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["3\\,000", "3\\,500"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Regarde la précision demandée : à la centaine, l'écart entre les bornes est $100$."
+			},
+			"variables": {
+				"q": "34",
+				"r": "62"
+			},
+			"description": "Erreur prévue : 3 000 en bas",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["3\\,400", "3\\,470"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Regarde la précision demandée : à la centaine, l'écart entre les bornes est $100$."
+			},
+			"variables": {
+				"q": "34",
+				"r": "62"
+			},
+			"description": "Erreur prévue : 3 470 en haut",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["3\\,400", "4\\,000"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Regarde la précision demandée : à la centaine, l'écart entre les bornes est $100$."
+			},
+			"variables": {
+				"q": "34",
+				"r": "62"
+			},
+			"description": "Erreur prévue : 4 000 en haut",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["340", "340"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as échangé les bornes : la plus petite va à gauche."
+			},
+			"variables": {
+				"q": "34",
+				"r": "7"
+			},
+			"description": "Erreur prévue : 340 en haut",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["3\\,400", "3\\,400"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as échangé les bornes : la plus petite va à gauche."
+			},
+			"variables": {
+				"q": "34",
+				"r": "62"
+			},
+			"description": "Erreur prévue : 3 400 en haut",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["1.41", "1.42"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"t": "0",
+				"x": "1.41421356",
+				"E": "1",
+				"G": "1.4",
+				"D": "1.5",
+				"H": "1.41",
+				"K": "1.42",
+				"M": "1.414"
+			},
+			"description": "√2 au centième, sur les zooms : 1,41 et 1,42",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["1.4", "1.42"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Au centième, les deux bornes ont deux chiffres après la virgule : lis-les sur le zoom où une graduation vaut $0{,}01$."
+			},
+			"variables": {
+				"t": "0",
+				"x": "1.41421356",
+				"E": "1",
+				"G": "1.4",
+				"D": "1.5",
+				"H": "1.41",
+				"K": "1.42",
+				"M": "1.414"
+			},
+			"description": "Erreur prévue : 1,4 en bas (au dixième)",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["1.41", "1.5"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Au centième, les deux bornes ont deux chiffres après la virgule : lis-les sur le zoom où une graduation vaut $0{,}01$."
+			},
+			"variables": {
+				"t": "0",
+				"x": "1.41421356",
+				"E": "1",
+				"G": "1.4",
+				"D": "1.5",
+				"H": "1.41",
+				"K": "1.42",
+				"M": "1.414"
+			},
+			"description": "Erreur prévue : 1,5 en haut (au dixième)",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["1.42", "1.42"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as échangé les bornes : la plus petite va à gauche."
+			},
+			"variables": {
+				"t": "0",
+				"x": "1.41421356",
+				"E": "1",
+				"G": "1.4",
+				"D": "1.5",
+				"H": "1.41",
+				"K": "1.42",
+				"M": "1.414"
+			},
+			"description": "Erreur prévue : 1,42 en bas (bornes échangées)",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["1.41", "1.41"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as échangé les bornes : la plus grande va à droite."
+			},
+			"variables": {
+				"t": "0",
+				"x": "1.41421356",
+				"E": "1",
+				"G": "1.4",
+				"D": "1.5",
+				"H": "1.41",
+				"K": "1.42",
+				"M": "1.414"
+			},
+			"description": "Erreur prévue : 1,41 en haut (bornes échangées)",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["1.414", "1.42"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Au centième, l'écart entre les bornes est $0{,}01$ : tu as lu le dernier zoom, où une graduation vaut $0{,}001$."
+			},
+			"variables": {
+				"t": "0",
+				"x": "1.41421356",
+				"E": "1",
+				"G": "1.4",
+				"D": "1.5",
+				"H": "1.41",
+				"K": "1.42",
+				"M": "1.414"
+			},
+			"description": "Erreur prévue : 1,414 en bas (au millième)",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["1.41", "1.415"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Au centième, l'écart entre les bornes est $0{,}01$ : tu as lu le dernier zoom, où une graduation vaut $0{,}001$."
+			},
+			"variables": {
+				"t": "0",
+				"x": "1.41421356",
+				"E": "1",
+				"G": "1.4",
+				"D": "1.5",
+				"H": "1.41",
+				"K": "1.42",
+				"M": "1.414"
+			},
+			"description": "Erreur prévue : 1,415 en haut (au millième)",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["1.4", "1.5"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"t": "0",
+				"x": "1.41421356",
+				"E": "1",
+				"G": "1.4",
+				"D": "1.5",
+				"H": "1.41",
+				"K": "1.42",
+				"M": "1.414"
+			},
+			"description": "Erreur : encadrement au dixième (1,4 et 1,5)",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["3.14", "3.15"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"t": "4",
+				"x": "3.14159265",
+				"E": "3",
+				"G": "3.1",
+				"D": "3.2",
+				"H": "3.14",
+				"K": "3.15",
+				"M": "3.141"
+			},
+			"description": "π au centième : 3,14 et 3,15",
+			"variationIndex": 3
 		}
 	]
 }

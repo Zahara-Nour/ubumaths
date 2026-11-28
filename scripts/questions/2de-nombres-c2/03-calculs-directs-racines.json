@@ -18,7 +18,24 @@
 			"conditions": [],
 			"blanks": [
 				{
-					"expectedAnswer": "{{a}}"
+					"expectedAnswer": "{{a}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:a^2}}",
+							"message": "Tu as élevé au carré le nombre sous la racine, au lieu d'élever au carré sa racine.",
+							"label": "Carré du nombre sous la racine"
+						},
+						{
+							"answer": "{{eval:2*a}}",
+							"message": "Tu as doublé le nombre : élever au carré, ce n'est pas multiplier par 2.",
+							"label": "Double au lieu du carré"
+						},
+						{
+							"answer": "2\\sqrt{ {{a}} }",
+							"message": "Tu as doublé la racine : élever au carré, ce n'est pas multiplier par 2.",
+							"label": "Racine doublée"
+						}
+					]
 				}
 			],
 			"correction": {
@@ -26,7 +43,8 @@
 					"Par définition, $\\sqrt{ {{a}} }$ est le nombre positif dont le carré vaut ${{a}}$.",
 					"$(\\sqrt{ {{a}} })^2=\\textcolor{{{color:primary.0}}}{{{a}}}$."
 				]
-			}
+			},
+			"hint": "Que veut dire $\\sqrt{ {{a}} }$ ? Reviens à sa définition."
 		},
 		{
 			"statement": "Calcule.\n\n$$\\sqrt{ {{a}} }\\times\\sqrt{ {{a}} }=?$$",
@@ -39,7 +57,24 @@
 			"conditions": [],
 			"blanks": [
 				{
-					"expectedAnswer": "{{a}}"
+					"expectedAnswer": "{{a}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:a^2}}",
+							"message": "Tu as perdu la racine en route : $\\sqrt{ {{a}} }\\times\\sqrt{ {{a}} }$ ne vaut pas ${{a}}\\times{{a}}$.",
+							"label": "Racines oubliées : a × a"
+						},
+						{
+							"answer": "2\\sqrt{ {{a}} }",
+							"message": "Tu as additionné les deux racines au lieu de les multiplier.",
+							"label": "Addition au lieu de multiplication"
+						},
+						{
+							"answer": "{{eval:2*a}}",
+							"message": "Tu as calculé ${{a}}+{{a}}$ : ici, on multiplie.",
+							"label": "a + a au lieu de √a × √a"
+						}
+					]
 				}
 			],
 			"correction": {
@@ -47,7 +82,8 @@
 					"$\\sqrt{ {{a}} }\\times\\sqrt{ {{a}} }=(\\sqrt{ {{a}} })^2$.",
 					"Le carré de $\\sqrt{ {{a}} }$ vaut ${{a}}$ : $\\sqrt{ {{a}} }\\times\\sqrt{ {{a}} }=\\textcolor{{{color:primary.0}}}{{{a}}}$."
 				]
-			}
+			},
+			"hintFromFirstStep": true
 		},
 		{
 			"statement": "Calcule.\n\n$${{p}}\\sqrt{ {{a}} }\\times{{q}}\\sqrt{ {{a}} }=?$$",
@@ -68,7 +104,24 @@
 			"conditions": [],
 			"blanks": [
 				{
-					"expectedAnswer": "{{eval:p*q*a}}"
+					"expectedAnswer": "{{eval:p*q*a}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:p*q}}\\sqrt{ {{a}} }",
+							"message": "Tu as multiplié les nombres devant, mais pas les racines entre elles.",
+							"label": "Racines non multipliées"
+						},
+						{
+							"answer": "{{eval:p*q*a^2}}",
+							"message": "Tu as compté $\\sqrt{ {{a}} }\\times\\sqrt{ {{a}} }$ comme ${{a}}\\times{{a}}$.",
+							"label": "√a × √a compté a²"
+						},
+						{
+							"answer": "{{eval:2*p*q*a}}",
+							"message": "Tu as compté $\\sqrt{ {{a}} }\\times\\sqrt{ {{a}} }$ comme ${{a}}+{{a}}$.",
+							"label": "√a × √a compté 2a"
+						}
+					]
 				}
 			],
 			"correction": {
@@ -76,7 +129,8 @@
 					"On regroupe les nombres et les racines : ${{p}}\\sqrt{ {{a}} }\\times{{q}}\\sqrt{ {{a}} }=({{p}}\\times{{q}})\\times(\\sqrt{ {{a}} }\\times\\sqrt{ {{a}} })$.",
 					"$\\sqrt{ {{a}} }\\times\\sqrt{ {{a}} }={{a}}$, donc le produit vaut ${{eval:p*q}}\\times{{a}}=\\textcolor{{{color:primary.0}}}{{{eval:p*q*a}}}$."
 				]
-			}
+			},
+			"hintFromFirstStep": true
 		},
 		{
 			"statement": "Calcule.\n\n$$({{p}}\\sqrt{ {{a}} })^2=?$$",
@@ -93,7 +147,24 @@
 			"conditions": [],
 			"blanks": [
 				{
-					"expectedAnswer": "{{eval:p^2*a}}"
+					"expectedAnswer": "{{eval:p^2*a}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:p*a}}",
+							"message": "Tu as élevé la racine au carré, mais pas le nombre ${{p}}$ devant.",
+							"label": "Nombre devant pas élevé au carré"
+						},
+						{
+							"answer": "{{eval:p^2}}\\sqrt{ {{a}} }",
+							"message": "Tu as élevé ${{p}}$ au carré, mais pas la racine.",
+							"label": "Racine pas élevée au carré"
+						},
+						{
+							"answer": "{{eval:p^2*a^2}}",
+							"message": "Tu as compté $(\\sqrt{ {{a}} })^2$ comme ${{a}}^2$.",
+							"label": "(√a)² compté a²"
+						}
+					]
 				}
 			],
 			"correction": {
@@ -101,7 +172,8 @@
 					"Le carré porte sur **les deux** facteurs : $({{p}}\\sqrt{ {{a}} })^2={{p}}^2\\times(\\sqrt{ {{a}} })^2$.",
 					"$={{eval:p^2}}\\times{{a}}=\\textcolor{{{color:primary.0}}}{{{eval:p^2*a}}}$."
 				]
-			}
+			},
+			"hintFromFirstStep": true
 		},
 		{
 			"statement": "Calcule.\n\n$${{if:p==1||{{p}}}}\\sqrt{ {{a}} }+{{if:q==1||{{q}}}}\\sqrt{ {{a}} }=?$$",
@@ -122,7 +194,24 @@
 			"conditions": [],
 			"blanks": [
 				{
-					"expectedAnswer": "{{eval:p+q}}\\sqrt{ {{a}} }"
+					"expectedAnswer": "{{eval:p+q}}\\sqrt{ {{a}} }",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:p+q}}\\sqrt{ {{eval:2*a}} }",
+							"message": "Tu as aussi additionné sous la racine : seuls les nombres devant les racines s'additionnent.",
+							"label": "Addition sous la racine"
+						},
+						{
+							"answer": "\\sqrt{ {{eval:(p+q)*a}} }",
+							"message": "Tu as tout mis sous une seule racine : une somme de racines ne se regroupe pas ainsi.",
+							"label": "Tout sous une seule racine"
+						},
+						{
+							"answer": "{{eval:p*q}}\\sqrt{ {{a}} }",
+							"message": "Tu as multiplié les nombres devant les racines au lieu de les additionner.",
+							"label": "Coefficients multipliés"
+						}
+					]
 				}
 			],
 			"correction": {
@@ -131,7 +220,8 @@
 					"${{if:p==1||{{p}}}}\\sqrt{ {{a}} }+{{if:q==1||{{q}}}}\\sqrt{ {{a}} }=\\textcolor{{{color:primary.0}}}{{{eval:p+q}}\\sqrt{ {{a}} }}$.",
 					"Attention : on n'additionne pas sous la racine, ${{if:p==1||{{p}}}}\\sqrt{ {{a}} }+{{if:q==1||{{q}}}}\\sqrt{ {{a}} }\\neq\\sqrt{ {{eval:(p+q)*a}} }$."
 				]
-			}
+			},
+			"hint": "Fais comme avec une lettre : $\\sqrt{ {{a}} }$ joue le rôle de $x$ dans ${{if:p==1||{{p}}}}x+{{if:q==1||{{q}}}}x$."
 		}
 	],
 	"testSpecs": [
@@ -153,7 +243,8 @@
 				"a": "7"
 			},
 			"expected": {
-				"status": "incorrect"
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as élevé au carré le nombre sous la racine, au lieu d'élever au carré sa racine."
 			},
 			"answers": ["49"]
 		},
@@ -164,7 +255,8 @@
 				"a": "7"
 			},
 			"expected": {
-				"status": "incorrect"
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as doublé le nombre : élever au carré, ce n'est pas multiplier par 2."
 			},
 			"answers": ["14"]
 		},
@@ -213,7 +305,8 @@
 				"q": "5"
 			},
 			"expected": {
-				"status": "incorrect"
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as multiplié les nombres devant, mais pas les racines entre elles."
 			},
 			"answers": ["15\\sqrt{2}"]
 		},
@@ -237,7 +330,8 @@
 				"p": "2"
 			},
 			"expected": {
-				"status": "incorrect"
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as élevé la racine au carré, mais pas le nombre $2$ devant."
 			},
 			"answers": ["6"]
 		},
@@ -249,7 +343,8 @@
 				"p": "2"
 			},
 			"expected": {
-				"status": "incorrect"
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as compté $\\left( \\sqrt{3} \\right)^2$ comme $3^2$."
 			},
 			"answers": ["36"]
 		},
@@ -275,7 +370,8 @@
 				"q": "1"
 			},
 			"expected": {
-				"status": "incorrect"
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as tout mis sous une seule racine : une somme de racines ne se regroupe pas ainsi."
 			},
 			"answers": ["\\sqrt{10}"]
 		},
@@ -301,9 +397,113 @@
 				"q": "3"
 			},
 			"expected": {
-				"status": "incorrect"
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as aussi additionné sous la racine : seuls les nombres devant les racines s'additionnent."
 			},
 			"answers": ["5\\sqrt{6}"]
+		},
+		{
+			"description": "Erreur : (√7)² = 2√7",
+			"variationIndex": 0,
+			"variables": {
+				"a": "7"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as doublé la racine : élever au carré, ce n'est pas multiplier par 2."
+			},
+			"answers": ["2\\sqrt{7}"]
+		},
+		{
+			"description": "Erreur : √7 × √7 = 49",
+			"variationIndex": 1,
+			"variables": {
+				"a": "7"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as perdu la racine en route : $\\sqrt{ 7 }\\times\\sqrt{ 7 }$ ne vaut pas $7\\times7$."
+			},
+			"answers": ["49"]
+		},
+		{
+			"description": "Erreur : √7 × √7 = 2√7",
+			"variationIndex": 1,
+			"variables": {
+				"a": "7"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as additionné les deux racines au lieu de les multiplier."
+			},
+			"answers": ["2\\sqrt{7}"]
+		},
+		{
+			"description": "Erreur : √7 × √7 = 14",
+			"variationIndex": 1,
+			"variables": {
+				"a": "7"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as calculé $7 + 7$ : ici, on multiplie."
+			},
+			"answers": ["14"]
+		},
+		{
+			"description": "Erreur : 3√2 × 5√2 = 60 (√2 × √2 = 4)",
+			"variationIndex": 2,
+			"variables": {
+				"a": "2",
+				"p": "3",
+				"q": "5"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as compté $\\sqrt{ 2 }\\times\\sqrt{ 2 }$ comme $2\\times2$."
+			},
+			"answers": ["60"]
+		},
+		{
+			"description": "Erreur : 2√3 × 4√3 = 48 (√3 × √3 = 6)",
+			"variationIndex": 2,
+			"variables": {
+				"a": "3",
+				"p": "2",
+				"q": "4"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as compté $\\sqrt{ 3 }\\times\\sqrt{ 3 }$ comme $3 + 3$."
+			},
+			"answers": ["48"]
+		},
+		{
+			"description": "Erreur : (2√3)² = 4√3",
+			"variationIndex": 3,
+			"variables": {
+				"a": "3",
+				"p": "2"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as élevé $2$ au carré, mais pas la racine."
+			},
+			"answers": ["4\\sqrt{3}"]
+		},
+		{
+			"description": "Erreur : 2√3 + 3√3 = 6√3",
+			"variationIndex": 4,
+			"variables": {
+				"a": "3",
+				"p": "2",
+				"q": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as multiplié les nombres devant les racines au lieu de les additionner."
+			},
+			"answers": ["6\\sqrt{3}"]
 		}
 	]
 }

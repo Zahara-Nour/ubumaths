@@ -6,19 +6,19 @@ Mettre en œuvre les idées retenues dans [idees-format-exercices.md](idees-form
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-22, après #2992._
+_Mis à jour le 2026-11-28, PR de la passe 2 ouverte (n° au § « Passe 2 appliquée »)._
 
-- **État** : idées 1 à 5 terminées (pas en prod). Idée 5 : moteur et éditeur (#2991), élève et prof
-  (#2992 : bouton « Coup de pouce » en Saisie, Flash-cards et révision, trace `with_help`,
-  « Difficile », « (avec indice) » côté prof).
-- **Prochaine action** : revue du lot « nombres et calculs » de Seconde (y écrire des indices).
-- **En attente de David** : essai de la case « En QCM » (aucun modèle local n'a d'erreurs prévues :
-  en ajouter une) ; trois choix d'affichage signalés (§ Idée 4, PR 2) ; essai du coup de pouce
-  (aucun modèle n'a d'indice : en écrire un dans l'éditeur ; serveur 5177).
-- **Pièges en cours** : `expectedErrors` et `hint` refusés ou retirés en prod avant le
-  `deploy:prod` qui livre #2962 et #2991 ; dédoublonnage du tirage aveugle à la forme (§ Idée 4, PR 3).
-- **Worktree / branche** : `ubumaths-wt-idees-format` (essai « En QCM », 5176) et
-  `ubumaths-wt-idees-format-indice-eleve` (essai du coup de pouce, 5177), à retirer après les essais.
+- **État** : passe 1 + passe 2 (66 fiches) commitées, 5 migrations de contenu générées, intégration
+  verte, base locale à jour, blocs neufs vus à l'écran. PR ouverte.
+- **Prochaine action** : CI verte → `pnpm pr:merger` → `migration list --linked` (seules nos 5 en
+  attente) → `db:migrate` → `migration-contenu.ts` doit dire « inchangé » → série de relecture des
+  52 modèles dans `/dev/modeles` (`scripts/series/creer-serie.ts`, ≤ 50 : deux séries).
+- **En attente de David** : rien. Après la PR : 7 fiches attendent un outil (n° 75, 76, 77, 79) ;
+  **n° 78 déjà livré** sur main (« zéros utiles », 4075445c98, 2026-11-26) → a-01-0 couverte, lot
+  `arrondi-court` à retirer d'`outils-lots.md`.
+- **Pièges** : rejeu `checkTemplate` ne sait pas rejouer une erreur prévue « impossible » (retirée
+  de 04 v7 et b-09 v4) ; capture WebKit coupe le bas du labyrinthe (Chromium : entier).
+- **Worktree / branche** : `ubumaths-wt-idees-format-revue-2de` (`feat/idees-format-revue-2de`).
 
 ## Idée 1 — phase 0 validée (David, 2026-11-21)
 
@@ -455,3 +455,110 @@ serveur, 1 du panneau (vérifiés rouges avant le code). Doc : `evaluations.md`,
 Relecture (`code-reviewer`, Sonnet) : aucun bloquant. Corrigé : la ligne des comptes rendue d'un
 seul tenant appariait le `$` isolé d'un nom avec celui du suivant → chaque compte rendu à part
 (test ajouté). Laissé : une erreur prévue nommée « Non reconnue » se confondrait avec cette ligne.
+
+## Revue du lot « nombres et calculs » de Seconde (2026-11-22)
+
+Worktree `../ubumaths-wt-idees-format-revue-2de`, branche `feat/idees-format-revue-2de`. 52 modèles
+(`scripts/questions/2de-nombres-{a,b,c1,c2,publies}/`), tous publiés ; fichiers = prod vérifié
+(`migration-contenu.ts` : 52 « inchangé »). Verdicts en prod (`question_template_reviews`) : un seul
+(« Arrondir », validé, sans commentaire). David : « attaque la revue du lot de seconde : n'oublie pas
+d'essayer de mettre des erreurs prévues ».
+
+- Critères : erreurs prévues (3 par case ordinaire, visées pour le QCM), spec `incorrect` par erreur
+  prévue, coup de pouce par variation, specs justes, meilleure case, bornes de Seconde.
+- Règles de la revue : variations jamais retirées ni déplacées ; seuls `variations`, `testSpecs`,
+  `description` changent (garde de `migration-contenu.ts`) ; réponse attendue, forme exigée et type
+  de case d'une variation existante inchangés → toute correction de ce genre = proposition à David.
+- Les JSON font foi désormais (ids dedans) : les scripts `docs/wip/questions/lot-2de-nombres-*.py`
+  ne sont plus à relancer.
+- ⚠️ Livraison : `hint` (#2991) n'est pas en prod ; la migration de contenu ne se joue qu'après le
+  `deploy:prod` qui livre #2991 (les erreurs prévues, #2962, y sont déjà).
+
+### Passe 1 : erreurs prévues, coups de pouce, specs (commit `1caca9d636`, pas de PR)
+
+Cinq agents (`pedagogy-expert`), un par dossier. 189 variations, toutes avec un coup de pouce
+(114 écrits, 75 « première étape ») ; 435 erreurs prévues ; 277 specs ajoutées ; contrôle
+`create-questions` sans ⛔ sur les 52, specs vertes à 300-400 tirages. Seuls `variations`
+(erreurs prévues, indice) et `testSpecs` changent (vérifié par script contre HEAD).
+Pas de PR : David (2026-11-22) rappelle que la revue doit **garder l'idée et revoir la forme**
+(bon type de case, outils existants ou à créer) ; la passe 1 l'avait interdit aux agents (modèles
+publiés). Une nouvelle forme peut rendre des erreurs prévues caduques : PR après la passe 2.
+Remarques de la passe 1 à reprendre : indice de « (√a)² » qui souffle presque la réponse
+(c2/03 v0) ; décimaux écrits avec un point dans la correction de 3b0a04c0 v3 et a692569a v3, v5
+(`toFrenchDecimal` au rendu : à vérifier à l'écran) ; 03 b v1 permet b = 1 (« 5 ÷ 7/1 ») ;
+02 c1 v1 toujours « négatif ».
+
+### Passe 2 : forme (2026-11-22, en cours)
+
+Trois agents en lecture seule (a + publiés, b, c1 + c2) : idée de chaque modèle, meilleure forme,
+outil existant ou à créer, voie (variation ajoutée, modifiée, nouveau modèle). → page à cocher pour
+David (phase 0), rien n'est réécrit avant.
+
+Passe 2 rendue : a + publiés 14 garder / 8 améliorer / 1 refaire ; b 7 / 5 / 1 ; c1 + c2 6 / 10 / 0.
+Défaut réel : 04b1cc7f v4 et 73514cdb v4 refusent 10⁴ pour (−2)⁴ × 5⁴. Choix du 2026-11-20 à
+revoir : 1 (rationaliser), 2 (décomposition), 3 (entier + fraction : la raison était fausse, un
+motif sait exiger p < w), 5 (arrondi), 6 (puissances) ; 4 (téra) tient. Outils proposés : message
+de forme écrit par l'auteur, « sans racine au dénominateur », « produit de facteurs premiers »,
+arrondi trop court à demi-point, |a − b| = |b − a|, réglages du modèle par la migration de contenu,
+règle sur deux cases, encadrement à l'envers, étapes générées. Propositions brutes :
+scratchpad de session `forme-{a,b,c}/propositions.json` (copiées dans la page).
+Page à cocher : https://claude.ai/artifact/NzDUsxMUyjn8Ke1rSJf2Af
+
+### Passe 2 complétée (2026-11-28)
+
+Relevé de ce qui a changé depuis le 22 (sessions `idees-rubrique` d'autres niveaux, outils) :
+`migration-contenu.ts` écrit les `options` d'un publié (2026-11-23) ; outils livrés : droite avec
+zoom (n° 54, refuse `placer:`), labyrinthe (n° 53), case « impossible » (n° 51) ; rangement généré.
+Les outils de la passe 2 n'étaient pas dans `outils-manquants.md` : inscrits n° 75 à 81 et une
+question au § 3 (étapes de correction générée), commit `e0cca07663` sur `main`.
+Page à cocher, version 2 : fiches neuves `n-zoom-lire` (a692569a), `n-zoom-encadrer` (c99ae1e8),
+`n-laby-multiples` (fa65910d ; pas de labyrinthe « premier », hors BO de Seconde),
+`n-impossible-entier` (04), `n-impossible-decimal` (09, démonstration « 1/3 n'est pas décimal »),
+`n-impossible-puissance` (04b1cc7f), fiches en attente `n-f16`, `n-f17` (outil n° 49, lot python en
+cours), `n-f34`, `n-f52` ; mises à jour : `g-choix2`, `t-reglages-publie` (livré),
+`b-12-nombre-premier-decomp-0` (voie : ajout), `c1-07-ecriture-scientifique-1` et
+`c1-08-calculer-avec-puissan-0` (réglage existant).
+
+### Passe 2 tranchée (David, 2026-11-28)
+
+« Je valide toute la page à cocher » (aucune case cochée en ligne : la validation est ce message).
+Lue comme : **ma recommandation sur chaque fiche**.
+
+- Questions d'ensemble : `g-voie` = au cas par cas (ajout par défaut ; modifier la variation pour
+  une vraie correction : bonne réponse refusée, consigne floue) ; choix 1, 2, 3, 5, 6 = oui ;
+  choix 4 (téra) = garder.
+- Outils : oui pour n° 75 (message de forme), 76 (produit de facteurs premiers), 77 (sans racine au
+  dénominateur), 78 (arrondi à demi-point), 79 (|a − b|) ; réglages du modèle = s'en servir ;
+  **plus tard** : n° 80 (deux cases), 81 (encadrement à l'envers), étapes de correction générée.
+- Fiches : 74 « oui », dont 3 « rien à changer » (b-01, b-02, b-05 : corrections écrites gardées) ;
+  **plus tard** : a-06 (droite à deux morceaux), publies-7d411132-0 (n° 80), n-f17 (n° 49) ;
+  **non** : n-f16.
+- **Attendent un outil** (8) : a-01-0 (n° 78), a-05-2 (n° 79), b-04-1, b-10-1, c1-03-1, c1-07-0
+  (n° 75), b-12-1 (n° 76), c2-07-0 (n° 77). **Faisables tout de suite** : les 66 autres, dont
+  b-12-0 et c1-07-1 / c1-08-0 par les réglages du modèle.
+
+### Passe 2 appliquée (2026-11-28)
+
+Cinq agents `pedagogy-expert`, un par dossier (fiches neuves rangées dans le modèle qu'elles
+complètent). 61 variations ajoutées, 13 corrigées (toutes demandées par une fiche ou une remarque
+de la passe 1), réglages du modèle sur b-12, c1-07, c1-08 (specs d'origine vertes). Garde contre
+HEAD : seuls `variations`, `testSpecs`, `description`, `options`. `create-questions` : 52 acceptés ;
+`question:specs` verts ; `sonde-horloges` 0 problème ; 5 migrations `…20261128151748` à
+`…151803`, intégration verte (`migrations-contenu-publie`). Vu à l'écran (base locale, `/dev/modeles`) :
+zooms « lire » et « encadrer » justes, labyrinthe des multiples, case « pas un nombre décimal ».
+
+- 10a51999 (Arrondir) changé en prod le 26 (`;aN`, d7b6a57aec) : fichier recollé sur la prod +
+  ajouts de la passe 1 ; corrigé de v5 « que l'on peut aussi écrire 3 » remplacé (3 est « à
+  améliorer » depuis le 26).
+- Écarts aux fiches : labyrinthe n de 11 à 49 (pas 2 à 99 : trop facile / trop large au
+  téléphone), l'élève trace le chemin (pas de mode « donne la sortie ») ; zoom « lire » : erreur
+  prévue « 1,4004 » remplacée par « arrêt au premier zoom » ; c2-02 : la fiche disait v2, c'est v1 ;
+  c1-02 : la remarque « toujours négatif » visait v2 (variable `t` ajoutée en dernier).
+- Variable ajoutée à une variation en prod (c1-02 v2) : contrôles figés (`instance`), séries =
+  verdict stocké ; même effet qu'une variation ajoutée.
+- Moins de 3 erreurs prévues quand il n'en existe pas d'autre réelle : a-05 v6, b-07 v4, b-08 v4,
+  b-09 v4, b-12 v5, 04 v7.
+- Reste : a-06-0, publies-7d411132-0 (n° 80), n-f17 (n° 49) plus tard ; n-f16 non ; 7 fiches à
+  outil (a-05-2 n° 79 ; b-04-1, b-10-1, c1-03-1, c1-07-0 n° 75 ; b-12-1 n° 76 ; c2-07-0 n° 77).
+- Vérification à l'écran laissée à la série : décimaux des corrigés de 3b0a04c0 v3, a692569a v3, v5
+  (valeurs `;d` : virgule posée au rendu ?).

@@ -29,7 +29,24 @@
 			],
 			"blanks": [
 				{
-					"expectedAnswer": "{{x}}"
+					"expectedAnswer": "{{x}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:-(x)}}",
+							"message": "Ton exposant a le mauvais signe : un préfixe comme kilo agrandit, un préfixe comme milli rapetisse.",
+							"label": "Signe de l'exposant"
+						},
+						{
+							"answer": "{{eval:(1-min(abs(abs(x)-3),1))*2*(x)+min(abs(abs(x)-3),1)*((x)-3*(x)/abs(x))}}",
+							"message": "Tu as pris l'exposant d'un préfixe voisin : revois l'ordre des préfixes, de $10^3$ en $10^3$.",
+							"label": "Préfixe voisin (milli / micro…)"
+						},
+						{
+							"answer": "{{eval:10^(x)}}",
+							"message": "Tu as donné la valeur de la puissance de $10$ : on demande seulement l'exposant.",
+							"label": "Valeur au lieu de l'exposant"
+						}
+					]
 				}
 			],
 			"correction": {
@@ -37,7 +54,8 @@
 					"**Préfixes** : téra (T) $=10^{12}$, giga (G) $=10^{9}$, méga (M) $=10^{6}$, kilo (k) $=10^{3}$, milli (m) $=10^{-3}$, micro (μ) $=10^{-6}$, nano (n) $=10^{-9}$.",
 					"Le préfixe {{if:j==0|kilo|{{if:j==1|méga|{{if:j==2|giga|{{if:j==3|téra|{{if:j==4|milli|{{if:j==5|micro|nano}}}}}}}}}}}} vaut $10^{ {{x}} }$ : $1~{{if:t==0|\\unit{km}|{{if:t==1|\\unit{mm}|{{if:t==2|\\unit{μm}|{{if:t==3|\\unit{nm}|{{if:t==4|\\unit{kW}|{{if:t==5|\\unit{MW}|{{if:t==6|\\unit{GW}|{{if:t==7|\\unit{TW}|{{if:t==8|\\unit{mW}|{{if:t==9|\\unit{kg}|{{if:t==10|\\unit{mg}|\\unit{μg}}}}}}}}}}}}}}}}}}}}}}}=\\textcolor{{{color:primary.0}}}{10^{ {{x}} }}~{{if:u==0|\\unit{m}|{{if:u==1|\\unit{W}|\\unit{g}}}}}$."
 				]
-			}
+			},
+			"hint": "Kilo, méga, giga, téra vont de $10^{3}$ en $10^{3}$ ; milli, micro, nano aussi, avec des exposants négatifs."
 		},
 		{
 			"statement": "Écris cette grandeur en {{if:u==0|mètre|{{if:u==1|watt|gramme}}}}s, sous la forme $c\\times10^{n}$.\n\n$${{c}}~{{if:t==0|\\unit{km}|{{if:t==1|\\unit{mm}|{{if:t==2|\\unit{μm}|{{if:t==3|\\unit{nm}|{{if:t==4|\\unit{kW}|{{if:t==5|\\unit{MW}|{{if:t==6|\\unit{GW}|{{if:t==7|\\unit{TW}|{{if:t==8|\\unit{mW}|{{if:t==9|\\unit{kg}|{{if:t==10|\\unit{mg}|\\unit{μg}}}}}}}}}}}}}}}}}}}}}}}=?~{{if:u==0|\\unit{m}|{{if:u==1|\\unit{W}|\\unit{g}}}}}$$",
@@ -65,7 +83,19 @@
 			],
 			"blanks": [
 				{
-					"expectedAnswer": "{{c}}\\times10^{ {{x}} }"
+					"expectedAnswer": "{{c}}\\times10^{ {{x}} }",
+					"expectedErrors": [
+						{
+							"answer": "{{c}}\\times10^{ {{eval:-(x)}} }",
+							"message": "Ton exposant a le mauvais signe : un préfixe comme kilo agrandit, un préfixe comme milli rapetisse.",
+							"label": "Signe de l'exposant"
+						},
+						{
+							"answer": "{{c}}\\times10^{ {{eval:(1-min(abs(abs(x)-3),1))*2*(x)+min(abs(abs(x)-3),1)*((x)-3*(x)/abs(x))}} }",
+							"message": "Tu as pris l'exposant d'un préfixe voisin : revois l'ordre des préfixes, de $10^3$ en $10^3$.",
+							"label": "Préfixe voisin (méga / giga…)"
+						}
+					]
 				}
 			],
 			"correction": {
@@ -73,7 +103,8 @@
 					"**Préfixes** : téra (T) $=10^{12}$, giga (G) $=10^{9}$, méga (M) $=10^{6}$, kilo (k) $=10^{3}$, milli (m) $=10^{-3}$, micro (μ) $=10^{-6}$, nano (n) $=10^{-9}$.",
 					"$1~{{if:t==0|\\unit{km}|{{if:t==1|\\unit{mm}|{{if:t==2|\\unit{μm}|{{if:t==3|\\unit{nm}|{{if:t==4|\\unit{kW}|{{if:t==5|\\unit{MW}|{{if:t==6|\\unit{GW}|{{if:t==7|\\unit{TW}|{{if:t==8|\\unit{mW}|{{if:t==9|\\unit{kg}|{{if:t==10|\\unit{mg}|\\unit{μg}}}}}}}}}}}}}}}}}}}}}}}=10^{ {{x}} }~{{if:u==0|\\unit{m}|{{if:u==1|\\unit{W}|\\unit{g}}}}}$, donc ${{c}}~{{if:t==0|\\unit{km}|{{if:t==1|\\unit{mm}|{{if:t==2|\\unit{μm}|{{if:t==3|\\unit{nm}|{{if:t==4|\\unit{kW}|{{if:t==5|\\unit{MW}|{{if:t==6|\\unit{GW}|{{if:t==7|\\unit{TW}|{{if:t==8|\\unit{mW}|{{if:t==9|\\unit{kg}|{{if:t==10|\\unit{mg}|\\unit{μg}}}}}}}}}}}}}}}}}}}}}}}={{c}}\\times\\textcolor{{{color:primary.0}}}{10^{ {{x}} }}~{{if:u==0|\\unit{m}|{{if:u==1|\\unit{W}|\\unit{g}}}}}$."
 				]
-			}
+			},
+			"hint": "Remplace le préfixe par la puissance de $10$ qu'il représente, puis multiplie par ${{c}}$."
 		},
 		{
 			"statement": "Quel préfixe complète l'égalité ?\n\n$$10^{ {{x}} }~{{if:u==0|\\unit{m}|{{if:u==1|\\unit{W}|\\unit{g}}}}}=1~\\ldots\\text{{{if:u==0|mètre|{{if:u==1|watt|gramme}}}}}$$\n\n```choix\nmelanger: non\n- kilo (k)\n- méga (M)\n- giga (G)\n- téra (T)\n- milli (m)\n- micro (μ)\n- nano (n)\n```",
@@ -105,7 +136,45 @@
 					"**Préfixes** : téra (T) $=10^{12}$, giga (G) $=10^{9}$, méga (M) $=10^{6}$, kilo (k) $=10^{3}$, milli (m) $=10^{-3}$, micro (μ) $=10^{-6}$, nano (n) $=10^{-9}$.",
 					"$10^{ {{x}} }$, c'est le préfixe **{{if:j==0|kilo|{{if:j==1|méga|{{if:j==2|giga|{{if:j==3|téra|{{if:j==4|milli|{{if:j==5|micro|nano}}}}}}}}}}}}** : $10^{ {{x}} }~{{if:u==0|\\unit{m}|{{if:u==1|\\unit{W}|\\unit{g}}}}}=1~{{if:t==0|\\unit{km}|{{if:t==1|\\unit{mm}|{{if:t==2|\\unit{μm}|{{if:t==3|\\unit{nm}|{{if:t==4|\\unit{kW}|{{if:t==5|\\unit{MW}|{{if:t==6|\\unit{GW}|{{if:t==7|\\unit{TW}|{{if:t==8|\\unit{mW}|{{if:t==9|\\unit{kg}|{{if:t==10|\\unit{mg}|\\unit{μg}}}}}}}}}}}}}}}}}}}}}}}$."
 				]
-			}
+			},
+			"hint": "Kilo, méga, giga, téra vont de $10^{3}$ en $10^{3}$ ; milli, micro, nano aussi, avec des exposants négatifs."
+		},
+		{
+			"statement": "Associe chaque préfixe à la puissance de $10$ qu'il représente. Une étiquette est en trop.\n\n````associer\n- {{if:s==0|kilo (k)|{{if:s==1|milli (m)|{{if:s==2|kilo (k)|giga (G)}}}}}} -> $10^{ {{x0}} }$\n- {{if:s==0|micro (μ)|{{if:s==1|méga (M)|{{if:s==2|milli (m)|téra (T)}}}}}} -> $10^{ {{x1}} }$\n- {{if:s==0|giga (G)|{{if:s==1|nano (n)|{{if:s==2|micro (μ)|milli (m)}}}}}} -> $10^{ {{x2}} }$\n- {{if:s==0|nano (n)|{{if:s==1|téra (T)|{{if:s==2|méga (M)|micro (μ)}}}}}} -> $10^{ {{x3}} }$\n- -> $10^{ {{x4}} }$\n````",
+			"variables": [
+				{
+					"name": "s",
+					"expression": "0..3"
+				},
+				{
+					"name": "x0",
+					"expression": "eval:(3)*(1-min(abs((s)-(0)),1))+(-3)*(1-min(abs((s)-(1)),1))+(3)*(1-min(abs((s)-(2)),1))+(9)*(1-min(abs((s)-(3)),1))"
+				},
+				{
+					"name": "x1",
+					"expression": "eval:(-6)*(1-min(abs((s)-(0)),1))+(6)*(1-min(abs((s)-(1)),1))+(-3)*(1-min(abs((s)-(2)),1))+(12)*(1-min(abs((s)-(3)),1))"
+				},
+				{
+					"name": "x2",
+					"expression": "eval:(9)*(1-min(abs((s)-(0)),1))+(-9)*(1-min(abs((s)-(1)),1))+(-6)*(1-min(abs((s)-(2)),1))+(-3)*(1-min(abs((s)-(3)),1))"
+				},
+				{
+					"name": "x3",
+					"expression": "eval:(-9)*(1-min(abs((s)-(0)),1))+(12)*(1-min(abs((s)-(1)),1))+(6)*(1-min(abs((s)-(2)),1))+(-6)*(1-min(abs((s)-(3)),1))"
+				},
+				{
+					"name": "x4",
+					"expression": "eval:(-3)*(1-min(abs((s)-(0)),1))+(-6)*(1-min(abs((s)-(1)),1))+(9)*(1-min(abs((s)-(2)),1))+(-9)*(1-min(abs((s)-(3)),1))"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Préfixes** : téra (T) $=10^{12}$, giga (G) $=10^{9}$, méga (M) $=10^{6}$, kilo (k) $=10^{3}$, milli (m) $=10^{-3}$, micro (μ) $=10^{-6}$, nano (n) $=10^{-9}$.",
+					"Kilo, méga, giga, téra agrandissent (exposants positifs, de $3$ en $3$) ; milli, micro, nano rapetissent (exposants négatifs, de $3$ en $3$).",
+					"$10^{ {{x4}} }$ est en trop : c'est le préfixe {{if:x4==-3|milli|{{if:x4==-6|micro|{{if:x4==9|giga|nano}}}}}}, absent de la liste."
+				]
+			},
+			"hint": "Kilo, méga, giga, téra vont de $10^{3}$ en $10^{3}$ ; milli, micro, nano aussi, avec des exposants négatifs."
 		}
 	],
 	"testSpecs": [
@@ -128,7 +197,8 @@
 			},
 			"answers": ["9"],
 			"expected": {
-				"status": "incorrect"
+				"status": "incorrect",
+				"expectedErrorMessage": "Ton exposant a le mauvais signe : un préfixe comme kilo agrandit, un préfixe comme milli rapetisse."
 			}
 		},
 		{
@@ -139,7 +209,8 @@
 			},
 			"answers": ["-6"],
 			"expected": {
-				"status": "incorrect"
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as pris l'exposant d'un préfixe voisin : revois l'ordre des préfixes, de $10^3$ en $10^3$."
 			}
 		},
 		{
@@ -174,7 +245,8 @@
 			},
 			"answers": ["3\\times10^{6}"],
 			"expected": {
-				"status": "incorrect"
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as pris l'exposant d'un préfixe voisin : revois l'ordre des préfixes, de $10^3$ en $10^3$."
 			}
 		},
 		{
@@ -198,7 +270,8 @@
 			},
 			"answers": ["7\\times10^{3}"],
 			"expected": {
-				"status": "incorrect"
+				"status": "incorrect",
+				"expectedErrorMessage": "Ton exposant a le mauvais signe : un préfixe comme kilo agrandit, un préfixe comme milli rapetisse."
 			}
 		},
 		{
@@ -241,6 +314,40 @@
 				"t": "3"
 			},
 			"answers": ["5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur prévue : Valeur au lieu de l'exposant",
+			"variationIndex": 0,
+			"variables": {
+				"t": "0"
+			},
+			"answers": ["1000"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as donné la valeur de la puissance de $10$ : on demande seulement l'exposant."
+			}
+		},
+		{
+			"description": "kilo, micro, giga, nano bien associés",
+			"variationIndex": 3,
+			"variables": {
+				"s": "0"
+			},
+			"answers": ["4", "0", "1", "2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : micro relié à 10⁻³ (milli)",
+			"variationIndex": 3,
+			"variables": {
+				"s": "0"
+			},
+			"answers": ["4", "3", "1", "2"],
 			"expected": {
 				"status": "incorrect"
 			}
