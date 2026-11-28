@@ -1,0 +1,34 @@
+{
+	"migration": "supabase/migrations/20261128145608_questions_idees_6e_angles_neufs_rangement_tags.sql",
+	"ranges": [
+		{
+			"id": "6ff9a5e2-011d-494a-92b5-3f2e9c6fcc4e",
+			"title": "Les noms d'un même angle",
+			"fichier": "n1-noms-d-un-meme-angle.json",
+			"branche": "Grandeurs et mesures",
+			"notion": "Angles",
+			"sousNotion": null,
+			"points": ["6-168"]
+		},
+		{
+			"id": "47ec40d1-eada-40e2-8c00-5f85fe37b667",
+			"title": "Calculer un angle sur une figure simple",
+			"fichier": "n2-calculer-un-angle-figure.json",
+			"branche": "Grandeurs et mesures",
+			"notion": "Angles",
+			"sousNotion": null,
+			"points": ["6-168"]
+		},
+		{
+			"id": "87623856-4845-4fc7-8ce6-b9549be51bfb",
+			"title": "Estimer un angle sans rapporteur",
+			"fichier": "n5-estimer-un-angle.json",
+			"branche": "Grandeurs et mesures",
+			"notion": "Angles",
+			"sousNotion": "mesure en degrés",
+			"points": ["6-169"]
+		}
+	],
+	"niveaux": [],
+	"tags": []
+}
