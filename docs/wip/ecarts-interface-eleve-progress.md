@@ -8,13 +8,13 @@ status: en cours
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-28, avant la première PR._
+_Mis à jour le 2026-11-28, après #3288._
 
-- **État** : latents corrigés et commités sur la branche (pas poussés, typecheck rouge) : L46, L50, L52, L53, L55, L108, L114, et L42 pour les messages 4xx.
-- **Prochaine action** : corriger le typecheck de `src/lib/utils/vip-card-modals.ts` (l. 107, 157, 215, 277 : `Component<Props>` refusé par `ModalEntry.component`, typer comme `push` le fait), puis `pnpm check:incremental`, revue `code-reviewer`, PR ; ensuite PR 2 : V73 + V75 ; PR 3 : L42 (500) ; V117 : consignes d'images dans `~/Downloads`, puis rangement quand David les a.
+- **État** : PR 1 mergée (#3288) : latents L46, L50, L52, L53, L55, L108, L114 et L42 pour les 4xx ; `modalStack.push` vérifie les props (`P extends object`). L142 inscrit au registre (prénom non échappé dans le mail de bienvenue, trouvé par l'audit, hors lot).
+- **Prochaine action** : PR 2 : V73 + V75 (nouveau worktree `../ubumaths-wt-ecarts-interface-eleve-fenetres` depuis `origin/main`) ; puis PR 3 : L42 (500) ; V117 : consignes d'images dans `~/Downloads`, puis rangement quand David les a.
 - **En attente de David** : rien ; phase 0 tranchée le 2026-11-28 (§ Décisions). Il génère les 4 images de V117 à partir des consignes que la session dépose dans `~/Downloads`.
-- **Pièges en cours** : branche commitée, **jamais poussée** : le pre-push refuse `wheel-landing.ts` et `public-nav-items.ts`, sans doc qui les couvre (ajouter au `couvre:` de la doc de la roue et de la navigation publique, cf. `docs/README.md`) · `ecarts-coquille.svelte.test.ts` est partagé avec L41 (`interface-prof`) et L43 (`cache`) : seul le test L52 y change.
-- **Worktree / branche** : `../ubumaths-wt-ecarts-interface-eleve`, `fix/ecarts-interface-eleve`.
+- **Pièges en cours** : L42 reste ouvert tant que les 500 ne sont pas faits (ne pas le barrer) · port 5176 souvent pris par une autre session : prendre le suivant libre.
+- **Worktree / branche** : aucun (celui de la PR 1 est retiré).
 
 ## Décisions de David (2026-11-28, phase 0 validée)
 
