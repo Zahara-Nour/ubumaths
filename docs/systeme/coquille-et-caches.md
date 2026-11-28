@@ -120,7 +120,9 @@ pose son propre squelette.
 
 Les liens publics vivent dans une seule liste, `#lib/navigation/public-nav-items.ts` : `Sidebar`
 (barre, grand écran) et le tiroir mobile de `Header` la lisent toutes les deux. Un lien s'ajoute
-là, jamais dans un des deux composants.
+là, jamais dans un des deux composants. Le lien surligné suit la même règle des deux côtés,
+`isNavItemActive` du même fichier : l'adresse du lien, ou une adresse qui commence par elle + `/`
+(un article du Shtam surligne « Le Shtam ») ; « Accueil » seulement sur `/`.
 
 Le lien « Aller au contenu » (`+layout.svelte:109-113`, WCAG 2.4.1) est le premier élément
 focusable. Il est caché par une translation (`-translate-y-[200%]`, `focus:translate-y-0`), pas
@@ -242,11 +244,21 @@ sauf si `canDismiss === false`. `pop()` appelle l'`onReturn` de la modale retir�
 garde une copie du sommet (`modalSnapshot`) pour que le fondu de sortie ait encore un composant à
 rendre.
 
+Clavier et lecteur d'écran (écart V73) : à l'ouverture, le renderer retient l'élément qui avait le
+clavier, met le clavier sur le premier élément focusable de la fenêtre, fait tourner Tab et Maj+Tab
+dedans, et met `inert` sur les autres enfants de son parent (le reste du layout racine), sauf les
+zones `aria-live` (les toasts, que les fenêtres émettent). À la fermeture, il retire `inert` et rend
+le clavier à l'élément retenu. Le fond est un frère de la fenêtre, pas son parent. Le conteneur ne
+prend `role="dialog"` que si la fenêtre n'en porte pas déjà un (la plupart, titrés par
+`aria-labelledby`). Limite connue (V140) : après une fenêtre empilée, la fenêtre d'en dessous est
+recréée, et le clavier va sur son premier bouton, pas sur l'élément qui avait ouvert la seconde.
+
 Les ouvertures passent surtout par `src/lib/utils/vip-card-modals.ts` et `bonus-modals.ts` ;
 aussi par le Démineur (`minesweeper.svelte.ts`), `RewardsBlock` et la page
 `teacher/gamification/rewards`. Les autres fenêtres de l'app
 (dont `InfoPanel`) utilisent le `Dialog` de bits-ui, pas cette pile. Test :
-`src/lib/stores/__tests__/modalStack.test.ts`.
+`src/lib/stores/__tests__/modalStack.test.ts`,
+`src/lib/components/modals/__tests__/ModalStackRenderer.svelte.test.ts` (navigateur).
 
 ### Écran et périphériques d'entrée
 
