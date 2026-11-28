@@ -298,7 +298,8 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 			worksheet = await applyClassification(locals.supabase, params.id, plan, classificationUpdate);
 		} catch (cause) {
 			logger.error('Failed to save classification:', cause);
-			throw error(500, 'Impossible d’enregistrer les notions de la fiche');
+			// La fiche ou ses notions : la transaction a tout annulé
+			throw error(500, 'Impossible d’enregistrer la fiche et ses notions');
 		}
 	}
 

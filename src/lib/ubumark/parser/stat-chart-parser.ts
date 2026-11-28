@@ -543,6 +543,9 @@ const CHOOSE_SCALE = 'à choisir';
 /** Ligne `placer:` (ligne rognée) d'un diagramme à construire : barres, boîte à moustaches */
 export const PLACER_LINE_REGEX = /^placer\s*:/i;
 
+/** `solution: oui` (ligne rognée) : la réponse du diagramme dessinée, rien à construire */
+const SOLVED_LINE_REGEX = /^solution\s*:\s*oui\s*$/i;
+
 /**
  * Les diagrammes en barres à construire (`placer:`) d'un énoncé, délimités comme
  * le parseur : corps sans clôtures, fermeture, et `nested` pour un bloc en retrait
@@ -587,9 +590,6 @@ function findStatChartsToPlace(markdown: string, kind: StatChartKind): StatChart
 				!block.body.some((line) => SOLVED_LINE_REGEX.test(line.trim()))
 		);
 }
-
-/** `solution: oui` (ligne rognée) : la réponse du diagramme dessinée, rien à construire */
-const SOLVED_LINE_REGEX = /^solution\s*:\s*oui\s*$/i;
 
 /** L'énoncé a-t-il un diagramme à construire (barres, boîte à moustaches) ? */
 export function hasStatChartToPlace(markdown: string): boolean {
