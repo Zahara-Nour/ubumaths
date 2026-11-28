@@ -178,6 +178,10 @@ de contenu appliquée en prod.
 | d03e49c0 Calculer la valeur d'une valeur absolue             | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
 | d264f7aa Pair ou impair : écrire 2k ou 2k + 1                | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
 | fa65910d Multiple : a = k × b                                | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
+| 39bafe0e Motif évolutif : trouver la régularité              | `idees-6e-algebre`                                          | 2026-11-28 |                                      |
+| 4048d9c5 Deux nombres inconnus : billets et devinettes       | `idees-6e-algebre`                                          | 2026-11-28 |                                      |
+| a06458ad Balances : la masse de deux objets                  | `idees-6e-algebre`                                          | 2026-11-28 |                                      |
+| a9c37578 Schéma en barres : choisir le schéma d'un énoncé    | `idees-6e-algebre`                                          | 2026-11-28 |                                      |
 
 ## Idées en attente
 
