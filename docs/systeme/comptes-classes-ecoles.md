@@ -292,8 +292,9 @@ le compte et la classe (page du lien : § « Page du parent » ci-dessous). Tabl
   Ce n'est **pas** une sauvegarde de la base : voir
   [procedure-restauration.md](../pratiques/procedure-restauration.md).
 - Page `src/routes/(protected)/dashboard/admin/settings/+page.svelte` : version de l'application et
-  numérotation des listes (décrite dans [utilitaires-et-demos.md](utilitaires-et-demos.md)), plus la
-  carte de configuration des signalements de bugs.
+  carte de configuration des signalements de bugs. Le réglage de numérotation des listes, qui ne
+  valait que pour le navigateur de l'admin, est retiré (V120, 2026-11-28 ;
+  [utilitaires-et-demos.md](utilitaires-et-demos.md)).
 - `src/lib/components/admin/TypedConfirmDialog.svelte` : boîte de confirmation où l'on tape un mot
   (nom de l'école, `RESTAURER`…). Le serveur revérifie avec `assertTypedConfirmation`
   (`src/lib/server/confirmAction.ts`).
