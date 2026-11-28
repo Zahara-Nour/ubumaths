@@ -1,7 +1,7 @@
 ---
 title: Écarts restants — lots pour des sessions en parallèle
 date: 2026-11-28
-status: lots écrits le 2026-11-28 ; en cours : fiches, interface-prof
+status: lots écrits le 2026-11-28 ; en cours : fiches, interface-prof, constructions
 ---
 
 # Écarts restants : lots pour des sessions en parallèle
@@ -63,7 +63,7 @@ Colonne « Pris par » : vide = libre ; `ecarts-<lot> (date)` = en cours ; `fait
 | `fiches`                  | V108, V109, V111, L9, L85, L86, L111, T23, M44                   | ecarts-fiches (2026-11-28)         | PDF et Typst.                                                                                                                                                                                                   |
 | `blocs`                   | V110, L88, L89, L90, L91, L92, L93                               | fait (#3266, #3270, 2026-11-28)    | Agent `pedagogy-expert`.                                                                                                                                                                                        |
 | `geometrie`               | V77, V119, L57, L58, L59, L60, L61, M19                          | fait (#3271, 2026-11-28)           | Fait. L60 corrigé dans mathAST (`analyzeContinuity`) : le domaine de tan(x) + 1/(x − 3) reste incomplet (`intersect`), écrit dans `docs/systeme/mathast/README.md`.                                             |
-| `constructions`           | V76, L56, M35, M36, M37, M38                                     |                                    | M38 : vérifier d'abord en prod (lecture seule) qu'il ne reste aucune construction au format JSON.                                                                                                               |
+| `constructions`           | V76, L56, M35, M36, M37, M38                                     | ecarts-constructions (2026-11-28)  | M38 : vérifier d'abord en prod (lecture seule) qu'il ne reste aucune construction au format JSON.                                                                                                               |
 | `cache`                   | L43, L44, L45, L47, L48, L54, M28, M29, M30                      |                                    |                                                                                                                                                                                                                 |
 | `interface-prof`          | V74, V106, V116, V118, V120, V121, V122, V123, L41, L116, M48    | ecarts-interface-prof (2026-11-28) | Petits bugs visibles du prof et de l'admin. M48 se ferme avec V118 : brancher `isTrivialHtmlWrapper` dans le collage de l'éditeur riche (garder le HTML riche, markdown seulement pour une enveloppe triviale). |
 | `interface-eleve`         | V73, V75, V117, L42, L46, L50, L52, L53, L55, L108, L114         |                                    | Petits bugs de l'élève et des pages publiques.                                                                                                                                                                  |
