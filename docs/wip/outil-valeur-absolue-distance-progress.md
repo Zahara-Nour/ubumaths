@@ -11,7 +11,7 @@ status: n° 79 codé, PR à ouvrir
 _Mis à jour le 2026-11-28, avant la première PR._
 
 - **État** : n° 79 codé (équivalence `normalize.ts` + écriture `checkForm`), tests verts ; PR à ouvrir.
-- **Prochaine action** : `pnpm check:incremental` + `pnpm types:cliquet` (verrou pris par une autre session au moment du /clear), suite `pnpm test:server` complète, revue `code-reviewer` (opus) à relancer si son rapport est perdu, puis PR et `pnpm pr:merger`.
+- **Prochaine action** : rapport de la revue `code-reviewer` (opus ; à relancer s'il est perdu), `pnpm types:cliquet`, puis PR et `pnpm pr:merger`. `check:incremental` = 0 erreur, branche poussée.
 - **En attente de David** : rien (phase 0 tranchée : « je te suis »).
 - **Pièges en cours** : lot mathAST (un seul à la fois) ; rendu des primitives en `ln|…|` changé (orienté).
 - **Worktree / branche** : `../ubumaths-wt-outil-valeur-absolue-distance` · `feat/outil-valeur-absolue-distance`.

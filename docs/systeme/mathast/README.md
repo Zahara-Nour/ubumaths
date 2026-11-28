@@ -188,7 +188,9 @@ Ni `simplify` ni `pedagogical-simplify` ne sont sur ce chemin.
    `simplifyNullProductsAST` (`factorZero`) → `removeNullTermsAST` (`nullTerms`) →
    `stripUnnecessaryBrackets` (`brackets`) → `removeSignsAST` (`signs`) →
    `removeFactorsOneAST` (`factorOne`) → `removeMultOperatorAST` (`products`) →
-   notations log/exponentielle → `sortTermsAndFactorsAST` ;
+   notations log/exponentielle → `sortTermsAndFactorsAST` → `unifyAbsoluteOppositeAST` (somme
+   entre barres premier terme positif : `|3 − x|` = `|x − 3|`, outil n° 79,
+   [convention](convention-equivalence.md#valeur-absolue-de-deux-opposés--u--u-outil-n-79-2026-11-28)) ;
 4. comparaison des `toLatex` (le signe `*` et `×` sont confondus) ; cas du pourcentage.
 
 Chaque étape qui modifie la réponse lève sa contrainte (`strict`, `warn` ou `off`, défaut
