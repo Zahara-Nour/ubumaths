@@ -2,15 +2,14 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-28, après la mise en prod 0.117.0 (#3264 et #3272 en prod)._
+_Mis à jour le 2026-11-28, F1 en brouillon en prod, migration de rangement en PR._
 
-- **État** : lot 1 en prod et relu. F1 (modèle 4-034, 7 variations) en prod côté code,
-  **pas encore en brouillon en base** (§ Lot 2) · **Prochaine action** : David lance
-  `! pnpm tsx scripts/create-questions.ts --dir scripts/questions/idees-3e-espace-neufs --publier`
-  depuis le dépôt principal ; je commite l'id écrit en tête du fichier, puis relecture dans
-  `/dev/modeles?point=4-034`, puis migration de rangement générée · **En attente de David** : ce
-  `--publier` · **Pièges en cours** : `--publier` en local écrit l'id local dans le fichier (à
-  retirer avant tout commit) · **Worktree / branche** : aucun
+- **État** : lot 1 en prod et relu. F1 (modèle 4-034, 58f04074) en brouillon en prod (7 variations),
+  id commité ; migration de rangement générée (nœud + tag 4-034) sur
+  `feat/idees-3e-espace-f1-rangement` · **Prochaine action** : PR mergée → `db:migrate`, puis
+  relecture de F1 dans `/dev/modeles?point=4-034` par David, puis publication · **En attente de
+  David** : rien avant la relecture · **Pièges en cours** : `--publier` en local écrit l'id local dans
+  le fichier (à retirer avant tout commit) · **Worktree / branche** : `ubumaths-wt-idees-3e-espace-f1`
 
 ## Rubrique
 
@@ -148,3 +147,13 @@ grades 4, niveau 2 à côté de 22d947f4).
 - `question:specs` 29/29, 350 tirages ; `sonde-cubes` 300 blocs, 0 problème ; `create-questions` en
   simulation vert. Réponse juste ou fausse non jouée à la main dans l'aperçu : les specs passent
   par le même juge.
+
+## En prod (2026-11-28)
+
+- Mise en prod 0.117.0 : #3264 (outil n° 72) et #3272 (F1) livrés.
+- `create-questions --publier` par David : F1 = `58f04074-dcf6-448f-b862-dc1486988794`, `draft`,
+  7 variations (relu en prod). Migration `20261128065817_questions_idees_3e_espace_neufs_rangement_tags`
+  générée par `migration-rangement.ts` (nœud « Géométrie > Théorème de Pythagore > calcul de
+  longueurs », point 4-034), fixture comprise.
+- `security-auditor` (2026-11-28) : aucun finding bloquant ; gardes vérifiées sur l'état de la prod
+  (modèle sans nœud ni tag, nœud et point uniques). Test `migrations-rangement-tags` vert.
