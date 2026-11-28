@@ -338,13 +338,23 @@ répondre 403 / 404 et masquer les boutons.
 
 ### Réécrire les constructions de la prod
 
-`pnpm constructions:reecrire` (`scripts/constructions-prod/appliquer.ts`, contenu dans `contenu.ts`) a
-réécrit les constructions publiques de la prod le 2026-10-24. **Simulation par défaut** :
-`--cible local` montre le rendu sans lire la prod ; `--cible prod` affiche le diff et écrit la
-sauvegarde `scripts/constructions-prod/avant-2026-10-23.json` (commitée : c'est le retour arrière) ;
-`--cible prod --publier` écrit, lancé par David après relecture du rendu. Gardes : sauvegarde complète
-exigée, titre d'avant vérifié ligne à ligne, écriture sous condition `updated_at` inchangé puis relue.
-Test : `scripts/__tests__/constructions-prod.test.ts` (O milieu de [AC] et [BD], AM = MN = NB…).
+`pnpm constructions:reecrire --lot <lot>` (`scripts/constructions-prod/appliquer.ts`) écrit un lot
+de réécriture des constructions de la prod :
+
+- `2026-10-23` (`contenu.ts`) : les constructions publiques réécrites le 2026-10-24 ;
+- `v76` (`arcs-carre.ts`, 2026-11-28) : dans « Axes de symétrie et construction d'un carré », les
+  44 arcs de compas reçoivent le nom de l'arc du JSON d'origine et `@cacher("arc_n")` devient
+  `masque(_arcn)` (l'auteur les effaçait ; `@cacher` ne cache que des instruments). La migration
+  vers le DSL avait aussi changé le signe des angles sans échanger début et fin : 13 arcs de 20°
+  étaient devenus des arcs de 340°, rétablis. Chaque `masque` est un pas de 500 ms.
+
+**Simulation par défaut** : `--cible local` montre le rendu sans lire la prod ; `--cible prod`
+affiche le diff et écrit la sauvegarde du lot (`scripts/constructions-prod/avant-<lot>.json`, à
+commiter : c'est le retour arrière) ; `--cible prod --publier` écrit, lancé par David après relecture
+du rendu. Gardes : sauvegarde complète exigée, titre d'avant (et script d'avant, quand le lot le
+donne) vérifié ligne à ligne, écriture sous condition `updated_at` inchangé puis relue. Test :
+`scripts/__tests__/constructions-prod.test.ts` (O milieu de [AC] et [BD], AM = MN = NB, arcs du carré
+effacés…).
 
 ## 7. Convertisseur XML InstrumenPoche → DSL
 

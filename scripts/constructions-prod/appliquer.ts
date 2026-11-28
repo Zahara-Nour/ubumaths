@@ -1,23 +1,27 @@
 /**
- * Écriture de la réécriture des constructions publiques (`contenu.ts`)
- * ====================================================================
+ * Écriture d'un lot de réécriture des constructions publiques
+ * ===========================================================
+ *
+ * Lots (`--lot`) :
+ * - `2026-10-23` (`contenu.ts`) : réécriture des 9 constructions publiques ;
+ * - `v76` (`arcs-carre.ts`, 2026-11-28) : les arcs de compas du carré s'effacent.
  *
  * ⚠️ SIMULATION PAR DÉFAUT : rien n'est écrit en prod sans `--publier`.
  * ⚠️ `--cible prod --publier` : lancé par David, après sa relecture du rendu en local.
  *
  * Usage :
- *   pnpm constructions:reecrire --cible local              (aperçu : les 3 constructions réécrites
+ *   pnpm constructions:reecrire --lot <lot> --cible local    (aperçu : les constructions réécrites
  *                                                          + titres et descriptions des autres)
- *   pnpm constructions:reecrire --cible prod               (simulation : diff + sauvegarde)
- *   pnpm constructions:reecrire --cible prod --publier
+ *   pnpm constructions:reecrire --lot <lot> --cible prod     (simulation : diff + sauvegarde)
+ *   pnpm constructions:reecrire --lot <lot> --cible prod --publier
  *
  * Local (`.env.local`) : aperçu du rendu seulement, sans lire la prod. Prod (`.env`),
  * avant toute écriture :
- * 1. sauvegarde des lignes lues dans `scripts/constructions-prod/avant-2026-10-23.json`
+ * 1. sauvegarde des lignes lues dans le fichier du lot (`scripts/constructions-prod/avant-<lot>.json`)
  *    (à commiter : c'est le retour arrière ; hors de `data/`, que git ignore) ; `--publier`
  *    refuse si la sauvegarde ne contient pas l'état d'avant de chaque ligne à écrire ;
- * 2. chaque ligne doit porter son titre d'avant (sinon : déjà faite → sautée, ou modifiée
- *    entre-temps → lot refusé en entier) ;
+ * 2. chaque ligne doit porter son titre d'avant, et son script d'avant quand le lot le donne
+ *    (sinon : déjà faite → sautée, ou modifiée entre-temps → lot refusé en entier) ;
  * 3. écriture sous condition `updated_at` inchangé, ligne rendue relue et comparée aux
  *    valeurs voulues (une garde qui échoue rend 0 ligne, sans erreur). Une écriture
  *    interrompue se relance telle quelle : les lignes déjà faites sont sautées.
@@ -28,7 +32,8 @@ import { parse } from 'dotenv';
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname } from 'node:path';
 import type { Database } from '../../src/lib/types/database';
-import { CHANGES, type ConstructionChange } from './contenu';
+import { CHANGES as CHANGES_2026_10_23, type ConstructionChange } from './contenu';
+import { CHANGES as CHANGES_V76 } from './arcs-carre';
 
 // ============================================================================
 // TYPES
@@ -53,7 +58,13 @@ type Row = Pick<
 
 const PROD_HOST = 'cnevnzsvixxpnurautls.supabase.co';
 const LOCAL_HOSTS = new Set(['127.0.0.1', 'localhost']);
-const BACKUP_FILE = 'scripts/constructions-prod/avant-2026-10-23.json';
+const LOTS: Record<string, { changes: readonly ConstructionChange[]; backupFile: string }> = {
+	'2026-10-23': {
+		changes: CHANGES_2026_10_23,
+		backupFile: 'scripts/constructions-prod/avant-2026-10-23.json'
+	},
+	v76: { changes: CHANGES_V76, backupFile: 'scripts/constructions-prod/avant-v76.json' }
+};
 const COLUMNS =
 	'id, title, description, script, dsl_script, format, is_public, created_at, updated_at';
 
@@ -78,36 +89,37 @@ function clientFrom(file: string, urlKey: string, expected: (host: string) => bo
 	});
 }
 
-async function readRows(supabase: SupabaseClient<Database>): Promise<Row[]> {
+async function readRows(
+	supabase: SupabaseClient<Database>,
+	changes: readonly ConstructionChange[]
+): Promise<Row[]> {
 	const { data, error } = await supabase
 		.from('constructions')
 		.select(COLUMNS)
 		.in(
 			'id',
-			CHANGES.map((c) => c.id)
+			changes.map((c) => c.id)
 		);
 	if (error) throw new Error(`lecture des constructions : ${error.message}`);
 	return data ?? [];
 }
 
-function writeBackup(rows: Row[]): void {
+function writeBackup(rows: Row[], backupFile: string): void {
 	const sorted = [...rows].sort((a, b) => a.id.localeCompare(b.id));
 	const content = JSON.stringify(sorted, null, '\t') + '\n';
-	if (existsSync(BACKUP_FILE) && readFileSync(BACKUP_FILE, 'utf8') !== content) {
+	if (existsSync(backupFile) && readFileSync(backupFile, 'utf8') !== content) {
 		// La sauvegarde est le retour arrière : ne jamais l'écraser par un état déjà réécrit
-		console.log(`  sauvegarde déjà présente et différente, gardée telle quelle : ${BACKUP_FILE}`);
+		console.log(`  sauvegarde déjà présente et différente, gardée telle quelle : ${backupFile}`);
 		return;
 	}
-	mkdirSync(dirname(BACKUP_FILE), { recursive: true });
-	writeFileSync(BACKUP_FILE, content);
-	console.log(`  sauvegarde : ${BACKUP_FILE}`);
+	mkdirSync(dirname(backupFile), { recursive: true });
+	writeFileSync(backupFile, content);
+	console.log(`  sauvegarde : ${backupFile}`);
 }
 
 /** Lignes à écrire dont la sauvegarde ne garde pas l'état lu (retour arrière incomplet) */
-function missingFromBackup(rows: Row[]): string[] {
-	const saved: unknown = existsSync(BACKUP_FILE)
-		? JSON.parse(readFileSync(BACKUP_FILE, 'utf8'))
-		: [];
+function missingFromBackup(rows: Row[], backupFile: string): string[] {
+	const saved: unknown = existsSync(backupFile) ? JSON.parse(readFileSync(backupFile, 'utf8')) : [];
 	const savedById = new Map<string, unknown>(
 		Array.isArray(saved)
 			? saved.flatMap((s: unknown) =>
@@ -140,6 +152,9 @@ function rowState(row: Row | undefined, change: ConstructionChange): 'todo' | 'd
 		row.is_public === change.isPublic;
 	if (done) return 'done';
 	if (row.title !== change.titreAvant) return `titre inattendu « ${row.title} »`;
+	if (change.dslAvant !== undefined && row.dsl_script !== change.dslAvant) {
+		return 'script modifié depuis la sauvegarde dont le nouveau est tiré';
+	}
 	return 'todo';
 }
 
@@ -157,8 +172,11 @@ function describeChange(row: Row, change: ConstructionChange): string {
  * là) ; les autres, si la base locale les a (copie de `db:seed-riche`), reçoivent titre,
  * description et publication.
  */
-async function insertPreview(supabase: SupabaseClient<Database>): Promise<void> {
-	const rewritten = CHANGES.filter((c) => c.dslScript !== undefined);
+async function insertPreview(
+	supabase: SupabaseClient<Database>,
+	changes: readonly ConstructionChange[]
+): Promise<void> {
+	const rewritten = changes.filter((c) => c.dslScript !== undefined);
 	const { data, error } = await supabase
 		.from('constructions')
 		.upsert(
@@ -179,7 +197,7 @@ async function insertPreview(supabase: SupabaseClient<Database>): Promise<void> 
 	}
 	for (const c of rewritten) console.log(`  ${c.title} : /constructions/${c.id}`);
 
-	for (const c of CHANGES.filter((change) => change.dslScript === undefined)) {
+	for (const c of changes.filter((change) => change.dslScript === undefined)) {
 		const { data: updated, error: updateError } = await supabase
 			.from('constructions')
 			.update({ title: c.title, description: c.description, is_public: c.isPublic })
@@ -222,23 +240,26 @@ async function main(): Promise<void> {
 	const cible = argValue('--cible');
 	if (cible !== 'local' && cible !== 'prod') throw new Error('--cible local|prod requis');
 	const publish = process.argv.includes('--publier');
+	const lotName = argValue('--lot');
+	const lot = lotName ? LOTS[lotName] : undefined;
+	if (!lot) throw new Error(`--lot ${Object.keys(LOTS).join('|')} requis`);
 
 	if (cible === 'local') {
 		const local = clientFrom('.env.local', 'SUPABASE_URL', (h) => LOCAL_HOSTS.has(h));
 		console.log('Cible : base LOCALE (aperçu)');
-		await insertPreview(local);
+		await insertPreview(local, lot.changes);
 		return;
 	}
 
 	const prod = clientFrom('.env', 'PUBLIC_SUPABASE_URL', (h) => h === PROD_HOST);
-	const rows = await readRows(prod);
+	const rows = await readRows(prod, lot.changes);
 	console.log(`Cible : PRODUCTION${publish ? '' : ' (simulation)'}, ${rows.length} lignes lues`);
-	writeBackup(rows);
+	writeBackup(rows, lot.backupFile);
 	const byId = new Map(rows.map((r) => [r.id, r]));
 
 	const todo: { row: Row; change: ConstructionChange }[] = [];
 	const refusals: string[] = [];
-	for (const change of CHANGES) {
+	for (const change of lot.changes) {
 		const row = byId.get(change.id);
 		const state = rowState(row, change);
 		if (state === 'done') console.log(`  = ${change.title} : déjà faite`);
@@ -255,10 +276,13 @@ async function main(): Promise<void> {
 		console.log(`Simulation : ${todo.length} ligne(s) à écrire. Relancer avec --publier.`);
 		return;
 	}
-	const unsaved = missingFromBackup(todo.map((t) => t.row));
+	const unsaved = missingFromBackup(
+		todo.map((t) => t.row),
+		lot.backupFile
+	);
 	if (unsaved.length > 0) {
 		throw new Error(
-			`sauvegarde ${BACKUP_FILE} sans l'état d'avant de : ${unsaved.join(', ')} ; rien n'est écrit`
+			`sauvegarde ${lot.backupFile} sans l'état d'avant de : ${unsaved.join(', ')} ; rien n'est écrit`
 		);
 	}
 	try {

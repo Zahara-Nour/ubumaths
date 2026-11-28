@@ -25,6 +25,8 @@ export interface ConstructionChange {
 	description: string;
 	/** Nouveau script, ou `undefined` pour garder celui de la prod */
 	dslScript?: string;
+	/** Script lu en prod avant réécriture, quand le nouveau en est tiré : garde de plus */
+	dslAvant?: string;
 	isPublic: boolean;
 }
 
