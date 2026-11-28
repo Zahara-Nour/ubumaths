@@ -8,13 +8,18 @@ status: en cours
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-28, à l'ouverture._
+_Mis à jour le 2026-11-28, avant la PR._
 
-- **État** : 8 écarts vérifiés, phase 0 validée par David le 2026-11-28 ; correction en cours.
-- **Écarts** (8) : V77, V119, L57, L58, L59, L60, L61, M19.
-- **Prochaine action** : coder après la réponse de David (tests d'abord : preuves → tests ordinaires).
+- **État** : les 8 écarts corrigés et commités sur la branche (preuves → tests ordinaires,
+  `tests/ecarts/geometrie.test.ts` supprimé, registre barré, 3 docs système à jour). L60 corrigé
+  dans mathAST (`analysis/continuity.ts`, `isolatedPointsBesidePeriodic`), pas dans le grapheur
+  (correctif grapheur refusé en revue : coût sans borne). 2ᵉ revue : régression à corriger
+  (`isContinuousOnDomain` faux sur un trou effaçable à côté de tan), en cours.
+- **Prochaine action** : commit du correctif de revue, suites touchées, push, PR, `pnpm pr:merger`.
 - **En attente de David** : rien.
-- **Pièges en cours** : agent `geometry-expert` pour `src/lib/geometry-core/` ; sondes seulement pour vérifier un correctif, pas de cas voisins.
+- **Pièges en cours** : `intersect` de mathAST perd les points isolés à côté d'une exclusion
+  périodique (le domaine de tan(x) + 1/(x − 3) reste incomplet) — pas inscrit au registre
+  (cas voisin, à proposer à David).
 - **Worktree / branche** : `../ubumaths-wt-ecarts-geometrie` · `fix/ecarts-geometrie`.
 
 ## Journal
@@ -48,3 +53,13 @@ la commande de M19 aussi (trois interfaces : `IntersectionConfig`, `NewtonConfig
 - **Q1** : curseur à 0 → rien dessiné, sans erreur ; le cercle revient quand le curseur bouge.
 - **Q2** : primes acceptés en fin de nom, autant qu'on veut (M', M'', …).
 - **Q3** : équation sans aucun point → courbe vide, sans erreur (cohérent avec Q1).
+
+### 2026-11-28 — correction et revues
+
+- Agents : `geometry-expert` (V77, V119, L57, L58, L59, M19), Sonnet (L60, L61), puis
+  `mathast-expert` (L60 à la cause). Vérifié en prod (lecture seule) : aucune figure n'utilise
+  `angle_polaire` ni `slider(` positionnel, donc V119 et V77 ne changent aucun contenu.
+- Rendu vu par `pnpm voir /demo/geometrie --ordi` avec une figure d'essai provisoire (retirée) :
+  cercle de rayon a, droites x = ±2, médiatrice de [AB], M' et M'', 0 erreur de console.
+- Revue 1 (Opus) : L60 côté grapheur refusé (coût, cas du test seul) ; L59 `courbe("x^2 - 1")`
+  sans `=` redevenu une erreur. Revue 2 (Opus) : régression `isContinuousOnDomain`, doublon π/2.
