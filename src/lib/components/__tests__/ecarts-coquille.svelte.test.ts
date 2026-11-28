@@ -1,9 +1,10 @@
 /**
  * Écarts de la coquille qui demandent un navigateur (docs/ecarts/registre.md) :
- * L52 (L41 corrigé : tests dans recherche-prof.svelte.test.ts ; L43 et L45 corrigés : tests ordinaires).
+ * Aucun écart ouvert : L41 (tests dans recherche-prof.svelte.test.ts), L43, L45 et L52
+ * corrigés, leurs tests sont des tests ordinaires.
  *
  * Le projet vitest `ecarts` n'a pas de navigateur : chaque écart est ici en
- * `it.fails`, et son nom porte le marqueur « écart L52 » que la preuve du
+ * `it.fails`, et son nom porte le marqueur « écart Lnn » que la preuve du
  * registre cherche. Tant que l'écart est vrai, `it.fails` est vert ; à la
  * correction il devient rouge, et la PR qui corrige retire `.fails` ET le
  * marqueur (docs/pratiques/registre-des-ecarts.md § Les trois preuves).
@@ -122,8 +123,8 @@ describe('roue : durée de rotation', () => {
 		expect(await dureeDeRotation({})).toBe('4s');
 	});
 
-	// Aujourd'hui : 4 secondes quelle que soit la durée demandée.
-	it.fails('écart L52 : avec spinDuration = 2, la roue tourne 2 secondes', async () => {
+	// L52 corrigé : la durée demandée est celle de la transition.
+	it('avec spinDuration = 2, la roue tourne 2 secondes', async () => {
 		expect(await dureeDeRotation({ spinDuration: 2 })).toBe('2s');
 	});
 });

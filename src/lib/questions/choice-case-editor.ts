@@ -14,6 +14,7 @@
 import {
 	assignBlankIndices,
 	findCaseChoiceBlocks,
+	variationCasesUnresolved,
 	type AssignedBlankType
 } from './generator/assign-blank-indices';
 import {
@@ -98,6 +99,9 @@ function countsLikeResolved(
 	if (Object.values(raw.operationBlanks ?? {}).some((source) => UNRESOLVED_MARKERS.test(source))) {
 		return false;
 	}
+	// Tableau à compléter à variables : illisible brut comme une fois chaque variable
+	// à `1`, les deux comptes concordent à tort
+	if (variationCasesUnresolved(raw)) return false;
 	const neutral = assignBlankIndices(withVariablesAsOne(statement));
 	return (
 		neutral.totalBlanks === raw.totalBlanks &&

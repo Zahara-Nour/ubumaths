@@ -1,0 +1,799 @@
+{
+	"id": "4048d9c5-3e97-4aad-ae20-75d89a4a63fe",
+	"title": "Deux nombres inconnus : billets et devinettes",
+	"description": "Trouver deux nombres sans lettre : billets de 5 € et de 10 € (nombre de billets et somme donnés, « si tous étaient des billets de 5 € ») ; deux entiers de 2 à 12 dont on donne la somme et le produit, ou l'écart et le produit (essais organisés) ; pièges : euros pris pour des billets, somme partagée en deux",
+	"grades": ["6"],
+	"level": 4,
+	"delay": 120,
+	"status": "published",
+	"options": {
+		"constraints": {
+			"spacesFromFourDigits": true
+		}
+	},
+	"variations": [
+		{
+			"hint": "Si tous les billets étaient des billets de $5~\\unit{€}$, combien d'argent y aurait-il dans la tirelire ?",
+			"blanks": [
+				{
+					"expectedAnswer": "{{x}}",
+					"expectedErrors": [
+						{
+							"label": "Tous les billets de 5 €",
+							"answer": "{{eval:S/5}}",
+							"message": "Il n'y a pas que des billets de $5~\\unit{€}$ : avec ${{eval:S/5}}$ billets, on dépasserait les ${{N}}$ billets de la tirelire."
+						},
+						{
+							"label": "Euros en trop pris pour des billets",
+							"answer": "{{eval:N-(S-5*N)}}",
+							"message": "Tu as retiré ${{eval:S-5*N}}$ billets : ${{eval:S-5*N}}$, ce sont des euros. Chaque billet de $10~\\unit{€}$ apporte $5~\\unit{€}$ de plus qu'un billet de $5~\\unit{€}$."
+						},
+						{
+							"label": "Cases échangées",
+							"answer": "{{y}}",
+							"message": "C'est le nombre de billets de $10~\\unit{€}$ : vérifie l'ordre des cases."
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{y}}",
+					"expectedErrors": [
+						{
+							"label": "Euros en trop non partagés",
+							"answer": "{{eval:S-5*N}}",
+							"message": "C'est l'argent en trop, en euros : chaque billet de $10~\\unit{€}$ apporte $5~\\unit{€}$ de plus qu'un billet de $5~\\unit{€}$."
+						},
+						{
+							"label": "Tous les billets de 10 €",
+							"answer": "{{eval:S/10}}",
+							"message": "Il n'y a pas que des billets de $10~\\unit{€}$ : il y a aussi des billets de $5~\\unit{€}$."
+						},
+						{
+							"label": "Cases échangées",
+							"answer": "{{x}}",
+							"message": "C'est le nombre de billets de $5~\\unit{€}$ : vérifie l'ordre des cases."
+						}
+					]
+				}
+			],
+			"statement": "Dans sa tirelire, Zoé n'a que des billets de $5~\\unit{€}$ et de $10~\\unit{€}$. Elle a ${{N}}$ billets en tout, pour ${{eval:((100*S)/100)[€]}}$.\n\nCombien a-t-elle de billets de chaque sorte ?\n\nBillets de $5~\\unit{€}$ : $?$\n\nBillets de $10~\\unit{€}$ : $?$",
+			"variables": [
+				{
+					"name": "N",
+					"expression": "20..40"
+				},
+				{
+					"name": "y",
+					"expression": "3..37"
+				},
+				{
+					"name": "x",
+					"expression": "eval:N-y"
+				},
+				{
+					"name": "S",
+					"expression": "eval:5*x+10*y"
+				}
+			],
+			"conditions": ["x>=3", "x!=y"],
+			"correction": {
+				"steps": [
+					"**Si tous les billets étaient des billets de $5~\\unit{€}$**, Zoé aurait ${{N}} \\times 5 = {{eval:5*N}}~\\unit{€}$.",
+					"**Ce qui manque.** Elle a ${{S}} - {{eval:5*N}} = {{eval:S-5*N}}~\\unit{€}$ de plus. Chaque billet de $10~\\unit{€}$ apporte $5~\\unit{€}$ de plus qu'un billet de $5~\\unit{€}$ : ${{eval:S-5*N}} \\div 5 = \\textcolor{{{color:primary.0}}}{{{y}}}$ billets de $10~\\unit{€}$.",
+					"**Les billets de $5~\\unit{€}$.** ${{N}} - {{y}} = \\textcolor{{{color:primary.0}}}{{{x}}}$.",
+					"**Vérification.** ${{x}} \\times 5 + {{y}} \\times 10 = {{eval:5*x}} + {{eval:10*y}} = {{S}}$."
+				]
+			}
+		},
+		{
+			"hint": "Écris ${{eval:x*y}}$ comme le produit de deux nombres, de toutes les façons possibles : laquelle a la bonne somme ?",
+			"blanks": [
+				{
+					"expectedAnswer": "{{x}}",
+					"expectedErrors": [
+						{
+							"label": "Nombres échangés",
+							"answer": "{{y}}",
+							"message": "C'est le plus grand des deux nombres : le plus petit va dans la première case."
+						},
+						{
+							"label": "Somme partagée en deux",
+							"answer": "{{eval:(x+y)/2}}",
+							"message": "${{eval:(x+y)/2}} + {{eval:(x+y)/2}} = {{eval:x+y}}$, mais ${{eval:(x+y)/2}} \\times {{eval:(x+y)/2}} = {{eval:(x+y)*(x+y)/4}}$, pas ${{eval:x*y}}$."
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{y}}",
+					"expectedErrors": [
+						{
+							"label": "Nombres échangés",
+							"answer": "{{x}}",
+							"message": "C'est le plus petit des deux nombres : le plus petit va dans la première case."
+						},
+						{
+							"label": "Somme partagée en deux",
+							"answer": "{{eval:(x+y)/2}}",
+							"message": "Les deux nombres ne sont pas égaux : leur produit serait ${{eval:(x+y)*(x+y)/4}}$, pas ${{eval:x*y}}$."
+						}
+					]
+				}
+			],
+			"statement": "Je pense à deux nombres entiers. Leur somme est ${{eval:x+y}}$ et leur produit est ${{eval:x*y}}$.\n\nQuels sont ces deux nombres ? Écris le plus petit dans la première case.\n\nLe plus petit : $?$\n\nLe plus grand : $?$",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "2..11"
+				},
+				{
+					"name": "y",
+					"expression": "3..12"
+				}
+			],
+			"conditions": ["x<y", "mod(x+y,2)==0"],
+			"correction": {
+				"steps": [
+					"**Essais organisés.** On cherche deux nombres dont le produit vaut ${{eval:x*y}}$ : il y en a peu, on les essaie un à un et on calcule leur somme.",
+					"${{x}} \\times {{y}} = {{eval:x*y}}$ et ${{x}} + {{y}} = {{eval:x+y}}$ : les deux nombres sont $\\textcolor{{{color:primary.0}}}{{{x}}}$ et $\\textcolor{{{color:primary.0}}}{{{y}}}$."
+				]
+			}
+		},
+		{
+			"hint": "Écris ${{eval:x*y}}$ comme le produit de deux nombres, de toutes les façons possibles : laquelle a le bon écart ?",
+			"blanks": [
+				{
+					"expectedAnswer": "{{x}}",
+					"expectedErrors": [
+						{
+							"label": "Nombres échangés",
+							"answer": "{{y}}",
+							"message": "C'est le plus grand des deux nombres : le plus petit va dans la première case."
+						},
+						{
+							"label": "Écart pris pour un nombre",
+							"answer": "{{eval:y-x}}",
+							"message": "${{eval:y-x}}$, c'est l'écart entre les deux nombres, pas l'un d'eux."
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{y}}",
+					"expectedErrors": [
+						{
+							"label": "Nombres échangés",
+							"answer": "{{x}}",
+							"message": "C'est le plus petit des deux nombres : le plus petit va dans la première case."
+						},
+						{
+							"label": "Produit pris pour un nombre",
+							"answer": "{{eval:x*y}}",
+							"message": "${{eval:x*y}}$ est le produit des deux nombres, pas l'un d'eux."
+						}
+					]
+				}
+			],
+			"statement": "Je pense à deux nombres entiers. Le plus grand dépasse le plus petit de ${{eval:y-x}}$, et leur produit est ${{eval:x*y}}$.\n\nQuels sont ces deux nombres ? Écris le plus petit dans la première case.\n\nLe plus petit : $?$\n\nLe plus grand : $?$",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "2..11"
+				},
+				{
+					"name": "y",
+					"expression": "3..12"
+				}
+			],
+			"conditions": ["x<y", "y-x!=x"],
+			"correction": {
+				"steps": [
+					"**Essais organisés.** On cherche deux nombres dont le produit vaut ${{eval:x*y}}$ : il y en a peu, on les essaie un à un et on calcule leur écart.",
+					"${{x}} \\times {{y}} = {{eval:x*y}}$ et ${{y}} - {{x}} = {{eval:y-x}}$ : les deux nombres sont $\\textcolor{{{color:primary.0}}}{{{x}}}$ et $\\textcolor{{{color:primary.0}}}{{{y}}}$."
+				]
+			}
+		},
+		{
+			"statement": "{{if:t==0|Dans une ferme|{{if:t==1|Chez Inès|Sur un parking}}}}, il n'y a que des {{if:t==0|lapins|{{if:t==1|chats|voitures}}}} et des {{if:t==0|poules|{{if:t==1|oiseaux|motos}}}}. On compte ${{h}}$ {{if:t==0|têtes|{{if:t==1|têtes|véhicules}}}} et ${{m}}$ {{if:t==0|pattes|{{if:t==1|pattes|roues}}}}.\n\nCombien y a-t-il de {{if:t==0|lapins|{{if:t==1|chats|voitures}}}} ? Combien de {{if:t==0|poules|{{if:t==1|oiseaux|motos}}}} ?\n\n{{if:t==0|Lapins|{{if:t==1|Chats|Voitures}}}} : $?$\n\n{{if:t==0|Poules|{{if:t==1|Oiseaux|Motos}}}} : $?$",
+			"variables": [
+				{
+					"name": "t",
+					"expression": "0..2"
+				},
+				{
+					"name": "x",
+					"expression": "2..10"
+				},
+				{
+					"name": "y",
+					"expression": "2..10"
+				},
+				{
+					"name": "h",
+					"expression": "eval:x+y"
+				},
+				{
+					"name": "m",
+					"expression": "eval:4*x+2*y"
+				}
+			],
+			"conditions": ["x!=y", "mod(y,2)==0", "y!=2*x"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{x}}",
+					"expectedErrors": [
+						{
+							"answer": "{{y}}",
+							"message": "C'est le nombre de {{if:t==0|poules|{{if:t==1|oiseaux|motos}}}} : vérifie l'ordre des cases.",
+							"label": "Nombres inversés"
+						},
+						{
+							"answer": "{{eval:h/2}}",
+							"message": "Avec autant de {{if:t==0|lapins|{{if:t==1|chats|voitures}}}} que de {{if:t==0|poules|{{if:t==1|oiseaux|motos}}}}, il y aurait ${{eval:3*h}}$ {{if:t==0|pattes|{{if:t==1|pattes|roues}}}}, pas ${{m}}$.",
+							"label": "Total partagé en deux"
+						},
+						{
+							"answer": "{{eval:m/4}}",
+							"message": "En divisant les ${{m}}$ {{if:t==0|pattes|{{if:t==1|pattes|roues}}}} par $4$, tu fais comme s'il n'y avait que des {{if:t==0|lapins|{{if:t==1|chats|voitures}}}} : les {{if:t==0|poules|{{if:t==1|oiseaux|motos}}}} n'en ont que $2$.",
+							"label": "{{if:t==0|pattes|{{if:t==1|pattes|roues}}}} divisées par 4"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{y}}",
+					"expectedErrors": [
+						{
+							"answer": "{{x}}",
+							"message": "C'est le nombre de {{if:t==0|lapins|{{if:t==1|chats|voitures}}}} : vérifie l'ordre des cases.",
+							"label": "Nombres inversés"
+						},
+						{
+							"answer": "{{eval:h/2}}",
+							"message": "Il n'y a pas autant de {{if:t==0|poules|{{if:t==1|oiseaux|motos}}}} que de {{if:t==0|lapins|{{if:t==1|chats|voitures}}}} : on aurait alors ${{eval:3*h}}$ {{if:t==0|pattes|{{if:t==1|pattes|roues}}}}, pas ${{m}}$.",
+							"label": "Total partagé en deux"
+						},
+						{
+							"answer": "{{eval:h-m/4}}",
+							"message": "${{m}} \\div 4 = {{eval:m/4}}$ n'est pas le nombre de {{if:t==0|lapins|{{if:t==1|chats|voitures}}}} : les {{if:t==0|poules|{{if:t==1|oiseaux|motos}}}} n'ont que $2$ {{if:t==0|pattes|{{if:t==1|pattes|roues}}}}.",
+							"label": "{{if:t==0|pattes|{{if:t==1|pattes|roues}}}} divisées par 4"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Et s'il n'y avait que des {{if:t==0|poules|{{if:t==1|oiseaux|motos}}}} ?** Il y aurait ${{h}} \\times 2 = {{eval:2*h}}$ {{if:t==0|pattes|{{if:t==1|pattes|roues}}}}.",
+					"**L'ajustement.** Il y a ${{m}} - {{eval:2*h}} = {{eval:m-2*h}}$ {{if:t==0|pattes|{{if:t==1|pattes|roues}}}} de plus. Chaque {{if:t==0|lapin|{{if:t==1|chat|voiture}}}} à la place {{if:t==0|d'une poule|{{if:t==1|d'un oiseau|d'une moto}}}} en ajoute $2$ : ${{eval:m-2*h}} \\div 2 = \\textcolor{{{color:primary.0}}}{{{x}}}$ {{if:t==0|lapins|{{if:t==1|chats|voitures}}}}.",
+					"**Les {{if:t==0|poules|{{if:t==1|oiseaux|motos}}}}.** ${{h}} - {{x}} = \\textcolor{{{color:primary.0}}}{{{y}}}$.",
+					"**Vérification.** ${{x}} \\times 4 + {{y}} \\times 2 = {{eval:4*x}} + {{eval:2*y}} = {{m}}$."
+				]
+			},
+			"hint": "Et s'il n'y avait que des {{if:t==0|poules|{{if:t==1|oiseaux|motos}}}} ?"
+		},
+		{
+			"statement": "Dans son porte-monnaie, Malik n'a que des pièces de {{if:c==0|$20$ centimes|$50$ centimes}} et des pièces de {{if:c==0|$2~\\unit{€}$|$1~\\unit{€}$}}. Il a ${{h}}$ pièces en tout, pour ${{eval:((s)/100)[€]}}$.\n\nCombien a-t-il de pièces de chaque sorte ?\n\nPièces de {{if:c==0|$20$ centimes|$50$ centimes}} : $?$\n\nPièces de {{if:c==0|$2~\\unit{€}$|$1~\\unit{€}$}} : $?$",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "0..1"
+				},
+				{
+					"name": "p",
+					"expression": "eval:20+30*c"
+				},
+				{
+					"name": "g",
+					"expression": "eval:200-100*c"
+				},
+				{
+					"name": "x",
+					"expression": "2..10"
+				},
+				{
+					"name": "y",
+					"expression": "2..10"
+				},
+				{
+					"name": "h",
+					"expression": "eval:x+y"
+				},
+				{
+					"name": "s",
+					"expression": "eval:g*x+p*y"
+				}
+			],
+			"conditions": ["x!=y"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{y}}",
+					"expectedErrors": [
+						{
+							"answer": "{{x}}",
+							"message": "C'est le nombre de pièces de {{if:c==0|$2~\\unit{€}$|$1~\\unit{€}$}} : vérifie l'ordre des cases.",
+							"label": "Nombres inversés"
+						},
+						{
+							"answer": "{{eval:h/2}}",
+							"message": "Il n'y a pas autant de pièces de chaque sorte : on aurait alors ${{eval:((h*(p+g)/2)/100)[€]}}$, pas ${{eval:((s)/100)[€]}}$.",
+							"label": "Total partagé en deux"
+						},
+						{
+							"answer": "{{eval:s/p}}",
+							"message": "Il n'y a pas que des pièces de {{if:c==0|$20$ centimes|$50$ centimes}} : avec ${{eval:s/p}}$ pièces, on dépasserait les ${{h}}$ pièces du porte-monnaie.",
+							"label": "Toutes des petites pièces"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{x}}",
+					"expectedErrors": [
+						{
+							"answer": "{{y}}",
+							"message": "C'est le nombre de pièces de {{if:c==0|$20$ centimes|$50$ centimes}} : vérifie l'ordre des cases.",
+							"label": "Nombres inversés"
+						},
+						{
+							"answer": "{{eval:h/2}}",
+							"message": "Il n'y a pas autant de pièces de chaque sorte : on aurait alors ${{eval:((h*(p+g)/2)/100)[€]}}$, pas ${{eval:((s)/100)[€]}}$.",
+							"label": "Total partagé en deux"
+						},
+						{
+							"answer": "{{eval:(g-p)*x/100;d}}",
+							"message": "C'est l'argent en plus, en euros : chaque pièce de {{if:c==0|$2~\\unit{€}$|$1~\\unit{€}$}} n'apporte que ${{eval:((g-p)/100)[€]}}$ de plus qu'une pièce de {{if:c==0|$20$ centimes|$50$ centimes}}.",
+							"label": "Argent en plus non partagé"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Et s'il n'y avait que des pièces de {{if:c==0|$20$ centimes|$50$ centimes}} ?** Malik aurait ${{h}} \\times {{if:mod(p,100)==0|{{eval:(p)/100;d}}|{{eval:(p)/100;d2}}}} = {{if:mod(h*p,100)==0|{{eval:(h*p)/100;d}}|{{eval:(h*p)/100;d2}}}}~\\unit{€}$.",
+					"**L'ajustement.** Il a ${{if:mod(s,100)==0|{{eval:(s)/100;d}}|{{eval:(s)/100;d2}}}} - {{if:mod(h*p,100)==0|{{eval:(h*p)/100;d}}|{{eval:(h*p)/100;d2}}}} = {{if:mod(s-h*p,100)==0|{{eval:(s-h*p)/100;d}}|{{eval:(s-h*p)/100;d2}}}}~\\unit{€}$ de plus. Chaque pièce de {{if:c==0|$2~\\unit{€}$|$1~\\unit{€}$}} à la place d'une pièce de {{if:c==0|$20$ centimes|$50$ centimes}} ajoute ${{eval:((g-p)/100)[€]}}$ : ${{if:mod(g-p,100)==0|{{eval:(g-p)/100;d}}|{{eval:(g-p)/100;d2}}}} \\times \\textcolor{{{color:primary.0}}}{{{x}}} = {{if:mod(s-h*p,100)==0|{{eval:(s-h*p)/100;d}}|{{eval:(s-h*p)/100;d2}}}}$ : il y a $\\textcolor{{{color:primary.0}}}{{{x}}}$ pièces de {{if:c==0|$2~\\unit{€}$|$1~\\unit{€}$}}.",
+					"**Les pièces de {{if:c==0|$20$ centimes|$50$ centimes}}.** ${{h}} - {{x}} = \\textcolor{{{color:primary.0}}}{{{y}}}$.",
+					"**Vérification.** ${{y}} \\times {{if:mod(p,100)==0|{{eval:(p)/100;d}}|{{eval:(p)/100;d2}}}} + {{x}} \\times {{if:mod(g,100)==0|{{eval:(g)/100;d}}|{{eval:(g)/100;d2}}}} = {{if:mod(p*y,100)==0|{{eval:(p*y)/100;d}}|{{eval:(p*y)/100;d2}}}} + {{if:mod(g*x,100)==0|{{eval:(g*x)/100;d}}|{{eval:(g*x)/100;d2}}}} = {{if:mod(s,100)==0|{{eval:(s)/100;d}}|{{eval:(s)/100;d2}}}}$."
+				]
+			},
+			"hint": "Et s'il n'y avait que des pièces de {{if:c==0|$20$ centimes|$50$ centimes}} ?"
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["18", "12"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"N": "30",
+				"S": "210",
+				"x": "18",
+				"y": "12"
+			},
+			"description": "Billets : 30 billets, 210 € → 18 de 5 €, 12 de 10 €",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["12", "18"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "C'est le nombre de billets de $10~\\unit{€}$ : vérifie l'ordre des cases."
+			},
+			"variables": {
+				"N": "30",
+				"S": "210",
+				"x": "18",
+				"y": "12"
+			},
+			"description": "Billets : cases échangées",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["18", "60"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "C'est l'argent en trop, en euros : chaque billet de $10~\\unit{€}$ apporte $5~\\unit{€}$ de plus qu'un billet de $5~\\unit{€}$."
+			},
+			"variables": {
+				"N": "30",
+				"S": "210",
+				"x": "18",
+				"y": "12"
+			},
+			"description": "Billets : 60 € en trop non partagés",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["18", "21"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Il n'y a pas que des billets de $10~\\unit{€}$ : il y a aussi des billets de $5~\\unit{€}$."
+			},
+			"variables": {
+				"N": "30",
+				"S": "210",
+				"x": "18",
+				"y": "12"
+			},
+			"description": "Billets : 210 ÷ 10 (21)",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["42", "12"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Il n'y a pas que des billets de $5~\\unit{€}$ : avec $42$ billets, on dépasserait les $30$ billets de la tirelire."
+			},
+			"variables": {
+				"N": "30",
+				"S": "210",
+				"x": "18",
+				"y": "12"
+			},
+			"description": "Billets : 210 ÷ 5 (42)",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["-30", "12"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as retiré $60$ billets : $60$, ce sont des euros. Chaque billet de $10~\\unit{€}$ apporte $5~\\unit{€}$ de plus qu'un billet de $5~\\unit{€}$."
+			},
+			"variables": {
+				"N": "30",
+				"S": "210",
+				"x": "18",
+				"y": "12"
+			},
+			"description": "Billets : 30 − 60 (−30)",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["6", "8"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"x": "6",
+				"y": "8"
+			},
+			"description": "Somme : 14 et 48 → 6 et 8",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["8", "6"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "C'est le plus grand des deux nombres : le plus petit va dans la première case."
+			},
+			"variables": {
+				"x": "6",
+				"y": "8"
+			},
+			"description": "Somme : échangés",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["7", "7"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "$7 + 7 = 14$, mais $7 \\times 7 = 49$, pas $48$."
+			},
+			"variables": {
+				"x": "6",
+				"y": "8"
+			},
+			"description": "Somme : 7 et 7",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["3", "11"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"x": "3",
+				"y": "11"
+			},
+			"description": "Somme : 3 et 11 (somme 14, produit 33)",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["4", "9"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"x": "4",
+				"y": "9"
+			},
+			"description": "Écart : écart 5, produit 36 → 4 et 9",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["9", "4"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "C'est le plus grand des deux nombres : le plus petit va dans la première case."
+			},
+			"variables": {
+				"x": "4",
+				"y": "9"
+			},
+			"description": "Écart : échangés",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["5", "9"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "$5$, c'est l'écart entre les deux nombres, pas l'un d'eux."
+			},
+			"variables": {
+				"x": "4",
+				"y": "9"
+			},
+			"description": "Écart : l'écart écrit (5)",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["4", "36"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "$36$ est le produit des deux nombres, pas l'un d'eux."
+			},
+			"variables": {
+				"x": "4",
+				"y": "9"
+			},
+			"description": "Écart : le produit écrit (36)",
+			"variationIndex": 2
+		},
+		{
+			"description": "Pattes : 10 têtes, 32 pattes → 6 lapins, 4 poules",
+			"variationIndex": 3,
+			"variables": {
+				"t": "0",
+				"x": "6",
+				"y": "4",
+				"h": "10",
+				"m": "32"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["6", "4"]
+		},
+		{
+			"description": "Pattes : lapins et poules inversés (case 1)",
+			"variationIndex": 3,
+			"variables": {
+				"t": "0",
+				"x": "6",
+				"y": "4",
+				"h": "10",
+				"m": "32"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "C'est le nombre de poules : vérifie l'ordre des cases."
+			},
+			"answers": ["4", "4"]
+		},
+		{
+			"description": "Pattes : 10 ÷ 2 lapins (5)",
+			"variationIndex": 3,
+			"variables": {
+				"t": "0",
+				"x": "6",
+				"y": "4",
+				"h": "10",
+				"m": "32"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Avec autant de lapins que de poules, il y aurait $30$ pattes, pas $32$."
+			},
+			"answers": ["5", "4"]
+		},
+		{
+			"description": "Pattes : 32 ÷ 4 lapins (8)",
+			"variationIndex": 3,
+			"variables": {
+				"t": "0",
+				"x": "6",
+				"y": "4",
+				"h": "10",
+				"m": "32"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "En divisant les $32$ pattes par $4$, tu fais comme s'il n'y avait que des lapins : les poules n'en ont que $2$."
+			},
+			"answers": ["8", "4"]
+		},
+		{
+			"description": "Pattes : lapins et poules inversés (case 2)",
+			"variationIndex": 3,
+			"variables": {
+				"t": "0",
+				"x": "6",
+				"y": "4",
+				"h": "10",
+				"m": "32"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "C'est le nombre de lapins : vérifie l'ordre des cases."
+			},
+			"answers": ["6", "6"]
+		},
+		{
+			"description": "Pattes : 10 ÷ 2 poules (5)",
+			"variationIndex": 3,
+			"variables": {
+				"t": "0",
+				"x": "6",
+				"y": "4",
+				"h": "10",
+				"m": "32"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Il n'y a pas autant de poules que de lapins : on aurait alors $30$ pattes, pas $32$."
+			},
+			"answers": ["6", "5"]
+		},
+		{
+			"description": "Pattes : 10 − 32 ÷ 4 poules (2)",
+			"variationIndex": 3,
+			"variables": {
+				"t": "0",
+				"x": "6",
+				"y": "4",
+				"h": "10",
+				"m": "32"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "$32 \\div 4 = 8$ n'est pas le nombre de lapins : les poules n'ont que $2$ pattes."
+			},
+			"answers": ["6", "2"]
+		},
+		{
+			"description": "Roues : 13 véhicules, 44 roues → 9 voitures, 4 motos",
+			"variationIndex": 3,
+			"variables": {
+				"t": "2",
+				"x": "9",
+				"y": "4",
+				"h": "13",
+				"m": "44"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["9", "4"]
+		},
+		{
+			"description": "Pièces : 12 pièces, 11,40 € → 7 de 20 c, 5 de 2 €",
+			"variationIndex": 4,
+			"variables": {
+				"c": "0",
+				"p": "20",
+				"g": "200",
+				"x": "5",
+				"y": "7",
+				"h": "12",
+				"s": "1140"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["7", "5"]
+		},
+		{
+			"description": "Pièces : inversés (case 1)",
+			"variationIndex": 4,
+			"variables": {
+				"c": "0",
+				"p": "20",
+				"g": "200",
+				"x": "5",
+				"y": "7",
+				"h": "12",
+				"s": "1140"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "C'est le nombre de pièces de $2~\\unit{€}$ : vérifie l'ordre des cases."
+			},
+			"answers": ["5", "5"]
+		},
+		{
+			"description": "Pièces : 12 ÷ 2 (case 1)",
+			"variationIndex": 4,
+			"variables": {
+				"c": "0",
+				"p": "20",
+				"g": "200",
+				"x": "5",
+				"y": "7",
+				"h": "12",
+				"s": "1140"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Il n'y a pas autant de pièces de chaque sorte : on aurait alors $13.20~\\unit{€}$, pas $11.40~\\unit{€}$."
+			},
+			"answers": ["6", "5"]
+		},
+		{
+			"description": "Pièces : toutes de 20 c (57)",
+			"variationIndex": 4,
+			"variables": {
+				"c": "0",
+				"p": "20",
+				"g": "200",
+				"x": "5",
+				"y": "7",
+				"h": "12",
+				"s": "1140"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Il n'y a pas que des pièces de $20$ centimes : avec $57$ pièces, on dépasserait les $12$ pièces du porte-monnaie."
+			},
+			"answers": ["57", "5"]
+		},
+		{
+			"description": "Pièces : inversés (case 2)",
+			"variationIndex": 4,
+			"variables": {
+				"c": "0",
+				"p": "20",
+				"g": "200",
+				"x": "5",
+				"y": "7",
+				"h": "12",
+				"s": "1140"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "C'est le nombre de pièces de $20$ centimes : vérifie l'ordre des cases."
+			},
+			"answers": ["7", "7"]
+		},
+		{
+			"description": "Pièces : 9 € en plus non partagés",
+			"variationIndex": 4,
+			"variables": {
+				"c": "0",
+				"p": "20",
+				"g": "200",
+				"x": "5",
+				"y": "7",
+				"h": "12",
+				"s": "1140"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "C'est l'argent en plus, en euros : chaque pièce de $2~\\unit{€}$ n'apporte que $1.80~\\unit{€}$ de plus qu'une pièce de $20$ centimes."
+			},
+			"answers": ["7", "9"]
+		},
+		{
+			"description": "Pièces : 50 c et 1 €, 3 et 8 → 7 €",
+			"variationIndex": 4,
+			"variables": {
+				"c": "1",
+				"p": "50",
+				"g": "100",
+				"x": "3",
+				"y": "8",
+				"h": "11",
+				"s": "700"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["8", "3"]
+		}
+	]
+}

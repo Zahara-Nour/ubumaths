@@ -1,0 +1,94 @@
+---
+title: Chantier solide-agrandir — bouton « Agrandir » du bloc solide
+date: 2026-11-28
+status: en cours
+---
+
+# Chantier `solide-agrandir` — bouton « Agrandir » du bloc solide
+
+## Reprendre ici
+
+_Mis à jour le 2026-11-28, après #3287._
+
+- **État** : le bouton « Agrandir » du bloc solide est mergé (#3287, une seule PR) ; pas en prod sans
+  `deploy:prod` demandé par David.
+- **Prochaine action** : après l'essai de David, clore le chantier (journal archivé, lien de
+  `docs/systeme/ubumark.md` vers l'archive).
+- **En attente de David** : l'essai sur son téléphone (doigt réel, fenêtre ouverte en Safari) ; dire si le
+  gain d'une figure à tourner (environ un tiers sur téléphone, à cause du cadre fixe de la rotation) lui
+  suffit ; dire si l'absence de bouton dans un choix à cocher lui convient.
+- **Pièges en cours** : la grande et la petite figure partagent la même rotation (`figures` dans
+  `createEspaceRotation`) ; pas de bouton dans un choix (`figure-in-choice.ts`) ni dans un élément que l'on
+  touche (`CLICKABLE_PARENT`).
+- **Worktree / branche** : `../ubumaths-wt-solide-agrandir`, `chore/solide-agrandir-essai` (sur `main`, sert
+  seulement au serveur d'essai, port 5176) ; à retirer à la clôture.
+
+## 1. D'où l'on part
+
+Suite du chantier [solides-3d](../archive/wip/solides-3d-progress.md) (clos le 2026-11-28). David, le
+2026-11-28 : « est-ce qu'il serait intéressant de pouvoir zoomer dans les blocs solides ? ». Réponse : un zoom
+libre (pincer) coûte cher (le doigt tourne déjà la figure, il faudrait aussi déplacer la figure grossie) ; un
+bouton « Agrandir » rend presque le même service. David : « ok ajoute le bouton agrandir ».
+
+## 2. Phase 0 — comportements (validés par David le 2026-11-28 : « je te suis »)
+
+Exemple suivi : le cube avec la droite (IG), le plan (BDE) et le point K, sur téléphone.
+
+### Nominal
+
+1. Un petit bouton « Agrandir » apparaît sous la figure, à côté de « Vue de départ ».
+2. Un appui ouvre la figure en grand par-dessus la page : toute la largeur de l'écran sur téléphone, une
+   grande fenêtre sur ordinateur.
+3. La grande figure s'ouvre sous le même angle que la petite. Si elle est à tourner, elle tourne au doigt, à
+   la souris et au clavier, avec son bouton « Vue de départ ».
+4. On ferme par la croix, par Échap ou par un appui à côté. La petite figure reprend l'angle qu'on a laissé
+   dans la grande.
+5. Agrandir ne compte pas dans la réponse, comme tourner.
+
+### Limites
+
+6. Les noms, les traits et les cotes grossissent avec la figure, sans être replacés.
+7. Fiche PDF et chat des élèves : rien ne change, pas de bouton.
+8. Lecteur d'écran : le bouton se lit « Agrandir la figure », la fenêtre a la même description que la figure.
+9. Une nouvelle question referme la fenêtre si elle était ouverte.
+
+### Erreurs
+
+10. Aucune nouvelle erreur d'auteur : pas de réglage à écrire.
+
+### Questions (réponse du 2026-11-28 : « je te suis » — la recommandation à chacune)
+
+- **(a) Quelles figures ?** Tous les blocs `solide` sans geste, qu'ils tournent ou non ; pas les `cubes`.
+- **(b) Toujours là, ou au choix de l'auteur ?** Toujours là, sans réglage.
+- **(c) Figures à geste** (`tracer: vecteur`) : pas de bouton dans ce lot.
+
+## 3. Ce qui est fait (2026-11-28)
+
+- `Solide.svelte` : le `<svg>` est un snippet dessiné deux fois (page, fenêtre `Dialog`), depuis la même
+  rotation ; `enlarged` (un `$derived` remis à faux quand le bloc change) ; bouton sous la figure.
+- `figure-in-choice.ts` : contexte posé par `ChoiceList.svelte` et `MultipleChoiceInput.svelte`, pour ne pas
+  rendre un bouton dans un bouton dès le rendu serveur.
+- `solide-rotation.svelte.ts` : `attach` tient la liste des `<svg>` (`figures`) ; avant, la fenêtre refermée
+  laissait la figure de la page sans capture du pointeur ni retour du clavier.
+- Tests : `SolideAgrandir.svelte.test.ts` (16 ; les 12 premiers rouges avant le code : 9 sur 12, les 3 autres
+  disent « pas de bouton ») ; `SolideTourner.svelte.test.ts` : la figure fixe a maintenant un bouton, « Agrandir ».
+- Doc : `docs/systeme/ubumark.md` (paragraphe « Bouton Agrandir »), catalogue (`block-catalog/solide.ts`).
+- **Écarts avec la phase 0, à dire à David** :
+  - **pas de bouton quand la figure est dans un choix à cocher** (ou une carte que l'on touche) : le choix
+    est lui-même un bouton, « Agrandir » y cocherait le choix ; pas non plus dans la liste des choix corrigée ;
+  - Échap sur une grande figure **tournée** ramène d'abord la vue de départ (règle du chantier `solides-3d`),
+    un second Échap ferme ;
+  - **gain mesuré sur téléphone (390 px)** : une figure fixe presque × 2 ; une figure à tourner environ × 1,3
+    seulement, parce que son cadre réserve la place de la rotation.
+- Vu à l'écran par la session : captures Chromium du composant (téléphone 390 px, figure à tourner et figure
+  fixe, page et fenêtre ; ordinateur 1280 px) ; page d'aide du bloc solide en Safari grand écran (`pnpm voir`,
+  bouton sous le cylindre, le cône et la boule, 0 erreur de console). **Pas vu** : la fenêtre ouverte en
+  Safari, le thème sombre, le doigt sur un vrai téléphone.
+- **Revue** (`code-reviewer`) : aucun bloquant. **Corrigés** : la fenêtre se rouvrait seule quand le premier
+  bloc revenait après un autre ; le bouton était rendu dans le bouton d'un choix au rendu serveur (contexte
+  `figure-in-choice.ts`), et sous chaque figure de 3 cm de la liste corrigée ; le clavier revient sur le bouton
+  à la fermeture ; garde d'indice dans `attach`. **Laissés** : deux questions de suite au même texte de bloc ne
+  referment pas la fenêtre (rien ne les distingue) ; pendant la fermeture animée, la capture du pointeur reste
+  à la grande figure (la page n'est pas atteignable à ce moment) ; pas de test au doigt réel.
+- Docs non modifiées : `docs/systeme/questions.md` (la case choix ne change pas, elle pose seulement le contexte) et
+  `docs/systeme/utilitaires-et-demos.md` (une phrase de plus dans le catalogue du bloc solide).

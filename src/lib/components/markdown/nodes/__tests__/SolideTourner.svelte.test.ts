@@ -74,12 +74,13 @@ function drag(svg: SVGSVGElement, dx: number, dy: number) {
 }
 
 describe('Solide — tourner: oui', () => {
-	it('sans la clé : ni clavier, ni bouton, ni consigne', async () => {
+	it('sans la clé : ni clavier, ni consigne ; le seul bouton est « Agrandir »', async () => {
 		const screen = await render(Espace, { target: mainElement(), props: { node: node(...PAVE) } });
 		const svg = svgOf(screen.container);
 		expect(svg.hasAttribute('tabindex')).toBe(false);
 		expect(getComputedStyle(svg).touchAction).not.toBe('none');
-		expect(screen.container.querySelectorAll('button')).toHaveLength(0);
+		const buttons = [...screen.container.querySelectorAll('button')];
+		expect(buttons.map((b) => b.textContent?.trim())).toEqual(['Agrandir']);
 		expect(screen.container.textContent).not.toContain('tourner');
 	});
 

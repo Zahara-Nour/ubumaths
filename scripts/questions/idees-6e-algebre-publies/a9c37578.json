@@ -1,0 +1,409 @@
+{
+	"id": "a9c37578-1364-47f4-9cf1-b047b6c29a68",
+	"title": "Schéma en barres : choisir le schéma d'un énoncé",
+	"description": "Somme et différence de deux quantités : choisir parmi trois schémas en barres celui qui traduit l'énoncé (écart « de plus » ou « de moins »)",
+	"grades": ["6"],
+	"level": 1,
+	"delay": 120,
+	"status": "published",
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"statement": "Léa et Tom ont ${{eval:2*p+d}}$ billes en tout. Léa en a ${{d}}$ de plus que Tom.\n\nQuel schéma traduit cet énoncé ?\n\n````choix\n- ```schema-barres\n  Tom : ? (3)\n  Léa : ? (3) ; {{d}} (1)\n  total : {{eval:2*p+d}}\n  ```\n- ```schema-barres\n  Tom : ? (3) ; {{d}} (1)\n  Léa : ? (3)\n  total : {{eval:2*p+d}}\n  ```\n- ```schema-barres\n  Tom : ? (3)\n  Léa : ? (3) ; {{eval:2*p+d}} (1)\n  total : {{d}}\n  ```\n````",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "10..300"
+				},
+				{
+					"name": "d",
+					"expression": "2..90"
+				}
+			],
+			"conditions": ["2*p+d<1000", "p>=2*d", "d*6>=p"],
+			"correction": {
+				"steps": [
+					"**Le tout.** Les deux barres ensemble font ${{eval:2*p+d}}$ billes : l'accolade, à droite, embrasse les deux barres.",
+					"**L'écart.** Léa en a ${{d}}$ de plus que Tom : c'est la barre de Léa qui dépasse de ${{d}}$.\n\n```schema-barres\nTom : ? (3)\nLéa : ? (3) ; {{d}} (1)\ntotal : {{eval:2*p+d}}\n```\n\n"
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"statement": "Léa et Tom ont ${{eval:2*p+d}}$ cartes en tout. Léa en a ${{d}}$ de moins que Tom.\n\nQuel schéma traduit cet énoncé ?\n\n````choix\n- ```schema-barres\n  Léa : ? (3)\n  Tom : ? (3) ; {{d}} (1)\n  total : {{eval:2*p+d}}\n  ```\n- ```schema-barres\n  Léa : ? (3) ; {{d}} (1)\n  Tom : ? (3)\n  total : {{eval:2*p+d}}\n  ```\n- ```schema-barres\n  Léa : ? (3)\n  Tom : ? (3) ; {{eval:2*p+d}} (1)\n  total : {{d}}\n  ```\n````",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "10..300"
+				},
+				{
+					"name": "d",
+					"expression": "2..90"
+				}
+			],
+			"conditions": ["2*p+d<1000", "p>=2*d", "d*6>=p"],
+			"correction": {
+				"steps": [
+					"**Le tout.** Les deux barres ensemble font ${{eval:2*p+d}}$ cartes : l'accolade, à droite, embrasse les deux barres.",
+					"**L'écart.** Tom en a ${{d}}$ de plus que Léa : c'est la barre de Tom qui dépasse de ${{d}}$.\n\n```schema-barres\nLéa : ? (3)\nTom : ? (3) ; {{d}} (1)\ntotal : {{eval:2*p+d}}\n```\n\n"
+				]
+			}
+		},
+		{
+			"statement": "Au cross du collège, ${{T}}$ élèves ont couru, dont ${{f}}$ filles. Combien de garçons ont couru ?\n\nQuel schéma traduit cet énoncé ?\n\n````choix\n- ```schema-barres\n  Filles : {{f}} ({{if:2*f>T|3|2}})\n  Garçons : ? ({{if:2*f>T|2|3}})\n  total : {{T}}\n  ```\n- ```schema-barres\n  Filles : {{f}} ({{if:2*f>T|3|2}})\n  Garçons : {{T}} ({{if:2*f>T|2|3}})\n  total : ?\n  ```\n- ```schema-barres\n  Filles : {{f}} ({{if:2*f>T|3|2}})\n  Garçons : ? ({{if:2*f>T|2|3}}) = {{T}}\n  ```\n````",
+			"variables": [
+				{
+					"name": "T",
+					"expression": "20..99"
+				},
+				{
+					"name": "f",
+					"expression": "10..89"
+				}
+			],
+			"conditions": ["f<T", "T-f>=10", "2*f!=T"],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Le tout.** Les ${{T}}$ élèves, ce sont les filles et les garçons ensemble : l'accolade, à droite, embrasse les deux barres.",
+					"**La partie cherchée.** On connaît les filles, ${{f}}$ ; le ? est sur la barre des garçons.\n\n```schema-barres\nFilles : {{f}} ({{if:2*f>T|3|2}})\nGarçons : ? ({{if:2*f>T|2|3}})\ntotal : {{T}}\n```\n\nOn cherche une partie du tout : ${{T}} - {{f}} = \\textcolor{{{color:primary.0}}}{{{eval:T-f}}}$ garçons."
+				]
+			},
+			"hint": "Cherche d'abord ce qu'on connaît : le tout, ou une des parts ?"
+		},
+		{
+			"statement": "Tom a ${{a}}$ billes. Léa en a ${{n}}$ fois plus que Tom. Combien Léa a-t-elle de billes ?\n\nQuel schéma traduit cet énoncé ?\n\n````choix\n- ```schema-barres\n  Tom : {{a}}\n  Léa : {{a}} ; {{a}} ; {{a}}{{if:n>3| ; {{a}}|}}{{if:n>4| ; {{a}}|}}{{if:n>5| ; {{a}}|}}{{if:n>6| ; {{a}}|}}{{if:n>7| ; {{a}}|}}{{if:n>8| ; {{a}}|}} = ?\n  ```\n- ```schema-barres\n  Tom : {{a}}\n  Léa : {{a}} ; {{n}} (0,5) = ?\n  ```\n- ```schema-barres\n  Tom : ? ; ? ; ?{{if:n>3| ; ?|}}{{if:n>4| ; ?|}}{{if:n>5| ; ?|}}{{if:n>6| ; ?|}}{{if:n>7| ; ?|}}{{if:n>8| ; ?|}}\n  Léa : {{a}}\n  ```\n````",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "3..9"
+				},
+				{
+					"name": "a",
+					"expression": "10..99"
+				}
+			],
+			"conditions": ["a!=n"],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**« ${{n}}$ fois plus ».** La barre de Léa est faite de ${{n}}$ barres comme celle de Tom : on ne lui ajoute pas ${{n}}$ billes.\n\n```schema-barres\nTom : {{a}}\nLéa : {{a}} ; {{a}} ; {{a}}{{if:n>3| ; {{a}}|}}{{if:n>4| ; {{a}}|}}{{if:n>5| ; {{a}}|}}{{if:n>6| ; {{a}}|}}{{if:n>7| ; {{a}}|}}{{if:n>8| ; {{a}}|}} = ?\n```",
+					"**Le calcul.** ${{n}} \\times {{a}} = \\textcolor{{{color:primary.0}}}{{{eval:n*a}}}$ billes pour Léa."
+				]
+			},
+			"hint": "Cherche d'abord ce qu'on connaît : le tout, ou une des parts ?"
+		},
+		{
+			"statement": "${{T}}$ gommes sont partagées équitablement entre ${{n}}$ amis. Combien de gommes chaque ami reçoit-il ?\n\nQuel schéma traduit cet énoncé ?\n\n````choix\n- ```schema-barres\n  Gommes : ? ; ? ; ?{{if:n>3| ; ?|}}{{if:n>4| ; ?|}}{{if:n>5| ; ?|}}{{if:n>6| ; ?|}}{{if:n>7| ; ?|}}{{if:n>8| ; ?|}} = {{T}}\n  ```\n- ```schema-barres\n  Gommes : {{T}} ; {{T}} ; {{T}}{{if:n>3| ; {{T}}|}}{{if:n>4| ; {{T}}|}}{{if:n>5| ; {{T}}|}}{{if:n>6| ; {{T}}|}}{{if:n>7| ; {{T}}|}}{{if:n>8| ; {{T}}|}} = ?\n  ```\n- ```schema-barres\n  Gommes : {{T}} (3) ; {{n}} (0,5) = ?\n  ```\n````",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "3..9"
+				},
+				{
+					"name": "q",
+					"expression": "2..33"
+				},
+				{
+					"name": "T",
+					"expression": "eval:n*q"
+				}
+			],
+			"conditions": ["T>=10", "T<=99", "q!=n"],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Ce qu'on connaît.** Le tout, ${{T}}$ gommes, et le nombre de parts égales, ${{n}}$ : on cherche la valeur d'une part.\n\n```schema-barres\nGommes : ? ; ? ; ?{{if:n>3| ; ?|}}{{if:n>4| ; ?|}}{{if:n>5| ; ?|}}{{if:n>6| ; ?|}}{{if:n>7| ; ?|}}{{if:n>8| ; ?|}} = {{T}}\n```",
+					"**Le calcul.** ${{T}} \\div {{n}} = \\textcolor{{{color:primary.0}}}{{{q}}}$ gommes pour chaque ami."
+				]
+			},
+			"hint": "Cherche d'abord ce qu'on connaît : le tout, ou une des parts ?"
+		},
+		{
+			"statement": "${{T}}$ gommes sont rangées par paquets de ${{q}}$. Combien de paquets peut-on faire ?\n\nQuel schéma traduit cet énoncé ?\n\n````choix\n- ```schema-barres\n  Gommes : {{q}} ; {{q}} ; -… (2) ; {{q}} = {{T}}\n  ```\n- ```schema-barres\n  Gommes : ? ; ? ; ?{{if:q>3| ; ?|}}{{if:q>4| ; ?|}}{{if:q>5| ; ?|}}{{if:q>6| ; ?|}}{{if:q>7| ; ?|}}{{if:q>8| ; ?|}} = {{T}}\n  ```\n- ```schema-barres\n  Gommes : {{q}} ; {{q}} ; -… (2) ; {{q}} = ?\n  ```\n````",
+			"variables": [
+				{
+					"name": "q",
+					"expression": "3..9"
+				},
+				{
+					"name": "k",
+					"expression": "4..33"
+				},
+				{
+					"name": "T",
+					"expression": "eval:q*k"
+				}
+			],
+			"conditions": ["T<=99", "k!=q"],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Ce qu'on connaît.** Le tout, ${{T}}$ gommes, et la valeur d'une part, ${{q}}$ gommes par paquet : on cherche le nombre de parts. Les pointillés disent qu'on ne sait pas encore combien il y a de paquets.\n\n```schema-barres\nGommes : {{q}} ; {{q}} ; -… (2) ; {{q}} = {{T}}\n```",
+					"**Le calcul.** ${{T}} \\div {{q}} = \\textcolor{{{color:primary.0}}}{{{k}}}$ paquets."
+				]
+			},
+			"hint": "Cherche d'abord ce qu'on connaît : le tout, ou une des parts ?"
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"d": "12",
+				"p": "36"
+			},
+			"description": "Bon schéma",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"d": "12",
+				"p": "36"
+			},
+			"description": "Erreur : écart sur la barre de Tom",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"d": "12",
+				"p": "36"
+			},
+			"description": "Erreur : écart et total inversés",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"d": "25",
+				"p": "50"
+			},
+			"description": "« de moins » : bon schéma",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"d": "25",
+				"p": "50"
+			},
+			"description": "« de moins » : écart sur la barre de Léa",
+			"variationIndex": 1
+		},
+		{
+			"description": "Partie : bon schéma",
+			"variationIndex": 2,
+			"variables": {
+				"T": "45",
+				"f": "27"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0"]
+		},
+		{
+			"description": "Partie : le total cherché",
+			"variationIndex": 2,
+			"variables": {
+				"T": "45",
+				"f": "27"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["1"]
+		},
+		{
+			"description": "Partie : total sous la seule barre des garçons",
+			"variationIndex": 2,
+			"variables": {
+				"T": "45",
+				"f": "27"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["2"]
+		},
+		{
+			"description": "Partie : plus de garçons que de filles, bon schéma",
+			"variationIndex": 2,
+			"variables": {
+				"T": "61",
+				"f": "24"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0"]
+		},
+		{
+			"description": "Fois plus : bon schéma",
+			"variationIndex": 3,
+			"variables": {
+				"n": "4",
+				"a": "12"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0"]
+		},
+		{
+			"description": "Fois plus : addition au lieu de « 4 fois plus »",
+			"variationIndex": 3,
+			"variables": {
+				"n": "4",
+				"a": "12"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["1"]
+		},
+		{
+			"description": "Fois plus : Tom et Léa inversés",
+			"variationIndex": 3,
+			"variables": {
+				"n": "4",
+				"a": "12"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["2"]
+		},
+		{
+			"description": "Fois plus : 9 fois, bon schéma",
+			"variationIndex": 3,
+			"variables": {
+				"n": "9",
+				"a": "35"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0"]
+		},
+		{
+			"description": "Une part : bon schéma",
+			"variationIndex": 4,
+			"variables": {
+				"n": "8",
+				"q": "7",
+				"T": "56"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0"]
+		},
+		{
+			"description": "Une part : multiplication",
+			"variationIndex": 4,
+			"variables": {
+				"n": "8",
+				"q": "7",
+				"T": "56"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["1"]
+		},
+		{
+			"description": "Une part : addition",
+			"variationIndex": 4,
+			"variables": {
+				"n": "8",
+				"q": "7",
+				"T": "56"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["2"]
+		},
+		{
+			"description": "Nombre de parts : bon schéma",
+			"variationIndex": 5,
+			"variables": {
+				"q": "8",
+				"k": "7",
+				"T": "56"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0"]
+		},
+		{
+			"description": "Nombre de parts : 8 parts inconnues",
+			"variationIndex": 5,
+			"variables": {
+				"q": "8",
+				"k": "7",
+				"T": "56"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["1"]
+		},
+		{
+			"description": "Nombre de parts : total cherché",
+			"variationIndex": 5,
+			"variables": {
+				"q": "8",
+				"k": "7",
+				"T": "56"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["2"]
+		}
+	]
+}

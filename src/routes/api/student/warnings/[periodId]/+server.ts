@@ -61,7 +61,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 	// Validate periodId parameter
 	const periodIdValidation = periodIdSchema.safeParse(params.periodId);
 	if (!periodIdValidation.success) {
-		throw error(400, 'Invalid period ID format');
+		throw error(400, 'Identifiant de période invalide');
 	}
 	const periodId = periodIdValidation.data;
 
