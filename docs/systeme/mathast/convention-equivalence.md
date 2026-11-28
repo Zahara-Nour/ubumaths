@@ -670,3 +670,38 @@ droit)` (identité en x) ; chaque constante est remplacée par 2, −1 puis 3 et
 Limites connues : un `areEquivalent` qui ne sait pas conclure (budget dépassé) rend la réponse
 fausse ; l'intervalle n'est vérifié qu'en des points d'essai (une réponse indéfinie en un point
 isolé de l'intervalle passe). Sans `answerKind`, rien ne change.
+
+## Réponse « résolution » : ligne par ligne (case `answerKind: "resolution"`)
+
+L'élève résout une équation en écrivant les équations successives (outil 55, spécification de
+David du 2026-11-28). `questions/resolution/resolution-answer.ts` juge avec le solveur de
+mathAST (`solveEquation`) — aucune comparaison d'écriture entre les lignes :
+
+- deux lignes sont équivalentes ⇔ même statut du solveur (une solution, plusieurs, aucune,
+  toutes) et mêmes solutions (`areEquivalent` deux à deux) ; la première ligne est comparée à
+  `equation`, chaque suivante à la précédente ;
+- une ligne illisible, sans `=`, avec plusieurs `=` (« une seule égalité par ligne »), avec une
+  autre lettre que l'inconnue, ou que le solveur ne sait pas résoudre : marquée illisible ;
+- garde de coût, AVANT le solveur : chaque exposant est un entier écrit d'au plus 10, et le degré
+  écrit de la ligne (produit : somme, puissance : multiple) ne dépasse pas 20 ; sinon illisible
+  (`(x+1)^{999}=…` coûtait des secondes, `((x+1)^{10})^{10}…` épuisait la mémoire) ;
+- une seule ligne fausse ou illisible → faux (même si la dernière est juste) ; le jugement
+  s'arrête là, les lignes suivantes restent sans marque ;
+- `minLines` compte la conclusion plus les étapes avant elle qui ne sont ni une autre conclusion
+  `x = …` (recopiée) ni l'équation de l'énoncé recopiée ;
+- la dernière ligne doit être `x = valeur` (x seul à gauche, pas de x à droite) ; la valeur est
+  ensuite une case ordinaire, comparée au membre droit de l'attendue (`x={{s}}` → `{{s}}`) avec
+  les réglages de la case (`acceptDecimal`, règles, forme exigée).
+
+| Équation   | Lignes de l'élève         | Verdict                                           |
+| ---------- | ------------------------- | ------------------------------------------------- |
+| 3x − 5 = 7 | `3x=12`, `x=4`            | juste                                             |
+| 3x − 5 = 7 | `x=4`                     | juste (`minLines` 1) ; faux avec `minLines` 2     |
+| 3x − 5 = 7 | `3x=12`, `x=\frac{12}{3}` | ½ (fraction à simplifier)                         |
+| 3x − 5 = 7 | `3x=12`, `x=8-4`          | 0, mal écrit (calcul non effectué)                |
+| 3x − 5 = 7 | `x=\frac{12}{3}=4`        | faux, « écris une seule égalité par ligne »       |
+| 2x = 5     | `x=2{,}5`                 | juste avec `acceptDecimal`, sinon mal écrit       |
+| 3x − 5 = 7 | `3x=2`, `x=\frac{2}{3}`   | faux, « La ligne 1 n'a pas les mêmes solutions… » |
+| 3x − 5 = 7 | `3x=12`                   | faux, « Termine ta résolution par « x = … ». »    |
+| 3x − 5 = 7 | `0=0`                     | faux (toutes les valeurs ≠ une solution)          |
+| 4/x = 5/3  | `12=5x`, `x=\frac{12}{5}` | juste                                             |

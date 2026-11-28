@@ -46,6 +46,26 @@ describe('calculus-editor', () => {
 		});
 	});
 
+	it('aller-retour résolution ligne par ligne, lignes exigées', () => {
+		const defaults = {
+			answerKind: 'resolution' as const,
+			equation: '{{a}}x+{{b}}={{c}}',
+			minLines: 2
+		};
+		const state = calculusEditorState(defaults);
+		expect(state.resolution).toBe(true);
+		expect(state.minLines).toBe('2');
+		expect(calculusBlankDefaults(state)).toEqual(defaults);
+		expect(blankDefaultsSchema.safeParse(calculusBlankDefaults(state)).success).toBe(true);
+	});
+
+	it('résolution : lignes exigées vides, 1 ou illisibles omises (défaut 1)', () => {
+		for (const minLines of ['', '1', 'deux', '2.5']) {
+			const state = { ...calculusEditorState(undefined), resolution: true, minLines };
+			expect(calculusBlankDefaults(state)).toEqual({ answerKind: 'resolution' });
+		}
+	});
+
 	it('aucune case de calcul : null', () => {
 		expect(calculusBlankDefaults(calculusEditorState({ answerKind: 'vecteur' }))).toBeNull();
 	});
