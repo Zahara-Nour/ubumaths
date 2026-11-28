@@ -11,7 +11,8 @@
  * - une écriture qui échoue en route (ici une branche glissée dans les notions, que
  *   le trigger de la table refuse APRÈS le retrait des notions et la mise à jour de
  *   la fiche) : rien n'a changé ;
- * - un autre compte que l'auteur (ni admin) : refusé, rien n'a changé ;
+ * - un autre compte que l'auteur (ni admin) : refusé, rien n'a changé ; un élève à qui
+ *   la fiche est donnée la lit, ses notions aussi, mais ne peut pas les retirer ;
  * - anonyme : la fonction n'est pas appelable.
  *
  * @vitest-environment node
@@ -44,6 +45,7 @@ const RUN = `Itest-notions-d-un-coup-${Date.now().toString(36)}`;
 let teacherId: string;
 let teacherClient: SupabaseClient<Database>;
 let studentClient: SupabaseClient<Database>;
+let studentId: string;
 let branchId: string;
 let suitesId: string;
 let derivationId: string;
@@ -112,6 +114,7 @@ beforeAll(async () => {
 	teacherId = teacher.id;
 	teacherClient = await signedIn(teacher.email);
 	const student = await TestData.profile().withRole('student').create();
+	studentId = student.id;
 	studentClient = await signedIn(student.email);
 
 	branchId = await node('branch', null, `${RUN} branche`);
@@ -179,6 +182,35 @@ describe('save_worksheet_classification — tout ou rien', () => {
 			category: 'review',
 			notions: [suitesId, derivationId]
 		});
+	});
+
+	it('un élève qui LIT la fiche (donnée) sans pouvoir l’écrire : retrait refusé, rien n’a changé', async () => {
+		const id = await worksheet();
+		await sql(`update public.worksheets set status = 'published' where id = $1`, [id]);
+		const [{ id: assignmentId }] = await sql(
+			`insert into public.worksheet_assignments (worksheet_id, status, created_by)
+			 values ($1, 'active', $2) returning id`,
+			[id, teacherId]
+		);
+		await sql(
+			`insert into public.worksheet_assignment_students (assignment_id, student_id) values ($1, $2)`,
+			[assignmentId, studentId]
+		);
+		// Prémisse : l'élève voit la fiche et ses notions (sinon le test ne prouverait rien)
+		const { data: vues } = await studentClient
+			.from('worksheet_classifications')
+			.select('node_id')
+			.eq('worksheet_id', id);
+		expect(vues).toHaveLength(2);
+
+		// Fiche inchangée, notions vidées : seul le contrôle du retrait peut refuser
+		const { error } = await studentClient.rpc('save_worksheet_classification', {
+			p_worksheet_id: id,
+			p_fields: {},
+			p_notions: []
+		});
+		expect(error?.code).toBe('42501');
+		expect((await stored(id)).notions).toEqual([suitesId, derivationId]);
 	});
 
 	it('anonyme : la fonction n’est pas appelable', async () => {
