@@ -4,8 +4,8 @@
 
 _Mis à jour le 2026-11-28, avant la PR._
 
-- **État** : phase 0 validée ; tests (`intervalle-parametre.test.ts`, 18) et code écrits, verts ; suites atelier + domaines + grapheur vertes (8 532) ; `check:incremental` 0 erreur.
-- **Prochaine action** : vérifier le rendu à l'écran (curseur qui déplace la borne, Playwright sur le serveur 5177 du worktree), `types:cliquet`, doc `docs/systeme/atelier.md` (§ intervalle), revue `code-reviewer` en `model: opus` (le parseur de mathAST est touché), puis PR.
+- **État** : phase 0 validée ; code + tests (`intervalle-parametre.test.ts`, 18) verts, suites atelier + domaines + grapheur vertes (8 532), `check:incremental` 0 erreur ; doc `atelier.md` et `mathast/README.md` à jour ; branche poussée (commits `05c3628539`, `2e9510c2f1`), **pas encore de PR**.
+- **Prochaine action** : rendu à l'écran (Playwright sur un serveur 5177+ du worktree : `k = 2`, `f(x)=x sur [k;5]`, tracer, bouger le curseur ; Claude dans Chrome demande de choisir entre 2 navigateurs, l'éviter), `pnpm types:cliquet`, merge d'`origin/main` (43 commits de retard), revue `code-reviewer` en `model: opus` (parseur de mathAST touché), puis PR et `pnpm pr:merger`.
 - **En attente de David** : rien.
 - **Pièges en cours** : `recomputeAll` lit les ensembles à paramètre avec les valeurs du passage d'avant et repasse UNE fois s'ils changent (`#recomputingAgain`).
 - **Worktree / branche** : `../ubumaths-wt-fonctions-morceaux` · `feat/fonctions-morceaux`.
