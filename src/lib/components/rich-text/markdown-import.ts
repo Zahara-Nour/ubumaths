@@ -259,6 +259,8 @@ function convertBlock(block: BlockNode): JSONContent | null {
 			return convertCodeBlock({ type: 'code-block', language: 'robot', code: block.source });
 		case 'labyrinthe':
 			return convertCodeBlock({ type: 'code-block', language: 'labyrinthe', code: block.source });
+		case 'yohaku':
+			return convertCodeBlock({ type: 'code-block', language: 'yohaku', code: block.source });
 		case 'partage':
 			return convertCodeBlock({ type: 'code-block', language: 'partage', code: block.source });
 		case 'espace':
@@ -445,6 +447,10 @@ function convertListItem(item: ListItemNode): JSONContent {
 		} else if (child.type === 'labyrinthe') {
 			content.push(
 				convertCodeBlock({ type: 'code-block', language: 'labyrinthe', code: child.source })
+			);
+		} else if (child.type === 'yohaku') {
+			content.push(
+				convertCodeBlock({ type: 'code-block', language: 'yohaku', code: child.source })
 			);
 		} else if (child.type === 'operation') {
 			content.push(

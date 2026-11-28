@@ -22,6 +22,10 @@
  * un point qui n'est ni un point de la figure ni une intersection de deux traits
  * est « placé à l'œil », faux même posé pile au bon endroit.
  *
+ * Outil n° 38 (chantier `outil-equerre-uni`) : avec la règle graduée dans `outils:`,
+ * le milieu se marque aussi sur une graduation de la règle posée sur [AB] (0 en A
+ * ou en B) ; [AB] mesure alors un nombre pair de millimètres.
+ *
  * Pur : positions de la figure et points attendus donnés par l'appelant
  * (registre `positions.ts`, qui calcule l'expression).
  *
@@ -31,7 +35,13 @@
 import type { ConstructionCheck, PointCheck } from '#lib/ubumark/types/construction.ts';
 import { isDrawnPoint, type DrawnObject } from './answer';
 import { basePointsOf, constructionOf, intersectTraits, isInFrame } from './instruments';
-import { mediatriceSupportError } from './line';
+import {
+	mediatriceSupportError,
+	midpointEyeballedFeedback,
+	rulerMidpointError,
+	usesRulerMidpoint
+} from './line';
+import { rulerLengthOf } from './segment-length';
 import { circumcenterOf, circumcenterSupportError } from './circle';
 import type { ConstructionVerdict, Position } from './judge';
 import { dot, sub, tolerance } from './polygon';
@@ -159,7 +169,10 @@ function assertPlainPaper(
 	// Lot 3 (§ 9) : le milieu se construit par la médiatrice (compas, règle)
 	const midpoint = MIDPOINT_REGEX.exec(check.expression.trim());
 	if (midpoint) {
-		const message = mediatriceSupportError([midpoint[1], midpoint[2]], points, shapes);
+		const names: [string, string] = [midpoint[1], midpoint[2]];
+		const message =
+			mediatriceSupportError(names, points, shapes) ??
+			(usesRulerMidpoint(shapes) ? rulerMidpointError(names, points, shapes) : null);
 		if (message) throw new PointAuthorError(`${label} : ${message}`);
 		return;
 	}
@@ -323,9 +336,20 @@ export function judgePoints(
 	// (décisions de David, 2026-11-02, § 8, et 2026-11-03, § 14)
 	if (shapes && !shapes.grid && unused.length > 0) {
 		const base = basePointsOf(points, shapes.segments);
-		const { isBuilt } = constructionOf(objects, base, shapes.traits);
+		// Outil n° 38 : un milieu marqué sur une graduation de la règle graduée
+		const midpoints = checks.flatMap((check) => {
+			const match = MIDPOINT_REGEX.exec(check.expression.trim());
+			return match ? [[match[1], match[2]] as [string, string]] : [];
+		});
+		const ruled = usesRulerMidpoint(shapes) && midpoints.length > 0;
+		const { isBuilt } = constructionOf(objects, base, shapes.traits, {
+			...(ruled && { rulerLength: rulerLengthOf(shapes.window) })
+		});
 		if (unused.some((p) => !isBuilt(p))) {
-			return { status: 'incorrect', feedback: POINT_EYEBALLED_FEEDBACK };
+			const feedback = ruled
+				? midpointEyeballedFeedback(...midpoints[0])
+				: POINT_EYEBALLED_FEEDBACK;
+			return { status: 'incorrect', feedback };
 		}
 	}
 	const eps = tolerance(...targets.map((t) => t.at), ...unused);

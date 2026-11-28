@@ -73,6 +73,8 @@ import { parseRobotContent } from '#lib/ubumark/parser/robot-parser.ts';
 import { expectedRobotAnswer } from '#lib/ubumark/utils/robot-answer.ts';
 import { parseLabyrintheContent } from '#lib/ubumark/parser/labyrinthe-parser.ts';
 import { expectedLabyrintheAnswer } from '#lib/ubumark/utils/labyrinthe-answer.ts';
+import { parseYohakuContent } from '#lib/ubumark/parser/yohaku-parser.ts';
+import { expectedYohakuAnswer } from '#lib/ubumark/utils/yohaku-answer.ts';
 
 // Constantes
 
@@ -178,6 +180,16 @@ export function buildAnswerOf(
 			return { errors: node.errors.map((e) => e.message) };
 		}
 		return { answer: expectedLabyrintheAnswer(node.spec) };
+	}
+	if (kind === 'yohaku') {
+		// Grille yohaku à remplir : l'opération, la solution de l'auteur et les totaux (le juge
+		// suit les contraintes, pas la solution)
+		const node = parseYohakuContent(source);
+		if (node.caseIndex !== undefined) return { errors: [CASE_IS_AUTOMATIC] };
+		if (node.errors.length > 0 || node.spec === null) {
+			return { errors: node.errors.map((e) => e.message) };
+		}
+		return { answer: expectedYohakuAnswer(node.spec) };
 	}
 	if (kind === 'line') {
 		const { node, errors } = parseNumberLineContent(source);

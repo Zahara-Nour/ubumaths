@@ -1,21 +1,20 @@
 ---
 title: Écarts — lot cours-evaluations
 date: 2026-11-28
-status: en cours — PR 1 mergée (#3291), L39 à faire
+status: en cours — PR 1 (#3291) et PR 2 (#3300) mergées, clôture à faire
 ---
 
 # Écarts — lot `cours-evaluations`
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-28, après #3291._
+_Mis à jour le 2026-11-28, après #3300._
 
-- **État** : PR 1 #3291 mergée (V72, L37, L38, L40, L112, L113). Migration `20261128072151` **en prod** (2026-11-28 : `supabase db push --include-all` par David, avec `20261128132651` d'`idees-3e-algorithmique` ; `migration list --linked` sans attente, relu par cette session-là).
-- **Prochaine action** : (1) ~~`db:migrate`~~ fait ; vérifier les contraintes en prod (MCP en lecture) ; (2) L39 en PR 2, nouveau worktree `ubumaths-wt-ecarts-cours-evaluations` depuis `origin/main`, branche `fix/ecarts-cours-evaluations-l39`.
-- **L39, accord de David (2026-11-28, « oui »)** : policy DELETE pour prof/admin sur `skill_attempts` limitée à `source = 'teacher'`, `task_id` non nul, élève de ses classes ; fonction SQL `security invoker` qui supprime puis réécrit la grille d'une tâche en une transaction et lève si des lignes restent.
-- **En attente de David** : rien, sauf le choix ci-dessus sur `db:migrate` ; et s'il veut que les liens des familles suivent les dates de l'école (aujourd'hui toujours le 31 août).
-- **Pièges** : supprimer un point travaillé est refusé depuis L112, donc un test qui supprime ses points efface d'abord `journal_entry_points` et `student_point_state` (corrigé dans 4 tests). `createEvaluation` des tests d'intégration est sans mélange par défaut.
-- **Worktree / branche** : retirés par `pr:merger`.
+- **État** : les 7 écarts du lot sont corrigés. PR 1 #3291 (V72, L37, L38, L40, L112, L113) et PR 2 #3300 (L39) mergées ; migrations `20261128072151` et `20261128135334` en prod, vérifiées par le MCP en lecture (policy, trigger, fonction, clés en NO ACTION).
+- **Prochaine action** : clôture du chantier (recompter le découpage, versement du durable dans `docs/systeme/`, archivage du journal, ligne de `ecarts-lots.md`), après la réponse de David ci-dessous.
+- **En attente de David** : les liens des familles doivent-ils suivre les dates de l'école (aujourd'hui toujours le 31 août, `endOfSchoolYear`) ?
+- **Pièges** : le cache des cases effacées de `skill_attempts` passe par `trg_skill_attempts_after_delete`, qui saute un élève supprimé (sinon la suppression d'un compte échoue). La saisie n'efface que les élèves de sa grille.
+- **Worktree / branche** : aucun (retirés par `pr:merger`).
 
 ## Décisions (2026-11-28)
 

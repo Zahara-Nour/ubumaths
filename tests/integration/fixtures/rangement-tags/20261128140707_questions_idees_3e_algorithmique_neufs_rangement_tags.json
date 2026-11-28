@@ -1,0 +1,16 @@
+{
+	"migration": "supabase/migrations/20261128140707_questions_idees_3e_algorithmique_neufs_rangement_tags.sql",
+	"ranges": [
+		{
+			"id": "d01396e6-9123-481c-9143-d8452c7ff1fe",
+			"title": "Diviseurs et multiples avec un programme",
+			"fichier": "e-diviseurs-multiples-programme.json",
+			"branche": "Algorithmique",
+			"notion": "Variables et instructions",
+			"sousNotion": "instructions conditionnelles",
+			"points": ["5-011"]
+		}
+	],
+	"niveaux": [],
+	"tags": []
+}

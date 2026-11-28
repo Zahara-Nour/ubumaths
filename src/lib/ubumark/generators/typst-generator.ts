@@ -75,6 +75,7 @@ import { generateHorlogeTypst } from './horloge-typst';
 import { generateTortueTypst } from './tortue-typst';
 import { generateRobotTypst } from './robot-typst';
 import { generateLabyrintheTypst } from './labyrinthe-typst';
+import { generateYohakuTypst } from './yohaku-typst';
 import { generateCalculTypst } from './calcul-typst';
 import { generatePartageTypst } from './partage-typst';
 import { generateEspaceTypst } from './espace-typst';
@@ -582,6 +583,9 @@ function generateBlock(node: BlockNode, options: ResolvedTypstTranspilerOptions)
 		case 'labyrinthe':
 			// Labyrinthe : la grille, l'entrée et les sorties ; en solution, le bon chemin teinté
 			return generateLabyrintheTypst(node);
+		case 'yohaku':
+			// Grille yohaku : cases à remplir vides, totaux au bord ; en solution, la solution écrite
+			return generateYohakuTypst(node);
 
 		default:
 			return '';

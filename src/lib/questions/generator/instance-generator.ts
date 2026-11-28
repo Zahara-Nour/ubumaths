@@ -74,6 +74,11 @@ import {
 	ecrireChemin,
 	readExpectedLabyrintheAnswer
 } from '#lib/ubumark/utils/labyrinthe-answer.ts';
+import { hasYohakuARemplir } from '#lib/ubumark/parser/yohaku-parser.ts';
+import {
+	yohakuSolutionAnswer,
+	readExpectedYohakuAnswer
+} from '#lib/ubumark/utils/yohaku-answer.ts';
 import { hasVariationToFill } from '#lib/ubumark/parser/variation-table-parser.ts';
 import {
 	readSignTableCases,
@@ -373,6 +378,7 @@ function blockAnswerName(kind: BuildKind): string {
 	if (kind === 'calcul') return 'le programme du bloc calcul (attendu:)';
 	if (kind === 'robot') return 'le code du robot (calculé d’après la scène)';
 	if (kind === 'labyrinthe') return 'le chemin du labyrinthe (tiré avec la grille)';
+	if (kind === 'yohaku') return 'les cases de la grille (la solution écrite dans le bloc)';
 	return `la valeur du bloc ${kind} (construire:)`;
 }
 
@@ -886,6 +892,7 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 				hasCalculToProgram(String(resolvedStatement)) ||
 				hasRobotToProduce(String(resolvedStatement)) ||
 				hasLabyrintheAParcourir(String(resolvedStatement)) ||
+				hasYohakuARemplir(String(resolvedStatement)) ||
 				hasRangerToPlace(String(resolvedStatement)) ||
 				hasAssocierToPlace(String(resolvedStatement)) ||
 				hasTrousToPlace(String(resolvedStatement)) ||
@@ -1112,7 +1119,7 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 				// Le juge apparierait une construction avec une autre case (34 tapé ailleurs)
 				if (template.options?.orderIndependent) {
 					errors.push(
-						`${kind === 'cubes' || kind === 'patron' || kind === 'solide' || kind === 'courbe' || kind === 'trig' || kind === 'tortue' || kind === 'calcul' || kind === 'robot' || kind === 'labyrinthe' ? 'un' : 'une'} ${kind === 'partage' || kind === 'cubes' || kind === 'patron' || kind === 'solide' || kind === 'tortue' || kind === 'calcul' || kind === 'robot' || kind === 'labyrinthe' ? buildKindName(kind) : isPlaceKind(kind) ? `${buildKindName(kind)} à placer` : 'case à construire'} ne se combine pas avec « ordre indifférent »`
+						`${kind === 'cubes' || kind === 'patron' || kind === 'solide' || kind === 'courbe' || kind === 'trig' || kind === 'tortue' || kind === 'calcul' || kind === 'robot' || kind === 'labyrinthe' ? 'un' : 'une'} ${kind === 'partage' || kind === 'cubes' || kind === 'patron' || kind === 'solide' || kind === 'tortue' || kind === 'calcul' || kind === 'robot' || kind === 'labyrinthe' || kind === 'yohaku' ? buildKindName(kind) : isPlaceKind(kind) ? `${buildKindName(kind)} à placer` : 'case à construire'} ne se combine pas avec « ordre indifférent »`
 					);
 				}
 				if (errors.length > 0 || !('answer' in read)) {
@@ -1236,6 +1243,9 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 							return child.spec?.parcourir && child.caseIndex !== undefined
 								? [child.caseIndex]
 								: [];
+						}
+						if (child.type === 'yohaku') {
+							return child.spec !== null && child.caseIndex !== undefined ? [child.caseIndex] : [];
 						}
 						if (child.type === 'trig-circle') {
 							const first = child.caseIndex;
@@ -1664,13 +1674,19 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 					resolved.expectedAnswerLatex =
 						buildAnswer.kind === 'labyrinthe'
 							? ecrireChemin(readExpectedLabyrintheAnswer(buildAnswer.answer)?.chemin ?? [])
-							: buildAnswer.kind === 'tortue'
-								? (readExpectedTortueAnswer(buildAnswer.answer)?.attendu ?? buildAnswer.answer)
-								: buildAnswer.kind === 'calcul'
-									? (readExpectedCalculAnswer(buildAnswer.answer)?.attendu ?? buildAnswer.answer)
-									: buildAnswer.kind === 'robot'
-										? (readExpectedRobotAnswer(buildAnswer.answer)?.solution ?? buildAnswer.answer)
-										: buildAnswer.answer;
+							: buildAnswer.kind === 'yohaku'
+								? (() => {
+										const attendu = readExpectedYohakuAnswer(buildAnswer.answer);
+										return attendu ? yohakuSolutionAnswer(attendu) : buildAnswer.answer;
+									})()
+								: buildAnswer.kind === 'tortue'
+									? (readExpectedTortueAnswer(buildAnswer.answer)?.attendu ?? buildAnswer.answer)
+									: buildAnswer.kind === 'calcul'
+										? (readExpectedCalculAnswer(buildAnswer.answer)?.attendu ?? buildAnswer.answer)
+										: buildAnswer.kind === 'robot'
+											? (readExpectedRobotAnswer(buildAnswer.answer)?.solution ??
+												buildAnswer.answer)
+											: buildAnswer.answer;
 				}
 				// Erreurs prévues : réponses résolues comme l'attendu ; messages plus bas,
 				// une fois toutes les cases connues (`{{solution}}` permis)

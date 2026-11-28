@@ -122,6 +122,12 @@ import {
 	isLabyrintheBlockStart
 } from './labyrinthe-parser';
 import {
+	findYohakuBlocks,
+	parseYohaku,
+	parseYohakuContent,
+	isYohakuBlockStart
+} from './yohaku-parser';
+import {
 	findPartageBlocks,
 	parsePartage,
 	parsePartageContent,
@@ -549,6 +555,7 @@ function parseBlocks(
 	const calculBlocks = findCalculBlocks(lines);
 	const robotBlocks = findRobotBlocks(lines);
 	const labyrintheBlocks = findLabyrintheBlocks(lines);
+	const yohakuBlocks = findYohakuBlocks(lines);
 	const partageBlocks = findPartageBlocks(lines);
 	const espaceBlocks = findEspaceBlocks(lines);
 	const operationBlocks = findOperationBlocks(lines);
@@ -584,6 +591,7 @@ function parseBlocks(
 		{ ranges: calculBlocks, parse: parseCalcul, language: 'calcul' },
 		{ ranges: robotBlocks, parse: parseRobot, language: 'robot' },
 		{ ranges: labyrintheBlocks, parse: parseLabyrinthe, language: 'labyrinthe' },
+		{ ranges: yohakuBlocks, parse: parseYohaku, language: 'yohaku' },
 		{ ranges: partageBlocks, parse: parsePartage, language: 'partage' },
 		{ ranges: espaceBlocks, parse: parseEspace, language: 'cubes' },
 		{ ranges: operationBlocks, parse: parseOperation, language: 'operation' },
@@ -662,6 +670,7 @@ function parseBlocks(
 			...calculBlocks,
 			...robotBlocks,
 			...labyrintheBlocks,
+			...yohakuBlocks,
 			...partageBlocks,
 			...espaceBlocks,
 			...operationBlocks,
@@ -690,6 +699,7 @@ function parseBlocks(
 			...findCalculBlocks(originalLines),
 			...findRobotBlocks(originalLines),
 			...findLabyrintheBlocks(originalLines),
+			...findYohakuBlocks(originalLines),
 			...findPartageBlocks(originalLines),
 			...findEspaceBlocks(originalLines),
 			...findOperationBlocks(originalLines),
@@ -1886,6 +1896,12 @@ const SPECIAL_BLOCK_KINDS = [
 		language: 'labyrinthe'
 	},
 	{
+		is: isYohakuBlockStart,
+		find: findYohakuBlocks,
+		parse: parseYohaku,
+		language: 'yohaku'
+	},
+	{
 		is: isPartageBlockStart,
 		find: findPartageBlocks,
 		parse: parsePartage,
@@ -2170,6 +2186,10 @@ function parseContentWithCodeBlocks(
 			// Labyrinthe dans un item de liste : toujours un nœud, même en erreur (Q48) ; sans
 			// case (bloc en retrait), l'élève n'y répond pas
 			blocks.push(parseLabyrintheContent(restoreMathPlaceholders(code, placeholders)));
+		} else if (language === 'yohaku') {
+			// Grille yohaku dans un item de liste : toujours un nœud, même en erreur (Q48) ; sans
+			// case (bloc en retrait), l'élève n'y répond pas
+			blocks.push(parseYohakuContent(restoreMathPlaceholders(code, placeholders)));
 		} else if (language === 'partage') {
 			// Partage dans un item de liste : toujours un nœud, même en erreur (Q48)
 			blocks.push(parsePartageContent(restoreMathPlaceholders(code, placeholders)));

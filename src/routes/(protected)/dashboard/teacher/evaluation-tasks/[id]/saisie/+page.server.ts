@@ -269,41 +269,35 @@ export const actions: Actions = {
 			}
 		}
 
-		// Construire les rows à insérer : tous les (student × skill du périmètre)
-		// → 'plus' si coché, 'minus' sinon
-		const rowsToInsert: Array<{
-			student_id: string;
-			observable_id: string;
-			code: 'plus' | 'minus';
-			task_id: string;
-			source: 'teacher';
-		}> = [];
+		// La grille complète : tous les (élève × observable du périmètre),
+		// 'plus' si coché, 'minus' sinon.
+		const rows: Array<{ student_id: string; observable_id: string; code: 'plus' | 'minus' }> = [];
 		for (const sid of allowedStudentIds) {
 			if (!sid) continue;
 			for (const skid of allowedSkillIds) {
-				rowsToInsert.push({
+				rows.push({
 					student_id: sid,
 					observable_id: skid,
-					code: checked.has(`${sid}:${skid}`) ? 'plus' : 'minus',
-					task_id: params.id,
-					source: 'teacher'
+					code: checked.has(`${sid}:${skid}`) ? 'plus' : 'minus'
 				});
 			}
 		}
 
-		// Idempotence : DELETE tous les attempts existants de cette tâche, puis INSERT batch
-		const { error: delErr } = await locals.supabase
-			.from('skill_attempts')
-			.delete()
-			.eq('task_id', params.id);
-		if (delErr) return fail(500, { message: `DELETE failed: ${delErr.message}` });
-
-		const { error: insErr } = await locals.supabase.from('skill_attempts').insert(rowsToInsert);
-		if (insErr) return fail(500, { message: `INSERT failed: ${insErr.message}` });
+		// Idempotence (L39) : la fonction efface la grille de la tâche et la réécrit
+		// en une transaction ; elle lève si une ligne n'a pas pu être effacée (refus
+		// RLS silencieux), au lieu de doubler la grille.
+		const { error: saveErr } = await locals.supabase.rpc('save_evaluation_task_grid', {
+			p_task_id: params.id,
+			p_rows: rows
+		});
+		if (saveErr) {
+			logger.error('Enregistrement de la grille impossible :', saveErr);
+			return fail(500, { message: "La saisie n'a pas été enregistrée. Réessaie." });
+		}
 
 		return {
 			success: true,
-			message: `Saisie enregistrée (${rowsToInsert.length} observations, ${checked.size} réussites)`
+			message: `Saisie enregistrée (${rows.length} observations, ${checked.size} réussites)`
 		};
 	}
 };
