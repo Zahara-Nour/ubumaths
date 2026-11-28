@@ -61,6 +61,28 @@ describe('schoolYearExpiry', () => {
 		);
 	});
 
+	it("fin d'année saisie à plus de 18 mois (« 2099 ») : le 31 août qui vient", async () => {
+		const { client } = fakeClient({ start_date: '2026-09-01', end_date: '2099-07-15' });
+		expect((await schoolYearExpiry(client, 'school-1', now)).toISOString()).toBe(
+			'2027-08-31T23:59:59.000Z'
+		);
+	});
+
+	it('fin d’année à 18 mois tout juste : gardée', async () => {
+		const { client } = fakeClient({ start_date: '2026-09-01', end_date: '2028-05-28' });
+		expect((await schoolYearExpiry(client, 'school-1', now)).toISOString()).toBe(
+			'2028-05-28T23:59:59.000Z'
+		);
+	});
+
+	it('émis un 31 août : plafond au 29 février, sans déborder sur mars', async () => {
+		const { client } = fakeClient({ start_date: '2026-09-01', end_date: '2028-03-01' });
+		const aug31 = new Date('2026-08-31T10:00:00Z');
+		expect((await schoolYearExpiry(client, 'school-1', aug31)).toISOString()).toBe(
+			'2026-08-31T23:59:59.000Z'
+		);
+	});
+
 	it("en été, année de l'école finie : le 31 août qui vient", async () => {
 		const { client } = fakeClient({ start_date: '2026-09-01', end_date: '2027-07-15' });
 		const july = new Date('2027-07-20T10:00:00Z');
