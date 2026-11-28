@@ -2,19 +2,18 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-28, F1 en brouillon en prod, migration de rangement en PR._
+_Mis à jour le 2026-11-28, chantier clos._
 
-- **État** : lot 1 en prod et relu. F1 (modèle 4-034, 58f04074) en brouillon en prod (7 variations),
-  id commité ; migration de rangement générée (nœud + tag 4-034) sur
-  `feat/idees-3e-espace-f1-rangement` · **Prochaine action** : PR mergée → `db:migrate`, puis
-  relecture de F1 dans `/dev/modeles?point=4-034` par David, puis publication · **En attente de
-  David** : rien avant la relecture · **Pièges en cours** : `--publier` en local écrit l'id local dans
-  le fichier (à retirer avant tout commit) · **Worktree / branche** : `ubumaths-wt-idees-3e-espace-f1`
+- **État** : lot 1 (F2, F3, F5 : variations de cinq modèles publiés) en prod et relu ; F1 (58f04074,
+  4-034, 7 variations) rangé par #3282 (`db:migrate` joué), validé par David et publié par lui
+  (`publier-lot.ts --publier`), statut `published` relu en prod. F4 et R : rien (décision de David).
+  **Chantier clos et archivé** (rubrique « publiée »). · **Prochaine action** : aucune · **En
+  attente de David** : rien · **Pièges en cours** : aucun · **Worktree / branche** : aucun.
 
 ## Rubrique
 
 « Espace » de 3e (codes 3G4, 6 exercices), réservée le 2026-11-27 dans
-[idees-ailleurs-repartition.md](idees-ailleurs-repartition.md).
+[idees-ailleurs-repartition.md](../../../wip/idees-ailleurs-repartition.md).
 
 ## Phase 0 (2026-11-27)
 
@@ -157,3 +156,5 @@ grades 4, niveau 2 à côté de 22d947f4).
   longueurs », point 4-034), fixture comprise.
 - `security-auditor` (2026-11-28) : aucun finding bloquant ; gardes vérifiées sur l'état de la prod
   (modèle sans nœud ni tag, nœud et point uniques). Test `migrations-rangement-tags` vert.
+- #3282 mergé, `db:migrate` joué le 2026-11-28 (accord de David) ; nœud et tag 4-034 vérifiés en prod.
+- F1 validé par David dans `/dev/modeles` et publié le 2026-11-28 (`published` relu en prod).
