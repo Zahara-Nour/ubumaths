@@ -1147,6 +1147,27 @@
 						/>
 					</div>
 				{/if}
+			{:else if node.type === 'courbe' && node.caseIndex !== undefined && node.spec?.construire !== undefined}
+				<!-- Escalier à construire : l'élève pose u₁…u_N sur l'axe, une case par terme
+				     (N, N + 1…), la chaîne de ses termes jusqu'à k est la réponse de la case k -->
+				{@const firstCase = node.caseIndex}
+				{@const caseCount = node.spec.construire.terms.length}
+				{#if showCorrectAnswers}
+					<!-- Bonne réponse : le repère avec le vrai escalier -->
+					<BuildAnswer kind="courbe" source={node.source} answer={null} status="solution" />
+				{:else}
+					<div data-construire-case={firstCase} data-construire-cases={caseCount}>
+						<Courbe
+							{node}
+							answers={node.spec.construire.terms.map((_, k) => ({
+								value: inputStates[firstCase + k]?.value ?? '',
+								isCorrect: flashMode ? null : (inputStates[firstCase + k]?.isCorrect ?? null),
+								disabled: flashMode || effectiveDisabled,
+								onChange: (value: string) => handleInputChange(firstCase + k, value)
+							}))}
+						/>
+					</div>
+				{/if}
 			{:else if node.type === 'courbe' && node.caseIndex !== undefined && node.spec?.placer !== undefined}
 				<!-- Repère à points à placer : l'élève pose ses points, une case par point
 				     (N, N + 1…), les coordonnées de chacun sont sa réponse -->

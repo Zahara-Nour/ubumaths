@@ -23,7 +23,7 @@ describe('parseur', () => {
 	});
 
 	it('sans geste, avec une case, ou ni oui ni non : refusé', () => {
-		expect(block('solution: oui').errors[0]?.message).toMatch(/placer: ou tracer:/);
+		expect(block('solution: oui').errors[0]?.message).toMatch(/placer:, tracer: ou construire/);
 		expect(block('tracer: x = 3', 'case: 0', 'solution: oui').errors[0]?.message).toMatch(
 			/pas avec case/
 		);

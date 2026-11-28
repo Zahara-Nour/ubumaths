@@ -146,4 +146,18 @@ describe('courbe → Typst : titres d’axes et points à placer', () => {
 		expect(count(out, /^\s*\/\/ solution vecteur/gm)).toBe(1);
 		expect(out).toMatch(/line\([^\n]*mark: \(end: ">"/);
 	});
+
+	it('escalier à construire : courbe, y = x et u₀ seul ; corrigé = le vrai escalier en vert', () => {
+		const source =
+			'x: 0 ; 4\ny: 0 ; 4\nu(0) = 0 ; u(n+1) = sqrt(2*u(n)+3) pour n de 0 à 3 construire 3';
+		const statement = generateCourbeTypst(parseCourbeContent(source));
+		expect(count(statement, /^\s*\/\/ relation u/gm)).toBeGreaterThan(0);
+		expect(count(statement, /^\s*\/\/ diagonale/gm)).toBe(1);
+		expect(count(statement, /^\s*\/\/ départ u/gm)).toBe(1);
+		expect(count(statement, /^\s*\/\/ rang u/gm)).toBe(1);
+		expect(statement).not.toContain('// escalier');
+		expect(statement).not.toContain('// solution');
+		const out = generateCourbeTypst(parseCourbeContent(`${source}\nsolution: oui`));
+		expect(count(out, /^\s*\/\/ solution droite/gm)).toBe(9);
+	});
 });

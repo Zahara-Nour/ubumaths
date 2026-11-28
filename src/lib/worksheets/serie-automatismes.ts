@@ -313,7 +313,8 @@ function dessineParLeBloc(corps: readonly string[], corrige: boolean): string[] 
  * Droite à tracer (`tracer: y = 2x - 1`) : à l'énoncé, le repère vide (lignes `tracer:`
  * et `case:` retirées) ; au corrigé (`corrige`), la ligne `tracer:` devient la droite
  * dessinée, en vert. Une case par droite. Vecteur à tracer, droite verticale : cf.
- * `dessineParLeBloc`. Droite ou vecteur masqués → refus.
+ * `dessineParLeBloc`, comme l'escalier à construire (une case par terme). Droite ou
+ * vecteur masqués → refus.
  *
  * Points à placer : cf. `pointsDuRepere`. Repère en retrait ou cité → refus, message à
  * l'appui.
@@ -340,6 +341,16 @@ function droitesATracer(
 			const corps = pointsDuRepere(repere.body, placer, pris, corrige);
 			lignes.splice(repere.startIndex + 1, repere.body.length, ...corps);
 			cases += placer.length;
+			continue;
+		}
+		// Escalier à construire : le repère avec la courbe, y = x et u₀ ; corrigé, le vrai escalier
+		if (node.spec.construire) {
+			lignes.splice(
+				repere.startIndex + 1,
+				repere.body.length,
+				...dessineParLeBloc(repere.body, corrige)
+			);
+			cases += node.spec.construire.terms.length;
 			continue;
 		}
 		if (node.spec.vecteur) {
