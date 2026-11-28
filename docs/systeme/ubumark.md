@@ -2414,8 +2414,9 @@ problème. À lancer **avant** d'écrire des énoncés ou corrigés en base.
   `tracer:` (écrire `1/2x`). Suivi : ligne 24 de [outils-manquants.md](../wip/outils-manquants.md).
 - ` ```ranger ` dans une liste sort en bloc de code (absent de `SPECIAL_BLOCK_KINDS`) : ne touche que
   le cours ; dans une question, il est refusé de toute façon.
-- Blocs d'espace, laissés tels quels : la cote d'un cylindre coupé parallèlement à l'axe est posée sous
-  la base, loin de son court trait quand la distance est petite. Restes hors chantier : voir l'en-tête
+- Blocs d'espace : la distance à l'axe d'un cylindre coupé parallèlement à l'axe est écrite contre son
+  trait en tirets, en haut à gauche de son bout au centre de la base (écart V110, 2026-11-28 : sous la
+  base, elle était loin du trait court ; à mi-hauteur, elle tombait sur le bord de la coupe). Restes hors chantier : voir l'en-tête
   du [journal archivé](../archive/wip/solides-progress.md).
 - **Boîte à moustaches**, laissés après revue (#2151, #2162) : fractions refusées sur une ligne de
   boîte mais acceptées dans `données:` ; à 40 graduations (le plafond), les étiquettes de l'axe se
