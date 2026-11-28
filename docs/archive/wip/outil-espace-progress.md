@@ -1,7 +1,7 @@
 ---
 title: Lot d'outils « espace » (outils 64 et 65)
 date: 2026-11-28
-status: outils 64 (#3308) et 65 (#3316) livrés
+status: lot clos (#3308, #3316, 2026-11-28), journal archivé
 ---
 
 # Lot d'outils « espace »
@@ -10,7 +10,7 @@ status: outils 64 (#3308) et 65 (#3316) livrés
 
 _Mis à jour le 2026-11-28, après #3316._
 
-- **État** : lot `espace` fini — outil 64 (#3308) et outil 65 (#3316) livrés, rien en prod tant que David ne lance pas `deploy:prod` · **Prochaine action** : passer la ligne `espace` de `docs/wip/outils-lots.md` à « fait (#3308, #3316, 2026-11-28) » (fichier tenu par une autre session le 2026-11-28, pas touché), puis archiver ce journal · **En attente de David** : rien · **Pièges en cours** : aucun · **Worktree / branche** : retirés par `pr:merger`
+- **État** : lot clos — outil 64 (#3308) et outil 65 (#3316) livrés, ligne `espace` d'`outils-lots.md` passée à « fait », journal archivé · **Prochaine action** : aucune · **En attente de David** : rien (rien en prod avant `deploy:prod`) · **Pièges en cours** : aucun · **Worktree / branche** : retirés par `pr:merger`
 
 ## Outil 64 — phase 0 (envoyée le 2026-11-28)
 
