@@ -1,16 +1,16 @@
 ---
 title: Lot d'outils « espace » (outils 64 et 65)
 date: 2026-11-28
-status: outil 64 en PR ; outil 65 à faire
+status: outil 64 livré (#3308) ; outil 65 à faire
 ---
 
 # Lot d'outils « espace »
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-28, à l'ouverture de la PR de l'outil 64._
+_Mis à jour le 2026-11-28, après #3308._
 
-- **État** : outil 64 (case `droite-parametrique`) en PR, revues code + sécurité faites et corrigées · **Prochaine action** : merger la PR (CI verte), passer la ligne 64 en « Livré », puis outil 65 (point au tiers d'une arête dans ` ```solide `), phase 0 d'abord · **En attente de David** : rien · **Pièges en cours** : `{{u}}` négatif sans parenthèses donne `1+-2t`, illisible : écrire `+({{u}})t` ou `cleanCoefficients` · **Worktree / branche** : `../ubumaths-wt-outil-espace`, `feat/outil-espace`, serveur de dev 5180
+- **État** : outil 64 livré (#3308, case `droite-parametrique`) ; outil 65 pas commencé · **Prochaine action** : recréer le worktree `../ubumaths-wt-outil-espace` (branche `feat/outil-espace` depuis `origin/main`), vérifier que l'outil 65 manque encore (point au tiers d'une arête dans ` ```solide `, `points:` ne connaît que `milieu` et `centre`), puis phase 0 · **En attente de David** : rien · **Pièges en cours** : aucun · **Worktree / branche** : à recréer (retirés par `pr:merger`)
 
 ## Outil 64 — phase 0 (envoyée le 2026-11-28)
 
