@@ -139,10 +139,19 @@ async function poserEtatProd(pg: Client, cas: Cas): Promise<void> {
 				[m.id, m.avant]
 			);
 		}
+		// Comme en prod (le relevé l'a vérifié) : le modèle a les niveaux de ses points, sauf ceux que
+		// la même migration lui ajoute ; ceux-là, son bloc de niveaux les pose
 		for (const m of cas.tags) {
+			const gagnes = cas.niveaux.find((n) => n.id === m.id);
 			await pg.query(
-				'update public.question_templates set classification_node_id = $2 where id = $1',
-				[m.id, await nodeIdByPath(pg, m.noeud)]
+				`update public.question_templates t
+				    set classification_node_id = $2,
+				        grades = case when $4::boolean then t.grades else array(
+				          select distinct g from unnest(t.grades || array(
+				            select p.grade from public.curriculum_points p
+				             where p.code = any($3::text[]) and p.grade is not null)) as g) end
+				  where t.id = $1`,
+				[m.id, await nodeIdByPath(pg, m.noeud), [...m.avant, ...m.ajoutes], gagnes !== undefined]
 			);
 		}
 	});
@@ -320,6 +329,51 @@ function eprouver(obtenir: () => { pg: Client; cas: Cas }, lot?: Cas): void {
 				const etat = await lireEtat(pg, cas);
 				expect(cas.ranges.every((m) => etat.noeuds.get(m.id) === '∅')).toBe(true);
 				expect(etat.tags).toEqual(tagsAvant(cas));
+			});
+		}
+	);
+
+	it.skipIf(lot !== undefined && lot.tags.length === 0)(
+		'point ajouté d’un niveau retiré du modèle depuis le relevé : la migration échoue',
+		async () => {
+			const { pg, cas } = obtenir();
+			const dernier = cas.tags.at(-1);
+			if (!dernier) throw new Error('lot sans tag ajouté');
+			await enTransaction(pg, async () => {
+				await poserEtatProd(pg, cas);
+				await sansHorodatage(pg, async () => {
+					await pg.query(
+						`update public.question_templates set grades = array['CP']::text[] where id = $1`,
+						[dernier.id]
+					);
+				});
+				await expect(pg.query(readFileSync(cas.migration, 'utf-8'))).rejects.toThrow(
+					cas.niveaux.some((m) => m.id === dernier.id)
+						? /changés depuis le relevé/
+						: /point ajouté d'un niveau absent du modèle/
+				);
+			});
+		}
+	);
+
+	it.skipIf(lot !== undefined && lot.tags.length === 0)(
+		'TOUT ou RIEN : un modèle à taguer manquant fait échouer la migration (ou aucun, si c’est le seul)',
+		async () => {
+			const { pg, cas } = obtenir();
+			const premier = cas.tags[0];
+			if (!premier) throw new Error('lot sans tag ajouté');
+			await enTransaction(pg, async () => {
+				await poserEtatProd(pg, cas);
+				await pg.query('delete from public.question_templates where id = $1', [premier.id]);
+				const autres = cas.tags.length - 1;
+				const migration = pg.query(readFileSync(cas.migration, 'utf-8'));
+				if (autres === 0 || cas.ranges.some((m) => m.id === premier.id)) {
+					await expect(migration).resolves.toBeDefined();
+				} else {
+					await expect(migration).rejects.toThrow(
+						new RegExp(`modèles à taguer partiellement présents : ${autres} sur ${cas.tags.length}`)
+					);
+				}
 			});
 		}
 	);

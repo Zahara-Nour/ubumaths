@@ -43,3 +43,10 @@ Exemple réel : le modèle « loi d'une variable aléatoire » (1re spé + 1re t
 - Tests : 83 unitaires (41 rouges sur l'ancien module), intégration 193 verts dont un cas
   synthétique « deux programmes sur un même nœud » et « tag ajouté à un modèle rangé ».
 - Doc : `docs/pratiques/couvrir-un-niveau.md` § 6, skill `idees-rubrique`.
+- Revue `code-reviewer` (Opus) : aucun bloquant ; corrigés : TOUT ou RIEN sur la présence des
+  modèles à taguer, garde SQL « point d'un niveau absent du modèle » (le trigger des tags ne
+  regarde pas les niveaux), refus au relevé d'un tag d'avant illisible ; tests ajoutés (modèle
+  rangé sur une notion, présence partielle, niveau retiré depuis le relevé). Laissé : le bloc
+  « niveaux ajoutés » (inchangé) n'a pas non plus de TOUT ou RIEN sur la présence ; le TS compte
+  dans « un par programme » les points sans nœud, que le trigger exempte (plus strict, sans
+  danger).

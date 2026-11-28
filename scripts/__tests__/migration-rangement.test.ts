@@ -518,6 +518,28 @@ describe('examinerModele, points ajoutés', () => {
 		expect(examen.sorte === 'refuse' && examen.erreur).toMatch(message);
 	});
 
+	it('modèle rangé sur une NOTION qui gagne un point de cette notion', () => {
+		const examen = examinerModele(
+			'b.json',
+			ajouts([], ['1TECHNO-095']),
+			probas({ classification_node_id: 'n3', points: [] }),
+			ARBRE
+		);
+		expect(examen.sorte === 'ajouts' && examen.tags).toEqual(
+			tags({ noeud: 'Probabilités > Variables aléatoires', avant: [] })
+		);
+	});
+
+	it('tag d’avant illisible (point inconnu de l’arbre) : refus', () => {
+		const examen = examinerModele(
+			'b.json',
+			ajouts([], ['1TECHNO-095']),
+			probas({ points: ['inconnu'] }),
+			ARBRE
+		);
+		expect(examen.sorte === 'refuse' && examen.erreur).toMatch(/porte un tag illisible/);
+	});
+
 	it('modèle sans nœud en prod : refus', () => {
 		const examen = examinerModele(
 			'b.json',
@@ -649,6 +671,8 @@ describe('genererMigration', () => {
 			`v_codes @> array['1SPE-355']::text[] and v_codes <@ array['1SPE-355']::text[]`
 		);
 		expect(sql).toContain('tags de 0000000b changés depuis le relevé');
+		expect(sql).toContain('if v_presents not in (0, 1) then');
+		expect(sql).toContain('not (p.grade = any (q.grades))');
 		expect(sql).toContain(': tags {1SPE-355} + 1TECHNO-095');
 		const retour = extractRollback(fichier);
 		expect(retour).toContain(`('${ID2}'::uuid, '1TECHNO-095')`);

@@ -403,7 +403,7 @@ function examinerAjouts(
 	if (rangement.points.length > 0) {
 		const poses = prod.points.map((id) => arbre.points.find((p) => p.id === id));
 		const dejaPoses = poses.filter((p): p is PointProgramme => p !== undefined);
-		if (dejaPoses.length !== poses.length) {
+		if (dejaPoses.length !== poses.length || dejaPoses.some((p) => !p.code)) {
 			return { sorte: 'refuse', erreur: `${fichier} : ${id8} porte un tag illisible en prod` };
 		}
 		const nouveaux = rangement.points.filter((c) => !dejaPoses.some((p) => p.code === c));
@@ -684,6 +684,7 @@ alter table public.question_templates enable trigger update_question_templates_u
 }
 
 function sqlTags(tags: readonly ModeleTags[]): string {
+	const n = tags.length;
 	const valeurs = tags
 		.flatMap((m) => m.ajoutes.map((code) => `	('${m.id}', ${texte(code)})`))
 		.join(',\n');
@@ -720,14 +721,27 @@ update _qt_ajouts a set point_id = p.id
   from public.curriculum_points p
  where p.code = a.code and p.archived_at is null;
 do $tags$
-declare v_codes text[];
+declare v_codes text[]; v_presents integer;
 begin
+	select count(distinct a.id) into v_presents
+	  from _qt_ajouts a join public.question_templates q on q.id = a.id;
+	if v_presents not in (0, ${n}) then
+		raise exception 'modèles à taguer partiellement présents : % sur ${n}', v_presents;
+	end if;
 ${gardes}
 	if exists (select 1 from _qt_ajouts a join public.question_templates q on q.id = a.id
 	            where a.point_id is null) then
 		raise exception 'points ajoutés introuvables : %',
 			(select count(*) from _qt_ajouts a join public.question_templates q on q.id = a.id
 			  where a.point_id is null);
+	end if;
+	-- Un point d'un niveau que le modèle n'a pas (niveaux retirés depuis le relevé) : refus. Le
+	-- trigger des tags ne regarde pas les niveaux. Les niveaux ajoutés plus haut comptent.
+	if exists (select 1 from _qt_ajouts a
+	             join public.question_templates q on q.id = a.id
+	             join public.curriculum_points p on p.id = a.point_id
+	            where p.grade is not null and not (p.grade = any (q.grades))) then
+		raise exception 'point ajouté d''un niveau absent du modèle';
 	end if;
 end $tags$;
 insert into public.question_template_points (template_id, point_id)
