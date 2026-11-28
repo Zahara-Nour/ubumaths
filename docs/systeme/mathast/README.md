@@ -1870,8 +1870,9 @@ Doublons qui restent, chacun pour un autre besoin :
   - conditions : `cot`, `sec`, `csc`, `arccosh` n'ont pas de condition écrivable (la
     simplification n'a pas lieu) ; `avoidsPeriodicPoints` limité à `cos u` / `sin u` seuls
     (`computeDomain(1/(sin x cos x))` rendait kπ au lieu de kπ/2 : corrigé, V85, 2026-11-24 —
-    `nonZeroSet` d'un produit réunit deux familles périodiques en une quand c'est possible,
-    `1/(sin x cos x)` → kπ/2, et refuse sinon : `1/(sin x cos(2x))` (kπ et π/4 + kπ/2, deux
+    deux familles périodiques se réunissent en une quand c'est possible (`intersectExact`,
+    `domain/periodic-families.ts`, appelé par `nonZeroSet` et par `intersect` / `union`,
+    L119, 2026-11-28), `1/(sin x cos x)` et `1/sin x + 1/cos x` → kπ/2, et refusent sinon : `1/(sin x cos(2x))` (kπ et π/4 + kπ/2, deux
     familles sans écriture) et `1/((x − 1) cos x)` (un point hors de la famille) ne sont plus
     ℝ privé de la seule première famille) ;
     libellés bruts (« pour x^2y > 0 », « 2xy > 0 ») et conditions redondantes (« xy > 0 et
