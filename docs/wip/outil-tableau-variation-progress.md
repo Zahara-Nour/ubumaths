@@ -8,15 +8,14 @@ status: outil 63 livré (#3286), outil 59 codé, PR à ouvrir
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-28, outil 59 codé, revue en cours, PR à ouvrir._
+_Mis à jour le 2026-11-28, outil 59 revu, PR ouverte._
 
-- **État** : outil 63 livré (#3286) ; outil 59 codé, testé (21 621 tests verts, 0 erreur de
-  types), commité et mergé d'`origin/main` sur la branche, **pas poussé** ; revue `code-reviewer`
-  (Opus) lancée, rapport non lu · **Prochaine action** : relancer la revue si la session a été
-  vidée (diff `origin/main...HEAD -- src`), corriger, pousser, ouvrir la PR, CI verte →
-  `pnpm pr:merger`, puis clore le lot dans `outils-lots.md` · **En attente de David** : rien ·
-  **Pièges en cours** : `work-figure-editor.ts:36` (hors lot, non vérifié) · **Worktree /
-  branche** : `../ubumaths-wt-outil-tableau-variation-59`, `feat/outil-tableau-variation-59`
+- **État** : outil 63 livré (#3286) ; outil 59 codé, testé, revu (`code-reviewer` Opus : rien de
+  bloquant), PR ouverte depuis `feat/outil-tableau-variation-59` · **Prochaine action** : CI verte →
+  `pnpm pr:merger`, puis clore le lot (63 et 59 faits) dans `outils-lots.md` · **En attente de
+  David** : rien · **Pièges en cours** : `work-figure-editor.ts:36` (hors lot, non vérifié) ·
+  **Worktree / branche** : `../ubumaths-wt-outil-tableau-variation-59`,
+  `feat/outil-tableau-variation-59`
 
 Lot pris par `pnpm outils lancer` le 2026-11-28 ([outils-lots.md](outils-lots.md)) : 63, puis 59.
 
@@ -119,3 +118,6 @@ avant). Vrai modèle N1 V0/V1 (tableau remis dans l'énoncé, copie du script da
   (nom de figure), tous deux rouges sans le correctif. Constat : un tableau dont seul le
   domaine porte `{{al}}` se lit sur l'énoncé brut ; ce sont les signes `?{{if:…}}` qui le
   rendent illisible.
+- Revue (`code-reviewer`, Opus) : rien de bloquant. Mineur : la garde `variationMasked` voit
+  maintenant une hauteur de limite laissée à côté d'une flèche masquée (plus juste ; les modèles ne
+  pouvaient pas cacher ces flèches avant, donc aucun énoncé généré n'est touché).
