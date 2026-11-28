@@ -2,17 +2,16 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-28, après #3294 et la migration en prod._
+_Mis à jour le 2026-11-28, PR de rangement en cours._
 
-- **État** : #3294 mergé ; migration `20261128132651` en prod (`db push --include-all` par David, avec
-  `20261128072151` d'`ecarts-cours-evaluations`) : les 13 variations et leurs specs sont relues en
-  prod (0a470416 4, 4ce8eb3c 7, 5c092e43 5, 6e99d291 5, 962da675 7, 9f9bddbd 6 variations). Modèle E
-  pas encore créé. · **Prochaine action** : après le `create-questions --publier` de David, commiter
-  l'id de E, migration de rangement (nœud « instructions conditionnelles », point 5-011) ; série de
-  relecture des 6 publiés ; relecture dans `/dev/modeles` ; publication de E. · **En attente de David**
-  : `pnpm tsx scripts/create-questions.ts --dir scripts/questions/idees-3e-algorithmique-neufs
---publier`. · **Pièges en cours** : E est un modèle de **5e** (`grades` `['5']`). · **Worktree /
-  branche** : aucun.
+- **État** : 13 variations en prod. E créé en brouillon par David (`d01396e6`). PR « rangement » :
+  id de E, migration `20261128140707` (nœud « instructions conditionnelles », point 5-011), série
+  `scripts/series/3-relecture-algorithmique-publies.json` (simulation verte). · **Prochaine action** :
+  test d'intégration, audit, PR, merge ; puis David : `db:migrate` et `creer-serie.ts --publier`. ·
+  **En attente de David** : après le merge. · **Pièges en cours** : le fichier de E porte son id
+  dans le dépôt principal (modifié, non commité) : le remettre à l'état de `main` avant le `pull` qui
+  suit le merge. · **Worktree / branche** : `../ubumaths-wt-idees-3e-algorithmique`,
+  `feat/idees-3e-algorithmique-rangement`.
 
 ## Rubrique
 
@@ -85,3 +84,11 @@ variations ajoutées à la fin) et `docs/wip/questions/idees-3e-algorithmique-ne
   donnée réelle ni lien).
 - #3294 mergé le 2026-11-28 (CI verte, `pr:merger`).
 - Migration `20261128132651` en prod le 2026-11-28 (David, `db push --include-all`, avec `20261128072151`) ; variations relues en prod par le MCP.
+
+## Rangement de E (2026-11-28)
+
+- `create-questions --publier` par David : E = `d01396e6-9123-481c-9143-d8452c7ff1fe`, brouillon.
+- Migration `20261128140707_questions_idees_3e_algorithmique_neufs_rangement_tags.sql` générée par
+  `migration-rangement.ts` (relevé de la prod), fixture comprise.
+- Série de relecture des 6 modèles publiés : `scripts/series/3-relecture-algorithmique-publies.json`
+  (6 questions, 6 min ; simulation verte).
