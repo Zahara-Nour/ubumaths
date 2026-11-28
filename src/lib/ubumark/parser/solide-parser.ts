@@ -33,6 +33,11 @@
  *   milieu peut prendre un point déjà déclaré (`J milieu IG`). Avec `repere:`,
  *   un point par ses coordonnées : `M (1 ; 0,5 ; 1)` (au plus 3 décimales ; refusé
  *   hors du solide agrandi d'une marge).
+ *   Sur un segment, par une fraction (outil n° 65) : `M tel que AM = 1/3 AB`
+ *   (0 < p/q < 1, réduite, dénominateur au plus 10 ; deux points distincts).
+ * - `graduer:` (facultatif, polyèdres, outil n° 65) : `AB 3, EH 4`, une arête ou
+ *   un segment de `segments:` partagé en parts égales (2 à 10) par de petits
+ *   traits ; aussi avec `tracer:` (figure à geste).
  * - `repere:` (facultatif, polyèdres, lot 7c) : `A ; AB, AD, AE`, une origine et
  *   trois vecteurs qui en partent, pas dans un même plan, entre sommets ou points
  *   déclarés sans coordonnées, avant le premier point à coordonnées. Pas avec
@@ -68,6 +73,8 @@ import {
 	SOLIDE_MAX_POINTS,
 	SOLIDE_MAX_RATIO,
 	SOLIDE_MAX_RIGHT_ANGLES,
+	SOLIDE_MAX_GRADUATIONS,
+	SOLIDE_MAX_PARTS,
 	SOLIDE_MAX_SEGMENTS,
 	SOLIDE_MAX_TERMS,
 	SOLIDE_MAX_VECTORS,
@@ -81,6 +88,7 @@ import {
 	type SolideRightAngle,
 	type SolideSection,
 	type SolideSegment,
+	type SolideGraduation,
 	type SolideSpec,
 	type SolideTask,
 	type SolideVector,
@@ -145,6 +153,35 @@ const COORDINATE_REGEX = /^-?\d+(?:[.,]\d+)?$/;
 const REPERE_USAGE = 'ex. repere: A ; AB, AD, AE';
 
 const MEET_USAGE = 'ex. K intersection (IG) (BDE)';
+const ALONG_USAGE = 'ex. M tel que AM = 1/3 AB';
+const GRADUER_USAGE = 'ex. graduer: AB 3';
+
+/** Les numérateurs et les dénominateurs d'une fraction lue en mots (« deux tiers ») */
+const NUMERATOR_WORDS = [
+	'',
+	'un',
+	'deux',
+	'trois',
+	'quatre',
+	'cinq',
+	'six',
+	'sept',
+	'huit',
+	'neuf'
+];
+const DENOMINATOR_WORDS = [
+	'',
+	'',
+	'demi',
+	'tiers',
+	'quart',
+	'cinquième',
+	'sixième',
+	'septième',
+	'huitième',
+	'neuvième',
+	'dixième'
+];
 
 /** Un angle est droit quand son cosinus est, en valeur absolue, sous ce seuil (arrondis des calculs) */
 const RIGHT_ANGLE_COS = 1e-9;
@@ -608,6 +645,62 @@ function readRepere(
 	return { origin: origin[0], axes: [axes[0], axes[1], axes[2]] };
 }
 
+/** La fraction p/q (réduite, 0 < p/q < 1, q ≤ 10) en mots : « la moitié », « deux tiers » */
+function fractionWords([p, q]: [number, number]): string {
+	if (q === 2) return 'la moitié';
+	const plural = p > 1 && q !== 3 ? 's' : '';
+	return `${NUMERATOR_WORDS[p]} ${DENOMINATOR_WORDS[q]}${plural}`;
+}
+
+/**
+ * Le point de `M tel que AM = 1/3 AB` (outil n° 65) : sur le segment [AB], à la
+ * fraction donnée de A ; `text` : ce qui suit « tel ». `at` : les points connus, en 3D
+ */
+function readAlong(
+	name: string,
+	text: string,
+	known: string[],
+	at: Point3[]
+): Pick<SolidePoint, 'label' | 'along'> | string {
+	const usage = `${name} : ${ALONG_USAGE}`;
+	const parts = /^que\s+([^=]+)=(.+)$/.exec(text.trim());
+	if (parts === null) return usage;
+	const right = /^(\d+)\s*\/\s*(\d+)\s*(.+)$/.exec(parts[2].trim());
+	if (right === null) {
+		return /^\d/.test(parts[2].trim())
+			? `${name} : une fraction comme 1/3 ou 2/3 (${ALONG_USAGE})`
+			: usage;
+	}
+	const [p, q] = [Number(right[1]), Number(right[2])];
+	if (q === 0 || p <= 0 || p >= q) {
+		return `${name} : la fraction est entre 0 et 1 (${p}/${q}), pour que ${name} reste sur le segment`;
+	}
+	// Réduite d'abord : 5/20 est 1/4
+	const k = gcd(p, q);
+	const ratio: [number, number] = [p / k, q / k];
+	if (ratio[1] > SOLIDE_MAX_PARTS) {
+		return `${name} : un dénominateur au plus ${SOLIDE_MAX_PARTS} (fraction réduite)`;
+	}
+	const ends = namedPoints(right[3], known);
+	if (typeof ends === 'string') return ends;
+	if (ends.length !== 2) {
+		return `« ${right[3].trim()} » : un segment se désigne par deux points (${ALONG_USAGE})`;
+	}
+	const [from, to] = ends;
+	if (samePosition(at[from], at[to])) {
+		return `${name} : un segment entre deux points distincts (${known[from]}${known[to]} : un seul point)`;
+	}
+	// Le premier membre : le premier point du segment, puis le point déclaré
+	const expected = `${known[from]}${name}`;
+	if (parts[1].replace(/\s/g, '') !== expected) {
+		return `${name} : ${name} se place depuis ${known[from]} (ex. ${expected} = ${ratio[0]}/${ratio[1]} ${known[from]}${known[to]})`;
+	}
+	return {
+		label: `tel que ${expected} = ${fractionWords(ratio)} de ${known[from]}${known[to]}`,
+		along: { from, to, ratio }
+	};
+}
+
 /**
  * Le point d'intersection de `K intersection (IG) (BDE)` (lot 7e) : une droite et
  * un plan, ou deux droites, dans un ordre ou dans l'autre ; une phrase d'erreur
@@ -706,7 +799,7 @@ function readPoints(
 	if (items.length > SOLIDE_MAX_POINTS) return `au plus ${SOLIDE_MAX_POINTS} points`;
 	const known = names.map((n) => n ?? '');
 	const points: SolidePoint[] = [];
-	const usage = 'ex. I milieu AE, O centre ABCD';
+	const usage = 'ex. I milieu AE, O centre ABCD, M tel que AM = 1/3 AB';
 	const coordsUsage = 'ex. M (1 ; 0,5 ; 1)';
 	const size = Math.max(...shape.dims);
 	const at3 = () => solidePoints3(shape.form, shape.dims, points);
@@ -740,7 +833,8 @@ function readPoints(
 		const kind = plain(match?.[2] ?? '');
 		if (
 			byCoords === null &&
-			(match === null || (kind !== 'milieu' && kind !== 'centre' && kind !== 'intersection'))
+			(match === null ||
+				(kind !== 'milieu' && kind !== 'centre' && kind !== 'intersection' && kind !== 'tel'))
 		) {
 			return `point « ${item.trim()} » non compris (${usage})`;
 		}
@@ -803,6 +897,13 @@ function readPoints(
 				return `${name} tombe hors de la figure : un point reste dans le solide, ou tout près`;
 			}
 			points.push(point);
+			known.push(name);
+			continue;
+		}
+		if (kind === 'tel') {
+			const read = readAlong(name, match[3], known, at3());
+			if (typeof read === 'string') return read;
+			points.push({ name, of: [], ...read });
 			known.push(name);
 			continue;
 		}
@@ -967,6 +1068,51 @@ function readSegments(
 		segments.push({ from: a, to: b });
 	}
 	return segments;
+}
+
+/**
+ * Les segments gradués de `graduer: AB 3, EH 4` (outil n° 65) : une arête, ou un
+ * segment de `segments:`, et son nombre de parts ; une phrase d'erreur sinon
+ */
+function readGraduations(
+	value: string,
+	topology: SolideTopology,
+	names: (string | null)[],
+	points: SolidePoint[],
+	segments: SolideSegment[]
+): SolideGraduation[] | string {
+	const items = value.split(',').filter((i) => i.trim() !== '');
+	if (items.length > SOLIDE_MAX_GRADUATIONS) {
+		return `au plus ${SOLIDE_MAX_GRADUATIONS} segments gradués`;
+	}
+	const known = [...names.map((n) => n ?? ''), ...points.map((p) => p.name)];
+	const graduations: SolideGraduation[] = [];
+	const same = (a: number, b: number) => (s: { from: number; to: number }) =>
+		(s.from === a && s.to === b) || (s.from === b && s.to === a);
+	for (const item of items) {
+		const match = /^(.*?)\s+(\S+)$/.exec(item.trim());
+		if (match === null || !/^\d+$/.test(match[2])) {
+			return `« ${item.trim()} » : le segment, puis le nombre de parts (${GRADUER_USAGE})`;
+		}
+		const refs = namedPoints(match[1], known);
+		if (typeof refs === 'string') return refs;
+		const written = `[${refs.map((i) => known[i]).join('')}]`;
+		if (refs.length !== 2) {
+			return `« ${match[1].trim()} » : un segment se désigne par deux points (${GRADUER_USAGE})`;
+		}
+		const [a, b] = refs;
+		const parts = Number(match[2]);
+		if (parts < 2 || parts > SOLIDE_MAX_PARTS) {
+			return `${written} : de 2 à ${SOLIDE_MAX_PARTS} parts (${GRADUER_USAGE})`;
+		}
+		const edge = topology.edges.some(([i, j]) => same(a, b)({ from: i, to: j }));
+		if (!edge && !segments.some(same(a, b))) {
+			return `${written} n’est ni une arête ni un segment de segments: (ajoute segments: ${written})`;
+		}
+		if (graduations.some(same(a, b))) return `${written} deux fois : chaque segment une fois`;
+		graduations.push({ from: a, to: b, parts });
+	}
+	return graduations;
 }
 
 /** Les angles droits de `angles-droits:` ; une phrase d'erreur sinon */
@@ -1276,6 +1422,7 @@ export function parseSolideContent(source: string): {
 			| 'droites'
 			| 'segments'
 			| 'angles-droits'
+			| 'graduer'
 			| 'plans'
 			| 'repere'
 			| 'tracer'
@@ -1291,6 +1438,7 @@ export function parseSolideContent(source: string): {
 				droites: 'dessiner des droites',
 				segments: 'dessiner des segments',
 				'angles-droits': 'coder des angles droits',
+				graduer: 'graduer un segment',
 				plans: 'dessiner des plans',
 				repere: 'poser un repère',
 				tracer: 'faire tracer un vecteur'
@@ -1397,6 +1545,19 @@ export function parseSolideContent(source: string): {
 		if (typeof read === 'string') fail(anglesEntry.line, read);
 		else rightAngles = read;
 	}
+	// Graduations (`graduer:`, outil n° 65) : une arête, ou un segment de `segments:`
+	const graduerEntry = seen.get('graduer');
+	let graduations: SolideGraduation[] = [];
+	if (
+		graduerEntry !== undefined &&
+		needs(graduerEntry, 'graduer') &&
+		names !== null &&
+		pointsRead
+	) {
+		const read = readGraduations(graduerEntry.value, topology, names, points, segments);
+		if (typeof read === 'string') fail(graduerEntry.line, read);
+		else graduations = read;
+	}
 	// Plans (`plans:`, chantier `solides-3d`, lot 7b) : par trois points nommés
 	const plansEntry = seen.get('plans');
 	let plans: SolidePlan[] = [];
@@ -1468,6 +1629,7 @@ export function parseSolideContent(source: string): {
 			...(droites.length > 0 && { droites }),
 			...(segments.length > 0 && { segments }),
 			...(rightAngles.length > 0 && { rightAngles }),
+			...(graduations.length > 0 && { graduations }),
 			...(plans.length > 0 && { plans }),
 			...(repere !== undefined && { repere }),
 			...(task !== undefined && { task }),
