@@ -64,7 +64,8 @@
 					"{{if:w=1|Le dénominateur de la fraction irréductible, ${{r}}$, ne contient que les facteurs premiers $2$ et $5$ : $x={{eval:p/q;d}}$ est décimal, $x\\in 𝔻$.}}{{if:w=0|Le dénominateur de la fraction irréductible, ${{r}}$, a un facteur premier autre que $2$ et $5$ : l'écriture décimale de $x$ est illimitée, $x\\notin 𝔻$.}}",
 					"$x$ est le quotient de deux entiers : $x\\in\\mathbb{Q}$, et donc $x\\in\\mathbb{R}$."
 				]
-			}
+			},
+			"hint": "Simplifie d'abord la fraction. Est-ce un entier ? Son écriture décimale s'arrête-t-elle ?"
 		},
 		{
 			"blanks": [
@@ -112,7 +113,8 @@
 					"{{if:z=1|${{n}}={{k}}^2$ est un carré parfait : $x={{if:s<0|-}}\\sqrt{ {{n}} }={{eval:s*k}}$ est un entier relatif, donc $x\\in\\mathbb{Z}$, $x\\in 𝔻$, $x\\in\\mathbb{Q}$ et $x\\in\\mathbb{R}$.}}{{if:u=1| Il est positif : $x\\in\\mathbb{N}$.}}{{if:z=1 && u=0| Il est négatif : $x\\notin\\mathbb{N}$.}}{{if:z=0|${{eval:k^2}}<{{n}}<{{eval:(k+1)^2}}$ : ${{n}}$ n'est pas un carré parfait, donc $\\sqrt{ {{n}} }$ est irrationnel (comme $\\sqrt{2}$).}}",
 					"{{if:z=0|$x$ n'est donc ni rationnel, ni décimal, ni entier : $x\\notin\\mathbb{Q}$, $x\\notin 𝔻$, $x\\notin\\mathbb{Z}$, $x\\notin\\mathbb{N}$. Seulement $x\\in\\mathbb{R}$.}}{{if:z=1|Rappel : $\\mathbb{N} \\subset\\mathbb{Z} \\subset 𝔻 \\subset\\mathbb{Q} \\subset\\mathbb{R}$.}}"
 				]
-			}
+			},
+			"hint": "Cherche si ${{n}}$ est le carré d'un entier : c'est ce qui décide si $\\sqrt{ {{n}} }$ est un entier ou un irrationnel."
 		},
 		{
 			"blanks": [
@@ -153,7 +155,8 @@
 					"{{if:u=1|$x={{eval:m/100}}$ est un entier naturel : $x\\in\\mathbb{N}$ et $x\\in\\mathbb{Z}$.}}{{if:z=1 && u=0|$x={{eval:m/100}}$ est un entier négatif : $x\\in\\mathbb{Z}$ mais $x\\notin\\mathbb{N}$.}}{{if:z=0|$x$ n'est pas entier : $x\\notin\\mathbb{Z}$ et $x\\notin\\mathbb{N}$.}}",
 					"$x=\\dfrac{ {{m}} }{100}$ : c'est un nombre décimal, donc $x\\in 𝔻$, $x\\in\\mathbb{Q}$ et $x\\in\\mathbb{R}$."
 				]
-			}
+			},
+			"hint": "Rappelle-toi : $\\mathbb{N}\\subset\\mathbb{Z}\\subset𝔻\\subset\\mathbb{Q}\\subset\\mathbb{R}$. Un nombre qui est dans un ensemble est aussi dans tous ceux qui suivent."
 		},
 		{
 			"blanks": [
@@ -174,7 +177,8 @@
 					"{{if:k==0|Donc $x=\\pi\\notin\\mathbb{Q}$.|Si $x$ était rationnel, {{if:k==0|$x=\\pi$|{{if:k==1|$\\pi=-x$|{{if:k==2|$\\pi=\\dfrac{x}{2}$|{{if:k==3|$\\pi=2x$|$\\pi=x-1$}}}}}}}} le serait aussi, ce qui est faux : $x\\notin\\mathbb{Q}$.}}",
 					"$x$ n'est donc ni rationnel, ni décimal, ni entier : $x\\notin\\mathbb{Q}$, $x\\notin 𝔻$, $x\\notin\\mathbb{Z}$, $x\\notin\\mathbb{N}$. Seulement $\\textcolor{{{color:primary.0}}}{x\\in\\mathbb{R}}$."
 				]
-			}
+			},
+			"hint": "$\\pi$ est irrationnel. Si $x$ était un quotient d'entiers, que pourrais-tu en déduire pour $\\pi$ ?"
 		}
 	],
 	"testSpecs": [

@@ -49,6 +49,7 @@
 		trainingStatus
 	} from '#lib/questions/correction-card-verdict.ts';
 	import { computeBlankColors } from './blank-verdicts';
+	import { provideAnswerPreparations } from '#lib/components/question-inputs/answer-preparations.ts';
 	import { MarkdownRenderer } from '#lib/components/markdown/index.ts';
 	import InlineMarkdown from '#lib/components/markdown/InlineMarkdown.svelte';
 	import { templateGenericFunctions } from '#lib/questions/generic-functions.ts';
@@ -144,6 +145,8 @@
 	let userAnswer = $state<string | string[]>('');
 	let isSubmitted = $state(false);
 	let isSubmitting = $state(false);
+	// Cases à préparer avant la validation (programme Python : il tourne d'abord)
+	const preparations = provideAnswerPreparations();
 	let isCorrect = $state(false);
 	let validationFeedback = $state('');
 
@@ -304,10 +307,19 @@
 	// EVENT HANDLERS
 	// ============================================================================
 
-	function handleSubmit() {
+	/** Les cases à préparer (programme Python : il tourne d'abord), puis la validation */
+	async function handleSubmit() {
 		if (!canSubmit || isSubmitting) return;
 
 		isSubmitting = true;
+		// Rien à préparer (question ordinaire) : validée tout de suite, comme toujours
+		if (!preparations.isEmpty()) {
+			await preparations.prepareAll();
+			if (isSubmitted) {
+				isSubmitting = false;
+				return;
+			}
+		}
 		attempts += 1;
 
 		const answer = prepareAnswerValue();

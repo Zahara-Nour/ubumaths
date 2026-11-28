@@ -31,6 +31,7 @@ import { calculEntry } from './calcul';
 import { robotEntry } from './robot';
 import { labyrintheEntry } from './labyrinthe';
 import { yohakuEntry } from './yohaku';
+import { pythonAEcrireEntry } from './python-a-ecrire';
 import { boxPlotEntry, statChartEntry } from './stat-chart';
 import { trigEntry } from './trig';
 import { variationEntry } from './variation';
@@ -68,6 +69,7 @@ export const BLOCK_CATALOG: BlockCatalogEntry[] = [
 	robotEntry,
 	labyrintheEntry,
 	yohakuEntry,
+	pythonAEcrireEntry,
 	engrenagesEntry
 ];
 

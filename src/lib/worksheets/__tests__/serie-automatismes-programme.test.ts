@@ -1,5 +1,6 @@
 /**
- * Série d'automatismes : question à programme (tortue, calcul ; chantier `blockly`, PR 5)
+ * Série d'automatismes : question à programme (tortue, calcul ; chantier `blockly`, PR 5 ;
+ * Python, outil 49)
  * et robot à produire (chantier `suite-fleches`, PR 1b)
  * ======================================================================================
  *
@@ -26,13 +27,20 @@ function modele(id: string, statement: string): QuestionTemplate {
 
 const MODELES = new Map([
 	['tortue', modele('tortue', 'Trace.\n\n```tortue\nattendu: avancer 3\n```')],
-	['calcul', modele('calcul', 'Programme.\n\n```calcul\nattendu: afficher nombre + 2\n```')]
+	['calcul', modele('calcul', 'Programme.\n\n```calcul\nattendu: afficher nombre + 2\n```')],
+	[
+		'python',
+		modele(
+			'python',
+			'Écris.\n\n```python-a-ecrire\nfonction: f\nsolution: |\n  def f(x):\n      return x\nessais: f(1)\n```'
+		)
+	]
 ]);
 
 describe('buildSerie — question à programme', () => {
-	it.each(['tortue', 'calcul'])('%s : refusée avec un message clair', (id) => {
+	it.each(['tortue', 'calcul', 'python'])('%s : refusée avec un message clair', (id) => {
 		expect(() => buildSerie(MODELES, [{ templateId: id, seed: 1 }])).toThrow(
-			`${id} : une question à programme (tortue, calcul) ne peut pas entrer dans une série d’automatismes`
+			`${id} : une question à programme (tortue, calcul, Python) ne peut pas entrer dans une série d’automatismes`
 		);
 	});
 });

@@ -37,6 +37,7 @@ export type CatalogNodeType =
 	| 'robot'
 	| 'labyrinthe'
 	| 'yohaku'
+	| 'python-a-ecrire'
 	| 'collection'
 	| 'monnaie'
 	| 'schema-barres';

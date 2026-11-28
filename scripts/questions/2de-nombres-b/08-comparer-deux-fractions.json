@@ -57,7 +57,8 @@
 					"Ainsi $\\dfrac{ {{r}} }{ {{t}} }<1<\\dfrac{ {{p}} }{ {{q}} }$.",
 					"Donc $\\textcolor{{{color:primary.0}}}{{{if:z==1|\\dfrac{ {{p}} }{ {{q}} }|\\dfrac{ {{r}} }{ {{t}} }}}{{if:z==1|>|<}}{{if:z==1|\\dfrac{ {{r}} }{ {{t}} }|\\dfrac{ {{p}} }{ {{q}} }}}}$."
 				]
-			}
+			},
+			"hintFromFirstStep": true
 		},
 		{
 			"statement": "Compare ces deux fractions : choisis le bon signe.\n\n$${{if:z==1|\\dfrac{ {{n}} }{ {{n1}} }|\\dfrac{ {{m}} }{ {{n}} }}}\\;\\ldots\\;{{if:z==1|\\dfrac{ {{m}} }{ {{n}} }|\\dfrac{ {{n}} }{ {{n1}} }}}$$\n\n```choix\nmelanger: non\n- $<$\n- $>$\n```",
@@ -107,7 +108,8 @@
 					"La différence est **négative**, donc $\\dfrac{ {{m}} }{ {{n}} }<\\dfrac{ {{n}} }{ {{n1}} }$.",
 					"Donc $\\textcolor{{{color:primary.0}}}{{{if:z==1|\\dfrac{ {{n}} }{ {{n1}} }|\\dfrac{ {{m}} }{ {{n}} }}}{{if:z==1|>|<}}{{if:z==1|\\dfrac{ {{m}} }{ {{n}} }|\\dfrac{ {{n}} }{ {{n1}} }}}}$."
 				]
-			}
+			},
+			"hintFromFirstStep": true
 		},
 		{
 			"statement": "Compare ces deux fractions : choisis le bon signe.\n\n$${{if:z==1|\\dfrac{ {{a}} }{ {{n}} }|\\dfrac{ {{b}} }{ {{n}} }}}\\;\\ldots\\;{{if:z==1|\\dfrac{ {{b}} }{ {{n}} }|\\dfrac{ {{a}} }{ {{n}} }}}$$\n\n```choix\nmelanger: non\n- $<$\n- $>$\n```",
@@ -145,7 +147,8 @@
 					"${{a}}>{{b}}$, donc $\\dfrac{ {{a}} }{ {{n}} }>\\dfrac{ {{b}} }{ {{n}} }$.",
 					"Donc $\\textcolor{{{color:primary.0}}}{{{if:z==1|\\dfrac{ {{a}} }{ {{n}} }|\\dfrac{ {{b}} }{ {{n}} }}}{{if:z==1|>|<}}{{if:z==1|\\dfrac{ {{b}} }{ {{n}} }|\\dfrac{ {{a}} }{ {{n}} }}}}$."
 				]
-			}
+			},
+			"hintFromFirstStep": true
 		},
 		{
 			"statement": "Compare ces deux fractions : choisis le bon signe.\n\n$${{if:z==1|\\dfrac{ {{n}} }{ {{a}} }|\\dfrac{ {{n}} }{ {{b}} }}}\\;\\ldots\\;{{if:z==1|\\dfrac{ {{n}} }{ {{b}} }|\\dfrac{ {{n}} }{ {{a}} }}}$$\n\n```choix\nmelanger: non\n- $<$\n- $>$\n```",
@@ -183,7 +186,140 @@
 					"${{a}}<{{b}}$, donc $\\dfrac{ {{n}} }{ {{a}} }>\\dfrac{ {{n}} }{ {{b}} }$.",
 					"Donc $\\textcolor{{{color:primary.0}}}{{{if:z==1|\\dfrac{ {{n}} }{ {{a}} }|\\dfrac{ {{n}} }{ {{b}} }}}{{if:z==1|>|<}}{{if:z==1|\\dfrac{ {{n}} }{ {{b}} }|\\dfrac{ {{n}} }{ {{a}} }}}}$."
 				]
-			}
+			},
+			"hintFromFirstStep": true
+		},
+		{
+			"statement": "On compare ${{if:z==1|\\dfrac{ {{n}} }{ {{n1}} }|\\dfrac{ {{m}} }{ {{n}} }}}$ et ${{if:z==1|\\dfrac{ {{m}} }{ {{n}} }|\\dfrac{ {{n}} }{ {{n1}} }}}$.\n\nCalcule la différence, sous la forme d'une fraction irréductible :\n\n${{if:z==1|\\dfrac{ {{n}} }{ {{n1}} }|\\dfrac{ {{m}} }{ {{n}} }}}-{{if:z==1|\\dfrac{ {{m}} }{ {{n}} }|\\dfrac{ {{n}} }{ {{n1}} }}}=?$\n\nPuis choisis le bon signe :\n\n$${{if:z==1|\\dfrac{ {{n}} }{ {{n1}} }|\\dfrac{ {{m}} }{ {{n}} }}}\\;\\ldots\\;{{if:z==1|\\dfrac{ {{m}} }{ {{n}} }|\\dfrac{ {{n}} }{ {{n1}} }}}$$\n\n```choix\nmelanger: non\n- $<$\n- $>$\n```",
+			"variables": [
+				{
+					"name": "z",
+					"expression": "0|1"
+				},
+				{
+					"name": "n",
+					"expression": "5..15"
+				},
+				{
+					"name": "n1",
+					"expression": "eval:n-1"
+				},
+				{
+					"name": "m",
+					"expression": "eval:n+1"
+				},
+				{
+					"name": "P",
+					"expression": "eval:n*(n-1)"
+				},
+				{
+					"name": "M1",
+					"expression": "eval:(n+1)*(n-1)"
+				},
+				{
+					"name": "M2",
+					"expression": "eval:n*n"
+				},
+				{
+					"name": "rep",
+					"expression": "eval:z"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:z==1|\\frac{1}{ {{P}} }|-\\frac{1}{ {{P}} }}}",
+					"expectedErrors": [
+						{
+							"answer": "{{if:z==1|-\\frac{1}{ {{P}} }|\\frac{1}{ {{P}} }}}",
+							"message": "Tu as calculé la différence dans l'autre sens : c'est la première fraction moins la seconde.",
+							"label": "Différence dans l’autre sens"
+						},
+						{
+							"answer": "1",
+							"message": "Tu as soustrait les numérateurs entre eux et les dénominateurs entre eux : il faut d'abord un même dénominateur.",
+							"label": "Numérateurs et dénominateurs soustraits entre eux"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{rep}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On réduit au même dénominateur ${{n}}\\times{{n1}}={{P}}$ :",
+					"{{if:z==1|$$\\dfrac{ {{n}} }{ {{n1}} }-\\dfrac{ {{m}} }{ {{n}} }=\\dfrac{ {{n}}\\times{{n}} }{ {{n1}}\\times{{n}} }-\\dfrac{ {{m}}\\times{{n1}} }{ {{n}}\\times{{n1}} }=\\dfrac{ {{M2}}-{{M1}} }{ {{P}} }=\\dfrac{ 1 }{ {{P}} }$$|$$\\dfrac{ {{m}} }{ {{n}} }-\\dfrac{ {{n}} }{ {{n1}} }=\\dfrac{ {{m}}\\times{{n1}} }{ {{n}}\\times{{n1}} }-\\dfrac{ {{n}}\\times{{n}} }{ {{n1}}\\times{{n}} }=\\dfrac{ {{M1}}-{{M2}} }{ {{P}} }=-\\dfrac{ 1 }{ {{P}} }$$}}",
+					"La différence est {{if:z==1|**positive**|**négative**}}, donc $\\textcolor{{{color:primary.0}}}{{{if:z==1|\\dfrac{ {{n}} }{ {{n1}} }|\\dfrac{ {{m}} }{ {{n}} }}}{{if:z==1|>|<}}{{if:z==1|\\dfrac{ {{m}} }{ {{n}} }|\\dfrac{ {{n}} }{ {{n1}} }}}}$."
+				]
+			},
+			"hint": "Réduis les deux fractions au même dénominateur pour calculer la différence : son signe dit laquelle est la plus grande."
+		},
+		{
+			"statement": "Range ces fractions dans l'ordre croissant.\n\n```ranger\nsigne: <\n- $\\dfrac{ {{n}} }{ {{b}} }$\n- $\\dfrac{ {{n}} }{ {{a}} }$\n- $\\dfrac{ {{r}} }{ {{t}} }$\n- $\\dfrac{ {{p}} }{ {{q}} }$\n```",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "2..9"
+				},
+				{
+					"name": "a",
+					"expression": "{{eval:n+1}}..{{eval:n+6}}"
+				},
+				{
+					"name": "b",
+					"expression": "{{eval:a+1}}..{{eval:a+6}}"
+				},
+				{
+					"name": "t",
+					"expression": "{{eval:a+1}}..{{eval:a+6}}"
+				},
+				{
+					"name": "j",
+					"expression": "1..2"
+				},
+				{
+					"name": "r",
+					"expression": "eval:t-j"
+				},
+				{
+					"name": "q",
+					"expression": "2..9"
+				},
+				{
+					"name": "k",
+					"expression": "1..3"
+				},
+				{
+					"name": "p",
+					"expression": "eval:q+k"
+				},
+				{
+					"name": "nt",
+					"expression": "eval:n*t"
+				},
+				{
+					"name": "ra",
+					"expression": "eval:r*a"
+				}
+			],
+			"conditions": [
+				"n<a",
+				"a<b",
+				"gcd(n,a)==1",
+				"gcd(n,b)==1",
+				"gcd(r,t)==1",
+				"gcd(p,q)==1",
+				"n*t<r*a"
+			],
+			"correction": {
+				"steps": [
+					"$\\dfrac{ {{p}} }{ {{q}} }$ est la seule fraction plus grande que $1$ (numérateur plus grand que le dénominateur) : c'est la plus grande.",
+					"$\\dfrac{ {{n}} }{ {{b}} }$ et $\\dfrac{ {{n}} }{ {{a}} }$ ont le **même numérateur** : la plus grande a le plus petit dénominateur, donc $\\dfrac{ {{n}} }{ {{b}} }<\\dfrac{ {{n}} }{ {{a}} }$.",
+					"Pour $\\dfrac{ {{n}} }{ {{a}} }$ et $\\dfrac{ {{r}} }{ {{t}} }$, on réduit au même dénominateur ${{a}}\\times{{t}}$ : ${{n}}\\times{{t}}={{nt}}$ et ${{r}}\\times{{a}}={{ra}}$, donc $\\dfrac{ {{n}} }{ {{a}} }<\\dfrac{ {{r}} }{ {{t}} }$.",
+					"$$\\textcolor{{{color:primary.0}}}{\\dfrac{ {{n}} }{ {{b}} }<\\dfrac{ {{n}} }{ {{a}} }<\\dfrac{ {{r}} }{ {{t}} }<\\dfrac{ {{p}} }{ {{q}} }}$$"
+				]
+			},
+			"hint": "Repère d'abord la fraction plus grande que $1$. Pour deux fractions de même numérateur, la plus grande est celle qui a le plus petit dénominateur."
 		}
 	],
 	"testSpecs": [
@@ -294,6 +430,119 @@
 				"b": "9"
 			},
 			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Différence : 13/12 − 12/11 = −1/132, donc <",
+			"variationIndex": 4,
+			"variables": {
+				"z": "0",
+				"n": "12"
+			},
+			"answers": ["-\\frac{1}{132}", "0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Différence : 12/11 − 13/12 = 1/132, donc >",
+			"variationIndex": 4,
+			"variables": {
+				"z": "1",
+				"n": "12"
+			},
+			"answers": ["\\frac{1}{132}", "1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Différence juste, signe faux",
+			"variationIndex": 4,
+			"variables": {
+				"z": "0",
+				"n": "12"
+			},
+			"answers": ["-\\frac{1}{132}", "1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur prévue : différence dans l’autre sens",
+			"variationIndex": 4,
+			"variables": {
+				"z": "0",
+				"n": "12"
+			},
+			"answers": ["\\frac{1}{132}", "0"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as calculé la différence dans l'autre sens : c'est la première fraction moins la seconde."
+			}
+		},
+		{
+			"description": "Erreur prévue : (13 − 12)/(12 − 11) = 1",
+			"variationIndex": 4,
+			"variables": {
+				"z": "0",
+				"n": "12"
+			},
+			"answers": ["1", "0"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as soustrait les numérateurs entre eux et les dénominateurs entre eux : il faut d'abord un même dénominateur."
+			}
+		},
+		{
+			"description": "Ranger : 5/9 < 5/7 < 9/11 < 7/5",
+			"variationIndex": 5,
+			"variables": {
+				"n": "5",
+				"a": "7",
+				"b": "9",
+				"t": "11",
+				"j": "2",
+				"q": "5",
+				"k": "2"
+			},
+			"answers": ["3", "0", "1", "2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Ranger : ordre des dénominateurs (5/7 avant 5/9)",
+			"variationIndex": 5,
+			"variables": {
+				"n": "5",
+				"a": "7",
+				"b": "9",
+				"t": "11",
+				"j": "2",
+				"q": "5",
+				"k": "2"
+			},
+			"answers": ["0", "3", "1", "2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Ranger : 7/5 avant les autres (numérateur le plus petit)",
+			"variationIndex": 5,
+			"variables": {
+				"n": "5",
+				"a": "7",
+				"b": "9",
+				"t": "11",
+				"j": "2",
+				"q": "5",
+				"k": "2"
+			},
+			"answers": ["2", "3", "0", "1"],
 			"expected": {
 				"status": "incorrect"
 			}

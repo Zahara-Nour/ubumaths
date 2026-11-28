@@ -34,7 +34,8 @@
 					"$1=\\dfrac{ {{q}} }{ {{q}} }$ : on compare les numérateurs, le dénominateur étant le même.",
 					"{{if:idx==0|${{p}}<{{q}}$ : le numérateur est **plus petit** que le dénominateur, donc $\\textcolor{{{color:primary.0}}}{\\dfrac{ {{p}} }{ {{q}} }<1}$.|${{p}}>{{q}}$ : le numérateur est **plus grand** que le dénominateur, donc $\\textcolor{{{color:primary.0}}}{\\dfrac{ {{p}} }{ {{q}} }>1}$.}}"
 				]
-			}
+			},
+			"hintFromFirstStep": true
 		},
 		{
 			"statement": "Compare ${{n}}$ et $\\dfrac{ {{p}} }{ {{q}} }$.\n\n```choix\nmelanger: non\n- ${{n}}<\\dfrac{ {{p}} }{ {{q}} }$\n- ${{n}}=\\dfrac{ {{p}} }{ {{q}} }$\n- ${{n}}>\\dfrac{ {{p}} }{ {{q}} }$\n```",
@@ -75,7 +76,8 @@
 					"On écrit ${{n}}$ avec le dénominateur ${{q}}$ : ${{n}}=\\dfrac{ {{eval:n*q}} }{ {{q}} }$.",
 					"{{if:sg==1|${{eval:n*q}}<{{p}}$, donc $\\textcolor{{{color:primary.0}}}{{{n}}<\\dfrac{ {{p}} }{ {{q}} }}$.|${{eval:n*q}}>{{p}}$, donc $\\textcolor{{{color:primary.0}}}{{{n}}>\\dfrac{ {{p}} }{ {{q}} }}$.}}"
 				]
-			}
+			},
+			"hintFromFirstStep": true
 		},
 		{
 			"statement": "Range ces nombres dans l'ordre **croissant**.\n\n```ranger\nsigne: <\n- $\\dfrac{ {{p}} }{ {{q}} }$\n- ${{eval:d2/100;d}}$\n- ${{eval:d3/10;d}}$\n- $\\dfrac{ {{r}} }{ {{s}} }$\n```",
@@ -117,7 +119,50 @@
 					"Pour comparer ${{eval:d2/100;d}}$ et ${{eval:d3/10;d}}$, on écrit ${{eval:d3/10;d}}={{eval:d3/10;d}}0$ : ${{eval:d2/100;d}}<{{eval:d3/10;d}}0$ (on ne compare pas ${{eval:d2}}$ et ${{eval:d3}}$).",
 					"$\\textcolor{{{color:primary.0}}}{\\dfrac{ {{p}} }{ {{q}} }<{{eval:d2/100;d}}<{{eval:d3/10;d}}<\\dfrac{ {{r}} }{ {{s}} }}$"
 				]
-			}
+			},
+			"hint": "Écris tous les nombres en écriture décimale, avec le même nombre de chiffres après la virgule (par exemple trois), puis compare-les."
+		},
+		{
+			"statement": "Compare $\\dfrac{ {{p}} }{ {{q}} }$ et $1$, sans calculatrice.\n\n```choix\nmelanger: non\n- $\\dfrac{ {{p}} }{ {{q}} }<1$\n- $\\dfrac{ {{p}} }{ {{q}} }=1$\n- $\\dfrac{ {{p}} }{ {{q}} }>1$\n```",
+			"variables": [
+				{
+					"name": "hi",
+					"expression": "1000..9999"
+				},
+				{
+					"name": "u",
+					"expression": "1..9"
+				},
+				{
+					"name": "v",
+					"expression": "1..9"
+				},
+				{
+					"name": "p",
+					"expression": "eval:100*hi+10*u+v"
+				},
+				{
+					"name": "q",
+					"expression": "eval:100*hi+10*v+u"
+				},
+				{
+					"name": "idx",
+					"expression": "eval:2*min(max(u-v,0),1)"
+				}
+			],
+			"conditions": ["u != v"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{idx}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Inutile de calculer : on compare le numérateur ${{p}}$ et le dénominateur ${{q}}$. Ils ont les mêmes premiers chiffres ; on compare les deux derniers : ${{eval:10*u+v}}$ et ${{eval:10*v+u}}$.",
+					"{{if:idx==0|${{p}}<{{q}}$ : le numérateur est **plus petit** que le dénominateur, donc $\\textcolor{{{color:primary.0}}}{\\dfrac{ {{p}} }{ {{q}} }<1}$.|${{p}}>{{q}}$ : le numérateur est **plus grand** que le dénominateur, donc $\\textcolor{{{color:primary.0}}}{\\dfrac{ {{p}} }{ {{q}} }>1}$.}}"
+				]
+			},
+			"hint": "Une fraction est plus petite que $1$ quand son numérateur est plus petit que son dénominateur. Compare-les chiffre par chiffre, en partant de la gauche."
 		}
 	],
 	"testSpecs": [
@@ -267,6 +312,86 @@
 				"r": "3"
 			},
 			"answers": ["3", "1", "0", "2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "123 457 / 123 475 < 1",
+			"variationIndex": 3,
+			"variables": {
+				"hi": "1234",
+				"u": "5",
+				"v": "7",
+				"p": "123457",
+				"q": "123475",
+				"idx": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 123 457 / 123 475 > 1",
+			"variationIndex": 3,
+			"variables": {
+				"hi": "1234",
+				"u": "5",
+				"v": "7",
+				"p": "123457",
+				"q": "123475",
+				"idx": "0"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 123 457 / 123 475 = 1 (presque égaux)",
+			"variationIndex": 3,
+			"variables": {
+				"hi": "1234",
+				"u": "5",
+				"v": "7",
+				"p": "123457",
+				"q": "123475",
+				"idx": "0"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "987 691 / 987 619 > 1",
+			"variationIndex": 3,
+			"variables": {
+				"hi": "9876",
+				"u": "9",
+				"v": "1",
+				"p": "987691",
+				"q": "987619",
+				"idx": "2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 987 691 / 987 619 < 1",
+			"variationIndex": 3,
+			"variables": {
+				"hi": "9876",
+				"u": "9",
+				"v": "1",
+				"p": "987691",
+				"q": "987619",
+				"idx": "2"
+			},
+			"answers": ["0"],
 			"expected": {
 				"status": "incorrect"
 			}

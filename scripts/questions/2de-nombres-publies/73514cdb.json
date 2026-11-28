@@ -10,7 +10,24 @@
 		{
 			"blanks": [
 				{
-					"expectedAnswer": "\\frac{ {{L}}^{ {{n}} } }{ {{eval:(k)^(n)}} }"
+					"expectedAnswer": "\\frac{ {{L}}^{ {{n}} } }{ {{eval:(k)^(n)}} }",
+					"expectedErrors": [
+						{
+							"answer": "\\frac{ {{L}}^{ {{n}} } }{ {{k}} }",
+							"message": "Le dénominateur aussi est élevé à la puissance.",
+							"label": "Dénominateur non élevé à la puissance"
+						},
+						{
+							"answer": "\\frac{ {{L}}^{ {{n}} } }{ {{eval:(k)*(n)}} }",
+							"message": "Élever à la puissance $n$, ce n'est pas multiplier par $n$.",
+							"label": "Dénominateur multiplié par n"
+						},
+						{
+							"answer": "\\frac{ {{L}} }{ {{eval:(k)^(n)}} }",
+							"message": "Le numérateur aussi est élevé à la puissance.",
+							"label": "Numérateur non élevé à la puissance"
+						}
+					]
 				}
 			],
 			"statement": "Écris sans parenthèses, sous la forme la plus simple.\n\n$$\\left(\\dfrac{ {{L}} }{ {{k}} }\\right)^{ {{n}} }=?$$",
@@ -34,12 +51,30 @@
 					"**Puissance d'un quotient** : $\\left(\\dfrac{a}{b}\\right)^n=\\dfrac{a^n}{b^n}$ : le numérateur et le dénominateur sont élevés à la puissance $n$.",
 					"$$\\left(\\dfrac{ {{L}} }{ {{k}} }\\right)^{ {{n}} }=\\dfrac{\\textcolor{{{color:primary.1}}}{{{L}}^{ {{n}} }}}{\\textcolor{{{color:primary.0}}}{{{k}}^{ {{n}} }}}=\\textcolor{{{color:primary.0}}}{\\dfrac{ {{L}}^{ {{n}} } }{ {{eval:(k)^(n)}} }}$$"
 				]
-			}
+			},
+			"hintFromFirstStep": true
 		},
 		{
 			"blanks": [
 				{
-					"expectedAnswer": "\\frac{ {{eval:(k)^(n)}} }{ {{L}}^{ {{n}} } }"
+					"expectedAnswer": "\\frac{ {{eval:(k)^(n)}} }{ {{L}}^{ {{n}} } }",
+					"expectedErrors": [
+						{
+							"answer": "\\frac{ {{k}} }{ {{L}}^{ {{n}} } }",
+							"message": "Le numérateur aussi est élevé à la puissance.",
+							"label": "Numérateur non élevé à la puissance"
+						},
+						{
+							"answer": "\\frac{ {{eval:(k)*(n)}} }{ {{L}}^{ {{n}} } }",
+							"message": "Élever à la puissance $n$, ce n'est pas multiplier par $n$.",
+							"label": "Numérateur multiplié par n"
+						},
+						{
+							"answer": "\\frac{ {{eval:(k)^(n)}} }{ {{L}} }",
+							"message": "Le dénominateur aussi est élevé à la puissance.",
+							"label": "Dénominateur non élevé à la puissance"
+						}
+					]
 				}
 			],
 			"statement": "Écris sans parenthèses, sous la forme la plus simple.\n\n$$\\left(\\dfrac{ {{k}} }{ {{L}} }\\right)^{ {{n}} }=?$$",
@@ -63,12 +98,30 @@
 					"**Puissance d'un quotient** : $\\left(\\dfrac{a}{b}\\right)^n=\\dfrac{a^n}{b^n}$ : le numérateur et le dénominateur sont élevés à la puissance $n$. Ici ${{L}}\\neq0$.",
 					"$$\\left(\\dfrac{ {{k}} }{ {{L}} }\\right)^{ {{n}} }=\\dfrac{\\textcolor{{{color:primary.0}}}{{{k}}^{ {{n}} }}}{\\textcolor{{{color:primary.1}}}{{{L}}^{ {{n}} }}}=\\textcolor{{{color:primary.0}}}{\\dfrac{ {{eval:(k)^(n)}} }{ {{L}}^{ {{n}} } }}$$"
 				]
-			}
+			},
+			"hintFromFirstStep": true
 		},
 		{
 			"blanks": [
 				{
-					"expectedAnswer": "\\frac{ {{eval:(q)^(n)}} }{ {{eval:(p)^(n)}} }"
+					"expectedAnswer": "\\frac{ {{eval:(q)^(n)}} }{ {{eval:(p)^(n)}} }",
+					"expectedErrors": [
+						{
+							"answer": "\\frac{ {{eval:(p)^(n)}} }{ {{eval:(q)^(n)}} }",
+							"message": "Un exposant négatif, c'est la puissance de l'inverse : tu n'as pas inversé la fraction.",
+							"label": "Inverse oublié"
+						},
+						{
+							"answer": "-\\frac{ {{eval:(p)^(n)}} }{ {{eval:(q)^(n)}} }",
+							"message": "Un exposant négatif ne rend pas le nombre négatif.",
+							"label": "Exposant négatif lu comme un signe"
+						},
+						{
+							"answer": "-\\frac{ {{eval:(q)^(n)}} }{ {{eval:(p)^(n)}} }",
+							"message": "Un exposant négatif ne rend pas le nombre négatif.",
+							"label": "Inversé, avec un signe moins en trop"
+						}
+					]
 				}
 			],
 			"statement": "Écris sous la forme d'une fraction irréductible.\n\n$$\\left(\\dfrac{ {{p}} }{ {{q}} }\\right)^{-{{n}} }=?$$",
@@ -92,12 +145,36 @@
 					"**Exposant négatif** : $a^{-n}=\\dfrac{1}{a^n}$ ; pour une fraction, c'est la puissance de son **inverse** : $\\left(\\dfrac{a}{b}\\right)^{-n}=\\left(\\dfrac{b}{a}\\right)^{n}$.",
 					"$$\\left(\\dfrac{ {{p}} }{ {{q}} }\\right)^{-{{n}} }=\\textcolor{{{color:primary.0}}}{\\left(\\dfrac{ {{q}} }{ {{p}} }\\right)^{ {{n}} }}=\\dfrac{ {{q}}^{ {{n}} } }{ {{p}}^{ {{n}} } }=\\textcolor{{{color:primary.1}}}{\\dfrac{ {{eval:(q)^(n)}} }{ {{eval:(p)^(n)}} }}$$"
 				]
-			}
+			},
+			"hintFromFirstStep": true
 		},
 		{
 			"blanks": [
 				{
-					"expectedAnswer": "{{if:s==1|(-{{k}})|{{k}}}}^{ {{n}} }"
+					"expectedAnswer": "{{if:s==1|(-{{k}})|{{k}}}}^{ {{n}} }",
+					"expectedErrors": [
+						{
+							"answer": "{{k}}^{0}",
+							"message": "Les exposants ne se soustraient pas ici : ce sont les bases qu'on divise, l'exposant reste.",
+							"label": "Exposants soustraits"
+						},
+						{
+							"answer": "{{eval:((k)-1)*(q)}}^{ {{n}} }",
+							"message": "Les bases se divisent, elles ne se soustraient pas.",
+							"label": "Bases soustraites"
+						},
+						{
+							"answer": "{{if:s==1|-{{k}}|{{k}}}}",
+							"message": "L'exposant reste le même : il ne se divise pas.",
+							"label": "Exposants divisés"
+						},
+						{
+							"answer": "{{k}}^{ {{n}} }",
+							"message": "Revois le signe : compte combien de fois tu multiplies un nombre négatif.",
+							"label": "Signe perdu"
+						}
+					],
+					"requiredForm": "power"
 				}
 			],
 			"statement": "Écris sous la forme d'une seule puissance.\n\n$$\\dfrac{ {{if:s==1|(-{{eval:(k)*(q)}})|{{eval:(k)*(q)}}}}^{ {{n}} } }{ {{q}}^{ {{n}} } }=?$$",
@@ -124,7 +201,8 @@
 					"**Puissance d'un quotient**, lue de droite à gauche : $\\dfrac{a^n}{b^n}=\\left(\\dfrac{a}{b}\\right)^n$ : même exposant, on divise les bases.",
 					"$$\\dfrac{ {{if:s==1|(-{{eval:(k)*(q)}})|{{eval:(k)*(q)}}}}^{ {{n}} } }{ {{q}}^{ {{n}} } }=\\left(\\textcolor{{{color:primary.0}}}{\\dfrac{ {{if:s==1|-{{eval:(k)*(q)}}|{{eval:(k)*(q)}}}} }{ {{q}} }}\\right)^{ {{n}} }=\\textcolor{{{color:primary.0}}}{{{if:s==1|(-{{k}})|{{k}}}}^{ {{n}} }}$$"
 				]
-			}
+			},
+			"hintFromFirstStep": true
 		}
 	],
 	"testSpecs": [
@@ -144,7 +222,8 @@
 		{
 			"answers": ["\\frac{x^2}{3}"],
 			"expected": {
-				"status": "incorrect"
+				"status": "incorrect",
+				"expectedErrorMessage": "Le dénominateur aussi est élevé à la puissance."
 			},
 			"variables": {
 				"L": "x|x",
@@ -170,7 +249,8 @@
 		{
 			"answers": ["\\frac{2}{t^3}"],
 			"expected": {
-				"status": "incorrect"
+				"status": "incorrect",
+				"expectedErrorMessage": "Le numérateur aussi est élevé à la puissance."
 			},
 			"variables": {
 				"L": "t|t",
@@ -196,7 +276,8 @@
 		{
 			"answers": ["\\frac{4}{9}"],
 			"expected": {
-				"status": "incorrect"
+				"status": "incorrect",
+				"expectedErrorMessage": "Un exposant négatif, c'est la puissance de l'inverse : tu n'as pas inversé la fraction."
 			},
 			"variables": {
 				"n": "2",
@@ -209,7 +290,8 @@
 		{
 			"answers": ["-\\frac{4}{9}"],
 			"expected": {
-				"status": "incorrect"
+				"status": "incorrect",
+				"expectedErrorMessage": "Un exposant négatif ne rend pas le nombre négatif."
 			},
 			"variables": {
 				"n": "2",
@@ -236,7 +318,8 @@
 		{
 			"answers": ["2^0"],
 			"expected": {
-				"status": "incorrect"
+				"status": "incorrect",
+				"expectedErrorMessage": "Les exposants ne se soustraient pas ici : ce sont les bases qu'on divise, l'exposant reste."
 			},
 			"variables": {
 				"q": "3",
@@ -265,7 +348,8 @@
 		{
 			"answers": ["3^4"],
 			"expected": {
-				"status": "incorrect"
+				"status": "incorrect",
+				"expectedErrorMessage": "Les bases se divisent, elles ne se soustraient pas."
 			},
 			"variables": {
 				"q": "3",
@@ -293,7 +377,8 @@
 		{
 			"answers": ["2^3"],
 			"expected": {
-				"status": "incorrect"
+				"status": "incorrect",
+				"expectedErrorMessage": "Revois le signe : compte combien de fois tu multiplies un nombre négatif."
 			},
 			"variables": {
 				"q": "3",
@@ -302,6 +387,134 @@
 				"s": "1"
 			},
 			"description": "Erreur : signe perdu (2³)",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["\\frac{x^2}{6}"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Élever à la puissance $n$, ce n'est pas multiplier par $n$."
+			},
+			"variables": {
+				"L": "x|x",
+				"k": "3",
+				"n": "2"
+			},
+			"description": "Erreur prévue : x²/6",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["\\frac{x}{9}"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Le numérateur aussi est élevé à la puissance."
+			},
+			"variables": {
+				"L": "x|x",
+				"k": "3",
+				"n": "2"
+			},
+			"description": "Erreur prévue : x/9",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["\\frac{6}{t^3}"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Élever à la puissance $n$, ce n'est pas multiplier par $n$."
+			},
+			"variables": {
+				"L": "t|t",
+				"k": "2",
+				"n": "3"
+			},
+			"description": "Erreur prévue : 6/t³",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["\\frac{8}{t}"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Le dénominateur aussi est élevé à la puissance."
+			},
+			"variables": {
+				"L": "t|t",
+				"k": "2",
+				"n": "3"
+			},
+			"description": "Erreur prévue : 8/t",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["-\\frac{9}{4}"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Un exposant négatif ne rend pas le nombre négatif."
+			},
+			"variables": {
+				"n": "2",
+				"p": "2",
+				"q": "3"
+			},
+			"description": "Erreur prévue : −9/4",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "L'exposant reste le même : il ne se divise pas."
+			},
+			"variables": {
+				"q": "3",
+				"k": "2",
+				"n": "4",
+				"s": "0"
+			},
+			"description": "Erreur prévue : 2¹",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["2^4"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"q": "3",
+				"k": "2",
+				"n": "4",
+				"s": "1"
+			},
+			"description": "(−6)⁴ / 3⁴ = 2⁴ : base non imposée, juste",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["(-2)^4"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"q": "3",
+				"k": "2",
+				"n": "4",
+				"s": "1"
+			},
+			"description": "(−6)⁴ / 3⁴ = (−2)⁴, juste",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["16"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			},
+			"variables": {
+				"q": "3",
+				"k": "2",
+				"n": "4",
+				"s": "1"
+			},
+			"description": "Forme : 16 au lieu d'une puissance",
 			"variationIndex": 3
 		}
 	]

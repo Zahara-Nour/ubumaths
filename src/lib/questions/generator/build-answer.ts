@@ -78,6 +78,8 @@ import { parseLabyrintheContent } from '#lib/ubumark/parser/labyrinthe-parser.ts
 import { expectedLabyrintheAnswer } from '#lib/ubumark/utils/labyrinthe-answer.ts';
 import { parseYohakuContent } from '#lib/ubumark/parser/yohaku-parser.ts';
 import { expectedYohakuAnswer } from '#lib/ubumark/utils/yohaku-answer.ts';
+import { parsePythonAEcrireContent } from '#lib/ubumark/parser/python-a-ecrire-parser.ts';
+import { expectedPythonAnswer } from '#lib/questions/python/python-answer.ts';
 
 // Constantes
 
@@ -197,6 +199,17 @@ export function buildAnswerOf(
 			return { errors: node.errors.map((e) => e.message) };
 		}
 		return { answer: expectedYohakuAnswer(node.spec) };
+	}
+	if (kind === 'python') {
+		// Programme Python : la fonction, la solution de l'auteur, les essais et les exigences
+		// (le navigateur rejoue les deux programmes sur chaque essai)
+		const node = parsePythonAEcrireContent(source);
+		if (node.caseIndex !== undefined) return { errors: [CASE_IS_AUTOMATIC] };
+		if (node.errors.length > 0 || node.spec === null) {
+			return { errors: node.errors.map((e) => e.message) };
+		}
+		const { fonction, solution, essais, exiger } = node.spec;
+		return { answer: expectedPythonAnswer({ fonction, solution, essais, exiger }) };
 	}
 	if (kind === 'line') {
 		const { node, errors } = parseNumberLineContent(source);

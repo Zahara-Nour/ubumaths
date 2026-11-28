@@ -69,6 +69,7 @@
 	import RobotCode from './nodes/RobotCode.svelte';
 	import Labyrinthe from './nodes/Labyrinthe.svelte';
 	import Yohaku from './nodes/Yohaku.svelte';
+	import PythonAEcrire from './nodes/PythonAEcrire.svelte';
 	import CalculProgramme from './nodes/CalculProgramme.svelte';
 
 	// Raw markdown viewer with syntax highlighting
@@ -442,6 +443,8 @@
 					<Labyrinthe {node} />
 				{:else if node.type === 'yohaku'}
 					<Yohaku {node} />
+				{:else if node.type === 'python-a-ecrire'}
+					<PythonAEcrire {node} />
 				{/if}
 			{/each}
 		{:else}
