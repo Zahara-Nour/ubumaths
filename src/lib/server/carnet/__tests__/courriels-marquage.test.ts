@@ -1,26 +1,22 @@
 /**
- * Tests de preuve du registre des écarts (docs/ecarts/registre.md), domaine
- * messagerie et carnet de liaison.
+ * Passage quotidien du carnet : marquage des épisodes après un courriel
+ * d'exception (écart L80, ancienne preuve de `tests/ecarts/messagerie.test.ts`).
  *
- * Chaque test affirme le comportement ATTENDU d'un écart encore ouvert : il est
- * rouge tant que l'écart est vrai. Le nom de chaque `describe` porte l'identifiant
- * de l'écart, que le registre retient par `› L80`.
+ * Un épisode non marqué serait reproposé par le plan la semaine suivante, et le
+ * parent recevrait deux fois le même avertissement : le passage doit le signaler
+ * en finissant en erreur (le cron la journalise).
  *
- * Les écarts du domaine qui demandent une vraie base (L79, L82, L83, L84) ont
- * leur preuve dans `tests/integration/ecarts-messagerie.test.ts`.
- *
- * Sonde : le passage quotidien du carnet (`runCarnetDaily`) sur une base
- * simulée, le courriel simulé. Aucune erreur n'est avalée.
+ * Sonde : `runCarnetDaily` sur une base simulée, le courriel simulé.
  */
 
 import { describe, it, expect, vi } from 'vitest';
-import { runCarnetDaily } from '#lib/server/carnet/courriels.ts';
+import { runCarnetDaily } from '../courriels';
 
 vi.mock('#lib/server/email/brevo.ts', () => ({
 	sendCarnetExceptionEmail: vi.fn(async () => ({ success: true })),
 	sendCarnetQuarterlyEmail: vi.fn(async () => ({ success: true }))
 }));
-vi.mock('#lib/server/carnet/envois.ts', () => ({ sendClassMissingLinks: vi.fn() }));
+vi.mock('../envois', () => ({ sendClassMissingLinks: vi.fn() }));
 vi.mock('#lib/server/serviceRoleClient.ts', () => ({ createServiceRoleClient: vi.fn() }));
 
 type Reponse = { data: unknown; error: { message: string } | null };
@@ -91,14 +87,7 @@ describe('témoin : épisodes marqués après le courriel', () => {
 	});
 });
 
-describe('L80 : épisodes non marqués après un courriel d’exception parti', () => {
-	// Sans marquage, le plan repropose l'épisode au bout de 6 jours et demi : le
-	// parent reçoit deux fois le même avertissement. Attendu ici : le passage le
-	// signale (il finit en erreur, que le cron journalise). Si la correction
-	// choisit plutôt d'empêcher la reproposition en base, ou de compter l'échec
-	// au rapport sans lever, ce test est à réécrire (en intégration sur
-	// `carnet_exception_plan` dans le premier cas).
-	//
+describe('épisodes non marqués après un courriel d’exception parti', () => {
 	// La base simulée lève « table inattendue » pour toute table qu'elle ne
 	// connaît pas : une erreur de ce nom n'est pas le signalement attendu.
 	it('une panne de base au marquage fait finir le passage en erreur', async () => {
