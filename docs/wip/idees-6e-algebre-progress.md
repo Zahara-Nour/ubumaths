@@ -2,21 +2,19 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-28, après l'écriture du lot (commit 4de96ab4a1, pas encore de PR)._
+_Mis à jour le 2026-11-28, à l'ouverture de la PR du lot._
 
-- **État** : lot écrit et commité sur la branche : 4 modèles neufs (F2, F3, F6, F8,
-  `scripts/questions/idees-6e-algebre-neufs/`) et 10 variations ajoutées aux 4 publiés
-  (`scripts/questions/idees-6e-algebre-publies/`), migration de contenu générée
-  (`20261128070225_…_publies_contenu.sql`). Specs 168/168 vertes ; rendu vu sur iPhone (WebKit) par
-  `/dev/modeles` en base locale (copies « [essai local] » des 8 modèles, laissées en base locale).
-- **Prochaine action** : David lance `create-questions --dir scripts/questions/idees-6e-algebre-neufs
---publier` (prod, brouillons) ; puis commiter les ids, `migration-rangement.ts`, PR,
-  `security-auditor`, `db:migrate` selon les 4 conditions, relecture dans `/dev/modeles`.
-- **En attente de David** : la commande ci-dessus ; F4 « 0,5 à 3 kg » lu comme la masse d'un objet
-  (pesées jusqu'à 15 kg) : à confirmer ou resserrer.
-- **Pièges en cours** : nom à gauche d'un schéma en barres rogné dans une case choix (« ommes » pour
-  « Gommes », déjà vrai pour « Tom » en prod) : largeur estimée à 9 px par caractère
-  (`schema-barres-scene.ts` l. 58), hors de ce lot.
+- **État** : 4 brouillons créés en prod par David (9e0a8c36 F2, 660db94b F3, b407006d F6, 048246da
+  F8) ; PR du lot ouverte : migration de contenu (10 variations à 4 publiés) et migration de
+  rangement (6-142, 6-143). Specs 168/168 ; intégration verte, rouge sans les migrations ;
+  `security-auditor` : rien.
+- **Prochaine action** : PR mergée → `db:migrate` (4 conditions ; `migration list --linked` d'abord),
+  puis relecture : brouillons par `/dev/modeles?point=6-142` et `?point=6-143`, publiés complétés
+  par une série de relecture (`scripts/series/creer-serie.ts`).
+- **En attente de David** : mes recos du 2026-11-28 sans réponse : F4 gardé (pesées jusqu'à 15 kg,
+  rien de changé) ; noms rognés des schémas en barres dans une PR à part.
+- **Pièges en cours** : nom à gauche d'un schéma en barres rogné dans une case choix
+  (`schema-barres-scene.ts` l. 58, 9 px par caractère), hors de ce lot.
 - **Worktree / branche** : `../ubumaths-wt-idees-6e-algebre`, `feat/idees-6e-algebre`.
 
 ## Rubrique
