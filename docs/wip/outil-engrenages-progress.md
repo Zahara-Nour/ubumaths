@@ -8,11 +8,15 @@ dentées en texte seul.
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-28, phase 0 envoyée._
+_Mis à jour le 2026-11-28, PR 1 codée, pas encore ouverte._
 
-- **État** : phase 0 envoyée à David, rien de codé · **Prochaine action** : lire sa réponse
-  (Q1 à Q5), la noter ici, puis tests rouges → bloc ` ```engrenages ` · **En attente de David** :
-  Q1 à Q5 · **Pièges en cours** : aucun · **Worktree / branche** :
+- **État** : bloc ` ```engrenages ` codé et commité sur la branche (parseur, moteur, écran avec
+  animation au corrigé, PDF, catalogue, docs système) ; tests verts, `check:incremental` 0 erreur,
+  cliquet tenu, `lint:fast` propre, `docs:check-a-jour` vert, rendu vu à l'écran et au PDF ·
+  **Prochaine action** : revue `code-reviewer` (Sonnet) lancée, résultat perdu au `/clear` →
+  la relancer sur `git diff origin/main...HEAD -- src`, corriger, puis pousser, ouvrir la PR et
+  `pnpm pr:merger <n>` · **En attente de David** : rien · **Pièges en cours** : serveur de dev
+  du worktree sur le port 5177 (à arrêter) · **Worktree / branche** :
   `../ubumaths-wt-outil-engrenages`, `feat/outil-engrenages`.
 
 ## Phase 0 (envoyée le 2026-11-28)
@@ -57,3 +61,23 @@ Questions :
   C ? »), ou rien (reco : rien, une option `sens: oui` quand un modèle le demandera) ?
 - **Q5 découpage** : une PR : le bloc, l'écran, l'animation du corrigé, le PDF ; le modèle F6
   reste aux sessions « idées » (règle 5 d'`outils-lots.md`). Reco : oui.
+
+Décisions (David, 2026-11-28 : « je suis tes recos ») : **Q1** animation au corrigé seulement ;
+**Q2** durée calculée par le bloc (premier retour de tous les repères) ; **Q3** roues en ligne
+seulement ; **Q4** pas de flèches de sens ; **Q5** une PR (bloc, écran, animation, PDF), le modèle
+F6 aux sessions « idées ».
+
+## PR 1 : l'outil
+
+- « Au corrigé » = le bloc est écrit dans la correction du modèle : `CorrectionView` pose un
+  contexte (`correction-context.ts`) que lit le composant ; dans l'énoncé, figure à l'arrêt.
+- Un seul dessin pour l'écran et le PDF (`utils/engrenages-moteur.ts`) : rayon = dents / 2 (même
+  module pour toutes les roues), phases calculées pour que dent et creux se répondent.
+- PDF : légendes en texte Typst posées sous chaque roue (`#place`), pas dans le SVG : le moteur
+  SVG de Typst n'a pas nos polices.
+- Vérifié à l'écran (`pnpm voir /aide-ecriture/blocs/engrenages --compte prof`, iPhone / Safari) :
+  dents engrenées, repères face à face, légendes ; PDF compilé et relu (deux et trois roues).
+  Animation : test de composant dans Chromium (`Engrenages.svelte.test.ts`, bouton, compteur,
+  phrase finale « après 36 dents : A a fait 3 tours, B a fait 2 tours »).
+- Tests : 27 (parseur, moteur dont l'engrènement pour toute parité, Typst avec compilation réelle),
+  4 (aller-retour de l'éditeur riche), 3 (écran).

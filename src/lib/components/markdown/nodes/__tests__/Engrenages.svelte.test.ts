@@ -29,7 +29,7 @@ const BLOC = ['```engrenages', 'roues: 12 ; 18', '```'].join('\n');
 describe('bloc ```engrenages à l’écran', () => {
 	it('dans l’énoncé : deux roues dessinées, leurs légendes, aucun bouton', async () => {
 		const container = mainElement();
-		render(MarkdownRenderer, {
+		await render(MarkdownRenderer, {
 			target: container,
 			props: { content: `Deux roues s’engrènent.\n\n${BLOC}` }
 		});
@@ -41,7 +41,7 @@ describe('bloc ```engrenages à l’écran', () => {
 	});
 
 	it('dans une correction : « Voir tourner », puis les tours de chaque roue', async () => {
-		render(CorrectionView, {
+		await render(CorrectionView, {
 			target: mainElement(),
 			props: { markdown: `Le plus petit multiple commun de 12 et 18 est 36.\n\n${BLOC}` }
 		});
@@ -59,7 +59,7 @@ describe('bloc ```engrenages à l’écran', () => {
 	});
 
 	it('bloc en erreur : cadre neutre pour l’élève', async () => {
-		render(MarkdownRenderer, {
+		await render(MarkdownRenderer, {
 			target: mainElement(),
 			props: { content: '```engrenages\nroues: 12\n```' }
 		});
