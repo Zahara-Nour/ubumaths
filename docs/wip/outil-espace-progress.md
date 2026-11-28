@@ -1,16 +1,16 @@
 ---
 title: Lot d'outils « espace » (outils 64 et 65)
 date: 2026-11-28
-status: outil 64 livré (#3308) ; outil 65 à faire
+status: outils 64 (#3308) et 65 (#3316) livrés
 ---
 
 # Lot d'outils « espace »
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-28, après #3308._
+_Mis à jour le 2026-11-28, après #3316._
 
-- **État** : outil 64 livré (#3308) ; outil 65 fait sur la branche, revue faite, PR ouverte · **Prochaine action** : CI verte → `pnpm pr:merger`, puis lot `espace` « fait » dans `outils-lots.md` et n° de PR dans `outils-manquants.md` § 4 · **En attente de David** : rien · **Pièges en cours** : aucun · **Worktree / branche** : `../ubumaths-wt-outil-espace`, `feat/outil-espace`
+- **État** : lot `espace` fini — outil 64 (#3308) et outil 65 (#3316) livrés, rien en prod tant que David ne lance pas `deploy:prod` · **Prochaine action** : passer la ligne `espace` de `docs/wip/outils-lots.md` à « fait (#3308, #3316, 2026-11-28) » (fichier tenu par une autre session le 2026-11-28, pas touché), puis archiver ce journal · **En attente de David** : rien · **Pièges en cours** : aucun · **Worktree / branche** : retirés par `pr:merger`
 
 ## Outil 64 — phase 0 (envoyée le 2026-11-28)
 

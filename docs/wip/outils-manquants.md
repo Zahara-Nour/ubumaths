@@ -108,7 +108,7 @@ Figure d'engrenages (ancien n° 52 : bloc ` ```engrenages `, `roues: 12 ; 18` (2
 
 Case « représentation paramétrique » jugée « même droite » (ancien n° 64 : `answerKind: 'droite-parametrique'`, case seule dans `$$?$$`, trois lignes `x =`, `y =`, `z =` ; attendue `x=1+2t\\y=2\\z=-1+3t` ; juste pour toute représentation de la même droite, toute lettre de paramètre, écriture non jugée ; espace seulement, décision de David ; #3308, 2026-11-28).
 
-Point au tiers d'une arête dans ` ```solide ` (ancien n° 65 : `points: M tel que AM = 1/3 AB`, toute fraction entre 0 et 1, dénominateur au plus 10, sur deux points distincts quelconques ; `graduer: AB 3`, petits traits sur une arête ou un segment de `segments:` ; chantier `outil-espace`, 2026-11-28 ; la variation « au tiers » de TSPE-332 reste aux sessions « questions »).
+Point au tiers d'une arête dans ` ```solide ` (ancien n° 65 : `points: M tel que AM = 1/3 AB`, toute fraction entre 0 et 1, dénominateur au plus 10, sur deux points distincts quelconques ; `graduer: AB 3`, petits traits sur une arête ou un segment de `segments:` ; chantier `outil-espace`, #3316, 2026-11-28 ; la variation « au tiers » de TSPE-332 reste aux sessions « questions »).
 
 Grille jugée par ses contraintes, Yohaku (ancien n° 56 : bloc ` ```yohaku `, `opération: produit | somme`, deux `ligne:` dont les cases entre crochets sont à remplir ; l'auteur écrit une solution, le bloc calcule les totaux développés ; juste si chaque ligne et chaque colonne donne son total, plusieurs remplissages justes, fractions comprises ; énoncé d'évaluation masqué `[?]` + `totaux:` ; PDF, série, corrigé « D'autres remplissages sont justes. » ; 3-013, rose des sommes de 6e à faire en modèles ; #3302, 2026-11-28, lot `yohaku`).
 
