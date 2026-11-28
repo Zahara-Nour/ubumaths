@@ -60,7 +60,9 @@
 	import {
 		CHECK_TOOL,
 		INSTRUMENT_TOOLS,
+		isCompositeFigure,
 		isDiagonalRectangleCheck,
+		type ConstructionCheck,
 		type ConstructionTool
 	} from '#lib/ubumark/types/construction.ts';
 	import {
@@ -96,6 +98,8 @@
 		constructionPositions
 	} from '#lib/questions/construction/positions.ts';
 	import type { ExpectedPoints, PointSolution } from '#lib/questions/construction/point.ts';
+	import { compositeSteps, type CompositeStep } from '#lib/questions/construction/composite.ts';
+	import type { FigureShapes } from '#lib/questions/construction/symmetry.ts';
 	import {
 		SNAP_RADIUS_PX,
 		addTap,
@@ -287,7 +291,10 @@
 			// côté se trace aussi le long de la règle (revue de #2658), comme au rectangle sans
 			// équerre (O à 3 cm, D à 6 cm de B)
 			if (ruler && tools.includes('compas')) {
-				return tools.includes('rapporteur') || checks.some(isDiagonalRectangleCheck)
+				// Figure composée (outil n° 45) : une étape peut tracer le long de la règle
+				return tools.includes('rapporteur') ||
+					checks.some(isDiagonalRectangleCheck) ||
+					isCompositeFigure(checks)
 					? 'Règle posée : touche Compas pour l’ouvrir sur la règle, ou Segment pour tracer le long de la règle. Pour la reposer, touche où mettre le 0.'
 					: 'Règle posée : touche Compas pour l’ouvrir sur la règle. Pour la reposer, touche où mettre le 0.';
 			}
@@ -321,9 +328,57 @@
 	let grid = $derived(
 		tool === 'segment' || tool === 'point' || lineCheck ? node.header.grid : null
 	);
+	/**
+	 * Figure composée (outil n° 45) : les étapes de la correction, chacune avec ses points
+	 * (ceux construits aux étapes d'avant, du côté où l'élève a tracé) ; null sinon
+	 */
+	let compositeCorrection = $derived.by((): CompositeStep[] | null => {
+		if (!corrected || !isCompositeFigure(checks)) return null;
+		try {
+			return compositeSteps(checks, node.source, tools, objects);
+		} catch (error) {
+			// Figure qui ne se construit pas (la garde de l'auteur l'aurait refusée) : la
+			// correction d'ensemble, et l'erreur dans la console (revue)
+			console.error('Figure composée : correction impossible', error);
+			return null;
+		}
+	});
+	/** Ce que dessine la correction : la figure entière, ou chaque étape d'une figure composée */
+	interface CorrectionStep {
+		checks: ConstructionCheck[];
+		points: ReadonlyMap<string, Position>;
+		shapes: FigureShapes;
+		expected: ExpectedPoints | undefined;
+	}
+	function correctionSteps(
+		scene: FigureScene,
+		allPoints: ReadonlyMap<string, Position>
+	): CorrectionStep[] {
+		if (compositeCorrection) {
+			return compositeCorrection.map((step) => ({
+				checks: [step.check],
+				points: step.points,
+				shapes: step.shapes,
+				expected: step.expected
+			}));
+		}
+		return [
+			{
+				checks,
+				points: allPoints,
+				shapes: figureShapes(scene, node.header),
+				expected: expectedOf()
+			}
+		];
+	}
 	/** Points à placer, montrés à la correction (calculés à part : jamais aimantés) */
 	let pointSolutions = $derived.by((): PointSolution[] => {
 		if (!corrected || !checks.some((c) => c.kind === 'point')) return [];
+		if (compositeCorrection) {
+			return compositeCorrection.flatMap((step) =>
+				step.check.kind === 'point' ? solutionPoints([step.check], step.expected, step.points) : []
+			);
+		}
 		try {
 			return solutionPoints(
 				checks,
@@ -1150,232 +1205,226 @@
 				<line data-testid="droite-choisie" class="droite-choisie" {...g} />
 			{/if}
 		{/if}
-		{#if corrected}
-			<!-- Segment de longueur donnée (ou cercle de rayon donné en cm) : la règle posée en A (ou en O) -->
-			{#each solutionRulers(checks, allPoints, figureShapes(scene, node.header), objects) as goodRuler, i (i)}
-				{@const r = rulerOnScreen(goodRuler, scene, width, height)}
-				<g data-testid="bonne-regle" class="bonne-regle" aria-hidden="true">
-					<Ruler
-						x={r.x}
-						y={r.y}
-						rotation={r.rotation}
-						length={rulerLength}
-						pixelsPerUnit={r.pixelsPerUnit}
-						mirrored={r.mirrored}
-					/>
-				</g>
-			{/each}
-			{#each solutionLines(checks, allPoints, objects, figureShapes(scene, node.header), expectedOf()) as line, i (i)}
-				{@const s = toScreen(line, scene, width, height)}
-				{#if s}
-					<line
-						data-testid={line.kind === 'segment' ? 'bon-segment' : 'bonne-droite'}
-						class="bonne-droite"
-						x1={s.x1}
-						y1={s.y1}
-						x2={s.x2}
-						y2={s.y2}
-					/>
-				{/if}
-			{/each}
-		{/if}
-		{#if corrected}
-			{#each solutionCodages(checks, allPoints) as m, i (i)}
-				{@const c = codage(
-					{ name: '', at: m.to, from: m.from, foot: m.foot, axial: true },
-					scene,
-					width,
-					height
-				)}
-				{#if c}
-					<g data-testid="codage-mediatrice" class="bon-point">
-						{#if c.corner}<path class="bon-point-codage" d={c.corner} />{/if}
-						{#each c.ticks as t, j (j)}<line class="bon-point-codage" {...t} />{/each}
+		<!-- Figure composée (outil n° 45) : la correction de chaque étape, avec ses points -->
+		{#each correctionSteps(scene, allPoints) as step, k (k)}
+			{#if corrected}
+				<!-- Segment de longueur donnée (ou cercle de rayon donné en cm) : la règle posée en A (ou en O) -->
+				{#each solutionRulers(step.checks, step.points, step.shapes, objects) as goodRuler, i (i)}
+					{@const r = rulerOnScreen(goodRuler, scene, width, height)}
+					<g data-testid="bonne-regle" class="bonne-regle" aria-hidden="true">
+						<Ruler
+							x={r.x}
+							y={r.y}
+							rotation={r.rotation}
+							length={rulerLength}
+							pixelsPerUnit={r.pixelsPerUnit}
+							mirrored={r.mirrored}
+						/>
+					</g>
+				{/each}
+				{#each solutionLines(step.checks, step.points, objects, step.shapes, step.expected) as line, i (i)}
+					{@const s = toScreen(line, scene, width, height)}
+					{#if s}
+						<line
+							data-testid={line.kind === 'segment' ? 'bon-segment' : 'bonne-droite'}
+							class="bonne-droite"
+							x1={s.x1}
+							y1={s.y1}
+							x2={s.x2}
+							y2={s.y2}
+						/>
+					{/if}
+				{/each}
+			{/if}
+			{#if corrected}
+				{#each solutionCodages(step.checks, step.points) as m, i (i)}
+					{@const c = codage(
+						{ name: '', at: m.to, from: m.from, foot: m.foot, axial: true },
+						scene,
+						width,
+						height
+					)}
+					{#if c}
+						<g data-testid="codage-mediatrice" class="bon-point">
+							{#if c.corner}<path class="bon-point-codage" d={c.corner} />{/if}
+							{#each c.ticks as t, j (j)}<line class="bon-point-codage" {...t} />{/each}
+						</g>
+					{/if}
+				{/each}
+			{/if}
+			{#if corrected}
+				<!-- Perpendiculaire ou parallèle par un point (outil n° 40) : l'angle droit codé au pied ;
+			     pour la parallèle, la perpendiculaire par le point en trait fin -->
+				{#each solutionThroughLines(step.checks, step.points, step.shapes) as solution, i (i)}
+					<g data-testid="bonne-droite-equerre" class="bon-point">
+						{#each solution.guides as guide, j (j)}
+							{@const s = toScreen(guide, scene, width, height)}
+							{#if s}
+								<line
+									data-testid="bonne-droite-perpendiculaire"
+									class="bon-cercle-mediatrice"
+									x1={s.x1}
+									y1={s.y1}
+									x2={s.x2}
+									y2={s.y2}
+								/>
+							{/if}
+						{/each}
+						{#each solution.rightAngles as corner, j (j)}
+							{@const d = rightCorner(corner, scene, width, height)}
+							{#if d}
+								<path data-testid="bonne-droite-angle-droit" class="bon-point-codage" {d} />
+							{/if}
+						{/each}
+					</g>
+				{/each}
+			{/if}
+			{#if corrected}
+				<!-- Cercle à construire (lot 3b) : le cercle, son centre, deux médiatrices en traits fins -->
+				{#each solutionCircles(step.checks, step.expected, step.points, step.shapes) as solution (solution.name)}
+					{@const center = transformer.mathToSvg(solution.center.x, solution.center.y)}
+					{@const edge = transformer.mathToSvg(
+						solution.center.x + solution.radius,
+						solution.center.y
+					)}
+					<g data-testid="bon-cercle" class="bon-cercle">
+						{#each solution.mediatrices as line, i (i)}
+							{@const s = toScreen(line, scene, width, height)}
+							{#if s}
+								<line
+									data-testid="bon-cercle-mediatrice"
+									class="bon-cercle-mediatrice"
+									x1={s.x1}
+									y1={s.y1}
+									x2={s.x2}
+									y2={s.y2}
+								/>
+							{/if}
+						{/each}
+						<circle
+							class="bon-cercle-trait"
+							cx={center.x}
+							cy={center.y}
+							r={Math.hypot(edge.x - center.x, edge.y - center.y)}
+						/>
+						<circle class="bon-cercle-centre" cx={center.x} cy={center.y} r="3.5" />
+					</g>
+				{/each}
+			{/if}
+			{#if corrected}
+				<!-- Triangle à construire (lot 4) : arcs de report en traits fins, longueurs codées ;
+			     lot 7 : angles donnés codés -->
+				{@const triangle = solutionTriangle(step.checks, step.points, step.shapes, lines)}
+				{#if triangle}
+					<g data-testid="bon-triangle" class="bon-cercle">
+						{#each triangle.arcs as arc, i (i)}
+							{@const center = transformer.mathToSvg(arc.center.x, arc.center.y)}
+							{@const edge = transformer.mathToSvg(arc.center.x + arc.radius, arc.center.y)}
+							<circle
+								data-testid="bon-triangle-arc"
+								class="bon-triangle-arc"
+								cx={center.x}
+								cy={center.y}
+								r={Math.hypot(edge.x - center.x, edge.y - center.y)}
+							/>
+						{/each}
+						{#each triangle.marks as mark, i (i)}
+							{#each lengthTicks(mark, scene, width, height) as t, j (j)}
+								<line data-testid="bon-triangle-marque" class="bon-point-codage" {...t} />
+							{/each}
+						{/each}
+						<!-- Angles donnés (lot 7) : l'arc codé de leur mesure, comme au lot 5 -->
+						{#each triangle.angles as angle, i (i)}
+							{@const a = angleArc(angle, scene, width, height)}
+							<g data-testid="bon-triangle-angle" class="bon-point">
+								<path class="bon-point-codage" d={a.d} />
+								<text x={a.label.x} y={a.label.y} text-anchor="middle" dominant-baseline="middle"
+									>{a.text}</text
+								>
+							</g>
+						{/each}
+						<!-- Triangle rectangle (n° 20) : la perpendiculaire à l'équerre en trait fin,
+					     l'angle droit codé d'un petit carré -->
+						{#each triangle.guides as guide, i (i)}
+							{@const s = toScreen(guide, scene, width, height)}
+							{#if s}
+								<line
+									data-testid="bon-triangle-perpendiculaire"
+									class="bon-cercle-mediatrice"
+									x1={s.x1}
+									y1={s.y1}
+									x2={s.x2}
+									y2={s.y2}
+								/>
+							{/if}
+						{/each}
+						{#each triangle.rightAngles as corner, i (i)}
+							{@const d = rightCorner(corner, scene, width, height)}
+							{#if d}
+								<path data-testid="bon-triangle-angle-droit" class="bon-point-codage" {d} />
+							{/if}
+						{/each}
 					</g>
 				{/if}
-			{/each}
-		{/if}
-		{#if corrected}
-			<!-- Perpendiculaire ou parallèle par un point (outil n° 40) : l'angle droit codé au pied ;
-			     pour la parallèle, la perpendiculaire par le point en trait fin -->
-			{#each solutionThroughLines(checks, allPoints, figureShapes(scene, node.header)) as solution, i (i)}
-				<g data-testid="bonne-droite-equerre" class="bon-point">
-					{#each solution.guides as guide, j (j)}
-						{@const s = toScreen(guide, scene, width, height)}
-						{#if s}
-							<line
-								data-testid="bonne-droite-perpendiculaire"
-								class="bon-cercle-mediatrice"
-								x1={s.x1}
-								y1={s.y1}
-								x2={s.x2}
-								y2={s.y2}
-							/>
-						{/if}
-					{/each}
-					{#each solution.rightAngles as corner, j (j)}
-						{@const d = rightCorner(corner, scene, width, height)}
-						{#if d}
-							<path data-testid="bonne-droite-angle-droit" class="bon-point-codage" {d} />
-						{/if}
-					{/each}
-				</g>
-			{/each}
-		{/if}
-		{#if corrected}
-			<!-- Cercle à construire (lot 3b) : le cercle, son centre, deux médiatrices en traits fins -->
-			{#each solutionCircles(checks, expectedOf(), allPoints, figureShapes(scene, node.header)) as solution (solution.name)}
-				{@const center = transformer.mathToSvg(solution.center.x, solution.center.y)}
-				{@const edge = transformer.mathToSvg(
-					solution.center.x + solution.radius,
-					solution.center.y
-				)}
-				<g data-testid="bon-cercle" class="bon-cercle">
-					{#each solution.mediatrices as line, i (i)}
-						{@const s = toScreen(line, scene, width, height)}
-						{#if s}
-							<line
-								data-testid="bon-cercle-mediatrice"
-								class="bon-cercle-mediatrice"
-								x1={s.x1}
-								y1={s.y1}
-								x2={s.x2}
-								y2={s.y2}
-							/>
-						{/if}
-					{/each}
-					<circle
-						class="bon-cercle-trait"
-						cx={center.x}
-						cy={center.y}
-						r={Math.hypot(edge.x - center.x, edge.y - center.y)}
-					/>
-					<circle class="bon-cercle-centre" cx={center.x} cy={center.y} r="3.5" />
-				</g>
-			{/each}
-		{/if}
-		{#if corrected}
-			<!-- Triangle à construire (lot 4) : arcs de report en traits fins, longueurs codées ;
-			     lot 7 : angles donnés codés -->
-			{@const triangle = solutionTriangle(
-				checks,
-				allPoints,
-				figureShapes(scene, node.header),
-				lines
-			)}
-			{#if triangle}
-				<g data-testid="bon-triangle" class="bon-cercle">
-					{#each triangle.arcs as arc, i (i)}
-						{@const center = transformer.mathToSvg(arc.center.x, arc.center.y)}
-						{@const edge = transformer.mathToSvg(arc.center.x + arc.radius, arc.center.y)}
-						<circle
-							data-testid="bon-triangle-arc"
-							class="bon-triangle-arc"
-							cx={center.x}
-							cy={center.y}
-							r={Math.hypot(edge.x - center.x, edge.y - center.y)}
-						/>
-					{/each}
-					{#each triangle.marks as mark, i (i)}
-						{#each lengthTicks(mark, scene, width, height) as t, j (j)}
-							<line data-testid="bon-triangle-marque" class="bon-point-codage" {...t} />
-						{/each}
-					{/each}
-					<!-- Angles donnés (lot 7) : l'arc codé de leur mesure, comme au lot 5 -->
-					{#each triangle.angles as angle, i (i)}
-						{@const a = angleArc(angle, scene, width, height)}
-						<g data-testid="bon-triangle-angle" class="bon-point">
-							<path class="bon-point-codage" d={a.d} />
-							<text x={a.label.x} y={a.label.y} text-anchor="middle" dominant-baseline="middle"
-								>{a.text}</text
-							>
-						</g>
-					{/each}
-					<!-- Triangle rectangle (n° 20) : la perpendiculaire à l'équerre en trait fin,
-					     l'angle droit codé d'un petit carré -->
-					{#each triangle.guides as guide, i (i)}
-						{@const s = toScreen(guide, scene, width, height)}
-						{#if s}
-							<line
-								data-testid="bon-triangle-perpendiculaire"
-								class="bon-cercle-mediatrice"
-								x1={s.x1}
-								y1={s.y1}
-								x2={s.x2}
-								y2={s.y2}
-							/>
-						{/if}
-					{/each}
-					{#each triangle.rightAngles as corner, i (i)}
-						{@const d = rightCorner(corner, scene, width, height)}
-						{#if d}
-							<path data-testid="bon-triangle-angle-droit" class="bon-point-codage" {d} />
-						{/if}
-					{/each}
-				</g>
 			{/if}
-		{/if}
-		{#if corrected}
-			<!-- Bissectrice à construire (lot 9) : l'arc en O et les deux arcs égaux en traits fins,
+			{#if corrected}
+				<!-- Bissectrice à construire (lot 9) : l'arc en O et les deux arcs égaux en traits fins,
 			     les deux demi-angles codés du même signe -->
-			{#each solutionBissectrices(checks, allPoints) as solution, i (i)}
-				<g data-testid="bonne-bissectrice" class="bon-point">
-					{#each solution.arcs as arc, j (j)}
-						{@const center = transformer.mathToSvg(arc.center.x, arc.center.y)}
-						{@const edge = transformer.mathToSvg(arc.center.x + arc.radius, arc.center.y)}
-						<circle
-							data-testid="bonne-bissectrice-arc"
-							class="bon-triangle-arc"
-							cx={center.x}
-							cy={center.y}
-							r={Math.hypot(edge.x - center.x, edge.y - center.y)}
-						/>
-					{/each}
-					{#each [[solution.from, solution.middle], [solution.middle, solution.to]] as [from, to], j (j)}
-						{@const h = halfAngleCodage(
-							solution.center,
-							from,
-							to,
-							solution.sens,
-							scene,
-							width,
-							height
-						)}
-						<path data-testid="bonne-bissectrice-demi-angle" class="bon-point-codage" d={h.d} />
-						<line class="bon-point-codage" {...h.tick} />
-					{/each}
-				</g>
-			{/each}
-		{/if}
-		{#if corrected}
-			<!-- Segment à mesurer (n° 26) : sa longueur, écrite du côté opposé au corps de la règle -->
-			{@const measuredSegment = solutionSegmentMeasure(
-				checks,
-				allPoints,
-				figureShapes(scene, node.header)
-			)}
-			{#if measuredSegment}
-				{@const l = segmentLabel(measuredSegment, scene, width, height)}
-				<g data-testid="bonne-longueur" class="bon-point">
-					<text x={l.x} y={l.y} text-anchor="middle" dominant-baseline="middle"
-						>{measuredSegment.text}</text
-					>
-				</g>
+				{#each solutionBissectrices(step.checks, step.points) as solution, i (i)}
+					<g data-testid="bonne-bissectrice" class="bon-point">
+						{#each solution.arcs as arc, j (j)}
+							{@const center = transformer.mathToSvg(arc.center.x, arc.center.y)}
+							{@const edge = transformer.mathToSvg(arc.center.x + arc.radius, arc.center.y)}
+							<circle
+								data-testid="bonne-bissectrice-arc"
+								class="bon-triangle-arc"
+								cx={center.x}
+								cy={center.y}
+								r={Math.hypot(edge.x - center.x, edge.y - center.y)}
+							/>
+						{/each}
+						{#each [[solution.from, solution.middle], [solution.middle, solution.to]] as [from, to], j (j)}
+							{@const h = halfAngleCodage(
+								solution.center,
+								from,
+								to,
+								solution.sens,
+								scene,
+								width,
+								height
+							)}
+							<path data-testid="bonne-bissectrice-demi-angle" class="bon-point-codage" d={h.d} />
+							<line class="bon-point-codage" {...h.tick} />
+						{/each}
+					</g>
+				{/each}
 			{/if}
-		{/if}
-		{#if corrected}
-			<!-- Angle à construire (lot 5) : l'arc de l'angle, codé de sa mesure -->
-			{@const arc = solutionAngle(checks, allPoints, figureShapes(scene, node.header), lines)}
-			{#if arc}
-				{@const a = angleArc(arc, scene, width, height)}
-				<g data-testid="bon-angle" class="bon-point">
-					<path class="bon-point-codage" d={a.d} />
-					<text x={a.label.x} y={a.label.y} text-anchor="middle" dominant-baseline="middle"
-						>{a.text}</text
-					>
-				</g>
+			{#if corrected}
+				<!-- Segment à mesurer (n° 26) : sa longueur, écrite du côté opposé au corps de la règle -->
+				{@const measuredSegment = solutionSegmentMeasure(step.checks, step.points, step.shapes)}
+				{#if measuredSegment}
+					{@const l = segmentLabel(measuredSegment, scene, width, height)}
+					<g data-testid="bonne-longueur" class="bon-point">
+						<text x={l.x} y={l.y} text-anchor="middle" dominant-baseline="middle"
+							>{measuredSegment.text}</text
+						>
+					</g>
+				{/if}
 			{/if}
-		{/if}
+			{#if corrected}
+				<!-- Angle à construire (lot 5) : l'arc de l'angle, codé de sa mesure -->
+				{@const arc = solutionAngle(step.checks, step.points, step.shapes, lines)}
+				{#if arc}
+					{@const a = angleArc(arc, scene, width, height)}
+					<g data-testid="bon-angle" class="bon-point">
+						<path class="bon-point-codage" d={a.d} />
+						<text x={a.label.x} y={a.label.y} text-anchor="middle" dominant-baseline="middle"
+							>{a.text}</text
+						>
+					</g>
+				{/if}
+			{/if}
+		{/each}
 		{#each pointSolutions as solution (solution.name)}
 			{@const p = transformer.mathToSvg(solution.at.x, solution.at.y)}
 			{@const c = codage(solution, scene, width, height)}

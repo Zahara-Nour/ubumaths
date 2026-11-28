@@ -1,22 +1,22 @@
 ---
 title: Lot d'outils equerre-uni — journal
 date: 2026-11-28
-status: outils 40 (#3290) et 38 (#3299) livrés ; 45 à faire
+status: lot fini — outils 40 (#3290), 38 (#3299), 45 (#3313) livrés
 ---
 
 # Lot `equerre-uni` (outils 40, puis 38, puis 45)
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-28, après #3299._
+_Mis à jour le 2026-11-28, après #3313._
 
-- **État** : outils 40 (#3290) et 38 (#3299) livrés ; reste 45 (figure composée : plusieurs constructions
-  vérifiées dans une même figure, CM1-105, CM2-095) · **Prochaine action** : nouveau worktree
-  `../ubumaths-wt-outil-equerre-uni` (branche `feat/outil-equerre-uni-45`), outil 45 vérifié dans le code, puis
-  sa phase 0 · **En attente de David** : rien · **Pièges en cours** : à dire à David : la correction de l'outil 40
-  s'affiche aussi sur quadrillage, (d) segment → pied possible hors du segment (aucun cas réel) ; outil 38 :
-  `droite` reste exigée dans `outils:` (`droite, regle, point, equerre`) · **Worktree / branche** : aucun
-  (retirés par `pr:merger`).
+- **État** : lot `equerre-uni` fini : outils 40 (#3290), 38 (#3299) et 45 (#3313, figure composée) livrés ;
+  listes `outils-manquants.md` et `outils-lots.md` à jour · **Prochaine action** : aucune dans ce lot ;
+  CM1-105 / CM2-095 peuvent avoir leur modèle (figures A et B du § 3) · **En attente de David** : rien ·
+  **Pièges en cours** : à dire à David : correction de l'outil 40 aussi sur quadrillage ; (d) segment → pied
+  hors du segment possible ; outil 38 : `droite` exigée dans `outils:` ; outil 45 : `cercle(I, passant=A)`,
+  pas de droite dans une figure composée (exemple C), limites du § 3 quater · **Worktree / branche** :
+  aucun (retirés par `pr:merger`).
 
 ## 1. Outil 40 — phase 0 (2026-11-28)
 
@@ -173,3 +173,87 @@ David : « je te suis » sur les 4 questions (comportements ; le Point aimanté 
   fausse sans message) : sans Segment dans la palette, ils posent et déplacent le point, quel que soit l'outil
   (test navigateur, vu rouge sans la correction) ; le milieu à l'œil ne se lit que sur un point posé SUR (AB)
   (test) ; `m[eé]diatrice` dans `rulerMidpointOf` ; l'aide « touche Point » passe avant celle du compas.
+
+## 3. Outil 45 — phase 0 (2026-11-28)
+
+**Vérifié dans le code** : l'outil manque. Chaque famille de vérifications est seule dans sa figure : le parseur
+refuse le mélange (« … ne se mêle pas à d'autres vérifications », `construction-parser.ts`) et le juge
+(`judgeConstruction`, `construction/judge.ts`) ne passe la main qu'à un seul juge, qui prend TOUS les traits de
+l'élève (un trait qu'il n'attend pas = réponse forgée ou « de trop »). Seules plusieurs droites, ou plusieurs
+cercles, vont ensemble. Les points construits par l'élève (C et D d'un carré) ne servent pas aux vérifications
+suivantes.
+
+**Cas réels** (BO CM1 / CM2, espace : « construire une figure composée de segments, de droites, de polygones
+usuels et de cercles ») ; exemples de la banque d'origine (6G2A-2 : un segment, puis des cercles) :
+
+- A. « Trace [AB] de 6 cm. Trace le cercle de centre A de rayon 2 cm, puis le cercle de diamètre [AB]. »
+- B. « Construis le carré ABCD de 5 cm de côté. Trace ses diagonales ; elles se coupent en O. Trace le cercle de
+  centre O passant par A. »
+- C. « Construis le rectangle ABCD (6 cm × 4 cm). Trace la droite perpendiculaire à (AC) passant par B. »
+
+**Proposition** : une figure, un programme en étapes, une validation. Syntaxe : plusieurs `verifier:` de familles
+différentes, dans l'ordre du programme ; une étape peut citer un point construit à une étape d'avant.
+
+- Nominal : toutes les étapes justes → juste.
+- Erreur : verdict de la PREMIÈRE étape fausse, avec son numéro : « Étape 2 : ton cercle ne passe pas par A. »
+- Traits : chaque étape prend les siens ; un trait qu'aucune étape ne prend est un trait de construction, ignoré.
+
+**Questions à David** :
+
+1. Les trois exemples A, B, C : ce sont bien les figures composées attendues ? Reco : A et B d'abord (sans la C,
+   l'équerre sur une diagonale est rare au CM).
+2. Une seule validation, verdict de la première étape fausse ; ou une étape à la fois (on valide l'étape 1, puis
+   l'étape 2 s'ajoute sur le dessin) ? Reco : une seule validation, comme sur le cahier.
+3. Étape 1 fausse (carré mal construit) : on s'arrête là (« Étape 1 : … ») ; ou on juge aussi la suite d'après
+   les points de l'élève ? Reco : s'arrêter à la première, plus simple à lire pour un élève de CM1.
+4. Correction : la figure entière, étape par étape (chaque étape a déjà sa correction). OK ?
+
+### 3 bis. Outil 45 : décisions (2026-11-28)
+
+David : « je te suis » sur les 4 questions : A (segment puis cercles) et B (carré, diagonales, cercle) d'abord,
+pas C ; une seule validation ; arrêt à la première étape fausse (« Étape n : … ») ; correction de la figure
+entière, étape par étape.
+
+### 3 ter. Outil 45 : plan technique (2026-11-28)
+
+- **Syntaxe** : plusieurs `verifier:` de familles différentes = figure composée ; chaque ligne est une étape,
+  dans l'ordre. Familles admises (V1) : `segment AB = 6 cm`, carré / rectangle coté, `cercle`, `point`, et une
+  vérification neuve `segment [AC]` (tracer le segment qui joint deux points : les diagonales de B). Une autre
+  famille dans une figure composée : erreur d'auteur.
+- **Points construits** : une étape juste nomme ses points (B au bout du segment ; C, D du carré ; le point
+  placé). Ils sont ajoutés à la figure (`X = point(x, y)`) avant de juger l'étape suivante, aux positions de
+  l'élève ; à la création du modèle, à celles de la correction. Le point de croisement des diagonales :
+  `point O = intersection(segment(A, C), segment(B, D))`.
+- **Juge** (`construction/composite.ts`) : chaque étape jugée par son juge actuel, sur les objets de ses
+  outils ; les objets d'une autre étape ne sont ni « de trop » ni « forgés » (réglage `composite` des juges qui
+  les comptent). Forgé : un objet dont l'outil n'est pas dans `outils:`. Message : « Étape n : … ».
+- **Palette** : chaque étape exige ses outils ; un outil de plus est admis s'il sert à une autre étape.
+- **Écran** : correction de chaque étape, dessinée avec ses points.
+- Exemples A et B en tests ; pas de C (droite dans une figure composée).
+
+### 3 quater. Outil 45 : travail (2026-11-28)
+
+- Types : `segment_par` (`segment [AC]`), `isCompositeFigure` (au moins deux familles, toutes parmi segment
+  coté, carré / rectangle cotés, `segment [AC]`, cercle, point), `compositeStepTools`. Écart au plan : un
+  mélange avec une droite ou un triangle n'est PAS une figure composée (il garde « ne se mêle pas ») ; deux
+  tests existants l'exigeaient.
+- Parseur : `compositeCoherenceError` (papier uni, `outils:` exigé, chaque étape vérifiée seule avec ses
+  outils), `compositeToolErrors` (outil qui ne sert à aucune étape).
+- `construction/composite.ts` : `judgeComposite`, `assertComposite`, `compositeSteps`, `stepSource`.
+  Réglage `composite` de `judgeRuledPolygon`, `judgePoints`, `judgeCircles` ; `segmentLengthEnd`,
+  `ruledPolygonCorners` ; `point O = intersection(segment(A, C), segment(B, D))` accepté sur papier uni.
+- Syntaxe du cercle par un point : `cercle(I, passant=A)` (pas `cercle(I, A)`).
+- Écran : `correctionSteps` (la correction de chaque étape, avec ses points) ; message de la règle posée.
+- Tests : `construction-figure-composee.test.ts` (22, rouges avant le code),
+  `figure-a-completer-figure-composee.svelte.test.ts` (3, navigateur). Capture vue : message de l'étape 1,
+  les deux cercles, la règle, le point I.
+- Limites (V1, à dire à David) : un point d'une autre étape placé à l'œil peut être compté à l'étape du
+  premier point ; un cercle dont le centre n'est pas nommé (croisement non marqué) n'est pas construit.
+- Revue (`code-reviewer`, Opus) — corrigé, avec un test rouge chacun : (1) le générateur exigeait C et D
+  nommés dans la figure pour `segment [AC]` (`compositeBuiltNames`) ; (2) des points semés passaient
+  (contrôle final : un point qui n'est ni de la figure ni construit = « point de trop ») ; (3) l'étape
+  `segment AB = 6 cm` voyait le segment d'une étape `segment [AC]` (segments entre deux points connus
+  retirés) ; (4) deux cercles de même centre à deux étapes (« un seul cercle » sauté en mode composé) ;
+  (6) correction impossible → correction d'ensemble et erreur en console. Laissés : (5) un trait sans
+  rapport avec aucune étape n'est pas signalé (décision 3 de la phase 0 : trait de construction) ;
+  (7) une étape = un calcul de scène (cache à une entrée), acceptable pour 4 ou 5 étapes.

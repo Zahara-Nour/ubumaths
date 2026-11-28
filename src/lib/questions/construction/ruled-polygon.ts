@@ -255,11 +255,82 @@ function vertexVerdict(
 		: wrongRuledLengthFeedback(nameV, nameP, mm, setting.expected);
 }
 
-export function judgeRuledPolygon(
+/** Les deux angles droits en B et en A d'un candidat (figure composée : les diagonales) */
+function rightAngled(setting: Setting, c: Position, d: Position): boolean {
+	const { a, b } = setting;
+	const ab = { x: b.x - a.x, y: b.y - a.y };
+	const square = (u: Position, v: Position) =>
+		Math.abs(ab.x * (v.x - u.x) + ab.y * (v.y - u.y)) <= 1e-6 * distance(a, b) * distance(u, v);
+	return square(b, c) && square(a, d);
+}
+
+/**
+ * Figure composée (outil n° 45) : les sommets C et D de la figure de l'élève, une fois
+ * l'étape juste (`judgeRuledPolygon` en mode composé) ; null sinon
+ */
+export function ruledPolygonCorners(
 	check: RuledPolygonCheck,
 	points: ReadonlyMap<string, Position>,
 	shapes: FigureShapes | undefined,
 	objects: readonly DrawnObject[]
+): { c: Position; d: Position } | null {
+	const corners = closedCorners(check, points, shapes, objects, true);
+	return corners.length === 1 ? { c: corners[0].c.at, d: corners[0].d.at } : null;
+}
+
+type Corner = { at: Position; end: Position };
+
+/**
+ * Les figures fermées : un C vu depuis B, un D vu depuis A, du même côté de (AB), [CD]
+ * couvert. Figure composée : les diagonales tracées font d'autres « figures » ; parmi
+ * plusieurs, seules celles à angles droits en A et en B comptent.
+ */
+function closedCorners(
+	check: RuledPolygonCheck,
+	points: ReadonlyMap<string, Position>,
+	shapes: FigureShapes | undefined,
+	objects: readonly DrawnObject[],
+	composite: boolean
+): { c: Corner; d: Corner }[] {
+	const setting = settingOf(check, points, shapes);
+	const { a, b } = setting;
+	const segments = objects.filter((o): o is DrawnLine => o.kind === 'segment');
+	const drawn: Segment[] = segments.map((s) => ({
+		a: { x: s.x1, y: s.y1 },
+		b: { x: s.x2, y: s.y2 }
+	}));
+	const eps = tolerance(a, b, ...drawn.flatMap((s) => [s.a, s.b]));
+	const fromB = sideEnds(segments, b, a, eps);
+	const fromA = sideEnds(segments, a, b, eps);
+	const pieces = mergeSegments([{ a, b }, ...drawn], eps);
+	const closed = fromB.flatMap((c) =>
+		fromA
+			.filter((d) => {
+				const side = sideOf(setting, c.at, eps);
+				return (
+					side !== 0 &&
+					sideOf(setting, d.at, eps) === side &&
+					!near(c.at, d.at, eps) &&
+					coveringPiece({ a: c.at, b: d.at }, pieces, eps) !== null
+				);
+			})
+			.map((d) => ({ c, d }))
+	);
+	if (!composite || closed.length <= 1) return closed;
+	const square = closed.filter(({ c, d }) => rightAngled(setting, c.at, d.at));
+	return square.length > 0 ? square : closed;
+}
+
+/**
+ * `composite` (figure composée, outil n° 45) : les traits des autres étapes (les
+ * diagonales) ne sont ni « de trop » ni une autre figure.
+ */
+export function judgeRuledPolygon(
+	check: RuledPolygonCheck,
+	points: ReadonlyMap<string, Position>,
+	shapes: FigureShapes | undefined,
+	objects: readonly DrawnObject[],
+	{ composite = false }: { composite?: boolean } = {}
 ): ConstructionVerdict {
 	const setting = settingOf(check, points, shapes);
 	const figure = shapes as FigureShapes;
@@ -284,19 +355,7 @@ export function judgeRuledPolygon(
 
 	// Figures fermées : un C vu depuis B, un D vu depuis A, du même côté de (AB), [CD] couvert
 	const pieces = mergeSegments([{ a, b }, ...drawn], eps);
-	const closed = fromB.flatMap((c) =>
-		fromA
-			.filter((d) => {
-				const side = sideOf(setting, c.at, eps);
-				return (
-					side !== 0 &&
-					sideOf(setting, d.at, eps) === side &&
-					!near(c.at, d.at, eps) &&
-					coveringPiece({ a: c.at, b: d.at }, pieces, eps) !== null
-				);
-			})
-			.map((d) => ({ c, d }))
-	);
+	const closed = closedCorners(check, points, shapes, objects, composite);
 	if (closed.length === 0) return { status: 'incorrect', feedback: NOT_CLOSED_FEEDBACK };
 	if (closed.length > 1) {
 		return { status: 'incorrect', feedback: severalPolygonsFeedback(check.kind, check.points) };
@@ -372,6 +431,7 @@ export function judgeRuledPolygon(
 		const verdict = dFirst?.firstOk ? dFirst : cFirst;
 		if (verdict.feedback) return { status: 'incorrect', feedback: verdict.feedback };
 	}
+	if (composite) return { status: 'correct' };
 	const feedback = leftoverFeedback([a, b, c.at, d.at], pieces, eps);
 	return feedback ? { status: 'incorrect', feedback } : { status: 'correct' };
 }
