@@ -82,6 +82,23 @@ export function bissectriceOf(expression: string): [string, string, string] | nu
 	return match ? [match[1], match[2], match[3]] : null;
 }
 
+/** `mediatrice(A, B)` / `milieu(A, B)` : deux points nommés */
+const RULER_MIDPOINT_REGEX = {
+	droite: /^mediatrice\(\s*([A-Za-z][A-Za-z0-9_]*)\s*,\s*([A-Za-z][A-Za-z0-9_]*)\s*\)$/,
+	point: /^milieu\(\s*([A-Za-z][A-Za-z0-9_]*)\s*,\s*([A-Za-z][A-Za-z0-9_]*)\s*\)$/
+} as const;
+
+/**
+ * Outil n° 38 (chantier `outil-equerre-uni`) : une vérification dont le milieu peut se
+ * marquer à la règle graduée, `droite m = mediatrice(A, B)` ou `point M = milieu(A, B)` :
+ * ses deux points ; null sinon
+ */
+export function rulerMidpointOf(check: ConstructionCheck): [string, string] | null {
+	if (check.kind !== 'droite' && check.kind !== 'point') return null;
+	const match = RULER_MIDPOINT_REGEX[check.kind].exec(check.expression.trim());
+	return match ? [match[1], match[2]] : null;
+}
+
 /**
  * Perpendiculaire ou parallèle à un trait droit par un point (outil n° 40, chantier
  * `outil-equerre-uni`) : `perpendiculaire(A, d)`, `parallele(A, d)` ; à l'équerre

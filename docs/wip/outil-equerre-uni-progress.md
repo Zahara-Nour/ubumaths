@@ -1,21 +1,24 @@
 ---
 title: Lot d'outils equerre-uni — journal
 date: 2026-11-28
-status: outil 40 livré (#3290) ; 38 et 45 à faire
+status: outil 40 livré (#3290) ; 38 codé (branche) ; 45 à faire
 ---
 
 # Lot `equerre-uni` (outils 40, puis 38, puis 45)
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-28, après #3290._
+_Mis à jour le 2026-11-28, outil 38 codé (pas encore de PR)._
 
-- **État** : outil 40 livré (#3290, § 1 bis) ; reste 38 (médiatrice à la règle graduée et à l'équerre, papier uni)
-  puis 45 (figure composée) · **Prochaine action** : nouveau worktree `../ubumaths-wt-outil-equerre-uni`
-  (branche `feat/outil-equerre-uni-38`), outil 38 vérifié dans le code, puis sa phase 0 · **En attente de
-  David** : rien · **Pièges en cours** : `triangle-quadrillage` touche le même module (`merge origin/main` avant
-  chaque PR) ; à dire à David : la correction de l'outil 40 s'affiche aussi sur quadrillage, (d) segment → pied
-  possible hors du segment (aucun cas réel) · **Worktree / branche** : aucun (retirés par `pr:merger`).
+- **État** : outil 38 codé et testé sur `feat/outil-equerre-uni-38` (§ 2, § 2 bis : décisions de David prises,
+  « je te suis ») ; tests ciblés verts (509 fichiers questions + ubumark, 3 navigateur) · **Prochaine action** :
+  `pnpm check:incremental` (était verrouillé par `outil-second-tag`), `pnpm types:cliquet`, `merge origin/main`,
+  rendu vu à l'écran (`pnpm voir` / `pnpm lien`), revue `code-reviewer` (Opus : correction des réponses), ligne
+  38 de `outils-manquants.md` → livré, puis PR et `pnpm pr:merger` ; ensuite outil 45 · **En attente de David** :
+  rien · **Pièges en cours** : `triangle-quadrillage` touche le même module ; à dire à David : la correction de
+  l'outil 40 s'affiche aussi sur quadrillage, (d) segment → pied possible hors du segment ; outil 38 : la droite
+  reste exigée dans `outils:` (`droite, regle, point, equerre`) · **Worktree / branche** :
+  `../ubumaths-wt-outil-equerre-uni`, `feat/outil-equerre-uni-38`.
 
 ## 1. Outil 40 — phase 0 (2026-11-28)
 
@@ -144,3 +147,25 @@ milieu n'est sur aucune graduation : 6,5 cm → 3,25 cm) et tient sur la règle 
 4. **Le milieu d'un segment** (`verifier: point M = milieu(A, B)`, `outils: regle, point`) : même mécanisme, le
    point marqué sur la graduation est le milieu. Dans la même PR ? Reco : oui (la ligne 38 le cite, quelques
    lignes de plus).
+
+### 2 bis. Outil 38 : décisions et travail (2026-11-28)
+
+David : « je te suis » sur les 4 questions (comportements ; le Point aimanté aux graduations ; message du milieu
+à l'œil ; le milieu d'un segment dans la même PR).
+
+- **Palette** : `outils: droite, regle, point, equerre` (la droite reste exigée pour une vérification `droite`,
+  comme à l'outil 40 — écart à la syntaxe de la phase 0) ; milieu : `outils: regle, point`. Règle sans Point ou
+  sans Équerre (médiatrice) : erreur d'auteur ; règle sur quadrillage : erreur d'auteur.
+- **Le juge lit la palette** : `FigureShapes.tools` (rempli par `positions-setup.ts` depuis `outils:`). Sans la
+  règle dans la palette, une règle posée reste une réponse forgée.
+- `instruments.ts` : option `rulerLength` de `constructionOf` — un point posé sur une graduation d'une règle bien
+  posée (0 sur un point construit, bord vers un point construit ou le long d'un trait droit construit par ce 0)
+  est construit ; `isOnRulerGraduation`.
+- `line.ts` : `usesRulerMidpoint`, `rulerMidpointError` (nombre pair de mm, pas plus long que la règle),
+  `midpointEyeballedFeedback` ; le milieu à l'œil se lit sur le point posé par lequel passe la droite (pas
+  `isBuilt` : un point posé sur [AB] devient le croisement de [AB] et de la droite d'équerre tracée par lui).
+- `point.ts` : même option et même message pour `milieu(A, B)`.
+- Écran : le Point s'aimante à la graduation du mm quand la règle est posée ; ‹ › le déplacent d'un millimètre
+  (`nudgeRulerEnd`, forme `point`) — sans eux, toucher le bon millimètre au doigt est trop dur.
+- Tests : `construction-mediatrice-regle.test.ts` (27 ; les 25 du juge, 22 rouges avant le code ; 2 de ‹ › écrits après),
+  `figure-a-completer-mediatrice-regle.svelte.test.ts` (3, navigateur ; 2 rouges sans l'écran).

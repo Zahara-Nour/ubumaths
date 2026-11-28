@@ -29,6 +29,12 @@
  * aussi sur quadrillage : il manque la droite, l'une pour l'autre, bonne direction
  * mais pas par A, par A mais mauvaise direction.
  *
+ * Outil n° 38 (même chantier) : avec la règle graduée dans `outils:` (papier uni),
+ * la médiatrice se construit aussi en marquant le milieu sur une graduation de la
+ * règle posée sur [AB] (0 en A ou en B), puis à l'équerre par ce point ; [AB] mesure
+ * un nombre pair de millimètres (`rulerMidpointError`). Milieu posé à l'œil : son
+ * message (`midpointEyeballedFeedback`).
+ *
  * Pur : positions de la figure et droites attendues données par l'appelant
  * (registre `positions.ts`).
  *
@@ -41,12 +47,13 @@ import {
 	type LineCheck,
 	type ThroughLine
 } from '#lib/ubumark/types/construction.ts';
-import type { DrawnLine, DrawnObject, DrawnRepere } from './answer';
+import { isDrawnPoint, type DrawnLine, type DrawnObject, type DrawnRepere } from './answer';
 import {
 	angleSideVertex,
 	basePointsOf,
 	constructionOf,
 	isInFrame,
+	isOnRulerGraduation,
 	isOnSomeTrait,
 	isStraight,
 	lineCrossesFrame,
@@ -56,6 +63,7 @@ import {
 import type { ConstructionVerdict, Position } from './judge';
 import type { ExpectedLine, ExpectedPoints } from './point';
 import { tolerance } from './polygon';
+import { formatLength, rulerLengthOf } from './segment-length';
 import type { FigureShapes } from './symmetry';
 
 export const LINE_EYEBALLED_FEEDBACK =
@@ -89,6 +97,9 @@ export const notPerpendicularToSegmentFeedback = (a: string, b: string) =>
 	`Ta droite passe par le milieu de [${a}${b}] mais n’est pas perpendiculaire à [${a}${b}].`;
 export const notMediatriceFeedback = (a: string, b: string) =>
 	`Ce n’est pas la médiatrice de [${a}${b}].`;
+/** Outil n° 38 : le milieu marqué ailleurs que sur une graduation de la règle bien posée */
+export const midpointEyeballedFeedback = (a: string, b: string) =>
+	`Ton milieu est placé à l’œil : pose la règle sur [${a}${b}] et marque-le sur une graduation.`;
 
 export const BISSECTRICE_EYEBALLED_FEEDBACK =
 	'Ta bissectrice est tracée à l’œil : construis-la avec tes instruments.';
@@ -296,6 +307,42 @@ function bissectriceSupportError(
 }
 
 /**
+ * Outil n° 38 : le milieu se marque-t-il à la règle graduée ? Papier uni avec la
+ * règle dans la palette de l'auteur (`shapes.tools`) ; sinon les graduations ne
+ * construisent rien
+ */
+export function usesRulerMidpoint(shapes: FigureShapes | undefined): boolean {
+	return Boolean(shapes && !shapes.grid && shapes.tools?.includes('regle'));
+}
+
+/**
+ * Outil n° 38 : le milieu de [AB] tombe-t-il sur une graduation du millimètre ?
+ * [AB] mesure un nombre pair de millimètres et tient sur la règle (sa longueur,
+ * `rulerLengthOf`). Sert aussi au milieu (`point.ts`). Le message, ou null.
+ */
+export function rulerMidpointError(
+	names: [string, string],
+	points: ReadonlyMap<string, Position>,
+	shapes: FigureShapes
+): string | null {
+	const a = points.get(names[0]);
+	const b = points.get(names[1]);
+	if (!a || !b) return null;
+	const [p, q] = names;
+	const length = Math.hypot(b.x - a.x, b.y - a.y);
+	const mm = Math.round(length * 10);
+	const rulerLength = rulerLengthOf(shapes.window);
+	if (Math.abs(length * 10 - mm) > 1e-6 * Math.max(1, mm) || mm % 2 !== 0) {
+		const shown = `${String(Math.round(length * 1000) / 1000).replace('.', ',')} cm`;
+		return `à la règle graduée, [${p}${q}] doit mesurer un nombre pair de millimètres (son milieu tombe alors sur une graduation) ; il mesure ${shown}`;
+	}
+	if (length > rulerLength + 1e-9) {
+		return `[${p}${q}] (${formatLength(mm, 'cm')}) est plus long que la règle (${rulerLength} cm) : agrandir la fenêtre ou raccourcir [${p}${q}]`;
+	}
+	return null;
+}
+
+/**
  * Papier uni : la médiatrice de [AB] se construit-elle dans la fenêtre ? A et B
  * visibles (le compas s'y pique), et au moins 2 unités de médiatrice dans la
  * fenêtre : l'élève y trouve deux croisements de cercles égaux, de n'importe quel
@@ -420,9 +467,35 @@ export function assertLines(
 				`${label} : sans quadrillage, seulement une médiatrice (mediatrice(A, B)), une bissectrice (bissectrice(A, O, B)), une perpendiculaire (perpendiculaire(A, d)) ou une parallèle (parallele(A, d)) ; sinon ajouter « grille: 1 »`
 			);
 		}
-		const message = mediatriceSupportError(mediatrice, points, shapes);
+		const message =
+			mediatriceSupportError(mediatrice, points, shapes) ??
+			(usesRulerMidpoint(shapes) ? rulerMidpointError(mediatrice, points, shapes) : null);
 		if (message) throw new LineAuthorError(`${label} : ${message}`);
 	}
+}
+
+/**
+ * Outil n° 38 : la droite passe-t-elle par un point posé par l'élève qui n'est ni
+ * un point de départ ni sur une graduation de la règle bien posée ? (Pas
+ * `isBuilt` : le point posé sur [AB] devient le croisement de [AB] et de la droite
+ * d'équerre tracée par lui.)
+ */
+function throughEyeballedPoint(
+	line: DrawnLine,
+	objects: readonly DrawnObject[],
+	construction: Construction,
+	base: readonly Position[],
+	rulerLength: number
+): boolean {
+	const [p, q] = ends(line);
+	return objects.some((o) => {
+		if (!isDrawnPoint(o)) return false;
+		const at = { x: o.x, y: o.y };
+		if (!isOnLine(at, { a: p, b: q })) return false;
+		const eps = tolerance(at);
+		if (base.some((b) => Math.hypot(b.x - at.x, b.y - at.y) <= eps)) return false;
+		return !isOnRulerGraduation(at, objects, construction, rulerLength);
+	});
 }
 
 /** Pourquoi la droite n'est pas la médiatrice de [AB] */
@@ -474,13 +547,17 @@ export function judgeLines(
 	objects: readonly DrawnObject[]
 ): ConstructionVerdict {
 	const withBissectrice = checks.some((check) => bissectriceOf(check.expression) !== null);
+	// Outil n° 38 : la règle graduée posée et le milieu marqué, pour une médiatrice seulement
+	const withRuler =
+		usesRulerMidpoint(shapes) && checks.some((check) => mediatriceOf(check.expression) !== null);
 	// Le Report (lot 9) : un trait de construction, comme un cercle ; le repère du
 	// rapporteur, pour une bissectrice seulement (§ 25)
 	const allowed = (o: DrawnObject) =>
 		o.kind === 'droite' ||
 		o.kind === 'cercle' ||
 		o.kind === 'report' ||
-		(withBissectrice && o.kind === 'repere');
+		(withBissectrice && o.kind === 'repere') ||
+		(withRuler && (o.kind === 'regle' || o.kind === 'point'));
 	if (!objects.every(allowed)) return { status: 'incorrect' };
 	const figureTraits = shapes?.traits ?? [];
 	// Papier uni : droite construite de proche en proche (décision de David, 2026-11-03, § 14) ;
@@ -488,7 +565,8 @@ export function judgeLines(
 	const construction =
 		shapes && !shapes.grid
 			? constructionOf(objects, basePointsOf(points, shapes.segments), figureTraits, {
-					arcsOnSides: withBissectrice
+					arcsOnSides: withBissectrice,
+					...(withRuler && { rulerLength: rulerLengthOf(shapes.window) })
 				})
 			: null;
 	const lineIndexes = objects.flatMap((o, i) => (o.kind === 'droite' ? [i] : []));
@@ -540,6 +618,23 @@ export function judgeLines(
 		const a = mediatrice ? points.get(mediatrice[0]) : undefined;
 		const b = mediatrice ? points.get(mediatrice[1]) : undefined;
 		const shown = a && b ? closest(free, objects, a, b, figureTraits) : free[free.length - 1];
+		// Outil n° 38 : la droite passe par un point posé qui n'est pas construit (pas sur une
+		// graduation de la règle bien posée) : c'est le milieu qui est à l'œil
+		if (
+			withRuler &&
+			mediatrice &&
+			construction &&
+			shapes &&
+			throughEyeballedPoint(
+				objects[shown] as DrawnLine,
+				objects,
+				construction,
+				basePointsOf(points, shapes.segments),
+				rulerLengthOf(shapes.window)
+			)
+		) {
+			return { status: 'incorrect', feedback: midpointEyeballedFeedback(...mediatrice) };
+		}
 		if (!built(shown)) return { status: 'incorrect', feedback: LINE_EYEBALLED_FEEDBACK };
 		if (!mediatrice || !a || !b) {
 			return { status: 'incorrect', feedback: LINE_NOT_IN_PLACE_FEEDBACK };

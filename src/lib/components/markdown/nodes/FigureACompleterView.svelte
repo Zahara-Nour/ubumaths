@@ -126,7 +126,8 @@
 		solutionTriangle,
 		type ConstructionAnswerInput,
 		type Drawing,
-		type Protractor as PosedProtractor
+		type Protractor as PosedProtractor,
+		type RulerShape
 	} from '#lib/questions/construction/drawing.ts';
 	import { PROTRACTOR_RADIUS } from '#lib/constructions-v2/constants.ts';
 	import { protractorRadiusOf } from '#lib/questions/construction/angle.ts';
@@ -237,8 +238,13 @@
 	 * Le trait que mène la règle : le cercle au compas (PR 3 ; ou le Compas choisi
 	 * dans une palette qui a aussi le segment, triangle coté en cm), sinon le segment
 	 */
-	let rulerShape = $derived<'segment' | 'cercle'>(
-		compassOnly || (tools.includes('compas') && tool === 'compas') ? 'cercle' : 'segment'
+	let rulerShape = $derived<RulerShape>(
+		compassOnly || (tools.includes('compas') && tool === 'compas')
+			? 'cercle'
+			: // Outil n° 38 : le milieu marqué au Point sur la règle
+				tool === 'point'
+				? 'point'
+				: 'segment'
 	);
 	/** Palette avec équerre ou compas : aimantation des instruments (hors quadrillage) */
 	let instruments = $derived(tools.some((t) => INSTRUMENT_TOOLS.includes(t)));
@@ -272,6 +278,10 @@
 					? 'Règle posée : touche Compas pour l’ouvrir sur la règle, ou Segment pour tracer le long de la règle. Pour la reposer, touche où mettre le 0.'
 					: 'Règle posée : touche Compas pour l’ouvrir sur la règle. Pour la reposer, touche où mettre le 0.';
 			}
+			// Outil n° 38 : le milieu se marque au Point sur une graduation
+			if (ruler && tools.includes('point')) {
+				return 'Règle posée : touche Point pour marquer une graduation. Pour la reposer, touche où mettre le 0.';
+			}
 			if (ruler && segmentMeasure) {
 				return 'Règle posée : lis la longueur du segment, puis tape-la sous la figure. Pour la reposer, touche où mettre le 0.';
 			}
@@ -282,6 +292,9 @@
 		}
 		if (tool === 'segment' && ruler) {
 			return 'Trace le segment le long de la règle : son bout s’arrête sur une graduation, ‹ › pour l’ajuster d’un millimètre.';
+		}
+		if (tool === 'point' && ruler) {
+			return 'Marque le point sur une graduation de la règle, ‹ › pour l’ajuster d’un millimètre.';
 		}
 		if (tool === 'compas' && ruler && rulerShape === 'cercle') {
 			return 'Pique le compas au 0 de la règle, puis ouvre-le sur une graduation, ‹ › pour l’ajuster d’un millimètre.';
@@ -722,6 +735,12 @@
 			tapAt(first ?? snapWithInstruments(math, targets, radius));
 			return;
 		}
+		// Outil n° 38 : règle posée, le Point marque une graduation (le milieu de [AB])
+		if (tool === 'point' && ruler) {
+			const onRuler = rulerGraduationNear(math, ruler, rulerLength, radius, scene.viewport);
+			tapAt(onRuler ?? snapWithInstruments(math, targets, radius));
+			return;
+		}
 		if (tool === 'equerre' && !drawing.guide) {
 			const guide = straightAt(math, targets.traits, radius);
 			if (guide) chooseLine(guide);
@@ -792,6 +811,7 @@
 			if (drawing.start && tool === 'regle') return 'Règle : 0 choisi';
 			if (ruler) {
 				if (rulerMm === null) return 'Règle posée';
+				if (rulerShape === 'point') return `Règle posée, point à ${formatLength(rulerMm, 'cm-mm')}`;
 				return rulerShape === 'cercle'
 					? `Règle posée, compas ouvert à ${formatLength(rulerMm, 'cm-mm')}`
 					: `Règle posée, segment de ${formatLength(rulerMm, 'cm-mm')}`;
@@ -1091,7 +1111,9 @@
 				tabindex="0"
 				aria-label={rulerShape === 'cercle'
 					? 'Règle graduée : flèches pour régler l’ouverture du compas'
-					: 'Règle graduée : flèches pour régler la longueur du segment'}
+					: rulerShape === 'point'
+						? 'Règle graduée : flèches pour déplacer le point d’un millimètre'
+						: 'Règle graduée : flèches pour régler la longueur du segment'}
 				aria-valuemin={0}
 				aria-valuemax={rulerLength * 10}
 				aria-valuenow={rulerMm ?? 0}
@@ -1524,7 +1546,9 @@
 							data-testid="regle-moins"
 							aria-label={rulerShape === 'cercle'
 								? 'Compas : un millimètre de moins'
-								: 'Segment : un millimètre de moins'}
+								: rulerShape === 'point'
+									? 'Point : un millimètre de moins'
+									: 'Segment : un millimètre de moins'}
 							onclick={() => nudgeRuler(-1)}>‹ 1 mm</Button
 						>
 						<Button
@@ -1533,7 +1557,9 @@
 							data-testid="regle-plus"
 							aria-label={rulerShape === 'cercle'
 								? 'Compas : un millimètre de plus'
-								: 'Segment : un millimètre de plus'}
+								: rulerShape === 'point'
+									? 'Point : un millimètre de plus'
+									: 'Segment : un millimètre de plus'}
 							onclick={() => nudgeRuler(1)}>1 mm ›</Button
 						>
 					{/if}
