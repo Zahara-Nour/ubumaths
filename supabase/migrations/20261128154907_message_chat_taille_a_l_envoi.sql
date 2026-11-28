@@ -1,16 +1,18 @@
 -- ============================================================================
 -- Chat : un message trop lourd ne part pas, même par l'API de la base (écart L124)
 -- ============================================================================
--- Constat de code-reviewer sur #3115 : le site borne un message (10 000
--- caractères de texte, 100 000 de JSON, src/lib/server/validation/messages.ts),
--- mais la policy INSERT de `messages` ne borne rien. Par l'API de la base, un
--- compte connecté pouvait envoyer un message de plusieurs mégaoctets, qui
--- ralentissait le marquage (`process_message_content`) à l'envoi.
+-- Constat de code-reviewer sur #3115 : rien ne borne un message du chat. Le chat
+-- écrit directement dans `messages` (src/lib/stores/chat.svelte.ts, sans Zod ; la
+-- borne de src/lib/server/validation/messages.ts ne sert qu'aux messages privés),
+-- et la policy INSERT ne borne rien. Un compte connecté pouvait envoyer un message
+-- de plusieurs mégaoctets, qui ralentissait le marquage (`process_message_content`).
 --
 -- Accès (tranché par David le 2026-11-28) : personne ne lit ni n'écrit rien de
 -- plus. Seul effet : un message de plus de 200 000 caractères (JSON écrit par la
 -- base, plus long que celui du navigateur : espaces après `:` et `,`) envoyé par
--- un compte connecté est refusé. Le site n'en envoie jamais.
+-- un compte connecté est refusé (code 22001) ; le chat le dit à l'élève (« Message
+-- trop long »). Le plus gros message de prof ou d'élève en prod sans image
+-- rangée dedans fait 1 825 caractères (lecture du 2026-11-28).
 --
 -- Pourquoi un trigger BEFORE INSERT et pas une contrainte CHECK : la prod garde
 -- trois messages de janvier 2026 plus lourds (jusqu'à 299 000 caractères, images

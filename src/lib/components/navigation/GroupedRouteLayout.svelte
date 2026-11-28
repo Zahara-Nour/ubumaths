@@ -63,7 +63,6 @@
 				{#if tab.badge === '?' || (tab.badge && tab.badge > 0)}
 					<span
 						title={tab.badgeLabel}
-						aria-label={tab.badgeLabel}
 						class={cn(
 							'ml-1 flex h-5 min-w-5 items-center justify-center rounded-full px-1.5 text-xs font-bold',
 							isActiveTab(tab.href)
@@ -72,6 +71,9 @@
 						)}
 					>
 						{tab.badge}
+						{#if tab.badgeLabel}
+							<span class="sr-only">{tab.badgeLabel}</span>
+						{/if}
 					</span>
 				{/if}
 			</a>

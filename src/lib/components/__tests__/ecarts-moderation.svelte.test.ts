@@ -73,7 +73,7 @@ describe('compteur de signalements illisible dans le menu de modération', () =>
 
 	it('un compteur illisible n’est pas rendu comme zéro signalement', () => {
 		expect(illisible).not.toBe(aucun);
-		expect(illisible).toContain('aria-label="Nombre de signalements inconnu"');
+		expect(illisible).toContain('<span class="sr-only">Nombre de signalements inconnu</span>');
 		expect(illisible).toMatch(/>\s*\?\s*</);
 	});
 });

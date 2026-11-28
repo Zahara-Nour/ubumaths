@@ -2,14 +2,13 @@
  * Chat : un message trop lourd ne part pas, même par l'API de la base (écart L124)
  * ===============================================================================
  *
- * Le site borne déjà un message (10 000 caractères de texte, 100 000 de JSON :
- * `src/lib/server/validation/messages.ts`). Un compte connecté qui écrit
- * directement dans `messages` n'avait aucune borne : un message énorme ralentissait
- * le marquage (`process_message_content`) à l'envoi.
+ * Le chat écrit directement dans `messages` (src/lib/stores/chat.svelte.ts), sans
+ * borne côté site, et la policy INSERT ne bornait rien : un message énorme
+ * ralentissait le marquage (`process_message_content`) à l'envoi.
  *
  *   1. un message de plus de 200 000 caractères (JSON écrit par la base) envoyé
  *      par un élève est refusé, avec une erreur lisible ;
- *   2. un message à la limite du site part ;
+ *   2. un long message ordinaire (10 000 caractères mis en forme) part ;
  *   3. non-régression : un ancien message plus lourd, déjà en base (images
  *      rangées dans le message avant le stockage des pièces jointes), se supprime
  *      toujours ; le serveur garde la main.
@@ -42,8 +41,8 @@ function docDePlusDe(longueur: number) {
 	};
 }
 
-/** Document tel que le site l'accepte au plus : 10 000 caractères en 100 paragraphes. */
-function docALaLimiteDuSite() {
+/** Un long message ordinaire : 10 000 caractères en gras, en 100 paragraphes. */
+function longDocOrdinaire() {
 	return {
 		type: 'doc',
 		content: Array.from({ length: 100 }, () => ({
@@ -98,11 +97,11 @@ describe('Chat — taille d’un message à l’envoi', () => {
 		expect(data).toEqual([]);
 	});
 
-	it('un message à la limite du site part', async () => {
+	it('un long message ordinaire part', async () => {
 		const { error } = await eleveClient.from('messages').insert({
 			conversation_id: conversationId,
 			sender_id: eleveId,
-			content: docALaLimiteDuSite()
+			content: longDocOrdinaire()
 		});
 
 		expect(error).toBeNull();

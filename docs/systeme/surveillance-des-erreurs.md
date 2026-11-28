@@ -228,7 +228,10 @@ Les rappels sont branchés dans `src/routes/(protected)/dashboard/+layout.svelte
   `/dashboard/admin/bug-reports` (une seule lecture pour la liste) et par l'export. Rien n'est
   enregistré : un signalement de plus de 30 jours n'a plus d'erreurs (purge du journal).
 - **`/api/bug-reports/[reportId]`** : `GET` ; `PATCH` (l'auteur modifie titre et
-  description tant que le statut vaut `pending` ; l'admin change statut et notes) ;
+  description tant que le statut vaut `pending` ; l'admin change statut et notes) ; un statut
+  résolu (`resolved`, `wont_fix`, `duplicate`) note l'admin et la date (`resolved_by`,
+  `resolved_at`), tout autre statut les remet à vide : un rapport rouvert ne garde pas le nom de
+  son ancien résolveur (même règle dans le lot) ;
   `DELETE` (admin).
 - **`/api/bug-reports/batch`** : `PATCH` et `DELETE` en lot, admin, 100 rapports au plus.
   Chaque écriture vérifie ses lignes : un rapport intact (inconnu, refus de la RLS) va dans
