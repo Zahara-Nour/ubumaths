@@ -161,7 +161,9 @@ avant, l'élève qui avait ouvert un fil s'écrivait à lui-même). Elle reçoit
 (`page.data.profile.role`) et ne propose qu'un compte à qui je peux écrire, selon la règle de
 `validate_message_recipients` : l'élève ne répond pas à un message de l'admin (V135). Un rôle
 inconnu ne retire rien. La page d'écriture affiche alors ce seul destinataire, sans liste ; le
-serveur décide (un élève de test est refusé, L84). Les refus de la base ne sont jamais
+serveur décide : un élève de test est refusé (L84), même s'il a écrit au prof, qui voit alors
+« Répondre » mais reçoit un refus ; une réponse à un message ni envoyé ni reçu est refusée par
+« Vous ne pouvez pas répondre à ce message. » (L127, L131). Les refus de la base ne sont jamais
 rendus tels quels par `send/` : 403 (destinataire non permis), 400 (classe sans élève actif,
 code `P0002`), 500 sans le message technique. Tests : `src/lib/utils/message-reply.test.ts`,
 `send.test.ts`, bloc « comptes sans nom complet » de `e2e/verifs/messagerie.spec.ts`.

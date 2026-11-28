@@ -1,19 +1,19 @@
 ---
 title: Lot d'écarts messagerie
 date: 2026-11-28
-status: phase 0 posée à David, aucun code
+status: lot codé, PR à ouvrir
 ---
 
 # Lot d'écarts `messagerie`
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-28, avant la première PR._
+_Mis à jour le 2026-11-28, avant l'ouverture de la PR._
 
-- **État** : écarts vérifiés dans le SQL (tous encore vrais) ; phase 0 et question d'accès posées à David, aucun code.
-- **Prochaine action** : selon ses réponses, tests d'intégration rouges, puis une migration additive.
-- **En attente de David** : réponses de la phase 0 ci-dessous.
-- **Pièges en cours** : L127 et L131 sont le même défaut (parent d'une réponse non contrôlé).
+- **État** : tout le lot codé sur la branche (migration `20261128161241`, Zod, `replyRecipientId`, code mort) ; tests verts (16 fichiers d'intégration messagerie, unitaires) ; V135 vu à l'écran ; `code-reviewer` sans bloquant.
+- **Prochaine action** : relancer `security-auditor` sur `git diff origin/main...HEAD` (le premier tournait encore au `/clear`, résultat perdu), puis push, PR, merge, puis `db:migrate` (additive) et clôture du lot (registre, `ecarts-lots.md`, archive du journal).
+- **En attente de David** : rien.
+- **Pièges en cours** : L135 clos sans code (invariant mono-professeur) ; L84 : preuve passée de `it.fails` à `it` dans `ecarts-messagerie.test.ts`, fichier partagé avec le lot `carnet-notifications`.
 - **Worktree / branche** : `../ubumaths-wt-ecarts-messagerie` · `fix/ecarts-messagerie`.
 
 ## Écarts (11)
@@ -33,6 +33,20 @@ Dernière définition des fonctions : `20261126132310_messagerie_noms_et_message
 - V135 : `replyRecipientId` (`src/lib/utils/message-reply.ts`) propose de répondre à tout expéditeur, admin compris.
 - T37, M41, C44 : mécaniques, sans question.
 
-## Phase 0
+## Phase 0 — tranchée par David le 2026-11-28 (« je te suis »)
 
-Posée à David le 2026-11-28 (voir la conversation) : question d'accès et comportements.
+Question d'accès : personne ne lit rien de nouveau, chaque point retire un accès.
+
+1. Réponse seulement à un message envoyé ou reçu (L127, L131) ; refus « Vous ne pouvez pas répondre à ce message. »
+2. Comptes de test exclus : le prof n'écrit plus à un élève de test (L84). L135 : **faux**, l'invariant mono-professeur interdit tout second compte prof → clos sans code.
+3. Message supprimé par son destinataire : plus ouvert, ni seul ni dans le fil ; l'expéditeur garde le sien (L133).
+4. Étiquette de classe ignorée hors envoi à une classe (L132), sans refus.
+5. Destinataire en double compté une fois, sans erreur (L134), en Zod et en SQL.
+6. Pas de « Répondre » sur un message de l'admin pour l'élève (V135) ; règle de `validate_message_recipients` côté page.
+
+Sans question : T37 (droits retirés sur `message_search_index`), M41 (store + route de recherche), C44 (tests d'envoi périmés de `api-routes.test.ts` retirés, `send.test.ts` les couvre).
+
+## Fait
+
+- Tests rouges vérifiés avant la migration : 12 rouges, 6 témoins verts (`messagerie-ecarts-lot.test.ts`).
+- Revue `code-reviewer` : 0 bloquant ; mineur 2 corrigé (message de refus propre), mineurs 1 et 3 consignés dans la doc / laissés (répondre à un message qu'on a supprimé reste accepté, sans enjeu d'accès).
