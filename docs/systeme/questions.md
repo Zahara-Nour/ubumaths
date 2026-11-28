@@ -1144,6 +1144,25 @@ cercle(O, passant=A)` (palette : le compas ; papier uni ou quadrillage, O et A s
    segment va d'abord à un croisement de traits proche (tout croisement : arcs, droites, segments ;
    hors du départ), puis à la graduation (revue de #2658 : une règle laissée en B vers C ne doit pas
    avaler le croisement des arcs).
+   **Triangle à reproduire sur quadrillage** (outil n° 47, chantier `outil-triangle-quadrillage`,
+   phase 0 validée le 2026-11-28 ; `construction/triangle-copy.ts`, `isCopyCheck`) :
+   `triangle ABC : reproduit DEF`, le modèle DEF tracé, ABC = DEF **déplacé** (A ↔ D, B ↔ E, C ↔ F),
+   au segment seul. Forme 1 : B dans la figure, [AB] tracé, égal à [DE] déplacé ; l'élève trace [AC]
+   et [BC]. Forme 2 : seul A placé ; l'élève trace les trois côtés (B attendu en A + (E − D)). On juge
+   le résultat : traits fusionnés par droite (`mergeSegments` de `polygon.ts`), dans n'importe quel
+   ordre et sens, [AB] repassé sans effet ; les trois côtés couverts → juste, sauf trait de trop ou qui
+   dépasse (`leftoverFeedback`). Sinon, dans l'ordre : un triangle fermé de l'élève (A, et B en forme 1,
+   plus des bouts de ses traits) aux mêmes longueurs que le modèle → « Ton triangle est retourné par
+   rapport au modèle. » (retourné ou tourné, décision 1) ; un autre triangle fermé → « Ton sommet C
+   n'est pas au bon endroit : compte les carreaux depuis A sur le modèle. » (forme 2 : le sommet faux,
+   B ou C, ou « Tes sommets B et C… ») ; forme 2 sans triangle fermé : « Ton triangle doit partir du
+   point A. » (aucun trait en A) ou « Ta figure n'est pas fermée. » ; forme 1 : les messages du
+   triangle (côté manquant, côtés qui ne se rejoignent pas) ou le trait de trop. Hors palette (point) :
+   faux sans message. Erreurs de l'auteur : un sommet du modèle ou A absent, caché, hors de la fenêtre
+   ou hors d'un nœud ; modèle aplati ; [AB] qui n'est pas [DE] déplacé (le message donne où placer B)
+   ou non tracé ; C déjà dans la figure ; B ou C attendus hors de la fenêtre. Correction : [AC] et
+   [BC], ou les trois côtés (`copySolution`), sans arc ni codage (`copyCorrection`). Le générateur
+   demande les noms du modèle et de A.
    Vérification `angle AOy = 50` (`construction/angle.ts`, lot 5 du chantier) : [OA) est donné (A, O
    nommés et visibles, `points` = A puis O) ; y nomme le côté à tracer (messages seulement) ; mesure
    entière de 1 à 179 (parseur). L'élève pose le rapporteur (outil `rapporteur` : centre, puis un point

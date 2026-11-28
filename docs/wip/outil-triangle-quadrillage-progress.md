@@ -1,7 +1,7 @@
 ---
 title: Outil 47 — triangle quelconque à reproduire sur quadrillage
 date: 2026-11-28
-status: phase 0 envoyée à David, en attente
+status: phase 0 validée le 2026-11-28, code en cours
 ---
 
 # Chantier `outil-triangle-quadrillage`
@@ -10,10 +10,10 @@ status: phase 0 envoyée à David, en attente
 
 _Mis à jour le 2026-11-28, avant la première PR._
 
-- **État** : phase 0 de l'outil 47 envoyée à David (§ 1), rien de codé.
-- **Prochaine action** : lire sa réponse, l'écrire au § 1, puis tests rouges dans
-  `src/lib/questions/construction/triangle.ts` (et le parseur `construction-parser.ts`).
-- **En attente de David** : les trois questions du § 1.
+- **État** : phase 0 validée (§ 1) ; tests puis code en cours.
+- **Prochaine action** : `triangle-copy.ts` (juge, correction), branché sur `triangle.ts` et
+  `construction-parser.ts` ; tests `construction-triangle-copy.test.ts`.
+- **En attente de David** : rien.
 - **Pièges en cours** : même module que le lot `equerre-uni` → `git merge origin/main` avant la PR.
 - **Worktree / branche** : `../ubumaths-wt-outil-triangle-quadrillage`, `feat/outil-triangle-quadrillage`.
 
@@ -36,3 +36,14 @@ carreaux, au seul outil Segment. Syntaxe `verifier: triangle ABC : reproduit DEF
 
 Questions posées : (1) seulement le même triangle décalé, ou aussi retourné / tourné ? (2) les
 deux formes ? (3) la syntaxe.
+
+Décisions (David, « oui » à mes recommandations, 2026-11-28) :
+
+1. **Même triangle déplacé seulement** (ni retourné, ni tourné). Un triangle pareil au modèle mais
+   retourné ou tourné a son message : « Ton triangle est retourné par rapport au modèle. »
+2. **Les deux formes, dans la même PR.** B dans la figure → forme 1 ([AB] tracé, [AB] = [DE]
+   déplacé, sinon erreur d'auteur) ; B absent → forme 2 (l'élève trace les trois côtés depuis A).
+3. **Syntaxe `reproduit DEF`** : A ↔ D, B ↔ E, C ↔ F ; quadrillage obligatoire, palette Segment seule.
+
+On juge le résultat : côtés dans n'importe quel ordre, dans un sens ou l'autre, en plusieurs morceaux
+(fusion des traits de `polygon.ts`) ; un trait de trop est refusé.

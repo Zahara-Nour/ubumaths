@@ -141,9 +141,11 @@ export const LINE_GRID_TOOLS: ConstructionTool[] = ['droite', 'equerre', 'compas
  * Compas avec l'angle
  */
 export function triangleTools(
-	check: Pick<TriangleCheck, 'angles' | 'lengths'>,
+	check: Pick<TriangleCheck, 'angles' | 'lengths' | 'model'>,
 	grid = false
 ): ConstructionTool[] {
+	// Triangle à reproduire (n° 47) : sur quadrillage, au segment seul
+	if (check.model) return ['segment'];
 	// Triangle rectangle (n° 20) : l'équerre et le Report sur papier uni, le segment seul sur quadrillage
 	if (rightAngleOf(check)) {
 		if (grid) return ['segment'];
@@ -377,12 +379,16 @@ export interface TriangleAngle {
  * Triangle rectangle (n° 20) : un angle de 90° (construit à l'équerre), seul ou
  * avec la longueur du côté qui le porte (`CAB = 90 ; AC = u`, `AC = 3 carreaux`,
  * ou `AC = 4 cm` à la règle graduée, PR 4 de `regle-graduee`).
+ * À reproduire sur quadrillage (outil n° 47) : `reproduit DEF`, le modèle, seule
+ * donnée (`lengths` et `angles` vides) ; l'élève trace ABC, DEF déplacé.
  */
 export interface TriangleCheck {
 	kind: 'triangle';
 	points: [string, string, string];
 	lengths: TriangleLength[];
 	angles: TriangleAngle[];
+	/** Outil n° 47 : le triangle modèle à reproduire (A ↔ D, B ↔ E, C ↔ F) */
+	model?: [string, string, string];
 	line: number;
 }
 
