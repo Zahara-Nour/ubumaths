@@ -904,7 +904,7 @@ function piMultipleNode(q: Rational): MathNode {
 	const pi: MathNode = { type: 'constant', constant: 'pi' };
 	const top: MathNode = n === 1n ? pi : multiply(numberNode(n.toString()), pi, 'implicit');
 	const body: MathNode = q.d === 1n ? top : divide(top, numberNode(q.d.toString()), 'inline');
-	return negative ? { type: 'opposite', operand: body } : body;
+	return negative ? opposite(body) : body;
 }
 
 /**
@@ -1170,7 +1170,7 @@ function shiftedLinearRoot(
 	const absA = a.n < 0n ? -a.n : a.n;
 	const body: MathNode =
 		absA === 1n ? constant : divide(constant, numberNode(absA.toString()), 'inline');
-	return { root: negative ? { type: 'opposite', operand: body } : body, slope };
+	return { root: negative ? opposite(body) : body, slope };
 }
 
 /**

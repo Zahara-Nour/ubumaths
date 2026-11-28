@@ -3056,7 +3056,7 @@ function tryDirectSubstitutionNumeric(
 	const numericValue = computeNumericValue(substituted);
 
 	if (numericValue !== null && Number.isFinite(numericValue)) {
-		const resultNode: MathNode = { type: 'number', value: cleanNumberString(numericValue) };
+		const resultNode: MathNode = numericNode(cleanNumberString(numericValue));
 		recorder.recordStepByRule(
 			'direct-substitution',
 			expr,
