@@ -1431,7 +1431,8 @@ function constructionBlankResult(
 		points,
 		answer,
 		constructionShapes(construction.source),
-		constructionExpected(construction.source)
+		constructionExpected(construction.source),
+		construction.source
 	);
 	if (status === 'empty') return { isCorrect: false, status: 'empty' };
 	if (status === 'correct') return { isCorrect: true, status: 'correct' };

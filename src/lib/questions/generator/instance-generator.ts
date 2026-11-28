@@ -51,7 +51,11 @@ import {
 import { shuffleChoices } from './choice-shuffler';
 import { assignBlankIndices } from './assign-blank-indices';
 import { parseOperationContent } from '#lib/ubumark/parser/operation-parser.ts';
-import { isDiagonalRectangleCheck, isRuledPolygonCheck } from '#lib/ubumark/types/construction.ts';
+import {
+	compositeBuiltNames,
+	isDiagonalRectangleCheck,
+	isRuledPolygonCheck
+} from '#lib/ubumark/types/construction.ts';
 import { hasCollectionToBuild } from '#lib/ubumark/parser/collection-parser.ts';
 import { hasMonnaieToBuild } from '#lib/ubumark/parser/monnaie-parser.ts';
 import { hasLineToPlace } from '#lib/ubumark/parser/number-line-parser.ts';
@@ -986,6 +990,8 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 				// Faute de frappe dans `verifier:` : vue ici (lecture légère des noms affectés,
 				// `Z = …`), sinon l'élève aurait un « faux » pour une erreur de l'auteur
 				const named = namesAssignedIn(header.figureSource);
+				// Figure composée (outil n° 45) : un point construit à une étape d'avant n'est pas nommé
+				const builtBefore = new Set<string>();
 				for (const check of header.spec.checks) {
 					// Symétrique : l'axe ou le centre est nommé aussi (`d = droite(P, Q)`, `O = point(…)`) ;
 					// point à placer : son expression est calculée à la publication (`check-template`) ;
@@ -996,26 +1002,29 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 					const names =
 						check.kind === 'point' || check.kind === 'droite' || check.kind === 'cercle'
 							? []
-							: isRuledPolygonCheck(check)
-								? check.points.slice(0, 2)
-								: // Rectangle sans équerre : A et C (la diagonale), B et D sont à construire
-									isDiagonalRectangleCheck(check)
-									? [check.points[0], check.points[2]]
-									: check.kind === 'segment'
-										? [check.point]
-										: check.kind === 'symetrique'
-											? [...(check.points ?? []), check.by]
-											: check.kind === 'triangle'
-												? check.model
-													? // Reproduire (n° 47) : le modèle et A ; B seulement s'il est tracé
-														[...check.model, check.points[0]]
-													: [
-															check.points[0],
-															check.points[1],
-															// En carreaux (n° 20), rien à nommer
-															...check.lengths.flatMap((l) => ('source' in l ? l.source : []))
-														]
-												: check.points;
+							: check.kind === 'segment_par'
+								? check.points.filter((name) => !builtBefore.has(name))
+								: isRuledPolygonCheck(check)
+									? check.points.slice(0, 2)
+									: // Rectangle sans équerre : A et C (la diagonale), B et D sont à construire
+										isDiagonalRectangleCheck(check)
+										? [check.points[0], check.points[2]]
+										: check.kind === 'segment'
+											? [check.point]
+											: check.kind === 'symetrique'
+												? [...(check.points ?? []), check.by]
+												: check.kind === 'triangle'
+													? check.model
+														? // Reproduire (n° 47) : le modèle et A ; B seulement s'il est tracé
+															[...check.model, check.points[0]]
+														: [
+																check.points[0],
+																check.points[1],
+																// En carreaux (n° 20), rien à nommer
+																...check.lengths.flatMap((l) => ('source' in l ? l.source : []))
+															]
+													: check.points;
+					for (const name of compositeBuiltNames(check)) builtBefore.add(name);
 					for (const name of names) {
 						if (!named.has(name)) {
 							errors.push({

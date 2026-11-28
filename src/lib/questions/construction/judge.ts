@@ -17,6 +17,7 @@ import {
 	centeredCircleOf,
 	isRuledLength,
 	isDiagonalRectangleCheck,
+	isCompositeFigure,
 	isRuledPolygonCheck,
 	rulerMidpointOf,
 	type ConstructionCheck,
@@ -44,6 +45,7 @@ import {
 	judgeLines,
 	usesRulerMidpoint
 } from './line';
+import { assertComposite, judgeComposite } from './composite';
 import { CircleAuthorError, assertCircles, isCircleCheck, judgeCircles } from './circle';
 import { PolygonAuthorError, givenVertices, judgePolygon } from './polygon';
 import { RuledPolygonAuthorError, assertRuledPolygon, judgeRuledPolygon } from './ruled-polygon';
@@ -170,7 +172,7 @@ function isPolygonCheck(check: ConstructionCheck): check is PolygonCheck {
 }
 
 /** Erreur d'auteur d'un module de vérification → celle du juge ; le reste passe */
-function asAuthorError(error: unknown): unknown {
+export function asAuthorError(error: unknown): unknown {
 	if (
 		error instanceof PolygonAuthorError ||
 		error instanceof RuledPolygonAuthorError ||
@@ -202,8 +204,14 @@ export function assertConstructionChecks(
 	checks: readonly ConstructionCheck[],
 	points: ReadonlyMap<string, Position>,
 	shapes?: FigureShapes,
-	expected?: ExpectedPoints
+	expected?: ExpectedPoints,
+	source?: string
 ): void {
+	// Figure composée (outil n° 45) : chaque étape sur sa figure, points construits compris
+	if (source !== undefined && isCompositeFigure(checks)) {
+		assertComposite(checks, source, shapes?.tools ?? []);
+		return;
+	}
 	const pointChecks = checks.filter(isPointCheck);
 	if (pointChecks.length > 0) {
 		try {
@@ -327,8 +335,13 @@ export function judgeConstruction(
 	points: ReadonlyMap<string, Position>,
 	answer: string,
 	shapes?: FigureShapes,
-	expected?: ExpectedPoints
+	expected?: ExpectedPoints,
+	source?: string
 ): ConstructionVerdict {
+	// Figure composée (outil n° 45) : un programme d'étapes, `composite.ts`
+	if (source !== undefined && isCompositeFigure(allChecks)) {
+		return judgeComposite(allChecks, source, shapes?.tools ?? [], answer);
+	}
 	// Angle à mesurer (lot 6) : seul dans la figure (garanti par le parseur) ; les repères ne
 	// sont pas notés, la mesure tapée l'est
 	const measure = allChecks.find((c) => c.kind === 'mesure');
