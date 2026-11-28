@@ -2,17 +2,19 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-28, après #3301._
+_Mis à jour le 2026-11-28, relecture validée par David._
 
-- **État** : 13 variations en prod (#3294). #3301 mergé : id de E (`d01396e6`, brouillon), migration
-  de rangement `20261128140707` (seule en attente en prod), série de relecture
-  `scripts/series/3-relecture-algorithmique-publies.json`. · **Prochaine action** : après
-  `db:migrate`, vérifier nœud et tag 5-011 de E en prod, `garde-niveaux-tags.ts` ; après la relecture
-  de David, lire les verdicts (`question_template_reviews`), corriger, `publier-lot.ts` en simulation
-  pour E ; tableau de répartition (« publiée », réservations levées), journal versé. · **En attente de
-  David** : `pnpm db:migrate` ; `pnpm tsx scripts/series/creer-serie.ts --fichier
-scripts/series/3-relecture-algorithmique-publies.json --publier` ; relecture dans `/dev/modeles`. ·
-  **Pièges en cours** : E est un modèle de **5e**. · **Worktree / branche** : aucun.
+- **État** : 13 variations en prod ; E (`d01396e6`) rangé en prod (« instructions conditionnelles »,
+  5-011, grades 5), encore brouillon ; série de relecture enregistrée par David (id `1ec193bd` écrit
+  dans `scripts/series/3-relecture-algorithmique-publies.json`, **modifié et non commité dans le
+  dépôt principal**). Relecture **validée par David** (« je valide la relecture »).
+  `publier-lot.ts` en simulation vert pour E ; `garde-niveaux-tags` vert. · **Prochaine action** :
+  (1) PR de l'id de la série (nouveau worktree, copier le fichier, puis `git checkout --` dans le
+  dépôt principal avant le `pull`) ; (2) David : `pnpm tsx scripts/questions/publier-lot.ts --dir
+scripts/questions/idees-3e-algorithmique-neufs --publier`, puis relire `published` en prod ; (3)
+  tableau de répartition : 3I1 « publiée », six réservations levées ; (4) journal versé
+  (`couvrir-un-niveau.md`), chantier clos. · **En attente de David** : `publier-lot --publier`. ·
+  **Pièges en cours** : aucun. · **Worktree / branche** : aucun.
 
 ## Rubrique
 
@@ -94,3 +96,4 @@ variations ajoutées à la fin) et `docs/wip/questions/idees-3e-algorithmique-ne
 - Série de relecture des 6 modèles publiés : `scripts/series/3-relecture-algorithmique-publies.json`
   (6 questions, 6 min ; simulation verte).
 - #3301 mergé le 2026-11-28 (CI verte, `pr:merger`) ; test `migrations-rangement-tags` vert, `security-auditor` sans finding bloquant (non bloquant : la rubrique du point 5-011, « Nombres et calculs > Opérations », ne colle pas à sa branche « Algorithmique », donnée antérieure au chantier).
+- 2026-11-28 : `db:migrate` (rangement de E) et série `1ec193bd` par David ; nœud et tag 5-011 relus en prod ; relecture validée par David dans la conversation (« je valide la relecture »), aucun verdict à lire en base.
