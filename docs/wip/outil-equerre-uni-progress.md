@@ -92,3 +92,55 @@ papier uni ; messages aussi sur quadrillage ; correction avec angle droit et per
   l'une lisait la droite juste de l'autre (test ajouté). Laissés, à dire à David : la correction (angle droit,
   perpendiculaire en trait fin) s'affiche aussi sur quadrillage (CM1-167, 168 en prod) ; (d) donnée par un
   segment : le pied peut tomber hors du segment (aucun cas réel).
+
+## 2. Outil 38 — phase 0 (2026-11-28)
+
+**Vérifié dans le code** : l'outil manque encore. Sur papier uni, le juge des droites (`judgeLines`, `line.ts`)
+refuse tout objet autre que droite, cercle, report (et repère pour une bissectrice) : une règle posée ou un point
+marqué rend la réponse fausse sans message. Le juge « construit » (`constructionOf`, `instruments.ts`) ignore les
+graduations : un point posé sur la règle est un point à l'œil. L'écran n'aimante aux graduations que le Segment et
+le Compas (`FigureACompleterView.svelte`), pas le Point. L'équerre, elle, sait déjà tracer la perpendiculaire par
+un point posé (les points posés sont des cibles d'aimantation).
+
+**Syntaxe d'auteur** : rien de neuf, la palette dit la méthode :
+
+```
+outils: regle, point, equerre
+verifier: droite m = mediatrice(A, B)
+```
+
+**Exemple d'élève** (6-165, papier uni) : un segment [AB] de 6 cm. « Construis la médiatrice de [AB]. »
+
+- **Nominal** : l'élève pose la règle, son 0 en A, le long de [AB] ; il marque un point sur la graduation 3 cm ;
+  il pose l'équerre le long de [AB], la glisse jusqu'à ce point et trace → juste.
+- **Limites** : le 0 en B → juste aussi. Règle posée de A vers B sans segment tracé (A et B seuls) → juste. Avec
+  `compas` aussi dans la palette, les deux cercles de même rayon restent acceptés.
+- **Erreurs** (messages existants) :
+  - point marqué sur la mauvaise graduation (3,5 cm) → « Ta droite est perpendiculaire à [AB] mais ne passe pas
+    par son milieu. » ;
+  - par le milieu mais tracée à la règle, pas à l'équerre (deuxième point à l'œil) → « Ta droite est tracée à
+    l'œil : construis-la avec tes instruments. » ;
+  - milieu posé à l'œil (pas sur une graduation, ou règle pas posée le long de [AB] depuis A ou B) → même
+    message « tracée à l'œil » (voir question 3) ;
+  - rien de tracé → « Trace la médiatrice de [AB]. » (existant).
+
+**Ce qui change dans le juge** : un point posé sur une graduation d'une règle dont le 0 est un point construit et
+qui longe un trait droit construit (ou vise un point construit) devient construit — seulement dans une figure qui
+vérifie une médiatrice (comme l'exception de la bissectrice au compas), pour ne rien rendre « construit » ailleurs.
+
+**Garde de l'auteur** (papier uni, `regle` dans `outils:`) : [AB] mesure un nombre PAIR de millimètres (sinon son
+milieu n'est sur aucune graduation : 6,5 cm → 3,25 cm) et tient sur la règle ; `point` et `equerre` dans `outils:`.
+
+**Correction** : celle d'aujourd'hui (la médiatrice, angle droit au milieu, moitiés égales codées).
+
+**Questions à David** :
+
+1. Les comportements ci-dessus : OK ?
+2. **Le geste pour marquer le milieu** : le Point, aimanté aux graduations quand la règle est posée (le geste du
+   cahier : « je marque le milieu ») ; ou le Segment tracé du 0 à la graduation (déjà aimanté, mais il recouvre
+   [AB] et ne se voit pas). Reco : le Point.
+3. Milieu posé à l'œil : un message à lui, « Ton milieu est placé à l'œil : pose la règle sur [AB] et marque-le
+   sur une graduation. », au lieu de « tracée à l'œil » ? Reco : oui, il dit quoi refaire.
+4. **Le milieu d'un segment** (`verifier: point M = milieu(A, B)`, `outils: regle, point`) : même mécanisme, le
+   point marqué sur la graduation est le milieu. Dans la même PR ? Reco : oui (la ligne 38 le cite, quelques
+   lignes de plus).
