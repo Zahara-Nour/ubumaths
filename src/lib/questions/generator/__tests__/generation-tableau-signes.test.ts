@@ -493,6 +493,22 @@ describe('choix et tableau à compléter à variables, blanks[] complet', () => 
 		expect(failure(homographique('5'))).toMatch(/Case 4 \(bloc choix\).*hors des choix/);
 	});
 
+	it('un bloc choix mal écrit reste signalé à l’enregistrement, sans numéro de case', () => {
+		const t = template({
+			statement: HOMOGRAPHIQUE.replace('melanger: non', 'melanger: non\ncase: 4'),
+			variables: VARIABLES,
+			blanks: [
+				{ expectedAnswer: '{{D}}' },
+				{ expectedAnswer: '' },
+				{ expectedAnswer: '' },
+				{ expectedAnswer: '1' }
+			]
+		});
+		expect(validateTemplate(t).join(' ; ')).toMatch(
+			/Variation 1, case choix : case: est posée automatiquement/
+		);
+	});
+
 	it('éditeur : pas de réalignement des cases (le compte du tableau dépend des variables)', () => {
 		expect(withBlockCases(['{{D}}', '1'], HOMOGRAPHIQUE, () => '')).toBeNull();
 	});
