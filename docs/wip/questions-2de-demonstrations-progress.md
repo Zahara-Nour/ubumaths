@@ -6,19 +6,23 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-09, migration du lot 9 poussée (PR de rangement ouverte, voir § 16)._
+_Mis à jour le 2026-11-28 (session `idees-format`, vérification) : #2525 jamais mergée._
 
-- **État** : lots 1-8 publiés. Lot 9 : 2 brouillons en prod (#2523), migration de rangement `20261109180421`
-  écrite, test 13/13, audit 0 finding, PR ouverte (branche `feat/questions-2de-approfondissements-9-rangement`).
-- **Prochaine action** : CI verte → `pnpm check:migrations --pr <n>` puis merge → `db:migrate` par David (`!`,
-  depuis le dépôt principal à jour) → vérifier en prod (nœuds, tags, `64f54fc1` `{1_SPE,2}`, `updated_at`) → page à
-  cocher du lot 9 → publication → versement du chantier.
-- **En attente de David** : `db:migrate` après le merge.
-- **Pièges en cours** : garde « Doc à jour » → `Doc-inchangée:` dans un commit (fait) ; écritures en prod → commande
-  `!` ; « Client Tests (browser) » qui plante tests verts → `gh run rerun --failed`.
-- **Worktree / branche** : `../ubumaths-wt-questions-2de-demonstrations`, `feat/questions-2de-approfondissements-9-rangement`.
-
----
+- **État** : lots 1-8 publiés. Lot 9 : 2 brouillons en prod depuis le 2026-11-09 (8009fb19 point 324, 4014a007
+  point 363, vérifié par MCP le 2026-11-28) ; `64f54fc1` encore `{1_SPE}` seul ; migration de rangement
+  `20261109180421` dans **#2525, OUVERTE depuis le 2026-11-09** (CI verte à l'époque, jamais mergée).
+- **Prochaine action** : (1) `git merge origin/main` dans la branche (jamais stash), **nouvel horodatage**
+  (`pnpm migration:horodatage`, `git mv` de la migration : 256 migrations plus récentes sur `main`, `db push`
+  la refuserait) ; (2) revérifier en prod ce que la migration suppose (nœuds Géométrie repérée › équations de
+  droites, Fonction racine carrée › définition et courbe, `64f54fc1`, tags 2-323/324/363 absents), relancer
+  `pnpm test:integration tests/integration/questions-2de-approfondissements-9-rangement-tags.test.ts` ; (3) push,
+  CI, `pnpm check:migrations --pr 2525`, `pnpm pr:merger 2525` ; (4) `db:migrate` (conditions remplies :
+  rangement seul, additive, rollback écrit, audit 0 finding ; `migration list --linked` d'abord) → vérifier en
+  prod → page à cocher des 2 modèles → publication par David → versement de ce chantier et de `questions-2de`.
+- **En attente de David** : rien avant la page à cocher.
+- **Pièges en cours** : écritures en prod → commande `!` ; « Client Tests (browser) » qui plante tests verts →
+  `gh run rerun --failed` ; garde « Doc à jour » → `Doc-inchangée:` dans un commit.
+- **Worktree / branche** : `../ubumaths-wt-questions-2de-demonstrations`, `feat/questions-2de-approfondissements-9-rangement` (PR #2525).
 
 ## 1. Relevé : les démonstrations du BO de seconde (2026-11-06)
 
