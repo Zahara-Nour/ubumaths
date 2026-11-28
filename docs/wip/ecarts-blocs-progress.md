@@ -8,16 +8,20 @@ status: en cours
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-28, avant la première PR._
+_Mis à jour le 2026-11-28, après #3266._
 
-- **État** : L88, L89, L90, L92, L93 corrigés sur la branche (PR 1) ; L91 déjà corrigé par E46
-  (`tickLabelStride`, 2026-11-24), à clore au registre sans code ; V110 attend sa phase 0.
-- **Prochaine action** : PR 1 (revue, CI, merge) ; puis V110 dans sa propre PR, une fois la phase 0
-  tranchée par David.
-- **En attente de David** : phase 0 de V110 (où écrire la distance d'un cylindre coupé près de l'axe).
-- **Pièges en cours** : un bloc reconnu dans une liste doit aussi être affiché par `ListNode` (sinon
-  il disparaît, cf. E56, L89).
-- **Worktree / branche** : `../ubumaths-wt-ecarts-blocs` · `fix/ecarts-blocs`.
+- **État** : #3266 mergée (L88, L89, L90, L92, L93). V110 corrigé et poussé sur
+  `fix/ecarts-blocs-v110` (commit bf2578be5a, test rouge→vert, preuve du registre verte), **PR pas
+  encore ouverte**. L91 déjà corrigé par E46, à clore au registre sans code.
+- **Prochaine action** : dans le worktree V110, `git merge origin/main` (récupère ce journal), noter
+  V110 dans le journal, push, ouvrir la PR (pas de revue : position d'une cote, < 30 lignes),
+  `pnpm pr:merger`. Puis clore le lot : barrer L88-L93 et V110 au registre (L91 « déjà corrigé par E46,
+  9448e19f97 »), `fait (#3266, #<V110>, date)` dans `ecarts-lots.md`, archiver ce journal.
+- **En attente de David** : rien. V110 : il a répondu « je te suis » à l'option 1 (à côté du trait) ;
+  posée finalement **en haut à gauche du bout du trait au centre de la base**, car à mi-hauteur elle
+  tombait sur le bord de la coupe (vu à l'écran, 0,5 / 1 / 3 cm) ; écart signalé à David.
+- **Pièges en cours** : un bloc reconnu dans une liste doit aussi être affiché par `ListNode` (E56, L89).
+- **Worktree / branche** : `../ubumaths-wt-ecarts-blocs-v110` · `fix/ecarts-blocs-v110`.
 
 ## Écarts du lot
 
