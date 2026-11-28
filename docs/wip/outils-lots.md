@@ -1,7 +1,7 @@
 ---
 title: Outils manquants — lots pour des sessions en parallèle
 date: 2026-11-28
-status: lots écrits le 2026-11-28 ; en cours : equerre-uni, espace, escalier-suite, python
+status: lots écrits le 2026-11-28 ; en cours : espace, escalier-suite, python
 ---
 
 # Outils manquants : lots pour des sessions en parallèle
@@ -39,7 +39,7 @@ par lot (worktree + Claude avec Remote Control, dans tmux) ; chaque session suit
 | Lot                       | Outils (n° d'`outils-manquants.md`) | Module                                                                  | Pris par                          | Notes                                                                                  |
 | ------------------------- | ----------------------------------- | ----------------------------------------------------------------------- | --------------------------------- | -------------------------------------------------------------------------------------- |
 | `tableau-variation`       | 63, puis 59                         | `instance-generator`, ` ```variation `                                  | fait (#3286, #3296, 2026-11-28)   | 63 est un défaut en prod : le premier                                                  |
-| `equerre-uni`             | 40, puis 38, puis 45                | figure à compléter, `construction/line.ts`                              | outil-equerre-uni (2026-11-28)    | 45 dépend du 40                                                                        |
+| `equerre-uni`             | 40, puis 38, puis 45                | figure à compléter, `construction/line.ts`                              | fait (#3290, #3299, #3313)        | 45 dépend du 40                                                                        |
 | `triangle-quadrillage`    | 47                                  | figure à compléter, contrôle `triangle`                                 | fait (#3289, 2026-11-28)          | même module que `equerre-uni` : `merge origin/main` avant la PR                        |
 | `graduer-segment`         | 61                                  | ` ```line `                                                             | fait (#3293, 2026-11-28)          |                                                                                        |
 | `equation-lignes`         | 55                                  | mathAST (équivalence), case neuve                                       | fait (#3292, 2026-11-28)          |                                                                                        |

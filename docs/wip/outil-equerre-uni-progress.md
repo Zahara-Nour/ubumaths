@@ -1,22 +1,22 @@
 ---
 title: Lot d'outils equerre-uni — journal
 date: 2026-11-28
-status: outils 40 (#3290) et 38 (#3299) livrés ; 45 en PR
+status: lot fini — outils 40 (#3290), 38 (#3299), 45 (#3313) livrés
 ---
 
 # Lot `equerre-uni` (outils 40, puis 38, puis 45)
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-28, avant la PR de l'outil 45._
+_Mis à jour le 2026-11-28, après #3313._
 
-- **État** : outils 40 (#3290) et 38 (#3299) livrés ; outil 45 (figure composée) en PR, branche
-  `feat/outil-equerre-uni-45` (§ 3 à 3 quater) · **Prochaine action** : CI verte → `pnpm pr:merger`, puis
-  clore le lot (`outils-lots.md`, `outils-manquants.md` ligne 45 « Fait ») · **En attente de David** : rien ·
+- **État** : lot `equerre-uni` fini : outils 40 (#3290), 38 (#3299) et 45 (#3313, figure composée) livrés ;
+  listes `outils-manquants.md` et `outils-lots.md` à jour · **Prochaine action** : aucune dans ce lot ;
+  CM1-105 / CM2-095 peuvent avoir leur modèle (figures A et B du § 3) · **En attente de David** : rien ·
   **Pièges en cours** : à dire à David : correction de l'outil 40 aussi sur quadrillage ; (d) segment → pied
   hors du segment possible ; outil 38 : `droite` exigée dans `outils:` ; outil 45 : `cercle(I, passant=A)`,
   pas de droite dans une figure composée (exemple C), limites du § 3 quater · **Worktree / branche** :
-  `../ubumaths-wt-outil-equerre-uni`, `feat/outil-equerre-uni-45`.
+  aucun (retirés par `pr:merger`).
 
 ## 1. Outil 40 — phase 0 (2026-11-28)
 
