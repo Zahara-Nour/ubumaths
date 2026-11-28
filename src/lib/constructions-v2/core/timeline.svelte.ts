@@ -170,8 +170,12 @@ export class Timeline {
 			this._currentTime = 0;
 			this._currentStepIndex = -1;
 		} else {
-			this._currentTime = this.stepTimings[this._currentStepIndex - 1].end;
-			this.updateCurrentStep();
+			// Indice posé directement : `findStepAt` ne distingue pas les pas de 0 ms
+			// qui finissent au même instant (masques à la suite, en fin de script)
+			const prevIndex = this._currentStepIndex - 1;
+			this._currentTime = this.stepTimings[prevIndex].end;
+			this._currentStepIndex = prevIndex;
+			this.onStepChange?.(prevIndex);
 		}
 		this.emitState();
 	}
