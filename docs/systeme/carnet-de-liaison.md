@@ -159,8 +159,9 @@ formulaire sans `Origin` de notre site (Q39).
 - Le plafond d'un courriel par semaine vaut par adresse **et par élève** : un parent de deux
   élèves peut recevoir deux courriels le même jour ; un lien et un courriel d'exception peuvent
   partir le même jour (Q33 : les liens ne comptent pas).
-- Épisodes non marqués après un envoi réussi (erreur de base) : journalisé, ils repartent une
-  semaine plus tard.
+- Épisodes non marqués après un envoi réussi (erreur de base) : ils repartent une semaine plus
+  tard. Le passage quotidien finit alors en erreur, que le cron journalise (L80) ; les courriels
+  suivants partent quand même.
 - Arrêter puis reprendre les courriels resignale une exception encore en cours (voulu : le
   parent qui reprend veut l'état présent).
 - Un élève qui change de classe en cours d'année, ou retiré puis remis dans sa classe (un
