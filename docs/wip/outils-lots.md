@@ -1,7 +1,7 @@
 ---
 title: Outils manquants — lots pour des sessions en parallèle
 date: 2026-11-28
-status: lots écrits le 2026-11-28 ; en cours : tableau-variation, equerre-uni, graduer-segment ; faits : triangle-quadrillage, equation-lignes
+status: lots écrits le 2026-11-28 ; en cours : tableau-variation, equerre-uni, graduer-segment, second-tag, yohaku
 ---
 
 # Outils manquants : lots pour des sessions en parallèle
@@ -43,8 +43,8 @@ par lot (worktree + Claude avec Remote Control, dans tmux) ; chaque session suit
 | `triangle-quadrillage` | 47                                  | figure à compléter, contrôle `triangle`      | fait (#3289, 2026-11-28)             | même module que `equerre-uni` : `merge origin/main` avant la PR |
 | `graduer-segment`      | 61                                  | ` ```line `                                  | outil-graduer-segment (2026-11-28)   |                                                                 |
 | `equation-lignes`      | 55                                  | mathAST (équivalence), case neuve            | fait (#3292, 2026-11-28)             |                                                                 |
-| `second-tag`           | 66                                  | `migration-rangement.ts`                     |                                      | petit                                                           |
-| `yohaku`               | 56                                  | bloc neuf                                    |                                      |                                                                 |
+| `second-tag`           | 66                                  | `migration-rangement.ts`                     | outil-second-tag (2026-11-28)        | petit                                                           |
+| `yohaku`               | 56                                  | bloc neuf                                    | outil-yohaku (2026-11-28)            |                                                                 |
 | `espace`               | 64, puis 65                         | case neuve, ` ```solide `                    |                                      |                                                                 |
 | `escalier-suite`       | 48                                  | ` ```courbe `                                |                                      |                                                                 |
 | `ecritures-exactes`    | 62                                  | mathAST (`checkForm`, `cosmetic-transforms`) |                                      | attend la fin de `fusion-moteurs` (même code)                   |
