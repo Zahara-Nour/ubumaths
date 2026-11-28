@@ -459,7 +459,7 @@ La modération porte sur la table `messages` **du chat**, pas sur `private_messa
 - **Notification d'un compte = à son nom, figée après envoi** (seul `deleted_at` bouge) :
   trigger `guard_notification_authorship_trg` (`20261001220000_securite_points_mineurs.sql`, Q77).
 - **Un prof ne cible que des classes ou des élèves inscrits** (adhésion active : un élève qui
-  a quitté toutes les classes est refusé, L83), jamais `all` ni `role` (`createNotification`).
+  a quitté toutes les classes est refusé, L83), jamais `all` ni `role` (`createNotification`, et policy « Teachers can create notifications for their classes » pour l'insertion directe).
 - **Élève archivé** : ne voit plus les notifications de la classe quittée
   (`20260912200000_archived_members_lose_class_notifications.sql`, test
   `tests/integration/archived-member-class-notifications.test.ts`).

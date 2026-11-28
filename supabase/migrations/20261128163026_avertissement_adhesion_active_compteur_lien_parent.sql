@@ -3,7 +3,7 @@
 -- ============================================================================
 --
 -- QUESTION D'ACCÈS (posée à David le 2026-11-28) : personne ne lit rien de
--- plus qu'avant. La migration FERME deux écritures, elle n'en ouvre aucune :
+-- plus qu'avant. La migration FERME des écritures, elle n'en ouvre aucune :
 --
 --   · L82 : le professeur ne peut plus poser un avertissement à un élève dans
 --     une classe où l'élève n'a pas d'adhésion ACTIVE (pas inscrit, ou adhésion
@@ -14,19 +14,26 @@
 --     Fermé aux trois portes : `add_warning`, `add_warnings_bulk` (SECURITY
 --     DEFINER, qui contournent la RLS) et la policy d'insertion directe.
 --
+--   · L83 : la policy d'insertion des notifications du prof n'accepte plus,
+--     en ciblage nominatif, un élève sans adhésion active (déjà refusé par
+--     `createNotification`, pas par une insertion directe).
+--
 --   · L79 : `get_carnet_by_token` n'ajoute plus une ouverture au lien quand le
 --     carnet est ouvert par le jeton d'un courriel. Rien ne change de ce qui est
 --     lu ; seul le compteur `access_count` (lu par aucun écran) est juste.
 --
--- Additive : `create or replace` des fonctions (les droits restent), policy
--- remplacée par une plus stricte. Aucune donnée touchée.
+-- Additive : `create or replace` des fonctions (les droits restent), policies
+-- remplacées par des plus strictes. Aucune donnée touchée.
 --
 -- ROLLBACK (rejouer les définitions précédentes) :
 --   · add_warning, add_warnings_bulk : supabase/migrations/20260616220000_baseline_schema.sql
 --     (puis `alter function … set search_path = public, pg_temp`, comme
 --     20261003210000_rpc_lot4_hygiene.sql) ;
 --   · get_carnet_by_token : supabase/migrations/20261116215952_carnet_courriels_exception.sql ;
---   · policy :
+--   · policy des notifications : rejouer le `with check` de
+--     20260620090000_drop_class_teacher_id_mono_teacher.sql (ligne ~3289) par
+--     `alter policy`, sans `and cm.status = 'active'` ;
+--   · policy des avertissements :
 --       drop policy if exists "teachers_insert_own_class_warnings" on public.student_warnings;
 --       create policy "teachers_insert_own_class_warnings" on public.student_warnings
 --         for insert to authenticated
@@ -202,7 +209,39 @@ comment on policy "teachers_insert_own_class_warnings" on public.student_warning
 	'Teachers can add warnings for active members of their classes';
 
 -- ---------------------------------------------------------------------------
--- 2. L79 : une ouverture n'est comptée au lien que si elle vient du lien
+-- 2. L83 : notification nominative du prof, adhésion active de l'élève
+-- ---------------------------------------------------------------------------
+-- `createNotification` le contrôle côté serveur ; la policy le laissait passer
+-- à une insertion directe (PostgREST, session du prof). `alter policy` garde
+-- le rôle (`authenticated`, 20261001130000) ; seul `cm.status = 'active'`
+-- s'ajoute.
+
+alter policy "Teachers can create notifications for their classes" on public.notifications
+	with check (
+		(select p.role::text from public.profiles p where p.id = auth.uid()) = 'teacher'
+		and (
+			(
+				target_type = 'classes'
+				and target_class_ids <@ (
+					select array_agg(c.id) from public.classes c
+					where public.is_teacher_or_admin()
+				)
+			)
+			or (
+				target_type = 'users'
+				and target_user_ids <@ (
+					select array_agg(distinct cm.student_id)
+					from public.class_members cm
+					join public.classes c on c.id = cm.class_id
+					where public.is_teacher_or_admin()
+						and cm.status = 'active'
+				)
+			)
+		)
+	);
+
+-- ---------------------------------------------------------------------------
+-- 3. L79 : une ouverture n'est comptée au lien que si elle vient du lien
 -- ---------------------------------------------------------------------------
 
 create or replace function public.get_carnet_by_token(p_token text)
