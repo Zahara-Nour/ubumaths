@@ -198,7 +198,8 @@ La modération porte sur la table `messages` **du chat**, pas sur `private_messa
   (l'ancienne adresse `/dashboard/teacher/warnings` est redirigée par `src/hooks.server.ts`).
 - Serveur : `src/lib/server/warnings.ts` — `getCurrentAcademicPeriod`, `getActiveSchoolYear`,
   `getSchoolYearPeriods` (lus aussi par `dashboard/teacher/+layout.server.ts`),
-  `getClassWarnings`, `addWarningsBulk`, `removeWarningsBulk`.
+  `getClassWarnings`, `addWarningsBulk`, `removeWarningsBulk`. Un échec de la base y lève
+  un 500 au message français, le détail part au journal (`throwServerError`, écart L42).
 - API prof (`requireRoles(['teacher','admin'])`) : `src/routes/api/warnings/bulk/`
   (`add_warnings_bulk`, un ajout ou plusieurs), `warnings/remove-bulk/` (`remove_warnings_bulk`,
   contexte `teacher` ou `vip_card`), `classes/[classId]/warnings/` (lecture par classe).
