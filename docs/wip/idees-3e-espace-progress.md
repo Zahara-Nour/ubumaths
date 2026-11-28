@@ -2,14 +2,15 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-28, après #3272 (F1 mergé)._
+_Mis à jour le 2026-11-28, après la mise en prod 0.117.0 (#3264 et #3272 en prod)._
 
-- **État** : lot 1 en prod et relu. F1 (modèle 4-034, 7 variations) mergé sur `main` par #3272,
-  **pas encore en brouillon en prod** (§ Lot 2) · **Prochaine action** : `deploy:prod` (demande de
-  David : #3264, l'outil n° 72, n'est pas en prod), puis brouillon de F1 en prod par David, relecture
-  dans `/dev/modeles`, puis migration de rangement générée · **En attente de David** : le
-  `deploy:prod` · **Pièges en cours** : `--publier` en local écrit l'id local dans le fichier (à
-  retirer avant tout commit) · **Worktree / branche** : aucun (retiré par `pr:merger`)
+- **État** : lot 1 en prod et relu. F1 (modèle 4-034, 7 variations) en prod côté code,
+  **pas encore en brouillon en base** (§ Lot 2) · **Prochaine action** : David lance
+  `! pnpm tsx scripts/create-questions.ts --dir scripts/questions/idees-3e-espace-neufs --publier`
+  depuis le dépôt principal ; je commite l'id écrit en tête du fichier, puis relecture dans
+  `/dev/modeles?point=4-034`, puis migration de rangement générée · **En attente de David** : ce
+  `--publier` · **Pièges en cours** : `--publier` en local écrit l'id local dans le fichier (à
+  retirer avant tout commit) · **Worktree / branche** : aucun
 
 ## Rubrique
 
