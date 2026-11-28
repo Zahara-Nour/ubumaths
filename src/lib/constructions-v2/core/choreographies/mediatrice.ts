@@ -674,7 +674,7 @@ function buildRegleEquerre(ctx: Parameters<ChoreographyFn>[0]): ChoreographyResu
 	const subSteps: SubStep[] = [
 		...measureSteps,
 		{
-			kind: 'compass-measure',
+			kind: 'instrument-move',
 			instrument: 'setSquare',
 			instrumentTarget: squareTarget,
 			compassRadius: 0,
@@ -696,7 +696,7 @@ function buildRegleEquerre(ctx: Parameters<ChoreographyFn>[0]): ChoreographyResu
 			instruction: `Le long du bord de l'équerre, on trace la perpendiculaire à ${nom(d)} en ${nI}`
 		},
 		{
-			kind: 'compass-measure',
+			kind: 'instrument-move',
 			instrument: 'ruler',
 			instrumentTarget: rulerTarget,
 			compassRadius: 0,

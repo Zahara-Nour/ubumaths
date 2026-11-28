@@ -3,7 +3,8 @@
 	 * Flash-card d'une tuile (catalogue Automaths, Ma série), sous une ligne fine
 	 *
 	 * Phase 0 validée par David (2026-11-26, chantier `automaths`) : à gauche le
-	 * badge des niveaux du modèle (« CM1–CM2 », « CM1 · 6e ») ; à droite
+	 * badge des niveaux du modèle (« CM1–CM2 », « CM1 · 6e »), plein (couleur
+	 * d'accent, 2026-11-28) ; à droite
 	 * « ‹ 2/5 › » quand le modèle a au moins deux variations. Les flèches
 	 * changent seulement l'exemple affiché : rien ne change dans la série. Un
 	 * exemple de variation est toujours le même (graine fixe, `variationExample`).
@@ -146,7 +147,14 @@
 	<div
 		class="flex min-h-6 flex-wrap items-center justify-between gap-x-2 text-xs text-muted-foreground"
 	>
-		<span title="Niveaux" data-tile-grades>{gradeBadge}</span>
+		<!-- Badge plein (demande de David, 2026-11-28) ; sans niveau, pas de pastille vide -->
+		<span
+			class={gradeBadge
+				? 'rounded-full bg-primary px-2 py-0.5 font-medium text-primary-foreground'
+				: undefined}
+			title="Niveaux"
+			data-tile-grades>{gradeBadge}</span
+		>
 		<div class="ml-auto flex items-center gap-3">
 			{#if choosable}
 				<MyCheckbox

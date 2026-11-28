@@ -1049,7 +1049,7 @@ function buildRapporteur(ctx: Parameters<ChoreographyFn>[0]): ChoreographyResult
 			: `l’angle : ${formatDeg(read)}°`;
 	const subSteps: SubStep[] = [
 		{
-			kind: 'compass-measure',
+			kind: 'instrument-move',
 			instrument: 'protractor',
 			instrumentTarget: { x: V.x, y: V.y, rotation },
 			compassRadius: 0,
@@ -1060,7 +1060,7 @@ function buildRapporteur(ctx: Parameters<ChoreographyFn>[0]): ChoreographyResult
 			instruction: `On place le centre du rapporteur sur ${nom(nV)}, le 0 sur ${side}, et on lit ${reading}`
 		},
 		{
-			kind: 'compass-measure',
+			kind: 'instrument-move',
 			instrument: 'pencil',
 			secondaryInstrument: 'protractor',
 			instrumentTarget: {

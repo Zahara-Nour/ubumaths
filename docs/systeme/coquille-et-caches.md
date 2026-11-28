@@ -304,10 +304,8 @@ du 2026-11-11 : `reading 'id'` sur `/dev/modeles`, onglet d'avant 0.81.0).
 
 ## Pièges
 
-- **Les getters `*Sync` du cache prof et `getBuddySync` ne réagissent pas au temps.** Ils
-  comparent `Date.now()` au TTL, qui n'est pas réactif : un `$derived` ne se recalcule pas à
-  l'expiration, il rend `null` au prochain recalcul déclenché par autre chose. Le cache élève
-  (récompenses, avertissements) n'a plus ce défaut : il se relit à l'échéance.
+- **Les getters `*Sync` du cache prof et `getBuddySync` ne suivent pas leur échéance** : écart
+  L141 au [registre](../ecarts/registre.md).
 - **Les classes du cache prof ne viennent que de l'hydratation** : aucune lecture d'API ne
   remplit une classe seule (`getAllClassesSync` lit ce que les pages ont versé).
 - **Le layout prof refuse l'admin.** Une garde `teacher || admin` dans une page sous
