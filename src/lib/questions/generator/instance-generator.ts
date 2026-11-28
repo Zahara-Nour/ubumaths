@@ -376,7 +376,7 @@ function blockAnswerName(kind: BuildKind): string {
 	if (kind === 'patron') return 'les faces du bloc patron (designer:, completer:)';
 	if (kind === 'solide') return 'les points du bloc solide (tracer:)';
 	if (kind === 'courbe')
-		return 'les coordonnées du point, la droite ou le vecteur du repère (placer:, tracer:)';
+		return 'les coordonnées du point, la droite, le vecteur ou l’escalier du repère (placer:, tracer:, construire)';
 	if (kind === 'trig') return 'la mesure du point du cercle trigonométrique (placer:)';
 	if (kind === 'tortue') return 'le programme du bloc tortue (attendu:)';
 	if (kind === 'calcul') return 'le programme du bloc calcul (attendu:)';
@@ -1239,6 +1239,8 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 							const first = child.caseIndex;
 							if ((child.spec?.tracer || child.spec?.vecteur) && first !== undefined)
 								return [first];
+							const build = child.spec?.construire;
+							if (build && first !== undefined) return build.terms.map((_, k) => first + k);
 							if (!child.spec?.placer || first === undefined) return [];
 							return child.spec.placer.map((_, k) => first + k);
 						}

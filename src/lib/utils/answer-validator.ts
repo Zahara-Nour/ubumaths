@@ -94,6 +94,7 @@ import { expectsUnitlessValue, withoutDegreeSuffix } from '#lib/questions/answer
 import { judgeConstruction } from '#lib/questions/construction/judge.ts';
 import { isPlacedTimeCorrect } from '#lib/ubumark/utils/horloge-placer.ts';
 import { isCourbeAnswerCorrect } from '#lib/ubumark/utils/courbe-tracer.ts';
+import { staircaseChains } from '#lib/ubumark/utils/courbe-construire.ts';
 import { isPlacedAngleCorrect } from '#lib/ubumark/utils/trig-placer.ts';
 import { isTortueAnswerCorrect, tortueAnswerVerdict } from '#lib/ubumark/utils/tortue-answer.ts';
 import { calculAnswerVerdict, isCalculAnswerCorrect } from '#lib/ubumark/utils/calcul-answer.ts';
@@ -2215,9 +2216,14 @@ function validateGradedBlanks(
 		return validateBlanksOrderIndependent(userAnswers, instance, userAnswersLatex);
 	}
 
+	// Escalier à construire : toutes ses cases jugées sur la chaîne de sa dernière case
+	const judged = staircaseChains(
+		userAnswers,
+		blanks.map((b) => b.expectedAnswer)
+	);
 	return aggregateOrderedBlanks(
 		blanks.map((blank, i) =>
-			validateSingleBlank(userAnswers[i], blank, userAnswersLatex?.[i], instance)
+			validateSingleBlank(judged[i], blank, userAnswersLatex?.[i], instance)
 		),
 		blanks
 	);
@@ -2877,8 +2883,13 @@ function detailGradedBlanks(
 	const answers = userAnswers.map((answer, i) => userAnswersLatex?.[i] || answer);
 
 	if (!instance.options?.orderIndependent) {
+		// Escalier à construire : toutes ses cases jugées sur la chaîne de sa dernière case
+		const judged = staircaseChains(
+			userAnswers,
+			blanks.map((b) => b.expectedAnswer)
+		);
 		const results = blanks.map((blank, i) =>
-			validateSingleBlank(userAnswers[i], blank, userAnswersLatex?.[i], instance)
+			validateSingleBlank(judged[i], blank, userAnswersLatex?.[i], instance)
 		);
 		return {
 			result: aggregateOrderedBlanks(results, blanks),

@@ -183,7 +183,7 @@ Lecture d'un terme : le survol montre la **valeur exacte** (`exact.ts`, plafonds
 
 Le moteur de suites sert aussi le bloc ubumark ` ```courbe ` (`src/lib/ubumark/parser/courbe-parser.ts`,
 `src/lib/ubumark/utils/courbe-scene.ts`) : le modifier, c'est modifier ce bloc. Ce bloc a aussi son
-geste « placer des points », son geste « tracer une droite » (`tracer:`), son geste « tracer un vecteur » (`tracer: vecteur`, combinaison `u + v` comprise), ses vecteurs donnés (`vecteurs:`, flèches de la scène, `scene.vectors`), sa courbe de données (`données:`, ligne brisée de la scène, `scene.data`), son corrigé dessiné (`solution: oui`, réponse du geste en vert, `solvedOverlay`) et ses titres d'axes, décrits dans [ubumark](ubumark.md) (Repère à placer) :
+geste « placer des points », son geste « tracer une droite » (`tracer:`), son geste « tracer un vecteur » (`tracer: vecteur`, combinaison `u + v` comprise), son geste « construire l'escalier » d'une suite récurrente (`construire N`, à la place d'`escalier`, `scene.start`, u₀ sur l'axe), ses vecteurs donnés (`vecteurs:`, flèches de la scène, `scene.vectors`), sa courbe de données (`données:`, ligne brisée de la scène, `scene.data`), son corrigé dessiné (`solution: oui`, réponse du geste en vert, `solvedOverlay`) et ses titres d'axes, décrits dans [ubumark](ubumark.md) (Repère à placer) :
 le pas de grille automatique (`courbeGridSteps`) y est partagé par la scène, le parseur et l'écran.
 En évaluation notée, `placer: A=? ; B=?` (coordonnées masquées) se lit aussi : point de remplacement,
 ni nœud ni fenêtre vérifiés ([ubumark](ubumark.md), invariant 12).
@@ -415,4 +415,4 @@ Les écarts de cette zone sont au [registre des écarts](../ecarts/registre.md) 
 
 ---
 
-Vérifié contre le code le 2026-10-15.
+Vérifié contre le code le 2026-10-15 ; construire l'escalier (``courbe, `construire N`, outil 48) le 2026-11-28.

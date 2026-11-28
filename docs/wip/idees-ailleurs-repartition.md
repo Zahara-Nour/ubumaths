@@ -116,7 +116,7 @@ anciennes versions. Les deux fichiers d'automatismes `6AutoN4` ne sont pas repri
 | Distances                          | 6G1   | 6         | libre                |                             |
 | Cercles et disques                 | 6G2   | 9         | libre                |                             |
 | Médiatrices                        | 6G3   | 5         | libre                |                             |
-| Angles                             | 6G4   | 12        | prise (2026-11-28)   | `idees-6e-angles`           |
+| Angles                             | 6G4   | 12        | publiée (2026-11-28) | `idees-6e-angles`           |
 | Bissectrices                       | 6G5   | 3         | libre                |                             |
 | Triangles                          | 6G6   | 16        | libre                |                             |
 | Symétrie axiale                    | 6G7   | 13        | libre                |                             |
@@ -178,9 +178,6 @@ de contenu appliquée en prod.
 | d03e49c0 Calculer la valeur d'une valeur absolue             | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
 | d264f7aa Pair ou impair : écrire 2k ou 2k + 1                | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
 | fa65910d Multiple : a = k × b                                | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| c8741112 Le vocabulaire des angles                           | `idees-6e-angles`                                           | 2026-11-28 |                                      |
-| 3be08965 Mesurer un angle au rapporteur                      | `idees-6e-angles`                                           | 2026-11-28 |                                      |
-| 2291c83c Construire un angle de mesure donnée                | `idees-6e-angles`                                           | 2026-11-28 |                                      |
 
 ## Idées en attente
 
