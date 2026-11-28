@@ -6,17 +6,17 @@ Mettre en œuvre les idées retenues dans [idees-format-exercices.md](idees-form
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-28, page à cocher complétée (outils livrés depuis le 22, idées en attente) ; pas de PR._
+_Mis à jour le 2026-11-28, page à cocher validée en bloc par David ; pas de PR._
 
-- **État** : idées 1 à 5 en prod (0.117.0, `hint` compris). Revue de Seconde : passe 1 commitée ;
-  passe 2 sur la page à cocher https://claude.ai/artifact/NzDUsxMUyjn8Ke1rSJf2Af (collection
-  `reponses`, **0 réponse** le 2026-11-28), version 2 : 7 fiches neuves en tête, 3 mises à jour.
-- **Prochaine action** : lire les réponses de David (les compter), réécrire, une seule PR pour les
-  deux passes, migration de contenu (réglages du modèle compris), puis série de relecture des 52
-  dans `/dev/modeles`, puis lever les 16 réservations.
-- **En attente de David** : la page à cocher ; `/idees-rubrique` en 1re et Tle (à lui expliquer).
+- **État** : passe 1 commitée ; passe 2 **tranchée** (« je valide toute la page à cocher »,
+  2026-11-28) = mes recommandations partout, détail au § « Passe 2 tranchée ».
+- **Prochaine action** : PR 1 = passe 1 + les 66 propositions sans outil neuf (liste au §),
+  agents `pedagogy-expert` par dossier ; migration de contenu (réglages compris) ; puis série de
+  relecture des 52 + neufs dans `/dev/modeles`. Les 8 propositions qui attendent un outil
+  (n° 75 à 79) viennent après leurs outils.
+- **En attente de David** : faire faire les outils n° 75 à 79 par un lot d'outils (`/prendre-outil`) ou ici ?
 - **Pièges** : réglages du modèle = jugent aussi les variations en prod (specs d'origine vertes) ;
-  zoom refuse `placer:` ; `impossibleLabel` ni en flash-card ni en classe ; dédoublonnage aveugle à la forme.
+  zoom refuse `placer:` ; `impossibleLabel` ni en flash-card ni en classe ; variations jamais retirées.
 - **Worktree / branche** : `ubumaths-wt-idees-format-revue-2de` (`feat/idees-format-revue-2de`).
 
 ## Idée 1 — phase 0 validée (David, 2026-11-21)
@@ -517,3 +517,21 @@ Page à cocher, version 2 : fiches neuves `n-zoom-lire` (a692569a), `n-zoom-enca
 cours), `n-f34`, `n-f52` ; mises à jour : `g-choix2`, `t-reglages-publie` (livré),
 `b-12-nombre-premier-decomp-0` (voie : ajout), `c1-07-ecriture-scientifique-1` et
 `c1-08-calculer-avec-puissan-0` (réglage existant).
+
+### Passe 2 tranchée (David, 2026-11-28)
+
+« Je valide toute la page à cocher » (aucune case cochée en ligne : la validation est ce message).
+Lue comme : **ma recommandation sur chaque fiche**.
+
+- Questions d'ensemble : `g-voie` = au cas par cas (ajout par défaut ; modifier la variation pour
+  une vraie correction : bonne réponse refusée, consigne floue) ; choix 1, 2, 3, 5, 6 = oui ;
+  choix 4 (téra) = garder.
+- Outils : oui pour n° 75 (message de forme), 76 (produit de facteurs premiers), 77 (sans racine au
+  dénominateur), 78 (arrondi à demi-point), 79 (|a − b|) ; réglages du modèle = s'en servir ;
+  **plus tard** : n° 80 (deux cases), 81 (encadrement à l'envers), étapes de correction générée.
+- Fiches : 74 « oui », dont 3 « rien à changer » (b-01, b-02, b-05 : corrections écrites gardées) ;
+  **plus tard** : a-06 (droite à deux morceaux), publies-7d411132-0 (n° 80), n-f17 (n° 49) ;
+  **non** : n-f16.
+- **Attendent un outil** (8) : a-01-0 (n° 78), a-05-2 (n° 79), b-04-1, b-10-1, c1-03-1, c1-07-0
+  (n° 75), b-12-1 (n° 76), c2-07-0 (n° 77). **Faisables tout de suite** : les 66 autres, dont
+  b-12-0 et c1-07-1 / c1-08-0 par les réglages du modèle.
