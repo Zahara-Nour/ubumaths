@@ -52,7 +52,9 @@ import {
 	flattenSumShallow,
 	flattenProductShallow,
 	unflattenSum,
-	unflattenProduct
+	unflattenProduct,
+	type Sign,
+	type SignedTerm
 } from './flatten';
 import { parseLatexSafe, type CapitalPairs, type GenericFunctionConfig } from './parser';
 import { separateSpacedCapitals } from './parser/latex/point-names';
@@ -1119,6 +1121,42 @@ function unifyNegativeExponentialNotationAST(ast: MathNode): MathNode {
 	});
 }
 
+/**
+ * Terme d'une somme qui porte son signe moins dans un coefficient (`(−3)·x`,
+ * `−3`) : le moins passe au signe du terme, pour que `−3x + 2` et `2 − 3x`
+ * se lisent pareil.
+ */
+function liftTermSign(signed: SignedTerm): SignedTerm {
+	const { term, sign } = signed;
+	const flipped: Sign = sign === '+' ? '-' : '+';
+	if (term.type === 'multiplication' && isOpposite(term.left)) {
+		return { sign: flipped, term: { ...term, left: term.left.operand } };
+	}
+	if (isOpposite(term)) return { sign: flipped, term: term.operand };
+	return signed;
+}
+
+/**
+ * |u| et |−u| sont la même écriture (outil n° 79) : `|3 − x|` pour `|x − 3|`
+ * n'est pas une faute de forme. Une somme entre les barres est écrite avec son
+ * premier terme positif (après le tri des termes) : `|3 − x|` → `|x − 3|`.
+ */
+function unifyAbsoluteOppositeAST(ast: MathNode): MathNode {
+	return mapNode(ast, (node) => {
+		if (node.type !== 'function' || node.name !== 'abs' || node.args.length !== 1) return node;
+		const [arg] = node.args;
+		if (arg.type !== 'addition' && arg.type !== 'subtraction') return node;
+		const terms = flattenSumShallow(arg).map(liftTermSign);
+		if (terms.length < 2 || terms[0].sign === '+') return node;
+		const flipped = terms.map((t): SignedTerm => ({
+			sign: t.sign === '+' ? '-' : '+',
+			term: t.term
+		}));
+		const rebuilt = unflattenSum(flipped);
+		return rebuilt === null ? node : { ...node, args: [sortTermsAndFactorsAST(rebuilt)] };
+	});
+}
+
 function buildASTPipeline(options: CheckFormOptions = {}): TransformerStep[] {
 	return [
 		{ transform: unifySegmentNotationAST, constraintId: null }, // notation, pas forme
@@ -1135,7 +1173,8 @@ function buildASTPipeline(options: CheckFormOptions = {}): TransformerStep[] {
 		})),
 		{ transform: unifyLogPowerNotationAST, constraintId: null }, // notation, pas forme
 		{ transform: unifyNegativeExponentialNotationAST, constraintId: null }, // notation, pas forme
-		{ transform: sortTermsAndFactorsAST, constraintId: null } // normalisation only
+		{ transform: sortTermsAndFactorsAST, constraintId: null }, // normalisation only
+		{ transform: unifyAbsoluteOppositeAST, constraintId: null } // |3 − x| = |x − 3|, pas une forme
 	];
 }
 

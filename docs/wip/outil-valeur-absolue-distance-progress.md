@@ -1,7 +1,7 @@
 ---
 title: Lot d'outils valeur-absolue-distance (n° 79)
 date: 2026-11-28
-status: phase 0 posée, en attente de David
+status: n° 79 codé, PR à ouvrir
 ---
 
 # Lot `valeur-absolue-distance`
@@ -10,10 +10,10 @@ status: phase 0 posée, en attente de David
 
 _Mis à jour le 2026-11-28, avant la première PR._
 
-- **État** : outil n° 79 vérifié manquant ; phase 0 écrite ci-dessous, rien de codé.
-- **Prochaine action** : réponse de David à la phase 0, puis tests rouges dans `src/lib/mathAST/__tests__/`.
-- **En attente de David** : phase 0 (§ Phase 0, questions 1 et 2).
-- **Pièges en cours** : lot mathAST (un seul à la fois, règle 1 d'`outils-lots.md`).
+- **État** : n° 79 codé (équivalence `normalize.ts` + écriture `checkForm`), tests verts ; PR à ouvrir.
+- **Prochaine action** : `pnpm check:incremental` + `pnpm types:cliquet` (verrou pris par une autre session au moment du /clear), suite `pnpm test:server` complète, revue `code-reviewer` (opus) à relancer si son rapport est perdu, puis PR et `pnpm pr:merger`.
+- **En attente de David** : rien (phase 0 tranchée : « je te suis »).
+- **Pièges en cours** : lot mathAST (un seul à la fois) ; rendu des primitives en `ln|…|` changé (orienté).
 - **Worktree / branche** : `../ubumaths-wt-outil-valeur-absolue-distance` · `feat/outil-valeur-absolue-distance`.
 
 ## Outil n° 79 : |a − b| = |b − a| dans l'équivalence
@@ -53,3 +53,23 @@ Questions :
    |1 − x²|) — ou seulement les différences a − b ?
 2. `2|x − 3|` pour `|2x − 6|` (un facteur sorti des barres) est refusé aussi. Aucun modèle ne le
    demande aujourd'hui : je le laisse hors du lot (recommandé), ou je l'ajoute ?
+
+### Tranché (David, 2026-11-28)
+
+« Je te suis » : règle générale |u| = |−u| ; `2|x − 3|` pour `|2x − 6|` hors du lot.
+
+### Fait
+
+- **Équivalence** : `absOfMixedSignArgument` (`normalize.ts`, cas `abs`) oriente un argument aux
+  termes des deux signes vers l'écriture sans moins en tête. Un premier essai (orientation par
+  empreinte) changeait 28 rendus figés (`ln|−x + 1|`) : abandonné.
+- **Écriture** : l'équivalence seule ne suffisait pas, `validateAnswer` rendait `bad_form` (« pas
+  écrite sous la forme demandée ») pour `|3 − x|`. Ajout de `unifyAbsoluteOppositeAST` dans le
+  pipeline de `checkForm` (`cosmetic-transforms.ts`), après le tri. Aucun autre lot en cours n'y
+  touche (`fusion-moteurs` dormant, `formes-messages` ailleurs).
+- **Rendu des primitives** : `∫ 1/(1 − x) = −ln|x − 1|` (avant `−ln|−x + 1|`), `∫ −3/(4 − 2x) =
+3/2 ln|x − 2|`. Oracle : forme `\frac{3}{2}\ln|x-2|` ajoutée au corpus (comme `5/(2x − 4)`),
+  `2/(1 − x²)` retiré des écarts de forme connus (désormais juste).
+- Tests : `mathAST/__tests__/equivalence-valeur-absolue-opposee.test.ts`,
+  `utils/__tests__/answer-validator-valeur-absolue-opposee.test.ts` (10 rouges sans le code).
+- Doc : `convention-equivalence.md` § Valeur absolue de deux opposés.

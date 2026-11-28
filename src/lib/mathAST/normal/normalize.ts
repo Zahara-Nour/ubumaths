@@ -258,6 +258,61 @@ function applyFunctionParity(
 	return null;
 }
 
+/**
+ * Vrai quand l'écriture commence par un signe moins (`−x + 1`, `−3x + 2`) :
+ * on descend au terme le plus à gauche.
+ */
+function leadsWithMinus(node: MathNode): boolean {
+	switch (node.type) {
+		case 'opposite':
+			return true;
+		case 'number':
+			return node.value.startsWith('-');
+		case 'addition':
+		case 'subtraction':
+		case 'multiplication':
+			return leadsWithMinus(node.left);
+		case 'division':
+			return leadsWithMinus(node.numerator);
+		default:
+			return false;
+	}
+}
+
+/**
+ * Valeur absolue d'un argument aux termes des deux signes (`3 − x`) : des deux
+ * opposés `u` et `−u`, on garde celui qui s'écrit sans signe moins en tête
+ * (`x − 3`), pour que `|3 − x|` et `|x − 3|` donnent le même facteur opaque
+ * (outil n° 79) et que `|x − 1|` reste écrit `|x − 1|`. Si les deux écritures
+ * commencent pareil, l'empreinte départage.
+ * Un argument aux termes tous de même signe ne passe pas ici : `|−x − 1|` est
+ * déjà retourné par la parité, `|x + 1|` reste tel quel.
+ *
+ * @returns la forme normale de `|u|` orientée, null si l'argument n'est pas mixte
+ */
+function absOfMixedSignArgument(
+	argForm: NormalForm,
+	canonicalNode: MathNode & { type: 'function' },
+	originalNode: MathNode,
+	ctx: NormalizeContext | undefined
+): NormalForm | null {
+	const opposite = negNormalForm(argForm);
+	if (canFactorOutNegative(argForm) !== null || canFactorOutNegative(opposite) !== null) {
+		return null;
+	}
+	const argNode = denormalize(argForm);
+	const oppositeNode = denormalize(opposite);
+	const argLeadsWithMinus = leadsWithMinus(argNode);
+	const keepArg =
+		argLeadsWithMinus === leadsWithMinus(oppositeNode)
+			? hashNormalForm(argForm) <= hashNormalForm(opposite)
+			: !argLeadsWithMinus;
+	const absNode: MathNode = { ...canonicalNode, args: [keepArg ? argNode : oppositeNode] };
+	const result = normalizeOpaqueNode(absNode);
+	recordNormalizationStep(ctx, 'even-function-parity', originalNode, result, 'summarized');
+	return result;
+}
+
 // =============================================================================
 // Trigonometric π-shift Reduction
 // =============================================================================
@@ -5066,6 +5121,10 @@ function normalizeFunction(
 		// Apply parity rule: abs(-x) = abs(x)
 		const parityResult5 = applyFunctionParity(argForm, name, canonicalNode, node, ctx);
 		if (parityResult5 !== null) return parityResult5;
+
+		// |u| = |−u| quand u a des termes des deux signes : `|3 − x|` ≡ `|x − 3|`
+		const oppositeResult = absOfMixedSignArgument(argForm, canonicalNode, node, ctx);
+		if (oppositeResult !== null) return oppositeResult;
 
 		// Contains variables or evaluation failed - treat as opaque
 		return normalizeOpaqueNode(canonicalNode);
