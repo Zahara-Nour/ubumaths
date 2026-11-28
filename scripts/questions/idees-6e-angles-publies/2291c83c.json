@@ -1,0 +1,219 @@
+{
+	"id": "2291c83c-8082-49cd-aafb-ef9b154f96cd",
+	"title": "Construire un angle de mesure donnée",
+	"description": "Au rapporteur : poser le centre sur le sommet et la base sur le côté donné, marquer la graduation voulue, tracer le second côté",
+	"grades": ["6"],
+	"level": 1,
+	"delay": 180,
+	"status": "published",
+	"variations": [
+		{
+			"statement": "Construis la demi-droite $[Oy)$ telle que $\\widehat{AOy} = {{a}}^\\circ$.\n\n```figure-a-completer\nfenetre: 0 ; 10 ; 0 ; 8\nverifier: angle AOy = {{a}}\n---\nO = point(4, 3)\nA = point(9, 3)\nx = demidroite(O, A)\n```",
+			"variables": [
+				{
+					"name": "r",
+					"expression": "2..16"
+				},
+				{
+					"name": "a",
+					"expression": "eval:10*r"
+				}
+			],
+			"conditions": ["a!=90"],
+			"correction": {
+				"steps": [
+					"**Poser le rapporteur** : son centre sur le sommet $O$, sa base le long de $[OA)$.",
+					"Partir du $0$ qui est sur $[OA)$, marquer un repère à la graduation ${{a}}^\\circ$, puis tracer à la règle la demi-droite $\\textcolor{{{color:primary.0}}}{[Oy)}$ de $O$ au repère."
+				]
+			}
+		},
+		{
+			"statement": "Construis la demi-droite $[Oy)$ telle que $\\widehat{AOy} = {{a}}^\\circ$.\n\n```figure-a-completer\nfenetre: 0 ; 10 ; 0 ; 8\nverifier: angle AOy = {{a}}\n---\nO = point(5, 4)\nA = point(1, 3)\nx = demidroite(O, A)\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "15..165"
+				}
+			],
+			"conditions": ["a!=90"],
+			"correction": {
+				"steps": [
+					"**Poser le rapporteur** : son centre sur le sommet $O$, sa base le long de $[OA)$.",
+					"Partir du $0$ qui est sur $[OA)$, marquer un repère à la graduation ${{a}}^\\circ$, puis tracer à la règle la demi-droite $\\textcolor{{{color:primary.0}}}{[Oy)}$ de $O$ au repère."
+				]
+			}
+		},
+		{
+			"statement": "Construis la demi-droite $[Oy)$ telle que $\\widehat{AOy} = {{a}}^\\circ$.\n\n```figure-a-completer\nfenetre: 0 ; 10 ; 0 ; 8\nverifier: angle AOy = {{a}}\n---\nO = point(5, 4)\nP = point(8.6, 4, visible=faux)\nA = rotation(P, angle={{s}}, centre=O)\nx = demidroite(O, A)\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "15..165"
+				},
+				{
+					"name": "s",
+					"expression": "20..50"
+				}
+			],
+			"conditions": ["a!=90"],
+			"correction": {
+				"steps": [
+					"**Poser le rapporteur** : son centre sur le sommet $O$, sa base le long de $[OA)$, même si $[OA)$ est penchée : on tourne le rapporteur avec elle.",
+					"Partir du $0$ qui est sur $[OA)$, marquer un repère à la graduation ${{a}}^\\circ$, puis tracer à la règle la demi-droite $\\textcolor{{{color:primary.0}}}{[Oy)}$ de $O$ au repère."
+				]
+			},
+			"hint": "Le côté $[OA)$ est penché : tourne le rapporteur pour que sa base suive $[OA)$."
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["repere(4;3;9;3;3;50;1)|segment(4;3;5.928362829059618;5.298133329356935)"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "50",
+				"r": "5"
+			},
+			"description": "50°, au-dessus de [OA)",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["repere(4;3;9;3;3;50;-1)|segment(4;3;5.928362829059618;0.7018666706430658)"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "50",
+				"r": "5"
+			},
+			"description": "50°, au-dessous de [OA)",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["repere(4;3;9;3;3;130;1)|segment(4;3;2.071637170940382;5.298133329356935)"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "50",
+				"r": "5"
+			},
+			"description": "Erreur : 130° (mauvaise graduation)",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["segment(4;3;5.928362829059618;5.298133329356935)"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "50",
+				"r": "5"
+			},
+			"description": "Erreur : côté tracé à l'œil, sans repère",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["repere(5;4;1;3;3;37;1)|segment(5;4;3.1135139971229426;1.6673683186261612)"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "37"
+			},
+			"description": "Oblique : 37°",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["repere(5;4;1;3;3;128;-1)|segment(5;4;6.218476046762719;6.741407690122995)"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "128"
+			},
+			"description": "Oblique : 128°, de l'autre côté",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["repere(5;4;1;3;3;143;1)|segment(5;4;7.762255499655681;2.829553694259346)"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "37"
+			},
+			"description": "Erreur : 143° au lieu de 37°",
+			"variationIndex": 1
+		},
+		{
+			"description": "40°, base à 30°",
+			"variationIndex": 2,
+			"variables": {
+				"a": "40",
+				"s": "30"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": [
+				"repere(5;4;8.11769145362398;5.8;3;40;1)|segment(5;4;6.026060429977006;6.819077862357725)"
+			]
+		},
+		{
+			"description": "40°, de l'autre côté",
+			"variationIndex": 2,
+			"variables": {
+				"a": "40",
+				"s": "30"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": [
+				"repere(5;4;8.11769145362398;5.8;3;40;-1)|segment(5;4;7.9544232590366235;3.479055466999209)"
+			]
+		},
+		{
+			"description": "Erreur : 140° au lieu de 40°",
+			"variationIndex": 2,
+			"variables": {
+				"a": "40",
+				"s": "30"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": [
+				"repere(5;4;8.11769145362398;5.8;3;140;1)|segment(5;4;2.045576740963376;4.520944533000791)"
+			]
+		},
+		{
+			"description": "Erreur : mesuré depuis l'horizontale",
+			"variationIndex": 2,
+			"variables": {
+				"a": "40",
+				"s": "30"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["segment(5;4;7.298133329356935;5.928362829059617)"]
+		},
+		{
+			"description": "125°, base à 45°",
+			"variationIndex": 2,
+			"variables": {
+				"a": "125",
+				"s": "45"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": [
+				"repere(5;4;7.545584412271571;6.545584412271571;3;125;-1)|segment(5;4;5.520944533000791;1.045576740963376)"
+			]
+		}
+	]
+}
