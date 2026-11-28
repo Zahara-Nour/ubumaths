@@ -13,7 +13,7 @@ _Mis à jour le 2026-11-28, chantier clos._
 ## Rubrique
 
 « Espace » de 3e (codes 3G4, 6 exercices), réservée le 2026-11-27 dans
-[idees-ailleurs-repartition.md](idees-ailleurs-repartition.md).
+[idees-ailleurs-repartition.md](../../../wip/idees-ailleurs-repartition.md).
 
 ## Phase 0 (2026-11-27)
 
