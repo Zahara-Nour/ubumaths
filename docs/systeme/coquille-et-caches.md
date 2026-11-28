@@ -252,6 +252,9 @@ notifications, le temps réel relance ensuite la lecture ([realtime.md](realtime
   `?tags=`), formulaire `GET`, aucune lecture côté client. Moins de 2 caractères et aucun tag :
   pas de recherche. 50 résultats au plus, 10 tags au plus, 100 caractères au plus. Les liens
   viennent du registre `#lib/resources/index.ts`. Moteur : `searchResources` ([serveur.md](serveur.md)).
+  Les filtres (types, tags) suivent l'adresse à chaque navigation, retour arrière compris (L41) ;
+  sans résultat, le message cite le texte et les tags cherchés (« Aucun résultat pour le tag
+  #fractions. », V74). Tests : `src/lib/components/__tests__/recherche-prof.svelte.test.ts`.
 - **`/dashboard/teacher/documents`** : documents du tuteur IA (`DocumentManager`, RAG).
 
 `Wheel.svelte` sert aussi à l'accueil prof, à `VipCardUseDialog` et à `/dev/roue`. Les

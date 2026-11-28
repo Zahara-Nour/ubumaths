@@ -7,7 +7,7 @@ couvre:
   - 'src/routes/api/student/warnings/**'
   - 'src/lib/components/{moderation,notifications,student-inbox}/**'
   - 'src/lib/components/{AddFriend,FriendRequests,FriendsList,OnlineStatus}.svelte'
-  - 'src/lib/stores/{privateMessages,notifications,mentions,hashtags}.svelte.ts'
+  - 'src/lib/stores/{privateMessages,notifications,hashtags}.svelte.ts'
   - 'src/lib/server/{notifications,auto-notifications,warnings,student-inbox}.ts'
   - 'src/lib/server/validation/{messages,moderation,notifications,warnings}.ts'
   - src/lib/server/message-attachments.ts
@@ -270,8 +270,10 @@ La modération porte sur la table `messages` **du chat**, pas sur `private_messa
   `public` n'y figure pas (elle n'ouvre rien, cf. [exercices.md](exercices.md)). Rien à voir avec les messages.
   Composants `src/lib/components/student-inbox/` ; appelée par
   `src/routes/(protected)/dashboard/+page.server.ts` et `dashboard/student/work/+page.server.ts`.
-- `src/lib/stores/mentions.svelte.ts` et `hashtags.svelte.ts` alimentent les extensions
-  `@` et `#` de l'éditeur riche (`src/lib/components/rich-text/editor-config.ts`).
+- `src/lib/stores/hashtags.svelte.ts` alimente l'extension `#` de l'éditeur riche
+  (`src/lib/components/rich-text/editor-config.ts`). Taper `@` n'y propose personne : la liste
+  n'avait que des personnes inventées (V106, retirée le 2026-11-28) ; le nœud `mention` affiche
+  seulement les mentions déjà écrites.
 
 ## Invariants
 

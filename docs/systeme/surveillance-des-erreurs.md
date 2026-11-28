@@ -280,7 +280,10 @@ défaut `DEFAULT_BUG_REPORTS_CONFIG` (tout à `true`). Réglage : `BugReportsCon
 - `/dashboard/admin/docs` et `/dashboard/admin/docs/[...path]` : lisent `docs/` sur le
   disque au moment de la requête (`src/lib/server/docs-scanner.ts`) et rendent le
   Markdown en HTML (`src/lib/server/markdown-parser.ts`, `marked`). `getDocumentContent`
-  refuse un chemin qui sort de `docs/` (`..`).
+  refuse un chemin qui sort de `docs/` (`..`). Rubriques = dossiers de `docs/`, dans l'ordre
+  systeme, pratiques, adr, wip, archive, puis les autres. La recherche (`?q=`, Zod, 100 caractères
+  au plus) garde les docs dont le titre ou le chemin contient le texte, sans tenir compte des
+  accents (`filterDocCategories`).
 - `/dev/*` (admin seul, hors du tableau de bord) : pages d'essai (session, RLS, avatar, roue,
   PDF Typst et LaTeX, MathField, carte question, éditeur riche…), listées par `/dev`. Plus rien
   sous `/dashboard/admin/debug/`. Les anciennes adresses sont redirigées en 308 ([auth.md](auth.md)).
@@ -425,8 +428,10 @@ rapport en UUID. Exceptions : voir Écarts.
   partent à la déconnexion, quand un autre compte prend l'onglet ou un autre onglet, restent pour
   le même compte ; une navigation est retenue sans ses paramètres.
 
-Rien d'autre ne teste `freezeDetection.ts` (ni les gels, ni le battement), les pages admin, ni
-`docs-scanner.ts`.
+- `src/lib/server/__tests__/docs-scanner.test.ts` : ordre et noms des rubriques de la doc
+  admin, filtre de la recherche (V116).
+
+Rien d'autre ne teste `freezeDetection.ts` (ni les gels, ni le battement) ni les pages admin.
 
 ## Décisions
 

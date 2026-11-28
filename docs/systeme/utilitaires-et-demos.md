@@ -49,7 +49,6 @@ couvre:
   - 'src/routes/(protected)/dev/polices/luciole/+page.svelte'
   - 'src/routes/(protected)/dev/polices/luciole/luciole-pdf.ts'
   - 'src/routes/(public)/upsilon/+page.svelte'
-  - src/lib/stores/listNumbering.svelte.ts
   - src/lib/styles/list-numbering.css
   - src/lib/types/list-numbering.ts
   - src/lib/components/ClassStatsCard.svelte
@@ -99,7 +98,7 @@ Trois familles de fichiers sans domaine propre :
 
 1. les **pages de démo et de mise au point** (`/demo/**`, `/dev/**`) et deux pages publiques
    isolées (`/a-propos`, `/upsilon`) ;
-2. la **numérotation des listes** à l'affichage (store, CSS, types) ;
+2. la **numérotation des listes** à l'affichage (CSS, types) ;
 3. les **utilitaires** de `src/lib/utils/` et les composants isolés, en index.
 
 Un appelant compté ici est un import réel (`git grep "<chemin d'import>" -- src`), tests exclus.
@@ -413,8 +412,7 @@ Les écarts de cette zone sont au [registre des écarts](../ecarts/registre.md) 
 
 ## 2. Numérotation des listes à l'affichage
 
-Fichiers : `src/lib/types/list-numbering.ts`, `src/lib/stores/listNumbering.svelte.ts`,
-`src/lib/styles/list-numbering.css` (importé par `src/app.css`).
+Fichiers : `src/lib/types/list-numbering.ts`, `src/lib/styles/list-numbering.css` (importé par `src/app.css`).
 
 - **Schémas** (`NUMBERING_SCHEMES`) : `1-a-i`, `a-1-i`, `a-i`, `1.a.i`, `I.A.1`, `decimal`
   (1. 1.1. 1.1.1.). L'`id` devient une classe CSS `scheme-<id>` posée sur les `<ol>`, avec
@@ -422,7 +420,9 @@ Fichiers : `src/lib/types/list-numbering.ts`, `src/lib/stores/listNumbering.svel
 - **Réglage** (`ListNumberingConfig`) : `scheme` (`'auto'` ou un schéma), `schemeWithNesting`,
   `schemeWithoutNesting`. Par défaut : `auto`, `1-a-i` avec ou sans imbrication (même hiérarchie que
   le PDF, `typst-generator.ts` ; une liste plate est numérotée 1) 2) 3), choix de David du
-  2026-10-18). Un réglage enregistré par l'admin (localStorage) garde son choix.
+  2026-10-18). Ce réglage est le même pour tous : `MarkdownRenderer` lit `DEFAULT_CONFIG`. Il n'y a
+  plus de réglage dans la page admin (il ne valait que pour le navigateur de l'admin, retiré par
+  V120, 2026-11-28).
 - **Calcul** : `MarkdownRenderer.svelte` (`effectiveListScheme`) prend le réglage du store et, en
   mode `auto`, choisit selon la profondeur maximale des listes de l'AST. `ListNode.svelte` applique la classe.
 - **Interface** : carte « Numérotation des listes » de `/dashboard/admin/settings`.

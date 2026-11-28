@@ -60,10 +60,14 @@ et la façon d'**afficher** sans risque un contenu écrit par quelqu'un d'autre.
 
 Extension TipTap `MarkdownPaste`, branchée par `editor-config.ts`. Au collage :
 
-1. lit `text/plain` du presse-papiers (rien d'autre) ;
+1. lit `text/plain` et `text/html` du presse-papiers ; `shouldConvertMarkdownPaste` décide (V118) :
 2. `containsMarkdownSyntax(text)` : faux si le texte contient une balise HTML (`isHtmlContent`),
    sinon additionne les poids des motifs reconnus (titres, gras, italique, code, listes, liens,
    formules…) et compare au seuil `MARKDOWN_THRESHOLD = 3` ;
+   puis `isTrivialHtmlWrapper(html)` : un HTML **riche** (balises de mise en forme, listes, titres,
+   liens, tableaux, images, gras ou italique en style) part au collage natif, qui garde la mise en
+   forme d'un traitement de texte ou d'une page web ; une simple enveloppe (`<pre>`, couleurs et
+   police d'un éditeur de code, classes seules) laisse lire le texte comme du markdown ;
 3. `normalizeMarkdownIndentation` retire l'indentation commune ;
 4. `markdownToTipTap` (ubumark) convertit, puis `editor.commands.insertContent`.
 

@@ -13,7 +13,13 @@ import {
 } from '../class-knowledge';
 
 type QueryResult = { data: unknown; error: unknown };
-type TableHandler = () => Promise<QueryResult> | QueryResult;
+type PageRange = { from: number; to: number };
+/**
+ * Reçoit la page demandée par `.range()` (absente sans `.range()`). Un handler
+ * qui ne lit pas la page ne rend que la première : les suivantes sont vides,
+ * comme une table qui tient dans une page.
+ */
+type TableHandler = (range?: PageRange) => Promise<QueryResult> | QueryResult;
 type MockSpec = Record<string, TableHandler>;
 type InCall = { table: string; method: 'in' | 'eq'; column: string; values: unknown[] };
 
@@ -38,8 +44,15 @@ function buildMock(tableHandlers: MockSpec, inCalls: InCall[] = []) {
 		if (!handler) {
 			throw new Error(`Unexpected table in mock: ${table}`);
 		}
-		const terminalPromise = Promise.resolve().then(handler);
+		let pageRange: PageRange | undefined;
+		// La chaîne est construite d'un trait avant le `then` : la page est connue ici.
+		const terminalPromise = Promise.resolve().then(() =>
+			pageRange && pageRange.from > 0 && handler.length === 0
+				? { data: [], error: null }
+				: handler(pageRange)
+		);
 		const queryBuilder = {
+			range: vi.fn(),
 			select: vi.fn(),
 			eq: vi.fn(),
 			in: vi.fn(),
@@ -64,6 +77,10 @@ function buildMock(tableHandlers: MockSpec, inCalls: InCall[] = []) {
 		queryBuilder.is.mockReturnValue(queryBuilder);
 		queryBuilder.gte.mockReturnValue(queryBuilder);
 		queryBuilder.order.mockReturnValue(queryBuilder);
+		queryBuilder.range.mockImplementation((from: number, to: number) => {
+			pageRange = { from, to };
+			return queryBuilder;
+		});
 		queryBuilder.maybeSingle.mockImplementation(handler);
 		queryBuilder.single.mockImplementation(handler);
 		return queryBuilder;
@@ -176,6 +193,26 @@ describe('getClassCurriculumPointGrid', () => {
 		expect(grid.students.length).toBe(1);
 		expect(grid.points).toEqual([]);
 		expect(grid.cells).toEqual({});
+	});
+
+	it('V123 : les essais au-delà de 1000 lignes comptent (lecture page par page)', async () => {
+		// 1000 essais sur t1, puis l'unique essai de t2 en deuxième page.
+		const tags = [tag('t1', point('cap1')), tag('t2', point('cap2', { order: 2 }))];
+		const supabase = gridFixture(tags, {
+			skill_attempts: (range) => {
+				const from = range?.from ?? 0;
+				const to = range?.to ?? 999;
+				if (to - from + 1 > 1000) throw new Error('page de plus de 1000 lignes demandée');
+				const all = [
+					...Array.from({ length: 1000 }, () => ({ student_id: 's1', template_id: 't1' })),
+					{ student_id: 's1', template_id: 't2' }
+				];
+				return { data: all.slice(from, to + 1), error: null };
+			}
+		});
+		const grid = await getClassCurriculumPointGrid(supabase, 'class-1');
+		expect(grid.points.map((p) => p.id).sort()).toEqual(['cap1', 'cap2']);
+		expect(grid.cells['s1:cap2']).toBe('acquise_en_memoire');
 	});
 
 	it('un point neuf tagué fait une colonne, étiquetée par sa notion', async () => {
