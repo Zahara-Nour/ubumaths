@@ -263,7 +263,7 @@ Intégration : `tests/integration/kanban-rls.test.ts`, `tests/integration/kanban
 
 ## 5. Ancien moteur de constructions (retiré)
 
-Le moteur **d'avant le DSL** (`src/lib/constructions/`, scripts en JSON plat, convertisseur XML
+Le moteur **d'avant le DSL** (src/lib/constructions (sans « -v2 »), scripts en JSON plat, convertisseur XML
 → JSON) est retiré depuis le 2026-11-28 (écart M38) : la prod n'avait plus aucune construction
 au format JSON. Le système actuel est `constructions-v2` + `geometry-core`
 ([geometrie/README.md](geometrie/README.md)) ; sa page `/constructions/conversion` traduit le

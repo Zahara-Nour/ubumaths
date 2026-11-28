@@ -412,7 +412,7 @@ Les écarts de cette zone sont au [registre des écarts](../../ecarts/registre.m
 - `starPairStems` (`parallele.ts`) pourrait aller jusqu'à Q\*/R\* si toutes les lettres de C à P sont prises : cas théorique.
 - Les journaux archivés `archive/wip/v1-choreographies-substeps-progress.md` (`ctx.sub` non implémenté, `cercle_circonscrit` en stub, `transporte` en 6 sous-étapes) et `archive/wip/constructions-v2/progress.md` (« les constructions JSON existantes fonctionnent toujours ») sont des historiques : aujourd'hui `ctx.sub` et `cercle_circonscrit` sont implémentés (§ 4), `transporte` a 7 sous-étapes, et `/constructions/[id]` affiche « n'est plus supporté ».
 
-L'ancien module `src/lib/constructions/` (format JSON, lecteur, convertisseur XML → JSON) est
+L'ancien module src/lib/constructions (sans « -v2 ») (format JSON, lecteur, convertisseur XML → JSON) est
 retiré depuis M38 (2026-11-28) : la prod n'avait plus aucune construction JSON. Gardés et
 déplacés : `JsonEditor` (`src/lib/components/JsonEditor.svelte`, formulaire de question) et les
 instruments du tableau blanc (`src/lib/whiteboard/components/instruments/`).
