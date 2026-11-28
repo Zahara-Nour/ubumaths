@@ -2,15 +2,17 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-28, lot écrit, avant la PR._
+_Mis à jour le 2026-11-28, après #3294._
 
-- **État** : phase 0 validée (« je valide tes recos »). Lot écrit sur la branche : 13 variations de 6
-  modèles publiés (migration de contenu `20261128132651`) et le modèle neuf E (5e, 5-011). · **Prochaine
-  action** : PR, CI, merge (test d'intégration vert, `security-auditor` sans finding) ; puis David :
-  `create-questions --publier` (E) et `db:migrate`. · **En attente de David** : rien avant la PR. ·
-  **Pièges en cours** : E est un modèle de **5e** (point 5-011, `grades` `['5']`) ; la migration de
-  contenu a été régénérée deux fois et gardée sous son premier nom (déjà jouée en base locale). ·
-  **Worktree / branche** : `../ubumaths-wt-idees-3e-algorithmique`, `feat/idees-3e-algorithmique`.
+- **État** : #3294 mergé (13 variations de 6 modèles publiés + fichier du modèle neuf E, 5e).
+  Migration de contenu `20261128132651` seule en attente en prod (`migration list --linked`). ·
+  **Prochaine action** : `db:migrate` (accord de David), puis vérifier les 13 variations en prod ;
+  après le `create-questions --publier` de David, commiter l'id de E, migration de rangement (nœud
+  « instructions conditionnelles », point 5-011), puis relecture dans `/dev/modeles` (série de
+  relecture pour les publiés, `?point=5-011` pour E) et publication. · **En attente de David** :
+  accord pour `db:migrate` ; `pnpm tsx scripts/create-questions.ts --dir
+scripts/questions/idees-3e-algorithmique-neufs --publier`. · **Pièges en cours** : E est un modèle
+  de **5e** (`grades` `['5']`). · **Worktree / branche** : aucun (retirés par `pr:merger`).
 
 ## Rubrique
 
@@ -81,3 +83,4 @@ variations ajoutées à la fin) et `docs/wip/questions/idees-3e-algorithmique-ne
 - Test `migrations-contenu-publie` vert (2026-11-28, 351 tests). `security-auditor` : aucun finding
   bloquant ; personne ne gagne ni ne perd d'accès (6 UPDATE gardés, rollback cohérent, contenu sans
   donnée réelle ni lien).
+- #3294 mergé le 2026-11-28 (CI verte, `pr:merger`).
