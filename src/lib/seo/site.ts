@@ -62,9 +62,30 @@ export function toJsonLdScript(data: Record<string, unknown>): string {
 	return `<script type="application/ld+json">${json}</script>`;
 }
 
+/** Fraction écrite a/b ; numérateur ou dénominateur composé entre parenthèses. */
+function fractionToPlain(_: string, num: string, den: string): string {
+	const wrap = (part: string) => (/[+\-\s/]/.test(part.trim()) ? `(${part.trim()})` : part.trim());
+	return `${wrap(num)}/${wrap(den)}`;
+}
+
+/** Les fractions de l'intérieur vers l'extérieur : `\frac{\frac{1}{2}}{3}` compris. */
+function fractionsToPlain(math: string): string {
+	const innermost = /\\[dt]?frac\{([^{}]*)\}\{([^{}]*)\}/g;
+	let current = math;
+	for (let guard = 0; guard < 10; guard++) {
+		// Une racine intérieure (\sqrt{2}) d'abord, pour libérer la fraction qui la contient
+		const next = current
+			.replace(/\\sqrt\{([^{}]*)\}/g, (_, arg: string) => `√${arg.length > 1 ? `(${arg})` : arg}`)
+			.replace(innermost, fractionToPlain);
+		if (next === current) break;
+		current = next;
+	}
+	// `\frac12` : deux chiffres collés
+	return current.replace(/\\[dt]?frac\s*(\d)(\d)/g, '$1/$2');
+}
+
 function mathToPlain(math: string): string {
-	return math
-		.replace(/\\[dt]?frac\{([^{}]*)\}\{([^{}]*)\}/g, '$1/$2')
+	return fractionsToPlain(math)
 		.replace(/\\(left|right)\b/g, '')
 		.replace(/\\([a-zA-Z]+)/g, (_, name: string) => LATEX_SYMBOLS[name] ?? name)
 		.replace(/[{}]/g, '')

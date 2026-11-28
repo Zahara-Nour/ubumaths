@@ -8,9 +8,9 @@ status: en cours
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-28, à l'ouverture._
+_Mis à jour le 2026-11-28, à l'ouverture de la PR._
 
-- **État** : lot réservé (`docs/wip/ecarts-lots.md`), les 11 écarts vérifiés vrais dans le code le 2026-11-28 · **Prochaine action** : après les réponses de David, tests rouges puis correctifs, une PR · **En attente de David** : phase 0 de V74, V106, V116, V118, V120, V121, V122 · **Pièges en cours** : aucun · **Worktree / branche** : `../ubumaths-wt-ecarts-interface-prof`, `fix/ecarts-interface-prof`
+- **État** : les 11 écarts corrigés sur la branche, tests verts, revue `code-reviewer` faite (3 points corrigés), rendu vu par `pnpm voir` (Contenu, recherche, doc admin, réglages) · **Prochaine action** : PR mergée → barrer les 11 lignes au registre, `fait (#PR)` dans `ecarts-lots.md`, archiver ce journal · **En attente de David** : rien · **Pièges en cours** : collage V118 non testable à l'écran sans presse-papiers (couvert par les tests de `shouldConvertMarkdownPaste`) · **Worktree / branche** : `../ubumaths-wt-ecarts-interface-prof`, `fix/ecarts-interface-prof`
 
 ## Écarts du lot
 
@@ -43,3 +43,10 @@ V74, V106, V116, V118, V120, V121, V122, V123, L41, L116, M48 (lignes au [regist
 5. **V120** : retirer le réglage admin de numérotation des listes (choix b).
 6. **V121** : « Contenu pédagogique » · « Gérez vos modèles de chapitres, exercices, énigmes et fiches » · onglets Modèles de chapitres, Exercices, Énigmes, Fiches, Carnets Python.
 7. **V122** : infobulle en texte simple, sans signes LaTeX.
+
+### 2026-11-28 — correctifs et revue
+
+- Tests d'abord (rouges vérifiés) pour V74, L41, V116, V118, V122, V123, L116 ; puis correctifs.
+- V106 : retrait de la liste « @ » (store `mentions` supprimé), le nœud `mention` reste pour les contenus existants. V120 : store `listNumbering` supprimé, `MarkdownRenderer` lit `DEFAULT_CONFIG`.
+- Preuves réécrites au registre : V106 (« Alice Dupont » reste un nom fictif d'un autre test), M48 (fonction branchée, pas retirée).
+- Revue : rubriques de la doc admin rouvertes à chaque recherche ; `toPlainText` traite fractions imbriquées, `\frac12`, parenthèses ; HTML d'éditeur de code (police à chasse fixe) toujours lu comme markdown.

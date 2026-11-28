@@ -12,11 +12,10 @@
 	const initialData = data;
 
 	let searchQuery = $state(initialData.searchQuery || '');
-	// Une recherche ouvre toutes les rubriques qui ont un résultat
-	let expandedCategories = $state<Set<string>>(
-		new Set(
-			initialData.searchQuery ? initialData.categories.map((c) => c.path) : ['systeme', 'pratiques']
-		)
+	// Une recherche ouvre toutes les rubriques qui ont un résultat ; recalculé à
+	// chaque navigation (nouvelle recherche), un clic l'ajuste sur place
+	let expandedCategories = $derived<Set<string>>(
+		new Set(data.searchQuery ? data.categories.map((c) => c.path) : ['systeme', 'pratiques'])
 	);
 
 	function toggleCategory(categoryPath: string) {

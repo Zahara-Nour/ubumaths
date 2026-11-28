@@ -41,6 +41,16 @@ export function isTrivialHtmlWrapper(html: string): boolean {
 	const trimmed = html.trim();
 	if (!trimmed) return true;
 
+	// Éditeur de code (police à chasse fixe) : ses gras et italiques sont ceux de
+	// la coloration syntaxique (commentaires, mots-clés), pas une mise en forme.
+	if (
+		/font-family\s*:[^;"']*(monospace|menlo|consolas|monaco|courier|fira code|jetbrains)/i.test(
+			trimmed
+		)
+	) {
+		return true;
+	}
+
 	const richFormattingPatterns = [
 		// Mise en forme en ligne
 		/<(strong|b|em|i|u|s|strike|del|mark|sub|sup)\b/i,

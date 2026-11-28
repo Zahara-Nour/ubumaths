@@ -183,6 +183,12 @@ Math: $x^2$</pre>`;
 			expect(isTrivialHtmlWrapper(html)).toBe(true);
 		});
 
+		it('handles code editor HTML whose theme puts comments in italic', () => {
+			const html =
+				'<div style="font-family: Menlo, monospace"><div><span style="font-style: italic;">- note</span></div></div>';
+			expect(isTrivialHtmlWrapper(html)).toBe(true);
+		});
+
 		it('handles classes alone (Word paragraphs without formatting)', () => {
 			const html = '<p class="MsoListParagraph">1. Calculer</p>';
 			expect(isTrivialHtmlWrapper(html)).toBe(true);
