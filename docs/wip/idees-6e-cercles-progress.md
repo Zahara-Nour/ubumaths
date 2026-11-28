@@ -2,17 +2,15 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-28, après #3334._
+_Mis à jour le 2026-11-28, migrations jouées en prod._
 
-- **État** : #3334 mergée (migrations 20261128171523 rangement N1/N2, 20261128171531 contenu des 3 publiés) ;
-  **pas encore jouées en prod**. Conditions 1 à 4 réunies (accès : personne ; rouge sans / vert avec ;
-  `security-auditor` sans bloquant ; additives, rollback en commentaire).
-- **Prochaine action** : `migration list --linked` ; si seules nos 2 migrations sont en attente → `db:migrate`
-  depuis `main`, vérifier en base (N1/N2 sur `cercle` + 6-162, publiés à 6/6/7 variations) ; puis relecture
-  `/dev/modeles?noeud=` et série de relecture des 3 publiés.
-- **En attente de David** : `db:migrate` bloqué : 20261128163026 (avertissements L82/L79, chantier
-  `ecarts-carnet-notifications`, #3333) est aussi en attente. Attendre que sa session la pousse, ou que David
-  dise de tout pousser.
+- **État** : #3334 mergée, migrations jouées en prod (`db:migrate`, avec 20261128163026 d'`ecarts-carnet-notifications`
+  sur l'ordre de David) et vérifiées : N1 c9bc598a et N2 10d20825 en brouillon sur `cercle`, tag 6-162 ; publiés
+  b8939937 (7 variations), 48524505 (6), 2f3da9ce (6).
+- **Prochaine action** : relecture des 2 brouillons dans `/dev/modeles?noeud=` (sous-notion `cercle`) et série de
+  relecture des 3 publiés (`scripts/series/creer-serie.ts`, David l'enregistre) ; puis publication (`publier-lot.ts`,
+  David) et rubrique « publiée » dans le tableau.
+- **En attente de David** : rien.
 - **Pièges en cours** : deux `verifier:` de la même famille (deux cercles) ne font pas une figure composée, et
   la garde de la règle graduée refuse alors le cercle « passant par » : N1 c commence par le segment [CD].
 - **Worktree / branche** : `../ubumaths-wt-idees-6e-cercles`, `feat/idees-6e-cercles-migrations` (poussée).
@@ -77,6 +75,8 @@ Page à cocher : https://claude.ai/artifact/WtKPymyPCYikJrmezzon8f (Oui / Non / 
 
 ## Journal
 
+- 2026-11-28 : sur l'ordre de David (« pousse tout »), `db:migrate` : 20261128163026 (avertissements L82/L79),
+  20261128171523, 20261128171531 appliquées ; vérifiées en base.
 - 2026-11-28 : #3334 mergée (CI : E28 de `lecture-graphique` rouge une fois, sans lien, vert au rejeu).
   `db:migrate` non lancé : 20261128163026 d'une autre session aussi en attente.
 - 2026-11-28 : migrations générées (rangement 20261128171523, contenu 20261128171531). Nœud `cercle` revérifié
