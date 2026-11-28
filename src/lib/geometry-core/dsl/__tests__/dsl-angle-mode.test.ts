@@ -7,6 +7,7 @@
 import { describe, it, expect } from 'vitest';
 import { parse } from '../parser';
 import { interpret } from '../interpreter';
+import { geoToNumber } from '../../compute/to-number';
 
 function run(source: string) {
 	return interpret(parse(source));
@@ -112,5 +113,38 @@ describe('Phase 5 — Builtins angles also follow the mode (regression)', () => 
 		);
 		const id = symbols.get('a')?.figureId;
 		expect(id).toBeDefined();
+	});
+});
+
+describe('angle_polaire suit le mode d’angle (V119)', () => {
+	const points = 'O = point(0, 0)\nP = point(0, 1)\nt = angle_polaire(O, P)';
+
+	function polar(source: string): number {
+		const { figure, symbols } = run(source);
+		const id = symbols.get('t')?.figureId;
+		if (!id) throw new Error('t absent de la figure');
+		const value = figure.getScalarValue(id);
+		if (value == null) throw new Error('t sans valeur');
+		return value;
+	}
+
+	it('en radians : π/2', () => {
+		expect(polar(`unite_angle("radians")\n${points}`)).toBeCloseTo(Math.PI / 2, 12);
+	});
+
+	it('en degrés (défaut) : 90', () => {
+		expect(polar(points)).toBeCloseTo(90, 12);
+	});
+
+	it('la bissectrice reste juste en radians', () => {
+		const { figure, symbols } = run(
+			'unite_angle("radians")\nA = point(1, 0)\nV = point(0, 0)\nB = point(0, 1)\nd = bissectrice(A, V, B)'
+		);
+		const line = figure.getElementById(symbols.get('d')!.figureId!);
+		if (!line || line.type !== 'line') throw new Error('d doit être une droite');
+		// Le point porteur (autre que V) est sur la diagonale y = x.
+		const p = figure.getPosition(line.point2Id)!;
+		expect(geoToNumber(p.x)).toBeGreaterThan(0.1);
+		expect(geoToNumber(p.y)).toBeCloseTo(geoToNumber(p.x), 9);
 	});
 });
