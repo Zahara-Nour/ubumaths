@@ -602,12 +602,15 @@ Deux systèmes distincts, à ne pas confondre :
 
 Accès : on lit les messages des conversations dont on est participant, et ceux qu'on a envoyés ou
 reçus ; le professeur lit la messagerie pour la modérer et supprime (logiquement) les messages des
-chats de classe ; l'admin lit tout.
+chats de classe ; l'admin lit tout. Un message que son destinataire a supprimé ne lui est plus ouvert,
+ni seul ni dans un fil (`20261128161241`).
 
 Écriture (`20261016101500`, `20261016101600`) : un message envoyé ne se réécrit plus. Les
 rôles de l'API ne peuvent modifier que `private_messages.deleted_by_sender` et
 `message_inbox.read_at` / `deleted` (droits par colonne) ; statut, dossier et étoile passent
-par des fonctions SECURITY DEFINER. Détail : [messagerie-et-moderation.md](messagerie-et-moderation.md).
+par des fonctions SECURITY DEFINER. Une réponse ne s'accroche qu'à un message envoyé ou reçu,
+dans un fil dont on a envoyé ou reçu le premier message ; `message_search_index` n'est écrit que
+par son trigger (`20261128161241`). Détail : [messagerie-et-moderation.md](messagerie-et-moderation.md).
 
 Pièces jointes de la messagerie (`20261016101300`) : bucket **privé** `message-attachments`
 (10 Mo, comme la contrainte `file_size` de la table ; JPEG, PNG, WebP, HEIC, PDF), **sans policy sur `storage.objects`** : seul le client
