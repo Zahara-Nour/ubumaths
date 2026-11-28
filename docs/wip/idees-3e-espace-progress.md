@@ -2,14 +2,16 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-28, après #3264 (outil n° 72 livré)._
+_Mis à jour le 2026-11-28, F1 écrit sur sa branche (pas encore de PR)._
 
-- **État** : lot 1 en prod (5 variations de 5 modèles publiés, migration appliquée par David),
-  relecture validée par David (« je valide », dans la conversation, aucun verdict en base) ;
-  réservations levées · **Prochaine action** : F1, modèle neuf de 4e « Calculer une longueur dans
-  un solide avec Pythagore » ; l'outil n° 72 est livré (#3264 : `segments:`, `angles-droits:`),
-  diagonale du cube **[DF]**, jamais [AG] (note sous F1) · **En attente de David** : rien · **Pièges en cours** : F1 est un modèle de 4e
-  (4-034) ; nouveau worktree sur `origin/main` · **Worktree / branche** : aucun
+- **État** : lot 1 en prod et relu. F1 écrit (7 variations, 29 specs vertes, sonde 0 problème,
+  rendu vu à l'écran en local), commité et poussé sur la branche, **PR pas encore ouverte** (§ Lot 2)
+  · **Prochaine action** : ouvrir la PR des fichiers seuls (« revue : aucune, contenu »), CI, merge ;
+  puis brouillon en prod par David **après un `deploy:prod`** (#3264, l'outil n° 72, n'est pas en
+  prod), puis migration de rangement générée · **En attente de David** : rien pour la PR ; le
+  `deploy:prod` avant le brouillon · **Pièges en cours** : `--publier` en local écrit l'id local dans
+  le fichier (retiré avant le commit) · **Worktree / branche** : `ubumaths-wt-idees-3e-espace-f1`,
+  `feat/idees-3e-espace-f1`
 
 ## Rubrique
 
@@ -126,3 +128,24 @@ fin), migration `20261127223236_questions_idees_3e_espace_publies_contenu.sql` e
 Séries de relecture enregistrées par David (`scripts/series/{3,4,5}-relecture-espace-publies.json`,
 #3256). Relecture validée par David dans la conversation (« je valide ») ; aucun verdict en base.
 Réservations des cinq modèles levées dans le tableau de répartition.
+
+## Lot 2 : F1, modèle neuf de 4e (2026-11-28)
+
+Script `docs/wip/questions/idees-3e-espace-neufs.py` → `scripts/questions/idees-3e-espace-neufs/`
+(un fichier, `rangement` : « Géométrie > Théorème de Pythagore > calcul de longueurs », 4-034 ;
+grades 4, niveau 2 à côté de 22d947f4).
+
+- 7 variations (v0 à v6) : face d'un cube [BE] ; diagonale du cube [DF] par [HF] ; face d'un pavé
+  [HF] ; diagonale du pavé [DF] ; cylindre $OM$ ; génératrice d'un cône ; arête latérale d'une
+  pyramide régulière (`points: O centre ABCD`, `segments: [SO], [OA]`). Trois erreurs prévues par
+  case, un coup de pouce par variation, résultat arrondi au dixième, jamais entier ni à la limite.
+- Écarts avec la fiche : v1 ne demande que $DF$ (une case), $HF$ dans la correction. Cylindre : la
+  figure montre le cylindre et ses centres, M et le triangle sont dans l'énoncé (l'outil ne trace
+  rien sur un solide rond). Messages des erreurs écrits sous leur forme réécrite
+  (`$\left[ DF \right]$`).
+- Vu à l'écran (`/dev/modeles` en local, WebKit, `.captures/f1/`) : [AF] passait sur D en
+  cavalière → [BE] ; pavés écrasés (p = 2 pour l = 11) → l ≤ 3p, l ≤ 3h ; cône en aiguille → r ≥ 3,
+  h ≤ 3r ; pyramide plate → 2h ≥ a. Revu après correction : les 7 figures sont lisibles.
+- `question:specs` 29/29, 350 tirages ; `sonde-cubes` 300 blocs, 0 problème ; `create-questions` en
+  simulation vert. Réponse juste ou fausse non jouée à la main dans l'aperçu : les specs passent
+  par le même juge.

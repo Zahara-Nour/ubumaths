@@ -1,0 +1,732 @@
+{
+	"rangement": {
+		"noeud": "Géométrie > Théorème de Pythagore > calcul de longueurs",
+		"point": "4-034"
+	},
+	"title": "Calculer une longueur dans un solide avec Pythagore",
+	"description": "Théorème de Pythagore dans un solide, résultat arrondi au dixième : diagonale d'une face et diagonale d'un cube ou d'un pavé, cylindre (centre d'une base à un point du bord de l'autre), génératrice d'un cône, arête latérale d'une pyramide régulière à base carrée",
+	"grades": ["4"],
+	"level": 2,
+	"delay": 150,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "$ABCDEFGH$ est un cube d'arête ${{a}}~\\unit{cm}$. Calcule la longueur de la diagonale $[BE]$ de la face $ABFE$, arrondie au dixième.\n\n```solide\nforme: cube {{a}}\nsommets: A B C D E F G H\ncotes: cm\nsegments: [BE]\nangles-droits: BAE\n```\n\n$BE \\approx ?~\\unit{cm}$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "3..12"
+				}
+			],
+			"conditions": [
+				"abs((a*sqrt(2)) - round(a*sqrt(2))) > 0.05",
+				"abs(10*(a*sqrt(2)) - round(10*(a*sqrt(2)))) < 0.4"
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:round(10*(a*sqrt(2)))/10;d}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:2*a^2}}",
+							"message": "Tu as trouvé le **carré** de la longueur : il reste à prendre sa racine carrée.",
+							"label": "Racine carrée oubliée"
+						},
+						{
+							"answer": "{{eval:2*a}}",
+							"message": "On n'ajoute pas les longueurs : la longueur cherchée est l'hypoténuse d'un triangle rectangle, utilise le théorème de Pythagore.",
+							"label": "Longueurs ajoutées"
+						},
+						{
+							"answer": "{{eval:round(10*(sqrt(2*a)))/10;d}}",
+							"message": "Le carré d'un nombre n'est pas son double : $a^2 = a \\times a$.",
+							"label": "Carré pris pour le double"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"La face $ABFE$ est un carré : le triangle $BAE$ est rectangle en $A$, d'hypoténuse $[BE]$.",
+					"Théorème de Pythagore : $BE^2 = AB^2 + AE^2 = {{a}}^2 + {{a}}^2 = {{eval:2*a^2}}$.",
+					"Donc $BE = \\sqrt{{{eval:2*a^2}}} \\approx \\textcolor{{{color:primary.0}}}{{{eval:round(10*(a*sqrt(2)))/10;d}}~\\unit{cm}}$ (à la calculatrice, arrondi au dixième)."
+				]
+			},
+			"hint": "Repère un triangle rectangle dont la longueur cherchée est l'hypoténuse."
+		},
+		{
+			"statement": "$ABCDEFGH$ est un cube d'arête ${{a}}~\\unit{cm}$. Calcule la longueur de sa diagonale $[DF]$, arrondie au dixième.\n\n```solide\nforme: cube {{a}}\nsommets: A B C D E F G H\ncotes: cm\nsegments: [HF], [DF]\nangles-droits: DHF\n```\n\n$DF \\approx ?~\\unit{cm}$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "3..12"
+				}
+			],
+			"conditions": [
+				"abs((a*sqrt(3)) - round(a*sqrt(3))) > 0.05",
+				"abs(10*(a*sqrt(3)) - round(10*(a*sqrt(3)))) < 0.4"
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:round(10*(a*sqrt(3)))/10;d}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:round(10*(a*sqrt(2)))/10;d}}",
+							"message": "Tu as calculé la diagonale d'une **face** : $\\left[ DF \\right]$ traverse le cube, c'est l'hypoténuse du triangle $DHF$.",
+							"label": "Diagonale de la face"
+						},
+						{
+							"answer": "{{eval:3*a}}",
+							"message": "On n'ajoute pas les longueurs : la longueur cherchée est l'hypoténuse d'un triangle rectangle, utilise le théorème de Pythagore.",
+							"label": "Longueurs ajoutées"
+						},
+						{
+							"answer": "{{eval:3*a^2}}",
+							"message": "Tu as trouvé le **carré** de la longueur : il reste à prendre sa racine carrée.",
+							"label": "Racine carrée oubliée"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"Dans la face $EFGH$, le triangle $HEF$ est rectangle en $E$ : $HF^2 = HE^2 + EF^2 = {{a}}^2 + {{a}}^2 = {{eval:2*a^2}}$.",
+					"L'arête $[DH]$ est perpendiculaire à la face $EFGH$ : le triangle $DHF$ est rectangle en $H$, d'hypoténuse $[DF]$.",
+					"Théorème de Pythagore : $DF^2 = DH^2 + HF^2 = {{eval:a^2}} + {{eval:2*a^2}} = {{eval:3*a^2}}$.",
+					"Donc $DF = \\sqrt{{{eval:3*a^2}}} \\approx \\textcolor{{{color:primary.0}}}{{{eval:round(10*(a*sqrt(3)))/10;d}}~\\unit{cm}}$ (à la calculatrice, arrondi au dixième)."
+				]
+			},
+			"hint": "Commence par la diagonale $[HF]$ de la face du dessus, puis utilise le triangle $DHF$, rectangle en $H$."
+		},
+		{
+			"statement": "$ABCDEFGH$ est un pavé droit : $EF = {{l}}~\\unit{cm}$, $EH = {{p}}~\\unit{cm}$ et $AE = {{h}}~\\unit{cm}$. Calcule la longueur de la diagonale $[HF]$ de la face $EFGH$, arrondie au dixième.\n\n```solide\nforme: pave {{l}} {{p}} {{h}}\nsommets: A B C D E F G H\ncotes: cm\nsegments: [HF]\nangles-droits: HEF\n```\n\n$HF \\approx ?~\\unit{cm}$",
+			"variables": [
+				{
+					"name": "l",
+					"expression": "4..12"
+				},
+				{
+					"name": "p",
+					"expression": "2..8"
+				},
+				{
+					"name": "h",
+					"expression": "2..10"
+				}
+			],
+			"conditions": [
+				"p < l",
+				"h != l",
+				"h != p",
+				"l <= 3*h",
+				"l <= 3*p",
+				"abs((sqrt(l^2+p^2)) - round(sqrt(l^2+p^2))) > 0.05",
+				"abs(10*(sqrt(l^2+p^2)) - round(10*(sqrt(l^2+p^2)))) < 0.4"
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:round(10*(sqrt(l^2+p^2)))/10;d}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:l+p}}",
+							"message": "On n'ajoute pas les longueurs : la longueur cherchée est l'hypoténuse d'un triangle rectangle, utilise le théorème de Pythagore.",
+							"label": "Longueurs ajoutées"
+						},
+						{
+							"answer": "{{eval:l^2+p^2}}",
+							"message": "Tu as trouvé le **carré** de la longueur : il reste à prendre sa racine carrée.",
+							"label": "Racine carrée oubliée"
+						},
+						{
+							"answer": "{{eval:round(10*(sqrt(l^2-p^2)))/10;d}}",
+							"message": "La longueur cherchée est l'hypoténuse, le plus long côté : on **ajoute** les carrés des deux autres côtés.",
+							"label": "Carrés soustraits"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"La face $EFGH$ est un rectangle : le triangle $HEF$ est rectangle en $E$, d'hypoténuse $[HF]$.",
+					"Théorème de Pythagore : $HF^2 = EF^2 + EH^2 = {{l}}^2 + {{p}}^2 = {{eval:l^2+p^2}}$.",
+					"Donc $HF = \\sqrt{{{eval:l^2+p^2}}} \\approx \\textcolor{{{color:primary.0}}}{{{eval:round(10*(sqrt(l^2+p^2)))/10;d}}~\\unit{cm}}$ (à la calculatrice, arrondi au dixième)."
+				]
+			},
+			"hint": "Repère un triangle rectangle dont la longueur cherchée est l'hypoténuse."
+		},
+		{
+			"statement": "$ABCDEFGH$ est un pavé droit : $EF = {{l}}~\\unit{cm}$, $EH = {{p}}~\\unit{cm}$ et $DH = {{h}}~\\unit{cm}$. Calcule la longueur de sa diagonale $[DF]$, arrondie au dixième.\n\n```solide\nforme: pave {{l}} {{p}} {{h}}\nsommets: A B C D E F G H\ncotes: cm\nsegments: [HF], [DF]\nangles-droits: DHF\n```\n\n$DF \\approx ?~\\unit{cm}$",
+			"variables": [
+				{
+					"name": "l",
+					"expression": "4..12"
+				},
+				{
+					"name": "p",
+					"expression": "2..8"
+				},
+				{
+					"name": "h",
+					"expression": "2..10"
+				}
+			],
+			"conditions": [
+				"p < l",
+				"h != l",
+				"h != p",
+				"l <= 3*h",
+				"l <= 3*p",
+				"abs((sqrt(l^2+p^2+h^2)) - round(sqrt(l^2+p^2+h^2))) > 0.05",
+				"abs(10*(sqrt(l^2+p^2+h^2)) - round(10*(sqrt(l^2+p^2+h^2)))) < 0.4",
+				"abs(sqrt(l^2+p^2) - round(sqrt(l^2+p^2))) > 0.05"
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:round(10*(sqrt(l^2+p^2+h^2)))/10;d}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:round(10*(sqrt(l^2+p^2)))/10;d}}",
+							"message": "Tu as calculé la diagonale de la face du dessus : $\\left[ DF \\right]$ traverse le pavé, c'est l'hypoténuse du triangle $DHF$.",
+							"label": "Diagonale de la face"
+						},
+						{
+							"answer": "{{eval:l+p+h}}",
+							"message": "On n'ajoute pas les longueurs : la longueur cherchée est l'hypoténuse d'un triangle rectangle, utilise le théorème de Pythagore.",
+							"label": "Longueurs ajoutées"
+						},
+						{
+							"answer": "{{eval:l^2+p^2+h^2}}",
+							"message": "Tu as trouvé le **carré** de la longueur : il reste à prendre sa racine carrée.",
+							"label": "Racine carrée oubliée"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"Dans la face $EFGH$, le triangle $HEF$ est rectangle en $E$ : $HF^2 = EF^2 + EH^2 = {{l}}^2 + {{p}}^2 = {{eval:l^2+p^2}}$.",
+					"L'arête $[DH]$ est perpendiculaire à la face $EFGH$ : le triangle $DHF$ est rectangle en $H$, d'hypoténuse $[DF]$.",
+					"Théorème de Pythagore : $DF^2 = DH^2 + HF^2 = {{h}}^2 + {{eval:l^2+p^2}} = {{eval:l^2+p^2+h^2}}$.",
+					"Donc $DF = \\sqrt{{{eval:l^2+p^2+h^2}}} \\approx \\textcolor{{{color:primary.0}}}{{{eval:round(10*(sqrt(l^2+p^2+h^2)))/10;d}}~\\unit{cm}}$ (à la calculatrice, arrondi au dixième)."
+				]
+			},
+			"hint": "Commence par la diagonale $[HF]$ de la face du dessus, puis utilise le triangle $DHF$, rectangle en $H$."
+		},
+		{
+			"statement": "Un cylindre a pour axe $[OO']$ : $O$ et $O'$ sont les centres de ses bases. Son rayon mesure ${{r}}~\\unit{cm}$ et sa hauteur ${{h}}~\\unit{cm}$. $M$ est un point du cercle de centre $O'$. Calcule la longueur $OM$, arrondie au dixième.\n\n```solide\nforme: cylindre {{r}} {{h}}\nsommets: O O'\ncotes: cm\n```\n\n$OM \\approx ?~\\unit{cm}$",
+			"variables": [
+				{
+					"name": "r",
+					"expression": "2..8"
+				},
+				{
+					"name": "h",
+					"expression": "4..15"
+				}
+			],
+			"conditions": [
+				"h > r",
+				"abs((sqrt(r^2+h^2)) - round(sqrt(r^2+h^2))) > 0.05",
+				"abs(10*(sqrt(r^2+h^2)) - round(10*(sqrt(r^2+h^2)))) < 0.4"
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:round(10*(sqrt(r^2+h^2)))/10;d}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:r+h}}",
+							"message": "On n'ajoute pas les longueurs : la longueur cherchée est l'hypoténuse d'un triangle rectangle, utilise le théorème de Pythagore.",
+							"label": "Longueurs ajoutées"
+						},
+						{
+							"answer": "{{eval:r^2+h^2}}",
+							"message": "Tu as trouvé le **carré** de la longueur : il reste à prendre sa racine carrée.",
+							"label": "Racine carrée oubliée"
+						},
+						{
+							"answer": "{{eval:round(10*(sqrt(h^2-r^2)))/10;d}}",
+							"message": "La longueur cherchée est l'hypoténuse, le plus long côté : on **ajoute** les carrés des deux autres côtés.",
+							"label": "Carrés soustraits"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"L'axe $[OO']$ est perpendiculaire à la base de centre $O'$ : le triangle $OO'M$ est rectangle en $O'$, d'hypoténuse $[OM]$. $OO' = {{h}}~\\unit{cm}$ (la hauteur) et $O'M = {{r}}~\\unit{cm}$ (le rayon).",
+					"Théorème de Pythagore : $OM^2 = OO'^2 + O'M^2 = {{h}}^2 + {{r}}^2 = {{eval:r^2+h^2}}$.",
+					"Donc $OM = \\sqrt{{{eval:r^2+h^2}}} \\approx \\textcolor{{{color:primary.0}}}{{{eval:round(10*(sqrt(r^2+h^2)))/10;d}}~\\unit{cm}}$ (à la calculatrice, arrondi au dixième)."
+				]
+			},
+			"hint": "Les points $O$, $O'$ et $M$ forment un triangle rectangle : en quel point est l'angle droit ?"
+		},
+		{
+			"statement": "Un cône de révolution a pour sommet $S$ ; $O$ est le centre de sa base. Son rayon mesure ${{r}}~\\unit{cm}$ et sa hauteur $SO = {{h}}~\\unit{cm}$. $M$ est un point du cercle de base. Calcule la longueur $SM$ de la génératrice, arrondie au dixième.\n\n```solide\nforme: cone {{r}} {{h}}\nsommets: S O\ncotes: cm\n```\n\n$SM \\approx ?~\\unit{cm}$",
+			"variables": [
+				{
+					"name": "r",
+					"expression": "3..9"
+				},
+				{
+					"name": "h",
+					"expression": "4..15"
+				}
+			],
+			"conditions": [
+				"h > r",
+				"h <= 3*r",
+				"abs((sqrt(r^2+h^2)) - round(sqrt(r^2+h^2))) > 0.05",
+				"abs(10*(sqrt(r^2+h^2)) - round(10*(sqrt(r^2+h^2)))) < 0.4"
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:round(10*(sqrt(r^2+h^2)))/10;d}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:r+h}}",
+							"message": "On n'ajoute pas les longueurs : la longueur cherchée est l'hypoténuse d'un triangle rectangle, utilise le théorème de Pythagore.",
+							"label": "Longueurs ajoutées"
+						},
+						{
+							"answer": "{{eval:r^2+h^2}}",
+							"message": "Tu as trouvé le **carré** de la longueur : il reste à prendre sa racine carrée.",
+							"label": "Racine carrée oubliée"
+						},
+						{
+							"answer": "{{eval:round(10*(sqrt(h^2-r^2)))/10;d}}",
+							"message": "La longueur cherchée est l'hypoténuse, le plus long côté : on **ajoute** les carrés des deux autres côtés.",
+							"label": "Carrés soustraits"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"La hauteur $[SO]$ est perpendiculaire à la base : le triangle $SOM$ est rectangle en $O$, d'hypoténuse $[SM]$. $SO = {{h}}~\\unit{cm}$ et $OM = {{r}}~\\unit{cm}$ (le rayon).",
+					"Théorème de Pythagore : $SM^2 = SO^2 + OM^2 = {{h}}^2 + {{r}}^2 = {{eval:r^2+h^2}}$.",
+					"Donc $SM = \\sqrt{{{eval:r^2+h^2}}} \\approx \\textcolor{{{color:primary.0}}}{{{eval:round(10*(sqrt(r^2+h^2)))/10;d}}~\\unit{cm}}$ (à la calculatrice, arrondi au dixième)."
+				]
+			},
+			"hint": "Le sommet, le centre de la base et un point du cercle de base forment un triangle rectangle : en quel point est l'angle droit ?"
+		},
+		{
+			"statement": "$SABCD$ est une pyramide régulière : sa base est le carré $ABCD$ de côté ${{a}}~\\unit{cm}$, de centre $O$, et sa hauteur $SO$ mesure ${{h}}~\\unit{cm}$. Calcule la longueur de l'arête $[SA]$, arrondie au dixième.\n\n```solide\nforme: pyramide carree {{a}} {{h}}\nsommets: S A B C D\ncotes: cm\npoints: O centre ABCD\nsegments: [SO], [OA]\nangles-droits: SOA\n```\n\n$SA \\approx ?~\\unit{cm}$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..12"
+				},
+				{
+					"name": "h",
+					"expression": "3..15"
+				}
+			],
+			"conditions": [
+				"2*h >= a",
+				"h <= 3*a",
+				"abs((sqrt(h^2+a^2/2)) - round(sqrt(h^2+a^2/2))) > 0.05",
+				"abs(10*(sqrt(h^2+a^2/2)) - round(10*(sqrt(h^2+a^2/2)))) < 0.4"
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:round(10*(sqrt(h^2+a^2/2)))/10;d}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:round(10*(sqrt(h^2+a^2)))/10;d}}",
+							"message": "$\\left[ OA \\right]$ n'est pas un côté du carré : c'est la moitié de sa diagonale $\\left[ AC \\right]$. Calcule d'abord $AC$.",
+							"label": "Côté pris pour OA"
+						},
+						{
+							"answer": "{{eval:round(10*(sqrt(h^2+a^2/4)))/10;d}}",
+							"message": "$O$ n'est pas le milieu d'un côté : c'est le centre du carré, $OA$ est la moitié de la diagonale $\\left[ AC \\right]$.",
+							"label": "Demi-côté pris pour OA"
+						},
+						{
+							"answer": "{{eval:round(10*(sqrt(h^2+2*a^2)))/10;d}}",
+							"message": "$OA$ est la **moitié** de la diagonale $\\left[ AC \\right]$, pas la diagonale entière.",
+							"label": "Diagonale entière prise pour OA"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"Dans le carré $ABCD$, le triangle $ABC$ est rectangle en $B$ : $AC^2 = AB^2 + BC^2 = {{a}}^2 + {{a}}^2 = {{eval:2*a^2}}$. Le centre $O$ est le milieu de $[AC]$, donc $OA^2 = \\dfrac{AC^2}{4} = \\dfrac{{{eval:2*a^2}}}{4} = {{eval:a^2/2;d}}$.",
+					"La hauteur $[SO]$ est perpendiculaire à la base : le triangle $SOA$ est rectangle en $O$, d'hypoténuse $[SA]$.",
+					"Théorème de Pythagore : $SA^2 = SO^2 + OA^2 = {{eval:h^2}} + {{eval:a^2/2;d}} = {{eval:h^2+a^2/2;d}}$.",
+					"Donc $SA = \\sqrt{{{eval:h^2+a^2/2;d}}} \\approx \\textcolor{{{color:primary.0}}}{{{eval:round(10*(sqrt(h^2+a^2/2)))/10;d}}~\\unit{cm}}$ (à la calculatrice, arrondi au dixième)."
+				]
+			},
+			"hint": "Calcule d'abord $OA$ : c'est la moitié de la diagonale du carré. Puis utilise le triangle $SOA$, rectangle en $O$."
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "a = 5 : 5√2 ≈ 7,1",
+			"variationIndex": 0,
+			"variables": {
+				"a": "5"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["7{,}1"]
+		},
+		{
+			"description": "Erreur : 2a² = 50",
+			"variationIndex": 0,
+			"variables": {
+				"a": "5"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as trouvé le **carré** de la longueur : il reste à prendre sa racine carrée."
+			},
+			"answers": ["50"]
+		},
+		{
+			"description": "Erreur : 2a = 10",
+			"variationIndex": 0,
+			"variables": {
+				"a": "5"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "On n'ajoute pas les longueurs : la longueur cherchée est l'hypoténuse d'un triangle rectangle, utilise le théorème de Pythagore."
+			},
+			"answers": ["10"]
+		},
+		{
+			"description": "Erreur : √(2a) ≈ 3,2",
+			"variationIndex": 0,
+			"variables": {
+				"a": "5"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Le carré d'un nombre n'est pas son double : $a^2 = a \\times a$."
+			},
+			"answers": ["3{,}2"]
+		},
+		{
+			"description": "Erreur : valeur tronquée 7,0",
+			"variationIndex": 0,
+			"variables": {
+				"a": "5"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["7"]
+		},
+		{
+			"description": "a = 5 : 5√3 ≈ 8,7",
+			"variationIndex": 1,
+			"variables": {
+				"a": "5"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["8{,}7"]
+		},
+		{
+			"description": "Erreur : diagonale de la face ≈ 7,1",
+			"variationIndex": 1,
+			"variables": {
+				"a": "5"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as calculé la diagonale d'une **face** : $\\left[ DF \\right]$ traverse le cube, c'est l'hypoténuse du triangle $DHF$."
+			},
+			"answers": ["7{,}1"]
+		},
+		{
+			"description": "Erreur : 3a = 15",
+			"variationIndex": 1,
+			"variables": {
+				"a": "5"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "On n'ajoute pas les longueurs : la longueur cherchée est l'hypoténuse d'un triangle rectangle, utilise le théorème de Pythagore."
+			},
+			"answers": ["15"]
+		},
+		{
+			"description": "Erreur : 3a² = 75",
+			"variationIndex": 1,
+			"variables": {
+				"a": "5"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as trouvé le **carré** de la longueur : il reste à prendre sa racine carrée."
+			},
+			"answers": ["75"]
+		},
+		{
+			"description": "l = 6, p = 4 : √52 ≈ 7,2",
+			"variationIndex": 2,
+			"variables": {
+				"l": "6",
+				"p": "4",
+				"h": "3"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["7{,}2"]
+		},
+		{
+			"description": "Erreur : l + p = 10",
+			"variationIndex": 2,
+			"variables": {
+				"l": "6",
+				"p": "4",
+				"h": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "On n'ajoute pas les longueurs : la longueur cherchée est l'hypoténuse d'un triangle rectangle, utilise le théorème de Pythagore."
+			},
+			"answers": ["10"]
+		},
+		{
+			"description": "Erreur : l² + p² = 52",
+			"variationIndex": 2,
+			"variables": {
+				"l": "6",
+				"p": "4",
+				"h": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as trouvé le **carré** de la longueur : il reste à prendre sa racine carrée."
+			},
+			"answers": ["52"]
+		},
+		{
+			"description": "Erreur : √(l² − p²) ≈ 4,5",
+			"variationIndex": 2,
+			"variables": {
+				"l": "6",
+				"p": "4",
+				"h": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "La longueur cherchée est l'hypoténuse, le plus long côté : on **ajoute** les carrés des deux autres côtés."
+			},
+			"answers": ["4{,}5"]
+		},
+		{
+			"description": "l = 6, p = 4, h = 3 : √61 ≈ 7,8",
+			"variationIndex": 3,
+			"variables": {
+				"l": "6",
+				"p": "4",
+				"h": "3"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["7{,}8"]
+		},
+		{
+			"description": "Erreur : diagonale de la face ≈ 7,2",
+			"variationIndex": 3,
+			"variables": {
+				"l": "6",
+				"p": "4",
+				"h": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as calculé la diagonale de la face du dessus : $\\left[ DF \\right]$ traverse le pavé, c'est l'hypoténuse du triangle $DHF$."
+			},
+			"answers": ["7{,}2"]
+		},
+		{
+			"description": "Erreur : l + p + h = 13",
+			"variationIndex": 3,
+			"variables": {
+				"l": "6",
+				"p": "4",
+				"h": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "On n'ajoute pas les longueurs : la longueur cherchée est l'hypoténuse d'un triangle rectangle, utilise le théorème de Pythagore."
+			},
+			"answers": ["13"]
+		},
+		{
+			"description": "Erreur : l² + p² + h² = 61",
+			"variationIndex": 3,
+			"variables": {
+				"l": "6",
+				"p": "4",
+				"h": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as trouvé le **carré** de la longueur : il reste à prendre sa racine carrée."
+			},
+			"answers": ["61"]
+		},
+		{
+			"description": "r = 3, h = 7 : √58 ≈ 7,6",
+			"variationIndex": 4,
+			"variables": {
+				"r": "3",
+				"h": "7"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["7{,}6"]
+		},
+		{
+			"description": "Erreur : r + h = 10",
+			"variationIndex": 4,
+			"variables": {
+				"r": "3",
+				"h": "7"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "On n'ajoute pas les longueurs : la longueur cherchée est l'hypoténuse d'un triangle rectangle, utilise le théorème de Pythagore."
+			},
+			"answers": ["10"]
+		},
+		{
+			"description": "Erreur : r² + h² = 58",
+			"variationIndex": 4,
+			"variables": {
+				"r": "3",
+				"h": "7"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as trouvé le **carré** de la longueur : il reste à prendre sa racine carrée."
+			},
+			"answers": ["58"]
+		},
+		{
+			"description": "Erreur : √(h² − r²) ≈ 6,3",
+			"variationIndex": 4,
+			"variables": {
+				"r": "3",
+				"h": "7"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "La longueur cherchée est l'hypoténuse, le plus long côté : on **ajoute** les carrés des deux autres côtés."
+			},
+			"answers": ["6{,}3"]
+		},
+		{
+			"description": "r = 3, h = 7 : √58 ≈ 7,6",
+			"variationIndex": 5,
+			"variables": {
+				"r": "3",
+				"h": "7"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["7{,}6"]
+		},
+		{
+			"description": "Erreur : r + h = 10",
+			"variationIndex": 5,
+			"variables": {
+				"r": "3",
+				"h": "7"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "On n'ajoute pas les longueurs : la longueur cherchée est l'hypoténuse d'un triangle rectangle, utilise le théorème de Pythagore."
+			},
+			"answers": ["10"]
+		},
+		{
+			"description": "Erreur : r² + h² = 58",
+			"variationIndex": 5,
+			"variables": {
+				"r": "3",
+				"h": "7"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as trouvé le **carré** de la longueur : il reste à prendre sa racine carrée."
+			},
+			"answers": ["58"]
+		},
+		{
+			"description": "Erreur : √(h² − r²) ≈ 6,3",
+			"variationIndex": 5,
+			"variables": {
+				"r": "3",
+				"h": "7"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "La longueur cherchée est l'hypoténuse, le plus long côté : on **ajoute** les carrés des deux autres côtés."
+			},
+			"answers": ["6{,}3"]
+		},
+		{
+			"description": "a = 6, h = 4 : √34 ≈ 5,8",
+			"variationIndex": 6,
+			"variables": {
+				"a": "6",
+				"h": "4"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["5{,}8"]
+		},
+		{
+			"description": "Erreur : côté pris pour OA, √52 ≈ 7,2",
+			"variationIndex": 6,
+			"variables": {
+				"a": "6",
+				"h": "4"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "$\\left[ OA \\right]$ n'est pas un côté du carré : c'est la moitié de sa diagonale $\\left[ AC \\right]$. Calcule d'abord $AC$."
+			},
+			"answers": ["7{,}2"]
+		},
+		{
+			"description": "Erreur : demi-côté pris pour OA, 5",
+			"variationIndex": 6,
+			"variables": {
+				"a": "6",
+				"h": "4"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "$O$ n'est pas le milieu d'un côté : c'est le centre du carré, $OA$ est la moitié de la diagonale $\\left[ AC \\right]$."
+			},
+			"answers": ["5"]
+		},
+		{
+			"description": "Erreur : diagonale entière, √88 ≈ 9,4",
+			"variationIndex": 6,
+			"variables": {
+				"a": "6",
+				"h": "4"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "$OA$ est la **moitié** de la diagonale $\\left[ AC \\right]$, pas la diagonale entière."
+			},
+			"answers": ["9{,}4"]
+		}
+	]
+}
