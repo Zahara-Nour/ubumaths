@@ -49,7 +49,6 @@ export const BLOCK_CATALOG: BlockCatalogEntry[] = [
 	statChartEntry,
 	boxPlotEntry,
 	qrEntry,
-	engrenagesEntry,
 	horlogeEntry,
 	collectionEntry,
 	monnaieEntry,
@@ -68,7 +67,8 @@ export const BLOCK_CATALOG: BlockCatalogEntry[] = [
 	calculEntry,
 	robotEntry,
 	labyrintheEntry,
-	yohakuEntry
+	yohakuEntry,
+	engrenagesEntry
 ];
 
 /** Fiche d'un bloc par son segment d'adresse */
