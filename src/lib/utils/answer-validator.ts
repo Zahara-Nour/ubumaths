@@ -76,6 +76,8 @@ import { judgeMatrixAnswer, matrixEntryTexts } from '#lib/questions/matrices/mat
 import { judgePrimitiveAnswer } from '#lib/questions/calculus/primitive-answer.ts';
 import { judgeDifferentialEquationAnswer } from '#lib/questions/calculus/differential-equation-answer.ts';
 import type { CalculusVerdict } from '#lib/questions/calculus/calculus-reading.ts';
+import { judgeResolutionAnswer } from '#lib/questions/resolution/resolution-answer.ts';
+import { judgeParametricLineAnswer } from '#lib/questions/parametric/parametric-line-answer.ts';
 import { judgeRounding, roundingFeedback, roundToPrecision } from '#lib/questions/rounding.ts';
 import {
 	centsZerosMeaningful,
@@ -100,6 +102,7 @@ import {
 	isLabyrintheAnswerCorrect,
 	labyrintheAnswerVerdict
 } from '#lib/ubumark/utils/labyrinthe-answer.ts';
+import { isYohakuAnswerCorrect, yohakuAnswerVerdict } from '#lib/ubumark/utils/yohaku-answer.ts';
 import {
 	isLineToRepresentBlank,
 	isRepresentedIntervalCorrect
@@ -888,6 +891,8 @@ function validateBlankValue(
 	if (blank.construire === 'calcul') return isCalculAnswerCorrect(userAnswer, blank.expectedAnswer);
 	// Robot à produire : le code de l'élève rejoué sur la scène, juste s'il finit sur l'arrivée
 	if (blank.construire === 'robot') return isRobotAnswerCorrect(userAnswer, blank.expectedAnswer);
+	// Grille yohaku : chaque ligne et chaque colonne donne son total, quel que soit le remplissage
+	if (blank.construire === 'yohaku') return isYohakuAnswerCorrect(userAnswer, blank.expectedAnswer);
 	// Labyrinthe : le chemin de l'élève, de l'entrée à une sortie par des cases qui suivent la règle
 	if (blank.construire === 'labyrinthe')
 		return isLabyrintheAnswerCorrect(userAnswer, blank.expectedAnswer);
@@ -922,6 +927,18 @@ function validateBlankValue(
 			{ openableBounds: blank.openableBounds }
 		);
 		return status !== 'incorrect' && status !== 'empty';
+	}
+
+	// Résolution ligne par ligne : lignes de mêmes solutions, conclusion « x = … »
+	// (garde de complexité appliquée à CHAQUE ligne par le juge)
+	if (blank.answerKind === 'resolution') {
+		return judgeResolutionAnswer(userAnswer, blank).status === 'correct';
+	}
+
+	// Droite paramétrique : même droite (point sur la droite, vecteur colinéaire) ; trois
+	// lignes dans une valeur, garde de complexité appliquée à CHAQUE ligne par le juge
+	if (blank.answerKind === 'droite-parametrique') {
+		return judgeParametricLineAnswer(userAnswer, blank.expectedAnswer).status === 'correct';
 	}
 
 	// Réponse hostile ou démesurée : fausse, sans être lue (garde Q58)
@@ -1019,6 +1036,8 @@ function roundingOnlyFeedback(
 		blank.answerKind === 'intervalles' ||
 		blank.answerKind === 'vecteur' ||
 		blank.answerKind === 'matrice' ||
+		blank.answerKind === 'resolution' ||
+		blank.answerKind === 'droite-parametrique' ||
 		isCalculusBlank(blank) ||
 		blank.type === 'text'
 	) {
@@ -1342,6 +1361,61 @@ function calculusBlankResult(
 }
 
 /**
+ * Case « résolution » : verdict de `questions/resolution/` dans la forme de
+ * `validateSingleBlank`. Lignes justes et conclusion « x = valeur » : la valeur est
+ * ensuite jugée comme une case ordinaire (`x = \frac{12}{3}` : fraction à simplifier, ½).
+ */
+function resolutionBlankResult(
+	answer: string,
+	blank: InstanceBlank,
+	instance: QuestionInstance
+): ReturnType<typeof validateSingleBlank> {
+	const { status, feedback, finalValue } = judgeResolutionAnswer(answer, blank);
+	if (status === 'empty') return { isCorrect: false, status: 'empty' };
+	if (status !== 'correct' || finalValue === undefined) {
+		return feedback
+			? { isCorrect: false, status: 'incorrect', feedback }
+			: { isCorrect: false, status: 'incorrect' };
+	}
+	// La valeur finale est une case ordinaire : comparée au membre droit de l'attendue
+	// (`x={{s}}` → `{{s}}`), avec les réglages de la case (`acceptDecimal`, règles, forme
+	// exigée…). `x = 7+5` (calcul non fait), `x = 0,5` sans `acceptDecimal` : `bad_form`
+	const {
+		answerKind: _kind,
+		equation: _equation,
+		variable: _variable,
+		minLines: _minLines,
+		...rest
+	} = blank;
+	const sign = blank.expectedAnswer.indexOf('=');
+	const expectedValue =
+		sign < 0 ? blank.expectedAnswer : blank.expectedAnswer.slice(sign + 1).trim();
+	return validateSingleBlank(
+		finalValue,
+		{ ...rest, expectedAnswer: expectedValue },
+		finalValue,
+		instance
+	);
+}
+
+/**
+ * Case « droite paramétrique » : verdict de `questions/parametric/` dans la forme de
+ * `validateSingleBlank`. Seule la droite est jugée, jamais l'écriture (décision de
+ * David, 2026-11-28) : pas de forme à juger ensuite.
+ */
+function parametricLineBlankResult(
+	answer: string,
+	blank: InstanceBlank
+): ReturnType<typeof validateSingleBlank> {
+	const { status, feedback } = judgeParametricLineAnswer(answer, blank.expectedAnswer);
+	if (status === 'correct') return { isCorrect: true, status: 'correct' };
+	if (status === 'empty') return { isCorrect: false, status: 'empty' };
+	return feedback
+		? { isCorrect: false, status: 'incorrect', feedback }
+		: { isCorrect: false, status: 'incorrect' };
+}
+
+/**
  * Case « figure » : verdict de `questions/construction/` dans la forme de
  * `validateSingleBlank`. Positions des points lues dans le registre (inscrit
  * par l'écran de l'élève et la correction serveur) ; sans lui, une erreur.
@@ -1356,7 +1430,8 @@ function constructionBlankResult(
 		points,
 		answer,
 		constructionShapes(construction.source),
-		constructionExpected(construction.source)
+		constructionExpected(construction.source),
+		construction.source
 	);
 	if (status === 'empty') return { isCorrect: false, status: 'empty' };
 	if (status === 'correct') return { isCorrect: true, status: 'correct' };
@@ -1591,6 +1666,13 @@ function judgeSingleBlank(
 		return verdict.message ? { isCorrect: false, feedback: verdict.message } : { isCorrect: false };
 	}
 
+	// Grille yohaku : faux, le message dit quelles lignes ou colonnes ne donnent pas leur total
+	if (blank.construire === 'yohaku') {
+		const verdict = yohakuAnswerVerdict(userAnswer, blank.expectedAnswer);
+		if (verdict.juste) return { isCorrect: true, status: 'correct' };
+		return verdict.message ? { isCorrect: false, feedback: verdict.message } : { isCorrect: false };
+	}
+
 	// Programme de calcul : ses affichages sur chaque essai contre ceux de l'attendu ; un
 	// programme illisible, muet ou en erreur sur un essai dit pourquoi
 	if (blank.construire === 'calcul') {
@@ -1667,6 +1749,19 @@ function judgeSingleBlank(
 	// Ensemble en notation intervalle (inéquation) : chaîne à part, cf. interval-answer.ts
 	if (blank.answerKind === 'intervalles') {
 		return intervalBlankResult(userAnswerLatex || userAnswer, blank, instance);
+	}
+
+	// Résolution ligne par ligne : chaîne à part, cf. resolution/resolution-answer.ts.
+	// Avant la garde de complexité : plusieurs lignes dépassent vite la longueur d'UNE
+	// réponse ; le juge mesure chaque ligne
+	if (blank.answerKind === 'resolution') {
+		return resolutionBlankResult(userAnswerLatex || userAnswer, blank, instance);
+	}
+
+	// Droite paramétrique : chaîne à part, cf. parametric/parametric-line-answer.ts. Avant la
+	// garde de complexité, comme la résolution : le juge mesure chaque ligne
+	if (blank.answerKind === 'droite-parametrique') {
+		return parametricLineBlankResult(userAnswerLatex || userAnswer, blank);
 	}
 
 	// Réponse hostile ou démesurée : fausse AVANT toute lecture (garde Q58, cf.
@@ -2439,6 +2534,16 @@ function matchedAnswerForm(
 		const result = matrixBlankResult(blankLatex || userAnswer, blank, instance);
 		return { status: result.status ?? 'incorrect', violations: result.constraintViolations ?? [] };
 	}
+	// Case « droite paramétrique » appariée : même jugement que seule
+	if (blank.answerKind === 'droite-parametrique') {
+		const result = parametricLineBlankResult(blankLatex || userAnswer, blank);
+		return { status: result.status ?? 'incorrect', violations: result.constraintViolations ?? [] };
+	}
+	// Case « résolution » appariée : même jugement que seule
+	if (blank.answerKind === 'resolution') {
+		const result = resolutionBlankResult(blankLatex || userAnswer, blank, instance);
+		return { status: result.status ?? 'incorrect', violations: result.constraintViolations ?? [] };
+	}
 	// Case « primitive » / « solution-ed » appariée : même jugement que seule
 	if (isCalculusBlank(blank)) {
 		const result = calculusBlankResult(blankLatex || userAnswer, blank, instance);
@@ -2532,8 +2637,14 @@ function validateBlanksOrderIndependent(
 	}
 
 	// Réponse hostile ou démesurée (garde Q58) : fausse, avec son message. Les cases
-	// « intervalles » ont leur propre garde (dans `validateBlankValue`).
-	const ordinaryBlanks = blanks.every((blank) => blank.answerKind !== 'intervalles');
+	// « intervalles » ont leur propre garde (dans `validateBlankValue`) ; les cases à
+	// plusieurs lignes (« resolution », « droite-parametrique ») mesurent chaque ligne.
+	const ordinaryBlanks = blanks.every(
+		(blank) =>
+			blank.answerKind !== 'intervalles' &&
+			blank.answerKind !== 'resolution' &&
+			blank.answerKind !== 'droite-parametrique'
+	);
 	// Le bouton « impossible » (sa marque) n'est pas une expression : jamais mesuré
 	const isButton = (answer: string, latex: string | undefined) =>
 		blanks.some((blank) => blank.impossibleLabel !== undefined) &&

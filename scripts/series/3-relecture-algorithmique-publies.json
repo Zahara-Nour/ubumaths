@@ -1,0 +1,44 @@
+{
+	"id": "1ec193bd-705d-4e4d-9426-05b1a6be1b00",
+	"title": "Relecture — algorithmique, 6 modèles publiés complétés (3e)",
+	"grade": "3",
+	"description": "Relecture dans /dev/modeles des modèles publiés de 3e auxquels le chantier idees-3e-algorithmique a ajouté des variations (à la fin de chaque modèle) : lutin dans un repère, Syracuse, valeur à saisir, diviseurs, tableur, bloc « losange ».",
+	"items": [
+		{
+			"modele": "Conditions composées",
+			"templateId": "9f9bddbd-19cc-43cc-90b9-e67c9058468d",
+			"quantity": 1,
+			"delay": 60
+		},
+		{
+			"modele": "Boucle « répéter jusqu'à ce que »",
+			"templateId": "4ce8eb3c-e00a-4a26-adf7-d4f215b8cc3b",
+			"quantity": 1,
+			"delay": 60
+		},
+		{
+			"modele": "Plusieurs variables",
+			"templateId": "962da675-6cde-45c9-9ba4-56d96a2be9c6",
+			"quantity": 1,
+			"delay": 60
+		},
+		{
+			"modele": "Écrire un programme pour résoudre un problème (3e)",
+			"templateId": "6e99d291-aa1e-4abe-8813-f8f0e8deac32",
+			"quantity": 1,
+			"delay": 60
+		},
+		{
+			"modele": "Formules du tableur",
+			"templateId": "5c092e43-3bb3-4f5d-8eaf-5f9da9a70039",
+			"quantity": 1,
+			"delay": 60
+		},
+		{
+			"modele": "Bloc personnalisé",
+			"templateId": "0a470416-e296-4f2b-b11d-dee7150ebc7a",
+			"quantity": 1,
+			"delay": 60
+		}
+	]
+}

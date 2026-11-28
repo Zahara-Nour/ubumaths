@@ -106,7 +106,7 @@ anciennes versions. Les deux fichiers d'automatismes `6AutoN4` ne sont pas repri
 | Nombres entiers et décimaux        | 6N1   | 38        | publiée (2026-11-23) | `idees-6e-entiers-decimaux` |
 | Nombres décimaux                   | 6N2   | 55        | publiée (2026-11-23) | `idees-6e-decimaux`         |
 | Fractions                          | 6N3   | 53        | publiée (2026-11-25) | `idees-6e-fractions`        |
-| Algèbre                            | 6N4   | 9         | prise (2026-11-28)   | `idees-6e-algebre`          |
+| Algèbre                            | 6N4   | 9         | publiée (2026-11-28) | `idees-6e-algebre`          |
 | Résolution de problèmes            | 6N5   | 24        | publiée (2026-11-27) | `idees-6e-problemes`        |
 | Longueurs                          | 6M1   | 16        | publiée (2026-11-28) | `idees-6e-longueurs`        |
 | Aires                              | 6M2   | 17        | publiée (2026-11-27) | `idees-6e-aires`            |
@@ -116,7 +116,7 @@ anciennes versions. Les deux fichiers d'automatismes `6AutoN4` ne sont pas repri
 | Distances                          | 6G1   | 6         | libre                |                             |
 | Cercles et disques                 | 6G2   | 9         | libre                |                             |
 | Médiatrices                        | 6G3   | 5         | libre                |                             |
-| Angles                             | 6G4   | 12        | libre                |                             |
+| Angles                             | 6G4   | 12        | prise (2026-11-28)   | `idees-6e-angles`           |
 | Bissectrices                       | 6G5   | 3         | libre                |                             |
 | Triangles                          | 6G6   | 16        | libre                |                             |
 | Symétrie axiale                    | 6G7   | 13        | libre                |                             |
@@ -146,7 +146,7 @@ pas. Le fichier `beta3I12` n'est pas repris.
 | Théorème de Thalès                       | 3G2       | 10        | publiée (2026-11-27)                                       | `idees-3e-thales`            |
 | Trigonométrie                            | 3G3       | 13        | publiée (2026-11-25)                                       | `idees-3e-trigonometrie`     |
 | Espace                                   | 3G4       | 6         | publiée (2026-11-28)                                       | `idees-3e-espace`            |
-| Algorithmique et programmation           | 3I1       | 11        | prise (2026-11-28)                                         | `idees-3e-algorithmique`     |
+| Algorithmique et programmation           | 3I1       | 11        | publiée (2026-11-28)                                       | `idees-3e-algorithmique`     |
 | Automatismes (mélange des rubriques)     | 3Auto, 3a | 34        | libre ; **à faire en dernier**, après les autres rubriques |                              |
 | Sujets de brevet (mélange des rubriques) | 3Z1       | 15        | libre ; **à faire en dernier**, après les autres rubriques |                              |
 
@@ -178,15 +178,16 @@ de contenu appliquée en prod.
 | d03e49c0 Calculer la valeur d'une valeur absolue             | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
 | d264f7aa Pair ou impair : écrire 2k ou 2k + 1                | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
 | fa65910d Multiple : a = k × b                                | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| 39bafe0e Motif évolutif : trouver la régularité              | `idees-6e-algebre`                                          | 2026-11-28 |                                      |
-| 4048d9c5 Deux nombres inconnus : billets et devinettes       | `idees-6e-algebre`                                          | 2026-11-28 |                                      |
-| a06458ad Balances : la masse de deux objets                  | `idees-6e-algebre`                                          | 2026-11-28 |                                      |
-| a9c37578 Schéma en barres : choisir le schéma d'un énoncé    | `idees-6e-algebre`                                          | 2026-11-28 |                                      |
+| c8741112 Le vocabulaire des angles                           | `idees-6e-angles`                                           | 2026-11-28 |                                      |
+| 3be08965 Mesurer un angle au rapporteur                      | `idees-6e-angles`                                           | 2026-11-28 |                                      |
+| 2291c83c Construire un angle de mesure donnée                | `idees-6e-angles`                                           | 2026-11-28 |                                      |
 
 ## Idées en attente
 
 Ce sont des idées notées pour un modèle déjà réservé, ou reportées par David (« plus tard »).
 
+- `idees-6e-angles` (2026-11-28, pour la session de la rubrique « Espace » 6G8) : 6G41, « compléter une
+  représentation en perspective cavalière » (cube ou pavé), rangé sous le préfixe 6G4 mais exercice de solides.
 - `ensembles-2de` : fiches 16, 17, 34, 52 du relevé « nombres et calculs » (rares mais au
   programme, voir le journal).
 - `idees-6e-entiers` (plus tard, David, 2026-11-22) : la rose des sommes (6N0A-2), en attente d'un outil
@@ -202,3 +203,7 @@ Ce sont des idées notées pour un modèle déjà réservé, ou reportées par D
   1/5 000 000) pour calculer une distance réelle ou sur le plan (6P3E, clone d'un exercice de 5e) ; la 5e
   n'a que « trouver l'échelle » (c1a54695, 24a8e2b1).
 - `idees-6e-aires` (2026-11-27, pour la session de 5e) : conversions d'aire au-delà de m², dm², cm² (mm², dam², hm², km², ha, a ; deux sauts, QCM ×10/×100) et assemblages carré + rectangle + triangle où l'on déduit un côté d'une aire puis l'aire d'un triangle (6M2A-1, 6M2B-2) : hors bornes de 6e.
+- `idees-3e-algorithmique` (2026-11-28, pour la session de la rubrique « Pensée informatique » de 6e, 6I1) : 3I12-5
+  n'est que le niveau « 3 » de 6I1B-6 (cocher, parmi cinq programmes, tous ceux qui tracent un segment, un
+  carré ou un compte à rebours donné ; erreurs d'une unité dans « répéter n fois »), contenu de 5e (5-106).
+  Notre ``choix accepte plusieurs bonnes réponses.

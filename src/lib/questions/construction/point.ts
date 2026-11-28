@@ -22,6 +22,10 @@
  * un point qui n'est ni un point de la figure ni une intersection de deux traits
  * est « placé à l'œil », faux même posé pile au bon endroit.
  *
+ * Outil n° 38 (chantier `outil-equerre-uni`) : avec la règle graduée dans `outils:`,
+ * le milieu se marque aussi sur une graduation de la règle posée sur [AB] (0 en A
+ * ou en B) ; [AB] mesure alors un nombre pair de millimètres.
+ *
  * Pur : positions de la figure et points attendus donnés par l'appelant
  * (registre `positions.ts`, qui calcule l'expression).
  *
@@ -31,7 +35,13 @@
 import type { ConstructionCheck, PointCheck } from '#lib/ubumark/types/construction.ts';
 import { isDrawnPoint, type DrawnObject } from './answer';
 import { basePointsOf, constructionOf, intersectTraits, isInFrame } from './instruments';
-import { mediatriceSupportError } from './line';
+import {
+	mediatriceSupportError,
+	midpointEyeballedFeedback,
+	rulerMidpointError,
+	usesRulerMidpoint
+} from './line';
+import { rulerLengthOf } from './segment-length';
 import { circumcenterOf, circumcenterSupportError } from './circle';
 import type { ConstructionVerdict, Position } from './judge';
 import { dot, sub, tolerance } from './polygon';
@@ -113,6 +123,11 @@ function parallelogramOf(expression: string): [string, string, string] | null {
 export const MIDPOINT_REGEX =
 	/^milieu\(\s*([A-Za-z][A-Za-z0-9_]*)\s*,\s*([A-Za-z][A-Za-z0-9_]*)\s*\)$/;
 
+/** `intersection(segment(A, C), segment(B, D))` (ou `droite(…)`) : le croisement de deux traits */
+const NAME = '([A-Za-z][A-Za-z0-9_]*)';
+const TRAIT = String.raw`(segment|droite)\(\s*${NAME}\s*,\s*${NAME}\s*\)`;
+const CROSSING_REGEX = new RegExp(String.raw`^intersection\(\s*${TRAIT}\s*,\s*${TRAIT}\s*\)$`);
+
 const SYMMETRY_REGEX =
 	/^sym[eé]trie\(\s*([A-Za-z][A-Za-z0-9_]*)\s*,\s*(axe|centre)\s*=\s*([A-Za-z][A-Za-z0-9_]*)?/;
 
@@ -159,7 +174,10 @@ function assertPlainPaper(
 	// Lot 3 (§ 9) : le milieu se construit par la médiatrice (compas, règle)
 	const midpoint = MIDPOINT_REGEX.exec(check.expression.trim());
 	if (midpoint) {
-		const message = mediatriceSupportError([midpoint[1], midpoint[2]], points, shapes);
+		const names: [string, string] = [midpoint[1], midpoint[2]];
+		const message =
+			mediatriceSupportError(names, points, shapes) ??
+			(usesRulerMidpoint(shapes) ? rulerMidpointError(names, points, shapes) : null);
 		if (message) throw new PointAuthorError(`${label} : ${message}`);
 		return;
 	}
@@ -181,10 +199,23 @@ function assertPlainPaper(
 		}
 		return;
 	}
+	// Outil n° 45 (figure composée) : le croisement de deux traits joignant des points
+	// (les diagonales du carré) ; l'élève trace les traits, puis marque le point
+	const crossing = CROSSING_REGEX.exec(check.expression.trim());
+	if (crossing) {
+		const names = [crossing[2], crossing[3], crossing[5], crossing[6]];
+		const unknown = names.find((name) => !points.has(name));
+		if (unknown) {
+			throw new PointAuthorError(
+				`${label} : le point ${unknown} n’existe pas (ni dans la figure, ni construit à une étape d’avant)`
+			);
+		}
+		return;
+	}
 	const symmetry = symmetryOf(check.expression);
 	if (!symmetry || !symmetry.target) {
 		throw new PointAuthorError(
-			`${label} : sans quadrillage, seulement un symétrique (symetrie(A, axe=d) ou symetrie(A, centre=O)), un milieu (milieu(A, B)), le centre d’un cercle circonscrit (centre(cercle_circonscrit(A, B, C))) ou le 4e sommet d’un parallélogramme (sommet(parallelogramme(A, B, C), 4)) ; sinon ajouter « grille: 1 »`
+			`${label} : sans quadrillage, seulement un symétrique (symetrie(A, axe=d) ou symetrie(A, centre=O)), un milieu (milieu(A, B)), le centre d’un cercle circonscrit (centre(cercle_circonscrit(A, B, C))), le 4e sommet d’un parallélogramme (sommet(parallelogramme(A, B, C), 4)) ou un croisement (intersection(segment(A, C), segment(B, D))) ; sinon ajouter « grille: 1 »`
 		);
 	}
 	const axis = symmetry.by === 'axe' ? (shapes.lines.get(symmetry.target) ?? null) : null;
@@ -314,7 +345,8 @@ export function judgePoints(
 	expected: ExpectedPoints | undefined,
 	points: ReadonlyMap<string, Position>,
 	shapes: FigureShapes | undefined,
-	objects: readonly DrawnObject[]
+	objects: readonly DrawnObject[],
+	{ composite = false }: { composite?: boolean } = {}
 ): ConstructionVerdict {
 	const targets = checks.map((check) => ({ check, at: expectedOf(check, expected) }));
 	const unused = objects.filter(isDrawnPoint).map(({ x, y }) => ({ x, y }));
@@ -323,9 +355,20 @@ export function judgePoints(
 	// (décisions de David, 2026-11-02, § 8, et 2026-11-03, § 14)
 	if (shapes && !shapes.grid && unused.length > 0) {
 		const base = basePointsOf(points, shapes.segments);
-		const { isBuilt } = constructionOf(objects, base, shapes.traits);
+		// Outil n° 38 : un milieu marqué sur une graduation de la règle graduée
+		const midpoints = checks.flatMap((check) => {
+			const match = MIDPOINT_REGEX.exec(check.expression.trim());
+			return match ? [[match[1], match[2]] as [string, string]] : [];
+		});
+		const ruled = usesRulerMidpoint(shapes) && midpoints.length > 0;
+		const { isBuilt } = constructionOf(objects, base, shapes.traits, {
+			...(ruled && { rulerLength: rulerLengthOf(shapes.window) })
+		});
 		if (unused.some((p) => !isBuilt(p))) {
-			return { status: 'incorrect', feedback: POINT_EYEBALLED_FEEDBACK };
+			const feedback = ruled
+				? midpointEyeballedFeedback(...midpoints[0])
+				: POINT_EYEBALLED_FEEDBACK;
+			return { status: 'incorrect', feedback };
 		}
 	}
 	const eps = tolerance(...targets.map((t) => t.at), ...unused);
@@ -336,7 +379,8 @@ export function judgePoints(
 		else unused.splice(index, 1);
 	}
 	if (missed.length === 0) {
-		return unused.length > 0
+		// Figure composée (outil n° 45) : les points des autres étapes ne sont pas de trop
+		return unused.length > 0 && !composite
 			? { status: 'incorrect', feedback: POINT_EXTRA_FEEDBACK }
 			: { status: 'correct' };
 	}

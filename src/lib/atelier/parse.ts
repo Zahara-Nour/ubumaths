@@ -780,7 +780,10 @@ export function variablesOf(
  * Seuls les noms qu'un objet peut porter (`hasObjectNameShape` : ni `alpha_1`, ni
  * les marques `ω_1` de la grille), hors terme d'une suite (`indexedObjectName`).
  */
-function withIndexedNames(ast: MathNode, functionNames: readonly string[] | undefined): MathNode {
+export function withIndexedNames(
+	ast: MathNode,
+	functionNames: readonly string[] | undefined
+): MathNode {
 	return hideIndexedNames(
 		ast,
 		(name, node) => hasObjectNameShape(name) && indexedObjectName(node, functionNames) !== null

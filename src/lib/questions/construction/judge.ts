@@ -17,7 +17,9 @@ import {
 	centeredCircleOf,
 	isRuledLength,
 	isDiagonalRectangleCheck,
+	isCompositeFigure,
 	isRuledPolygonCheck,
+	rulerMidpointOf,
 	type ConstructionCheck,
 	type DroiteParCheck,
 	type PolygonCheck
@@ -35,7 +37,15 @@ import {
 	judgePoints,
 	type ExpectedPoints
 } from './point';
-import { LineAuthorError, assertLines, bissectriceOf, isLineCheck, judgeLines } from './line';
+import {
+	LineAuthorError,
+	assertLines,
+	bissectriceOf,
+	isLineCheck,
+	judgeLines,
+	usesRulerMidpoint
+} from './line';
+import { assertComposite, judgeComposite } from './composite';
 import { CircleAuthorError, assertCircles, isCircleCheck, judgeCircles } from './circle';
 import { PolygonAuthorError, givenVertices, judgePolygon } from './polygon';
 import { RuledPolygonAuthorError, assertRuledPolygon, judgeRuledPolygon } from './ruled-polygon';
@@ -46,6 +56,7 @@ import {
 } from './diagonal-rectangle';
 import { SymmetryAuthorError, assertSymmetry, judgeSymmetry, type FigureShapes } from './symmetry';
 import { TriangleAuthorError, assertTriangle, judgeTriangle } from './triangle';
+import { assertCopy, isCopyCheck, judgeCopy } from './triangle-copy';
 import { AngleAuthorError, assertAngle, judgeAngle } from './angle';
 import { MeasureAuthorError, assertMeasure, judgeMeasure } from './measure';
 import {
@@ -161,7 +172,7 @@ function isPolygonCheck(check: ConstructionCheck): check is PolygonCheck {
 }
 
 /** Erreur d'auteur d'un module de vérification → celle du juge ; le reste passe */
-function asAuthorError(error: unknown): unknown {
+export function asAuthorError(error: unknown): unknown {
 	if (
 		error instanceof PolygonAuthorError ||
 		error instanceof RuledPolygonAuthorError ||
@@ -193,8 +204,14 @@ export function assertConstructionChecks(
 	checks: readonly ConstructionCheck[],
 	points: ReadonlyMap<string, Position>,
 	shapes?: FigureShapes,
-	expected?: ExpectedPoints
+	expected?: ExpectedPoints,
+	source?: string
 ): void {
+	// Figure composée (outil n° 45) : chaque étape sur sa figure, points construits compris
+	if (source !== undefined && isCompositeFigure(checks)) {
+		assertComposite(checks, source, shapes?.tools ?? []);
+		return;
+	}
 	const pointChecks = checks.filter(isPointCheck);
 	if (pointChecks.length > 0) {
 		try {
@@ -271,7 +288,8 @@ export function assertConstructionChecks(
 		}
 		if (check.kind === 'triangle') {
 			try {
-				assertTriangle(check, points, shapes);
+				if (isCopyCheck(check)) assertCopy(check, points, shapes);
+				else assertTriangle(check, points, shapes);
 			} catch (error) {
 				throw asAuthorError(error);
 			}
@@ -317,8 +335,13 @@ export function judgeConstruction(
 	points: ReadonlyMap<string, Position>,
 	answer: string,
 	shapes?: FigureShapes,
-	expected?: ExpectedPoints
+	expected?: ExpectedPoints,
+	source?: string
 ): ConstructionVerdict {
+	// Figure composée (outil n° 45) : un programme d'étapes, `composite.ts`
+	if (source !== undefined && isCompositeFigure(allChecks)) {
+		return judgeComposite(allChecks, source, shapes?.tools ?? [], answer);
+	}
 	// Angle à mesurer (lot 6) : seul dans la figure (garanti par le parseur) ; les repères ne
 	// sont pas notés, la mesure tapée l'est
 	const measure = allChecks.find((c) => c.kind === 'mesure');
@@ -378,7 +401,11 @@ export function judgeConstruction(
 	const rulerPolygon = allChecks.find(isRuledPolygonCheck);
 	// … ou d'un rectangle sans équerre, seul dans la figure (garanti par le parseur)
 	const diagonalRectangle = allChecks.find(isDiagonalRectangleCheck);
+	// … ou d'une médiatrice ou d'un milieu (outil n° 38), si l'auteur l'a mise dans outils:
+	const rulerMidpoint =
+		usesRulerMidpoint(shapes) && allChecks.some((c) => rulerMidpointOf(c) !== null);
 	if (
+		!rulerMidpoint &&
 		!segmentLength &&
 		!rulerCircle &&
 		!rulerTriangle &&
@@ -448,7 +475,9 @@ export function judgeConstruction(
 	const triangle = allChecks.find((c) => c.kind === 'triangle');
 	if (triangle) {
 		try {
-			return judgeTriangle(triangle, points, shapes, objects);
+			return isCopyCheck(triangle)
+				? judgeCopy(triangle, points, shapes, objects)
+				: judgeTriangle(triangle, points, shapes, objects);
 		} catch (error) {
 			throw asAuthorError(error);
 		}

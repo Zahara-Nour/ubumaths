@@ -570,12 +570,14 @@ export type { CourbeNode } from './courbe';
 export type { FigureNode } from './figure';
 export type { StatChartNode } from './stat-chart';
 export type { QrNode } from './qr';
+export type { EngrenagesNode } from './engrenages';
 export type { ScratchNode } from './scratch';
 export type { HorlogeNode } from './horloge';
 export type { TortueNode } from './tortue';
 export type { CalculNode } from './calcul';
 export type { RobotNode } from './robot';
 export type { LabyrintheNode } from './labyrinthe';
+export type { YohakuNode } from './yohaku';
 export type { PartageNode } from './partage';
 export type { EspaceNode } from './espace';
 export type { OperationNode } from './operation';
@@ -596,12 +598,14 @@ import type { CourbeNode } from './courbe';
 import type { FigureNode } from './figure';
 import type { StatChartNode } from './stat-chart';
 import type { QrNode } from './qr';
+import type { EngrenagesNode } from './engrenages';
 import type { ScratchNode } from './scratch';
 import type { HorlogeNode } from './horloge';
 import type { TortueNode } from './tortue';
 import type { CalculNode } from './calcul';
 import type { RobotNode } from './robot';
 import type { LabyrintheNode } from './labyrinthe';
+import type { YohakuNode } from './yohaku';
 import type { PartageNode } from './partage';
 import type { EspaceNode } from './espace';
 import type { OperationNode } from './operation';
@@ -635,12 +639,14 @@ export type BlockNode =
 	| FigureNode
 	| StatChartNode
 	| QrNode
+	| EngrenagesNode
 	| ScratchNode
 	| HorlogeNode
 	| TortueNode
 	| CalculNode
 	| RobotNode
 	| LabyrintheNode
+	| YohakuNode
 	| PartageNode
 	| EspaceNode
 	| OperationNode

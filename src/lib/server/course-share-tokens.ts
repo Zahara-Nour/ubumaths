@@ -13,7 +13,7 @@
  * jetons (lecture, rotation, révocation) : les deux tables ont la même forme,
  * mais le client Supabase typé ne sait pas écrire `from(table)` sur une union de
  * noms de table sans transtypage. Les briques communes
- * (`generateShareTokenString`, `endOfSchoolYear`) sont importées, pas
+ * (`generateShareTokenString`, `classSchoolYearExpiry`) sont importées, pas
  * recopiées. Factoriser obligerait à toucher le module du
  * cahier, en production et sans test qui le couvre de bout en bout : un
  * risque sans gain pour trois fonctions de quelques lignes.
@@ -25,11 +25,8 @@ import { z } from 'zod';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '#lib/types/database.ts';
 import { generateShareTokenString } from '#lib/server/exercise-share-tokens.ts';
-import {
-	endOfSchoolYear,
-	type JournalShareToken,
-	type PublicWorksheet
-} from '#lib/server/journal-share-tokens.ts';
+import type { JournalShareToken, PublicWorksheet } from '#lib/server/journal-share-tokens.ts';
+import { classSchoolYearExpiry } from '#lib/server/school-year.ts';
 import { buildSeriesLink, seriesItemsSchema, totalQuestions } from '#lib/validation/series.ts';
 import { readStoredSeriesMany } from '#lib/server/series-lines.ts';
 import { createServerLogger } from '#lib/utils/logger.ts';
@@ -444,6 +441,15 @@ export async function rotateCourseShareToken(
 	classId: string,
 	userId: string
 ): Promise<{ token: CourseShareToken | null; error: string | null }> {
+	// Avant la révocation : une fin d'année illisible ne doit pas laisser le
+	// cours sans lien.
+	let expiresAt: Date;
+	try {
+		expiresAt = await classSchoolYearExpiry(supabase, classId);
+	} catch {
+		return { token: null, error: 'Impossible de créer le lien du cours' };
+	}
+
 	const { error: revokeError } = await revokeCourseShareToken(supabase, classId);
 	if (revokeError) return { token: null, error: revokeError };
 
@@ -454,7 +460,7 @@ export async function rotateCourseShareToken(
 			// CSPRNG (finding H8, audit d'août).
 			token: generateShareTokenString(),
 			created_by: userId,
-			expires_at: endOfSchoolYear().toISOString()
+			expires_at: expiresAt.toISOString()
 		})
 		.select(TOKEN_COLUMNS)
 		.single();

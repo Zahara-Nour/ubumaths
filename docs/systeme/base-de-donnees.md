@@ -195,10 +195,19 @@ Deux référentiels, deux usages (la famille A, ex-`skills`, n'existe plus :
   de cours ne comptent pas (`20260928160000`).
 - **`curriculum_point_automatismes`** : un point « automatisme » l'est **pour un niveau** (liste
   publiée par un programme), pas dans l'absolu.
-- **`skill_attempts` est la source unique des faits**, immuable (aucune policy UPDATE/DELETE hors
-  admin). Un CHECK impose le XOR entre les deux régimes. Le trigger `trg_skill_attempts_after_insert`
-  recalcule les caches (`update_student_point_state`, `update_student_observable_state` →
-  `update_student_competence_level`) ; les caches ne s'écrivent que par lui.
+- **`skill_attempts` est la source unique des faits**, immuable (aucune policy UPDATE hors admin ;
+  DELETE : l'admin, et le prof pour les seules observations `teacher` d'une tâche,
+  `skill_attempts_delete_teacher_task`, L39). Un CHECK impose le XOR entre les deux régimes. Le
+  trigger `trg_skill_attempts_after_insert` recalcule les caches (`update_student_point_state`,
+  `update_student_observable_state` → `update_student_competence_level`) ;
+  `trg_skill_attempts_after_delete` (par requête) recalcule ceux des observations effacées. Les
+  caches ne s'écrivent que par ces triggers.
+- **Saisie d'une tâche** (`20261128135334`) : `save_evaluation_task_grid(p_task_id, p_rows)`,
+  `security invoker`, efface puis réécrit en une transaction la grille de la tâche des seuls élèves
+  de `p_rows` (un élève archivé depuis garde ses observations), 5 000 lignes au plus, codes `plus` /
+  `minus` ; elle lève si une de ces lignes n'a pas pu être effacée (refus RLS), au lieu de doubler
+  la grille. Seul chemin d'écriture de la page de saisie. Le trigger de suppression ne recalcule
+  pas le cache d'un élève supprimé (cascade d'un compte : ses caches partent avec lui).
 - **Contenu d'une trace** ([ADR 0038](../adr/0038-contenu-d-une-trace.md), `20261111092522`) :
   colonnes facultatives `place` (lieu : `flash_cards`, `typing`, `mock_test`, `number_race`, `review`,
   `evaluation`), `response_ms`, `allotted_ms`, `end_reason` (`validated` / `timeout`), `seed`,
@@ -877,12 +886,13 @@ authenticated` ne part qu'après le `deploy:prod` qui livre la route (sinon la p
   table reçoit `42501` sur un `select('*')`, ce qui casse PostgREST. Pour cacher des données à l'élève,
   une table annexe sans policy élève (c'était le choix de `python_submission_server_verdicts`, supprimée
   depuis).
-- **`curriculum_points` : cinq des six clés étrangères qui le visent sont en CASCADE** ; supprimer un
-  point effacerait sans un mot la couverture du cahier de texte et l'acquisition des élèves. On
-  archive.
-- **`journal_entry_activities.exercise_id` est en `SET NULL`** alors qu'un CHECK de forme exige la
-  colonne pour `kind = 'exercise'` : supprimer un exercice cité dans une séance échoue sur la
-  contrainte.
+- **Supprimer un point de `curriculum_points` qu'un élève a travaillé ou qu'une séance couvre est
+  REFUSÉ** (`student_point_state` et `journal_entry_points` en NO ACTION, migration
+  `20261128072151`, L112) : rattacher d'abord ce travail à un autre point, ou archiver. Les autres
+  clés qui visent un point (modèles, exercices, automatismes) restent en CASCADE.
+- **Supprimer un exercice cité par une séance du cahier de texte est REFUSÉ**
+  (`journal_entry_activities.exercise_id` en NO ACTION, code `23503`, L113) : `deleteExercise` rend
+  `ExerciseCitedError`, et la page dit au prof combien de séances le citent.
 - **Deux générations de seeds du programme.** Les anciens (`20260621160000_seed_curriculum_6e`,
   `20260830090000_seed_curriculum_1re_spe`) amorcent un niveau vide, une fois (garde
   `IF EXISTS … THEN RETURN`) ; ensuite la page `/dashboard/teacher/programme` faisait foi, jusqu'à la

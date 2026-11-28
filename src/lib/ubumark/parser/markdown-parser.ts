@@ -91,6 +91,12 @@ import {
 } from './number-line-parser';
 import { findQrBlocks, parseQr, parseQrContent, isQrBlockStart } from './qr-parser';
 import {
+	findEngrenagesBlocks,
+	parseEngrenages,
+	parseEngrenagesContent,
+	isEngrenagesBlockStart
+} from './engrenages-parser';
+import {
 	findScratchBlocks,
 	parseScratch,
 	parseScratchContent,
@@ -121,6 +127,12 @@ import {
 	parseLabyrintheContent,
 	isLabyrintheBlockStart
 } from './labyrinthe-parser';
+import {
+	findYohakuBlocks,
+	parseYohaku,
+	parseYohakuContent,
+	isYohakuBlockStart
+} from './yohaku-parser';
 import {
 	findPartageBlocks,
 	parsePartage,
@@ -549,6 +561,8 @@ function parseBlocks(
 	const calculBlocks = findCalculBlocks(lines);
 	const robotBlocks = findRobotBlocks(lines);
 	const labyrintheBlocks = findLabyrintheBlocks(lines);
+	const yohakuBlocks = findYohakuBlocks(lines);
+	const engrenagesBlocks = findEngrenagesBlocks(lines);
 	const partageBlocks = findPartageBlocks(lines);
 	const espaceBlocks = findEspaceBlocks(lines);
 	const operationBlocks = findOperationBlocks(lines);
@@ -584,6 +598,8 @@ function parseBlocks(
 		{ ranges: calculBlocks, parse: parseCalcul, language: 'calcul' },
 		{ ranges: robotBlocks, parse: parseRobot, language: 'robot' },
 		{ ranges: labyrintheBlocks, parse: parseLabyrinthe, language: 'labyrinthe' },
+		{ ranges: yohakuBlocks, parse: parseYohaku, language: 'yohaku' },
+		{ ranges: engrenagesBlocks, parse: parseEngrenages, language: 'engrenages' },
 		{ ranges: partageBlocks, parse: parsePartage, language: 'partage' },
 		{ ranges: espaceBlocks, parse: parseEspace, language: 'cubes' },
 		{ ranges: operationBlocks, parse: parseOperation, language: 'operation' },
@@ -662,6 +678,8 @@ function parseBlocks(
 			...calculBlocks,
 			...robotBlocks,
 			...labyrintheBlocks,
+			...yohakuBlocks,
+			...engrenagesBlocks,
 			...partageBlocks,
 			...espaceBlocks,
 			...operationBlocks,
@@ -690,6 +708,8 @@ function parseBlocks(
 			...findCalculBlocks(originalLines),
 			...findRobotBlocks(originalLines),
 			...findLabyrintheBlocks(originalLines),
+			...findYohakuBlocks(originalLines),
+			...findEngrenagesBlocks(originalLines),
 			...findPartageBlocks(originalLines),
 			...findEspaceBlocks(originalLines),
 			...findOperationBlocks(originalLines),
@@ -1850,6 +1870,12 @@ const SPECIAL_BLOCK_KINDS = [
 		language: 'qr'
 	},
 	{
+		is: isEngrenagesBlockStart,
+		find: findEngrenagesBlocks,
+		parse: parseEngrenages,
+		language: 'engrenages'
+	},
+	{
 		is: isScratchBlockStart,
 		find: findScratchBlocks,
 		parse: parseScratch,
@@ -1884,6 +1910,12 @@ const SPECIAL_BLOCK_KINDS = [
 		find: findLabyrintheBlocks,
 		parse: parseLabyrinthe,
 		language: 'labyrinthe'
+	},
+	{
+		is: isYohakuBlockStart,
+		find: findYohakuBlocks,
+		parse: parseYohaku,
+		language: 'yohaku'
 	},
 	{
 		is: isPartageBlockStart,
@@ -2151,6 +2183,9 @@ function parseContentWithCodeBlocks(
 		} else if (language === 'qr') {
 			// QR code dans un item de liste : toujours un nœud, même en erreur (Q48)
 			blocks.push(parseQrContent(restoreMathPlaceholders(code, placeholders)));
+		} else if (language === 'engrenages') {
+			// Engrenages dans un item de liste : toujours un nœud, même en erreur (Q48)
+			blocks.push(parseEngrenagesContent(restoreMathPlaceholders(code, placeholders)));
 		} else if (language === 'horloge') {
 			// Horloge dans un item de liste : toujours un nœud, même en erreur (Q48)
 			blocks.push(parseHorlogeContent(restoreMathPlaceholders(code, placeholders)));
@@ -2170,6 +2205,10 @@ function parseContentWithCodeBlocks(
 			// Labyrinthe dans un item de liste : toujours un nœud, même en erreur (Q48) ; sans
 			// case (bloc en retrait), l'élève n'y répond pas
 			blocks.push(parseLabyrintheContent(restoreMathPlaceholders(code, placeholders)));
+		} else if (language === 'yohaku') {
+			// Grille yohaku dans un item de liste : toujours un nœud, même en erreur (Q48) ; sans
+			// case (bloc en retrait), l'élève n'y répond pas
+			blocks.push(parseYohakuContent(restoreMathPlaceholders(code, placeholders)));
 		} else if (language === 'partage') {
 			// Partage dans un item de liste : toujours un nœud, même en erreur (Q48)
 			blocks.push(parsePartageContent(restoreMathPlaceholders(code, placeholders)));

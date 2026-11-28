@@ -38,7 +38,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 	// Validate classId parameter
 	const validation = uuidSchema.safeParse(params.classId);
 	if (!validation.success) {
-		throw error(400, 'Invalid class ID format');
+		throw error(400, 'Identifiant de classe invalide');
 	}
 
 	const classId = validation.data;

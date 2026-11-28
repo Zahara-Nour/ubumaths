@@ -25,6 +25,8 @@
 	- Droite à placer (`placer:`) : `NumberLinePlacer.svelte` (l'élève pose ses points)
 	- Droite à représenter (`representer:`) : `NumberLineRepresenter.svelte` (l'élève
 	  dessine l'intervalle)
+	- Droite à graduer (`graduer:`) : `NumberLineGraduer.svelte` (l'élève partage
+	  chaque unité, puis pose ses points)
 	- Zooms (`zoom:`, outil n° 54) : une droite agrandie par zoom, `ZOOM_ROW_GAP` px sous la
 	  précédente, reliée par deux pointillés ; les points sur toutes les droites où ils tombent
 
@@ -60,13 +62,14 @@
 	import { toLocaleDecimal } from '#lib/utils/french-math.ts';
 	import NumberLinePlacer from './NumberLinePlacer.svelte';
 	import NumberLineRepresenter from './NumberLineRepresenter.svelte';
+	import NumberLineGraduer from './NumberLineGraduer.svelte';
 	import type { BuildCase } from './CollectionConstruire.svelte';
 
 	interface Props {
 		node: NumberLineNode;
 		/** Montrer les avertissements d'auteur (par défaut : contexte d'édition) */
 		showErrors?: boolean;
-		/** Droite à placer dans une question : ses cases, une par point */
+		/** Droite à placer dans une question : ses cases, une par point (à graduer : les parts d'abord) */
 		answers?: BuildCase[];
 		/** Points posés SUR la droite, plus gros (droite à placer : le point de l'élève) */
 		pointsOnLine?: boolean;
@@ -255,7 +258,9 @@
 	let svgHeight = $derived(SVG_HEIGHT + zoomCount * ZOOM_ROW_GAP);
 </script>
 
-{#if node.placer !== undefined}
+{#if node.graduer !== undefined}
+	<NumberLineGraduer {node} {answers} {showErrors} class={className} />
+{:else if node.placer !== undefined}
 	<NumberLinePlacer {node} {answers} {showErrors} class={className} />
 {:else if node.representer !== undefined}
 	<NumberLineRepresenter {node} {answers} {showErrors} class={className} />

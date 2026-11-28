@@ -38,7 +38,9 @@ import {
 	INSTRUMENT_TOOLS,
 	LINE_GRID_TOOLS,
 	bissectriceOf,
+	throughLineOf,
 	centeredCircleOf,
+	rulerMidpointOf,
 	centeredCircleTools,
 	PLAIN_PAPER_TOOLS,
 	triangleTools,
@@ -49,6 +51,10 @@ import {
 	isSquaresLength,
 	DIAGONAL_RECTANGLE_TOOLS,
 	RULED_POLYGON_TOOLS,
+	compositeFamilyOf,
+	compositeStepPalette,
+	compositeStepTools,
+	isCompositeFigure,
 	type ConstructionCheck,
 	type ConstructionCheckKind,
 	type ConstructionSpec,
@@ -128,7 +134,8 @@ type NamedKind =
 	| 'angle'
 	| 'mesure'
 	| 'segment'
-	| 'mesure_segment';
+	| 'mesure_segment'
+	| 'segment_par';
 
 /** Nombre de points de chaque vérification, et comment l'écrire */
 const CHECK_ARITY: Record<
@@ -178,6 +185,10 @@ const TRIANGLE_LENGTH_REGEX = /^([A-Z])([A-Z])\s*=\s*(\S+)$/;
 const TRIANGLE_ANGLE_REGEX = /^([A-Z])([A-Z])([A-Z])\s*=\s*(\d{1,3})\s*°?$/;
 const POINT_PAIR_REGEX = /^([A-Z])([A-Z])$/;
 const TRIANGLE_RIGHT_EXAMPLE = 'triangle ABC : CAB = 90 ; AC = u';
+const TRIANGLE_COPY_EXAMPLE = 'triangle ABC : reproduit DEF';
+/** Outil n° 47 : `reproduit DEF`, le modèle à reproduire sur quadrillage */
+const TRIANGLE_COPY_REGEX = /^reproduit\b\s*(.*)$/;
+const TRIANGLE_MODEL_REGEX = /^([A-Z])([A-Z])([A-Z])$/;
 const RULER_TRIANGLE_EXAMPLE = 'triangle ABC : CAB = 90 ; AC = 4 cm';
 /** `AC = 3 carreaux` (n° 20) : une longueur sur quadrillage, l'unité obligatoire */
 const TRIANGLE_SQUARES_REGEX = /^([A-Z])([A-Z])\s*=\s*(\d{1,3})\s*carreaux?$/;
@@ -201,13 +212,33 @@ function readTriangle(rest: string, line: number): ConstructionCheck {
 	const usage = `« ${TRIANGLE_EXAMPLE} », « ${TRIANGLE_ANGLES_EXAMPLE} », « triangle ABC : AC = u ; CAB = 40 » ou « ${TRIANGLE_RIGHT_EXAMPLE} »`;
 	// Triangle rectangle (n° 20) : l'angle droit peut être la seule donnée
 	const aloneRight = parts.length === 1 && Number(TRIANGLE_ANGLE_REGEX.exec(parts[0])?.[4]) === 90;
-	if (!match || (parts.length !== 2 && !aloneRight)) {
+	const copy = parts.some((part) => TRIANGLE_COPY_REGEX.test(part));
+	if (!match || (parts.length !== 2 && !aloneRight && !copy)) {
 		throw new LineError(`triangle attend ses sommets et deux données : ${usage}`);
 	}
 	const [a, b, c] = [match[1], match[2], match[3]];
 	if (new Set([a, b, c]).size !== 3)
 		throw new LineError('triangle attend trois sommets différents');
 	const name = `${a}${b}${c}`;
+	// Outil n° 47 : `reproduit DEF`, seule donnée
+	if (parts.some((part) => TRIANGLE_COPY_REGEX.test(part))) {
+		const model = TRIANGLE_MODEL_REGEX.exec(TRIANGLE_COPY_REGEX.exec(parts[0])?.[1].trim() ?? '');
+		if (parts.length !== 1 || !model) {
+			throw new LineError(
+				`triangle ${name} : le triangle à reproduire n’a qu’une donnée, son modèle : « ${TRIANGLE_COPY_EXAMPLE} »`
+			);
+		}
+		const [d, e, f] = [model[1], model[2], model[3]];
+		if (new Set([d, e, f]).size !== 3) {
+			throw new LineError(`triangle ${name} : le modèle attend trois sommets différents`);
+		}
+		if ([d, e, f].some((p) => [a, b, c].includes(p))) {
+			throw new LineError(
+				`triangle ${name} : le modèle ${d}${e}${f} est un autre triangle, sans sommet commun avec ${name}`
+			);
+		}
+		return { kind: 'triangle', points: [a, b, c], lengths: [], angles: [], model: [d, e, f], line };
+	}
 	/** Le sommet donné (A ou B) d'un côté qui va vers C ; null sinon */
 	const sideEnd = (p: string, q: string): string | null => {
 		const ends = [p, q];
@@ -641,7 +672,22 @@ function readDiagonalRectangle(
 }
 
 /** Les mots de `verifier:` (le segment à mesurer s'écrit `mesure AB`) */
-const AUTHOR_CHECK_WORDS = CONSTRUCTION_CHECK_KINDS.filter((kind) => kind !== 'mesure_segment');
+const AUTHOR_CHECK_WORDS = CONSTRUCTION_CHECK_KINDS.filter(
+	(kind) => kind !== 'mesure_segment' && kind !== 'segment_par'
+);
+
+/** `segment [AC]` (outil n° 45) : deux points nommés, différents */
+const SEGMENT_THROUGH_REGEX = /^\[\s*([A-Z][A-Za-z0-9_]*?)\s*([A-Z][A-Za-z0-9_]*)\s*\]$/;
+
+function readSegmentThrough(rest: string, line: number): ConstructionCheck {
+	const match = SEGMENT_THROUGH_REGEX.exec(rest.trim());
+	if (!match)
+		throw new LineError('segment [AC] attend deux points entre crochets : « segment [AC] »');
+	if (match[1] === match[2]) {
+		throw new LineError(`segment [${match[1]}${match[2]}] : deux points différents`);
+	}
+	return { kind: 'segment_par', points: [match[1], match[2]], line };
+}
 
 function readCheck(value: string, line: number): ConstructionCheck {
 	const [rawWord = '', ...rest] = value.split(/\s+/);
@@ -651,7 +697,12 @@ function readCheck(value: string, line: number): ConstructionCheck {
 	if (word === 'triangle') return readTriangle(rest.join(' '), line);
 	if (word === 'angle') return readAngle(rest.join(' '), line);
 	if (word === 'mesure') return readMeasure(rest.join(' '), line);
-	if (word === 'segment') return readSegmentLength(rest.join(' '), line);
+	if (word === 'segment') {
+		const text = rest.join(' ');
+		return text.trim().startsWith('[')
+			? readSegmentThrough(text, line)
+			: readSegmentLength(text, line);
+	}
 	if (word === 'mesure_segment') {
 		throw new LineError(`pour mesurer un segment, écrire « ${SEGMENT_MEASURE_EXAMPLE} »`);
 	}
@@ -813,6 +864,11 @@ function coherenceError(
 	const rulerCircle =
 		check.kind === 'cercle' && centeredCircleOf(check.expression)?.kind === 'longueur';
 	const rulerTriangle = check.kind === 'triangle' && check.lengths.some(isRuledLength);
+	// … et au milieu marqué sur la règle (outil n° 38) : médiatrice ou milieu, papier uni
+	const rulerMidpoint = rulerMidpointOf(check) !== null && spec.tools.includes('regle');
+	if (rulerMidpoint && grid && (check.kind === 'droite' || check.kind === 'point')) {
+		return `${check.kind} ${check.name} : le milieu se marque à la règle graduée sur papier uni (sur quadrillage, on compte les carreaux) ; retirer regle de outils: (ou retirer « grille: »)`;
+	}
 	// … et au carré / rectangle coté (PR 6), qui a ses propres règles ci-dessous
 	if (isRuledPolygonCheck(check)) return ruledPolygonError(check, spec, grid);
 	// … et au rectangle sans équerre (chantier `rectangle-sans-equerre`)
@@ -823,6 +879,7 @@ function coherenceError(
 		check.kind !== 'mesure_segment' &&
 		!rulerCircle &&
 		!rulerTriangle &&
+		!rulerMidpoint &&
 		spec.tools.includes('regle')
 	) {
 		return `la règle graduée ne sert qu’à tracer un segment de longueur donnée (« verifier: ${SEGMENT_EXAMPLE} »), un cercle de rayon donné (« verifier: ${RULER_CIRCLE_EXAMPLE} »), un triangle coté en cm (« verifier: ${RULER_TRIANGLE_EXAMPLE} ») ou à mesurer un segment (« verifier: ${SEGMENT_MEASURE_EXAMPLE} ») ; la retirer de outils:`;
@@ -892,6 +949,17 @@ function coherenceError(
 		if (spec.checks.length > 1) {
 			return `triangle ${name} : un triangle à construire ne se mêle pas à d’autres vérifications`;
 		}
+		// Outil n° 47 : sur quadrillage, au segment seul
+		if (check.model) {
+			if (!grid) {
+				return `triangle ${name} : un triangle se reproduit sur quadrillage (ajouter « grille: 1 »)`;
+			}
+			const other = spec.tools.find((t) => t !== 'segment');
+			if (other) {
+				return `triangle ${name} : outil ${other} hors de la palette (segment) : sur quadrillage, on compte les carreaux`;
+			}
+			return null;
+		}
 		const right = rightAngleOf(check);
 		// PR 4 de `regle-graduee` (triangle rectangle) et chantier `triangle-cote-cm` (quelconque) :
 		// les cm, sur papier uni seulement ; toutes les longueurs en cm, ou aucune (décision de
@@ -960,7 +1028,7 @@ function coherenceError(
 			}
 		}
 		if (grid) {
-			return `triangle ${name} : le triangle se construit sur papier uni ; retirer « grille: » (ou écrire « grille: non »)`;
+			return `triangle ${name} : le triangle se construit sur papier uni ; retirer « grille: » (ou écrire « grille: non »), ou le faire reproduire d’après un modèle tracé (« ${TRIANGLE_COPY_EXAMPLE} »)`;
 		}
 	} else if (check.kind === 'cercle' && rulerCircle) {
 		const message = rulerCircleError(check, spec, grid);
@@ -980,11 +1048,24 @@ function coherenceError(
 		// Lot 9 (§ 25) : une bissectrice admet aussi le rapporteur
 		const allowed = [
 			...(PLAIN_PAPER_TOOLS[check.kind] ?? []),
-			...(protractorAllowed && check.kind === 'droite' ? (['rapporteur'] as const) : [])
+			...(protractorAllowed && check.kind === 'droite' ? (['rapporteur'] as const) : []),
+			...(rulerMidpoint ? (['regle', 'point'] as const) : [])
 		];
 		const other = spec.tools.find((t) => !allowed.includes(t));
 		if (other)
 			return `${check.kind} ${check.name} : outil ${other} hors de la palette (${allowed.join(', ')})`;
+		// Outil n° 38 : à la règle graduée, le milieu se marque au point, la perpendiculaire
+		// par ce point se trace à l'équerre (décision de David, 2026-11-28)
+		if (rulerMidpoint && (!spec.tools.includes('point') || !spec.tools.includes('equerre'))) {
+			return `droite ${check.name} : à la règle graduée, le milieu se marque au point, puis la perpendiculaire se trace à l’équerre (outils: droite, regle, point, equerre)`;
+		}
+		// Outil n° 40 : sur papier uni, la perpendiculaire et la parallèle par un point se
+		// tracent à l'équerre (décision 2 de David, 2026-11-28) ; sur quadrillage, compter suffit
+		const through = check.kind === 'droite' ? throughLineOf(check.expression) : null;
+		if (through && !grid && !spec.tools.includes('equerre')) {
+			const what = through.kind === 'perpendiculaire' ? 'perpendiculaire' : 'parallèle';
+			return `droite ${check.name} : la ${what} se trace à l’équerre sur papier uni (outils: droite, equerre)`;
+		}
 		// Lot 9 (§ 25) : sur quadrillage, la médiatrice passe par les nœuds ; le Report garde un écartement libre
 		if (check.kind === 'droite' && grid && spec.tools.includes('report')) {
 			return `droite ${check.name} : le report se prend sur papier uni ; le retirer de outils: (ou retirer « grille: »)`;
@@ -1037,6 +1118,64 @@ function coherenceError(
 		return `sans quadrillage, ${check.kind} demande les instruments (outils: ${plainPaper.join(', ')}), ou ajouter « grille: 1 »`;
 	}
 	return null;
+}
+
+/** Ce qui se mêle à une figure composée (outil n° 45), pour les messages */
+const COMPOSITE_FAMILIES_TEXT =
+	'segment de longueur donnée, carré ou rectangle coté, segment [AC], cercle, point';
+
+/**
+ * Figure composée (outil n° 45, chantier `outil-equerre-uni`) : chaque étape est
+ * vérifiée comme si elle était seule, avec les outils de `outils:` qui lui servent ;
+ * papier uni, `outils:` écrit. Le reste (outil de trop) : `compositeToolErrors`.
+ */
+function compositeCoherenceError(
+	check: ConstructionCheck,
+	spec: ConstructionSpec,
+	grid: boolean,
+	toolsSeen: boolean
+): string | null {
+	const first = spec.checks[0] === check;
+	if (first && grid) {
+		return 'une figure composée se construit sur papier uni ; retirer « grille: » (ou écrire « grille: non »)';
+	}
+	if (first && !toolsSeen) {
+		return 'une figure composée donne ses outils (outils: …), ceux de toutes ses étapes';
+	}
+	if (grid || !toolsSeen) return null;
+	const family = compositeFamilyOf(check);
+	if (!family) {
+		return `${check.kind} ne se mêle pas à une figure composée (${COMPOSITE_FAMILIES_TEXT})`;
+	}
+	if (new Set(spec.checks.map((c) => compositeFamilyOf(c) ?? c.kind)).size < 2) {
+		return 'segment [AC] ne sert que dans une figure composée, avec d’autres étapes (carré, cercle…)';
+	}
+	if (check.kind === 'point' || check.kind === 'cercle') {
+		const twin = spec.checks.find(
+			(c) => (c.kind === 'point' || c.kind === 'cercle') && c.name === check.name
+		);
+		if (twin !== check) return `deux étapes nommées ${check.name.replace("'", '’')}`;
+	}
+	if (check.kind === 'segment_par') {
+		return spec.tools.includes('segment')
+			? null
+			: `segment [${check.points.join('')}] se trace avec l’outil segment (outils: segment)`;
+	}
+	const step: ConstructionSpec = {
+		...spec,
+		tools: compositeStepTools(check, spec.tools),
+		checks: [check]
+	};
+	return coherenceError(check, step, grid);
+}
+
+/** Figure composée : un outil de `outils:` qui ne sert à aucune étape */
+function compositeToolErrors(spec: ConstructionSpec): string[] {
+	// `segment [AC]` seul : son message à lui (`compositeCoherenceError`)
+	if (spec.checks.every((c) => c.kind === 'segment_par')) return [];
+	return spec.tools
+		.filter((tool) => !spec.checks.some((c) => compositeStepPalette(c).includes(tool)))
+		.map((tool) => `l’outil ${tool} ne sert à aucune étape ; le retirer de outils:`);
 }
 
 /**
@@ -1132,13 +1271,21 @@ export function readConstructionHeader(
 		spec.tools = plainPaper ? [...plainPaper] : [CHECK_TOOL[kind]];
 	}
 	const coherent: ConstructionCheck[] = [];
+	const composite = isCompositeFigure(spec.checks);
+	if (composite && toolsSeen && !grid) {
+		for (const message of compositeToolErrors(spec)) errors.push({ message });
+	}
 	for (const check of spec.checks) {
 		// Rapporteur déjà posé (lot 8) : l'élève n'a aucun outil, `outils:` ne dirait rien de vrai
 		const posedMessage =
 			check.kind === 'mesure' && check.posed && toolsSeen
 				? `mesure ${check.points.join('')}, rapporteur posé : l’élève n’a aucun outil ; retirer outils:`
 				: null;
-		const message = posedMessage ?? coherenceError(check, spec, grid);
+		const message =
+			posedMessage ??
+			(composite
+				? compositeCoherenceError(check, spec, grid, toolsSeen)
+				: coherenceError(check, spec, grid));
 		if (message) errors.push({ message: `Ligne ${check.line} : ${message}`, line: check.line });
 		else coherent.push(check);
 	}

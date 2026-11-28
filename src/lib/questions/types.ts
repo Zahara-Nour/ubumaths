@@ -201,7 +201,14 @@ export type QuestionVariable = SharedVariable;
 
 /** Nature d'une réponse qui n'est pas une expression (voir `TemplateBlank.answerKind`) */
 export type AnswerKind =
-	'intervalles' | 'equation' | 'vecteur' | 'matrice' | 'primitive' | 'solution-ed';
+	| 'intervalles'
+	| 'equation'
+	| 'vecteur'
+	| 'matrice'
+	| 'primitive'
+	| 'solution-ed'
+	| 'resolution'
+	| 'droite-parametrique';
 
 /** Valeurs de `AnswerKind` (schémas Zod, éditeur) */
 export const ANSWER_KINDS = [
@@ -210,7 +217,9 @@ export const ANSWER_KINDS = [
 	'vecteur',
 	'matrice',
 	'primitive',
-	'solution-ed'
+	'solution-ed',
+	'resolution',
+	'droite-parametrique'
 ] as const satisfies readonly AnswerKind[];
 
 /**
@@ -230,11 +239,14 @@ export const SOLUTION_MODES = ['generale', 'une'] as const satisfies readonly So
 export interface CalculusBlankFields {
 	/** Case `primitive` : fonction dont on cherche une primitive (`3x^2`) */
 	integrand?: string;
-	/** Cases `primitive` et `solution-ed` : variable (défaut `x`) */
+	/** Cases `primitive`, `solution-ed` et `resolution` : variable (défaut `x`) */
 	variable?: string;
 	/** Case `primitive` : intervalle d'étude facultatif (`]0;+\infty[`) */
 	interval?: string;
-	/** Case `solution-ed` : équation différentielle du 1er ordre (`y'=2y-6`) */
+	/**
+	 * Case `solution-ed` : équation différentielle du 1er ordre (`y'=2y-6`) ;
+	 * case `resolution` : équation de l'énoncé (`{{a}}x+{{b}}={{c}}`)
+	 */
 	equation?: string;
 	/** Case `solution-ed` : voir `SolutionMode` */
 	solutionMode?: SolutionMode;
@@ -242,6 +254,11 @@ export interface CalculusBlankFields {
 	function?: string;
 	/** Case `solution-ed`, mode `une` : condition initiale facultative (`y(0)=4`) */
 	initial?: string;
+	/**
+	 * Case `resolution` : nombre de lignes exigé (défaut 1 : `x = 4` seul est juste ;
+	 * 2 = au moins une étape avant la conclusion)
+	 */
+	minLines?: number;
 }
 
 /**
@@ -374,6 +391,17 @@ export interface TemplateBlank extends CalculusBlankFields {
 	 * facultatif. `'solution-ed'` = une solution de `equation` (1er ordre),
 	 * vérifiée par substitution ; voir `solutionMode`. Jugées par
 	 * `questions/calculus/`.
+	 * `'resolution'` = une équation résolue ligne par ligne (case posée seule dans
+	 * `$$\placeholder[N]{}$$`) : chaque ligne a les mêmes solutions que la
+	 * précédente (la première que `equation`), la dernière est « x = valeur », sa
+	 * valeur jugée comme une case ordinaire ; voir `minLines`. Jugée par
+	 * `questions/resolution/resolution-answer.ts`.
+	 * `'droite-parametrique'` = une représentation paramétrique d'une droite de
+	 * l'espace (case posée seule dans `$$\placeholder[N]{}$$`, trois lignes
+	 * `x =`, `y =`, `z =`), attendue `x=1+2t\\y=2\\z=-1+3t` : juste pour toute
+	 * représentation de la même droite (point sur la droite, vecteur colinéaire),
+	 * quelle que soit la lettre du paramètre. Jugée par
+	 * `questions/parametric/parametric-line-answer.ts`.
 	 */
 	answerKind?: AnswerKind;
 	/**
@@ -776,7 +804,8 @@ export type BuildKind =
 	| 'tortue'
 	| 'calcul'
 	| 'robot'
-	| 'labyrinthe';
+	| 'labyrinthe'
+	| 'yohaku';
 
 /** Nom du bloc pour les messages au prof : « bloc collection », « droite graduée », « horloge » */
 export function buildKindName(kind: BuildKind): string {
@@ -796,6 +825,7 @@ export function buildKindName(kind: BuildKind): string {
 	if (kind === 'calcul') return 'programme de calcul';
 	if (kind === 'robot') return 'robot à produire';
 	if (kind === 'labyrinthe') return 'labyrinthe à parcourir';
+	if (kind === 'yohaku') return 'grille à remplir';
 	return kind === 'horloge' ? 'horloge' : `bloc ${kind}`;
 }
 

@@ -1,0 +1,290 @@
+{
+	"id": "6e99d291-aa1e-4abe-8813-f8f0e8deac32",
+	"title": "Écrire un programme pour résoudre un problème (3e)",
+	"description": "Écrire en blocs un programme avec boucle conditionnelle : chiffres, moitiés, épargne.",
+	"grades": ["3"],
+	"level": 3,
+	"delay": 600,
+	"status": "published",
+	"variations": [
+		{
+			"blanks": [],
+			"statement": "Écris un programme qui affiche le **nombre de chiffres** du nombre choisi (un entier positif) : pour $2026$, il affiche $4$.\n\n```calcul\nniveau: 3e\nattendu: mettre x à nombre ; mettre chiffres à 1 ; répéter jusqu’à x < 10 [ mettre x à (x − reste de x par 10) ÷ 10 ; ajouter 1 à chiffres ] ; afficher chiffres\nessais: 0 ; 7 ; 10 ; 99 ; 100 ; 2026 ; 12345\n```",
+			"variables": [],
+			"conditions": [],
+			"correction": {
+				"steps": [
+					"Retirer le dernier chiffre d'un nombre, c'est lui retirer son chiffre des unités (le reste de sa division par $10$) puis diviser par $10$ : $2026 \\to 202$.",
+					"On compte les chiffres dans une variable qui vaut $1$ au départ, et on retire un chiffre **jusqu'à ce qu'**il n'en reste qu'un (x $< 10$).",
+					"Pour $2026$ : $2026 \\to 202 \\to 20 \\to 2$, trois chiffres retirés, plus le dernier : $4$."
+				]
+			}
+		},
+		{
+			"blanks": [],
+			"statement": "Écris un programme qui affiche combien de fois on peut diviser le nombre choisi (un entier positif non nul) par $2$ en obtenant à chaque fois un **nombre entier** : pour $12$, il affiche $2$ ($12 \\to 6 \\to 3$).\n\n```calcul\nniveau: 3e\nattendu: mettre x à nombre ; mettre fois à 0 ; répéter jusqu’à reste de x par 2 ≠ 0 [ mettre x à x ÷ 2 ; ajouter 1 à fois ] ; afficher fois\nessais: 1 ; 6 ; 7 ; 8 ; 12 ; 40 ; 96\n```",
+			"variables": [],
+			"conditions": [],
+			"correction": {
+				"steps": [
+					"On peut diviser par $2$ en restant entier tant que le nombre est **pair**.",
+					"On divise donc par $2$ **jusqu'à ce que** le nombre soit impair (reste par $2$ $\\neq 0$), en comptant les divisions.",
+					"Pour un nombre impair, la boucle ne tourne pas : le programme affiche $0$."
+				]
+			}
+		},
+		{
+			"blanks": [],
+			"statement": "Une tirelire contient ${{d}}$ € ; chaque mois, on y ajoute ${{m}}$ €.\n\nLe nombre choisi est un montant en euros. Écris un programme qui affiche au bout de **combien de mois** la tirelire contiendra au moins ce montant.\n\n```calcul\nniveau: 3e\nattendu: mettre tirelire à {{d}} ; mettre mois à 0 ; répéter jusqu’à tirelire ≥ nombre [ ajouter {{m}} à tirelire ; ajouter 1 à mois ] ; afficher mois\nessais: 5 ; {{d}} ; {{f}} ; 100 ; 250\n```",
+			"variables": [
+				{
+					"name": "d",
+					"expression": "10..50"
+				},
+				{
+					"name": "m",
+					"expression": "5..20"
+				},
+				{
+					"name": "f",
+					"expression": "eval:d+m"
+				}
+			],
+			"conditions": [],
+			"correction": {
+				"steps": [
+					"Deux variables : **tirelire** (${{d}}$ € au départ) et **mois** ($0$ au départ).",
+					"Chaque mois : ajouter ${{m}}$ à tirelire et $1$ à mois.",
+					"On répète **jusqu'à ce que** tirelire $\\geq$ nombre, puis on affiche mois."
+				]
+			}
+		},
+		{
+			"statement": "L'algorithme de **Syracuse** part d'un entier positif non nul : s'il est pair, on le divise par $2$ ; sinon, on le multiplie par $3$ et on ajoute $1$. On recommence jusqu'à obtenir $1$.\n\nÉcris un programme qui affiche le **nombre d'étapes** pour passer du nombre choisi à $1$ : pour $3$, il affiche $7$ ($3 \\to 10 \\to 5 \\to 16 \\to 8 \\to 4 \\to 2 \\to 1$).\n\n```calcul\nniveau: 3e\nattendu: mettre x à nombre ; mettre compteur à 0 ; répéter jusqu’à x = 1 [ si reste de x par 2 = 0 alors [ mettre x à x ÷ 2 ] sinon [ mettre x à 3 × x + 1 ] ; ajouter 1 à compteur ] ; afficher compteur\nessais: 1 ; 2 ; 3 ; 6 ; 7 ; 12\n```",
+			"variables": [],
+			"blanks": [],
+			"correction": {
+				"steps": [
+					"On garde le nombre dans une variable $x$ et on compte les étapes dans une autre, qui part de $0$.",
+					"Tant que $x \\neq 1$ : si le reste de $x$ par $2$ vaut $0$, $x$ devient $x \\div 2$, sinon $3 \\times x + 1$ ; puis on ajoute $1$ au compteur.",
+					"Un programme juste : `mettre x à nombre ; mettre compteur à 0 ; répéter jusqu’à x = 1 [ si reste de x par 2 = 0 alors [ mettre x à x ÷ 2 ] sinon [ mettre x à 3 × x + 1 ] ; ajouter 1 à compteur ] ; afficher compteur`."
+				]
+			},
+			"hint": "Utilise une variable qui compte les étapes, et le reste de la division par $2$ pour savoir si le nombre est pair."
+		},
+		{
+			"statement": "Écris un programme qui affiche le **nombre de diviseurs** du nombre choisi (un entier positif non nul) : pour $12$, il affiche $6$ ($1$, $2$, $3$, $4$, $6$ et $12$).\n\n```calcul\nniveau: 3e\nattendu: mettre d à 1 ; mettre diviseurs à 0 ; répéter jusqu’à d > nombre [ si reste de nombre par d = 0 alors [ ajouter 1 à diviseurs ] ; ajouter 1 à d ] ; afficher diviseurs\nessais: 1 ; 7 ; 12 ; 36 ; 60\n```",
+			"variables": [],
+			"blanks": [],
+			"correction": {
+				"steps": [
+					"On teste chaque entier $d$ de $1$ au nombre choisi : $d$ est un diviseur quand le reste de la division du nombre par $d$ vaut $0$.",
+					"Une variable compte les diviseurs trouvés ; une autre, $d$, augmente de $1$ à chaque tour.",
+					"Un programme juste : `mettre d à 1 ; mettre diviseurs à 0 ; répéter jusqu’à d > nombre [ si reste de nombre par d = 0 alors [ ajouter 1 à diviseurs ] ; ajouter 1 à d ] ; afficher diviseurs`."
+				]
+			},
+			"hint": "Teste chaque nombre de $1$ au nombre choisi : est-ce que le reste de la division vaut $0$ ?"
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": [
+				"mettre x à nombre ; mettre chiffres à 1 ; répéter jusqu’à x < 10 [ mettre x à (x − reste de x par 10) ÷ 10 ; ajouter 1 à chiffres ] ; afficher chiffres"
+			],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {},
+			"description": "Chiffres : référence",
+			"variationIndex": 0
+		},
+		{
+			"answers": [
+				"mettre x à nombre ; mettre chiffres à 1 ; répéter jusqu’à x < 10 [ mettre x à x ÷ 10 ; ajouter 1 à chiffres ] ; afficher chiffres"
+			],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {},
+			"description": "Chiffres : en divisant par 10 sans arrondir",
+			"variationIndex": 0
+		},
+		{
+			"answers": [
+				"mettre x à nombre ; mettre chiffres à 0 ; répéter jusqu’à x < 10 [ mettre x à x ÷ 10 ; ajouter 1 à chiffres ] ; afficher chiffres"
+			],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {},
+			"description": "Erreur : compteur à 0 au départ",
+			"variationIndex": 0
+		},
+		{
+			"answers": [
+				"mettre x à nombre ; mettre fois à 0 ; répéter jusqu’à reste de x par 2 ≠ 0 [ mettre x à x ÷ 2 ; ajouter 1 à fois ] ; afficher fois"
+			],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {},
+			"description": "Moitiés : référence",
+			"variationIndex": 1
+		},
+		{
+			"answers": [
+				"mettre x à nombre ; mettre fois à 0 ; répéter jusqu’à reste de x par 2 = 1 [ mettre x à x ÷ 2 ; ajouter 1 à fois ] ; afficher fois"
+			],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {},
+			"description": "Moitiés : jusqu'à reste = 1",
+			"variationIndex": 1
+		},
+		{
+			"answers": [
+				"mettre x à nombre ; mettre fois à 0 ; répéter jusqu’à reste de x par 2 ≠ 0 [ mettre x à x ÷ 2 ; ajouter 1 à fois ] ; afficher x"
+			],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {},
+			"description": "Erreur : affiche x",
+			"variationIndex": 1
+		},
+		{
+			"answers": [
+				"mettre tirelire à 20 ; mettre mois à 0 ; répéter jusqu’à tirelire ≥ nombre [ ajouter 15 à tirelire ; ajouter 1 à mois ] ; afficher mois"
+			],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"d": "20",
+				"f": "35",
+				"m": "15"
+			},
+			"description": "Épargne : référence",
+			"variationIndex": 2
+		},
+		{
+			"answers": [
+				"mettre tirelire à 20 ; mettre mois à 0 ; répéter jusqu’à tirelire > nombre [ ajouter 15 à tirelire ; ajouter 1 à mois ] ; afficher mois"
+			],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"d": "20",
+				"f": "35",
+				"m": "15"
+			},
+			"description": "Erreur : strictement plus que le montant",
+			"variationIndex": 2
+		},
+		{
+			"answers": [
+				"mettre tirelire à 0 ; mettre mois à 0 ; répéter jusqu’à tirelire ≥ nombre [ ajouter 15 à tirelire ; ajouter 1 à mois ] ; afficher mois"
+			],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"d": "20",
+				"f": "35",
+				"m": "15"
+			},
+			"description": "Erreur : tirelire vide au départ",
+			"variationIndex": 2
+		},
+		{
+			"description": "C : référence",
+			"variationIndex": 3,
+			"variables": {},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": [
+				"mettre x à nombre ; mettre compteur à 0 ; répéter jusqu’à x = 1 [ si reste de x par 2 = 0 alors [ mettre x à x ÷ 2 ] sinon [ mettre x à 3 × x + 1 ] ; ajouter 1 à compteur ] ; afficher compteur"
+			]
+		},
+		{
+			"description": "C : test « impair » d'abord",
+			"variationIndex": 3,
+			"variables": {},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": [
+				"mettre x à nombre ; mettre compteur à 0 ; répéter jusqu’à x = 1 [ si reste de x par 2 = 1 alors [ mettre x à 3 × x + 1 ] sinon [ mettre x à x ÷ 2 ] ; ajouter 1 à compteur ] ; afficher compteur"
+			]
+		},
+		{
+			"description": "C : compteur à 1",
+			"variationIndex": 3,
+			"variables": {},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": [
+				"mettre x à nombre ; mettre compteur à 1 ; répéter jusqu’à x = 1 [ si reste de x par 2 = 0 alors [ mettre x à x ÷ 2 ] sinon [ mettre x à 3 × x + 1 ] ; ajouter 1 à compteur ] ; afficher compteur"
+			]
+		},
+		{
+			"description": "C : affiche x au lieu des compteur",
+			"variationIndex": 3,
+			"variables": {},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": [
+				"mettre x à nombre ; mettre compteur à 0 ; répéter jusqu’à x = 1 [ si reste de x par 2 = 0 alors [ mettre x à x ÷ 2 ] sinon [ mettre x à 3 × x + 1 ] ; ajouter 1 à compteur ] ; afficher x"
+			]
+		},
+		{
+			"description": "F : référence",
+			"variationIndex": 4,
+			"variables": {},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": [
+				"mettre d à 1 ; mettre diviseurs à 0 ; répéter jusqu’à d > nombre [ si reste de nombre par d = 0 alors [ ajouter 1 à diviseurs ] ; ajouter 1 à d ] ; afficher diviseurs"
+			]
+		},
+		{
+			"description": "F : boucle « répéter nombre fois »",
+			"variationIndex": 4,
+			"variables": {},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": [
+				"mettre d à 1 ; mettre diviseurs à 0 ; répéter nombre [ si reste de nombre par d = 0 alors [ ajouter 1 à diviseurs ] ; ajouter 1 à d ] ; afficher diviseurs"
+			]
+		},
+		{
+			"description": "F : d part de 2 (1 oublié)",
+			"variationIndex": 4,
+			"variables": {},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": [
+				"mettre d à 2 ; mettre diviseurs à 0 ; répéter jusqu’à d > nombre [ si reste de nombre par d = 0 alors [ ajouter 1 à diviseurs ] ; ajouter 1 à d ] ; afficher diviseurs"
+			]
+		},
+		{
+			"description": "F : s'arrête avant le nombre",
+			"variationIndex": 4,
+			"variables": {},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": [
+				"mettre d à 1 ; mettre diviseurs à 0 ; répéter jusqu’à d = nombre [ si reste de nombre par d = 0 alors [ ajouter 1 à diviseurs ] ; ajouter 1 à d ] ; afficher diviseurs"
+			]
+		}
+	]
+}

@@ -14,6 +14,8 @@
 	  elle, la version détaillée, sans interrupteur (jamais de correction vide).
 	- Marqueur mal formé (D5) : version détaillée pour l'élève, messages
 	  d'auteur seulement en contexte auteur (`showAuthoringErrors`).
+	- Pose le contexte « correction » (`provideInCorrection`) : ```engrenages
+	  n'y tourne qu'ici.
 -->
 <script lang="ts">
 	import { onMount } from 'svelte';
@@ -21,6 +23,7 @@
 	import { MarkdownRenderer } from '#lib/components/markdown/index.ts';
 	import type { GenericFunctionConfig } from '#lib/mathAST/index.ts';
 	import { readAuthoringErrors } from '#lib/components/markdown/authoring-errors.ts';
+	import { provideInCorrection } from '#lib/components/markdown/correction-context.ts';
 	import { splitCorrectionDetail } from '#lib/questions/correction-detail.ts';
 	import { readDetailPreference, writeDetailPreference } from './correction-view-preference';
 
@@ -49,6 +52,8 @@
 
 	const regionId = $props.id();
 	const parentAuthoringErrors = readAuthoringErrors();
+	// Un bloc écrit dans la correction le sait (```engrenages ne tourne qu'au corrigé)
+	provideInCorrection();
 
 	let detailed = $state(false);
 

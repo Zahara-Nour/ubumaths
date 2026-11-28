@@ -23,6 +23,7 @@ export type CatalogNodeType =
 	| 'figure'
 	| 'stat-chart'
 	| 'qr'
+	| 'engrenages'
 	| 'scratch'
 	| 'horloge'
 	| 'partage'
@@ -35,6 +36,7 @@ export type CatalogNodeType =
 	| 'calcul'
 	| 'robot'
 	| 'labyrinthe'
+	| 'yohaku'
 	| 'collection'
 	| 'monnaie'
 	| 'schema-barres';

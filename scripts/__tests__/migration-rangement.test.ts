@@ -7,6 +7,7 @@ import { instructionDeSchema } from '../lib/migrations-de-donnees';
 import {
 	examinerModele,
 	genererMigration,
+	lireFixture,
 	lireRangement,
 	nomMigration,
 	resoudreChemin,
@@ -14,6 +15,7 @@ import {
 	type ModeleNiveaux,
 	type ModeleProd,
 	type ModeleRange,
+	type ModeleTags,
 	type Rangement
 } from '../lib/migration-rangement';
 
@@ -30,16 +32,24 @@ const ARBRE: Arbre = {
 		{ id: 's1', parent_id: 'n1', name: 'multiplication', kind: 'subnotion', archived_at: null },
 		{ id: 's2', parent_id: 'n1', name: 'addition', kind: 'subnotion', archived_at: null },
 		{ id: 's3', parent_id: 'n1', name: 'ancienne', kind: 'subnotion', archived_at: '2026-01-01' },
-		{ id: 'n2', parent_id: 'b1', name: 'Entiers', kind: 'notion', archived_at: null }
+		{ id: 'n2', parent_id: 'b1', name: 'Entiers', kind: 'notion', archived_at: null },
+		{ id: 'b2', parent_id: null, name: 'Probabilités', kind: 'branch', archived_at: null },
+		{ id: 'n3', parent_id: 'b2', name: 'Variables aléatoires', kind: 'notion', archived_at: null },
+		{ id: 's4', parent_id: 'n3', name: 'loi', kind: 'subnotion', archived_at: null }
 	],
 	points: [
 		{ id: 'p115', code: '6-115', grade: '6', node_id: 's1', archived_at: null },
 		{ id: 'p110', code: '6-110', grade: '6', node_id: 'n1', archived_at: null },
 		{ id: 'p101', code: '6-101', grade: '6', node_id: 'n2', archived_at: null },
-		{ id: 'p099', code: '6-099', grade: '6', node_id: 's1', archived_at: '2026-01-01' }
+		{ id: 'p099', code: '6-099', grade: '6', node_id: 's1', archived_at: '2026-01-01' },
+		{ id: 'ps355', code: '1SPE-355', grade: '1_SPE', node_id: 's4', archived_at: null },
+		{ id: 'ps356', code: '1SPE-356', grade: '1_SPE', node_id: 'n3', archived_at: null },
+		{ id: 'pt095', code: '1TECHNO-095', grade: '1_TECHNO', node_id: 'n3', archived_at: null },
+		{ id: 'pm013', code: '6-013', grade: '6', node_id: 'n3', archived_at: null }
 	]
 };
 const MULTIPLICATION = ['Nombres et calculs', 'Décimaux : calculs', 'multiplication'];
+const LOI = ['Probabilités', 'Variables aléatoires', 'loi'];
 const ENTETE = { lot: '6e-x', source: 'scripts/questions/6e-x', date: '2026-11-22' };
 
 // ============================================================================
@@ -57,8 +67,28 @@ function prod(plus: Partial<ModeleProd> = {}): ModeleProd {
 	};
 }
 
-function neuf(point: string | null = '6-115', chemin = MULTIPLICATION): Rangement {
-	return { sorte: 'neuf', chemin, point };
+function neuf(point: string | string[] | null = '6-115', chemin = MULTIPLICATION): Rangement {
+	return {
+		sorte: 'neuf',
+		chemin,
+		points: point === null ? [] : typeof point === 'string' ? [point] : point
+	};
+}
+
+function ajouts(niveauxAjoutes: string[], pointsAjoutes: string[] = []): Rangement {
+	return { sorte: 'ajouts', niveaux: niveauxAjoutes, points: pointsAjoutes };
+}
+
+/** Le modèle de 1re rangé sur « loi », tagué 1SPE-355 seul (le cas réel de l'outil 66) */
+function probas(plus: Partial<ModeleProd> = {}): ModeleProd {
+	return prod({
+		id: ID2,
+		title: 'Loi',
+		grades: ['1_SPE', '1_TECHNO'],
+		classification_node_id: 's4',
+		points: ['ps355'],
+		...plus
+	});
 }
 
 function range(plus: Partial<ModeleRange> = {}): ModeleRange {
@@ -69,7 +99,19 @@ function range(plus: Partial<ModeleRange> = {}): ModeleRange {
 		branche: 'Nombres et calculs',
 		notion: 'Décimaux : calculs',
 		sousNotion: 'multiplication',
-		point: '6-115',
+		points: ['6-115'],
+		...plus
+	};
+}
+
+function tags(plus: Partial<ModeleTags> = {}): ModeleTags {
+	return {
+		id: ID2,
+		title: 'Loi',
+		fichier: 'b.json',
+		noeud: 'Probabilités > Variables aléatoires > loi',
+		avant: ['1SPE-355'],
+		ajoutes: ['1TECHNO-095'],
 		...plus
 	};
 }
@@ -110,11 +152,27 @@ describe('lireRangement', () => {
 		);
 	});
 
+	it('modèle neuf : une liste de points, un par programme', () => {
+		expect(
+			lireRangement({ noeud: LOI.join(' > '), point: ['1SPE-355', '1TECHNO-095'] }, 'a.json')
+		).toEqual({ ok: true, rangement: neuf(['1SPE-355', '1TECHNO-095'], LOI) });
+	});
+
 	it('niveaux ajoutés', () => {
 		expect(lireRangement({ niveauxAjoutes: ['6'] }, 'a.json')).toEqual({
 			ok: true,
-			rangement: { sorte: 'niveaux', niveaux: ['6'] }
+			rangement: ajouts(['6'])
 		});
+	});
+
+	it('points ajoutés, seuls ou avec des niveaux', () => {
+		expect(lireRangement({ pointsAjoutes: ['1TECHNO-095'] }, 'a.json')).toEqual({
+			ok: true,
+			rangement: ajouts([], ['1TECHNO-095'])
+		});
+		expect(
+			lireRangement({ niveauxAjoutes: ['1_TECHNO'], pointsAjoutes: ['1TECHNO-095'] }, 'a.json')
+		).toEqual({ ok: true, rangement: ajouts(['1_TECHNO'], ['1TECHNO-095']) });
 	});
 
 	it.each([
@@ -135,7 +193,15 @@ describe('lireRangement', () => {
 		['niveau inconnu', { niveauxAjoutes: ['6e'] }],
 		['niveau qui finirait le commentaire SQL', { niveauxAjoutes: ["6\r; select 'x'; --"] }],
 		['saut de ligne dans le chemin', { noeud: 'A > B\rC', point: '6-115' }],
-		['saut de ligne dans le point', { noeud: 'A > B', point: '6-115\n' }]
+		['saut de ligne dans le point', { noeud: 'A > B', point: '6-115\n' }],
+		['liste de points vide', { noeud: 'A > B', point: [] }],
+		['point en double dans la liste', { noeud: 'A > B', point: ['6-115', '6-115'] }],
+		['point vide dans la liste', { noeud: 'A > B', point: ['6-115', ''] }],
+		['points ajoutés vides', { pointsAjoutes: [] }],
+		['points ajoutés en texte', { pointsAjoutes: '1TECHNO-095' }],
+		['point ajouté en double', { pointsAjoutes: ['1TECHNO-095', '1TECHNO-095'] }],
+		['points ajoutés avec un nœud', { noeud: 'A > B', point: null, pointsAjoutes: ['6-115'] }],
+		['champ vide', {}]
 	])('refuse : %s', (_nom, brut) => {
 		const lu = lireRangement(brut, 'a.json');
 		expect(lu.ok).toBe(false);
@@ -168,14 +234,13 @@ describe('examinerModele', () => {
 	it('modèle neuf sans nœud ni tag : rangé sur sa sous-notion, avec son point', () => {
 		expect(examinerModele('a.json', neuf(), prod(), ARBRE)).toEqual({
 			sorte: 'range',
-			modele: range(),
-			alerte: null
+			modele: range()
 		});
 	});
 
 	it('point posé sur la NOTION du nœud : accepté', () => {
 		const examen = examinerModele('a.json', neuf('6-110'), prod(), ARBRE);
-		expect(examen.sorte === 'range' && examen.modele.point).toBe('6-110');
+		expect(examen.sorte === 'range' && examen.modele.points).toEqual(['6-110']);
 	});
 
 	it('rangé sur une notion, sans tag', () => {
@@ -187,14 +252,79 @@ describe('examinerModele', () => {
 		);
 		expect(examen).toEqual({
 			sorte: 'range',
-			modele: range({ notion: 'Entiers', sousNotion: null, point: null }),
-			alerte: null
+			modele: range({ notion: 'Entiers', sousNotion: null, points: [] })
 		});
 	});
 
-	it('point d’un niveau absent du modèle : rangé, avec une alerte', () => {
+	it('point d’un niveau absent du modèle : refus', () => {
 		const examen = examinerModele('a.json', neuf(), prod({ grades: ['CM2'] }), ARBRE);
-		expect(examen.sorte === 'range' && examen.alerte).toMatch(/6-115 est de niveau 6.*\(CM2\)/);
+		expect(examen).toEqual({
+			sorte: 'refuse',
+			erreur: 'a.json : le point 6-115 est de niveau 6, absent des niveaux du modèle (CM2)'
+		});
+	});
+
+	it('deux points de deux programmes, sur le nœud et sur sa notion : rangé avec les deux', () => {
+		const examen = examinerModele(
+			'a.json',
+			neuf(['1SPE-355', '1TECHNO-095'], LOI),
+			prod({ grades: ['1_SPE', '1_TECHNO'] }),
+			ARBRE
+		);
+		expect(examen).toEqual({
+			sorte: 'range',
+			modele: range({
+				branche: 'Probabilités',
+				notion: 'Variables aléatoires',
+				sousNotion: 'loi',
+				points: ['1SPE-355', '1TECHNO-095']
+			})
+		});
+	});
+
+	it('deux points du même programme : refus', () => {
+		const examen = examinerModele(
+			'a.json',
+			neuf(['1SPE-355', '1SPE-356'], LOI),
+			prod({ grades: ['1_SPE'] }),
+			ARBRE
+		);
+		expect(examen.sorte === 'refuse' && examen.erreur).toBe(
+			'a.json : 1SPE-355 et 1SPE-356 sont du même programme (1_SPE) — un modèle a au plus un point par programme'
+		);
+	});
+
+	it('second point d’un niveau que le modèle n’a pas : refus', () => {
+		const examen = examinerModele(
+			'a.json',
+			neuf(['1SPE-355', '1TECHNO-095'], LOI),
+			prod({ grades: ['1_SPE'] }),
+			ARBRE
+		);
+		expect(examen.sorte === 'refuse' && examen.erreur).toMatch(
+			/1TECHNO-095 est de niveau 1_TECHNO, absent des niveaux du modèle \(1_SPE\)/
+		);
+	});
+
+	it('lot relancé avec deux points déjà posés : ignoré ; un seul des deux posé : refus', () => {
+		const rangement = neuf(['1SPE-355', '1TECHNO-095'], LOI);
+		const grades = ['1_SPE', '1_TECHNO'];
+		expect(
+			examinerModele(
+				'a.json',
+				rangement,
+				prod({ grades, classification_node_id: 's4', points: ['pt095', 'ps355'] }),
+				ARBRE
+			).sorte
+		).toBe('ignore');
+		expect(
+			examinerModele(
+				'a.json',
+				rangement,
+				prod({ grades, classification_node_id: 's4', points: ['ps355'] }),
+				ARBRE
+			).sorte
+		).toBe('refuse');
 	});
 
 	it('chemin introuvable : refus', () => {
@@ -277,34 +407,147 @@ describe('examinerModele', () => {
 	it('niveau ajouté : niveaux du relevé gardés, le neuf à la suite', () => {
 		const examen = examinerModele(
 			'b.json',
-			{ sorte: 'niveaux', niveaux: ['6'] },
+			ajouts(['6']),
 			prod({ id: ID2, title: 'Quotient', grades: ['CM2'], classification_node_id: 's1' }),
 			ARBRE
 		);
-		expect(examen).toEqual({ sorte: 'niveaux', modele: niveaux() });
+		expect(examen).toEqual({ sorte: 'ajouts', niveaux: niveaux(), tags: null });
 	});
 
 	it('niveau déjà posé : ignoré ; un seul des deux manque : lui seul est ajouté', () => {
 		const dejaLa = prod({ grades: ['CM2', '6'], classification_node_id: 's1' });
-		expect(
-			examinerModele('b.json', { sorte: 'niveaux', niveaux: ['6'] }, dejaLa, ARBRE).sorte
-		).toBe('ignore');
-		const examen = examinerModele(
-			'b.json',
-			{ sorte: 'niveaux', niveaux: ['6', '5'] },
-			dejaLa,
-			ARBRE
-		);
-		expect(examen.sorte === 'niveaux' && examen.modele.apres).toEqual(['CM2', '6', '5']);
+		expect(examinerModele('b.json', ajouts(['6']), dejaLa, ARBRE).sorte).toBe('ignore');
+		const examen = examinerModele('b.json', ajouts(['6', '5']), dejaLa, ARBRE);
+		expect(examen.sorte === 'ajouts' && examen.niveaux?.apres).toEqual(['CM2', '6', '5']);
 	});
 });
 
 describe('examinerModele, niveaux', () => {
 	it('niveau ajouté à un modèle SANS nœud en prod : refus (jamais rangé)', () => {
-		const examen = examinerModele('b.json', { sorte: 'niveaux', niveaux: ['5'] }, prod(), ARBRE);
+		const examen = examinerModele('b.json', ajouts(['5']), prod(), ARBRE);
 		expect(examen.sorte === 'refuse' && examen.erreur).toMatch(
-			/b\.json : 0000000a n'a pas de nœud en prod — « niveauxAjoutes »/
+			/b\.json : 0000000a n'a pas de nœud en prod — « niveauxAjoutes » et « pointsAjoutes »/
 		);
+	});
+});
+
+describe('examinerModele, points ajoutés', () => {
+	it('cas réel : le modèle tagué 1SPE-355 gagne 1TECHNO-095, posé sur la notion de son nœud', () => {
+		expect(examinerModele('b.json', ajouts([], ['1TECHNO-095']), probas(), ARBRE)).toEqual({
+			sorte: 'ajouts',
+			niveaux: null,
+			tags: tags()
+		});
+	});
+
+	it('point déjà posé : ignoré ; l’un posé, l’autre non : lui seul est ajouté', () => {
+		const deja = probas({ points: ['ps355', 'pt095'] });
+		expect(examinerModele('b.json', ajouts([], ['1TECHNO-095']), deja, ARBRE).sorte).toBe('ignore');
+		const examen = examinerModele(
+			'b.json',
+			ajouts([], ['1SPE-355', '1TECHNO-095']),
+			probas(),
+			ARBRE
+		);
+		expect(examen.sorte === 'ajouts' && examen.tags?.ajoutes).toEqual(['1TECHNO-095']);
+	});
+
+	it('modèle rangé sans tag qui gagne son premier point', () => {
+		const examen = examinerModele(
+			'b.json',
+			ajouts([], ['1TECHNO-095']),
+			probas({ points: [] }),
+			ARBRE
+		);
+		expect(examen.sorte === 'ajouts' && examen.tags).toEqual(tags({ avant: [] }));
+	});
+
+	it('niveau et point du même programme ajoutés ensemble : les deux posés', () => {
+		const examen = examinerModele(
+			'b.json',
+			ajouts(['1_TECHNO'], ['1TECHNO-095']),
+			probas({ grades: ['1_SPE'] }),
+			ARBRE
+		);
+		expect(examen).toEqual({
+			sorte: 'ajouts',
+			niveaux: {
+				id: ID2,
+				title: 'Loi',
+				fichier: 'b.json',
+				avant: ['1_SPE'],
+				apres: ['1_SPE', '1_TECHNO']
+			},
+			tags: tags()
+		});
+	});
+
+	it('point d’un niveau que le modèle n’a pas, et que le fichier n’ajoute pas : refus', () => {
+		const examen = examinerModele(
+			'b.json',
+			ajouts([], ['1TECHNO-095']),
+			probas({ grades: ['1_SPE'] }),
+			ARBRE
+		);
+		expect(examen.sorte === 'refuse' && examen.erreur).toMatch(
+			/1TECHNO-095 est de niveau 1_TECHNO, absent des niveaux du modèle \(1_SPE\)/
+		);
+	});
+
+	it('second point d’un programme déjà tagué : refus', () => {
+		const examen = examinerModele('b.json', ajouts([], ['1SPE-356']), probas(), ARBRE);
+		expect(examen.sorte === 'refuse' && examen.erreur).toMatch(
+			/1SPE-355 et 1SPE-356 sont du même programme \(1_SPE\)/
+		);
+	});
+
+	it.each([
+		['introuvable', '1SPE-999', /point 1SPE-999 introuvable/],
+		[
+			'ni sur le nœud ni sur sa notion',
+			'6-115',
+			/le point 6-115 est sur « Nombres et calculs > Décimaux : calculs > multiplication », ni sur « Probabilités > Variables aléatoires > loi »/
+		]
+	])('point %s : refus', (_nom, code, message) => {
+		const examen = examinerModele(
+			'b.json',
+			ajouts([], [code]),
+			probas({ grades: ['1_SPE', '1_TECHNO', '6'] }),
+			ARBRE
+		);
+		expect(examen.sorte === 'refuse' && examen.erreur).toMatch(message);
+	});
+
+	it('modèle rangé sur une NOTION qui gagne un point de cette notion', () => {
+		const examen = examinerModele(
+			'b.json',
+			ajouts([], ['1TECHNO-095']),
+			probas({ classification_node_id: 'n3', points: [] }),
+			ARBRE
+		);
+		expect(examen.sorte === 'ajouts' && examen.tags).toEqual(
+			tags({ noeud: 'Probabilités > Variables aléatoires', avant: [] })
+		);
+	});
+
+	it('tag d’avant illisible (point inconnu de l’arbre) : refus', () => {
+		const examen = examinerModele(
+			'b.json',
+			ajouts([], ['1TECHNO-095']),
+			probas({ points: ['inconnu'] }),
+			ARBRE
+		);
+		expect(examen.sorte === 'refuse' && examen.erreur).toMatch(/porte un tag illisible/);
+	});
+
+	it('modèle sans nœud en prod : refus', () => {
+		const examen = examinerModele(
+			'b.json',
+			ajouts([], ['1TECHNO-095']),
+			probas({ classification_node_id: null, points: [] }),
+			ARBRE
+		);
+		expect(examen.sorte).toBe('refuse');
 	});
 });
 
@@ -318,37 +561,48 @@ describe('nomMigration', () => {
 
 describe('genererMigration', () => {
 	it('refuse un lot vide', () => {
-		expect(() => genererMigration(ENTETE, { ranges: [], niveaux: [] })).toThrow(
+		expect(() => genererMigration(ENTETE, { ranges: [], niveaux: [], tags: [] })).toThrow(
 			/pas de migration vide/
 		);
 	});
 
 	it('apostrophes des noms de nœuds doublées, titres ramenés à une ligne', () => {
 		const sql = genererMigration(ENTETE, {
-			ranges: [range({ notion: "L'ordre", title: 'Deux\nlignes', point: null })],
-			niveaux: []
+			ranges: [range({ notion: "L'ordre", title: 'Deux\nlignes', points: [] })],
+			niveaux: [],
+			tags: []
 		});
-		expect(sql).toContain(`('${ID}', 'Nombres et calculs', 'L''ordre', 'multiplication', null)`);
+		expect(sql).toContain(`('${ID}', 'Nombres et calculs', 'L''ordre', 'multiplication')`);
+		expect(sql).not.toContain('insert into _qr_tags');
 		expect(sql).toContain('« Deux lignes »');
 		expect(sql).toContain('→ sans tag');
 	});
 
 	it('TOUT ou RIEN sur le nombre de modèles du lot', () => {
-		const sql = genererMigration(ENTETE, { ranges: [range(), range({ id: ID2 })], niveaux: [] });
+		const sql = genererMigration(ENTETE, {
+			ranges: [range(), range({ id: ID2 })],
+			niveaux: [],
+			tags: []
+		});
 		expect(sql).toContain('if v_presents not in (0, 2) then');
 	});
 
 	it('niveaux seuls : pas de table du lot ; rangement seul : pas de bloc de niveaux', () => {
-		const seuls = genererMigration(ENTETE, { ranges: [], niveaux: [niveaux()] });
+		const seuls = genererMigration(ENTETE, { ranges: [], niveaux: [niveaux()], tags: [] });
 		expect(seuls).not.toContain('_qr_modeles');
 		expect(seuls).toContain(`set grades = array['CM2', '6']::text[]`);
 		expect(seuls).toContain(`and grades = array['CM2']::text[];`);
-		expect(genererMigration(ENTETE, { ranges: [range()], niveaux: [] })).not.toContain('$niveaux$');
+		expect(genererMigration(ENTETE, { ranges: [range()], niveaux: [], tags: [] })).not.toContain(
+			'$niveaux$'
+		);
 	});
 
 	it('le rollback en commentaire s’extrait et défait tout, niveaux gardés', () => {
 		const fichier = join(mkdtempSync(join(tmpdir(), 'rangement-')), 'm.sql');
-		writeFileSync(fichier, genererMigration(ENTETE, { ranges: [range()], niveaux: [niveaux()] }));
+		writeFileSync(
+			fichier,
+			genererMigration(ENTETE, { ranges: [range()], niveaux: [niveaux()], tags: [] })
+		);
 		const retour = extractRollback(fichier);
 		expect(retour).toContain(`('${ID}'::uuid, '6-115')`);
 		expect(retour).toContain('set classification_node_id = null');
@@ -366,7 +620,11 @@ describe('genererMigration', () => {
 	it('aucune ligne hors commentaire avant le corps, même avec un retour chariot dans le lot ou la source', () => {
 		const sql = genererMigration(
 			{ lot: "x\r; select 'a'; --", source: "d\r; select 'b'; --", date: '2026-11-22' },
-			{ ranges: [range({ title: "t\r; select 'c'; --" })], niveaux: [niveaux()] }
+			{
+				ranges: [range({ title: "t\r; select 'c'; --" })],
+				niveaux: [niveaux()],
+				tags: [tags({ id: ID, title: "u\r; select 'd'; --" })]
+			}
 		);
 		const entete = sql.slice(0, sql.indexOf('-- ROLLBACK:END'));
 		expect(entete).not.toContain('\r');
@@ -377,13 +635,75 @@ describe('genererMigration', () => {
 		const fichier = join(mkdtempSync(join(tmpdir(), 'rangement-')), 'm.sql');
 		writeFileSync(
 			fichier,
-			genererMigration(ENTETE, { ranges: [range({ point: null })], niveaux: [] })
+			genererMigration(ENTETE, { ranges: [range({ points: [] })], niveaux: [], tags: [] })
 		);
 		expect(extractRollback(fichier)).not.toContain('delete from');
 	});
 
 	it('la migration générée ne touche ni schéma ni règles d’accès (garde des migrations de données)', () => {
-		const sql = genererMigration(ENTETE, { ranges: [range()], niveaux: [niveaux()] });
+		const sql = genererMigration(ENTETE, { ranges: [range()], niveaux: [niveaux()], tags: [] });
 		expect(instructionDeSchema(sql)).toBeNull();
+	});
+
+	it('modèle rangé avec deux points : deux lignes de tags, rollback qui retire les deux', () => {
+		const fichier = join(mkdtempSync(join(tmpdir(), 'rangement-')), 'm.sql');
+		const sql = genererMigration(ENTETE, {
+			ranges: [range({ points: ['1SPE-355', '1TECHNO-095'] })],
+			niveaux: [],
+			tags: []
+		});
+		writeFileSync(fichier, sql);
+		expect(sql).toContain(
+			`insert into _qr_tags (id, code) values\n\t('${ID}', '1SPE-355'),\n\t('${ID}', '1TECHNO-095');`
+		);
+		expect(sql).toContain('→ 1SPE-355 + 1TECHNO-095');
+		const retour = extractRollback(fichier);
+		expect(retour).toContain(`('${ID}'::uuid, '1SPE-355'),\n\t('${ID}'::uuid, '1TECHNO-095')`);
+	});
+
+	it('points ajoutés : garde des tags du relevé, rollback qui ne retire que l’ajouté', () => {
+		const fichier = join(mkdtempSync(join(tmpdir(), 'rangement-')), 'm.sql');
+		const sql = genererMigration(ENTETE, { ranges: [], niveaux: [], tags: [tags()] });
+		writeFileSync(fichier, sql);
+		expect(sql).not.toContain('_qr_modeles');
+		expect(sql).toContain(`insert into _qt_ajouts (id, code) values\n\t('${ID2}', '1TECHNO-095');`);
+		expect(sql).toContain(
+			`v_codes @> array['1SPE-355']::text[] and v_codes <@ array['1SPE-355']::text[]`
+		);
+		expect(sql).toContain('tags de 0000000b changés depuis le relevé');
+		expect(sql).toContain('if v_presents not in (0, 1) then');
+		expect(sql).toContain('not (p.grade = any (q.grades))');
+		expect(sql).toContain(': tags {1SPE-355} + 1TECHNO-095');
+		const retour = extractRollback(fichier);
+		expect(retour).toContain(`('${ID2}'::uuid, '1TECHNO-095')`);
+		expect(retour).not.toContain('1SPE-355');
+		expect(retour).not.toContain('classification_node_id');
+		expect(instructionDeSchema(sql)).toBeNull();
+	});
+});
+
+describe('lireFixture', () => {
+	it('fixture d’avant l’outil 66 (`point`, sans `tags`) : ramenée à la forme d’aujourd’hui', () => {
+		const { points: _p, ...sansPoints } = range();
+		expect(
+			lireFixture({
+				migration: 'm.sql',
+				ranges: [
+					{ ...sansPoints, point: '6-115' },
+					{ ...sansPoints, id: ID2, point: null }
+				],
+				niveaux: [niveaux()]
+			})
+		).toEqual({
+			migration: 'm.sql',
+			ranges: [range(), range({ id: ID2, points: [] })],
+			niveaux: [niveaux()],
+			tags: []
+		});
+	});
+
+	it('fixture d’aujourd’hui : inchangée', () => {
+		const f = { migration: 'm.sql', ranges: [range()], niveaux: [], tags: [tags()] };
+		expect(lireFixture(f)).toEqual(f);
 	});
 });

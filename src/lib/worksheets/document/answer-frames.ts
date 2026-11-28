@@ -138,11 +138,13 @@ function nodeLines(node: ASTNode): number {
 		case 'figure':
 		case 'stat-chart':
 		case 'qr':
+		case 'engrenages':
 		case 'horloge':
 		case 'tortue':
 		case 'calcul':
 		case 'robot':
 		case 'labyrinthe':
+		case 'yohaku':
 		case 'partage':
 		case 'espace':
 		case 'operation':

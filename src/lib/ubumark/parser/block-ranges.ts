@@ -21,6 +21,8 @@ import { findTortueBlocks } from './tortue-parser';
 import { findCalculBlocks } from './calcul-parser';
 import { findRobotBlocks } from './robot-parser';
 import { findLabyrintheBlocks } from './labyrinthe-parser';
+import { findYohakuBlocks } from './yohaku-parser';
+import { findEngrenagesBlocks } from './engrenages-parser';
 import { findPartageBlocks } from './partage-parser';
 import { findEspaceBlocks } from './espace-parser';
 import { findOperationBlocks } from './operation-parser';
@@ -60,6 +62,8 @@ export function blockLineRanges(lines: string[]): [number, number][] {
 		...findCalculBlocks(lines),
 		...findRobotBlocks(lines),
 		...findLabyrintheBlocks(lines),
+		...findYohakuBlocks(lines),
+		...findEngrenagesBlocks(lines),
 		...findPartageBlocks(lines),
 		...findEspaceBlocks(lines),
 		...findOperationBlocks(lines),

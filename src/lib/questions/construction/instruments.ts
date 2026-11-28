@@ -584,6 +584,12 @@ function sameRadiusCrossings(
 export interface ConstructionOptions {
 	/** Exception 4 (lot 9, § 25) : la bissectrice au compas */
 	arcsOnSides?: boolean;
+	/**
+	 * Outil n° 38 (médiatrice et milieu à la règle graduée) : longueur de la règle
+	 * (cm) ; un point posé sur une graduation d'une règle bien posée est construit
+	 * (`graduationPoints`). Absente : les graduations ne construisent rien.
+	 */
+	rulerLength?: number;
 }
 
 export function constructionOf(
@@ -622,6 +628,13 @@ export function constructionOf(
 			paired.push(p);
 			grew = true;
 		}
+		if (options.rulerLength !== undefined) {
+			for (const p of graduationPoints(objects, isBuilt, traits, options.rulerLength)) {
+				if (isBuilt(p)) continue;
+				paired.push(p);
+				grew = true;
+			}
+		}
 		if (!options.arcsOnSides) continue;
 		for (const arc of arcsOnSides(objects, built, isBuilt, traits)) {
 			eyeballed.push(arc);
@@ -633,6 +646,65 @@ export function constructionOf(
 		}
 	}
 	return { built, traits, isBuilt };
+}
+
+/**
+ * Outil n° 38 : règle graduée bien posée, son 0 sur un point construit, son bord
+ * vers un point construit ou le long d'un trait droit construit qui passe par ce 0
+ * (la règle posée sur [AB], 0 en A)
+ */
+function isWellPlacedRuler(
+	ruler: DrawnRegle,
+	isBuilt: (p: Position) => boolean,
+	traits: readonly Trait[]
+): boolean {
+	const origin = { x: ruler.ox, y: ruler.oy };
+	const toward = { x: ruler.bx, y: ruler.by };
+	if (!isBuilt(origin)) return false;
+	if (isBuilt(toward)) return true;
+	return traits.some(
+		(t) => isStraight(t) && isOnSomeTrait(origin, [t]) && isOnSomeTrait(toward, [t])
+	);
+}
+
+/**
+ * Outil n° 38 : `p` est-il sur une graduation d'une règle bien posée
+ * (`isWellPlacedRuler`, d'après ce que l'élève a construit) ?
+ */
+export function isOnRulerGraduation(
+	p: Position,
+	objects: readonly DrawnObject[],
+	construction: Construction,
+	rulerLength: number
+): boolean {
+	return objects.some(
+		(o) =>
+			o.kind === 'regle' &&
+			isWellPlacedRuler(o, construction.isBuilt, construction.traits) &&
+			rulerGraduationOf(p, o, rulerLength) !== null
+	);
+}
+
+/**
+ * Outil n° 38 : les points posés (outil Point) sur une graduation du millimètre
+ * d'une règle bien posée (`isWellPlacedRuler`) : le milieu marqué sur la règle.
+ * Ils deviennent des points construits, jamais des traits.
+ */
+function graduationPoints(
+	objects: readonly DrawnObject[],
+	isBuilt: (p: Position) => boolean,
+	traits: readonly Trait[],
+	rulerLength: number
+): Position[] {
+	const rulers = objects.filter(
+		(o): o is DrawnRegle => o.kind === 'regle' && isWellPlacedRuler(o, isBuilt, traits)
+	);
+	if (rulers.length === 0) return [];
+	return objects.flatMap((o) => {
+		if (o.kind !== 'point') return [];
+		const p = { x: o.x, y: o.y };
+		return rulers.some((r) => rulerGraduationOf(p, r, rulerLength) !== null) ? [p] : [];
+	});
 }
 
 /** Un cercle à l'œil et les points que l'exception 4 lui fait construire */

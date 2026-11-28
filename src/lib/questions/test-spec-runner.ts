@@ -22,6 +22,8 @@ import { readExpectedEquation } from './equations/equation-answer';
 import { readExpectedVector } from './vectors/vector-answer';
 import { readExpectedMatrix } from './matrices/matrix-answer';
 import { readExpectedPrimitive } from './calculus/primitive-answer';
+import { readExpectedResolution } from './resolution/resolution-answer';
+import { readExpectedParametricLine } from './parametric/parametric-line-answer';
 import { readExpectedSolution } from './calculus/differential-equation-answer';
 
 export interface TestSpecResult {
@@ -68,7 +70,8 @@ export function runTestSpec(template: QuestionTemplate, spec: TestSpec): TestSpe
 
 	// Case « intervalles », « équation », « vecteur » ou « matrice » : une réponse attendue illisible est une erreur du MODÈLE
 	// (côté élève, elle rendrait toute réponse fausse sans le dire). Case « primitive » ou
-	// « solution-ed » : de même pour une attendue qui ne vérifie pas elle-même la règle.
+	// « solution-ed » : de même pour une attendue qui ne vérifie pas elle-même la règle ; case
+	// « resolution » : pour une attendue qui n'est pas la solution de l'équation de l'énoncé.
 	for (const [index, blank] of (instance.blanks ?? []).entries()) {
 		if (blank.answerKind === undefined) continue;
 		if (blank.answerKind === 'primitive' || blank.answerKind === 'solution-ed') {
@@ -76,6 +79,26 @@ export function runTestSpec(template: QuestionTemplate, spec: TestSpec): TestSpe
 				blank.answerKind === 'primitive'
 					? readExpectedPrimitive(blank.expectedAnswer, blank)
 					: readExpectedSolution(blank.expectedAnswer, blank);
+			if (!checked.ok) {
+				return makeError(
+					`Réponse attendue invalide (case ${index + 1}) : ${blank.expectedAnswer} — ${checked.error}`
+				);
+			}
+			continue;
+		}
+		// Case « résolution » : l'attendue (`x=4`) doit être la solution de `equation`
+		if (blank.answerKind === 'resolution') {
+			const checked = readExpectedResolution(blank.expectedAnswer, blank);
+			if (!checked.ok) {
+				return makeError(
+					`Réponse attendue invalide (case ${index + 1}) : ${blank.expectedAnswer} — ${checked.error}`
+				);
+			}
+			continue;
+		}
+		// Case « droite paramétrique » : trois lignes affines en un seul paramètre, vecteur non nul
+		if (blank.answerKind === 'droite-parametrique') {
+			const checked = readExpectedParametricLine(blank.expectedAnswer);
 			if (!checked.ok) {
 				return makeError(
 					`Réponse attendue invalide (case ${index + 1}) : ${blank.expectedAnswer} — ${checked.error}`
