@@ -8,12 +8,12 @@ status: en cours
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-28, avant la première PR._
+_Mis à jour le 2026-11-28, avant la PR._
 
-- **État** : L56, M35, M36, M37 corrigés sur la branche (commit local, pas encore poussé). V76 et M38 vérifiés en prod, en attente de la réponse de David (phase 0 ci-dessous).
-- **Prochaine action** : selon les réponses, corriger V76 (script pour David) et M38, puis revue `code-reviewer` (+ `security-auditor` si M38 touche l'API), une seule PR.
-- **En attente de David** : questions V76 et M38 (§ Phase 0).
-- **Pièges en cours** : dans une comparaison d'état de figure, les champs `compute` sont des fonctions neuves à chaque relecture (comparer en JSON).
+- **État** : les 6 écarts corrigés sur la branche (4 commits + merge de main) ; revues `code-reviewer` et `security-auditor` (Opus) lancées, PR pas encore ouverte. Après un `/clear`, leurs résultats sont perdus : les relancer sur `git diff origin/main...HEAD`.
+- **Prochaine action** : corriger les findings, pousser, ouvrir la PR, `pnpm pr:merger`. Après merge : `pnpm constructions:reecrire --lot v76 --cible prod` (simulation, par moi), puis **David** lance `--publier` ; commiter la sauvegarde `avant-v76.json`.
+- **En attente de David** : l'écriture en prod de V76 (`--publier`).
+- **Pièges en cours** : `masque` coûte un pas de 500 ms (44 arcs : effacement arc par arc) ; les points `_p…` du carré gardent leur étiquette (défaut à part, déjà en prod, non traité).
 - **Worktree / branche** : `../ubumaths-wt-ecarts-constructions` · `fix/ecarts-constructions`.
 
 ## Écarts du lot
@@ -38,8 +38,13 @@ V76, L56, M35, M36, M37, M38 (6).
 
 ### V76 — les arcs de compas du carré restent affichés
 
-Question posée à David le 2026-11-28 : voir le message de la session.
+Question posée le 2026-11-28 : (A) préparer le script corrigé du carré, chaque arc nommé et effacé où l'auteur l'effaçait, écriture en prod par David ; (B) retirer seulement les `@cacher` inutiles. Réponse de David : « je te suis », soit A, l'option recommandée.
 
 ### M38 — l'ancien format JSON
 
-La page `/constructions/conversion` (bouton sur `/constructions`) est vivante : elle convertit un fichier XML **à la fois** en JSON (ancien format, ancien lecteur, ancien éditeur) et en DSL. Retirer le JSON enlève quelque chose de la page du prof. Question posée à David le 2026-11-28.
+La page `/constructions/conversion` (bouton sur `/constructions`) convertissait un fichier XML **à la fois** en JSON et en DSL, et enregistrait le JSON (injouable) quand le DSL échouait. Question posée le 2026-11-28 : (A) DSL seul, erreur affichée en cas d'échec, ancien module retiré ; (B) garder. Réponse de David : « je te suis », soit A, l'option recommandée.
+
+## Fait après la phase 0
+
+- **M38** : ancien module `src/lib/constructions/` retiré, ainsi que `api/constructions/convert` (sans appelant) et `scripts/convert-instrumenpoche.ts` ; `JsonEditor` → `src/lib/components/`, instruments du tableau blanc → `src/lib/whiteboard/components/instruments/`. `POST /api/constructions` : `format: 'dsl'` seul, `dsl_script` requis ; `PUT` n'accepte plus `script`. Page de conversion : DSL seul, aperçu par le lecteur v2. Tests d'API ajoutés (`ecriture-reservee.test.ts`).
+- **V76** : lot `v76` de `pnpm constructions:reecrire --lot` (`scripts/constructions-prod/arcs-carre.ts`). Les 44 arcs reçoivent le nom de l'arc du JSON d'origine (correspondance vérifiée arc par arc : rayon, angles), `@cacher("arc_n")` → `masque(_arcn)`. Découvert à l'écran : la migration vers le DSL avait changé le signe des angles sans échanger début et fin, 13 arcs de 20° tracés sur 340° (presque des cercles) ; ordre rétabli. Garde ajoutée : `dslAvant` (script de prod identique à la sauvegarde dont le nouveau est tiré). Vu en local dans Chrome : petits arcs pendant la construction, aucun à la fin.
