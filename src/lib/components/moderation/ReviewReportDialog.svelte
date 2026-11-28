@@ -10,7 +10,8 @@
 		- onSuccess: Callback after successful review
 
 	Features:
-		- Display reported message with context (10 previous messages)
+		- Display reported message with context (10 previous messages), rendered as the
+		  recipient saw it (restricted rendering, écart T36)
 		- Radio group for decision (dismissed | reviewed | actioned)
 		- Checkbox to delete message (if actioned)
 		- Textarea for review notes
@@ -28,6 +29,7 @@
 	import MyCheckbox from '#lib/components/MyCheckbox.svelte';
 	import { Badge } from '#lib/components/ui/badge/index.ts';
 	import RestrictUserDialog from './RestrictUserDialog.svelte';
+	import ReportedMessageContent from './ReportedMessageContent.svelte';
 	import { CheckCircle, XCircle, AlertTriangle, Loader2, Trash2, UserX } from '@lucide/svelte';
 	import { toaster } from '#lib/stores/toaster.svelte.ts';
 	import { formatDistanceToNow, format } from 'date-fns';
@@ -342,9 +344,10 @@
 										{getSenderName(report.sender_firstname, report.sender_lastname)}
 									</span>
 								</div>
-								<p class="text-sm whitespace-pre-wrap">
-									{report.message_plain_text || '[Contenu non disponible]'}
-								</p>
+								<ReportedMessageContent
+									content={report.message_content}
+									plainText={report.message_plain_text}
+								/>
 							</div>
 						{:else}
 							<div class="space-y-2">
@@ -369,9 +372,7 @@
 												{formatMessageTime(msg.created_at)}
 											</span>
 										</div>
-										<p class="text-sm whitespace-pre-wrap">
-											{msg.plain_text || '[Contenu non disponible]'}
-										</p>
+										<ReportedMessageContent content={msg.content} plainText={msg.plain_text} />
 									</div>
 								{/each}
 							</div>
