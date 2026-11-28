@@ -56,6 +56,14 @@ describe('currentSchoolYear', () => {
 		expect(rpc).toHaveBeenCalledWith('current_school_year', { p_school_id: 'school-1' });
 	});
 
+	it('année de l’école finie (nouvelle année non saisie) : du 1er septembre au 31 août', async () => {
+		const { client } = fakeClient({ start_date: '2025-09-01', end_date: '2026-06-30' });
+		expect(await currentSchoolYear(client, 'school-1', now)).toEqual({
+			start: '2026-09-01',
+			end: '2027-08-31'
+		});
+	});
+
 	it('école sans année saisie : du 1er septembre au 31 août', async () => {
 		const { client } = fakeClient(null);
 		expect(await currentSchoolYear(client, 'school-1', now)).toEqual({

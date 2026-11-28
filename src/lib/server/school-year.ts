@@ -1,9 +1,11 @@
 /**
  * Année scolaire : UNE règle pour tout le site (L38).
  *
- * Les dates que l'école a saisies (`school_years`), choisies par la fonction SQL
- * `current_school_year` (celle qui contient aujourd'hui, sinon la plus récente
- * déjà commencée), comme les avertissements ; sinon du 1er septembre au 31 août. `endOfSchoolYear` (expiration des liens
+ * Les dates que l'école a saisies (`school_years`) quand elles contiennent le
+ * jour, lues par la fonction SQL `current_school_year` ; sinon du 1er septembre
+ * au 31 août. La fonction SQL rend aussi une année FINIE (« la plus récente déjà
+ * commencée ») : écartée ici, sinon une école qui n'a pas saisi sa nouvelle
+ * année verrait l'année écoulée. `endOfSchoolYear` (expiration des liens
  * envoyés aux familles) suit la règle par défaut : un lien ne meurt pas avant
  * le 31 août, quelle que soit la date de sortie saisie par l'école.
  *
@@ -50,8 +52,7 @@ export function endOfSchoolYear(now: Date = new Date()): Date {
 
 /**
  * Année scolaire en cours pour une école : ses dates saisies (fonction SQL
- * `current_school_year`), sinon la règle par défaut. `now` ne sert qu'à la
- * règle par défaut : la fonction SQL lit la date du serveur de base. Une lecture en panne lève : une année
+ * `current_school_year`) si elles contiennent `now`, sinon la règle par défaut. Une lecture en panne lève : une année
  * inventée compterait des séances qui n'en sont pas.
  */
 export async function currentSchoolYear(
@@ -69,6 +70,9 @@ export async function currentSchoolYear(
 		logger.error('[school-year] Année scolaire illisible :', error);
 		throw new Error(error.message);
 	}
-	if (!data) return defaultSchoolYear(now);
+	// Année de l'école finie (nouvelle année pas encore saisie, ou été) : la
+	// fonction SQL rendrait l'année écoulée, on retombe sur la règle par défaut
+	const today = now.toISOString().slice(0, 10);
+	if (!data || data.end_date < today) return defaultSchoolYear(now);
 	return { start: data.start_date, end: data.end_date };
 }
