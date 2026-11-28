@@ -1,21 +1,20 @@
 ---
 title: Écarts — lot cours-evaluations
 date: 2026-11-28
-status: en cours — PR 1 mergée (#3291), L39 à faire
+status: en cours — PR 1 mergée (#3291), PR 2 (L39) en cours
 ---
 
 # Écarts — lot `cours-evaluations`
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-28, après #3291._
+_Mis à jour le 2026-11-28, PR 2 (L39) #3300 ouverte._
 
-- **État** : PR 1 #3291 mergée (V72, L37, L38, L40, L112, L113). Migration `20261128072151` **en prod** (2026-11-28 : `supabase db push --include-all` par David, avec `20261128132651` d'`idees-3e-algorithmique` ; `migration list --linked` sans attente, relu par cette session-là).
-- **Prochaine action** : (1) ~~`db:migrate`~~ fait ; vérifier les contraintes en prod (MCP en lecture) ; (2) L39 en PR 2, nouveau worktree `ubumaths-wt-ecarts-cours-evaluations` depuis `origin/main`, branche `fix/ecarts-cours-evaluations-l39`.
-- **L39, accord de David (2026-11-28, « oui »)** : policy DELETE pour prof/admin sur `skill_attempts` limitée à `source = 'teacher'`, `task_id` non nul, élève de ses classes ; fonction SQL `security invoker` qui supprime puis réécrit la grille d'une tâche en une transaction et lève si des lignes restent.
-- **En attente de David** : rien, sauf le choix ci-dessus sur `db:migrate` ; et s'il veut que les liens des familles suivent les dates de l'école (aujourd'hui toujours le 31 août).
-- **Pièges** : supprimer un point travaillé est refusé depuis L112, donc un test qui supprime ses points efface d'abord `journal_entry_points` et `student_point_state` (corrigé dans 4 tests). `createEvaluation` des tests d'intégration est sans mélange par défaut.
-- **Worktree / branche** : retirés par `pr:merger`.
+- **État** : PR 1 #3291 mergée ; sa migration `20261128072151` **en prod** (2026-11-28, `supabase db push --include-all` par David, avec `20261128132651` d'`idees-3e-algorithmique`). PR 2 (L39) #3300 : policy `skill_attempts_delete_teacher_task`, trigger `trg_skill_attempts_after_delete`, fonction `save_evaluation_task_grid` ; 9 tests d'intégration (5 rouges sans la migration).
+- **Prochaine action** : merge de #3300, puis `db:migrate` de `20261128135334` (vérifier `migration list --linked` : elle seule en attente) ; vérifier les contraintes de PR 1 en prod (MCP en lecture).
+- **En attente de David** : les liens des familles doivent-ils suivre les dates de l'école (aujourd'hui toujours le 31 août) ?
+- **Pièges** : `update_student_observable_state` est fermée à `authenticated` : le cache des cases effacées passe par un trigger, qui saute un élève supprimé (sinon la suppression d'un compte échoue, FK du cache). La saisie n'efface que les élèves de la grille (archivés préservés). Supprimer un point travaillé est refusé depuis L112.
+- **Worktree / branche** : `ubumaths-wt-ecarts-cours-evaluations` · `fix/ecarts-cours-evaluations-l39`.
 
 ## Décisions (2026-11-28)
 
