@@ -1,6 +1,7 @@
 /**
  * Écarts de modération et de surveillance qui demandent un navigateur
- * (docs/ecarts/registre.md) : L110, L123.
+ * (docs/ecarts/registre.md) : L123 ouvert ; L110 corrigé, son test est devenu
+ * ordinaire (plus de `.fails`, plus de marqueur).
  *
  * Le projet vitest `ecarts` n'a pas de navigateur : chaque écart est ici en
  * `it.fails`, et son nom porte le marqueur « écart L123 » que la preuve du
@@ -153,7 +154,7 @@ describe('« Détection des freezes » coupée dans la configuration', () => {
 		expect(envoisRetablie).toBe(1);
 	});
 
-	it.fails('écart L110 : détection coupée, la tâche longue n’est pas envoyée', () => {
+	it('détection coupée, la tâche longue n’est pas envoyée', () => {
 		expect(envoisCoupee).toBe(0);
 	});
 });

@@ -1,13 +1,9 @@
 /**
- * Tests de preuve du registre des écarts (docs/ecarts/registre.md), domaine
- * rapports de bug.
+ * Remplacement de la capture d'un rapport de bug : l'effacement de l'ancienne
+ * capture qui échoue, en erreur ou en silence (zéro fichier rendu), laisse une
+ * trace au journal du serveur (ancien écart L122, docs/ecarts/registre.md).
  *
- * Chaque test affirme le comportement ATTENDU d'un écart encore ouvert : il est
- * rouge tant que l'écart est vrai. Le nom de chaque `describe` porte l'identifiant
- * de l'écart, que le registre retient par `› L122`.
- *
- * Les tests nommés « témoin » sont verts aujourd'hui : ils montrent que le même
- * geste marche sur un cas voisin, donc que le rouge vient bien de l'écart.
+ * Les tests nommés « témoin » montrent que le même geste marche sur un cas voisin.
  */
 
 import { beforeEach, describe, expect, it, vi } from 'vitest';
@@ -33,7 +29,7 @@ vi.mock('#lib/utils/logger.ts', () => ({
 	createLogger: () => log
 }));
 
-describe('L122 : remplacement d’une capture, ancienne capture non effacée', () => {
+describe('remplacement d’une capture : ancienne capture non effacée', () => {
 	beforeEach(() => {
 		vi.resetModules();
 		for (const spy of Object.values(log)) spy.mockClear();
@@ -59,7 +55,7 @@ describe('L122 : remplacement d’une capture, ancienne capture non effacée', (
 			removedPaths.push(paths);
 			return removal as { data: never[]; error: null };
 		});
-		const { POST } = await import('../../src/routes/api/bug-reports/[reportId]/screenshot/+server');
+		const { POST } = await import('../+server');
 
 		const body = new FormData();
 		body.append('image', new File([PNG_BYTES], 'capture.png', { type: 'image/png' }));
@@ -96,7 +92,7 @@ describe('L122 : remplacement d’une capture, ancienne capture non effacée', (
 	});
 
 	// Un effacement refusé par les règles du stockage ne rend pas d'erreur : il rend
-	// zéro fichier. Aujourd'hui : rien au journal, l'ancienne capture reste orpheline.
+	// zéro fichier.
 	it('effacement refusé en silence (zéro fichier rendu), le journal le dit', async () => {
 		expect(await alertsAfterReplacing({ data: [], error: null })).toBeGreaterThan(0);
 	});

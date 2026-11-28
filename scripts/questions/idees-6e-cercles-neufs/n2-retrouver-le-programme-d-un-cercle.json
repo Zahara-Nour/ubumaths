@@ -1,0 +1,227 @@
+{
+	"rangement": {
+		"noeud": "Géométrie > Figures planes > cercle",
+		"point": "6-162"
+	},
+	"title": "Retrouver le programme d'un cercle tracé",
+	"description": "Décrire un cercle tracé par son centre et un point, son diamètre, ou son rayon : centre et point de passage, cercle de diamètre [AB] (centre au milieu), rayon moitié du diamètre ; pièges : centre et point échangés, rayon pris égal au diamètre",
+	"grades": ["6"],
+	"level": 2,
+	"delay": 60,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Comment ce cercle a-t-il été tracé ?\n\n```figure\nfenetre: -4.5 ; 8.5 ; -4.5 ; 4.5\ndescription: Un cercle, son centre marqué, et un segment [AB] dont un bout est le centre.\n---\nA = point(0, 0, etiquette=\"bas-gauche\")\nB = point(4, 0, etiquette=\"bas-droite\")\nsegment(A, B)\n{{if:k==0|cercle(A, rayon=4, couleur=\"bleu\", epaisseur=2)|cercle(B, rayon=4, couleur=\"bleu\", epaisseur=2)}}\n```\n\n```choix\nmelanger: non\n- le cercle de centre $A$ qui passe par $B$\n- le cercle de centre $B$ qui passe par $A$\n- le cercle de diamètre $[AB]$\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "0..1"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{k}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Le centre** est le point où l'on pique le compas : il est au milieu du cercle, à la même distance de tous ses points.",
+					"{{if:k==0|Le centre est $A$ et le cercle passe par $B$ : $\\textcolor{{{color:primary.0}}}{\\text{le cercle de centre A qui passe par B}}$.|Le centre est $B$ et le cercle passe par $A$ : $\\textcolor{{{color:primary.0}}}{\\text{le cercle de centre B qui passe par A}}$.}}",
+					"$[AB]$ n'est pas un diamètre : il ne traverse pas le cercle, c'est un rayon."
+				]
+			},
+			"hint": "Où est le centre du cercle : en $A$, en $B$, ou ailleurs ?"
+		},
+		{
+			"statement": "Le point $I$ est le milieu de $[AB]$. Quelles phrases décrivent ce cercle ?\n\n```figure\nfenetre: -4 ; 4 ; -3.6 ; 3.6\ndescription: Un cercle, un segment [AB] qui le traverse en passant par son milieu I.\n---\nI = point(0, 0, etiquette=\"bas\")\nA = point(I, longueur=3, angle={{t}}, etiquette=\"gauche\")\nB = point(I, longueur=3, angle={{eval:t+180}}, etiquette=\"droite\")\ncercle(I, rayon=3, couleur=\"bleu\", epaisseur=2)\nsegment(A, B)\n```\n\n```choix\nplusieurs: oui\n- le cercle de diamètre $[AB]$\n- le cercle de centre $A$ qui passe par $B$\n- le cercle de centre $I$ et de rayon $AB$\n- le cercle de centre $I$ qui passe par $B$\n```",
+			"variables": [
+				{
+					"name": "t",
+					"expression": "150..210"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0;3"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$[AB]$ traverse le cercle en passant par son centre $I$ : c'est $\\textcolor{{{color:primary.0}}}{\\text{un diamètre}}$.",
+					"Le cercle a pour centre $I$ et passe par $A$ et par $B$ : c'est aussi $\\textcolor{{{color:primary.0}}}{\\text{le cercle de centre I qui passe par B}}$.",
+					"Son rayon est $IA$, la **moitié** de $AB$, pas $AB$."
+				]
+			},
+			"hint": "Où est le centre ? Et le rayon, est-ce $AB$ ou sa moitié ?"
+		},
+		{
+			"statement": "Quelles phrases décrivent ce cercle ?\n\n```figure\nfenetre: -4 ; 4 ; -3.6 ; 3.6\ndescription: Un cercle de centre O ; un diamètre [EF] tracé, sa longueur écrite.\n---\nO = point(0, 0, etiquette=\"bas\")\nE = point(-3, 0, etiquette=\"gauche\")\nF = point(3, 0, etiquette=\"droite\")\ncercle(O, rayon=3, couleur=\"bleu\", epaisseur=2)\nsegment(E, F)\ntexte(0, 0.45, \"{{eval:2*k}} cm\")\n```\n\n```choix\nplusieurs: oui\n- le cercle de centre $O$ et de rayon ${{k}}~\\unit{cm}$\n- le cercle de centre $O$ et de rayon ${{eval:2*k}}~\\unit{cm}$\n- le cercle de centre $O$ et de diamètre ${{k}}~\\unit{cm}$\n- le cercle de centre $O$ et de diamètre ${{eval:2*k}}~\\unit{cm}$\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "2..6"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0;3"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$[EF]$ passe par le centre $O$ : c'est un diamètre, il mesure $\\textcolor{{{color:primary.0}}}{\\text{{{eval:2*k}} cm}}$.",
+					"Le rayon est la moitié du diamètre : ${{eval:2*k}} \\div 2 = \\textcolor{{{color:primary.0}}}{{{k}}~\\unit{cm}}$."
+				]
+			},
+			"hint": "La longueur écrite est celle de $[EF]$ : est-ce un rayon ou un diamètre ?"
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Centre A passant par B",
+			"variationIndex": 0,
+			"variables": {
+				"k": "0"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0"]
+		},
+		{
+			"description": "Erreur : centre et point échangés",
+			"variationIndex": 0,
+			"variables": {
+				"k": "0"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["1"]
+		},
+		{
+			"description": "Erreur : [AB] pris pour un diamètre",
+			"variationIndex": 0,
+			"variables": {
+				"k": "0"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["2"]
+		},
+		{
+			"description": "Centre B passant par A",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["1"]
+		},
+		{
+			"description": "Erreur : centre B, « centre A »",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["0"]
+		},
+		{
+			"description": "Diamètre [AB] et centre I passant par B",
+			"variationIndex": 1,
+			"variables": {
+				"t": "180"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0;3"]
+		},
+		{
+			"description": "Le diamètre seulement : la moitié",
+			"variationIndex": 1,
+			"variables": {
+				"t": "180"
+			},
+			"expected": {
+				"status": "unoptimal_form"
+			},
+			"answers": ["0"]
+		},
+		{
+			"description": "Erreur : rayon AB au lieu de sa moitié",
+			"variationIndex": 1,
+			"variables": {
+				"t": "180"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["0;2;3"]
+		},
+		{
+			"description": "Erreur : centre A",
+			"variationIndex": 1,
+			"variables": {
+				"t": "160"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["1"]
+		},
+		{
+			"description": "Rayon 4 cm et diamètre 8 cm",
+			"variationIndex": 2,
+			"variables": {
+				"k": "4"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0;3"]
+		},
+		{
+			"description": "Erreur : le diamètre pris pour le rayon",
+			"variationIndex": 2,
+			"variables": {
+				"k": "4"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["1"]
+		},
+		{
+			"description": "Erreur : rayon 4 cm et diamètre 4 cm",
+			"variationIndex": 2,
+			"variables": {
+				"k": "4"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["0;2"]
+		},
+		{
+			"description": "Une seule des deux : la moitié",
+			"variationIndex": 2,
+			"variables": {
+				"k": "5"
+			},
+			"expected": {
+				"status": "unoptimal_form"
+			},
+			"answers": ["3"]
+		}
+	]
+}

@@ -99,3 +99,31 @@ export const bulkResolveErrorsSchema = z
 				'Au moins un filtre doit être spécifié pour éviter de résoudre toutes les erreurs accidentellement'
 		}
 	);
+
+/**
+ * Filtres de la page admin des erreurs (`?type=&severity=&resolved=&search=`).
+ * Un paramètre absent ou vide ne filtre pas.
+ */
+export const adminErrorsFiltersSchema = z.object({
+	type: z
+		.enum([
+			'client_js',
+			'server_api',
+			'server_load',
+			'server_action',
+			'validation',
+			'performance',
+			'database'
+		])
+		.optional(),
+	severity: z.enum(['info', 'warning', 'error', 'critical']).optional(),
+	resolved: z.enum(['true', 'false']).optional(),
+	search: z.string().trim().max(200).optional()
+});
+
+/**
+ * Note de résolution d'une erreur (action `resolve` de la page de détail).
+ */
+export const resolveErrorFormSchema = z.object({
+	notes: z.string().trim().max(2000).optional()
+});
