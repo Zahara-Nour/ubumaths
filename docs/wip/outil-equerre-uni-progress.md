@@ -207,3 +207,26 @@ différentes, dans l'ordre du programme ; une étape peut citer un point constru
 3. Étape 1 fausse (carré mal construit) : on s'arrête là (« Étape 1 : … ») ; ou on juge aussi la suite d'après
    les points de l'élève ? Reco : s'arrêter à la première, plus simple à lire pour un élève de CM1.
 4. Correction : la figure entière, étape par étape (chaque étape a déjà sa correction). OK ?
+
+### 3 bis. Outil 45 : décisions (2026-11-28)
+
+David : « je te suis » sur les 4 questions : A (segment puis cercles) et B (carré, diagonales, cercle) d'abord,
+pas C ; une seule validation ; arrêt à la première étape fausse (« Étape n : … ») ; correction de la figure
+entière, étape par étape.
+
+### 3 ter. Outil 45 : plan technique (2026-11-28)
+
+- **Syntaxe** : plusieurs `verifier:` de familles différentes = figure composée ; chaque ligne est une étape,
+  dans l'ordre. Familles admises (V1) : `segment AB = 6 cm`, carré / rectangle coté, `cercle`, `point`, et une
+  vérification neuve `segment [AC]` (tracer le segment qui joint deux points : les diagonales de B). Une autre
+  famille dans une figure composée : erreur d'auteur.
+- **Points construits** : une étape juste nomme ses points (B au bout du segment ; C, D du carré ; le point
+  placé). Ils sont ajoutés à la figure (`X = point(x, y)`) avant de juger l'étape suivante, aux positions de
+  l'élève ; à la création du modèle, à celles de la correction. Le point de croisement des diagonales :
+  `point O = intersection(segment(A, C), segment(B, D))`.
+- **Juge** (`construction/composite.ts`) : chaque étape jugée par son juge actuel, sur les objets de ses
+  outils ; les objets d'une autre étape ne sont ni « de trop » ni « forgés » (réglage `composite` des juges qui
+  les comptent). Forgé : un objet dont l'outil n'est pas dans `outils:`. Message : « Étape n : … ».
+- **Palette** : chaque étape exige ses outils ; un outil de plus est admis s'il sert à une autre étape.
+- **Écran** : correction de chaque étape, dessinée avec ses points.
+- Exemples A et B en tests ; pas de C (droite dans une figure composée).
