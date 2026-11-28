@@ -1,24 +1,24 @@
 ---
 title: Écarts — lot cours-evaluations
 date: 2026-11-28
-status: en cours — PR 1 à 4 (#3291, #3300, #3306, plafond des liens), clôture à faire
+status: en cours — PR 1 à 4 mergées (#3291, #3300, #3306, #3312), clôture à faire
 ---
 
 # Écarts — lot `cours-evaluations`
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-28, PR 4 (plafond des liens) ouverte._
+_Mis à jour le 2026-11-28, après #3312 (plafond des liens)._
 
-- **État** : les 7 écarts du lot sont corrigés (#3291, #3300 ; migrations en prod). Les liens des familles (cahier, cours, carnet) expirent à la fin de l'année scolaire de l'école (#3306 ; politique de confidentialité v1.6), jamais plus de 18 mois après leur émission : une fin d'année saisie au-delà (« 2099 ») retombe sur le 31 août qui vient (PR 4, `schoolYearExpiry`, branche `fix/liens-familles-plafond`). Rien à déployer en base.
+- **État** : les 7 écarts du lot sont corrigés (#3291, #3300 ; migrations en prod). Les liens des familles (cahier, cours, carnet) expirent à la fin de l'année scolaire de l'école (#3306 ; politique de confidentialité v1.6), jamais plus de 18 mois après leur émission : une fin d'année saisie au-delà (« 2099 ») retombe sur le 31 août qui vient (#3312, `schoolYearExpiry`). Rien à déployer en base.
 - **Prochaine action** : clôture du chantier (recompter le découpage, versement dans `docs/systeme/`, archivage du journal, ligne de `ecarts-lots.md`).
 - **En attente de David** : rien.
 - **Pièges** : les liens déjà émis gardent leur 31 août. Le cache des cases effacées de `skill_attempts` passe par `trg_skill_attempts_after_delete` (saute un élève supprimé).
-- **Worktree / branche** : `ubumaths-wt-ecarts-cours-evaluations` / `fix/liens-familles-plafond` jusqu'au merge de la PR 4 (retirés par `pr:merger`).
+- **Worktree / branche** : aucun (retirés par `pr:merger`).
 
 ## Décisions (2026-11-28)
 
-- **Plafond des liens** (après #3306) : David, « oui » : au plus 18 mois après l'émission, sinon le 31 août qui vient (PR 4). Les liens déjà émis gardent leur date.
+- **Plafond des liens** (après #3306) : David, « oui » : au plus 18 mois après l'émission, sinon le 31 août qui vient (#3312). Les liens déjà émis gardent leur date.
 
 David, « je te suis » sur les quatre propositions de la phase 0 :
 
