@@ -17,6 +17,10 @@
 
 	// Dernière liste de classes versée au cache (comparée par référence, pas réactive)
 	let hydratedClasses: LayoutData['classes'] | null = null;
+	let hydratedPeriods: {
+		currentPeriod: LayoutData['currentPeriod'] | undefined;
+		allPeriods: LayoutData['allPeriods'] | undefined;
+	} = { currentPeriod: undefined, allPeriods: undefined };
 
 	// Hydrate cache with SSR data, au montage ET à chaque relecture du layout
 	// (`refreshAll()` après une action de formulaire : écart L45). Seules les
@@ -38,7 +42,12 @@
 
 			// Hydrate periods
 			const schoolId = profile?.school_id;
-			if (schoolId && (currentPeriod || allPeriods)) {
+			// Mêmes périodes que la dernière fois (layout parent relu) : rien à refaire
+			const periodsChanged =
+				currentPeriod !== hydratedPeriods.currentPeriod ||
+				allPeriods !== hydratedPeriods.allPeriods;
+			hydratedPeriods = { currentPeriod, allPeriods };
+			if (periodsChanged && schoolId && (currentPeriod || allPeriods)) {
 				console.log(`[Teacher Layout] ✅ Hydrating periods cache (from SSR)`);
 				teacherCache.setPeriods(schoolId, currentPeriod, allPeriods || []);
 

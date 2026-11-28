@@ -50,9 +50,8 @@
 	let { data, children } = $props();
 
 	// Dernières données du layout versées au cache (comparées par référence, pas réactives).
-	// `undefined` au départ : un Palotin `null` est versé lui aussi au montage.
-	let hydratedRewards: typeof data.rewards | undefined = undefined;
-	let hydratedBuddy: typeof data.buddy | undefined = undefined;
+	let hydratedRewards: typeof data.rewards = null;
+	let hydratedBuddy: typeof data.buddy = undefined;
 
 	// Réponse enregistrée : recharge le profil et l'état du consentement (bandeau).
 	async function handleAgeAnswered() {
@@ -76,18 +75,20 @@
 			// est relu, et réécrire le cache avec l'ancienne lecture effacerait les
 			// mises à jour optimistes faites depuis.
 			// Hydrate rewards cache (10min TTL)
+			// `null` = lecture en échec : rien n'est versé, le cache garde ce qu'il a.
 			if (rewards && rewards !== hydratedRewards) {
 				studentCache.hydrateRewards(rewards);
+				hydratedRewards = rewards;
 			}
-			hydratedRewards = rewards;
 
 			// Hydrate buddy cache (10min TTL). Le Palotin lui-même (maison, écusson,
 			// passages, quiz de choix) est montré par `PalotinPresence`, monté par le
 			// layout racine (chantier `palotins`).
-			if (buddy !== hydratedBuddy) {
+			// `undefined` = lecture en échec ; `null` = pas encore de Palotin (versé).
+			if (buddy !== undefined && buddy !== hydratedBuddy) {
 				studentCache.hydrateBuddy(buddy);
+				hydratedBuddy = buddy;
 			}
-			hydratedBuddy = buddy;
 
 			// Hydrate consent store for UI disabling
 			if (consentStatus) {

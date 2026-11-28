@@ -190,6 +190,16 @@ describe('layout du prof : données neuves après une action de formulaire', () 
 		await rerender({ data: layoutData([classe('c1', '6e A'), classe('c2', '5e B')]) });
 		expect(classesEnCache()).toEqual(['5e B', '6e A']);
 	});
+
+	// Un layout parent relu change `data` sans relire la liste : l'ancienne lecture ne
+	// doit pas écraser ce que le cache a appris depuis.
+	it('des données relues ailleurs (même liste) ne réécrivent pas le cache', async () => {
+		const data = layoutData([classe('c1', '6e A')]);
+		const { rerender } = await render(TeacherLayout, { props: { data, children } });
+		teacherCache.hydrateAllClasses([classe('c1', '6e A'), classe('c2', '5e B')]);
+		await rerender({ data: { ...data } });
+		expect(classesEnCache()).toEqual(['5e B', '6e A']);
+	});
 });
 
 describe('roue : durée de rotation', () => {

@@ -55,19 +55,21 @@ export const load: LayoutServerLoad = async ({ locals }) => {
 
 		if (rewardsError) {
 			logger.error('[Layout] Error fetching rewards:', rewardsError);
-			// Non-critical - continue with default rewards
+			// Non-critical : pas de valeur de repli (`null`). Le layout la verserait au
+			// cache à chaque relecture et effacerait des récompenses connues ; sans
+			// elles, l'accueil relit l'API (`studentCache.getRewards()`).
 		}
 
 		// Parse VIP cards
 		// Le `try/catch` d'origine ne pouvait jamais se déclencher : un cast ne
 		// lève rien. La forme est désormais réellement vérifiée.
-		const vipCards = asStudentVipCards(rewardsData?.vip_cards);
-
-		const rewards: StudentRewards = {
-			gidouilles: rewardsData?.gidouilles || 0,
-			bonus: rewardsData?.bonus || 0,
-			vip_cards: vipCards
-		};
+		const rewards: StudentRewards | null = rewardsData
+			? {
+					gidouilles: rewardsData.gidouilles || 0,
+					bonus: rewardsData.bonus || 0,
+					vip_cards: asStudentVipCards(rewardsData.vip_cards)
+				}
+			: null;
 
 		// Fetch buddy data (may not exist yet if quiz not completed)
 		const { data: buddyData, error: buddyDataError } = await supabase
@@ -90,18 +92,21 @@ export const load: LayoutServerLoad = async ({ locals }) => {
 			// chaque consommateur ait à le faire, et garantit un compagnon parlant.
 			// La Constance perdue et le retour à fêter sont lus après l'affichage par le
 			// composant de présence (GET /api/student/buddy/presence, chantier `palotins`).
-			buddy: buddyData ? toBuddyState(buddyData) : null
+			// `undefined` = lecture en échec : le cache garde le Palotin connu
+			// (`null` = pas encore de Palotin, versé au cache).
+			buddy:
+				buddyDataError && buddyDataError.code !== 'PGRST116'
+					? undefined
+					: buddyData
+						? toBuddyState(buddyData)
+						: null
 		};
 	} catch (err) {
 		logger.error('[Layout] Unexpected error loading student dashboard:', err);
-		// Return minimal data to prevent crashes
+		// Rien à verser au cache (voir `rewardsError`) : l'accueil relit l'API
 		return {
-			rewards: {
-				gidouilles: 0,
-				bonus: 0,
-				vip_cards: {}
-			},
-			buddy: null
+			rewards: null,
+			buddy: undefined
 		};
 	}
 };

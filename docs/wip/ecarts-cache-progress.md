@@ -11,7 +11,8 @@ status: en cours
 _Mis à jour le 2026-11-28, avant la PR 1._
 
 - **État** : PR 1 (branche `fix/ecarts-cache`) corrige M28, M29, M30, L44, L45, L47, L48, L54.
-- **Prochaine action** : revue, PR, merge ; puis L43 (PR 2) selon la réponse de David.
+- **Prochaine action** : merge de la PR 1 (revues faites : `code-reviewer` 1 point corrigé,
+  `security-auditor` rien) ; puis L43 (PR 2) selon la réponse de David.
 - **En attente de David** : la question de phase 0 de L43 (ci-dessous).
 - **Pièges en cours** : `schedule-write-verdict.test.ts` échoue parfois quand il tourne avec tout
   `dashboard/teacher` (passe seul, 4/4) : sans lien avec le lot.
@@ -44,6 +45,9 @@ L43, L44, L45, L47, L48, L54, M28, M29, M30 (pris le 2026-11-28, `docs/wip/ecart
   seulement quand la donnée est neuve (comparaison par référence) : `data` change aussi quand un
   layout parent est relu, et réécrire l'ancienne lecture effacerait les mises à jour optimistes.
 - Preuve L43 réécrite sur les récompenses (le profil n'existe plus), toujours `it.fails`.
+- Revue (`code-reviewer`) : une lecture en échec au serveur ne verse plus de valeur de repli au
+  cache (`rewards: null`, `buddy: undefined`) ; sinon chaque relecture du layout aurait affiché
+  0 gidouille. Garde par référence testée (« même liste ») ; périodes du layout prof gardées de même.
 
 ## L43 : question de phase 0 (en attente de David)
 
