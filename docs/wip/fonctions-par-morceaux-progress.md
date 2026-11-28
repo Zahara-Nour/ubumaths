@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-28, PR 2 (Atelier) ouverte._
+_Mis à jour le 2026-11-28, après #3336 (PR 2, Atelier)._
 
-- **État** : PR 2 ouverte (`feat/fonctions-par-morceaux-2`) — écriture par morceaux dans Calcul et la carte, refus, `sinon`, ensemble, curseur, Q3, Géométrie ; revue faite et corrigée ; 56 tests, suites atelier + parseurs vertes, vérif à l'écran verte.
-- **Prochaine action** : merge de la PR 2 à la CI verte ; puis PR 3 (Graphe : ronds plein/vide aux coupures — les morceaux s'y tracent déjà).
-- **En attente de David** : une condition `x = 0` (`sin(x)/x pour x ≠ 0, 1 pour x = 0`) — accepter un morceau en un point, ou garder le refus ? Aujourd'hui refusée (« Chaque morceau a sa condition… »).
+- **État** : PR 1 (moteur) et PR 2 (Atelier) mergées — `f(x) = x pour x < k, x^2 pour x ≥ k` s'écrit dans Calcul et la carte, refus, `sinon`, ensemble, curseur, Q3, Géométrie avec ronds. Rien en prod (pas de `deploy:prod` demandé).
+- **Prochaine action** : PR 3 (Graphe) — nouveau worktree `../ubumaths-wt-fonctions-par-morceaux-3` ; les morceaux s'y tracent déjà, il manque les ronds plein/vide aux coupures (`plot-sync.ts`, `CurvePiece`, `endpointMarkers`).
+- **En attente de David** : une condition `x = 0` (`sin(x)/x pour x ≠ 0, 1 pour x = 0`) — accepter un morceau en un point, ou garder le refus actuel (« Chaque morceau a sa condition… ») ?
 - **Pièges en cours** : `expressionOf` (texte maison) perd un nœud par morceaux : `syncEngine` passe l'arbre, les commandes sont refusées (Q3), une fonction en attente aussi. Texte : `1,2x` reste une virgule décimale (mettre une espace).
-- **Worktree / branche** : `../ubumaths-wt-fonctions-par-morceaux-2`, `feat/fonctions-par-morceaux-2`.
+- **Worktree / branche** : aucun (celui de PR 2 retiré par `pr:merger`).
 
 ## Demande
 
