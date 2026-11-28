@@ -2,20 +2,18 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-28, série publiée, #3269 (id de la série) en cours de merge._
+_Mis à jour le 2026-11-28, après #3269._
 
-- **État** : tout le lot est en prod (#3262, #3265, `db:migrate` vérifiés par MCP). David a publié la série de
-  relecture `aa16caa1` (6 publiés complétés) ; id commité par #3269 (`pr:merger` lancé : vérifier `MERGED`, sinon
-  la merger). Puis David : « je valide » (2026-11-28).
-- **Prochaine action** : lire les verdicts en base (`question_template_reviews`, `reviewed_at` du 2026-11-28) pour
-  les 6 brouillons et les 6 publiés ; si « je valide » couvre tout (à confirmer avec David si des verdicts manquent),
-  `publier-lot.ts --dir scripts/questions/idees-6e-longueurs-neufs` en simulation, David `--publier` ; puis lever
-  les réservations des 6 publiés, rubrique « publiée » dans `idees-ailleurs-repartition.md`, versement du journal.
-- **En attente de David** : la commande `--publier` de `publier-lot.ts`, après la simulation.
-- **Pièges en cours** : `conditions: []` écrase les conditions partagées ; le pre-commit laisse l'index d'une
-  fixture JSON dans sa forme d'avant prettier (`MM`) : vérifier `git diff HEAD`, puis `git restore --staged`.
-- **Worktree / branche** : `../ubumaths-wt-idees-6e-longueurs-serie` (`chore/idees-6e-longueurs-serie`, #3269),
-  retiré par `pr:merger` au merge.
+- **État** : tout le lot est en prod (#3262, #3265, `db:migrate`) ; série de relecture `aa16caa1` publiée, id
+  commité (#3269 mergée, worktree retiré). Les 6 neufs sont encore brouillons en prod (MCP) ; **aucun verdict en
+  base** (`question_template_reviews` vide depuis le 2026-11-27) : seul « je valide » de David.
+- **Prochaine action** : après la publication par David, vérifier les 6 `published` par MCP ; lever les
+  réservations des 6 publiés, rubrique « publiée » dans `idees-ailleurs-repartition.md`, versement du journal.
+- **En attente de David** : confirmer que « je valide » couvre les 12 modèles, puis lancer lui-même (le
+  classifieur refuse même la simulation en prod) `publier-lot.ts --dir scripts/questions/idees-6e-longueurs-neufs`,
+  puis `--publier`.
+- **Pièges en cours** : `conditions: []` écrase les conditions partagées.
+- **Worktree / branche** : aucun (travail restant = doc sur `main`).
 
 ## Phase 0 (2026-11-27)
 
