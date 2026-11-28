@@ -559,6 +559,23 @@ function matchesRequiredForm(
 // =============================================================================
 
 /**
+ * Réponse lue pour juger sa forme (lève une erreur si elle ne se lit pas).
+ * Parenthèses inutiles retirées : (2×3) a la même forme que 2×3.
+ */
+function parseFormAnswer(latex: string, options: RequiredFormOptions): MathNode {
+	// Virgule nue (`0,5n`) décimale, comme pour le juge de valeur (#520),
+	// sauf dans une écriture à virgule séparatrice (couple, liste…). Jugé sur la
+	// réponse, pas sur l'attendue comme le juge de valeur : aucun motif ne sait
+	// écrire un couple aujourd'hui ; à aligner si un jour il en arrive un.
+	const decimalLatex = expectsSeparatorComma(latex) ? latex : bareDecimalCommaToPoint(latex);
+	const node = parseLatex(decimalLatex, {
+		genericFunctions: options.genericFunctions,
+		capitalPairs: options.capitalPairs
+	});
+	return stripUnnecessaryBrackets(node);
+}
+
+/**
  * Checks if student answers match the required structural form.
  *
  * Returns the indices of answers that violate the required form.
@@ -584,23 +601,6 @@ function matchesRequiredForm(
  * checkRequiredForm(['2 \\times 3'], { pattern: 'a:integer * b:integer' })
  * // => [] (valid)
  */
-/**
- * Réponse lue pour juger sa forme (lève une erreur si elle ne se lit pas).
- * Parenthèses inutiles retirées : (2×3) a la même forme que 2×3.
- */
-function parseFormAnswer(latex: string, options: RequiredFormOptions): MathNode {
-	// Virgule nue (`0,5n`) décimale, comme pour le juge de valeur (#520),
-	// sauf dans une écriture à virgule séparatrice (couple, liste…). Jugé sur la
-	// réponse, pas sur l'attendue comme le juge de valeur : aucun motif ne sait
-	// écrire un couple aujourd'hui ; à aligner si un jour il en arrive un.
-	const decimalLatex = expectsSeparatorComma(latex) ? latex : bareDecimalCommaToPoint(latex);
-	const node = parseLatex(decimalLatex, {
-		genericFunctions: options.genericFunctions,
-		capitalPairs: options.capitalPairs
-	});
-	return stripUnnecessaryBrackets(node);
-}
-
 export function checkRequiredForm(
 	answersLatex: string[],
 	requiredForm: RequiredForm,
@@ -688,7 +688,7 @@ export function judgeRequiredForm(
 			analysis = { kind: 'other' } as const;
 		}
 		const verdict = primeFactorsVerdict(analysis, requiredForm);
-		return verdict === 'ok' || analysis.kind === 'ok'
+		return verdict === 'ok'
 			? { verdict: 'ok' }
 			: { verdict, feedback: primeFactorsFeedback(analysis) };
 	}

@@ -223,6 +223,21 @@ describe('facteurs premiers : correcteur', () => {
 		expect(remarks(buildExpectedResult(instance, answer(['4\\times21'])))).toEqual([message]);
 	});
 
+	it('réponse attendue écrite décomposée (2² × 3 × 7) : même comportement', () => {
+		const instance = generate(
+			template([{ expectedAnswer: '2^{2}\\times3\\times7', requiredForm: 'primeFactorsPowers' }])
+		);
+		expect(judge(instance, '7\\times3\\times2^{2}')).toEqual({
+			status: 'correct',
+			feedback: undefined
+		});
+		expect(judge(instance, '2\\times2\\times3\\times7').status).toBe('unoptimal_form');
+		expect(judge(instance, '4\\times21')).toEqual({
+			status: 'bad_form',
+			feedback: '$4$ et $21$ ne sont pas des nombres premiers.'
+		});
+	});
+
 	it('deux cases : chacune son message', () => {
 		const instance = generate(
 			template(

@@ -10,8 +10,9 @@ status: n° 75 livré (#3329) ; n° 76 en cours
 
 _Mis à jour le 2026-11-28, n° 76 en cours (avant PR)._
 
-- **État** : n° 76 codé et testé sur `feat/outil-formes-messages-76` ; PR pas encore ouverte.
-- **Prochaine action** : rendu vu à l'écran, revue `code-reviewer` (opus), PR, merge.
+- **État** : n° 76 codé, testé, vu à l'écran, relu ; PR ouverte.
+- **Prochaine action** : PR ouverte, CI, merge (`pnpm pr:merger`) ; puis n° 76 « livré » dans
+  `outils-manquants.md` et `outils-lots.md` (commit doc sur `main`).
 - **En attente de David** : rien (phase 0 tranchée : « ok pour tout »).
 - **Pièges en cours** : message de forme calculé sur la réponse (`judgeRequiredForm`), pas
   `getRequiredFormFeedback` (phrase de repli seulement).
@@ -103,3 +104,7 @@ toujours son message (pas de message d'auteur) ; Q5 négatifs hors champ (refus�
   `requiredFormCosmetics` coupe `products` pour cette forme ; `expected-result.ts` retire le bon
   message de forme quand une erreur prévue passe devant.
 - Tests : `required-form-prime-factors.test.ts` (36 ; 35 rouges avant le code).
+- Vérif à l'écran `e2e/verifs/facteurs-premiers.spec.ts` (2, captures vues clair et sombre :
+  formules du message rendues, ½ point affiché).
+- Revue (`code-reviewer` opus) : aucun bloquant ; 3 mineurs corrigés (JSDoc de
+  `checkRequiredForm` déplacé, condition redondante, cas « attendu écrit décomposé » ajouté).
