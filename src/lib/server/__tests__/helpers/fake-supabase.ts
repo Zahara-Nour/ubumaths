@@ -40,6 +40,7 @@ const CHAIN_METHODS = [
 	'gt',
 	'gte',
 	'lt',
+	'lte',
 	'in',
 	'is',
 	'not',

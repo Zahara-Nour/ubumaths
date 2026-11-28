@@ -52,7 +52,7 @@ La règle du bouton retour (quand, où, vers quelle page) est dans
 
 De gauche à droite : le menu (mobile), la gidouille (lien vers l'accueil du site, `/`), le nom de l'espace
 (« Mon cabinet », « Espace enseignant », « Administration ») avec la date de l'Almanach dessous, la
-bascule du mode test (profs), l'avatar (lien vers le profil), puis sur ordinateur la taille du
+bascule du mode test (profs ; état du **compte**, `teacherTestMode` lu par `+layout.server.ts`, jamais celui du navigateur, L40), l'avatar (lien vers le profil), puis sur ordinateur la taille du
 texte, le thème et le plein écran. Le nom de l'espace n'est pas un titre : le seul `h1` est celui
 de la page.
 

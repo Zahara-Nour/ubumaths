@@ -210,6 +210,25 @@ function cryptoRandomInt(max: number): number {
 	}
 }
 
+/**
+ * Ordre des questions d'une tentative (V72). « Mélanger l'ordre des questions »
+ * coché → mélange de Fisher-Yates par `randomInt` ; sinon l'ordre de la série.
+ * Rend une copie : la liste reçue reste intacte.
+ */
+export function attemptOrder<T>(
+	items: readonly T[],
+	shuffle: boolean,
+	randomInt: (max: number) => number
+): T[] {
+	const order = [...items];
+	if (!shuffle) return order;
+	for (let i = order.length - 1; i > 0; i--) {
+		const j = randomInt(i);
+		[order[i], order[j]] = [order[j], order[i]];
+	}
+	return order;
+}
+
 function summary(evaluation: EvaluationWithSeries): EvaluationSummary {
 	return {
 		id: evaluation.id,
@@ -562,8 +581,10 @@ export async function startEvaluationAttempt(
 			logger.error('[evaluation-attempts] Génération impossible :', templateId, errors)
 	});
 	const generated: Array<{ stored: StoredQuestion; instance: QuestionInstance }> = [];
+	// Ordre tiré UNE fois, au démarrage : les positions rangées le gardent à la reprise
+	const ordered = attemptOrder(draws, evaluation.shuffle_questions, randomInt);
 	// Une génération impossible est déjà omise par le tirage (journalisée ci-dessus)
-	for (const draw of draws) {
+	for (const draw of ordered) {
 		// Énoncé masqué qui dirait encore la réponse (masque cassé) : écarté, jamais envoyé
 		const leaks = gestureAnswerLeaks(draw.instance);
 		if (leaks.length > 0) {

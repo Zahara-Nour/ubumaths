@@ -16,6 +16,7 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '#lib/types/database.ts';
 import { generateShareTokenString } from '#lib/server/exercise-share-tokens.ts';
+import { endOfSchoolYear } from '#lib/server/school-year.ts';
 import { createServerLogger } from '#lib/utils/logger.ts';
 import { withBranches } from '#lib/server/worksheets/worksheet-classification.ts';
 
@@ -108,19 +109,6 @@ export interface JournalShareToken {
 	access_count: number;
 	last_accessed_at: string | null;
 	created_at: string;
-}
-
-/**
- * Fin de l'année scolaire suivante : le 31 août à venir.
- *
- * Un lien d'année scolaire doit mourir de lui-même à la rentrée plutôt que de
- * survivre indéfiniment chez d'anciennes familles.
- */
-export function endOfSchoolYear(now: Date = new Date()): Date {
-	// Septembre (mois 8) et après → 31 août de l'année suivante ; sinon celui de
-	// l'année en cours.
-	const year = now.getMonth() >= 8 ? now.getFullYear() + 1 : now.getFullYear();
-	return new Date(Date.UTC(year, 7, 31, 23, 59, 59));
 }
 
 /**
