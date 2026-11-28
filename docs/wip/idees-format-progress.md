@@ -6,18 +6,18 @@ Mettre en œuvre les idées retenues dans [idees-format-exercices.md](idees-form
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-22, avant /clear ; revue du lot de Seconde en cours (pas de PR)._
+_Mis à jour le 2026-11-28, page à cocher complétée (outils livrés depuis le 22, idées en attente) ; pas de PR._
 
-- **État** : idées 1 à 5 sur main. Revue de Seconde : passe 1 (erreurs prévues, coups de pouce,
-  specs) commitée ; passe 2 (forme) sur la page à cocher https://claude.ai/artifact/NzDUsxMUyjn8Ke1rSJf2Af
-  (collection `reponses`) ; skills de lot à jour (`41e1628cb`).
-- **Prochaine action** : (1) `deploy:prod` par David (631/631 migrations jouées) ; (2) lui dire
-  comment lancer `/idees-rubrique` en Première et Terminale, une session par rubrique
-  (`docs/wip/idees-ailleurs-repartition.md`) ; (3) lire ses réponses (les compter), réécrire, PR.
-- **En attente de David** : la page à cocher ; essais « En QCM » et coup de pouce.
-- **Pièges** : `migration-contenu.ts` refuse les réglages du modèle ; dédoublonnage aveugle à la forme.
-- **Worktree / branche** : `ubumaths-wt-idees-format-revue-2de` (`feat/idees-format-revue-2de`) ;
-  `ubumaths-wt-idees-format` et `-indice-eleve` à retirer après les essais.
+- **État** : idées 1 à 5 en prod (0.117.0, `hint` compris). Revue de Seconde : passe 1 commitée ;
+  passe 2 sur la page à cocher https://claude.ai/artifact/NzDUsxMUyjn8Ke1rSJf2Af (collection
+  `reponses`, **0 réponse** le 2026-11-28), version 2 : 7 fiches neuves en tête, 3 mises à jour.
+- **Prochaine action** : lire les réponses de David (les compter), réécrire, une seule PR pour les
+  deux passes, migration de contenu (réglages du modèle compris), puis série de relecture des 52
+  dans `/dev/modeles`, puis lever les 16 réservations.
+- **En attente de David** : la page à cocher ; `/idees-rubrique` en 1re et Tle (à lui expliquer).
+- **Pièges** : réglages du modèle = jugent aussi les variations en prod (specs d'origine vertes) ;
+  zoom refuse `placer:` ; `impossibleLabel` ni en flash-card ni en classe ; dédoublonnage aveugle à la forme.
+- **Worktree / branche** : `ubumaths-wt-idees-format-revue-2de` (`feat/idees-format-revue-2de`).
 
 ## Idée 1 — phase 0 validée (David, 2026-11-21)
 
@@ -502,3 +502,18 @@ arrondi trop court à demi-point, |a − b| = |b − a|, réglages du modèle pa
 règle sur deux cases, encadrement à l'envers, étapes générées. Propositions brutes :
 scratchpad de session `forme-{a,b,c}/propositions.json` (copiées dans la page).
 Page à cocher : https://claude.ai/artifact/NzDUsxMUyjn8Ke1rSJf2Af
+
+### Passe 2 complétée (2026-11-28)
+
+Relevé de ce qui a changé depuis le 22 (sessions `idees-rubrique` d'autres niveaux, outils) :
+`migration-contenu.ts` écrit les `options` d'un publié (2026-11-23) ; outils livrés : droite avec
+zoom (n° 54, refuse `placer:`), labyrinthe (n° 53), case « impossible » (n° 51) ; rangement généré.
+Les outils de la passe 2 n'étaient pas dans `outils-manquants.md` : inscrits n° 75 à 81 et une
+question au § 3 (étapes de correction générée), commit `e0cca07663` sur `main`.
+Page à cocher, version 2 : fiches neuves `n-zoom-lire` (a692569a), `n-zoom-encadrer` (c99ae1e8),
+`n-laby-multiples` (fa65910d ; pas de labyrinthe « premier », hors BO de Seconde),
+`n-impossible-entier` (04), `n-impossible-decimal` (09, démonstration « 1/3 n'est pas décimal »),
+`n-impossible-puissance` (04b1cc7f), fiches en attente `n-f16`, `n-f17` (outil n° 49, lot python en
+cours), `n-f34`, `n-f52` ; mises à jour : `g-choix2`, `t-reglages-publie` (livré),
+`b-12-nombre-premier-decomp-0` (voie : ajout), `c1-07-ecriture-scientifique-1` et
+`c1-08-calculer-avec-puissan-0` (réglage existant).
