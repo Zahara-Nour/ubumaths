@@ -1,20 +1,21 @@
 ---
 title: Écarts — lot cours-evaluations
 date: 2026-11-28
-status: en cours — PR 1 en revue, L39 en attente de David
+status: en cours — PR 1 mergée (#3291), L39 à faire
 ---
 
 # Écarts — lot `cours-evaluations`
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-28, avant la première PR._
+_Mis à jour le 2026-11-28, après #3291._
 
-- **État** : PR 1 (V72, L37, L38, L40, L112, L113) codée, testée (unitaires et intégration ; L112/L113 vérifiés rouges sans la migration), revue faite (code-reviewer : rien ; security-auditor : RESTRICT → NO ACTION, appliqué). L39 n'est pas commencé.
-- **Prochaine action** : ouvrir la PR 1, la merger au vert, puis `db:migrate` (migration additive `20261128072151`, 4 conditions). Ensuite L39 en PR 2.
-- **En attente de David** : la question d'accès de L39 (aucune policy DELETE prof sur `skill_attempts`, donc chaque enregistrement de la saisie ajoute une grille).
-- **Pièges en cours** : `createEvaluation` des tests d'intégration est maintenant SANS mélange par défaut (sinon l'ordre est tiré au hasard).
-- **Worktree / branche** : `../ubumaths-wt-ecarts-cours-evaluations` · `fix/ecarts-cours-evaluations`.
+- **État** : PR 1 #3291 mergée (V72, L37, L38, L40, L112, L113). Migration `20261128072151` **pas encore en prod** : `db:migrate` suspendu, car une autre migration attend aussi (`20261128132651`, questions de 3e en algorithmique, autre session).
+- **Prochaine action** : (1) `db:migrate` quand `migration list --linked` ne montre plus que la nôtre, ou sur l'accord de David pour pousser les deux ; (2) L39 en PR 2, nouveau worktree `ubumaths-wt-ecarts-cours-evaluations` depuis `origin/main`, branche `fix/ecarts-cours-evaluations-l39`.
+- **L39, accord de David (2026-11-28, « oui »)** : policy DELETE pour prof/admin sur `skill_attempts` limitée à `source = 'teacher'`, `task_id` non nul, élève de ses classes ; fonction SQL `security invoker` qui supprime puis réécrit la grille d'une tâche en une transaction et lève si des lignes restent.
+- **En attente de David** : rien, sauf le choix ci-dessus sur `db:migrate` ; et s'il veut que les liens des familles suivent les dates de l'école (aujourd'hui toujours le 31 août).
+- **Pièges** : supprimer un point travaillé est refusé depuis L112, donc un test qui supprime ses points efface d'abord `journal_entry_points` et `student_point_state` (corrigé dans 4 tests). `createEvaluation` des tests d'intégration est sans mélange par défaut.
+- **Worktree / branche** : retirés par `pr:merger`.
 
 ## Décisions (2026-11-28)
 
