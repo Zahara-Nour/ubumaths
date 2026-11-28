@@ -568,4 +568,3 @@ zooms « lire » et « encadrer » justes, labyrinthe des multiples, case « pas
 `scripts/series/2-relecture-revue-forme-nombres.json` (36) et `…-publies.json` (16), publiées par
 David ; relecture validée en bloc (« je valide la relecture »). Outil n° 78 trouvé déjà livré
 (« zéros utiles », 4075445c98) : lot `arrondi-court` retiré d'`outils-lots.md`.
-\n
