@@ -110,3 +110,38 @@ describe('avancement — arbre branche > notion > points (C5, B2)', () => {
 		expect(result.tree).toEqual([]);
 	});
 });
+
+describe('avancement — année scolaire (L38)', () => {
+	it('les dates saisies par l’école bornent les séances comptées', async () => {
+		const fake = createFakeSupabase((table, calls) => {
+			const programme = answerProgramme(table, calls);
+			if (programme) return programme;
+			switch (table) {
+				case 'classes':
+					return { data: [{ id: CLASS_ID, name: '5e A', grade: '5', school_id: 'school-1' }] };
+				case 'class_journal_entries':
+					return { data: [] };
+				default:
+					throw new Error(`Table inattendue : ${table}`);
+			}
+		});
+		// Fonction SQL `current_school_year` : les dates saisies par l'école
+		const rpc = vi.fn(() => ({
+			maybeSingle: async () => ({
+				data: { start_date: '2026-09-02', end_date: '2027-07-04' },
+				error: null
+			})
+		}));
+		const event = {
+			locals: { supabase: { ...fake.client, from: fake.client.from, rpc } },
+			url: new URL(`http://localhost/dashboard/teacher/avancement?class=${CLASS_ID}`)
+		} as unknown as LoadEvent;
+		const result = (await load(event)) as PageServerData;
+
+		expect(rpc).toHaveBeenCalledWith('current_school_year', { p_school_id: 'school-1' });
+		const calls = fake.on('class_journal_entries')[0].calls;
+		expect(calls).toContainEqual({ method: 'gte', args: ['entry_date', '2026-09-02'] });
+		expect(calls).toContainEqual({ method: 'lte', args: ['entry_date', '2027-07-04'] });
+		expect(result.schoolYearLabel).toBe('2026–2027');
+	});
+});

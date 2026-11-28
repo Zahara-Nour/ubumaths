@@ -28,7 +28,8 @@ import {
 	schoolYearSchema,
 	createScheduleEntrySchema,
 	getClassWarningsSchema,
-	getClassGidouillesSchema
+	getClassGidouillesSchema,
+	getClassStudentsSchema
 } from '../classes';
 
 describe('miscellaneous validation modules', () => {
@@ -742,6 +743,19 @@ describe('miscellaneous validation modules', () => {
 
 			const result = getClassGidouillesSchema.safeParse(data);
 			expect(result.success).toBe(false);
+		});
+	});
+
+	describe('getClassStudentsSchema', () => {
+		it('accepte un classId UUID', () => {
+			const result = getClassStudentsSchema.safeParse({
+				classId: '550e8400-e29b-41d4-a716-446655440000'
+			});
+			expect(result.success).toBe(true);
+		});
+
+		it('refuse un classId qui n’est pas un UUID', () => {
+			expect(getClassStudentsSchema.safeParse({ classId: 'not-a-uuid' }).success).toBe(false);
 		});
 	});
 });

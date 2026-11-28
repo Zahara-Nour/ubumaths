@@ -94,7 +94,9 @@ view own exercises`, `created_by = auth.uid()`, depuis 20260618093000 : un prof 
   `created_by === user.id` dans le code (`updateExercise`, `deleteExercise`, partage) en plus de
   la RLS. `deleteExercise` relit la ligne supprimée (`.select('id')`) : 0 ligne (refus RLS
   silencieux) → `EXERCISE_NOT_DELETED`, que la route `DELETE /api/exercises/[id]` et l'action de
-  formulaire rendent en 403, jamais en succès. Routes élève : `requireAuth` ; « terminé » exige
+  formulaire rendent en 403, jamais en succès. Exercice cité par une séance du cahier de texte
+  (clé en NO ACTION, `23503`, L113) → `ExerciseCitedError` : l'action rend un 409 qui compte les
+  séances (« retirez-le d'abord de ces séances »). Routes élève : `requireAuth` ; « terminé » exige
   en plus le consentement (`requireConsent(profile, 'submit_exercise')`).
 
 ## Côté professeur

@@ -13,6 +13,7 @@ import { requireRoles } from '#lib/server/middleware/auth.ts';
 import { getProgrammeTreeKeeping } from '#lib/server/programme-tree.ts';
 import type { ProgrammeBranch } from '#lib/utils/programme-tree.ts';
 import { error } from '@sveltejs/kit';
+import { currentSchoolYear, type SchoolYearSpan } from '#lib/server/school-year.ts';
 import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('(protected)/dashboard/teacher/avancement/+page.server');
@@ -22,23 +23,30 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 
 	const { data: classesRaw, error: classesRawError } = await locals.supabase
 		.from('classes')
-		.select('id, name, grade')
+		.select('id, name, grade, school_id')
 		.order('name', { ascending: true });
 
 	if (classesRawError) {
 		logger.error('Lecture impossible :', classesRawError);
 		throw error(500, 'Impossible de charger les données');
 	}
-	const classes = (classesRaw ?? []) as { id: string; name: string; grade: string | null }[];
+	const classes = (classesRaw ?? []) as {
+		id: string;
+		name: string;
+		grade: string | null;
+		school_id: string | null;
+	}[];
 
 	const requested = url.searchParams.get('class');
 	const selected = classes.find((c) => c.id === requested) ?? classes[0] ?? null;
 
-	// Current school year window: 1 Sept → 1 Sept.
-	const now = new Date();
-	const startYear = now.getMonth() >= 8 ? now.getFullYear() : now.getFullYear() - 1;
-	const yearStart = `${startYear}-09-01`;
-	const yearEnd = `${startYear + 1}-09-01`;
+	// Année scolaire en cours (L38) : dates de l'école, sinon 1er sept. → 31 août
+	let schoolYear: SchoolYearSpan;
+	try {
+		schoolYear = await currentSchoolYear(locals.supabase, selected?.school_id ?? null);
+	} catch {
+		throw error(500, 'Impossible de charger les données');
+	}
 
 	let tree: ProgrammeBranch[] = [];
 	const counts: Record<string, number> = {};
@@ -48,8 +56,8 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 			.from('class_journal_entries')
 			.select('id')
 			.eq('class_id', selected.id)
-			.gte('entry_date', yearStart)
-			.lt('entry_date', yearEnd);
+			.gte('entry_date', schoolYear.start)
+			.lte('entry_date', schoolYear.end);
 
 		if (entriesError) {
 			logger.error('Lecture impossible :', entriesError);
@@ -80,7 +88,7 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 		classOptions: classes.map((c) => ({ value: c.id, label: c.name })),
 		selectedClassId: selected?.id ?? '',
 		selectedGrade: selected?.grade ?? null,
-		schoolYearLabel: `${startYear}–${startYear + 1}`,
+		schoolYearLabel: `${schoolYear.start.slice(0, 4)}–${schoolYear.end.slice(0, 4)}`,
 		tree,
 		counts
 	};

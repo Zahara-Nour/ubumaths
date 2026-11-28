@@ -329,7 +329,7 @@
 			<!-- Test Mode Toggle (teachers only) - hidden on mobile -->
 			{#if data.profile.role === 'teacher'}
 				<div class="hidden md:block">
-					<TestModeToggle currentUserIsTest={data.profile.is_test} />
+					<TestModeToggle currentUserIsTest={data.profile.is_test} enabled={data.teacherTestMode} />
 				</div>
 			{/if}
 
