@@ -114,7 +114,7 @@ anciennes versions. Les deux fichiers d'automatismes `6AutoN4` ne sont pas repri
 | Durées                             | 6M4   | 11        | publiée (2026-11-27) | `idees-6e-durees`           |
 | Géométrie de base                  | 6G0   | 10        | libre                |                             |
 | Distances                          | 6G1   | 6         | libre                |                             |
-| Cercles et disques                 | 6G2   | 9         | libre                |                             |
+| Cercles et disques                 | 6G2   | 9         | prise (2026-11-28)   | `idees-6e-cercles`          |
 | Médiatrices                        | 6G3   | 5         | libre                |                             |
 | Angles                             | 6G4   | 12        | publiée (2026-11-28) | `idees-6e-angles`           |
 | Bissectrices                       | 6G5   | 3         | libre                |                             |
