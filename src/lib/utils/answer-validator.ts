@@ -98,6 +98,7 @@ import { staircaseChains } from '#lib/ubumark/utils/courbe-construire.ts';
 import { isPlacedAngleCorrect } from '#lib/ubumark/utils/trig-placer.ts';
 import { isTortueAnswerCorrect, tortueAnswerVerdict } from '#lib/ubumark/utils/tortue-answer.ts';
 import { calculAnswerVerdict, isCalculAnswerCorrect } from '#lib/ubumark/utils/calcul-answer.ts';
+import { pythonAnswerVerdict } from '#lib/questions/python/python-answer.ts';
 import { isRobotAnswerCorrect, robotAnswerVerdict } from '#lib/ubumark/utils/robot-answer.ts';
 import {
 	isLabyrintheAnswerCorrect,
@@ -890,6 +891,8 @@ function validateBlankValue(
 	if (blank.construire === 'tortue') return isTortueAnswerCorrect(userAnswer, blank.expectedAnswer);
 	// Programme de calcul : ses affichages, rejoués sur chaque essai, contre ceux de l'attendu
 	if (blank.construire === 'calcul') return isCalculAnswerCorrect(userAnswer, blank.expectedAnswer);
+	// Programme Python : le verdict calculé dans le navigateur avant la validation (rangé dans la valeur)
+	if (blank.construire === 'python') return pythonAnswerVerdict(userAnswer).juste;
 	// Robot à produire : le code de l'élève rejoué sur la scène, juste s'il finit sur l'arrivée
 	if (blank.construire === 'robot') return isRobotAnswerCorrect(userAnswer, blank.expectedAnswer);
 	// Grille yohaku : chaque ligne et chaque colonne donne son total, quel que soit le remplissage
@@ -1678,6 +1681,14 @@ function judgeSingleBlank(
 	// programme illisible, muet ou en erreur sur un essai dit pourquoi
 	if (blank.construire === 'calcul') {
 		const verdict = calculAnswerVerdict(userAnswer, blank.expectedAnswer);
+		if (verdict.juste) return { isCorrect: true, status: 'correct' };
+		return verdict.message ? { isCorrect: false, feedback: verdict.message } : { isCorrect: false };
+	}
+
+	// Programme Python : le verdict rangé dans la valeur par la case, qui a fait tourner le
+	// programme dans le navigateur avant la validation ; sans verdict (temps écoulé) : faux
+	if (blank.construire === 'python') {
+		const verdict = pythonAnswerVerdict(userAnswer);
 		if (verdict.juste) return { isCorrect: true, status: 'correct' };
 		return verdict.message ? { isCorrect: false, feedback: verdict.message } : { isCorrect: false };
 	}

@@ -78,6 +78,7 @@ import { generateRobotTypst } from './robot-typst';
 import { generateLabyrintheTypst } from './labyrinthe-typst';
 import { generateYohakuTypst } from './yohaku-typst';
 import { generateCalculTypst } from './calcul-typst';
+import { generatePythonAEcrireTypst } from './python-a-ecrire-typst';
 import { generatePartageTypst } from './partage-typst';
 import { generateEspaceTypst } from './espace-typst';
 import { generateOperationTypst } from './operation-typst';
@@ -581,6 +582,9 @@ function generateBlock(node: BlockNode, options: ResolvedTypstTranspilerOptions)
 		case 'calcul':
 			// Programme de calcul : « À faire sur Chiphre » (la consigne est dans l'énoncé)
 			return generateCalculTypst(node);
+		case 'python-a-ecrire':
+			// Programme Python : le départ en bloc de code (sans éditeur), jamais la solution
+			return generatePythonAEcrireTypst(node);
 		case 'robot':
 			// Robot : le quadrillage ; à produire, « Écris le code : » et 15 cases vides
 			return generateRobotTypst(node);

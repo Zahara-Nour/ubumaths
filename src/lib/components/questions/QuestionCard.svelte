@@ -50,6 +50,7 @@
 
 	// Input components
 	import FillBlanksInput from '#lib/components/question-inputs/FillBlanksInput.svelte';
+	import { provideAnswerPreparations } from '#lib/components/question-inputs/answer-preparations.ts';
 	import { toFrenchDecimal } from '#lib/utils/french-math.ts';
 	import CourseCardView from './CourseCardView.svelte';
 	import { provideQuestionLexicon } from '#lib/components/markdown/lexicon-context.ts';
@@ -87,6 +88,9 @@
 	// ============================================================================
 	// STATE MANAGEMENT
 	// ============================================================================
+
+	// Cases à préparer avant la validation (programme Python : il tourne d'abord)
+	const preparations = provideAnswerPreparations();
 
 	// Answer state
 	let userAnswer = $state<string | string[]>('');
@@ -246,16 +250,26 @@
 	}
 
 	/**
-	 * Handle answer submission
+	 * Handle answer submission : les cases à préparer (programme Python) d'abord, puis la
+	 * validation des valeurs qu'elles ont mises à jour. Évaluation (collectOnly) : rien à
+	 * préparer, la réponse est collectée telle quelle.
 	 */
-	function handleSubmit() {
+	async function handleSubmit() {
 		if (!canSubmit || isSubmitting) return;
 
 		isSubmitting = true;
-		const answerData = validateCurrentAnswer();
-		isSubmitting = false;
-
-		onAnswerSubmit?.(answerData);
+		try {
+			// Rien à préparer (question ordinaire) : validée tout de suite, comme toujours
+			if (!collectOnly && !preparations.isEmpty()) {
+				await preparations.prepareAll();
+				// Temps écoulé pendant la préparation : la réponse est déjà partie
+				if (isSubmitted) return;
+			}
+			const answerData = validateCurrentAnswer();
+			onAnswerSubmit?.(answerData);
+		} finally {
+			isSubmitting = false;
+		}
 	}
 
 	/**

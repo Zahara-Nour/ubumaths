@@ -24,6 +24,7 @@ import { hasCourbeToPlace } from '#lib/ubumark/parser/courbe-parser.ts';
 import { hasTrigCircleToPlace } from '#lib/ubumark/parser/trig-circle-parser.ts';
 import { hasTortueToProgram } from '#lib/ubumark/parser/tortue-parser.ts';
 import { hasCalculToProgram } from '#lib/ubumark/parser/calcul-parser.ts';
+import { hasPythonAEcrire } from '#lib/ubumark/parser/python-a-ecrire-parser.ts';
 import { hasRobotToProduce } from '#lib/ubumark/parser/robot-parser.ts';
 import { hasLabyrintheAParcourir } from '#lib/ubumark/parser/labyrinthe-parser.ts';
 import { hasYohakuARemplir } from '#lib/ubumark/parser/yohaku-parser.ts';
@@ -192,7 +193,7 @@ function validateVariation(
 			// une figure à colorier aussi,
 			// un assemblage de cubes à geste aussi, un patron à geste aussi, un repère à points
 			// à placer aussi, un cercle trigonométrique à points à placer aussi, un tableau de
-			// signes à compléter aussi (ses cellules cachées), un programme tortue ou de calcul aussi
+			// signes à compléter aussi (ses cellules cachées), un programme tortue, de calcul ou Python aussi
 			if (
 				(!variation.blanks || variation.blanks.length === 0) &&
 				!hasOperationToFill(String(variation.statement ?? shared?.statement ?? '')) &&
@@ -208,6 +209,7 @@ function validateVariation(
 				!hasRobotToProduce(String(variation.statement ?? shared?.statement ?? '')) &&
 				!hasLabyrintheAParcourir(String(variation.statement ?? shared?.statement ?? '')) &&
 				!hasYohakuARemplir(String(variation.statement ?? shared?.statement ?? '')) &&
+				!hasPythonAEcrire(String(variation.statement ?? shared?.statement ?? '')) &&
 				!hasRangerToPlace(String(variation.statement ?? shared?.statement ?? '')) &&
 				!hasAssocierToPlace(String(variation.statement ?? shared?.statement ?? '')) &&
 				!hasTrousToPlace(String(variation.statement ?? shared?.statement ?? '')) &&

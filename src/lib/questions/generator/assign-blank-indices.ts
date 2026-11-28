@@ -60,6 +60,7 @@ import { findCalculsToProgram } from '#lib/ubumark/parser/calcul-parser.ts';
 import { findRobotsToProduce } from '#lib/ubumark/parser/robot-parser.ts';
 import { findLabyrinthesAParcourir } from '#lib/ubumark/parser/labyrinthe-parser.ts';
 import { findYohakusARemplir } from '#lib/ubumark/parser/yohaku-parser.ts';
+import { findPythonsAEcrire } from '#lib/ubumark/parser/python-a-ecrire-parser.ts';
 import { findVariationsToFill } from '#lib/ubumark/parser/variation-table-parser.ts';
 import { NESTED_PREFIX } from '#lib/ubumark/parser/nested-line.ts';
 import { buildCaseCount } from './build-answer';
@@ -309,6 +310,9 @@ function choiceBlockErrors(block: MarkedChoiceBlock, caseIndex: number): string[
 	if (findYohakusARemplir(block.body.join('\n')).length > 0) {
 		errors.push(`${prefix} ${buildNestedMessage('yohaku')}`);
 	}
+	if (findPythonsAEcrire(block.body.join('\n')).length > 0) {
+		errors.push(`${prefix} ${buildNestedMessage('python')}`);
+	}
 	if (findVariationsToFill(block.body.join('\n')).length > 0) {
 		errors.push(`${prefix} ${VARIATION_NESTED_MESSAGE}`);
 	}
@@ -431,7 +435,8 @@ const NESTED_BLOCK_NAMES: Record<BuildKind, string> = {
 	calcul: 'Un programme de calcul',
 	robot: 'Un robot à produire',
 	labyrinthe: 'Un labyrinthe à parcourir',
-	yohaku: 'Une grille à remplir'
+	yohaku: 'Une grille à remplir',
+	python: 'Un programme Python'
 };
 
 const buildNestedMessage = (kind: BuildKind) =>
@@ -568,7 +573,8 @@ function markBuildBlocks(statement: string): {
 		...findCalculsToProgram(statement).map((b) => ({ ...b, kind: 'calcul' as const })),
 		...findRobotsToProduce(statement).map((b) => ({ ...b, kind: 'robot' as const })),
 		...findLabyrinthesAParcourir(statement).map((b) => ({ ...b, kind: 'labyrinthe' as const })),
-		...findYohakusARemplir(statement).map((b) => ({ ...b, kind: 'yohaku' as const }))
+		...findYohakusARemplir(statement).map((b) => ({ ...b, kind: 'yohaku' as const })),
+		...findPythonsAEcrire(statement).map((b) => ({ ...b, kind: 'python' as const }))
 	].sort((a, b) => a.startIndex - b.startIndex);
 	const errors = found.filter((b) => b.nested).map((b) => buildNestedMessage(b.kind));
 	// Courbe dans un élément d'un bloc fermé par ``` : même message que l'aperçu
@@ -829,7 +835,8 @@ export function assignBlankIndices(
 								build.kind === 'calcul' ||
 								build.kind === 'robot' ||
 								build.kind === 'labyrinthe' ||
-								build.kind === 'yohaku'
+								build.kind === 'yohaku' ||
+								build.kind === 'python'
 								? 'text'
 								: 'math'
 						);
