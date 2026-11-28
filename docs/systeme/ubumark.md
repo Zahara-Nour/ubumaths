@@ -1406,16 +1406,23 @@ accent accepté) et deux `ligne:` obligatoires, deux cases séparées par `|` ; 
 (défaut `non`) ; `case: N` posé par le générateur. Une case est une formule en syntaxe maison (celle
 des modèles, `{{a}}` résolu avant) ; **entre crochets, l'élève la remplit**. L'auteur écrit UNE
 solution : le bloc calcule les totaux (`utils/yohaku-moteur.ts` : case lue par `parseCustomSafe` puis
-nettoyée par `cleanCoefficientsAst`, `1x+-3` → `x − 3` ; total = somme ou produit passé par
-`expandedForm`, le moteur de `.développer`). Une clé `ligne:` par ligne (pas une `grille:` suivie de
+nettoyée par `cleanCoefficientsAst`, `1x+-3` → `x − 3`, virgule décimale acceptée et écrite
+`2{,}5` ; total = somme ou produit passé par `expandedForm`, le moteur de `.développer`). Une clé `ligne:` par ligne (pas une `grille:` suivie de
 lignes nues) : une ligne nue sans chiffre aurait été lue comme du texte par la règle de fermeture
 (Q66). Une grille qui a une case entre crochets est une question (`findYohakusARemplir`). Refus :
 clé inconnue ou en double, opération inconnue, moins ou plus de deux lignes, ligne sans deux cases,
-case vide ou illisible, aucune case entre crochets (y compris avec `solution: oui`).
+case vide ou illisible, case qui est une égalité, `|x|` (le `|` sépare les cases), aucune case
+entre crochets (y compris avec `solution: oui`). **Énoncé d'une évaluation notée**
+(`maskGestureAnswers`, `maskYohaku`) : chaque case à remplir devient `[?]` et les totaux sont
+écrits (`totaux: L1 ; L2 | C1 ; C2`, syntaxe maison, `spec.totaux`) : la solution de l'auteur ne
+part pas au navigateur ; `findUnmaskedAnswers` signale une grille non masquée. `totaux:` sans case
+`[?]`, ou case `[?]` sans `totaux:` : refus.
 
 Réponse (`utils/yohaku-answer.ts`) : les cases à remplir en LaTeX (MathLive), ordre de lecture, en
-tableau JSON (`ecrireReponse`). Attendu (`expectedYohakuAnswer`) : JSON de l'opération, de la
-solution en LaTeX, des cases à remplir et des totaux. Juge (`yohakuAnswerVerdict`) : **chaque ligne
+tableau JSON (`ecrireReponse`) ; une grille effacée envoie une réponse vide. Attendu (`expectedYohakuAnswer`) : JSON de l'opération, de la
+solution en LaTeX, des cases à remplir et des totaux. Juge (`yohakuAnswerVerdict`) : chaque case lue seule (`lireCaseEleve` :
+illisible ou égalité → « Une case ne se lit pas : vérifie ce que tu as écrit. »), le calcul
+construit en arbre puis écrit (jamais le texte de l'élève collé dans un autre) ; **chaque ligne
 et chaque colonne doit donner son total** (`areEquivalent`, 500 ms, comme une case d'expression),
 pas la solution de l'auteur : plusieurs remplissages sont justes, fractions comprises (décision de
 David, 2026-11-28). Case vide : « Remplis toutes les cases. » ; faux : « La 2e ligne et la 1re

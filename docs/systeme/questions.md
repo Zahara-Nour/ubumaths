@@ -1789,7 +1789,7 @@ Tests : `FlashCard-coup-de-pouce.svelte.test.ts`, les tests des trois formes.
    ` ```figure-a-completer ` ; tableau à compléter : valeur de x cachée → `??1`, `??2`… dans
    `domain:` et dans les clés des lignes, signe, marque ou flèche cachés → `?` seul, valeur cachée
    d'une ligne `variation:` → `?, position` ; valeurs qui encadrent une flèche cachée passées en
-   `center`, bornes implicites de leur ligne écrites (`-inf: , top`), `maskVariation`) ; la case
+   `center`, bornes implicites de leur ligne écrites (`-inf: , top`), `maskVariation`) ; grille ` ```yohaku ` : cases à remplir → `[?]`, totaux écrits en `totaux: L1 ; L2 | C1 ; C2` (`maskYohaku`) ; la case
    garde le genre de son bloc (`cellule` pour une case de tableau) (`construire`, ou `figure`
    pour une figure à compléter, jamais `construction`), pour le même écran qu'hors évaluation
    (chantier [fuite-enonce](../archive/wip/fuite-enonce-progress.md)). Limite : un point invisible

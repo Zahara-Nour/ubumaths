@@ -19,7 +19,8 @@
  */
 
 import { areEquivalent } from '#lib/math/index.ts';
-import { calculLatex } from './yohaku-moteur';
+import { calculLatex, lireCaseEleve } from './yohaku-moteur';
+import type { MathNode } from '#lib/mathAST/types.ts';
 import { YOHAKU_TAILLE, type YohakuOperation, type YohakuSpec } from '../types/yohaku';
 
 // ============================================================================
@@ -180,13 +181,24 @@ export function yohakuAnswerVerdict(userAnswer: string, expected: string): Verdi
 	if (valeurs.length !== n || valeurs.some((v) => v.trim() === '')) {
 		return { juste: false, message: YOHAKU_INCOMPLET, ...rien };
 	}
-	const g = grilleEleve(attendu, valeurs);
+	// Chaque case lue seule, puis le calcul construit en arbre : une case n'est jamais collée
+	// dans le texte d'une autre (`1\right)+\left(1` ne sort plus de sa parenthèse)
+	const n2: MathNode[][] = [];
+	for (const ligne of grilleEleve(attendu, valeurs)) {
+		const lues: MathNode[] = [];
+		for (const texte of ligne) {
+			const lue = lireCaseEleve(texte);
+			if (lue === null) return { juste: false, message: YOHAKU_ILLISIBLE, ...rien };
+			lues.push(lue);
+		}
+		n2.push(lues);
+	}
 	const op = attendu.operation;
 	const lignesFausses = [0, 1].filter(
-		(l) => !equivalent(calculLatex(op, g[l][0], g[l][1]), attendu.lignes[l])
+		(l) => !equivalent(calculLatex(op, n2[l][0], n2[l][1]), attendu.lignes[l])
 	);
 	const colonnesFausses = [0, 1].filter(
-		(c) => !equivalent(calculLatex(op, g[0][c], g[1][c]), attendu.colonnes[c])
+		(c) => !equivalent(calculLatex(op, n2[0][c], n2[1][c]), attendu.colonnes[c])
 	);
 	if (lignesFausses.length === 0 && colonnesFausses.length === 0) {
 		return { juste: true, ...rien };

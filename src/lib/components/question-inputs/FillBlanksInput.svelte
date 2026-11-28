@@ -634,7 +634,7 @@
 			// Plan vide : le premier bouton de la réserve ; droite à placer : la droite
 			slot.build
 				.querySelector<HTMLElement>(
-					'.construire-ajouter:not(:disabled), [data-signe-case]:not(:disabled), [role="slider"], [data-ranger-focus]:not(:disabled), [data-associer-focus]:not(:disabled), [data-trous-focus]:not(:disabled), [data-tortue-focus]:not(:disabled), [data-robot-focus]:not(:disabled), [data-labyrinthe-focus]:not(:disabled), math-field[data-yohaku-focus], [data-calcul-focus]:not(:disabled), math-field[data-resolution-focus], .partage-colorier [role="button"]:not([aria-disabled="true"]), .cubes-geste [role="button"]:not([aria-disabled="true"]), .cubes-saisie input:not(:disabled), .patron-geste [role="button"]:not([aria-disabled="true"]), .solide-geste [role="button"]:not([aria-disabled="true"])'
+					'.construire-ajouter:not(:disabled), [data-signe-case]:not(:disabled), [role="slider"], [data-ranger-focus]:not(:disabled), [data-associer-focus]:not(:disabled), [data-trous-focus]:not(:disabled), [data-tortue-focus]:not(:disabled), [data-robot-focus]:not(:disabled), [data-labyrinthe-focus]:not(:disabled), math-field[data-yohaku-focus]:not([read-only]), [data-calcul-focus]:not(:disabled), math-field[data-resolution-focus], .partage-colorier [role="button"]:not([aria-disabled="true"]), .cubes-geste [role="button"]:not([aria-disabled="true"]), .cubes-saisie input:not(:disabled), .patron-geste [role="button"]:not([aria-disabled="true"]), .solide-geste [role="button"]:not([aria-disabled="true"])'
 				)
 				?.focus();
 			return;

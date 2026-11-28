@@ -15,6 +15,9 @@
  * - `solution: oui | non` (défaut `non`) : la solution montrée dans les cases (corrigé
  *   imprimé, cours).
  * - `case: N` : posée par le générateur (question seulement).
+ * - Énoncé masqué d'une évaluation notée (`maskGestureAnswers`) : les cases à remplir deviennent
+ *   `[?]` et les totaux sont écrits (`totaux: L1 ; L2 | C1 ; C2`), la solution ne part pas au
+ *   navigateur. `totaux:` seulement avec des cases `[?]`.
  *
  * Un bloc qui a une case à remplir est une question (une case de réponse).
  *
@@ -23,7 +26,7 @@
 
 import { unnestedLine } from './nested-line';
 import { specialBlockEnd } from './unclosed-block';
-import { lireCase, total } from '../utils/yohaku-moteur';
+import { lireCase, total, type CaseLue } from '../utils/yohaku-moteur';
 import {
 	YOHAKU_TAILLE,
 	type YohakuBlockRange,
@@ -47,9 +50,12 @@ const KEY_LINE_REGEX = /^([A-Za-zÀ-ÿ]+)\s*:\s*(.*)$/;
 /** Une case à remplir : `[x+2]` */
 const A_REMPLIR = /^\[(.*)\]$/;
 
-type Key = 'opération' | 'ligne' | 'solution' | 'case';
+type Key = 'opération' | 'ligne' | 'solution' | 'case' | 'totaux';
 
-const KEY_NAMES: Key[] = ['opération', 'ligne', 'solution', 'case'];
+const KEY_NAMES: Key[] = ['opération', 'ligne', 'solution', 'case', 'totaux'];
+
+/** Case masquée de l'énoncé d'une évaluation : `[?]` */
+export const YOHAKU_MASQUEE = '?';
 
 /** Les clés du bloc, sans accent comprises : une ligne qui commence par l'une d'elles n'est
  * jamais du texte (Q66) */
@@ -154,25 +160,56 @@ function lireOuiNon(value: string, key: string): boolean {
 }
 
 /** Une ligne de la grille : ses cases lues, avec leur formule */
-function lireLigne(value: string): { cases: YohakuCase[]; nodes: MathNode[] } {
+function lireLigne(value: string): { cases: YohakuCase[]; nodes: (MathNode | null)[] } {
 	const morceaux = value.split('|').map((c) => c.trim());
 	if (morceaux.length !== YOHAKU_TAILLE) {
 		throw new LineError(
-			`ligne « ${value} » : ${YOHAKU_TAILLE} cases séparées par | (ex. ligne: [x+2] | x+3)`
+			`ligne « ${value} » : ${YOHAKU_TAILLE} cases séparées par | (ex. ligne: [x+2] | x+3) ; pas de valeur absolue |x| dans une case`
 		);
 	}
 	const cases: YohakuCase[] = [];
-	const nodes: MathNode[] = [];
+	const nodes: (MathNode | null)[] = [];
 	for (const morceau of morceaux) {
 		const crochets = A_REMPLIR.exec(morceau);
 		const texte = crochets ? crochets[1] : morceau;
 		if (texte.trim() === '') throw new LineError(`case vide dans « ${value} » : écris sa solution`);
+		if (crochets && texte.trim() === YOHAKU_MASQUEE) {
+			cases.push({ source: '', latex: '', aRemplir: true });
+			nodes.push(null);
+			continue;
+		}
 		const lue = lireCase(texte);
-		if (lue === null) throw new LineError(`case « ${texte.trim()} » illisible`);
+		if (lue === 'relation') {
+			throw new LineError(`case « ${texte.trim()} » : une expression, pas une égalité`);
+		}
+		if (lue === 'illisible') {
+			throw new LineError(`case « ${texte.trim()} » illisible (ex. 2x+1, 2,5, 1/2)`);
+		}
 		cases.push({ source: lue.source, latex: lue.latex, aRemplir: crochets !== null });
 		nodes.push(lue.node);
 	}
 	return { cases, nodes };
+}
+
+/** `totaux: L1 ; L2 | C1 ; C2` (énoncé masqué) : les totaux des lignes puis des colonnes */
+function lireTotaux(value: string): { lignes: CaseLue[]; colonnes: CaseLue[] } {
+	const groupes = value.split('|').map((g) => g.split(';').map((t) => t.trim()));
+	if (groupes.length !== 2 || groupes.some((g) => g.length !== YOHAKU_TAILLE)) {
+		throw new LineError(`totaux « ${value} » : écris L1 ; L2 | C1 ; C2`);
+	}
+	const [lignes, colonnes] = groupes.map((g) =>
+		g.map((t) => {
+			const lu = lireCase(t);
+			if (typeof lu === 'string') throw new LineError(`total « ${t} » illisible`);
+			return lu;
+		})
+	);
+	return { lignes, colonnes };
+}
+
+/** La ligne `totaux:` d'une grille (énoncé masqué) */
+export function totauxEcrits(lignes: readonly string[], colonnes: readonly string[]): string {
+	return `${lignes.join(' ; ')} | ${colonnes.join(' ; ')}`;
 }
 
 /**
@@ -188,7 +225,8 @@ export function parseYohakuContent(source: string): YohakuNode {
 	let operation = null as YohakuOperation | null;
 	let solution = false as boolean;
 	let caseIndex: number | undefined;
-	const grille: { cases: YohakuCase[]; nodes: MathNode[] }[] = [];
+	const grille: { cases: YohakuCase[]; nodes: (MathNode | null)[] }[] = [];
+	let totaux: { lignes: CaseLue[]; colonnes: CaseLue[] } | null = null;
 	let lignesLues = 0;
 	const seen = new Map<Key, number>();
 
@@ -244,6 +282,9 @@ export function parseYohakuContent(source: string): YohakuNode {
 				case 'solution':
 					solution = lireOuiNon(value, 'solution');
 					break;
+				case 'totaux':
+					totaux = lireTotaux(value);
+					break;
 				case 'case':
 					if (!ENTIER.test(value)) throw new LineError(`case « ${value} » : numéro de case entier`);
 					caseIndex = Number(value);
@@ -267,20 +308,58 @@ export function parseYohakuContent(source: string): YohakuNode {
 		fail(seen.get('ligne') ?? 1, 'aucune case à remplir : mets au moins une case entre crochets');
 	}
 
+	const masquee = grille.some((l) => l.nodes.some((n) => n === null));
+	if (errors.length === 0 && masquee && totaux === null) {
+		fail(seen.get('ligne') ?? 1, 'une case [?] demande la ligne totaux: (L1 ; L2 | C1 ; C2)');
+	}
+	if (errors.length === 0 && !masquee && totaux !== null) {
+		fail(seen.get('totaux') ?? 1, 'totaux: seulement avec des cases [?] (les totaux se calculent)');
+	}
+
 	const withCase = caseIndex === undefined ? {} : { caseIndex };
 	if (errors.length > 0 || operation === null || grille.length !== YOHAKU_TAILLE) {
 		return { type: 'yohaku', source, spec: null, errors, ...withCase };
 	}
 
 	const op: YohakuOperation = operation;
-	const lignes = grille.map((l) => total(op, l.nodes[0], l.nodes[1]));
-	const colonnes = [0, 1].map((c) => total(op, grille[0].nodes[c], grille[1].nodes[c]));
+	const calcules =
+		totaux ??
+		totauxDe(
+			op,
+			grille.map((l) => l.nodes)
+		);
 	return {
 		type: 'yohaku',
 		source,
-		spec: { operation: op, cases: grille.map((l) => l.cases), lignes, colonnes, solution },
+		spec: {
+			operation: op,
+			cases: grille.map((l) => l.cases),
+			lignes: calcules.lignes.map((t) => t.latex),
+			colonnes: calcules.colonnes.map((t) => t.latex),
+			totaux: totauxEcrits(
+				calcules.lignes.map((t) => t.source),
+				calcules.colonnes.map((t) => t.source)
+			),
+			solution
+		},
 		errors,
 		...withCase
+	};
+}
+
+/** Totaux calculés depuis la solution de l'auteur (aucune case masquée) */
+function totauxDe(
+	op: YohakuOperation,
+	nodes: (MathNode | null)[][]
+): { lignes: CaseLue[]; colonnes: CaseLue[] } {
+	const n = (l: number, c: number): MathNode => {
+		const node = nodes[l][c];
+		if (node === null) throw new Error('case masquée sans totaux');
+		return node;
+	};
+	return {
+		lignes: [0, 1].map((l) => total(op, n(l, 0), n(l, 1))),
+		colonnes: [0, 1].map((c) => total(op, n(0, c), n(1, c)))
 	};
 }
 

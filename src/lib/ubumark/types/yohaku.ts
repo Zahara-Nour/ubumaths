@@ -38,7 +38,7 @@ export type YohakuOperation = 'somme' | 'produit';
 // ============================================================================
 
 export interface YohakuCase {
-	/** La solution de l'auteur, en syntaxe maison nettoyée (`x - 3`) */
+	/** La solution de l'auteur, en syntaxe maison nettoyée (`x - 3`) ; '' pour une case masquée `[?]` */
 	source: string;
 	/** La même, en LaTeX (affichage et corrigé) */
 	latex: string;
@@ -54,6 +54,8 @@ export interface YohakuSpec {
 	lignes: string[];
 	/** Total de chaque colonne, en LaTeX */
 	colonnes: string[];
+	/** Les totaux en syntaxe maison, `L1 ; L2 | C1 ; C2` : la ligne `totaux:` de l'énoncé masqué */
+	totaux: string;
 	/** `solution: oui` : la solution montrée dans les cases (corrigé imprimé, cours) */
 	solution: boolean;
 }

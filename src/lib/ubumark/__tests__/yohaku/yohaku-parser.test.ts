@@ -10,6 +10,7 @@ import {
 } from '#lib/ubumark/parser/yohaku-parser.ts';
 import {
 	ecrireReponse,
+	YOHAKU_ILLISIBLE,
 	expectedYohakuAnswer,
 	readExpectedYohakuAnswer,
 	yohakuAnswerVerdict,
@@ -72,11 +73,46 @@ describe('parseur', () => {
 		[['opération: somme', 'ligne: 1 | 2', 'ligne: 3 | 4'], 'aucune case à remplir'],
 		[['opération: somme', 'ligne: [] | 2', 'ligne: 3 | 4'], 'case vide'],
 		[['opération: somme', 'ligne: [2+*] | 2', 'ligne: 3 | 4'], 'illisible'],
-		[['opération: somme', 'grille: 2 x 2'], 'inconnue']
+		[['opération: somme', 'grille: 2 x 2'], 'inconnue'],
+		[['opération: somme', 'ligne: [x=2] | 3', 'ligne: 3 | 4'], 'pas une égalité'],
+		[['opération: somme', 'ligne: [|x|] | 3', 'ligne: 3 | 4'], 'pas de valeur absolue'],
+		[['opération: somme', 'ligne: [?] | 3', 'ligne: 3 | 4'], 'demande la ligne totaux'],
+		[
+			['opération: somme', 'ligne: [1] | 3', 'ligne: 3 | 4', 'totaux: 4 ; 7 | 4 ; 7'],
+			'seulement avec des cases [?]'
+		],
+		[['opération: somme', 'ligne: [?] | 3', 'ligne: 3 | 4', 'totaux: 4 ; 7'], 'L1 ; L2 | C1 ; C2']
 	])('refuse à l’auteur %j', (lignes, attendu) => {
 		const node = parseYohakuContent(lignes.join('\n'));
 		expect(node.spec).toBeNull();
 		expect(node.errors.map((e) => e.message).join(' ; ')).toContain(attendu);
+	});
+});
+
+describe('décimaux et énoncé masqué', () => {
+	it('virgule décimale acceptée et écrite à la française', () => {
+		const node = parseYohakuContent(
+			['opération: somme', 'ligne: [2,5] | 3', 'ligne: 1 | 4'].join('\n')
+		);
+		expect(node.errors).toEqual([]);
+		expect(node.spec?.cases[0][0].latex).toBe('2{,}5');
+		expect(node.spec?.lignes[0]).toBe('5{,}5');
+		expect(node.spec?.colonnes[0]).toBe('3{,}5');
+	});
+
+	it('grille masquée : cases [?] vides, totaux lus sur totaux:', () => {
+		const node = parseYohakuContent(
+			[
+				'opération: produit',
+				'ligne: [?] | [?]',
+				'ligne: [?] | x+1',
+				'totaux: x^2+5x+6 ; 2x^2+3x+1 | 2x^2+5x+2 ; x^2+4x+3'
+			].join('\n')
+		);
+		expect(node.errors).toEqual([]);
+		expect(node.spec?.cases[0][0]).toEqual({ source: '', latex: '', aRemplir: true });
+		expect(node.spec?.lignes.map(sansEspaces)).toEqual(['x^2+5x+6', '2x^2+3x+1']);
+		expect(node.spec?.colonnes.map(sansEspaces)).toEqual(['2x^2+5x+2', 'x^2+4x+3']);
 	});
 });
 
@@ -154,6 +190,31 @@ describe('juge', () => {
 		);
 		expect(yohakuAnswerVerdict(ecrireReponse(['4', '6', '4', '5']), libre).juste).toBe(true);
 		expect(yohakuAnswerVerdict(ecrireReponse(['0', '10', '8', '1']), libre).juste).toBe(true);
+	});
+
+	it('une parenthèse glissée dans une case ne sort pas de sa case (revue du 2026-11-28)', () => {
+		const pieges = attenduDe(
+			['opération: produit', 'ligne: [2] | [3]', 'ligne: [3] | [2]'].join('\n')
+		);
+		const reponse = ecrireReponse(['1\\right)+\\left(1', '5', '5', '\\frac65']);
+		expect(yohakuAnswerVerdict(reponse, pieges)).toMatchObject({
+			juste: false,
+			message: YOHAKU_ILLISIBLE
+		});
+	});
+
+	it('une égalité dans une case est illisible, pas une ligne fausse', () => {
+		const reponse = ecrireReponse(['x+2', 'x+3', '2x+1=0', 'x+1']);
+		expect(yohakuAnswerVerdict(reponse, attendu)).toMatchObject({
+			juste: false,
+			message: YOHAKU_ILLISIBLE
+		});
+	});
+
+	it('décimaux : la réponse à virgule de MathLive est lue', () => {
+		const dec = attenduDe(['opération: somme', 'ligne: [2,5] | 3', 'ligne: [1] | 4'].join('\n'));
+		expect(yohakuAnswerVerdict(ecrireReponse(['2{,}5', '1']), dec).juste).toBe(true);
+		expect(yohakuAnswerVerdict(ecrireReponse(['2.5', '1']), dec).juste).toBe(true);
 	});
 
 	it('une case vide : « Remplis toutes les cases. »', () => {

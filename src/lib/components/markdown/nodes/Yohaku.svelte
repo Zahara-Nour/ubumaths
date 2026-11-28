@@ -73,7 +73,8 @@
 		const n = spec.cases.flat().filter((c) => c.aRemplir).length;
 		const suivantes = Array.from({ length: n }, (_, k) => valeurs[k] ?? '');
 		suivantes[rang] = valeur;
-		answer.onChange(ecrireReponse(suivantes));
+		// Grille effacée : réponse vide (« Tu n'as rien écrit dans la grille. »), pas une grille fausse
+		answer.onChange(suivantes.every((v) => v.trim() === '') ? '' : ecrireReponse(suivantes));
 	}
 </script>
 

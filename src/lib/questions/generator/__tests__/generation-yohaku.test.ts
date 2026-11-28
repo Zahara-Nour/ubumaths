@@ -155,11 +155,27 @@ describe('grille yohaku : la case et sa réponse', () => {
 });
 
 describe('évaluation notée', () => {
-	it('l’énoncé envoyé garde la grille ; la solution de l’auteur ne fuit pas dans la réponse', () => {
+	it('l’énoncé envoyé a des cases [?] et les totaux écrits : la solution de l’auteur ne part pas', () => {
 		const full = generate(template({ statement: ENONCE }));
 		const { statement } = toPublicQuestion(full, { position: 0, delaySeconds: 20 });
 		const marque = statement.split('```yohaku\n')[1].split('\n```')[0];
-		expect(parseYohakuContent(marque).caseIndex).toBe(0);
+		expect(marque).toContain('ligne: [?] | [?]');
+		expect(marque).toContain('ligne: [?] | x+1');
+		expect(marque.split('\n').filter((l) => l.startsWith('ligne:'))).toEqual([
+			'ligne: [?] | [?]',
+			'ligne: [?] | x+1'
+		]);
+		const masque = parseYohakuContent(marque);
+		expect(masque.errors).toEqual([]);
+		expect(masque.caseIndex).toBe(0);
+		// Mêmes totaux que la grille de l'auteur : l'écran de l'élève ne change pas
+		const complet = parseYohakuContent(CORPS.join('\n')).spec;
+		expect(masque.spec?.lignes).toEqual(complet?.lignes);
+		expect(masque.spec?.colonnes).toEqual(complet?.colonnes);
 		expect(findUnmaskedAnswers(statement)).toEqual([]);
+	});
+
+	it('la garde voit une grille non masquée', () => {
+		expect(findUnmaskedAnswers(ENONCE)).toEqual(['yohaku']);
 	});
 });
