@@ -1,0 +1,594 @@
+{
+	"id": "4ce8eb3c-e00a-4a26-adf7-d4f215b8cc3b",
+	"title": "Boucle « répéter jusqu'à ce que »",
+	"description": "Exécuter à la main une boucle « répéter jusqu'à ce que » d'un programme Scratch : reste par soustractions successives, nombre de passages, compteur, doublement",
+	"grades": ["3"],
+	"level": 1,
+	"delay": 90,
+	"status": "published",
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:n-d*floor(n/d)}}"
+				}
+			],
+			"statement": "Voici un programme (exemple du programme officiel).\n\n```scratch\nquand le drapeau vert pressé\ndemander [Quel est le nombre à diviser ?] et attendre\nmettre [reste v] à (réponse)\ndemander [Quel est le diviseur ?] et attendre\nrépéter jusqu'à ce que <(reste) < (réponse)>\nmettre [reste v] à ((reste) - (réponse))\nfin\ndire (reste)\n```\n\nOn saisit ${{n}}$ puis ${{d}}$. Que dit le programme à la fin ?\n\n$?$",
+			"variables": [
+				{
+					"name": "d",
+					"expression": "3..9"
+				},
+				{
+					"name": "n",
+					"expression": "20..60"
+				}
+			],
+			"conditions": ["n>=3*d"],
+			"correction": {
+				"steps": [
+					"La variable *réponse* contient la dernière saisie : le diviseur ${{d}}$. *reste* part de ${{n}}$.",
+					"La condition est testée **avant** chaque passage : dès qu'elle est vraie, la boucle s'arrête. Tant que *reste* $\\geqslant {{d}}$, on lui retire ${{d}}$.",
+					"*reste* prend les valeurs ${{n}}$, ${{eval:n-d}}$, ${{eval:n-2*d}}$, … ; après ${{eval:floor(n/d)}}$ passages, *reste* $= {{n}} - {{eval:floor(n/d)}} \\times {{d}} = {{eval:n-d*floor(n/d)}}$, et ${{eval:n-d*floor(n/d)}} < {{d}}$ : la boucle s'arrête.",
+					"Le programme dit $\\textcolor{{{color:primary.0}}}{{{eval:n-d*floor(n/d)}}}$ : c'est le reste de la division euclidienne de ${{n}}$ par ${{d}}$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:floor(n/d)}}"
+				}
+			],
+			"statement": "Combien de fois les instructions de la boucle sont-elles exécutées ?\n\n```scratch\nmettre [reste v] à ({{n}})\nrépéter jusqu'à ce que <(reste) < [{{d}}]>\nmettre [reste v] à ((reste) - ({{d}}))\nfin\ndire (reste)\n```\n\n$?$ fois",
+			"variables": [
+				{
+					"name": "d",
+					"expression": "3..9"
+				},
+				{
+					"name": "n",
+					"expression": "20..60"
+				},
+				{
+					"name": "r",
+					"expression": "eval:n-d*floor(n/d)"
+				}
+			],
+			"conditions": ["n>=3*d", "floor(n/d)<=12"],
+			"correction": {
+				"steps": [
+					"La condition est testée **avant** chaque passage : dès qu'elle est vraie, la boucle s'arrête.",
+					"Chaque passage retire ${{d}}$ à *reste* ; la boucle s'arrête quand *reste* $< {{d}}$.",
+					"${{n}} = {{eval:floor(n/d)}} \\times {{d}}{{if:r>0| + {{r}}|}}$ : après ${{eval:floor(n/d)}}$ passages, *reste* $= {{r}} < {{d}}$.",
+					"La boucle est exécutée $\\textcolor{{{color:primary.0}}}{{{eval:floor(n/d)}}}$ fois."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:k*(floor(s/k)+1)}}"
+				}
+			],
+			"statement": "Que dit ce programme à la fin ?\n\n```scratch\nmettre [i v] à (0)\nrépéter jusqu'à ce que <(i) > [{{s}}]>\najouter ({{k}}) à [i v]\nfin\ndire (i)\n```\n\n$?$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "2..9"
+				},
+				{
+					"name": "s",
+					"expression": "10..60"
+				}
+			],
+			"conditions": ["floor(s/k)+1<=12", "floor(s/k)>=3"],
+			"correction": {
+				"steps": [
+					"La condition est testée **avant** chaque passage : dès qu'elle est vraie, la boucle s'arrête.",
+					"$i$ prend les valeurs $0$, ${{k}}$, ${{eval:2*k}}$, ${{eval:3*k}}$, … (les multiples de ${{k}}$).",
+					"Le plus grand multiple de ${{k}}$ inférieur ou égal à ${{s}}$ est ${{eval:k*floor(s/k)}}$ : « ${{eval:k*floor(s/k)}} > {{s}}$ » est fausse, la boucle continue.",
+					"Le multiple suivant, ${{eval:k*(floor(s/k)+1)}}$, est plus grand que ${{s}}$ : la boucle s'arrête. Le programme dit $\\textcolor{{{color:primary.0}}}{{{eval:k*(floor(s/k)+1)}}}$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:2^t}}"
+				}
+			],
+			"statement": "Que dit ce programme à la fin ?\n\n```scratch\nmettre [x v] à (1)\nrépéter jusqu'à ce que <(x) > [{{s}}]>\nmettre [x v] à ((x) * (2))\nfin\ndire (x)\n```\n\n$?$",
+			"variables": [
+				{
+					"name": "t",
+					"expression": "4..9"
+				},
+				{
+					"name": "u",
+					"expression": "0..9"
+				},
+				{
+					"name": "s",
+					"expression": "eval:2^(t-1)+floor(u*2^(t-1)/10)"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La condition est testée **avant** chaque passage : dès qu'elle est vraie, la boucle s'arrête.",
+					"$x$ double à chaque passage : $1$, $2$, $4$, $8$, $16$, … (les puissances de $2$).",
+					"${{eval:2^(t-1)}} \\leqslant {{s}}$ : la boucle continue ; puis $x = {{eval:2^t}}$ et ${{eval:2^t}} > {{s}}$ : la boucle s'arrête.",
+					"Le programme dit $\\textcolor{{{color:primary.0}}}{{{eval:2^t}}}$."
+				]
+			}
+		},
+		{
+			"statement": "```scratch\naller à x: ({{x0}}) y: (0)\nrépéter jusqu'à ce que <(abscisse x) > [{{k}}]>\najouter ({{d}}) à x\najouter ({{h}}) à y\nfin\n```\n\nOù se trouve le lutin à la fin du programme ?\n\n$x = ?$ et $y = ?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..6"
+				},
+				{
+					"name": "kk",
+					"expression": "3..10"
+				},
+				{
+					"name": "dd",
+					"expression": "2..5"
+				},
+				{
+					"name": "hh",
+					"expression": "1..4"
+				},
+				{
+					"name": "x0",
+					"expression": "eval:-10*a"
+				},
+				{
+					"name": "k",
+					"expression": "eval:10*kk"
+				},
+				{
+					"name": "d",
+					"expression": "eval:10*dd"
+				},
+				{
+					"name": "h",
+					"expression": "eval:10*hh"
+				},
+				{
+					"name": "n",
+					"expression": "eval:floor((k-x0)/d)+1"
+				}
+			],
+			"conditions": ["(k-x0)%d!=0", "n>=3", "n<=8"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:x0+n*d}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:x0+(n-1)*d}}",
+							"message": "La boucle continue tant que $x$ n'a pas **dépassé** la limite : le tour où $x$ la dépasse compte aussi.",
+							"label": "Un tour de moins"
+						},
+						{
+							"answer": "{{k}}",
+							"message": "Le lutin ne s'arrête pas exactement sur la limite : il avance de ${{d}}$ à chaque tour.",
+							"label": "Limite donnée pour x"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{eval:n*h}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:(n-1)*h}}",
+							"message": "La boucle continue tant que $x$ n'a pas **dépassé** la limite : le tour où $x$ la dépasse compte aussi.",
+							"label": "Un tour de moins"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"La condition est testée **avant** chaque tour : la boucle s'arrête dès que $x > {{k}}$.",
+					"Abscisses successives : ${{x0}}$, ${{eval:x0+d}}$, ${{eval:x0+2*d}}$, … Il faut ${{n}}$ tours pour dépasser ${{k}}$ : $x = {{x0}} + {{n}} \\times {{d}} = {{eval:x0+n*d}}$.",
+					"À chaque tour, $y$ augmente de ${{h}}$ : $y = {{n}} \\times {{h}} = {{eval:n*h}}$.",
+					"Position finale : $\\textcolor{{{color:primary.0}}}{x = {{eval:x0+n*d}}}$ et $\\textcolor{{{color:primary.0}}}{y = {{eval:n*h}}}$."
+				]
+			},
+			"hint": "Suis le lutin instruction par instruction : note $x$ et $y$ après chacune, et teste la condition avec les valeurs du moment."
+		},
+		{
+			"statement": "Ce programme applique l'algorithme de **Syracuse** : si $n$ est pair, on le divise par $2$ ; sinon, on le multiplie par $3$ et on ajoute $1$, jusqu'à obtenir $1$.\n\n```scratch\nquand le drapeau vert pressé\ndemander [Choisis un nombre entier.] et attendre\nmettre [n v] à (réponse)\nmettre [compteur v] à (0)\nrépéter jusqu'à ce que <(n) = [1]>\nsi <((n) modulo (2)) = [0]> alors\nmettre [n v] à ((n) / (2))\nsinon\nmettre [n v] à (((3) * (n)) + (1))\nfin\najouter (1) à [compteur v]\nfin\ndire (compteur)\n```\n\nOn saisit ${{N}}$. Que dit le lutin à la fin ?\n\n$?$",
+			"variables": [
+				{
+					"name": "s",
+					"expression": "0..11"
+				},
+				{
+					"name": "N",
+					"expression": "eval:(3)*(1-min(abs((s)-(0)),1))+(5)*(1-min(abs((s)-(1)),1))+(6)*(1-min(abs((s)-(2)),1))+(10)*(1-min(abs((s)-(3)),1))+(12)*(1-min(abs((s)-(4)),1))+(13)*(1-min(abs((s)-(5)),1))+(20)*(1-min(abs((s)-(6)),1))+(21)*(1-min(abs((s)-(7)),1))+(24)*(1-min(abs((s)-(8)),1))+(26)*(1-min(abs((s)-(9)),1))+(40)*(1-min(abs((s)-(10)),1))+(42)*(1-min(abs((s)-(11)),1))"
+				},
+				{
+					"name": "E",
+					"expression": "eval:(7)*(1-min(abs((s)-(0)),1))+(5)*(1-min(abs((s)-(1)),1))+(8)*(1-min(abs((s)-(2)),1))+(6)*(1-min(abs((s)-(3)),1))+(9)*(1-min(abs((s)-(4)),1))+(9)*(1-min(abs((s)-(5)),1))+(7)*(1-min(abs((s)-(6)),1))+(7)*(1-min(abs((s)-(7)),1))+(10)*(1-min(abs((s)-(8)),1))+(10)*(1-min(abs((s)-(9)),1))+(8)*(1-min(abs((s)-(10)),1))+(8)*(1-min(abs((s)-(11)),1))"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{E}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:E+1}}",
+							"message": "Le compteur part de $0$ : le nombre de départ ne compte pas comme une étape.",
+							"label": "Départ compté comme une étape"
+						},
+						{
+							"answer": "{{eval:E-1}}",
+							"message": "Le dernier tour, celui qui donne $1$, ajoute aussi $1$ au compteur.",
+							"label": "Dernière étape oubliée"
+						},
+						{
+							"answer": "1",
+							"message": "À la fin, $n$ vaut toujours $1$ : le lutin dit la valeur du compteur.",
+							"label": "Valeur de n au lieu du compteur"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"À chaque tour, $n$ change une fois et le compteur augmente de $1$ ; la boucle s'arrête quand $n = 1$.",
+					"Valeurs successives de $n$ : {{if:s==0|$3, 10, 5, 16, 8, 4, 2, 1$|}}{{if:s==1|$5, 16, 8, 4, 2, 1$|}}{{if:s==2|$6, 3, 10, 5, 16, 8, 4, 2, 1$|}}{{if:s==3|$10, 5, 16, 8, 4, 2, 1$|}}{{if:s==4|$12, 6, 3, 10, 5, 16, 8, 4, 2, 1$|}}{{if:s==5|$13, 40, 20, 10, 5, 16, 8, 4, 2, 1$|}}{{if:s==6|$20, 10, 5, 16, 8, 4, 2, 1$|}}{{if:s==7|$21, 64, 32, 16, 8, 4, 2, 1$|}}{{if:s==8|$24, 12, 6, 3, 10, 5, 16, 8, 4, 2, 1$|}}{{if:s==9|$26, 13, 40, 20, 10, 5, 16, 8, 4, 2, 1$|}}{{if:s==10|$40, 20, 10, 5, 16, 8, 4, 2, 1$|}}{{if:s==11|$42, 21, 64, 32, 16, 8, 4, 2, 1$|}}.",
+					"Le lutin dit $\\textcolor{{{color:primary.0}}}{{{E}}}$."
+				]
+			},
+			"hint": "Écris la suite des valeurs de $n$, une par tour de boucle, et compte les tours."
+		},
+		{
+			"statement": "Ce programme applique l'algorithme de **Syracuse** : si $n$ est pair, on le divise par $2$ ; sinon, on le multiplie par $3$ et on ajoute $1$, jusqu'à obtenir $1$.\n\n```scratch\nquand le drapeau vert pressé\ndemander [Choisis un nombre entier.] et attendre\nmettre [n v] à (réponse)\nmettre [compteur v] à (0)\nrépéter jusqu'à ce que <(n) = [1]>\nsi <((n) modulo (2)) = [0]> alors\nmettre [n v] à ((n) / (2))\nsinon\nmettre [n v] à (((3) * (n)) + (1))\nfin\najouter (1) à [compteur v]\nfin\ndire (compteur)\n```\n\nOn saisit ${{N}}$. Quel est le **plus grand** nombre que prend la variable $n$ pendant le programme ?\n\n$?$",
+			"variables": [
+				{
+					"name": "s",
+					"expression": "0..5"
+				},
+				{
+					"name": "N",
+					"expression": "eval:(3)*(1-min(abs((s)-(0)),1))+(6)*(1-min(abs((s)-(1)),1))+(10)*(1-min(abs((s)-(2)),1))+(12)*(1-min(abs((s)-(3)),1))+(26)*(1-min(abs((s)-(4)),1))+(42)*(1-min(abs((s)-(5)),1))"
+				},
+				{
+					"name": "M",
+					"expression": "eval:(16)*(1-min(abs((s)-(0)),1))+(16)*(1-min(abs((s)-(1)),1))+(16)*(1-min(abs((s)-(2)),1))+(16)*(1-min(abs((s)-(3)),1))+(40)*(1-min(abs((s)-(4)),1))+(64)*(1-min(abs((s)-(5)),1))"
+				},
+				{
+					"name": "P",
+					"expression": "eval:(10)*(1-min(abs((s)-(0)),1))+(3)*(1-min(abs((s)-(1)),1))+(5)*(1-min(abs((s)-(2)),1))+(6)*(1-min(abs((s)-(3)),1))+(13)*(1-min(abs((s)-(4)),1))+(21)*(1-min(abs((s)-(5)),1))"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{M}}",
+					"expectedErrors": [
+						{
+							"answer": "{{N}}",
+							"message": "La suite peut monter au-dessus du nombre de départ : écris toutes les valeurs de $n$.",
+							"label": "Nombre de départ"
+						},
+						{
+							"answer": "{{P}}",
+							"message": "Ne t'arrête pas au premier tour : continue jusqu'à ce que $n$ vaille $1$.",
+							"label": "Premier tour seulement"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"Valeurs successives de $n$ : {{if:s==0|$3, 10, 5, 16, 8, 4, 2, 1$|}}{{if:s==1|$6, 3, 10, 5, 16, 8, 4, 2, 1$|}}{{if:s==2|$10, 5, 16, 8, 4, 2, 1$|}}{{if:s==3|$12, 6, 3, 10, 5, 16, 8, 4, 2, 1$|}}{{if:s==4|$26, 13, 40, 20, 10, 5, 16, 8, 4, 2, 1$|}}{{if:s==5|$42, 21, 64, 32, 16, 8, 4, 2, 1$|}}.",
+					"Le plus grand nombre est $\\textcolor{{{color:primary.0}}}{{{M}}}$."
+				]
+			},
+			"hint": "Écris la suite des valeurs de $n$ jusqu'à $1$, puis repère la plus grande."
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["5"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"d": "6",
+				"n": "47"
+			},
+			"description": "47 et 6 : reste 5",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["11"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"d": "6",
+				"n": "47"
+			},
+			"description": "Erreur : arrêt un tour trop tôt (11)",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["47"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"d": "6",
+				"n": "47"
+			},
+			"description": "Erreur : le nombre de départ (47)",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["7"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"d": "6",
+				"n": "47"
+			},
+			"description": "Erreur : le quotient (7)",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["7"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"d": "6",
+				"n": "47",
+				"r": "5"
+			},
+			"description": "47 et 6 : 7 passages",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["8"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"d": "6",
+				"n": "47",
+				"r": "5"
+			},
+			"description": "Erreur : un passage de trop (8)",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["25"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"k": "5",
+				"s": "23"
+			},
+			"description": "k = 5, s = 23 : 25",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["20"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"k": "5",
+				"s": "23"
+			},
+			"description": "Erreur : arrêt un tour trop tôt (20)",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["24"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"k": "4",
+				"s": "20"
+			},
+			"description": "k = 4, s = 20 : 24 (20 n'est pas > 20)",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["20"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"k": "4",
+				"s": "20"
+			},
+			"description": "Erreur : arrêt à i = s (20)",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["64"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"s": "40",
+				"t": "6",
+				"u": "2"
+			},
+			"description": "s = 40 : 64",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["32"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"s": "40",
+				"t": "6",
+				"u": "2"
+			},
+			"description": "Erreur : arrêt un tour trop tôt (32)",
+			"variationIndex": 3
+		},
+		{
+			"description": "A3 : (70 ; 50)",
+			"variationIndex": 4,
+			"variables": {
+				"a": "3",
+				"kk": "6",
+				"dd": "2",
+				"hh": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["70", "50"]
+		},
+		{
+			"description": "A3 : un tour de moins",
+			"variationIndex": 4,
+			"variables": {
+				"a": "3",
+				"kk": "6",
+				"dd": "2",
+				"hh": "1"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "La boucle continue tant que $x$ n'a pas **dépassé** la limite : le tour où $x$ la dépasse compte aussi."
+			},
+			"answers": ["50", "40"]
+		},
+		{
+			"description": "A3 : la limite pour x",
+			"variationIndex": 4,
+			"variables": {
+				"a": "3",
+				"kk": "6",
+				"dd": "2",
+				"hh": "1"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Le lutin ne s'arrête pas exactement sur la limite : il avance de $20$ à chaque tour."
+			},
+			"answers": ["60", "50"]
+		},
+		{
+			"description": "B1 : 3 → 7 compteur",
+			"variationIndex": 5,
+			"variables": {
+				"s": "0"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["7"]
+		},
+		{
+			"description": "B1 : 12 → 9 compteur",
+			"variationIndex": 5,
+			"variables": {
+				"s": "4"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["9"]
+		},
+		{
+			"description": "B1 : départ compté",
+			"variationIndex": 5,
+			"variables": {
+				"s": "0"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Le compteur part de $0$ : le nombre de départ ne compte pas comme une étape."
+			},
+			"answers": ["8"]
+		},
+		{
+			"description": "B1 : dernière étape oubliée",
+			"variationIndex": 5,
+			"variables": {
+				"s": "0"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Le dernier tour, celui qui donne $1$, ajoute aussi $1$ au compteur."
+			},
+			"answers": ["6"]
+		},
+		{
+			"description": "B1 : valeur de n",
+			"variationIndex": 5,
+			"variables": {
+				"s": "0"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "À la fin, $n$ vaut toujours $1$ : le lutin dit la valeur du compteur."
+			},
+			"answers": ["1"]
+		},
+		{
+			"description": "B2 : 3 → 16",
+			"variationIndex": 6,
+			"variables": {
+				"s": "0"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["16"]
+		},
+		{
+			"description": "B2 : 26 → 40",
+			"variationIndex": 6,
+			"variables": {
+				"s": "4"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["40"]
+		},
+		{
+			"description": "B2 : nombre de départ",
+			"variationIndex": 6,
+			"variables": {
+				"s": "4"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "La suite peut monter au-dessus du nombre de départ : écris toutes les valeurs de $n$."
+			},
+			"answers": ["26"]
+		},
+		{
+			"description": "B2 : premier tour",
+			"variationIndex": 6,
+			"variables": {
+				"s": "0"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Ne t'arrête pas au premier tour : continue jusqu'à ce que $n$ vaille $1$."
+			},
+			"answers": ["10"]
+		}
+	]
+}

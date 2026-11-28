@@ -1,0 +1,83 @@
+# Chantier `idees-3e-algorithmique` — idées de la rubrique « Algorithmique et programmation » de 3e
+
+## Reprendre ici
+
+_Mis à jour le 2026-11-28, lot écrit, avant la PR._
+
+- **État** : phase 0 validée (« je valide tes recos »). Lot écrit sur la branche : 13 variations de 6
+  modèles publiés (migration de contenu `20261128132651`) et le modèle neuf E (5e, 5-011). · **Prochaine
+  action** : PR, CI, merge (test d'intégration vert, `security-auditor` sans finding) ; puis David :
+  `create-questions --publier` (E) et `db:migrate`. · **En attente de David** : rien avant la PR. ·
+  **Pièges en cours** : E est un modèle de **5e** (point 5-011, `grades` `['5']`) ; la migration de
+  contenu a été régénérée deux fois et gardée sous son premier nom (déjà jouée en base locale). ·
+  **Worktree / branche** : `../ubumaths-wt-idees-3e-algorithmique`, `feat/idees-3e-algorithmique`.
+
+## Rubrique
+
+« Algorithmique et programmation » de 3e (code 3I1, 11 exercices), réservée le 2026-11-28 dans
+[idees-ailleurs-repartition.md](idees-ailleurs-repartition.md).
+
+## Phase 0 (2026-11-28)
+
+Page à cocher : https://claude.ai/artifact/Mv3B7G3XB2r8X3jjjYoE4u (collection `verdicts`, une entrée par
+fiche A à H, R, Q1). Une case par question, coup de pouce et trois erreurs prévues par case, `testSpecs`
+sur chaque variation, programmes en ` ```scratch ` (blocs `aller à x: y:`, `ajouter … à x`, `abscisse x`
+et `modulo` vérifiés dans le dictionnaire français de scratchblocks).
+
+| Fiche | Idée                                                                                                                                         | Recommandation                                                                    | Point         |
+| ----- | -------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------- | ------------- |
+| A     | Position finale du lutin (3I1, 3I10-1)                                                                                                       | 9f9bddbd v5, v6 ; 4ce8eb3c v5                                                     | 3-048 ; 3-049 |
+| B     | Syracuse : compteur, plus grande valeur (3I1-1, 3I12-6)                                                                                      | 4ce8eb3c v6, v7                                                                   | 3-049         |
+| C     | Écrire le programme de Syracuse (` ```calcul `)                                                                                              | 6e99d291 v4                                                                       | 3-051         |
+| D     | Quelle valeur saisir (Thalès, équation, produit nul, Pythagore) (3I12-6)                                                                     | 962da675 v4 à v7                                                                  | 3-047         |
+| E     | Diviseurs et multiples avec un programme (3I12-1 à 4)                                                                                        | **modèle neuf de 5e**, 5 variations, sous-notion « instructions conditionnelles » | 5-011         |
+| F     | Écrire le programme qui compte les diviseurs                                                                                                 | 6e99d291 v5                                                                       | 3-051         |
+| G     | Tableur : moyenne d'une semaine de températures (3I13-1)                                                                                     | 5c092e43 v5 (``choix, décision Q22 du 2026-11-18)                                 | 3-032         |
+| H     | Paramètres d'un bloc personnalisé (3I1DNB-0)                                                                                                 | 0a470416 v4                                                                       | 3-050         |
+| R     | 3I12-5 (copie de 6I1B-6) → session 6I1 ; dichotomie (2de), tableur hors statistique, questions descriptives, figure à choisir, bloc à écrire | rien                                                                              | —             |
+
+Questions :
+
+- **Q1** : E (5-011, 5e) dans ce chantier, ou en « Idées en attente » ? Recommandation : dans ce chantier.
+- **Accès de la migration** : personne ne gagne d'accès, on range un modèle et on complète des modèles.
+
+Aucun outil manquant : le plateau de couleurs de 3I10-1 devient une position (x ; y), et la formule de
+tableur reste à choisir (Q22).
+
+## Décisions de David (2026-11-28)
+
+« Je valide tes recos » : toutes les recommandations de la page à cocher (A à H, R), Q1 : E dans ce
+chantier. Personne ne gagne d'accès. Les six modèles publiés sont réservés dans le tableau de
+répartition ; 3I12-5 est noté en « Idées en attente » pour la session 6I1.
+
+## Lot (2026-11-28)
+
+Scripts `docs/wip/questions/idees-3e-algorithmique-publies.py` (export de prod du 2026-11-28,
+variations ajoutées à la fin) et `docs/wip/questions/idees-3e-algorithmique-neufs.py`.
+
+| Modèle                                                | Ajout                                                                                                                    | Point                                                  |
+| ----------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------ |
+| 9f9bddbd Conditions composées                         | v5 : lutin, condition « ou » après deux déplacements ; v6 : « et » dans 5 tours                                          | 3-048                                                  |
+| 4ce8eb3c Répéter jusqu'à                              | v5 : lutin jusqu'à abscisse > k ; v6 : Syracuse, compteur ; v7 : Syracuse, maximum                                       | 3-049                                                  |
+| 6e99d291 Écrire un programme                          | v4 : nombre d'étapes de Syracuse ; v5 : nombre de diviseurs (``calcul 3e)                                                | 3-051                                                  |
+| 962da675 Plusieurs variables                          | v4 : Thalès (AE) ; v5 : équation ; v6 : produit nul (valeur positive) ; v7 : Pythagore                                   | 3-047                                                  |
+| 5c092e43 Formules du tableur                          | v5 : moyenne de températures négatives comprises, en colonne B2:B6                                                       | 3-032                                                  |
+| 0a470416 Bloc personnalisé                            | v4 : a et b d'un bloc « losange » (b = 180 − tour)                                                                       | 3-050                                                  |
+| **Neuf** Diviseurs et multiples avec un programme (E) | 5 variations : condition à choisir, couple « multiple », nombre de diviseurs dits, 3e diviseur, ce que fait le programme | 5-011 (5e, « instructions conditionnelles », niveau 1) |
+
+- Chaque variation : coup de pouce, erreurs prévues (deux ou trois par case, choix exclus), specs.
+  `question:specs` vert sur les sept fichiers ; sonde Scratch (`checkScratchProgram` sur chaque bloc
+  tiré, 200 tirages par modèle) : 1 734 blocs, 0 problème ; `create-questions` en simulation vert (E).
+- Écarts avec les fiches : A1 n'a que deux erreurs prévues par case (« ou lu comme et » et « branche
+  échangée » donnent la même position) ; G en colonne et sur cinq jours (en ligne, le tableau
+  débordait à 390 px, vu à l'écran) ; H sans erreur prévue sur a (aucune erreur réelle) ; messages
+  en « degrés » (le juge réécrit `60°` en `60 °`).
+- **Vu à l'écran** (`/dev/modeles` en local, WebKit, iPhone 13, copies locales, `.captures/algo/`) :
+  blocs Scratch dessinés (lutin, Syracuse, Thalès, équation, produit nul, losange, condition vide
+  de E v1, conditions dans un choix) ; positions et valeurs attendues recalculées à la main sur les
+  tirages vus. Réponses justes et fausses non jouées à la main : les specs passent par le même juge.
+- Migration `20261128132651_questions_idees_3e_algorithmique_publies_contenu.sql` et sa fixture,
+  générées par `migration-contenu.ts` (relevé de la prod du 2026-11-28).
+- Test `migrations-contenu-publie` vert (2026-11-28, 351 tests). `security-auditor` : aucun finding
+  bloquant ; personne ne gagne ni ne perd d'accès (6 UPDATE gardés, rollback cohérent, contenu sans
+  donnée réelle ni lien).
