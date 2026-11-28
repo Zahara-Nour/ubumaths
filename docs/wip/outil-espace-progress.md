@@ -10,7 +10,7 @@ status: outil 64 livré (#3308) ; outil 65 à faire
 
 _Mis à jour le 2026-11-28, après #3308._
 
-- **État** : outil 64 livré (#3308, case `droite-parametrique`) ; outil 65 pas commencé · **Prochaine action** : recréer le worktree `../ubumaths-wt-outil-espace` (branche `feat/outil-espace` depuis `origin/main`), vérifier que l'outil 65 manque encore (point au tiers d'une arête dans ` ```solide `, `points:` ne connaît que `milieu` et `centre`), puis phase 0 · **En attente de David** : rien · **Pièges en cours** : aucun · **Worktree / branche** : à recréer (retirés par `pr:merger`)
+- **État** : outil 64 livré (#3308) ; outil 65 fait sur la branche, revue faite, PR ouverte · **Prochaine action** : CI verte → `pnpm pr:merger`, puis lot `espace` « fait » dans `outils-lots.md` et n° de PR dans `outils-manquants.md` § 4 · **En attente de David** : rien · **Pièges en cours** : aucun · **Worktree / branche** : `../ubumaths-wt-outil-espace`, `feat/outil-espace`
 
 ## Outil 64 — phase 0 (envoyée le 2026-11-28)
 
@@ -50,3 +50,34 @@ qu'en Terminale spé, dans l'espace ; le plan a la case `equation`), et David : 
 - `security-auditor` (Opus) : aucun bloquant ; corrigé : bornes de rendu du verso mesurées sur la
   réponse entière (3 lignes au plafond triplaient la page du professeur), `&` inertes, 4e ligne
   montrée en texte inerte.
+
+## Outil 65 — phase 0 (envoyée le 2026-11-28)
+
+Vérifié (`solide-parser.ts`, `readPoints`) : `points:` lit `milieu`, `centre`, `intersection` et
+les coordonnées (ces dernières seulement avec `repere:`). Sans repère, un point au tiers d'une
+arête ne se déclare pas ; un quart = milieu d'un milieu. Pas de graduation d'arête.
+Proposition : `M tel que AM = 1/3 AB` (fraction strictement entre 0 et 1, deux points distincts
+quelconques) ; graduations en question. Questions posées à David dans le message de la session.
+
+Réponse de David (2026-11-28) : « je te suis » → Q1 : `M tel que AM = 1/3 AB` ; Q2 : graduations
+dans la même PR, `graduer: AB 3` ; Q3 : deux points distincts quelconques ; Q4 : la variation
+« au tiers » de N3 (TSPE-332) laissée aux sessions « questions ».
+
+## Outil 65 — livré sur la branche
+
+- `points: M tel que AM = 1/3 AB` (`readAlong`, `SolidePoint.along`, `solidePoints3`) ; `graduer: AB 3`
+  (`readGraduations`, `SolideScene.ticks`, Solide.svelte, SolideGeste.svelte, PDF). Tests :
+  `solide-tiers.test.ts` (43), `SolideGeste.svelte.test.ts` (graduations dans la figure à geste).
+- Écart à la phase 0, décidé seul : `graduer:` prend une arête ou un segment de `segments:`, pas un
+  segment non dessiné (des traits sans trait n'ont pas de sens).
+- Vu : exemple « Un point au tiers d'une arête » de `/aide-ecriture/blocs/solide`, capture WebKit
+  (M sur le trait du tiers, trait des deux tiers visible, nom accessible lu).
+
+## Outil 65 — revue (2026-11-28)
+
+- `code-reviewer` (Sonnet) : 1 important corrigé (graduations absentes de la figure à geste
+  `SolideGeste.svelte` avec `tracer:`) ; corrigés : test PDF qui ne prouvait pas d'où venaient les
+  `cap: "butt"`, traits en paquet sur un segment vu presque par le bout (aucun trait si une part est
+  plus courte que `TICK_HALF`), fraction réduite avant le contrôle du dénominateur (5/20 admis),
+  en-tête du parseur. Laissés : traits pleins sur une arête cachée (lisible), nom du point qui
+  n'évite pas les traits (aucun cas réel).

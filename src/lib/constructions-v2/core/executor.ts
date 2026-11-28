@@ -176,6 +176,15 @@ export function readingPauseMs(instruction: string | undefined): number {
 	return Math.min(MAX_READING_PAUSE, Math.max(AUTO_PAUSE_BETWEEN_STEPS, reading));
 }
 
+/** Instruction `masque(…)` ou `montre(…)` seule sur sa ligne (sans affectation). */
+function isVisibilityCall(stmt: DslStatement): boolean {
+	return (
+		stmt.kind === 'exprStatement' &&
+		stmt.expr.kind === 'call' &&
+		(stmt.expr.name === 'masque' || stmt.expr.name === 'montre')
+	);
+}
+
 /**
  * Noms déclarés par le script (affectations, y compris dans les boucles et
  * les `si`) : une lettre de point auxiliaire ne doit pas les reprendre,
@@ -1623,9 +1632,14 @@ export class ConstructionExecutor {
 		if (!hasDrawable) {
 			const adjusted = Math.round(DEFAULT_STEP_DURATION / speedFactor);
 			const needsPause = hasPoint || hasFadeInLine;
-			const stepDur = needsPause
-				? Math.max(100, Math.min(MAX_STEP_DURATION, adjusted)) + AUTO_PAUSE_BETWEEN_STEPS
-				: Math.max(100, Math.min(MAX_STEP_DURATION, adjusted));
+			// `masque(…)` / `montre(…)` qui ne crée rien : instantané, comme une
+			// directive ; des effacements à la suite tombent au même instant (V76).
+			const instantaneous = newElements.length === 0 && isVisibilityCall(stmt);
+			const stepDur = instantaneous
+				? 0
+				: needsPause
+					? Math.max(100, Math.min(MAX_STEP_DURATION, adjusted)) + AUTO_PAUSE_BETWEEN_STEPS
+					: Math.max(100, Math.min(MAX_STEP_DURATION, adjusted));
 			durations.push(stepDur);
 			this._stepPhases.push({
 				movePhaseEnd: 0,

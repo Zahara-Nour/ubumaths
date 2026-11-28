@@ -170,8 +170,12 @@ export class Timeline {
 			this._currentTime = 0;
 			this._currentStepIndex = -1;
 		} else {
-			this._currentTime = this.stepTimings[this._currentStepIndex - 1].end;
-			this.updateCurrentStep();
+			// Indice posé directement : `findStepAt` ne distingue pas les pas de 0 ms
+			// qui finissent au même instant (masques à la suite, en fin de script)
+			const prevIndex = this._currentStepIndex - 1;
+			this._currentTime = this.stepTimings[prevIndex].end;
+			this._currentStepIndex = prevIndex;
+			this.onStepChange?.(prevIndex);
 		}
 		this.emitState();
 	}
@@ -253,6 +257,8 @@ export class Timeline {
 
 	private findStepAt(time: number): number {
 		if (time <= 0 || this.stepTimings.length === 0) return -1;
+		// Au bout : le dernier pas, même de durée 0 (un `masque` final doit s'appliquer)
+		if (time >= this._totalDuration) return this.stepTimings.length - 1;
 		for (let i = 0; i < this.stepTimings.length; i++) {
 			if (time <= this.stepTimings[i].end) return i;
 		}

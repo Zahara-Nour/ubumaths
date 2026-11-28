@@ -1900,6 +1900,22 @@ accessible : « segment [AG] », « angle droit en E », jamais une longueur. **
 cube (et un pavé de longueur égale à la hauteur), le dessin de la diagonale [AG] passe par F puis se couche
 sur l'arête [FG], qui se voit : ce bout est dessiné en plein. Prendre [DF] (ou [CE], [HB]), ou `tourner: oui`.
 
+**Point sur un segment par une fraction et segments gradués** (outil n° 65 de
+[outils-manquants](../wip/outils-manquants.md), chantier `outil-espace`, `solide-tiers.test.ts`) — polyèdres
+seulement, sommets nommés exigés. `points: M tel que AM = 1/3 AB` (`readAlong`) : `SolidePoint.along` =
+`{ from, to, ratio }`, `of` vide, la fraction **réduite** `[p, q]` (réduite avant le contrôle : 5/20 est admis) avec 0 < p/q < 1 et q ≤ `SOLIDE_MAX_PARTS`
+= 10, comptée depuis `from` (`solidePoints3` : `from + p/q × (to − from)`) ; deux points distincts quelconques,
+sommets ou points déclarés avant (`J tel que IJ = 1/3 IG`) ; le premier membre doit être le premier point du
+segment suivi du nom déclaré (sinon « M se place depuis A (ex. AM = 1/3 AB) »). Le point sert ensuite comme un
+autre (milieu, vecteurs, geste, repère). Nom accessible : « point M tel que AM = un tiers de AB »
+(`fractionWords` : « la moitié », « deux tiers », « trois quarts »). `graduer: AB 3, [EH] 4`
+(`readGraduations`, `SolideSpec.graduations`, type `SolideGraduation` : `from`, `to`, `parts` de 2 à 10 ; au plus
+`SOLIDE_MAX_GRADUATIONS` = 4 ; clé absente → pas de champ) : une **arête ou un segment de `segments:`**, sinon
+refusé. Scène : `SolideScene.ticks`, un trait par graduation intérieure, en travers du segment projeté, de
+longueur fixe à l'écran (`TICK_HALF` = 0,09 cm de part et d'autre), calculé après la mise à l'échelle ; aucun
+quand le segment, vu presque par le bout, a des parts plus courtes que `TICK_HALF` ; suit la rotation. Écran : `line.solide-graduation` à bouts droits, après les
+segments, dans `Solide.svelte` et dans la figure à geste `SolideGeste.svelte` (`graduer:` va avec `tracer:`) ; PDF : un `curve` noir `cap: "butt"` par trait. Nom accessible : « [AB] partagé en 3 parts égales ».
+
 **Repère du solide et points par coordonnées** (chantier [solides-3d](../archive/wip/solides-3d-progress.md), lot 7c,
 `solide-repere.test.ts`) — polyèdres seulement, sommets nommés exigés. `repere: A ; AB, AD, AE`
 (`SolideSpec.repere`, type `SolideRepere` : `origin` et `axes`, le bout de chacun des trois vecteurs ; clé
