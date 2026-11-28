@@ -12,6 +12,9 @@
  * - Segments (intervals, demi-droites comprises) with bracket endpoints
  * - Linear and logarithmic scales
  * - LaTeX → Typst math conversion for labels
+ * - `unite: 6 cm` (outil n° 61) : un intervalle de `step` mesure vraiment 6 cm, droite
+ *   jamais réduite ; droite à graduer (`graduer:`) : seules les graduations de `step`,
+ *   l'élève partage au guide-âne
  * - Zooms (outil n° 54) : droites agrandies, chacune `ZOOM_GAP` cm sous la précédente,
  *   reliées par deux pointillés ; les points sur toutes les droites où ils tombent
  *
@@ -95,6 +98,12 @@ export function generateNumberLineTypst(
 	options: NumberLineTypstOptions = {}
 ): string {
 	const opts = { ...DEFAULT_OPTIONS, ...options };
+	// Longueur réelle (`unite:`) : chaque intervalle de `step` mesure `unitCm` cm
+	const unitCm = node.unitCm;
+	if (unitCm !== undefined) {
+		const span = numVal(node.config.end) - numVal(node.config.start);
+		opts.lineWidth = (unitCm * span) / numVal(node.config.step);
+	}
 
 	try {
 		const startNum = numVal(node.config.start);
@@ -132,6 +141,10 @@ export function generateNumberLineTypst(
 		});
 
 		const body = parts.join('\n');
+		// À sa vraie longueur (le parseur la borne à la page) : jamais réduite
+		if (unitCm !== undefined) {
+			return `#import "@preview/cetz:0.3.0"\n\n#cetz.canvas({\n${body}\n})`;
+		}
 		// Échelle AJUSTÉE, comme l'arbre de probabilités : 12 cm de droite débordaient d'une
 		// colonne de fiche (~8,7 cm) sur la voisine. `layout` donne la largeur disponible,
 		// `measure` celle de la droite ; on ne réduit que si elle dépasse (jamais

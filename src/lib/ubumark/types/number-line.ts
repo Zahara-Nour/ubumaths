@@ -147,6 +147,15 @@ export interface NumberLineRepresenter {
 	interval: NumberLineSegment | null;
 }
 
+/**
+ * Droite à graduer (`graduer: 3`, outil n° 61) : l'élève partage lui-même chaque
+ * intervalle de `step` en `parts` parts égales (puis pose les points de `placer:`
+ * sur ses graduations). `parts` null : valeur masquée (`graduer: ?`), énoncé envoyé.
+ */
+export interface NumberLineGraduer {
+	parts: number | null;
+}
+
 // ============================================================================
 // AST NODE
 // ============================================================================
@@ -211,9 +220,17 @@ export interface NumberLineNode extends BaseNode {
 	zooms?: NumberLineConfig[];
 	/** Droite à représenter (`representer:`) : l'intervalle de l'élève. Jamais dessiné. */
 	representer?: NumberLineRepresenter;
+	/** Droite à graduer (`graduer:`) : le nombre de parts attendu. Jamais dessiné. */
+	graduer?: NumberLineGraduer;
+	/**
+	 * PDF (`unite: 6 cm`) : longueur réelle d'un intervalle de `step`, en cm ; la
+	 * droite n'est alors jamais réduite à la colonne. Sans effet à l'écran.
+	 */
+	unitCm?: number;
 	/**
 	 * Première case d'une droite à placer dans une question (`case: N`, posée par
-	 * le générateur) : le point k a la case N + k
+	 * le générateur) : le point k a la case N + k ; droite à graduer : la case N est
+	 * le nombre de parts, le point k a la case N + 1 + k
 	 */
 	caseIndex?: number;
 	/**

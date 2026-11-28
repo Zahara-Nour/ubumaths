@@ -4,10 +4,10 @@
 
 _Mis à jour le 2026-11-28, avant la première PR._
 
-- **État** : lot réservé (c825324f80) ; outil 61 vérifié manquant (` ```line ` n'a que `placer:` /
-  `representer:`, droites toujours déjà graduées). Phase 0 envoyée à David.
-- **Prochaine action** : réponses de David à Q1-Q4 ci-dessous, puis tests rouges.
-- **En attente de David** : Q1-Q4 de la phase 0.
+- **État** : lot réservé (c825324f80) ; outil 61 vérifié manquant. Phase 0 validée par David le
+  2026-11-28 (recommandations de Q1-Q4). Implémentation en cours.
+- **Prochaine action** : tests rouges → code → verts, rendu vérifié, PR.
+- **En attente de David** : rien.
 - **Pièges en cours** : aucun.
 - **Worktree / branche** : `../ubumaths-wt-outil-graduer-segment` · `feat/outil-graduer-segment`.
 
@@ -54,3 +54,7 @@ Questions :
   Recommandation : oui.
 - **Q4** — Au PDF, segment unité à sa vraie longueur (`unite: 6 cm`) sans graduations
   intermédiaires, pour le guide-âne : dans cette PR, ou plus tard ? Recommandation : dans cette PR.
+
+**Décision de David (2026-11-28)** : « je valide tes recos ». Q1 nombre de parts (− / +) ; Q2
+graduations fausses, point juste à sa valeur (10/6 = 5/3) ; Q3 une case pour les graduations plus
+une par point ; Q4 `unite: 6 cm` au PDF dans cette PR.

@@ -105,7 +105,7 @@ export const numberLineEntry: BlockCatalogEntry = {
 						'début ; fin ; step pas, puis major n et labels a, b si besoin (zoom: 12.4 ; 12.5 ; step 0.01)',
 					defaultValue: 'aucun',
 					description:
-						'Une droite agrandie sous la précédente, reliée par deux pointillés au morceau qu’elle agrandit. Début et fin sur des graduations de la droite du dessus ; une ligne zoom: par zoom, 4 au plus, chacun dans le précédent. Sans labels, aucun nombre écrit : l’élève les retrouve. Les points se dessinent sur toutes les droites où ils tombent. Ni placer:, ni representer:, ni segments:, ni scale: log avec un zoom.'
+						'Une droite agrandie sous la précédente, reliée par deux pointillés au morceau qu’elle agrandit. Début et fin sur des graduations de la droite du dessus ; une ligne zoom: par zoom, 4 au plus, chacun dans le précédent. Sans labels, aucun nombre écrit : l’élève les retrouve. Les points se dessinent sur toutes les droites où ils tombent. Ni placer:, ni representer:, ni graduer:, ni segments:, ni scale: log avec un zoom.'
 				}
 			]
 		},
@@ -130,6 +130,30 @@ export const numberLineEntry: BlockCatalogEntry = {
 					defaultValue: 'aucun',
 					description:
 						'L’élève touche la droite pour poser la borne, choisit le côté des solutions (← vers la gauche, vers la droite →) et bascule la borne comprise / exclue ; intervalle borné : il pose les deux bornes. La droite compte pour une case, juste si bornes, côté et crochets le sont. Jamais écrit à l’écran. Ni placer: ni segments: avec.'
+				}
+			]
+		},
+		{
+			title: 'Dans une question : graduer la droite',
+			settings: [
+				{
+					key: 'graduer',
+					values: 'le nombre de parts dans un intervalle de step, de 2 à 12 (graduer: 3)',
+					defaultValue: 'aucun',
+					description:
+						'La droite ne montre que les graduations de step ; sous elle, « Parts dans une unité : − 1 + ». L’élève partage chaque intervalle en parts égales, tracées par l’écran, puis pose les points de placer: (facultatif) sur SES graduations ; changer le nombre de parts retire les points. Une case pour les parts (juste s’il en choisit autant), puis une par point, jugé sur sa valeur (10/6 vaut 5/3). Les points de placer: doivent tomber sur la grille partagée. Ni points:, ni representer:, ni segments:, ni scale: log. Sur le PDF, aucune graduation intermédiaire : l’enfant partage au guide-âne (voir unite:).'
+				}
+			]
+		},
+		{
+			title: 'Sur le PDF',
+			settings: [
+				{
+					key: 'unite',
+					values: 'une longueur en cm (unite: 6 cm)',
+					defaultValue: 'droite de 12 cm, réduite à la colonne',
+					description:
+						'La longueur réelle d’un intervalle de step sur le PDF : la droite n’est alors jamais réduite. 17 cm au plus en tout. Sans effet à l’écran ; utile pour graduer au guide-âne ou mesurer à la règle.'
 				}
 			]
 		}
@@ -237,6 +261,20 @@ export const numberLineEntry: BlockCatalogEntry = {
 			),
 			explanation:
 				'x ⩾ 2 : l’élève pose la borne en 2, choisit « vers la droite → » et garde la borne comprise. Un intervalle borné ([-1, 3[) se représente en posant deux bornes. La consigne va dans l’énoncé, au-dessus.'
+		},
+		{
+			title: 'Graduer en tiers, puis placer (question)',
+			source: fence(
+				'line',
+				'start: 0',
+				'end: 2',
+				'step: 1',
+				'graduer: 3',
+				'placer: A=5/3',
+				'unite: 6 cm'
+			),
+			explanation:
+				'L’élève partage chaque unité en 3 parts avec − / +, puis pose A sur la 5e graduation. Deux cases : les parts, puis A. Sur le PDF, l’unité mesure 6 cm et n’est pas partagée : l’enfant la partage au guide-âne.'
 		},
 		{
 			title: 'Placer plusieurs nombres (question)',
