@@ -173,3 +173,37 @@ David : « je te suis » sur les 4 questions (comportements ; le Point aimanté 
   fausse sans message) : sans Segment dans la palette, ils posent et déplacent le point, quel que soit l'outil
   (test navigateur, vu rouge sans la correction) ; le milieu à l'œil ne se lit que sur un point posé SUR (AB)
   (test) ; `m[eé]diatrice` dans `rulerMidpointOf` ; l'aide « touche Point » passe avant celle du compas.
+
+## 3. Outil 45 — phase 0 (2026-11-28)
+
+**Vérifié dans le code** : l'outil manque. Chaque famille de vérifications est seule dans sa figure : le parseur
+refuse le mélange (« … ne se mêle pas à d'autres vérifications », `construction-parser.ts`) et le juge
+(`judgeConstruction`, `construction/judge.ts`) ne passe la main qu'à un seul juge, qui prend TOUS les traits de
+l'élève (un trait qu'il n'attend pas = réponse forgée ou « de trop »). Seules plusieurs droites, ou plusieurs
+cercles, vont ensemble. Les points construits par l'élève (C et D d'un carré) ne servent pas aux vérifications
+suivantes.
+
+**Cas réels** (BO CM1 / CM2, espace : « construire une figure composée de segments, de droites, de polygones
+usuels et de cercles ») ; exemples de la banque d'origine (6G2A-2 : un segment, puis des cercles) :
+
+- A. « Trace [AB] de 6 cm. Trace le cercle de centre A de rayon 2 cm, puis le cercle de diamètre [AB]. »
+- B. « Construis le carré ABCD de 5 cm de côté. Trace ses diagonales ; elles se coupent en O. Trace le cercle de
+  centre O passant par A. »
+- C. « Construis le rectangle ABCD (6 cm × 4 cm). Trace la droite perpendiculaire à (AC) passant par B. »
+
+**Proposition** : une figure, un programme en étapes, une validation. Syntaxe : plusieurs `verifier:` de familles
+différentes, dans l'ordre du programme ; une étape peut citer un point construit à une étape d'avant.
+
+- Nominal : toutes les étapes justes → juste.
+- Erreur : verdict de la PREMIÈRE étape fausse, avec son numéro : « Étape 2 : ton cercle ne passe pas par A. »
+- Traits : chaque étape prend les siens ; un trait qu'aucune étape ne prend est un trait de construction, ignoré.
+
+**Questions à David** :
+
+1. Les trois exemples A, B, C : ce sont bien les figures composées attendues ? Reco : A et B d'abord (sans la C,
+   l'équerre sur une diagonale est rare au CM).
+2. Une seule validation, verdict de la première étape fausse ; ou une étape à la fois (on valide l'étape 1, puis
+   l'étape 2 s'ajoute sur le dessin) ? Reco : une seule validation, comme sur le cahier.
+3. Étape 1 fausse (carré mal construit) : on s'arrête là (« Étape 1 : … ») ; ou on juge aussi la suite d'après
+   les points de l'élève ? Reco : s'arrêter à la première, plus simple à lire pour un élève de CM1.
+4. Correction : la figure entière, étape par étape (chaque étape a déjà sa correction). OK ?
