@@ -14,7 +14,7 @@ _Mis à jour le 2026-11-28, après #3276._
 
 ## Écarts du lot
 
-V74, V106, V116, V118, V120, V121, V122, V123, L41, L116, M48 (lignes au [registre](../ecarts/registre.md)).
+V74, V106, V116, V118, V120, V121, V122, V123, L41, L116, M48 (lignes au [registre](../../ecarts/registre.md)).
 
 ## Vérification (2026-11-28)
 
