@@ -1,0 +1,640 @@
+{
+	"id": "962da675-6cde-45c9-9ba4-56d96a2be9c6",
+	"title": "Plusieurs variables",
+	"description": "Suivre un programme Scratch à plusieurs variables : valeurs finales après des affectations successives, programme de calcul avec saisies, échange de deux variables",
+	"grades": ["3"],
+	"level": 1,
+	"delay": 90,
+	"status": "published",
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:n+m}}"
+				},
+				{
+					"expectedAnswer": "{{n}}"
+				}
+			],
+			"statement": "Voici un programme qui utilise deux variables $a$ et $b$.\n\n```scratch\nmettre [a v] à ({{n}})\nmettre [b v] à ({{m}})\nmettre [a v] à ((a) + (b))\nmettre [b v] à ((a) - (b))\n```\n\nQuelles sont les valeurs de $a$ et de $b$ à la fin du programme ?\n\n$a = ?$ et $b = ?$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "2..20"
+				},
+				{
+					"name": "m",
+					"expression": "2..20"
+				}
+			],
+			"conditions": ["n!=m"],
+			"correction": {
+				"steps": [
+					"Les instructions s'exécutent **dans l'ordre**, et chaque affectation remplace l'ancienne valeur.",
+					"Après les deux premières lignes : $a = {{n}}$ et $b = {{m}}$.",
+					"Ligne 3 : $a$ prend la valeur $a + b = {{n}} + {{m}} = {{eval:n+m}}$.",
+					"Ligne 4 : $b$ prend la valeur $a - b$, calculée avec la **nouvelle** valeur de $a$ : ${{eval:n+m}} - {{m}} = {{n}}$.",
+					"À la fin : $\\textcolor{{{color:primary.0}}}{a = {{eval:n+m}}}$ et $\\textcolor{{{color:primary.0}}}{b = {{n}}}$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:p*q+f}}"
+				}
+			],
+			"statement": "Un commerçant utilise ce programme pour calculer le prix à payer, frais de port compris.\n\n```scratch\nquand le drapeau vert pressé\ndemander [Prix d'un objet ?] et attendre\nmettre [prix v] à (réponse)\ndemander [Nombre d'objets ?] et attendre\nmettre [quantité v] à (réponse)\nmettre [total v] à ((prix) * (quantité))\nmettre [total v] à ((total) + ({{f}}))\ndire (total)\n```\n\nOn saisit ${{p}}$ puis ${{q}}$. Que dit le programme à la fin ?\n\n$?$",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "2..15"
+				},
+				{
+					"name": "q",
+					"expression": "2..9"
+				},
+				{
+					"name": "f",
+					"expression": "3..9"
+				}
+			],
+			"conditions": ["p!=q"],
+			"correction": {
+				"steps": [
+					"La variable *prix* vaut ${{p}}$ et la variable *quantité* vaut ${{q}}$.",
+					"*total* prend d'abord la valeur *prix* × *quantité* : ${{p}} \\times {{q}} = {{eval:p*q}}$.",
+					"Puis *total* prend la valeur *total* + ${{f}}$ : ${{eval:p*q}} + {{f}} = {{eval:p*q+f}}$.",
+					"Le programme dit $\\textcolor{{{color:primary.0}}}{{{eval:p*q+f}}}$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"statement": "Au départ, la variable $a$ vaut ${{n}}$ et la variable $b$ vaut ${{m}}$. Lequel de ces programmes **échange** leurs valeurs (à la fin, $a$ vaut ${{m}}$ et $b$ vaut ${{n}}$) ?\n\n````choix\n- ```scratch\n  mettre [c v] à (a)\n  mettre [a v] à (b)\n  mettre [b v] à (c)\n  ```\n- ```scratch\n  mettre [a v] à (b)\n  mettre [b v] à (a)\n  ```\n- ```scratch\n  mettre [c v] à (a)\n  mettre [b v] à (c)\n  mettre [a v] à (b)\n  ```\n````",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "2..20"
+				},
+				{
+					"name": "m",
+					"expression": "2..20"
+				}
+			],
+			"conditions": ["n!=m"],
+			"correction": {
+				"steps": [
+					"Avec deux affectations seulement (`a` ← `b`, puis `b` ← `a`), l'ancienne valeur de $a$ est **perdue** dès la première ligne : $a$ et $b$ valent tous deux ${{m}}$.",
+					"Il faut une troisième variable $c$ pour **garder** l'ancienne valeur de $a$ : $c = {{n}}$, puis $a = {{m}}$, puis $b = c = {{n}}$.",
+					"Dans l'ordre « $c$ ← $a$, $b$ ← $c$, $a$ ← $b$ », $b$ prend ${{n}}$ puis $a$ prend la nouvelle valeur de $b$ : les deux valent ${{n}}$.",
+					"Le bon programme : **c ← a, puis a ← b, puis b ← c**."
+				]
+			}
+		},
+		{
+			"statement": "Le point $D$ est sur le segment $[AB]$ et le point $E$ sur le segment $[AC]$. Ce programme teste si les droites $(BC)$ et $(DE)$ sont parallèles.\n\n```scratch\ndemander [Longueur AB ?] et attendre\nmettre [AB v] à (réponse)\ndemander [Longueur AC ?] et attendre\nmettre [AC v] à (réponse)\ndemander [Longueur AD ?] et attendre\nmettre [AD v] à (réponse)\ndemander [Longueur AE ?] et attendre\nmettre [AE v] à (réponse)\nsi <((AB) / (AD)) = ((AC) / (AE))> alors\ndire [Les droites sont parallèles.]\nsinon\ndire [Les droites ne sont pas parallèles.]\nfin\n```\n\nOn saisit $AB = {{eval:n*t}}$, $AC = {{eval:n*s}}$ et $AD = {{eval:m*t}}$. Quelle valeur faut-il saisir pour $AE$ pour que le lutin dise « Les droites sont parallèles. » ?\n\n$AE = ?$",
+			"variables": [
+				{
+					"name": "m",
+					"expression": "2..4"
+				},
+				{
+					"name": "dn",
+					"expression": "1..3"
+				},
+				{
+					"name": "n",
+					"expression": "eval:m+dn"
+				},
+				{
+					"name": "t",
+					"expression": "1..3"
+				},
+				{
+					"name": "s",
+					"expression": "2..5"
+				}
+			],
+			"conditions": ["s!=t"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:m*s}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:n*n*s/m}}",
+							"message": "Le programme compare $\\frac{AB}{AD}$ et $\\frac{AC}{AE}$ : mets les longueurs dans le même ordre.",
+							"label": "Rapport à l'envers"
+						},
+						{
+							"answer": "{{eval:n*s-(n-m)*t}}",
+							"message": "Les longueurs sont proportionnelles, pas décalées d'un même nombre : compare des quotients, pas des différences.",
+							"label": "Différences au lieu de quotients"
+						},
+						{
+							"answer": "{{eval:m*t}}",
+							"message": "Tu as recopié $AD$ : calcule $AE$ avec l'égalité des quotients.",
+							"label": "AD recopiée"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le lutin dit « Les droites sont parallèles. » quand $\\frac{AB}{AD} = \\frac{AC}{AE}$ (réciproque du théorème de Thalès).",
+					"$\\frac{AB}{AD} = \\frac{{{eval:n*t}}}{{{eval:m*t}}}$, donc il faut $\\frac{{{eval:n*s}}}{AE} = \\frac{{{eval:n*t}}}{{{eval:m*t}}}$.",
+					"$AE = \\frac{{{eval:n*s}} \\times {{eval:m*t}}}{{{eval:n*t}}} = \\textcolor{{{color:primary.0}}}{{{eval:m*s}}}$."
+				]
+			},
+			"hint": "Le lutin dit cette phrase quand la condition du « si » est vraie : écris l'égalité qu'elle teste avec les valeurs connues, puis trouve la valeur qui manque."
+		},
+		{
+			"statement": "Ce programme teste si un nombre est solution d'une équation.\n\n```scratch\ndemander [Choisis un nombre.] et attendre\nmettre [x v] à (réponse)\nmettre [gauche v] à ((({{a}}) * (x)) + ({{b}}))\nmettre [droite v] à ((({{c}}) * (x)) + ({{d}}))\nsi <(gauche) = (droite)> alors\ndire [Gagné !]\nsinon\ndire [Perdu]\nfin\n```\n\nQuelle valeur faut-il saisir pour que le lutin dise « Gagné ! » ?\n\n$x = ?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9"
+				},
+				{
+					"name": "c",
+					"expression": "1..8"
+				},
+				{
+					"name": "b",
+					"expression": "1..20"
+				},
+				{
+					"name": "xs",
+					"expression": "1..10"
+				},
+				{
+					"name": "x",
+					"expression": "eval:xs-5"
+				},
+				{
+					"name": "d",
+					"expression": "eval:(a-c)*x+b"
+				}
+			],
+			"conditions": ["a>c", "x!=0", "d!=0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{x}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:-x}}",
+							"message": "Vérifie le signe : remplace $x$ par ta réponse dans les deux calculs.",
+							"label": "Erreur de signe"
+						},
+						{
+							"answer": "{{eval:(d+b)/(a-c)}}",
+							"message": "En passant ${{b}}$ de l'autre côté, on le **soustrait**.",
+							"label": "Terme constant ajouté"
+						},
+						{
+							"answer": "{{eval:(d-b)/(a+c)}}",
+							"message": "En passant ${{c}}x$ de l'autre côté, on le **soustrait**.",
+							"label": "Terme en x ajouté"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le lutin dit « Gagné ! » quand ${{a}}x + {{b}} = {{c}}x + {{d;()}}$.",
+					"On regroupe : ${{eval:a-c}}x = {{d;()}} - {{b}} = {{eval:d-b}}$.",
+					"Donc $x = \\frac{{{eval:d-b}}}{{{eval:a-c}}} = \\textcolor{{{color:primary.0}}}{{{x}}}$."
+				]
+			},
+			"hint": "Le lutin dit cette phrase quand la condition du « si » est vraie : écris l'égalité qu'elle teste avec les valeurs connues, puis trouve la valeur qui manque."
+		},
+		{
+			"statement": "```scratch\ndemander [Choisis un nombre.] et attendre\nmettre [x v] à (réponse)\nmettre [a v] à ((x) + ({{p}}))\nmettre [b v] à ((x) - ({{q}}))\nsi <((a) * (b)) = [0]> alors\ndire [Le produit est nul.]\nsinon\ndire [Le produit n'est pas nul.]\nfin\n```\n\nQuelle valeur **positive** faut-il saisir pour que le lutin dise « Le produit est nul. » ?\n\n$x = ?$",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "2..9"
+				},
+				{
+					"name": "q",
+					"expression": "2..9"
+				}
+			],
+			"conditions": ["p!=q"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{q}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:-q}}",
+							"message": "Vérifie le signe : avec $x = -{{q}}$, $b = x - {{q}}$ ne vaut pas $0$.",
+							"label": "Erreur de signe"
+						},
+						{
+							"answer": "{{p}}",
+							"message": "Vérifie : avec $x = {{p}}$, ni $a$ ni $b$ ne vaut $0$.",
+							"label": "Signe de p"
+						},
+						{
+							"answer": "{{eval:-p}}",
+							"message": "$-{{p}}$ annule aussi le produit, mais on demande la valeur **positive**.",
+							"label": "Valeur négative"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"Un produit est nul quand l'un de ses facteurs est nul : $a = 0$ ou $b = 0$.",
+					"$a = x + {{p}} = 0$ donne $x = -{{p}}$ ; $b = x - {{q}} = 0$ donne $x = {{q}}$.",
+					"La valeur positive est $\\textcolor{{{color:primary.0}}}{{{q}}}$."
+				]
+			},
+			"hint": "Un produit est nul quand l'un de ses facteurs est nul : cherche la valeur de $x$ qui annule $a$, puis celle qui annule $b$."
+		},
+		{
+			"statement": "```scratch\ndemander [Longueur AB ?] et attendre\nmettre [AB v] à (réponse)\ndemander [Longueur BC ?] et attendre\nmettre [BC v] à (réponse)\ndemander [Longueur CA ?] et attendre\nmettre [CA v] à (réponse)\nsi <(((AB) * (AB)) + ((BC) * (BC))) = ((CA) * (CA))> alors\ndire [Le triangle est rectangle en B.]\nsinon\ndire [Le triangle n'est pas rectangle en B.]\nfin\n```\n\nOn saisit $BC = {{bc}}$ et $CA = {{ca}}$. Quelle valeur faut-il saisir pour $AB$ pour que le lutin dise « Le triangle est rectangle en B. » ?\n\n$AB = ?$",
+			"variables": [
+				{
+					"name": "s",
+					"expression": "0..5"
+				},
+				{
+					"name": "ab",
+					"expression": "eval:(3)*(1-min(abs((s)-(0)),1))+(5)*(1-min(abs((s)-(1)),1))+(6)*(1-min(abs((s)-(2)),1))+(8)*(1-min(abs((s)-(3)),1))+(9)*(1-min(abs((s)-(4)),1))+(12)*(1-min(abs((s)-(5)),1))"
+				},
+				{
+					"name": "bc",
+					"expression": "eval:(4)*(1-min(abs((s)-(0)),1))+(12)*(1-min(abs((s)-(1)),1))+(8)*(1-min(abs((s)-(2)),1))+(15)*(1-min(abs((s)-(3)),1))+(12)*(1-min(abs((s)-(4)),1))+(16)*(1-min(abs((s)-(5)),1))"
+				},
+				{
+					"name": "ca",
+					"expression": "eval:(5)*(1-min(abs((s)-(0)),1))+(13)*(1-min(abs((s)-(1)),1))+(10)*(1-min(abs((s)-(2)),1))+(17)*(1-min(abs((s)-(3)),1))+(15)*(1-min(abs((s)-(4)),1))+(20)*(1-min(abs((s)-(5)),1))"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{ab}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:ca*ca-bc*bc}}",
+							"message": "Tu as trouvé $AB^2$ : il reste à prendre la racine carrée.",
+							"label": "Racine oubliée"
+						},
+						{
+							"answer": "{{eval:ca-bc}}",
+							"message": "Le programme compare des **carrés** : $AB^2 + BC^2 = CA^2$.",
+							"label": "Longueurs soustraites"
+						},
+						{
+							"answer": "\\sqrt{{{eval:ca*ca+bc*bc}}}",
+							"message": "$CA$ est le plus long côté (l'hypoténuse) : on **soustrait** les carrés, $AB^2 = CA^2 - BC^2$.",
+							"label": "Carrés ajoutés"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le lutin dit « rectangle en B » quand $AB^2 + BC^2 = CA^2$ (réciproque du théorème de Pythagore).",
+					"$AB^2 = CA^2 - BC^2 = {{eval:ca*ca}} - {{eval:bc*bc}} = {{eval:ab*ab}}$.",
+					"$AB = \\sqrt{{{eval:ab*ab}}} = \\textcolor{{{color:primary.0}}}{{{ab}}}$."
+				]
+			},
+			"hint": "Le lutin dit cette phrase quand la condition du « si » est vraie : écris l'égalité qu'elle teste avec les valeurs connues, puis trouve la valeur qui manque."
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["8", "5"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"m": "3",
+				"n": "5"
+			},
+			"description": "n = 5, m = 3 : a = 8, b = 5",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["8", "3"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"m": "3",
+				"n": "5"
+			},
+			"description": "Erreur : b inchangé (b = 3)",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["8", "2"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"m": "3",
+				"n": "5"
+			},
+			"description": "Erreur : b calculé avec l'ancien a (5 − 3 = 2)",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["18"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"f": "6",
+				"p": "4",
+				"q": "3"
+			},
+			"description": "Prix 4, 3 objets, port 6 : 18",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["12"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"f": "6",
+				"p": "4",
+				"q": "3"
+			},
+			"description": "Erreur : port oublié (12)",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["13"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"f": "6",
+				"p": "4",
+				"q": "3"
+			},
+			"description": "Erreur : tout ajouté (13)",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"m": "3",
+				"n": "5"
+			},
+			"description": "Échange avec c",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"m": "3",
+				"n": "5"
+			},
+			"description": "Erreur : sans variable c",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"m": "3",
+				"n": "5"
+			},
+			"description": "Erreur : avec c, mais à l'envers",
+			"variationIndex": 2
+		},
+		{
+			"description": "D1 : AE = 8",
+			"variationIndex": 3,
+			"variables": {
+				"m": "2",
+				"dn": "1",
+				"t": "2",
+				"s": "4"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["8"]
+		},
+		{
+			"description": "D1 : rapport à l'envers (18)",
+			"variationIndex": 3,
+			"variables": {
+				"m": "2",
+				"dn": "1",
+				"t": "2",
+				"s": "4"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Le programme compare $\\frac{AB}{AD}$ et $\\frac{AC}{AE}$ : mets les longueurs dans le même ordre."
+			},
+			"answers": ["18"]
+		},
+		{
+			"description": "D1 : différences (10)",
+			"variationIndex": 3,
+			"variables": {
+				"m": "2",
+				"dn": "1",
+				"t": "2",
+				"s": "4"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Les longueurs sont proportionnelles, pas décalées d'un même nombre : compare des quotients, pas des différences."
+			},
+			"answers": ["10"]
+		},
+		{
+			"description": "D1 : AD recopiée",
+			"variationIndex": 3,
+			"variables": {
+				"m": "2",
+				"dn": "1",
+				"t": "2",
+				"s": "4"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as recopié $AD$ : calcule $AE$ avec l'égalité des quotients."
+			},
+			"answers": ["4"]
+		},
+		{
+			"description": "D2 : x = 3",
+			"variationIndex": 4,
+			"variables": {
+				"a": "5",
+				"c": "2",
+				"b": "4",
+				"xs": "8"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["3"]
+		},
+		{
+			"description": "D2 : signe",
+			"variationIndex": 4,
+			"variables": {
+				"a": "5",
+				"c": "2",
+				"b": "4",
+				"xs": "8"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Vérifie le signe : remplace $x$ par ta réponse dans les deux calculs."
+			},
+			"answers": ["-3"]
+		},
+		{
+			"description": "D2 : constante ajoutée (17/3)",
+			"variationIndex": 4,
+			"variables": {
+				"a": "5",
+				"c": "2",
+				"b": "4",
+				"xs": "8"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "En passant $4$ de l'autre côté, on le **soustrait**."
+			},
+			"answers": ["\\frac{17}{3}"]
+		},
+		{
+			"description": "D2 : terme en x ajouté (9/7)",
+			"variationIndex": 4,
+			"variables": {
+				"a": "5",
+				"c": "2",
+				"b": "4",
+				"xs": "8"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "En passant $2 x$ de l'autre côté, on le **soustrait**."
+			},
+			"answers": ["\\frac{9}{7}"]
+		},
+		{
+			"description": "D3 : x = 7",
+			"variationIndex": 5,
+			"variables": {
+				"p": "4",
+				"q": "7"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["7"]
+		},
+		{
+			"description": "D3 : signe (−7)",
+			"variationIndex": 5,
+			"variables": {
+				"p": "4",
+				"q": "7"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Vérifie le signe : avec $x = -7$, $b = x - 7$ ne vaut pas $0$."
+			},
+			"answers": ["-7"]
+		},
+		{
+			"description": "D3 : p (4)",
+			"variationIndex": 5,
+			"variables": {
+				"p": "4",
+				"q": "7"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Vérifie : avec $x = 4$, ni $a$ ni $b$ ne vaut $0$."
+			},
+			"answers": ["4"]
+		},
+		{
+			"description": "D3 : valeur négative (−4)",
+			"variationIndex": 5,
+			"variables": {
+				"p": "4",
+				"q": "7"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "$-4$ annule aussi le produit, mais on demande la valeur **positive**."
+			},
+			"answers": ["-4"]
+		},
+		{
+			"description": "D4 : AB = 5",
+			"variationIndex": 6,
+			"variables": {
+				"s": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["5"]
+		},
+		{
+			"description": "D4 : racine oubliée (25)",
+			"variationIndex": 6,
+			"variables": {
+				"s": "1"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as trouvé $AB^2$ : il reste à prendre la racine carrée."
+			},
+			"answers": ["25"]
+		},
+		{
+			"description": "D4 : longueurs soustraites (1)",
+			"variationIndex": 6,
+			"variables": {
+				"s": "1"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Le programme compare des **carrés** : $AB^2 + BC^2 = CA^2$."
+			},
+			"answers": ["1"]
+		},
+		{
+			"description": "D4 : carrés ajoutés (√313)",
+			"variationIndex": 6,
+			"variables": {
+				"s": "1"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "$CA$ est le plus long côté (l'hypoténuse) : on **soustrait** les carrés, $AB^2 = CA^2 - BC^2$."
+			},
+			"answers": ["\\sqrt{313}"]
+		}
+	]
+}

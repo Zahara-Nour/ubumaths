@@ -1,0 +1,436 @@
+{
+	"rangement": {
+		"noeud": "Algorithmique > Variables et instructions > instructions conditionnelles",
+		"point": "5-011"
+	},
+	"title": "Diviseurs et multiples avec un programme",
+	"description": "Lire un programme Scratch qui utilise le reste (modulo) : condition « est un multiple de », nombres pour lesquels le lutin dit « multiple », programme qui dit les diviseurs d'un nombre (combien, le troisième, ce qu'il fait)",
+	"grades": ["5"],
+	"level": 1,
+	"delay": 90,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "**Rappel.** Dans Scratch, « $a$ modulo $b$ » donne le **reste** de la division euclidienne de $a$ par $b$ : $17$ modulo $5$ vaut $2$.\n\nOn veut que ce programme dise « {{if:w==0|Le premier nombre est un multiple du second.|}}{{if:w==1|Le second nombre est un diviseur du premier.|}}{{if:w==2|Le premier nombre divise le second.|}} » quand c'est vrai.\n\n```scratch\ndemander [Donne un premier nombre entier.] et attendre\nmettre [a v] à (réponse)\ndemander [Donne un second nombre entier.] et attendre\nmettre [b v] à (réponse)\nsi <> alors\ndire [Oui]\nsinon\ndire [Non]\nfin\n```\n\nQuelle condition faut-il mettre dans le « si » ?\n\n````choix\n- ```scratch\n  <((a) modulo (b)) = [0]>\n  ```\n- ```scratch\n  <((b) modulo (a)) = [0]>\n  ```\n- ```scratch\n  <((a) modulo (b)) = [1]>\n  ```\n- ```scratch\n  <((a) / (b)) = [0]>\n  ```\n````",
+			"variables": [
+				{
+					"name": "w",
+					"expression": "0..2"
+				},
+				{
+					"name": "k",
+					"expression": "eval:(0)*(1-min(abs((w)-(0)),1))+(0)*(1-min(abs((w)-(1)),1))+(1)*(1-min(abs((w)-(2)),1))"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{k}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"« $a$ est un multiple de $b$ », « $b$ est un diviseur de $a$ » et « $b$ divise $a$ » veulent dire la même chose : la division de $a$ par $b$ tombe juste, son reste vaut $0$.",
+					"{{if:w==2|Ici, c'est le premier nombre, $a$, qui divise le second, $b$ : on teste le reste de $b$ par $a$.|Ici, on teste le reste de la division de $a$ par $b$.}}",
+					"La bonne condition est $\\textcolor{{{color:primary.0}}}{\\text{{{if:w==2|(b modulo a) = 0|(a modulo b) = 0}}}}$."
+				]
+			},
+			"hint": "Un nombre est un multiple d'un autre quand la division tombe juste : que vaut alors le reste ?"
+		},
+		{
+			"statement": "**Rappel.** Dans Scratch, « $a$ modulo $b$ » donne le **reste** de la division euclidienne de $a$ par $b$ : $17$ modulo $5$ vaut $2$.\n\n```scratch\ndemander [Donne un premier nombre entier.] et attendre\nmettre [a v] à (réponse)\ndemander [Donne un second nombre entier.] et attendre\nmettre [b v] à (réponse)\nsi <((a) modulo (b)) = [0]> alors\ndire [Le premier nombre est un multiple du second.]\nsinon\ndire [Le premier nombre n'est pas un multiple du second.]\nfin\n```\n\nPour quels nombres saisis, dans cet ordre, le lutin dit-il « Le premier nombre est un multiple du second. » ?\n\n```choix\n- ${{eval:q*b}}$ puis ${{b}}$\n- ${{b}}$ puis ${{eval:q*b}}$\n- ${{eval:q*b+1}}$ puis ${{b}}$\n- ${{eval:q*b}}$ puis ${{eval:b+1}}$\n```",
+			"variables": [
+				{
+					"name": "b",
+					"expression": "3..9"
+				},
+				{
+					"name": "q",
+					"expression": "2..9"
+				}
+			],
+			"conditions": ["(q*b)%(b+1)!=0"],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le lutin dit « multiple » quand le reste de la division du **premier** nombre par le **second** vaut $0$.",
+					"${{eval:q*b}} = {{q}} \\times {{b}}$ : le reste de ${{eval:q*b}}$ par ${{b}}$ vaut $0$. Dans l'autre ordre, le reste de ${{b}}$ par ${{eval:q*b}}$ vaut ${{b}}$.",
+					"Il faut saisir $\\textcolor{{{color:primary.0}}}{{{eval:q*b}}}$ puis $\\textcolor{{{color:primary.0}}}{{{b}}}$."
+				]
+			},
+			"hint": "Pour chaque proposition, calcule le reste de la division du premier nombre par le second."
+		},
+		{
+			"statement": "**Rappel.** Dans Scratch, « $a$ modulo $b$ » donne le **reste** de la division euclidienne de $a$ par $b$ : $17$ modulo $5$ vaut $2$.\n\n```scratch\nquand le drapeau vert pressé\ndemander [Donne un nombre entier.] et attendre\nmettre [d v] à (1)\nrépéter (réponse) fois\nsi <((réponse) modulo (d)) = [0]> alors\ndire (d) pendant (1) secondes\nfin\najouter (1) à [d v]\nfin\n```\n\nOn saisit ${{N}}$. **Combien** de nombres le lutin dit-il ?\n\n$?$",
+			"variables": [
+				{
+					"name": "s",
+					"expression": "0..7"
+				},
+				{
+					"name": "N",
+					"expression": "eval:(12)*(1-min(abs((s)-(0)),1))+(18)*(1-min(abs((s)-(1)),1))+(20)*(1-min(abs((s)-(2)),1))+(24)*(1-min(abs((s)-(3)),1))+(28)*(1-min(abs((s)-(4)),1))+(30)*(1-min(abs((s)-(5)),1))+(36)*(1-min(abs((s)-(6)),1))+(40)*(1-min(abs((s)-(7)),1))"
+				},
+				{
+					"name": "D",
+					"expression": "eval:(6)*(1-min(abs((s)-(0)),1))+(6)*(1-min(abs((s)-(1)),1))+(6)*(1-min(abs((s)-(2)),1))+(8)*(1-min(abs((s)-(3)),1))+(6)*(1-min(abs((s)-(4)),1))+(8)*(1-min(abs((s)-(5)),1))+(9)*(1-min(abs((s)-(6)),1))+(8)*(1-min(abs((s)-(7)),1))"
+				},
+				{
+					"name": "T",
+					"expression": "eval:(3)*(1-min(abs((s)-(0)),1))+(3)*(1-min(abs((s)-(1)),1))+(4)*(1-min(abs((s)-(2)),1))+(3)*(1-min(abs((s)-(3)),1))+(4)*(1-min(abs((s)-(4)),1))+(3)*(1-min(abs((s)-(5)),1))+(3)*(1-min(abs((s)-(6)),1))+(4)*(1-min(abs((s)-(7)),1))"
+				},
+				{
+					"name": "Q",
+					"expression": "eval:(4)*(1-min(abs((s)-(0)),1))+(6)*(1-min(abs((s)-(1)),1))+(5)*(1-min(abs((s)-(2)),1))+(4)*(1-min(abs((s)-(3)),1))+(7)*(1-min(abs((s)-(4)),1))+(5)*(1-min(abs((s)-(5)),1))+(4)*(1-min(abs((s)-(6)),1))+(5)*(1-min(abs((s)-(7)),1))"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{D}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:D-2}}",
+							"message": "Le lutin dit aussi $1$ et ${{N}}$ : ce sont des diviseurs de ${{N}}$.",
+							"label": "1 et le nombre oubliés"
+						},
+						{
+							"answer": "{{eval:D-1}}",
+							"message": "Le dernier tour teste $d = {{N}}$ : le reste vaut $0$, le lutin dit aussi ${{N}}$.",
+							"label": "Le nombre lui-même oublié"
+						},
+						{
+							"answer": "{{N}}",
+							"message": "Le lutin ne parle que quand le reste vaut $0$, pas à chaque tour.",
+							"label": "Un nombre par tour"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"La variable $d$ prend les valeurs $1$, $2$, $3$, …, ${{N}}$ (la boucle tourne ${{N}}$ fois). Le lutin dit $d$ quand le reste de ${{N}}$ par $d$ vaut $0$ : il dit les **diviseurs** de ${{N}}$.",
+					"Le lutin dit, dans l'ordre : {{if:s==0|$1, 2, 3, 4, 6, 12$|}}{{if:s==1|$1, 2, 3, 6, 9, 18$|}}{{if:s==2|$1, 2, 4, 5, 10, 20$|}}{{if:s==3|$1, 2, 3, 4, 6, 8, 12, 24$|}}{{if:s==4|$1, 2, 4, 7, 14, 28$|}}{{if:s==5|$1, 2, 3, 5, 6, 10, 15, 30$|}}{{if:s==6|$1, 2, 3, 4, 6, 9, 12, 18, 36$|}}{{if:s==7|$1, 2, 4, 5, 8, 10, 20, 40$|}}.",
+					"Il dit $\\textcolor{{{color:primary.0}}}{{{D}}}$ nombres."
+				]
+			},
+			"hint": "La variable $d$ va de $1$ au nombre saisi. Le lutin ne parle que quand le reste vaut $0$ : écris les valeurs de $d$ pour lesquelles c'est le cas."
+		},
+		{
+			"statement": "**Rappel.** Dans Scratch, « $a$ modulo $b$ » donne le **reste** de la division euclidienne de $a$ par $b$ : $17$ modulo $5$ vaut $2$.\n\n```scratch\nquand le drapeau vert pressé\ndemander [Donne un nombre entier.] et attendre\nmettre [d v] à (1)\nrépéter (réponse) fois\nsi <((réponse) modulo (d)) = [0]> alors\ndire (d) pendant (1) secondes\nfin\najouter (1) à [d v]\nfin\n```\n\nOn saisit ${{N}}$. Quel est le **troisième** nombre que dit le lutin ?\n\n$?$",
+			"variables": [
+				{
+					"name": "s",
+					"expression": "0..7"
+				},
+				{
+					"name": "N",
+					"expression": "eval:(12)*(1-min(abs((s)-(0)),1))+(18)*(1-min(abs((s)-(1)),1))+(20)*(1-min(abs((s)-(2)),1))+(24)*(1-min(abs((s)-(3)),1))+(28)*(1-min(abs((s)-(4)),1))+(30)*(1-min(abs((s)-(5)),1))+(36)*(1-min(abs((s)-(6)),1))+(40)*(1-min(abs((s)-(7)),1))"
+				},
+				{
+					"name": "D",
+					"expression": "eval:(6)*(1-min(abs((s)-(0)),1))+(6)*(1-min(abs((s)-(1)),1))+(6)*(1-min(abs((s)-(2)),1))+(8)*(1-min(abs((s)-(3)),1))+(6)*(1-min(abs((s)-(4)),1))+(8)*(1-min(abs((s)-(5)),1))+(9)*(1-min(abs((s)-(6)),1))+(8)*(1-min(abs((s)-(7)),1))"
+				},
+				{
+					"name": "T",
+					"expression": "eval:(3)*(1-min(abs((s)-(0)),1))+(3)*(1-min(abs((s)-(1)),1))+(4)*(1-min(abs((s)-(2)),1))+(3)*(1-min(abs((s)-(3)),1))+(4)*(1-min(abs((s)-(4)),1))+(3)*(1-min(abs((s)-(5)),1))+(3)*(1-min(abs((s)-(6)),1))+(4)*(1-min(abs((s)-(7)),1))"
+				},
+				{
+					"name": "Q",
+					"expression": "eval:(4)*(1-min(abs((s)-(0)),1))+(6)*(1-min(abs((s)-(1)),1))+(5)*(1-min(abs((s)-(2)),1))+(4)*(1-min(abs((s)-(3)),1))+(7)*(1-min(abs((s)-(4)),1))+(5)*(1-min(abs((s)-(5)),1))+(4)*(1-min(abs((s)-(6)),1))+(5)*(1-min(abs((s)-(7)),1))"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{T}}",
+					"expectedErrors": [
+						{
+							"answer": "{{Q}}",
+							"message": "Le premier nombre dit est $1$ : $1$ divise tous les nombres.",
+							"label": "1 oublié"
+						},
+						{
+							"answer": "3",
+							"message": "Le lutin ne dit pas toutes les valeurs de $d$ : seulement celles où le reste vaut $0$.",
+							"label": "Troisième valeur de d"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"La variable $d$ prend les valeurs $1$, $2$, $3$, …, ${{N}}$ (la boucle tourne ${{N}}$ fois). Le lutin dit $d$ quand le reste de ${{N}}$ par $d$ vaut $0$ : il dit les **diviseurs** de ${{N}}$.",
+					"Le lutin dit, dans l'ordre : {{if:s==0|$1, 2, 3, 4, 6, 12$|}}{{if:s==1|$1, 2, 3, 6, 9, 18$|}}{{if:s==2|$1, 2, 4, 5, 10, 20$|}}{{if:s==3|$1, 2, 3, 4, 6, 8, 12, 24$|}}{{if:s==4|$1, 2, 4, 7, 14, 28$|}}{{if:s==5|$1, 2, 3, 5, 6, 10, 15, 30$|}}{{if:s==6|$1, 2, 3, 4, 6, 9, 12, 18, 36$|}}{{if:s==7|$1, 2, 4, 5, 8, 10, 20, 40$|}}.",
+					"Le troisième nombre dit est $\\textcolor{{{color:primary.0}}}{{{T}}}$."
+				]
+			},
+			"hint": "Écris les valeurs de $d$ pour lesquelles le reste vaut $0$, dans l'ordre, sans oublier $1$."
+		},
+		{
+			"statement": "**Rappel.** Dans Scratch, « $a$ modulo $b$ » donne le **reste** de la division euclidienne de $a$ par $b$ : $17$ modulo $5$ vaut $2$.\n\n```scratch\nquand le drapeau vert pressé\ndemander [Donne un nombre entier.] et attendre\nmettre [d v] à (1)\nrépéter (réponse) fois\nsi <((réponse) modulo (d)) = [0]> alors\ndire (d) pendant (1) secondes\nfin\najouter (1) à [d v]\nfin\n```\n\nQue fait ce programme ?\n\n```choix\n- Il dit tous les diviseurs du nombre saisi.\n- Il dit les premiers multiples du nombre saisi.\n- Il dit tous les nombres entiers de $1$ au nombre saisi.\n- Il dit le reste de la division du nombre saisi par $2$.\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La variable $d$ prend les valeurs $1$, $2$, $3$, … jusqu'au nombre saisi.",
+					"Le lutin dit $d$ seulement quand le reste de la division du nombre saisi par $d$ vaut $0$, c'est-à-dire quand $d$ est un diviseur du nombre.",
+					"$\\textcolor{{{color:primary.0}}}{\\text{Il dit tous les diviseurs du nombre saisi.}}$"
+				]
+			},
+			"hint": "Essaie le programme avec un petit nombre, par exemple $6$ : note ce que dit le lutin."
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "v1 : multiple → a modulo b",
+			"variationIndex": 0,
+			"variables": {
+				"w": "0"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0"]
+		},
+		{
+			"description": "v1 : diviseur → a modulo b",
+			"variationIndex": 0,
+			"variables": {
+				"w": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0"]
+		},
+		{
+			"description": "v1 : divise → b modulo a",
+			"variationIndex": 0,
+			"variables": {
+				"w": "2"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["1"]
+		},
+		{
+			"description": "v1 : divise, modulo à l'envers",
+			"variationIndex": 0,
+			"variables": {
+				"w": "2"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["0"]
+		},
+		{
+			"description": "v1 : reste 1",
+			"variationIndex": 0,
+			"variables": {
+				"w": "0"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["2"]
+		},
+		{
+			"description": "v1 : quotient nul",
+			"variationIndex": 0,
+			"variables": {
+				"w": "0"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["3"]
+		},
+		{
+			"description": "v2 : 42 puis 7",
+			"variationIndex": 1,
+			"variables": {
+				"b": "7",
+				"q": "6"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0"]
+		},
+		{
+			"description": "v2 : ordre inversé",
+			"variationIndex": 1,
+			"variables": {
+				"b": "7",
+				"q": "6"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["1"]
+		},
+		{
+			"description": "v2 : 43 puis 7",
+			"variationIndex": 1,
+			"variables": {
+				"b": "7",
+				"q": "6"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["2"]
+		},
+		{
+			"description": "v2 : 42 puis 8",
+			"variationIndex": 1,
+			"variables": {
+				"b": "7",
+				"q": "6"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["3"]
+		},
+		{
+			"description": "v3 : 12 → 6",
+			"variationIndex": 2,
+			"variables": {
+				"s": "0"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["6"]
+		},
+		{
+			"description": "v3 : 36 → 9",
+			"variationIndex": 2,
+			"variables": {
+				"s": "6"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["9"]
+		},
+		{
+			"description": "v3 : 1 et 12 oubliés",
+			"variationIndex": 2,
+			"variables": {
+				"s": "0"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Le lutin dit aussi $1$ et $12$ : ce sont des diviseurs de $12$."
+			},
+			"answers": ["4"]
+		},
+		{
+			"description": "v3 : 12 oublié",
+			"variationIndex": 2,
+			"variables": {
+				"s": "0"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Le dernier tour teste $d = 12$ : le reste vaut $0$, le lutin dit aussi $12$."
+			},
+			"answers": ["5"]
+		},
+		{
+			"description": "v3 : un par tour",
+			"variationIndex": 2,
+			"variables": {
+				"s": "0"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Le lutin ne parle que quand le reste vaut $0$, pas à chaque tour."
+			},
+			"answers": ["12"]
+		},
+		{
+			"description": "v4 : 20 → 4",
+			"variationIndex": 3,
+			"variables": {
+				"s": "2"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["4"]
+		},
+		{
+			"description": "v4 : 28 → 4",
+			"variationIndex": 3,
+			"variables": {
+				"s": "4"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["4"]
+		},
+		{
+			"description": "v4 : 1 oublié (5)",
+			"variationIndex": 3,
+			"variables": {
+				"s": "2"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Le premier nombre dit est $1$ : $1$ divise tous les nombres."
+			},
+			"answers": ["5"]
+		},
+		{
+			"description": "v4 : 3e valeur de d",
+			"variationIndex": 3,
+			"variables": {
+				"s": "2"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Le lutin ne dit pas toutes les valeurs de $d$ : seulement celles où le reste vaut $0$."
+			},
+			"answers": ["3"]
+		},
+		{
+			"description": "v5 : diviseurs",
+			"variationIndex": 4,
+			"variables": {},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0"]
+		},
+		{
+			"description": "v5 : multiples",
+			"variationIndex": 4,
+			"variables": {},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["1"]
+		},
+		{
+			"description": "v5 : tous les nombres",
+			"variationIndex": 4,
+			"variables": {},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["2"]
+		}
+	]
+}

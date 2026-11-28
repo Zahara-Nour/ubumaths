@@ -2,14 +2,15 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-28, phase 0 en attente de David._
+_Mis à jour le 2026-11-28, lot écrit, avant la PR._
 
-- **État** : relevé fait ([idees-3e-algorithmique-releve.md](idees-3e-algorithmique-releve.md)), phase 0
-  publiée en page à cocher. · **Prochaine action** : lire les verdicts de la page (collection
-  `verdicts`), consigner les décisions, réserver les 6 modèles publiés visés, écrire le gros lot. · **En
-  attente de David** : verdicts des fiches A à H, R, Q1. · **Pièges en cours** : E est un modèle de
-  **5e** (point 5-011, `grades` `['5']`), jamais tagué en 3e. · **Worktree / branche** :
-  `../ubumaths-wt-idees-3e-algorithmique`, `feat/idees-3e-algorithmique`.
+- **État** : phase 0 validée (« je valide tes recos »). Lot écrit sur la branche : 13 variations de 6
+  modèles publiés (migration de contenu `20261128132651`) et le modèle neuf E (5e, 5-011). · **Prochaine
+  action** : test d'intégration de la migration, `security-auditor`, PR, CI, merge ; puis David :
+  `create-questions --publier` (E) et `db:migrate`. · **En attente de David** : rien avant la PR. ·
+  **Pièges en cours** : E est un modèle de **5e** (point 5-011, `grades` `['5']`) ; la migration de
+  contenu a été régénérée deux fois et gardée sous son premier nom (déjà jouée en base locale). ·
+  **Worktree / branche** : `../ubumaths-wt-idees-3e-algorithmique`, `feat/idees-3e-algorithmique`.
 
 ## Rubrique
 
@@ -42,3 +43,38 @@ Questions :
 
 Aucun outil manquant : le plateau de couleurs de 3I10-1 devient une position (x ; y), et la formule de
 tableur reste à choisir (Q22).
+
+## Décisions de David (2026-11-28)
+
+« Je valide tes recos » : toutes les recommandations de la page à cocher (A à H, R), Q1 : E dans ce
+chantier. Personne ne gagne d'accès. Les six modèles publiés sont réservés dans le tableau de
+répartition ; 3I12-5 est noté en « Idées en attente » pour la session 6I1.
+
+## Lot (2026-11-28)
+
+Scripts `docs/wip/questions/idees-3e-algorithmique-publies.py` (export de prod du 2026-11-28,
+variations ajoutées à la fin) et `docs/wip/questions/idees-3e-algorithmique-neufs.py`.
+
+| Modèle                                                | Ajout                                                                                                                    | Point                                                  |
+| ----------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------ |
+| 9f9bddbd Conditions composées                         | v5 : lutin, condition « ou » après deux déplacements ; v6 : « et » dans 5 tours                                          | 3-048                                                  |
+| 4ce8eb3c Répéter jusqu'à                              | v5 : lutin jusqu'à abscisse > k ; v6 : Syracuse, compteur ; v7 : Syracuse, maximum                                       | 3-049                                                  |
+| 6e99d291 Écrire un programme                          | v4 : nombre d'étapes de Syracuse ; v5 : nombre de diviseurs (``calcul 3e)                                                | 3-051                                                  |
+| 962da675 Plusieurs variables                          | v4 : Thalès (AE) ; v5 : équation ; v6 : produit nul (valeur positive) ; v7 : Pythagore                                   | 3-047                                                  |
+| 5c092e43 Formules du tableur                          | v5 : moyenne de températures négatives comprises, en colonne B2:B6                                                       | 3-032                                                  |
+| 0a470416 Bloc personnalisé                            | v4 : a et b d'un bloc « losange » (b = 180 − tour)                                                                       | 3-050                                                  |
+| **Neuf** Diviseurs et multiples avec un programme (E) | 5 variations : condition à choisir, couple « multiple », nombre de diviseurs dits, 3e diviseur, ce que fait le programme | 5-011 (5e, « instructions conditionnelles », niveau 1) |
+
+- Chaque variation : coup de pouce, erreurs prévues (deux ou trois par case, choix exclus), specs.
+  `question:specs` vert sur les sept fichiers ; sonde Scratch (`checkScratchProgram` sur chaque bloc
+  tiré, 200 tirages par modèle) : 1 734 blocs, 0 problème ; `create-questions` en simulation vert (E).
+- Écarts avec les fiches : A1 n'a que deux erreurs prévues par case (« ou lu comme et » et « branche
+  échangée » donnent la même position) ; G en colonne et sur cinq jours (en ligne, le tableau
+  débordait à 390 px, vu à l'écran) ; H sans erreur prévue sur a (aucune erreur réelle) ; messages
+  en « degrés » (le juge réécrit `60°` en `60 °`).
+- **Vu à l'écran** (`/dev/modeles` en local, WebKit, iPhone 13, copies locales, `.captures/algo/`) :
+  blocs Scratch dessinés (lutin, Syracuse, Thalès, équation, produit nul, losange, condition vide
+  de E v1, conditions dans un choix) ; positions et valeurs attendues recalculées à la main sur les
+  tirages vus. Réponses justes et fausses non jouées à la main : les specs passent par le même juge.
+- Migration `20261128132651_questions_idees_3e_algorithmique_publies_contenu.sql` et sa fixture,
+  générées par `migration-contenu.ts` (relevé de la prod du 2026-11-28).
