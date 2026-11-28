@@ -2,17 +2,17 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-28, après #3294._
+_Mis à jour le 2026-11-28, après #3294 et la migration en prod._
 
-- **État** : #3294 mergé (13 variations de 6 modèles publiés + fichier du modèle neuf E, 5e).
-  Migration de contenu `20261128132651` seule en attente en prod (`migration list --linked`). ·
-  **Prochaine action** : `db:migrate` (accord de David), puis vérifier les 13 variations en prod ;
-  après le `create-questions --publier` de David, commiter l'id de E, migration de rangement (nœud
-  « instructions conditionnelles », point 5-011), puis relecture dans `/dev/modeles` (série de
-  relecture pour les publiés, `?point=5-011` pour E) et publication. · **En attente de David** :
-  accord pour `db:migrate` ; `pnpm tsx scripts/create-questions.ts --dir
-scripts/questions/idees-3e-algorithmique-neufs --publier`. · **Pièges en cours** : E est un modèle
-  de **5e** (`grades` `['5']`). · **Worktree / branche** : aucun (retirés par `pr:merger`).
+- **État** : #3294 mergé ; migration `20261128132651` en prod (`db push --include-all` par David, avec
+  `20261128072151` d'`ecarts-cours-evaluations`) : les 13 variations et leurs specs sont relues en
+  prod (0a470416 4, 4ce8eb3c 7, 5c092e43 5, 6e99d291 5, 962da675 7, 9f9bddbd 6 variations). Modèle E
+  pas encore créé. · **Prochaine action** : après le `create-questions --publier` de David, commiter
+  l'id de E, migration de rangement (nœud « instructions conditionnelles », point 5-011) ; série de
+  relecture des 6 publiés ; relecture dans `/dev/modeles` ; publication de E. · **En attente de David**
+  : `pnpm tsx scripts/create-questions.ts --dir scripts/questions/idees-3e-algorithmique-neufs
+--publier`. · **Pièges en cours** : E est un modèle de **5e** (`grades` `['5']`). · **Worktree /
+  branche** : aucun.
 
 ## Rubrique
 
@@ -84,3 +84,4 @@ variations ajoutées à la fin) et `docs/wip/questions/idees-3e-algorithmique-ne
   bloquant ; personne ne gagne ni ne perd d'accès (6 UPDATE gardés, rollback cohérent, contenu sans
   donnée réelle ni lien).
 - #3294 mergé le 2026-11-28 (CI verte, `pr:merger`).
+- Migration `20261128132651` en prod le 2026-11-28 (David, `db push --include-all`, avec `20261128072151`) ; variations relues en prod par le MCP.

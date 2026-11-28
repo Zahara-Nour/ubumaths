@@ -18,6 +18,7 @@ import {
 	isRuledLength,
 	isDiagonalRectangleCheck,
 	isRuledPolygonCheck,
+	rulerMidpointOf,
 	type ConstructionCheck,
 	type DroiteParCheck,
 	type PolygonCheck
@@ -35,7 +36,14 @@ import {
 	judgePoints,
 	type ExpectedPoints
 } from './point';
-import { LineAuthorError, assertLines, bissectriceOf, isLineCheck, judgeLines } from './line';
+import {
+	LineAuthorError,
+	assertLines,
+	bissectriceOf,
+	isLineCheck,
+	judgeLines,
+	usesRulerMidpoint
+} from './line';
 import { CircleAuthorError, assertCircles, isCircleCheck, judgeCircles } from './circle';
 import { PolygonAuthorError, givenVertices, judgePolygon } from './polygon';
 import { RuledPolygonAuthorError, assertRuledPolygon, judgeRuledPolygon } from './ruled-polygon';
@@ -380,7 +388,11 @@ export function judgeConstruction(
 	const rulerPolygon = allChecks.find(isRuledPolygonCheck);
 	// … ou d'un rectangle sans équerre, seul dans la figure (garanti par le parseur)
 	const diagonalRectangle = allChecks.find(isDiagonalRectangleCheck);
+	// … ou d'une médiatrice ou d'un milieu (outil n° 38), si l'auteur l'a mise dans outils:
+	const rulerMidpoint =
+		usesRulerMidpoint(shapes) && allChecks.some((c) => rulerMidpointOf(c) !== null);
 	if (
+		!rulerMidpoint &&
 		!segmentLength &&
 		!rulerCircle &&
 		!rulerTriangle &&

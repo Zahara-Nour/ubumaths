@@ -40,6 +40,7 @@ import {
 	bissectriceOf,
 	throughLineOf,
 	centeredCircleOf,
+	rulerMidpointOf,
 	centeredCircleTools,
 	PLAIN_PAPER_TOOLS,
 	triangleTools,
@@ -838,6 +839,11 @@ function coherenceError(
 	const rulerCircle =
 		check.kind === 'cercle' && centeredCircleOf(check.expression)?.kind === 'longueur';
 	const rulerTriangle = check.kind === 'triangle' && check.lengths.some(isRuledLength);
+	// … et au milieu marqué sur la règle (outil n° 38) : médiatrice ou milieu, papier uni
+	const rulerMidpoint = rulerMidpointOf(check) !== null && spec.tools.includes('regle');
+	if (rulerMidpoint && grid && (check.kind === 'droite' || check.kind === 'point')) {
+		return `${check.kind} ${check.name} : le milieu se marque à la règle graduée sur papier uni (sur quadrillage, on compte les carreaux) ; retirer regle de outils: (ou retirer « grille: »)`;
+	}
 	// … et au carré / rectangle coté (PR 6), qui a ses propres règles ci-dessous
 	if (isRuledPolygonCheck(check)) return ruledPolygonError(check, spec, grid);
 	// … et au rectangle sans équerre (chantier `rectangle-sans-equerre`)
@@ -848,6 +854,7 @@ function coherenceError(
 		check.kind !== 'mesure_segment' &&
 		!rulerCircle &&
 		!rulerTriangle &&
+		!rulerMidpoint &&
 		spec.tools.includes('regle')
 	) {
 		return `la règle graduée ne sert qu’à tracer un segment de longueur donnée (« verifier: ${SEGMENT_EXAMPLE} »), un cercle de rayon donné (« verifier: ${RULER_CIRCLE_EXAMPLE} »), un triangle coté en cm (« verifier: ${RULER_TRIANGLE_EXAMPLE} ») ou à mesurer un segment (« verifier: ${SEGMENT_MEASURE_EXAMPLE} ») ; la retirer de outils:`;
@@ -1016,11 +1023,17 @@ function coherenceError(
 		// Lot 9 (§ 25) : une bissectrice admet aussi le rapporteur
 		const allowed = [
 			...(PLAIN_PAPER_TOOLS[check.kind] ?? []),
-			...(protractorAllowed && check.kind === 'droite' ? (['rapporteur'] as const) : [])
+			...(protractorAllowed && check.kind === 'droite' ? (['rapporteur'] as const) : []),
+			...(rulerMidpoint ? (['regle', 'point'] as const) : [])
 		];
 		const other = spec.tools.find((t) => !allowed.includes(t));
 		if (other)
 			return `${check.kind} ${check.name} : outil ${other} hors de la palette (${allowed.join(', ')})`;
+		// Outil n° 38 : à la règle graduée, le milieu se marque au point, la perpendiculaire
+		// par ce point se trace à l'équerre (décision de David, 2026-11-28)
+		if (rulerMidpoint && (!spec.tools.includes('point') || !spec.tools.includes('equerre'))) {
+			return `droite ${check.name} : à la règle graduée, le milieu se marque au point, puis la perpendiculaire se trace à l’équerre (outils: droite, regle, point, equerre)`;
+		}
 		// Outil n° 40 : sur papier uni, la perpendiculaire et la parallèle par un point se
 		// tracent à l'équerre (décision 2 de David, 2026-11-28) ; sur quadrillage, compter suffit
 		const through = check.kind === 'droite' ? throughLineOf(check.expression) : null;

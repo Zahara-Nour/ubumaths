@@ -813,7 +813,8 @@ pointillés, un toucher ouvre dessous + / −, 0 / ‖ / rien, ou ↗ / ↘ ; au
 `data-construire-case` (Entrée → première case vide). Flash : cellules vides ; bonne réponse : remplies.
 Énoncé masqué d'évaluation : même écran. Tableau de **variations** (chantier `variations-a-completer`) :
 une flèche cachée n'est pas dessinée et les deux valeurs qui l'encadrent sont au milieu
-(`variationRowForDisplay`) ; une valeur cachée est une case à sa hauteur.
+(`variationRowForDisplay`) ; à côté d'une double barre, c'est la limite du côté de la flèche qui
+passe au milieu, l'autre côté garde sa hauteur (outil 59) ; une valeur cachée est une case à sa hauteur.
 
 Corrigé (résultat attendu, `expected-result.ts`) : le tableau sort de l'énoncé rempli et de la consigne
 (`withoutSignTableCases`, aussi dans `instructionOf`) ; une ligne `sign-table` par tableau, à sa place :
@@ -1002,7 +1003,18 @@ grise pas « Valider » (`FlashCard`, `QuestionCard` ; la version publique porte
    jusqu'à A, la parallèle en deux équerres : `isSupported` le reconnaît depuis le lot 2b), A ou B invisible, ou médiatrice
    qui n'a pas 2 unités dans la fenêtre (`mediatriceSupportError`, aussi pour `milieu(A, B)` : l'élève y
    croise deux cercles de même rayon, quel qu'il soit ; avant le lot 9, les cercles de rayon AB devaient
-   s'y couper). Une `droite` ne se mêle à aucune autre
+   s'y couper). Médiatrice et milieu à la règle graduée (outil n° 38, papier uni, `regle` dans `outils:` ;
+   médiatrice : `droite, regle, point, equerre`, milieu : `regle, point`) : l'élève pose la règle sur [AB],
+   son 0 en A ou en B, marque le milieu au Point (aimanté aux graduations du mm, ‹ › le déplacent d'un
+   millimètre, `nudgeRulerEnd` forme `point`), puis trace à l'équerre par ce point. Le juge lit la palette
+   (`FigureShapes.tools`, rempli par `positions-setup.ts`) : avec la règle et une médiatrice ou un milieu
+   vérifié, `constructionOf` reçoit `rulerLength` et un point posé sur une graduation d'une règle bien posée
+   (0 sur un point construit, bord vers un point construit ou le long d'un trait droit construit par ce 0)
+   est construit ; partout ailleurs, une règle posée reste une réponse forgée. Milieu posé à l'œil (point
+   posé sur (AB), ni point de départ ni sur une graduation) : « Ton milieu est placé à l'œil : pose la règle
+   sur [AB] et marque-le sur une graduation. » (`midpointEyeballedFeedback`). Erreur de l'auteur : [AB] qui
+   ne mesure pas un nombre pair de millimètres ou plus long que la règle (`rulerMidpointError`). Une
+   `droite` ne se mêle à aucune autre
    vérification, et sa palette ne prend que règle, équerre, compas, report (parseur : un point ou un segment
    tracé ferait une réponse forgée). Palette : règle, équerre, compas, avec ou sans quadrillage, et le report sur papier uni (lot 9 : il garde l'écartement des deux cercles égaux ; `LINE_GRID_TOOLS` sur quadrillage, où `outils: report` est refusé)
    (`PLAIN_PAPER_TOOLS.droite`) ; sur quadrillage, tous ses touchers vont aux nœuds (l'équerre choisit
@@ -1796,7 +1808,8 @@ Tests : `FlashCard-coup-de-pouce.svelte.test.ts`, les tests des trois formes.
    ` ```figure-a-completer ` ; tableau à compléter : valeur de x cachée → `??1`, `??2`… dans
    `domain:` et dans les clés des lignes, signe, marque ou flèche cachés → `?` seul, valeur cachée
    d'une ligne `variation:` → `?, position` ; valeurs qui encadrent une flèche cachée passées en
-   `center`, bornes implicites de leur ligne écrites (`-inf: , top`), `maskVariation`) ; la case
+   `center`, comme la limite d'une double barre du côté d'une flèche cachée (`||, ?, center, +inf, top`),
+   bornes implicites de leur ligne écrites (`-inf: , top`), `maskVariation`) ; la case
    garde le genre de son bloc (`cellule` pour une case de tableau) (`construire`, ou `figure`
    pour une figure à compléter, jamais `construction`), pour le même écran qu'hors évaluation
    (chantier [fuite-enonce](../archive/wip/fuite-enonce-progress.md)). Limite : un point invisible

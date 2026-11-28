@@ -26,6 +26,19 @@ const CUBIQUE = [
 	'  -2,2: ?flèche'
 ];
 
+/** Homographique ↘ ↘ (outil 59) : limites cachées, deux flèches cachées */
+const HOMOGRAPHIQUE = [
+	'variable: x',
+	'domain: -inf, 2, +inf',
+	'',
+	'variation: f(x)',
+	'  -inf: 1, top',
+	'  2: ||, ?-inf, bottom, ?+inf, top',
+	'  +inf: 1, bottom',
+	'  -inf,2: ?flèche',
+	'  2,+inf: ?flèche'
+];
+
 // Functions
 function parsed(lines: string[]): VariationTableNode {
 	const { node, errors } = parseVariationTableContent(lines);
@@ -70,5 +83,29 @@ describe('VariationTable — ligne variation: à compléter', () => {
 		expect(cases.map((c) => c.textContent?.trim())).toEqual(['4', '↘']);
 		expect(positionOf(root, 1)).toBe('vt-pos-top');
 		expect(positionOf(root, 2)).toBe('vt-pos-bottom');
+	});
+
+	it('flèches cachées autour d’une double barre : aucune dessinée, limites au milieu', async () => {
+		const screen = await render(VariationTable, { props: { node: parsed(HOMOGRAPHIQUE) } });
+		const root = screen.container;
+		expect(root.querySelectorAll('[data-vt-case]')).toHaveLength(4);
+		expect(root.querySelectorAll('svg.vt-arrow')).toHaveLength(0);
+		const limits = [...root.querySelectorAll('.vt-limit')];
+		expect(limits).toHaveLength(2);
+		for (const limit of limits) expect(limit.classList).toContain('vt-pos-center');
+	});
+
+	it('flèches cachées autour d’une double barre, hiddenCells="filled" : le tableau juste', async () => {
+		const screen = await render(VariationTable, {
+			props: { node: parsed(HOMOGRAPHIQUE), hiddenCells: 'filled' }
+		});
+		const root = screen.container;
+		const cases = [...root.querySelectorAll('[data-vt-case]')];
+		expect(cases.map((c) => c.textContent?.trim())).toEqual(['↘', '-\\infty', '+\\infty', '↘']);
+		const limits = [...root.querySelectorAll('.vt-limit')];
+		expect(limits.map((l) => [...l.classList].find((c) => c.startsWith('vt-pos-')))).toEqual([
+			'vt-pos-bottom',
+			'vt-pos-top'
+		]);
 	});
 });
