@@ -8,11 +8,11 @@ status: en cours — PR 1 à 3 mergées (#3291, #3300, #3306), clôture à faire
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-28, après #3306._
+_Mis à jour le 2026-11-28, après #3306 (plafond des liens accordé)._
 
 - **État** : les 7 écarts du lot sont corrigés (#3291, #3300 ; migrations en prod). Les liens des familles (cahier, cours, carnet) expirent à la fin de l'année scolaire de l'école (#3306, accord de David du 2026-11-28 ; politique de confidentialité v1.6). Rien à déployer en base.
-- **Prochaine action** : clôture du chantier (recompter le découpage contre les PR, versement du durable dans `docs/systeme/`, archivage du journal, ligne de `ecarts-lots.md`).
-- **En attente de David** : borner une fin d'année saisie par erreur (ex. 2099 → lien valable des années) ? Point mineur de la revue de #3306, non tranché.
+- **Prochaine action** : (1) PR 4, accord de David du 2026-11-28 (« oui ») : plafonner l'expiration des liens des familles à 18 mois après le jour d'émission ; une fin d'année d'école au-delà → retour au 31 août qui vient (`schoolYearExpiry`, `src/lib/server/school-year.ts`), test unitaire du cas « 2099 », doc (`cours-et-chapitres.md`, `carnet-de-liaison.md`) ; nouveau worktree `ubumaths-wt-ecarts-cours-evaluations`, branche `fix/liens-familles-plafond`. (2) Clôture du chantier (recompter le découpage, versement dans `docs/systeme/`, archivage du journal, ligne de `ecarts-lots.md`).
+- **En attente de David** : rien.
 - **Pièges** : les liens déjà émis gardent leur 31 août. Le cache des cases effacées de `skill_attempts` passe par `trg_skill_attempts_after_delete` (saute un élève supprimé).
 - **Worktree / branche** : aucun (retirés par `pr:merger`).
 
