@@ -60,6 +60,13 @@ describe('lineCoefficients — équation d’une droite', () => {
 		expect(normalized('y = 2*(x - 1)')).toEqual({ a: -2, b: 1, c: 2 });
 	});
 
+	// Écart L88 : la fraction LaTeX qu'écrit un prof ou que rend `{{eval}}`
+	it('fraction LaTeX : `\\frac`, `\\dfrac`, comme `1/2x`', () => {
+		expect(normalized('y = \\frac{1}{2}x')).toEqual({ a: -0.5, b: 1, c: 0 });
+		expect(normalized('y = \\dfrac{3}{4}x - 1')).toEqual({ a: -0.75, b: 1, c: 1 });
+		expect(normalized('y = -\\frac{1}{2}x + \\pi')).toEqual(normalized('y = -1/2x + \\pi'));
+	});
+
 	it('refuse ce qui n’est pas une droite', () => {
 		expect(lineCoefficients('y = x^2')).toMatch(/pas l’équation d’une droite/);
 		expect(lineCoefficients('y = 1/x')).toMatch(/pas l’équation d’une droite/);
@@ -85,6 +92,12 @@ describe('tracer: — lecture du bloc', () => {
 
 	it('virgule décimale lue comme un point', () => {
 		expect(spec(block(...WINDOW, 'tracer: y = 0,5x + 1')).tracer!.equation).toBe('y = 0.5x + 1');
+	});
+
+	it('fraction LaTeX acceptée, écrite en formule à l’élève (L88)', () => {
+		const tracer = spec(block(...WINDOW, 'tracer: y = \\frac{1}{2}x + 1')).tracer!;
+		expect(tracer.equation).toContain('\\frac{1}{2}');
+		expect(equationLatex(tracer.equation)).toBe(equationLatex('y = 1/2x + 1'));
 	});
 
 	it('verticale et cartésienne acceptées', () => {

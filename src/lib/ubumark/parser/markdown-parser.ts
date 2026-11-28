@@ -158,7 +158,12 @@ import {
 	isSchemaBarresBlockStart
 } from './schema-barres-parser';
 import { findChoiceBlocks, parseChoiceBlock } from './choix-parser';
-import { findRangerBlocks, parseRangerBlock } from './ranger-parser';
+import {
+	findRangerBlocks,
+	isRangerBlockStart,
+	parseRangerBlock,
+	parseRangerContent
+} from './ranger-parser';
 import { findAssocierBlocks, parseAssocierBlock, parseAssocierContent } from './associer-parser';
 import { findTrousBlocks, parseTrousBlock, parseTrousContent } from './trous-parser';
 import {
@@ -1915,6 +1920,13 @@ const SPECIAL_BLOCK_KINDS = [
 		find: findSchemaBarresBlocks,
 		parse: parseSchemaBarres,
 		language: 'schema-barres'
+	},
+	// Écart L89 : des étiquettes à ranger dans un item de liste sortaient en code brut
+	{
+		is: isRangerBlockStart,
+		find: findRangerBlocks,
+		parse: parseRangerBlock,
+		language: 'ranger'
 	}
 ] as const;
 
@@ -2180,6 +2192,9 @@ function parseContentWithCodeBlocks(
 			// Éléments à associer dans un item de liste (énoncé d'une série d'automatismes,
 			// bloc sans case) : deux colonnes à relier, jamais du code
 			blocks.push(parseAssocierContent(restoreMathPlaceholders(code, placeholders)));
+		} else if (language === 'ranger') {
+			// Étiquettes à ranger dans un item de liste (écart L89) : le bloc, jamais du code
+			blocks.push(parseRangerContent(restoreMathPlaceholders(code, placeholders)));
 		} else if (language === 'trous') {
 			// Texte à trous dans un item de liste (énoncé d'une série d'automatismes, bloc
 			// sans case) : le texte et sa réserve, jamais du code

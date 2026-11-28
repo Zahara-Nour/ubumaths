@@ -125,6 +125,13 @@ export interface SolideScene {
 	 */
 	droites?: SolideLine[][];
 	/**
+	 * Segments donnés (`segments:`), puis les deux côtés du petit carré de chaque
+	 * angle droit codé (`angles-droits:`), en morceaux : en tirets là où une face
+	 * du solide passe devant ; dessinés en couleur, comme les droites. Absent : ni
+	 * segment ni angle droit.
+	 */
+	segments?: SolideLine[];
+	/**
 	 * Plans donnés (`plans:`), dans l'ordre écrit : la partie du plan dans le
 	 * solide, teintée après les faces marquées, et son bord en couleur, en tirets
 	 * là où une face du solide passe devant. Absent : le bloc n'a pas de plans.
@@ -265,6 +272,9 @@ const TURN_PAD = 0.75;
  * que cela (`solide-parser.ts`)
  */
 export const DROITE_OVERHANG = 0.18;
+
+/** Le côté du carré d'un angle droit codé, en part de la plus grande dimension du solide */
+const RIGHT_ANGLE_SIZE = 0.1;
 
 /** Nom d'un point déclaré sur une figure à droites : second tour de places, à cette part de l'écart habituel */
 const POINT_NAME_FAR = 1.7;
@@ -574,6 +584,8 @@ interface Draft {
 	points: EspacePoint[];
 	/** Droites données (`droites:`), chacune en morceaux qui se suivent ; polyèdres seulement */
 	droites?: SolideLine[][];
+	/** Segments donnés, puis carrés des angles droits codés, en morceaux ; polyèdres seulement */
+	segments?: SolideLine[];
 	/**
 	 * Plans donnés (`plans:`) ; `spots` : les points du plan où écrire le nom d'un plan
 	 * nommé, du plus dégagé au moins dégagé sur le dessin de départ ; `borderSpots` : des
@@ -727,6 +739,55 @@ function polyhedronDraft(spec: SolideSpec, vue: EspaceVue = VUE_DE_DEPART): Turn
 		return stretches.map((stretch) => segment(at(stretch.from), at(stretch.to), stretch.hidden));
 	});
 
+	// Segments donnés, puis carrés des angles droits codés (outil n° 72) : d'un point
+	// à l'autre, en tirets là où une face passe devant, comme les droites
+	const piecesOf = (from: Point3, to: Point3): SolideLine[] => {
+		const stretches = spec.hidden
+			? hiddenStretches(points3, topology.faces, topology.edges, from, to, view)
+			: [{ from: 0, to: 1, hidden: false }];
+		const at = (t: number) =>
+			project({
+				x: from.x + (to.x - from.x) * t,
+				y: from.y + (to.y - from.y) * t,
+				z: from.z + (to.z - from.z) * t
+			});
+		return stretches.map((stretch) => segment(at(stretch.from), at(stretch.to), stretch.hidden));
+	};
+	const size3 = Math.max(box.maxX - box.minX, box.maxY - box.minY, box.maxZ - box.minZ);
+	const givenSegments =
+		spec.segments === undefined && spec.rightAngles === undefined
+			? undefined
+			: [
+					...(spec.segments ?? []).flatMap((s) => piecesOf(named3[s.from], named3[s.to])),
+					...(spec.rightAngles ?? []).flatMap((angle) => {
+						const corner = named3[angle.at];
+						const toward = (p: Point3) => {
+							const length = Math.hypot(p.x - corner.x, p.y - corner.y, p.z - corner.z);
+							return {
+								length,
+								unit: {
+									x: (p.x - corner.x) / length,
+									y: (p.y - corner.y) / length,
+									z: (p.z - corner.z) / length
+								}
+							};
+						};
+						const u = toward(named3[angle.from]);
+						const w = toward(named3[angle.to]);
+						// Le côté du carré : une part du solide, jamais plus du tiers d'un côté de l'angle
+						const side = Math.min(RIGHT_ANGLE_SIZE * size3, Math.min(u.length, w.length) / 3);
+						const shifted = (a: number, b: number): Point3 => ({
+							x: corner.x + side * (a * u.unit.x + b * w.unit.x),
+							y: corner.y + side * (a * u.unit.y + b * w.unit.y),
+							z: corner.z + side * (a * u.unit.z + b * w.unit.z)
+						});
+						return [
+							...piecesOf(shifted(1, 0), shifted(1, 1)),
+							...piecesOf(shifted(1, 1), shifted(0, 1))
+						];
+					})
+				];
+
 	// Plans donnés : la partie du plan dans le solide ; son bord en tirets là où une
 	// face passe devant (lot 7b, question (c))
 	const lerp = (p: Point3, q: Point3, t: number): Point3 => ({
@@ -819,6 +880,7 @@ function polyhedronDraft(spec: SolideSpec, vue: EspaceVue = VUE_DE_DEPART): Turn
 			)
 		),
 		...(droites !== undefined && { droites }),
+		...(givenSegments !== undefined && { segments: givenSegments }),
 		...(plans !== undefined && { plans }),
 		lines,
 		fills,
@@ -1496,6 +1558,11 @@ function layoutSolide(
 	const droites = draft.droites?.map((pieces) =>
 		pieces.map((l) => ({ ...l, points: l.points.map(toScreen) }))
 	);
+	const givenSegments = draft.segments?.map((l) => ({ ...l, points: l.points.map(toScreen) }));
+	const givenSegmentEnds = (givenSegments ?? []).map((l): [EspacePoint, EspacePoint] => [
+		l.points[0],
+		l.points[1]
+	]);
 	// Chaque droite d'un bout à l'autre : les noms l'évitent
 	const droiteSegments = (droites ?? []).map((pieces): [EspacePoint, EspacePoint] => [
 		pieces[0].points[0],
@@ -1528,7 +1595,8 @@ function layoutSolide(
 			p,
 			all[(i + 1) % all.length]
 		]),
-		...droiteSegments
+		...droiteSegments,
+		...givenSegmentEnds
 	];
 
 	// Noms des sommets : à l'extérieur, en s'éloignant du centre du dessin
@@ -1678,6 +1746,7 @@ function layoutSolide(
 		),
 		...arrows.map((a): [EspacePoint, EspacePoint] => [a.shaft[0], a.head[0]]),
 		...droiteSegments,
+		...givenSegmentEnds,
 		...planSegments
 	];
 
@@ -1916,6 +1985,9 @@ function layoutSolide(
 		...(droites !== undefined && {
 			droites: droites.map((pieces) => pieces.map((l) => ({ ...l, points: l.points.map(shift) })))
 		}),
+		...(givenSegments !== undefined && {
+			segments: givenSegments.map((l) => ({ ...l, points: l.points.map(shift) }))
+		}),
 		...(plans !== undefined && {
 			plans: plans.map((plan) => ({
 				fill: plan.fill.map(shift),
@@ -1962,6 +2034,13 @@ export function solideLabel(spec: SolideSpec): string {
 		parts.push(
 			droite.name === null ? `droite ${through}` : `droite ${droite.name} égale à ${through}`
 		);
+	}
+	// Segments et angles droits donnés : ils sont dans l'énoncé (jamais leur longueur)
+	for (const given of spec.segments ?? []) {
+		parts.push(`segment [${known[given.from]}${known[given.to]}]`);
+	}
+	for (const angle of spec.rightAngles ?? []) {
+		parts.push(`angle droit en ${known[angle.at]}`);
 	}
 	// Plans donnés : leurs points seulement, jamais une position relative (la réponse)
 	for (const plan of spec.plans ?? []) {

@@ -38,6 +38,7 @@
 	import Courbe from './Courbe.svelte';
 	import FigureBlock from './FigureBlock.svelte';
 	import StatChart from './StatChart.svelte';
+	import RangerPlacer from './RangerPlacer.svelte';
 	import QrBlock from './QrBlock.svelte';
 	import ScratchBlock from './ScratchBlock.svelte';
 	import Horloge from './Horloge.svelte';
@@ -356,7 +357,8 @@
 			'operation',
 			'collection',
 			'monnaie',
-			'schema-barres'
+			'schema-barres',
+			'ranger'
 		].includes(node.type);
 	}
 
@@ -515,6 +517,9 @@
 						<Monnaie node={child} />
 					{:else if isSchemaBarresNode(child)}
 						<SchemaBarres node={child} />
+					{:else if child.type === 'ranger'}
+						<!-- Étiquettes à ranger dans un item de liste de cours (écart L89) -->
+						<RangerPlacer node={child} />
 					{:else if child.type === 'horizontal-rule'}
 						<HorizontalRule />
 					{/if}
@@ -631,6 +636,9 @@
 						<Monnaie node={child} />
 					{:else if isSchemaBarresNode(child)}
 						<SchemaBarres node={child} />
+					{:else if child.type === 'ranger'}
+						<!-- Étiquettes à ranger dans un item de liste de cours (écart L89) -->
+						<RangerPlacer node={child} />
 					{:else if child.type === 'horizontal-rule'}
 						<HorizontalRule />
 					{/if}
