@@ -1,7 +1,7 @@
 """Écrit les modèles neufs du chantier idees-6e-algebre dans scripts/questions/idees-6e-algebre-neufs/.
 
 Phase 0 validée par David le 2026-11-28 (« je valide les modèles », journal
-docs/wip/idees-6e-algebre-progress.md, section « Fiches validées ») : F2, F3, F6, F8. On reprend
+docs/archive/wip/idees-6e-algebre/idees-6e-algebre-progress.md, section « Fiches validées ») : F2, F3, F6, F8. On reprend
 l'idée de l'autre plateforme, pas sa forme ni son texte : choisir le calcul d'un problème à une
 étape, compléter un énoncé d'après un schéma en barres, motif répétitif (frise), appartenance à
 une suite à pas constant.

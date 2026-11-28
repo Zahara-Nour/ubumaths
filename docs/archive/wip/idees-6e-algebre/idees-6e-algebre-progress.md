@@ -2,21 +2,21 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-28, après la publication des 4 modèles neufs par David._
+_Mis à jour le 2026-11-28, chantier clos._
 
-- **État** : rubrique **publiée** (vérifié en base : 9e0a8c36, 660db94b, b407006d, 048246da
-  `published`) ; « je valide » + « go » de David = les 8 bons, aucun verdict en base, rien
-  corrigé. Répartition mise à jour (« publiée », 4 réservations levées). Aucun worktree.
-- **Prochaine action** : PR à part pour les noms rognés des schémas en barres
-  (`schema-barres-scene.ts` l. 58), décidée le 2026-11-28, dans
-  `ubumaths-wt-idees-6e-algebre-barres` ; puis verser le journal (fin de chantier).
+- **État** : **clos**. Les 4 neufs (9e0a8c36 F2, 660db94b F3, b407006d F6, 048246da F8) sont
+  **publiés** en prod (publication lancée par David, statut relu par MCP) ; les variations des 4
+  publiés (a9c37578, a06458ad, 4048d9c5, 39bafe0e) sont en prod, validées (« je valide » puis
+  « go »). Noms rognés des schémas en barres corrigés (#3295, largeur estimée par famille de
+  caractères). Réservations levées, journal archivé.
+- **Prochaine action** : aucune.
 - **En attente de David** : rien.
-- **Pièges en cours** : aucun.
+- **Pièges notés** : aucun.
 
 ## Rubrique
 
 Rubrique 6N4 « Algèbre » d'une autre plateforme : 9 exercices (6N4A-1 à 5, 6N4B-1, 6N4B, 6N4B-2,
-6N43-1). Réservée le 2026-11-28 dans [idees-ailleurs-repartition.md](idees-ailleurs-repartition.md).
+6N43-1). Réservée le 2026-11-28 dans [idees-ailleurs-repartition.md](../../../wip/idees-ailleurs-repartition.md).
 Points de 6e : 6-142 (schémas en barre), 6-143 (motif évolutif).
 
 ## Phase 0 (2026-11-28)
