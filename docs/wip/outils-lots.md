@@ -1,7 +1,7 @@
 ---
 title: Outils manquants — lots pour des sessions en parallèle
 date: 2026-11-28
-status: lots écrits le 2026-11-28 ; en cours : python
+status: lots écrits le 2026-11-28 ; aucun en cours
 ---
 
 # Outils manquants : lots pour des sessions en parallèle
@@ -48,7 +48,7 @@ par lot (worktree + Claude avec Remote Control, dans tmux) ; chaque session suit
 | `espace`                  | 64, puis 65                         | case neuve, ` ```solide `                                               | fait (#3308, #3316, 2026-11-28) |                                                                                        |
 | `escalier-suite`          | 48                                  | ` ```courbe `                                                           | fait (#3315, 2026-11-28)        |                                                                                        |
 | `ecritures-exactes`       | 62, puis 77                         | mathAST (`checkForm`, `cosmetic-transforms`), `requiredForm`            |                                 | attend la fin de `fusion-moteurs` (même code) ; 77 = revue de Seconde (rationaliser)   |
-| `python`                  | 49                                  | case neuve, `python-exercises`                                          | outil-python (2026-11-28)       | le plus gros                                                                           |
+| `python`                  | 49                                  | case neuve, `python-exercises`                                          | fait (#3318, 2026-11-28)        | le plus gros                                                                           |
 | `formes-messages`         | 75, puis 76                         | `required-form-validator.ts`, messages de la case, `template-schema.ts` |                                 | revue de Seconde (David, 2026-11-28) ; 76 nomme le facteur fautif par le message du 75 |
 | `arrondi-court`           | 78                                  | `rounding.ts` (`judgeRounding`)                                         |                                 | petit ; revue de Seconde                                                               |
 | `valeur-absolue-distance` | 79                                  | mathAST (équivalence)                                                   |                                 | lot mathAST (règle 1) ; revue de Seconde                                               |
