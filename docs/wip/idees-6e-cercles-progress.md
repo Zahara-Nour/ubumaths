@@ -2,14 +2,18 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-28, phase 0 envoyée._
+_Mis à jour le 2026-11-28, lot écrit, PR des fichiers à ouvrir._
 
-- **État** : relevé fait ([idees-6e-cercles-releve.md](idees-6e-cercles-releve.md)), fiches de phase 0 ci-dessous,
-  page à cocher envoyée à David. Rien d'écrit.
-- **Prochaine action** : lire les verdicts de la page (collection `verdicts`), les consigner ici, puis écrire le lot.
-- **En attente de David** : verdicts des fiches F1 à F3, N1, N2, O1 à O3.
-- **Worktree / branche** : `../ubumaths-wt-idees-6e-cercles`, `docs/idees-6e-cercles` (branche de doc pour
-  l'instant ; une branche `feat/` sur `origin/main` pour la PR des modèles).
+- **État** : phase 0 validée par David (« je valide », toutes les fiches). Lot écrit et vérifié (specs vertes,
+  sonde des figures 0 problème, essai en base locale vu à l'écran). Outils 82 à 84 ajoutés à
+  `outils-manquants.md`. b8939937, 48524505, 2f3da9ce réservés dans le tableau.
+- **Prochaine action** : merger la PR des fichiers ; puis David lance `create-questions --publier` sur
+  `scripts/questions/idees-6e-cercles-neufs` (brouillons en prod), je commite les ids ; migrations de rangement
+  (N1, N2 : nœud cercle, 6-162) et de contenu (3 publiés), `security-auditor`, `db:migrate`.
+- **En attente de David** : `create-questions --publier` après le merge.
+- **Pièges en cours** : deux `verifier:` de la même famille (deux cercles) ne font pas une figure composée, et
+  la garde de la règle graduée refuse alors le cercle « passant par » : N1 c commence par le segment [CD].
+- **Worktree / branche** : `../ubumaths-wt-idees-6e-cercles`, `feat/idees-6e-cercles` ; serveur de dev 5177.
 
 ## Phase 0 (2026-11-28)
 
@@ -68,3 +72,18 @@ Page à cocher : https://claude.ai/artifact/WtKPymyPCYikJrmezzon8f (Oui / Non / 
   - **O2 — Reports bout à bout au compas** sur une demi-droite, jugés en longueur totale : 6G2C-2 (périmètre
     reporté). Points du CM (comparer des périmètres) et 6-148.
   - **O3 — Arcs de cercle** d'extrémités données, tracés et jugés (figure faite d'arcs) : 6G2B-1. CM1-105 / CM2-095.
+
+## Journal
+
+- 2026-11-28 : lot écrit (`docs/wip/questions/idees-6e-cercles-neufs.py`, `…-publies.py`). Écarts à la phase 0 :
+  N1 c reprend le programme de leur exercice (segment [CD] de n cm d'abord, puis les deux cercles : figure
+  composée, cf. pièges) ; F2 f : disque grisé et M placé dedans, sur le cercle ou dehors (pas d'« extérieur
+  grisé ») ; F3 d et e : M placé sur la figure, pas de région grisée (une couronne évidée demanderait une
+  couleur de fond, rendu incertain en thème sombre) ; une case choix ou figure ne porte pas d'erreurs prévues
+  (specs seules) ; un choix incomplet (une bonne case sur deux) est jugé « à améliorer », pas faux. Specs : N1 14,
+  N2 13, b8939937 +20, 48524505 +16, 2f3da9ce +18, toutes vertes ; sonde des figures : 0 problème. Essai en base
+  locale (copies « — essai »), vu dans `/dev/modeles` : consignes « Coche … » en doublon avec la ligne de
+  l'appli, remplacées par une question.
+- 2026-11-28 : David valide toutes les fiches (« je valide », page à cocher vide). b8939937, 48524505, 2f3da9ce
+  réservés (64c7f7593a) et exportés de prod. Outils O1 à O3 → n° 82 à 84 de `outils-manquants.md`.
+- 2026-11-28 : rubrique réservée (ad25529d73), relevé et phase 0 écrits.
