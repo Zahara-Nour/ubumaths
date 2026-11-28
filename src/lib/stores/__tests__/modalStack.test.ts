@@ -3,7 +3,7 @@ import { modalStack } from '#lib/stores/modalStack.svelte.ts';
 import type { Component } from 'svelte';
 
 // Mock component for testing
-const MockComponent = {} as Component<{ modal?: number }>;
+const MockComponent = {} as Component<{ modal?: number; test?: string }>;
 
 describe('ModalStack Store', () => {
 	beforeEach(() => {

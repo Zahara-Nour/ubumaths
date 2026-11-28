@@ -57,7 +57,9 @@ class ModalStackStore {
 	 * @param entry Modal configuration (without id)
 	 * @returns Generated UUID for this modal instance
 	 */
-	push<P extends ModalProps>(
+	// `object` et pas `ModalProps` : une `interface Props` n'a pas de signature d'index et ne
+	// satisferait pas `Record<string, unknown>` (P retomberait alors sur ModalProps).
+	push<P extends object>(
 		entry: Omit<ModalEntry, 'id' | 'component' | 'props'> & {
 			component: Component<P>;
 			props: NoInfer<P>;
@@ -69,6 +71,7 @@ class ModalStackStore {
 			// Les props ont été vérifiées contre le composant dans la signature ci-dessus ; la
 			// pile, qui mêle des modales différentes, ne garde que la forme commune.
 			component: entry.component as unknown as Component<ModalProps>,
+			props: entry.props as ModalProps,
 			id
 		};
 		this.stack.push(modalEntry);
