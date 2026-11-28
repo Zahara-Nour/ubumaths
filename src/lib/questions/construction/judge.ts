@@ -46,6 +46,7 @@ import {
 } from './diagonal-rectangle';
 import { SymmetryAuthorError, assertSymmetry, judgeSymmetry, type FigureShapes } from './symmetry';
 import { TriangleAuthorError, assertTriangle, judgeTriangle } from './triangle';
+import { assertCopy, isCopyCheck, judgeCopy } from './triangle-copy';
 import { AngleAuthorError, assertAngle, judgeAngle } from './angle';
 import { MeasureAuthorError, assertMeasure, judgeMeasure } from './measure';
 import {
@@ -271,7 +272,8 @@ export function assertConstructionChecks(
 		}
 		if (check.kind === 'triangle') {
 			try {
-				assertTriangle(check, points, shapes);
+				if (isCopyCheck(check)) assertCopy(check, points, shapes);
+				else assertTriangle(check, points, shapes);
 			} catch (error) {
 				throw asAuthorError(error);
 			}
@@ -448,7 +450,9 @@ export function judgeConstruction(
 	const triangle = allChecks.find((c) => c.kind === 'triangle');
 	if (triangle) {
 		try {
-			return judgeTriangle(triangle, points, shapes, objects);
+			return isCopyCheck(triangle)
+				? judgeCopy(triangle, points, shapes, objects)
+				: judgeTriangle(triangle, points, shapes, objects);
 		} catch (error) {
 			throw asAuthorError(error);
 		}

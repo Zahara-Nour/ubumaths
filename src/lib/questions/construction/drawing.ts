@@ -68,6 +68,7 @@ import {
 	triangleSolution,
 	type TriangleCorrection
 } from './triangle';
+import { copyCorrection, copySolution, isCopyCheck } from './triangle-copy';
 import { angleCorrection, angleSolution, type AngleCorrection } from './angle';
 import { measureCorrection } from './measure';
 import { segmentMeasureCorrection, segmentMeasureRuler } from './segment-measure';
@@ -538,7 +539,11 @@ export function solutionLines(
 		}
 		if (check.kind === 'droite') return lineSolution([check], expected);
 		if (check.kind === 'symetrique') return symmetrySolution(check, points, shapes);
-		if (check.kind === 'triangle') return triangleSolution(check, points, shapes, drawn);
+		if (check.kind === 'triangle') {
+			return isCopyCheck(check)
+				? copySolution(check, points, shapes)
+				: triangleSolution(check, points, shapes, drawn);
+		}
 		if (check.kind === 'angle') return angleSolution(check, points, shapes, drawn);
 		if (check.kind === 'segment') return segmentLengthSolution(check, points, shapes, drawn);
 		if (isRuledPolygonCheck(check)) return ruledPolygonSolution(check, points, shapes, drawn);
@@ -594,6 +599,7 @@ export function solutionTriangle(
 	const diagonal = checks.find(isDiagonalRectangleCheck);
 	if (diagonal) return diagonalRectangleCorrection(diagonal, points, shapes, drawn);
 	const check = checks.find((c) => c.kind === 'triangle');
+	if (check && isCopyCheck(check)) return copyCorrection();
 	return check ? triangleCorrection(check, points, shapes, drawn) : null;
 }
 
