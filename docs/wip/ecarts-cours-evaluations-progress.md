@@ -1,20 +1,20 @@
 ---
 title: Écarts — lot cours-evaluations
 date: 2026-11-28
-status: en cours — PR 1 (#3291) et PR 2 (#3300) mergées, PR 3 (liens des familles) en cours
+status: en cours — PR 1 à 3 mergées (#3291, #3300, #3306), clôture à faire
 ---
 
 # Écarts — lot `cours-evaluations`
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-28, PR 3 (liens des familles) en cours._
+_Mis à jour le 2026-11-28, après #3306._
 
-- **État** : les 7 écarts du lot sont corrigés (#3291, #3300), migrations en prod. David a répondu « oui » (2026-11-28) : les liens des familles (cahier, cours, carnet) expirent à la fin de l'année scolaire de l'école (31 août sans dates). PR 3 sur `fix/liens-familles-annee-ecole` : `schoolYearExpiry` / `classSchoolYearExpiry`, courriel du carnet qui annonce la date, page de confidentialité et registre des traitements reformulés.
-- **Prochaine action** : merge de la PR 3, puis clôture du chantier (recompter le découpage, versement, archivage du journal, ligne de `ecarts-lots.md`).
-- **En attente de David** : borner une fin d'année saisie par erreur (ex. 2099 → lien valable des années) ? Point mineur de la revue, non tranché.
-- **Pièges** : les liens déjà émis gardent leur 31 août. Le carnet lit l'école par `profiles.school_id` (client service).
-- **Worktree / branche** : `ubumaths-wt-ecarts-cours-evaluations` · `fix/liens-familles-annee-ecole`.
+- **État** : les 7 écarts du lot sont corrigés (#3291, #3300 ; migrations en prod). Les liens des familles (cahier, cours, carnet) expirent à la fin de l'année scolaire de l'école (#3306, accord de David du 2026-11-28 ; politique de confidentialité v1.6). Rien à déployer en base.
+- **Prochaine action** : clôture du chantier (recompter le découpage contre les PR, versement du durable dans `docs/systeme/`, archivage du journal, ligne de `ecarts-lots.md`).
+- **En attente de David** : borner une fin d'année saisie par erreur (ex. 2099 → lien valable des années) ? Point mineur de la revue de #3306, non tranché.
+- **Pièges** : les liens déjà émis gardent leur 31 août. Le cache des cases effacées de `skill_attempts` passe par `trg_skill_attempts_after_delete` (saute un élève supprimé).
+- **Worktree / branche** : aucun (retirés par `pr:merger`).
 
 ## Décisions (2026-11-28)
 
