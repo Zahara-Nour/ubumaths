@@ -106,7 +106,7 @@ anciennes versions. Les deux fichiers d'automatismes `6AutoN4` ne sont pas repri
 | Nombres entiers et décimaux        | 6N1   | 38        | publiée (2026-11-23) | `idees-6e-entiers-decimaux` |
 | Nombres décimaux                   | 6N2   | 55        | publiée (2026-11-23) | `idees-6e-decimaux`         |
 | Fractions                          | 6N3   | 53        | publiée (2026-11-25) | `idees-6e-fractions`        |
-| Algèbre                            | 6N4   | 9         | prise (2026-11-28)   | `idees-6e-algebre`          |
+| Algèbre                            | 6N4   | 9         | publiée (2026-11-28) | `idees-6e-algebre`          |
 | Résolution de problèmes            | 6N5   | 24        | publiée (2026-11-27) | `idees-6e-problemes`        |
 | Longueurs                          | 6M1   | 16        | publiée (2026-11-28) | `idees-6e-longueurs`        |
 | Aires                              | 6M2   | 17        | publiée (2026-11-27) | `idees-6e-aires`            |
@@ -178,10 +178,12 @@ de contenu appliquée en prod.
 | d03e49c0 Calculer la valeur d'une valeur absolue             | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
 | d264f7aa Pair ou impair : écrire 2k ou 2k + 1                | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
 | fa65910d Multiple : a = k × b                                | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| 39bafe0e Motif évolutif : trouver la régularité              | `idees-6e-algebre`                                          | 2026-11-28 |                                      |
-| 4048d9c5 Deux nombres inconnus : billets et devinettes       | `idees-6e-algebre`                                          | 2026-11-28 |                                      |
-| a06458ad Balances : la masse de deux objets                  | `idees-6e-algebre`                                          | 2026-11-28 |                                      |
-| a9c37578 Schéma en barres : choisir le schéma d'un énoncé    | `idees-6e-algebre`                                          | 2026-11-28 |                                      |
+| 0a470416 Bloc personnalisé                                   | `idees-3e-algorithmique`                                    | 2026-11-28 |                                      |
+| 4ce8eb3c Boucle « répéter jusqu'à ce que »                   | `idees-3e-algorithmique`                                    | 2026-11-28 |                                      |
+| 5c092e43 Formules du tableur                                 | `idees-3e-algorithmique`                                    | 2026-11-28 |                                      |
+| 6e99d291 Écrire un programme pour résoudre un problème (3e)  | `idees-3e-algorithmique`                                    | 2026-11-28 |                                      |
+| 962da675 Plusieurs variables                                 | `idees-3e-algorithmique`                                    | 2026-11-28 |                                      |
+| 9f9bddbd Conditions composées                                | `idees-3e-algorithmique`                                    | 2026-11-28 |                                      |
 
 ## Idées en attente
 
@@ -202,3 +204,7 @@ Ce sont des idées notées pour un modèle déjà réservé, ou reportées par D
   1/5 000 000) pour calculer une distance réelle ou sur le plan (6P3E, clone d'un exercice de 5e) ; la 5e
   n'a que « trouver l'échelle » (c1a54695, 24a8e2b1).
 - `idees-6e-aires` (2026-11-27, pour la session de 5e) : conversions d'aire au-delà de m², dm², cm² (mm², dam², hm², km², ha, a ; deux sauts, QCM ×10/×100) et assemblages carré + rectangle + triangle où l'on déduit un côté d'une aire puis l'aire d'un triangle (6M2A-1, 6M2B-2) : hors bornes de 6e.
+- `idees-3e-algorithmique` (2026-11-28, pour la session de la rubrique « Pensée informatique » de 6e, 6I1) : 3I12-5
+  n'est que le niveau « 3 » de 6I1B-6 (cocher, parmi cinq programmes, tous ceux qui tracent un segment, un
+  carré ou un compte à rebours donné ; erreurs d'une unité dans « répéter n fois »), contenu de 5e (5-106).
+  Notre ``choix accepte plusieurs bonnes réponses.

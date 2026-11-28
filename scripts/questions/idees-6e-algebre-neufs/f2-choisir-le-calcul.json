@@ -1,0 +1,407 @@
+{
+	"id": "9e0a8c36-f362-497e-9fb0-7e294d791b9d",
+	"rangement": {
+		"noeud": "Algèbre > Premiers pas algébriques > nombre inconnu",
+		"point": "6-142"
+	},
+	"title": "Choisir le calcul qui résout le problème",
+	"description": "Problème à une étape : choisir, sans le faire, le calcul qui y répond parmi les quatre opérations sur les deux nombres de l'énoncé ; tout ou partie, comparaison (« de moins » qui fait ajouter), produit, partage (piège « entre lui et ses amis ») ; corrigé par un schéma en barres",
+	"grades": ["6"],
+	"level": 2,
+	"delay": 60,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "{{if:t==0|Léa a ${{N}}$ billes. À la récréation, elle en gagne ${{k}}$. Combien de billes a-t-elle maintenant ?|{{if:t==1|Dans un bus, il y a ${{N}}$ passagers. À l'arrêt, ${{k}}$ passagers descendent et personne ne monte. Combien de passagers reste-t-il dans le bus ?|Une classe compte ${{N}}$ élèves, dont ${{k}}$ portent des lunettes. Combien d'élèves ne portent pas de lunettes ?}}}}\n\nQuel calcul permet de répondre ? Ne fais pas le calcul : choisis-le seulement.\n\n```choix\n- ${{N}} + {{k}}$\n- ${{N}} - {{k}}$\n- ${{N}} \\times {{k}}$\n- ${{N}} \\div {{k}}$\n```",
+			"variables": [
+				{
+					"name": "t",
+					"expression": "0..2"
+				},
+				{
+					"name": "N",
+					"expression": "15..50"
+				},
+				{
+					"name": "k",
+					"expression": "5..9"
+				},
+				{
+					"name": "r",
+					"expression": "eval:min(t,1)"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{r}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Le schéma.**{{if:t==0|\n\n```schema-barres\nBilles : {{N}} (4) ; {{k}} (1) = ?\n```\n\n|{{if:t==1|\n\n```schema-barres\nPassagers : ? (4) ; {{k}} (1) = {{N}}\n```\n\n|\n\n```schema-barres\nÉlèves : ? (4) ; {{k}} (1) = {{N}}\n```\n\n}}}}",
+					"{{if:t==0|**Ce qu'on cherche.** Les billes d'avant et celles gagnées sont les deux parties ; on cherche le tout : on ajoute les parties, $\\textcolor{{{color:primary.0}}}{{{N}} + {{k}}}$.|{{if:t==1|**Ce qu'on cherche.** Le tout, ce sont les ${{N}}$ passagers ; ceux qui restent sont une partie : on retire l'autre partie, $\\textcolor{{{color:primary.0}}}{{{N}} - {{k}}}$.|**Ce qu'on cherche.** Le tout, ce sont les ${{N}}$ élèves ; ceux sans lunettes sont une partie : on retire l'autre partie, $\\textcolor{{{color:primary.0}}}{{{N}} - {{k}}}$.}}}}"
+				]
+			},
+			"hint": "Dessine le schéma : cherches-tu le tout, une partie ou une part ?"
+		},
+		{
+			"statement": "{{if:t==0|Inès a ${{N}}$ ans. Son frère Hugo a ${{k}}$ ans de plus qu'elle. Quel âge a Hugo ?|{{if:t==1|Inès a ${{N}}$ ans. Sa sœur Zoé a ${{k}}$ ans de moins qu'elle. Quel âge a Zoé ?|Hugo a ${{N}}$ ans. Il a ${{k}}$ ans de moins que sa sœur Inès. Quel âge a Inès ?}}}}\n\nQuel calcul permet de répondre ? Ne fais pas le calcul : choisis-le seulement.\n\n```choix\n- ${{N}} + {{k}}$\n- ${{N}} - {{k}}$\n- ${{N}} \\times {{k}}$\n- ${{N}} \\div {{k}}$\n```",
+			"variables": [
+				{
+					"name": "t",
+					"expression": "0..2"
+				},
+				{
+					"name": "N",
+					"expression": "15..50"
+				},
+				{
+					"name": "k",
+					"expression": "5..9"
+				},
+				{
+					"name": "r",
+					"expression": "eval:(1-min(abs(t-1),1))"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{r}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Le schéma.** On compare deux âges : une barre par personne.{{if:t==0|\n\n```schema-barres\nInès : {{N}} (4)\nHugo : {{N}} (4) ; {{k}} (1) = ?\n```\n\n|{{if:t==1|\n\n```schema-barres\nInès : {{N}} (4) ; {{k}} (1)\nZoé : ? (4) ; -{{k}} (1)\n```\n\n|\n\n```schema-barres\nHugo : {{N}} (4)\nInès : {{N}} (4) ; {{k}} (1) = ?\n```\n\n}}}}",
+					"{{if:t==0|**Ce qu'on cherche.** Hugo est le plus âgé : sa barre, c'est celle d'Inès et ${{k}}$ ans de plus, $\\textcolor{{{color:primary.0}}}{{{N}} + {{k}}}$.|{{if:t==1|**Ce qu'on cherche.** Zoé est la plus jeune : sa barre, c'est celle d'Inès moins ${{k}}$ ans, $\\textcolor{{{color:primary.0}}}{{{N}} - {{k}}}$.|**Ce qu'on cherche.** « Hugo a ${{k}}$ ans de moins qu'Inès », c'est « Inès a ${{k}}$ ans de plus que Hugo » : on ajoute, $\\textcolor{{{color:primary.0}}}{{{N}} + {{k}}}$. Le mot « moins » ne veut pas toujours dire qu'on soustrait.}}}}"
+				]
+			},
+			"hint": "Dessine le schéma : cherches-tu le tout, une partie ou une part ?"
+		},
+		{
+			"statement": "{{if:t==0|Un magasin reçoit ${{k}}$ paquets de ${{N}}$ cartes. Combien de cartes reçoit-il en tout ?|{{if:t==1|Dans une salle, il y a ${{k}}$ rangées de ${{N}}$ chaises. Combien y a-t-il de chaises ?|Tom met ${{N}}~\\unit{€}$ de côté chaque mois, pendant ${{k}}$ mois. Combien d'argent a-t-il mis de côté ?}}}}\n\nQuel calcul permet de répondre ? Ne fais pas le calcul : choisis-le seulement.\n\n```choix\n- ${{N}} + {{k}}$\n- ${{N}} - {{k}}$\n- ${{N}} \\times {{k}}$\n- ${{N}} \\div {{k}}$\n```",
+			"variables": [
+				{
+					"name": "t",
+					"expression": "0..2"
+				},
+				{
+					"name": "N",
+					"expression": "15..50"
+				},
+				{
+					"name": "k",
+					"expression": "5..9"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "2"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Le schéma.** ${{k}}$ parts égales de ${{N}}$ ; on cherche le tout.{{if:k==5|\n\n```schema-barres\n: {{N}} ; {{N}} ; {{N}} ; {{N}} ; {{N}} = ?\n```\n\n|{{if:k==6|\n\n```schema-barres\n: {{N}} ; {{N}} ; {{N}} ; {{N}} ; {{N}} ; {{N}} = ?\n```\n\n|{{if:k==7|\n\n```schema-barres\n: {{N}} ; {{N}} ; {{N}} ; {{N}} ; {{N}} ; {{N}} ; {{N}} = ?\n```\n\n|{{if:k==8|\n\n```schema-barres\n: {{N}} ; {{N}} ; {{N}} ; {{N}} ; {{N}} ; {{N}} ; {{N}} ; {{N}} = ?\n```\n\n|\n\n```schema-barres\n: {{N}} ; {{N}} ; {{N}} ; {{N}} ; {{N}} ; {{N}} ; {{N}} ; {{N}} ; {{N}} = ?\n```\n\n}}}}}}}}",
+					"**Ce qu'on cherche.** Le tout fait ${{k}}$ fois ${{N}}$ : $\\textcolor{{{color:primary.0}}}{{{N}} \\times {{k}}}$."
+				]
+			},
+			"hint": "Dessine le schéma : cherches-tu le tout, une partie ou une part ?"
+		},
+		{
+			"statement": "{{if:t==0|Léo partage ${{N}}$ gommes entre ses ${{k}}$ amis ; chacun en reçoit autant. Combien de gommes chaque ami reçoit-il ?|{{if:t==1|Léo partage ${{N}}$ gommes entre lui et ses ${{k}}$ amis ; chacun en reçoit autant. Combien de gommes chacun reçoit-il ?|${{N}}$ élèves forment ${{k}}$ équipes, toutes de la même taille. Combien d'élèves y a-t-il dans chaque équipe ?}}}}\n\nQuel calcul permet de répondre ? Ne fais pas le calcul : choisis-le seulement.\n\n```choix\n- ${{N}} + {{k}}$\n- ${{N}} - {{k}}$\n- ${{N}} \\times {{k}}$\n- ${{N}} \\div {{k}}$\n- ${{N}} \\div {{eval:k+1}}$\n```",
+			"variables": [
+				{
+					"name": "t",
+					"expression": "0..2"
+				},
+				{
+					"name": "N",
+					"expression": "15..50"
+				},
+				{
+					"name": "k",
+					"expression": "5..9"
+				},
+				{
+					"name": "dv",
+					"expression": "eval:k+(1-min(abs(t-1),1))"
+				},
+				{
+					"name": "r",
+					"expression": "eval:3+(1-min(abs(t-1),1))"
+				}
+			],
+			"conditions": ["mod(N,dv)==0", "dv<=9"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{r}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Le schéma.** Un tout de ${{N}}$, partagé en ${{dv}}$ parts égales.{{if:dv==5|\n\n```schema-barres\n: ? ; ? ; ? ; ? ; ? = {{N}}\n```\n\n|{{if:dv==6|\n\n```schema-barres\n: ? ; ? ; ? ; ? ; ? ; ? = {{N}}\n```\n\n|{{if:dv==7|\n\n```schema-barres\n: ? ; ? ; ? ; ? ; ? ; ? ; ? = {{N}}\n```\n\n|{{if:dv==8|\n\n```schema-barres\n: ? ; ? ; ? ; ? ; ? ; ? ; ? ; ? = {{N}}\n```\n\n|{{if:dv==9|\n\n```schema-barres\n: ? ; ? ; ? ; ? ; ? ; ? ; ? ; ? ; ? = {{N}}\n```\n\n|\n\n```schema-barres\n: ? ; ? ; ? ; ? ; ? ; ? ; ? ; ? ; ? ; ? = {{N}}\n```\n\n}}}}}}}}}}",
+					"{{if:t==0|**Ce qu'on cherche.** Les ${{N}}$ gommes sont partagées en ${{k}}$ parts égales ; on cherche une part : $\\textcolor{{{color:primary.0}}}{{{N}} \\div {{k}}}$.|{{if:t==1|**Ce qu'on cherche.** Léo garde aussi sa part : on partage entre ${{k}} + 1 = {{dv}}$ personnes, et on cherche une part : $\\textcolor{{{color:primary.0}}}{{{N}} \\div {{dv}}}$.|**Ce qu'on cherche.** Les ${{N}}$ élèves sont partagés en ${{k}}$ équipes égales ; on cherche une part : $\\textcolor{{{color:primary.0}}}{{{N}} \\div {{k}}}$.}}}}"
+				]
+			},
+			"hint": "Dessine le schéma : cherches-tu le tout, une partie ou une part ?"
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Tout : billes gagnées → N + k",
+			"variationIndex": 0,
+			"variables": {
+				"t": "0",
+				"N": "32",
+				"k": "7",
+				"r": "0"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0"]
+		},
+		{
+			"description": "Tout : soustraction refusée",
+			"variationIndex": 0,
+			"variables": {
+				"t": "0",
+				"N": "32",
+				"k": "7",
+				"r": "0"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["1"]
+		},
+		{
+			"description": "Partie : passagers descendus → N − k",
+			"variationIndex": 0,
+			"variables": {
+				"t": "1",
+				"N": "32",
+				"k": "7",
+				"r": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["1"]
+		},
+		{
+			"description": "Partie : addition refusée",
+			"variationIndex": 0,
+			"variables": {
+				"t": "1",
+				"N": "32",
+				"k": "7",
+				"r": "1"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["0"]
+		},
+		{
+			"description": "Partie : élèves sans lunettes → N − k",
+			"variationIndex": 0,
+			"variables": {
+				"t": "2",
+				"N": "27",
+				"k": "8",
+				"r": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["1"]
+		},
+		{
+			"description": "Partie : division refusée",
+			"variationIndex": 0,
+			"variables": {
+				"t": "2",
+				"N": "27",
+				"k": "8",
+				"r": "1"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["3"]
+		},
+		{
+			"description": "Comparaison : de plus → N + k",
+			"variationIndex": 1,
+			"variables": {
+				"t": "0",
+				"N": "32",
+				"k": "6",
+				"r": "0"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0"]
+		},
+		{
+			"description": "Comparaison : de moins → N − k",
+			"variationIndex": 1,
+			"variables": {
+				"t": "1",
+				"N": "32",
+				"k": "6",
+				"r": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["1"]
+		},
+		{
+			"description": "Comparaison : de moins, mot « moins » pris au pied de la lettre",
+			"variationIndex": 1,
+			"variables": {
+				"t": "2",
+				"N": "32",
+				"k": "6",
+				"r": "0"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["1"]
+		},
+		{
+			"description": "Comparaison : de moins, on cherche le plus grand → N + k",
+			"variationIndex": 1,
+			"variables": {
+				"t": "2",
+				"N": "32",
+				"k": "6",
+				"r": "0"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0"]
+		},
+		{
+			"description": "Produit : paquets → N × k",
+			"variationIndex": 2,
+			"variables": {
+				"t": "0",
+				"N": "32",
+				"k": "7"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["2"]
+		},
+		{
+			"description": "Produit : addition refusée",
+			"variationIndex": 2,
+			"variables": {
+				"t": "0",
+				"N": "32",
+				"k": "7"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["0"]
+		},
+		{
+			"description": "Produit : division refusée",
+			"variationIndex": 2,
+			"variables": {
+				"t": "2",
+				"N": "45",
+				"k": "9"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["3"]
+		},
+		{
+			"description": "Partage : entre ses 7 amis → N ÷ k",
+			"variationIndex": 3,
+			"variables": {
+				"t": "0",
+				"N": "42",
+				"k": "7",
+				"dv": "7",
+				"r": "3"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["3"]
+		},
+		{
+			"description": "Partage : multiplication refusée",
+			"variationIndex": 3,
+			"variables": {
+				"t": "0",
+				"N": "42",
+				"k": "7",
+				"dv": "7",
+				"r": "3"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["2"]
+		},
+		{
+			"description": "Partage : avec mes 7 amis → N ÷ 8",
+			"variationIndex": 3,
+			"variables": {
+				"t": "1",
+				"N": "48",
+				"k": "7",
+				"dv": "8",
+				"r": "4"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["4"]
+		},
+		{
+			"description": "Partage : avec mes 7 amis, Léo oublié (÷ 7)",
+			"variationIndex": 3,
+			"variables": {
+				"t": "1",
+				"N": "48",
+				"k": "7",
+				"dv": "8",
+				"r": "4"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["3"]
+		},
+		{
+			"description": "Partage : équipes → N ÷ k",
+			"variationIndex": 3,
+			"variables": {
+				"t": "2",
+				"N": "30",
+				"k": "6",
+				"dv": "6",
+				"r": "3"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["3"]
+		}
+	]
+}

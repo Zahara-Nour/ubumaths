@@ -1,5 +1,6 @@
 /**
- * Éditeur de modèle : réglages des cases « primitive » et « solution-ed »
+ * Éditeur de modèle : réglages des cases « primitive », « solution-ed » et
+ * « resolution » (équation résolue ligne par ligne, outil 55)
  * (valeurs par défaut des cases, `shared.blankDefaults`).
  *
  * L'état du formulaire est un objet plat de champs texte ; il se lit depuis
@@ -18,6 +19,10 @@ export interface CalculusEditorState {
 	solution: boolean;
 	/** Solution-ed : la solution générale est attendue (mode `generale`) */
 	general: boolean;
+	/** Case « resolution » : équation résolue ligne par ligne */
+	resolution: boolean;
+	/** Resolution : nombre de lignes exigé (texte du champ, vide = 1) */
+	minLines: string;
 	integrand: string;
 	variable: string;
 	interval: string;
@@ -34,6 +39,8 @@ export function calculusEditorState(defaults: BlankDefaults | undefined): Calcul
 		primitive: defaults?.answerKind === 'primitive',
 		solution: defaults?.answerKind === 'solution-ed',
 		general: defaults?.solutionMode === 'generale',
+		resolution: defaults?.answerKind === 'resolution',
+		minLines: defaults?.minLines === undefined ? '' : String(defaults.minLines),
 		integrand: defaults?.integrand ?? '',
 		variable: defaults?.variable ?? '',
 		interval: defaults?.interval ?? '',
@@ -50,7 +57,7 @@ function filled(text: string): string | undefined {
 
 /**
  * Réglages à écrire dans `blankDefaults` (`answerKind` compris), `null` si
- * aucune des deux cases n'est choisie. « primitive » l'emporte si les deux le sont.
+ * aucune des cases n'est choisie. « primitive » l'emporte, puis « solution-ed ».
  */
 export function calculusBlankDefaults(
 	state: CalculusEditorState
@@ -77,6 +84,17 @@ export function calculusBlankDefaults(
 			...(variable && { variable }),
 			...(fn && { function: fn }),
 			...(initial && { initial })
+		};
+	}
+	if (state.resolution) {
+		const equation = filled(state.equation);
+		// Entier ≥ 2 seulement : 1 est le défaut, le schéma borne le reste
+		const minLines = Number(state.minLines.trim());
+		return {
+			answerKind: 'resolution',
+			...(equation && { equation }),
+			...(variable && { variable }),
+			...(Number.isInteger(minLines) && minLines >= 2 && { minLines })
 		};
 	}
 	return null;
