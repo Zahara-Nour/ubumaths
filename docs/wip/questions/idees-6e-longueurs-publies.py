@@ -1,7 +1,7 @@
 """Ajoute les variations validées à six modèles publiés de 6e, exportés de prod dans
 scripts/questions/idees-6e-longueurs-publies/ (chantier idees-6e-longueurs).
 
-Phase 0 du 2026-11-27 (« je te suis », journal docs/wip/idees-6e-longueurs-progress.md, fiches F1 à F6) :
+Phase 0 du 2026-11-27 (« je te suis », journal docs/archive/wip/idees-6e-longueurs/idees-6e-longueurs-progress.md, fiches F1 à F6) :
 - F1 → 060086c8 « Calcul du périmètre d'un carré » (6-144) : carré dessiné et codé, côté décimal ;
 - F2 → 66f9abbf « Calcul du périmètre d'un rectangle » (6-199) : rectangle dessiné et codé, côtés
   décimaux ;
