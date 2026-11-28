@@ -1,20 +1,17 @@
 ---
 title: Lot d'écarts messagerie
 date: 2026-11-28
-status: lot codé, PR à ouvrir
+status: clos (#3328)
 ---
 
 # Lot d'écarts `messagerie`
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-28, avant l'ouverture de la PR._
+_Mis à jour le 2026-11-28, après #3328._
 
-- **État** : tout le lot codé sur la branche (migration `20261128161241`, Zod, `replyRecipientId`, code mort) ; tests verts (16 fichiers d'intégration messagerie, unitaires) ; V135 vu à l'écran ; `code-reviewer` et `security-auditor` sans bloquant.
-- **Prochaine action** : push, PR, merge, puis `db:migrate` (additive) et clôture du lot (registre, `ecarts-lots.md`, archive du journal).
-- **En attente de David** : rien.
-- **Pièges en cours** : L135 clos sans code (invariant mono-professeur) ; L84 : preuve passée de `it.fails` à `it` dans `ecarts-messagerie.test.ts`, fichier partagé avec le lot `carnet-notifications`.
-- **Worktree / branche** : `../ubumaths-wt-ecarts-messagerie` · `fix/ecarts-messagerie`.
+- **État** : lot clos. PR #3328 mergée, migration `20261128161241` appliquée en prod, lignes barrées au registre, journal archivé.
+- **Prochaine action** : aucune. **Laissé** : `REVOKE INSERT ON private_messages` (à trancher à part).
 
 ## Écarts (11)
 
