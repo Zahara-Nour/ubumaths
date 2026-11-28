@@ -1,7 +1,7 @@
 ---
 title: Écarts restants — lots pour des sessions en parallèle
 date: 2026-11-28
-status: lots écrits le 2026-11-28 ; en cours : interface-eleve, carnet-notifications
+status: lots écrits le 2026-11-28 ; en cours : interface-eleve, carnet-notifications, mathast-limites
 ---
 
 # Écarts restants : lots pour des sessions en parallèle
@@ -78,14 +78,14 @@ Chaque bug visible y demande un choix de forme : c'est la session qui pose des q
 Sondes par le chemin de l'Atelier (`runInput`), jamais `pnpm math`. Agent `mathast-expert`, revue
 `code-reviewer` en Opus.
 
-| Lot                    | Écarts                                                                     | Pris par | Notes                                     |
-| ---------------------- | -------------------------------------------------------------------------- | -------- | ----------------------------------------- |
-| `mathast-limites`      | V125, L28 bis, L74, L75, L76, L77, L117, L118, L119, L121                  |          | Limites et domaines. V125 d'abord.        |
-| `mathast-second-degre` | V40, V93, V94, V95, V96, L70, L71, L120                                    |          | Second degré à paramètre et racines.      |
-| `mathast-ln`           | V80, V81, V82, V84, L62, L63, L65                                          |          | Simplification des logarithmes.           |
-| `mathast-trigo`        | V88, V89, V90, V91, L64, L69                                               |          |                                           |
-| `mathast-integrales`   | V17, V64, V98, V99, V100, V101                                             |          | Intégrales et primitives.                 |
-| `mathast-divers`       | V34, V78, V79, V83, V86, V87, V97, V102, L15, L25, L66, L67, L68, L72, M39 |          | À recouper en deux si la session s'étire. |
+| Lot                    | Écarts                                                                     | Pris par                            | Notes                                     |
+| ---------------------- | -------------------------------------------------------------------------- | ----------------------------------- | ----------------------------------------- |
+| `mathast-limites`      | V125, L28 bis, L74, L75, L76, L77, L117, L118, L119, L121                  | ecarts-mathast-limites (2026-11-28) | Limites et domaines. V125 d'abord.        |
+| `mathast-second-degre` | V40, V93, V94, V95, V96, L70, L71, L120                                    |                                     | Second degré à paramètre et racines.      |
+| `mathast-ln`           | V80, V81, V82, V84, L62, L63, L65                                          |                                     | Simplification des logarithmes.           |
+| `mathast-trigo`        | V88, V89, V90, V91, L64, L69                                               |                                     |                                           |
+| `mathast-integrales`   | V17, V64, V98, V99, V100, V101                                             |                                     | Intégrales et primitives.                 |
+| `mathast-divers`       | V34, V78, V79, V83, V86, V87, V97, V102, L15, L25, L66, L67, L68, L72, M39 |                                     | À recouper en deux si la session s'étire. |
 
 ## Hors lots
 
