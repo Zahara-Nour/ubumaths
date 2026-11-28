@@ -275,6 +275,9 @@ function tokenizeLine(
 		if (isIdentStart(ch)) {
 			const start = pos;
 			while (pos < line.length && isIdentPart(line[pos])) pos++;
+			// Primes en fin de nom seulement (`M'`, `M''`) : l'image d'un point.
+			// L'apostrophe ne sert nulle part ailleurs (les chaînes sont entre `"`).
+			while (pos < line.length && line[pos] === "'") pos++;
 			const word = line.slice(start, pos);
 			const type: TokenType = isKeyword(word) ? 'KEYWORD' : 'IDENTIFIER';
 			tokens.push({

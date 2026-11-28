@@ -3722,7 +3722,15 @@ export class Figure {
 		return id;
 	}
 
-	createScalarPolarAngle(centerId: string, pointId: string, options?: ElementOptions): string {
+	/**
+	 * Angle polaire du vecteur (center → point), dans `]-180, 180]` en degrés
+	 * (défaut) ou dans `]-π, π]` si `unite: 'rad'`.
+	 */
+	createScalarPolarAngle(
+		centerId: string,
+		pointId: string,
+		options?: ElementOptions & { unite?: 'rad' | 'deg' }
+	): string {
 		this.requirePoints('createScalarPolarAngle', centerId, pointId);
 		const id = this.generateId('sca');
 		const element: GeoScalar = {
@@ -3730,6 +3738,7 @@ export class Figure {
 			scalarKind: 'polar_angle',
 			id,
 			targetIds: [centerId, pointId],
+			unite: options?.unite ?? 'deg',
 			color: this.resolveColor(options),
 			visible: options?.visible ?? false,
 			label: options?.label,

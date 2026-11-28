@@ -274,3 +274,19 @@ describe('pôles périodiques (tan, 1/cos)', () => {
 		found.forEach((x, k) => expect(x).toBeCloseTo(expected[k], 6));
 	});
 });
+
+describe('pôle isolé parmi une famille périodique illisible (L60)', () => {
+	it('tan(x) + 1/(x − 3) dézoomé garde l’asymptote x = 3', () => {
+		const parsed = parseFunction('\\tan(x)+\\frac{1}{x-3}');
+		if (!parsed.ast) throw new Error('illisible');
+		const wide: Viewport = { xMin: -580, xMax: 600, yMin: -130, yMax: 480 };
+		const poles = analyzeFunction(
+			cachedEvaluator(parsed.ast),
+			wide,
+			'f',
+			buildAnalysisAST(parsed.ast)
+		).verticalAsymptotes.map((a) => a.x);
+
+		expect(poles.some((x) => Math.abs(x - 3) < 1e-6)).toBe(true);
+	});
+});

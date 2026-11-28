@@ -25,21 +25,34 @@
 
 import type { GeoParametricCurve } from '../types/elements';
 
+/**
+ * Réglages des Newton multi-départs de `graph/` : point le plus proche (ce
+ * fichier), intersections 1D (`parametric-intersection-1d.ts`) et 2D
+ * (`parametric-intersection.ts`). Chaque solveur a ses valeurs par défaut et
+ * ne lit que les champs qui le concernent.
+ */
 export interface NewtonConfig {
-	/** Number of equally spaced starting parameters in [t_min, t_max]. */
+	/** Départs également espacés dans [t_min, t_max] (en 2D : par axe, N² au total). */
 	numStarts: number;
 	/** Maximum Newton iterations per start. */
 	maxIterations: number;
-	/** Convergence tolerance on |f(t)| = |(γ − cursor)·γ'|. */
-	tolerance: number;
-	/** Singularity threshold: skip start if ‖γ'(t0)‖ < threshold. */
+	/** Tolérance de convergence sur |f| (ici |(γ − cursor)·γ'|, en 2D ‖γ1 − γ2‖). */
+	convergenceTolerance: number;
+	/** Intersections : après bornage, rejet si |f| dépasse ce seuil (plus permissif). */
+	acceptanceTolerance: number;
+	/** Départ sauté / itération abandonnée sous ce seuil (‖γ'‖, |f'| ou |det J|). */
 	singularityThreshold: number;
+	/** Intersections : epsilon de dédoublonnage = (t_max − t_min) × ce rapport. */
+	duplicateThresholdRatio: number;
 }
 
-const DEFAULT_CONFIG: NewtonConfig = {
+const DEFAULT_CONFIG: Pick<
+	NewtonConfig,
+	'numStarts' | 'maxIterations' | 'convergenceTolerance' | 'singularityThreshold'
+> = {
 	numStarts: 8,
 	maxIterations: 20,
-	tolerance: 1e-8,
+	convergenceTolerance: 1e-8,
 	singularityThreshold: 1e-10
 };
 
@@ -129,7 +142,7 @@ export function findClosestParameterOnCurve(
 			const rx = p.x - cursorX;
 			const ry = p.y - cursorY;
 			const f = rx * dp.dx + ry * dp.dy;
-			if (Math.abs(f) < cfg.tolerance) break;
+			if (Math.abs(f) < cfg.convergenceTolerance) break;
 
 			const speed2 = dp.dx * dp.dx + dp.dy * dp.dy;
 			if (!Number.isFinite(speed2) || speed2 < cfg.singularityThreshold) {

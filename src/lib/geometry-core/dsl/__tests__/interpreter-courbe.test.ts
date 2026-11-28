@@ -7,6 +7,10 @@ import { parse } from '../parser';
 import { interpret } from '../interpreter';
 import { geoToNumber } from '../../compute/to-number';
 import { DslRuntimeError } from '../errors';
+import { marchingSquares } from '../../rendering/marching-squares';
+import { exportToSVG } from '../../rendering/export-svg';
+import { exportToTikZ } from '../../rendering/export-tikz';
+import { exportToTypst } from '../../rendering/export-typst';
 
 function run(script: string) {
 	const program = parse(script);
@@ -433,5 +437,81 @@ describe('inflections — find inflection points', () => {
 		if (pos) {
 			expect(geoToNumber(pos.x)).toBeCloseTo(0, 0);
 		}
+	});
+});
+
+// ─── V77 : conique dont un coefficient suit un curseur ───────────────
+
+describe('courbe — conique qui suit un curseur (V77)', () => {
+	const script = 'a = slider(0, 5, 2)\nc = courbe("x^2 + y^2 = a^2")';
+	const VIEW = { xMin: -6, xMax: 6, yMin: -6, yMax: 6 };
+
+	function curveOf(figure: ReturnType<typeof run>['figure'], id: string) {
+		const el = figure.getElementById(id);
+		if (!el || el.type !== 'quadraticCurve') throw new Error('c doit être une quadraticCurve');
+		return el;
+	}
+
+	it('slider(0, 5, 2) : min, max, valeur positionnels', () => {
+		const { figure, symbols } = run('a = slider(0, 5, 2)');
+		expect(figure.getScalarValue(symbols.get('a')!.figureId!)).toBe(2);
+	});
+
+	it('dessine le cercle de rayon a, et suit le curseur', () => {
+		const { figure, symbols } = run(script);
+		const cId = symbols.get('c')!.figureId!;
+		expect(curveOf(figure, cId).conic.type).toBe('circle');
+		expect(curveOf(figure, cId).conic.a).toBeCloseTo(2, 9);
+
+		figure.moveSlider(symbols.get('a')!.figureId!, 3);
+		figure.recompute();
+		expect(curveOf(figure, cId).conic.type).toBe('circle');
+		expect(curveOf(figure, cId).conic.a).toBeCloseTo(3, 9);
+	});
+
+	it('curseur à 0 : rien dessiné, sans erreur ; le cercle revient ensuite', () => {
+		const { figure, symbols } = run('a = slider(0, 5, 0)\nc = courbe("x^2 + y^2 = a^2")');
+		const cId = symbols.get('c')!.figureId!;
+		expect(curveOf(figure, cId).conic.type).toBe('degenerate');
+		expect(() => exportToSVG(figure, VIEW)).not.toThrow();
+		expect(() => exportToTikZ(figure, VIEW)).not.toThrow();
+		expect(() => exportToTypst(figure, VIEW)).not.toThrow();
+
+		figure.moveSlider(symbols.get('a')!.figureId!, 1);
+		figure.recompute();
+		expect(curveOf(figure, cId).conic.type).toBe('circle');
+		expect(curveOf(figure, cId).conic.a).toBeCloseTo(1, 9);
+	});
+});
+
+// ─── L59 : équation sans y (x² = 4) ───────────────────────────────────
+
+describe('courbe — équation sans y (L59)', () => {
+	const VIEW = { xMin: -5, xMax: 5, yMin: -5, yMax: 5 };
+
+	function implicitOf(script: string) {
+		const { figure, symbols } = run(script);
+		const el = figure.getElementById(symbols.get('c')!.figureId!);
+		if (!el || el.type !== 'implicitCurve') throw new Error('c doit être une implicitCurve');
+		return el;
+	}
+
+	it('x^2 = 4 : visible, les deux droites x = −2 et x = 2', () => {
+		const el = implicitOf('c = courbe("x^2 = 4")');
+		expect(el.visible).toBe(true);
+		const xs = marchingSquares(el.compiledFn, VIEW).flatMap((c) => c.points.map((p) => p.x));
+		expect(xs.length).toBeGreaterThan(0);
+		for (const x of xs) expect(Math.abs(Math.abs(x) - 2)).toBeLessThan(0.01);
+		expect(xs.some((x) => x < 0)).toBe(true);
+		expect(xs.some((x) => x > 0)).toBe(true);
+	});
+
+	it('x^2 - 1 sans « = » : erreur « y absente », pas de courbe implicite', () => {
+		expect(() => run('c = courbe("x^2 - 1")')).toThrow(/la variable y est absente/);
+	});
+
+	it('x^2 = -1 : courbe vide, sans erreur', () => {
+		const el = implicitOf('c = courbe("x^2 = -1")');
+		expect(marchingSquares(el.compiledFn, VIEW)).toEqual([]);
 	});
 });

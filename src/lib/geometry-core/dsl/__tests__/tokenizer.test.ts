@@ -373,3 +373,15 @@ describe('tokenizer — complex scripts', () => {
 		expect(keywords).toContain('retourne');
 	});
 });
+
+describe('tokenizer — primes en fin de nom (L58)', () => {
+	it("lit M' et M'' comme des identifiants", () => {
+		const tokens = tokenize("M' = M''");
+		expect(tokens[0]).toMatchObject({ type: 'IDENTIFIER', value: "M'" });
+		expect(tokens[2]).toMatchObject({ type: 'IDENTIFIER', value: "M''" });
+	});
+
+	it('refuse un prime en tête de nom', () => {
+		expect(() => tokenize("'M = 1")).toThrow(DslTokenizerError);
+	});
+});

@@ -2461,8 +2461,9 @@ problème. À lancer **avant** d'écrire des énoncés ou corrigés en base.
 - ` ```ranger ` dans une liste : lu (`SPECIAL_BLOCK_KINDS`, `parseContentWithCodeBlocks`) et affiché
   (`ListNode`) depuis l'écart L89 ; ne sert qu'au cours, une question le refuse (« doivent être au
   premier niveau »).
-- Blocs d'espace, laissés tels quels : la cote d'un cylindre coupé parallèlement à l'axe est posée sous
-  la base, loin de son court trait quand la distance est petite. Restes hors chantier : voir l'en-tête
+- Blocs d'espace : la distance à l'axe d'un cylindre coupé parallèlement à l'axe est écrite contre son
+  trait en tirets, en haut à gauche de son bout au centre de la base (écart V110, 2026-11-28 : sous la
+  base, elle était loin du trait court ; à mi-hauteur, elle tombait sur le bord de la coupe). Restes hors chantier : voir l'en-tête
   du [journal archivé](../archive/wip/solides-progress.md).
 - **Boîte à moustaches**, laissés après revue (#2151, #2162) : `données:`
   tirées au hasard de taille paire → médiane au demi, refusée sur un axe de 1 en 1 pour ce tirage (le
