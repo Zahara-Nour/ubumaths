@@ -1,20 +1,19 @@
 ---
 title: Écarts — lot cours-evaluations
 date: 2026-11-28
-status: en cours — PR 1 à 4 mergées (#3291, #3300, #3306, #3312), clôture à faire
+status: clos le 2026-11-28 — #3291, #3300, #3306, #3312
 ---
 
 # Écarts — lot `cours-evaluations`
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-28, après #3312 (plafond des liens)._
+_Mis à jour le 2026-11-28, clôture._
 
-- **État** : les 7 écarts du lot sont corrigés (#3291, #3300 ; migrations en prod). Les liens des familles (cahier, cours, carnet) expirent à la fin de l'année scolaire de l'école (#3306 ; politique de confidentialité v1.6), jamais plus de 18 mois après leur émission : une fin d'année saisie au-delà (« 2099 ») retombe sur le 31 août qui vient (#3312, `schoolYearExpiry`). Rien à déployer en base.
-- **Prochaine action** : clôture du chantier (recompter le découpage, versement dans `docs/systeme/`, archivage du journal, ligne de `ecarts-lots.md`).
+- **État** : chantier clos. Les 7 écarts barrés au registre (preuves vertes), lot marqué « fait » dans `ecarts-lots.md`, versement fait dans `docs/systeme/` (`evaluations.md`, `cours-et-chapitres.md`, `carnet-de-liaison.md`, `base-de-donnees.md`, `exercices.md`).
+- **Prochaine action** : aucune.
 - **En attente de David** : rien.
-- **Pièges** : les liens déjà émis gardent leur 31 août. Le cache des cases effacées de `skill_attempts` passe par `trg_skill_attempts_after_delete` (saute un élève supprimé).
-- **Worktree / branche** : aucun (retirés par `pr:merger`).
+- **Worktree / branche** : aucun.
 
 ## Décisions (2026-11-28)
 

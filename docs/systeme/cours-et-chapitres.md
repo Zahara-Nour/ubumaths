@@ -474,7 +474,7 @@ un archivé (400 « Point archivé ») ; décocher et retirer un tag restent per
 ### Lien de partage du cahier
 
 `class_journal_share_tokens` : un jeton **actif** par classe (`rotateShareToken` révoque l'ancien),
-expirant à la fin de l'année scolaire de l'école de la classe (`classSchoolYearExpiry` de `school-year.ts` : ses dates saisies, sinon le 31 août ; jamais plus de 18 mois après l'émission ; lue avant la révocation, une lecture en panne laisse l'ancien lien). La page publique passe par
+expirant à la fin de l'année scolaire de l'école de la classe (`classSchoolYearExpiry` de `school-year.ts` : ses dates saisies, sinon le 31 août ; jamais plus de 18 mois après l'émission ; lue avant la révocation, une lecture en panne laisse l'ancien lien ; un lien émis avant cette règle, le 2026-11-28, garde son 31 août). La page publique passe par
 les RPC `get_class_journal_by_share_token` et `get_worksheet_by_share_token` ; elle ne donne
 que les séances publiées, et seulement les fiches **citées** dans une séance visible (imprimées
 dans le style de la fiche, lot 4b). Jeton
