@@ -51,6 +51,10 @@ import {
 	isSquaresLength,
 	DIAGONAL_RECTANGLE_TOOLS,
 	RULED_POLYGON_TOOLS,
+	compositeFamilyOf,
+	compositeStepPalette,
+	compositeStepTools,
+	isCompositeFigure,
 	type ConstructionCheck,
 	type ConstructionCheckKind,
 	type ConstructionSpec,
@@ -130,7 +134,8 @@ type NamedKind =
 	| 'angle'
 	| 'mesure'
 	| 'segment'
-	| 'mesure_segment';
+	| 'mesure_segment'
+	| 'segment_par';
 
 /** Nombre de points de chaque vérification, et comment l'écrire */
 const CHECK_ARITY: Record<
@@ -667,7 +672,22 @@ function readDiagonalRectangle(
 }
 
 /** Les mots de `verifier:` (le segment à mesurer s'écrit `mesure AB`) */
-const AUTHOR_CHECK_WORDS = CONSTRUCTION_CHECK_KINDS.filter((kind) => kind !== 'mesure_segment');
+const AUTHOR_CHECK_WORDS = CONSTRUCTION_CHECK_KINDS.filter(
+	(kind) => kind !== 'mesure_segment' && kind !== 'segment_par'
+);
+
+/** `segment [AC]` (outil n° 45) : deux points nommés, différents */
+const SEGMENT_THROUGH_REGEX = /^\[\s*([A-Z][A-Za-z0-9_]*?)\s*([A-Z][A-Za-z0-9_]*)\s*\]$/;
+
+function readSegmentThrough(rest: string, line: number): ConstructionCheck {
+	const match = SEGMENT_THROUGH_REGEX.exec(rest.trim());
+	if (!match)
+		throw new LineError('segment [AC] attend deux points entre crochets : « segment [AC] »');
+	if (match[1] === match[2]) {
+		throw new LineError(`segment [${match[1]}${match[2]}] : deux points différents`);
+	}
+	return { kind: 'segment_par', points: [match[1], match[2]], line };
+}
 
 function readCheck(value: string, line: number): ConstructionCheck {
 	const [rawWord = '', ...rest] = value.split(/\s+/);
@@ -677,7 +697,12 @@ function readCheck(value: string, line: number): ConstructionCheck {
 	if (word === 'triangle') return readTriangle(rest.join(' '), line);
 	if (word === 'angle') return readAngle(rest.join(' '), line);
 	if (word === 'mesure') return readMeasure(rest.join(' '), line);
-	if (word === 'segment') return readSegmentLength(rest.join(' '), line);
+	if (word === 'segment') {
+		const text = rest.join(' ');
+		return text.trim().startsWith('[')
+			? readSegmentThrough(text, line)
+			: readSegmentLength(text, line);
+	}
 	if (word === 'mesure_segment') {
 		throw new LineError(`pour mesurer un segment, écrire « ${SEGMENT_MEASURE_EXAMPLE} »`);
 	}
@@ -1095,6 +1120,64 @@ function coherenceError(
 	return null;
 }
 
+/** Ce qui se mêle à une figure composée (outil n° 45), pour les messages */
+const COMPOSITE_FAMILIES_TEXT =
+	'segment de longueur donnée, carré ou rectangle coté, segment [AC], cercle, point';
+
+/**
+ * Figure composée (outil n° 45, chantier `outil-equerre-uni`) : chaque étape est
+ * vérifiée comme si elle était seule, avec les outils de `outils:` qui lui servent ;
+ * papier uni, `outils:` écrit. Le reste (outil de trop) : `compositeToolErrors`.
+ */
+function compositeCoherenceError(
+	check: ConstructionCheck,
+	spec: ConstructionSpec,
+	grid: boolean,
+	toolsSeen: boolean
+): string | null {
+	const first = spec.checks[0] === check;
+	if (first && grid) {
+		return 'une figure composée se construit sur papier uni ; retirer « grille: » (ou écrire « grille: non »)';
+	}
+	if (first && !toolsSeen) {
+		return 'une figure composée donne ses outils (outils: …), ceux de toutes ses étapes';
+	}
+	if (grid || !toolsSeen) return null;
+	const family = compositeFamilyOf(check);
+	if (!family) {
+		return `${check.kind} ne se mêle pas à une figure composée (${COMPOSITE_FAMILIES_TEXT})`;
+	}
+	if (new Set(spec.checks.map((c) => compositeFamilyOf(c) ?? c.kind)).size < 2) {
+		return 'segment [AC] ne sert que dans une figure composée, avec d’autres étapes (carré, cercle…)';
+	}
+	if (check.kind === 'point' || check.kind === 'cercle') {
+		const twin = spec.checks.find(
+			(c) => (c.kind === 'point' || c.kind === 'cercle') && c.name === check.name
+		);
+		if (twin !== check) return `deux étapes nommées ${check.name.replace("'", '’')}`;
+	}
+	if (check.kind === 'segment_par') {
+		return spec.tools.includes('segment')
+			? null
+			: `segment [${check.points.join('')}] se trace avec l’outil segment (outils: segment)`;
+	}
+	const step: ConstructionSpec = {
+		...spec,
+		tools: compositeStepTools(check, spec.tools),
+		checks: [check]
+	};
+	return coherenceError(check, step, grid);
+}
+
+/** Figure composée : un outil de `outils:` qui ne sert à aucune étape */
+function compositeToolErrors(spec: ConstructionSpec): string[] {
+	// `segment [AC]` seul : son message à lui (`compositeCoherenceError`)
+	if (spec.checks.every((c) => c.kind === 'segment_par')) return [];
+	return spec.tools
+		.filter((tool) => !spec.checks.some((c) => compositeStepPalette(c).includes(tool)))
+		.map((tool) => `l’outil ${tool} ne sert à aucune étape ; le retirer de outils:`);
+}
+
 /**
  * Lire les lignes propres du bloc (avant `---`) : la spécification, les
  * erreurs situées, et le texte à donner au parseur de ```figure.
@@ -1188,13 +1271,21 @@ export function readConstructionHeader(
 		spec.tools = plainPaper ? [...plainPaper] : [CHECK_TOOL[kind]];
 	}
 	const coherent: ConstructionCheck[] = [];
+	const composite = isCompositeFigure(spec.checks);
+	if (composite && toolsSeen && !grid) {
+		for (const message of compositeToolErrors(spec)) errors.push({ message });
+	}
 	for (const check of spec.checks) {
 		// Rapporteur déjà posé (lot 8) : l'élève n'a aucun outil, `outils:` ne dirait rien de vrai
 		const posedMessage =
 			check.kind === 'mesure' && check.posed && toolsSeen
 				? `mesure ${check.points.join('')}, rapporteur posé : l’élève n’a aucun outil ; retirer outils:`
 				: null;
-		const message = posedMessage ?? coherenceError(check, spec, grid);
+		const message =
+			posedMessage ??
+			(composite
+				? compositeCoherenceError(check, spec, grid, toolsSeen)
+				: coherenceError(check, spec, grid));
 		if (message) errors.push({ message: `Ligne ${check.line} : ${message}`, line: check.line });
 		else coherent.push(check);
 	}

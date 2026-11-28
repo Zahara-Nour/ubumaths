@@ -567,6 +567,11 @@ export function solutionLines(
 		if (isDiagonalRectangleCheck(check)) {
 			return diagonalRectangleSolution(check, points, shapes, drawn);
 		}
+		// Outil n° 45 (figure composée) : le segment qui joint les deux points
+		if (check.kind === 'segment_par') {
+			const [a, b] = check.points.map((name) => points.get(name));
+			return a && b ? [{ kind: 'segment', x1: a.x, y1: a.y, x2: b.x, y2: b.y }] : [];
+		}
 		if (check.kind !== 'droite_par')
 			return polygonSolution(check, points, drawn.filter(isDrawnLine));
 		const a = points.get(check.points[0]);
