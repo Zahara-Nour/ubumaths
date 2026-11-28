@@ -14,7 +14,9 @@
  * de la droite devient `tracer: ?`), ```horloge (`placer:`), ```collection et
  * ```monnaie (`construire:`, avec sa réserve par défaut écrite : `maskMonnaie`), ```partage (`colorier:`), ```barres (effectifs des
  * barres de `placer:`, `axe: à choisir` compris : l'échelle ne se déduit plus),
- * ```boite-a-moustaches (les cinq valeurs des boîtes de `placer:`, ou `données:`).
+ * ```boite-a-moustaches (les cinq valeurs des boîtes de `placer:`, ou `données:`),
+ * ```yohaku (chaque case à remplir devient `[?]`, les totaux sont écrits en `totaux:` : ils
+ * ne se calculent plus sans la solution).
  * Lot 2, des lignes réécrites (David, journal § 7) :
  * - ```cubes `retrouver:` : `hauteurs: ? ? / 0 ?` (l'empreinte est la vue de dessus,
  *   donnée) et `vues: face 2 1 ; droite 1 2` (tout assemblage qui a ces vues est juste :
@@ -53,6 +55,11 @@ import {
 	parseTortueContent
 } from '#lib/ubumark/parser/tortue-parser.ts';
 import { findCalculsToProgram } from '#lib/ubumark/parser/calcul-parser.ts';
+import {
+	findYohakusARemplir,
+	parseYohakuContent,
+	YOHAKU_MASQUEE
+} from '#lib/ubumark/parser/yohaku-parser.ts';
 import {
 	findHorlogesToPlace,
 	isMaskedPlacerValue,
@@ -117,6 +124,10 @@ const REPRESENTER_LINE = /^(representer\s*:)(.*)$/i;
 const GRADUER_LINE = /^(graduer\s*:)(.*)$/i;
 const TRACER_LINE = /^(tracer\s*:)(.*)$/i;
 const BUILD_LINE = /^(construire\s*:)(.*)$/i;
+/** Ligne d'une grille yohaku : `ligne: [x+2] | x+3` */
+const YOHAKU_LIGNE = /^(ligne\s*:)(.*)$/i;
+/** Case d'une grille yohaku entre crochets, masquée ou non */
+const YOHAKU_CASE_A_REMPLIR = /^\[(.*)\]$/;
 const COLORIER_LINE = /^(colorier\s*:)(.*)$/i;
 const ATTENDU_LINE = /^(attendu\s*:)(.*)$/i;
 const RESERVE_LINE = /^réserve\s*:/i;
@@ -219,6 +230,39 @@ function maskTortue(block: FoundBlock): MaskLine {
 		if (masked === null || modele === null) return masked;
 		return `${masked}\nfigure: ${figureText(modele)}`;
 	};
+}
+
+/**
+ * Grille yohaku : chaque case entre crochets devient `[?]` ; après la dernière ligne, les
+ * totaux calculés depuis la solution (`totaux: L1 ; L2 | C1 ; C2`). Bloc illisible : laissé
+ * tel quel (le générateur le refuse).
+ */
+function maskYohaku(block: FoundBlock): MaskLine {
+	const spec = parseYohakuContent(block.body.join('\n')).spec;
+	if (spec === null) return () => null;
+	const rangs = block.body.flatMap((line, rank) => (YOHAKU_LIGNE.test(line.trim()) ? [rank] : []));
+	const derniere = rangs[rangs.length - 1];
+	const cases = keyLine(YOHAKU_LIGNE, (value) =>
+		value
+			.split('|')
+			.map((c) => (YOHAKU_CASE_A_REMPLIR.test(c.trim()) ? `[${YOHAKU_MASQUEE}]` : c.trim()))
+			.join(' | ')
+	);
+	return (line, rank) => {
+		const masked = cases(line, rank);
+		if (masked === null || typeof masked !== 'string' || rank !== derniere) return masked;
+		return [masked, `totaux: ${spec.totaux}`];
+	};
+}
+
+/** Une grille yohaku dont toutes les cases à remplir sont `[?]` */
+function yohakuMasked(block: FoundBlock): boolean {
+	return valuesOf(block.body, ['ligne']).every((value) =>
+		value.split('|').every((c) => {
+			const m = YOHAKU_CASE_A_REMPLIR.exec(c.trim());
+			return m === null || m[1].trim() === YOHAKU_MASQUEE;
+		})
+	);
 }
 
 function maskMonnaie(block: FoundBlock): MaskLine {
@@ -715,6 +759,8 @@ export function findUnmaskedAnswers(statement: string): string[] {
 		),
 		// Texte à trous : l'énoncé d'instance n'a que des trous vides (`[]`), même avec sa réserve écrite
 		...leaks('trous', own(findTrousToPlace(statement)), (block) => !trousHasFilledHole(block.body)),
+		// Grille yohaku : la solution de l'auteur est la réponse, où qu'il soit
+		...leaks('yohaku', findYohakusARemplir(statement), yohakuMasked),
 		...leaks('collection', findBuildCollections(statement), keyMasked(['construire'])),
 		...leaks('monnaie', findBuildMonnaies(statement), keyMasked(['construire'])),
 		...leaks('partage', findPartagesToColorier(statement), keyMasked(['colorier'])),
@@ -781,6 +827,7 @@ export function maskGestureAnswers(statement: string): string {
 	// ne dit la réponse)
 	maskBlocks(findCalculsToProgram(statement), () => keyLine(ATTENDU_LINE, () => MASKED_VALUE));
 	maskBlocks(findHorlogesToPlace(statement), () => keyLine(PLACER_LINE, maskedPlacerValue));
+	maskBlocks(findYohakusARemplir(statement), maskYohaku);
 	const build = keyLine(BUILD_LINE, () => MASKED_VALUE);
 	maskBlocks(findBuildCollections(statement), () => build);
 	maskBlocks(findBuildMonnaies(statement), maskMonnaie);

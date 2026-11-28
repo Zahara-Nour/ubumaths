@@ -790,7 +790,8 @@ export type BuildKind =
 	| 'tortue'
 	| 'calcul'
 	| 'robot'
-	| 'labyrinthe';
+	| 'labyrinthe'
+	| 'yohaku';
 
 /** Nom du bloc pour les messages au prof : « bloc collection », « droite graduée », « horloge » */
 export function buildKindName(kind: BuildKind): string {
@@ -810,6 +811,7 @@ export function buildKindName(kind: BuildKind): string {
 	if (kind === 'calcul') return 'programme de calcul';
 	if (kind === 'robot') return 'robot à produire';
 	if (kind === 'labyrinthe') return 'labyrinthe à parcourir';
+	if (kind === 'yohaku') return 'grille à remplir';
 	return kind === 'horloge' ? 'horloge' : `bloc ${kind}`;
 }
 

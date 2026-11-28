@@ -63,6 +63,8 @@
 	import { parseRobotContent } from '#lib/ubumark/parser/robot-parser.ts';
 	import LabyrintheCorrige from '#lib/components/markdown/nodes/LabyrintheCorrige.svelte';
 	import { parseLabyrintheContent } from '#lib/ubumark/parser/labyrinthe-parser.ts';
+	import YohakuCorrige from '#lib/components/markdown/nodes/YohakuCorrige.svelte';
+	import { parseYohakuContent } from '#lib/ubumark/parser/yohaku-parser.ts';
 	import CalculCorrige from '#lib/components/markdown/nodes/CalculCorrige.svelte';
 	import { parseCalculContent } from '#lib/ubumark/parser/calcul-parser.ts';
 	import Partage from '#lib/components/markdown/nodes/Partage.svelte';
@@ -141,6 +143,7 @@
 	let calcul = $derived(kind === 'calcul' ? parseCalculContent(source) : null);
 	let robot = $derived(kind === 'robot' ? parseRobotContent(source) : null);
 	let labyrinthe = $derived(kind === 'labyrinthe' ? parseLabyrintheContent(source) : null);
+	let yohaku = $derived(kind === 'yohaku' ? parseYohakuContent(source) : null);
 	let partage = $derived(kind === 'partage' ? parsePartageContent(source) : null);
 	let cubes = $derived(kind === 'cubes' ? parseEspaceContent(source) : null);
 	let patron = $derived(kind === 'patron' ? parseEspaceContent(source, 'patron') : null);
@@ -316,6 +319,9 @@
 		correct={accepted(status)}
 		expected={expected?.[0]}
 	/>
+{:else if yohaku}
+	<!-- Grille yohaku : la grille de l'élève (lignes et colonnes fausses en rouge) ou une grille juste -->
+	<YohakuCorrige node={yohaku} {answer} correct={accepted(status)} expected={expected?.[0]} />
 {:else if calcul}
 	<!-- Programme de calcul : les programmes en texte, le tableau nombre → résultat -->
 	<CalculCorrige node={calcul} {answer} correct={accepted(status)} expected={expected?.[0]} />
