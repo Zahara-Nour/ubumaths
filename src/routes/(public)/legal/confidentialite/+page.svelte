@@ -12,7 +12,7 @@
 	<article class="prose max-w-none prose-slate dark:prose-invert">
 		<h1>Politique de confidentialité</h1>
 
-		<p class="lead text-muted-foreground">Dernière mise à jour : 25 novembre 2026 | Version 1.5</p>
+		<p class="lead text-muted-foreground">Dernière mise à jour : 28 novembre 2026 | Version 1.6</p>
 
 		<hr />
 
