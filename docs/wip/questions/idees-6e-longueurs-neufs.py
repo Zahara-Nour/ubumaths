@@ -1,6 +1,6 @@
 """Écrit les modèles neufs du chantier idees-6e-longueurs dans scripts/questions/idees-6e-longueurs-neufs/.
 
-Phase 0 du 2026-11-27 (journal docs/wip/idees-6e-longueurs-progress.md, § Modèles neufs) : David a
+Phase 0 du 2026-11-27 (journal docs/archive/wip/idees-6e-longueurs/idees-6e-longueurs-progress.md, § Modèles neufs) : David a
 répondu « je te suis » aux fiches N1 à N5 et aux questions Q1, Q2. On reprend l'idée de l'autre
 plateforme, pas sa forme ni son texte.
 

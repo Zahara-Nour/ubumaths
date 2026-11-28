@@ -105,6 +105,13 @@ export const CATEGORY_LABELS: Record<ContentLocale, Record<WorksheetCategory, st
 	}
 };
 
+/**
+ * Titre d'une fiche anglaise sans catégorie dont une notion n'a pas de nom
+ * anglais, et dont la branche n'en a pas non plus : jamais le titre français
+ * (V111, David le 2026-11-28)
+ */
+const UNTRANSLATED_TITLE_EN = 'Worksheet';
+
 /** Séparateur des notions, et de la catégorie au bas de page */
 const SEPARATOR = ' · ';
 
@@ -223,6 +230,17 @@ function localizedNotions(
 	};
 }
 
+/**
+ * Le nom anglais de la branche de toutes les notions (une seule comprise) ;
+ * `null` si elles n'en partagent pas une, ou si elle n'est pas traduite.
+ */
+function englishBranchOf(notions: readonly TitleNotion[]): string | null {
+	const first = notions[0];
+	const branchEn = first?.branchEn?.trim();
+	if (!first?.branch || !branchEn) return null;
+	return notions.every((notion) => notion.branch === first.branch) ? notionLabel(branchEn) : null;
+}
+
 /** Ce que le PDF imprime : voir `PrintedTitle` et les cas de l'ADR 0041 */
 export function printedTitle(input: PrintedTitleInput): PrintedTitle {
 	const { type, category, customTitle, title, locale } = input;
@@ -246,6 +264,10 @@ export function printedTitle(input: PrintedTitleInput): PrintedTitle {
 		}
 		if (notionsText !== '') return { main: notionsText, notions: '', sub, footer: flat, flat };
 		if (categoryLabel !== '') return alone(categoryLabel);
+		// Anglais, noms manquants : le nom anglais de la branche commune, sinon « Worksheet »
+		if (locale === 'en' && input.notions.length > 0) {
+			return alone(englishBranchOf(input.notions) ?? UNTRANSLATED_TITLE_EN);
+		}
 		return alone(title);
 	}
 

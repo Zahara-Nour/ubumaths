@@ -2,20 +2,16 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-28, série publiée, #3269 (id de la série) en cours de merge._
+_Mis à jour le 2026-11-28, chantier clos._
 
-- **État** : tout le lot est en prod (#3262, #3265, `db:migrate` vérifiés par MCP). David a publié la série de
-  relecture `aa16caa1` (6 publiés complétés) ; id commité par #3269 (`pr:merger` lancé : vérifier `MERGED`, sinon
-  la merger). Puis David : « je valide » (2026-11-28).
-- **Prochaine action** : lire les verdicts en base (`question_template_reviews`, `reviewed_at` du 2026-11-28) pour
-  les 6 brouillons et les 6 publiés ; si « je valide » couvre tout (à confirmer avec David si des verdicts manquent),
-  `publier-lot.ts --dir scripts/questions/idees-6e-longueurs-neufs` en simulation, David `--publier` ; puis lever
-  les réservations des 6 publiés, rubrique « publiée » dans `idees-ailleurs-repartition.md`, versement du journal.
-- **En attente de David** : la commande `--publier` de `publier-lot.ts`, après la simulation.
-- **Pièges en cours** : `conditions: []` écrase les conditions partagées ; le pre-commit laisse l'index d'une
-  fixture JSON dans sa forme d'avant prettier (`MM`) : vérifier `git diff HEAD`, puis `git restore --staged`.
-- **Worktree / branche** : `../ubumaths-wt-idees-6e-longueurs-serie` (`chore/idees-6e-longueurs-serie`, #3269),
-  retiré par `pr:merger` au merge.
+- **État** : **clos**. Les 6 neufs (c26b4d4c, 0d55c1de, 8ac28cf5, 84648b3b, 0031e3ea, 10dc7b1c) sont **publiés** en
+  prod (publication lancée par David, statut relu par MCP) ; les 11 variations ajoutées aux 6 publiés sont en prod,
+  série de relecture `aa16caa1` validée (« je valide »). Réservations levées, journal archivé.
+- **Prochaine action** : aucune.
+- **En attente de David** : rien.
+- **Pièges notés** : `conditions: []` écrase les conditions partagées ; le pre-commit laisse l'index d'une fixture
+  JSON dans sa forme d'avant prettier (`MM`).
+- **Worktree / branche** : aucun.
 
 ## Phase 0 (2026-11-27)
 
@@ -112,6 +108,8 @@ Page à cocher : https://claude.ai/artifact/6bCd5vw2yxYQ7pQvQUJ7uV (Oui / Non / 
   CM1-068, plages réduites à deux chiffres après la virgule.
 
 ## Historique
+
+- 2026-11-28 : David publie les 6 neufs (`publier-lot.ts --publier`), statut relu par MCP ; chantier clos.
 
 - 2026-11-28 : David publie la série `aa16caa1` (id → #3269), puis « je valide ».
 

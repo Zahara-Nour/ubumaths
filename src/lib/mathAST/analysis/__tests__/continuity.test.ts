@@ -22,6 +22,8 @@ import {
 	tan
 } from '../../factory';
 import { literalNumberValue } from '../../common/numeric';
+import { parseLatex } from '../../parser';
+import { computeNumericValue } from '../../eval/numeric-value';
 
 describe('analyzeContinuity()', () => {
 	describe('continuous functions', () => {
@@ -263,6 +265,42 @@ describe('analyzeContinuity()', () => {
 			// Should have discontinuities at 0, ±π
 			const infiniteDiscs = result.discontinuities.filter((d) => d.type === 'infinite');
 			expect(infiniteDiscs.length).toBeGreaterThanOrEqual(1);
+		});
+
+		// L60 : le domaine ne sait pas écrire « famille + points » ; le pôle
+		// isolé x = 3 disparaissait à côté des π/2 + kπ de tan.
+		it.each(['\\tan(x)+\\frac{1}{x-3}', '2\\tan(x)\\cdot\\frac{1}{x-3}'])(
+			'%s garde le pôle isolé 3 à côté de la famille π/2 + kπ',
+			(latex) => {
+				const result = analyzeContinuity(parseLatex(latex), 'x');
+				const values = result.discontinuities.map((d) => computeNumericValue(d.point));
+
+				const atThree = result.discontinuities.find(
+					(d) => Math.abs((computeNumericValue(d.point) ?? NaN) - 3) < 1e-9
+				);
+				expect(atThree?.type).toBe('infinite');
+				expect(atThree?.periodic).toBeUndefined();
+				expect(values.some((v) => v !== null && Math.abs(v - Math.PI / 2) < 1e-6)).toBe(true);
+				expect(result.discontinuities.some((d) => d.periodic !== undefined)).toBe(true);
+			}
+		);
+
+		// Un point effaçable hors du domaine réel ne casse pas la continuité
+		// sur le domaine, même si la famille périodique semble le contenir.
+		it.each(['\\frac{x-3}{x-3}\\tan(x)', '\\tan(x)+\\frac{\\sin(x)}{x}'])(
+			'%s reste continue sur son domaine',
+			(latex) => {
+				const result = analyzeContinuity(parseLatex(latex), 'x');
+				expect(result.isContinuousOnDomain).toBe(true);
+			}
+		);
+
+		it('tan(x) + 1/(x − π/2) : π/2 n’est rendu qu’une fois', () => {
+			const result = analyzeContinuity(parseLatex('\\tan(x)+\\frac{1}{x-\\frac{\\pi}{2}}'), 'x');
+			const atHalfPi = result.discontinuities.filter(
+				(d) => Math.abs((computeNumericValue(d.point) ?? NaN) - Math.PI / 2) < 1e-9
+			);
+			expect(atHalfPi).toHaveLength(1);
 		});
 	});
 

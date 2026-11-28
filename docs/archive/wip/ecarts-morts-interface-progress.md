@@ -1,16 +1,16 @@
 ---
 title: Chantier ecarts-morts-interface
 date: 2026-11-28
-status: en cours (M48 restant)
+status: clos (#3260, #3268 ; M48 passé au lot interface-prof)
 ---
 
 # Chantier `ecarts-morts-interface`
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-28, PR de M58 ouverte (branche `chore/ecarts-morts-interface-2`)._
+_Mis à jour le 2026-11-28, chantier clos._
 
-- **État** : M32, M33, M34, M47, M49, M52 mergés (#3260) ; M58 en PR · **Prochaine action** : merger la PR de M58, puis M48 seulement quand V118 est tranché · **En attente** : M48 attend V118 (lot `interface-prof`) : brancher ou retirer `isTrivialHtmlWrapper` · **Pièges en cours** : un module de `src/lib` importé nu doit être dans `scripts/side-effect-modules.ts`, sinon le build l'élague ; la règle CSS `.exercise-content` de `app.css` n'est PAS morte (texte des exercices en Inter) · **Worktree / branche** : `ubumaths-wt-ecarts-morts-interface-2` / `chore/ecarts-morts-interface-2`
+- **État** : clos. M32, M33, M34, M47, M49, M52 (#3260) et M58 (#3268) faits · **M48** passé au lot `interface-prof` (décision de David, 2026-11-28) : `isTrivialHtmlWrapper` sera branchée par le correctif de V118, pas retirée · **Worktree / branche** : aucun
 
 ## Lot
 

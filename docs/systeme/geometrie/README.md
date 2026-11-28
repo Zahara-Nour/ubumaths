@@ -489,14 +489,6 @@ ailleurs, sans `checks.ts` : case « figure » des questions, `src/lib/questions
   table.
 - La CSP autorise `unsafe-eval` pour Typst (`src/hooks.server.ts`).
 - `figure.ts` (~5 000 lignes) et `builtins.ts` (~7 400 lignes) sont les deux plus gros fichiers.
-- Trois interfaces de configuration Newton divergentes : `NewtonConfig`, `IntersectionConfig`,
-  `IntersectionConfig1D`.
-- `courbe("x^2 + y^2 = a^2")` avec `a = slider(…)` rend une conique **dégénérée** : les
-  coefficients sont évalués sans le curseur (`a` y vaut 0) et ne le suivent pas (constaté le
-  2026-10-18). La vue Figure de l'atelier contourne par `parameterRecipe` ; le DSL ne s'en sert
-  pas encore.
-- `courbe("x^2 = 4")` est refusée (« la variable y est absente ») au lieu de deux droites ;
-  l'atelier, lui, la dessine (marching squares).
 - `GeometryCanvas` écrit l'étiquette d'une courbe implicite avec `svg.label`, que
   `implicitCurveToSVG` ne rend pas : le nom ne s'affiche pas (et le `<text>` n'a pas de `y`).
 

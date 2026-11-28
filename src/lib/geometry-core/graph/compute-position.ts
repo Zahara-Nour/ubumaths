@@ -1186,7 +1186,8 @@ function computeScalarValue(
 			const dy = geoToNumber(point.y) - geoToNumber(center.y);
 			if (Math.abs(dx) < 1e-15 && Math.abs(dy) < 1e-15) return undefined;
 			const rad = Math.atan2(dy, dx);
-			return (rad * 180) / Math.PI;
+			// Sans unité (figures anciennes, bissectrice) : degrés, comme avant.
+			return el.unite === 'rad' ? rad : (rad * 180) / Math.PI;
 		}
 		case 'angle_measure': {
 			// Unsigned angle in [0, π] at vertex V between rays V→A and V→B.

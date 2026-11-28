@@ -4,128 +4,17 @@
  *
  * Chaque test affirme le comportement ATTENDU d'un écart encore ouvert : il est
  * rouge tant que l'écart est vrai. Le nom de chaque `describe` porte l'identifiant
- * de l'écart, que le registre retient par `› V111`, `› L85`…
+ * de l'écart, que le registre retient par `› L87`…
  *
  * Les tests nommés « témoin » sont verts aujourd'hui : ils montrent que le même
  * geste marche sur un cas voisin, donc que le rouge vient bien de l'écart.
  */
 
-import { readFileSync } from 'node:fs';
-import { resolve } from 'node:path';
-
-import { createTypstCompiler } from '@myriaddreamin/typst.ts/compiler';
-import { loadFonts } from '@myriaddreamin/typst.ts/options.init';
-import { beforeAll, describe, expect, it, vi } from 'vitest';
+import { describe, expect, it } from 'vitest';
 
 import { assignBlankIndices } from '#lib/questions/generator/assign-blank-indices.ts';
-import { escapeTypst } from '#lib/ubumark/generators/typst-generator.ts';
 import { parseStatChartContent } from '#lib/ubumark/parser/stat-chart-parser.ts';
 import { lineCoefficients } from '#lib/ubumark/utils/courbe-tracer.ts';
-import { printedTitle, type TitleNotion } from '#lib/worksheets/worksheet-title.ts';
-
-describe('V111 : fiche anglaise au titre composé, sans catégorie', () => {
-	// Le titre en base est le titre composé, écrit en français par l'éditeur.
-	const FRENCH_TITLE = 'Suites arithmétiques';
-	const notion: TitleNotion = { name: 'suites arithmétiques', branch: 'Suites' };
-
-	function mainTitle(locale: 'fr' | 'en', notions: TitleNotion[]): string {
-		return printedTitle({
-			type: 'worksheet',
-			category: null,
-			customTitle: false,
-			title: FRENCH_TITLE,
-			notions,
-			locale
-		}).main;
-	}
-
-	it('témoin : en français, le titre composé s’imprime', () => {
-		expect(mainTitle('fr', [notion])).toBe(FRENCH_TITLE);
-	});
-
-	it('témoin : notion traduite, la version anglaise imprime son nom anglais', () => {
-		expect(mainTitle('en', [{ ...notion, nameEn: 'arithmetic sequences' }])).toBe(
-			'Arithmetic sequences'
-		);
-	});
-
-	// Aujourd'hui : « Suites arithmétiques » en tête de la fiche anglaise.
-	it('notion sans nom anglais : la version anglaise n’imprime pas le titre français', () => {
-		const main = mainTitle('en', [notion]);
-		// Un titre vide ne serait pas une correction
-		expect(main).not.toBe('');
-		expect(main).not.toMatch(/arithmétiques/i);
-	});
-});
-
-describe('L85 : `//` dans un titre ou une consigne de fiche', () => {
-	type Compiler = ReturnType<typeof createTypstCompiler>;
-
-	// Le texte d'un contenu Typst, tel qu'il s'imprime (mots et espaces)
-	const PLAIN = [
-		'#let plain(c) = {',
-		'  if type(c) == str { c }',
-		'  else if c.has("text") { c.text }',
-		'  else if c.has("children") { c.children.map(plain).join("") }',
-		'  else if c == [ ] { " " }',
-		'  else { "" }',
-		'}'
-	].join('\n');
-
-	let compiler: Compiler;
-
-	beforeAll(async () => {
-		const wasm = readFileSync(
-			resolve('node_modules/@myriaddreamin/typst-ts-web-compiler/pkg/typst_ts_web_compiler_bg.wasm')
-		);
-		const fonts = ['ShantellSans-Light.ttf', 'ShantellSans-Bold.ttf', 'ChiphreMath.ttf'].map(
-			(f) => new Uint8Array(readFileSync(resolve('static/fonts/chiphre-math-typst', f)))
-		);
-		// Hors réseau, comme les autres tests qui compilent du Typst
-		vi.stubGlobal('fetch', () => Promise.reject(new Error('réseau interdit dans ce test')));
-		compiler = createTypstCompiler();
-		await compiler.init({
-			getModule: () => wasm,
-			beforeBuild: [loadFonts(fonts, { assets: false })]
-		});
-	}, 120_000);
-
-	/** Ce que Typst imprime d'un texte échappé par `escapeTypst`, seul sur sa ligne */
-	async function printed(text: string): Promise<string> {
-		const source = [
-			PLAIN,
-			'#let c = [',
-			escapeTypst(text),
-			']',
-			'#metadata(plain(c)) <lu>',
-			'#c'
-		].join('\n');
-		compiler.addSource('/main.typ', source);
-		const values = await compiler.runWithWorld({ mainFilePath: '/main.typ' }, async (world) => {
-			const { diagnostics } = await world.compile({ diagnostics: 'full' });
-			const errors = (diagnostics ?? []).filter(
-				(d: { message: string }) => !d.message.startsWith('unknown font family')
-			);
-			expect(errors).toEqual([]);
-			return world.query({ selector: '<lu>', field: 'value' }) as Promise<string[]>;
-		});
-		expect(values).toHaveLength(1);
-		return values[0].trim();
-	}
-
-	it('témoin : une seule barre, le texte s’imprime en entier', async () => {
-		expect(await printed('a / b')).toBe('a / b');
-	});
-
-	it('témoin : un caractère échappé (#) s’imprime tel quel', async () => {
-		expect(await printed('a # b')).toBe('a # b');
-	});
-
-	// Aujourd'hui : « a » (Typst lit `// b` comme un commentaire).
-	it('« a // b » s’imprime en entier', async () => {
-		expect(await printed('a // b')).toBe('a // b');
-	});
-});
 
 describe('L87 : horloge à régler comme option d’un choix', () => {
 	function choiceErrorsOf(option: string[]): string {

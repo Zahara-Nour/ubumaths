@@ -137,7 +137,8 @@ const KNOWN_KEYS = [
 	'axes',
 	'case',
 	'vecteurs',
-	'données'
+	'données',
+	'solution'
 ] as const;
 
 /** Clé écrite sans accent, lue comme la clé accentuée */
@@ -234,12 +235,16 @@ export function findCourbeBlocks(lines: string[]): CourbeBlockRange[] {
 /** Ligne du geste d'un bloc : `placer:` (points) ou `tracer:` (droite) */
 const GESTURE_LINE_REGEX = /^\s*(?:placer|tracer)\s*:/i;
 
+/** `solution: oui` : la réponse est dessinée, l'élève n'a rien à faire (pas de case) */
+const SOLVED_LINE_REGEX = /^\s*solution\s*:\s*oui\s*$/i;
+
 /**
  * Les repères à points à placer (`placer:`) ou à droite à tracer (`tracer:`)
  * d'un énoncé, délimités comme le
  * parseur : corps sans clôtures, fermeture, et `nested` pour un bloc en
  * retrait, cité ou ouvert sur la ligne d'un item (l'élève ne pourrait pas y
- * répondre : sa case n'est pas créée)
+ * répondre : sa case n'est pas créée). Un repère `solution: oui` n'en est pas un :
+ * sa réponse est dessinée.
  */
 export function findCourbesToPlace(markdown: string): {
 	startIndex: number;
@@ -260,7 +265,11 @@ export function findCourbesToPlace(markdown: string): {
 				nested: lines[block.startIndex] !== plain[block.startIndex]
 			};
 		})
-		.filter((block) => block.body.some((line) => GESTURE_LINE_REGEX.test(line)));
+		.filter(
+			(block) =>
+				block.body.some((line) => GESTURE_LINE_REGEX.test(line)) &&
+				!block.body.some((line) => SOLVED_LINE_REGEX.test(line))
+		);
 }
 
 /** L'énoncé a-t-il un repère à points à placer ou à droite à tracer ? */
@@ -1170,6 +1179,9 @@ export function parseCourbeContent(source: string): CourbeNode {
 	let donnees: CourbeData | undefined;
 	let caseIndex: number | undefined;
 	let caseLine = 0;
+	/** `solution: oui` : la réponse du geste dessinée (corrigé imprimé d'une série) */
+	let solution: boolean = false;
+	let solutionLine = 0;
 
 	const fail = (line: number, content: string, error: unknown) => {
 		const message = error instanceof Error ? error.message : String(error);
@@ -1299,6 +1311,15 @@ export function parseCourbeContent(source: string): CourbeNode {
 				case 'données':
 					donnees = parseData(value, line);
 					break;
+				case 'solution': {
+					const answer = value.toLowerCase();
+					if (answer !== 'oui' && answer !== 'non') {
+						throw new LineError(`solution « ${value} » : oui ou non`);
+					}
+					solution = answer === 'oui';
+					solutionLine = line;
+					break;
+				}
 				case 'case':
 					if (!/^\d+$/.test(value)) {
 						throw new LineError(`case « ${value} » : numéro de case entier`);
@@ -1478,6 +1499,23 @@ export function parseCourbeContent(source: string): CourbeNode {
 		}
 	}
 
+	// `solution: oui` : il faut une réponse à dessiner, et pas de case (c'est un corrigé)
+	if (solution) {
+		const problem =
+			placer === undefined && tracer === undefined && vecteur === undefined
+				? 's’emploie avec placer: ou tracer:'
+				: caseIndex !== undefined
+					? 'pas avec case: (le corrigé ne se remplit pas)'
+					: null;
+		if (problem !== null) {
+			errors.push({
+				message: `Ligne ${solutionLine} : solution : ${problem}`,
+				line: solutionLine,
+				content: lines[solutionLine - 1].trim()
+			});
+		}
+	}
+
 	const spec: CourbeSpec | null =
 		errors.length === 0
 			? {
@@ -1496,7 +1534,8 @@ export function parseCourbeContent(source: string): CourbeNode {
 					...(vecteur !== undefined && { vecteur }),
 					...(vecteurs !== undefined && { vecteurs }),
 					...(axisTitles !== undefined && { axisTitles }),
-					...(donnees !== undefined && { donnees })
+					...(donnees !== undefined && { donnees }),
+					...(solution ? { solution: true as const } : {})
 				}
 			: null;
 

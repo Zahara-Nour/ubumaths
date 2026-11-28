@@ -183,7 +183,7 @@ Lecture d'un terme : le survol montre la **valeur exacte** (`exact.ts`, plafonds
 
 Le moteur de suites sert aussi le bloc ubumark ` ```courbe ` (`src/lib/ubumark/parser/courbe-parser.ts`,
 `src/lib/ubumark/utils/courbe-scene.ts`) : le modifier, c'est modifier ce bloc. Ce bloc a aussi son
-geste « placer des points », son geste « tracer une droite » (`tracer:`), son geste « tracer un vecteur » (`tracer: vecteur`, combinaison `u + v` comprise), ses vecteurs donnés (`vecteurs:`, flèches de la scène, `scene.vectors`), sa courbe de données (`données:`, ligne brisée de la scène, `scene.data`) et ses titres d'axes, décrits dans [ubumark](ubumark.md) (Repère à placer) :
+geste « placer des points », son geste « tracer une droite » (`tracer:`), son geste « tracer un vecteur » (`tracer: vecteur`, combinaison `u + v` comprise), ses vecteurs donnés (`vecteurs:`, flèches de la scène, `scene.vectors`), sa courbe de données (`données:`, ligne brisée de la scène, `scene.data`), son corrigé dessiné (`solution: oui`, réponse du geste en vert, `solvedOverlay`) et ses titres d'axes, décrits dans [ubumark](ubumark.md) (Repère à placer) :
 le pas de grille automatique (`courbeGridSteps`) y est partagé par la scène, le parseur et l'écran.
 En évaluation notée, `placer: A=? ; B=?` (coordonnées masquées) se lit aussi : point de remplacement,
 ni nœud ni fenêtre vérifiés ([ubumark](ubumark.md), invariant 12).
@@ -247,6 +247,10 @@ la main (2026-10-15). Une limite ou un coefficient plus petit que son incertitud
 dernières sondes, dispersion des extrapolations) vaut **0** (`snapToZero`) : ln(x)/x recevait
 `y = 0,0000862`. Les abscisses de sondage (`LARGE_X_VALUES`) ne sont volontairement **pas** des
 puissances de 10 (elles tombaient sur la période de `cos(πx/50)`).
+Quand ni ces sondes ni la limite symbolique ne concluent, des sondes **très lointaines**
+(`HUGE_X_VALUES`, 1e3 à 1e96) passent par le même critère de convergence : (ln x)²/√x vaut encore
+0,38 en x ≈ 137 000 et n'avait pas son asymptote y = 0 (L61, 2026-11-28). ln x seul ne converge
+pas ainsi : ses écarts entre sondes ne rétrécissent pas.
 
 Asymptotes **verticales** (`findVerticalAsymptotes`) : les singularités de l'expression
 (`singularities`, via `getAllDiscontinuities` de mathAST, en cache par AST) passent d'abord. Un

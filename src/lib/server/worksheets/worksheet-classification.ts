@@ -111,7 +111,8 @@ function asWorksheetType(value: string): WorksheetType {
 /**
  * La branche de chaque nœud demandé, avec son nom anglais, lue dans l'arbre en
  * remontant les parents (une requête par niveau, trois au plus). Une seule
- * notion n'a pas besoin de sa branche (le titre garde son nom) : rien n'est lu.
+ * notion a aussi besoin de sa branche : son nom anglais titre la fiche anglaise
+ * quand la notion n'a pas le sien (V111).
  *
  * @throws si la lecture échoue
  */
@@ -120,7 +121,7 @@ export async function loadBranches(
 	nodeIds: readonly string[]
 ): Promise<Map<string, BranchName | null>> {
 	const branches = new Map<string, BranchName | null>();
-	if (nodeIds.length < 2) return branches;
+	if (nodeIds.length === 0) return branches;
 
 	const tree = new Map<string, TitleTreeNode>();
 	let toRead = [...new Set(nodeIds)];
