@@ -86,3 +86,5 @@ Exemple suivi : le cube avec la droite (IG), le plan (BDE) et le point K, sur t�
   à la fermeture ; garde d'indice dans `attach`. **Laissés** : deux questions de suite au même texte de bloc ne
   referment pas la fenêtre (rien ne les distingue) ; pendant la fermeture animée, la capture du pointeur reste
   à la grande figure (la page n'est pas atteignable à ce moment) ; pas de test au doigt réel.
+- Docs non modifiées : `docs/systeme/questions.md` (la case choix ne change pas, elle pose seulement le contexte) et
+  `docs/systeme/utilitaires-et-demos.md` (une phrase de plus dans le catalogue du bloc solide).
