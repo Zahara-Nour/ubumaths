@@ -146,7 +146,7 @@ pas. Le fichier `beta3I12` n'est pas repris.
 | Théorème de Thalès                       | 3G2       | 10        | publiée (2026-11-27)                                       | `idees-3e-thales`            |
 | Trigonométrie                            | 3G3       | 13        | publiée (2026-11-25)                                       | `idees-3e-trigonometrie`     |
 | Espace                                   | 3G4       | 6         | publiée (2026-11-28)                                       | `idees-3e-espace`            |
-| Algorithmique et programmation           | 3I1       | 11        | prise (2026-11-28)                                         | `idees-3e-algorithmique`     |
+| Algorithmique et programmation           | 3I1       | 11        | publiée (2026-11-28)                                       | `idees-3e-algorithmique`     |
 | Automatismes (mélange des rubriques)     | 3Auto, 3a | 34        | libre ; **à faire en dernier**, après les autres rubriques |                              |
 | Sujets de brevet (mélange des rubriques) | 3Z1       | 15        | libre ; **à faire en dernier**, après les autres rubriques |                              |
 
@@ -178,12 +178,6 @@ de contenu appliquée en prod.
 | d03e49c0 Calculer la valeur d'une valeur absolue             | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
 | d264f7aa Pair ou impair : écrire 2k ou 2k + 1                | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
 | fa65910d Multiple : a = k × b                                | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| 0a470416 Bloc personnalisé                                   | `idees-3e-algorithmique`                                    | 2026-11-28 |                                      |
-| 4ce8eb3c Boucle « répéter jusqu'à ce que »                   | `idees-3e-algorithmique`                                    | 2026-11-28 |                                      |
-| 5c092e43 Formules du tableur                                 | `idees-3e-algorithmique`                                    | 2026-11-28 |                                      |
-| 6e99d291 Écrire un programme pour résoudre un problème (3e)  | `idees-3e-algorithmique`                                    | 2026-11-28 |                                      |
-| 962da675 Plusieurs variables                                 | `idees-3e-algorithmique`                                    | 2026-11-28 |                                      |
-| 9f9bddbd Conditions composées                                | `idees-3e-algorithmique`                                    | 2026-11-28 |                                      |
 | c8741112 Le vocabulaire des angles                           | `idees-6e-angles`                                           | 2026-11-28 |                                      |
 | 3be08965 Mesurer un angle au rapporteur                      | `idees-6e-angles`                                           | 2026-11-28 |                                      |
 | 2291c83c Construire un angle de mesure donnée                | `idees-6e-angles`                                           | 2026-11-28 |                                      |

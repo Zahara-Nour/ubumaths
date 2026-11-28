@@ -158,14 +158,12 @@ describe('Calcul : refus', () => {
 		expect(d.atelier.get('f')).toBeUndefined();
 	});
 
-	// Revue : `sur [k;5]` prend un paramètre, pas encore « pour » — refus au message juste
-	it('une borne qui cite un objet : refusée, sans parler de la lettre', () => {
+	// Une condition à paramètre (`pour x > k`) est acceptée : intervalle-pour-parametre.test.ts
+	it('une condition illisible : refusée, sans parler de la lettre', () => {
 		const d = desk();
-		d.submit('k = 3');
-		d.submit('f(x) = x pour x > k');
+		d.submit('f(x) = x pour x > 2 > 1');
 
 		expect(last(d)).toEqual({ text: UNREADABLE_CONDITION, failed: true });
-		expect(UNREADABLE_CONDITION).toContain('à des nombres');
 	});
 
 	it('une seconde formule : une seule formule (par morceaux, plus tard)', () => {
