@@ -137,7 +137,7 @@ export const POST: RequestHandler = async ({ request, locals, url }) => {
 
 		const triggerResponse: CronTriggerResponse = {
 			success: false,
-			message: err instanceof Error ? err.message : 'Impossible de lancer la tâche',
+			message: 'Impossible de lancer la tâche',
 			job_path,
 			triggered_at: new Date().toISOString()
 		};
@@ -161,7 +161,7 @@ async function triggerRpcJob(functionName: string, job_path: string): Promise<Re
 
 		const triggerResponse: CronTriggerResponse = {
 			success: false,
-			message: `Échec de la tâche (RPC) : ${rpcError.message}`,
+			message: 'Échec de la tâche (RPC)',
 			job_path,
 			triggered_at: new Date().toISOString()
 		};

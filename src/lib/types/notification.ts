@@ -11,8 +11,14 @@ import type { Tables } from './database';
 export type Notification = Tables<'notifications'>;
 
 // Notification enums (matching database constraints)
-export type NotificationType =
-	'info' | 'warning' | 'success' | 'error' | 'alert' | 'announcement' | 'system' | 'reminder';
+/**
+ * Les quatre sortes que la base accepte (`notifications_type_check`).
+ *
+ * Le type en listait huit : `warning`, `success`, `error` et `system` passaient
+ * le compilateur, apparaissaient dans le sélecteur des pages de création, et la
+ * base (comme le schéma Zod) les refusait à l'envoi (écart L81).
+ */
+export type NotificationType = 'info' | 'alert' | 'announcement' | 'reminder';
 
 export type NotificationPriority = 'normal' | 'important' | 'urgent';
 
@@ -150,12 +156,8 @@ export interface UnreadCount {
  */
 export const NOTIFICATION_TYPE_ICONS: Record<NotificationType, string> = {
 	info: '🔔',
-	warning: '⚠️',
-	success: '✅',
-	error: '❌',
 	alert: '⚠️',
 	announcement: '📢',
-	system: '⚙️',
 	reminder: '⏰'
 };
 
@@ -192,12 +194,8 @@ export const NOTIFICATION_PRIORITY_COLORS: Record<
  */
 export const NOTIFICATION_TYPE_LABELS: Record<NotificationType, string> = {
 	info: 'Information',
-	warning: 'Avertissement',
-	success: 'Succès',
-	error: 'Erreur',
 	alert: 'Alerte',
 	announcement: 'Annonce',
-	system: 'Système',
 	reminder: 'Rappel'
 };
 

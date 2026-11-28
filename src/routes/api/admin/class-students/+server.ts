@@ -1,3 +1,4 @@
+import { throwServerError } from '#lib/server/utils/error-handler.ts';
 import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { classStudentsQuerySchema } from '#lib/server/validation/admin.ts';
@@ -80,8 +81,11 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 			.eq('status', 'active');
 
 		if (queryError) {
-			logger.error('[GET /api/admin/class-students] Error fetching students:', queryError);
-			throw error(500, `Impossible de charger les élèves de la classe : ${queryError.message}`);
+			throwServerError(
+				'api/admin/class-students',
+				queryError,
+				'Impossible de charger les élèves de la classe'
+			);
 		}
 
 		// Transform the nested structure to flat user objects

@@ -16,6 +16,7 @@
  * - Requires Google integration with drive.file scope
  */
 
+import { throwServerError } from '#lib/server/utils/error-handler.ts';
 import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import {
@@ -201,8 +202,6 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			}
 		}
 
-		logger.error('[Whiteboard Drive] Save error:', err);
-		const message = err instanceof Error ? err.message : 'erreur inconnue';
-		throw error(500, `Impossible d’enregistrer sur Google Drive : ${message}`);
+		throwServerError('api/whiteboard/drive/save', err, 'Impossible d’enregistrer sur Google Drive');
 	}
 };

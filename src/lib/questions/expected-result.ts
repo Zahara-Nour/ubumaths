@@ -68,6 +68,7 @@ import type { HiddenCellKind } from '#lib/ubumark/types/variation-table.ts';
 import { isSignTableCell, signCellToken } from './sign-table-case';
 import { blankErrorGuess, errorGuessSentence } from './error-kinds';
 import { expectedErrorOf } from './expected-errors';
+import { getRequiredFormFeedback } from './required-form-validator';
 import { impossibleAnswerLatex, isImpossibleAnswer } from './impossible-answer';
 import {
 	validateAnswerDetailed,
@@ -665,7 +666,16 @@ function blankRemarks(instance: QuestionInstance, detail: BlankVerdict): string[
 	// prévue (idée 4) ; jamais de type deviné sur des numéros de choix
 	if (isChoiceBlank(instance.blanks?.[detail.index])) return expected ? [expected.message] : [];
 	if (expected) {
-		return [expected.message, ...detail.remarks.filter((remark) => remark !== expected.message)];
+		// Mauvaise forme (n° 75) : le message de l'erreur prévue REMPLACE celui de la forme
+		const requiredForm = instance.blanks?.[detail.index]?.requiredForm;
+		const formFeedback =
+			detail.status === 'bad_form' && requiredForm
+				? getRequiredFormFeedback(requiredForm, false)
+				: undefined;
+		return [
+			expected.message,
+			...detail.remarks.filter((remark) => remark !== expected.message && remark !== formFeedback)
+		];
 	}
 	if (detail.remarks.length > 0) return detail.remarks;
 	const guess = blankErrorGuess(instance, detail);

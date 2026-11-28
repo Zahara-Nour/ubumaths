@@ -13,6 +13,7 @@
  * Teacher/admin only (la RLS applique `is_teacher_or_admin()`).
  */
 
+import { serverErrorResponse } from '#lib/server/utils/error-handler.ts';
 import type { RequestHandler } from './$types';
 import { requireRoles } from '#lib/server/middleware/auth.ts';
 import {
@@ -74,8 +75,11 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		}
 		const mapped = curriculumDbError(dbErr);
 		if (mapped) return mapped;
-		logger.error('[curriculum] template-tags POST failed:', dbErr);
-		return Response.json({ error: dbErr.message }, { status: 500 });
+		return serverErrorResponse(
+			'api/teacher/curriculum/template-tags/POST',
+			dbErr,
+			'Impossible d’enregistrer l’étiquette'
+		);
 	}
 
 	return Response.json({ success: true }, { status: 201 });
@@ -103,8 +107,11 @@ export const DELETE: RequestHandler = async ({ url, locals }) => {
 	if (dbErr) {
 		const mapped = curriculumDbError(dbErr);
 		if (mapped) return mapped;
-		logger.error('[curriculum] template-tags DELETE failed:', dbErr);
-		return Response.json({ error: dbErr.message }, { status: 500 });
+		return serverErrorResponse(
+			'api/teacher/curriculum/template-tags/DELETE',
+			dbErr,
+			'Impossible de retirer l’étiquette'
+		);
 	}
 	if (!deleted || deleted.length === 0) {
 		return Response.json({ error: 'Tag introuvable ou non modifiable' }, { status: 404 });

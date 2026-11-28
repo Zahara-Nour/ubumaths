@@ -14,6 +14,7 @@
  * - Requires Google integration with drive.file scope
  */
 
+import { throwServerError } from '#lib/server/utils/error-handler.ts';
 import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireRole } from '#lib/server/middleware/auth.ts';
@@ -72,9 +73,11 @@ export const GET: RequestHandler = async ({ params, locals }) => {
 			throw err;
 		}
 
-		logger.error('[Whiteboard Drive] Autosave lookup error:', err);
-		const message = err instanceof Error ? err.message : 'erreur inconnue';
-		throw error(500, `Impossible de rechercher la sauvegarde automatique : ${message}`);
+		throwServerError(
+			'api/whiteboard/drive/autosave/recherche',
+			err,
+			'Impossible de rechercher la sauvegarde automatique'
+		);
 	}
 };
 
@@ -119,8 +122,10 @@ export const DELETE: RequestHandler = async ({ params, locals }) => {
 			throw err;
 		}
 
-		logger.error('[Whiteboard Drive] Autosave delete error:', err);
-		const message = err instanceof Error ? err.message : 'erreur inconnue';
-		throw error(500, `Impossible de supprimer la sauvegarde automatique : ${message}`);
+		throwServerError(
+			'api/whiteboard/drive/autosave/suppression',
+			err,
+			'Impossible de supprimer la sauvegarde automatique'
+		);
 	}
 };

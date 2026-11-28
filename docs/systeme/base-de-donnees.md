@@ -43,20 +43,20 @@ qui **contourne la RLS**. Décision figée : [ADR 0002](../adr/0002-mono-profess
 
 Toutes `SECURITY DEFINER` (elles lisent `profiles` / `class_members` sans repasser par leur RLS).
 
-| Fonction                                                                                                      | Vrai quand…                                                                                                                                                          |
-| ------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `is_teacher_or_admin()`                                                                                       | l'appelant a le rôle `teacher` ou `admin`. **Pivot** : la plus utilisée des policies.                                                                                |
-| `is_admin()`                                                                                                  | l'appelant a le rôle `admin` (et lui seul : le professeur n'y passe pas).                                                                                            |
-| `is_my_student(p_student_id)`                                                                                 | = `is_teacher_or_admin()`. Le paramètre est **ignoré** (réservé à un retour éventuel du cloisonnement).                                                              |
-| `is_teacher_of_student(p_student_id)`                                                                         | `is_teacher_or_admin()` **et** l'élève a au moins une ligne dans `class_members` (tout statut).                                                                      |
-| `is_class_teacher(p_class_id)` · `is_teacher_of_class(p_class_id)`                                            | = `is_teacher_or_admin()` ; la classe est ignorée (les policies « du professeur de la classe », par exemple sur `student_warnings`, valent donc aussi pour l'admin). |
-| `is_class_member(p_class_id)`                                                                                 | l'appelant a une ligne `class_members` dans cette classe (tout statut).                                                                                              |
-| `is_class_student(p_class_id)`                                                                                | idem, mais adhésion **active** seulement (depuis `20260915220000`).                                                                                                  |
-| `is_classmate(p_class_id)`                                                                                    | adhésion active de l'appelant **et** classe active (`classes.is_active`).                                                                                            |
-| `my_school()`                                                                                                 | `school_id` de l'appelant (NULL s'il n'est rattaché à aucune école).                                                                                                 |
-| `same_school(p_other)`                                                                                        | l'autre compte est dans la même école, non NULL, que l'appelant.                                                                                                     |
-| `is_friend(id)` · `are_classmates(id)` · `has_pending_request_from(id)` · `shares_tournament(id)`             | ouvrent la lecture d'un **profil** d'élève à un autre élève (ami, camarade, demande en attente, tournoi commun).                                                     |
-| `student_has_worksheet_access(id)` · `student_has_exercise_access(id)` · `had_class_access_to_assignment(id)` | accès élève **recalculé** depuis les affectations et `class_members` (§ Fiches).                                                                                     |
+| Fonction                                                                                                      | Vrai quand…                                                                                                                                                                                                                                                                       |
+| ------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `is_teacher_or_admin()`                                                                                       | l'appelant a le rôle `teacher` ou `admin`. **Pivot** : la plus utilisée des policies.                                                                                                                                                                                             |
+| `is_admin()`                                                                                                  | l'appelant a le rôle `admin` (et lui seul : le professeur n'y passe pas).                                                                                                                                                                                                         |
+| `is_my_student(p_student_id)`                                                                                 | = `is_teacher_or_admin()`. Le paramètre est **ignoré** (réservé à un retour éventuel du cloisonnement).                                                                                                                                                                           |
+| `is_teacher_of_student(p_student_id)`                                                                         | `is_teacher_or_admin()` **et** l'élève a au moins une ligne dans `class_members` (tout statut).                                                                                                                                                                                   |
+| `is_class_teacher(p_class_id)` · `is_teacher_of_class(p_class_id)`                                            | = `is_teacher_or_admin()` ; la classe est ignorée (les policies « du professeur de la classe », par exemple sur `student_warnings`, valent donc aussi pour l'admin ; l'insertion d'un avertissement exige en plus que l'élève soit inscrit dans la classe, adhésion active, L82). |
+| `is_class_member(p_class_id)`                                                                                 | l'appelant a une ligne `class_members` dans cette classe (tout statut).                                                                                                                                                                                                           |
+| `is_class_student(p_class_id)`                                                                                | idem, mais adhésion **active** seulement (depuis `20260915220000`).                                                                                                                                                                                                               |
+| `is_classmate(p_class_id)`                                                                                    | adhésion active de l'appelant **et** classe active (`classes.is_active`).                                                                                                                                                                                                         |
+| `my_school()`                                                                                                 | `school_id` de l'appelant (NULL s'il n'est rattaché à aucune école).                                                                                                                                                                                                              |
+| `same_school(p_other)`                                                                                        | l'autre compte est dans la même école, non NULL, que l'appelant.                                                                                                                                                                                                                  |
+| `is_friend(id)` · `are_classmates(id)` · `has_pending_request_from(id)` · `shares_tournament(id)`             | ouvrent la lecture d'un **profil** d'élève à un autre élève (ami, camarade, demande en attente, tournoi commun).                                                                                                                                                                  |
+| `student_has_worksheet_access(id)` · `student_has_exercise_access(id)` · `had_class_access_to_assignment(id)` | accès élève **recalculé** depuis les affectations et `class_members` (§ Fiches).                                                                                                                                                                                                  |
 
 ### Le visiteur non connecté (`anon`)
 
@@ -602,12 +602,15 @@ Deux systèmes distincts, à ne pas confondre :
 
 Accès : on lit les messages des conversations dont on est participant, et ceux qu'on a envoyés ou
 reçus ; le professeur lit la messagerie pour la modérer et supprime (logiquement) les messages des
-chats de classe ; l'admin lit tout.
+chats de classe ; l'admin lit tout. Un message que son destinataire a supprimé ne lui est plus ouvert,
+ni seul ni dans un fil (`20261128161241`).
 
 Écriture (`20261016101500`, `20261016101600`) : un message envoyé ne se réécrit plus. Les
 rôles de l'API ne peuvent modifier que `private_messages.deleted_by_sender` et
 `message_inbox.read_at` / `deleted` (droits par colonne) ; statut, dossier et étoile passent
-par des fonctions SECURITY DEFINER. Détail : [messagerie-et-moderation.md](messagerie-et-moderation.md).
+par des fonctions SECURITY DEFINER. Une réponse ne s'accroche qu'à un message envoyé ou reçu,
+dans un fil dont on a envoyé ou reçu le premier message ; `message_search_index` n'est écrit que
+par son trigger (`20261128161241`). Détail : [messagerie-et-moderation.md](messagerie-et-moderation.md).
 
 Pièces jointes de la messagerie (`20261016101300`) : bucket **privé** `message-attachments`
 (10 Mo, comme la contrainte `file_size` de la table ; JPEG, PNG, WebP, HEIC, PDF), **sans policy sur `storage.objects`** : seul le client
@@ -818,9 +821,11 @@ Preuve : `tests/integration/mesures-web-vitals.test.ts`.
 `account_deletion_audit` (RLS sans policy : client service seul) trace chaque suppression de
 compte, par l'élève ou par la purge de conservation ; `cleanup_result.storage_paths` liste ses
 fichiers, et `storage_removed_at` (`20261016101000`) dit s'ils ont été retirés du storage
-(nul = à retirer). `delete_user_account` ne rend, pour les pièces jointes de messages privés et les
-captures de signalement, que les chemins rangés chez l'élève (`20261016101200`) : il en écrit
-lui-même le chemin.
+(nul = à retirer). `delete_user_account` ne rend, pour les pièces jointes de messages privés, que
+les chemins rangés chez l'élève (`20261016101200`) : il en écrit lui-même le chemin. Pour les
+captures de rapport de bug, il rend **tout le dossier `<élève>/`** du bucket
+`bug-report-screenshots`, lu dans `storage.objects` (`20261128162608`, écart T34) : l'élève y
+dépose aussi, par l'API du stockage, des fichiers qu'aucun rapport ne nomme.
 
 **Liens courts des QR codes** (`short_links`, `20261019170000`) : un code de 8 caractères vers un
 chemin **interne** du site, en ASCII imprimable (jamais un autre domaine : la contrainte refuse `//`,

@@ -188,6 +188,18 @@ describe('POST /api/messages/send', () => {
 			expect((await refusal(promise)).status).toBe(403);
 		});
 
+		it('réponse à un message ni envoyé ni reçu (L127, L131) : 403, dit pourquoi', async () => {
+			vi.spyOn(console, 'error').mockImplementation(() => {});
+			const { promise } = call(pageBody(doc('Bonjour')), {
+				data: null,
+				error: { message: 'unauthorized: parent message not sent or received', code: '42501' }
+			});
+			expect(await refusal(promise)).toEqual({
+				status: 403,
+				message: 'Vous ne pouvez pas répondre à ce message.'
+			});
+		});
+
 		it('classe sans élève actif (P0002) : 400, dit pourquoi', async () => {
 			vi.spyOn(console, 'error').mockImplementation(() => {});
 			const { promise, rpcSpy } = call(

@@ -9,6 +9,7 @@
  * in a cahier de texte entry. Teacher/admin only.
  */
 
+import { serverErrorResponse } from '#lib/server/utils/error-handler.ts';
 import type { RequestHandler } from './$types';
 import { requireRoles } from '#lib/server/middleware/auth.ts';
 import {
@@ -85,8 +86,11 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		}
 		const mapped = curriculumDbError(dbErr);
 		if (mapped) return mapped;
-		logger.error('[curriculum] exercise-tags POST failed:', dbErr);
-		return Response.json({ error: dbErr.message }, { status: 500 });
+		return serverErrorResponse(
+			'api/teacher/curriculum/exercise-tags/POST',
+			dbErr,
+			'Impossible d’enregistrer l’étiquette'
+		);
 	}
 
 	return Response.json({ success: true }, { status: 201 });

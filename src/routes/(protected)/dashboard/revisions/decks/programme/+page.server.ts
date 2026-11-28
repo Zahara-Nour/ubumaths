@@ -8,6 +8,7 @@
  *     docs/systeme/srs.md §3.4 + §5.2
  */
 
+import { throwServerError } from '#lib/server/utils/error-handler.ts';
 import type { PageServerLoad } from './$types';
 import { error } from '@sveltejs/kit';
 import { requireAuth } from '#lib/server/middleware/auth.ts';
@@ -95,7 +96,11 @@ export const load: PageServerLoad = async ({ locals }): Promise<ProgrammeData> =
 		.maybeSingle();
 
 	if (deckErr) {
-		throw error(500, `Erreur deck Programme : ${deckErr.message}`);
+		throwServerError(
+			'revisions/decks/programme/deck',
+			deckErr,
+			'Impossible de charger le deck Programme'
+		);
 	}
 
 	const emptyResult: ProgrammeData = {
@@ -117,7 +122,11 @@ export const load: PageServerLoad = async ({ locals }): Promise<ProgrammeData> =
 		.eq('card_type', 'template');
 
 	if (cardsErr) {
-		throw error(500, `Erreur cartes : ${cardsErr.message}`);
+		throwServerError(
+			'revisions/decks/programme/cartes',
+			cardsErr,
+			'Impossible de charger les cartes du deck Programme'
+		);
 	}
 
 	if (!cards || cards.length === 0) {
@@ -142,9 +151,24 @@ export const load: PageServerLoad = async ({ locals }): Promise<ProgrammeData> =
 			.in('template_id', templateIds)
 	]);
 
-	if (statsRes.error) throw error(500, `Erreur stats FSRS : ${statsRes.error.message}`);
-	if (templatesRes.error) throw error(500, `Erreur templates : ${templatesRes.error.message}`);
-	if (linksRes.error) throw error(500, `Erreur tagging : ${linksRes.error.message}`);
+	if (statsRes.error)
+		throwServerError(
+			'revisions/decks/programme/stats',
+			statsRes.error,
+			'Impossible de charger les statistiques de révision'
+		);
+	if (templatesRes.error)
+		throwServerError(
+			'revisions/decks/programme/modeles',
+			templatesRes.error,
+			'Impossible de charger les modèles du deck Programme'
+		);
+	if (linksRes.error)
+		throwServerError(
+			'revisions/decks/programme/tags',
+			linksRes.error,
+			'Impossible de charger les étiquettes des modèles'
+		);
 
 	const stats = statsRes.data;
 	const templates = templatesRes.data;

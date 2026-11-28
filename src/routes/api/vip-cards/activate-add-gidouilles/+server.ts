@@ -25,6 +25,7 @@
  * - Card must not be already used
  */
 
+import { throwServerError } from '#lib/server/utils/error-handler.ts';
 import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireAuth } from '#lib/server/middleware/auth.ts';
@@ -78,8 +79,11 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		.single();
 
 	if (fetchError) {
-		logger.error('[activate-add-gidouilles] Error fetching profile:', fetchError);
-		throw error(500, `Impossible de charger le profil de l’élève : ${fetchError.message}`);
+		throwServerError(
+			'api/vip-cards/activate-add-gidouilles',
+			fetchError,
+			'Impossible de charger le profil de l’élève'
+		);
 	}
 
 	const vipCards = asStudentVipCards(studentProfile.vip_cards);

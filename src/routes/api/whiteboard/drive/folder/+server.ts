@@ -14,6 +14,7 @@
  * - Requires Google integration with drive.file scope
  */
 
+import { throwServerError } from '#lib/server/utils/error-handler.ts';
 import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import {
@@ -88,8 +89,6 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			}
 		}
 
-		logger.error('[Whiteboard Drive] Create folder error:', err);
-		const message = err instanceof Error ? err.message : 'erreur inconnue';
-		throw error(500, `Impossible de créer le dossier : ${message}`);
+		throwServerError('api/whiteboard/drive/folder', err, 'Impossible de créer le dossier');
 	}
 };

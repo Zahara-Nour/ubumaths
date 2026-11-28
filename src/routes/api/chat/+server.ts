@@ -170,13 +170,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			// Check if API key is configured
 			if (!env.GROQ_API_KEY) {
 				logger.error('GROQ_API_KEY not configured');
-				return Response.json(
-					{
-						error: 'Service temporairement indisponible',
-						details: 'API key not configured'
-					},
-					{ status: 503 }
-				);
+				return Response.json({ error: 'Service temporairement indisponible' }, { status: 503 });
 			}
 
 			// Use text-only model for tutor (no images in tutor mode)
@@ -322,13 +316,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		// Check if API key is configured (type-safe optional check)
 		if (!env.GROQ_API_KEY) {
 			logger.error('GROQ_API_KEY not configured');
-			return Response.json(
-				{
-					error: 'Service temporairement indisponible',
-					details: 'API key not configured'
-				},
-				{ status: 503 }
-			);
+			return Response.json({ error: 'Service temporairement indisponible' }, { status: 503 });
 		}
 
 		// Strip out any extra properties (like timestamp) and keep only role and content for API

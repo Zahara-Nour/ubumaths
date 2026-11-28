@@ -27,7 +27,11 @@
 	import MyCheckbox from './MyCheckbox.svelte';
 	import PrecisionEditor from './PrecisionEditor.svelte';
 	import { ChevronDown, CircleQuestionMark } from '@lucide/svelte';
-	import { ACCEPTABLE_PLACEHOLDER, REQUIRED_FORM_OPTIONS } from '#lib/questions/form-options.ts';
+	import {
+		ACCEPTABLE_PLACEHOLDER,
+		FORM_MESSAGE_PLACEHOLDER,
+		REQUIRED_FORM_OPTIONS
+	} from '#lib/questions/form-options.ts';
 	import { IMPOSSIBLE_LABEL_MAX } from '#lib/questions/impossible-answer.ts';
 	import type { CalculusEditorState } from '#lib/questions/calculus/calculus-editor.ts';
 
@@ -39,10 +43,13 @@
 		sharedRequiredFormSelect: string;
 		sharedRequiredFormPattern: string;
 		sharedRequiredFormAcceptable: string;
+		/** Message de l'auteur quand le motif n'est pas respecté (n° 75) */
+		sharedRequiredFormMessage: string;
 		sharedBlankPrecision: PrecisionType;
 		sharedBlankRequiredFormSelect: string;
 		sharedBlankRequiredFormPattern: string;
 		sharedBlankRequiredFormAcceptable: string;
+		sharedBlankRequiredFormMessage: string;
 		sharedBlankUnitExpected: boolean;
 		sharedBlankUnitRequired: string;
 		sharedBlankAcceptDecimal: boolean;
@@ -76,10 +83,12 @@
 		sharedRequiredFormSelect = $bindable(),
 		sharedRequiredFormPattern = $bindable(),
 		sharedRequiredFormAcceptable = $bindable(),
+		sharedRequiredFormMessage = $bindable(),
 		sharedBlankPrecision = $bindable(),
 		sharedBlankRequiredFormSelect = $bindable(),
 		sharedBlankRequiredFormPattern = $bindable(),
 		sharedBlankRequiredFormAcceptable = $bindable(),
+		sharedBlankRequiredFormMessage = $bindable(),
 		sharedBlankUnitExpected = $bindable(),
 		sharedBlankUnitRequired = $bindable(),
 		sharedBlankAcceptDecimal = $bindable(),
@@ -255,6 +264,12 @@
 									bind:value={sharedRequiredFormAcceptable}
 									placeholder={ACCEPTABLE_PLACEHOLDER}
 								/>
+								<Input
+									type="text"
+									bind:value={sharedRequiredFormMessage}
+									placeholder={FORM_MESSAGE_PLACEHOLDER}
+									aria-label="Message si la forme n’est pas respectée"
+								/>
 							{/if}
 						</Collapsible.Content>
 					</Collapsible.Root>
@@ -293,6 +308,12 @@
 										type="text"
 										bind:value={sharedBlankRequiredFormAcceptable}
 										placeholder={ACCEPTABLE_PLACEHOLDER}
+									/>
+									<Input
+										type="text"
+										bind:value={sharedBlankRequiredFormMessage}
+										placeholder={FORM_MESSAGE_PLACEHOLDER}
+										aria-label="Message si la forme n’est pas respectée"
 									/>
 								{/if}
 							</div>

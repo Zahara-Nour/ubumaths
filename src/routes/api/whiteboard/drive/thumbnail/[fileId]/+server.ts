@@ -16,6 +16,7 @@
  * - Images are fetched server-side with proper auth
  */
 
+import { throwServerError } from '#lib/server/utils/error-handler.ts';
 import { error } from '@sveltejs/kit';
 import { z } from 'zod';
 import type { RequestHandler } from './$types';
@@ -23,9 +24,6 @@ import { GoogleNotConnectedError, GoogleTokenExpiredError } from '#lib/server/go
 import { requireRole } from '#lib/server/middleware/auth.ts';
 import { getTeacherAccessToken } from '#lib/server/google/sync.ts';
 import { GoogleDriveClient } from '#lib/server/google/drive-api.ts';
-import { createServerLogger } from '#lib/utils/logger.ts';
-
-const logger = createServerLogger('api/whiteboard/drive/thumbnail/[fileId]/+server');
 
 /** Google Drive file ID pattern: alphanumeric with dashes and underscores, 10-50 chars */
 const DRIVE_FILE_ID_REGEX = /^[a-zA-Z0-9_-]{10,50}$/;
@@ -120,8 +118,6 @@ export const GET: RequestHandler = async ({ params, locals, setHeaders }) => {
 			}
 		}
 
-		logger.error('[Whiteboard Drive Thumbnail] Error:', err);
-		const message = err instanceof Error ? err.message : 'erreur inconnue';
-		throw error(500, `Impossible de charger la miniature : ${message}`);
+		throwServerError('api/whiteboard/drive/thumbnail', err, 'Impossible de charger la miniature');
 	}
 };

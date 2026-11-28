@@ -9,8 +9,9 @@
  * redirige immédiatement vers /dashboard/teacher/evaluation-tasks/[id].
  */
 
+import { logServerError, throwServerError } from '#lib/server/utils/error-handler.ts';
 import type { PageServerLoad, Actions } from './$types';
-import { error, fail, redirect } from '@sveltejs/kit';
+import { fail, redirect } from '@sveltejs/kit';
 import { requireRole } from '#lib/server/middleware/auth.ts';
 import { z } from 'zod';
 
@@ -37,7 +38,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 		.order('name');
 
 	if (err) {
-		throw error(500, `Erreur de chargement des classes : ${err.message}`);
+		throwServerError('evaluation-tasks/new/classes', err, 'Impossible de charger les classes');
 	}
 
 	return { classes: (classes ?? []) as TeacherClassOption[] };
@@ -75,7 +76,8 @@ export const actions: Actions = {
 			.single();
 
 		if (insertError || !data) {
-			return fail(500, { message: insertError?.message ?? 'Insert failed', values: raw });
+			logServerError('evaluation-tasks/new/creation', insertError ?? 'Aucune ligne rendue');
+			return fail(500, { message: 'Impossible de créer l’observation', values: raw });
 		}
 
 		// Redirection immédiate vers l'édition (déclaration du périmètre)

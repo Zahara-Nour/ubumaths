@@ -13,6 +13,7 @@
  * Spec : docs/archive/wip/skills-referentiel-design.md §3 (saisie par périmètre)
  */
 
+import { throwServerError } from '#lib/server/utils/error-handler.ts';
 import type { PageServerLoad, Actions } from './$types';
 import { error, fail } from '@sveltejs/kit';
 import { requireRole } from '#lib/server/middleware/auth.ts';
@@ -64,7 +65,12 @@ export const load: PageServerLoad = async ({ locals, params }): Promise<SaisieDa
 		.eq('id', params.id)
 		.maybeSingle();
 
-	if (taskErr) throw error(500, `Erreur observation : ${taskErr.message}`);
+	if (taskErr)
+		throwServerError(
+			'evaluation-tasks/saisie/tache',
+			taskErr,
+			'Impossible de charger l’observation'
+		);
 	if (!task) throw error(404, 'Observation introuvable');
 
 	const cls = Array.isArray(task.class) ? task.class[0] : task.class;
@@ -135,7 +141,12 @@ export const load: PageServerLoad = async ({ locals, params }): Promise<SaisieDa
 		)
 		.eq('task_id', params.id);
 
-	if (perErr) throw error(500, `Erreur périmètre : ${perErr.message}`);
+	if (perErr)
+		throwServerError(
+			'evaluation-tasks/saisie/perimetre',
+			perErr,
+			'Impossible de charger le périmètre de l’observation'
+		);
 
 	const observables: PerimeterObservable[] = (perimeter ?? [])
 		.map((row) => {

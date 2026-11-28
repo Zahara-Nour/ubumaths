@@ -17,7 +17,7 @@
  * - Reduces load on Supabase free tier by avoiding repeated expensive queries
  */
 
-import { error } from '@sveltejs/kit';
+import { throwServerError } from '#lib/server/utils/error-handler.ts';
 import type { RequestHandler } from './$types';
 import {
 	fetchHealthStats,
@@ -90,10 +90,10 @@ export const GET: RequestHandler = async ({ locals }) => {
 			}
 		});
 	} catch (err) {
-		logger.error('Error fetching health stats:', err);
-		throw error(
-			500,
-			err instanceof Error ? err.message : 'Impossible de charger les indicateurs de santé'
+		throwServerError(
+			'api/admin/health-stats',
+			err,
+			'Impossible de charger les indicateurs de santé'
 		);
 	}
 };

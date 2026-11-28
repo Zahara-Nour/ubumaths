@@ -13,7 +13,6 @@ import {
 	saveDraftSchema,
 	messageResponseSchema,
 	sendMessageResponseSchema,
-	searchMessagesQuerySchema,
 	updateMessageSchema,
 	inboxMessagesQuerySchema,
 	sentMessagesQuerySchema,
@@ -135,6 +134,19 @@ describe('rewards, messages, notifications validation schemas', () => {
 	// ============================================================================
 
 	describe('sendMessageSchema', () => {
+		it('compte une seule fois un destinataire en double (écart L134)', () => {
+			const id = '550e8400-e29b-41d4-a716-446655440000';
+			const result = sendMessageSchema.safeParse({
+				recipientIds: [id, id],
+				subject: 'Sujet',
+				content: {
+					type: 'doc',
+					content: [{ type: 'paragraph', content: [{ type: 'text', text: 'Bonjour' }] }]
+				}
+			});
+			expect(result.success && result.data.recipientIds).toEqual([id]);
+		});
+
 		/** Le document de l'éditeur riche pour un paragraphe de texte (ce que la page envoie). */
 		const doc = (text: string) => ({
 			type: 'doc',
@@ -387,191 +399,6 @@ describe('rewards, messages, notifications validation schemas', () => {
 
 			const result = sendMessageResponseSchema.safeParse(data);
 			expect(result.success).toBe(false);
-		});
-	});
-
-	describe('searchMessagesQuerySchema', () => {
-		it('should accept valid search query', () => {
-			const data = {
-				q: 'important meeting',
-				searchIn: 'inbox',
-				hasAttachments: 'true',
-				senderName: 'John Doe',
-				dateFrom: '2025-01-01T00:00:00Z',
-				dateTo: '2025-12-31T23:59:59Z',
-				limit: 50,
-				offset: 0
-			};
-
-			const result = searchMessagesQuerySchema.safeParse(data);
-			expect(result.success).toBe(true);
-		});
-
-		it('should use default values', () => {
-			const data = {
-				q: 'test'
-			};
-
-			const result = searchMessagesQuerySchema.safeParse(data);
-			expect(result.success).toBe(true);
-			if (result.success) {
-				expect(result.data.searchIn).toBe('all');
-				expect(result.data.limit).toBe(50);
-				expect(result.data.offset).toBe(0);
-			}
-		});
-
-		it('should accept all searchIn values', () => {
-			['inbox', 'sent', 'all'].forEach((searchIn) => {
-				const data = {
-					q: 'test',
-					searchIn
-				};
-
-				const result = searchMessagesQuerySchema.safeParse(data);
-				expect(result.success).toBe(true);
-			});
-		});
-
-		it('should transform hasAttachments string to boolean', () => {
-			const testCases = [
-				{ input: 'true', expected: true },
-				{ input: 'false', expected: false },
-				{ input: 'invalid', expected: undefined }
-			];
-
-			testCases.forEach(({ input, expected }) => {
-				const data = {
-					q: 'test',
-					hasAttachments: input
-				};
-
-				const result = searchMessagesQuerySchema.safeParse(data);
-				expect(result.success).toBe(true);
-				if (result.success) {
-					expect(result.data.hasAttachments).toBe(expected);
-				}
-			});
-		});
-
-		it('should coerce limit to number', () => {
-			const data = {
-				q: 'test',
-				limit: '25'
-			};
-
-			const result = searchMessagesQuerySchema.safeParse(data);
-			expect(result.success).toBe(true);
-			if (result.success) {
-				expect(result.data.limit).toBe(25);
-				expect(typeof result.data.limit).toBe('number');
-			}
-		});
-
-		it('should coerce offset to number', () => {
-			const data = {
-				q: 'test',
-				offset: '10'
-			};
-
-			const result = searchMessagesQuerySchema.safeParse(data);
-			expect(result.success).toBe(true);
-			if (result.success) {
-				expect(result.data.offset).toBe(10);
-				expect(typeof result.data.offset).toBe('number');
-			}
-		});
-
-		it('should reject empty query', () => {
-			const data = {
-				q: '   '
-			};
-
-			const result = searchMessagesQuerySchema.safeParse(data);
-			expect(result.success).toBe(false);
-		});
-
-		it('should reject query exceeding max length', () => {
-			const data = {
-				q: 'a'.repeat(201)
-			};
-
-			const result = searchMessagesQuerySchema.safeParse(data);
-			expect(result.success).toBe(false);
-		});
-
-		it('should reject invalid searchIn value', () => {
-			const data = {
-				q: 'test',
-				searchIn: 'invalid'
-			};
-
-			const result = searchMessagesQuerySchema.safeParse(data);
-			expect(result.success).toBe(false);
-		});
-
-		it('should reject senderName exceeding max length', () => {
-			const data = {
-				q: 'test',
-				senderName: 'a'.repeat(201)
-			};
-
-			const result = searchMessagesQuerySchema.safeParse(data);
-			expect(result.success).toBe(false);
-		});
-
-		it('should reject invalid dateFrom format', () => {
-			const data = {
-				q: 'test',
-				dateFrom: '2025-01-01' // Missing time
-			};
-
-			const result = searchMessagesQuerySchema.safeParse(data);
-			expect(result.success).toBe(false);
-		});
-
-		it('should reject invalid dateTo format', () => {
-			const data = {
-				q: 'test',
-				dateTo: 'invalid-date'
-			};
-
-			const result = searchMessagesQuerySchema.safeParse(data);
-			expect(result.success).toBe(false);
-		});
-
-		it('should reject limit exceeding max', () => {
-			const data = {
-				q: 'test',
-				limit: 101
-			};
-
-			const result = searchMessagesQuerySchema.safeParse(data);
-			expect(result.success).toBe(false);
-		});
-
-		it('should reject negative offset', () => {
-			const data = {
-				q: 'test',
-				offset: -5
-			};
-
-			const result = searchMessagesQuerySchema.safeParse(data);
-			expect(result.success).toBe(false);
-		});
-
-		it('should accept optional fields as undefined', () => {
-			const data = {
-				q: 'test',
-				searchIn: undefined,
-				hasAttachments: undefined,
-				senderName: undefined,
-				dateFrom: undefined,
-				dateTo: undefined
-			};
-
-			const result = searchMessagesQuerySchema.safeParse(data);
-			expect(result.success).toBe(true);
 		});
 	});
 

@@ -538,7 +538,8 @@ export async function getRemainingUsage(
  *   const response = await groqClient.chat.completions.create(...);
  *   // Incrémenter seulement si succès
  *   await incrementTutorUsage(userId, exerciseId);
- *   return json({ message: response.choices[0].message.content });
+ *   const texte = response.choices[0].message.content;
+ *   return json({ texte });
  * } catch (error) {
  *   // Ne PAS incrémenter si erreur
  *   logger.error('Groq API error:', error);

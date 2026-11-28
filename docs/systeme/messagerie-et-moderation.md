@@ -68,7 +68,8 @@ Cette zone couvre cinq choses :
   - `send/` → RPC `send_private_message` (après `requireConsent(profile, 'send_message')`) ;
   - `recipients/` → RPC `get_allowed_recipients` (+ `get_teacher_classes_for_messaging` pour le prof) ;
   - `inbox/` → `get_user_inbox` (boîte de réception et archives, selon `status`) ; `sent/` →
-    `get_user_sent_messages` ; `unread-count/` ; `search/` → `search_private_messages`. Un
+    `get_user_sent_messages` ; `unread-count/`. La route de recherche, sans appelant, est retirée
+    (M41, 2026-11-28) ; la RPC `search_private_messages` reste en base. Un
     paramètre absent prend le défaut du schéma (50 messages, depuis le premier, tous dossiers).
     La réponse suit la forme de la RPC, `id` en plus (copie de `message_id`) : `inboxMessagesResponseSchema`
     et `sentMessagesResponseSchema`, sans adresse de courriel. Ni l'une ni l'autre ne rend
@@ -135,6 +136,8 @@ une ligne de `message_search_index` (sujet, texte, nom et rôle de l'expéditeur
 tous les élèves ont un nom complet vide** (prénom et nom remplis). Depuis la migration
 `20261126094959`, le trigger prend le nom complet, sinon « prénom nom », sinon `Sans nom` ;
 avant, l'envoi d'un message par un de ces élèves rendait 500 (V131). Le nom est figé à l'envoi.
+Seul ce trigger (SECURITY DEFINER) écrit dans la table : `anon` n'y a aucun droit, `authenticated`
+seulement SELECT (`20261128161241`, T37).
 
 Tests : `tests/integration/database/messaging-triggers.test.ts`, bloc « expéditeur sans nom
 complet ». La fabrique de profils de test donne un nom complet à tout le monde : un test de
@@ -154,9 +157,13 @@ s'affiche par `messageRoleLabel` (`src/lib/utils/message-reply.ts`), jamais par 
 `replyRecipientId` (`src/lib/utils/message-reply.ts`) choisit le destinataire d'une réponse,
 depuis un message ouvert comme depuis un fil : le dernier qui m'a écrit ; sinon l'unique
 destinataire de mon message ; sinon personne, et les pages ne proposent pas « Répondre » (V133 :
-avant, l'élève qui avait ouvert un fil s'écrivait à lui-même). La page d'écriture affiche alors
-ce seul destinataire, sans liste ; s'il n'est pas dans la liste des destinataires permis (élève
-de test), la réponse part quand même et le serveur décide. Les refus de la base ne sont jamais
+avant, l'élève qui avait ouvert un fil s'écrivait à lui-même). Elle reçoit aussi mon rôle
+(`page.data.profile.role`) et ne propose qu'un compte à qui je peux écrire, selon la règle de
+`validate_message_recipients` : l'élève ne répond pas à un message de l'admin (V135). Un rôle
+inconnu ne retire rien. La page d'écriture affiche alors ce seul destinataire, sans liste ; le
+serveur décide : un élève de test est refusé (L84), même s'il a écrit au prof, qui voit alors
+« Répondre » mais reçoit un refus ; une réponse à un message ni envoyé ni reçu est refusée par
+« Vous ne pouvez pas répondre à ce message. » (L127, L131). Les refus de la base ne sont jamais
 rendus tels quels par `send/` : 403 (destinataire non permis), 400 (classe sans élève actif,
 code `P0002`), 500 sans le message technique. Tests : `src/lib/utils/message-reply.test.ts`,
 `send.test.ts`, bloc « comptes sans nom complet » de `e2e/verifs/messagerie.spec.ts`.
@@ -175,7 +182,13 @@ La modération porte sur la table `messages` **du chat**, pas sur `private_messa
   alerte), jamais 0. Restrictions et journal en échec
   lèvent un 500.
 - Composants : `src/lib/components/moderation/` — `MessageReportsTable` → `ReviewReportDialog`
-  (→ `RestrictUserDialog`) ; `ActiveRestrictionsTable`, `ModerationLogsTable` ;
+  (→ `RestrictUserDialog`) ; `ReviewReportDialog` montre le message signalé et son contexte
+  par `ReportedMessageContent`, **comme le destinataire l'a vu** : même chemin que le chat
+  (`tipTapToMarkdown` → `MarkdownRenderer` en rendu restreint), formules et images comprises
+  (écart T36, décision de David du 2026-11-28) ; `plain_text` n'en retient ni formule, ni
+  légende, ni bloc, il ne sert plus que de repli à un contenu qui n'est pas un document. Le
+  marquage et la recherche lisent toujours `plain_text`. La liste (`MessageReportsTable`) en
+  garde un aperçu de 60 caractères ; `ActiveRestrictionsTable`, `ModerationLogsTable` ;
   `DeleteMessageDialog` et `RestrictedUserBanner` servent dans le chat (`ChatMessageList`,
   `ChatWindow`).
 - API : `src/routes/api/moderation/` —
@@ -198,7 +211,8 @@ La modération porte sur la table `messages` **du chat**, pas sur `private_messa
   (l'ancienne adresse `/dashboard/teacher/warnings` est redirigée par `src/hooks.server.ts`).
 - Serveur : `src/lib/server/warnings.ts` — `getCurrentAcademicPeriod`, `getActiveSchoolYear`,
   `getSchoolYearPeriods` (lus aussi par `dashboard/teacher/+layout.server.ts`),
-  `getClassWarnings`, `addWarningsBulk`, `removeWarningsBulk`.
+  `getClassWarnings`, `addWarningsBulk`, `removeWarningsBulk`. Un échec de la base y lève
+  un 500 au message français, le détail part au journal (`throwServerError`, écart L42).
 - API prof (`requireRoles(['teacher','admin'])`) : `src/routes/api/warnings/bulk/`
   (`add_warnings_bulk`, un ajout ou plusieurs), `warnings/remove-bulk/` (`remove_warnings_bulk`,
   contexte `teacher` ou `vip_card`), `classes/[classId]/warnings/` (lecture par classe).
@@ -235,7 +249,12 @@ La modération porte sur la table `messages` **du chat**, pas sur `private_messa
   seuls les chemins du site (`/…`, jamais `//…`) sont suivis.
 - Envoi manuel : `src/routes/(protected)/dashboard/teacher/notifications/` et
   `dashboard/admin/notifications/` (form actions, `createNotificationSchema`, limite de débit).
-- Types : `src/lib/types/notification.ts` ; validation `src/lib/server/validation/notifications.ts`.
+- Types : `src/lib/types/notification.ts` (`NotificationType` = les quatre sortes de
+  `notifications_type_check` : `info`, `alert`, `announcement`, `reminder`) ; validation
+  `src/lib/server/validation/notifications.ts`.
+- Ordre des non lues (`getUnreadNotifications`) : urgentes, importantes, normales, puis la plus
+  récente d'abord ; tri en mémoire sur toute la liste avant la pagination (la colonne texte
+  triée en SQL rangeait « important » après « normal », V107).
 
 ### Modèles de messages
 
@@ -282,12 +301,18 @@ La modération porte sur la table `messages` **du chat**, pas sur `private_messa
 
 1. **Élève → prof seulement ; prof → élèves seulement ; admin → tout le monde.** Tenu par
    `validate_message_recipients` (migration `20260618093000_option_b_unification_remove_inter_teacher_sharing.sql`),
-   appelée dans `send_private_message`. Un élève hors-classe peut écrire au prof (ADR 0002).
+   appelée dans `send_private_message`. Le prof n'écrit pas à un élève de test, que sa liste ne
+   propose pas non plus (`20261128161241`, L84). Un destinataire en double ne compte qu'une fois
+   (même migration et `sendMessageSchema`, L134). Hors envoi à une classe, le message ne porte ni
+   `is_group_message` ni `class_id` (L132). Un élève hors-classe peut écrire au prof (ADR 0002).
    Test : `tests/integration/option-b-messaging.test.ts` (« student -> another student stays
    forbidden »).
 2. **On n'envoie qu'en son nom.** `send_private_message` refuse un `p_sender_id` différent de
    `auth.uid()` (hors admin) — `20260902091000_security_rpc_caller_guards.sql`. Même garde sur
-   `get_allowed_recipients` et `search_private_messages`.
+   `get_allowed_recipients` et `search_private_messages`. **On ne répond qu'à un message qu'on a
+   envoyé ou reçu** : un autre `p_parent_message_id` est refusé en `42501` (`20261128161241`,
+   L127 / L131 ; avant, une réponse s'accrochait au fil d'un autre). Tests :
+   `tests/integration/messagerie-ecarts-lot.test.ts`.
 3. **Un message de groupe** ne part que du prof ou de l'admin, vers une classe active
    (`validate_class_message_recipients`) ; la fonction remplace les destinataires par les élèves
    de la classe (`get_students_in_class` : membres actifs d'une classe active). Une classe sans
@@ -297,7 +322,9 @@ La modération porte sur la table `messages` **du chat**, pas sur `private_messa
 4. **Un fil ne montre que ses propres messages** : `get_message_thread` filtre sur
    expéditeur ou destinataire (`20260902102000_security_message_thread_filter.sql`, finding
    H12 : la réponse privée d'un élève fuitait vers ses camarades). Test :
-   `tests/integration/security-message-thread.test.ts`.
+   `tests/integration/security-message-thread.test.ts`. Un message que son destinataire a
+   supprimé (`message_inbox.deleted`) ne lui est plus ouvert, ni par `get_message_details` ni
+   dans le fil ; l'expéditeur garde son exemplaire (`20261128161241`, L133).
    4 bis. **Un élève ne lit pas l'identité des autres destinataires** (décision de David,
    2026-11-26) : `get_message_details` ne rend la liste complète des destinataires qu'à
    l'expéditeur du message et aux comptes prof ou admin ; tout autre destinataire n'y lit que sa
@@ -440,7 +467,9 @@ La modération porte sur la table `messages` **du chat**, pas sur `private_messa
 - Messages privés : la policy « Teachers can view messages for moderation » laisse le prof lire
   tout message impliquant un élève (`can_moderate_message`) ; l'admin lit tout.
 - Avertissements : seuls prof et admin écrivent (RPC SECURITY DEFINER gardées par
-  `is_class_teacher`, 20 avertissements actifs au plus par élève, classe et période). L'élève
+  `is_class_teacher`, 20 avertissements actifs au plus par élève, classe et période), et
+  seulement pour un élève inscrit dans la classe (adhésion active : fonctions et policy
+  d'insertion, `20261128163026_avertissement_adhesion_active_compteur_lien_parent.sql`, L82). L'élève
   ne lit que les siens, non supprimés (policy « Students can view their own active warnings »).
 
 ### Notifications
@@ -451,8 +480,8 @@ La modération porte sur la table `messages` **du chat**, pas sur `private_messa
   `tests/integration/notifications-systeme-serveur.test.ts`.
 - **Notification d'un compte = à son nom, figée après envoi** (seul `deleted_at` bouge) :
   trigger `guard_notification_authorship_trg` (`20261001220000_securite_points_mineurs.sql`, Q77).
-- **Un prof ne cible que des classes ou des élèves inscrits**, jamais `all` ni `role`
-  (`createNotification`).
+- **Un prof ne cible que des classes ou des élèves inscrits** (adhésion active : un élève qui
+  a quitté toutes les classes est refusé, L83), jamais `all` ni `role` (`createNotification`, et policy « Teachers can create notifications for their classes » pour l'insertion directe).
 - **Élève archivé** : ne voit plus les notifications de la classe quittée
   (`20260912200000_archived_members_lose_class_notifications.sql`, test
   `tests/integration/archived-member-class-notifications.test.ts`).
@@ -486,7 +515,7 @@ La modération porte sur la table `messages` **du chat**, pas sur `private_messa
 ### Zod
 
 Toutes les entrées passent par un schéma : `sendMessageSchema`, `updateMessageSchema`,
-`searchMessagesQuerySchema`, `restrictUserSchema`, `deleteMessageSchema`, `addWarningsBulkSchema`,
+`restrictUserSchema`, `deleteMessageSchema`, `addWarningsBulkSchema`,
 `removeWarningsBulkSchema`, `createNotificationSchema`, `markNotificationReadSchema`. `reports/[id]/` porte son schéma en local (`reviewReportSchema`) ;
 `messages/[id]/context/` borne `count` à la main (1 à 50).
 
