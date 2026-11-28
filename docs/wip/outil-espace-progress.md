@@ -10,7 +10,7 @@ status: outil 64 livré (#3308) ; outil 65 à faire
 
 _Mis à jour le 2026-11-28, après #3308._
 
-- **État** : outil 64 livré (#3308, case `droite-parametrique`) ; outil 65 pas commencé · **Prochaine action** : recréer le worktree `../ubumaths-wt-outil-espace` (branche `feat/outil-espace` depuis `origin/main`), vérifier que l'outil 65 manque encore (point au tiers d'une arête dans ` ```solide `, `points:` ne connaît que `milieu` et `centre`), puis phase 0 · **En attente de David** : rien · **Pièges en cours** : aucun · **Worktree / branche** : à recréer (retirés par `pr:merger`)
+- **État** : outil 64 livré (#3308, case `droite-parametrique`) ; outil 65 en phase 0 (questions envoyées) · **Prochaine action** : réponse de David, puis tests rouges · **En attente de David** : Q1 à Q4 de la phase 0 de l’outil 65 · **Pièges en cours** : aucun · **Worktree / branche** : `../ubumaths-wt-outil-espace`, `feat/outil-espace`
 
 ## Outil 64 — phase 0 (envoyée le 2026-11-28)
 
@@ -50,3 +50,11 @@ qu'en Terminale spé, dans l'espace ; le plan a la case `equation`), et David : 
 - `security-auditor` (Opus) : aucun bloquant ; corrigé : bornes de rendu du verso mesurées sur la
   réponse entière (3 lignes au plafond triplaient la page du professeur), `&` inertes, 4e ligne
   montrée en texte inerte.
+
+## Outil 65 — phase 0 (envoyée le 2026-11-28)
+
+Vérifié (`solide-parser.ts`, `readPoints`) : `points:` lit `milieu`, `centre`, `intersection` et
+les coordonnées (ces dernières seulement avec `repere:`). Sans repère, un point au tiers d'une
+arête ne se déclare pas ; un quart = milieu d'un milieu. Pas de graduation d'arête.
+Proposition : `M tel que AM = 1/3 AB` (fraction strictement entre 0 et 1, deux points distincts
+quelconques) ; graduations en question. Questions posées à David dans le message de la session.
