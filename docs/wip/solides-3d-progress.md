@@ -2,20 +2,22 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-28, après #3263 (petite PR d'après le 7c mergée)._
+_Mis à jour le 2026-11-28, après #3273 (lot 7e mergé)._
 
 - **État** : [ADR 0045](../adr/0045-figures-de-l-espace-qui-tournent.md) ; lots 1 à 6, 7a, 7b, bord en
-  butée, **7c** (repère du solide, points par coordonnées, § 21) et la **petite PR d'après le 7c** (description
-  sous chaque réglage dans la page d'aide, cases de `retrouver:` teintées, § 22) mergés (#3195 à #3263) ; lot
-  7c essayé par David le 2026-11-28 (« c'est bon »). Les lots 3 à 7c ne sont pas en prod sans `deploy:prod` demandé
-  par David (le vérifier avant de l'affirmer).
-- **Prochaine action** : le **lot 7e** (point d'intersection demandé par l'auteur, § 17 question (d)), en
-  commençant par sa phase 0 (comportements en français, à faire valider par David avant de coder). Le 7d (repère sans solide) reste laissé tant qu'aucun
-  modèle n'en a besoin.
-- **En attente de David** : rien de bloquant. Deux choix de la petite PR faits sans lui, annoncés le
-  2026-11-28, sans réponse encore : teinte des cases de `retrouver:` (14 % de la couleur d'accent) et
-  description gardée dans le tableau, en gris sous la clé. Il n'a rien dit de « (Q) » écrit sur la zone teintée de (P) après son
-  essai : laissé.
+  butée, 7c, petite PR d'après le 7c et **lot 7e** (point d'intersection, `points: K intersection (IG) (BDE)`,
+  § 23 et 24) mergés (#3195 à #3273). Le 7e n'a pas encore été essayé par David. Les lots 3 à 7e ne sont pas
+  en prod sans `deploy:prod` demandé par David (le vérifier avant de l'affirmer).
+- **Prochaine action** : aucun lot validé ne reste, sauf le 7d (repère sans solide), laissé tant qu'aucun
+  modèle n'en a besoin. Avant de proposer la clôture : recompter le découpage validé (§ 4 et § 17) contre les
+  PR mergées et le code, puis versement de fin de chantier.
+- **En attente de David** : l'essai du 7e ; l'écart entre les comportements 86 et 98 (K n'est pas un point à
+  toucher : `tracer:` est refusé avec `intersection`, § 24) ; deux choix de la petite PR d'après le 7c restés
+  sans réponse (teinte des cases de `retrouver:`, description en gris sous la clé) ; « (Q) » sur la zone
+  teintée de (P) : laissé.
+- **Tranché par David le 2026-11-28 (lot 7e, « je te suis »)** : pas de droite d'intersection de deux plans
+  dans ce lot ; l'intersection s'écrit toujours avec les points entre parenthèses, jamais avec `d` ou `P` ;
+  K hors du solide mais dans la marge est accepté.
 - **Tranché par David le 2026-11-28 (lot 7c, « je te suis »)** : les trois choix du § 21 sont gardés
   (vecteurs du repère qui partent tous de l'origine ; coordonnées décimales seulement, les fractions le jour
   où un modèle en a besoin ; point à coordonnées accepté sur un sommet) ; **petite PR à part, après le 7c** :
@@ -42,9 +44,10 @@ _Mis à jour le 2026-11-28, après #3263 (petite PR d'après le 7c mergée)._
   même si son serveur de dev tourne** (#3227, #3229 : dossier laissé avec `.svelte-kit` et `.vite`, serveur
   à tuer par son PID) — recréer le worktree et relancer le serveur aussitôt après le merge ; `pnpm voir
 --compte prof` refusait la connexion du compte fictif le 2026-11-27 (base locale en marche).
-- **Worktree / branche** : aucun (retirés par `pnpm pr:merger 3263`, serveur de dev arrêté avant) ; à recréer sous le nom
-  `../ubumaths-wt-solides-3d`. Le lien du tailnet 8444 → 5176 est resté publié (serveur arrêté) : `pnpm lien`
-  le reprend depuis le nouveau worktree, `--stop` est refusé dans le dépôt principal.
+- **Worktree / branche** : aucun (retirés par `pnpm pr:merger 3273`) ; à recréer sous le nom
+  `../ubumaths-wt-solides-3d` — le dossier existe encore avec seulement `.svelte-kit` (reste du serveur de
+  dev, à supprimer avec l'accord de David). Le lien du tailnet 8445 → 5177 est resté publié (serveur
+  arrêté) ; le 8444 → 5176 sert à une autre session.
 
 ## 1. D'où l'on part
 
