@@ -126,7 +126,7 @@ describe('POST /api/chat/conversations', () => {
 			} as never)
 		).rejects.toMatchObject({
 			status: 400,
-			message: 'Invalid JSON'
+			message: 'Corps de requête JSON invalide'
 		});
 	});
 

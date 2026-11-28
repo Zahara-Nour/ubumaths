@@ -48,7 +48,7 @@ export const PUT: RequestHandler = async ({ request, params, locals }) => {
 		!reportId ||
 		!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(reportId)
 	) {
-		throw error(400, 'Invalid report ID');
+		throw error(400, 'Identifiant de signalement invalide');
 	}
 
 	// 4. Parse and validate input
@@ -56,7 +56,7 @@ export const PUT: RequestHandler = async ({ request, params, locals }) => {
 	try {
 		body = await request.json();
 	} catch {
-		throw error(400, 'Invalid JSON');
+		throw error(400, 'Corps de requête JSON invalide');
 	}
 
 	const validation = reviewReportSchema.safeParse(body);
@@ -102,7 +102,7 @@ export const PUT: RequestHandler = async ({ request, params, locals }) => {
 			throw error(403, 'Permission denied');
 		}
 		if (reviewError.message.includes('Invalid status')) {
-			throw error(400, 'Invalid status');
+			throw error(400, 'Statut invalide');
 		}
 
 		throw error(500, 'Failed to review report');
