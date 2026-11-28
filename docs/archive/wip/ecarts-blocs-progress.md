@@ -1,27 +1,20 @@
 ---
 title: Écarts — lot blocs
 date: 2026-11-28
-status: en cours
+status: clos
 ---
 
 # Écarts — lot `blocs`
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-28, après #3266._
+_Mis à jour le 2026-11-28, après #3270._
 
-- **État** : #3266 mergée (L88, L89, L90, L92, L93). V110 corrigé et poussé sur
-  `fix/ecarts-blocs-v110` (commit bf2578be5a, test rouge→vert, preuve du registre verte), **PR pas
-  encore ouverte** (journal noté dans la branche). L91 déjà corrigé par E46, à clore au registre sans code.
-- **Prochaine action** : dans le worktree V110, `git merge origin/main` (récupère ce journal), noter
-  V110 dans le journal, push, ouvrir la PR (pas de revue : position d'une cote, < 30 lignes),
-  `pnpm pr:merger`. Puis clore le lot : barrer L88-L93 et V110 au registre (L91 « déjà corrigé par E46,
-  9448e19f97 »), `fait (#3266, #<V110>, date)` dans `ecarts-lots.md`, archiver ce journal.
-- **En attente de David** : rien. V110 : il a répondu « je te suis » à l'option 1 (à côté du trait) ;
-  posée finalement **en haut à gauche du bout du trait au centre de la base**, car à mi-hauteur elle
-  tombait sur le bord de la coupe (vu à l'écran, 0,5 / 1 / 3 cm) ; écart signalé à David.
-- **Pièges en cours** : un bloc reconnu dans une liste doit aussi être affiché par `ListNode` (E56, L89).
-- **Worktree / branche** : `../ubumaths-wt-ecarts-blocs-v110` · `fix/ecarts-blocs-v110`.
+- **État** : **lot clos.** #3266 (L88, L89, L90, L92, L93) et #3270 (V110) mergées ; L91 clos sans
+  code (déjà corrigé par E46). Lignes barrées au registre, lot `fait` dans `ecarts-lots.md`, journal
+  archivé. · **Prochaine action** : aucune. · **En attente de David** : rien (V110 : cote posée en
+  haut à gauche du bout du trait plutôt qu'à mi-hauteur, écart à l'option 1 signalé).
+- **Worktree / branche** : aucun (retirés par `pnpm pr:merger`).
 
 ## Écarts du lot
 
