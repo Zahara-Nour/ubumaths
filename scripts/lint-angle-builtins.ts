@@ -59,9 +59,7 @@ const EXCLUDE_FILES = [
 	// Reads legacy JSON format with old 'angleMark' kind — intentional backward-compat reader
 	'migrate-constructions-to-dsl.ts',
 	// IEP XML instrument type 'angle_droit' — not a DSL builtin, just an IEP action category
-	'converter.ts',
-	// convert-instrumenpoche.ts handles IEP 'angle_droit' instrument type
-	'convert-instrumenpoche.ts'
+	'converter.ts'
 ];
 
 // ---------------------------------------------------------------------------

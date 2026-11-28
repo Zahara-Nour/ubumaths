@@ -1,8 +1,8 @@
 <!--
-	InstrumenPoche XML Conversion Page
-	===================================
-	Allows teachers and admins to import InstrumenPoche XML files
-	and convert them to Chiphre construction format.
+	Page de conversion XML InstrumenPoche
+	=====================================
+	Le prof importe un fichier XML InstrumenPoche et le convertit en script DSL
+	de construction (seul format accepté depuis M38, 2026-11-28).
 -->
 
 <script lang="ts">
@@ -15,12 +15,9 @@
 	import * as Tabs from '#lib/components/ui/tabs/index.ts';
 	import * as Card from '#lib/components/ui/card/index.ts';
 	import * as Collapsible from '#lib/components/ui/collapsible/index.ts';
-	import { Badge } from '#lib/components/ui/badge/index.ts';
 	import MyCheckbox from '#lib/components/MyCheckbox.svelte';
 	import TagsInput from '#lib/components/templates/TagsInput.svelte';
-	import { JsonEditor, ConstructionPlayer } from '#lib/constructions/components/index.ts';
-	import { constructionScriptSchema } from '#lib/constructions/schemas.ts';
-	import { convertInstrumenPoche } from '#lib/constructions/converter.ts';
+	import ConstructionPlayer from '#lib/constructions-v2/components/ConstructionPlayer.svelte';
 	import { convertXmlToDsl } from '#lib/constructions-v2/converter.ts';
 	import { toaster } from '#lib/stores/toaster.svelte.ts';
 	import { goto } from '$app/navigation';
@@ -28,7 +25,6 @@
 		Upload,
 		FileCode,
 		AlertTriangle,
-		CheckCircle,
 		Play,
 		Save,
 		ChevronDown,
@@ -36,13 +32,6 @@
 		X,
 		Code2
 	} from '@lucide/svelte';
-
-	// Types for XML/JSON comparison
-	interface XmlJsonPair {
-		xml: string;
-		json: string;
-		stepStartIndex: number; // Index of first step in this pair
-	}
 
 	// Props
 	let { data }: { data: PageData } = $props();
@@ -54,13 +43,10 @@
 	let selectedFile = $state<File | null>(null);
 
 	// Conversion state
-	let jsonOutput = $state('');
 	let dslOutput = $state('');
-	let dslWarnings = $state<string[]>([]);
 	let warnings = $state<string[]>([]);
 	let conversionErrors = $state<string[]>([]);
 	let isConverting = $state(false);
-	let isJsonValid = $state(false);
 
 	// Metadata state
 	let title = $state('');
@@ -79,135 +65,10 @@
 
 	// Derived states
 	let canSave = $derived(
-		(isJsonValid || dslOutput.length > 0) &&
-			title.trim().length > 0 &&
-			conversionErrors.length === 0 &&
-			!isSaving
+		dslOutput.length > 0 && title.trim().length > 0 && conversionErrors.length === 0 && !isSaving
 	);
 
-	let parsedScript = $derived.by(() => {
-		if (!jsonOutput || !isJsonValid) return null;
-		try {
-			return JSON.parse(jsonOutput);
-		} catch {
-			return null;
-		}
-	});
-
 	let hasContent = $derived(xmlInput.trim().length > 0 || selectedFile !== null);
-
-	// Calculate editor height based on JSON line count (min 400px, 20px per line)
-	let jsonEditorHeight = $derived.by(() => {
-		if (!jsonOutput) return '400px';
-		const lineCount = jsonOutput.split('\n').length;
-		const calculatedHeight = Math.max(400, lineCount * 20 + 50); // 20px per line + padding
-		return `${calculatedHeight}px`;
-	});
-
-	// Parse XML and extract action elements with their JSON equivalents
-	let xmlJsonPairs = $derived.by((): XmlJsonPair[] => {
-		if (!xmlInput.trim() || !parsedScript?.steps) return [];
-
-		const pairs: XmlJsonPair[] = [];
-
-		// Extract action elements from XML
-		const actionRegex = /<action\s+([^>]+)\s*\/>/g;
-		const actions: { xml: string; attrs: string }[] = [];
-		let match;
-
-		while ((match = actionRegex.exec(xmlInput)) !== null) {
-			actions.push({ xml: match[0], attrs: match[1] });
-		}
-
-		let stepIndex = 0;
-		let actionIndex = 0;
-
-		while (actionIndex < actions.length && stepIndex < parsedScript.steps.length) {
-			const action = actions[actionIndex];
-			const attrs = action.attrs;
-			const pairStartIndex = stepIndex; // Track start index for this pair
-
-			// Check if this is a text "creer" action (followed by "ecrire" which produces the step)
-			if (attrs.includes('objet="texte"') && attrs.includes('mouvement="creer"')) {
-				// Look for the next "ecrire" action
-				if (actionIndex + 1 < actions.length) {
-					const nextAction = actions[actionIndex + 1];
-					if (
-						nextAction.attrs.includes('objet="texte"') &&
-						nextAction.attrs.includes('mouvement="ecrire"')
-					) {
-						// Group both XML actions with JSON steps (text + optional pause if tempo)
-						const step = parsedScript.steps[stepIndex];
-						let jsonLines = JSON.stringify(step);
-						stepIndex++;
-
-						// If ecrire has tempo, there's also a pause step
-						if (nextAction.attrs.includes('tempo=') && stepIndex < parsedScript.steps.length) {
-							const pauseStep = parsedScript.steps[stepIndex];
-							if ('pause' in pauseStep) {
-								jsonLines += '\n' + JSON.stringify(pauseStep);
-								stepIndex++;
-							}
-						}
-
-						pairs.push({
-							xml: action.xml + '\n' + nextAction.xml,
-							json: jsonLines,
-							stepStartIndex: pairStartIndex
-						});
-						actionIndex += 2;
-						continue;
-					}
-				}
-				// "creer" without "ecrire" - skip (no JSON output)
-				actionIndex++;
-				continue;
-			}
-
-			// Check if this action produces no JSON output (e.g., some show/hide that don't match)
-			// or produces multiple JSON steps
-
-			const step = parsedScript.steps[stepIndex];
-			let jsonLines = JSON.stringify(step);
-
-			// Check if compass tracer produces rotate + arc steps
-			if (attrs.includes('objet="compas"') && attrs.includes('mouvement="tracer"')) {
-				stepIndex++;
-				if (stepIndex < parsedScript.steps.length) {
-					const arcStep = parsedScript.steps[stepIndex];
-					jsonLines += '\n' + JSON.stringify(arcStep);
-				}
-			}
-
-			// Check if show/montrer with position produces move + show steps
-			if (
-				attrs.includes('mouvement="montrer"') &&
-				(attrs.includes('abscisse=') || attrs.includes('ordonnee='))
-			) {
-				stepIndex++;
-				if (stepIndex < parsedScript.steps.length) {
-					const showStep = parsedScript.steps[stepIndex];
-					jsonLines += '\n' + JSON.stringify(showStep);
-				}
-			}
-
-			stepIndex++;
-
-			// Generic tempo handling: any action with tempo produces a pause step after
-			if (attrs.includes('tempo=') && stepIndex < parsedScript.steps.length) {
-				const nextStep = parsedScript.steps[stepIndex];
-				if (nextStep && typeof nextStep === 'object' && 'pause' in nextStep) {
-					jsonLines += '\n' + JSON.stringify(nextStep);
-					stepIndex++;
-				}
-			}
-
-			pairs.push({ xml: action.xml, json: jsonLines, stepStartIndex: pairStartIndex });
-			actionIndex++;
-		}
-
-		return pairs;
-	});
 
 	// File handling
 	function handleDragOver(event: DragEvent) {
@@ -256,7 +117,7 @@
 	function clearFile() {
 		selectedFile = null;
 		xmlInput = '';
-		jsonOutput = '';
+		dslOutput = '';
 		warnings = [];
 		conversionErrors = [];
 		showPreview = false;
@@ -274,48 +135,25 @@
 		warnings = [];
 
 		try {
-			// Convert to JSON (legacy)
-			const result = await convertInstrumenPoche(xmlInput);
-
-			if (result.success && result.script) {
-				jsonOutput = JSON.stringify(result.script, null, 2);
+			const result = await convertXmlToDsl(xmlInput);
+			if (result.success && result.dsl) {
+				dslOutput = result.dsl;
 				warnings = result.warnings;
-
-				if (!title && result.script.title) {
-					title = result.script.title;
-				}
-				if (!description && result.script.description) {
-					description = result.script.description;
-				}
-
 				toaster.success('Conversion reussie');
 				showPreview = true;
 			} else {
-				conversionErrors = result.errors;
-				jsonOutput = '';
+				dslOutput = '';
+				conversionErrors =
+					result.errors.length > 0 ? result.errors : ['La conversion n’a produit aucun script'];
 				toaster.error('La conversion a echoue');
 			}
-
-			// Also convert to DSL (new format)
-			const dslResult = await convertXmlToDsl(xmlInput);
-			if (dslResult.success && dslResult.dsl) {
-				dslOutput = dslResult.dsl;
-				dslWarnings = dslResult.warnings;
-			} else {
-				dslOutput = '';
-				dslWarnings = [];
-			}
 		} catch (err) {
+			dslOutput = '';
 			conversionErrors = [(err as Error).message || 'Erreur de conversion inattendue'];
 			toaster.error('Erreur de conversion');
 		} finally {
 			isConverting = false;
 		}
-	}
-
-	// JSON validation callback
-	function handleJsonValidate(valid: boolean, _errors: string[]) {
-		isJsonValid = valid;
 	}
 
 	// Save construction
@@ -325,27 +163,17 @@
 		isSaving = true;
 
 		try {
-			// Prefer DSL format if available, fallback to JSON
-			const useDsl = dslOutput.length > 0;
-			const body: Record<string, unknown> = {
-				title: title.trim(),
-				description: description.trim() || undefined,
-				is_public: isPublic,
-				tags: tags.length > 0 ? tags : undefined
-			};
-
-			if (useDsl) {
-				body.format = 'dsl';
-				body.dsl_script = dslOutput;
-			} else {
-				body.format = 'json';
-				body.script = JSON.parse(jsonOutput);
-			}
-
 			const response = await fetch('/api/constructions', {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify(body)
+				body: JSON.stringify({
+					title: title.trim(),
+					description: description.trim() || undefined,
+					is_public: isPublic,
+					tags: tags.length > 0 ? tags : undefined,
+					format: 'dsl',
+					dsl_script: dslOutput
+				})
 			});
 
 			if (response.ok) {
@@ -494,26 +322,39 @@
 		<Card.Root>
 			<Card.Header>
 				<Card.Title class="flex items-center gap-2">
-					Script JSON
-					{#if isJsonValid && jsonOutput}
-						<Badge variant="secondary" class="gap-1">
-							<CheckCircle class="h-3 w-3" />
-							Valide
-						</Badge>
-					{/if}
+					<Code2 class="h-5 w-5" />
+					Script DSL
 				</Card.Title>
-				<Card.Description>Resultat de la conversion (modifiable)</Card.Description>
+				<Card.Description>
+					Resultat de la conversion, modifiable ensuite dans l'editeur de constructions
+				</Card.Description>
 			</Card.Header>
 			<Card.Content class="space-y-4">
-				<!-- JSON Editor - height auto-adjusts to show full script -->
-				<div class="overflow-hidden rounded-lg border border-border">
-					<JsonEditor
-						bind:value={jsonOutput}
-						height={jsonEditorHeight}
-						schema={constructionScriptSchema}
-						onValidate={handleJsonValidate}
-					/>
-				</div>
+				{#if dslOutput}
+					<div class="overflow-hidden rounded-lg border border-border">
+						<pre
+							class="max-h-[400px] overflow-auto bg-muted p-4 font-mono text-sm">{dslOutput}</pre>
+					</div>
+
+					<Button
+						variant="outline"
+						onclick={() => {
+							navigator.clipboard.writeText(dslOutput);
+							toaster.success('Script DSL copie');
+						}}
+					>
+						Copier le DSL
+					</Button>
+				{:else}
+					<div
+						class="flex flex-col items-center justify-center rounded-lg border border-dashed border-muted-foreground/25 py-12 text-center"
+					>
+						<Code2 class="h-12 w-12 text-muted-foreground/50" />
+						<p class="mt-2 text-sm text-muted-foreground">
+							Importez et convertissez un fichier XML pour voir le script
+						</p>
+					</div>
+				{/if}
 
 				<!-- Warnings collapsible -->
 				{#if warnings.length > 0}
@@ -542,7 +383,7 @@
 				{/if}
 
 				<!-- Preview collapsible -->
-				{#if parsedScript}
+				{#if dslOutput}
 					<Collapsible.Root bind:open={showPreview}>
 						<Collapsible.Trigger
 							class="flex w-full items-center justify-between rounded-lg bg-muted p-3 text-left"
@@ -555,64 +396,13 @@
 						</Collapsible.Trigger>
 						<Collapsible.Content>
 							<div class="mt-2 overflow-hidden rounded-lg border border-border">
-								<ConstructionPlayer
-									script={parsedScript}
-									showControls={true}
-									showParameters={false}
-									showGrid={true}
-									showReload={true}
-								/>
+								<ConstructionPlayer script={dslOutput} showGrid={true} />
 							</div>
 						</Collapsible.Content>
 					</Collapsible.Root>
 				{/if}
 			</Card.Content>
 		</Card.Root>
-
-		<!-- DSL Output -->
-		{#if dslOutput}
-			<Card.Root class="mt-4">
-				<Card.Header>
-					<Card.Title class="flex items-center gap-2">
-						<Code2 class="h-5 w-5" />
-						Script DSL
-						<Badge variant="default" class="text-xs">Nouveau format</Badge>
-					</Card.Title>
-					<Card.Description>
-						Conversion en DSL (format editable dans l'editeur de constructions)
-					</Card.Description>
-				</Card.Header>
-				<Card.Content class="space-y-4">
-					<div class="overflow-hidden rounded-lg border border-border">
-						<pre
-							class="max-h-[400px] overflow-auto bg-muted p-4 font-mono text-sm">{dslOutput}</pre>
-					</div>
-
-					{#if dslWarnings.length > 0}
-						<div class="rounded-lg bg-amber-50 p-3 dark:bg-amber-950/20">
-							<p class="mb-1 text-sm font-medium text-amber-700 dark:text-amber-400">
-								{dslWarnings.length} avertissement{dslWarnings.length > 1 ? 's' : ''} DSL
-							</p>
-							<ul class="space-y-0.5 text-xs text-amber-600 dark:text-amber-500">
-								{#each dslWarnings as w, i (i)}
-									<li>- {w}</li>
-								{/each}
-							</ul>
-						</div>
-					{/if}
-
-					<Button
-						variant="outline"
-						onclick={() => {
-							navigator.clipboard.writeText(dslOutput);
-							toaster.success('Script DSL copie');
-						}}
-					>
-						Copier le DSL
-					</Button>
-				</Card.Content>
-			</Card.Root>
-		{/if}
 	</div>
 
 	<!-- Metadata Form -->
@@ -674,50 +464,5 @@
 				{/if}
 			</Button>
 		</Card.Footer>
-	</Card.Root>
-
-	<!-- XML/JSON Comparison Card -->
-	<Card.Root class="mt-6">
-		<Card.Header>
-			<Card.Title class="flex items-center gap-2">
-				<Code2 class="h-5 w-5" />
-				Comparaison XML / JSON
-			</Card.Title>
-			<Card.Description>
-				Correspondance entre les instructions XML InstrumenPoche et le format JSON Chiphre
-			</Card.Description>
-		</Card.Header>
-		<Card.Content>
-			{#if xmlJsonPairs.length > 0}
-				<div
-					class="max-h-[500px] space-y-4 overflow-y-auto rounded-lg border border-border bg-muted/30 p-4"
-				>
-					{#each xmlJsonPairs as pair, i (i)}
-						<div class="space-y-1">
-							<!-- XML instruction (blue) -->
-							<pre
-								class="overflow-x-auto rounded bg-blue-50 p-2 font-mono text-xs break-all whitespace-pre-wrap text-blue-700 dark:bg-blue-950/50 dark:text-blue-300">{pair.xml}</pre>
-							<!-- JSON translation (green) with step numbers -->
-							{#each pair.json.split('\n') as jsonLine, lineIndex (lineIndex)}
-								<pre
-									class="overflow-x-auto rounded bg-green-50 p-2 font-mono text-xs break-all whitespace-pre-wrap text-green-700 dark:bg-green-950/50 dark:text-green-300"><span
-										class="mr-2 inline-block min-w-[2rem] text-right font-bold text-green-500"
-										>[{pair.stepStartIndex + lineIndex}]</span
-									>{jsonLine}</pre>
-							{/each}
-						</div>
-					{/each}
-				</div>
-			{:else}
-				<div
-					class="flex flex-col items-center justify-center rounded-lg border border-dashed border-muted-foreground/25 py-12 text-center"
-				>
-					<Code2 class="h-12 w-12 text-muted-foreground/50" />
-					<p class="mt-2 text-sm text-muted-foreground">
-						Importez et convertissez un fichier XML pour voir la correspondance des instructions
-					</p>
-				</div>
-			{/if}
-		</Card.Content>
 	</Card.Root>
 </div>

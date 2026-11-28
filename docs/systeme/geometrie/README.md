@@ -95,9 +95,8 @@ Les scripts sont stockés en base dans `constructions.dsl_script`. Routes :
 `src/routes/(protected)/constructions/` (liste, `[id]`, `[id]/edit`, `new`, `conversion`, `essais`) et
 la vitrine `src/routes/(public)/demo/constructions/`.
 
-⚠️ L'ancien module `src/lib/constructions/` (XML, avant le DSL) vit encore : utilisé par
-`whiteboard/components/InstrumentLayer.svelte`, `QuestionTemplateForm.svelte` et
-`routes/api/constructions/convert`. Il ne fait pas partie de ce système.
+L'ancien module `src/lib/constructions/` (JSON, avant le DSL) est retiré depuis le 2026-11-28
+(M38) ; ses instruments vivent dans `src/lib/whiteboard/components/instruments/`.
 
 ### Composants et consommateurs
 
