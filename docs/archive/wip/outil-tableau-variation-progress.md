@@ -1,23 +1,21 @@
 ---
 title: Chantier outil-tableau-variation — outils 63 puis 59
 date: 2026-11-28
-status: outil 63 livré (#3286), outil 59 codé, PR à ouvrir
+status: clos — outils 63 (#3286) et 59 (#3296) livrés
 ---
 
 # Chantier `outil-tableau-variation`
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-28, outil 59 revu, PR ouverte._
+_Mis à jour le 2026-11-28, après #3296._
 
-- **État** : outil 63 livré (#3286) ; outil 59 codé, testé, revu (`code-reviewer` Opus : rien de
-  bloquant), PR ouverte depuis `feat/outil-tableau-variation-59` · **Prochaine action** : CI verte →
-  `pnpm pr:merger`, puis clore le lot (63 et 59 faits) dans `outils-lots.md` · **En attente de
-  David** : rien · **Pièges en cours** : `work-figure-editor.ts:36` (hors lot, non vérifié) ·
-  **Worktree / branche** : `../ubumaths-wt-outil-tableau-variation-59`,
-  `feat/outil-tableau-variation-59`
+- **État** : chantier clos, lot `tableau-variation` fait (outil 63 #3286, outil 59 #3296, pas
+  encore en prod) ; journal archivé · **Prochaine action** : aucune · **En attente de David** :
+  rien · **Pièges en cours** : `work-figure-editor.ts:36` (décalage possible, hors lot, non
+  vérifié) · **Worktree / branche** : aucun
 
-Lot pris par `pnpm outils lancer` le 2026-11-28 ([outils-lots.md](outils-lots.md)) : 63, puis 59.
+Lot pris par `pnpm outils lancer` le 2026-11-28 ([outils-lots.md](../../wip/outils-lots.md)) : 63, puis 59.
 
 ## Outil 59 — flèche cachée à côté d'une double barre
 
