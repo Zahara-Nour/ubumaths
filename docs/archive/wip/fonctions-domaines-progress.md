@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-28, suite `pour x > k` (PR à ouvrir)._
+_Mis à jour le 2026-11-28, après #3310. Chantier clos, journal archivé._
 
-- **État** : `f(x) = x pour x > 2` livré (#3304) ; `pour x > k` (paramètre) fait sur `feat/fonctions-domaines-parametre`, accord de David le 2026-11-28.
-- **Prochaine action** : PR, CI, merge ; puis archiver ce journal (doc durable dans `docs/systeme/atelier.md`).
+- **État** : `f(x) = x pour x > 2` (#3304) et `pour x > k` (#3310) mergés, pas encore en prod.
+- **Prochaine action** : aucune ; doc durable dans `docs/systeme/atelier.md`.
 - **En attente de David** : rien.
 - **Pièges en cours** : dans la carte, MathLive colle « pour » comme « sur » (`xpour2<x<4` en italique tant que le champ n'est pas relu) — comportement d'avant, non traité.
-- **Worktree / branche** : `ubumaths-wt-fonctions-domaines-parametre` / `feat/fonctions-domaines-parametre`.
+- **Worktree / branche** : aucun.
 
 ## Demande
 
@@ -55,5 +55,5 @@ f(x)=x pour 2<x<4 » (David, 2026-11-28).
   (`parseConditionNotation` → `parseSingleCondition` → `parseEndpointValue`). Sans `bound` (réponse
   d'élève), une lettre reste refusée.
 - `UNREADABLE_CONDITION` : « à des nombres ou à des valeurs, par exemple pour x > 2 ou pour x > k ».
-- Tests : `intervalle-pour-parametre.test.ts` (13, 10 rouges avant) ; vérif à l'écran
+- Tests : `intervalle-pour-parametre.test.ts` (13, 10 rouges avant) — PR #3310, mergée ; vérif à l'écran
   `atelier-intervalle-pour.spec.ts` (+1, `pour x > k`, verte sur ordi-chrome).
