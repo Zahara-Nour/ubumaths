@@ -511,9 +511,14 @@ export function judgeLines(
 		const through = throughLineOf(check.expression);
 		if (through) {
 			const free = lineIndexes.filter((i) => !taken.has(i));
+			// Une droite qui recouvre celle d'une AUTRE vérification n'est pas l'essai de celle-ci
+			const others = checks
+				.filter((other) => other !== check)
+				.map((other) => expectedOf(other, expected));
 			const verdict = judgeThroughLine(through, target, points, objects, free, built, {
 				guide: shapes?.lines.get(through.line) ?? null,
-				figureTraits
+				figureTraits,
+				others
 			});
 			if (typeof verdict !== 'number') return verdict;
 			taken.add(verdict);
@@ -552,7 +557,8 @@ export function judgeLines(
  * de l'élève retenue, ou le verdict faux et sa cause, lue sur la DERNIÈRE droite
  * tracée (les précédentes sont souvent des traits de construction : la
  * perpendiculaire intermédiaire de la parallèle). Une droite qui repasse un trait
- * de la figure ((d) elle-même) n'est pas un essai.
+ * de la figure ((d) elle-même) ou la droite d'une autre vérification n'est pas un
+ * essai (revue de l'outil n° 40).
  */
 function judgeThroughLine(
 	through: ThroughLine,
@@ -561,7 +567,11 @@ function judgeThroughLine(
 	objects: readonly DrawnObject[],
 	free: readonly number[],
 	built: (i: number) => boolean,
-	context: { guide: ExpectedLine | null; figureTraits: readonly Trait[] }
+	context: {
+		guide: ExpectedLine | null;
+		figureTraits: readonly Trait[];
+		others: readonly ExpectedLine[];
+	}
 ): number | ConstructionVerdict {
 	const { kind, point, line: name } = through;
 	const line = (i: number) => objects[i] as DrawnLine;
@@ -575,7 +585,9 @@ function judgeThroughLine(
 			(t) => isStraight(t) && isOnLine(t.a, { a: p, b: q }) && isOnLine(t.b, { a: p, b: q })
 		);
 	};
-	const own = free.filter((i) => !retraces(i));
+	const own = free.filter(
+		(i) => !retraces(i) && !context.others.some((other) => coincides(line(i), other))
+	);
 	if (own.length === 0) {
 		return { status: 'incorrect', feedback: throughLineMissingFeedback(kind, name, point) };
 	}

@@ -87,3 +87,7 @@ papier uni ; messages aussi sur quadrillage ; correction avec angle droit et per
   `figure-a-completer-droite-equerre.svelte.test.ts` (4, navigateur : équerre posée, message, correction).
 - Rendu vu à l'écran (capture du navigateur de test) : message, droite attendue en pointillés, angle droit au
   pied ; parallèle : perpendiculaire par A en trait fin.
+- Revue (`code-reviewer`, Opus) : aucun verdict faux. Corrigé : avec deux vérifications droite, le message de
+  l'une lisait la droite juste de l'autre (test ajouté). Laissés, à dire à David : la correction (angle droit,
+  perpendiculaire en trait fin) s'affiche aussi sur quadrillage (CM1-167, 168 en prod) ; (d) donnée par un
+  segment : le pied peut tomber hors du segment (aucun cas réel).

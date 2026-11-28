@@ -288,6 +288,29 @@ describe('outil 40 : parallèle sur papier uni', () => {
 	});
 });
 
+describe('outil 40 : deux vérifications dans la même figure (revue)', () => {
+	it('p fausse, q juste tracée après : le message de p ne lit pas q', () => {
+		const source = [
+			'fenetre: 0 ; 10 ; 0 ; 8',
+			'verifier: droite p = perpendiculaire(A, d)',
+			'verifier: droite q = parallele(C, d)',
+			'---',
+			...BODY
+		].join('\n');
+		const guide = guideOf(source);
+		// p par un point de (d) au lieu de A ; puis q en deux équerres par C
+		const wrongP = perpendicularThrough(guide, { x: 5, y: 3 });
+		const first = perpendicularThrough(guide, { x: 8, y: 3.6 });
+		const q = perpendicularThrough(along(first), { x: 8, y: 7 });
+		expect(judge(source, [wrongP, first, q])).toEqual({
+			status: 'incorrect',
+			feedback: notThroughPointFeedback('perpendiculaire', 'd', 'A')
+		});
+		const p = perpendicularThrough(guide, { x: 3, y: 6 });
+		expect(judge(source, [p, first, q])).toEqual({ status: 'correct' });
+	});
+});
+
 describe('outil 40 : messages aussi sur quadrillage (décision 3)', () => {
 	// (d) horizontale y = 3, A(4 ; 6)
 	const GRID_BODY = [
