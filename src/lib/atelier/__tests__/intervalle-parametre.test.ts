@@ -150,7 +150,7 @@ describe('bornes calculées et noms absents', () => {
 		const d = desk('k = 4');
 		const created = d.atelier.create(
 			{ kind: 'function', name: 'f', definition: 'x', interval: '\\left[\\frac{k}{2};5\\right]' },
-			'latex'
+			'mathfield'
 		);
 		expect(created.ok).toBe(true);
 		expect(plotRestrictionOf(d.atelier.get('f'))).toEqual([piece(2, 5)]);
