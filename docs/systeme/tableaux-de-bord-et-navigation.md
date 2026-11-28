@@ -136,7 +136,9 @@ s'ouvre par sa carte de « Mon travail » ou par un chapitre de cours.
 - Lien vers les decks SRS.
 
 Classes et périodes viennent de `/api/teacher/classes` et `/api/teacher/periods`, gardées dans le
-cache prof (`teacherCache`).
+cache prof (`teacherCache`). Après une lecture réussie des classes, la classe retenue est confrontée
+à la liste (`reconcileSelectedClass`) : une classe supprimée ou désactivée est remplacée par la
+première, ou vidée s'il n'y en a aucune ([coquille-et-caches.md](coquille-et-caches.md)).
 
 ### Admin (`AdminDashboard.svelte`)
 
