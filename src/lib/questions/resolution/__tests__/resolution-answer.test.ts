@@ -24,6 +24,11 @@ describe('lignes de la case', () => {
 		expect(parseResolutionAnswer(value)).toEqual(['3x=12', 'x=4']);
 	});
 
+	it('une barre oblique seule en fin de ligne ne casse pas la ligne suivante', () => {
+		const value = formatResolutionAnswer(['3x=12\\ ', 'x=4']);
+		expect(parseResolutionAnswer(value)).toEqual(['3x=12', 'x=4']);
+	});
+
 	it('une ligne qui commence par une commande LaTeX reste entière', () => {
 		const value = formatResolutionAnswer(['4\\times3=5x', '\\frac{12}{5}=x']);
 		expect(parseResolutionAnswer(value)).toEqual(['4\\times3=5x', '\\frac{12}{5}=x']);
@@ -83,17 +88,45 @@ describe('limite', () => {
 		expect(verdict.feedback).toMatch(/au moins 2 lignes/);
 	});
 
+	it('minLines : une conclusion recopiée ne compte pas comme une étape', () => {
+		const verdict = judge(['x=4', 'x=4'], { ...START, minLines: 2 });
+		expect(verdict.status).toBe('incorrect');
+		expect(verdict.feedback).toMatch(/au moins 2 lignes/);
+	});
+
+	it('minLines : l’équation de l’énoncé recopiée ne compte pas non plus', () => {
+		expect(judge(['3x - 5 = 7', 'x=4'], { ...START, minLines: 2 }).status).toBe('incorrect');
+		expect(judge(['3x=12', 'x=4'], { ...START, minLines: 2 }).status).toBe('correct');
+	});
+
 	it('trop de lignes : pas lue', () => {
 		const lines = Array.from({ length: RESOLUTION_MAX_LINES + 1 }, () => '3x=12');
 		expect(judge(lines).status).toBe('incorrect');
 	});
 });
 
+describe('garde de coût du solveur', () => {
+	it.each([
+		['(x+1)^{999}=(x+2)^{999}', 'exposant démesuré'],
+		['((((x+1)^{10})^{10})^{10})^{10}=1', 'puissances emboîtées'],
+		['x^{x}=1', 'exposant non numérique']
+	])('%s (%s) : illisible, sans faire tourner le solveur', (line) => {
+		const start = performance.now();
+		const verdict = judge(Array.from({ length: RESOLUTION_MAX_LINES }, () => line));
+		expect(verdict.lines).toEqual(['unreadable']);
+		expect(performance.now() - start).toBeLessThan(1000);
+	});
+
+	it('second degré écrit (x² − 4x + 4 = 0) : lu', () => {
+		expect(judge(['(x-2)^2=0', 'x=2'], { equation: 'x^2-4x+4=0' }).status).toBe('correct');
+	});
+});
+
 describe('erreur', () => {
-	it('3x = 2 → x = 2/3 : la ligne 1 est fausse, la 2 juste par rapport à elle', () => {
+	it('3x = 2 → x = 2/3 : la ligne 1 est fausse, la suite reste sans marque', () => {
 		const verdict = judge(['3x=2', 'x=\\frac{2}{3}']);
 		expect(verdict.status).toBe('incorrect');
-		expect(verdict.lines).toEqual(['not-equivalent', 'ok']);
+		expect(verdict.lines).toEqual(['not-equivalent']);
 		expect(verdict.feedback).toBe("La ligne 1 n'a pas les mêmes solutions que la précédente.");
 	});
 
@@ -101,7 +134,7 @@ describe('erreur', () => {
 		// 3x − 5 = 7 → 3x = 2 (faux) → x = 4 (faux par rapport à 3x = 2)
 		const verdict = judge(['3x=2', 'x=4']);
 		expect(verdict.status).toBe('incorrect');
-		expect(verdict.lines).toEqual(['not-equivalent', 'not-equivalent']);
+		expect(verdict.lines).toEqual(['not-equivalent']);
 	});
 
 	it('multiplier par 0 (0 = 0) ne garde pas les solutions', () => {
@@ -113,6 +146,12 @@ describe('erreur', () => {
 		expect(verdict.status).toBe('incorrect');
 		expect(verdict.lines[0]).toBe('unreadable');
 		expect(verdict.feedback).toMatch(/Je ne peux pas lire la ligne 1/);
+	});
+
+	it('plusieurs égalités sur une ligne (x = 12/3 = 4) : une seule par ligne', () => {
+		const verdict = judge(['3x=12', 'x=\\frac{12}{3}=4']);
+		expect(verdict.lines).toEqual(['ok', 'unreadable']);
+		expect(verdict.feedback).toBe('Ligne 2 : écris une seule égalité par ligne.');
 	});
 
 	it('ligne avec une autre lettre : illisible', () => {

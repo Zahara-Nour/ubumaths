@@ -1351,9 +1351,8 @@ function calculusBlankResult(
 
 /**
  * Case « résolution » : verdict de `questions/resolution/` dans la forme de
- * `validateSingleBlank`. Lignes justes et conclusion « x = valeur » : l'écriture de
- * la valeur est ensuite jugée comme une case ordinaire comparée à ELLE-MÊME
- * (`x = \frac{12}{3}` : fraction à simplifier, ½), comme `calculusBlankResult`.
+ * `validateSingleBlank`. Lignes justes et conclusion « x = valeur » : la valeur est
+ * ensuite jugée comme une case ordinaire (`x = \frac{12}{3}` : fraction à simplifier, ½).
  */
 function resolutionBlankResult(
 	answer: string,
@@ -1367,20 +1366,25 @@ function resolutionBlankResult(
 			? { isCorrect: false, status: 'incorrect', feedback }
 			: { isCorrect: false, status: 'incorrect' };
 	}
-	const form = validateSingleBlank(
+	// La valeur finale est une case ordinaire : comparée au membre droit de l'attendue
+	// (`x={{s}}` → `{{s}}`), avec les réglages de la case (`acceptDecimal`, règles, forme
+	// exigée…). `x = 7+5` (calcul non fait), `x = 0,5` sans `acceptDecimal` : `bad_form`
+	const {
+		answerKind: _kind,
+		equation: _equation,
+		variable: _variable,
+		minLines: _minLines,
+		...rest
+	} = blank;
+	const sign = blank.expectedAnswer.indexOf('=');
+	const expectedValue =
+		sign < 0 ? blank.expectedAnswer : blank.expectedAnswer.slice(sign + 1).trim();
+	return validateSingleBlank(
 		finalValue,
-		{
-			expectedAnswer: finalValue,
-			type: 'math',
-			...(blank.acceptDecimal && { acceptDecimal: true })
-		},
+		{ ...rest, expectedAnswer: expectedValue },
 		finalValue,
 		instance
 	);
-	// Autre verdict (valeur lue autrement qu'en expression) : celui des lignes fait foi
-	return form.status === 'bad_form' || form.status === 'unoptimal_form'
-		? form
-		: { isCorrect: true, status: 'correct' };
 }
 
 /**

@@ -43,7 +43,10 @@ export {
 
 // Types
 
-/** Verdict d'une ligne : juste, pas les mêmes solutions que la précédente, illisible */
+/**
+ * Verdict d'une ligne : juste, pas les mêmes solutions que la précédente, illisible.
+ * Les lignes après la première fausse ou illisible n'ont pas de marque.
+ */
 export type ResolutionLineMark = 'ok' | 'not-equivalent' | 'unreadable';
 
 export interface ResolutionVerdict {
@@ -75,17 +78,77 @@ interface SolutionSet {
 
 const DEFAULT_VARIABLE = 'x';
 
+/**
+ * Gardes de coût du solveur (revue de l'outil 55) : `(x+1)^{999}=(x+2)^{999}` passe la
+ * garde de complexité mais coûte des secondes, `((((x+1)^{10})^{10})^{10})^{10}=1`
+ * épuise la mémoire. Une ligne est lue si chaque exposant est un entier écrit d'au plus
+ * 10 et si son degré écrit (produit : somme, puissance : multiple) ne dépasse pas 20.
+ * Au collège, une résolution reste au premier ou au second degré.
+ */
+const MAX_WRITTEN_EXPONENT = 10;
+const MAX_WRITTEN_DEGREE = 20;
+
 // Functions
+
+/** Nœuds enfants d'un nœud quelconque (champs qui sont des nœuds ou des listes de nœuds) */
+function childNodes(node: MathNode): MathNode[] {
+	const isNode = (value: unknown): value is MathNode =>
+		typeof value === 'object' &&
+		value !== null &&
+		typeof (value as { type?: unknown }).type === 'string';
+	return Object.values(node).flatMap((value: unknown) =>
+		Array.isArray(value) ? value.filter(isNode) : isNode(value) ? [value] : []
+	);
+}
+
+/**
+ * Majorant du degré écrit d'une expression ; `Infinity` pour un exposant qui n'est pas un
+ * entier écrit d'au plus MAX_WRITTEN_EXPONENT (`x^{999}`, `x^{x}`)
+ */
+function writtenDegree(node: MathNode): number {
+	switch (node.type) {
+		case 'number':
+		case 'constant':
+			return 0;
+		case 'variable':
+			return 1;
+		case 'superscript': {
+			let exponent = node.superscript;
+			while (exponent.type === 'delimiter') exponent = exponent.content;
+			const value = exponent.type === 'number' ? Number(exponent.value) : Number.NaN;
+			if (!(Math.abs(value) <= MAX_WRITTEN_EXPONENT)) return Infinity;
+			return writtenDegree(node.base) * Math.max(1, Math.abs(value));
+		}
+		case 'addition':
+		case 'subtraction':
+		case 'relation':
+			return Math.max(writtenDegree(node.left), writtenDegree(node.right));
+		default:
+			// Produit, quotient, fonction… : la somme des degrés de ses parties
+			return childNodes(node).reduce((sum, child) => sum + writtenDegree(child), 0);
+	}
+}
 
 /** Lecture LaTeX tolérante, comme les autres cases (virgule décimale, espaces) */
 function parseLine(text: string): MathNode | null {
 	if (isAnswerTooComplex(text)) return null;
 	try {
 		const { ast } = parseLatexSafe(stripLatexSpacing(text.trim(), 'decimal'));
-		return ast ?? null;
+		return ast && writtenDegree(ast) <= MAX_WRITTEN_DEGREE ? ast : null;
 	} catch {
 		return null;
 	}
+}
+
+/** Plusieurs égalités sur une ligne (`x=\frac{12}{3}=4`) */
+function hasSeveralEquals(text: string): boolean {
+	return text.split('=').length > 2;
+}
+
+/** Ligne écrite comme l'équation de l'énoncé (espaces ignorés) */
+function sameWriting(a: string, b: string): boolean {
+	const compact = (text: string) => stripLatexSpacing(text, 'decimal').replace(/\s+/g, '');
+	return compact(a) === compact(b);
 }
 
 /** Équation « = » dont la seule lettre est l'inconnue, sinon null */
@@ -158,34 +221,47 @@ export function judgeResolutionAnswer(
 		};
 	}
 
-	// Chaque ligne est comparée à la précédente ; une ligne illisible ne sert pas de
-	// référence : la suivante est comparée à la dernière ligne lue
+	// Chaque ligne est comparée à la précédente. Le jugement s'arrête à la première ligne
+	// fausse ou illisible (la réponse est déjà fausse ; le solveur ne tourne pas pour rien) :
+	// les lignes suivantes restent sans marque
 	const marks: ResolutionLineMark[] = [];
 	for (const line of lines) {
 		const equation = readEquation(line, variable);
 		const solutions = equation ? solutionSet(equation, variable) : null;
 		if (!solutions) {
 			marks.push('unreadable');
-			continue;
+			const k = marks.length;
+			return {
+				status: 'incorrect',
+				feedback: hasSeveralEquals(line)
+					? `Ligne ${k} : écris une seule égalité par ligne.`
+					: `Je ne peux pas lire la ligne ${k} : écris une équation en ${variable}.`,
+				lines: marks
+			};
 		}
-		marks.push(sameSolutions(previous, solutions) ? 'ok' : 'not-equivalent');
+		if (!sameSolutions(previous, solutions)) {
+			marks.push('not-equivalent');
+			return {
+				status: 'incorrect',
+				feedback: `La ligne ${marks.length} n'a pas les mêmes solutions que la précédente.`,
+				lines: marks
+			};
+		}
+		marks.push('ok');
 		previous = solutions;
 	}
 
-	const firstWrong = marks.findIndex((mark) => mark !== 'ok');
-	if (firstWrong >= 0) {
-		return {
-			status: 'incorrect',
-			feedback:
-				marks[firstWrong] === 'unreadable'
-					? `Je ne peux pas lire la ligne ${firstWrong + 1} : écris une équation en ${variable}.`
-					: `La ligne ${firstWrong + 1} n'a pas les mêmes solutions que la précédente.`,
-			lines: marks
-		};
-	}
-
+	// Lignes exigées : la conclusion, plus les étapes avant elle qui ne sont ni une autre
+	// conclusion « x = … » (recopiée) ni l'équation de l'énoncé recopiée
 	const minLines = Math.max(1, Math.floor(fields.minLines ?? 1));
-	if (lines.length < minLines) {
+	const steps = lines
+		.slice(0, -1)
+		.filter(
+			(line) =>
+				conclusionValue(line, variable) === null &&
+				!(fields.equation && sameWriting(line, fields.equation))
+		).length;
+	if (steps + 1 < minLines) {
 		return {
 			status: 'incorrect',
 			feedback: `Écris les étapes de ta résolution : au moins ${minLines} lignes.`,

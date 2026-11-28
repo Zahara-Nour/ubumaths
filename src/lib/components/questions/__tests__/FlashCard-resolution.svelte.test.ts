@@ -3,8 +3,8 @@
  * ===============================================================
  *
  * L'élève tape 3x = 2 (faux), Entrée, x = 2/3, puis « Valider » : la ligne 1 est
- * marquée fausse, la ligne 2 juste (par rapport à la ligne 1), et le message de la
- * première ligne fausse s'affiche. Aucune marque avant « Valider ».
+ * marquée fausse, la ligne 2 reste sans marque (le jugement s'arrête à la première
+ * ligne fausse), et son message s'affiche. Aucune marque avant « Valider ».
  */
 import { describe, it, expect, beforeAll, afterEach } from 'vitest';
 import { render } from 'vitest-browser-svelte';
@@ -54,7 +54,7 @@ async function focus(field: MathfieldElement) {
 }
 
 describe('FlashCard — case résolution', () => {
-	it('taper deux lignes, valider : ✗ puis ✓, message de la ligne 1', async () => {
+	it('taper deux lignes, valider : ✗ sur la ligne 1, message de la ligne 1', async () => {
 		const main = document.body.appendChild(document.createElement('main'));
 		mains.push(main);
 		const { container } = await render(FlashCard, {
@@ -83,7 +83,7 @@ describe('FlashCard — case résolution', () => {
 					(line) => line.dataset.etat
 				)
 			)
-			.toEqual(['not-equivalent', 'ok']);
+			.toEqual(['not-equivalent', undefined]);
 		expect(front(container).textContent).toContain(
 			"La ligne 1 n'a pas les mêmes solutions que la précédente."
 		);

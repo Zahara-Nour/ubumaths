@@ -10,9 +10,9 @@ status: outil 55 codé, PR à ouvrir
 
 _Mis à jour le 2026-11-28, avant la PR de l'outil 55._
 
-- **État** : outil 55 codé sur la branche (case `answerKind: 'resolution'`), tests verts, rendu
-  vu (`pnpm voir /dev/carte-question?question=resolution`) · **Prochaine action** : revue
-  `code-reviewer` (opus), PR, `pnpm pr:merger` · **En attente de David** : rien · **Pièges en
+- **État** : outil 55 codé, revue faite et corrigée, tests verts, rendu vu
+  (`pnpm voir /dev/carte-question?question=resolution`) · **Prochaine action** : PR,
+  `pnpm pr:merger`, puis ligne 55 dans « Livré » d'`outils-manquants.md` et clôture du lot · **En attente de David** : rien · **Pièges en
   cours** : lot « mathAST » (un seul à la fois) ; `read-only="false"` laisse MathLive en lecture
   seule ; `onbeforeinput` de Svelte est délégué (écouteur natif nécessaire) · **Worktree /
   branche** : `../ubumaths-wt-outil-equation-lignes`, `feat/outil-equation-lignes`.
@@ -95,3 +95,16 @@ intervalles, equation, vecteur, matrice, primitive, solution-ed ; rien à plusie
 - Écran : `ResolutionInput.svelte`, monté par `FillBlanksInput` pour une case seule dans
   `$$?$$`. Exemple dans `/dev/carte-question?question=resolution`.
 - Corrigé : l'attendue `x = 4` ; les étapes, par le mode B existant (`linear-equation`).
+
+### 2026-11-28 — revue `code-reviewer` (opus), corrections
+
+- Bloquant, coût : `(x+1)^{999}=…` coûtait des secondes au solveur, `((x+1)^{10})^{10}…`
+  épuisait la mémoire → garde avant le solveur (exposant entier écrit ≤ 10, degré écrit ≤ 20),
+  et arrêt à la première ligne fausse (les suivantes restent sans marque).
+- Bloquant, valeur finale : comparée à elle-même, `x = 8-4` ou `x = 0,5` (sans `acceptDecimal`)
+  passaient → jugée contre le membre droit de l'attendue avec les réglages de la case.
+- `minLines` contourné par une conclusion ou l'énoncé recopiés → ne comptent plus.
+- « Première case vide » ne trouvait pas la case : `data-resolution-focus` posé.
+- `x = 12/3 = 4` : message « écris une seule égalité par ligne ».
+- Séparateur : barre oblique seule en fin de ligne retirée.
+- Laissé : `\left(x\right) = 4` refusé comme conclusion (rare).

@@ -46,7 +46,7 @@ function generated(): QuestionInstance {
 					blanks: [{ expectedAnswer: 'x=4', answerKind: 'resolution', equation: '3x-5=7' }]
 				}
 			],
-			grades: ['4e'],
+			grades: ['4'],
 			level: 1
 		} as unknown as QuestionTemplate,
 		42
@@ -171,7 +171,7 @@ describe('case résolution', () => {
 		expect(root.querySelectorAll('.resolution-marque')).toHaveLength(0);
 	});
 
-	it('validée : ✓ / ✗ par ligne (3x = 2 fausse, x = 4 fausse par rapport à elle)', async () => {
+	it('validée : ✓ puis ✗ à la première ligne fausse, la suite sans marque', async () => {
 		const { root } = await screenOf({
 			values: ['3x=12\\\\3x=2\\\\x=\\frac{2}{3}'],
 			validationResults: [false],
@@ -180,7 +180,54 @@ describe('case résolution', () => {
 		const states = [...root.querySelectorAll<HTMLElement>('.resolution-ligne')].map(
 			(line) => line.dataset.etat
 		);
-		expect(states).toEqual(['ok', 'not-equivalent', 'ok']);
+		expect(states).toEqual(['ok', 'not-equivalent', undefined]);
 		expect(root.querySelector('.resolution-ajouter')).toBeNull();
+	});
+});
+
+describe('case résolution parmi d’autres cases', () => {
+	it('Entrée dans une case remplie : le curseur va dans la résolution vide', async () => {
+		let submitted = 0;
+		const result = generateInstance(
+			{
+				id: 'test-resolution-deux-cases',
+				title: 'Équation',
+				status: 'draft',
+				type: 'fill_in_blanks',
+				variations: [
+					{
+						statement: templateMarkdown('Combien vaut $2+2$ ? $?$\n\nRésous : $3x-5=7$\n\n$$?$$'),
+						blanks: [
+							{ expectedAnswer: '4' },
+							{ expectedAnswer: 'x=4', answerKind: 'resolution', equation: '3x-5=7' }
+						]
+					}
+				],
+				grades: ['4'],
+				level: 1
+			} as unknown as QuestionTemplate,
+			42
+		);
+		if (!result.success) throw new Error(result.errors.join(' ; '));
+		const screen = await render(FillBlanksInput, {
+			target: mainElement(),
+			props: {
+				statement: result.instance.statement,
+				blanks: result.instance.blanks ?? [],
+				values: [],
+				validationResults: [],
+				onSubmit: () => submitted++
+			}
+		});
+		const root = screen.container as HTMLElement;
+		const first = [...root.querySelectorAll<MathfieldElement>('math-field')].find(
+			(field) => !field.closest('.resolution')
+		)!;
+		await expect.poll(() => first.getPrompts().length).toBeGreaterThan(0);
+		await focus(first);
+		await userEvent.keyboard('4');
+		await userEvent.keyboard('{Enter}');
+		await expect.poll(() => document.activeElement === lineFields(root)[0]).toBe(true);
+		expect(submitted).toBe(0);
 	});
 });

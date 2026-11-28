@@ -54,6 +54,13 @@
 	);
 
 	// Une fois validée : une marque par ligne ÉCRITE, rapportée aux lignes affichées
+	// Ligne où « aller à la première case vide » met le curseur : la première vide, sinon la
+	// dernière (sélecteur de `focusSlot`, `FillBlanksInput`)
+	let focusLine = $derived.by(() => {
+		const empty = lines.findIndex((line) => !line.trim());
+		return empty >= 0 ? empty : lines.length - 1;
+	});
+
 	let marks = $derived.by((): (ResolutionLineMark | undefined)[] => {
 		if (isCorrect === null || !fields.equation) return [];
 		const written = judgeResolutionAnswer(value, fields).lines;
@@ -137,6 +144,7 @@
 						oninput={(event: Event) =>
 							update(index, (event.currentTarget as MathfieldElement).value)}
 						{...disabled ? { 'read-only': true } : {}}
+						{...index === focusLine ? { 'data-resolution-focus': '' } : {}}
 						aria-label={`Case ${caseNumber}, ligne ${index + 1}`}
 					/>
 				</div>

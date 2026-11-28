@@ -22,7 +22,7 @@ function instanceWith(blank: InstanceBlank): QuestionInstance {
 		templateId: 'equation',
 		statement: 'Résous : $3x-5=7$\n\n$$\\placeholder[0]{}$$' as ResolvedMarkdown,
 		blanks: [blank],
-		grades: ['4e'],
+		grades: ['4'],
 		level: 1,
 		generatedAt: new Date().toISOString()
 	};
@@ -71,7 +71,7 @@ function templateWith(blank: TemplateBlank): QuestionTemplate {
 				blanks: [blank]
 			}
 		],
-		grades: ['4e'],
+		grades: ['4'],
 		level: 1
 	};
 }
@@ -100,10 +100,18 @@ describe('validateAnswer : case résolution (3x − 5 = 7)', () => {
 		expect(statusOf(['3x=12', 'x=4'], blank)).toBe('correct');
 	});
 
-	it('acceptDecimal : x = 2,5 pour 5/2', () => {
+	it('acceptDecimal : x = 2,5 pour 5/2 juste avec le réglage, mal écrit sans lui', () => {
 		const blank = resolutionBlank({ equation: '2x=5', expectedAnswer: 'x=\\frac{5}{2}' });
 		expect(statusOf(['x=2{,}5'], { ...blank, acceptDecimal: true })).toBe('correct');
+		expect(statusOf(['x=2{,}5'], blank)).toBe('bad_form');
 	});
+
+	it.each([['x=8-4'], ['x=12\\div 3'], ['x=2+2']])(
+		'valeur finale non calculée (%s) : jugée comme une case ordinaire, bad_form',
+		(last) => {
+			expect(statusOf(['3x=12', last])).toBe('bad_form');
+		}
+	);
 
 	it('longue résolution : la garde de complexité mesure chaque ligne, pas la réponse entière', () => {
 		const step = '\\frac{3x}{3}-\\frac{5}{3}+\\frac{5}{3}=\\frac{7}{3}+\\frac{5}{3}';

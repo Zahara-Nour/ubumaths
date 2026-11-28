@@ -20,10 +20,19 @@ export const RESOLUTION_MAX_LINES = 20;
 
 /** Valeur de la case : les lignes non vides, séparées par `\\` */
 export function formatResolutionAnswer(lines: readonly string[]): string {
-	return lines
-		.map((line) => line.trim())
-		.filter((line) => line.length > 0)
-		.join(LINE_SEPARATOR);
+	return (
+		lines
+			// Une barre oblique laissée seule en fin de ligne (`x=4\ ` rogné) collerait au
+			// séparateur et casserait la ligne suivante
+			.map((line) =>
+				line
+					.trim()
+					.replace(/(?<!\\)\\$/, '')
+					.trim()
+			)
+			.filter((line) => line.length > 0)
+			.join(LINE_SEPARATOR)
+	);
 }
 
 /** Lignes écrites, lues dans la valeur de la case (lignes vides retirées) */
