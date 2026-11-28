@@ -1,21 +1,23 @@
 ---
 title: Lot d'outils formes-messages (n° 75 puis 76)
 date: 2026-11-28
-status: n° 75 codé, en revue avant la PR
+status: n° 75 livré (#3329) ; n° 76 à faire
 ---
 
 # Lot `formes-messages` : n° 75 puis n° 76
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-28, avant la première PR._
+_Mis à jour le 2026-11-28, après #3329._
 
-- **État** : n° 75 codé, tests verts, rendu vu à l'écran (`e2e/verifs/message-de-forme.spec.ts`).
-- **Prochaine action** : revue (`code-reviewer` opus, correction des réponses) → PR → merge ; puis
-  phase 0 du n° 76.
+- **État** : n° 75 livré (#3329, mergée) ; n° 76 pas commencé.
+- **Prochaine action** : n° 76 (forme « produit de facteurs premiers ») : vérifier qu'il manque
+  encore, puis phase 0 à David (`pnpm prevenir question`), rien de codé avant sa réponse.
 - **En attente de David** : rien.
-- **Pièges en cours** : aucun.
-- **Worktree / branche** : `../ubumaths-wt-outil-formes-messages` · `feat/outil-formes-messages`.
+- **Pièges en cours** : le n° 76 nomme le facteur fautif par le message du n° 75
+  (`requiredForm.message`, `getRequiredFormFeedback`).
+- **Worktree / branche** : à recréer (`../ubumaths-wt-outil-formes-messages`,
+  `feat/outil-formes-messages-76` depuis `origin/main`).
 
 ## Origine
 
@@ -62,7 +64,7 @@ Questions à David :
 recommandations (motif seulement ; pas de message pour « acceptable » ; erreur prévue de même
 valeur comparée sur l'écriture ; `{ pattern, acceptable?, message? }`).
 
-## N° 75 : fait (branche, 2026-11-28)
+## N° 75 : livré (#3329, 2026-11-28)
 
 - `required-form-validator.ts` `getRequiredFormFeedback` : `message` du motif, sinon la phrase
   générale. Schémas souple et strict : `message` non vide, 500 caractères au plus.
