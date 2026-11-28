@@ -6,7 +6,7 @@ Mettre en œuvre les idées retenues dans [idees-format-exercices.md](idees-form
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-28, relecture de la revue de Seconde validée par David._
+_Mis à jour le 2026-11-28, après #3322._
 
 - **État** : revue du lot « nombres et calculs » de Seconde **finie** : #3319 en prod (52 modèles,
   « inchangé » vérifié), deux séries de relecture publiées et validées par David (« je valide la
@@ -16,8 +16,7 @@ _Mis à jour le 2026-11-28, relecture de la revue de Seconde validée par David.
   (`outils-lots.md`), chacun ajoutant sa variation. Reste du chantier : clôture / versement.
 - **En attente de David** : dire si le chantier `idees-format` se clôt (versement du journal).
 - **Pièges** : rejeu `checkTemplate` ne sait pas rejouer une erreur prévue « impossible ».
-- **Worktree / branche** : `ubumaths-wt-idees-format-series` (`feat/idees-format-series-2de`),
-  à retirer après sa PR.
+- **Worktree / branche** : aucun (#3322 mergée, worktree retiré).
 
 ## Idée 1 — phase 0 validée (David, 2026-11-21)
 
