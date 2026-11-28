@@ -87,7 +87,7 @@ import {
 	withImplicitEndpoints,
 	type VariationToFill
 } from '#lib/ubumark/parser/variation-table-parser.ts';
-import type { VariationTableNode } from '#lib/ubumark/types/variation-table.ts';
+import type { VariationTableNode, VariationValue } from '#lib/ubumark/types/variation-table.ts';
 import { unnestedLine } from '#lib/ubumark/parser/nested-line.ts';
 import {
 	isMaskedVectorValue,
@@ -540,10 +540,12 @@ function maskVariation(block: VariationToFill): MaskLine {
 			inVariationRow &&
 			isPoint &&
 			VARIATION_LINE_MARKERS.includes(parts[0]) &&
-			parts.slice(1).some((part) => part.startsWith('?'));
+			(parts.slice(1).some((part) => part.startsWith('?')) ||
+				(arrows?.centered.has(plainKey) ?? false));
 		if (limitsLine) {
-			// Limites cachées autour d'une marque : `?` à leur place, hauteurs écrites (la
-			// forme courte `||, ?-inf, +inf` les déduirait de la limite)
+			// Limites autour d'une marque (cachées, ou touchées par une flèche cachée) : `?`
+			// à la place d'une limite cachée, hauteurs écrites (la forme courte
+			// `||, ?-inf, +inf` les déduirait de la limite), au milieu du côté d'une flèche cachée
 			shownValue = maskedLimits(block, ranks[rank], plainKey, parts) ?? MASKED_VALUE;
 		} else if (inVariationRow && isPoint && parts.length === 2) {
 			// Valeur d'une ligne variation: (cachée ou non) : hauteur gardée, sauf à côté
@@ -573,8 +575,10 @@ function maskedLimits(
 	key: string,
 	parts: readonly string[]
 ): string | null {
-	const row = block.node?.rows[rowIndex];
-	const value = row?.type === 'variation' ? row.values.get(key) : undefined;
+	const node = block.node;
+	if (node?.rows[rowIndex]?.type !== 'variation') return null;
+	// Telle que dessinée : la limite qui touche une flèche cachée est au milieu
+	const value = variationRowForDisplay(node, rowIndex).values.get(key);
 	if (!value?.marker) return null;
 	const hiddenSides = new Set(
 		(block.node?.cases ?? [])
@@ -588,7 +592,8 @@ function maskedLimits(
 		return `${parts[0]}, ${shown(left, 'left')}, ${shown(right, 'right')}`;
 	}
 	if (value.limitSide) {
-		return `${parts[0]}, ${value.limitSide}, ${MASKED_VALUE}, ${value.position}`;
+		const expression = hiddenSides.has(value.limitSide) ? MASKED_VALUE : value.expression;
+		return `${parts[0]}, ${value.limitSide}, ${expression}, ${value.position}`;
 	}
 	return null;
 }
@@ -610,11 +615,23 @@ function variationMasked(node: ReturnType<typeof findVariationsToFill>[number]['
 		const row = cell.row === 'domain' ? undefined : node.rows[cell.row];
 		if (cell.kind !== 'fleche' || row?.type !== 'variation') return true;
 		const filled = withImplicitEndpoints(row, node.domain);
-		return cell.key.split(',').every((point) => {
-			const value = filled.values.get(point);
-			return value === undefined || value.position === 'center';
-		});
+		const [from, to] = cell.key.split(',');
+		// La flèche repart du côté droit de son départ, arrive du côté gauche de son arrivée
+		return (
+			heightShown(filled.values.get(from), 'right') && heightShown(filled.values.get(to), 'left')
+		);
 	});
+}
+
+/**
+ * La valeur ne dit pas la hauteur d'une flèche qui la touche du côté `side` : absente ou
+ * au milieu ; pour une double barre, la limite de ce côté (s'il y en a une)
+ */
+function heightShown(value: VariationValue | undefined, side: 'left' | 'right'): boolean {
+	if (value === undefined) return true;
+	if (!value.marker) return value.position === 'center';
+	if (value.limits) return value.limits[side === 'left' ? 0 : 1].position === 'center';
+	return value.limitSide !== side || value.position === 'center';
 }
 
 /** `A=? ; B=?`, `?` : chaque cible de la ligne est masquée */

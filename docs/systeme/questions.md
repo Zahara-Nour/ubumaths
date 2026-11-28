@@ -790,7 +790,8 @@ pointillés, un toucher ouvre dessous + / −, 0 / ‖ / rien, ou ↗ / ↘ ; au
 `data-construire-case` (Entrée → première case vide). Flash : cellules vides ; bonne réponse : remplies.
 Énoncé masqué d'évaluation : même écran. Tableau de **variations** (chantier `variations-a-completer`) :
 une flèche cachée n'est pas dessinée et les deux valeurs qui l'encadrent sont au milieu
-(`variationRowForDisplay`) ; une valeur cachée est une case à sa hauteur.
+(`variationRowForDisplay`) ; à côté d'une double barre, c'est la limite du côté de la flèche qui
+passe au milieu, l'autre côté garde sa hauteur (outil 59) ; une valeur cachée est une case à sa hauteur.
 
 Corrigé (résultat attendu, `expected-result.ts`) : le tableau sort de l'énoncé rempli et de la consigne
 (`withoutSignTableCases`, aussi dans `instructionOf`) ; une ligne `sign-table` par tableau, à sa place :
@@ -1760,7 +1761,8 @@ Tests : `FlashCard-coup-de-pouce.svelte.test.ts`, les tests des trois formes.
    ` ```figure-a-completer ` ; tableau à compléter : valeur de x cachée → `??1`, `??2`… dans
    `domain:` et dans les clés des lignes, signe, marque ou flèche cachés → `?` seul, valeur cachée
    d'une ligne `variation:` → `?, position` ; valeurs qui encadrent une flèche cachée passées en
-   `center`, bornes implicites de leur ligne écrites (`-inf: , top`), `maskVariation`) ; la case
+   `center`, comme la limite d'une double barre du côté d'une flèche cachée (`||, ?, center, +inf, top`),
+   bornes implicites de leur ligne écrites (`-inf: , top`), `maskVariation`) ; la case
    garde le genre de son bloc (`cellule` pour une case de tableau) (`construire`, ou `figure`
    pour une figure à compléter, jamais `construction`), pour le même écran qu'hors évaluation
    (chantier [fuite-enonce](../archive/wip/fuite-enonce-progress.md)). Limite : un point invisible
