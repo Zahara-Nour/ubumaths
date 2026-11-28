@@ -2,15 +2,21 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-28, après les réponses à Q1 et Q2._
+_Mis à jour le 2026-11-28, après l'écriture du lot (commit 4de96ab4a1, pas encore de PR)._
 
-- **État** : phase 0 validée (F1 à F8 oui). Q1 et Q2 tranchées par David (« je te suis », sur mes
-  recommandations) : outil n° 72 noté dans `outils-manquants.md` ; F6 et F8 rangés sur **6-143**.
-  4 modèles publiés réservés (a9c37578, a06458ad, 4048d9c5, 39bafe0e). Rien d'écrit en code.
-- **Prochaine action** : écrire le gros lot dans le worktree (4 modèles neufs F2, F3, F6, F8 ;
-  10 variations aux 4 publiés), puis simulation, `question:specs`, essai en base locale.
-- **En attente de David** : rien.
-- **Pièges en cours** : aucun.
+- **État** : lot écrit et commité sur la branche : 4 modèles neufs (F2, F3, F6, F8,
+  `scripts/questions/idees-6e-algebre-neufs/`) et 10 variations ajoutées aux 4 publiés
+  (`scripts/questions/idees-6e-algebre-publies/`), migration de contenu générée
+  (`20261128070225_…_publies_contenu.sql`). Specs 168/168 vertes ; rendu vu sur iPhone (WebKit) par
+  `/dev/modeles` en base locale (copies « [essai local] » des 8 modèles, laissées en base locale).
+- **Prochaine action** : David lance `create-questions --dir scripts/questions/idees-6e-algebre-neufs
+--publier` (prod, brouillons) ; puis commiter les ids, `migration-rangement.ts`, PR,
+  `security-auditor`, `db:migrate` selon les 4 conditions, relecture dans `/dev/modeles`.
+- **En attente de David** : la commande ci-dessus ; F4 « 0,5 à 3 kg » lu comme la masse d'un objet
+  (pesées jusqu'à 15 kg) : à confirmer ou resserrer.
+- **Pièges en cours** : nom à gauche d'un schéma en barres rogné dans une case choix (« ommes » pour
+  « Gommes », déjà vrai pour « Tom » en prod) : largeur estimée à 9 px par caractère
+  (`schema-barres-scene.ts` l. 58), hors de ce lot.
 - **Worktree / branche** : `../ubumaths-wt-idees-6e-algebre`, `feat/idees-6e-algebre`.
 
 ## Rubrique
@@ -96,3 +102,21 @@ cocher pour que le lot s'écrive sans elle.
   1 000 ; v2 suite montrée à partir d'un terme lointain, 1 000 à 10 000 ; v3 (saisie) le plus grand
   terme ≤ N. Erreurs prévues (v3) : N lui-même, le terme d'après, un multiple du pas oubliant le
   départ. Coup de pouce : « Combien faut-il ajouter au premier terme pour arriver à ce nombre ? »
+
+## Lot écrit (2026-11-28)
+
+Deux agents (neufs, publiés), relus dans le code ; specs relancées par la session : 168/168.
+Écarts aux fiches, tous écrits en tête des deux scripts :
+
+- F2 v4 : cinquième choix N ÷ (k + 1), sans lequel le piège « entre lui et ses k amis » n'aurait pas
+  sa bonne réponse parmi les choix.
+- F3 v2 : barres du triathlon pas à l'échelle 1 : 5 : 15 (étiquette de la natation illisible
+  sinon) ; ordre des longueurs gardé.
+- F6 v1 : coup de pouce propre et 2 erreurs prévues seulement ; v2 : blocs de 4 à 6 formes (la case
+  choix montre exactement les formes du bloc) ; v3 : 60 multiple de toutes les longueurs, jamais de
+  bloc entamé.
+- F8 : pas de 3 à 8 en v1 et v2 (corrigé par la session : avec un pas de 2, les trois intrus étaient
+  tous décalés de 1, une question de parité) ; v3 : N de 100 à 1 000.
+- F1 : trois schémas par variation ; F4 : masses d'objet 0,5 à 3 kg, pesées jusqu'à 15 kg ; F5 v4 :
+  erreurs transposées aux pièces ; F7 v6 : 2 erreurs prévues ; F7 : motif de cubes = tour de départ
+  de b cubes puis une tour de a cubes par étape.
