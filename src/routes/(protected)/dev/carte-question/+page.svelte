@@ -26,6 +26,7 @@
 	import { RefreshCw, Copy, Check } from '@lucide/svelte';
 	import { browser } from '$app/env';
 	import { page } from '$app/state';
+	import { expectedParametricLatex } from '#lib/questions/parametric/parametric-line-answer.ts';
 
 	// ============================================================================
 	// STATE MANAGEMENT
@@ -279,6 +280,23 @@
 			],
 			grades: ['4', '3'],
 			level: 1
+		},
+		// Case « droite paramétrique » (outil 64) : toute représentation de la même droite
+		droite_parametrique: {
+			templateId: 'demo-droite-parametrique',
+			statement: resolvedMarkdown(
+				'Écris une représentation paramétrique de la droite passant par $A(1\\,;\\,2\\,;\\,-1)$ et de vecteur directeur $\\vec{u}\\begin{pmatrix}2\\\\0\\\\3\\end{pmatrix}$.\n\n$$\\placeholder[0]{}$$'
+			),
+			blanks: [
+				{
+					expectedAnswer: 'x=1+2t\\\\y=2\\\\z=-1+3t',
+					expectedAnswerLatex: expectedParametricLatex('x=1+2t\\\\y=2\\\\z=-1+3t'),
+					type: 'math',
+					answerKind: 'droite-parametrique'
+				}
+			],
+			grades: ['T_SPE'],
+			level: 1
 		}
 	};
 
@@ -293,7 +311,8 @@
 		{ value: 'figure_a_completer', label: 'Figure à compléter (CP-059)' },
 		{ value: 'figure_carre', label: 'Terminer un carré (CP-060)' },
 		{ value: 'figure_alignes', label: 'Points alignés ? (CP-058)' },
-		{ value: 'resolution', label: 'Équation ligne par ligne (outil 55)' }
+		{ value: 'resolution', label: 'Équation ligne par ligne (outil 55)' },
+		{ value: 'droite_parametrique', label: 'Droite paramétrique (outil 64)' }
 	];
 	const SIZE_ITEMS = [
 		{ value: 'sm', label: 'Petite' },

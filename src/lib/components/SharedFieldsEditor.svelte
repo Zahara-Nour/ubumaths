@@ -353,7 +353,7 @@
 							<!-- Matrice dans une case : coefficients comparés par valeur (clavier « Matrice ») -->
 							<MyCheckbox bind:checked={sharedBlankMatrix} label="Réponse : matrice" />
 							<!-- Case ordinaire : bouton « pas factorisable » quand la réponse peut ne pas exister -->
-							{#if !sharedBlankIntervals && !sharedBlankEquation && !sharedBlankVector && !sharedBlankMatrix && !sharedBlankCalculus.primitive && !sharedBlankCalculus.solution && !sharedBlankCalculus.resolution}
+							{#if !sharedBlankIntervals && !sharedBlankEquation && !sharedBlankVector && !sharedBlankMatrix && !sharedBlankCalculus.primitive && !sharedBlankCalculus.solution && !sharedBlankCalculus.resolution && !sharedBlankCalculus.parametric}
 								<MyCheckbox
 									bind:checked={sharedBlankImpossible}
 									label="Bouton « impossible » (la réponse peut ne pas exister)"
@@ -472,6 +472,17 @@
 										Case seule dans un bloc $$?$$ ; réponse attendue x = solution.
 									</p>
 								</div>
+							{/if}
+							<!-- Droite paramétrique de l'espace : toute représentation de la même droite
+							     est juste (case seule dans $$?$$, trois lignes x =, y =, z =) -->
+							<MyCheckbox
+								bind:checked={sharedBlankCalculus.parametric}
+								label="Réponse : représentation paramétrique d'une droite (espace)"
+							/>
+							{#if sharedBlankCalculus.parametric}
+								<p class="pl-6 text-xs text-muted-foreground">
+									Case seule dans un bloc $$?$$ ; réponse attendue x=1+2t\\y=2\\z=-1+3t.
+								</p>
 							{/if}
 						</Collapsible.Content>
 					</Collapsible.Root>
