@@ -1,20 +1,17 @@
 ---
 title: Lot d'écarts « fiches » (PDF et Typst)
 date: 2026-11-28
-status: en cours
+status: clos
 ---
 
 # Lot d'écarts « fiches »
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-28, après #3267._
+_Mis à jour le 2026-11-28 : chantier clos._
 
-- **État** : PR 1 mergée (#3267) : L85, T23, L111, L9, V111, V108 + M44 faits et barrés au registre. Restent **V109** et **L86**, tranchés par David (§ Questions). T38 et L140 (relevés par `security-auditor`, zone du lot) sont dans « Hors lots » d'`ecarts-lots.md`, pas dans ce lot.
-- **Prochaine action** : PR 2, nouveau worktree `../ubumaths-wt-ecarts-fiches` (branche `fix/ecarts-fiches-2` depuis `origin/main`). V109 : horloge à régler et barre à construire dans une série d'automatismes (aujourd'hui refusées par `buildSerie`, « 0 case(s) dans l'énoncé ») : même mécanisme que V108, clé `solution: oui` sur ```horloge et sur le diagramme en barres (parseur, écran, PDF en vert), puis réécriture dans `serie-automatismes.ts`. L86 : question d'accès tranchée (droits de l'appelant, accès inchangé) ; fonction SQL qui écrit notions et fiche d'un coup, tests d'intégration rouges d'abord, `security-auditor`, migration additive avec rollback en commentaire.
-- **En attente de David** : rien.
-- **Pièges en cours** : preuve de M44 sous bash (glob). Tests de preuve : `ECARTS_PREUVES=1 npx vitest run --project ecarts …`. Capture d'un rendu Svelte : `page.screenshot({ element })` dans un test jetable, image dans `__screenshots__/` à déplacer dans `.captures/`.
-- **Worktree / branche** : aucun (retirés par `pr:merger` après #3267).
+- **État** : clos. 9 écarts faits et barrés (#3267, #3275) ; migration `20261128003004` en prod ; lot marqué « fait » dans `docs/wip/ecarts-lots.md` ; journal archivé.
+- **Prochaine action** : aucune.
 
 ## Écarts du lot
 
@@ -31,6 +28,14 @@ V108, V109, V111 (visibles, phase 0) · L9, L85, L86, L111 (latents) · T23 (RGP
 **Tranché par David le 2026-11-28 (« d'accord » sur les recommandations)** : (1) V108 + M44 : flèche verte, pointillés de construction gardés, dessin `solved` appelé (pas supprimé) ; (2) V109 : aiguilles et barre en vert ; (3) V111 : nom anglais de la branche s'il existe, sinon « Worksheet » ; (4) L86 : fonction SQL aux droits de l'appelant, accès inchangé ; (5) L9 : STIX retirée du témoin (décision du 2026-11-03 remplacée).
 
 ## Historique
+
+- 2026-11-28 : clôture sur go de David : lot marqué fait, journal archivé.
+
+- 2026-11-28 : #3275 mergée (PR 2 : V109, L86), après un `deploy:prod` qui tenait le verrou ; `db:migrate` de `20261128003004` (seule migration en attente), fonction vérifiée en prod.
+
+- 2026-11-28 : revues de la PR 2. `security-auditor` (Opus) : aucun bloquant, accès inchangé (policies vérifiées en prod) ; test ajouté : élève qui lit la fiche sans pouvoir retirer ses notions. `code-reviewer` (Opus) : aucun bloquant ; message de la route rendu juste (« la fiche et ses notions »), constante remise avant les fonctions.
+
+- 2026-11-28 : PR 2. V109 : clé `solution: oui` sur `horloge (aiguilles attendues en vert, à la taille de l'horloge à placer) et `barres (barres à construire en vert, `spec.solvedBars` ; échelle à choisir → l'axe juste, `adaptedScale`) ; écran, PDF, `findHorlogesToPlace` / `findBarsToPlace` sautent ces blocs ; série : `horlogesARegler`, `barresAConstruire` (énoncé sans `case:`, corrigé + `solution: oui`). Relevé en prod : 4 modèles publiés à horloge à régler, 7 à barres à construire (dont 4 à échelle à choisir). L86 : `save_worksheet_classification` (security invoker, une transaction, refus RLS vérifiés en base) ; route et `applyClassification` passent par elle.
 
 - 2026-11-28 : #3267 mergée (PR 1). Conflit avec `main` sur `ubumark.md` (L89 d'une autre session) résolu en gardant les deux.
 

@@ -1,21 +1,48 @@
+---
+title: Chantier solides-3d — figures de l'espace qui tournent
+date: 2026-11-28
+status: clos
+---
+
 # Chantier `solides-3d` — figures de l'espace qui tournent
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-28, après #3263 (petite PR d'après le 7c mergée)._
+_Mis à jour le 2026-11-28 : chantier clos._
 
-- **État** : [ADR 0045](../adr/0045-figures-de-l-espace-qui-tournent.md) ; lots 1 à 6, 7a, 7b, bord en
-  butée, **7c** (repère du solide, points par coordonnées, § 21) et la **petite PR d'après le 7c** (description
-  sous chaque réglage dans la page d'aide, cases de `retrouver:` teintées, § 22) mergés (#3195 à #3263) ; lot
-  7c essayé par David le 2026-11-28 (« c'est bon »). Les lots 3 à 7c ne sont pas en prod sans `deploy:prod` demandé
-  par David (le vérifier avant de l'affirmer).
-- **Prochaine action** : le **lot 7e** (point d'intersection demandé par l'auteur, § 17 question (d)), en
-  commençant par sa phase 0 (comportements en français, à faire valider par David avant de coder). Le 7d (repère sans solide) reste laissé tant qu'aucun
-  modèle n'en a besoin.
-- **En attente de David** : rien de bloquant. Deux choix de la petite PR faits sans lui, annoncés le
-  2026-11-28, sans réponse encore : teinte des cases de `retrouver:` (14 % de la couleur d'accent) et
-  description gardée dans le tableau, en gris sous la clé. Il n'a rien dit de « (Q) » écrit sur la zone teintée de (P) après son
-  essai : laissé.
+- **État** : clos. [ADR 0045](../../adr/0045-figures-de-l-espace-qui-tournent.md) ; lots 1 à 6, 7a, 7b,
+  bord en butée, 7c, petite PR d'après le 7c et 7e mergés (#3195, #3200, #3211, #3216, #3222, #3227, #3229,
+  #3235, #3244, #3251, #3252, #3257, #3263, #3273), découpage des § 4 et § 17 recompté contre les PR et le
+  code le 2026-11-28. Lots 1 à 7c en prod (0.117.0) ; le 7e (#3273), essayé par David le 2026-11-28
+  (« c'est bon »), attend un `deploy:prod` demandé par David.
+- **Durable** : [docs/systeme/ubumark.md](../../systeme/ubumark.md) (blocs solide et cubes, moteur de vue,
+  pièges de la rotation) et l'ADR 0045.
+- **Non fait, noté dans [outils-manquants.md](../../wip/outils-manquants.md)** : n° 73, repère sans solide
+  (lot 7d, laissé tant qu'aucun modèle n'en a besoin) ; n° 74, vecteur à tracer sur une figure qui porte des
+  droites, des plans, un repère ou un point d'intersection (écart entre les comportements 86 et 98, laissé
+  par David le 2026-11-28).
+- **Tranché par David le 2026-11-28, à la clôture (« go » sur les recommandations)** : cases de `retrouver:`
+  teintées et description en gris sous le réglage gardées telles quelles ; K n'est pas un point à toucher.
+- **Worktree / branche** : aucun ; liens du tailnet retirés.
+
+## Dernier « Reprendre ici » avant la clôture
+
+_Mis à jour le 2026-11-28, après #3273 (lot 7e mergé)._
+
+- **État** : [ADR 0045](../../adr/0045-figures-de-l-espace-qui-tournent.md) ; lots 1 à 6, 7a, 7b, bord en
+  butée, 7c, petite PR d'après le 7c et **lot 7e** (point d'intersection, `points: K intersection (IG) (BDE)`,
+  § 23 et 24) mergés (#3195 à #3273). Le 7e n'a pas encore été essayé par David. Les lots 3 à 7e ne sont pas
+  en prod sans `deploy:prod` demandé par David (le vérifier avant de l'affirmer).
+- **Prochaine action** : aucun lot validé ne reste, sauf le 7d (repère sans solide), laissé tant qu'aucun
+  modèle n'en a besoin. Avant de proposer la clôture : recompter le découpage validé (§ 4 et § 17) contre les
+  PR mergées et le code, puis versement de fin de chantier.
+- **En attente de David** : l'essai du 7e ; l'écart entre les comportements 86 et 98 (K n'est pas un point à
+  toucher : `tracer:` est refusé avec `intersection`, § 24) ; deux choix de la petite PR d'après le 7c restés
+  sans réponse (teinte des cases de `retrouver:`, description en gris sous la clé) ; « (Q) » sur la zone
+  teintée de (P) : laissé.
+- **Tranché par David le 2026-11-28 (lot 7e, « je te suis »)** : pas de droite d'intersection de deux plans
+  dans ce lot ; l'intersection s'écrit toujours avec les points entre parenthèses, jamais avec `d` ou `P` ;
+  K hors du solide mais dans la marge est accepté.
 - **Tranché par David le 2026-11-28 (lot 7c, « je te suis »)** : les trois choix du § 21 sont gardés
   (vecteurs du repère qui partent tous de l'origine ; coordonnées décimales seulement, les fractions le jour
   où un modèle en a besoin ; point à coordonnées accepté sur un sommet) ; **petite PR à part, après le 7c** :
@@ -42,9 +69,10 @@ _Mis à jour le 2026-11-28, après #3263 (petite PR d'après le 7c mergée)._
   même si son serveur de dev tourne** (#3227, #3229 : dossier laissé avec `.svelte-kit` et `.vite`, serveur
   à tuer par son PID) — recréer le worktree et relancer le serveur aussitôt après le merge ; `pnpm voir
 --compte prof` refusait la connexion du compte fictif le 2026-11-27 (base locale en marche).
-- **Worktree / branche** : aucun (retirés par `pnpm pr:merger 3263`, serveur de dev arrêté avant) ; à recréer sous le nom
-  `../ubumaths-wt-solides-3d`. Le lien du tailnet 8444 → 5176 est resté publié (serveur arrêté) : `pnpm lien`
-  le reprend depuis le nouveau worktree, `--stop` est refusé dans le dépôt principal.
+- **Worktree / branche** : aucun (retirés par `pnpm pr:merger 3273`) ; à recréer sous le nom
+  `../ubumaths-wt-solides-3d` — le dossier existe encore avec seulement `.svelte-kit` (reste du serveur de
+  dev, à supprimer avec l'accord de David). Le lien du tailnet 8445 → 5177 est resté publié (serveur
+  arrêté) ; le 8444 → 5176 sert à une autre session.
 
 ## 1. D'où l'on part
 
@@ -768,7 +796,72 @@ positions relatives ; le repère sert ensuite aux calculs (représentations para
 ## 23. Hors des lots : segments et angles droits du bloc solide (2026-11-28)
 
 Outil n° 72 d'`outils-manquants.md`, fait par la session `outils` dans son propre chantier, journal
-[solide-segments](../archive/wip/solide-segments-progress.md), #3264 : `segments: [HF], [DF]` et
+[solide-segments](solide-segments-progress.md), #3264 : `segments: [HF], [DF]` et
 `angles-droits: DHF` (polyèdres, ni `section:` ni `tracer:`, rotation et PDF compris). Reprend
 `hiddenStretches` comme les droites. Piège : en cavalière, la diagonale [AG] d'un cube se dessine sur
 l'arête [FG].
+
+## 23. Lot 7e — point d'intersection : comportements (validés par David le 2026-11-28)
+
+Exemple suivi : cube ABCDEFGH, I milieu de [AE], `points: I milieu AE, K intersection (IG) (BDE)`.
+
+### Nominal
+
+84. **Droite et plan.** `K intersection (IG) (BDE)` : K est marqué d'un point et nommé, là où la droite
+    perce le plan.
+85. **Deux droites.** `K intersection (AG) (BH)` : K est le point où elles se croisent.
+86. K sert ensuite comme un autre point : milieu, vecteur, droite, plan.
+87. La droite et le plan n'ont pas besoin d'être dessinés.
+88. Avec `tourner: oui`, K et son nom suivent la rotation ; sur la fiche PDF, c'est la vue de départ.
+
+### Limites
+
+89. Rien n'est dessiné sans que l'auteur le demande (le comportement 76 reste vrai).
+90. K qui tombe sur un sommet est accepté, deux noms au même endroit.
+91. K compte dans les 8 points au plus ; les points qu'il utilise sont déclarés avant lui.
+92. Lecteur d'écran : « point K intersection de la droite (IG) et du plan (BDE) ».
+93. Une figure sans `intersection` reste strictement celle d'aujourd'hui.
+
+### Erreurs (message pour l'auteur, jamais de figure fausse)
+
+94. Droite parallèle au plan, ou contenue dans le plan.
+95. Deux droites parallèles, confondues, ou non coplanaires.
+96. Point inconnu, trois points alignés pour le plan, nom déjà pris.
+97. K hors de la figure : même règle que pour un point à coordonnées.
+98. `intersection` sur un cylindre, un cône ou une boule, ou avec `section:` ou `tracer:`.
+
+### Questions pour David (réponse du 2026-11-28 : « je te suis » — (1) aux trois)
+
+- **(a) Deux plans** (leur intersection est une droite) : (1) pas dans ce lot. Retenu.
+- **(b) Écrire avec les noms** (`K intersection d P`) : (1) non, toujours les points entre parenthèses. Retenu.
+- **(c) K hors du solide mais dans la marge** : (1) accepté, comme un point à coordonnées. Retenu.
+
+## 24. Lot 7e — ce qui est fait (2026-11-28)
+
+- **Écriture** `points: K intersection (IG) (BDE)` ou `K intersection (AG) (BH)` (`SolidePoint.meet` : `line`,
+  `other`), le plan ou la droite en premier, indifféremment. Lecture : `readMeet` (`solide-parser.ts`) ;
+  position : `meetPoint`, appelé par `solidePoints3` (`espace-solides.ts`). Rien de neuf dans la scène, dans
+  `Solide.svelte` ni dans le PDF : c'est un point déclaré de plus.
+- **Erreurs** des comportements 94 à 98, plus : deux plans (« se coupent selon une droite, pas en un
+  point »), écriture non comprise (sans parenthèses, un ou trois groupes, un ou quatre points dans un groupe).
+- **Écart avec la phase 0, à dire à David** : le comportement 86 disait aussi « point à toucher dans un
+  geste », le 98 refuse `tracer:` — or `tracer:` est le seul geste du bloc. Le 98 est appliqué (comme pour
+  `droites:`, `plans:`, `repere:`) : K n'est pas un point à toucher tant que `tracer:` est refusé.
+- Catalogue (`block-catalog/solide.ts` : réglage `points` complété, exemple « Le point où une droite perce un
+  plan », erreur « Une droite parallèle au plan »), doc `docs/systeme/ubumark.md` (paragraphe « Point
+  d'intersection »).
+- Tests : `solide-intersection.test.ts` (24, rouges avant le code : 22 sur 24), `Solide.svelte.test.ts` (+1).
+- Vu à l'écran par la session (captures Chromium du composant) : cube avec K, (IG) et (BDE), à la vue de
+  départ et tourné au clavier ; K seul ; (AG) et (BH) avec leur point O ; K sur le sommet A (deux noms côte à
+  côte) ; pyramide avec O = (AC) ∩ (BD), K = (AI) ∩ (SBD), tournée ; K dans la marge, juste à gauche de E (son
+  nom touche celui de E, comme tout point posé contre un sommet). **Pas vu** : la fiche PDF imprimée (le
+  Typst est testé, pas compilé), le thème sombre, le doigt sur un vrai téléphone.
+- **Revue** (`code-reviewer`, opus) : témoin indépendant sur 25 000 entrées (10 solides, dimensions de 0,1 à
+  1000, droites et plans au hasard parmi sommets, milieux et centres) — chaque point accepté est sur la droite
+  et sur le plan ou l'autre droite, aucun accepté sans point unique, aucun sécant refusé à tort, ni NaN ni
+  exception ; 80 entrées tordues, une seule erreur à chaque fois ; aucun consommateur ne suppose `of` non
+  vide ; bloc sans intersection inchangé. **Deux points corrigés** : `K intersection(IG)(BDE)` sans espace
+  disait « non compris » avec l'exemple des milieux (accepté maintenant) ; le test de `section:` / `tracer:`
+  asserte une seule erreur. **Laissés** : `intersection` + `repere:` + `section:` dit le conflit deux fois
+  (une ligne chacun) ; la marge se rapporte à la plus grande dimension, comme au lot 7c (`pave 0,1 1 0,5` :
+  un point à 0,1 hors d'un pavé épais de 0,1 est accepté).

@@ -5,14 +5,13 @@
  * Type definitions for the teacher dashboard caching system.
  *
  * ARCHITECTURE:
- * - 5 separate caches with different TTLs
+ * - 4 separate caches with different TTLs
  * - Optimized for teacher dashboard performance
  * - Supports optimistic UI updates with SvelteMap reactivity
  */
 
 import type { StudentVipCards } from './vip-card';
 import type { Warning, StudentWarningCounts } from '#lib/server/warnings.ts';
-import type { Database } from './database';
 import type { SvelteMap } from 'svelte/reactivity';
 
 // ============================================================================
@@ -74,25 +73,6 @@ export interface ClassInfo {
 	schedules: ClassSchedule[];
 }
 
-/**
- * Academic period type
- */
-export type AcademicPeriod = Database['public']['Tables']['academic_periods']['Row'];
-
-/**
- * School type
- */
-export type School = Database['public']['Tables']['schools']['Row'];
-
-/**
- * School information with periods
- */
-export interface SchoolInfo {
-	school: School;
-	current_period: AcademicPeriod | null;
-	all_periods: AcademicPeriod[];
-}
-
 // ============================================================================
 // CACHED DATA TYPES
 // ============================================================================
@@ -134,14 +114,6 @@ export interface CachedClass {
 	fetchedAt: number;
 }
 
-/**
- * Cached school information (Cache 4)
- */
-export interface CachedSchool {
-	schoolInfo: SchoolInfo;
-	fetchedAt: number;
-}
-
 // ============================================================================
 // CACHE STATISTICS
 // ============================================================================
@@ -154,7 +126,6 @@ export interface CacheStats {
 	rewards: number;
 	warnings: number;
 	classes: number;
-	school: number;
 	periods: number;
 	totalEntries: number;
 	memoryEstimate: string;

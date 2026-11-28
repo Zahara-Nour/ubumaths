@@ -39,7 +39,11 @@ import { toLatex } from '#lib/mathAST/index.ts';
 import type { CapitalPairs, GenericFunctionConfig } from '#lib/mathAST/parser/types.ts';
 import { withDigitGrouping } from '#lib/utils/french-math.ts';
 import { SCHOOL_MIN_DIGITS_FOR_GROUPING } from '#lib/mathAST/digit-grouping.ts';
-import { withChoiceClockSize } from '#lib/ubumark/parser/horloge-parser.ts';
+import {
+	findHorlogesToPlace,
+	parseHorlogeContent,
+	withChoiceClockSize
+} from '#lib/ubumark/parser/horloge-parser.ts';
 import { withChoiceCollectionSize } from '#lib/ubumark/parser/collection-parser.ts';
 import { withChoiceMonnaieSize } from '#lib/ubumark/parser/monnaie-parser.ts';
 import { replaceChoiceBlocks, type ChoiceBlock } from '#lib/ubumark/parser/choix-parser.ts';
@@ -51,10 +55,12 @@ import {
 } from '#lib/ubumark/parser/number-line-parser.ts';
 import { lineCoefficients } from '#lib/ubumark/utils/courbe-tracer.ts';
 import {
+	findBarsToPlace,
 	findBoxPlotsToPlace,
 	parseStatChartContent,
 	PLACER_LINE_REGEX
 } from '#lib/ubumark/parser/stat-chart-parser.ts';
+import { barsCaseCount } from '#lib/ubumark/utils/barres-placer.ts';
 import { boxPlotCaseCount } from '#lib/ubumark/utils/boxplot-placer.ts';
 import {
 	associerItemHasBlock,
@@ -636,6 +642,87 @@ function labyrinthesAFiger(
 	return { texte: lignes.join('\n'), cases };
 }
 
+/** Un bloc à geste dont le corrigé dessine lui-même la réponse (`solution: oui`) */
+interface BlocDessine {
+	startIndex: number;
+	body: string[];
+	closed: boolean;
+	nested: boolean;
+}
+
+/**
+ * Blocs qui dessinent eux-mêmes leur réponse au corrigé (V109, David le 2026-11-28) :
+ * à l'énoncé, le bloc sans `case:` (le geste se fait au crayon) ; au corrigé, `case:`
+ * retirée et `solution: oui` ajoutée (une `solution:` de l'auteur ferait une clé en
+ * double). `casesDu` lit le bloc et dit son nombre de cases, ou la raison du refus ;
+ * bloc en retrait ou cité, ou sans fin → refus.
+ */
+function reponsesDessinees(
+	modele: string,
+	texte: string,
+	corrige: boolean,
+	blocs: readonly BlocDessine[],
+	nom: string,
+	casesDu: (corps: string) => number | string
+): { texte: string; cases: number } {
+	const lignes = texte.split('\n');
+	let cases = 0;
+	// Du dernier au premier : les rangs des blocs précédents restent justes
+	for (const bloc of [...blocs].reverse()) {
+		if (bloc.nested) throw new Error(`${modele} : ${nom} en retrait ou cité`);
+		if (!bloc.closed) throw new Error(`${modele} : ${nom} sans fin de bloc`);
+		const lu = casesDu(bloc.body.join('\n'));
+		if (typeof lu === 'string') throw new Error(`${modele} : ${nom} illisible (${lu})`);
+		cases += lu;
+		const corps = bloc.body.filter(
+			(ligne) => !CASE_LINE.test(ligne) && !(corrige && SOLUTION_LINE.test(ligne))
+		);
+		lignes.splice(
+			bloc.startIndex + 1,
+			bloc.body.length,
+			...(corrige ? [...corps, 'solution: oui'] : corps)
+		);
+	}
+	return { texte: lignes.join('\n'), cases };
+}
+
+/** Horloges à régler (```horloge, `placer:`) : cadran vide à l'énoncé, aiguilles en vert au corrigé ; une case chacune */
+function horlogesARegler(modele: string, texte: string, corrige: boolean) {
+	return reponsesDessinees(
+		modele,
+		texte,
+		corrige,
+		findHorlogesToPlace(texte),
+		'horloge à régler',
+		(corps) => {
+			const node = parseHorlogeContent(corps);
+			return node.errors.length > 0 || node.spec === null
+				? node.errors.map((e) => e.message).join(' ; ')
+				: 1;
+		}
+	);
+}
+
+/**
+ * Barres à construire (```barres, `placer:`) : axe sans ces barres à l'énoncé, barres en
+ * vert au corrigé ; une case par barre, plus une pour l'échelle à choisir
+ */
+function barresAConstruire(modele: string, texte: string, corrige: boolean) {
+	return reponsesDessinees(
+		modele,
+		texte,
+		corrige,
+		findBarsToPlace(texte),
+		'diagramme à construire',
+		(corps) => {
+			const node = parseStatChartContent('barres', corps);
+			return node.spec === null
+				? node.errors.map((e) => e.message).join(' ; ')
+				: barsCaseCount(node.spec);
+		}
+	);
+}
+
 /** Un choix à imprimer : taille des blocs (horloge, collection, monnaie) posée */
 function choixImprime(contenu: string): string {
 	return withChoiceMonnaieSize(withChoiceCollectionSize(withChoiceClockSize(contenu)));
@@ -757,6 +844,12 @@ function figer(template: QuestionTemplate, instance: QuestionInstance): Question
 	const labyrinthesEnonce = labyrinthesAFiger(template.id, robotsEnonce.texte, false);
 	const labyrinthesCorrige = labyrinthesAFiger(template.id, robotsCorrige.texte, true);
 
+	// Horloge à régler, barres à construire : vides à l'énoncé, réponse en vert au corrigé
+	const horlogesEnonce = horlogesARegler(template.id, labyrinthesEnonce.texte, false);
+	const horlogesCorrige = horlogesARegler(template.id, labyrinthesCorrige.texte, true);
+	const barresEnonce = barresAConstruire(template.id, horlogesEnonce.texte, false);
+	const barresCorrige = barresAConstruire(template.id, horlogesCorrige.texte, true);
+
 	// Chaque case attendue doit être remplacée, ni plus ni moins (un marqueur d'une
 	// autre convention, `<<expr:…>>`, laisserait sinon une question sans case)
 	const cases =
@@ -769,17 +862,19 @@ function figer(template: QuestionTemplate, instance: QuestionInstance): Question
 		associerEnonce.cases +
 		trousEnonce.cases +
 		robotsEnonce.cases +
-		labyrinthesEnonce.cases;
+		labyrinthesEnonce.cases +
+		horlogesEnonce.cases +
+		barresEnonce.cases;
 	if (cases !== (instance.blanks?.length ?? 0)) {
 		throw new Error(
 			`${template.id} : ${cases} case(s) dans l'énoncé pour ${instance.blanks?.length ?? 0} réponse(s) attendue(s)`
 		);
 	}
 
-	const enonce = labyrinthesEnonce.texte
+	const enonce = barresEnonce.texte
 		.replace(PLACEHOLDER, `\\text{${BLANK_TEXT}}`)
 		.replace(TEXT_BLANK, BLANK_TEXT);
-	const corrige = labyrinthesCorrige.texte
+	const corrige = barresCorrige.texte
 		.replace(PLACEHOLDER, (_m, i: string) => reponse(instance, Number(i), true, minDigits))
 		.replace(TEXT_BLANK, (_m, i: string) => reponse(instance, Number(i), false, minDigits));
 

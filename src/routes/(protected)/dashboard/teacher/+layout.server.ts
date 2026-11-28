@@ -47,16 +47,13 @@ const logger = createServerLogger('(protected)/dashboard/teacher/+layout.server'
 
 type AcademicPeriod = Database['public']['Tables']['academic_periods']['Row'];
 
-export const load: LayoutServerLoad = async ({ locals, depends }) => {
+export const load: LayoutServerLoad = async ({ locals }) => {
 	const { user, profile, supabase } = locals;
 
 	// Must be logged in as teacher
 	if (!user || !profile || profile.role !== 'teacher') {
 		throw error(403, 'Accès refusé');
 	}
-
-	// Mark this data as dependent on 'teacher:classes' for reactive invalidation
-	depends('teacher:classes');
 
 	try {
 		// Fetch classes with counts using optimized RPC function

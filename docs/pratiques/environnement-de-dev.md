@@ -511,6 +511,8 @@ pour de vrai ; `EMAIL_CAPTURE_DIR` change le dossier. Base distante (worktree sa
   `pnpm deploy:prod` (`scripts/deploy-prod.sh`) : dernier commit de main vert → `pnpm release`
   (numéro, CHANGELOG, tag, via `commit-and-tag-version`) → CI de la version → avance rapide de
   `production`. Jamais de mise en prod automatique (ADR 0021). `--essai` montre ce qui partirait.
+  Le script pose `GIT_PAGER=cat` : la liste des commits à livrer s'affiche d'un trait, sans
+  attendre de touche (une mise en prod est restée bloquée six heures dessus le 2026-11-28).
 - **Avant de créer la version** (et avec `--essai`) : le script lit les migrations jouées en prod
   (`supabase migration list --linked`, lecture seule) et les compare à celles du commit à livrer.
   Une migration pas encore jouée arrête tout, en nommant le fichier : le code livré pourrait dépendre

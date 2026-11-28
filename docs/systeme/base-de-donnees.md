@@ -426,6 +426,12 @@ Code : `src/lib/server/` (`chapters.ts`, `chapters-publication.ts`, `chapter-tem
   rempli ; `worksheets.custom_title` (vrai par défaut) dit s'il est libre (imprimé tel quel) ou
   composé par l'éditeur (« Suites · Entraînement technique », recomposé par le PDF) ; les liens de
   partage le rendent. Tests : `tests/integration/categorie-notions-fiche.test.ts`.
+  **Écriture en une transaction** (`20261128003004`, écart L86) : `save_worksheet_classification(p_worksheet_id,
+p_fields, p_notions)`, `security invoker` (droits et RLS de l'appelant, accès inchangé ; `authenticated`
+  seulement) : notions retirées, colonnes `type` / `category` / `custom_title` / `title` de la fiche (autre
+  clé → 22023), notions écrites avec leur position ; un refus RLS, même silencieux, lève 42501 et annule
+  tout ; rend la fiche. Seul appelant : `applyClassification` (route `PUT /api/worksheets/[id]`). Tests :
+  `tests/integration/enregistrer-notions-fiche-d-un-coup.test.ts`.
 - `worksheet_assignments` (distribution) → `worksheet_assignment_classes`,
   `worksheet_assignment_students`, `worksheet_assignment_exercise_settings`.
   `worksheet_assignments.guidance_level` : **niveau de guidage** des exercices pour cette

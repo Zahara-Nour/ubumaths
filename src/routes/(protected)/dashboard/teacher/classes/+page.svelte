@@ -100,7 +100,7 @@
 
 	/**
 	 * Hydrate cache with fresh data from server load function
-	 * Populates Cache 3 (class info) and Cache 4 (school info)
+	 * Populates Cache 3 (class info)
 	 */
 	$effect(() => {
 		// Hydrate class info cache (Cache 3) for each class
@@ -121,15 +121,6 @@
 				schedules: classItem.schedules as never
 			};
 			teacherCache.hydrateClassInfo(classItem.id, classInfo);
-		}
-
-		// Hydrate school info cache (Cache 4) if available
-		if (data.school) {
-			teacherCache.hydrateSchoolInfo(
-				data.school as never,
-				// @ts-expect-error current_period doesn't exist in schema type but exists at runtime
-				data.school.current_period || null
-			);
 		}
 	});
 

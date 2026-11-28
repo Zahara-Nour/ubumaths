@@ -14,18 +14,13 @@
  * CACHE STRUCTURE:
  * The student cache is divided into 3 independent caches:
  *
- * 1. Profile Cache (StudentProfile)
- *    - TTL: 2 hours
- *    - Contains: Student info + class memberships
- *    - Updates: Infrequent (only when profile changes)
- *
- * 2. Rewards Cache (StudentRewards)
+ * 1. Rewards Cache (StudentRewards)
  *    - TTL: 10 minutes
  *    - Contains: Gidouilles balance + VIP cards
  *    - Updates: Frequent (after each reward action)
  *    - Supports: Optimistic updates for instant UI feedback
  *
- * 3. Warnings Cache (StudentWarnings)
+ * 2. Warnings Cache (StudentWarnings)
  *    - TTL: 10 minutes per period
  *    - Contains: Warning counts + full warning objects
  *    - Keyed by: Academic period ID
@@ -40,68 +35,6 @@ import type { Warning, StudentWarningCounts } from '#lib/server/warnings.ts';
 // ============================================================================
 // BASIC TYPES (API Response Shapes)
 // ============================================================================
-
-/**
- * Student profile data
- *
- * Returned by:
- * - GET /api/student/profile
- * - +layout.server.ts load function
- *
- * Usage:
- * ```typescript
- * const profile = await studentCache.getProfile();
- * console.log(profile.classes); // Array of class memberships
- * ```
- */
-export interface StudentProfile {
-	/** Student's UUID from profiles table */
-	id: string;
-	/** Student's email address */
-	email: string | null;
-	/** Student's first name */
-	firstname: string | null;
-	/** Student's last name (optional) */
-	lastname: string | null;
-	/** Computed full name (firstname + lastname) */
-	full_name: string | null;
-	/** URL to student's avatar image (Supabase Storage or Gravatar) */
-	avatar_url: string | null;
-	/** Student's grade level (e.g., "6ème", "5ème") */
-	grade: string | null;
-	/** Whether this is a test account (for development) */
-	is_test: boolean;
-	/** UUID of the school this student belongs to */
-	school_id: string | null;
-	/** Array of classes the student is enrolled in */
-	classes: ClassMembership[];
-}
-
-/**
- * Class membership information
- *
- * Represents a student's enrollment in a class, including:
- * - Class details (name, active status)
- * - Teacher information
- * - Enrollment date
- *
- * Usage:
- * ```typescript
- * profile.classes.forEach(membership => {
- *   console.log(`${membership.class_name} (joined ${membership.joined_at})`);
- * });
- * ```
- */
-export interface ClassMembership {
-	/** UUID of the class */
-	class_id: string;
-	/** Human-readable class name (e.g., "Mathématiques 6ème A") */
-	class_name: string;
-	/** ISO timestamp of when student joined this class */
-	joined_at: string;
-	/** Whether the class is currently active */
-	is_active: boolean;
-}
 
 /**
  * Student rewards data (gidouilles + bonus + VIP cards)
@@ -158,34 +91,7 @@ export interface StudentWarnings {
 // ============================================================================
 
 /**
- * Cached student profile (Cache 1)
- *
- * STORAGE:
- * Stored as a single object (singleton pattern)
- *
- * TTL: 2 hours (PROFILE_TTL)
- *
- * STRUCTURE:
- * {
- *   profile: StudentProfile,  // The actual data
- *   fetchedAt: 1699564800000  // Unix timestamp (Date.now())
- * }
- *
- * FRESHNESS CHECK:
- * ```typescript
- * const now = Date.now();
- * const isFresh = (now - cached.fetchedAt) < PROFILE_TTL;
- * ```
- */
-export interface CachedProfile {
-	/** The student profile data */
-	profile: StudentProfile;
-	/** Unix timestamp (milliseconds) when this data was fetched */
-	fetchedAt: number;
-}
-
-/**
- * Cached rewards data (Cache 2)
+ * Cached rewards data (Cache 1)
  *
  * STORAGE:
  * Stored as a single object (singleton pattern)
@@ -214,7 +120,7 @@ export interface CachedRewards {
 }
 
 /**
- * Cached warnings data (Cache 3)
+ * Cached warnings data (Cache 2)
  *
  * STORAGE:
  * Stored in a Map<periodId, CachedWarnings>
@@ -271,8 +177,6 @@ export interface CachedWarnings {
  * ```
  */
 export interface CacheStats {
-	/** Whether profile cache has data (true) or is empty (false) */
-	profile: boolean;
 	/** Whether rewards cache has data (true) or is empty (false) */
 	rewards: boolean;
 	/** Number of academic periods cached in warnings cache */
@@ -284,11 +188,11 @@ export interface CacheStats {
 }
 
 // ============================================================================
-// BUDDY CACHE (Cache 4)
+// BUDDY CACHE (Cache 3)
 // ============================================================================
 
 /**
- * Cached buddy data (Cache 4)
+ * Cached buddy data (Cache 3)
  *
  * TTL: 10 minutes (BUDDY_TTL)
  *

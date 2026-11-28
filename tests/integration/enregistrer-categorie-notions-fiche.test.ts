@@ -132,7 +132,8 @@ async function stored(id: string): Promise<Stored> {
 
 /**
  * Ce que fait la route PUT : préparer (lecture, règle, titre composé), puis
- * appliquer (notions en trop retirées, fiche mise à jour, notions écrites).
+ * appliquer en une transaction (notions en trop retirées, fiche mise à jour,
+ * notions écrites).
  * Rend le message d'erreur 400, ou null.
  */
 async function save(
@@ -156,15 +157,8 @@ async function save(
 		...(request.type ? { type: request.type } : {}),
 		...plan.update
 	};
-	await applyClassification(teacherClient, id, plan, async () => {
-		const { data, error } = await teacherClient
-			.from('worksheets')
-			.update(update)
-			.eq('id', id)
-			.select('id');
-		if (error) throw new Error(`mise à jour refusée : ${error.code} ${error.message}`);
-		expect(data).toHaveLength(1);
-	});
+	const saved = await applyClassification(teacherClient, id, plan, update);
+	expect(saved.id).toBe(id);
 	return null;
 }
 
