@@ -172,6 +172,14 @@ export {
 	isLabyrintheBlockStart
 } from './labyrinthe-parser';
 
+// Bloc ```yohaku
+export {
+	parseYohaku,
+	parseYohakuContent,
+	findYohakuBlocks,
+	isYohakuBlockStart
+} from './yohaku-parser';
+
 // Bloc ```partage
 export {
 	parsePartage,

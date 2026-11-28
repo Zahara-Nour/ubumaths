@@ -101,6 +101,7 @@ import {
 	isLabyrintheAnswerCorrect,
 	labyrintheAnswerVerdict
 } from '#lib/ubumark/utils/labyrinthe-answer.ts';
+import { isYohakuAnswerCorrect, yohakuAnswerVerdict } from '#lib/ubumark/utils/yohaku-answer.ts';
 import {
 	isLineToRepresentBlank,
 	isRepresentedIntervalCorrect
@@ -889,6 +890,8 @@ function validateBlankValue(
 	if (blank.construire === 'calcul') return isCalculAnswerCorrect(userAnswer, blank.expectedAnswer);
 	// Robot à produire : le code de l'élève rejoué sur la scène, juste s'il finit sur l'arrivée
 	if (blank.construire === 'robot') return isRobotAnswerCorrect(userAnswer, blank.expectedAnswer);
+	// Grille yohaku : chaque ligne et chaque colonne donne son total, quel que soit le remplissage
+	if (blank.construire === 'yohaku') return isYohakuAnswerCorrect(userAnswer, blank.expectedAnswer);
 	// Labyrinthe : le chemin de l'élève, de l'entrée à une sortie par des cases qui suivent la règle
 	if (blank.construire === 'labyrinthe')
 		return isLabyrintheAnswerCorrect(userAnswer, blank.expectedAnswer);
@@ -1634,6 +1637,13 @@ function judgeSingleBlank(
 	// Labyrinthe : faux, le chemin dit pourquoi (entrée, case sautée, intrus, sortie manquée)
 	if (blank.construire === 'labyrinthe') {
 		const verdict = labyrintheAnswerVerdict(userAnswer, blank.expectedAnswer);
+		if (verdict.juste) return { isCorrect: true, status: 'correct' };
+		return verdict.message ? { isCorrect: false, feedback: verdict.message } : { isCorrect: false };
+	}
+
+	// Grille yohaku : faux, le message dit quelles lignes ou colonnes ne donnent pas leur total
+	if (blank.construire === 'yohaku') {
+		const verdict = yohakuAnswerVerdict(userAnswer, blank.expectedAnswer);
 		if (verdict.juste) return { isCorrect: true, status: 'correct' };
 		return verdict.message ? { isCorrect: false, feedback: verdict.message } : { isCorrect: false };
 	}

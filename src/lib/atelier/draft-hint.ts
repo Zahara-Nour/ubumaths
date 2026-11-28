@@ -15,7 +15,7 @@
  */
 
 import type { InputMode } from './input-mode';
-import { intervalWord } from './interval';
+import { intervalWord, isConditionWritten } from './interval';
 
 // =============================================================================
 // Types
@@ -34,6 +34,9 @@ export interface DraftHint {
 /** Les écritures d'un ensemble, une fois « sur » tapé. */
 export const INTERVAL_MODEL = '[a;b], ]a;b[, [0;+∞[';
 
+/** Les écritures d'une condition, une fois « pour » tapé (chantier fonctions-domaines). */
+export const CONDITION_MODEL = 'x > 2, 2 < x < 4, x ≠ 0';
+
 const INTERVAL_NOTE = 'pour choisir l’ensemble';
 
 /** Le début d'une définition de fonction : `f(x) =`, `f_1(t) =` (la forme de `calcul.ts`). */
@@ -51,7 +54,12 @@ export function definitionHint(draft: string, inputMode: InputMode): DraftHint |
 	// Une définition en n est une SUITE (`kindOf`, `calcul.ts`), qui refuse « sur »
 	if (letter === 'n') return null;
 	const body = draft.slice(start.length);
-	if (intervalWord(body, inputMode === 'math' ? 'latex' : 'detect', true) !== null) {
+	const word = intervalWord(body, inputMode === 'math' ? 'latex' : 'detect', true);
+	if (word !== null) {
+		// La lettre de la définition, pas `x` : `g(t) = t pour t > 2`
+		if (isConditionWritten(word.after)) {
+			return { model: CONDITION_MODEL.replace(/x/g, letter) };
+		}
 		return { model: INTERVAL_MODEL };
 	}
 	return { model: `${name}(${letter}) = ${letter}² sur [0;3]`, note: INTERVAL_NOTE };

@@ -1,0 +1,254 @@
+{
+	"id": "3be08965-fb6c-4e2a-8878-f06dd04a54d3",
+	"title": "Mesurer un angle au rapporteur",
+	"description": "Lire la mesure d'un angle sur un rapporteur déjà posé, puis poser soi-même le rapporteur (centre au sommet, base sur un côté) et lire la bonne graduation",
+	"grades": ["6"],
+	"level": 1,
+	"delay": 120,
+	"status": "published",
+	"variations": [
+		{
+			"statement": "Le rapporteur est posé sur l'angle $\\widehat{AOB}$. Quelle est sa mesure, en degrés ?\n\n```figure-a-completer\nfenetre: 0 ; 10 ; 0 ; 8\nverifier: mesure AOB, rapporteur posé\n---\nO = point(5, 2.5)\nA = point(9, 2.5)\nP = point(8.6, 2.5, visible=faux)\nB = rotation(P, angle={{a}}, centre=O)\nx = demidroite(O, A)\ny = demidroite(O, B)\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "15..165"
+				}
+			],
+			"conditions": ["a!=90"],
+			"correction": {
+				"steps": [
+					"**Lire la bonne graduation.** Le centre du rapporteur est sur le sommet $O$, sa base sur le côté $[OA)$. On part du $0$ qui est **sur le côté $[OA)$** et on suit cette graduation jusqu'au côté $[OB)$.",
+					"L'angle est {{if:a<90|aigu|obtus}} : sa mesure est {{if:a<90|plus petite|plus grande}} que $90^\\circ$. $\\widehat{AOB} = \\textcolor{{{color:primary.0}}}{{{a}}^\\circ}$."
+				]
+			}
+		},
+		{
+			"statement": "Mesure l'angle $\\widehat{AOB}$ avec le rapporteur, puis écris sa mesure, en degrés.\n\n```figure-a-completer\nfenetre: 0 ; 10 ; 0 ; 8\nverifier: mesure AOB\n---\nO = point(5, 4)\nP = point(8.6, 4, visible=faux)\nA = rotation(P, angle={{t}}, centre=O)\nB = rotation(P, angle={{eval:t+a}}, centre=O)\nx = demidroite(O, A)\ny = demidroite(O, B)\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "15..165"
+				},
+				{
+					"name": "t",
+					"expression": "0..50"
+				}
+			],
+			"conditions": ["a!=90"],
+			"correction": {
+				"steps": [
+					"**Lire la bonne graduation.** Le centre du rapporteur est sur le sommet $O$, sa base sur le côté $[OA)$. On part du $0$ qui est **sur le côté $[OA)$** et on suit cette graduation jusqu'au côté $[OB)$.",
+					"L'angle est {{if:a<90|aigu|obtus}} : sa mesure est {{if:a<90|plus petite|plus grande}} que $90^\\circ$. $\\widehat{AOB} = \\textcolor{{{color:primary.0}}}{{{a}}^\\circ}$."
+				]
+			}
+		},
+		{
+			"statement": "Le rapporteur est posé sur l'angle $\\widehat{AOB}$. Quelle est sa mesure, en degrés ?\n\n```figure-a-completer\nfenetre: 0 ; 10 ; 0 ; 8\nverifier: mesure AOB, rapporteur posé\n---\nO = point(5, 2.5)\nA = point(1, 2.5)\nP = point(1.4, 2.5, visible=faux)\nB = rotation(P, angle={{eval:-a}}, centre=O)\nx = demidroite(O, A)\ny = demidroite(O, B)\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "15..165"
+				}
+			],
+			"conditions": ["a!=90"],
+			"correction": {
+				"steps": [
+					"**Lire la bonne graduation.** Ici, le côté $[OA)$ part vers la **gauche** : on part du $0$ qui est à gauche, sur $[OA)$, et on suit cette graduation jusqu'au côté $[OB)$.",
+					"L'angle est {{if:a<90|aigu|obtus}} : sa mesure est {{if:a<90|plus petite|plus grande}} que $90^\\circ$. $\\widehat{AOB} = \\textcolor{{{color:primary.0}}}{{{a}}^\\circ}$."
+				]
+			},
+			"hint": "Le $0$ à suivre est celui qui est sur le côté $[OA)$ : ici, à gauche. Ton angle est-il aigu ou obtus ?"
+		},
+		{
+			"statement": "Mesure l'angle $\\widehat{BOC}$ avec le rapporteur, puis écris sa mesure, en degrés.\n\n```figure-a-completer\nfenetre: 0 ; 10 ; 0 ; 8\nverifier: mesure BOC\n---\nO = point(5, 3)\nP = point(8.6, 3, visible=faux)\nA = rotation(P, angle={{t}}, centre=O)\nB = rotation(P, angle={{eval:t+b}}, centre=O)\nC = rotation(P, angle={{eval:t+b+c}}, centre=O)\nx = demidroite(O, A)\ny = demidroite(O, B)\nz = demidroite(O, C)\n```",
+			"variables": [
+				{
+					"name": "b",
+					"expression": "20..50"
+				},
+				{
+					"name": "c",
+					"expression": "35..120"
+				},
+				{
+					"name": "t",
+					"expression": "0..15"
+				}
+			],
+			"conditions": ["c!=90", "b+c<=165"],
+			"correction": {
+				"steps": [
+					"**Poser le rapporteur sur le bon côté.** L'angle $\\widehat{BOC}$ a pour côtés $[OB)$ et $[OC)$ : le centre du rapporteur sur $O$, sa base le long de $[OB)$. Le côté $[OA)$ ne sert pas.",
+					"On part du $0$ qui est sur $[OB)$ jusqu'au côté $[OC)$ : $\\widehat{BOC} = \\textcolor{{{color:primary.0}}}{{{c}}^\\circ}$."
+				]
+			},
+			"hint": "Les côtés de $\\widehat{BOC}$ sont $[OB)$ et $[OC)$ : pose la base du rapporteur sur $[OB)$."
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["mesure(50)"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "50"
+			},
+			"description": "Rapporteur posé : 50",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["mesure(130)"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "50"
+			},
+			"description": "Erreur : 130 (mauvaise graduation)",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["mesure(124)"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "124"
+			},
+			"description": "Rapporteur posé : 124",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["mesure(56)"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "124"
+			},
+			"description": "Erreur : 56 (mauvaise graduation)",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["mesure(72)"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "72",
+				"t": "30"
+			},
+			"description": "Angle tourné : 72",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["mesure(102)"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "72",
+				"t": "30"
+			},
+			"description": "Erreur : 102 (lu depuis l'horizontale)",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["mesure(108)"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "72",
+				"t": "30"
+			},
+			"description": "Erreur : 108 (mauvaise graduation)",
+			"variationIndex": 1
+		},
+		{
+			"description": "Côté à gauche : 50",
+			"variationIndex": 2,
+			"variables": {
+				"a": "50"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["mesure(50)"]
+		},
+		{
+			"description": "Erreur : 130 (graduation de droite)",
+			"variationIndex": 2,
+			"variables": {
+				"a": "50"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["mesure(130)"]
+		},
+		{
+			"description": "Côté à gauche : 140",
+			"variationIndex": 2,
+			"variables": {
+				"a": "140"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["mesure(140)"]
+		},
+		{
+			"description": "Erreur : 40 (graduation de droite)",
+			"variationIndex": 2,
+			"variables": {
+				"a": "140"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["mesure(40)"]
+		},
+		{
+			"description": "BOC : 70",
+			"variationIndex": 3,
+			"variables": {
+				"b": "30",
+				"c": "70",
+				"t": "10"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["mesure(70)"]
+		},
+		{
+			"description": "Erreur : AOC = 100",
+			"variationIndex": 3,
+			"variables": {
+				"b": "30",
+				"c": "70",
+				"t": "10"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["mesure(100)"]
+		},
+		{
+			"description": "Erreur : 110 (mauvaise graduation)",
+			"variationIndex": 3,
+			"variables": {
+				"b": "30",
+				"c": "70",
+				"t": "10"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["mesure(110)"]
+		}
+	]
+}

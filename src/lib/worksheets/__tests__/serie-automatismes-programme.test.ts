@@ -200,3 +200,45 @@ describe('buildSerie — labyrinthe avec `solution: non` écrite par l’auteur'
 		expect(serie.solution).toContain('solution: oui');
 	});
 });
+
+describe('buildSerie — grille yohaku à remplir (chantier `outil-yohaku`)', () => {
+	const yohaku = new Map([
+		[
+			'yohaku',
+			modele(
+				'yohaku',
+				[
+					'Remplis la grille.',
+					'',
+					'```yohaku',
+					'opération: produit',
+					'ligne: [x+2] | [x+3]',
+					'ligne: [2x+1] | x+1',
+					'```'
+				].join('\n')
+			)
+		]
+	]);
+
+	it('énoncé : le bloc sans case: ni solution: ; corrigé : solution: oui, une seule fois', () => {
+		const serie = buildSerie(yohaku, [{ templateId: 'yohaku', seed: 1 }]);
+		expect(serie.statement).toContain('```yohaku');
+		expect(serie.statement).not.toMatch(/case\s*:/);
+		expect(serie.statement).not.toContain('solution');
+		expect(serie.solution).toContain('solution: oui');
+		expect(serie.solution.match(/solution\s*:/g)).toEqual(['solution:']);
+		expect(serie.solution).not.toMatch(/case\s*:/);
+	});
+
+	it('`solution: non` écrite par l’auteur : le corrigé n’a qu’une ligne solution:', () => {
+		const modeles = new Map([
+			[
+				'y',
+				modele('y', '```yohaku\nopération: somme\nligne: [x] | 2\nligne: 3 | 4\nsolution: non\n```')
+			]
+		]);
+		const serie = buildSerie(modeles, [{ templateId: 'y', seed: 1 }]);
+		expect(serie.solution.match(/solution\s*:/g)).toEqual(['solution:']);
+		expect(serie.solution).toContain('solution: oui');
+	});
+});
