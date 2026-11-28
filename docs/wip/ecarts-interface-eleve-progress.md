@@ -8,13 +8,13 @@ status: en cours
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-28, après #3288._
+_Mis à jour le 2026-11-28, après #3325._
 
-- **État** : PR 1 mergée (#3288) : latents L46, L50, L52, L53, L55, L108, L114 et L42 pour les 4xx ; `modalStack.push` vérifie les props (`P extends object`). L142 inscrit au registre (prénom non échappé dans le mail de bienvenue, trouvé par l'audit, hors lot).
-- **Prochaine action** : PR 2 : V73 + V75 (nouveau worktree `../ubumaths-wt-ecarts-interface-eleve-fenetres` depuis `origin/main`) ; puis PR 3 : L42 (500) ; V117 : consignes d'images dans `~/Downloads`, puis rangement quand David les a.
-- **En attente de David** : rien ; phase 0 tranchée le 2026-11-28 (§ Décisions). Il génère les 4 images de V117 à partir des consignes que la session dépose dans `~/Downloads`.
-- **Pièges en cours** : L42 reste ouvert tant que les 500 ne sont pas faits (ne pas le barrer) · port 5176 souvent pris par une autre session : prendre le suivant libre.
-- **Worktree / branche** : aucun (celui de la PR 1 est retiré).
+- **État** : PR 1 (#3288) et PR 2 (#3325, V73 fenêtres au clavier + V75 lien surligné) mergées ; preuves V73 et V75 vertes (barrées par la tâche de nuit). V140 inscrit (clavier non rendu à la carte après une fenêtre empilée, hors lot). L142 inscrit (hors lot).
+- **Prochaine action** : PR 3 : L42 (500 : message français, détail au journal du serveur ; ~30 fichiers ; nouveau worktree `../ubumaths-wt-ecarts-interface-eleve-500` depuis `origin/main`) ; V117 : consignes d'images dans `~/Downloads`, puis rangement quand David les a.
+- **En attente de David** : rien ; phase 0 tranchée (§ Décisions). Il génère les 4 images de V117 à partir des consignes déposées dans `~/Downloads`.
+- **Pièges en cours** : L42 reste ouvert tant que les 500 ne sont pas faits (ne pas le barrer) · port 5176 souvent pris : prendre le suivant libre.
+- **Worktree / branche** : aucun (celui de la PR 2 est retiré).
 
 ## Décisions de David (2026-11-28, phase 0 validée)
 
@@ -35,3 +35,8 @@ _Mis à jour le 2026-11-28, après #3288._
 - L114 : `formatRounded` passe par `roundNumber` (28,75 → 28,8).
 - L42 : 17 messages 4xx traduits (15 fichiers, dont `moderation` et `chat`, lots libres). Les 500 qui recopient le message anglais de la base : question à David.
 - V117 : vérifié en prod (lecture seule) : les 4 cartes pointent vers `/images/vip-cards/mathemo-*.webp`, absent ; les 45 autres sont dans le stockage Supabase.
+- PR 2 (worktree `ubumaths-wt-ecarts-interface-eleve-fenetres`) :
+  - V75 : `isNavItemActive` (`public-nav-items.ts`), lu par la barre et le tiroir ; preuve du registre réécrite (elle cherchait `startsWith` dans `Sidebar.svelte`, qui n'en a plus besoin).
+  - V73 : `ModalStackRenderer` : fond = frère de la fenêtre (plus de `<button>` parent), clavier dans la fenêtre à l'ouverture, Tab qui tourne, frères de la couche `inert` sauf les zones `aria-live` (toasts émis par les fenêtres), clavier rendu à l'élément d'ouverture. En plus : 7 des 12 fenêtres portaient déjà leur `role="dialog"` titré, le conteneur en ajoutait un second → il ne le prend plus que si la fenêtre n'en a pas.
+  - Vu à l'écran : article du Shtam (barre surlignée) ; cartes VIP d'un élève fictif (Playwright : clavier dedans après 40 Tab, 3 frères inertes, Échap rend le clavier à la tuile, 0 erreur).
+  - Revue (`code-reviewer`) : rien de bloquant ; élément d'ouverture retenu en `$effect.pre` (avant le montage de la fenêtre). V140 inscrit (clavier non rendu à la carte après une fenêtre empilée : la fenêtre d'en dessous est recréée, défaut antérieur).

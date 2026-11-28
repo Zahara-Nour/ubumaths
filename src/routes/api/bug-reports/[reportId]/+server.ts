@@ -129,10 +129,15 @@ export const PATCH: RequestHandler = async ({ params, request, locals }) => {
 			if (validation.data.status !== undefined) {
 				updateData.status = validation.data.status;
 
-				// If resolving, set resolved_by and resolved_at
+				// Résolu : qui et quand. Rouvert (tout autre statut) : la résolution
+				// passée s'efface, sinon un rapport en attente garderait un nom de
+				// résolveur (écart L125).
 				if (['resolved', 'wont_fix', 'duplicate'].includes(validation.data.status)) {
 					updateData.resolved_by = user.id;
 					updateData.resolved_at = new Date().toISOString();
+				} else {
+					updateData.resolved_by = null;
+					updateData.resolved_at = null;
 				}
 			}
 
