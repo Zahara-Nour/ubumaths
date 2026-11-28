@@ -1,7 +1,7 @@
 ---
 title: Écarts restants — lots pour des sessions en parallèle
 date: 2026-11-28
-status: lots écrits le 2026-11-28 ; en cours : interface-eleve, carnet-notifications, mathast-limites
+status: lots écrits le 2026-11-28 ; en cours : interface-eleve, carnet-notifications
 ---
 
 # Écarts restants : lots pour des sessions en parallèle
@@ -78,14 +78,14 @@ Chaque bug visible y demande un choix de forme : c'est la session qui pose des q
 Sondes par le chemin de l'Atelier (`runInput`), jamais `pnpm math`. Agent `mathast-expert`, revue
 `code-reviewer` en Opus.
 
-| Lot                    | Écarts                                                                     | Pris par                            | Notes                                     |
-| ---------------------- | -------------------------------------------------------------------------- | ----------------------------------- | ----------------------------------------- |
-| `mathast-limites`      | V125, L28 bis, L74, L75, L76, L77, L117, L118, L119, L121                  | ecarts-mathast-limites (2026-11-28) | Limites et domaines. V125 d'abord.        |
-| `mathast-second-degre` | V40, V93, V94, V95, V96, L70, L71, L120                                    |                                     | Second degré à paramètre et racines.      |
-| `mathast-ln`           | V80, V81, V82, V84, L62, L63, L65                                          |                                     | Simplification des logarithmes.           |
-| `mathast-trigo`        | V88, V89, V90, V91, L64, L69                                               |                                     |                                           |
-| `mathast-integrales`   | V17, V64, V98, V99, V100, V101                                             |                                     | Intégrales et primitives.                 |
-| `mathast-divers`       | V34, V78, V79, V83, V86, V87, V97, V102, L15, L25, L66, L67, L68, L72, M39 |                                     | À recouper en deux si la session s'étire. |
+| Lot                    | Écarts                                                                     | Pris par                 | Notes                                                                                                                                                                                                 |
+| ---------------------- | -------------------------------------------------------------------------- | ------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `mathast-limites`      | V125, L28 bis, L74, L75, L76, L77, L117, L118, L119, L121                  | fait (#3338, 2026-11-28) | Fait. Laissés : L117 (deux cas sur trois) et V138, le type du domaine ne note qu'une famille périodique sans point ; chantier à part ou non : en attente de David. V138 pris avec le lot (hors lots). |
+| `mathast-second-degre` | V40, V93, V94, V95, V96, L70, L71, L120                                    |                          | Second degré à paramètre et racines.                                                                                                                                                                  |
+| `mathast-ln`           | V80, V81, V82, V84, L62, L63, L65                                          |                          | Simplification des logarithmes.                                                                                                                                                                       |
+| `mathast-trigo`        | V88, V89, V90, V91, L64, L69                                               |                          |                                                                                                                                                                                                       |
+| `mathast-integrales`   | V17, V64, V98, V99, V100, V101                                             |                          | Intégrales et primitives.                                                                                                                                                                             |
+| `mathast-divers`       | V34, V78, V79, V83, V86, V87, V97, V102, L15, L25, L66, L67, L68, L72, M39 |                          | À recouper en deux si la session s'étire.                                                                                                                                                             |
 
 ## Hors lots
 
@@ -93,7 +93,7 @@ Sondes par le chemin de l'Atelier (`runInput`), jamais `pnpm math`. Agent `matha
 - Les 68 lignes ouvertes qui ne sont pas « à faire » (suspendues avec le tuteur, en attente de
   David, reportées, à trier) ne sont dans aucun lot.
 - Écarts ajoutés après le 2026-11-28 : à lister ici.
-- **V138** (domaine de tan(x) + 1/(x − 3) qui oublie x = 3) : refus honnête attendu, à prendre avec `mathast-limites` (décision de David, 2026-11-28).
+- **V138** (domaine de tan(x) + 1/(x − 3) qui oublie x = 3) : pris avec `mathast-limites` (#3338) ; l'Atelier refuse honnêtement, `intersect` perd encore le point (même cause que L117).
 - **T38, L140** (fiches, PDF) : relevés par `security-auditor` sur la PR du lot `fiches` (2026-11-28), antérieurs à la branche ; zone du lot `fiches`.
 - **V139** (points `_p…` du carré avec étiquette) : relevé par la session `ecarts-constructions` (2026-11-28) en voyant le carré à l'écran ; moteur de géométrie (convention « nom en `_` = sans étiquette »), phase 0 à faire.
 - **L141** (cache : Palotin de l'élève et tableau de bord prof qui ne suivent pas leur échéance, même défaut que L43) : inscrit à la demande de David le 2026-11-28, à la fin du lot `cache`.

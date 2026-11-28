@@ -1,20 +1,20 @@
 ---
 title: Écarts — lot mathast-limites
 date: 2026-11-28
-status: en cours
+status: clos
 ---
 
 # Écarts — lot `mathast-limites`
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-28, avant l'ouverture de la PR._
+_Mis à jour le 2026-11-28, après #3338._
 
-- **État** : corrigés sur la branche : V125, L28 bis, L74, L75, L76, L77, L118, L119, L121 ; L117 en partie (π déjà un kπ) ; V138 reformulé (l'Atelier refuse déjà, `intersect` perd le point).
-- **Prochaine action** : revue faite ; PR, CI, merge.
-- **En attente de David** : type de domaine à plusieurs familles et points (reste de L117 et V138).
-- **Pièges en cours** : sondes par `runInput`, jamais `pnpm math` ; preuves par `ECARTS_PREUVES=1 pnpm exec vitest run --project ecarts …`.
-- **Worktree / branche** : `../ubumaths-wt-ecarts-mathast-limites` · `fix/ecarts-mathast-limites`.
+- **État** : clos. #3338 mergée : V125, L28 bis, L74, L75, L76, L77, L118, L119, L121 corrigés ; L117 (deux cas sur trois) et V138 laissés au registre.
+- **Prochaine action** : aucune ici ; les preuves vertes se barrent à la tâche de nuit.
+- **En attente de David** : chantier à part ou non pour un type de domaine à plusieurs familles périodiques et points (reste de L117, V138).
+- **Pièges en cours** : aucun.
+- **Worktree / branche** : retirés par `pnpm pr:merger`.
 
 ## Journal
 
