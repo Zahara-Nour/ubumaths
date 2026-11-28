@@ -84,7 +84,7 @@ Ceux du code et de l'interface :
 | `src/lib/atelier/names.ts`                  | Validation des noms, nommage automatique (`nextName`), noms de dérivées et de réciproques (`f^-1`) ; `splitDisplayExponent` sépare l'exposant `⁻¹` du nom affiché                                                     |
 | `src/lib/atelier/parse.ts`                  | Lecture d'une définition (`parseDefinition`), dépendances (`referencesOf`), provenance (`Provenance`) ; une définition illisible dit l'aide précise du parseur, comme la ligne de calcul (`invalidExpressionMessage`) |
 | `src/lib/atelier/letter.ts`                 | `f(t) = t^2` : la lettre de l'élève à l'affichage, la définition rangée en x                                                                                                                                          |
-| `src/lib/atelier/interval.ts`               | `f(x) = x^2 sur [0;+∞[` : coupe au mot « sur », lit l'ensemble, juge I3 (domaine) et I4 (`f(5)`)                                                                                                                      |
+| `src/lib/atelier/interval.ts`               | `f(x) = x^2 sur [0;+∞[`, `f(x) = x pour x > 2` : coupe au mot « sur » ou « pour », lit l'ensemble, juge I3 (domaine) et I4 (`f(5)`)                                                                                   |
 | `src/lib/atelier/draft-hint.ts`             | Le « Modèle : » d'une définition de fonction sous le champ de la console : `g(t) = t² sur [0;3]`, puis, « sur » tapé, `[a;b], ]a;b[, [0;+∞[`                                                                          |
 | `src/lib/atelier/reciprocal.ts`             | La carte `f⁻¹` et `.réciproque` : f passée au moteur, paramètres gardés en lettres, refus en français                                                                                                                 |
 | `src/lib/atelier/limit.ts`                  | `.limite EXPR en POINT` : point lu (côté, infini, `en x=1`), `evaluateLimit`, réponse en formule                                                                                                                      |
@@ -671,6 +671,22 @@ définition de fonction en cours (`f(x) =`, dans les deux champs) montre sous le
 f(x) = x² sur [0;3] — pour choisir l'ensemble », nom et variable tapés ; « sur » tapé, le modèle
 devient celui d'un intervalle (`definitionHint`, `draft-hint.ts`). Une indication seulement :
 Entrée calcule la ligne telle quelle.
+
+**Ou par une condition** (chantier `fonctions-domaines`, phase 0 validée par David le
+2026-11-28) : `f(x) = x pour x > 2`, `pour 2 < x < 4`, `pour x ≠ 0`, `pour x < 0 ou x ≥ 1` valent
+« sur » suivi de l'ensemble. « pour » ne coupe que devant une comparaison (`<`, `≤`, `≠`, `\lt`,
+`\le`, `\ne`… ; `a = 3 pour 4`, `pourcentage` restent entiers) ; la condition porte sur la lettre
+de la fonction (`f(x) = x pour t > 2` : « Je n'ai pas su lire la condition… »), elle est rangée
+TELLE QU'ÉCRITE dans `interval` et lue par le même `parseStudentDomain` ; mêmes refus que « sur »
+(vide, un point, hors du domaine). C'est l'écriture qui dit le mot (`isConditionWritten` : pas un
+début d'ensemble, une comparaison) : la carte réaffiche `x\text{ pour }x>2`, ce qui a été tapé
+(une condition tapée en texte y est réécrite en LaTeX, `≤` → `\le`, « ou » → `\text{ ou }`) ; les
+propriétés et la liste disent l'ensemble (« ]2 ; +∞[ »). Une seconde formule
+(`x pour x > 2, x^2 pour x ≤ 2`) est refusée (« Une seule formule par fonction… ») : la place reste
+libre pour les fonctions par morceaux. Dans le champ « Écriture mathématique » de la console,
+« pour » devient un mot comme « sur », et « ou », « et » seulement après lui (`f(t) = et` reste
+e·t) ; dans la carte, MathLive les colle (`x<0oux>1`), relus seulement derrière un chiffre, une
+accolade ou une espace (`\theta` n'est pas coupé).
 
 **Les calculs sur l'intervalle** (lot 2, I4) : `.résoudre` et `.variations` travaillent sur
 l'ensemble des fonctions qu'ils citent SEULES ou appelées sur une lettre (`f`, `f(x)`, `f'(t)` —
@@ -2090,7 +2106,8 @@ frappe : [atelier-saisie-naturelle.md](../archive/wip/atelier-saisie-naturelle.m
   domaine, aide… ; accents facultatifs ; formes conjuguées « résous », « dérive ») est une commande ;
   sinon un calcul ou une définition. Aucun point à taper ; un point tapé reste accepté sans bruit.
 - **Les petits mots** (de, à, en, sur, pour, dans, et, ordre, par) ne sont des mots **que** dans une
-  commande (et « sur » après le `=` d'une définition), jamais dans un calcul.
+  commande (et « sur », « pour » après le `=` d'une définition, « ou », « et » après ce « pour »),
+  jamais dans un calcul.
 - **Un mot devient texte quand il est fini** (espace, caractère mathématique, ou choix dans la
   liste), pas dès que ses lettres correspondent (sinon « de » dans « deriver ») ; retour aux maths
   automatique.
