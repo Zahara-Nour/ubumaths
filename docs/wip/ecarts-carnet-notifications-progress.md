@@ -8,12 +8,12 @@ status: en cours
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-28, avant l'ouverture de la première PR._
+_Mis à jour le 2026-11-28, à l'ouverture de la première PR._
 
-- **État** : V107, L79, L80, L81, L82, L83 corrigés et commités (migration `20261128163026_…` pour L82, L79 ; preuves d'intégration vertes avec elle, en « échec attendu » sans). Revue `code-reviewer` : rien de bloquant. Menu « Type » vu à l'écran (4 choix).
-- **Prochaine action** : fin de l'audit `security-auditor`, puis push et PR ; au merge, `db:migrate` seulement si David a répondu « oui » à la question d'accès. Ensuite : L78 (webhook Brevo) en seconde PR, avec sa phase 0.
-- **En attente de David** : « oui » explicite à la question d'accès de L82 / L79 (rien ne s'ouvre, seule l'écriture se ferme ; élève archivé refusé).
-- **Pièges en cours** : `add_warning` sans appelant : ne pas le retirer ici (suppression = décision à part).
+- **État** : PR 1 ouverte (V107, L79, L80, L81, L82, L83 ; migration `20261128163026_…`). Revue `code-reviewer` + `security-auditor` faites, sans bloquant ; les trois portes de L82 et l'insertion directe de L83 ajoutées sur l'audit, preuves rouges sans la migration, vertes avec.
+- **Prochaine action** : CI verte → `pnpm pr:merger <n>` ; puis `db:migrate` depuis le dépôt principal **seulement** avec le « oui » explicite de David à la question d'accès (sinon le lui redemander). Ensuite L78 (webhook Brevo) en PR 2, avec sa phase 0.
+- **En attente de David** : « oui » explicite à la question d'accès de L82 / L83 / L79 (rien ne s'ouvre ; le prof perd des écritures abusives ; élève archivé refusé).
+- **Pièges en cours** : `add_warning` sans appelant : ne pas le retirer ici. `db:migrate` pousse toutes les migrations en attente : `migration list --linked` avant.
 - **Worktree / branche** : `../ubumaths-wt-ecarts-carnet-notifications` · `fix/ecarts-carnet-notifications` · serveur de dev sur 5177.
 
 ## Écarts du lot
@@ -31,5 +31,6 @@ _Mis à jour le 2026-11-28, avant l'ouverture de la première PR._
 ## Historique
 
 - 2026-11-28 : lot pris, chantier ouvert.
+- 2026-11-28 : audit de sécurité : preuves de `add_warnings_bulk`, de l'insertion directe et de l'élève archivé ajoutées ; policy des notifications (L83) dans la migration.
 - 2026-11-28 : migration L82 + L79 écrite, preuves vertes ; revue de code sans bloquant.
 - 2026-11-28 : V107 (phase 0 validée), L83, L80, L81 corrigés ; L82, L79 attendent la question d'accès ; L78 = webhook Brevo.
