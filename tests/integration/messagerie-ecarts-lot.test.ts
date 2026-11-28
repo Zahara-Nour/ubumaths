@@ -132,6 +132,26 @@ describe('Messagerie privée : écarts du lot messagerie', () => {
 			expect(error?.code).toBe('42501');
 		});
 
+		it('Léa ne peut pas passer par un parent écrit en direct dans le fil de Tom', async () => {
+			const messageATom = await envoye(teacherClient, teacher.id, [tom.id]);
+			const { data: faux, error: ecriture } = await leaClient
+				.from('private_messages')
+				.insert({
+					sender_id: lea.id,
+					subject: 'Faux parent',
+					content: CONTENT,
+					thread_root_id: messageATom
+				})
+				.select('id')
+				.single();
+			expect(ecriture).toBeNull();
+			const { data, error } = await envoyer(leaClient, lea.id, [teacher.id], {
+				p_parent_message_id: faux!.id
+			});
+			expect(data).toBeNull();
+			expect(error?.code).toBe('42501');
+		});
+
 		it('un message parent inconnu est refusé', async () => {
 			const { data, error } = await envoyer(leaClient, lea.id, [teacher.id], {
 				p_parent_message_id: '00000000-0000-4000-8000-000000000001'

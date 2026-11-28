@@ -4,7 +4,8 @@
 -- Accès (tranché par David le 2026-11-28) : personne ne lit rien de nouveau,
 -- chaque point RETIRE un accès.
 --   * L127, L131 — `send_private_message` : une réponse ne s'accroche qu'à un
---     message que son auteur a envoyé ou reçu. Avant, un élève qui connaissait
+--     message que son auteur a envoyé ou reçu, dans un fil dont il a envoyé ou
+--     reçu le premier message. Avant, un élève qui connaissait
 --     l'identifiant d'un message rattachait sa réponse au fil d'un autre.
 --   * L132 — hors envoi à une classe, le message ne porte ni l'étiquette
 --     « message de classe » ni de classe (effet d'affichage seulement).
@@ -26,8 +27,10 @@
 --      `get_message_details`, `get_message_thread`) et de 20260618093000
 --      (`validate_message_recipients`), chacun avec
 --      `SET search_path = public, pg_temp` ;
---   2. GRANT ALL ON TABLE public.message_search_index TO anon;
---      GRANT INSERT, UPDATE, DELETE, TRUNCATE, REFERENCES, TRIGGER
+--   2. droits d'avant (mesurés en prod le 2026-11-28 : `arwdxtm`, sans TRUNCATE) :
+--      GRANT SELECT, INSERT, UPDATE, DELETE, REFERENCES, TRIGGER, MAINTAIN
+--        ON TABLE public.message_search_index TO anon;
+--      GRANT INSERT, UPDATE, DELETE, REFERENCES, TRIGGER
 --        ON TABLE public.message_search_index TO authenticated;
 
 -- -----------------------------------------------------------------------------
@@ -97,17 +100,28 @@ BEGIN
   v_plain_text := extract_plain_text_from_tiptap(p_content);
   v_plain_text := substring(trim(v_plain_text), 1, 5000); -- Limit length and trim whitespace
 
-  -- L127, L131 : on ne répond qu'à un message qu'on a envoyé ou reçu
-  -- (sinon la réponse s'accrocherait au fil d'un autre). Message sans accent :
-  -- le serveur lit le code.
+  -- L127, L131 : on ne répond qu'à un message qu'on a envoyé ou reçu, dans
+  -- un fil dont on a envoyé ou reçu le premier message (sinon la réponse
+  -- s'accrocherait au fil d'un autre, y compris par un parent écrit en direct
+  -- dans la table avec le `thread_root_id` d'un autre fil). Message sans
+  -- accent : le serveur lit le code.
   IF p_parent_message_id IS NOT NULL AND NOT EXISTS (
-    SELECT 1 FROM private_messages pm
-    WHERE pm.id = p_parent_message_id
+    SELECT 1
+    FROM private_messages parent
+    JOIN private_messages root ON root.id = COALESCE(parent.thread_root_id, parent.id)
+    WHERE parent.id = p_parent_message_id
       AND (
-        pm.sender_id = p_sender_id
+        parent.sender_id = p_sender_id
         OR EXISTS (
           SELECT 1 FROM message_inbox mi
-          WHERE mi.message_id = pm.id AND mi.recipient_id = p_sender_id
+          WHERE mi.message_id = parent.id AND mi.recipient_id = p_sender_id
+        )
+      )
+      AND (
+        root.sender_id = p_sender_id
+        OR EXISTS (
+          SELECT 1 FROM message_inbox mi
+          WHERE mi.message_id = root.id AND mi.recipient_id = p_sender_id
         )
       )
   ) THEN

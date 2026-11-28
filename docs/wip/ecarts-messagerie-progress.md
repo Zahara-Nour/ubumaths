@@ -10,8 +10,8 @@ status: lot codé, PR à ouvrir
 
 _Mis à jour le 2026-11-28, avant l'ouverture de la PR._
 
-- **État** : tout le lot codé sur la branche (migration `20261128161241`, Zod, `replyRecipientId`, code mort) ; tests verts (16 fichiers d'intégration messagerie, unitaires) ; V135 vu à l'écran ; `code-reviewer` sans bloquant.
-- **Prochaine action** : relancer `security-auditor` sur `git diff origin/main...HEAD` (le premier tournait encore au `/clear`, résultat perdu), puis push, PR, merge, puis `db:migrate` (additive) et clôture du lot (registre, `ecarts-lots.md`, archive du journal).
+- **État** : tout le lot codé sur la branche (migration `20261128161241`, Zod, `replyRecipientId`, code mort) ; tests verts (16 fichiers d'intégration messagerie, unitaires) ; V135 vu à l'écran ; `code-reviewer` et `security-auditor` sans bloquant.
+- **Prochaine action** : push, PR, merge, puis `db:migrate` (additive) et clôture du lot (registre, `ecarts-lots.md`, archive du journal).
 - **En attente de David** : rien.
 - **Pièges en cours** : L135 clos sans code (invariant mono-professeur) ; L84 : preuve passée de `it.fails` à `it` dans `ecarts-messagerie.test.ts`, fichier partagé avec le lot `carnet-notifications`.
 - **Worktree / branche** : `../ubumaths-wt-ecarts-messagerie` · `fix/ecarts-messagerie`.
@@ -50,3 +50,4 @@ Sans question : T37 (droits retirés sur `message_search_index`), M41 (store + r
 
 - Tests rouges vérifiés avant la migration : 12 rouges, 6 témoins verts (`messagerie-ecarts-lot.test.ts`).
 - Revue `code-reviewer` : 0 bloquant ; mineur 2 corrigé (message de refus propre), mineurs 1 et 3 consignés dans la doc / laissés (répondre à un message qu'on a supprimé reste accepté, sans enjeu d'accès).
+- Audit `security-auditor` : 0 bloquant. Corrigé : le contrôle du parent se contournait par un parent écrit en direct dans `private_messages` (INSERT permis à `authenticated`) avec le `thread_root_id` d'un autre fil → la fonction contrôle aussi le premier message du fil (test ajouté) ; rollback des droits de `message_search_index` aligné sur la prod (sans TRUNCATE). Laissé : `REVOKE INSERT ON private_messages` (à trancher à part, `src/lib/server/riddle-messages.ts` y écrit en direct), MAINTAIN d'`authenticated` sur l'index (défaut Supabase).
