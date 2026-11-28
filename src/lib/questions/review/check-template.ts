@@ -269,8 +269,12 @@ function roundedAnswerWithoutPrecision(template: QuestionTemplate): string[] {
 	});
 }
 
-/** Statuts d'une réponse de la bonne valeur : l'erreur prévue tombe sur la bonne réponse */
-const RIGHT_VALUE_STATUSES = new Set(['correct', 'unoptimal_form', 'bad_form']);
+/**
+ * Statuts d'une réponse de la bonne valeur : l'erreur prévue tombe sur la bonne réponse.
+ * Mauvaise forme d'une case à forme exigée : l'erreur prévue écrite telle quelle doit
+ * déclencher son message (n° 75) ; sans forme exigée, elle est ignorée comme avant.
+ */
+const RIGHT_VALUE_STATUSES = new Set(['correct', 'unoptimal_form']);
 
 /**
  * Erreurs prévues d'un tirage (idée 3) : chacune, répondue telle quelle, doit être
@@ -290,7 +294,10 @@ function expectedErrorReplayErrors(instance: QuestionInstance): string[] {
 			];
 			if (!verdict) return [`${where} : case introuvable`];
 			if (RIGHT_VALUE_STATUSES.has(verdict.status)) return [];
-			if (verdict.status !== 'incorrect') return [`${where} : réponse jugée « ${verdict.status} »`];
+			if (verdict.status === 'bad_form' && !blank.requiredForm) return [];
+			if (verdict.status !== 'incorrect' && verdict.status !== 'bad_form') {
+				return [`${where} : réponse jugée « ${verdict.status} »`];
+			}
 			const found = expectedErrorOf(instance, verdict);
 			const sameOrEarlier = (blank.expectedErrors ?? []).slice(0, k + 1);
 			return found !== null && sameOrEarlier.includes(found)

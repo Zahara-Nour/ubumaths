@@ -1,7 +1,7 @@
 ---
 title: Lot d'outils formes-messages (n° 75 puis 76)
 date: 2026-11-28
-status: phase 0 du n° 75 posée, en attente de David
+status: n° 75 codé, en revue avant la PR
 ---
 
 # Lot `formes-messages` : n° 75 puis n° 76
@@ -10,11 +10,11 @@ status: phase 0 du n° 75 posée, en attente de David
 
 _Mis à jour le 2026-11-28, avant la première PR._
 
-- **État** : phase 0 du n° 75 (message propre à une forme exigée) posée à David, rien de codé.
-- **Prochaine action** : réponse de David → tests rouges → code (n° 75), PR ; puis phase 0 du n° 76.
-- **En attente de David** : les 4 questions de la phase 0 du n° 75 ci-dessous.
-- **Pièges en cours** : le rejeu de `checkTemplate` refuse aujourd'hui une erreur prévue qui n'est
-  pas jugée fausse avec son message : à revoir pour une erreur prévue de même valeur.
+- **État** : n° 75 codé, tests verts, rendu vu à l'écran (`e2e/verifs/message-de-forme.spec.ts`).
+- **Prochaine action** : revue (`code-reviewer` opus, correction des réponses) → PR → merge ; puis
+  phase 0 du n° 76.
+- **En attente de David** : rien.
+- **Pièges en cours** : aucun.
 - **Worktree / branche** : `../ubumaths-wt-outil-formes-messages` · `feat/outil-formes-messages`.
 
 ## Origine
@@ -57,3 +57,22 @@ Questions à David :
 - Q2 : un second message pour la forme « acceptable » (½ point) ? (recommandé : non, pas de cas réel)
 - Q3 : erreur prévue de même valeur comparée sur l'**écriture** (`7/5` ≠ `14/10`) ? (recommandé : oui)
 - Q4 : syntaxe : `{ pattern, acceptable?, message? }` dans `requiredForm` ? (recommandé : oui)
+
+**Tranché** (David, 2026-11-28, « je te suis » en réponse aux 4 questions) : Q1 à Q4 = les
+recommandations (motif seulement ; pas de message pour « acceptable » ; erreur prévue de même
+valeur comparée sur l'écriture ; `{ pattern, acceptable?, message? }`).
+
+## N° 75 : fait (branche, 2026-11-28)
+
+- `required-form-validator.ts` `getRequiredFormFeedback` : `message` du motif, sinon la phrase
+  générale. Schémas souple et strict : `message` non vide, 500 caractères au plus.
+- Générateur : message résolu à l'étape 7 bis, comme celui d'une erreur prévue (source à part).
+- `expected-errors.ts` : sur `bad_form` d'une case à forme exigée, erreur prévue écrite telle quelle
+  (`nodesEqual` des arbres) ; `expected-result.ts` : son message remplace celui de la forme.
+- Rejeu `checkTemplate` : une erreur prévue de mauvaise forme (case à forme exigée) doit déclencher
+  son message ; sans forme exigée, ignorée comme avant.
+- Éditeur : champ « Message si la forme n'est pas respectée » (variation, partagé, défauts des cases).
+- Tests : `required-form-message.test.ts` (15, rouges avant), `QuestionTemplateForm-message-de-forme`
+  (2), verif `message-de-forme.spec.ts` (3, captures vues : clair, sombre, éditeur).
+- Hors lot : la ligne « Types d'erreur » du prof ne compte que les cases fausses (une erreur prévue
+  lue sur une mauvaise forme n'y figure pas) ; non demandé.

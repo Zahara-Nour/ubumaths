@@ -638,7 +638,7 @@ export function requiredFormVerdict(
 export function getRequiredFormFeedback(requiredForm: RequiredForm, _isMultiple: boolean): string {
 	if (typeof requiredForm === 'string') {
 		return REQUIRED_FORM_FEEDBACK[requiredForm];
-	} else {
-		return REQUIRED_FORM_FEEDBACK.pattern;
 	}
+	// Message écrit par l'auteur (outils-manquants n° 75), sinon la phrase générale
+	return requiredForm.message ?? REQUIRED_FORM_FEEDBACK.pattern;
 }
