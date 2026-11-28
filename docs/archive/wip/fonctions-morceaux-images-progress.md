@@ -2,10 +2,10 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-28, à l'ouverture de la PR._
+_Mis à jour le 2026-11-28, après #3303 (chantier clos, journal archivé)._
 
 - **État** : code + tests (`image-hors-ensemble.test.ts`, 10) verts ; revue `code-reviewer` faite, son bug (ensemble hérité lu en retard d'un passage) corrigé ; suites atelier vertes (8 241) ; `check:incremental` 0, cliquet tenu ; doc `atelier.md` (I4) à jour.
-- **Prochaine action** : après le merge, archiver ce journal.
+- **Prochaine action** : aucune ; #3303 mergée, doc durable dans `docs/systeme/atelier.md` (I4).
 - **En attente de David** : rien.
 - **Pièges en cours** : `f(x)` dans une autre fonction est un héritage, pas une image : jamais jugé (test).
 - **Worktree / branche** : `../ubumaths-wt-fonctions-morceaux-images` · `fix/image-hors-ensemble`.
