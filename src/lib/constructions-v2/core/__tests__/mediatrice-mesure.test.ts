@@ -55,12 +55,12 @@ describe('mediatrice @mesure — déroulé', () => {
 		const { exec, steps } = subSteps(SCRIPT);
 		expect(exec.totalSteps).toBe(2 + 7);
 		expect(steps.map((s) => s.kind)).toEqual([
-			'compass-measure',
-			'compass-measure',
+			'instrument-move',
+			'instrument-move',
 			'point-fade-in',
-			'compass-measure',
+			'instrument-move',
 			'ruler-trace',
-			'compass-measure',
+			'instrument-move',
 			'ruler-trace'
 		]);
 	});

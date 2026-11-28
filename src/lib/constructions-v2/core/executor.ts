@@ -80,7 +80,8 @@ import {
 	INSTRUMENT_RAMP_MS,
 	INSTRUMENT_MOVE_SPEED_FACTOR,
 	COMPASS_RAISE_MS,
-	COMPASS_LOWER_MS
+	COMPASS_LOWER_MS,
+	PIXELS_PER_UNIT
 } from '../constants';
 
 /** French instrument name to InstrumentType mapping. */
@@ -290,6 +291,8 @@ export class ConstructionExecutor {
 	 * indexing.
 	 */
 	private _plan: PlanEntry[] = [];
+	/** Vrai quand un `seekTo` a été interrompu par une erreur (cf. `seekTo`). */
+	private _seekNeedsReset = false;
 	/** Current position in `_plan` (-1 before first step). */
 	private _timelineIndex = -1;
 	/**
@@ -735,15 +738,30 @@ export class ConstructionExecutor {
 		this._moveDurationMs = 0;
 		this._lastCompassRadius = 0;
 		this._compassCurRadius = 0;
-		this._stepPhases = [];
-		this._plan = [];
+		// Frise, phases et durées viennent de la pré-simulation de `load()` :
+		// elles ne dépendent que du script, on les garde.
 		this._timelineIndex = -1;
 		this._currentSubStep = null;
 		this._pendingVisibility = null;
 		this._currentDecoratorTriple = null;
 		this._currentVoie = null;
 		this._lastChoreographyResult = null;
-		this._stepDurations = this.calculateStepDurations();
+		this._seekNeedsReset = false;
+	}
+
+	/**
+	 * Amène la lecture au pas `stepIndex` de la frise. En avant, ne joue que
+	 * les pas qui manquent ; en arrière (ou sur place), repart du début. Un
+	 * pas qui lève une erreur laisse l'état à moitié avancé : le déplacement
+	 * suivant repart alors du début.
+	 */
+	seekTo(stepIndex: number): void {
+		if (this._seekNeedsReset || stepIndex <= this._timelineIndex) this.reset();
+		this._seekNeedsReset = true;
+		while (this._timelineIndex < stepIndex && this.step()) {
+			// continue
+		}
+		this._seekNeedsReset = false;
 	}
 
 	// ─── Accessors ───────────────────────────────────────────
@@ -1450,7 +1468,7 @@ export class ConstructionExecutor {
 		};
 		newInstrumentPos: { type: InstrumentType; x: number; y: number; rotation: number } | null;
 	} {
-		const PPU = 40;
+		const PPU = PIXELS_PER_UNIT;
 
 		// Fade-in sub-steps (no instrument, no progressive trace) : short fade,
 		// then the reading pause. The fade ends at `drawPhaseEnd` ; the canvas
@@ -1472,10 +1490,10 @@ export class ConstructionExecutor {
 			};
 		}
 
-		// Draw duration from explicit geometric distance. For `compass-measure`,
-		// no arc is drawn — the step is purely a move + pause to visualize
-		// the compass taking a measure between two points.
-		const isMeasure = subStep.kind === 'compass-measure';
+		// Draw duration from explicit geometric distance. For `compass-measure`
+		// and `instrument-move`, nothing is drawn — the step is purely a move +
+		// pause (the compass takes a measure, or another instrument is placed).
+		const isMeasure = subStep.kind === 'compass-measure' || subStep.kind === 'instrument-move';
 		const rawDraw = isMeasure ? 0 : Math.round(subStep.geometricDistance * PPU * MS_PER_PIXEL);
 		const drawDuration = isMeasure
 			? 0
@@ -1573,7 +1591,7 @@ export class ConstructionExecutor {
 		instrumentPos: Record<string, { x: number; y: number; rotation: number }>,
 		durations: number[]
 	): void {
-		const PPU = 40;
+		const PPU = PIXELS_PER_UNIT;
 		const newElements = fig.getAllElements().slice(sizeBefore);
 
 		const hasDrawable = newElements.some(
