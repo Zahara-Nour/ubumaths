@@ -2,15 +2,17 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-28, PR des migrations ouverte._
+_Mis à jour le 2026-11-28, après #3314 et `db:migrate`._
 
-- **État** : brouillons créés en prod par David (6ff9a5e2, 47ec40d1, 87623856), ids commités ; migrations générées
-  (`…145608_…_neufs_rangement_tags.sql`, `…145615_…_publies_contenu.sql`), tests d'intégration verts.
-- **Prochaine action** : PR verte → merge → `migration list --linked` (aucune autre en attente) → `db:migrate` depuis
-  `main` → vérifier en prod nœuds, tags et variations → relecture dans `/dev/modeles` (série pour les 3 publiés).
-- **En attente de David** : rien avant la relecture.
+- **État** : en prod, 3 brouillons rangés et tagués (6ff9a5e2, 47ec40d1, 87623856), +6 variations sur c8741112,
+  3be08965, 2291c83c (vérifié en base). Série de relecture écrite, pas encore créée :
+  `scripts/series/6-relecture-angles-publies.json` dans `ubumaths-wt-idees-6e-angles-serie` (non commitée).
+- **Prochaine action** : après création de la série par David, commiter son id (PR, branche
+  `chore/idees-6e-angles-serie`) ; puis lire les verdicts de relecture, corriger, `publier-lot.ts` en simulation.
+- **En attente de David** : simulation puis `--publier` de `creer-serie.ts` sur ce fichier (classifieur : je ne lance
+  rien qui vise la prod) ; relecture dans `/dev/modeles?point=6-168` et `?point=6-169` + la série.
 - **Pièges en cours** : c8741112, 3be08965, 2291c83c réservés ; copies « — essai » en base locale (brouillons).
-- **Worktree / branche** : `ubumaths-wt-idees-6e-angles-migrations` · `feat/idees-6e-angles-migrations`.
+- **Worktree / branche** : `ubumaths-wt-idees-6e-angles-serie` · `chore/idees-6e-angles-serie`.
 
 ## Phase 0 (2026-11-28)
 
@@ -70,6 +72,9 @@ migration : **personne ne gagne d'accès**, on range des modèles du prof. Aucun
   Recommandation : **tolérance de 10°**, la saisie oblige à estimer.
 
 ## Historique
+
+- 2026-11-28 : #3314 mergée, `db:migrate` (2 migrations seules en attente), rangement, tags et variations
+  vérifiés en prod. Série de relecture écrite.
 
 - 2026-11-28 : brouillons créés en prod (`create-questions --publier`, David), ids commités ; migrations de
   rangement (3 modèles neufs) et de contenu (+6 variations de publiés) générées, tests d'intégration verts.
