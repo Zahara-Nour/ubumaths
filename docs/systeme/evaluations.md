@@ -245,7 +245,9 @@ Réglages (`evaluationSettingsSchema`) : course = temps limite obligatoire, 1 à
 (`COURSE_TIME_LIMIT_DEFAULT_MINUTES`), saisi en minutes, stocké en secondes ; entraînement = pas de
 temps limite global. `max_attempts` 1 à 10 ou illimité ; `deadline` facultative.
 
-Cycle de vie (prof) : créer depuis une série (`/dashboard/teacher/assessments/new?series=<id>`) →
+Cycle de vie (prof) : créer depuis une série (`/dashboard/teacher/assessments/new?series=<id>` ; la
+page nomme les modèles à case Python de la série, qui n'entreront pas dans le contrôle :
+`pythonTemplateTitles`, `server/series-python-cases.ts`) →
 brouillon modifiable (`[id]/edit` refuse hors `draft`) → publier → assigner à des classes (`assignEvaluation`
 refuse si non publiée). Le statut `archived` existe (lu par la liste et par
 `isEvaluationUnfinished`) mais aucun écran ne le pose. Une **série** est verrouillée par la base dès qu'une séance est
@@ -270,7 +272,9 @@ d'attente).
    sans compter de tentative, **même après la date limite** ; les réponses tapées sont perdues (Q34).
 4. Date limite passée → 403 ; tentatives épuisées → 403. Toute séance compte dès sa création,
    abandonnée comprise (Q33).
-5. Tirage par `drawSeriesQuestions` avec `excludeCourseCards`, hasard `crypto`. Chaque instance
+5. Tirage par `drawSeriesQuestions` avec `excludeCourseCards` et `excludePythonCases` (une case
+   « programme Python » se juge dans le navigateur seulement, outil 49 ; l'aperçu prof de
+   `/automaths/test` les retire aussi), hasard `crypto`. Chaque instance
    **complète** est figée dans `evaluation_attempt_questions` (Q42) : un modèle modifié ensuite ne
    change ni la reprise ni la correction. Une question impossible à générer, ou dont l'énoncé masqué
    dirait encore la réponse d'un bloc à geste (`gestureAnswerLeaks`, chantier `fuite-enonce`), est
