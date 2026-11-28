@@ -7,7 +7,10 @@
 		href: string;
 		label: string;
 		icon?: Component;
-		badge?: number;
+		/** Nombre à signaler (affiché s'il est > 0), ou `'?'` quand il est inconnu. */
+		badge?: number | '?';
+		/** Infobulle et nom lu de la pastille (ex. « Nombre de signalements inconnu »). */
+		badgeLabel?: string;
 	};
 
 	let {
@@ -57,8 +60,10 @@
 					<tab.icon class="size-4" />
 				{/if}
 				{tab.label}
-				{#if tab.badge && tab.badge > 0}
+				{#if tab.badge === '?' || (tab.badge && tab.badge > 0)}
 					<span
+						title={tab.badgeLabel}
+						aria-label={tab.badgeLabel}
 						class={cn(
 							'ml-1 flex h-5 min-w-5 items-center justify-center rounded-full px-1.5 text-xs font-bold',
 							isActiveTab(tab.href)
