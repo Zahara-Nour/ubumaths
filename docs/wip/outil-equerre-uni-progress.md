@@ -1,20 +1,21 @@
 ---
 title: Lot d'outils equerre-uni — journal
 date: 2026-11-28
-status: outil 40 codé, PR à ouvrir
+status: outil 40 livré (#3290) ; 38 et 45 à faire
 ---
 
 # Lot `equerre-uni` (outils 40, puis 38, puis 45)
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-28, avant toute PR._
+_Mis à jour le 2026-11-28, après #3290._
 
-- **État** : outil 40 codé et vérifié (§ 1 bis), PR à ouvrir · **Prochaine action** : PR de l'outil 40,
-  `pnpm pr:merger`, puis phase 0 de l'outil 38 (médiatrice à la règle graduée et à l'équerre) · **En attente
-  de David** : rien · **Pièges en cours** : le lot `triangle-quadrillage` touche le même module (figure à
-  compléter) : `merge origin/main` avant chaque PR · **Worktree / branche** : `../ubumaths-wt-outil-equerre-uni`,
-  `feat/outil-equerre-uni`.
+- **État** : outil 40 livré (#3290, § 1 bis) ; reste 38 (médiatrice à la règle graduée et à l'équerre, papier uni)
+  puis 45 (figure composée) · **Prochaine action** : nouveau worktree `../ubumaths-wt-outil-equerre-uni`
+  (branche `feat/outil-equerre-uni-38`), outil 38 vérifié dans le code, puis sa phase 0 · **En attente de
+  David** : rien · **Pièges en cours** : `triangle-quadrillage` touche le même module (`merge origin/main` avant
+  chaque PR) ; à dire à David : la correction de l'outil 40 s'affiche aussi sur quadrillage, (d) segment → pied
+  possible hors du segment (aucun cas réel) · **Worktree / branche** : aucun (retirés par `pr:merger`).
 
 ## 1. Outil 40 — phase 0 (2026-11-28)
 
