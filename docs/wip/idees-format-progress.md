@@ -14,7 +14,9 @@ _Mis à jour le 2026-11-28, page à cocher validée en bloc par David ; pas de P
   agents `pedagogy-expert` par dossier ; migration de contenu (réglages compris) ; puis série de
   relecture des 52 + neufs dans `/dev/modeles`. Les 8 propositions qui attendent un outil
   (n° 75 à 79) viennent après leurs outils.
-- **En attente de David** : faire faire les outils n° 75 à 79 par un lot d'outils (`/prendre-outil`) ou ici ?
+- **En attente de David** : rien. Outils n° 75 à 79 rangés en lots (`outils-lots.md`, commit
+  `79f058d653`) : `formes-messages` (75, 76), `arrondi-court` (78), `valeur-absolue-distance` (79),
+  77 dans `ecritures-exactes` (attend `fusion-moteurs`) ; à lancer par `pnpm outils lancer`.
 - **Pièges** : réglages du modèle = jugent aussi les variations en prod (specs d'origine vertes) ;
   zoom refuse `placer:` ; `impossibleLabel` ni en flash-card ni en classe ; variations jamais retirées.
 - **Worktree / branche** : `ubumaths-wt-idees-format-revue-2de` (`feat/idees-format-revue-2de`).
