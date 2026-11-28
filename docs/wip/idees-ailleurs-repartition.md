@@ -178,6 +178,9 @@ de contenu appliquée en prod.
 | d03e49c0 Calculer la valeur d'une valeur absolue             | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
 | d264f7aa Pair ou impair : écrire 2k ou 2k + 1                | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
 | fa65910d Multiple : a = k × b                                | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
+| b8939937 Cercle, disque, rayon, diamètre, corde              | `idees-6e-cercles`                                          | 2026-11-28 |                                      |
+| 48524505 Cercle et disque : des ensembles de points          | `idees-6e-cercles`                                          | 2026-11-28 |                                      |
+| 2f3da9ce Problèmes de distances à un point                   | `idees-6e-cercles`                                          | 2026-11-28 |                                      |
 
 ## Idées en attente
 

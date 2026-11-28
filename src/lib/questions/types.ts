@@ -805,7 +805,8 @@ export type BuildKind =
 	| 'calcul'
 	| 'robot'
 	| 'labyrinthe'
-	| 'yohaku';
+	| 'yohaku'
+	| 'python';
 
 /** Nom du bloc pour les messages au prof : « bloc collection », « droite graduée », « horloge » */
 export function buildKindName(kind: BuildKind): string {
@@ -826,6 +827,7 @@ export function buildKindName(kind: BuildKind): string {
 	if (kind === 'robot') return 'robot à produire';
 	if (kind === 'labyrinthe') return 'labyrinthe à parcourir';
 	if (kind === 'yohaku') return 'grille à remplir';
+	if (kind === 'python') return 'programme Python';
 	return kind === 'horloge' ? 'horloge' : `bloc ${kind}`;
 }
 
@@ -885,6 +887,9 @@ export interface InstanceBlank extends CalculusBlankFields {
 	 * solide (```solide, `tracer: vecteur AB + AD depuis A`) : réponse attendue = les
 	 * couples justes (`A/C`, ou `A/C|E/G` quand l'origine est libre), l'élève touche
 	 * deux points (`A/C`), juge à part (`isSolideAnswerCorrect`) : l'un des couples.
+	 * Programme Python (```python-a-ecrire) : réponse attendue = fonction, solution, essais et
+	 * exigences (`expectedPythonAnswer`) ; la valeur porte le code ET le verdict calculé dans
+	 * le navigateur avant la validation (`pythonAnswerVerdict`), jamais cru par le serveur.
 	 */
 	construire?: BuildKind;
 	/**

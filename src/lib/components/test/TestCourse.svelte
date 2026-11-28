@@ -140,6 +140,9 @@
 	 * Handle answer submission for a specific question
 	 */
 	function handleAnswerSubmit(index: number, answerData: AnswerData) {
+		// Course finie (chrono, « Terminer ») : une validation tardive (programme Python qui
+		// tournait encore) n'écrit ni seconde trace ni réponse après le score
+		if (testResult) return;
 		if (!answers.has(index)) {
 			validated.add(index);
 			recordTrace(index, answerData, {

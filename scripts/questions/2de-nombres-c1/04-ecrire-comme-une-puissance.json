@@ -26,7 +26,24 @@
 			"conditions": ["(a)^(n) <= 999"],
 			"blanks": [
 				{
-					"expectedAnswer": "{{n}}"
+					"expectedAnswer": "{{n}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:(N)/(a)}}",
+							"message": "Tu as divisé une seule fois : une puissance est un produit de facteurs tous égaux à la base.",
+							"label": "N ÷ a (produit au lieu de puissance)"
+						},
+						{
+							"answer": "{{eval:(n)-1}}",
+							"message": "Il te manque un facteur : recompte combien de fois tu multiplies la base.",
+							"label": "Un facteur de moins"
+						},
+						{
+							"answer": "{{eval:(n)+1}}",
+							"message": "Tu as un facteur de trop : recompte combien de fois tu multiplies la base.",
+							"label": "Un facteur de trop"
+						}
+					]
 				}
 			],
 			"correction": {
@@ -35,7 +52,8 @@
 					"${{if:n==3|{{a}}\\times {{a}}\\times {{a}}|{{if:n==4|{{a}}\\times {{a}}\\times {{a}}\\times {{a}}|{{if:n==5|{{a}}\\times {{a}}\\times {{a}}\\times {{a}}\\times {{a}}|{{if:n==6|{{a}}\\times {{a}}\\times {{a}}\\times {{a}}\\times {{a}}\\times {{a}}|{{if:n==7|{{a}}\\times {{a}}\\times {{a}}\\times {{a}}\\times {{a}}\\times {{a}}\\times {{a}}|{{if:n==8|{{a}}\\times {{a}}\\times {{a}}\\times {{a}}\\times {{a}}\\times {{a}}\\times {{a}}\\times {{a}}|{{a}}\\times {{a}}\\times {{a}}\\times {{a}}\\times {{a}}\\times {{a}}\\times {{a}}\\times {{a}}\\times {{a}}}}}}}}}}}}}}={{N}}$ : il y a ${{n}}$ facteurs.",
 					"$${{N}}=\\textcolor{{{color:primary.0}}}{{{a}}^{ {{n}} }}$$"
 				]
-			}
+			},
+			"hint": "Calcule les puissances successives de ${{a}}$ : ${{a}}^{2}$, ${{a}}^{3}$… jusqu'à tomber sur ${{N}}$."
 		},
 		{
 			"statement": "Complète par un nombre positif.\n\n$${{eval:(d)^(n)/10^(n);d}}=?^{ {{n}} }$$",
@@ -51,7 +69,19 @@
 			],
 			"blanks": [
 				{
-					"expectedAnswer": "{{eval:(d)/10;d}}"
+					"expectedAnswer": "{{eval:(d)/10;d}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:(d)/10^(n);d}}",
+							"message": "Tu as mis trop de zéros : compte les chiffres après la virgule dans le produit de tes facteurs.",
+							"label": "Trop de chiffres après la virgule"
+						},
+						{
+							"answer": "{{d}}",
+							"message": "Tu as oublié la virgule : ta réponse élevée à la puissance donne un nombre plus grand que 1.",
+							"label": "Virgule oubliée"
+						}
+					]
 				}
 			],
 			"correction": {
@@ -60,7 +90,8 @@
 					"${{d}}^{ {{n}} }={{eval:(d)^(n)}}$, et ${{eval:(d)^(n)/10^(n);d}}$ a ${{n}}$ chiffres après la virgule : la base a $1$ chiffre après la virgule.",
 					"$${{if:n==2|{{eval:(d)/10;d}}\\times {{eval:(d)/10;d}}|{{eval:(d)/10;d}}\\times {{eval:(d)/10;d}}\\times {{eval:(d)/10;d}}}}={{eval:(d)^(n)/10^(n);d}}\\quad\\text{donc}\\quad{{eval:(d)^(n)/10^(n);d}}=\\textcolor{{{color:primary.0}}}{{{eval:(d)/10;d}}}^{ {{n}} }$$"
 				]
-			}
+			},
+			"hint": "Cherche d'abord un entier dont la puissance ${{n}}$ s'écrit avec les mêmes chiffres, puis place la virgule : chaque facteur a autant de chiffres après la virgule."
 		},
 		{
 			"statement": "Complète.\n\n$$\\dfrac{1}{ {{N}} }={{a}}^{?}$$",
@@ -81,7 +112,24 @@
 			"conditions": ["(a)^(n) <= 999"],
 			"blanks": [
 				{
-					"expectedAnswer": "-{{n}}"
+					"expectedAnswer": "-{{n}}",
+					"expectedErrors": [
+						{
+							"answer": "{{n}}",
+							"message": "Ton exposant donne un nombre plus grand que 1 : ici, le nombre est un inverse.",
+							"label": "Signe oublié"
+						},
+						{
+							"answer": "-{{N}}",
+							"message": "Tu as recopié le dénominateur : l'exposant compte les facteurs, il ne vaut pas le nombre lui-même.",
+							"label": "Exposant = −N"
+						},
+						{
+							"answer": "{{eval:1-(n)}}",
+							"message": "Il te manque un facteur : recompte combien de fois tu multiplies la base.",
+							"label": "Un facteur de moins"
+						}
+					]
 				}
 			],
 			"correction": {
@@ -89,7 +137,8 @@
 					"On écrit d'abord le dénominateur comme une puissance de ${{a}}$, puis on utilise $\\dfrac{1}{a^n}=a^{-n}$.",
 					"${{N}}={{a}}^{ {{n}} }$, donc $\\dfrac{1}{ {{N}} }=\\dfrac{1}{ {{a}}^{ {{n}} } }=\\textcolor{{{color:primary.0}}}{{{a}}^{-{{n}} }}$."
 				]
-			}
+			},
+			"hint": "Écris d'abord ${{N}}$ comme une puissance de ${{a}}$, puis pense à l'écriture de l'inverse d'une puissance."
 		}
 	],
 	"testSpecs": [
@@ -114,7 +163,8 @@
 			},
 			"answers": ["32"],
 			"expected": {
-				"status": "incorrect"
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as divisé une seule fois : une puissance est un produit de facteurs tous égaux à la base."
 			}
 		},
 		{
@@ -162,7 +212,8 @@
 			},
 			"answers": ["0,02"],
 			"expected": {
-				"status": "incorrect"
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as mis trop de zéros : compte les chiffres après la virgule dans le produit de tes facteurs."
 			}
 		},
 		{
@@ -174,7 +225,8 @@
 			},
 			"answers": ["2"],
 			"expected": {
-				"status": "incorrect"
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as oublié la virgule : ta réponse élevée à la puissance donne un nombre plus grand que 1."
 			}
 		},
 		{
@@ -210,7 +262,8 @@
 			},
 			"answers": ["3"],
 			"expected": {
-				"status": "incorrect"
+				"status": "incorrect",
+				"expectedErrorMessage": "Ton exposant donne un nombre plus grand que 1 : ici, le nombre est un inverse."
 			}
 		},
 		{
@@ -222,7 +275,47 @@
 			},
 			"answers": ["-8"],
 			"expected": {
-				"status": "incorrect"
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as recopié le dénominateur : l'exposant compte les facteurs, il ne vaut pas le nombre lui-même."
+			}
+		},
+		{
+			"description": "Erreur prévue : Un facteur de moins",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"n": "6"
+			},
+			"answers": ["5"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Il te manque un facteur : recompte combien de fois tu multiplies la base."
+			}
+		},
+		{
+			"description": "Erreur prévue : Un facteur de trop",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"n": "6"
+			},
+			"answers": ["7"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as un facteur de trop : recompte combien de fois tu multiplies la base."
+			}
+		},
+		{
+			"description": "Erreur prévue : Un facteur de moins",
+			"variationIndex": 2,
+			"variables": {
+				"a": "2",
+				"n": "3"
+			},
+			"answers": ["-2"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Il te manque un facteur : recompte combien de fois tu multiplies la base."
 			}
 		}
 	]

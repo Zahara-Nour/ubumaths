@@ -509,6 +509,8 @@ export async function readEvaluationOverview(
 	const templates = await loadSeriesTemplates(actors.userClient, items);
 	const draws = drawSeriesQuestions(items, templates, {
 		excludeCourseCards: true,
+		// Case Python : jugée dans le navigateur seulement, jamais par le serveur (outil 49, Q1)
+		excludePythonCases: true,
 		choiceCases: true,
 		nextSeed: () => (actors.randomInt ?? cryptoRandomInt)(MAX_QUESTION_SEED),
 		onGenerationFailure: () => {}
@@ -574,6 +576,8 @@ export async function startEvaluationAttempt(
 	const templates = await loadSeriesTemplates(userClient, items);
 	const draws = drawSeriesQuestions(items, templates, {
 		excludeCourseCards: true,
+		// Case Python : jugée dans le navigateur seulement, jamais par le serveur (outil 49, Q1)
+		excludePythonCases: true,
 		// Idée 4 : variations « en QCM » ; l'instance figée (Q42) garde la forme QCM
 		choiceCases: true,
 		nextSeed: () => randomInt(MAX_QUESTION_SEED),

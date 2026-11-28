@@ -1,20 +1,19 @@
 ---
 title: Écarts — lot constructions
 date: 2026-11-28
-status: en cours
+status: clos le 2026-11-28 — #3284, #3317
 ---
 
 # Écarts — lot `constructions`
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-28, après #3317._
+_Mis à jour le 2026-11-28, clôture._
 
-- **État** : #3284 et #3317 mergées. L56, M35–M38 corrigés ; V76 : `masque`/`montre` instantanés (les 44 arcs du carré partent en 6 temps : 12, 4, 7, 7, 7, 7), fin de frise et « précédent » corrects sur des pas de 0 ms ; sauvegarde `scripts/constructions-prod/avant-v76.json` sur `main` (script de prod = source du lot).
-- **Prochaine action** : après la publication par David, clore le lot : registre (V76, L56, M35–M38 `fait (#PR)`), `ecarts-lots.md`, archive du journal.
-- **En attente de David** : depuis `main` à jour, `pnpm constructions:reecrire --lot v76 --cible prod --publier`, puis `pnpm deploy:prod`.
-- **Pièges en cours** : ne clore le lot qu'après l'écriture en prod. V139 (étiquettes `_p…` du carré) au registre, hors lots.
-- **Worktree / branche** : aucun (celui de #3317 retiré).
+- **État** : chantier clos. Les 6 écarts barrés au registre (preuves des 5 commandes vertes ; V76 vu en prod : le carré a ses `masque(_arcN)`, réécrit le 2026-11-28 à 15:14 UTC), lot marqué « fait » dans `ecarts-lots.md`. Doc système : `constructions.md` mis à jour dans #3317.
+- **Prochaine action** : aucune.
+- **En attente de David** : `pnpm deploy:prod` pas encore passé à la clôture (`production` à 0.117.0, sans #3317) ; sans lui, en lecture continue, les `masque` de fin du carré ne s'appliquent pas en prod.
+- **Worktree / branche** : aucun. V139 (étiquettes `_p…` du carré) reste au registre, hors lots.
 
 ## Écarts du lot
 

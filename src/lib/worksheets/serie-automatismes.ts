@@ -805,11 +805,15 @@ function figer(template: QuestionTemplate, instance: QuestionInstance): Question
 	if (etapes.length === 0 && instance.correction?.generatedSteps) {
 		throw new Error(`${template.id} : correction générée (mode B) non prise en charge`);
 	}
-	// Question à programme (tortue, calcul) : elle se fait à l'écran, pas sur une fiche
+	// Question à programme (tortue, calcul, Python) : elle se fait à l'écran, pas sur une fiche
 	// (David, 2026-11-14) ; refusée avec un message qui le dit au prof
-	if (instance.blanks?.some((b) => b.construire === 'tortue' || b.construire === 'calcul')) {
+	if (
+		instance.blanks?.some(
+			(b) => b.construire === 'tortue' || b.construire === 'calcul' || b.construire === 'python'
+		)
+	) {
 		throw new Error(
-			`${template.id} : une question à programme (tortue, calcul) ne peut pas entrer dans une série d’automatismes`
+			`${template.id} : une question à programme (tortue, calcul, Python) ne peut pas entrer dans une série d’automatismes`
 		);
 	}
 	// Consigne du modèle : lue avec SES fonctions, posée au-dessus du groupe par `buildSerie`

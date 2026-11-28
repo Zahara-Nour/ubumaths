@@ -39,6 +39,7 @@
 import { computeBlankColors } from '#lib/components/questions/blank-verdicts.ts';
 import { getQuestionType, type QuestionInstance } from '#lib/questions/types.ts';
 import { isAnsweredAsChoice } from '#lib/questions/choice-from-errors.ts';
+import { pythonAnswerForTrace } from '#lib/questions/python/python-answer.ts';
 import type { AnswerData } from '#lib/types/question-display.ts';
 
 // Types
@@ -86,6 +87,8 @@ const ANSWERED_PLACES: readonly SeriesTracePlace[] = ['typing', 'mock_test', 'nu
 const HINT_PLACES: readonly SeriesTracePlace[] = ['typing', 'flash_cards'];
 /** Formes chronométrées : durées et fin (N11) ; jamais Flash-cards ni Saisie */
 const TIMED_PLACES: readonly SeriesTracePlace[] = ['mock_test', 'number_race'];
+/** Borne d'une case de `answer_parts` (CHECK `trace_answer_parts_valid` de `skill_attempts`) */
+const MAX_ANSWER_PART_CHARS = 2000;
 /** Attentes avant chaque nouvel essai (deux essais de plus) */
 const DEFAULT_RETRY_DELAYS_MS = [1000, 3000];
 
@@ -94,10 +97,18 @@ function clampDuration(ms: number): number {
 	return Math.min(MAX_DURATION_MS, Math.max(0, Math.round(ms)));
 }
 
-/** Cases tapées ; la figure n'envoie pas son tracé, seulement son verdict */
+/**
+ * Cases tapées ; la figure n'envoie pas son tracé, seulement son verdict ; un programme
+ * Python, raccourci sous la borne de la base (sinon toute la tentative serait refusée)
+ */
 function answerPartsOf(values: string[], instance: QuestionInstance): string[] {
 	const blanks = instance.blanks ?? [];
-	return values.map((value, index) => (blanks[index]?.type === 'graphical' ? '' : value));
+	return values.map((value, index) => {
+		const blank = blanks[index];
+		if (blank?.type === 'graphical') return '';
+		if (blank?.construire === 'python') return pythonAnswerForTrace(value, MAX_ANSWER_PART_CHARS);
+		return value;
+	});
 }
 
 /** Réponse et verdicts par case ; null quand il n'y a aucune case tapée */

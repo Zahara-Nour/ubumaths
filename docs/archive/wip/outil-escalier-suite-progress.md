@@ -12,8 +12,9 @@ _Mis à jour le 2026-11-28, après #3315._
 
 - **État** : lot clos ; outil 48 livré (#3315), passé au § 4 « Livré » d'`outils-manquants.md` ·
   **Prochaine action** : aucune (le modèle TSPE-432 revient aux sessions « questions ») · **En attente
-  de David** : point B de la revue — un élève qui pose tous ses termes sur le point fixe a N−1/N
-  (cohérent avec « jugé depuis le point de l'élève ») ; laissé tel quel sauf avis contraire ·
+  de David** : rien. Point B tranché le 2026-11-28 : note inchangée (élève qui pose tout sur le point
+  fixe : N−1/N) ; ni règle de plus (elle refuserait des constructions justes), ni phrase dédiée sans
+  cas réel d'élève ·
   **Pièges** : avec √(2x+3), u₀ = 0, fenêtre 0..4, `construire 4` est refusé (u₃, u₄ trop proches) →
   `construire 3` · **Worktree / branche** : retirés par `pnpm pr:merger`.
 

@@ -45,12 +45,30 @@
 					"Un entier est **pair** s'il s'écrit $2k$, **impair** s'il s'écrit $2k+1$, avec $k$ **entier**.",
 					"{{if:s==0|$A=2\\times{{u}}n+{{eval:2*(v)+(t)}}$ : $\\textcolor{{{color:primary.0}}}{2\\times{{u}}n}$ est pair quel que soit $n$, donc $A$ a la parité de ${{eval:2*(v)+(t)}}$ : $A$ est **{{if:t==0|toujours pair|toujours impair}}**.|Le coefficient de $n$, ${{eval:2*(u)+1}}$, est impair : ${{eval:2*(u)+1}}n$ a la parité de $n$. Pour $n=0$, $A={{eval:2*(v)+(t)}}$ ; pour $n=1$, $A={{eval:2*(u)+1+2*(v)+(t)}}$ : l'un est pair, l'autre impair. $A$ est **pair ou impair, selon $n$**.}}"
 				]
-			}
+			},
+			"hint": "Essaie avec $n=0$ puis avec $n=1$ : si les deux résultats n'ont pas la même parité, tout dépend de $n$."
 		},
 		{
 			"blanks": [
 				{
-					"expectedAnswer": "n+m+{{eval:((a)+(b))/2}}"
+					"expectedAnswer": "n+m+{{eval:((a)+(b))/2}}",
+					"expectedErrors": [
+						{
+							"answer": "n+m+{{eval:(a)+(b)}}",
+							"message": "Tu n'as pas divisé ce nombre par $2$ : dans la parenthèse, tout est divisé par $2$.",
+							"label": "Nombre non divisé par 2"
+						},
+						{
+							"answer": "2n+2m+{{eval:((a)+(b))/2}}",
+							"message": "Les termes en $n$ et en $m$ aussi sont divisés par $2$ dans la parenthèse.",
+							"label": "Termes en n et m non divisés"
+						},
+						{
+							"answer": "2n+2m+{{eval:(a)+(b)}}",
+							"message": "Tu as recopié la somme sans la diviser par $2$.",
+							"label": "Rien divisé par 2"
+						}
+					]
 				}
 			],
 			"statement": "$n$ et $m$ désignent des entiers. Complète pour montrer que la somme est paire.\n\n$$(2n+{{a}})+(2m+{{b}})=2\\times\\left(?\\right)$$",
@@ -70,12 +88,30 @@
 					"$$(2n+{{a}})+(2m+{{b}})=2n+2m+{{eval:(a)+(b)}}=2\\times\\textcolor{{{color:primary.0}}}{\\left(n+m+{{eval:((a)+(b))/2}}\\right)}$$",
 					"$k=\\textcolor{{{color:primary.0}}}{n+m+{{eval:((a)+(b))/2}}}$ est un entier : la somme de deux impairs est **paire**."
 				]
-			}
+			},
+			"hint": "Regroupe $2n+2m$ et les nombres, puis mets $2$ en facteur."
 		},
 		{
 			"blanks": [
 				{
-					"expectedAnswer": "{{c}}n+{{d}}"
+					"expectedAnswer": "{{c}}n+{{d}}",
+					"expectedErrors": [
+						{
+							"answer": "{{c}}n+{{eval:(2*(d)+1)/2}}",
+							"message": "Le $+1$ est déjà en dehors de la parenthèse : ne le compte pas dedans.",
+							"label": "Le +1 compté dans la parenthèse"
+						},
+						{
+							"answer": "{{eval:2*(c)}}n+{{d}}",
+							"message": "Tu n'as pas divisé le coefficient de $n$ par $2$.",
+							"label": "Coefficient de n non divisé"
+						},
+						{
+							"answer": "{{c}}n+{{eval:2*(d)}}",
+							"message": "Tu n'as pas divisé le nombre par $2$.",
+							"label": "Nombre non divisé"
+						}
+					]
 				}
 			],
 			"statement": "$n$ désigne un entier. Complète pour montrer que ce nombre est impair.\n\n$${{eval:2*(c)}}n+{{eval:2*(d)+1}}=2\\times\\left(?\\right)+1$$",
@@ -95,12 +131,30 @@
 					"$$\\begin{aligned}{{eval:2*(c)}}n+{{eval:2*(d)+1}}&={{eval:2*(c)}}n+{{eval:2*(d)}}+1\\\\&=2\\times\\textcolor{{{color:primary.0}}}{\\left({{c}}n+{{d}}\\right)}+1\\end{aligned}$$",
 					"$k=\\textcolor{{{color:primary.0}}}{{{c}}n+{{d}}}$ est un entier : le nombre est **impair**."
 				]
-			}
+			},
+			"hint": "Écris ${{eval:2*(d)+1}}$ comme un nombre pair plus $1$, puis mets $2$ en facteur dans le reste."
 		},
 		{
 			"blanks": [
 				{
-					"expectedAnswer": "2nm+{{a}}n"
+					"expectedAnswer": "2nm+{{a}}n",
+					"expectedErrors": [
+						{
+							"answer": "4nm+{{eval:2*(a)}}n",
+							"message": "Le facteur $2$ est déjà sorti de la parenthèse : ne le laisse pas dedans.",
+							"label": "Facteur 2 laissé dans la parenthèse"
+						},
+						{
+							"answer": "2m+{{a}}",
+							"message": "Tu as perdu le facteur $n$ : il reste dans la parenthèse.",
+							"label": "Facteur n perdu"
+						},
+						{
+							"answer": "2nm+{{a}}",
+							"message": "Le facteur $n$ multiplie chaque terme de la parenthèse.",
+							"label": "n distribué sur un seul terme"
+						}
+					]
 				}
 			],
 			"statement": "$n$ et $m$ désignent des entiers. Complète pour montrer que le produit est pair.\n\n$$2n\\times(2m+{{a}})=2\\times\\left(?\\right)$$",
@@ -116,7 +170,8 @@
 					"$$2n\\times(2m+{{a}})=2\\times\\textcolor{{{color:primary.0}}}{n(2m+{{a}})}=2\\times\\textcolor{{{color:primary.0}}}{\\left(2nm+{{a}}n\\right)}$$",
 					"$k=\\textcolor{{{color:primary.0}}}{2nm+{{a}}n}$ est un entier : le produit d'un pair par un entier est **pair**."
 				]
-			}
+			},
+			"hint": "$2n$ contient déjà le facteur $2$ : sors-le, puis développe ce qui reste."
 		},
 		{
 			"blanks": [
@@ -145,7 +200,8 @@
 					"{{if:x==2|Quel que soit $n$ :|$n$ est {{if:p==0|pair : $n=2k$|impair : $n=2k+1$}}, avec $k$ entier.}}",
 					"{{if:m==0|$A=(2k)^2+2k=4k^2+2k=2\\left(2k^2+k\\right)$ s'écrit $2\\times(\\ldots)$ : $A$ est **pair**.|{{if:m==1|$A=(2k+1)^2+(2k+1)=4k^2+6k+2=2\\left(2k^2+3k+1\\right)$ s'écrit $2\\times(\\ldots)$ : $A$ est **pair**.|{{if:m==2|$A=2k(2k+1)=2\\left(k(2k+1)\\right)$ s'écrit $2\\times(\\ldots)$ : $A$ est **pair**.|{{if:m==3|$A=(2k+1)(2k+2)=2\\left((2k+1)(k+1)\\right)$ s'écrit $2\\times(\\ldots)$ : $A$ est **pair**.|{{if:m==4|$A=2n+1=2\\times n+1$ s'écrit $2\\times(\\ldots)+1$ : $A$ est **impair**.|{{if:m==5|$A=2n+1=2\\times n+1$ s'écrit $2\\times(\\ldots)+1$ : $A$ est **impair**.|{{if:m==6|$A=(2k)^2+1=2\\left(2k^2\\right)+1$ s'écrit $2\\times(\\ldots)+1$ : $A$ est **impair**.|{{if:m==7|$A=(2k+1)^2+1=4k^2+4k+2=2\\left(2k^2+2k+1\\right)$ s'écrit $2\\times(\\ldots)$ : $A$ est **pair**.|{{if:m==8|$A=3\\times2k+1=2\\times3k+1$ s'écrit $2\\times(\\ldots)+1$ : $A$ est **impair**.|$A=3(2k+1)+1=6k+4=2(3k+2)$ s'écrit $2\\times(\\ldots)$ : $A$ est **pair**.}}}}}}}}}}}}}}}}}}"
 				]
-			}
+			},
+			"hint": "Remplace $n$ par {{if:p==0|$2k$|$2k+1$}}, développe, puis regarde si tu peux écrire $A$ sous la forme $2\\times(\\ldots)$. Tu peux aussi essayer avec un exemple."
 		}
 	],
 	"testSpecs": [
@@ -246,7 +302,8 @@
 		{
 			"answers": ["n+m+4"],
 			"expected": {
-				"status": "incorrect"
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu n'as pas divisé ce nombre par $2$ : dans la parenthèse, tout est divisé par $2$."
 			},
 			"variables": {
 				"a": "1",
@@ -270,7 +327,8 @@
 		{
 			"answers": ["2n+\\frac{3}{2}"],
 			"expected": {
-				"status": "incorrect"
+				"status": "incorrect",
+				"expectedErrorMessage": "Le $+1$ est déjà en dehors de la parenthèse : ne le compte pas dedans."
 			},
 			"variables": {
 				"c": "2",
@@ -304,7 +362,8 @@
 		{
 			"answers": ["4nm+6n"],
 			"expected": {
-				"status": "incorrect"
+				"status": "incorrect",
+				"expectedErrorMessage": "Le facteur $2$ est déjà sorti de la parenthèse : ne le laisse pas dedans."
 			},
 			"variables": {
 				"a": "3"
@@ -415,6 +474,82 @@
 			},
 			"description": "Erreur : 3n + 1 impair",
 			"variationIndex": 4
+		},
+		{
+			"answers": ["2n+2m+2"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Les termes en $n$ et en $m$ aussi sont divisés par $2$ dans la parenthèse."
+			},
+			"variables": {
+				"a": "1",
+				"b": "3"
+			},
+			"description": "Erreur prévue : 2n + 2m + 2",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["2n+2m+4"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as recopié la somme sans la diviser par $2$."
+			},
+			"variables": {
+				"a": "1",
+				"b": "3"
+			},
+			"description": "Erreur prévue : 2n + 2m + 4",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["4n+1"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu n'as pas divisé le coefficient de $n$ par $2$."
+			},
+			"variables": {
+				"c": "2",
+				"d": "1"
+			},
+			"description": "Erreur prévue : 4n + 1",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["2n+2"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu n'as pas divisé le nombre par $2$."
+			},
+			"variables": {
+				"c": "2",
+				"d": "1"
+			},
+			"description": "Erreur prévue : 2n + 2",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["2m+3"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as perdu le facteur $n$ : il reste dans la parenthèse."
+			},
+			"variables": {
+				"a": "3"
+			},
+			"description": "Erreur prévue : 2m + 3",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["2nm+3"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Le facteur $n$ multiplie chaque terme de la parenthèse."
+			},
+			"variables": {
+				"a": "3"
+			},
+			"description": "Erreur prévue : 2nm + 3",
+			"variationIndex": 3
 		}
 	]
 }

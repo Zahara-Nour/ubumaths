@@ -73,6 +73,29 @@
 		</div>
 	</div>
 
+	{#if data.pythonTitles.length > 0}
+		<!-- Case Python : jugée dans le navigateur seulement, le serveur qui corrige le contrôle ne la tire pas -->
+		<div
+			class="mb-6 rounded-md border border-border bg-muted/50 p-4 text-sm"
+			role="note"
+			data-testid="python-exclues"
+		>
+			<p class="font-medium">
+				{data.pythonTitles.length > 1 ? 'Ces modèles n’entreront pas' : 'Ce modèle n’entrera pas'} dans
+				le contrôle
+			</p>
+			<p class="mt-1 text-muted-foreground">
+				Un programme Python se corrige dans le navigateur de l’élève, pas sur le serveur qui note le
+				contrôle : ces questions restent pour l’entraînement.
+			</p>
+			<ul class="mt-2 list-disc pl-5">
+				{#each data.pythonTitles as title, i (i)}
+					<li>{title}</li>
+				{/each}
+			</ul>
+		</div>
+	{/if}
+
 	{#if !settings}
 		<Card.Root>
 			<Card.Header>

@@ -70,7 +70,19 @@
 			"conditions": ["gcd(a,n)==1", "gcd(b,n)==1", "X>0"],
 			"blanks": [
 				{
-					"expectedAnswer": "\\frac{ {{N}} }{ {{D}} }"
+					"expectedAnswer": "\\frac{ {{N}} }{ {{D}} }",
+					"expectedErrors": [
+						{
+							"answer": "\\frac{ {{S}} }{ {{L}} }",
+							"message": "Tu as donné la fraction déjà lue : on demande ce qui reste à lire.",
+							"label": "Fraction faite au lieu du reste"
+						},
+						{
+							"answer": "\\frac{ {{eval:n+m-a-b}} }{ {{eval:n+m}} }",
+							"message": "Tu as combiné les numérateurs entre eux et les dénominateurs entre eux : il faut d'abord un même dénominateur.",
+							"label": "Numérateurs et dénominateurs combinés entre eux"
+						}
+					]
 				}
 			],
 			"correction": {
@@ -81,7 +93,8 @@
 					"$$\\dfrac{ {{L}} }{ {{L}} }-\\dfrac{ {{S}} }{ {{L}} }=\\dfrac{ {{X}} }{ {{Y}} }$$",
 					"{{if:g>1|On simplifie par ${{g}}$ : ${{if:X<0|-}}\\dfrac{ {{eval:abs(X)}} }{ {{Y}} }=\\textcolor{{{color:primary.0}}}{{{if:N<0|-}}\\dfrac{ {{eval:abs(N)}} }{ {{D}} }}$.|Le résultat $\\textcolor{{{color:primary.0}}}{{{if:N<0|-}}\\dfrac{ {{eval:abs(N)}} }{ {{D}} }}$ ne se simplifie pas.}}"
 				]
-			}
+			},
+			"hint": "Additionne les deux fractions déjà lues, puis retire le résultat du roman entier, qui vaut $1$."
 		},
 		{
 			"statement": "{{if:w==0|Inès|{{if:w==1|Théo|Sacha}}}} fait une randonnée. Le matin, {{if:w==1|il|elle}} parcourt {{if:a==1|le|les}} $\\dfrac{ {{a}} }{ {{n}} }$ du trajet, et l'après-midi {{if:b==1|le|les}} $\\dfrac{ {{b}} }{ {{m}} }$ du trajet.\n\nQuelle fraction du trajet reste-t-il à parcourir ? Donne le résultat sous la forme d'une fraction irréductible.\n\n$$?$$",
@@ -150,7 +163,24 @@
 			"conditions": ["gcd(a,n)==1", "gcd(b,m)==1", "X>0"],
 			"blanks": [
 				{
-					"expectedAnswer": "\\frac{ {{N}} }{ {{D}} }"
+					"expectedAnswer": "\\frac{ {{N}} }{ {{D}} }",
+					"expectedErrors": [
+						{
+							"answer": "\\frac{ {{S}} }{ {{L}} }",
+							"message": "Tu as donné la fraction déjà parcourue : on demande ce qui reste à parcourir.",
+							"label": "Fraction faite au lieu du reste"
+						},
+						{
+							"answer": "\\frac{ {{eval:n+m-a-b}} }{ {{eval:n+m}} }",
+							"message": "Tu as combiné les numérateurs entre eux et les dénominateurs entre eux : il faut d'abord un même dénominateur.",
+							"label": "Numérateurs et dénominateurs combinés entre eux"
+						},
+						{
+							"answer": "\\frac{ {{eval:L-a-b}} }{ {{L}} }",
+							"message": "Tu as changé un dénominateur sans multiplier aussi le numérateur par le même nombre.",
+							"label": "Dénominateur changé, numérateur oublié"
+						}
+					]
 				}
 			],
 			"correction": {
@@ -161,7 +191,8 @@
 					"$$\\dfrac{ {{L}} }{ {{L}} }-\\dfrac{ {{S}} }{ {{L}} }=\\dfrac{ {{X}} }{ {{Y}} }$$",
 					"{{if:g>1|On simplifie par ${{g}}$ : ${{if:X<0|-}}\\dfrac{ {{eval:abs(X)}} }{ {{Y}} }=\\textcolor{{{color:primary.0}}}{{{if:N<0|-}}\\dfrac{ {{eval:abs(N)}} }{ {{D}} }}$.|Le résultat $\\textcolor{{{color:primary.0}}}{{{if:N<0|-}}\\dfrac{ {{eval:abs(N)}} }{ {{D}} }}$ ne se simplifie pas.}}"
 				]
-			}
+			},
+			"hint": "Additionne les deux fractions déjà parcourues, puis retire le résultat du trajet entier, qui vaut $1$."
 		},
 		{
 			"statement": "{{if:w==0|Hugo|{{if:w==1|Awa|Malik}}}} peint {{if:a==1|le|les}} $\\dfrac{ {{a}} }{ {{n}} }$ d'un mur le matin et {{if:b==1|le|les}} $\\dfrac{ {{b}} }{ {{m}} }$ du mur l'après-midi.\n\nQuelle fraction du mur reste-t-il à peindre ? Donne le résultat sous la forme d'une fraction irréductible.\n\n$$?$$",
@@ -226,7 +257,24 @@
 			"conditions": ["gcd(n,m)==1", "n>m", "gcd(a,n)==1", "gcd(b,m)==1", "X>0"],
 			"blanks": [
 				{
-					"expectedAnswer": "\\frac{ {{N}} }{ {{D}} }"
+					"expectedAnswer": "\\frac{ {{N}} }{ {{D}} }",
+					"expectedErrors": [
+						{
+							"answer": "\\frac{ {{S}} }{ {{L}} }",
+							"message": "Tu as donné la fraction déjà peinte : on demande ce qui reste à peindre.",
+							"label": "Fraction faite au lieu du reste"
+						},
+						{
+							"answer": "\\frac{ {{eval:n+m-a-b}} }{ {{eval:n+m}} }",
+							"message": "Tu as combiné les numérateurs entre eux et les dénominateurs entre eux : il faut d'abord un même dénominateur.",
+							"label": "Numérateurs et dénominateurs combinés entre eux"
+						},
+						{
+							"answer": "\\frac{ {{eval:L-a-b}} }{ {{L}} }",
+							"message": "Tu as changé un dénominateur sans multiplier aussi le numérateur par le même nombre.",
+							"label": "Dénominateur changé, numérateur oublié"
+						}
+					]
 				}
 			],
 			"correction": {
@@ -237,7 +285,112 @@
 					"$$\\dfrac{ {{L}} }{ {{L}} }-\\dfrac{ {{S}} }{ {{L}} }=\\dfrac{ {{X}} }{ {{Y}} }$$",
 					"{{if:g>1|On simplifie par ${{g}}$ : ${{if:X<0|-}}\\dfrac{ {{eval:abs(X)}} }{ {{Y}} }=\\textcolor{{{color:primary.0}}}{{{if:N<0|-}}\\dfrac{ {{eval:abs(N)}} }{ {{D}} }}$.|Le résultat $\\textcolor{{{color:primary.0}}}{{{if:N<0|-}}\\dfrac{ {{eval:abs(N)}} }{ {{D}} }}$ ne se simplifie pas.}}"
 				]
-			}
+			},
+			"hint": "Additionne les deux fractions déjà peintes, puis retire le résultat du mur entier, qui vaut $1$."
+		},
+		{
+			"statement": "Un réservoir contient ${{Q}}~\\unit{L}$ d'eau. On en utilise {{if:a==1|le|les}} $\\dfrac{ {{a}} }{ {{n}} }$ le matin et {{if:b==1|le|les}} $\\dfrac{ {{b}} }{ {{m}} }$ l'après-midi.\n\nCombien de litres d'eau reste-t-il dans le réservoir ?\n\n$?$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "3..7"
+				},
+				{
+					"name": "m",
+					"expression": "2..5"
+				},
+				{
+					"name": "L",
+					"expression": "eval:n*m"
+				},
+				{
+					"name": "a",
+					"expression": "1..3"
+				},
+				{
+					"name": "b",
+					"expression": "1..2"
+				},
+				{
+					"name": "k",
+					"expression": "2..6"
+				},
+				{
+					"name": "Q",
+					"expression": "eval:k*L"
+				},
+				{
+					"name": "A",
+					"expression": "eval:a*L/n"
+				},
+				{
+					"name": "B",
+					"expression": "eval:b*L/m"
+				},
+				{
+					"name": "S",
+					"expression": "eval:a*L/n+b*L/m"
+				},
+				{
+					"name": "X",
+					"expression": "eval:L-a*L/n-b*L/m"
+				},
+				{
+					"name": "Y",
+					"expression": "eval:L"
+				},
+				{
+					"name": "g",
+					"expression": "eval:gcd(abs(X),Y)"
+				},
+				{
+					"name": "N",
+					"expression": "eval:(X)/(g)"
+				},
+				{
+					"name": "D",
+					"expression": "eval:(Y)/(g)"
+				},
+				{
+					"name": "R",
+					"expression": "eval:X*Q/L"
+				}
+			],
+			"conditions": ["gcd(n,m)==1", "n>m", "gcd(a,n)==1", "gcd(b,m)==1", "X>0", "Q<=150"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{R}}\\unit{L}",
+					"unit": {
+						"expected": true
+					},
+					"expectedErrors": [
+						{
+							"answer": "{{eval:S*Q/L}}\\unit{L}",
+							"message": "Tu as donné la quantité d'eau utilisée : on demande ce qui reste.",
+							"label": "Quantité utilisée au lieu du reste"
+						},
+						{
+							"answer": "\\frac{ {{N}} }{ {{D}} }\\unit{L}",
+							"message": "Tu as donné la fraction du réservoir qui reste : il faut encore la prendre des ${{Q}}$ litres.",
+							"label": "Fraction au lieu de la quantité"
+						},
+						{
+							"answer": "{{eval:(L-a-b)*Q/L}}\\unit{L}",
+							"message": "Tu as changé un dénominateur sans multiplier aussi le numérateur par le même nombre.",
+							"label": "Dénominateur changé, numérateur oublié"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"On ajoute d'abord les deux fractions utilisées, au dénominateur commun ${{L}}$ :",
+					"$$\\dfrac{ {{a}} }{ {{n}} }+\\dfrac{ {{b}} }{ {{m}} }=\\dfrac{ {{A}} }{ {{L}} }+\\dfrac{ {{B}} }{ {{L}} }=\\dfrac{ {{S}} }{ {{L}} }$$",
+					"Il reste $1-\\dfrac{ {{S}} }{ {{L}} }=\\dfrac{ {{X}} }{ {{L}} }$ du réservoir.",
+					"Prendre $\\dfrac{ {{X}} }{ {{L}} }$ de ${{Q}}~\\unit{L}$, c'est multiplier : ${{Q}}\\times\\dfrac{ {{X}} }{ {{L}} }=\\textcolor{{{color:primary.0}}}{{{R}}~\\unit{L}}$."
+				]
+			},
+			"hint": "Calcule d'abord la fraction du réservoir qui reste, puis prends cette fraction des ${{Q}}$ litres."
 		}
 	],
 	"testSpecs": [
@@ -343,6 +496,210 @@
 			"answers": ["\\frac{11}{15}"],
 			"expected": {
 				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur prévue : 7/10 lu au lieu de 3/10",
+			"variationIndex": 0,
+			"variables": {
+				"w": "0",
+				"n": "10",
+				"a": "3",
+				"b": "4"
+			},
+			"answers": ["\\frac{7}{10}"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as donné la fraction déjà lue : on demande ce qui reste à lire."
+			}
+		},
+		{
+			"description": "Erreur prévue : 1 − 7/20",
+			"variationIndex": 0,
+			"variables": {
+				"w": "0",
+				"n": "10",
+				"a": "3",
+				"b": "4"
+			},
+			"answers": ["\\frac{13}{20}"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as combiné les numérateurs entre eux et les dénominateurs entre eux : il faut d'abord un même dénominateur."
+			}
+		},
+		{
+			"description": "Erreur prévue : 5/8 parcouru au lieu de 3/8",
+			"variationIndex": 1,
+			"variables": {
+				"w": "1",
+				"n": "4",
+				"k": "2",
+				"a": "1",
+				"b": "3"
+			},
+			"answers": ["\\frac{5}{8}"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as donné la fraction déjà parcourue : on demande ce qui reste à parcourir."
+			}
+		},
+		{
+			"description": "Erreur prévue : 1 − (1 + 1)/(3 + 6) = 7/9",
+			"variationIndex": 1,
+			"variables": {
+				"w": "1",
+				"n": "3",
+				"k": "2",
+				"a": "1",
+				"b": "1"
+			},
+			"answers": ["\\frac{7}{9}"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as combiné les numérateurs entre eux et les dénominateurs entre eux : il faut d'abord un même dénominateur."
+			}
+		},
+		{
+			"description": "Erreur prévue : (6 − 1 − 1)/6",
+			"variationIndex": 1,
+			"variables": {
+				"w": "1",
+				"n": "3",
+				"k": "2",
+				"a": "1",
+				"b": "1"
+			},
+			"answers": ["\\frac{4}{6}"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as changé un dénominateur sans multiplier aussi le numérateur par le même nombre."
+			}
+		},
+		{
+			"description": "Erreur prévue : 11/15 peint",
+			"variationIndex": 2,
+			"variables": {
+				"w": "2",
+				"n": "5",
+				"m": "3",
+				"a": "2",
+				"b": "1"
+			},
+			"answers": ["\\frac{11}{15}"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as donné la fraction déjà peinte : on demande ce qui reste à peindre."
+			}
+		},
+		{
+			"description": "Erreur prévue : 1 − 3/8",
+			"variationIndex": 2,
+			"variables": {
+				"w": "2",
+				"n": "5",
+				"m": "3",
+				"a": "2",
+				"b": "1"
+			},
+			"answers": ["\\frac{5}{8}"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as combiné les numérateurs entre eux et les dénominateurs entre eux : il faut d'abord un même dénominateur."
+			}
+		},
+		{
+			"description": "Erreur prévue : (15 − 2 − 1)/15",
+			"variationIndex": 2,
+			"variables": {
+				"w": "2",
+				"n": "5",
+				"m": "3",
+				"a": "2",
+				"b": "1"
+			},
+			"answers": ["\\frac{12}{15}"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as changé un dénominateur sans multiplier aussi le numérateur par le même nombre."
+			}
+		},
+		{
+			"description": "60 L, 2/5 puis 1/3 : il reste 16 L",
+			"variationIndex": 3,
+			"variables": {
+				"n": "5",
+				"m": "3",
+				"a": "2",
+				"b": "1",
+				"k": "4"
+			},
+			"answers": ["16\\,L"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "60 L : 16 sans unité",
+			"variationIndex": 3,
+			"variables": {
+				"n": "5",
+				"m": "3",
+				"a": "2",
+				"b": "1",
+				"k": "4"
+			},
+			"answers": ["16"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur prévue : 44 L utilisés",
+			"variationIndex": 3,
+			"variables": {
+				"n": "5",
+				"m": "3",
+				"a": "2",
+				"b": "1",
+				"k": "4"
+			},
+			"answers": ["44\\,L"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as donné la quantité d'eau utilisée : on demande ce qui reste."
+			}
+		},
+		{
+			"description": "Erreur prévue : 4/15 L",
+			"variationIndex": 3,
+			"variables": {
+				"n": "5",
+				"m": "3",
+				"a": "2",
+				"b": "1",
+				"k": "4"
+			},
+			"answers": ["\\frac{4}{15}\\,L"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as donné la fraction du réservoir qui reste : il faut encore la prendre des $60$ litres."
+			}
+		},
+		{
+			"description": "Erreur prévue : 48 L (numérateurs non multipliés)",
+			"variationIndex": 3,
+			"variables": {
+				"n": "5",
+				"m": "3",
+				"a": "2",
+				"b": "1",
+				"k": "4"
+			},
+			"answers": ["48\\,L"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as changé un dénominateur sans multiplier aussi le numérateur par le même nombre."
 			}
 		}
 	]
