@@ -58,6 +58,9 @@ const HORLOGE_BLOCK_START_REGEX = /^```horloge\s*$/;
 const PLACER_LINE_REGEX = /^placer\s*:/i;
 const BLOCK_END_REGEX = /^```\s*$/;
 
+/** `solution: oui` : les aiguilles attendues sont dessinées, l'élève n'a rien à faire */
+const SOLVED_LINE_REGEX = /^solution\s*:\s*oui\s*$/i;
+
 /** `clé: valeur` */
 const KEY_LINE_REGEX = /^([A-Za-zÀ-ÿ]+)\s*:\s*(.*)$/;
 
@@ -83,7 +86,8 @@ const BLOCK_KEYS = [
 	'cadran',
 	'taille',
 	'placer',
-	'case'
+	'case',
+	'solution'
 ] as const;
 
 type Key =
@@ -95,7 +99,8 @@ type Key =
 	| 'cadran'
 	| 'taille'
 	| 'placer'
-	| 'case';
+	| 'case'
+	| 'solution';
 
 const KEY_NAMES: Key[] = [
 	'heure',
@@ -106,7 +111,8 @@ const KEY_NAMES: Key[] = [
 	'cadran',
 	'taille',
 	'placer',
-	'case'
+	'case',
+	'solution'
 ];
 
 const TIME_FORMAT_HINT = 'écris l’heure sous la forme 9 h 30 (ou 9 h, ou 9 h 30 min 15 s)';
@@ -146,7 +152,8 @@ export function findHorlogeBlocks(lines: string[]): HorlogeBlockRange[] {
 /**
  * Les horloges à placer (`placer:`) d'un énoncé, délimitées comme le parseur :
  * corps sans clôtures, fermeture, et `nested` pour un bloc en retrait ou cité
- * (l'élève ne pourrait pas y répondre : sa case n'est pas créée)
+ * (l'élève ne pourrait pas y répondre : sa case n'est pas créée). Une horloge
+ * `solution: oui` n'en est pas une : ses aiguilles sont dessinées.
  */
 export function findHorlogesToPlace(markdown: string): {
 	startIndex: number;
@@ -167,7 +174,10 @@ export function findHorlogesToPlace(markdown: string): {
 				BLOCK_KEYS
 			);
 			const body = plain.slice(i + 1, closed ? endIndex : endIndex + 1);
-			if (body.some((line) => PLACER_LINE_REGEX.test(line))) {
+			if (
+				body.some((line) => PLACER_LINE_REGEX.test(line)) &&
+				!body.some((line) => SOLVED_LINE_REGEX.test(line.trim()))
+			) {
 				found.push({ startIndex: i, body, closed, nested: lines[i] !== plain[i] });
 			}
 			i = endIndex;
@@ -298,6 +308,8 @@ export function parseHorlogeContent(source: string): HorlogeNode {
 	let placer: HorlogeTime | null = null;
 	let placerLine = 1;
 	let caseIndex: number | undefined;
+	/** `solution: oui` : les aiguilles attendues dessinées (corrigé imprimé d'une série) */
+	let solution = false;
 	const seen = new Map<Key, number>();
 
 	lines.forEach((line, index) => {
@@ -365,6 +377,14 @@ export function parseHorlogeContent(source: string): HorlogeNode {
 						throw new LineError(`case « ${value} » : numéro de case entier`);
 					caseIndex = Number(value);
 					break;
+				case 'solution': {
+					const answer = value.toLowerCase();
+					if (answer !== 'oui' && answer !== 'non') {
+						throw new LineError(`solution « ${value} » : oui ou non`);
+					}
+					solution = answer === 'oui';
+					break;
+				}
 			}
 		} catch (e) {
 			if (!(e instanceof LineError)) throw e;
@@ -425,6 +445,12 @@ export function parseHorlogeContent(source: string): HorlogeNode {
 	if (caseIndex !== undefined && !seen.has('placer')) {
 		fail(seen.get('case') ?? 1, 'case: sans objet sans placer:');
 	}
+	// `solution: oui` : une heure à dessiner, et pas de case (c'est un corrigé, V109)
+	if (solution && !seen.has('placer')) {
+		fail(seen.get('solution') ?? 1, 'solution : s’emploie avec placer:');
+	} else if (solution && caseIndex !== undefined) {
+		fail(seen.get('solution') ?? 1, 'solution : pas avec case: (le corrigé ne se remplit pas)');
+	}
 	const withCase = caseIndex === undefined ? {} : { caseIndex };
 	if (readPlacer !== null && errors.length === 0) {
 		return {
@@ -438,7 +464,8 @@ export function parseHorlogeContent(source: string): HorlogeNode {
 				ticks,
 				minuteHand,
 				dial24,
-				sizeCm
+				sizeCm,
+				...(solution ? { solution: true as const } : {})
 			},
 			errors,
 			...withCase

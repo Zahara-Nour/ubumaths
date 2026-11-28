@@ -99,7 +99,7 @@ import { BINOMIAL_MAX_N } from '#lib/statistics/binomial.ts';
 import { GEOMETRIC_MAX_K } from '#lib/statistics/geometric.ts';
 import { UNIFORM_MAX_VALUES } from '#lib/statistics/uniform.ts';
 import { carreauGrid, usesCarreaux } from '../utils/stat-chart-carreaux';
-import { SCALE_STEPS, scaleAxis } from '../utils/barres-placer';
+import { SCALE_STEPS, adaptedScale, scaleAxis } from '../utils/barres-placer';
 import { isMaskedValue } from '../utils/masked-value';
 import { isOnGraduation } from '../utils/boxplot-placer';
 
@@ -165,6 +165,8 @@ interface Options {
 	placer: string[] | 'toutes' | null;
 	/** Numéro de la première case (`case: N`, posé par le générateur) */
 	caseIndex: number | undefined;
+	/** Barres : `solution: oui`, les barres à construire dessinées (corrigé d'une série, V109) */
+	solution: boolean;
 }
 
 /** Une série nommée (`données Garçons: …`), lue ligne par ligne */
@@ -262,7 +264,8 @@ const OPTION_KEYS = [
 	'aire',
 	'axe',
 	'placer',
-	'case'
+	'case',
+	'solution'
 ] as const;
 type OptionKey = (typeof OPTION_KEYS)[number];
 
@@ -313,7 +316,8 @@ const OPTION_KINDS: Partial<Record<OptionKey, readonly StatChartKind[]>> = {
 	// Diagramme en barres à construire (chantier « réponses à placer », § 17-18)
 	axe: ['barres'],
 	placer: ['barres'],
-	case: ['barres']
+	case: ['barres'],
+	solution: ['barres']
 };
 
 /** Options dont l'auteur écrit l'accent */
@@ -542,7 +546,8 @@ export const PLACER_LINE_REGEX = /^placer\s*:/i;
 /**
  * Les diagrammes en barres à construire (`placer:`) d'un énoncé, délimités comme
  * le parseur : corps sans clôtures, fermeture, et `nested` pour un bloc en retrait
- * ou cité (l'élève ne pourrait pas y répondre : ses cases ne sont pas créées)
+ * ou cité (l'élève ne pourrait pas y répondre : ses cases ne sont pas créées).
+ * Un diagramme `solution: oui` n'en est pas un : ses barres sont dessinées.
  */
 export function findBarsToPlace(markdown: string): StatChartToPlace[] {
 	return findStatChartsToPlace(markdown, 'barres');
@@ -576,8 +581,15 @@ function findStatChartsToPlace(markdown: string, kind: StatChartKind): StatChart
 				nested: lines[block.startIndex] !== plain[block.startIndex]
 			};
 		})
-		.filter((block) => block.body.some((line) => PLACER_LINE_REGEX.test(line.trim())));
+		.filter(
+			(block) =>
+				block.body.some((line) => PLACER_LINE_REGEX.test(line.trim())) &&
+				!block.body.some((line) => SOLVED_LINE_REGEX.test(line.trim()))
+		);
 }
+
+/** `solution: oui` (ligne rognée) : la réponse du diagramme dessinée, rien à construire */
+const SOLVED_LINE_REGEX = /^solution\s*:\s*oui\s*$/i;
 
 /** L'énoncé a-t-il un diagramme à construire (barres, boîte à moustaches) ? */
 export function hasStatChartToPlace(markdown: string): boolean {
@@ -900,6 +912,14 @@ function applyOption(kind: StatChartKind, key: OptionKey, value: string, options
 			}
 			options.caseIndex = Number(value.trim());
 			return;
+		case 'solution': {
+			const answer = value.trim().toLowerCase();
+			if (answer !== 'oui' && answer !== 'non') {
+				throw new LineError(`solution « ${value.trim()} » : oui ou non`);
+			}
+			options.solution = answer === 'oui';
+			return;
+		}
 		case 'masquer':
 			// Tableau d'effectifs (Q130) : résolu une fois les valeurs connues
 			if (kind === 'effectifs') {
@@ -3466,7 +3486,8 @@ export function parseStatChartContent(kind: StatChartKind, source: string): Stat
 		axis: null,
 		chooseScale: false,
 		placer: null,
-		caseIndex: undefined
+		caseIndex: undefined,
+		solution: false
 	};
 	let lawVariable = null as ({ name: string } & LawLine) | null;
 	// `X ~ B(n ; p)` (manche 11) : la loi binomiale remplace `X =` / `P =`
@@ -4057,6 +4078,31 @@ export function parseStatChartContent(kind: StatChartKind, source: string): Stat
 		else toPlace = checked.toPlace;
 	}
 
+	// `solution: oui` (V109) : le diagramme juste, les barres à construire dessinées
+	// (en vert) ; échelle à choisir : la juste, la plus petite où tout rentre
+	let axis = options.axis;
+	let chooseScale = options.chooseScale;
+	let solvedBars: number[] | undefined;
+	if (errors.length === 0 && options.solution) {
+		const line = optionLines.solution ?? 0;
+		if (toPlace === null) {
+			errors.push({ message: `Ligne ${line} : solution : s’emploie avec placer:`, line });
+		} else if (options.caseIndex !== undefined) {
+			errors.push({
+				message: `Ligne ${line} : solution : pas avec case: (le corrigé ne se remplit pas)`,
+				line
+			});
+		} else {
+			if (chooseScale) {
+				const scale = adaptedScale(data.map((d) => d.value));
+				if (scale !== null) axis = scaleAxis(scale);
+				chooseScale = false;
+			}
+			solvedBars = toPlace;
+			toPlace = null;
+		}
+	}
+
 	const spec: StatChartSpec | null =
 		errors.length === 0
 			? {
@@ -4082,9 +4128,10 @@ export function parseStatChartContent(kind: StatChartKind, source: string): Stat
 					series,
 					twoSeries,
 					scatter: null,
-					axis: options.axis,
+					axis,
 					toPlace,
-					chooseScale: options.chooseScale
+					chooseScale,
+					...(solvedBars !== undefined && { solvedBars })
 				}
 			: null;
 

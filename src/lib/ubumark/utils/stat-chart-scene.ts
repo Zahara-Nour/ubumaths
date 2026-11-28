@@ -195,6 +195,8 @@ export interface SceneBar {
 	 * que seule la correction dessine ; absente sinon
 	 */
 	toPlace?: true;
+	/** Barre attendue d'un corrigé (`solution: oui`, V109) : dessinée en vert ; absente sinon */
+	solved?: true;
 	value: number;
 	/** Valeur écrite au-dessus de la barre (`valeurs: oui`) */
 	valueLabel: string;
@@ -746,6 +748,7 @@ function buildBarScene(
 			? mutedAxis(locale)
 			: valueAxis(maxValue, height, unit, locale);
 	const toPlace = new Set(spec.toPlace ?? []);
+	const solved = new Set(spec.solvedBars ?? []);
 
 	const margin = (1 - BAR_WIDTH) / 2;
 	const barWidth = BAR_WIDTH / seriesList.length;
@@ -757,6 +760,7 @@ function buildBarScene(
 				label: shownLabel(d.label, locale),
 				...(two !== null && { series: s }),
 				...(toPlace.has(i) && { toPlace: true as const }),
+				...(solved.has(i) && { solved: true as const }),
 				value,
 				valueLabel: formatValue(value, unit, locale),
 				left,
