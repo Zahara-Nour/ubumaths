@@ -634,7 +634,7 @@
 			// Plan vide : le premier bouton de la réserve ; droite à placer : la droite
 			slot.build
 				.querySelector<HTMLElement>(
-					'.construire-ajouter:not(:disabled), [data-signe-case]:not(:disabled), [role="slider"], [data-ranger-focus]:not(:disabled), [data-associer-focus]:not(:disabled), [data-trous-focus]:not(:disabled), [data-tortue-focus]:not(:disabled), [data-robot-focus]:not(:disabled), [data-labyrinthe-focus]:not(:disabled), math-field[data-yohaku-focus]:not([read-only]), [data-calcul-focus]:not(:disabled), math-field[data-resolution-focus], .partage-colorier [role="button"]:not([aria-disabled="true"]), .cubes-geste [role="button"]:not([aria-disabled="true"]), .cubes-saisie input:not(:disabled), .patron-geste [role="button"]:not([aria-disabled="true"]), .solide-geste [role="button"]:not([aria-disabled="true"])'
+					'.construire-ajouter:not(:disabled), [data-signe-case]:not(:disabled), [role="slider"], [data-ranger-focus]:not(:disabled), [data-associer-focus]:not(:disabled), [data-trous-focus]:not(:disabled), [data-tortue-focus]:not(:disabled), [data-robot-focus]:not(:disabled), [data-labyrinthe-focus]:not(:disabled), math-field[data-yohaku-focus]:not([read-only]), [data-calcul-focus]:not(:disabled), [data-graduer-focus]:not(:disabled), math-field[data-resolution-focus], .partage-colorier [role="button"]:not([aria-disabled="true"]), .cubes-geste [role="button"]:not([aria-disabled="true"]), .cubes-saisie input:not(:disabled), .patron-geste [role="button"]:not([aria-disabled="true"]), .solide-geste [role="button"]:not([aria-disabled="true"])'
 				)
 				?.focus();
 			return;
@@ -1065,6 +1065,26 @@
 								}
 							: undefined}
 					/>
+				{/if}
+			{:else if node.type === 'number-line' && node.caseIndex !== undefined && node.graduer !== undefined}
+				<!-- Droite à graduer : la case N est le nombre de parts, le point k a la case N + 1 + k -->
+				{@const firstCase = node.caseIndex}
+				{@const caseCount = 1 + (node.placer?.length ?? 0)}
+				{#if showCorrectAnswers}
+					<!-- Bonne réponse : la droite partagée, les points justes -->
+					<BuildAnswer kind="line" source={node.source ?? ''} answer={null} status="solution" />
+				{:else}
+					<div data-construire-case={firstCase} data-construire-cases={caseCount}>
+						<NumberLine
+							{node}
+							answers={Array.from({ length: caseCount }, (_, k) => ({
+								value: inputStates[firstCase + k]?.value ?? '',
+								isCorrect: flashMode ? null : (inputStates[firstCase + k]?.isCorrect ?? null),
+								disabled: flashMode || effectiveDisabled,
+								onChange: (value: string) => handleInputChange(firstCase + k, value)
+							}))}
+						/>
+					</div>
 				{/if}
 			{:else if node.type === 'number-line' && node.caseIndex !== undefined && node.placer !== undefined}
 				<!-- Droite à placer : l'élève pose ses points, une case par point (N, N + 1…),

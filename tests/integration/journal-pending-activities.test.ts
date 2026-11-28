@@ -61,6 +61,9 @@ async function cleanup() {
 		const testPointIds = (testPoints ?? []).map((p) => p.id);
 		if (testPointIds.length > 0) {
 			await service.from('exercise_curriculum_points').delete().in('point_id', testPointIds);
+			// Supprimer un point travaillé ou couvert est refusé (L112) : son travail d'abord
+			await service.from('journal_entry_points').delete().in('point_id', testPointIds);
+			await service.from('student_point_state').delete().in('point_id', testPointIds);
 		}
 		await service.from('exercise_classifications').delete().in('node_id', createdNodeIds);
 		await service.from('curriculum_points').delete().in('node_id', createdNodeIds);

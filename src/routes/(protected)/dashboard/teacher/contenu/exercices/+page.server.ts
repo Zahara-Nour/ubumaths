@@ -6,7 +6,8 @@ import { z } from 'zod';
 import {
 	getTeacherExercises,
 	deleteExercise,
-	EXERCISE_NOT_DELETED
+	EXERCISE_NOT_DELETED,
+	ExerciseCitedError
 } from '#lib/server/exercises.ts';
 import { requireRoles } from '#lib/server/middleware/auth.ts';
 import { createServerLogger } from '#lib/utils/logger.ts';
@@ -15,6 +16,17 @@ const logger = createServerLogger('(protected)/dashboard/teacher/contenu/exercic
 
 /** Identifiant d'exercice reçu par l'action « delete ». */
 const exerciseIdSchema = z.string().uuid();
+
+/** Refus de suppression d'un exercice que des séances citent (L113) */
+function exerciseCitedMessage(sessions: number | null): string {
+	const where =
+		sessions === null
+			? 'des séances du cahier de texte'
+			: sessions === 1
+				? 'une séance du cahier de texte'
+				: `${sessions} séances du cahier de texte`;
+	return `Cet exercice est cité dans ${where} : retirez-le d'abord de ces séances pour le supprimer.`;
+}
 
 /**
  * Load teacher's exercises with optional filters
@@ -132,6 +144,10 @@ export const actions: Actions = {
 		// Delete exercise
 		const result = await deleteExercise(locals.supabase, exerciseId, user.id);
 
+		// L113 : des séances du cahier de texte citent l'exercice, qui reste
+		if (result.error instanceof ExerciseCitedError) {
+			return fail(409, { message: exerciseCitedMessage(result.error.sessions) });
+		}
 		if (result.error) {
 			logger.error('Error deleting exercise:', result.error);
 			if (result.error.message === 'Exercise not found') {

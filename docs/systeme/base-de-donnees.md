@@ -877,12 +877,13 @@ authenticated` ne part qu'après le `deploy:prod` qui livre la route (sinon la p
   table reçoit `42501` sur un `select('*')`, ce qui casse PostgREST. Pour cacher des données à l'élève,
   une table annexe sans policy élève (c'était le choix de `python_submission_server_verdicts`, supprimée
   depuis).
-- **`curriculum_points` : cinq des six clés étrangères qui le visent sont en CASCADE** ; supprimer un
-  point effacerait sans un mot la couverture du cahier de texte et l'acquisition des élèves. On
-  archive.
-- **`journal_entry_activities.exercise_id` est en `SET NULL`** alors qu'un CHECK de forme exige la
-  colonne pour `kind = 'exercise'` : supprimer un exercice cité dans une séance échoue sur la
-  contrainte.
+- **Supprimer un point de `curriculum_points` qu'un élève a travaillé ou qu'une séance couvre est
+  REFUSÉ** (`student_point_state` et `journal_entry_points` en NO ACTION, migration
+  `20261128072151`, L112) : rattacher d'abord ce travail à un autre point, ou archiver. Les autres
+  clés qui visent un point (modèles, exercices, automatismes) restent en CASCADE.
+- **Supprimer un exercice cité par une séance du cahier de texte est REFUSÉ**
+  (`journal_entry_activities.exercise_id` en NO ACTION, code `23503`, L113) : `deleteExercise` rend
+  `ExerciseCitedError`, et la page dit au prof combien de séances le citent.
 - **Deux générations de seeds du programme.** Les anciens (`20260621160000_seed_curriculum_6e`,
   `20260830090000_seed_curriculum_1re_spe`) amorcent un niveau vide, une fois (garde
   `IF EXISTS … THEN RETURN`) ; ensuite la page `/dashboard/teacher/programme` faisait foi, jusqu'à la

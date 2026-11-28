@@ -116,7 +116,7 @@ anciennes versions. Les deux fichiers d'automatismes `6AutoN4` ne sont pas repri
 | Distances                          | 6G1   | 6         | libre                |                             |
 | Cercles et disques                 | 6G2   | 9         | libre                |                             |
 | Médiatrices                        | 6G3   | 5         | libre                |                             |
-| Angles                             | 6G4   | 12        | libre                |                             |
+| Angles                             | 6G4   | 12        | prise (2026-11-28)   | `idees-6e-angles`           |
 | Bissectrices                       | 6G5   | 3         | libre                |                             |
 | Triangles                          | 6G6   | 16        | libre                |                             |
 | Symétrie axiale                    | 6G7   | 13        | libre                |                             |
@@ -189,6 +189,8 @@ de contenu appliquée en prod.
 
 Ce sont des idées notées pour un modèle déjà réservé, ou reportées par David (« plus tard »).
 
+- `idees-6e-angles` (2026-11-28, pour la session de la rubrique « Espace » 6G8) : 6G41, « compléter une
+  représentation en perspective cavalière » (cube ou pavé), rangé sous le préfixe 6G4 mais exercice de solides.
 - `ensembles-2de` : fiches 16, 17, 34, 52 du relevé « nombres et calculs » (rares mais au
   programme, voir le journal).
 - `idees-6e-entiers` (plus tard, David, 2026-11-22) : la rose des sommes (6N0A-2), en attente d'un outil

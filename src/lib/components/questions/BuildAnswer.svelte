@@ -10,7 +10,9 @@
 	seule. Lecture seule : jamais de réserve active. Droite à placer (```line,
 	`placer:`) : la droite verrouillée avec les points de l'élève (`answers`, un par
 	point, quand il y en a plusieurs), ou les points justes. Droite à représenter
-	(```line, `representer:`) : l'intervalle de l'élève, ou l'intervalle juste. Horloge à placer
+	(```line, `representer:`) : l'intervalle de l'élève, ou l'intervalle juste. Droite à
+	graduer (```line, `graduer:`) : les parts et les points de l'élève (cases dans l'ordre),
+	ou la droite juste partagée. Horloge à placer
 	(```horloge, `placer:`) : le cadran verrouillé avec les aiguilles de l'élève,
 	ou le cadran à l'heure juste. Figure à colorier (```partage, `colorier:`) : la
 	figure verrouillée avec les parts de l'élève, ou la figure juste. Diagramme en barres à construire (```barres,
@@ -38,6 +40,8 @@
 	import NumberLine from '#lib/components/markdown/nodes/NumberLine.svelte';
 	import NumberLinePlacer from '#lib/components/markdown/nodes/NumberLinePlacer.svelte';
 	import NumberLineRepresenter from '#lib/components/markdown/nodes/NumberLineRepresenter.svelte';
+	import NumberLineGraduer from '#lib/components/markdown/nodes/NumberLineGraduer.svelte';
+	import { graduerSolutionNode } from '#lib/ubumark/utils/number-line-graduer.ts';
 	import Courbe from '#lib/components/markdown/nodes/Courbe.svelte';
 	import { parseCourbeContent } from '#lib/ubumark/parser/courbe-parser.ts';
 	import { solutionLine } from '#lib/ubumark/utils/courbe-tracer.ts';
@@ -157,6 +161,16 @@
 				spec: { ...spec, build: undefined, sets: [collectionSolution(spec.build!)] }
 			}}
 		/>
+	{/if}
+{:else if line?.graduer !== undefined}
+	{#if lineCases}
+		<NumberLineGraduer node={line} answers={lineCases} showControls={false} />
+	{:else}
+		<!-- La droite juste : d parts, les points en vert, sans `graduer:` : dessinée seule -->
+		{@const solution = graduerSolutionNode(line)}
+		{#if solution}
+			<NumberLine node={solution} pointsOnLine />
+		{/if}
 	{/if}
 {:else if line?.representer !== undefined}
 	{#if lineCases}

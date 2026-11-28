@@ -719,6 +719,21 @@ que sur l'ensemble : point plein à une borne fermée, creux à une borne ouvert
 là où f n'est pas définie (détail : [grapheur.md](grapheur.md)). `f′`, qui hérite, se trace
 restreinte aussi.
 
+**L'intervalle à paramètre** (chantier fonctions-morceaux, phase 0 validée le 2026-11-28) : une
+borne peut citer des valeurs de l'atelier (`f(x) = x sur [k;5]`, `[-a;a]`, `[k+1;5[`,
+`\frac{k}{2}`). `intervalNamesOf` (`interval.ts`) lit les noms des bornes : ce sont des
+références de f (`#readRefsOf`) — k absent, f l'attend avec l'offre de curseur ; k en erreur, f
+aussi. Le champ garde l'écriture (`interval`, sauvegardée telle quelle) ; à chaque recalcul,
+`#parameterIntervalsNow` relit l'ensemble avec les valeurs (`parseStudentDomain`, option `bound`)
+et le range dans `FunctionObject.parameterInterval`, jamais sauvegardé, que `intervalDomainOf`
+préfère à la lecture de l'écriture : tracé, calculs, refus de `f(1)`, héritage suivent le curseur.
+Lu avec les valeurs du passage d'avant, il fait repasser `recomputeAll` une fois s'il change.
+Un ensemble que le curseur rend impossible met la carte en **erreur** (courbe effacée, retour seul
+quand le curseur revient), le refus de `checkInterval` suffixé des valeurs : « L'intervalle est
+vide (k = 6). », « réduit à un point (k = 5) », « √x n'est pas défini sur tout [−1 ; 5] (k = −1) ».
+À la création, la même valeur impossible refuse la saisie. Renommer k réécrit les bornes
+(`renamedInInterval`). Tests : `atelier/__tests__/intervalle-parametre.test.ts`.
+
 **La réciproque** (lot 3 de [atelier-reciproque-phase0.md](../archive/wip/atelier-reciproque-phase0.md),
 R1-R4) : le bouton « Réciproque » de la carte d'une fonction et `.réciproque f [sur I]` donnent la
 MÊME ligne (`reciprocalResult`, `src/lib/atelier/reciprocal.ts`) — réponse `f⁻¹(x) = …, f⁻¹ : départ

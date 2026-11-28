@@ -107,9 +107,12 @@ import { perfSwitches } from './perf-switches';
 import {
 	checkInterval,
 	citedIntervals,
+	intervalNamesOf,
 	ONLY_FUNCTIONS,
 	readInterval,
-	type CheckedInterval
+	renamedInInterval,
+	type CheckedInterval,
+	type IntervalValues
 } from './interval';
 import type { Domain } from '#lib/mathAST/domain/types.ts';
 import { getVariables } from '#lib/mathAST/eval/substitute.ts';
@@ -686,6 +689,12 @@ export class Atelier {
 	#baseline: string | null = null;
 	/** Annuler ou rétablir remet une photo : rien de ce qu'il écrit n'est une étape. */
 	#restoring = false;
+	/**
+	 * Une relecture d'atelier (Annuler, chargement, lien) est en cours : un
+	 * ensemble à paramètre (`[k;5]`) y est repris tel qu'écrit, jamais jugé sur
+	 * les valeurs du moment (k = 6 l'effacerait, revue).
+	 */
+	#restoringObjects = false;
 	/** L'étape gardée par la dernière `step` (voir `lastStepId`). */
 	#lastStepId: number | null = null;
 	/** Le point glissé à la souris, jusqu'au relâcher (`endGesture`). */
@@ -1254,10 +1263,88 @@ export class Atelier {
 		written: string,
 		definition: string,
 		provenance: Provenance,
-		letter: string | undefined
+		letter: string | undefined,
+		kept = false
 	): CheckedInterval {
 		if (kind !== 'function') return { ok: false, message: ONLY_FUNCTIONS };
-		return checkInterval(written, definition, provenance, this.functionNames, letter);
+		const values = this.#intervalValues(written, letter ?? INTERNAL_LETTER);
+		// Une valeur citée pas encore là (`[k;5]` avant `k = 2`) : la fonction l'attendra
+		if (values === 'waiting') return { ok: true, interval: written.trim() };
+		// Un ensemble à paramètre déjà accepté (relu par Annuler ou un chargement,
+		// gardé par une formule modifiée) : son écriture fait foi. Les valeurs du
+		// moment (k = 6 → vide) mettent la fonction en erreur au recalcul, comme un
+		// curseur glissé — jamais l'ensemble effacé ni la formule refusée (revue)
+		if (values !== undefined && (kept || this.#restoringObjects)) {
+			return { ok: true, interval: written.trim() };
+		}
+		return checkInterval(written, definition, provenance, this.functionNames, letter, values);
+	}
+
+	/**
+	 * Les valeurs des noms cités par les bornes d'un ensemble (`[k;5]`, chantier
+	 * fonctions-morceaux) : `undefined` sans nom ; `'waiting'` quand une valeur
+	 * manque ou ne se calcule pas encore (la fonction l'attend, `#readRefsOf`).
+	 * Un nom qui n'est pas une valeur (une fonction, un point) ne vaut rien : la
+	 * table rendue est vide, et l'ensemble reste illisible.
+	 */
+	#intervalValues(written: string, letter: string): IntervalValues | 'waiting' | undefined {
+		const names = intervalNamesOf(written, letter);
+		if (names.length === 0) return undefined;
+		const values = new Map<string, MathNode>();
+		for (const name of names) {
+			const object = this.get(name);
+			if (object === undefined) return 'waiting';
+			if (object.kind !== 'value') return new Map();
+			const substituted = substitutedAstOf(this, name);
+			if (!substituted.ok) return object.status === 'ok' ? new Map() : 'waiting';
+			values.set(name, substituted.ast);
+		}
+		return values;
+	}
+
+	/**
+	 * L'ensemble de chaque fonction à paramètre (`[k;5]`), lu avec les valeurs
+	 * du moment : l'ensemble, ou le refus (« L'intervalle est vide (k = 6). »).
+	 * Absente de la table : pas de paramètre, ou une valeur qui manque.
+	 */
+	#parameterIntervalsNow(): Map<string, { domain: Domain | null } | { message: string }> {
+		const result = new Map<string, { domain: Domain | null } | { message: string }>();
+		for (const o of this.items) {
+			if (!isFunction(o) || o.interval === undefined) continue;
+			const letter = o.letter ?? INTERNAL_LETTER;
+			const values = this.#intervalValues(o.interval, letter);
+			if (values === undefined || values === 'waiting') continue;
+			const checked = checkInterval(
+				o.interval,
+				o.definition,
+				o.provenance ?? 'url',
+				this.functionNames,
+				letter,
+				values
+			);
+			if (!checked.ok) {
+				result.set(o.name, { message: checked.message });
+				continue;
+			}
+			const read = readInterval(o.interval, letter, values);
+			result.set(o.name, { domain: read.ok ? read.domain : null });
+		}
+		return result;
+	}
+
+	/** Ranger sur chaque fonction l'ensemble lu avec les valeurs (`parameterInterval`). */
+	#applyParameterIntervals(
+		read: ReadonlyMap<string, { domain: Domain | null } | { message: string }>
+	): void {
+		this.items.forEach((o, i) => {
+			if (!isFunction(o)) return;
+			const entry = read.get(o.name);
+			const domain = entry !== undefined && 'domain' in entry ? entry.domain : null;
+			// Comparé par contenu : un objet neuf relancerait la carte et le tracé pour rien
+			if (JSON.stringify(o.parameterInterval ?? null) === JSON.stringify(domain)) return;
+			const { parameterInterval: _stale, ...rest } = o;
+			this.items[i] = domain === null ? rest : { ...rest, parameterInterval: domain };
+		});
 	}
 
 	/**
@@ -1465,11 +1552,18 @@ export class Atelier {
 			const rewritten = this.#renamedIn(o, from, to);
 			// Le premier terme d'une suite peut citer la valeur renommée (S1)
 			const firstTerm = isSequence(o) && o.firstTerm === from ? to : undefined;
-			if (rewritten !== o.definition || firstTerm !== undefined) {
+			// Les bornes d'un ensemble aussi (`[k;5]` → `[m;5]`)
+			const interval =
+				isFunction(o) && o.interval !== undefined
+					? renamedInInterval(o.interval, from, to, o.letter ?? INTERNAL_LETTER)
+					: undefined;
+			const intervalChanged = isFunction(o) && interval !== o.interval;
+			if (rewritten !== o.definition || firstTerm !== undefined || intervalChanged) {
 				this.items[i] = {
 					...o,
 					definition: rewritten,
-					...(firstTerm !== undefined && { firstTerm })
+					...(firstTerm !== undefined && { firstTerm }),
+					...(intervalChanged && { interval })
 				} as AtelierObject;
 				updated.push(o.name);
 			}
@@ -1539,7 +1633,8 @@ export class Atelier {
 				wanted,
 				definition,
 				provenance,
-				keptLetter
+				keptLetter,
+				interval === undefined
 			);
 			if (!checked.ok) return { ok: false, message: checked.message };
 			keptInterval = checked.interval;
@@ -2740,11 +2835,14 @@ export class Atelier {
 	): RestoreReport {
 		// Une relecture n'est jamais une étape : les réglages qu'elle repose non plus
 		const restoring = this.#restoring;
+		const restoringObjects = this.#restoringObjects;
 		this.#restoring = true;
+		this.#restoringObjects = true;
 		try {
 			return this.#restoreObjects(stored, provenances);
 		} finally {
 			this.#restoring = restoring;
+			this.#restoringObjects = restoringObjects;
 		}
 	}
 
@@ -3175,6 +3273,12 @@ export class Atelier {
 		if (isSequence(o) && o.mode === 'recurrence' && hasObjectNameShape(o.firstTerm)) {
 			if (!refs.some((r) => r.name === o.firstTerm)) refs.push({ name: o.firstTerm, as: 'value' });
 		}
+		// Les valeurs des bornes (`f(x) = x sur [k;5]`) : f attend k, et suit son curseur
+		if (isFunction(o) && o.interval !== undefined) {
+			for (const name of intervalNamesOf(o.interval, o.letter ?? INTERNAL_LETTER)) {
+				if (!refs.some((r) => r.name === name)) refs.push({ name, as: 'value' });
+			}
+		}
 		return refs;
 	}
 
@@ -3386,6 +3490,29 @@ export class Atelier {
 	 * pas lire ne peut rien promettre, donc l'erreur prime sur l'attente.
 	 */
 	private recomputeAll(): void {
+		// Les ensembles à paramètre se lisent avec les valeurs du passage d'avant ;
+		// si ce passage les change (une valeur qui vient d'apparaître), on repasse
+		// une fois (`#parameterIntervalsNow` en fin de passage)
+		const parameterIntervals = this.#parameterIntervalsNow();
+		this.#applyParameterIntervals(parameterIntervals);
+		this.#recomputeOnce(parameterIntervals);
+		if (this.#recomputingAgain) return;
+		const after = this.#parameterIntervalsNow();
+		if (JSON.stringify([...after]) === JSON.stringify([...parameterIntervals])) return;
+		this.#recomputingAgain = true;
+		try {
+			this.recomputeAll();
+		} finally {
+			this.#recomputingAgain = false;
+		}
+	}
+
+	/** Un second passage de `recomputeAll` en cours : il ne s'en relance pas un troisième. */
+	#recomputingAgain = false;
+
+	#recomputeOnce(
+		parameterIntervals: ReadonlyMap<string, { domain: Domain | null } | { message: string }>
+	): void {
 		this.#overFigureCap.clear();
 		this.#shortcutKinds();
 		const living = new Set(this.names);
@@ -3488,6 +3615,15 @@ export class Atelier {
 			// `g(x) = f(2x)` avec f sur un intervalle : pas encore su (décision c)
 			if (!ownError.get(o.name) && intervals.refused.has(o.name)) {
 				ownError.set(o.name, intervals.refused.get(o.name));
+			}
+			// `f(x) = x sur [k;5]` avec k = 6 : l'ensemble est vide (chantier fonctions-morceaux)
+			const parameterInterval = parameterIntervals.get(o.name);
+			if (
+				!ownError.get(o.name) &&
+				parameterInterval !== undefined &&
+				'message' in parameterInterval
+			) {
+				ownError.set(o.name, parameterInterval.message);
 			}
 			deps.set(
 				o.name,

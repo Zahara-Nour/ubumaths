@@ -15,7 +15,8 @@ import {
 	updateExercise,
 	deleteExercise,
 	getTeacherExercises,
-	EXERCISE_NOT_DELETED
+	EXERCISE_NOT_DELETED,
+	ExerciseCitedError
 } from '../exercises';
 import type { Database } from '#lib/types/database.ts';
 import type { ExerciseVersionContent } from '#lib/types/database-helpers.ts';
@@ -603,6 +604,26 @@ describe('deleteExercise', () => {
 		expect(mockSupabase.__mockQuery.delete).toHaveBeenCalled();
 		expect(mockSupabase.__mockQuery.select).toHaveBeenLastCalledWith('id');
 		expect(result.error?.message).toBe(EXERCISE_NOT_DELETED);
+	});
+
+	// L113 : des séances citent l'exercice → refus de la clé étrangère (23503)
+	it('L113 : exercice cité par une séance → ExerciseCitedError', async () => {
+		const mockSupabase = createMockSupabase() as any;
+		mockSupabase.__mockQuery.single.mockResolvedValueOnce({
+			data: { id: 'ex-123', created_by: 'user-123', variations: [] },
+			error: null
+		});
+		mockSupabase.__latestQuery.select.mockResolvedValue({
+			data: [versionRow('ex-123')],
+			error: null
+		});
+		mockSupabase.__mockQuery.select
+			.mockReturnValueOnce(mockSupabase.__mockQuery)
+			.mockResolvedValueOnce({ data: null, error: { code: '23503', message: 'fk' } });
+
+		const result = await deleteExercise(mockSupabase, 'ex-123', 'user-123');
+
+		expect(result.error).toBeInstanceOf(ExerciseCitedError);
 	});
 
 	it('should reject delete from non-owner', async () => {

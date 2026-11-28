@@ -13,7 +13,8 @@ import {
 	SCHEMA_BARRES_PX_PER_UNIT,
 	buildSchemaBarresScene,
 	schemaBarresDrawWidth,
-	schemaBarresLabel
+	schemaBarresLabel,
+	schemaBarresTextWidth
 } from '#lib/ubumark/utils/schema-barres-scene.ts';
 
 function scene(...lines: string[]) {
@@ -194,6 +195,31 @@ describe('schéma dans une colonne étroite (téléphone, case choix)', () => {
 		expect(drawWidth).toBeGreaterThanOrEqual(SCHEMA_BARRES_MIN_DRAW_WIDTH);
 		const s = buildSchemaBarresScene(spec, { drawWidth });
 		const part = s.rects[0];
-		expect(part.width).toBeGreaterThanOrEqual('1 234'.length * 9);
+		expect(part.width).toBeGreaterThanOrEqual(schemaBarresTextWidth('1 234'));
+	});
+});
+
+describe('largeur estimée des textes : jamais sous la largeur réelle', () => {
+	// Largeurs mesurées au corps 16 (le plus large d'Inter et de Luciole, WebKit et Chromium,
+	// 2026-11-28) : « Gommes » sortait du dessin dans une case choix, rogné en « ommes »
+	const MESURES: Record<string, number> = {
+		Tom: 34,
+		Gommes: 68,
+		Léa: 28,
+		Mamie: 52,
+		Wassim: 61,
+		Maximilien: 85,
+		Mercredi: 69,
+		Billes: 42,
+		WWWW: 65,
+		mmmm: 60
+	};
+
+	it.each(Object.entries(MESURES))('nom « %s » : estimé ≥ %i et dans le dessin', (nom, mesure) => {
+		const { scene: s } = scene(`${nom} : A (2)`, 'B : A (1)');
+		const texte = s.texts.find((t) => t.kind === 'name' && t.text === nom);
+		expect(texte?.width).toBeGreaterThanOrEqual(mesure);
+		// texte aligné à droite : son début reste dans la marge du dessin
+		expect((texte?.x ?? 0) - mesure).toBeGreaterThanOrEqual(0);
 	});
 });

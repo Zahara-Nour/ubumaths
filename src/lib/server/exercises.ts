@@ -523,6 +523,21 @@ export async function updateExercise(
 export const EXERCISE_NOT_DELETED = 'Exercise not deleted';
 
 /**
+ * Refus de `deleteExercise` : des séances du cahier de texte citent l'exercice
+ * (L113, ON DELETE NO ACTION). Le cahier garde la trace de ce qui a été fait :
+ * le prof retire d'abord l'exercice de ces séances. `sessions` est null quand
+ * le compte n'a pas pu être lu.
+ */
+export class ExerciseCitedError extends Error {
+	constructor(readonly sessions: number | null) {
+		super('Exercise cited by journal entries');
+	}
+}
+
+/** Violation de clé étrangère (Postgres) : une autre ligne cite celle-ci */
+const FOREIGN_KEY_VIOLATION = '23503';
+
+/**
  * Delete an exercise
  * Only the creator can delete their own exercise
  */
@@ -550,6 +565,14 @@ export async function deleteExercise(
 		.eq('id', id)
 		.eq('created_by', userId)
 		.select('id');
+
+	if (error?.code === FOREIGN_KEY_VIOLATION) {
+		const { count } = await supabase
+			.from('journal_entry_activities')
+			.select('id', { count: 'exact', head: true })
+			.eq('exercise_id', id);
+		return { error: new ExerciseCitedError(typeof count === 'number' ? count : null) };
+	}
 
 	if (error) {
 		logger.error('Error deleting exercise:', error);

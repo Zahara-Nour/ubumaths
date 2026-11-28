@@ -358,7 +358,7 @@ function trousLabelsCollide(
 /** Ce qui donne la réponse d'un bloc qui porte sa case, pour les messages au prof */
 function blockAnswerName(kind: BuildKind): string {
 	if (kind === 'line')
-		return 'la graduation ou l’intervalle de la droite graduée (placer:, representer:)';
+		return 'la graduation, l’intervalle ou le partage de la droite graduée (placer:, representer:, graduer:)';
 	if (kind === 'horloge') return 'l’heure de l’horloge (placer:)';
 	if (kind === 'barres') return 'l’effectif de la barre (placer:)';
 	if (kind === 'boite-a-moustaches') return 'les valeurs de la boîte (placer:)';
@@ -1217,6 +1217,10 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 						if (child.type === 'number-line') {
 							const first = child.caseIndex;
 							if (child.representer !== undefined && first !== undefined) return [first];
+							// Droite à graduer : la case des parts, puis une par point
+							if (child.graduer !== undefined && first !== undefined) {
+								return [first, ...(child.placer ?? []).map((_, k) => first + 1 + k)];
+							}
 							if (child.placer === undefined || first === undefined) return [];
 							return child.placer.map((_, k) => first + k);
 						}

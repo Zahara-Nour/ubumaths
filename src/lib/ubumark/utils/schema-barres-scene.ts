@@ -18,8 +18,10 @@
  * - Accolade horizontale : sous sa barre, du début à la fin du dernier segment
  *   PLEIN. Accolade verticale (`total`) : à droite, de la première à la dernière
  *   barre (hors accolades horizontales).
- * - La largeur d'un texte est ESTIMÉE (`SCHEMA_BARRES_CHAR_WIDTH` par caractère) :
- *   l'écran et le PDF n'ont pas la même police.
+ * - La largeur d'un texte est ESTIMÉE, caractère par caractère, par famille
+ *   (étroits, courants, capitales et chiffres, larges) : l'écran et le PDF n'ont
+ *   pas la même police. L'estimation est prise AU-DESSUS de la mesure (Inter et
+ *   Luciole, corps 16) : un nom trop large sortirait du dessin, rogné.
  *
  * @module ubumark/utils/schema-barres-scene
  */
@@ -54,8 +56,18 @@ export const SCHEMA_BARRES_STROKE = 1.6;
 /** Corps du texte, en unités */
 export const SCHEMA_BARRES_FONT_SIZE = 16;
 
-/** Largeur estimée d'un caractère, en unités */
-export const SCHEMA_BARRES_CHAR_WIDTH = 9;
+/**
+ * Largeur estimée d'un caractère, en unités, par famille. Plus large que la mesure
+ * au corps 16 (Inter et Luciole, WebKit et Chromium, 2026-11-28) : « i » 4,7 ;
+ * « a » 9,1 ; « O » 12,6 ; « m » 14,9 ; « W » 16,2.
+ */
+const COMMON_CHAR_WIDTH = 10;
+const NARROW_CHAR_WIDTH = 7;
+const CAPITAL_CHAR_WIDTH = 13;
+const WIDE_CHAR_WIDTH = 16.5;
+const NARROW_CHARS = /[ijlfrt.,;:!'’()[\]| ]/;
+const WIDE_CHARS = /[mwMWŒÆœæ&@%—]/;
+const CAPITAL_CHARS = /[A-ZÀ-ÖØ-Þ0-9€]/;
 
 /** Marge autour du dessin (le trait ne doit pas être rogné), en unités */
 export const SCHEMA_BARRES_MARGIN = 4;
@@ -135,7 +147,19 @@ export interface SchemaBarresScene {
 // FONCTIONS
 // ============================================================================
 
-const textWidth = (text: string) => text.length * SCHEMA_BARRES_CHAR_WIDTH;
+function charWidth(char: string): number {
+	if (WIDE_CHARS.test(char)) return WIDE_CHAR_WIDTH;
+	if (NARROW_CHARS.test(char)) return NARROW_CHAR_WIDTH;
+	if (CAPITAL_CHARS.test(char)) return CAPITAL_CHAR_WIDTH;
+	return COMMON_CHAR_WIDTH;
+}
+
+/** Largeur estimée d'un texte au corps `SCHEMA_BARRES_FONT_SIZE`, en unités */
+export function schemaBarresTextWidth(text: string): number {
+	let width = 0;
+	for (const char of text) width += charWidth(char);
+	return width;
+}
 
 /** Somme des longueurs d'une barre, parties manquantes comprises */
 function barLength(segments: { length: number }[]): number {
@@ -187,8 +211,8 @@ export function buildSchemaBarresScene(
 ): SchemaBarresScene {
 	const { bars } = spec;
 	const drawWidth = options.drawWidth ?? SCHEMA_BARRES_DRAW_WIDTH;
-	const nameChars = Math.max(...bars.map((b) => b.name.length));
-	const nameWidth = nameChars > 0 ? nameChars * SCHEMA_BARRES_CHAR_WIDTH + NAME_GAP : 0;
+	const nameText = Math.max(...bars.map((b) => schemaBarresTextWidth(b.name)));
+	const nameWidth = nameText > 0 ? nameText + NAME_GAP : 0;
 	const unit = drawWidth / Math.max(...bars.map((b) => barLength(b.segments)));
 	const left = SCHEMA_BARRES_MARGIN + nameWidth;
 	const right = left + drawWidth;
@@ -211,7 +235,7 @@ export function buildSchemaBarresScene(
 				x: left - NAME_GAP,
 				y: centerY,
 				anchor: 'end',
-				width: textWidth(bar.name)
+				width: schemaBarresTextWidth(bar.name)
 			});
 		}
 		let x = left;
@@ -226,7 +250,7 @@ export function buildSchemaBarresScene(
 					x: x + width / 2,
 					y: centerY,
 					anchor: 'middle',
-					width: Math.max(width, textWidth(segment.label))
+					width: Math.max(width, schemaBarresTextWidth(segment.label))
 				});
 			}
 			x += width;
@@ -244,7 +268,7 @@ export function buildSchemaBarresScene(
 				x: (left + plainEnd) / 2,
 				y: textY,
 				anchor: 'middle',
-				width: textWidth(bar.brace)
+				width: schemaBarresTextWidth(bar.brace)
 			});
 			rowBottom = braceTop + BRACE_HEIGHT + BRACE_TEXT_GAP + BRACE_TEXT_HEIGHT;
 		}
@@ -262,9 +286,9 @@ export function buildSchemaBarresScene(
 			x: textX,
 			y: (firstTop + lastBottom) / 2,
 			anchor: 'start',
-			width: textWidth(spec.total)
+			width: schemaBarresTextWidth(spec.total)
 		});
-		width = textX + textWidth(spec.total) + SCHEMA_BARRES_MARGIN;
+		width = textX + schemaBarresTextWidth(spec.total) + SCHEMA_BARRES_MARGIN;
 	}
 
 	// Le texte sous une accolade ne sort pas de la scène (accolade courte, texte long)
@@ -306,11 +330,12 @@ export function schemaBarresDrawWidth(spec: SchemaBarresSpec, columnPx: number):
 		...spec.bars.flatMap((b) =>
 			b.segments
 				.filter((s) => s.label !== '')
-				.map((s) => ((textWidth(s.label) + 2 * LABEL_PADDING) * longest) / s.length)
+				.map((s) => ((schemaBarresTextWidth(s.label) + 2 * LABEL_PADDING) * longest) / s.length)
 		)
 	);
-	const floor = Math.max(SCHEMA_BARRES_MIN_DRAW_WIDTH, labelsFit);
-	return Math.round(Math.min(SCHEMA_BARRES_DRAW_WIDTH, Math.max(target, floor)));
+	const minDrawWidth = Math.max(SCHEMA_BARRES_MIN_DRAW_WIDTH, labelsFit);
+	// Arrondis du côté sûr : vers le bas pour le corps visé, vers le haut pour le plancher
+	return Math.min(SCHEMA_BARRES_DRAW_WIDTH, Math.max(Math.floor(target), Math.ceil(minDrawWidth)));
 }
 
 /**

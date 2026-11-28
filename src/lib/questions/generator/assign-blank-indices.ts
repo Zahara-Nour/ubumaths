@@ -16,6 +16,7 @@
  * - Bloc ```collection ou ```monnaie à construire (`construire: N`) → UNE case, `case: N`
  *   posé dans le bloc ; droite à placer (```line, `placer: A=3 ; B=7`) → une case par point,
  *   droite à représenter (```line, `representer: [2, +inf[`) → une case (texte),
+ *   droite à graduer (```line, `graduer: 3`) → une case pour les parts puis une par point,
  *   N, N + 1…, seul N est posé ; diagramme en barres à construire (```barres, `placer:`) →
  *   une case par barre, de même ; repère à points à placer (```courbe, `placer: A=(2 ; 3)`)
  *   → une case par point, de même (refusé aussi comme option d'un bloc choix)

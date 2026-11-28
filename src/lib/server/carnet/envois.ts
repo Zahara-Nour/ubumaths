@@ -24,7 +24,7 @@ import { z } from 'zod';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '#lib/types/database.ts';
 import { createServiceRoleClient } from '#lib/server/serviceRoleClient.ts';
-import { endOfSchoolYear } from '#lib/server/journal-share-tokens.ts';
+import { endOfSchoolYear } from '#lib/server/school-year.ts';
 import { sendCarnetConfirmationEmail, sendCarnetLinkEmail } from '#lib/server/email/brevo.ts';
 import { CARNET_CONFIRM_DAYS } from '#lib/email-templates/carnet.ts';
 import { createServerLogger } from '#lib/utils/logger.ts';

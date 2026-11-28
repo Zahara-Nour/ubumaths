@@ -1,0 +1,678 @@
+{
+	"id": "9f9bddbd-19cc-43cc-90b9-e67c9058468d",
+	"title": "Conditions composées",
+	"description": "Lire une condition composée avec « et » ou « ou » dans un programme Scratch : ce que dit le programme selon les valeurs, traduire « strictement compris entre »",
+	"grades": ["3"],
+	"level": 1,
+	"delay": 90,
+	"status": "published",
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"statement": "Que dit ce programme ?\n\n```scratch\nmettre [x v] à ({{x}})\nsi <<(x) > [{{p}}]> et <(x) < [{{q}}]>> alors\ndire [Oui]\nsinon\ndire [Non]\nfin\n```\n\n````choix\n- « {{if:x>p and x<q|Oui|Non}} »\n- « {{if:x>p and x<q|Non|Oui}} »\n````",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "2..9"
+				},
+				{
+					"name": "q",
+					"expression": "eval:p+5"
+				},
+				{
+					"name": "dx",
+					"expression": "-2..7"
+				},
+				{
+					"name": "x",
+					"expression": "eval:p+dx"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Une condition « … **et** … » est vraie seulement si **les deux** conditions sont vraies.",
+					"$x = {{x}}$ : « $x > {{p}}$ » est {{if:x>p|vraie|fausse}} ; « $x < {{q}}$ » est {{if:x<q|vraie|fausse}}.",
+					"La condition composée est donc {{if:x>p and x<q|vraie|fausse}} : le programme dit **« {{if:x>p and x<q|Oui|Non}} »**."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"statement": "Que dit ce programme ?\n\n```scratch\nmettre [x v] à ({{x}})\nsi <<(x) < [{{p}}]> ou <(x) > [{{q}}]>> alors\ndire [Oui]\nsinon\ndire [Non]\nfin\n```\n\n````choix\n- « {{if:x<p or x>q|Oui|Non}} »\n- « {{if:x<p or x>q|Non|Oui}} »\n````",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "2..9"
+				},
+				{
+					"name": "q",
+					"expression": "eval:p+5"
+				},
+				{
+					"name": "dx",
+					"expression": "-2..7"
+				},
+				{
+					"name": "x",
+					"expression": "eval:p+dx"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Une condition « … **ou** … » est vraie dès qu'**au moins une** des deux conditions est vraie.",
+					"$x = {{x}}$ : « $x < {{p}}$ » est {{if:x<p|vraie|fausse}} ; « $x > {{q}}$ » est {{if:x>q|vraie|fausse}}.",
+					"La condition composée est donc {{if:x<p or x>q|vraie|fausse}} : le programme dit **« {{if:x<p or x>q|Oui|Non}} »**."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"statement": "Ce programme décide si un enfant peut monter dans un manège.\n\n```scratch\nquand le drapeau vert pressé\ndemander [Quel est ton âge ?] et attendre\nmettre [âge v] à (réponse)\ndemander [Quelle est ta taille en cm ?] et attendre\nmettre [taille v] à (réponse)\nsi <<(âge) > [{{A}}]> et <(taille) > [{{T}}]>> alors\ndire [Tu peux monter]\nsinon\ndire [Pas encore]\nfin\n```\n\nUn enfant saisit ${{a}}$ pour son âge et ${{t}}$ pour sa taille. Que dit le programme ?\n\n````choix\n- « {{if:a>A and t>T|Tu peux monter|Pas encore}} »\n- « {{if:a>A and t>T|Pas encore|Tu peux monter}} »\n````",
+			"variables": [
+				{
+					"name": "A",
+					"expression": "7..10"
+				},
+				{
+					"name": "T",
+					"expression": "120..140"
+				},
+				{
+					"name": "a",
+					"expression": "6..13"
+				},
+				{
+					"name": "dt",
+					"expression": "-12..12"
+				},
+				{
+					"name": "t",
+					"expression": "eval:T+dt"
+				}
+			],
+			"conditions": ["dt!=0"],
+			"correction": {
+				"steps": [
+					"Il faut **les deux** : âge $> {{A}}$ **et** taille $> {{T}}$.",
+					"Âge ${{a}}$ : « ${{a}} > {{A}}$ » est {{if:a>A|vraie|fausse}} ; taille ${{t}}$ : « ${{t}} > {{T}}$ » est {{if:t>T|vraie|fausse}}.",
+					"Le programme dit **« {{if:a>A and t>T|Tu peux monter|Pas encore}} »**."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"statement": "Quelle condition est vraie exactement quand $x$ est **strictement compris** entre ${{p}}$ et ${{q}}$ ?\n\n````choix\n- ```scratch\n  <<(x) > [{{p}}]> et <(x) < [{{q}}]>>\n  ```\n- ```scratch\n  <<(x) > [{{p}}]> ou <(x) < [{{q}}]>>\n  ```\n- ```scratch\n  <<(x) < [{{p}}]> et <(x) > [{{q}}]>>\n  ```\n- ```scratch\n  <<(x) < [{{p}}]> ou <(x) > [{{q}}]>>\n  ```\n````",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "2..9"
+				},
+				{
+					"name": "dq",
+					"expression": "3..9"
+				},
+				{
+					"name": "q",
+					"expression": "eval:p+dq"
+				}
+			],
+			"correction": {
+				"steps": [
+					"« $x$ est strictement compris entre ${{p}}$ et ${{q}}$ » signifie : $x > {{p}}$ **et** $x < {{q}}$ (les deux à la fois).",
+					"Avec « ou », $x = {{eval:q+5}}$ conviendrait (car ${{eval:q+5}} > {{p}}$) : la condition serait vraie pour tous les nombres.",
+					"La bonne condition : **(x > {{p}}) et (x < {{q}})**."
+				]
+			}
+		},
+		{
+			"statement": "Le lutin part du point $(0\\,;0)$.\n\n```scratch\naller à x: (0) y: (0)\najouter ({{ax}}) à x\najouter ({{ay}}) à y\nsi <<(abscisse x) > [{{p}}]> ou <(ordonnée y) > [{{q}}]>> alors\najouter ({{u}}) à x\nsinon\najouter ({{w}}) à y\nfin\n```\n\nOù se trouve le lutin à la fin du programme ?\n\n$x = ?$ et $y = ?$",
+			"variables": [
+				{
+					"name": "kx",
+					"expression": "1..9"
+				},
+				{
+					"name": "ky",
+					"expression": "1..9"
+				},
+				{
+					"name": "kp",
+					"expression": "1..9"
+				},
+				{
+					"name": "kq",
+					"expression": "1..9"
+				},
+				{
+					"name": "ku",
+					"expression": "1..5"
+				},
+				{
+					"name": "kw",
+					"expression": "1..5"
+				},
+				{
+					"name": "ax",
+					"expression": "eval:10*kx"
+				},
+				{
+					"name": "ay",
+					"expression": "eval:10*ky"
+				},
+				{
+					"name": "p",
+					"expression": "eval:10*kp"
+				},
+				{
+					"name": "q",
+					"expression": "eval:10*kq"
+				},
+				{
+					"name": "u",
+					"expression": "eval:10*ku"
+				},
+				{
+					"name": "w",
+					"expression": "eval:10*kw"
+				},
+				{
+					"name": "t",
+					"expression": "eval:min(min(max((kx)-(kp),0),1)+min(max((ky)-(kq),0),1),1)"
+				}
+			],
+			"conditions": ["kx!=kp", "ky!=kq"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:ax+u*t}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:ax+u*(1-t)}}",
+							"message": "Relis la condition : avec « ou », il suffit qu'une des deux comparaisons soit vraie pour faire le « alors ».",
+							"label": "Condition mal évaluée (ou lu comme et)"
+						},
+						{
+							"answer": "{{eval:u*t}}",
+							"message": "Les deux premiers « ajouter » déplacent déjà le lutin avant le test.",
+							"label": "Déplacements du début oubliés"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{eval:ay+w*(1-t)}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:ay+w*t}}",
+							"message": "Relis la condition : avec « ou », il suffit qu'une des deux comparaisons soit vraie pour faire le « alors ».",
+							"label": "Condition mal évaluée (ou lu comme et)"
+						},
+						{
+							"answer": "{{eval:w*(1-t)}}",
+							"message": "Les deux premiers « ajouter » déplacent déjà le lutin avant le test.",
+							"label": "Déplacements du début oubliés"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"Après les deux premiers « ajouter », le lutin est en $({{ax}}\\,;{{ay}})$.",
+					"Test : ${{ax}} > {{p}}$ est {{if:kx>kp|vrai|faux}}, ${{ay}} > {{q}}$ est {{if:ky>kq|vrai|faux}}. Avec « ou », la condition est {{if:t==1|vraie : le lutin fait le « alors »|fausse : le lutin fait le « sinon »}}.",
+					"Position finale : $\\textcolor{{{color:primary.0}}}{x = {{eval:ax+u*t}}}$ et $\\textcolor{{{color:primary.0}}}{y = {{eval:ay+w*(1-t)}}}$."
+				]
+			},
+			"hint": "Suis le lutin instruction par instruction : note $x$ et $y$ après chacune, et teste la condition avec les valeurs du moment."
+		},
+		{
+			"statement": "Le lutin part du point $(0\\,;0)$.\n\n```scratch\naller à x: (0) y: (0)\nrépéter (5) fois\nsi <<(abscisse x) > [{{p}}]> et <(ordonnée y) < [{{q}}]>> alors\najouter ({{u}}) à y\nsinon\najouter ({{w}}) à x\nfin\nfin\n```\n\nOù se trouve le lutin à la fin du programme ?\n\n$x = ?$ et $y = ?$",
+			"variables": [
+				{
+					"name": "kp",
+					"expression": "1..4"
+				},
+				{
+					"name": "kq",
+					"expression": "1..4"
+				},
+				{
+					"name": "ku",
+					"expression": "1..3"
+				},
+				{
+					"name": "kw",
+					"expression": "1..3"
+				},
+				{
+					"name": "p",
+					"expression": "eval:10*kp"
+				},
+				{
+					"name": "q",
+					"expression": "eval:10*kq"
+				},
+				{
+					"name": "u",
+					"expression": "eval:10*ku"
+				},
+				{
+					"name": "w",
+					"expression": "eval:10*kw"
+				},
+				{
+					"name": "x0",
+					"expression": "eval:0"
+				},
+				{
+					"name": "y0",
+					"expression": "eval:0"
+				},
+				{
+					"name": "c1",
+					"expression": "eval:min(max((x0)-(p),0),1)*min(max((q)-(y0),0),1)"
+				},
+				{
+					"name": "x1",
+					"expression": "eval:x0+w*(1-c1)"
+				},
+				{
+					"name": "y1",
+					"expression": "eval:y0+u*c1"
+				},
+				{
+					"name": "c2",
+					"expression": "eval:min(max((x1)-(p),0),1)*min(max((q)-(y1),0),1)"
+				},
+				{
+					"name": "x2",
+					"expression": "eval:x1+w*(1-c2)"
+				},
+				{
+					"name": "y2",
+					"expression": "eval:y1+u*c2"
+				},
+				{
+					"name": "c3",
+					"expression": "eval:min(max((x2)-(p),0),1)*min(max((q)-(y2),0),1)"
+				},
+				{
+					"name": "x3",
+					"expression": "eval:x2+w*(1-c3)"
+				},
+				{
+					"name": "y3",
+					"expression": "eval:y2+u*c3"
+				},
+				{
+					"name": "c4",
+					"expression": "eval:min(max((x3)-(p),0),1)*min(max((q)-(y3),0),1)"
+				},
+				{
+					"name": "x4",
+					"expression": "eval:x3+w*(1-c4)"
+				},
+				{
+					"name": "y4",
+					"expression": "eval:y3+u*c4"
+				},
+				{
+					"name": "c5",
+					"expression": "eval:min(max((x4)-(p),0),1)*min(max((q)-(y4),0),1)"
+				},
+				{
+					"name": "x5",
+					"expression": "eval:x4+w*(1-c5)"
+				},
+				{
+					"name": "y5",
+					"expression": "eval:y4+u*c5"
+				},
+				{
+					"name": "c6",
+					"expression": "eval:min(max((x5)-(p),0),1)*min(max((q)-(y5),0),1)"
+				},
+				{
+					"name": "x6",
+					"expression": "eval:x5+w*(1-c6)"
+				},
+				{
+					"name": "y6",
+					"expression": "eval:y5+u*c6"
+				},
+				{
+					"name": "nc",
+					"expression": "eval:c1+c2+c3+c4+c5"
+				}
+			],
+			"conditions": ["nc>=1", "nc<=4"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{x5}}",
+					"expectedErrors": [
+						{
+							"answer": "{{x4}}",
+							"message": "Compte les tours : la boucle répète ses instructions 5 fois.",
+							"label": "Un tour de moins"
+						},
+						{
+							"answer": "{{x6}}",
+							"message": "Compte les tours : la boucle répète ses instructions 5 fois.",
+							"label": "Un tour de trop"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{y5}}",
+					"expectedErrors": [
+						{
+							"answer": "{{y4}}",
+							"message": "Compte les tours : la boucle répète ses instructions 5 fois.",
+							"label": "Un tour de moins"
+						},
+						{
+							"answer": "{{y6}}",
+							"message": "Compte les tours : la boucle répète ses instructions 5 fois.",
+							"label": "Un tour de trop"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"À chaque tour, on teste la condition avec la position du moment : avec « et », il faut $x > {{p}}$ **et** $y < {{q}}$ pour ajouter ${{u}}$ à $y$ ; sinon on ajoute ${{w}}$ à $x$.",
+					"Positions après chaque tour : $({{x1}}\\,;{{y1}})$, $({{x2}}\\,;{{y2}})$, $({{x3}}\\,;{{y3}})$, $({{x4}}\\,;{{y4}})$, $({{x5}}\\,;{{y5}})$.",
+					"Position finale : $\\textcolor{{{color:primary.0}}}{x = {{x5}}}$ et $\\textcolor{{{color:primary.0}}}{y = {{y5}}}$."
+				]
+			},
+			"hint": "Suis le lutin instruction par instruction : note $x$ et $y$ après chacune, et teste la condition avec les valeurs du moment."
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"p": "3",
+				"q": "8",
+				"x": "5",
+				"dx": "2"
+			},
+			"description": "et, x dedans : Oui",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"p": "3",
+				"q": "8",
+				"x": "10",
+				"dx": "7"
+			},
+			"description": "Erreur : et lu ou (x = 10)",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"p": "3",
+				"q": "8",
+				"x": "3",
+				"dx": "0"
+			},
+			"description": "Erreur : borne incluse (x = 3)",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"p": "3",
+				"q": "8",
+				"x": "10",
+				"dx": "7"
+			},
+			"description": "ou, x dehors : Oui",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"p": "3",
+				"q": "8",
+				"x": "10",
+				"dx": "7"
+			},
+			"description": "Erreur : ou lu et (x = 10)",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"A": "8",
+				"T": "135",
+				"a": "12",
+				"t": "130",
+				"dt": "-5"
+			},
+			"description": "Manège : 12 ans, 130 cm, seuils 8 et 135 → Pas encore",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"A": "8",
+				"T": "135",
+				"a": "12",
+				"t": "130",
+				"dt": "-5"
+			},
+			"description": "Erreur : une seule condition suffit",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"p": "3",
+				"q": "8",
+				"dq": "5"
+			},
+			"description": "Traduire : (x > p) et (x < q)",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"p": "3",
+				"q": "8",
+				"dq": "5"
+			},
+			"description": "Erreur : ou à la place de et",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"p": "3",
+				"q": "8",
+				"dq": "5"
+			},
+			"description": "Erreur : bornes inversées",
+			"variationIndex": 3
+		},
+		{
+			"description": "A1 : une condition vraie → alors",
+			"variationIndex": 4,
+			"variables": {
+				"kx": "6",
+				"ky": "2",
+				"kp": "4",
+				"kq": "5",
+				"ku": "3",
+				"kw": "2"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["90", "20"]
+		},
+		{
+			"description": "A1 : aucune vraie → sinon",
+			"variationIndex": 4,
+			"variables": {
+				"kx": "2",
+				"ky": "3",
+				"kp": "4",
+				"kq": "5",
+				"ku": "3",
+				"kw": "2"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["20", "50"]
+		},
+		{
+			"description": "A1 : ou lu comme et (x)",
+			"variationIndex": 4,
+			"variables": {
+				"kx": "6",
+				"ky": "2",
+				"kp": "4",
+				"kq": "5",
+				"ku": "3",
+				"kw": "2"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Relis la condition : avec « ou », il suffit qu'une des deux comparaisons soit vraie pour faire le « alors »."
+			},
+			"answers": ["60", "20"]
+		},
+		{
+			"description": "A1 : départ oublié (x)",
+			"variationIndex": 4,
+			"variables": {
+				"kx": "6",
+				"ky": "2",
+				"kp": "4",
+				"kq": "5",
+				"ku": "3",
+				"kw": "2"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Les deux premiers « ajouter » déplacent déjà le lutin avant le test."
+			},
+			"answers": ["30", "20"]
+		},
+		{
+			"description": "A1 : branche échangée (y)",
+			"variationIndex": 4,
+			"variables": {
+				"kx": "2",
+				"ky": "3",
+				"kp": "4",
+				"kq": "5",
+				"ku": "3",
+				"kw": "2"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Relis la condition : avec « ou », il suffit qu'une des deux comparaisons soit vraie pour faire le « alors »."
+			},
+			"answers": ["20", "30"]
+		},
+		{
+			"description": "A2 : (30 ; 20)",
+			"variationIndex": 5,
+			"variables": {
+				"kp": "2",
+				"kq": "2",
+				"ku": "1",
+				"kw": "1",
+				"x0": "0",
+				"y0": "0"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["30", "20"]
+		},
+		{
+			"description": "A2 : un tour de moins (y)",
+			"variationIndex": 5,
+			"variables": {
+				"kp": "2",
+				"kq": "2",
+				"ku": "1",
+				"kw": "1",
+				"x0": "0",
+				"y0": "0"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Compte les tours : la boucle répète ses instructions 5 fois."
+			},
+			"answers": ["30", "10"]
+		},
+		{
+			"description": "A2 : un tour de trop (x)",
+			"variationIndex": 5,
+			"variables": {
+				"kp": "2",
+				"kq": "2",
+				"ku": "1",
+				"kw": "1",
+				"x0": "0",
+				"y0": "0"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Compte les tours : la boucle répète ses instructions 5 fois."
+			},
+			"answers": ["40", "20"]
+		}
+	]
+}

@@ -396,7 +396,8 @@ const COULEUR_SOLUTION = 'vert';
  * (`corrige`), `placer:` devient la ligne `points:` des points attendus, en vert (le
  * parseur refuse `points:` avec `placer:` : il n'y en a pas d'autre). Un point sans nom
  * prend la première lettre libre. Une case par point. Droite à représenter
- * (`representer:`), droite en retrait ou citée, illisible → refus, message à l'appui.
+ * (`representer:`), à graduer (`graduer:`), droite en retrait ou citée, illisible → refus,
+ * message à l'appui.
  */
 function droitesAPlacer(
 	modele: string,
@@ -415,6 +416,7 @@ function droitesAPlacer(
 			throw refus(`droite à placer illisible (${errors.map((e) => e.message).join(' ; ')})`);
 		}
 		if (node.representer) throw refus('droite à représenter non prise en charge');
+		if (node.graduer) throw refus('droite à graduer non prise en charge');
 		const placer = node.placer ?? [];
 		if (placer.length === 0) throw refus('droite à placer sans point à placer');
 		cases += placer.length;

@@ -311,6 +311,14 @@ async function removeDecor() {
 		.in('parent_id', branchIds);
 	const notionIds = (notions ?? []).map((n) => n.id);
 	if (notionIds.length > 0) {
+		// Supprimer un point travaillé ou couvert est refusé (L112) : son travail d'abord
+		const { data: points } = await service
+			.from('curriculum_points')
+			.select('id')
+			.in('node_id', notionIds);
+		const pointIds = (points ?? []).map((p) => p.id);
+		await service.from('journal_entry_points').delete().in('point_id', pointIds);
+		await service.from('student_point_state').delete().in('point_id', pointIds);
 		await service.from('curriculum_points').delete().in('node_id', notionIds);
 		await service.from('classification_nodes').delete().in('id', notionIds);
 	}
