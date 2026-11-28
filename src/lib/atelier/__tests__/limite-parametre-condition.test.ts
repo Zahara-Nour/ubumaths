@@ -157,3 +157,11 @@ describe('V125 — une valeur dont les lettres se simplifient est un nombre', ()
 		);
 	});
 });
+
+describe('L121 — d’un seul côté, la limite des deux côtés quand elle existe', () => {
+	it('x/(kx + x²) en 0⁺ : 1/k, pour k ≠ 0 (l’expression vaut 1/(k + x))', () => {
+		expect(latexOf(run('.limite \\frac{x}{kx+x^2} en 0+'))).toBe(
+			`\\lim\\limits_{x\\to 0^+} \\dfrac{x}{k x + x^2} = \\dfrac{1}{k}${FOR}k \\neq 0`
+		);
+	});
+});

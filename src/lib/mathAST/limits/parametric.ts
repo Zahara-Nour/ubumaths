@@ -179,11 +179,50 @@ function termLimit(
 
 /**
  * La limite, valable pour toute valeur des lettres, d'une expression que le
- * moteur refuse : une somme dont chaque terme a sa limite (`termLimit`). Les
- * infinis de même signe l'emportent ; ∞ − ∞ refuse ; parmi les valeurs finies,
- * au plus une non nulle (les autres valent 0). `null` sinon.
+ * moteur refuse : une somme dont chaque terme a sa limite (`termLimit`) ;
+ * sinon, d'un seul côté d'un point fini, la limite des deux côtés
+ * (`twoSidedLimit`). `null` sinon. La condition sur les lettres et les
+ * valeurs d'essai restent à `limitParameterCondition`.
  */
 export function limitForEveryParameter(
+	expr: MathNode,
+	variable: string,
+	approach: MathNode,
+	direction: LimitDirection
+): MathNode | null {
+	return (
+		sumLimit(expr, variable, approach, direction) ??
+		twoSidedLimit(expr, variable, approach, direction)
+	);
+}
+
+/**
+ * L121 : d'un seul côté d'un point fini, la limite FINIE des deux côtés,
+ * quand le moteur la trouve — elle vaut aussi d'un côté. `x/(kx + x²)` en
+ * 0⁺ : la substitution de 0⁺ bute sur le signe inconnu de k·0⁺, alors que
+ * la limite des deux côtés (L'Hôpital) donne 1/k. Une limite trouvée d'un
+ * seul côté par le moteur (`definedSide` : ln x en 0) n'en est pas une des
+ * deux côtés ; un infini, dont le signe peut dépendre de k, non plus.
+ */
+function twoSidedLimit(
+	expr: MathNode,
+	variable: string,
+	approach: MathNode,
+	direction: LimitDirection
+): MathNode | null {
+	if (direction === 'both' || isInfinity(approach)) return null;
+	const result = limitOf(expr, variable, approach, 'both');
+	if (result === null || result.definedSide !== undefined) return null;
+	const value = concludedValue(result);
+	return value === null || isInfinity(value) ? null : value;
+}
+
+/**
+ * Une somme dont chaque terme a sa limite (`termLimit`). Les infinis de même
+ * signe l'emportent ; ∞ − ∞ refuse ; parmi les valeurs finies, au plus une
+ * non nulle (les autres valent 0). `null` sinon.
+ */
+function sumLimit(
 	expr: MathNode,
 	variable: string,
 	approach: MathNode,
