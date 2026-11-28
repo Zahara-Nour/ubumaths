@@ -18,6 +18,7 @@ import type {
 	ConstraintId,
 	ConstraintMode,
 	ConstraintOptions,
+	RequiredForm,
 	ValidationRule
 } from '#lib/questions/types.ts';
 import {
@@ -58,10 +59,10 @@ import { evaluateRule, type EvaluationContext } from '#lib/questions/validation-
 import { readingOf, type FormulaReading } from '#lib/questions/formula-reading.ts';
 import { statusFromChoices } from '#lib/questions/choices.ts';
 import {
-	getRequiredFormFeedback,
-	REQUIRED_FORM_FEEDBACK,
-	requiredFormVerdict
+	judgeRequiredForm,
+	REQUIRED_FORM_FEEDBACK
 } from '#lib/questions/required-form-validator.ts';
+import { isPrimeFactorForm } from '#lib/questions/prime-factors-form.ts';
 import { validateQuantityAnswer } from '#lib/questions/units/validator.ts';
 import type { DurationFormIssue } from '#lib/questions/units/composite-duration.ts';
 import { rulesDecide } from '#lib/questions/rules-suffice.ts';
@@ -747,10 +748,15 @@ export function validateAlgebraic(
  */
 function requiredFormCosmetics(
 	latex: string,
+	requiredForm: RequiredForm,
 	constraints: ConstraintOptions,
 	reading: FormulaReading = {}
 ): { status: ValidationStatus; violations: NonNullable<ValidationResult['constraintViolations']> } {
-	const severities = buildConstraintSeverities(constraints);
+	// Produit de facteurs premiers : 2² × 3 × 7 s'écrit avec ses ×, la remarque
+	// « produits » est coupée pour cette case (outils-manquants n° 76)
+	const severities = buildConstraintSeverities(
+		isPrimeFactorForm(requiredForm) ? { ...constraints, products: 'off' } : constraints
+	);
 	const formOptions = formOptionsOf(constraints, reading);
 	return mapCosmeticViolations(cosmeticViolations(latex, severities, formOptions), false);
 }
@@ -1074,11 +1080,11 @@ function roundingOnlyFeedback(
  */
 function withAcceptableForm(
 	status: ValidationStatus,
-	violations: NonNullable<ValidationResult['constraintViolations']>
+	violations: NonNullable<ValidationResult['constraintViolations']>,
+	feedback: string = REQUIRED_FORM_FEEDBACK.acceptable
 ): { status: ValidationStatus; violations: NonNullable<ValidationResult['constraintViolations']> } {
 	// Refusée pour une autre raison : l'avertissement « juste » n'a rien à dire
 	if (status === 'bad_form') return { status, violations };
-	const feedback = REQUIRED_FORM_FEEDBACK.acceptable;
 	return {
 		status: 'unoptimal_form',
 		violations: [...violations, { constraint: 'form', severity: 'warning', feedback }]
@@ -1907,14 +1913,13 @@ function judgeSingleBlank(
 	if (blank.construire) return { isCorrect: true, status: 'correct' };
 
 	// 3. Required form check (per-blank)
-	const formVerdict =
+	const formJudgement =
 		blank.requiredForm && userAnswerLatex
-			? requiredFormVerdict(userAnswerLatex, blank.requiredForm, {
-					...readingOf(instance)
-				})
-			: 'ok';
+			? judgeRequiredForm(userAnswerLatex, blank.requiredForm, { ...readingOf(instance) })
+			: { verdict: 'ok' as const };
+	const formVerdict = formJudgement.verdict;
 	if (blank.requiredForm && formVerdict === 'violated') {
-		const feedback = getRequiredFormFeedback(blank.requiredForm, false);
+		const feedback = formJudgement.feedback ?? REQUIRED_FORM_FEEDBACK.pattern;
 		return {
 			isCorrect: false,
 			status: 'bad_form',
@@ -1952,10 +1957,15 @@ function judgeSingleBlank(
 
 	// requiredForm: form handled at step 3 → only cosmetic violations here.
 	if (blank.requiredForm) {
-		const cosmetic = requiredFormCosmetics(effectiveLatex, constraints, reading);
+		const cosmetic = requiredFormCosmetics(
+			effectiveLatex,
+			blank.requiredForm,
+			constraints,
+			reading
+		);
 		const { status, violations } =
 			formVerdict === 'acceptable'
-				? withAcceptableForm(cosmetic.status, cosmetic.violations)
+				? withAcceptableForm(cosmetic.status, cosmetic.violations, formJudgement.feedback)
 				: cosmetic;
 		return {
 			isCorrect: status !== 'bad_form',
@@ -2588,15 +2598,15 @@ function matchedAnswerForm(
 	const allViolations: NonNullable<ValidationResult['constraintViolations']> = [];
 
 	if (blank.requiredForm && blankLatex) {
-		const verdict = requiredFormVerdict(blankLatex, blank.requiredForm, {
+		const { verdict, feedback: formFeedback } = judgeRequiredForm(blankLatex, blank.requiredForm, {
 			...readingOf(instance)
 		});
 		if (verdict === 'violated') {
-			const feedback = getRequiredFormFeedback(blank.requiredForm, false);
+			const feedback = formFeedback ?? REQUIRED_FORM_FEEDBACK.pattern;
 			allViolations.push({ constraint: 'form', severity: 'error', feedback });
 			worstStatus = 'bad_form';
 		} else if (verdict === 'acceptable') {
-			const feedback = REQUIRED_FORM_FEEDBACK.acceptable;
+			const feedback = formFeedback ?? REQUIRED_FORM_FEEDBACK.acceptable;
 			allViolations.push({ constraint: 'form', severity: 'warning', feedback });
 			worstStatus = 'unoptimal_form';
 		}
@@ -2608,7 +2618,12 @@ function matchedAnswerForm(
 		// Forme exigée : déjà jugée par le motif ; ici seules les contraintes cosmétiques,
 		// comme pour une case seule (l'attendu n'est pas LA forme à reproduire)
 		const { status, violations } = blank.requiredForm
-			? requiredFormCosmetics(blankLatex, instance.options?.constraints ?? {}, reading)
+			? requiredFormCosmetics(
+					blankLatex,
+					blank.requiredForm,
+					instance.options?.constraints ?? {},
+					reading
+				)
 			: blank.precision || rulesDecide(blank) || acceptsExactDecimal(blank, blankLatex)
 				? checkSimpleNumberForm(
 						blankLatex,

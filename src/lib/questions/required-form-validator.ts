@@ -50,6 +50,14 @@ import { matches, tryMatch } from '#lib/mathAST/pattern/match.ts';
 import { isMathNodeBinding } from '#lib/mathAST/pattern/types.ts';
 import { EQUATION_FEEDBACK, matchesEquationForm } from './equations/equation-answer';
 import { COMPLEX_FORM_FEEDBACK, matchesComplexForm } from './complex-forms';
+import {
+	PRIME_FACTORS_FEEDBACK,
+	analyzePrimeFactors,
+	isPrimeFactorForm,
+	primeFactorsFeedback,
+	primeFactorsVerdict,
+	type PrimeFactorsAnalysis
+} from './prime-factors-form';
 
 // =============================================================================
 // CONSTANTS
@@ -68,6 +76,9 @@ export const REQUIRED_FORM_FEEDBACK = {
 	...EQUATION_FEEDBACK.forms,
 	// Formes d'un nombre complexe
 	...COMPLEX_FORM_FEEDBACK,
+	// Produit de facteurs premiers : phrase de repli, le juge nomme d'habitude le facteur
+	primeFactors: PRIME_FACTORS_FEEDBACK.other,
+	primeFactorsPowers: PRIME_FACTORS_FEEDBACK.other,
 	pattern: 'La réponse ne respecte pas la forme demandée.',
 	acceptable: 'La réponse est juste, mais pas écrite sous la forme demandée.'
 } as const;
@@ -214,6 +225,9 @@ function matchesPredefinedForm(
 		case 'exponentielle':
 		case 'algebrique':
 			return matchesComplexForm(node, formType);
+		case 'primeFactors':
+		case 'primeFactorsPowers':
+			return primeFactorsVerdict(analyzePrimeFactors(node), formType) === 'ok';
 	}
 }
 
@@ -545,6 +559,23 @@ function matchesRequiredForm(
 // =============================================================================
 
 /**
+ * Réponse lue pour juger sa forme (lève une erreur si elle ne se lit pas).
+ * Parenthèses inutiles retirées : (2×3) a la même forme que 2×3.
+ */
+function parseFormAnswer(latex: string, options: RequiredFormOptions): MathNode {
+	// Virgule nue (`0,5n`) décimale, comme pour le juge de valeur (#520),
+	// sauf dans une écriture à virgule séparatrice (couple, liste…). Jugé sur la
+	// réponse, pas sur l'attendue comme le juge de valeur : aucun motif ne sait
+	// écrire un couple aujourd'hui ; à aligner si un jour il en arrive un.
+	const decimalLatex = expectsSeparatorComma(latex) ? latex : bareDecimalCommaToPoint(latex);
+	const node = parseLatex(decimalLatex, {
+		genericFunctions: options.genericFunctions,
+		capitalPairs: options.capitalPairs
+	});
+	return stripUnnecessaryBrackets(node);
+}
+
+/**
  * Checks if student answers match the required structural form.
  *
  * Returns the indices of answers that violate the required form.
@@ -578,22 +609,8 @@ export function checkRequiredForm(
 	const violations: number[] = [];
 
 	for (let i = 0; i < answersLatex.length; i++) {
-		const latex = answersLatex[i];
-
 		try {
-			// Virgule nue (`0,5n`) décimale, comme pour le juge de valeur (#520),
-			// sauf dans une écriture à virgule séparatrice (couple, liste…). Jugé sur la
-			// réponse, pas sur l'attendue comme le juge de valeur : aucun motif ne sait
-			// écrire un couple aujourd'hui ; à aligner si un jour il en arrive un.
-			const decimalLatex = expectsSeparatorComma(latex) ? latex : bareDecimalCommaToPoint(latex);
-			const node = parseLatex(decimalLatex, {
-				genericFunctions: options.genericFunctions,
-				capitalPairs: options.capitalPairs
-			});
-
-			// Strip unnecessary brackets before checking form
-			// This ensures (2×3) is treated the same as 2×3
-			const strippedNode = stripUnnecessaryBrackets(node);
+			const strippedNode = parseFormAnswer(answersLatex[i], options);
 
 			// Check if the form matches
 			if (!matchesRequiredForm(strippedNode, requiredForm, options.genericFunctions)) {
@@ -620,6 +637,9 @@ export function requiredFormVerdict(
 	requiredForm: RequiredForm,
 	options: RequiredFormOptions = {}
 ): RequiredFormVerdict {
+	if (isPrimeFactorForm(requiredForm)) {
+		return judgeRequiredForm(answerLatex, requiredForm, options).verdict;
+	}
 	if (checkRequiredForm([answerLatex], requiredForm, options).length === 0) return 'ok';
 	if (typeof requiredForm !== 'string' && requiredForm.acceptable !== undefined) {
 		const acceptable = { pattern: requiredForm.acceptable };
@@ -642,4 +662,41 @@ export function getRequiredFormFeedback(requiredForm: RequiredForm, _isMultiple:
 	// Message écrit par l'auteur (outils-manquants n° 75), sinon la phrase générale
 	// `||` : un message résolu vide (variable vide) retombe sur la phrase générale
 	return requiredForm.message || REQUIRED_FORM_FEEDBACK.pattern;
+}
+
+/** Verdict de forme d'une réponse et le message que l'élève lit (absent si `ok`) */
+export interface RequiredFormJudgement {
+	verdict: RequiredFormVerdict;
+	feedback?: string;
+}
+
+/**
+ * Verdict et message d'UNE réponse. Le message dépend de la réponse pour le produit de
+ * facteurs premiers (« 4 n'est pas un nombre premier. », outils-manquants n° 76) ;
+ * pour les autres formes, celui de `getRequiredFormFeedback` ou de la forme acceptable.
+ */
+export function judgeRequiredForm(
+	answerLatex: string,
+	requiredForm: RequiredForm,
+	options: RequiredFormOptions = {}
+): RequiredFormJudgement {
+	if (isPrimeFactorForm(requiredForm)) {
+		let analysis: PrimeFactorsAnalysis;
+		try {
+			analysis = analyzePrimeFactors(parseFormAnswer(answerLatex, options));
+		} catch {
+			analysis = { kind: 'other' } as const;
+		}
+		if (analysis.kind === 'ok') return { verdict: 'ok' };
+		const verdict = primeFactorsVerdict(analysis, requiredForm);
+		return verdict === 'ok'
+			? { verdict: 'ok' }
+			: { verdict, feedback: primeFactorsFeedback(analysis) };
+	}
+	const verdict = requiredFormVerdict(answerLatex, requiredForm, options);
+	if (verdict === 'violated') {
+		return { verdict, feedback: getRequiredFormFeedback(requiredForm, false) };
+	}
+	if (verdict === 'acceptable') return { verdict, feedback: REQUIRED_FORM_FEEDBACK.acceptable };
+	return { verdict };
 }

@@ -14,6 +14,9 @@ export const REQUIRED_FORM_OPTIONS = [
 	// Formes d'un nombre complexe
 	{ value: 'exponentielle', label: 'Complexe : forme exponentielle (re^{iθ}, r > 0)' },
 	{ value: 'algebrique', label: 'Complexe : forme algébrique (a + ib)' },
+	// Produit de facteurs premiers (outils-manquants n° 76)
+	{ value: 'primeFactors', label: 'Produit de facteurs premiers (2 × 2 × 3 ou 2² × 3)' },
+	{ value: 'primeFactorsPowers', label: 'Produit de facteurs premiers, avec puissances (2² × 3)' },
 	{ value: 'custom', label: 'Pattern personnalisé' }
 ] as const;
 
