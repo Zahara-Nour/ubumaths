@@ -216,8 +216,7 @@ describe('erreur prévue de même valeur, sur une mauvaise forme (Q3)', () => {
 		const instance = generate(AVEC_ERREUR);
 		const detail = validateAnswerDetailed(instance, answer(['\\frac{7}{5}']));
 		const kinds = answerErrorKinds(instance, detail, ['\\frac{7}{5}'], 'bad_form');
-		expect(kinds.kinds).toHaveLength(1);
-		expect(kinds.kinds[0].expected).toBeDefined();
+		expect(kinds.kinds).toEqual([{ blank: 1, expected: expect.any(String) }]);
 	});
 
 	it('rejeu de publication : le modèle passe', () => {
