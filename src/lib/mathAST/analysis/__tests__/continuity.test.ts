@@ -284,6 +284,24 @@ describe('analyzeContinuity()', () => {
 				expect(result.discontinuities.some((d) => d.periodic !== undefined)).toBe(true);
 			}
 		);
+
+		// Un point effaçable hors du domaine réel ne casse pas la continuité
+		// sur le domaine, même si la famille périodique semble le contenir.
+		it.each(['\\frac{x-3}{x-3}\\tan(x)', '\\tan(x)+\\frac{\\sin(x)}{x}'])(
+			'%s reste continue sur son domaine',
+			(latex) => {
+				const result = analyzeContinuity(parseLatex(latex), 'x');
+				expect(result.isContinuousOnDomain).toBe(true);
+			}
+		);
+
+		it('tan(x) + 1/(x − π/2) : π/2 n’est rendu qu’une fois', () => {
+			const result = analyzeContinuity(parseLatex('\\tan(x)+\\frac{1}{x-\\frac{\\pi}{2}}'), 'x');
+			const atHalfPi = result.discontinuities.filter(
+				(d) => Math.abs((computeNumericValue(d.point) ?? NaN) - Math.PI / 2) < 1e-9
+			);
+			expect(atHalfPi).toHaveLength(1);
+		});
 	});
 
 	describe('domain boundaries (sqrt)', () => {
