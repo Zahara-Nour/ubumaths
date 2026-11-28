@@ -2,15 +2,15 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-28, après #3309._
+_Mis à jour le 2026-11-28, PR des migrations ouverte._
 
-- **État** : lot mergé (#3309) : 3 modèles neufs dans `scripts/questions/idees-6e-angles-neufs/`, 6 variations de
-  publiés dans `…-publies/`. Rien en prod.
-- **Prochaine action** : après la création des brouillons par David, commiter les ids écrits en tête des fichiers, puis
-  migrations générées (`migration-rangement.ts`, `migration-contenu.ts`) dans un nouveau worktree.
-- **En attente de David** : `pnpm tsx scripts/create-questions.ts --dir scripts/questions/idees-6e-angles-neufs --publier`.
+- **État** : brouillons créés en prod par David (6ff9a5e2, 47ec40d1, 87623856), ids commités ; migrations générées
+  (`…145608_…_neufs_rangement_tags.sql`, `…145615_…_publies_contenu.sql`), tests d'intégration verts.
+- **Prochaine action** : PR verte → merge → `migration list --linked` (aucune autre en attente) → `db:migrate` depuis
+  `main` → vérifier en prod nœuds, tags et variations → relecture dans `/dev/modeles` (série pour les 3 publiés).
+- **En attente de David** : rien avant la relecture.
 - **Pièges en cours** : c8741112, 3be08965, 2291c83c réservés ; copies « — essai » en base locale (brouillons).
-- **Worktree / branche** : aucun (le prochain sur `origin/main`, même sujet).
+- **Worktree / branche** : `ubumaths-wt-idees-6e-angles-migrations` · `feat/idees-6e-angles-migrations`.
 
 ## Phase 0 (2026-11-28)
 
@@ -70,6 +70,9 @@ migration : **personne ne gagne d'accès**, on range des modèles du prof. Aucun
   Recommandation : **tolérance de 10°**, la saisie oblige à estimer.
 
 ## Historique
+
+- 2026-11-28 : brouillons créés en prod (`create-questions --publier`, David), ids commités ; migrations de
+  rangement (3 modèles neufs) et de contenu (+6 variations de publiés) générées, tests d'intégration verts.
 
 - 2026-11-28 : #3309 mergée (fichiers du lot seuls, CI verte).
 
