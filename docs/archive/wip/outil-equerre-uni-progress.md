@@ -1,7 +1,7 @@
 ---
 title: Lot d'outils equerre-uni — journal
 date: 2026-11-28
-status: lot fini — outils 40 (#3290), 38 (#3299), 45 (#3313) livrés
+status: archivé — lot fini, outils 40 (#3290), 38 (#3299), 45 (#3313) livrés
 ---
 
 # Lot `equerre-uni` (outils 40, puis 38, puis 45)
