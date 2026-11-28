@@ -177,8 +177,10 @@ export function syncEngine(atelier: Atelier, engine: WebReplEngine): void {
 		// moteur ne sait pas lier `f'`. C'est le §6 bis appliqué à la
 		// synchronisation, au troisième endroit où il manquait après les commandes
 		// et les actions.
-		const substituted = expressionOf(atelier, object.name);
-		const ast = substituted.ok ? astOf(substituted.expression) : astOf(object.definition);
+		// L'ARBRE substitué, sans repasser par le texte maison : une fonction par
+		// morceaux s'écrit `{ x si x<2, … }`, que le parseur maison ne relit pas
+		const substituted = substitutedAstOf(atelier, object.name);
+		const ast = substituted.ok ? substituted.ast : astOf(object.definition);
 		if (ast === null) continue;
 		if (object.kind === 'function') {
 			createFunctionBinding(state, object.name, ['x'], ast);

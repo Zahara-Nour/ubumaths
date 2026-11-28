@@ -27,7 +27,8 @@ import {
 	type Provenance
 } from './parse';
 import { INTERNAL_LETTER, renameVariable } from './letter';
-import { intervalFieldLatex, intervalKeyword } from './interval';
+import { conditionFieldLatex, intervalFieldLatex, intervalKeyword } from './interval';
+import { piecesOf } from './piecewise';
 import { readNaturalQuantities } from './natural-quantities';
 import { argumentSeparatorsShown } from './decimal-comma';
 import { readArguments, readConstruction } from './construction-read';
@@ -86,6 +87,23 @@ function expressionFieldLatex(
 		if (composite !== null) return composite;
 	}
 	if (readingMode(provenance) === 'latex') return forMathlive(definition);
+	// `x pour x < 2, x^2 pour x ≥ 2` tapé dans Calcul : chaque morceau en LaTeX,
+	// « pour » et « sinon » en mots — jamais le `\begin{cases}` de `toLatex`
+	if (object.kind === 'function') {
+		const pieces = piecesOf(definition, readingMode(provenance));
+		if (pieces !== null && pieces.ok) {
+			const formula = (body: string) => {
+				const ast = astOf(body, provenance, functionNames);
+				return ast === null ? body : coordinateLatex(ast);
+			};
+			const written = pieces.pieces.map(
+				(piece) =>
+					`${formula(piece.body)}\\text{ pour }${conditionFieldLatex(piece.condition).replace(/(\d),(\d)/g, '$1{,}$2')}`
+			);
+			if (pieces.otherwise !== null) written.push(`${formula(pieces.otherwise)}\\text{ sinon}`);
+			return written.join(',');
+		}
+	}
 	// Une construction tapée dans Calcul (`milieu(A, B)`, `(AB)`, lot 2) : en LaTeX
 	// que le champ montre et que la lecture des constructions relit
 	if (object.kind === 'point' || object.kind === 'curve') {

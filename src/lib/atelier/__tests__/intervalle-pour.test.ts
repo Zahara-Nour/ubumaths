@@ -4,8 +4,8 @@
  * Phase 0 du chantier `fonctions-domaines` (validée par David le 2026-11-28) :
  * « pour » suivi d'une condition sur la lettre de la fonction vaut « sur »
  * suivi de l'ensemble ; la carte réaffiche ce qui a été tapé ; une seconde
- * formule (`…, x² pour x ≤ 2`) est refusée, la place reste libre pour les
- * fonctions par morceaux.
+ * formule (`…, x² pour x ≤ 2`) fait une fonction par morceaux (chantier
+ * `fonctions-par-morceaux`).
  */
 
 import { describe, it, expect } from 'vitest';
@@ -17,7 +17,6 @@ import {
 	readInterval,
 	splitInterval,
 	ONLY_FUNCTIONS,
-	ONE_FORMULA,
 	UNREADABLE_CONDITION
 } from '../interval';
 
@@ -166,12 +165,13 @@ describe('Calcul : refus', () => {
 		expect(last(d)).toEqual({ text: UNREADABLE_CONDITION, failed: true });
 	});
 
-	it('une seconde formule : une seule formule (par morceaux, plus tard)', () => {
+	// Une seconde formule fait une fonction par morceaux : fonctions-par-morceaux.test.ts
+	it('une seconde formule : une fonction par morceaux', () => {
 		const d = desk();
 		d.submit('f(x) = x pour x > 2, x^2 pour x ≤ 2');
 
-		expect(last(d)).toEqual({ text: ONE_FORMULA, failed: true });
-		expect(d.atelier.get('f')).toBeUndefined();
+		expect(last(d).failed).toBe(false);
+		expect(d.atelier.get('f')?.status).toBe('ok');
 	});
 
 	it('seule une fonction se définit pour une condition', () => {

@@ -18,8 +18,8 @@
  * `fonctions-domaines`, phase 0 validée par David le 2026-11-28) vaut « sur »
  * suivi de l'ensemble. L'objet range la condition écrite, et la carte la
  * réaffiche après « pour » : c'est l'écriture qui dit le mot (`isConditionWritten`).
- * Une seconde formule (`x pour x > 2, x² pour x ≤ 2`) est refusée : la place
- * reste libre pour les fonctions par morceaux.
+ * Plusieurs formules (`x pour x < 2, x² pour x ≥ 2`) font une fonction par
+ * morceaux : `piecewise.ts`, chantier `fonctions-par-morceaux`.
  *
  * @module atelier/interval
  */
@@ -32,13 +32,16 @@ import { parseStudentDomain } from '#lib/mathAST/domain/validation/parse-student
 import { expandExcludedPoints } from '#lib/mathAST/domain/validation/compare-domains.ts';
 import { computeDomain } from '#lib/mathAST/domain/compute.ts';
 import {
+	complement,
 	containsValue,
 	difference,
 	intersect,
 	isEmpty,
-	isUniversal
+	isUniversal,
+	union
 } from '#lib/mathAST/domain/algebra.ts';
 import { formatEndpointValue, formatInterval } from '#lib/mathAST/domain/format.ts';
+import { UNIVERSAL_DOMAIN } from '#lib/mathAST/domain/factory.ts';
 import { bound, endpointToNumber } from '#lib/math/intervals/index.ts';
 import { divide, number, subtract } from '#lib/mathAST/factory.ts';
 import { polynomialCoefficients } from '#lib/mathAST/normal/canonical-form.ts';
@@ -51,6 +54,7 @@ import { constantOf } from './constant';
 import { toCustom } from '#lib/mathAST/custom-generator.ts';
 import {
 	astOf,
+	parseDefinition,
 	readingMode,
 	readNumber,
 	referencesOf,
@@ -60,6 +64,17 @@ import {
 } from './parse';
 import type { Provenance } from './parse';
 import { INTERNAL_LETTER, renameVariableIn } from './letter';
+import {
+	domainText,
+	intervalKeyword,
+	intervalWord,
+	isConditionWritten,
+	JOIN_IN_TEXT,
+	UNREADABLE_CONDITION
+} from './interval-words';
+import { piecesOf } from './piecewise';
+
+export { intervalKeyword, intervalWord, isConditionWritten, UNREADABLE_CONDITION };
 import { derivativeOf, displayName, reciprocalOf } from './names';
 
 // =============================================================================
@@ -96,69 +111,7 @@ export type CheckedInterval =
 export const UNREADABLE_INTERVAL =
 	"Je n'ai pas su lire l'intervalle : écris par exemple sur [0;+∞[.";
 
-/**
- * Une condition illisible : une autre lettre que celle de la fonction, ou une
- * borne illisible (`pour x > 2 > 1`). Une borne qui cite une valeur (`pour x > k`) est lue.
- */
-export const UNREADABLE_CONDITION =
-	"Je n'ai pas su lire la condition : elle compare la lettre de la fonction à des nombres ou à des valeurs, par exemple pour x > 2 ou pour x > k.";
-
-export const ONE_FORMULA =
-	'Une seule formule par fonction : les fonctions par morceaux ne s’écrivent pas encore.';
-
 export const ONLY_FUNCTIONS = 'Seule une fonction se définit sur un intervalle.';
-
-/** « sur » écrit en mot par MathLive ou par la carte (`\text{ sur }`). */
-const SUR_AS_TEXT = /\\(?:text|textrm|mathrm|operatorname)\s*\{\s*sur\s*\}/g;
-
-/**
- * Le mot « sur ». En LaTeX (champ MathLive), collé à ce qui précède (`x^2sur`),
- * jamais une commande (`\surd`). En texte, un mot entier. Dans les deux cas,
- * c'est ce qui SUIT qui décide (`SET_START`).
- */
-const SUR_IN_LATEX = /(?<!\\)sur/g;
-const SUR_IN_TEXT = /(?<![A-Za-z\\])sur(?![A-Za-z])/g;
-
-/** « pour », mêmes règles que « sur » : c'est une comparaison derrière qui décide (`COMPARISON`). */
-const POUR_AS_TEXT = /\\(?:text|textrm|mathrm|operatorname)\s*\{\s*pour\s*\}/g;
-const POUR_IN_LATEX = /(?<!\\)pour/g;
-const POUR_IN_TEXT = /(?<![A-Za-z\\])pour(?![A-Za-z])/g;
-
-/** Une comparaison, en texte ou en LaTeX : ce qui fait d'une écriture une condition. */
-const COMPARISON = /[<>≤≥≠⩽⩾]|\\(?:lt|gt|leq?|geq?|leqslant|geqslant|neq?)(?![A-Za-z])/;
-
-/** « ou », « et » d'une condition, écrits en mot par MathLive (`\text{ ou }`). */
-const JOIN_AS_TEXT = /\\(?:text|textrm|mathrm)\s*\{\s*(ou|et)\s*\}/g;
-
-/**
- * « ou », « et » collés par MathLive (`x<0oux>1`) : seulement derrière un
- * chiffre, une accolade ou une espace — `\theta` n'est pas coupé.
- */
-const JOIN_GLUED = /(?<=[0-9}\s])(ou|et)(?=\s*[A-Za-z0-9\\-])/g;
-
-/** « ou », « et » d'une condition écrite en texte, entre deux comparaisons. */
-const JOIN_IN_TEXT = /\s+(ou|et)\s+/;
-
-/**
- * Le début d'un ensemble que `parseStudentDomain` lit : un crochet (aussi en
- * LaTeX), une accolade échappée, ℝ (`ℝ`, `\R`, `\mathbb{R}`, `R` seul, `R*`,
- * `R+`). `\left` compte seulement devant un crochet ou une accolade :
- * `\left(` et `\left|` (smartFence) sont des parenthèses, pas un ensemble.
- * Sans lui, « sur » n'est pas le mot de l'intervalle : `a = 3 sur 4`,
- * `x^{sur}`, `\text{surélevé}` restent entiers, comme avant le lot 1.
- */
-const SET_START =
-	/^(?:\\[,;:! ]|~|\s)*(?:\[|\]|\\left(?:\[|\]|\\lbrack|\\rbrack|\\\{|\\lbrace)|\\lbrack|\\rbrack|\\\{|\\lbrace|ℝ|\\R(?![A-Za-z])|\\mathbb|R(?![A-Za-z0-9]))/;
-
-/**
- * `ℝ\{1}` tapé collé : le parseur y lirait l'accolade échappée de LaTeX. En
- * texte, c'est la différence `ℝ \ {1}` (revue de #1337). `\R\{1\}` (LaTeX,
- * accolade fermante échappée) n'est pas touché.
- */
-const GLUED_SETMINUS = /(ℝ|(?<![A-Za-z\\])R|\\R)\\\{([^{}\\]*)\}/g;
-
-/** Seulement des espaces après « sur » : l'élève est en train de l'écrire. */
-const NOTHING_YET = /^(?:\\[,;:! ]|~|\s)*$/;
 
 /**
  * Un appel `f(…)` sans parenthèse dans l'argument — la forme de `TERM`
@@ -175,54 +128,16 @@ const CITED_NAME = /(?<![A-Za-z_\\])([A-Za-z](?:_\d+)?)(['′]*)/g;
 // =============================================================================
 
 /**
- * Où commence le mot « sur » d'un intervalle, et ce qui le suit — ou `null`.
- *
- * @param typing - Accepter aussi « sur » en fin de saisie (rien encore derrière) :
- *   la carte coupe `smartFence` avant que le crochet ne soit tapé.
+ * Couper une saisie au mot « sur » suivi d'un ensemble ; sinon la saisie reste
+ * entière. Une écriture PAR MORCEAUX (`x pour x < 2, x² pour x ≥ 2`) reste
+ * entière aussi : chaque morceau garde sa condition, la définition les lit
+ * toutes (`piecewise.ts`).
  */
-export function intervalWord(
-	typed: string,
-	mode: ReadingMode,
-	typing = false
-): { readonly before: string; readonly after: string } | null {
-	const text = typed.replace(SUR_AS_TEXT, ' sur ').replace(POUR_AS_TEXT, ' pour ');
-	for (const match of text.matchAll(mode === 'latex' ? SUR_IN_LATEX : SUR_IN_TEXT)) {
-		const after = text.slice(match.index + match[0].length);
-		if (SET_START.test(after) || (typing && NOTHING_YET.test(after))) {
-			return { before: text.slice(0, match.index), after };
-		}
-	}
-	// « pour » : une condition derrière (`x > 2`), sinon le mot reste dans la saisie
-	for (const match of text.matchAll(mode === 'latex' ? POUR_IN_LATEX : POUR_IN_TEXT)) {
-		const after = text.slice(match.index + match[0].length);
-		if (isConditionWritten(after)) return { before: text.slice(0, match.index), after };
-	}
-	return null;
-}
-
-/** L'écriture rangée est une condition (`x > 2`, écrite après « pour »), pas un ensemble. */
-export function isConditionWritten(written: string): boolean {
-	return !SET_START.test(written) && COMPARISON.test(written);
-}
-
-/** Le mot qui précède l'écriture rangée, dans le champ de la carte. */
-export function intervalKeyword(written: string): 'sur' | 'pour' {
-	return isConditionWritten(written) ? 'pour' : 'sur';
-}
-
-/** Couper une saisie au mot « sur » suivi d'un ensemble ; sinon la saisie reste entière. */
 export function splitInterval(typed: string, mode: ReadingMode): SplitDefinition {
+	if (piecesOf(typed, mode) !== null) return { body: typed, written: null };
 	const word = intervalWord(typed, mode);
 	if (word === null) return { body: typed, written: null };
 	return { body: word.before.trim(), written: word.after.trim() };
-}
-
-/** L'écriture lue par `parseStudentDomain` : `ℝ\{1}` collé devient une différence. */
-function domainText(written: string): string {
-	if (isConditionWritten(written)) {
-		return written.replace(JOIN_AS_TEXT, ' $1 ').replace(JOIN_GLUED, ' $1 ');
-	}
-	return written.replace(GLUED_SETMINUS, '$1 \\ {$2}');
 }
 
 /**
@@ -278,11 +193,6 @@ export function readInterval(
 	const unreadable = condition ? UNREADABLE_CONDITION : UNREADABLE_INTERVAL;
 	if (written.trim() === '' || written.length > MAX_INTERVAL_LENGTH) {
 		return { ok: false, message: unreadable };
-	}
-	// `x pour x > 2, x² pour x ≤ 2` : une seconde formule, la place des fonctions par morceaux
-	// (la lecture LaTeX trouve aussi le « pour » d'un texte)
-	if (condition && splitInterval(written, 'latex').written !== null) {
-		return { ok: false, message: ONE_FORMULA };
 	}
 	const bound =
 		values === undefined || values.size === 0
@@ -348,27 +258,127 @@ function checkReadInterval(
 	const read = readInterval(written, letter, values);
 	if (!read.ok) return read;
 	if (read.domain === null) return { ok: true, interval: undefined };
+	const outside = formulaOutside(read.domain, definition, provenance, functionNames, letter);
+	return outside === null
+		? { ok: true, interval: written.trim() }
+		: { ok: false, message: outside };
+}
 
+/**
+ * I3 : « √x n'est pas défini sur tout ]−1 ; +∞[ (pas en −0,5). », ou `null`
+ * quand la formule (en x) est définie sur tout l'ensemble. Une formule qui cite
+ * d'autres objets n'est pas jugée : son domaine dépend de leurs valeurs.
+ *
+ * @param letter - La lettre de l'élève, pour écrire la formule dans le message
+ */
+function formulaOutside(
+	domain: Domain,
+	definition: string,
+	provenance: Provenance,
+	functionNames: readonly string[],
+	letter: string
+): string | null {
 	const ast = astOf(definition, provenance, functionNames);
 	const cites = referencesOf(definition, provenance, functionNames).some(
 		(r) => r.name !== INTERNAL_LETTER
 	);
-	if (ast === null || cites) return { ok: true, interval: written.trim() };
+	if (ast === null || cites) return null;
 
 	const computed = computeDomain(ast, INTERNAL_LETTER);
-	if (computed.unresolved !== undefined) return { ok: true, interval: written.trim() };
-	const outside = difference(
-		expandExcludedPoints(read.domain),
-		expandExcludedPoints(computed.domain)
-	);
-	if (isEmpty(outside)) return { ok: true, interval: written.trim() };
+	if (computed.unresolved !== undefined) return null;
+	const outside = difference(expandExcludedPoints(domain), expandExcludedPoints(computed.domain));
+	if (isEmpty(outside)) return null;
 
 	const shown = letter === INTERNAL_LETTER ? ast : renameVariableIn(ast, INTERNAL_LETTER, letter);
 	const point = faultyPoint(outside);
-	return {
-		ok: false,
-		message: `${toCustom(shown)} n'est pas défini sur tout ${intervalText(read.domain)}${point === null ? '' : ` (pas en ${point})`}.`
-	};
+	return `${toCustom(shown)} n'est pas défini sur tout ${intervalText(domain)}${point === null ? '' : ` (pas en ${point})`}.`;
+}
+
+/** L'ensemble d'une fonction par morceaux (`null` pour ℝ), ou le refus. */
+export type CheckedPieces =
+	| { readonly ok: true; readonly domain: Domain | null }
+	| { readonly ok: false; readonly message: string };
+
+/**
+ * Une définition par morceaux (`x pour x < k, x^2 pour x ≥ k`, rangée en x) :
+ * son ensemble — la réunion des conditions, ℝ avec « sinon » —, ou le refus.
+ * Refus : un morceau qui ne s'écrit pas (`piecesOf`), une condition illisible,
+ * des conditions qui se chevauchent (Q1), une formule hors de son domaine sur
+ * sa condition (`ln(x) pour x < 1`). Les valeurs des conditions (`k`)
+ * remplacées par `values`, comme les bornes de `[k;5]`.
+ *
+ * @param letter - La lettre de l'élève, pour écrire les formules dans les messages
+ */
+export function checkPieces(
+	definition: string,
+	provenance: Provenance,
+	functionNames: readonly string[],
+	letter: string = INTERNAL_LETTER,
+	values?: IntervalValues
+): CheckedPieces {
+	const checked = checkReadPieces(definition, provenance, functionNames, letter, values);
+	if (checked.ok || values === undefined || values.size === 0) return checked;
+	if (checked.message === UNREADABLE_CONDITION) return checked;
+	return { ok: false, message: withValues(checked.message, values) };
+}
+
+function checkReadPieces(
+	definition: string,
+	provenance: Provenance,
+	functionNames: readonly string[],
+	letter: string,
+	values: IntervalValues | undefined
+): CheckedPieces {
+	const pieces = piecesOf(definition, readingMode(provenance));
+	if (pieces === null) return { ok: true, domain: null };
+	if (!pieces.ok) return pieces;
+	const parsed = parseDefinition('function', definition, provenance, functionNames);
+	if (parsed.error !== undefined) return { ok: false, message: parsed.error };
+
+	const domains: Domain[] = [];
+	for (const piece of pieces.pieces) {
+		const read = readInterval(piece.condition, INTERNAL_LETTER, values);
+		if (!read.ok) return read;
+		const domain = read.domain ?? UNIVERSAL_DOMAIN;
+		for (const other of domains) {
+			const common = intersect(expandExcludedPoints(domain), expandExcludedPoints(other));
+			if (!isEmpty(common)) return { ok: false, message: overlapMessage(common) };
+		}
+		domains.push(domain);
+		const outside = formulaOutside(domain, piece.body, provenance, functionNames, letter);
+		if (outside !== null) return { ok: false, message: outside };
+	}
+	const covered = domains.reduce(union);
+	if (pieces.otherwise === null) {
+		return { ok: true, domain: isUniversal(covered) ? null : covered };
+	}
+	const rest = complement(expandExcludedPoints(covered));
+	if (!isEmpty(rest)) {
+		const outside = formulaOutside(rest, pieces.otherwise, provenance, functionNames, letter);
+		if (outside !== null) return { ok: false, message: outside };
+	}
+	return { ok: true, domain: null };
+}
+
+/** Q1 : « Les conditions se chevauchent sur ]2 ; 3[ : … » */
+function overlapMessage(common: Domain): string {
+	return `Les conditions se chevauchent sur ${intervalText(common)} : chaque nombre doit appartenir à un seul morceau.`;
+}
+
+/**
+ * Les noms d'objets cités par les conditions d'une définition par morceaux
+ * (`x pour x < k, …` → `k`), dans l'ordre ; vide sans morceaux.
+ */
+export function piecesNamesOf(definition: string, provenance: Provenance): string[] {
+	const pieces = piecesOf(definition, readingMode(provenance));
+	if (pieces === null || !pieces.ok) return [];
+	const names: string[] = [];
+	for (const piece of pieces.pieces) {
+		for (const name of intervalNamesOf(piece.condition)) {
+			if (!names.includes(name)) names.push(name);
+		}
+	}
+	return names;
 }
 
 /**
@@ -507,6 +517,15 @@ export function chosenDomainAnswer(
 	if (match === null) return null;
 	const name = match[1] + "'".repeat(match[2].length);
 	const object = get(name);
+	// Par morceaux : l'ensemble est la réunion des conditions, ℝ compris (sans trou, ou « sinon »)
+	if (
+		object?.kind === 'function' &&
+		object.status === 'ok' &&
+		piecesOf(object.definition, readingMode(object.provenance ?? 'url')) !== null
+	) {
+		const own = intervalDomainOf(object);
+		return `${displayName(name)} est définie sur ${own === null ? 'ℝ' : intervalText(own)} (réunion des conditions de ses morceaux).`;
+	}
 	const domain = intervalDomainOf(object);
 	// En erreur (`f(2x)`, ensemble vide) : la commande suit son cours, rien à affirmer
 	if (domain === null || object?.status !== 'ok' || isEmpty(domain)) return null;
@@ -602,7 +621,7 @@ export function intervalFieldLatex(object: AtelierObject): string | null {
 	if (object.kind !== 'function' || object.interval === undefined) return null;
 	if (readingMode(object.provenance ?? 'url') === 'latex') return object.interval;
 	// Une condition (`x > 2`) : réécrite telle quelle en LaTeX, jamais en intervalle
-	if (isConditionWritten(object.interval)) return conditionLatex(object.interval);
+	if (isConditionWritten(object.interval)) return conditionFieldLatex(object.interval);
 	// À paramètre (`[k;5]`) : l'écriture, jamais les valeurs du moment (le champ relu les figerait)
 	if (intervalNamesOf(object.interval, object.letter ?? INTERNAL_LETTER).length > 0) {
 		// Mêmes réécritures que l'ensemble numérique ci-dessous : `]0;k] \ {1}` se relit
@@ -633,7 +652,7 @@ export function intervalFieldLatex(object: AtelierObject): string | null {
 }
 
 /** Une condition tapée en texte (`2 ≤ x < 4 ou x ≠ 7`), en LaTeX que le champ relit. */
-function conditionLatex(written: string): string {
+export function conditionFieldLatex(written: string): string {
 	return written
 		.split(JOIN_IN_TEXT)
 		.map((part, i) =>
