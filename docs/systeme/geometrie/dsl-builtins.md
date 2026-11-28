@@ -42,7 +42,7 @@ ubumark ` ```figure `, constructions animées). Vue d'ensemble du système : [RE
 | Décorateur (chorégraphie) | `d = mediatrice(A, B) @euclide @complet -arcs`              | `parseTrailingDecorators`                                                                                                                                                       |
 
 - Mots réservés : `KEYWORDS` (`dsl/keywords.ts`). Identifiants : lettres latines, chiffres,
-  lettres grecques Unicode (`Ω = point(0, 1)`) ; `α` et `alpha` sont deux noms différents, `π`
+  lettres grecques Unicode (`Ω = point(0, 1)`), primes en fin de nom seulement (`M'`, `M''`) ; `α` et `alpha` sont deux noms différents, `π`
   est un nom ordinaire (la constante s'écrit `\pi`).
 - Une expression « mathématique pure » (nombres, identifiants, opérateurs, fonctions non-builtins)
   est confiée à mathAST et reste **exacte** (`math-pure-expr.ts`) ; dès qu'un opérande est un
@@ -105,7 +105,7 @@ existant, rien n'est créé), **—** (effet seul).
 | `segment`         | `segment(A, B)` · `segment(A, longueur=L, angle=θ \| direction=B \| vecteur=u)`                                                          | ligne    |
 | `droite`          | `droite(A, B)`                                                                                                                           | ligne    |
 | `demidroite`      | `demidroite(O, A)`                                                                                                                       | ligne    |
-| `mediatrice`      | `mediatrice(A, B)`                                                                                                                       | ligne    |
+| `mediatrice`      | `mediatrice(A, B)` · `mediatrice(s)` (segment `s`)                                                                                       | ligne    |
 | `perpendiculaire` | `perpendiculaire(P, A, B)` : par `P`, ⟂ `(AB)` · `perpendiculaire(P, d)` : ⟂ `d` (droite, segment, demi-droite ; `P` doit être un point) | ligne    |
 | `parallele`       | `parallele(P, A, B)` : par `P`, ∥ `(AB)` · `parallele(P, d)` : ∥ `d` (droite, segment, demi-droite ; `P` doit être un point)             | ligne    |
 | `mediane`         | `mediane(A, B, C)` : issue de `A`                                                                                                        | ligne    |
@@ -160,7 +160,11 @@ La forme d'une courbe cartésienne ou implicite se lit par `curveShapeOf`
 (`geometry/curve-nature.ts`), partagée avec la vue Figure de l'atelier : affine en x et y →
 droite ; affine en y → y = f(x) ; du second degré → conique ; sinon implicite. `courbe()` la
 lit sur l'équation telle qu'écrite (`y = 3(x − 2) + 1` reste une courbe y = f(x),
-`(x − 1)² + (y − 2)² = 4` une implicite) ; l'atelier sur l'équation développée.
+`(x − 1)² + (y − 2)² = 4` une implicite) ; l'atelier sur l'équation développée. Sans y
+(`x^2 = 4`) : courbe implicite, les droites verticales solutions (vide pour `x^2 = -1`, sans
+erreur) ; sans `=` ni y (`x^2 - 1`), erreur « y absente ». Une conique qui cite un curseur par son nom (`a = slider(0, 5, 2)`,
+`courbe("x^2 + y^2 = a^2")`) le suit (`parameterRecipe`) ; dégénérée (curseur à 0), rien n'est
+dessiné.
 
 Domaine et morceaux (cartésien) : `courbe("y = x^2 sur ]-1 ; 2]")`, `… avec 0 < x <= 2`
 (`dsl/domain-parser.ts`) ; `courbe("y = { -x si x < 0, x^2 si x >= 0 }")` ou forme `sur` — on
@@ -195,22 +199,22 @@ objet, il rend son image (`dsl/transform-apply.ts`, toutes familles d'objets et 
 
 ### Mesures et calculs (scalaires)
 
-| Builtin         | Formes                                                                                                              |
-| --------------- | ------------------------------------------------------------------------------------------------------------------- |
-| `distance`      | `distance(A, B)` · `distance(A, d)` (d droite, segment ou demi-droite)                                              |
-| `longueur`      | `longueur(c)` · `longueur(c, t1, t2)` : longueur d'arc d'une courbe paramétrique (Simpson)                          |
-| `courbure`      | `courbure(c, t0)` : courbure signée                                                                                 |
-| `perimetre`     | `perimetre(A, B, C, …)`                                                                                             |
-| `aire`          | `aire(A, B, C, …)` (polygone) · `aire(f, a, b)` (voir §5)                                                           |
-| `aire_entre`    | `aire_entre(f, g, a, b)` (voir §5)                                                                                  |
-| `integrale`     | `integrale(f, a, b)` (voir §5)                                                                                      |
-| `pente`         | `pente(d)`                                                                                                          |
-| `rayon`         | `rayon(c)`                                                                                                          |
-| `puissance`     | `puissance(M, c)`                                                                                                   |
-| `excentricite`  | `excentricite(c)`                                                                                                   |
-| `angle_polaire` | `angle_polaire(O, P)` : angle de `OP` avec l'axe des abscisses, en radians dans `[-π ; π]`                          |
-| `mesure`        | `mesure(α)` · `mesure(α, unite="deg")` · `mesure(A, V, B)` · `mesure(u, v)` : angles seulement (radians par défaut) |
-| `slider`        | `slider(min=0, max=10, valeur=…, pas=…)` (défauts : 0, 10, milieu) : curseur                                        |
+| Builtin         | Formes                                                                                                                           |
+| --------------- | -------------------------------------------------------------------------------------------------------------------------------- |
+| `distance`      | `distance(A, B)` · `distance(A, d)` (d droite, segment ou demi-droite)                                                           |
+| `longueur`      | `longueur(c)` · `longueur(c, t1, t2)` : longueur d'arc d'une courbe paramétrique (Simpson)                                       |
+| `courbure`      | `courbure(c, t0)` : courbure signée                                                                                              |
+| `perimetre`     | `perimetre(A, B, C, …)`                                                                                                          |
+| `aire`          | `aire(A, B, C, …)` (polygone) · `aire(f, a, b)` (voir §5)                                                                        |
+| `aire_entre`    | `aire_entre(f, g, a, b)` (voir §5)                                                                                               |
+| `integrale`     | `integrale(f, a, b)` (voir §5)                                                                                                   |
+| `pente`         | `pente(d)`                                                                                                                       |
+| `rayon`         | `rayon(c)`                                                                                                                       |
+| `puissance`     | `puissance(M, c)`                                                                                                                |
+| `excentricite`  | `excentricite(c)`                                                                                                                |
+| `angle_polaire` | `angle_polaire(O, P)` : angle de `OP` avec l'axe des abscisses, dans l'unité d'angle de la figure (`]-180 ; 180]` ou `]-π ; π]`) |
+| `mesure`        | `mesure(α)` · `mesure(α, unite="deg")` · `mesure(A, V, B)` · `mesure(u, v)` : angles seulement (radians par défaut)              |
+| `slider`        | `slider(min=0, max=10, valeur=…, pas=…)` ou positionnel `slider(0, 5, 2)` (défauts : 0, 10, milieu) : curseur                    |
 
 ### Angles et repères
 

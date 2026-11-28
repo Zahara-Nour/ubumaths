@@ -22,6 +22,8 @@ import {
 	tan
 } from '../../factory';
 import { literalNumberValue } from '../../common/numeric';
+import { parseLatex } from '../../parser';
+import { computeNumericValue } from '../../eval/numeric-value';
 
 describe('analyzeContinuity()', () => {
 	describe('continuous functions', () => {
@@ -264,6 +266,24 @@ describe('analyzeContinuity()', () => {
 			const infiniteDiscs = result.discontinuities.filter((d) => d.type === 'infinite');
 			expect(infiniteDiscs.length).toBeGreaterThanOrEqual(1);
 		});
+
+		// L60 : le domaine ne sait pas écrire « famille + points » ; le pôle
+		// isolé x = 3 disparaissait à côté des π/2 + kπ de tan.
+		it.each(['\\tan(x)+\\frac{1}{x-3}', '2\\tan(x)\\cdot\\frac{1}{x-3}'])(
+			'%s garde le pôle isolé 3 à côté de la famille π/2 + kπ',
+			(latex) => {
+				const result = analyzeContinuity(parseLatex(latex), 'x');
+				const values = result.discontinuities.map((d) => computeNumericValue(d.point));
+
+				const atThree = result.discontinuities.find(
+					(d) => Math.abs((computeNumericValue(d.point) ?? NaN) - 3) < 1e-9
+				);
+				expect(atThree?.type).toBe('infinite');
+				expect(atThree?.periodic).toBeUndefined();
+				expect(values.some((v) => v !== null && Math.abs(v - Math.PI / 2) < 1e-6)).toBe(true);
+				expect(result.discontinuities.some((d) => d.periodic !== undefined)).toBe(true);
+			}
+		);
 	});
 
 	describe('domain boundaries (sqrt)', () => {

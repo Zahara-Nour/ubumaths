@@ -52,7 +52,7 @@ import { classifyWithSign, type SignedLimitValue } from '../limits/sign-tracking
 import { substitute } from '../eval/substitute';
 import { evaluateNodeToApproximatedNumber } from '../eval/evaluate';
 import { isInfinity, isFunction } from '../guards';
-import { findNodes } from '../transforms';
+import { findNodes, getChildren } from '../transforms';
 import { shouldIncludeStep } from '../common/verbosity';
 import { formatNumber } from '../common/format';
 import { ZERO_TOLERANCE } from '../common/constants';
@@ -309,6 +309,18 @@ function collectDiscontinuityCandidates(
 			if (!seenPoints.has(key)) {
 				seenPoints.add(key);
 				candidates.push(pc);
+			}
+		}
+
+		// 2a. Le type `Domain` ne sait pas écrire « famille + points » : intersect
+		// garde la famille seule, et le 3 de tan(x) + 1/(x − 3) disparaît (L60).
+		// On relit donc les points exclus des sous-expressions sans fonction
+		// périodique.
+		for (const point of isolatedPointsBesidePeriodic(expr, variable)) {
+			const key = getPointKey(point);
+			if (!seenPoints.has(key)) {
+				seenPoints.add(key);
+				candidates.push({ point, source: detectSourceFromExpression(expr, point, variable) });
 			}
 		}
 	}
@@ -815,6 +827,31 @@ function findPeriodicFunctionDiscontinuities(
 	return candidates;
 }
 
+/**
+ * Les points exclus des plus grandes sous-expressions qui ne contiennent
+ * aucune fonction périodique (1/(x − 3) dans tan(x) + 1/(x − 3)). Appelé
+ * seulement quand le domaine est une exclusion périodique : il couvre alors
+ * tout ℝ hors de la famille, et ses points isolés ont été perdus.
+ */
+function isolatedPointsBesidePeriodic(expr: MathNode, variable: string): MathNode[] {
+	const points: MathNode[] = [];
+	const visit = (node: MathNode): void => {
+		const hasPeriodic =
+			findNodes(node, (n) => isFunction(n) && isPeriodicTrigFunction(n.name)).length > 0;
+		if (hasPeriodic) {
+			for (const child of getChildren(node)) visit(child);
+			return;
+		}
+		const { domain } = computeDomain(node, variable);
+		if (domain.kind !== 'interval_set') return;
+		for (const ep of domain.excludedPoints) points.push(ep.value);
+	};
+	visit(expr);
+	return points;
+}
+
+/**
+ * Find zeros of an argument expression.
 /**
  * Find zeros of an argument expression.
  *
