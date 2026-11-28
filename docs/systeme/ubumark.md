@@ -842,7 +842,7 @@ terme que l'énoncé ne dessine pas : coefficient ≠ 1, ou couple de points abs
 trait dont un bout sort de la fenêtre est laissé. PDF `solution: oui` : les mêmes pointillés (`dash: "dashed"`).
 Défaut connu : le nom d'un point (en haut à droite) peut chevaucher une flèche qui en part.
 
-**Escalier à construire** (outil 48, `docs/wip/outil-escalier-suite-progress.md`) — `courbe-construire.test.ts`,
+**Escalier à construire** (outil 48, `docs/archive/wip/outil-escalier-suite-progress.md`) — `courbe-construire.test.ts`,
 `CourbeConstruire.svelte.test.ts` : sur la ligne d'une suite récurrente d'un ` ```courbe `, `construire N`
 (1 à 6) à la place d'`escalier` (nœud : `spec.construire`, `CourbeStaircaseToBuild` : `sequenceName`,
 `firstIndex`, `start`, `relation`, `margin`, `terms`). Seul u₀ est marqué sur l'axe des abscisses, avec la courbe
