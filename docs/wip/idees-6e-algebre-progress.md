@@ -2,22 +2,21 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-28, PR #3285 ouverte (copie de `main` ; celle de la branche dit la même chose, sans le n° de PR)._
+_Mis à jour le 2026-11-28, après #3285 (mergée, migrations appliquées en prod)._
 
-- **État** : lot complet dans la PR #3285 (4 brouillons neufs créés en prod par David : 9e0a8c36,
-  660db94b, b407006d, 048246da ; 10 variations à 4 publiés ; migrations de contenu et de rangement).
-  Specs 168/168, intégration verte et rouge sans les migrations, `security-auditor` : rien.
-  `pnpm pr:merger 3285` lancé en tâche de fond (peut avoir été coupé par le `/clear`).
-- **Prochaine action** : `gh pr view 3285 --json state` ; si ouverte, relancer `pnpm pr:merger 3285`
-  depuis le worktree ; mergée → `db:migrate` (4 conditions réunies ; `migration list --linked`
-  d'abord), puis relecture : `/dev/modeles?point=6-142` et `?point=6-143`, série de relecture des
-  publiés complétés (`scripts/series/creer-serie.ts`).
-- **Tranché par David (« je te suis », 2026-11-28)** : F4 gardé tel quel (pesées jusqu'à 15 kg) ;
-  noms rognés des schémas en barres (`schema-barres-scene.ts` l. 58, 9 px par caractère) corrigés dans
-  une PR à part, après #3285, rendu vérifié sur plusieurs modèles dont ceux en prod. **En attente de
-  David** : rien.
-- **Pièges en cours** : ne rien commiter sur la branche avant le merge (relance la CI).
-- **Worktree / branche** : `../ubumaths-wt-idees-6e-algebre`, `feat/idees-6e-algebre`.
+- **État** : en prod, vérifié : 4 brouillons rangés (9e0a8c36 F2, 660db94b F3 → 6-142 ; b407006d
+  F6, 048246da F8 → 6-143) ; variations ajoutées à la fin des publiés (a9c37578 6, a06458ad 4,
+  4048d9c5 5, 39bafe0e 7). Worktree et branche retirés.
+- **Prochaine action** : lire les verdicts de David (`question_template_reviews`, `reviewed_at` du
+  2026-11-28 ou après) sur les 8 modèles, corriger dans un nouveau worktree
+  (`ubumaths-wt-idees-6e-algebre-relecture`), puis `publier-lot.ts --dir
+scripts/questions/idees-6e-algebre-neufs` en simulation ; David lance `--publier`.
+- **En attente de David** : relecture dans `/dev/modeles?point=6-142` et `?point=6-143` (les 8
+  modèles y sont ; les nouvelles variations des publiés sont à la fin).
+- **Ensuite** : PR à part pour les noms rognés des schémas en barres (`schema-barres-scene.ts`
+  l. 58), décidée le 2026-11-28 ; fin de chantier = tableau de répartition (« publiée »,
+  réservations levées) et journal versé.
+- **Pièges en cours** : aucun.
 
 ## Rubrique
 
