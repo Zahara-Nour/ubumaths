@@ -8,14 +8,12 @@ status: en attente de la réponse de David à la question d'accès
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-28, avant la migration._
+_Mis à jour le 2026-11-28, avant la PR._
 
-- **État** : fichier `scripts/questions/idees-1re-variables-aleatoires-neufs/f1-loi-de-x-tableau-a-completer.json`
-  passé à `"rangement": { "pointsAjoutes": ["1TECHNO-095"] }` (outil 66, #3297). Aucun SQL écrit.
-  · **En attente de David** : la question d'accès (proposé : personne ne gagne d'accès ; le modèle
-  compte aussi pour 1TECHNO-095 dans la progression des élèves de 1re techno, qui le voient déjà).
-  · **Prochaine action** : `pnpm tsx scripts/questions/migration-rangement.ts --dir scripts/questions/idees-1re-variables-aleatoires-neufs --nom idees-1re-variables-aleatoires-second-tag`
-  (lit la PROD, `.env` seul), test d'intégration `migrations-rangement-tags`, `security-auditor`,
-  PR, merge, `db:migrate` si les 4 conditions. · **Pièges** : le modèle est 505ee05a, PAS d683e906
-  (rangé comme lui) ; si 1TECHNO-095 n'est ni sur le nœud ni sur sa notion, le script refuse.
-  · **Worktree / branche** : `../ubumaths-wt-questions-second-tag`, `feat/questions-second-tag-1techno`.
+- **État** : migration `20261128142705_questions_idees_1re_variables_aleatoires_second_tag_rangement_tags.sql`
+  générée (relevé prod : 505ee05a tagué {1SPE-355}), test d'intégration vert, rouge sans la
+  migration (4 tests), `security-auditor` sans bloquant. · **Question d'accès** : tranchée par
+  David le 2026-11-28 (« je te suis ») : personne ne gagne d'accès. · **Prochaine action** : PR,
+  merge, `migration list --linked` depuis le dépôt principal, `db:migrate`, vérifier le tag.
+  · **Pièges** : le modèle est 505ee05a, PAS d683e906. · **Worktree / branche** :
+  `../ubumaths-wt-questions-second-tag`, `feat/questions-second-tag-1techno`.
