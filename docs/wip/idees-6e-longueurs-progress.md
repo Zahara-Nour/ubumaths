@@ -2,20 +2,18 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-28, après #3262 et `db:migrate`._
+_Mis à jour le 2026-11-28, après #3265 et `db:migrate`._
 
-- **État** : #3262 mergée, ses 2 migrations jouées en prod et vérifiées par MCP (6 brouillons rangés, 4 tags,
-  +11 variations sur 6 publiés). PR de suite (branche `fix/idees-6e-longueurs-suite`) : correction de fdd849f5
-  (variation n° 8, `conditions: []` → `["a>b"]`, oui de David) et série `scripts/series/6-relecture-longueurs-publies.json`.
-- **Prochaine action** : PR de suite mergée → `db:migrate` (`migration list --linked` d'abord) → David lance
-  `pnpm tsx scripts/series/creer-serie.ts --fichier scripts/series/6-relecture-longueurs-publies.json --publier`
-  → commiter l'id → relecture des 6 brouillons dans `/dev/modeles` (`?point=6-144`, `6-199`, `6-148`,
-  `?noeud=` unités simples) et des 6 publiés par la série → verdicts → `publier-lot.ts`.
-- **En attente de David** : la commande `--publier` de la série, après le merge.
+- **État** : tout le lot est en prod et vérifié par MCP : 6 brouillons rangés (#3262), +11 variations sur 6 publiés,
+  fdd849f5 corrigé (#3265, réservation levée). Série `scripts/series/6-relecture-longueurs-publies.json` prête, sans id.
+- **Prochaine action** : David publie la série (commande ci-dessous) → commiter l'id → relecture dans
+  `/dev/modeles` : 6 brouillons (`?point=6-144`, `6-199`, `6-148`, et `?noeud=` unités simples pour N4 et N5), 6
+  publiés par la série → lire les verdicts → corriger → `publier-lot.ts` en simulation, David `--publier`.
+- **En attente de David** : `! pnpm tsx scripts/series/creer-serie.ts --fichier
+scripts/series/6-relecture-longueurs-publies.json --publier` (dépôt principal), puis sa relecture.
 - **Pièges en cours** : `conditions: []` écrase les conditions partagées ; le pre-commit laisse l'index d'une
   fixture JSON dans sa forme d'avant prettier (`MM`) : vérifier `git diff HEAD`, puis `git restore --staged`.
-- **Worktree / branche** : `../ubumaths-wt-idees-6e-longueurs-suite`, `fix/idees-6e-longueurs-suite` ; fdd849f5
-  réservé dans `idees-ailleurs-repartition.md` jusqu'à sa migration jouée.
+- **Worktree / branche** : aucun (worktrees retirés par `pr:merger`) ; 6 publiés réservés jusqu'à la relecture.
 
 ## Phase 0 (2026-11-27)
 
@@ -112,6 +110,9 @@ Page à cocher : https://claude.ai/artifact/6bCd5vw2yxYQ7pQvQUJ7uV (Oui / Non / 
   CM1-068, plages réduites à deux chiffres après la virgule.
 
 ## Historique
+
+- 2026-11-28 : #3265 mergée, `db:migrate`, fdd849f5 vérifié par MCP (variation n° 8 `["a>b"]`, 9 variations) ;
+  réservation de fdd849f5 levée.
 
 - 2026-11-28 : #3262 mergée, `db:migrate` (2 migrations), vérifié par MCP. David : « je te suis » sur fdd849f5 →
   migration de contenu `20261127235012_…_correction_contenu.sql` (variation n° 8 seule), 335 verts, rouge sans
