@@ -2,16 +2,17 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-28, PR de rangement en cours._
+_Mis à jour le 2026-11-28, après #3301._
 
-- **État** : 13 variations en prod. E créé en brouillon par David (`d01396e6`). PR « rangement » :
-  id de E, migration `20261128140707` (nœud « instructions conditionnelles », point 5-011), série
-  `scripts/series/3-relecture-algorithmique-publies.json` (simulation verte). · **Prochaine action** :
-  test d'intégration, audit, PR, merge ; puis David : `db:migrate` et `creer-serie.ts --publier`. ·
-  **En attente de David** : après le merge. · **Pièges en cours** : le fichier de E porte son id
-  dans le dépôt principal (modifié, non commité) : le remettre à l'état de `main` avant le `pull` qui
-  suit le merge. · **Worktree / branche** : `../ubumaths-wt-idees-3e-algorithmique`,
-  `feat/idees-3e-algorithmique-rangement`.
+- **État** : 13 variations en prod (#3294). #3301 mergé : id de E (`d01396e6`, brouillon), migration
+  de rangement `20261128140707` (seule en attente en prod), série de relecture
+  `scripts/series/3-relecture-algorithmique-publies.json`. · **Prochaine action** : après
+  `db:migrate`, vérifier nœud et tag 5-011 de E en prod, `garde-niveaux-tags.ts` ; après la relecture
+  de David, lire les verdicts (`question_template_reviews`), corriger, `publier-lot.ts` en simulation
+  pour E ; tableau de répartition (« publiée », réservations levées), journal versé. · **En attente de
+  David** : `pnpm db:migrate` ; `pnpm tsx scripts/series/creer-serie.ts --fichier
+scripts/series/3-relecture-algorithmique-publies.json --publier` ; relecture dans `/dev/modeles`. ·
+  **Pièges en cours** : E est un modèle de **5e**. · **Worktree / branche** : aucun.
 
 ## Rubrique
 
@@ -92,3 +93,4 @@ variations ajoutées à la fin) et `docs/wip/questions/idees-3e-algorithmique-ne
   `migration-rangement.ts` (relevé de la prod), fixture comprise.
 - Série de relecture des 6 modèles publiés : `scripts/series/3-relecture-algorithmique-publies.json`
   (6 questions, 6 min ; simulation verte).
+- #3301 mergé le 2026-11-28 (CI verte, `pr:merger`) ; test `migrations-rangement-tags` vert, `security-auditor` sans finding bloquant (non bloquant : la rubrique du point 5-011, « Nombres et calculs > Opérations », ne colle pas à sa branche « Algorithmique », donnée antérieure au chantier).
