@@ -66,6 +66,8 @@ describe('points: M tel que AM = 1/3 AB — lecture', () => {
 		// Une fraction non réduite est réduite
 		['S tel que AS = 2/4 AB', A, B, [1, 2], 'la moitié de AB', 1 / 2],
 		['T tel que AT = 7/10 AB', A, B, [7, 10], 'sept dixièmes de AB', 7 / 10],
+		// Réduite d'abord : 5/20 = 1/4, admise
+		['V tel que AV = 5/20 AB', A, B, [1, 4], 'un quart de AB', 1 / 4],
 		// Espaces facultatives autour de =, crochets permis autour du segment
 		['U tel que AU=1/3 [AB]', A, B, [1, 3], 'un tiers de AB', 1 / 3]
 	])('%s', (item, from, to, ratio, words, t) => {
@@ -97,6 +99,7 @@ describe('points: M tel que AM = 1/3 AB — lecture', () => {
 		['M tel que AM = 0/3 AB', 'entre 0 et 1'],
 		['M tel que AM = 3/3 AB', 'entre 0 et 1'],
 		['M tel que AM = 1/12 AB', 'au plus 10'],
+		['M tel que AM = 5/11 AB', 'au plus 10'],
 		['M tel que BM = 1/3 AB', 'AM = 1/3 AB'],
 		['M tel que AN = 1/3 AB', 'AM = 1/3 AB'],
 		['M tel que AM = 1/3 AZ', 'aucun point ne s’appelle Z'],
@@ -219,5 +222,20 @@ describe('graduer: AB 3 — dessin', () => {
 		// Les graduations : des traits noirs à bouts droits (les arêtes ont des bouts ronds)
 		const ticks = typst.match(/cap: "butt"/g) ?? [];
 		expect(ticks).toHaveLength(5);
+		// Sans graduer:, aucun trait à bouts droits : le compte ne vient que des graduations
+		const plain = generateEspaceTypst(
+			read(...CUBE, 'segments: [AG]', 'vecteurs: AG') as EspaceNode
+		);
+		expect(plain).not.toContain('cap: "butt"');
+	});
+
+	it('aucun trait quand le segment, vu presque par le bout, est trop court pour ses parts', () => {
+		// Figure basculée vers le dessus : [AE] ne fait plus que 2 à 3 mm
+		const vue = turnVue({ ...VUE_DE_DEPART, oblique: 0 }, 0, 1.1);
+		const scene = buildSolideScene({ ...spec(...CUBE, 'graduer: AE 10'), rotate: true }, vue);
+		const v = scene.vertices;
+		expect(distance(v[A], v[E])).toBeGreaterThan(0.1);
+		expect(distance(v[A], v[E])).toBeLessThan(0.4);
+		expect(scene.ticks ?? []).toEqual([]);
 	});
 });

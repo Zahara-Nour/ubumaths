@@ -1630,11 +1630,12 @@ function layoutSolide(
 	);
 	const givenSegments = draft.segments?.map((l) => ({ ...l, points: l.points.map(toScreen) }));
 	// Graduations : un petit trait en travers du segment, de longueur fixe sur l'écran ;
-	// aucun quand le segment se voit par le bout (vu de face, il n'a plus de longueur)
+	// aucun quand le segment, vu presque par le bout, est trop court pour ses parts
+	// (des traits plus serrés que leur demi-longueur ne feraient qu'un paquet)
 	const ticks = draft.graduations?.flatMap((g): [EspacePoint, EspacePoint][] => {
 		const [from, to] = [toScreen(g.from), toScreen(g.to)];
 		const length = Math.hypot(to.x - from.x, to.y - from.y);
-		if (length < 1e-6) return [];
+		if (length / g.parts < TICK_HALF) return [];
 		const across = {
 			x: (-(to.y - from.y) / length) * TICK_HALF,
 			y: ((to.x - from.x) / length) * TICK_HALF

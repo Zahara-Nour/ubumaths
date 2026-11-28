@@ -33,6 +33,11 @@
  *   milieu peut prendre un point déjà déclaré (`J milieu IG`). Avec `repere:`,
  *   un point par ses coordonnées : `M (1 ; 0,5 ; 1)` (au plus 3 décimales ; refusé
  *   hors du solide agrandi d'une marge).
+ *   Sur un segment, par une fraction (outil n° 65) : `M tel que AM = 1/3 AB`
+ *   (0 < p/q < 1, réduite, dénominateur au plus 10 ; deux points distincts).
+ * - `graduer:` (facultatif, polyèdres, outil n° 65) : `AB 3, EH 4`, une arête ou
+ *   un segment de `segments:` partagé en parts égales (2 à 10) par de petits
+ *   traits ; aussi avec `tracer:` (figure à geste).
  * - `repere:` (facultatif, polyèdres, lot 7c) : `A ; AB, AD, AE`, une origine et
  *   trois vecteurs qui en partent, pas dans un même plan, entre sommets ou points
  *   déclarés sans coordonnées, avant le premier point à coordonnées. Pas avec
@@ -667,9 +672,14 @@ function readAlong(
 			: usage;
 	}
 	const [p, q] = [Number(right[1]), Number(right[2])];
-	if (q > SOLIDE_MAX_PARTS) return `${name} : un dénominateur au plus ${SOLIDE_MAX_PARTS}`;
-	if (p <= 0 || p >= q) {
+	if (q === 0 || p <= 0 || p >= q) {
 		return `${name} : la fraction est entre 0 et 1 (${p}/${q}), pour que ${name} reste sur le segment`;
+	}
+	// Réduite d'abord : 5/20 est 1/4
+	const k = gcd(p, q);
+	const ratio: [number, number] = [p / k, q / k];
+	if (ratio[1] > SOLIDE_MAX_PARTS) {
+		return `${name} : un dénominateur au plus ${SOLIDE_MAX_PARTS} (fraction réduite)`;
 	}
 	const ends = namedPoints(right[3], known);
 	if (typeof ends === 'string') return ends;
@@ -683,11 +693,8 @@ function readAlong(
 	// Le premier membre : le premier point du segment, puis le point déclaré
 	const expected = `${known[from]}${name}`;
 	if (parts[1].replace(/\s/g, '') !== expected) {
-		const k = gcd(p, q);
-		return `${name} : ${name} se place depuis ${known[from]} (ex. ${expected} = ${p / k}/${q / k} ${known[from]}${known[to]})`;
+		return `${name} : ${name} se place depuis ${known[from]} (ex. ${expected} = ${ratio[0]}/${ratio[1]} ${known[from]}${known[to]})`;
 	}
-	const k = gcd(p, q);
-	const ratio: [number, number] = [p / k, q / k];
 	return {
 		label: `tel que ${expected} = ${fractionWords(ratio)} de ${known[from]}${known[to]}`,
 		along: { from, to, ratio }

@@ -202,7 +202,7 @@
 		{/each}
 		{#each scene.ticks ?? [] as [from, to], i (i)}
 			<line
-				class="solide-trait"
+				class="solide-trait solide-graduation"
 				x1={from.x + ESPACE_MARGIN}
 				y1={from.y + ESPACE_MARGIN}
 				x2={to.x + ESPACE_MARGIN}
