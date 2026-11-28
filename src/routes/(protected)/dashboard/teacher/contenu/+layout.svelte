@@ -11,7 +11,7 @@
 	const tabs = [
 		{
 			href: '/dashboard/teacher/contenu/templates',
-			label: 'Templates',
+			label: 'Modèles de chapitres',
 			icon: Layers as unknown as Component
 		},
 		{
@@ -21,25 +21,25 @@
 		},
 		{
 			href: '/dashboard/teacher/contenu/enigmes',
-			label: 'Enigmes',
+			label: 'Énigmes',
 			icon: Lightbulb as unknown as Component
 		},
 		{
 			href: '/dashboard/teacher/contenu/worksheets',
-			label: 'Worksheets',
+			label: 'Fiches',
 			icon: FileSpreadsheet as unknown as Component
 		},
 		{
 			href: '/dashboard/teacher/contenu/notebooks',
-			label: 'Notebooks',
+			label: 'Carnets Python',
 			icon: NotebookPen as unknown as Component
 		}
 	];
 </script>
 
 <GroupedRouteLayout
-	title="Contenu pedagogique"
-	description="Gerez vos templates, {lore.learning.exercise}s, enigmes et fiches de travail"
+	title="Contenu pédagogique"
+	description="Gérez vos modèles de chapitres, {lore.learning.exercise}s, énigmes et fiches"
 	{tabs}
 >
 	{@render children()}

@@ -15,7 +15,6 @@
 	import { Badge } from '#lib/components/ui/badge/index.ts';
 	import { Input } from '#lib/components/ui/input/index.ts';
 	import { Search } from '@lucide/svelte';
-	import { untrack } from 'svelte';
 	import { RESOURCE_KINDS, type ResourceKind } from '#lib/resources/kinds.ts';
 	import { RESOURCE_REGISTRY, resolveResource } from '#lib/resources/index.ts';
 	import type { PageData } from './$types';
@@ -27,9 +26,10 @@
 	// navigation. Un $state ici ne capturerait que la première valeur.
 	//
 	// Les filtres, eux, ont besoin d'être réactifs pour l'affichage des boutons.
-	// `untrack` dit explicitement qu'on veut la valeur d'arrivée, pas un suivi.
-	let selectedKinds = $state<ResourceKind[]>(untrack(() => [...data.kinds] as ResourceKind[]));
-	let selectedTags = $state<string[]>(untrack(() => [...data.tags]));
+	// `$derived` réassignable : un clic les change sur place, et une nouvelle
+	// adresse (autre recherche, retour arrière) les remet à ses valeurs (L41).
+	let selectedKinds = $derived<ResourceKind[]>([...data.kinds] as ResourceKind[]);
+	let selectedTags = $derived<string[]>([...data.tags]);
 
 	const kindsParam = $derived(selectedKinds.join(','));
 	const tagsParam = $derived(selectedTags.join(','));
@@ -40,6 +40,20 @@
 			? selectedKinds.filter((k) => k !== kind)
 			: [...selectedKinds, kind];
 	}
+
+	/** Les tags cités par le message « aucun résultat » : « le tag #a », « les tags #a, #b ». */
+	function tagsLabel(tags: string[]): string {
+		const list = tags.map((t) => `#${t}`).join(', ');
+		return tags.length > 1 ? `les tags ${list}` : `le tag ${list}`;
+	}
+
+	/** Le message « aucun résultat », qui cite le texte et les tags cherchés (V74). */
+	const noResultMessage = $derived.by(() => {
+		const query = data.query.trim();
+		if (data.tags.length === 0) return `Aucun résultat pour « ${query} ».`;
+		if (!query) return `Aucun résultat pour ${tagsLabel(data.tags)}.`;
+		return `Aucun résultat pour « ${query} » avec ${tagsLabel(data.tags)}.`;
+	});
 
 	/**
 	 * Le rôle est figé à 'teacher' : cette page vit sous /dashboard/teacher, dont
@@ -127,7 +141,7 @@
 	{#if data.error}
 		<p class="text-sm text-destructive">{data.error}</p>
 	{:else if data.searched && data.results.length === 0}
-		<p class="text-sm text-muted-foreground">Aucun résultat pour « {data.query} ».</p>
+		<p class="text-sm text-muted-foreground">{noResultMessage}</p>
 	{:else if data.results.length > 0}
 		<p class="text-sm text-muted-foreground">
 			{data.results.length} résultat{data.results.length > 1 ? 's' : ''}

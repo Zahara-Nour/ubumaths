@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { lore } from '#lib/config/lore.ts';
 	import { goto } from '$app/navigation';
+	import { untrack } from 'svelte';
 	import { Input } from '#lib/components/ui/input/index.ts';
 	import { Button } from '#lib/components/ui/button/index.ts';
 	import { addHeaderIds } from '#lib/utils/markdown.ts';
@@ -8,7 +9,10 @@
 	let { data } = $props();
 
 	let searchQuery = $state('');
-	let expandedCategories = $state<Set<string>>(new Set(['features', 'guides', 'architecture']));
+	// Ouvertes d'arrivée : les deux rubriques de travail et celle de la doc lue
+	let expandedCategories = $state<Set<string>>(
+		new Set(['systeme', 'pratiques', untrack(() => data.currentPath?.split('/')[0] ?? '')])
+	);
 
 	function toggleCategory(categoryPath: string) {
 		if (expandedCategories.has(categoryPath)) {
