@@ -2,16 +2,15 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-28, lot écrit._
+_Mis à jour le 2026-11-28, après #3309._
 
-- **État** : phase 0 validée (« je te suis »). Lot écrit : 3 modèles neufs (`scripts/questions/idees-6e-angles-neufs/`),
-  6 variations ajoutées à 3 publiés (`…-publies/`), specs vertes, sonde des figures à 0, essayé en base locale et vu à
-  l'écran. PR des fichiers ouverte.
-- **Prochaine action** : merger la PR (CI verte), puis David lance
-  `pnpm tsx scripts/create-questions.ts --dir scripts/questions/idees-6e-angles-neufs --publier`.
-- **En attente de David** : la création des 3 brouillons en prod.
-- **Pièges en cours** : c8741112, 3be08965, 2291c83c réservés ; les variations s'ajoutent à la fin.
-- **Worktree / branche** : `../ubumaths-wt-idees-6e-angles`, `feat/idees-6e-angles`.
+- **État** : lot mergé (#3309) : 3 modèles neufs dans `scripts/questions/idees-6e-angles-neufs/`, 6 variations de
+  publiés dans `…-publies/`. Rien en prod.
+- **Prochaine action** : après la création des brouillons par David, commiter les ids écrits en tête des fichiers, puis
+  migrations générées (`migration-rangement.ts`, `migration-contenu.ts`) dans un nouveau worktree.
+- **En attente de David** : `pnpm tsx scripts/create-questions.ts --dir scripts/questions/idees-6e-angles-neufs --publier`.
+- **Pièges en cours** : c8741112, 3be08965, 2291c83c réservés ; copies « — essai » en base locale (brouillons).
+- **Worktree / branche** : aucun (le prochain sur `origin/main`, même sujet).
 
 ## Phase 0 (2026-11-28)
 
@@ -71,6 +70,8 @@ migration : **personne ne gagne d'accès**, on range des modèles du prof. Aucun
   Recommandation : **tolérance de 10°**, la saisie oblige à estimer.
 
 ## Historique
+
+- 2026-11-28 : #3309 mergée (fichiers du lot seuls, CI verte).
 
 - 2026-11-28 : lot écrit (`docs/wip/questions/idees-6e-angles-neufs.py`, `…-publies.py`). Écarts à la phase 0,
   vus à l'écran : (d) sans n = 9 (éventail de 9 parts illisible sur téléphone) ; une case choix ou figure ne porte

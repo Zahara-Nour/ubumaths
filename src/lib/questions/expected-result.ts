@@ -26,7 +26,12 @@ import {
 	type ValidationStatus
 } from './types';
 import { rulesDecide } from './rules-suffice';
-import { escapeStudentText, neutralizeStudentLatex } from './student-answer-safety';
+import {
+	escapeStudentText,
+	exceedsMathNestingLimits,
+	neutralizeStudentLatex
+} from './student-answer-safety';
+import { PARAMETRIC_COORDINATES, parseParametricAnswer } from './parametric/parametric-lines';
 import { correctChoiceIndexesOf, isChoiceBlank, parseChoiceAnswer } from './choice-case';
 import { replaceChoiceBlocks } from '#lib/ubumark/parser/choix-parser.ts';
 import { isWorkFigureBlank } from './graded-part';
@@ -555,6 +560,35 @@ interface BlankView {
 	build?: { kind: BuildKind; source: string; answer: string; first: number; cases: number };
 }
 
+/**
+ * Réponse d'une case « droite paramétrique » rendue en système : chaque ligne
+ * neutralisée À PART (réponse de l'élève), l'accolade ajoutée ensuite. Ses trois lignes
+ * collées (`x=1+2t\\y=2\\…`) ne se rendent pas dans `\textcolor` ; `null` si rien
+ * n'est écrit.
+ *
+ * Bornes de rendu (audit de sécurité de l'outil 64) : mesurées sur la réponse ENTIÈRE,
+ * pas ligne par ligne (trois lignes au plafond triplaient la page du professeur) ;
+ * au-delà, ou avec un autre nombre de lignes que trois (une 4e ligne serait cachée), la
+ * réponse est montrée en texte inerte (son début). `&` rendus inertes : dans `cases`, ils
+ * ouvriraient des colonnes.
+ */
+/** Début montré d'une réponse « droite paramétrique » hors bornes, en texte inerte */
+const PARAMETRIC_INERT_PREVIEW = 200;
+
+export function parametricStudentLatex(typed: string): string | null {
+	const lines = parseParametricAnswer(typed);
+	if (lines.every((line) => !line.trim())) return null;
+	if (lines.length !== PARAMETRIC_COORDINATES.length || exceedsMathNestingLimits(typed)) {
+		const ellipsis = typed.length > PARAMETRIC_INERT_PREVIEW ? '…' : '';
+		return String.raw`\text{${escapeStudentText(typed.slice(0, PARAMETRIC_INERT_PREVIEW))}${ellipsis}}`;
+	}
+	const body = PARAMETRIC_COORDINATES.map((name, k) => {
+		const safe = neutralizeStudentLatex(lines[k] ?? '').replace(/(?<!\\)&/g, '\\&');
+		return `${name}=${safe}`;
+	}).join('\\\\');
+	return `\\begin{cases}${body}\\end{cases}`;
+}
+
 function blankViews(
 	instance: QuestionInstance,
 	answer: StudentAnswer | undefined,
@@ -580,9 +614,11 @@ function blankViews(
 		const student =
 			typed.trim() === ''
 				? null
-				: context === 'math' && blank.type !== 'graphical'
-					? neutralizeStudentLatex(typed)
-					: escapeStudentText(typed);
+				: blank.answerKind === 'droite-parametrique'
+					? parametricStudentLatex(typed)
+					: context === 'math' && blank.type !== 'graphical'
+						? neutralizeStudentLatex(typed)
+						: escapeStudentText(typed);
 		return [
 			{
 				index,

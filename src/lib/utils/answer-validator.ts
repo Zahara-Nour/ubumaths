@@ -77,6 +77,7 @@ import { judgePrimitiveAnswer } from '#lib/questions/calculus/primitive-answer.t
 import { judgeDifferentialEquationAnswer } from '#lib/questions/calculus/differential-equation-answer.ts';
 import type { CalculusVerdict } from '#lib/questions/calculus/calculus-reading.ts';
 import { judgeResolutionAnswer } from '#lib/questions/resolution/resolution-answer.ts';
+import { judgeParametricLineAnswer } from '#lib/questions/parametric/parametric-line-answer.ts';
 import { judgeRounding, roundingFeedback, roundToPrecision } from '#lib/questions/rounding.ts';
 import {
 	centsZerosMeaningful,
@@ -934,6 +935,12 @@ function validateBlankValue(
 		return judgeResolutionAnswer(userAnswer, blank).status === 'correct';
 	}
 
+	// Droite paramétrique : même droite (point sur la droite, vecteur colinéaire) ; trois
+	// lignes dans une valeur, garde de complexité appliquée à CHAQUE ligne par le juge
+	if (blank.answerKind === 'droite-parametrique') {
+		return judgeParametricLineAnswer(userAnswer, blank.expectedAnswer).status === 'correct';
+	}
+
 	// Réponse hostile ou démesurée : fausse, sans être lue (garde Q58)
 	if (isAnswerTooComplex(userAnswer)) return false;
 
@@ -1030,6 +1037,7 @@ function roundingOnlyFeedback(
 		blank.answerKind === 'vecteur' ||
 		blank.answerKind === 'matrice' ||
 		blank.answerKind === 'resolution' ||
+		blank.answerKind === 'droite-parametrique' ||
 		isCalculusBlank(blank) ||
 		blank.type === 'text'
 	) {
@@ -1391,6 +1399,23 @@ function resolutionBlankResult(
 }
 
 /**
+ * Case « droite paramétrique » : verdict de `questions/parametric/` dans la forme de
+ * `validateSingleBlank`. Seule la droite est jugée, jamais l'écriture (décision de
+ * David, 2026-11-28) : pas de forme à juger ensuite.
+ */
+function parametricLineBlankResult(
+	answer: string,
+	blank: InstanceBlank
+): ReturnType<typeof validateSingleBlank> {
+	const { status, feedback } = judgeParametricLineAnswer(answer, blank.expectedAnswer);
+	if (status === 'correct') return { isCorrect: true, status: 'correct' };
+	if (status === 'empty') return { isCorrect: false, status: 'empty' };
+	return feedback
+		? { isCorrect: false, status: 'incorrect', feedback }
+		: { isCorrect: false, status: 'incorrect' };
+}
+
+/**
  * Case « figure » : verdict de `questions/construction/` dans la forme de
  * `validateSingleBlank`. Positions des points lues dans le registre (inscrit
  * par l'écran de l'élève et la correction serveur) ; sans lui, une erreur.
@@ -1731,6 +1756,12 @@ function judgeSingleBlank(
 	// réponse ; le juge mesure chaque ligne
 	if (blank.answerKind === 'resolution') {
 		return resolutionBlankResult(userAnswerLatex || userAnswer, blank, instance);
+	}
+
+	// Droite paramétrique : chaîne à part, cf. parametric/parametric-line-answer.ts. Avant la
+	// garde de complexité, comme la résolution : le juge mesure chaque ligne
+	if (blank.answerKind === 'droite-parametrique') {
+		return parametricLineBlankResult(userAnswerLatex || userAnswer, blank);
 	}
 
 	// Réponse hostile ou démesurée : fausse AVANT toute lecture (garde Q58, cf.
@@ -2503,6 +2534,11 @@ function matchedAnswerForm(
 		const result = matrixBlankResult(blankLatex || userAnswer, blank, instance);
 		return { status: result.status ?? 'incorrect', violations: result.constraintViolations ?? [] };
 	}
+	// Case « droite paramétrique » appariée : même jugement que seule
+	if (blank.answerKind === 'droite-parametrique') {
+		const result = parametricLineBlankResult(blankLatex || userAnswer, blank);
+		return { status: result.status ?? 'incorrect', violations: result.constraintViolations ?? [] };
+	}
 	// Case « résolution » appariée : même jugement que seule
 	if (blank.answerKind === 'resolution') {
 		const result = resolutionBlankResult(blankLatex || userAnswer, blank, instance);
@@ -2601,8 +2637,14 @@ function validateBlanksOrderIndependent(
 	}
 
 	// Réponse hostile ou démesurée (garde Q58) : fausse, avec son message. Les cases
-	// « intervalles » ont leur propre garde (dans `validateBlankValue`).
-	const ordinaryBlanks = blanks.every((blank) => blank.answerKind !== 'intervalles');
+	// « intervalles » ont leur propre garde (dans `validateBlankValue`) ; les cases à
+	// plusieurs lignes (« resolution », « droite-parametrique ») mesurent chaque ligne.
+	const ordinaryBlanks = blanks.every(
+		(blank) =>
+			blank.answerKind !== 'intervalles' &&
+			blank.answerKind !== 'resolution' &&
+			blank.answerKind !== 'droite-parametrique'
+	);
 	// Le bouton « impossible » (sa marque) n'est pas une expression : jamais mesuré
 	const isButton = (answer: string, latex: string | undefined) =>
 		blanks.some((blank) => blank.impossibleLabel !== undefined) &&
