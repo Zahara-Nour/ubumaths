@@ -27,6 +27,8 @@ export interface SchoolYearSpan {
 const logger = createServerLogger('server/school-year');
 /** Septembre, en mois de `Date` (0 = janvier) */
 const SEPTEMBER = 8;
+/** Durée de vie maximale d'un lien des familles, en mois après son émission */
+const LINK_MAX_MONTHS = 18;
 
 // Functions
 /** Année de rentrée de l'année scolaire en cours (septembre et après → cette année) */
@@ -68,9 +70,25 @@ export async function currentSchoolYear(
 }
 
 /**
+ * Jour d'émission + `LINK_MAX_MONTHS` mois, en date ISO (AAAA-MM-JJ). Un
+ * quantième absent du mois d'arrivée (31 août + 18 mois) prend le dernier jour
+ * de ce mois, sans déborder sur le suivant.
+ */
+function linkMaxDay(now: Date): string {
+	const year = now.getUTCFullYear();
+	const month = now.getUTCMonth() + LINK_MAX_MONTHS;
+	const lastDay = new Date(Date.UTC(year, month + 1, 0)).getUTCDate();
+	const day = Math.min(now.getUTCDate(), lastDay);
+	return new Date(Date.UTC(year, month, day)).toISOString().slice(0, 10);
+}
+
+/**
  * Expiration d'un lien d'année scolaire : le dernier jour de l'année en cours
  * de l'école (`currentSchoolYear`), à 23:59:59 UTC. Un lien doit mourir de
  * lui-même à la fin de l'année plutôt que de survivre chez d'anciennes familles.
+ * Plafond : une fin d'année saisie à plus de 18 mois du jour d'émission (faute
+ * de frappe, « 2099 ») retombe sur le 31 août qui vient (accord de David du
+ * 2026-11-28).
  */
 export async function schoolYearExpiry(
 	supabase: SupabaseClient<Database>,
@@ -78,7 +96,8 @@ export async function schoolYearExpiry(
 	now: Date = new Date()
 ): Promise<Date> {
 	const { end } = await currentSchoolYear(supabase, schoolId, now);
-	return new Date(`${end}T23:59:59Z`);
+	const capped = end > linkMaxDay(now) ? defaultSchoolYear(now).end : end;
+	return new Date(`${capped}T23:59:59Z`);
 }
 
 /** `schoolYearExpiry` de l'école d'une classe. Classe illisible ou introuvable : lève. */
