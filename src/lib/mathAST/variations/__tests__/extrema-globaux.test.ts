@@ -45,11 +45,12 @@ describe('extremum global : pas si une limite le dépasse', () => {
 		]);
 	});
 
-	// x² e^{−x}, puis x⁴ e^{−x} (V68), ont servi d'exemple tant que leur
-	// limite en +∞ restait inconnue ; x² e^{−√x} la garde (0 en vrai). Si le
-	// moteur l'apprend, choisir un autre exemple : le test le dit.
+	// x² e^{−x}, puis x⁴ e^{−x} (V68), puis x² e^{−√x} (L77) ont servi
+	// d'exemple tant que leur limite en +∞ restait inconnue ; x²/e^{√x} la
+	// garde (0 en vrai). Si le moteur l'apprend, choisir un autre exemple :
+	// le test le dit.
 	it('une limite indéterminée interdit de conclure « global »', () => {
-		const result = study('x^2*e^(-sqrt(x))');
+		const result = study('x^2/e^(sqrt(x))');
 		const unknown = (result.boundaryLimits ?? []).some((l) => l.limit === 'indeterminate');
 		expect(unknown).toBe(true);
 		expect(result.extrema.every((e) => e.type.startsWith('local_'))).toBe(true);
