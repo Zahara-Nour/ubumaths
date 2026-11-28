@@ -2,22 +2,15 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-28, après #3285 (mergée, migrations appliquées en prod) et le « je valide » de David._
+_Mis à jour le 2026-11-28, après la publication des 4 modèles neufs par David._
 
-- **État** : en prod, vérifié : 4 brouillons rangés (9e0a8c36 F2, 660db94b F3 → 6-142 ; b407006d
-  F6, 048246da F8 → 6-143) ; variations ajoutées à la fin des publiés (a9c37578 6, a06458ad 4,
-  4048d9c5 5, 39bafe0e 7). Worktree et branche retirés.
-- **Prochaine action** : lire les verdicts de David (`question_template_reviews`, `reviewed_at` du
-  2026-11-28 ou après) sur les 8 modèles, corriger dans un nouveau worktree
-  (`ubumaths-wt-idees-6e-algebre-relecture`), puis `publier-lot.ts --dir
-scripts/questions/idees-6e-algebre-neufs` en simulation ; David lance `--publier`.
-- **David, 2026-11-28** : « je valide », en réponse à la demande de relecture des 8 modèles ;
-  **aucun verdict en base** (`question_template_reviews` vide pour ces 8). À la reprise : lui
-  demander en une ligne si « je valide » vaut « les 8 sont bons, publie », puis `publier-lot.ts`
-  en simulation et la commande `--publier` pour lui.
-- **Ensuite** : PR à part pour les noms rognés des schémas en barres (`schema-barres-scene.ts`
-  l. 58), décidée le 2026-11-28 ; fin de chantier = tableau de répartition (« publiée »,
-  réservations levées) et journal versé.
+- **État** : rubrique **publiée** (vérifié en base : 9e0a8c36, 660db94b, b407006d, 048246da
+  `published`) ; « je valide » + « go » de David = les 8 bons, aucun verdict en base, rien
+  corrigé. Répartition mise à jour (« publiée », 4 réservations levées). Aucun worktree.
+- **Prochaine action** : PR à part pour les noms rognés des schémas en barres
+  (`schema-barres-scene.ts` l. 58), décidée le 2026-11-28, dans
+  `ubumaths-wt-idees-6e-algebre-barres` ; puis verser le journal (fin de chantier).
+- **En attente de David** : rien.
 - **Pièges en cours** : aucun.
 
 ## Rubrique
