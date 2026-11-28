@@ -1735,7 +1735,7 @@ Concise / détaillée (ADR 0017) : `splitCorrectionDetail` retire ou garde `\det
 détail (`{.rappel .vert}` : détail coloré, retiré en concis) ; les autres (`{.def}`, `{.orange}`,
 classe inconnue) restent dans les deux versions, et une classe inconnue est signalée au prof par
 le rendu, plus par `splitCorrectionDetail` ([ADR 0042](../adr/0042-texte-colore-dans-la-prose.md)).
-Rédaction : [corrections-redaction](../pratiques/corrections-redaction.md).
+Rédaction : [corrections-redaction](../pratiques/corrections-redaction.md). `CorrectionView` pose aussi le contexte « correction » (`components/markdown/correction-context.ts`) : un bloc écrit dans la correction le sait ; ` ```engrenages ` n'y tourne qu'ici (outil n° 52). Les rendus de correction qui ne passent pas par `CorrectionView` (aperçu de `QuestionPreview`, « Solution » d'`ExerciseDisplay`) s'enveloppent dans `InCorrection.svelte`, qui pose le même contexte.
 
 **Coup de pouce** (chantier `idees-format`, idée 5, phase 0 validée par David le 2026-11-22) : un
 indice que l'élève ouvre s'il est bloqué. Par variation, au choix (`hint.ts`) : `hint`, un gabarit
