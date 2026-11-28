@@ -106,6 +106,8 @@ import { INTERNAL_LETTER, letterRejection, typedLetterOf } from './letter';
 import { perfSwitches } from './perf-switches';
 import {
 	checkInterval,
+	checkPieces,
+	piecesNamesOf,
 	citedIntervals,
 	intervalNamesOf,
 	ONLY_FUNCTIONS,
@@ -115,6 +117,7 @@ import {
 	type CheckedInterval,
 	type IntervalValues
 } from './interval';
+import { piecesOf, PIECEWISE_ONLY_FUNCTIONS, SEQUENCE_PIECES } from './piecewise';
 import type { Domain } from '#lib/mathAST/domain/types.ts';
 import { getVariables } from '#lib/mathAST/eval/substitute.ts';
 import { listCitedMessage } from './list-cited';
@@ -896,6 +899,10 @@ export class Atelier {
 			if (refused !== null) return { ok: false, message: refused };
 		}
 
+		// `f(x) = x pour x < k, x^2 pour x ≥ k` : les morceaux font l'ensemble (`checkPieces`)
+		const pieces = this.#checkedPieces(input.kind, definition, provenance, letter);
+		if (!pieces.ok) return pieces;
+
 		let interval: string | undefined;
 		if (input.interval !== undefined) {
 			const checked = this.#checkedInterval(
@@ -1291,6 +1298,30 @@ export class Atelier {
 	}
 
 	/**
+	 * Une définition par morceaux (`x pour x < k, x^2 pour x ≥ k`) : acceptée,
+	 * ou le refus de `checkPieces`. Une autre définition passe. Mêmes règles que
+	 * `#checkedInterval` pour les valeurs des conditions : `k` absent, la fonction
+	 * l'attend ; déjà acceptée (`kept`, Annuler, chargement), elle passe et le
+	 * recalcul dit l'erreur du moment.
+	 */
+	#checkedPieces(
+		kind: ObjectKind,
+		definition: string,
+		provenance: Provenance,
+		letter: string | undefined,
+		kept = false
+	): { readonly ok: true } | { readonly ok: false; readonly message: string } {
+		if (piecesOf(definition, readingMode(provenance)) === null) return { ok: true };
+		if (kind === 'sequence') return { ok: false, message: SEQUENCE_PIECES };
+		if (kind !== 'function') return { ok: false, message: PIECEWISE_ONLY_FUNCTIONS };
+		const values = this.#valuesOf(piecesNamesOf(definition, provenance));
+		if (values === 'waiting') return { ok: true };
+		if (values !== undefined && (kept || this.#restoringObjects)) return { ok: true };
+		const checked = checkPieces(definition, provenance, this.functionNames, letter, values);
+		return checked.ok ? { ok: true } : checked;
+	}
+
+	/**
 	 * Les valeurs des noms cités par les bornes d'un ensemble (`[k;5]`, chantier
 	 * fonctions-morceaux) : `undefined` sans nom ; `'waiting'` quand une valeur
 	 * manque ou ne se calcule pas encore (la fonction l'attend, `#readRefsOf`).
@@ -1298,7 +1329,11 @@ export class Atelier {
 	 * table rendue est vide, et l'ensemble reste illisible.
 	 */
 	#intervalValues(written: string, letter: string): IntervalValues | 'waiting' | undefined {
-		const names = intervalNamesOf(written, letter);
+		return this.#valuesOf(intervalNamesOf(written, letter));
+	}
+
+	/** Les valeurs de `names` (`#intervalValues`), `undefined` sans nom. */
+	#valuesOf(names: readonly string[]): IntervalValues | 'waiting' | undefined {
 		if (names.length === 0) return undefined;
 		const values = new Map<string, MathNode>();
 		for (const name of names) {
@@ -1320,7 +1355,23 @@ export class Atelier {
 	#parameterIntervalsNow(): Map<string, { domain: Domain | null } | { message: string }> {
 		const result = new Map<string, { domain: Domain | null } | { message: string }>();
 		for (const o of this.items) {
-			if (!isFunction(o) || o.interval === undefined) continue;
+			if (!isFunction(o)) continue;
+			// Par morceaux : la réunion des conditions, lue avec les valeurs du moment
+			const provenance = o.provenance ?? 'url';
+			if (piecesOf(o.definition, readingMode(provenance)) !== null) {
+				const values = this.#valuesOf(piecesNamesOf(o.definition, provenance));
+				if (values === 'waiting') continue;
+				const checked = checkPieces(
+					o.definition,
+					provenance,
+					this.functionNames,
+					o.letter ?? INTERNAL_LETTER,
+					values
+				);
+				result.set(o.name, checked.ok ? { domain: checked.domain } : { message: checked.message });
+				continue;
+			}
+			if (o.interval === undefined) continue;
 			const letter = o.letter ?? INTERNAL_LETTER;
 			const values = this.#intervalValues(o.interval, letter);
 			if (values === undefined || values === 'waiting') continue;
@@ -1636,8 +1687,18 @@ export class Atelier {
 		const keptLetter = letter ?? (isFunction(previous) ? previous.letter : undefined);
 		const wanted =
 			interval === undefined ? (isFunction(previous) ? previous.interval : undefined) : interval;
+		const pieces = this.#checkedPieces(
+			previous.kind,
+			definition,
+			provenance,
+			keptLetter,
+			definition === previous.definition
+		);
+		if (!pieces.ok) return pieces;
+		// Par morceaux, chaque condition fait l'ensemble : un « sur » d'avant ne reste pas
+		const piecewise = piecesOf(definition, readingMode(provenance)) !== null;
 		let keptInterval: string | undefined;
-		if (wanted !== null && wanted !== undefined) {
+		if (wanted !== null && wanted !== undefined && !piecewise) {
 			const checked = this.#checkedInterval(
 				previous.kind,
 				wanted,

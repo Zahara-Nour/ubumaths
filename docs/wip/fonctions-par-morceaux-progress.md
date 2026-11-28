@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-28, après #3335 (PR 1, moteur)._
+_Mis à jour le 2026-11-28, PR 2 (Atelier) ouverte._
 
-- **État** : PR 1 mergée — `f(3)` exact sur un nœud par morceaux, lecture de `\begin{cases}`. Rien de visible dans l'Atelier.
-- **Prochaine action** : PR 2 (Atelier) — nouveau worktree `../ubumaths-wt-fonctions-par-morceaux-2`, branche `feat/fonctions-par-morceaux-2` ; phase 0 et Q1-Q4 déjà tranchées (ci-dessous), tests d'abord.
-- **En attente de David** : rien.
-- **Pièges en cours** : `expressionOf` / `syncEngine` (`engine.ts`) font arbre → texte maison → arbre : un nœud par morceaux s'y perd (`{ v si c }` illisible, `si` = s·i) → passer l'arbre, ou relire en LaTeX. `simplify` ne réduit pas un nœud par morceaux, seul `evaluate`. Refus `ONE_FORMULA` à retirer (`interval.ts` ~282). Graphe = PR 3 (une formule par courbe aujourd'hui).
-- **Worktree / branche** : aucun (celui de PR 1 retiré par `pr:merger`).
+- **État** : PR 2 ouverte (`feat/fonctions-par-morceaux-2`) — écriture par morceaux dans Calcul et la carte, refus, `sinon`, ensemble, curseur, Q3, Géométrie ; revue faite et corrigée ; 56 tests, suites atelier + parseurs vertes, vérif à l'écran verte.
+- **Prochaine action** : merge de la PR 2 à la CI verte ; puis PR 3 (Graphe : ronds plein/vide aux coupures — les morceaux s'y tracent déjà).
+- **En attente de David** : une condition `x = 0` (`sin(x)/x pour x ≠ 0, 1 pour x = 0`) — accepter un morceau en un point, ou garder le refus ? Aujourd'hui refusée (« Chaque morceau a sa condition… »).
+- **Pièges en cours** : `expressionOf` (texte maison) perd un nœud par morceaux : `syncEngine` passe l'arbre, les commandes sont refusées (Q3), une fonction en attente aussi. Texte : `1,2x` reste une virgule décimale (mettre une espace).
+- **Worktree / branche** : `../ubumaths-wt-fonctions-par-morceaux-2`, `feat/fonctions-par-morceaux-2`.
 
 ## Demande
 
@@ -83,3 +83,35 @@ Suite de `fonctions-domaines` (#3304, #3310) et `fonctions-morceaux` (#3298, `[k
 - Constats : `simplify` ne réduit pas un nœud par morceaux (seul `evaluate`) ; la console ne
   remplace pas une valeur liée dans le corps d'une fonction (vrai pour toute fonction ; l'Atelier
   substitue avant, `expressionOf`).
+
+### PR 2 — Atelier
+
+- **Rangement** : la définition garde TOUTE l'écriture (`x pour x < k, x^2 pour x ≥ k`, en x), sans
+  `interval` ; `astOf` la lit en nœud `piecewise` (`parse.ts` → `piecewise.ts`). Aucun champ neuf,
+  sauvegarde inchangée. `splitInterval` ne coupe plus une écriture à plusieurs morceaux.
+- **Découpage** (`piecewise.ts`, `piecesOf`) : virgules de premier niveau (ni dans `()`/`{}`, ni
+  `0,5` en texte, ni `{,}` en LaTeX) ; par morceaux dès qu'une partie a « pour » + condition ou finit
+  par « sinon ». Refus : morceau sans condition, `sinon` pas en dernier, formule vide.
+- **Conditions en arbre** : chaque comparaison lue seule, « et » plus fort que « ou » (les parseurs
+  lisaient mal `x<0 ou x>1` et `2\lt x\lt 4`). L'ensemble, lui, vient de `readInterval`.
+- **Atelier** (`checkPieces`, `interval.ts`) : conditions lisibles, pas de chevauchement (Q1, « Les
+  conditions se chevauchent sur … »), chaque formule définie sur sa condition (`formulaOutside`,
+  factorisé de `checkInterval`) ; ensemble = réunion, ℝ avec `sinon`. Recalculé à chaque passage
+  dans `parameterInterval` (comme `[k;5]`) : curseur qui fait chevaucher → carte en erreur « (k = 3) ».
+- **`interval-words.ts`** : les mots « sur »/« pour » sortis d'`interval.ts`, pour que `parse.ts`
+  les lise sans cycle.
+- **Q3** (`piecewise-refusals.ts`) : toute commande (sauf `.domaine`), `f′`, et les boutons sauf
+  « Image » refusent une fonction par morceaux ou qui en cite une. `.évaluer` aussi (son chemin
+  passe par le texte maison). `.domaine f` : « (réunion des conditions de ses morceaux) ».
+- **Carte** : texte de Calcul réaffiché morceau par morceau (`\text{ pour }`, `\text{ sinon}`),
+  jamais `\begin{cases}`.
+- **Constat** : `a = 3 pour x < 0, 4 pour x ≥ 0` crée une fonction `a` (règle actuelle : `a = x^2`
+  aussi).
+- **Revue** (`code-reviewer`, Opus) : (1) carte en lettre t, mots collés (`tpourt<3,…`) : le renommage
+  mot à mot échouait, le repli rangeait un `\begin{cases}` qui échappait à `checkPieces` → renommage
+  morceau par morceau (`renameVariable`), et `\begin{cases}` refusé dans une définition
+  (`WRITE_WITH_POUR`) ; (2) `f(1)` sur une fonction par morceaux en attente repassait par le texte
+  maison → refus « f attend k » (`pendingPiecewiseRefusal`) ; (4) suite par morceaux : message à elle
+  (`SEQUENCE_PIECES`). Restent : `x = 0` (question à David), `1,2x` ambigu en texte. 7 tests.
+- **Vu à l'écran** (`e2e/verifs/atelier-fonctions-par-morceaux.spec.ts`, Chrome) : carte, images,
+  refus Q3, chevauchement sur la carte, Graphe (deux morceaux, saut en 2, sans ronds).
