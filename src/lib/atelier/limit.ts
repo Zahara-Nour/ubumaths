@@ -234,7 +234,7 @@ export function limitCommand(context: LimitContext, input: string, typed: string
 	const result =
 		everyParameter === null
 			? engineResult
-			: concludedResult(everyParameter, variable, approach, direction);
+			: concludedResult(everyParameter, variable, approach, direction, engineResult?.definedSide);
 	if (result === null) return { kind: 'commande', input, output: unknownLimit(ast, variable) };
 
 	// « Comment ? » : les étapes portent sur l'expression, dans la lettre de
@@ -592,9 +592,10 @@ function concludedResult(
 	value: MathNode,
 	variable: string,
 	approach: MathNode,
-	direction: LimitDirection
+	direction: LimitDirection,
+	definedSide: 'left' | 'right' | undefined
 ): LimitResult {
-	return {
+	const result: LimitResult = {
 		variable,
 		approach,
 		direction,
@@ -604,6 +605,9 @@ function concludedResult(
 		technique: 'linearity',
 		steps: []
 	};
+	// L118 : le côté de définition vu par le moteur, qui a renoncé au calcul
+	// (x ln x + kx en 0, défini à droite seulement) — la ligne écrit x → 0⁺
+	return definedSide === undefined ? result : { ...result, definedSide };
 }
 
 /** `evaluateLimit` sans exception : `null` quand le moteur renonce. */

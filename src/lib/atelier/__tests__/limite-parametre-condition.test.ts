@@ -165,3 +165,11 @@ describe('L121 — d’un seul côté, la limite des deux côtés quand elle exi
 		);
 	});
 });
+
+describe('L118 — une limite trouvée hors du moteur garde son côté de définition', () => {
+	it('x ln x + kx en 0 (sans côté tapé) s’écrit x → 0⁺', () => {
+		expect(latexOf(run('.limite x\\ln x+kx en 0'))).toBe(
+			'\\lim\\limits_{x\\to 0^+} \\left(x \\ln\\left( x \\right) + k x\\right) = 0'
+		);
+	});
+});
