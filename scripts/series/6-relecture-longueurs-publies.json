@@ -1,0 +1,43 @@
+{
+	"title": "Relecture — longueurs de 6e, 6 modèles publiés complétés",
+	"grade": "6",
+	"description": "Relecture dans /dev/modeles des 6 modèles publiés de 6e auxquels le chantier idees-6e-longueurs a ajouté 11 variations (à la fin de chaque modèle).",
+	"items": [
+		{
+			"modele": "Calcul du périmètre d'un carré.",
+			"templateId": "060086c8-2576-4b6f-a2c1-5994b83530db",
+			"quantity": 1,
+			"delay": 60
+		},
+		{
+			"modele": "Le périmètre d'un disque est proportionnel à son diamètre",
+			"templateId": "4343af4c-1549-4eb3-8471-8fd3f9233c38",
+			"quantity": 1,
+			"delay": 60
+		},
+		{
+			"modele": "Périmètres de figures composées",
+			"templateId": "60f165a8-3aba-4983-95c0-6b92b0cc6257",
+			"quantity": 1,
+			"delay": 60
+		},
+		{
+			"modele": "Calcul du périmètre d'un rectangle.",
+			"templateId": "66f9abbf-6e85-42ff-bf3c-af6d573491c3",
+			"quantity": 1,
+			"delay": 60
+		},
+		{
+			"modele": "Connaître la formule du périmètre d'un disque",
+			"templateId": "ccb4f5e5-3494-4447-9f6a-3bc3b3622eab",
+			"quantity": 1,
+			"delay": 60
+		},
+		{
+			"modele": "Calculer le périmètre d'un disque",
+			"templateId": "cfb4c692-04d8-4cd9-9849-3b5cb94628e5",
+			"quantity": 1,
+			"delay": 60
+		}
+	]
+}

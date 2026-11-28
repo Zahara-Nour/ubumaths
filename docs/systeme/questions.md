@@ -299,7 +299,7 @@ pour tous », la graine de série `SERIES_SEED_PARAM`). L'ancienne forme (catég
   droite ; barre en bas « Ma série · 3 questions · 2 min 30 » (téléphone, absente si la série est
   vide) → panneau du bas ; le catalogue garde un espace en bas, `pb-28`, pour que la dernière carte
   remonte au-dessus. `CartQuestionCard` (tuile d'un modèle de
-  la page détaillée, sous son titre : durée par pas de 5 s entre 5 et 300 s, corbeille « Retirer de ma
+  la page détaillée, sous son titre : durée par pas de 5 s entre 5 et 600 s (`MAX_QUESTION_DELAY_SECONDS`, celle de la série enregistrée ; écart L92), corbeille « Retirer de ma
   série » entre les deux, sans confirmation (2026-11-26), nombre de questions ; modèle plus
   publié → « Modèle retiré », avec « Retirer de ma série » ; pour un prof, la marque « Durée sans doute
   trop courte » à la durée choisie, puis la « Durée observée » chez ses élèves avec « Appliquer »

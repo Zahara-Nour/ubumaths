@@ -2,17 +2,19 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-28, après #3257 (lot 7c mergé)._
+_Mis à jour le 2026-11-28, après #3263 (petite PR d'après le 7c mergée)._
 
 - **État** : [ADR 0045](../adr/0045-figures-de-l-espace-qui-tournent.md) ; lots 1 à 6, 7a, 7b, bord en
-  butée et **7c** (repère du solide, points par coordonnées, § 21) mergés (#3195 à #3257) ; lot 7c essayé
-  par David le 2026-11-28 (« c'est bon »). Les lots 3 à 7c ne sont pas en prod sans `deploy:prod` demandé
+  butée, **7c** (repère du solide, points par coordonnées, § 21) et la **petite PR d'après le 7c** (description
+  sous chaque réglage dans la page d'aide, cases de `retrouver:` teintées, § 22) mergés (#3195 à #3263) ; lot
+  7c essayé par David le 2026-11-28 (« c'est bon »). Les lots 3 à 7c ne sont pas en prod sans `deploy:prod` demandé
   par David (le vérifier avant de l'affirmer).
-- **Prochaine action** : la **petite PR d'après le 7c** (description des réglages sous le réglage dans la
-  page d'aide ; cases de saisie de `retrouver:` teintées), puis le **lot 7e** (point d'intersection demandé
-  par l'auteur, § 17 question (d)) avec sa phase 0. Le 7d (repère sans solide) reste laissé tant qu'aucun
+- **Prochaine action** : le **lot 7e** (point d'intersection demandé par l'auteur, § 17 question (d)), en
+  commençant par sa phase 0 (comportements en français, à faire valider par David avant de coder). Le 7d (repère sans solide) reste laissé tant qu'aucun
   modèle n'en a besoin.
-- **En attente de David** : rien. Il n'a rien dit de « (Q) » écrit sur la zone teintée de (P) après son
+- **En attente de David** : rien de bloquant. Deux choix de la petite PR faits sans lui, annoncés le
+  2026-11-28, sans réponse encore : teinte des cases de `retrouver:` (14 % de la couleur d'accent) et
+  description gardée dans le tableau, en gris sous la clé. Il n'a rien dit de « (Q) » écrit sur la zone teintée de (P) après son
   essai : laissé.
 - **Tranché par David le 2026-11-28 (lot 7c, « je te suis »)** : les trois choix du § 21 sont gardés
   (vecteurs du repère qui partent tous de l'origine ; coordonnées décimales seulement, les fractions le jour
@@ -40,7 +42,7 @@ _Mis à jour le 2026-11-28, après #3257 (lot 7c mergé)._
   même si son serveur de dev tourne** (#3227, #3229 : dossier laissé avec `.svelte-kit` et `.vite`, serveur
   à tuer par son PID) — recréer le worktree et relancer le serveur aussitôt après le merge ; `pnpm voir
 --compte prof` refusait la connexion du compte fictif le 2026-11-27 (base locale en marche).
-- **Worktree / branche** : aucun (retirés par `pnpm pr:merger 3257`) ; à recréer sous le nom
+- **Worktree / branche** : aucun (retirés par `pnpm pr:merger 3263`, serveur de dev arrêté avant) ; à recréer sous le nom
   `../ubumaths-wt-solides-3d`. Le lien du tailnet 8444 → 5176 est resté publié (serveur arrêté) : `pnpm lien`
   le reprend depuis le nouveau worktree, `--stop` est refusé dans le dépôt principal.
 
@@ -745,3 +747,28 @@ positions relatives ; le repère sert ensuite aux calculs (représentations para
   « déclare-le avant » à la place de la vraie erreur de `points:`. **Laissés** : `repere: (A ; AB, AD, AE`
   (parenthèse non fermée) et `[AB]` acceptés sans message ; `I(milieu AE)` dit « trois coordonnées ».
   Tests : `solide-repere.test.ts` (34).
+
+## 22. Petite PR d'après le 7c : description sous le réglage, cases de `retrouver:` teintées (2026-11-28)
+
+- **Page d'aide d'un bloc** (`BlockHelpPage.svelte`, les 30 fiches) : deux lignes par réglage — la clé, ses
+  valeurs, son défaut ; puis la description dessous, sur toute la largeur, en gris. La colonne « Effet »
+  disparaît (`tourner:` des cubes y tenait sur dix lignes ; sur téléphone, le tableau défilait de côté).
+- **` ```cubes ` + `retrouver:`** (`CubesGeste.svelte`) : les cases à remplir de la vue de dessus sont teintées
+  (14 % de `--color-primary` sur le fond) ; avant, rien ne les distinguait des carreaux blancs des vues
+  données. La grille de la correction reste blanche.
+- Tests (rouges avant le code) : `BlockHelpPage.svelte.test.ts` (2 lignes par réglage, description sous la
+  clé, plus de « Effet »), `CubesGeste.svelte.test.ts` (couleur rendue, clair et sombre).
+- Vu à l'écran par la session (`pnpm voir`, WebKit) : `/aide-ecriture/blocs/cubes` sur grand écran (tableau,
+  deux exemples `retrouver:`), `/aide-ecriture/blocs/solide` au format iPhone (le tableau tient dans la
+  largeur). **Pas vu** : le thème sombre à l'écran (la teinte y est lue par le test), une question
+  `retrouver:` côté élève.
+- « (Q) » sur la zone teintée de (P) : David n'en a rien dit, laissé.
+- Revue : aucune (correctif d'affichage, sans logique).
+
+## 23. Hors des lots : segments et angles droits du bloc solide (2026-11-28)
+
+Outil n° 72 d'`outils-manquants.md`, fait par la session `outils` dans son propre chantier, journal
+[solide-segments](../archive/wip/solide-segments-progress.md), #3264 : `segments: [HF], [DF]` et
+`angles-droits: DHF` (polyèdres, ni `section:` ni `tracer:`, rotation et PDF compris). Reprend
+`hiddenStretches` comme les droites. Piège : en cavalière, la diagonale [AG] d'un cube se dessine sur
+l'arête [FG].

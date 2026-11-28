@@ -7,8 +7,9 @@
  * nœuds de la grille ; la droite qui passe par eux se dessine d'un bord à l'autre.
  *
  * Équation : réduite (`y = 2x - 1`), verticale (`x = 3`) ou cartésienne
- * (`2x + 3y - 6 = 0`), en syntaxe mathAST (`1/2x`, `0.5x`, `2*(x - 1)`) ; elle est
- * lue en `ax + by + c = 0` par évaluation, puis vérifiée affine.
+ * (`2x + 3y - 6 = 0`), en syntaxe mathAST (`1/2x`, `0.5x`, `2*(x - 1)`) ou avec une
+ * fraction LaTeX (`\frac{1}{2}x`, écart L88) ; elle est lue en `ax + by + c = 0` par
+ * évaluation, puis vérifiée affine.
  *
  * Réponse de la case (une seule) : `x1;y1/x2;y2` (`pointAnswer` pour chaque point,
  * vide pour un point pas posé). Réponse attendue : l'équation, telle qu'écrite
@@ -21,8 +22,10 @@
  */
 
 import { parseCustom } from '#lib/mathAST/parser/custom/index.ts';
+import { parseLatex } from '#lib/mathAST/parser/index.ts';
 import { compile } from '#lib/mathAST/eval/compile.ts';
 import { tidy } from '#lib/mathAST/tidy/index.ts';
+import type { MathNode } from '#lib/mathAST/types.ts';
 import { toLatex } from '#lib/mathAST/latex-generator.ts';
 import type { CourbeWindow } from '../types/courbe';
 import {
@@ -53,6 +56,9 @@ export interface TracedLineMistake {
 }
 
 // Constantes
+
+/** Commande LaTeX autre que `\pi` (que la syntaxe maison lit) : `\frac`, `\dfrac`… */
+const LATEX_COMMAND = /\\(?!pi(?![A-Za-z]))[A-Za-z]+/;
 
 /** Écart relatif toléré (calculs en virgule flottante) */
 const RELATIVE_TOLERANCE = 1e-9;
@@ -87,6 +93,15 @@ function variablesOf(node: unknown, found: Set<string> = new Set()): Set<string>
 	return found;
 }
 
+/**
+ * Un côté de l'équation : syntaxe maison mathAST, ou LaTeX s'il porte une commande
+ * comme `\frac{1}{2}x` (écart L88 : un prof l'écrit, `{{eval}}` la produit)
+ */
+function parseSide(side: string): MathNode {
+	const text = side.trim();
+	return LATEX_COMMAND.test(text) ? parseLatex(text) : parseCustom(text);
+}
+
 function close(a: number, b: number, scale: number): boolean {
 	return Math.abs(a - b) <= RELATIVE_TOLERANCE * Math.max(1, scale);
 }
@@ -102,8 +117,8 @@ export function lineCoefficients(equation: string): LineCoefficients | string {
 	}
 	let evaluate: (x: number, y: number) => number;
 	try {
-		const left = parseCustom(sides[0].trim());
-		const right = parseCustom(sides[1].trim());
+		const left = parseSide(sides[0]);
+		const right = parseSide(sides[1]);
 		const unknown = [...variablesOf([left, right])].filter((v) => v !== 'x' && v !== 'y');
 		if (unknown.length > 0) {
 			return `inconnue « ${unknown[0]} » : x et y seulement`;
@@ -231,7 +246,7 @@ export function equationLatex(equation: string): string {
 	try {
 		return equation
 			.split('=')
-			.map((side) => toLatex(tidy(parseCustom(side.trim()))))
+			.map((side) => toLatex(tidy(parseSide(side))))
 			.join(' = ');
 	} catch {
 		return equation;

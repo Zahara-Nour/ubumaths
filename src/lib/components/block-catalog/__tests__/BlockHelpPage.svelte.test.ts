@@ -18,7 +18,16 @@ describe('BlockHelpPage', () => {
 			.toBeInTheDocument();
 		// Tous les groupes : réglages de l'horloge, puis `placer` d'une question
 		const keys = horlogeEntry.settingGroups.reduce((n, group) => n + group.settings.length, 0);
-		expect(screen.container.querySelectorAll('tbody tr').length).toBe(keys);
+		// Deux lignes par réglage : la clé, ses valeurs, son défaut ; puis la description dessous
+		const rows = [...screen.container.querySelectorAll('tbody tr')];
+		expect(rows.length).toBe(2 * keys);
+		const first = horlogeEntry.settingGroups[0].settings[0];
+		expect(rows[0].textContent).toContain(`${first.key}:`);
+		expect(rows[0].textContent).not.toContain(first.description);
+		expect(rows[1].textContent?.trim()).toBe(first.description);
+		expect(rows[1].querySelector('td')?.getAttribute('colspan')).toBe('3');
+		// Plus de colonne « Effet » : la description a toute la largeur
+		expect(screen.container.querySelector('thead')?.textContent).not.toContain('Effet');
 		expect(page.getByRole('button', { name: 'Copier' }).elements()).toHaveLength(
 			horlogeEntry.examples.length
 		);

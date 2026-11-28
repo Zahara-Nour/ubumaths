@@ -77,6 +77,8 @@ export const SOLIDE_KEYS = [
 	'points',
 	'vecteurs',
 	'droites',
+	'segments',
+	'angles-droits',
 	'plans',
 	'repere',
 	'tracer',
@@ -90,6 +92,10 @@ export const SOLIDE_MAX_VECTORS = 8;
 
 /** Droites données (`droites:`) d'un ```solide : au plus (au-delà, on ne lit plus rien) */
 export const SOLIDE_MAX_DROITES = 4;
+
+/** Segments donnés (`segments:`) et angles droits codés (`angles-droits:`) d'un ```solide : au plus */
+export const SOLIDE_MAX_SEGMENTS = 6;
+export const SOLIDE_MAX_RIGHT_ANGLES = 3;
 
 /** Plans donnés (`plans:`) d'un ```solide : au plus (au-delà, on ne lit plus rien) */
 export const SOLIDE_MAX_PLANS = 2;
@@ -241,6 +247,16 @@ export interface SolideSpec {
 	 * couleur ; absent : aucune (la figure reste celle d'avant)
 	 */
 	droites?: SolideDroite[];
+	/**
+	 * Segments donnés (`segments:`, outil n° 72 de `outils-manquants.md`), dessinés
+	 * en couleur d'un point à l'autre ; absent : aucun (la figure reste celle d'avant)
+	 */
+	segments?: SolideSegment[];
+	/**
+	 * Angles droits codés (`angles-droits: AEG`, outil n° 72) : un petit carré au
+	 * sommet du milieu ; absent : aucun (la figure reste celle d'avant)
+	 */
+	rightAngles?: SolideRightAngle[];
 	/**
 	 * Plans donnés (`plans:`, chantier `solides-3d`, lot 7b) : la partie du plan
 	 * dans le solide, teintée ; absent : aucun (la figure reste celle d'avant)
@@ -414,6 +430,23 @@ export interface SolideDroite {
 	to: number;
 	/** `d = (AG)` : d ; null : nommée par ses deux points */
 	name: string | null;
+}
+
+/** Un segment donné (`segments: [AG]`) : indices de ses deux bouts (sommets, puis points déclarés) */
+export interface SolideSegment {
+	from: number;
+	to: number;
+}
+
+/**
+ * Un angle droit codé (`angles-droits: AEG`) : `at`, le sommet de l'angle (la
+ * lettre du milieu), `from` et `to`, un point sur chacun de ses côtés (indices
+ * des points : sommets, puis points déclarés)
+ */
+export interface SolideRightAngle {
+	from: number;
+	at: number;
+	to: number;
 }
 
 /** Un plan donné (`plans: (BDE), P = (ACG)`) : indices de trois points non alignés (sommets, puis points déclarés) */

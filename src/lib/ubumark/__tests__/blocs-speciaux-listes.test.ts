@@ -69,6 +69,17 @@ describe('droite graduée FERMÉE dans un item de liste (chantier automatismes-1
 	});
 });
 
+describe('étiquettes à ranger FERMÉES dans un item de liste (écart L89)', () => {
+	it('un bloc ranger, ses étiquettes lues, pas un bloc de code brut', () => {
+		const nodes = inItem(['```ranger', 'signe: <', '- 3', '- 1', '- 2', '```']);
+
+		expect(nodes.map((n) => n.type)).toEqual(['paragraph', 'ranger']);
+		const ranger = nodes[1] as { labels: unknown[]; errors: string[] };
+		expect(ranger.labels).toHaveLength(3);
+		expect(ranger.errors).toEqual([]);
+	});
+});
+
 describe('bloc spécial non fermé, sans ``` plus loin (Q63 en liste)', () => {
 	it('un cercle, puis le texte — plus de ```trig affiché brut', () => {
 		const nodes = inItem(['```trig', 'preset: quarters', '', 'Voici la suite']);

@@ -2,17 +2,20 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-27, après #3254._
+_Mis à jour le 2026-11-28, après #3262 et `db:migrate`._
 
-- **État** : lot écrit (6 modèles neufs, 20 variations ; 11 variations ajoutées à 6 publiés), `question:specs`
-  vert (111 + 109 specs), essai des neufs en base locale ; #3254 mergée (fichiers du lot seuls).
-- **Prochaine action** : PR mergée → David lance `create-questions --publier` sur
-  `scripts/questions/idees-6e-longueurs-neufs` ; puis migrations de rangement et de contenu (générées).
-- **En attente de David** : la commande `--publier` ; question sur le bogue de fdd849f5 (voir Historique).
-- **Pièges en cours** : une variation `conditions: []` écrase les conditions partagées (`??` du générateur) ;
-  ccb4f5e5 gagne l'option `constraints.products: off` (« ⚠️ options » de `migration-contenu`) ; la migration de
-  contenu générée trop tôt est mise de côté, à régénérer.
-- **Worktree / branche** : aucun (le prochain, sur `origin/main`, sous le même sujet).
+- **État** : #3262 mergée, ses 2 migrations jouées en prod et vérifiées par MCP (6 brouillons rangés, 4 tags,
+  +11 variations sur 6 publiés). PR de suite (branche `fix/idees-6e-longueurs-suite`) : correction de fdd849f5
+  (variation n° 8, `conditions: []` → `["a>b"]`, oui de David) et série `scripts/series/6-relecture-longueurs-publies.json`.
+- **Prochaine action** : PR de suite mergée → `db:migrate` (`migration list --linked` d'abord) → David lance
+  `pnpm tsx scripts/series/creer-serie.ts --fichier scripts/series/6-relecture-longueurs-publies.json --publier`
+  → commiter l'id → relecture des 6 brouillons dans `/dev/modeles` (`?point=6-144`, `6-199`, `6-148`,
+  `?noeud=` unités simples) et des 6 publiés par la série → verdicts → `publier-lot.ts`.
+- **En attente de David** : la commande `--publier` de la série, après le merge.
+- **Pièges en cours** : `conditions: []` écrase les conditions partagées ; le pre-commit laisse l'index d'une
+  fixture JSON dans sa forme d'avant prettier (`MM`) : vérifier `git diff HEAD`, puis `git restore --staged`.
+- **Worktree / branche** : `../ubumaths-wt-idees-6e-longueurs-suite`, `fix/idees-6e-longueurs-suite` ; fdd849f5
+  réservé dans `idees-ailleurs-repartition.md` jusqu'à sa migration jouée.
 
 ## Phase 0 (2026-11-27)
 
@@ -109,6 +112,16 @@ Page à cocher : https://claude.ai/artifact/6bCd5vw2yxYQ7pQvQUJ7uV (Oui / Non / 
   CM1-068, plages réduites à deux chiffres après la virgule.
 
 ## Historique
+
+- 2026-11-28 : #3262 mergée, `db:migrate` (2 migrations), vérifié par MCP. David : « je te suis » sur fdd849f5 →
+  migration de contenu `20261127235012_…_correction_contenu.sql` (variation n° 8 seule), 335 verts, rouge sans
+  elle ; série de relecture des 6 publiés simulée en prod.
+
+- 2026-11-28 : niveaux relevés en prod (inchangés), migrations de rangement et de contenu générées ;
+  `migrations-rangement-tags` et `migrations-contenu-publie` : 511 verts, rouges sans les migrations ;
+  `security-auditor` : aucun finding bloquant (seul le texte générique du rollback parle de niveaux).
+
+- 2026-11-28 : David lance `create-questions --publier` : 6 brouillons en prod, vérifiés par MCP.
 
 - 2026-11-27 : #3254 mergée (fichiers du lot seuls, CI verte).
 

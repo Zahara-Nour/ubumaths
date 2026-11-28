@@ -23,6 +23,8 @@
 	import * as Card from '#lib/components/ui/card/index.ts';
 	import { Badge } from '#lib/components/ui/badge/index.ts';
 	import { Label } from '#lib/components/ui/label/index.ts';
+	import MySelect from '#lib/components/MySelect.svelte';
+	import MyCheckbox from '#lib/components/MyCheckbox.svelte';
 	import { AlertCircle, RefreshCw, Check, X } from '@lucide/svelte';
 	import { onMount } from 'svelte';
 	import FlashCard from '#lib/components/questions/FlashCard.svelte';
@@ -35,7 +37,15 @@
 		template: Omit<QuestionTemplate, 'id' | 'created_at' | 'updated_at' | 'created_by'>;
 	}
 
+	type DisplaySize = 'sm' | 'md' | 'lg';
+
 	let { template }: Props = $props();
+
+	const DISPLAY_SIZES: { value: DisplaySize; label: string }[] = [
+		{ value: 'sm', label: 'Petite' },
+		{ value: 'md', label: 'Moyenne' },
+		{ value: 'lg', label: 'Grande' }
+	];
 
 	let instance = $state<QuestionInstance | null>(null);
 	// Fonctions déclarées par le modèle (`P(x)`) : notation des formules `~…~`
@@ -62,11 +72,18 @@
 
 	// FlashCard configuration
 	let interactive = $state<boolean>(true);
-	let displaySize = $state<'sm' | 'md' | 'lg'>('md');
+	let displaySize = $state<DisplaySize>('md');
 	let showCorrectionOnWrong = $state(false);
 
 	// Derived: Number of variations in template
 	let variationCount = $derived(template.variations?.length || 1);
+	let variationItems = $derived([
+		{ value: 'random', label: 'Aléatoire (selon la graine)' },
+		...Array.from({ length: variationCount }, (_, index) => ({
+			value: String(index),
+			label: `Variation ${index + 1}`
+		}))
+	]);
 
 	// Generate instance
 	function generate() {
@@ -105,6 +122,12 @@
 	function regenerate() {
 		seed = Math.floor(Math.random() * 1000000);
 		generate();
+	}
+
+	// Taille de l'aperçu : une des trois de la liste
+	function handleSizeChange(value: string) {
+		const size = DISPLAY_SIZES.find((item) => item.value === value);
+		if (size) displaySize = size.value;
 	}
 
 	// Handle variation selection change
@@ -174,20 +197,17 @@
 			<!-- Variation Selector (only show if multiple variations) -->
 			{#if variationCount > 1}
 				<div class="flex items-center gap-4">
-					<Label for="variation-select" class="text-sm font-medium">
-						Variation à prévisualiser:
-					</Label>
-					<select
-						id="variation-select"
+					<Label class="text-sm font-medium">Variation à prévisualiser:</Label>
+					<MySelect
+						type="single"
 						value={selectedVariationIndex === 'random' ? 'random' : String(selectedVariationIndex)}
-						onchange={(e) => handleVariationChange(e.currentTarget.value)}
-						class="flex h-9 w-64 rounded-md border border-input bg-background px-3 py-1 text-sm ring-offset-background focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-none"
-					>
-						<option value="random">Aléatoire (selon la graine)</option>
-						{#each Array(variationCount) as _, index (index)}
-							<option value={String(index)}>Variation {index + 1}</option>
-						{/each}
-					</select>
+						items={variationItems}
+						triggerAriaLabel="Variation à prévisualiser : {variationItems.find(
+							(item) => item.value === String(selectedVariationIndex)
+						)?.label ?? ''}"
+						onValueChange={handleVariationChange}
+						triggerClass="select-trigger h-9 w-64 rounded-md border border-input bg-background px-3 text-sm inline-flex items-center justify-between"
+					/>
 				</div>
 			{/if}
 		</div>
@@ -264,26 +284,26 @@
 
 							<!-- Size -->
 							<div class="space-y-2">
-								<Label for="display-size" class="text-sm font-medium">Taille</Label>
-								<select
-									id="display-size"
-									bind:value={displaySize}
-									class="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm ring-offset-background focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-none"
-								>
-									<option value="sm">Petite</option>
-									<option value="md">Moyenne</option>
-									<option value="lg">Grande</option>
-								</select>
+								<Label class="text-sm font-medium">Taille</Label>
+								<MySelect
+									type="single"
+									value={displaySize}
+									items={DISPLAY_SIZES}
+									triggerAriaLabel="Taille : {DISPLAY_SIZES.find(
+										(item) => item.value === displaySize
+									)?.label ?? ''}"
+									onValueChange={handleSizeChange}
+								/>
 							</div>
 
 							<!-- Options -->
 							<div class="space-y-2">
 								<Label class="text-sm font-medium">Options</Label>
 								<div class="space-y-1">
-									<label class="flex items-center gap-2 text-sm">
-										<input type="checkbox" bind:checked={showCorrectionOnWrong} class="rounded" />
-										Afficher correction si faux
-									</label>
+									<MyCheckbox
+										bind:checked={showCorrectionOnWrong}
+										label="Afficher correction si faux"
+									/>
 								</div>
 							</div>
 						</div>
