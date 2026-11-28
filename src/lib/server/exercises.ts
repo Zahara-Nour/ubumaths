@@ -524,7 +524,7 @@ export const EXERCISE_NOT_DELETED = 'Exercise not deleted';
 
 /**
  * Refus de `deleteExercise` : des séances du cahier de texte citent l'exercice
- * (L113, ON DELETE RESTRICT). Le cahier garde la trace de ce qui a été fait :
+ * (L113, ON DELETE NO ACTION). Le cahier garde la trace de ce qui a été fait :
  * le prof retire d'abord l'exercice de ces séances. `sessions` est null quand
  * le compte n'a pas pu être lu.
  */

@@ -878,11 +878,11 @@ authenticated` ne part qu'après le `deploy:prod` qui livre la route (sinon la p
   une table annexe sans policy élève (c'était le choix de `python_submission_server_verdicts`, supprimée
   depuis).
 - **Supprimer un point de `curriculum_points` qu'un élève a travaillé ou qu'une séance couvre est
-  REFUSÉ** (`student_point_state` et `journal_entry_points` en RESTRICT, migration
+  REFUSÉ** (`student_point_state` et `journal_entry_points` en NO ACTION, migration
   `20261128072151`, L112) : rattacher d'abord ce travail à un autre point, ou archiver. Les autres
   clés qui visent un point (modèles, exercices, automatismes) restent en CASCADE.
 - **Supprimer un exercice cité par une séance du cahier de texte est REFUSÉ**
-  (`journal_entry_activities.exercise_id` en RESTRICT, code `23503`, L113) : `deleteExercise` rend
+  (`journal_entry_activities.exercise_id` en NO ACTION, code `23503`, L113) : `deleteExercise` rend
   `ExerciseCitedError`, et la page dit au prof combien de séances le citent.
 - **Deux générations de seeds du programme.** Les anciens (`20260621160000_seed_curriculum_6e`,
   `20260830090000_seed_curriculum_1re_spe`) amorcent un niveau vide, une fois (garde

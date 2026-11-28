@@ -174,7 +174,7 @@ describe('preuves des écarts — suppressions en cascade (base locale)', () => 
 			expect(citesRestants).toBe(1);
 		});
 
-		// Refus VOULU (ON DELETE RESTRICT, 23503), plus l'accident du CHECK de
+		// Refus VOULU (ON DELETE NO ACTION, 23503), plus l'accident du CHECK de
 		// forme (23514) : c'est ce code que l'appli traduit pour le prof
 		it('L113 : le refus est celui de la clé étrangère', () => {
 			expect(codeDuRefus).toBe('23503');
