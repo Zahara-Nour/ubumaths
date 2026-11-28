@@ -22,7 +22,7 @@ couvre:
   - 'src/lib/components/questions/**'
   - 'src/lib/components/question-inputs/**'
   - src/lib/components/markdown/nodes/BlankInput.svelte
-  - 'src/lib/components/{QuestionTemplateForm,SharedFieldsEditor,ChoiceCaseEditor}.svelte'
+  - 'src/lib/components/{QuestionTemplateForm,SharedFieldsEditor,ChoiceCaseEditor,JsonEditor}.svelte'
   - 'src/lib/components/{QuestionTemplateCard,QuestionPreview*,QuestionCategoryFields,QuestionTemplateHelpDialogs,CategorySelector,CartQuestionCard,DisplayOptionsEditor,ValidationOptionsEditor,PrecisionEditor,VariableEditor,AnswerEditor,ExpectedErrorsEditor,CourseQuestionToggle}.svelte'
   - 'src/lib/stores/{questionCart,questionCategories,questionTemplates}.svelte.ts'
   - 'src/lib/components/series/{MySeriesPreview,MySeriesDock}.svelte'
@@ -152,7 +152,9 @@ pour tous », la graine de série `SERIES_SEED_PARAM`). L'ancienne forme (catég
   `SelfAssessButtons.svelte` (« Pas réussi / Réussi », auto-évaluation commune aux cartes de cours,
   Flash-cards et révisions ; raccourcis 1 / 2 sur option), `TestSpecEditor.svelte`.
 - Éditeur : `src/lib/components/QuestionTemplateForm.svelte`, `SharedFieldsEditor.svelte`,
-  `exercises/VariationEditor.svelte`. Ses sous-composants, à la racine de `src/lib/components/`
+  `exercises/VariationEditor.svelte`. Son mode « JSON brut » charge à la demande
+  `src/lib/components/JsonEditor.svelte` (CodeMirror ; venu de l'ancien moteur de constructions,
+  retiré le 2026-11-28). Ses sous-composants, à la racine de `src/lib/components/`
   (vérifié le 2026-10-13) : `questions/ClassificationNodePicker` (« Rangé dans » : branche →
   notion → sous-notion en cascade, trois `MySelect`, tout facultatif ; écrit
   `classification_node_id` ; l'arbre non archivé est lu par `server/classification-nodes.ts`, et

@@ -8,12 +8,20 @@
 import { describe, expect, it } from 'vitest';
 import { ConstructionExecutor } from '#lib/constructions-v2/core/executor.ts';
 import { geoToNumber } from '#lib/geometry-core/compute/to-number.ts';
+import { isArc } from '#lib/geometry-core/types/elements.ts';
 import {
 	CHANGES,
 	PARALLELOGRAMME,
 	PARTAGE_TROIS,
 	SYMETRIE_AXIALE
 } from '../constructions-prod/contenu';
+import {
+	CARRE_ID,
+	CHANGES as CHANGES_V76,
+	carreBackup,
+	ccwSweep,
+	nameAndHideArcs
+} from '../constructions-prod/arcs-carre';
 
 // =============================================================================
 // Décor
@@ -82,5 +90,88 @@ describe('constructions réécrites', () => {
 		expect(CHANGES.filter((c) => !c.isPublic).map((c) => c.title)).toEqual([
 			'Exercice de repérage de points'
 		]);
+	});
+});
+
+describe('V76 : les arcs de compas du carré s’effacent', () => {
+	const change = CHANGES_V76[0];
+	const before = carreBackup();
+	const script = change.dslScript ?? '';
+
+	/** Joue le script ; rend, après chaque pas, le nombre d'arcs visibles */
+	function visibleArcsByStep(dsl: string): number[] {
+		const exec = new ConstructionExecutor();
+		exec.load(dsl);
+		expect(exec.loadError?.message ?? null).toBeNull();
+		const counts: number[] = [];
+		while (exec.step()) {
+			counts.push(
+				exec.figure.getAllElements().filter((el) => isArc(el) && el.visible !== false).length
+			);
+		}
+		return counts;
+	}
+
+	it('un seul changement, sur le carré, tiré du script de la sauvegarde', () => {
+		expect(CHANGES_V76.map((c) => c.id)).toEqual([CARRE_ID]);
+		expect(change.dslAvant).toBe(before.dslScript);
+		expect(change.titreAvant).toBe(change.title);
+	});
+
+	it('les arcs du DSL sont ceux du JSON d’origine, dans le même ordre', () => {
+		const arcs = [
+			...before.dslScript.matchAll(/^arc\(\S+, rayon=(\S+), debut=(\S+), fin=(\S+)\)$/gm)
+		];
+		expect(arcs).toHaveLength(44);
+		expect(before.drawArcs).toHaveLength(44);
+		before.drawArcs.forEach((a, i) => {
+			expect(Number(arcs[i][1])).toBeCloseTo(a.radius / 40, 2);
+			expect(Number(arcs[i][2])).toBeCloseTo(-a.startAngle, 2);
+			expect(Number(arcs[i][3])).toBeCloseTo(-a.endAngle, 2);
+		});
+	});
+
+	it('seules les lignes des arcs et des @cacher changent', () => {
+		const old = before.dslScript.split('\n');
+		const next = script.split('\n');
+		expect(next).toHaveLength(old.length);
+		const changed = old.flatMap((line, i) => (line === next[i] ? [] : [`${line} → ${next[i]}`]));
+		expect(changed).toHaveLength(88);
+		expect(changed).toContain('@cacher("arc_9") → masque(_arc9)');
+		expect(changed[0]).toBe(
+			'arc(O, rayon=2.5, debut=10, fin=-10) → _arc9 = arc(O, rayon=2.5, debut=-10, fin=10)'
+		);
+		expect(script).not.toMatch(/@cacher\("arc_/);
+	});
+
+	it('avant : les 44 arcs restent ; après : tous s’effacent, un par un (un pas chacun)', () => {
+		expect(visibleArcsByStep(before.dslScript).at(-1)).toBe(44);
+		const counts = visibleArcsByStep(script);
+		expect(Math.max(...counts)).toBeGreaterThan(0);
+		expect(counts.at(-1)).toBe(0);
+		// 44 baisses : un pas `masque` par arc (500 ms chacun)
+		const drops = counts.filter((c, i) => i > 0 && c < counts[i - 1]).length;
+		expect(drops).toBe(44);
+	});
+
+	it('les arcs retrouvent les 20° de l’auteur (balayage fin − début du JSON)', () => {
+		const arcs = [
+			...script.matchAll(/^_arc\d+ = arc\(\S+, rayon=\S+, debut=(\S+), fin=(\S+)\)$/gm)
+		];
+		expect(arcs).toHaveLength(44);
+		arcs.forEach((m, i) => {
+			const a = before.drawArcs[i];
+			expect(ccwSweep(Number(m[1]), Number(m[2]))).toBeCloseTo(
+				Math.abs(a.endAngle - a.startAngle),
+				2
+			);
+		});
+	});
+
+	it('refuse un @cacher qui vise un arc inconnu, ou un nombre d’arcs différent', () => {
+		expect(() => nameAndHideArcs('arc(O, rayon=1, debut=0, fin=10)', [])).toThrow('1 arcs');
+		expect(() =>
+			nameAndHideArcs('arc(O, rayon=1, debut=0, fin=10)\n@cacher("arc_2")', ['arc_1'])
+		).toThrow('arc inconnu');
 	});
 });

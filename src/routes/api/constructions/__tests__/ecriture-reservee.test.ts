@@ -14,7 +14,6 @@ import { load as loadEdit } from '../../../(protected)/constructions/[id]/edit/+
 import { load as loadDetail } from '../../../(protected)/constructions/[id]/+page.server';
 import { load as loadList } from '../../../(protected)/constructions/+page.server';
 import { load as loadConversion } from '../../../(protected)/constructions/conversion/+page.server';
-import { POST as convert } from '../convert/+server';
 
 // ============================================================================
 // TYPES
@@ -226,12 +225,9 @@ describe('pages constructions', () => {
 		expect(await statusOf(() => loadNew({ locals } as never))).toBe(403);
 	});
 
-	it.each(READERS)('/constructions/conversion et sa conversion XML par %s → 403', async (role) => {
+	it.each(READERS)('/constructions/conversion par %s → 403', async (role) => {
 		const { locals } = fakeLocals(role);
 		expect(await statusOf(() => loadConversion({ locals } as never))).toBe(403);
-		expect(
-			await statusOf(() => convert({ locals, request: jsonRequest({ xml: '<a/>' }) } as never))
-		).toBe(403);
 	});
 
 	it('/constructions/new par le prof → ouverte', async () => {
@@ -285,5 +281,51 @@ describe('pages constructions', () => {
 		const { locals, parent, calls } = fakeLocals('teacher');
 		await loadList({ locals, parent } as never);
 		expect(calls.join(' ')).not.toMatch(/is_public",true|author_id/);
+	});
+});
+
+describe('API constructions : le format DSL seul (M38)', () => {
+	it('POST au format json → 400, table non touchée', async () => {
+		const { locals, tablesTouched } = fakeLocals('teacher');
+		const status = await statusOf(() =>
+			POST({
+				locals,
+				request: jsonRequest({ title: 'zz', format: 'json', script: { steps: [] } })
+			} as never)
+		);
+		expect(status).toBe(400);
+		expect(tablesTouched).toEqual([]);
+	});
+
+	it('POST sans script DSL → 400', async () => {
+		const { locals } = fakeLocals('teacher');
+		const status = await statusOf(() =>
+			POST({ locals, request: jsonRequest({ title: 'zz' }) } as never)
+		);
+		expect(status).toBe(400);
+	});
+
+	it('POST du prof : format dsl, ancien script vide', async () => {
+		const { locals, inserted } = fakeLocals('teacher');
+		const status = await statusOf(() =>
+			POST({ locals, request: jsonRequest(NEW_CONSTRUCTION) } as never)
+		);
+		expect(status).toBe(201);
+		expect(inserted).toEqual([
+			expect.objectContaining({ format: 'dsl', script: {}, dsl_script: 'A = point(0, 0)' })
+		]);
+	});
+
+	it('PUT du prof : un ancien script JSON envoyé n’est pas écrit', async () => {
+		const { locals, calls } = fakeLocals('teacher');
+		await statusOf(() =>
+			PUT({
+				locals,
+				params: { id: CONSTRUCTION_ID },
+				request: jsonRequest({ title: 'zz', script: { steps: [] } })
+			} as never)
+		);
+		const update = calls.find((c) => c.startsWith('update('));
+		expect(update).toBe('update({"title":"zz"})');
 	});
 });

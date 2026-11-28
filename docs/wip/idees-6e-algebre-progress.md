@@ -2,15 +2,21 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-28, après les réponses à Q1 et Q2._
+_Mis à jour le 2026-11-28, PR #3285 ouverte (copie de `main` ; celle de la branche dit la même chose, sans le n° de PR)._
 
-- **État** : phase 0 validée (F1 à F8 oui). Q1 et Q2 tranchées par David (« je te suis », sur mes
-  recommandations) : outil n° 72 noté dans `outils-manquants.md` ; F6 et F8 rangés sur **6-143**.
-  4 modèles publiés réservés (a9c37578, a06458ad, 4048d9c5, 39bafe0e). Rien d'écrit en code.
-- **Prochaine action** : écrire le gros lot dans le worktree (4 modèles neufs F2, F3, F6, F8 ;
-  10 variations aux 4 publiés), puis simulation, `question:specs`, essai en base locale.
-- **En attente de David** : rien.
-- **Pièges en cours** : aucun.
+- **État** : lot complet dans la PR #3285 (4 brouillons neufs créés en prod par David : 9e0a8c36,
+  660db94b, b407006d, 048246da ; 10 variations à 4 publiés ; migrations de contenu et de rangement).
+  Specs 168/168, intégration verte et rouge sans les migrations, `security-auditor` : rien.
+  `pnpm pr:merger 3285` lancé en tâche de fond (peut avoir été coupé par le `/clear`).
+- **Prochaine action** : `gh pr view 3285 --json state` ; si ouverte, relancer `pnpm pr:merger 3285`
+  depuis le worktree ; mergée → `db:migrate` (4 conditions réunies ; `migration list --linked`
+  d'abord), puis relecture : `/dev/modeles?point=6-142` et `?point=6-143`, série de relecture des
+  publiés complétés (`scripts/series/creer-serie.ts`).
+- **Tranché par David (« je te suis », 2026-11-28)** : F4 gardé tel quel (pesées jusqu'à 15 kg) ;
+  noms rognés des schémas en barres (`schema-barres-scene.ts` l. 58, 9 px par caractère) corrigés dans
+  une PR à part, après #3285, rendu vérifié sur plusieurs modèles dont ceux en prod. **En attente de
+  David** : rien.
+- **Pièges en cours** : ne rien commiter sur la branche avant le merge (relance la CI).
 - **Worktree / branche** : `../ubumaths-wt-idees-6e-algebre`, `feat/idees-6e-algebre`.
 
 ## Rubrique

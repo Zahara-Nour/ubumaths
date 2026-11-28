@@ -14,7 +14,6 @@ import {
 	CONSTRUCTION_COLUMNS,
 	canAuthorConstructions
 } from '#lib/server/constructions-access.ts';
-import { constructionScriptSchema } from '#lib/constructions/index.ts';
 import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/constructions/[id]/+server');
@@ -41,7 +40,6 @@ const updateConstructionSchema = z.object({
 		.string()
 		.max(2000, 'La description ne doit pas dépasser 2000 caractères')
 		.optional(),
-	script: constructionScriptSchema.optional(),
 	dsl_script: z.string().max(50000, 'Le script DSL est trop long').optional(),
 	is_public: z.boolean().optional()
 });

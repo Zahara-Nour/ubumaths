@@ -29,10 +29,6 @@
  * (commentés).
  */
 export const MODULES_WITH_SIDE_EFFECTS: ReadonlySet<string> = new Set([
-	'constructions/instruments/compass.ts',
-	'constructions/instruments/index.ts',
-	'constructions/instruments/pencil.ts',
-	'constructions/instruments/ruler.ts',
 	'exercises/typst/exercise-typst-generator.ts',
 	'geometry-core/dsl/builtins.ts',
 	'mathAST/cli/cli.ts',

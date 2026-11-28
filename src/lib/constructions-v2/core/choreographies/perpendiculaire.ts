@@ -1132,15 +1132,14 @@ function buildEquerre(ctx: ChoreographyCtx): ChoreographyResult {
 	const rulerRotationDeg = (Math.atan2(-dirFPy0, -dirFPx0) * 180) / Math.PI;
 
 	// ─── Sub-steps ───
-	// Kind `compass-measure` = move + pause sans tracé (sémantique
-	// générique « instrument se positionne »). Utilisé pour SS1, SS2, SS4
-	// (pose + glissement + swap équerre → règle).
+	// Kind `instrument-move` = déplacement + pause sans tracé. Utilisé pour
+	// SS1, SS2, SS4 (pose + glissement + swap équerre → règle).
 	const subSteps: SubStep[] = [
 		// SS1 : pose de l'équerre — coin sur A, bord aligné avec (AB),
 		// bord vertical déjà orienté vers le côté de P. À ce stade le
 		// bord vertical ne passe pas (encore) par P.
 		{
-			kind: 'compass-measure',
+			kind: 'instrument-move',
 			instrument: 'setSquare',
 			instrumentTarget: { x: A.x, y: A.y, rotation: setSquareRotation },
 			compassRadius: 0,
@@ -1153,7 +1152,7 @@ function buildEquerre(ctx: ChoreographyCtx): ChoreographyResult {
 		// SS2 : glissement de l'équerre le long de (AB) jusqu'à F, pour
 		// que le bord vertical passe par P. La rotation reste inchangée.
 		{
-			kind: 'compass-measure',
+			kind: 'instrument-move',
 			instrument: 'setSquare',
 			instrumentTarget: { x: Fx0, y: Fy0, rotation: setSquareRotation },
 			compassRadius: 0,
@@ -1185,7 +1184,7 @@ function buildEquerre(ctx: ChoreographyCtx): ChoreographyResult {
 		// (qui était dans `_autoInstruments` de SS3). La règle prend sa
 		// place.
 		{
-			kind: 'compass-measure',
+			kind: 'instrument-move',
 			instrument: 'ruler',
 			instrumentTarget: { x: rulerOriginX0, y: rulerOriginY0, rotation: rulerRotationDeg },
 			compassRadius: 0,
