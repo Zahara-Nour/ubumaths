@@ -411,6 +411,15 @@ function tryDirectEvaluationExact(
 				return numericNode(cleanNumberString(result));
 			}
 		}
+		// L76 : deux limites finies exactes sans valeur rationnelle (π, e) — le
+		// quotient exact, écrit (1/π). Choix écrit, plutôt que de compter sur
+		// le repli numérique pour échouer : un évaluateur flottant qui lirait π
+		// rendait 0.3183098862 « approché » pour (x + 1)/(πx) en +∞.
+		if ((numVal === null || denVal === null) && !isZeroResult(denResult)) {
+			const numNode = resultToNode(numResult);
+			const denNode = resultToNode(denResult);
+			if (numNode !== null && denNode !== null) return divide(numNode, denNode, 'fraction');
+		}
 	}
 
 	return null;

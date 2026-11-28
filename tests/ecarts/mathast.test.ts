@@ -660,3 +660,19 @@ describe('V138 — intersect perd le point exclu à côté d’une famille péri
 		expect(containsValue(domain, 1)).toBe(true);
 	});
 });
+
+describe('L76 — limite exacte par choix écrit, pas par lacune de l’évaluateur flottant', () => {
+	// Écart latent : la valeur exacte tenait à ce que `evaluateNumeric` ne lit
+	// pas π. Verte avant comme après le bon correctif (quotient exact écrit dans
+	// L'Hôpital) ; rouge si l'évaluateur apprend π sans lui (« Je ne sais pas » :
+	// 0.3183098862 approché). Preuve du mécanisme, évaluateur qui lit π et e :
+	// src/lib/mathAST/limits/__tests__/l76-exact-sans-evaluateur.test.ts.
+	for (const [input, expected] of [
+		['.limite \\frac{x+1}{\\pi x} en +inf', '= \\dfrac{1}{\\pi}'],
+		['.limite \\frac{x+1}{e x} en +inf', '= \\dfrac{1}{\\exponentialE}']
+	] as const) {
+		it(`${input} rend « ${expected} »`, () => {
+			expect(latexOf(run(input)).endsWith(expected)).toBe(true);
+		});
+	}
+});
