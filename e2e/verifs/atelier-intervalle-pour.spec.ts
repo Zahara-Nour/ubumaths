@@ -52,3 +52,17 @@ test('la carte : « pour 2 < x < 4 » tapé dans le champ', async ({ page }) => 
 	expect((await calc(page, 'g(1)')).refused).toBe(true);
 	await page.screenshot({ path: test.info().outputPath('carte-pour.png'), fullPage: false });
 });
+
+test('Calcul : f(x) = x pour x > k, la borne suit k', async ({ page }) => {
+	expect((await calc(page, 'k = 2')).refused).toBe(false);
+	expect((await calc(page, 'f(x) = x pour x > k')).refused).toBe(false);
+
+	const f = await card(page, 'f');
+	expect(normalizeLatex(f.latex ?? '')).toBe(normalizeLatex('x\\text{ pour }x>k'));
+	expect(f.message).toBeNull();
+	// k = 2 : f(1) refusé ; k = 0 : f(1) accepté
+	expect((await calc(page, 'f(1)')).refused).toBe(true);
+	expect((await calc(page, 'k = 0')).refused).toBe(false);
+	expect((await calc(page, 'f(1)')).refused).toBe(false);
+	await page.screenshot({ path: test.info().outputPath('pour-x-sup-k.png'), fullPage: false });
+});

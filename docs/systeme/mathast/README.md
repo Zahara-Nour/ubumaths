@@ -634,8 +634,9 @@ intervalle borné à la française, `solveInInterval` (`readSolvingDomain`) et `
 l'ensemble par `parseStudentDomain` — borne infinie (`[0 ; +∞[`), réunion, `ℝ \ {0}` ; l'intersection
 `∩` seulement sur option (`{ intersections: true }`, `avec`/`dans` de l'atelier, 2026-10-26 : une
 réponse d'élève ne l'accepte pas). L'option `bound` (chantier fonctions-morceaux, 2026-11-28)
-reçoit chaque borne lue d'un intervalle ou d'un point exclu AVANT le contrôle « nombre réel » :
-l'atelier y remplace `k` par sa valeur (`f(x) = x sur [k;5]`) ; sans elle, une lettre dans une
+reçoit chaque borne lue d'un intervalle, d'un point exclu ou d'une condition (`x > k`, `k < x < 5`,
+`x ≠ k` : chantier fonctions-domaines, 2026-11-28) AVANT le contrôle « nombre réel » :
+l'atelier y remplace `k` par sa valeur (`f(x) = x sur [k;5]`, `f(x) = x pour x > k`) ; sans elle, une lettre dans une
 borne est refusée, comme avant. Pour
 `.variations`, `studyDomain` (`domain/study.ts`) le croise avec le domaine de l'expression avant
 `computeVariations`, qui depuis le 2026-10-19 fait aussi ce croisement lui-même. `writeCommandArguments` écrit `dans` en
