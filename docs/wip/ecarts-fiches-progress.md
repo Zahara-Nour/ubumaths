@@ -8,13 +8,13 @@ status: en cours
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-28, PR 2 ouverte (revues faites)._
+_Mis à jour le 2026-11-28, après #3275._
 
-- **État** : PR 2 codée sur `fix/ecarts-fiches-2` : V109 (`solution: oui` sur `horloge et `barres, série d'automatismes) et L86 (fonction SQL `save_worksheet_classification`, migration `20261128003004`). Tests verts, intégration vérifiée rouge sans la migration, PDF compilé et regardé. Les deux écarts sont barrés au registre (preuve de L86 réécrite : elle attrapait aussi la lecture des notions).
-- **Prochaine action** : CI de la PR 2, merge ; puis `db:migrate` depuis `main` (migration additive ; 4 conditions réunies : accès tranché, intégration rouge sans la migration, `security-auditor` sans bloquant, rollback écrit) après `migration list --linked` (aucune autre en attente).
-- **En attente de David** : rien.
-- **Pièges en cours** : un script tsx hors du dépôt doit être en `.mts` (top-level await du logger). Tests de preuve : `ECARTS_PREUVES=1 npx vitest run --project ecarts …`.
-- **Worktree / branche** : `../ubumaths-wt-ecarts-fiches`, `fix/ecarts-fiches-2`.
+- **État** : lot terminé. Les 9 écarts (V108, V109, V111, L9, L85, L86, L111, T23, M44) sont faits et barrés au registre. Migration `20261128003004` (`save_worksheet_classification`) poussée en prod et vérifiée (security invoker, pas d'accès anon).
+- **Prochaine action** : clore le chantier (versement : journal archivé, lot marqué fini dans `docs/wip/ecarts-lots.md`), sur go de David.
+- **En attente de David** : le go de clôture.
+- **Pièges en cours** : une attente « fin de `deploy:prod` » par `pgrep -f "scripts/deploy-prod.sh"` se trouve elle-même et ne finit jamais : attendre sur le numéro de processus, ou laisser `pr:merger` attendre le verrou.
+- **Worktree / branche** : aucun (retirés par `pr:merger` après #3275).
 
 ## Écarts du lot
 
@@ -31,6 +31,8 @@ V108, V109, V111 (visibles, phase 0) · L9, L85, L86, L111 (latents) · T23 (RGP
 **Tranché par David le 2026-11-28 (« d'accord » sur les recommandations)** : (1) V108 + M44 : flèche verte, pointillés de construction gardés, dessin `solved` appelé (pas supprimé) ; (2) V109 : aiguilles et barre en vert ; (3) V111 : nom anglais de la branche s'il existe, sinon « Worksheet » ; (4) L86 : fonction SQL aux droits de l'appelant, accès inchangé ; (5) L9 : STIX retirée du témoin (décision du 2026-11-03 remplacée).
 
 ## Historique
+
+- 2026-11-28 : #3275 mergée (PR 2 : V109, L86), après un `deploy:prod` qui tenait le verrou ; `db:migrate` de `20261128003004` (seule migration en attente), fonction vérifiée en prod.
 
 - 2026-11-28 : revues de la PR 2. `security-auditor` (Opus) : aucun bloquant, accès inchangé (policies vérifiées en prod) ; test ajouté : élève qui lit la fiche sans pouvoir retirer ses notions. `code-reviewer` (Opus) : aucun bloquant ; message de la route rendu juste (« la fiche et ses notions »), constante remise avant les fonctions.
 
