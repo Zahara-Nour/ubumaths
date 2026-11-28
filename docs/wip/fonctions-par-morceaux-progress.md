@@ -4,9 +4,9 @@
 
 _Mis à jour le 2026-11-28, phase 0 validée._
 
-- **État** : phase 0 validée, code pas commencé.
-- **Prochaine action** : tests rouges (lecture, refus, image), puis implémentation.
-- **En attente de David** : rien.
+- **État** : phase 0 validée, trajet d'une fonction cartographié, code pas commencé.
+- **Prochaine action** : PR 1 (moteur) dès le go de David sur le découpage.
+- **En attente de David** : découpage en 3 PR (section « Découpage proposé »).
 - **Pièges en cours** : —
 - **Worktree / branche** : `../ubumaths-wt-fonctions-par-morceaux` · `feat/fonctions-par-morceaux`.
 
@@ -41,6 +41,27 @@ Suite de `fonctions-domaines` (#3304, #3310) et `fonctions-morceaux` (#3298, `[k
   compilé en numérique (`eval/compile.ts`), rendu LaTeX `\begin{cases}`. Pas d'évaluation
   exacte, ni `solve`, ni `variations`.
 - `interval.ts` refuse aujourd'hui la seconde formule (`ONE_FORMULA`).
+
+## Trajet d'une fonction (carte du 2026-11-28)
+
+- La définition est rangée en TEXTE (`definition`, `interval`), relue par `astOf` à chaque usage.
+- `syncEngine` / `expressionOf` (`engine.ts`) font AST → texte maison → AST : le parseur maison
+  ne relit pas `{ v si c }` ; le parseur LaTeX ne relit pas `\begin{cases}`.
+- Le calcul exact (`eval/evaluate.ts`) ignore `piecewise` : `f(3)` échouerait.
+- Graphe (`plot-sync.ts`) : la courbe part d'un texte LaTeX ; la restriction (`CurvePiece`) et
+  ses ronds pleins/creux (`endpointMarkers`) valent pour UNE formule.
+- Géométrie (`figure-sync.ts`) : `GeoFunction` accepte un `PiecewiseNode`, ronds pleins/creux
+  à chaque coupure déjà rendus (`svg-primitives.ts`, `analyzeBoundary`).
+- Refus centraux des commandes : `calcul.ts` ~2430 (`cited`) et `computeAction` ; héritage
+  `citedIntervals`.
+
+## Découpage proposé (en attente de David)
+
+1. **Moteur** (mathAST) : calcul exact d'un nœud par morceaux quand la condition se décide
+   (`f(3)` → 9), relecture de `\begin{cases}` et de `{ v si c }` (aller-retour).
+2. **Atelier** : écriture, refus (chevauchement, morceau sans condition, autre lettre, formule
+   hors domaine), `sinon`, images, carte, propriétés, refus des commandes (Q3), tracé Géométrie.
+3. **Graphe** : tracé morceau par morceau, ronds pleins/creux aux coupures.
 
 ## Ce qui est fait
 
