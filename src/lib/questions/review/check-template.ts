@@ -359,6 +359,18 @@ function correctionFormErrors(
 		.map(({ form }) => `correction : ${answer} (forme exigée ${JSON.stringify(form)})`);
 }
 
+/**
+ * Une variation a-t-elle une case qui n'est pas un programme Python ? (premier tirage de chaque
+ * variation ; un tirage en échec compte comme « oui » : la spec reste exigée)
+ */
+function hasOrdinaryCase(template: QuestionTemplate): boolean {
+	return template.variations.some((variation) => {
+		const result = generateInstance({ ...template, variations: [variation] }, 1);
+		if (!result.success) return true;
+		return (result.instance.blanks ?? []).some((blank) => blank.construire !== 'python');
+	});
+}
+
 export function checkTemplate(
 	candidate: Omit<QuestionTemplate, 'id'> & { id?: string },
 	options: { instances?: number } = {}
@@ -393,9 +405,11 @@ export function checkTemplate(
 	const courseCard = isCourseCard(template);
 	if (courseCard && specs.length > 0) reasons.push('une carte de cours ne porte pas de spec');
 	// Case Python : le programme ne tourne que dans le navigateur, une spec ne pourrait pas le
-	// juger ici (outil 49) ; pas exigée, le modèle est vérifié par ses tirages
-	if (!courseCard && !hasPythonCase(template) && specs.length === 0)
-		reasons.push('aucune spec de test');
+	// juger ici (outil 49). Spec exigée seulement si le modèle a aussi une case ordinaire (elle,
+	// une spec la vérifie ; la case Python y est comptée juste d'office). Décision de David,
+	// 2026-11-28
+	const onlyPythonCases = hasPythonCase(template) && !hasOrdinaryCase(template);
+	if (!courseCard && !onlyPythonCases && specs.length === 0) reasons.push('aucune spec de test');
 	// Chaque variation doit prouver qu'une bonne réponse est acceptée
 	const uncovered = template.variations
 		.map((_, index) => index)
