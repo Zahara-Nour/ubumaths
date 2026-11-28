@@ -1,7 +1,7 @@
 ---
 title: Outils manquants — lots pour des sessions en parallèle
 date: 2026-11-28
-status: lots écrits le 2026-11-28 ; en cours : equerre-uni, espace, escalier-suite
+status: lots écrits le 2026-11-28 ; en cours : equerre-uni, espace, escalier-suite, python, engrenages
 ---
 
 # Outils manquants : lots pour des sessions en parallèle
@@ -48,5 +48,5 @@ par lot (worktree + Claude avec Remote Control, dans tmux) ; chaque session suit
 | `espace`               | 64, puis 65                         | case neuve, ` ```solide `                    | outil-espace (2026-11-28)         |                                                                 |
 | `escalier-suite`       | 48                                  | ` ```courbe `                                | outil-escalier-suite (2026-11-28) |                                                                 |
 | `ecritures-exactes`    | 62                                  | mathAST (`checkForm`, `cosmetic-transforms`) |                                   | attend la fin de `fusion-moteurs` (même code)                   |
-| `python`               | 49                                  | case neuve, `python-exercises`               |                                   | le plus gros                                                    |
-| `engrenages`           | 52                                  | bloc neuf                                    |                                   | aucun point du programme : en dernier                           |
+| `python`               | 49                                  | case neuve, `python-exercises`               | outil-python (2026-11-28)         | le plus gros                                                    |
+| `engrenages`           | 52                                  | bloc neuf                                    | outil-engrenages (2026-11-28)     | aucun point du programme : en dernier                           |
