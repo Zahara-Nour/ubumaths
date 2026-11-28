@@ -1,7 +1,7 @@
 ---
 title: Écarts restants — lots pour des sessions en parallèle
 date: 2026-11-28
-status: lots écrits le 2026-11-28 ; en cours : interface-eleve, carnet-notifications, moderation-surveillance
+status: lots écrits le 2026-11-28 ; en cours : interface-eleve, carnet-notifications, moderation-surveillance, messagerie
 ---
 
 # Écarts restants : lots pour des sessions en parallèle
@@ -70,7 +70,7 @@ Colonne « Pris par » : vide = libre ; `ecarts-<lot> (date)` = en cours ; `fait
 | `cours-evaluations`       | V72, L37, L38, L39, L40, L112, L113                              | fait (#3291, #3300, 2026-11-28)             | L112, L113 : base de données, tests d'intégration.                                                                                                                  |
 | `carnet-notifications`    | V107, L78, L79, L80, L81, L82, L83                               | ecarts-carnet-notifications (2026-11-28)    | Données d'élèves et de parents : `code-reviewer` + `security-auditor`.                                                                                              |
 | `moderation-surveillance` | L109, L110, L122, L123, L124, L125, T26, T34, T36, C39, M59, D45 | ecarts-moderation-surveillance (2026-11-28) | D45 est une décision de produit : la poser à David. T26, T34 : `security-auditor` ; T26 touche le rendu des contenus d'élèves, ne jamais l'élargir.                 |
-| `messagerie`              | V135, L84, L127, L131, L132, L133, L134, L135, T37, M41, C44     |                                             | Fonctions SQL et droits : migrations, question d'accès à David avant tout SQL, `security-auditor`.                                                                  |
+| `messagerie`              | V135, L84, L127, L131, L132, L133, L134, L135, T37, M41, C44     | ecarts-messagerie (2026-11-28)              | Fonctions SQL et droits : migrations, question d'accès à David avant tout SQL, `security-auditor`.                                                                  |
 
 ## Lots mathAST (un seul à la fois, dans cet ordre)
 
