@@ -5,7 +5,7 @@
  * Ce qu'un repère à points à placer, à droite ou à vecteur à tracer montre
  * quand sa réponse est dessinée : les points attendus ; la droite attendue et
  * deux de ses nœuds ; la flèche attendue, et pour une somme de deux vecteurs
- * les pointillés de sa construction. Une seule source pour l'écran
+ * les pointillés de sa construction ; le vrai escalier d'une suite à construire. Une seule source pour l'écran
  * (`Courbe.svelte`) et le PDF (`courbe-typst.ts`) : le corrigé imprimé d'une
  * série d'automatismes (V108).
  *
@@ -17,6 +17,7 @@ import { constructionTraces } from './courbe-combinaison';
 import type { CourbePlacedPoint } from './courbe-placer';
 import { solutionLine } from './courbe-tracer';
 import { solutionVector } from './courbe-vecteur';
+import { solutionCobweb } from './courbe-construire';
 
 // ============================================================================
 // Types
@@ -66,6 +67,13 @@ export function solvedOverlay(spec: CourbeSpec): SolvedOverlay {
 	if (line) {
 		traces.push({ from: line.segment[0], to: line.segment[1], arrow: false, dashed: false });
 		for (const p of line.points) marks.push({ name: '', x: p.x, y: p.y });
+	}
+
+	// Escalier à construire : le vrai escalier depuis u₀
+	if (spec.construire) {
+		for (const t of solutionCobweb(spec.construire, spec.window)) {
+			traces.push({ ...t, arrow: false, dashed: false });
+		}
 	}
 
 	return { marks, traces };

@@ -132,7 +132,8 @@
 		const before = beforeCaret();
 		if (!field || before === null) return false;
 		const found = wordAtCaret(before, terminator === null);
-		const replacement = found && finishedWordLatex(found, lineKindOf(field.value, words), words);
+		const replacement =
+			found && finishedWordLatex(found, lineKindOf(field.value, words), words, field.value);
 		// Une barre après une unité (`km/h`) : sinon MathLive en fait une fraction
 		if (!found || !replacement || (terminator === '/' && !replacement.startsWith('\\mathrm'))) {
 			return false;

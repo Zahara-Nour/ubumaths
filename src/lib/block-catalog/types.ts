@@ -23,6 +23,7 @@ export type CatalogNodeType =
 	| 'figure'
 	| 'stat-chart'
 	| 'qr'
+	| 'engrenages'
 	| 'scratch'
 	| 'horloge'
 	| 'partage'

@@ -28,7 +28,7 @@ const words = commandWords(commandCatalog(new WebReplEngine()));
 /** Le mot fini juste avant le curseur, sur une ligne entière déjà tapée. */
 function finished(before: string, terminated = false): string | null {
 	const found = wordAtCaret(before, terminated);
-	return found === null ? null : finishedWordLatex(found, lineKindOf(before, words), words);
+	return found === null ? null : finishedWordLatex(found, lineKindOf(before, words), words, before);
 }
 
 function shown(result: CalcResult): string {
@@ -78,6 +78,16 @@ describe('un mot devient texte quand il est fini, et seulement à sa place', () 
 		expect(finished('f\\left(x\\right)=x^2\\,sur')).toBe('\\text{sur}');
 		expect(finished('f\\left(x\\right)\\,=\\,x^2\\,sur')).toBe('\\text{sur}');
 		expect(finished('2\\,sur')).toBeNull();
+	});
+
+	// Chantier fonctions-domaines : « pour » comme « sur » ; « ou », « et » après lui seulement
+	it('« pour » après le = d’une fonction, « ou » et « et » seulement après « pour »', () => {
+		expect(finished('f\\left(x\\right)=x\\,pour')).toBe('\\text{pour}');
+		expect(finished('2\\,pour')).toBeNull();
+		expect(finished('f\\left(x\\right)=x\\,\\text{pour}\\,x<0\\,ou')).toBe('\\text{ou}');
+		expect(finished('f\\left(x\\right)=x\\,\\text{pour}\\,x>0\\,et')).toBe('\\text{et}');
+		// `f(t) = et` : e·t, sans « pour » devant
+		expect(finished('f\\left(t\\right)=et')).toBeNull();
 	});
 
 	it('une unité seulement après « nombre + espace », hors commande', () => {
@@ -162,6 +172,12 @@ describe('le champ produit le texte que lit runInput, et la vraie chaîne répon
 			'f\\left(x\\right)=x^2\\,\\text{sur}\\,\\lbrack0;+\\infty\\lbrack',
 			'f(x)=x^2 sur [0;+∞[',
 			'définition f'
+		],
+		['g\\left(x\\right)=x\\,\\text{pour}\\,2<x<4', 'g(x)=x pour 2<x<4', 'définition g'],
+		[
+			'h\\left(x\\right)=x\\,\\text{pour}\\,x<0\\,\\text{ou}\\,x\\ge1',
+			'h(x)=x pour x<0 ou x\\ge1',
+			'définition h'
 		],
 		['\\text{variations}\\,f', '.variations f', "f'(x) = 2 x"],
 		['5\\,\\mathrm{km}\\,+\\,300\\,\\mathrm{m}', '5 km + 300 m', '5{,}3~\\mathrm{km}'],

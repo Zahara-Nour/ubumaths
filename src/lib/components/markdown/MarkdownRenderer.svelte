@@ -52,6 +52,7 @@
 	import StatChart from './nodes/StatChart.svelte';
 	import FigureBlock from './nodes/FigureBlock.svelte';
 	import QrBlock from './nodes/QrBlock.svelte';
+	import Engrenages from './nodes/Engrenages.svelte';
 	import ScratchBlock from './nodes/ScratchBlock.svelte';
 	import Horloge from './nodes/Horloge.svelte';
 	import Partage from './nodes/Partage.svelte';
@@ -406,6 +407,8 @@
 					<StatChart {node} />
 				{:else if node.type === 'qr'}
 					<QrBlock {node} />
+				{:else if node.type === 'engrenages'}
+					<Engrenages {node} />
 				{:else if node.type === 'scratch'}
 					<ScratchBlock {node} />
 				{:else if node.type === 'horloge'}

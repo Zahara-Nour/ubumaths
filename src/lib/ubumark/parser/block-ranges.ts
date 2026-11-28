@@ -23,6 +23,7 @@ import { findPythonAEcrireBlocks } from './python-a-ecrire-parser';
 import { findRobotBlocks } from './robot-parser';
 import { findLabyrintheBlocks } from './labyrinthe-parser';
 import { findYohakuBlocks } from './yohaku-parser';
+import { findEngrenagesBlocks } from './engrenages-parser';
 import { findPartageBlocks } from './partage-parser';
 import { findEspaceBlocks } from './espace-parser';
 import { findOperationBlocks } from './operation-parser';
@@ -64,6 +65,7 @@ export function blockLineRanges(lines: string[]): [number, number][] {
 		...findLabyrintheBlocks(lines),
 		...findYohakuBlocks(lines),
 		...findPythonAEcrireBlocks(lines),
+		...findEngrenagesBlocks(lines),
 		...findPartageBlocks(lines),
 		...findEspaceBlocks(lines),
 		...findOperationBlocks(lines),

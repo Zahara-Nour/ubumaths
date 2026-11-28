@@ -123,6 +123,11 @@ function parallelogramOf(expression: string): [string, string, string] | null {
 export const MIDPOINT_REGEX =
 	/^milieu\(\s*([A-Za-z][A-Za-z0-9_]*)\s*,\s*([A-Za-z][A-Za-z0-9_]*)\s*\)$/;
 
+/** `intersection(segment(A, C), segment(B, D))` (ou `droite(…)`) : le croisement de deux traits */
+const NAME = '([A-Za-z][A-Za-z0-9_]*)';
+const TRAIT = String.raw`(segment|droite)\(\s*${NAME}\s*,\s*${NAME}\s*\)`;
+const CROSSING_REGEX = new RegExp(String.raw`^intersection\(\s*${TRAIT}\s*,\s*${TRAIT}\s*\)$`);
+
 const SYMMETRY_REGEX =
 	/^sym[eé]trie\(\s*([A-Za-z][A-Za-z0-9_]*)\s*,\s*(axe|centre)\s*=\s*([A-Za-z][A-Za-z0-9_]*)?/;
 
@@ -194,10 +199,23 @@ function assertPlainPaper(
 		}
 		return;
 	}
+	// Outil n° 45 (figure composée) : le croisement de deux traits joignant des points
+	// (les diagonales du carré) ; l'élève trace les traits, puis marque le point
+	const crossing = CROSSING_REGEX.exec(check.expression.trim());
+	if (crossing) {
+		const names = [crossing[2], crossing[3], crossing[5], crossing[6]];
+		const unknown = names.find((name) => !points.has(name));
+		if (unknown) {
+			throw new PointAuthorError(
+				`${label} : le point ${unknown} n’existe pas (ni dans la figure, ni construit à une étape d’avant)`
+			);
+		}
+		return;
+	}
 	const symmetry = symmetryOf(check.expression);
 	if (!symmetry || !symmetry.target) {
 		throw new PointAuthorError(
-			`${label} : sans quadrillage, seulement un symétrique (symetrie(A, axe=d) ou symetrie(A, centre=O)), un milieu (milieu(A, B)), le centre d’un cercle circonscrit (centre(cercle_circonscrit(A, B, C))) ou le 4e sommet d’un parallélogramme (sommet(parallelogramme(A, B, C), 4)) ; sinon ajouter « grille: 1 »`
+			`${label} : sans quadrillage, seulement un symétrique (symetrie(A, axe=d) ou symetrie(A, centre=O)), un milieu (milieu(A, B)), le centre d’un cercle circonscrit (centre(cercle_circonscrit(A, B, C))), le 4e sommet d’un parallélogramme (sommet(parallelogramme(A, B, C), 4)) ou un croisement (intersection(segment(A, C), segment(B, D))) ; sinon ajouter « grille: 1 »`
 		);
 	}
 	const axis = symmetry.by === 'axe' ? (shapes.lines.get(symmetry.target) ?? null) : null;
@@ -327,7 +345,8 @@ export function judgePoints(
 	expected: ExpectedPoints | undefined,
 	points: ReadonlyMap<string, Position>,
 	shapes: FigureShapes | undefined,
-	objects: readonly DrawnObject[]
+	objects: readonly DrawnObject[],
+	{ composite = false }: { composite?: boolean } = {}
 ): ConstructionVerdict {
 	const targets = checks.map((check) => ({ check, at: expectedOf(check, expected) }));
 	const unused = objects.filter(isDrawnPoint).map(({ x, y }) => ({ x, y }));
@@ -360,7 +379,8 @@ export function judgePoints(
 		else unused.splice(index, 1);
 	}
 	if (missed.length === 0) {
-		return unused.length > 0
+		// Figure composée (outil n° 45) : les points des autres étapes ne sont pas de trop
+		return unused.length > 0 && !composite
 			? { status: 'incorrect', feedback: POINT_EXTRA_FEEDBACK }
 			: { status: 'correct' };
 	}

@@ -51,7 +51,11 @@ import {
 import { shuffleChoices } from './choice-shuffler';
 import { assignBlankIndices } from './assign-blank-indices';
 import { parseOperationContent } from '#lib/ubumark/parser/operation-parser.ts';
-import { isDiagonalRectangleCheck, isRuledPolygonCheck } from '#lib/ubumark/types/construction.ts';
+import {
+	compositeBuiltNames,
+	isDiagonalRectangleCheck,
+	isRuledPolygonCheck
+} from '#lib/ubumark/types/construction.ts';
 import { hasCollectionToBuild } from '#lib/ubumark/parser/collection-parser.ts';
 import { hasMonnaieToBuild } from '#lib/ubumark/parser/monnaie-parser.ts';
 import { hasLineToPlace } from '#lib/ubumark/parser/number-line-parser.ts';
@@ -153,6 +157,8 @@ import { cleanCoefficientsCustom } from '../clean-coefficients';
 import { expectedIntervalsLatex } from '../intervals/interval-answer';
 import { expectedVectorLatex } from '../vectors/vector-answer';
 import { expectedMatrixLatex } from '../matrices/matrix-answer';
+import { expectedParametricLatex } from '../parametric/parametric-line-answer';
+import { formatParametricAnswer, parseParametricAnswer } from '../parametric/parametric-lines';
 import { evaluateConditions } from './condition-evaluator';
 import { createRandomSource, randomIndex, type RandomSource } from '#lib/utils/random.ts';
 import { expectedInRequiredUnit } from '#lib/questions/units/required-unit.ts';
@@ -372,7 +378,7 @@ function blockAnswerName(kind: BuildKind): string {
 	if (kind === 'patron') return 'les faces du bloc patron (designer:, completer:)';
 	if (kind === 'solide') return 'les points du bloc solide (tracer:)';
 	if (kind === 'courbe')
-		return 'les coordonnées du point, la droite ou le vecteur du repère (placer:, tracer:)';
+		return 'les coordonnées du point, la droite, le vecteur ou l’escalier du repère (placer:, tracer:, construire)';
 	if (kind === 'trig') return 'la mesure du point du cercle trigonométrique (placer:)';
 	if (kind === 'tortue') return 'le programme du bloc tortue (attendu:)';
 	if (kind === 'calcul') return 'le programme du bloc calcul (attendu:)';
@@ -988,6 +994,8 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 				// Faute de frappe dans `verifier:` : vue ici (lecture légère des noms affectés,
 				// `Z = …`), sinon l'élève aurait un « faux » pour une erreur de l'auteur
 				const named = namesAssignedIn(header.figureSource);
+				// Figure composée (outil n° 45) : un point construit à une étape d'avant n'est pas nommé
+				const builtBefore = new Set<string>();
 				for (const check of header.spec.checks) {
 					// Symétrique : l'axe ou le centre est nommé aussi (`d = droite(P, Q)`, `O = point(…)`) ;
 					// point à placer : son expression est calculée à la publication (`check-template`) ;
@@ -998,26 +1006,29 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 					const names =
 						check.kind === 'point' || check.kind === 'droite' || check.kind === 'cercle'
 							? []
-							: isRuledPolygonCheck(check)
-								? check.points.slice(0, 2)
-								: // Rectangle sans équerre : A et C (la diagonale), B et D sont à construire
-									isDiagonalRectangleCheck(check)
-									? [check.points[0], check.points[2]]
-									: check.kind === 'segment'
-										? [check.point]
-										: check.kind === 'symetrique'
-											? [...(check.points ?? []), check.by]
-											: check.kind === 'triangle'
-												? check.model
-													? // Reproduire (n° 47) : le modèle et A ; B seulement s'il est tracé
-														[...check.model, check.points[0]]
-													: [
-															check.points[0],
-															check.points[1],
-															// En carreaux (n° 20), rien à nommer
-															...check.lengths.flatMap((l) => ('source' in l ? l.source : []))
-														]
-												: check.points;
+							: check.kind === 'segment_par'
+								? check.points.filter((name) => !builtBefore.has(name))
+								: isRuledPolygonCheck(check)
+									? check.points.slice(0, 2)
+									: // Rectangle sans équerre : A et C (la diagonale), B et D sont à construire
+										isDiagonalRectangleCheck(check)
+										? [check.points[0], check.points[2]]
+										: check.kind === 'segment'
+											? [check.point]
+											: check.kind === 'symetrique'
+												? [...(check.points ?? []), check.by]
+												: check.kind === 'triangle'
+													? check.model
+														? // Reproduire (n° 47) : le modèle et A ; B seulement s'il est tracé
+															[...check.model, check.points[0]]
+														: [
+																check.points[0],
+																check.points[1],
+																// En carreaux (n° 20), rien à nommer
+																...check.lengths.flatMap((l) => ('source' in l ? l.source : []))
+															]
+													: check.points;
+					for (const name of compositeBuiltNames(check)) builtBefore.add(name);
 					for (const name of names) {
 						if (!named.has(name)) {
 							errors.push({
@@ -1232,6 +1243,8 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 							const first = child.caseIndex;
 							if ((child.spec?.tracer || child.spec?.vecteur) && first !== undefined)
 								return [first];
+							const build = child.spec?.construire;
+							if (build && first !== undefined) return build.terms.map((_, k) => first + k);
 							if (!child.spec?.placer || first === undefined) return [];
 							return child.spec.placer.map((_, k) => first + k);
 						}
@@ -1553,16 +1566,26 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 					!(blank.unit ?? resolvedVariation.blankDefaults?.unit) &&
 					answerKind !== 'intervalles' &&
 					answerKind !== 'vecteur' &&
-					answerKind !== 'matrice';
+					answerKind !== 'matrice' &&
+					answerKind !== 'droite-parametrique';
+				// Droite paramétrique : chaque ligne nettoyée à part (`1+-2t` → `1-2t`)
+				const isParametricCleanable =
+					cleanCoefficients && isMathBlank && answerKind === 'droite-parametrique';
 				// Unité imposée : l'attendu s'écrit dans cette unité (`1.5[km]` → `1500[m]`)
 				const required = (blank.unit ?? resolvedVariation.blankDefaults?.unit)?.required;
 				const expectedAnswer = impossibleDraw
 					? IMPOSSIBLE_EXPECTED
 					: isCleanable
 						? cleanCoefficientsCustom(resolvedExpected, genericFunctions, capitalPairs)
-						: required
-							? expectedInRequiredUnit(resolvedExpected, required)
-							: resolvedExpected;
+						: isParametricCleanable
+							? formatParametricAnswer(
+									parseParametricAnswer(resolvedExpected).map((line) =>
+										cleanCoefficientsCustom(line, genericFunctions, capitalPairs)
+									)
+								)
+							: required
+								? expectedInRequiredUnit(resolvedExpected, required)
+								: resolvedExpected;
 
 				// `i` matches the blank counter assigned by `assignBlankIndices`
 				// (left-to-right, consecutive, 0-based). If that contract changes,
@@ -1646,12 +1669,14 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 									? expectedVectorLatex(resolved.expectedAnswer)
 									: resolved.answerKind === 'matrice'
 										? expectedMatrixLatex(resolved.expectedAnswer)
-										: convertToLatex(
-												resolved.expectedAnswer,
-												genericFunctions,
-												isCleanable,
-												capitalPairs
-											);
+										: resolved.answerKind === 'droite-parametrique'
+											? expectedParametricLatex(resolved.expectedAnswer)
+											: convertToLatex(
+													resolved.expectedAnswer,
+													genericFunctions,
+													isCleanable,
+													capitalPairs
+												);
 				}
 				if (operationAnswer !== undefined) {
 					resolved.operation = true;
@@ -1694,10 +1719,11 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 						resolved.answerKind === 'primitive' ||
 						resolved.answerKind === 'solution-ed' ||
 						resolved.answerKind === 'resolution' ||
+						resolved.answerKind === 'droite-parametrique' ||
 						template.options?.orderIndependent === true
 					) {
 						throw new Error(
-							`Case ${i + 1} : une erreur prévue ne va que dans une case à écriture mathématique ordinaire (ni texte, ni geste, ni primitive, ni solution d'équation différentielle, ni résolution ligne par ligne, ni case jugée par ses règles seules, ni cases appariées librement)`
+							`Case ${i + 1} : une erreur prévue ne va que dans une case à écriture mathématique ordinaire (ni texte, ni geste, ni primitive, ni solution d'équation différentielle, ni résolution ligne par ligne, ni droite paramétrique, ni case jugée par ses règles seules, ni cases appariées librement)`
 						);
 					}
 					resolved.expectedErrors = expectedErrors.map((error, k) => {

@@ -262,6 +262,11 @@ export function generateCourbeTypst(node: CourbeNode, options: CourbeTypstOption
 				`  line(${path(poly)}, stroke: (paint: ${color}, thickness: 0.9pt, join: "round"))`
 			);
 		}
+		// Escalier à construire : u₀ marqué sur l'axe, l'élève trace la suite à la main
+		if (st.start) {
+			lines.push(`  // départ ${seq.name}`);
+			lines.push(`  circle(${P(st.start)}, radius: 0.06, fill: ${color}, stroke: none)`);
+		}
 		// Sous les graduations de l'axe des abscisses
 		for (const l of st.termLabels) {
 			lines.push(`  // rang ${seq.name}`);

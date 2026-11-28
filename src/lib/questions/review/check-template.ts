@@ -316,7 +316,8 @@ function constructionErrors(instance: QuestionInstance): string[] | null {
 				checks,
 				constructionPositions(source),
 				constructionShapes(source),
-				constructionExpected(source)
+				constructionExpected(source),
+				source
 			);
 			return [];
 		} catch (error) {

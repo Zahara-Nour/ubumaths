@@ -28,7 +28,9 @@
 	l'élève, la bonne étiquette sous une place fausse ; ou les bonnes étiquettes seules.
 	Cercle trigonométrique
 	à placer (```trig, `placer:`) : le cercle verrouillé avec les points de l'élève
-	(`answers`, un par point), ou les points justes en vert.
+	(`answers`, un par point), ou les points justes en vert. Escalier à construire
+	(```courbe, `construire N`) : les termes de l'élève (`answers`, un par terme), ou le
+	vrai escalier en vert.
 
 	@module components/questions/BuildAnswer
 -->
@@ -47,6 +49,7 @@
 	import { solutionLine } from '#lib/ubumark/utils/courbe-tracer.ts';
 	import { solutionVector } from '#lib/ubumark/utils/courbe-vecteur.ts';
 	import { constructionTraces } from '#lib/ubumark/utils/courbe-combinaison.ts';
+	import { solutionCobweb } from '#lib/ubumark/utils/courbe-construire.ts';
 	import Horloge from '#lib/components/markdown/nodes/Horloge.svelte';
 	import HorlogePlacer from '#lib/components/markdown/nodes/HorlogePlacer.svelte';
 	import { parseHorlogeContent } from '#lib/ubumark/parser/horloge-parser.ts';
@@ -236,6 +239,20 @@
 		<Courbe
 			node={{ ...courbe, spec: { ...spec, vecteur: undefined } }}
 			traces={arrow ? [...construction, { ...arrow, color: 'vert', arrow: true }] : []}
+		/>
+	{/if}
+{:else if courbe?.spec?.construire !== undefined}
+	{@const spec = courbe.spec}
+	{#if lineCases}
+		<Courbe node={courbe} answers={lineCases} showControls={false} />
+	{:else}
+		<!-- Le repère avec le vrai escalier depuis u₀, sans le geste : dessiné seul -->
+		<Courbe
+			node={{ ...courbe, spec: { ...spec, construire: undefined } }}
+			traces={solutionCobweb(spec.construire!, spec.window).map((t) => ({
+				...t,
+				color: 'vert' as const
+			}))}
 		/>
 	{/if}
 {:else if courbe?.spec?.placer !== undefined}

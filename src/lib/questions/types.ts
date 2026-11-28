@@ -201,7 +201,14 @@ export type QuestionVariable = SharedVariable;
 
 /** Nature d'une réponse qui n'est pas une expression (voir `TemplateBlank.answerKind`) */
 export type AnswerKind =
-	'intervalles' | 'equation' | 'vecteur' | 'matrice' | 'primitive' | 'solution-ed' | 'resolution';
+	| 'intervalles'
+	| 'equation'
+	| 'vecteur'
+	| 'matrice'
+	| 'primitive'
+	| 'solution-ed'
+	| 'resolution'
+	| 'droite-parametrique';
 
 /** Valeurs de `AnswerKind` (schémas Zod, éditeur) */
 export const ANSWER_KINDS = [
@@ -211,7 +218,8 @@ export const ANSWER_KINDS = [
 	'matrice',
 	'primitive',
 	'solution-ed',
-	'resolution'
+	'resolution',
+	'droite-parametrique'
 ] as const satisfies readonly AnswerKind[];
 
 /**
@@ -388,6 +396,12 @@ export interface TemplateBlank extends CalculusBlankFields {
 	 * précédente (la première que `equation`), la dernière est « x = valeur », sa
 	 * valeur jugée comme une case ordinaire ; voir `minLines`. Jugée par
 	 * `questions/resolution/resolution-answer.ts`.
+	 * `'droite-parametrique'` = une représentation paramétrique d'une droite de
+	 * l'espace (case posée seule dans `$$\placeholder[N]{}$$`, trois lignes
+	 * `x =`, `y =`, `z =`), attendue `x=1+2t\\y=2\\z=-1+3t` : juste pour toute
+	 * représentation de la même droite (point sur la droite, vecteur colinéaire),
+	 * quelle que soit la lettre du paramètre. Jugée par
+	 * `questions/parametric/parametric-line-answer.ts`.
 	 */
 	answerKind?: AnswerKind;
 	/**

@@ -520,7 +520,8 @@ CRON_SECRET                   # Secret taches planifiees
 > en retard, inactivité ; une phrase par motif) et fin de trimestre (sans aucun nombre) ; chaque
 > courriel porte un jeton propre, haché. Les adresses d'un élève sans classe active depuis
 > 90 jours sont effacées par le cron quotidien, et les lignes de `parent_notifications` au bout
-> d'un an (Q42, 2026-11-17 ; politique v1.4, registre T9). Voir
+> d'un an (Q42, 2026-11-17 ; politique v1.4, registre T9). Le lien du carnet expire à la fin de
+> l'année scolaire de l'école (31 août sans dates saisies ; 2026-11-28, politique v1.6). Voir
 > [carnet-de-liaison.md](../carnet-de-liaison.md).
 >
 > **Base locale (2026-11-17)** : `.env` porte la clé Brevo de prod ; avant ce jour, une adresse

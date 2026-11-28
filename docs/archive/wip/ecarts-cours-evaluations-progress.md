@@ -1,22 +1,23 @@
 ---
 title: Écarts — lot cours-evaluations
 date: 2026-11-28
-status: en cours — PR 1 (#3291) et PR 2 (#3300) mergées, clôture à faire
+status: clos le 2026-11-28 — #3291, #3300, #3306, #3312
 ---
 
 # Écarts — lot `cours-evaluations`
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-28, après #3300._
+_Mis à jour le 2026-11-28, clôture._
 
-- **État** : les 7 écarts du lot sont corrigés. PR 1 #3291 (V72, L37, L38, L40, L112, L113) et PR 2 #3300 (L39) mergées ; migrations `20261128072151` et `20261128135334` en prod, vérifiées par le MCP en lecture (policy, trigger, fonction, clés en NO ACTION).
-- **Prochaine action** : clôture du chantier (recompter le découpage, versement du durable dans `docs/systeme/`, archivage du journal, ligne de `ecarts-lots.md`), après la réponse de David ci-dessous.
-- **En attente de David** : les liens des familles doivent-ils suivre les dates de l'école (aujourd'hui toujours le 31 août, `endOfSchoolYear`) ?
-- **Pièges** : le cache des cases effacées de `skill_attempts` passe par `trg_skill_attempts_after_delete`, qui saute un élève supprimé (sinon la suppression d'un compte échoue). La saisie n'efface que les élèves de sa grille.
-- **Worktree / branche** : aucun (retirés par `pr:merger`).
+- **État** : chantier clos. Les 7 écarts barrés au registre (preuves vertes), lot marqué « fait » dans `ecarts-lots.md`, versement fait dans `docs/systeme/` (`evaluations.md`, `cours-et-chapitres.md`, `carnet-de-liaison.md`, `base-de-donnees.md`, `exercices.md`).
+- **Prochaine action** : aucune.
+- **En attente de David** : rien.
+- **Worktree / branche** : aucun.
 
 ## Décisions (2026-11-28)
+
+- **Plafond des liens** (après #3306) : David, « oui » : au plus 18 mois après l'émission, sinon le 31 août qui vient (#3312). Les liens déjà émis gardent leur date.
 
 David, « je te suis » sur les quatre propositions de la phase 0 :
 

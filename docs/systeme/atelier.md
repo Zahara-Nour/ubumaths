@@ -84,7 +84,7 @@ Ceux du code et de l'interface :
 | `src/lib/atelier/names.ts`                  | Validation des noms, nommage automatique (`nextName`), noms de dérivées et de réciproques (`f^-1`) ; `splitDisplayExponent` sépare l'exposant `⁻¹` du nom affiché                                                     |
 | `src/lib/atelier/parse.ts`                  | Lecture d'une définition (`parseDefinition`), dépendances (`referencesOf`), provenance (`Provenance`) ; une définition illisible dit l'aide précise du parseur, comme la ligne de calcul (`invalidExpressionMessage`) |
 | `src/lib/atelier/letter.ts`                 | `f(t) = t^2` : la lettre de l'élève à l'affichage, la définition rangée en x                                                                                                                                          |
-| `src/lib/atelier/interval.ts`               | `f(x) = x^2 sur [0;+∞[` : coupe au mot « sur », lit l'ensemble, juge I3 (domaine) et I4 (`f(5)`)                                                                                                                      |
+| `src/lib/atelier/interval.ts`               | `f(x) = x^2 sur [0;+∞[`, `f(x) = x pour x > 2` : coupe au mot « sur » ou « pour », lit l'ensemble, juge I3 (domaine) et I4 (`f(5)`)                                                                                   |
 | `src/lib/atelier/draft-hint.ts`             | Le « Modèle : » d'une définition de fonction sous le champ de la console : `g(t) = t² sur [0;3]`, puis, « sur » tapé, `[a;b], ]a;b[, [0;+∞[`                                                                          |
 | `src/lib/atelier/reciprocal.ts`             | La carte `f⁻¹` et `.réciproque` : f passée au moteur, paramètres gardés en lettres, refus en français                                                                                                                 |
 | `src/lib/atelier/limit.ts`                  | `.limite EXPR en POINT` : point lu (côté, infini, `en x=1`), `evaluateLimit`, réponse en formule                                                                                                                      |
@@ -663,7 +663,11 @@ fonction (I3, `computeDomain` puis `difference` : « ln(x) n'est pas défini sur
 en −1). » ; pas jugé quand la définition cite d'autres objets) → refusé, rien ne change. Une
 définition retapée sans « sur » (Calcul ou carte) retire l'intervalle (I6). `f(5)` hors de
 l'ensemble est refusé dans Calcul (`outsideIntervalRefusal`, argument sans variable ou fait de valeurs de l'atelier — `f(b)` avec b = 5 —, et aussi dans une définition, `a = f(5)`) et par l'image
-de la carte (I4). Dans la carte, `smartFence` est coupé dès que le champ contient le « sur » d'un
+de la carte (I4). Quand l'ensemble change APRÈS (`j = f(3)`, puis le curseur de k pousse f sur
+[4 ; 5], ou f réécrite), `#recomputeOnce` refait le même contrôle sur chaque définition (texte,
+ou LaTeX débarrassé de `\left(` `\right)`) : j passe en erreur avec le message de Calcul, ce qui
+le cite aussi, et j redevient juste quand 3 revient dans l'ensemble. `f(x)` dans une autre
+fonction n'est pas une image (héritage, d) : jamais jugé ainsi. Dans la carte, `smartFence` est coupé dès que le champ contient le « sur » d'un
 intervalle — même règle `intervalWord`, « sur » en fin de saisie compris (jugé au `keydown`,
 `beforeinput` et `input` en capture : l'`input` arrive trop tard) — sinon `[0;1[` s'écrit
 `\left\lbrack0;1\left\lbrack\right\rbrack\right\rbrack`, illisible. Dans la console, une
@@ -671,6 +675,22 @@ définition de fonction en cours (`f(x) =`, dans les deux champs) montre sous le
 f(x) = x² sur [0;3] — pour choisir l'ensemble », nom et variable tapés ; « sur » tapé, le modèle
 devient celui d'un intervalle (`definitionHint`, `draft-hint.ts`). Une indication seulement :
 Entrée calcule la ligne telle quelle.
+
+**Ou par une condition** (chantier `fonctions-domaines`, phase 0 validée par David le
+2026-11-28) : `f(x) = x pour x > 2`, `pour 2 < x < 4`, `pour x ≠ 0`, `pour x < 0 ou x ≥ 1` valent
+« sur » suivi de l'ensemble. « pour » ne coupe que devant une comparaison (`<`, `≤`, `≠`, `\lt`,
+`\le`, `\ne`… ; `a = 3 pour 4`, `pourcentage` restent entiers) ; la condition porte sur la lettre
+de la fonction, comparée à des nombres ou à des valeurs de l'atelier (`pour x > k`, `pour -a ≤ x ≤ a` : comme `sur [k;5]`, ci-dessous) ; une autre lettre est refusée (`f(x) = x pour t > 2` : « Je n'ai pas su lire la condition… »). Elle est rangée
+TELLE QU'ÉCRITE dans `interval` et lue par le même `parseStudentDomain` ; mêmes refus que « sur »
+(vide, un point, hors du domaine). C'est l'écriture qui dit le mot (`isConditionWritten` : pas un
+début d'ensemble, une comparaison) : la carte réaffiche `x\text{ pour }x>2`, ce qui a été tapé
+(une condition tapée en texte y est réécrite en LaTeX, `≤` → `\le`, « ou » → `\text{ ou }`) ; les
+propriétés et la liste disent l'ensemble (« ]2 ; +∞[ »). Une seconde formule
+(`x pour x > 2, x^2 pour x ≤ 2`) est refusée (« Une seule formule par fonction… ») : la place reste
+libre pour les fonctions par morceaux. Dans le champ « Écriture mathématique » de la console,
+« pour » devient un mot comme « sur » (le « Modèle : » sous le champ devient alors `x > 2, 2 < x < 4, x ≠ 0`, dans la lettre de la définition), et « ou », « et » seulement après lui (`f(t) = et` reste
+e·t) ; dans la carte, MathLive les colle (`x<0oux>1`), relus seulement derrière un chiffre, une
+accolade ou une espace (`\theta` n'est pas coupé).
 
 **Les calculs sur l'intervalle** (lot 2, I4) : `.résoudre` et `.variations` travaillent sur
 l'ensemble des fonctions qu'ils citent SEULES ou appelées sur une lettre (`f`, `f(x)`, `f'(t)` —
@@ -721,7 +741,9 @@ restreinte aussi.
 
 **L'intervalle à paramètre** (chantier fonctions-morceaux, phase 0 validée le 2026-11-28) : une
 borne peut citer des valeurs de l'atelier (`f(x) = x sur [k;5]`, `[-a;a]`, `[k+1;5[`,
-`\frac{k}{2}`). `intervalNamesOf` (`interval.ts`) lit les noms des bornes : ce sont des
+`\frac{k}{2}`), et une condition aussi (`f(x) = x pour x > k`, `pour k < x < 5`, `pour x ≠ k` :
+`parseStudentDomain` passe l'option `bound` jusqu'aux bornes des conditions). Une réponse d'élève,
+lue sans `bound`, refuse toujours une lettre dans une borne. `intervalNamesOf` (`interval.ts`) lit les noms des bornes : ce sont des
 références de f (`#readRefsOf`) — k absent, f l'attend avec l'offre de curseur ; k en erreur, f
 aussi. Le champ garde l'écriture (`interval`, sauvegardée telle quelle) ; à chaque recalcul,
 `#parameterIntervalsNow` relit l'ensemble avec les valeurs (`parseStudentDomain`, option `bound`)
@@ -2090,7 +2112,8 @@ frappe : [atelier-saisie-naturelle.md](../archive/wip/atelier-saisie-naturelle.m
   domaine, aide… ; accents facultatifs ; formes conjuguées « résous », « dérive ») est une commande ;
   sinon un calcul ou une définition. Aucun point à taper ; un point tapé reste accepté sans bruit.
 - **Les petits mots** (de, à, en, sur, pour, dans, et, ordre, par) ne sont des mots **que** dans une
-  commande (et « sur » après le `=` d'une définition), jamais dans un calcul.
+  commande (et « sur », « pour » après le `=` d'une définition, « ou », « et » après ce « pour »),
+  jamais dans un calcul.
 - **Un mot devient texte quand il est fini** (espace, caractère mathématique, ou choix dans la
   liste), pas dès que ses lettres correspondent (sinon « de » dans « deriver ») ; retour aux maths
   automatique.

@@ -189,7 +189,10 @@ formulaire sans `Origin` de notre site (Q39).
 
 - 32 octets aléatoires en base64url (43 caractères) ; la base ne garde que l'empreinte
   sha256. Un lien perdu ne se renvoie pas : on en émet un neuf, qui révoque l'ancien.
-- Le lien expire le 31 août (`endOfSchoolYear`, comme le cahier et le cours).
+- Le lien expire à la fin de l'année scolaire de l'école de l'élève (`schoolYearExpiry`, comme le
+  cahier et le cours : ses dates saisies, sinon le 31 août ; une fin d'année à plus de 18 mois
+  de l'envoi retombe sur le 31 août qui vient ; un lien émis avant le 2026-11-28 garde son 31 août) ; le
+  courriel du lien annonce ce jour.
 - Le jeton ne sort pas : `noindex`, `Cache-Control: private, no-store`, aucun Referer
   (`<meta name="referrer" content="no-referrer">`, liens `noreferrer`), masqué en `[token]`
   dans l'analytique Vercel et dans le journal des erreurs (`redactSecretUrl`,

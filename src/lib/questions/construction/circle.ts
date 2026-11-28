@@ -413,7 +413,8 @@ export function judgeCircles(
 	expected: ExpectedPoints | undefined,
 	points: ReadonlyMap<string, Position>,
 	shapes: FigureShapes | undefined,
-	objects: readonly DrawnObject[]
+	objects: readonly DrawnObject[],
+	{ composite = false }: { composite?: boolean } = {}
 ): ConstructionVerdict {
 	// Rayon donné en cm (PR 3) : la règle graduée et le compas, rien d'autre (garanti par le parseur)
 	const ruled = checks.some((c) => centeredCircleOf(c.expression)?.kind === 'longueur');
@@ -451,6 +452,9 @@ export function judgeCircles(
 		const free = circleIndexes.filter((i) => !taken.has(i));
 		const centered = centeredCircleOf(check.expression);
 		if (centered) {
+			// Figure composée (outil n° 45) : un cercle d'un autre centre est celui d'une autre
+			// étape, pas un essai de celui-ci (« Pique ton compas en A » ne dirait pas vrai)
+			const tries = composite ? free.filter((i) => hasCenter(circleAt(i), target.center)) : free;
 			// Quadrillage : chaque toucher est aimanté à un nœud, tout cercle tracé est construit
 			const onGrid = Boolean(shapes?.grid);
 			// Les cercles qui recouvrent un AUTRE cercle attendu ne sont pas des essais de
@@ -462,10 +466,11 @@ export function judgeCircles(
 				const verdict = judgeRuled(
 					centered,
 					target,
-					{ free, all: circleIndexes },
+					{ free: tries, all: circleIndexes },
 					circleAt,
 					others,
-					(i) => compassGraduationOf(circleAt(i), rulersBefore(i), rulerLength)
+					(i) => compassGraduationOf(circleAt(i), rulersBefore(i), rulerLength),
+					composite
 				);
 				if (typeof verdict !== 'number') return verdict;
 				taken.add(verdict);
@@ -474,7 +479,7 @@ export function judgeCircles(
 			const verdict = judgeCentered(
 				centered,
 				target,
-				free,
+				tries,
 				circleAt,
 				(i) => onGrid || built(i),
 				others
@@ -613,7 +618,8 @@ function judgeRuled(
 	indexes: { free: readonly number[]; all: readonly number[] },
 	circleAt: (i: number) => DrawnCircle,
 	others: readonly ExpectedCircle[],
-	graduation: (i: number) => number | null
+	graduation: (i: number) => number | null,
+	composite = false
 ): number | ConstructionVerdict {
 	const shapeOf = (i: number): ExpectedCircle => ({
 		center: centerOf(circleAt(i)),
@@ -642,7 +648,8 @@ function judgeRuled(
 		others.filter(
 			(other) => distance(other.center, target.center) <= tolerance(other.center, target.center)
 		).length;
-	if (distinct.length > expectedHere) {
+	// Figure composée (outil n° 45) : un autre cercle de ce centre est celui d'une autre étape
+	if (!composite && distinct.length > expectedHere) {
 		return {
 			status: 'incorrect',
 			feedback: severalCirclesFeedback(centered.center, expectedHere)

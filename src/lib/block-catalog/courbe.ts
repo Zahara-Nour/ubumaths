@@ -159,6 +159,19 @@ export const courbeEntry: BlockCatalogEntry = {
 			]
 		},
 		{
+			title: 'Dans une question : construire l’escalier',
+			settings: [
+				{
+					key: 'construire N',
+					values:
+						'construire 1 à construire 6, à la place d’escalier sur la ligne d’une suite récurrente',
+					defaultValue: 'aucun',
+					description:
+						'Le repère montre la courbe de la relation, la droite y = x et u₀ sur l’axe des abscisses. L’élève touche l’axe pour u₁, u₂… (étiquettes sous le repère) ; sa marche se dessine après chaque terme. Chaque terme compte pour une case, juste s’il est à moins de 3 % de la largeur de la fenêtre de f(son terme précédent) : une erreur ne coûte qu’une case. Les rangs partent du premier terme et couvrent N termes (pour n de 0 à N). Refusé : un coin (uₖ₋₁ ; uₖ) hors de la fenêtre, deux termes consécutifs à moins de 6 % de la largeur, escalier sur la même ligne, deux suites à construire, placer:, tracer: ou données: dans le même repère. Sur le PDF, le repère sans l’escalier : l’enfant le trace à la main.'
+				}
+			]
+		},
+		{
 			title: 'Dans une question : placer des points',
 			settings: [
 				{
@@ -263,6 +276,17 @@ export const courbeEntry: BlockCatalogEntry = {
 			),
 			explanation:
 				'Les flèches u et v sont dessinées ; l’élève trace u + v depuis A. La correction nomme l’erreur (« u⃗ seul », « u⃗ − v⃗ ») et dessine le parallélogramme en pointillés.'
+		},
+		{
+			title: 'Construire l’escalier d’une suite (question)',
+			source: fence(
+				'courbe',
+				'x: 0 ; 4',
+				'y: 0 ; 4',
+				'u(0) = 0 ; u(n+1) = sqrt(2*u(n)+3) pour n de 0 à 3 construire 3'
+			),
+			explanation:
+				'Dans une question, l’élève construit u₁, u₂ et u₃ en touchant l’axe des abscisses ; la correction dessine le vrai escalier en vert. La consigne (« Construis sur l’axe des abscisses les termes u₁, u₂ et u₃ ») va dans l’énoncé, au-dessus.'
 		},
 		{
 			title: 'Des données dans un repère',

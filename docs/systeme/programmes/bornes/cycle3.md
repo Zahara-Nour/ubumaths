@@ -56,8 +56,8 @@ Chantier `questions-cm1` (démarche [couvrir-un-niveau.md](../../../pratiques/co
 - **219 modèles publiés** contiennent le niveau `CM1`, tous rangés et tagués ; **168 points sur 171** ont au moins un
   modèle publié (relevé MCP du 2026-11-19).
 - **3 points sans modèle, par décision de David** : 140 (suite orale) et 114 (construire un solide en vrai) sont non
-  évaluables dans l'appli ; 105 (reproduire une figure composée) attend l'outil « figure composée »
-  (`docs/wip/outils-manquants.md`, n° 45).
+  évaluables dans l'appli ; 105 (reproduire une figure composée) a son outil « figure composée »
+  (n° 45, #3313, 2026-11-28) : modèle à écrire.
 - **Lot 0, l'existant** (#1893) : 18 modèles marqués CM1 à tort passés au niveau de leur point (14 en CM2, dont 2
   réécrits, 4 en 6e) ; 8 modèles sans aucun point du CP à la 6e (calculs en ligne avec retenue, zéros inutiles) **repassés
   en brouillon, niveau CM1 gardé, à ne pas republier** : `cda36cc2`, `08fbcd26`, `09f22a2f`, `17a3c039`,
@@ -377,7 +377,7 @@ Chantier `questions-cm2` (démarche [couvrir-un-niveau.md](../../../pratiques/co
   **152 points sur 158** ont au moins un modèle publié (relevé MCP du 2026-11-20).
 - **6 points sans modèle, par décision de David** : 126 (suite orale), 079 et 080 (gabarit, pliage), 096 (rédiger un
   programme de construction), 106 (recueillir des données) sont non évaluables dans l'appli ; 095 (construire une
-  figure composée) attend l'outil « figure composée » (`docs/wip/outils-manquants.md`, n° 45). 087 et 101, d'abord
+  figure composée) a son outil « figure composée » (n° 45, #3313, 2026-11-28) : modèle à écrire. 087 et 101, d'abord
   classés hors appli, sont couverts par des modèles CM1 + CM2 (segment à la règle graduée, patron du cube à compléter).
 - **Lot 0, l'existant** (#1896) : les 12 modèles du CM1 « relève du CM2 » passés au CM2 par le lot 0 du CM1 (#1893) ;
   8 modèles du CM2 hors programme passés en 6e ou en 5e (critères par 3 et par 9 : 5-010, 5-119) ; **4 repassés en

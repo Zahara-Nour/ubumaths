@@ -20,7 +20,9 @@
  * `retrouver: face` : `face : 2 1 / 1 2`), ou les coordonnées d'un point à placer
  * dans un repère (```courbe, `placer: A=(2 ; 3)` : `2;3`, écrites par `pointAnswer`,
  * comme la réponse de l'élève), ou l'équation d'une droite à tracer (```courbe,
- * `tracer: y = 2x - 1` : `y = 2x - 1`, normalisée par le parseur), ou la mesure principale d'un point à placer sur le
+ * `tracer: y = 2x - 1` : `y = 2x - 1`, normalisée par le parseur), ou un terme d'un
+ * escalier à construire (```courbe, `construire N` : `escalier k=1 ; u0=0 ; marge=0.12 ;
+ * f=sqrt(2*(x)+3)`, une case par terme), ou la mesure principale d'un point à placer sur le
  * cercle trigonométrique (```trig, `placer: M = -pi/4` : `-\frac{\pi}{4}`).
  *
  * @module questions/generator/build-answer
@@ -62,6 +64,7 @@ import { numVal } from '#lib/ubumark/utils/number-line-render.ts';
 import { parseCourbeContent } from '#lib/ubumark/parser/courbe-parser.ts';
 import { pointAnswer } from '#lib/ubumark/utils/courbe-placer.ts';
 import { vectorExpected } from '#lib/ubumark/utils/courbe-vecteur.ts';
+import { staircaseExpected } from '#lib/ubumark/utils/courbe-construire.ts';
 import { parseTrigCircleContent } from '#lib/ubumark/parser/trig-circle-parser.ts';
 import { expectedStepAnswer, stepOfRadians } from '#lib/ubumark/utils/trig-placer.ts';
 import { hasMaskedValue } from '#lib/ubumark/utils/masked-value.ts';
@@ -117,7 +120,11 @@ export function buildCaseCount(kind: BuildKind, source: string): number {
 	if (kind === 'ranger') return Math.max(1, parseRangerContent(source).labels.length);
 	if (kind === 'associer') return Math.max(1, parseAssocierContent(source).items.length);
 	if (kind === 'trous') return Math.max(1, parseTrousContent(source).answers.length);
-	if (kind === 'courbe') return Math.max(1, parseCourbeContent(source).spec?.placer?.length ?? 1);
+	if (kind === 'courbe') {
+		const spec = parseCourbeContent(source).spec;
+		// Escalier à construire : une case par terme
+		return Math.max(1, spec?.construire?.terms.length ?? spec?.placer?.length ?? 1);
+	}
 	if (kind === 'trig') return Math.max(1, parseTrigCircleContent(source).node?.placer?.length ?? 1);
 	if (kind === 'barres') {
 		const spec = parseStatChartContent('barres', source).spec;
@@ -238,6 +245,19 @@ export function buildAnswerOf(
 		// Vecteur à tracer : ses coordonnées, et l'origine imposée (le juge accepte toute flèche du vecteur)
 		const vecteur = node.spec.vecteur;
 		if (vecteur?.coords) return { answer: vectorExpected(vecteur.coords, vecteur.origin) };
+		// Escalier à construire : le terme de rang point + 1, jugé depuis le précédent de l'élève
+		const build = node.spec.construire;
+		if (build !== undefined) {
+			if (point >= build.terms.length) return { errors: ['construire : terme absent'] };
+			return {
+				answer: staircaseExpected({
+					k: point + 1,
+					start: build.start,
+					margin: build.margin,
+					relation: build.relation
+				})
+			};
+		}
 		const target = node.spec.placer?.[point];
 		if (target === undefined) return { errors: ['placer: absent'] };
 		return { answer: pointAnswer(target.x, target.y) };
