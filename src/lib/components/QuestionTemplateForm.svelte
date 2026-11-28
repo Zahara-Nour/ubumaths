@@ -60,9 +60,11 @@
 	import { CONSTRAINT_IDS } from '#lib/questions/constraint-constants.ts';
 	import {
 		ACCEPTABLE_PLACEHOLDER,
+		FORM_MESSAGE_PLACEHOLDER,
 		REQUIRED_FORM_OPTIONS,
 		acceptableOf,
-		customRequiredForm
+		customRequiredForm,
+		messageOf
 	} from '#lib/questions/form-options.ts';
 	import {
 		applyCourseQuestionOption,
@@ -308,6 +310,7 @@
 			: ''
 	);
 	let sharedRequiredFormAcceptable = $state(acceptableOf(initialTemplate?.shared?.requiredForm));
+	let sharedRequiredFormMessage = $state(messageOf(initialTemplate?.shared?.requiredForm));
 	let sharedBlankPrecision = $state(
 		initialTemplate?.shared?.blankDefaults?.precision ?? { type: 'none' as const }
 	);
@@ -326,6 +329,9 @@
 	);
 	let sharedBlankRequiredFormAcceptable = $state(
 		acceptableOf(initialTemplate?.shared?.blankDefaults?.requiredForm)
+	);
+	let sharedBlankRequiredFormMessage = $state(
+		messageOf(initialTemplate?.shared?.blankDefaults?.requiredForm)
 	);
 	let sharedBlankUnitExpected = $state(
 		initialTemplate?.shared?.blankDefaults?.unit?.expected ?? false
@@ -487,6 +493,7 @@
 		requiredFormSelect: string;
 		requiredFormPattern: string;
 		requiredFormAcceptable: string;
+		requiredFormMessage: string;
 		overridesOpen: boolean;
 	}
 
@@ -497,6 +504,7 @@
 		requiredFormSelect: '',
 		requiredFormPattern: '',
 		requiredFormAcceptable: '',
+		requiredFormMessage: '',
 		overridesOpen: false
 	};
 
@@ -513,6 +521,7 @@
 			requiredFormPattern:
 				v.requiredForm && typeof v.requiredForm === 'object' ? v.requiredForm.pattern : '',
 			requiredFormAcceptable: acceptableOf(v.requiredForm),
+			requiredFormMessage: messageOf(v.requiredForm),
 			overridesOpen: false
 		})) || [{ ...DEFAULT_VARIATION_EXTRA }]
 	);
@@ -672,7 +681,8 @@
 				if (extra.requiredFormSelect === 'custom' && extra.requiredFormPattern.trim()) {
 					cleaned.requiredForm = customRequiredForm(
 						extra.requiredFormPattern,
-						extra.requiredFormAcceptable
+						extra.requiredFormAcceptable,
+						extra.requiredFormMessage
 					);
 				} else if (
 					VALID_REQUIRED_FORMS.includes(
@@ -720,7 +730,8 @@
 			if (sharedRequiredFormSelect === 'custom' && sharedRequiredFormPattern.trim()) {
 				shared.requiredForm = customRequiredForm(
 					sharedRequiredFormPattern,
-					sharedRequiredFormAcceptable
+					sharedRequiredFormAcceptable,
+					sharedRequiredFormMessage
 				);
 			} else if (
 				VALID_REQUIRED_FORMS.includes(
@@ -738,7 +749,8 @@
 			if (sharedBlankRequiredFormSelect === 'custom' && sharedBlankRequiredFormPattern.trim()) {
 				blankDefaults.requiredForm = customRequiredForm(
 					sharedBlankRequiredFormPattern,
-					sharedBlankRequiredFormAcceptable
+					sharedBlankRequiredFormAcceptable,
+					sharedBlankRequiredFormMessage
 				);
 			} else if (
 				VALID_REQUIRED_FORMS.includes(
@@ -905,6 +917,7 @@
 				? t.shared.requiredForm.pattern
 				: '';
 		sharedRequiredFormAcceptable = acceptableOf(t.shared?.requiredForm);
+		sharedRequiredFormMessage = messageOf(t.shared?.requiredForm);
 		sharedBlankPrecision = t.shared?.blankDefaults?.precision ?? { type: 'none' as const };
 		sharedBlankRequiredFormSelect = t.shared?.blankDefaults?.requiredForm
 			? typeof t.shared.blankDefaults.requiredForm === 'string'
@@ -917,6 +930,7 @@
 				? t.shared.blankDefaults.requiredForm.pattern
 				: '';
 		sharedBlankRequiredFormAcceptable = acceptableOf(t.shared?.blankDefaults?.requiredForm);
+		sharedBlankRequiredFormMessage = messageOf(t.shared?.blankDefaults?.requiredForm);
 		sharedBlankUnitExpected = t.shared?.blankDefaults?.unit?.expected ?? false;
 		sharedBlankUnitRequired = t.shared?.blankDefaults?.unit?.required || '';
 		sharedBlankRulesSuffice = t.shared?.blankDefaults?.rulesSuffice ?? false;
@@ -968,6 +982,7 @@
 			requiredFormPattern:
 				v.requiredForm && typeof v.requiredForm === 'object' ? v.requiredForm.pattern : '',
 			requiredFormAcceptable: acceptableOf(v.requiredForm),
+			requiredFormMessage: messageOf(v.requiredForm),
 			overridesOpen: false
 		})) || [{ ...DEFAULT_VARIATION_EXTRA }];
 
@@ -1666,10 +1681,12 @@
 			bind:sharedRequiredFormSelect
 			bind:sharedRequiredFormPattern
 			bind:sharedRequiredFormAcceptable
+			bind:sharedRequiredFormMessage
 			bind:sharedBlankPrecision
 			bind:sharedBlankRequiredFormSelect
 			bind:sharedBlankRequiredFormPattern
 			bind:sharedBlankRequiredFormAcceptable
+			bind:sharedBlankRequiredFormMessage
 			bind:sharedBlankUnitExpected
 			bind:sharedBlankUnitRequired
 			bind:sharedBlankAcceptDecimal
@@ -2002,6 +2019,12 @@
 															type="text"
 															bind:value={variationExtras[index].requiredFormAcceptable}
 															placeholder={ACCEPTABLE_PLACEHOLDER}
+														/>
+														<Input
+															type="text"
+															bind:value={variationExtras[index].requiredFormMessage}
+															placeholder={FORM_MESSAGE_PLACEHOLDER}
+															aria-label="Message si la forme n’est pas respectée"
 														/>
 													{/if}
 												</div>

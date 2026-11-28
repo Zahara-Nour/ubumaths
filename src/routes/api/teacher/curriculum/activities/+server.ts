@@ -8,6 +8,7 @@
  * an evaluation — reconciles the entry's AUTO coverage. Teacher/admin only.
  */
 
+import { serverErrorResponse } from '#lib/server/utils/error-handler.ts';
 import type { RequestHandler } from './$types';
 import { requireRoles } from '#lib/server/middleware/auth.ts';
 import {
@@ -96,8 +97,11 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	if (dbErr) {
 		const mapped = curriculumDbError(dbErr);
 		if (mapped) return mapped;
-		logger.error('[curriculum] activities POST failed:', dbErr);
-		return Response.json({ error: dbErr.message }, { status: 500 });
+		return serverErrorResponse(
+			'api/teacher/curriculum/activities/POST',
+			dbErr,
+			'Impossible d’enregistrer l’activité'
+		);
 	}
 
 	// Tagged activity → refresh auto coverage of the entry.

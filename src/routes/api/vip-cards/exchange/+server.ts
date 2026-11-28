@@ -32,6 +32,7 @@
  *   par les fonctions SQL elles-mêmes.
  */
 
+import { throwServerError } from '#lib/server/utils/error-handler.ts';
 import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireAuth } from '#lib/server/middleware/auth.ts';
@@ -58,9 +59,6 @@ import {
 	grantVipCardsAfterAction,
 	restoreActionCard
 } from '#lib/server/vip-card-grants.ts';
-import { createServerLogger } from '#lib/utils/logger.ts';
-
-const logger = createServerLogger('api/vip-cards/exchange/+server');
 
 // ============================================================================
 // TYPES
@@ -125,8 +123,11 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		.single();
 
 	if (fetchError) {
-		logger.error('[exchange] Error fetching student profile:', fetchError);
-		throw error(500, `Impossible de charger le profil de l’élève : ${fetchError.message}`);
+		throwServerError(
+			'api/vip-cards/exchange/profil',
+			fetchError,
+			'Impossible de charger le profil de l’élève'
+		);
 	}
 
 	const vipCards = asStudentVipCards(studentProfile.vip_cards);
@@ -227,8 +228,11 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	});
 
 	if (useError) {
-		logger.error('[exchange] RPC use_vip_card error:', useError);
-		throw error(500, `Impossible d’utiliser la carte d’action : ${useError.message}`);
+		throwServerError(
+			'api/vip-cards/exchange/use_vip_card',
+			useError,
+			'Impossible d’utiliser la carte d’action'
+		);
 	}
 
 	// `usedAt` : posé par `use_vip_card` quand la carte n'a plus d'usage (sinon

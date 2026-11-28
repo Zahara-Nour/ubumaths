@@ -112,11 +112,9 @@ describe('getUnreadNotifications - Pagination Logic', () => {
 						is: vi.fn().mockReturnValue({
 							gt: vi.fn().mockReturnValue({
 								or: vi.fn().mockReturnValue({
-									order: vi.fn().mockReturnValue({
-										order: vi.fn().mockResolvedValue({
-											data: allNotifications,
-											error: null
-										})
+									order: vi.fn().mockResolvedValue({
+										data: allNotifications,
+										error: null
 									})
 								})
 							})
@@ -188,11 +186,9 @@ describe('getUnreadNotifications - Pagination Logic', () => {
 						is: vi.fn().mockReturnValue({
 							gt: vi.fn().mockReturnValue({
 								or: vi.fn().mockReturnValue({
-									order: vi.fn().mockReturnValue({
-										order: vi.fn().mockResolvedValue({
-											data: allNotifications,
-											error: null
-										})
+									order: vi.fn().mockResolvedValue({
+										data: allNotifications,
+										error: null
 									})
 								})
 							})
@@ -268,11 +264,9 @@ describe('getUnreadNotifications - Pagination Logic', () => {
 						is: vi.fn().mockReturnValue({
 							gt: vi.fn().mockReturnValue({
 								or: vi.fn().mockReturnValue({
-									order: vi.fn().mockReturnValue({
-										order: vi.fn().mockResolvedValue({
-											data: allNotifications,
-											error: null
-										})
+									order: vi.fn().mockResolvedValue({
+										data: allNotifications,
+										error: null
 									})
 								})
 							})
@@ -346,11 +340,9 @@ describe('getUnreadNotifications - Pagination Logic', () => {
 						is: vi.fn().mockReturnValue({
 							gt: vi.fn().mockReturnValue({
 								or: vi.fn().mockReturnValue({
-									order: vi.fn().mockReturnValue({
-										order: vi.fn().mockResolvedValue({
-											data: allNotifications,
-											error: null
-										})
+									order: vi.fn().mockResolvedValue({
+										data: allNotifications,
+										error: null
 									})
 								})
 							})
@@ -424,11 +416,9 @@ describe('getUnreadNotifications - Pagination Logic', () => {
 						is: vi.fn().mockReturnValue({
 							gt: vi.fn().mockReturnValue({
 								or: vi.fn().mockReturnValue({
-									order: vi.fn().mockReturnValue({
-										order: vi.fn().mockResolvedValue({
-											data: allNotifications,
-											error: null
-										})
+									order: vi.fn().mockResolvedValue({
+										data: allNotifications,
+										error: null
 									})
 								})
 							})
@@ -521,11 +511,9 @@ describe('getUnreadNotifications - Pagination Logic', () => {
 						is: vi.fn().mockReturnValue({
 							gt: vi.fn().mockReturnValue({
 								or: vi.fn().mockReturnValue({
-									order: vi.fn().mockReturnValue({
-										order: vi.fn().mockResolvedValue({
-											data: allNotifications,
-											error: null
-										})
+									order: vi.fn().mockResolvedValue({
+										data: allNotifications,
+										error: null
 									})
 								})
 							})
@@ -593,11 +581,9 @@ describe('getUnreadNotifications - Pagination Logic', () => {
 						is: vi.fn().mockReturnValue({
 							gt: vi.fn().mockReturnValue({
 								or: vi.fn().mockReturnValue({
-									order: vi.fn().mockReturnValue({
-										order: vi.fn().mockResolvedValue({
-											data: [],
-											error: null
-										})
+									order: vi.fn().mockResolvedValue({
+										data: [],
+										error: null
 									})
 								})
 							})
@@ -692,11 +678,9 @@ describe('getUnreadNotifications - Pagination Logic', () => {
 						is: vi.fn().mockReturnValue({
 							gt: vi.fn().mockReturnValue({
 								or: vi.fn().mockReturnValue({
-									order: vi.fn().mockReturnValue({
-										order: vi.fn().mockResolvedValue({
-											data: allNotifications,
-											error: null
-										})
+									order: vi.fn().mockResolvedValue({
+										data: allNotifications,
+										error: null
 									})
 								})
 							})
@@ -757,11 +741,9 @@ describe('getUnreadNotifications - Pagination Logic', () => {
 						is: vi.fn().mockReturnValue({
 							gt: vi.fn().mockReturnValue({
 								or: vi.fn().mockReturnValue({
-									order: vi.fn().mockReturnValue({
-										order: vi.fn().mockResolvedValue({
-											data: null,
-											error: { message: 'Database connection failed' }
-										})
+									order: vi.fn().mockResolvedValue({
+										data: null,
+										error: { message: 'Database connection failed' }
 									})
 								})
 							})
@@ -820,11 +802,9 @@ describe('getUnreadNotifications - Pagination Logic', () => {
 						is: vi.fn().mockReturnValue({
 							gt: vi.fn().mockReturnValue({
 								or: vi.fn().mockReturnValue({
-									order: vi.fn().mockReturnValue({
-										order: vi.fn().mockResolvedValue({
-											data: allNotifications,
-											error: null
-										})
+									order: vi.fn().mockResolvedValue({
+										data: allNotifications,
+										error: null
 									})
 								})
 							})
@@ -864,5 +844,65 @@ describe('getUnreadNotifications - Pagination Logic', () => {
 			totalPages: 1,
 			hasMore: false
 		});
+	});
+
+	// ============================================================================
+	// TRI PAR PRIORITÉ (écart V107)
+	// ============================================================================
+
+	test('range urgentes, puis importantes, puis normales, la plus récente d’abord à priorité égale (V107)', async () => {
+		const jour = (d: number) => new Date(Date.UTC(2026, 10, d));
+		// Ordre rendu par la requête : par date décroissante, comme `order('created_at')`.
+		const allNotifications = [
+			createMockNotification('normale-28', 'normal', jour(28)),
+			createMockNotification('importante-27', 'important', jour(27)),
+			createMockNotification('urgente-26', 'urgent', jour(26)),
+			createMockNotification('normale-25', 'normal', jour(25)),
+			createMockNotification('importante-24', 'important', jour(24))
+		];
+
+		vi.mocked(mockSupabase.from).mockImplementation((table: string) => {
+			if (table === 'profiles') {
+				return {
+					select: vi.fn().mockReturnValue({
+						eq: vi.fn().mockReturnValue({
+							single: vi.fn().mockResolvedValue({
+								data: { role: 'student', class_ids: [] },
+								error: null
+							})
+						})
+					})
+				} as never;
+			}
+			if (table === 'notifications') {
+				return {
+					select: vi.fn().mockReturnValue({
+						is: vi.fn().mockReturnValue({
+							gt: vi.fn().mockReturnValue({
+								or: vi.fn().mockReturnValue({
+									order: vi.fn().mockResolvedValue({ data: allNotifications, error: null })
+								})
+							})
+						})
+					})
+				} as never;
+			}
+			return {
+				select: vi.fn().mockReturnValue({
+					eq: vi.fn().mockReturnValue({
+						in: vi.fn().mockResolvedValue({ data: [], error: null })
+					})
+				})
+			} as never;
+		});
+
+		// Page de 2 : l'ordre vaut pour toute la liste, pas page par page.
+		const page1 = await getUnreadNotifications(mockSupabase, 'user-123', { page: 1, limit: 2 });
+		const page2 = await getUnreadNotifications(mockSupabase, 'user-123', { page: 2, limit: 2 });
+		const page3 = await getUnreadNotifications(mockSupabase, 'user-123', { page: 3, limit: 2 });
+
+		expect(
+			[...page1.notifications, ...page2.notifications, ...page3.notifications].map((n) => n.id)
+		).toEqual(['urgente-26', 'importante-27', 'importante-24', 'normale-28', 'normale-25']);
 	});
 });

@@ -9,8 +9,8 @@
  * Spec : docs/archive/wip/skills-referentiel-design.md §3 (périmètre), §7 (evaluation_tasks)
  */
 
+import { throwServerError } from '#lib/server/utils/error-handler.ts';
 import type { PageServerLoad } from './$types';
-import { error } from '@sveltejs/kit';
 import { requireRole } from '#lib/server/middleware/auth.ts';
 
 export interface EvaluationTaskListItem {
@@ -50,7 +50,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 		.order('created_at', { ascending: false });
 
 	if (err) {
-		throw error(500, `Erreur de chargement : ${err.message}`);
+		throwServerError('evaluation-tasks/liste', err, 'Impossible de charger les observations');
 	}
 
 	const tasks: EvaluationTaskListItem[] = (data ?? []).map((t) => {

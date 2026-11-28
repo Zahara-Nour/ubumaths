@@ -19,6 +19,7 @@
  * - Requires Google integration with drive.file scope
  */
 
+import { throwServerError } from '#lib/server/utils/error-handler.ts';
 import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { GoogleNotConnectedError, GoogleTokenExpiredError } from '#lib/server/google/errors.ts';
@@ -134,7 +135,10 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 			requestedFolderId,
 			userId: user.id
 		});
-		const message = err instanceof Error ? err.message : 'erreur inconnue';
-		throw error(500, `Impossible de lister les fichiers Google Drive : ${message}`);
+		throwServerError(
+			'api/whiteboard/drive/list',
+			err,
+			'Impossible de lister les fichiers Google Drive'
+		);
 	}
 };

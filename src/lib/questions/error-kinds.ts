@@ -197,7 +197,13 @@ export function answerErrorKinds(
 			? (instance.blanks ?? []).length === 1 && status === 'incorrect'
 				? [{ index: 0, status, remarks: [], answer: values[0] ?? '' }]
 				: []
-			: detail.blanks.filter((b) => !b.ungraded && b.status === 'incorrect');
+			: detail.blanks.filter(
+					(b) =>
+						!b.ungraded &&
+						(b.status === 'incorrect' ||
+							// Mauvaise forme qui fait une erreur prévue (n° 75) : comptée comme l'élève la lit
+							(b.status === 'bad_form' && expectedErrorOf(instance, b) !== null))
+				);
 
 	const kinds: BlankErrorKind[] = [];
 	let unrecognized = 0;

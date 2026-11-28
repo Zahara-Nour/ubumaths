@@ -704,10 +704,12 @@ navigateur jusqu'à la prochaine page ouverte par un autre compte ou un visiteur
 - les fichiers de `chat-attachments`, `message-attachments`, `bug-report-screenshots` : la fonction
   rend leurs chemins exacts, collectés avant la cascade, et la route les retire (au mieux : un échec
   est journalisé en erreur, il n'interrompt pas la suppression ; le cron du dimanche reprend).
-  Pour `message-attachments` et `bug-report-screenshots`, dont l'élève écrit lui-même le chemin,
-  seul un chemin rangé chez lui est rendu (`messages/<son message>/…`, `<son id>/<son
-signalement>/…`, aucun segment `..`) : sinon il ferait retirer le fichier d'un camarade
-  (`20261016101200`).
+  Le retrait se fait par tranches de 1000 noms au plus (`src/lib/server/deleted-account-files.ts`).
+  Pour `message-attachments`, dont l'élève écrit lui-même le chemin, seul un chemin rangé chez
+  lui est rendu (`messages/<son message>/…`, aucun segment `..`) : sinon il ferait retirer le
+  fichier d'un camarade (`20261016101200`). Pour `bug-report-screenshots`, c'est **tout son
+  dossier `<son id>/`**, lu dans `storage.objects`, fichiers qu'aucun rapport ne nomme compris
+  (`20261128162608`, écart T34) ; seul l'élève (ou l'admin) écrit dans ce dossier.
 
 **Atomicité** : en fin de fonction, si une clé étrangère sans `ON DELETE` vise encore le compte
 (quelle que soit la table, future comprise), la fonction lève une exception et la transaction est

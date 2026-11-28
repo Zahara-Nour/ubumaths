@@ -16,6 +16,7 @@
  * - Only accesses files created by the app (drive.file scope)
  */
 
+import { throwServerError } from '#lib/server/utils/error-handler.ts';
 import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import {
@@ -96,8 +97,6 @@ export const GET: RequestHandler = async ({ params, locals }) => {
 			}
 		}
 
-		logger.error('[Whiteboard Drive] Load error:', err);
-		const message = err instanceof Error ? err.message : 'erreur inconnue';
-		throw error(500, `Impossible de charger depuis Google Drive : ${message}`);
+		throwServerError('api/whiteboard/drive/load', err, 'Impossible de charger depuis Google Drive');
 	}
 };

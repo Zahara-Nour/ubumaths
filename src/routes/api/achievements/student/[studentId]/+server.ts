@@ -30,10 +30,7 @@ import type { RequestHandler } from './$types';
 import { requireRole } from '#lib/server/middleware/auth.ts';
 import { verifyTeacherStudentWithRole } from '#lib/server/middleware/student-access.ts';
 import { studentIdSchema, achievementContextSchema } from '#lib/server/validation/achievements.ts';
-import {
-	getStudentAchievements,
-	AchievementServiceError
-} from '#lib/server/achievements/service.ts';
+import { getStudentAchievements } from '#lib/server/achievements/service.ts';
 import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/achievements/student/[studentId]/+server');
@@ -94,15 +91,11 @@ export const GET: RequestHandler = async ({ params, url, locals }) => {
 	} catch (err) {
 		logger.error('[API] Error fetching student achievements:', err);
 
-		if (err instanceof AchievementServiceError) {
-			throw error(500, err.message);
-		}
-
 		// Re-throw SvelteKit errors (HttpError) to preserve status codes
 		if (err && typeof err === 'object' && 'status' in err) {
 			throw err;
 		}
 
-		throw error(500, 'An error occurred while fetching student achievements');
+		throw error(500, 'Impossible de charger les succès de l’élève');
 	}
 };

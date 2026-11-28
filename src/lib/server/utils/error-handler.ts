@@ -201,3 +201,28 @@ export function sanitizeRPCError(err: unknown, functionName: string): never {
 
 	throw error(500, 'Une erreur est survenue');
 }
+
+/**
+ * Journal du serveur d'une erreur 500 : le détail (message de la base, de Google…)
+ * reste ici, jamais dans la réponse (écart L42).
+ */
+export function logServerError(context: string, err: unknown): void {
+	logger.error(`[${context}]`, { error: err, timestamp: new Date().toISOString() });
+}
+
+/**
+ * Erreur 500 : détail au journal du serveur, `message` (en français) à l'utilisateur.
+ */
+export function throwServerError(context: string, err: unknown, userMessage: string): never {
+	logServerError(context, err);
+	error(500, userMessage);
+}
+
+/**
+ * Réponse JSON 500 `{ error: message }` : détail au journal du serveur, `message`
+ * (en français) à l'utilisateur.
+ */
+export function serverErrorResponse(context: string, err: unknown, userMessage: string): Response {
+	logServerError(context, err);
+	return Response.json({ error: userMessage }, { status: 500 });
+}

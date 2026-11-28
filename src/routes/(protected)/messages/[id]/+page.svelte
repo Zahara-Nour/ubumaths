@@ -41,7 +41,9 @@
 
 	// À qui part la réponse : jamais à soi-même (message que j'ai envoyé → son destinataire)
 	const replyTo = $derived(
-		message && page.data.user ? replyRecipientId([message], page.data.user.id) : null
+		message && page.data.user
+			? replyRecipientId([message], page.data.user.id, page.data.profile?.role)
+			: null
 	);
 
 	// Destinataires que cette page ne nomme pas (un élève ne lit que sa propre ligne)

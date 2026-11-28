@@ -1,4 +1,5 @@
 {
+	"id": "8009fb19-34db-4736-a1bc-ddf88892a863",
 	"title": "Partie du plan décrite par des inégalités",
 	"description": "Triangle x ⩾ 0, y ⩾ 0, x + y ⩽ k (case, k de 2 à 5) ; rectangle a ⩽ x ⩽ a', 0 ⩽ y ⩽ b (trois cases) ; trapèze sous la droite y = mx + p (case choix)",
 	"grades": ["2"],

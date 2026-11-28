@@ -189,14 +189,69 @@ describe('preuves des écarts — messagerie, avertissements, carnet (base local
 			};
 			chezLui = await poser(classeA);
 			ailleurs = await poser(classeB);
+
+			// Les deux autres portes (L82) : la fonction groupée, seule appelée par
+			// l'appli, et l'insertion directe sous la policy du prof.
+			const absent = await nouvelEleve(classeA);
+			const archive = await nouvelEleve(classeB, 'archived');
+			const ecrits = async (eleve: string, classe: string): Promise<number> => {
+				const { data, error } = await service
+					.from('student_warnings')
+					.select('id')
+					.eq('student_id', eleve)
+					.eq('class_id', classe);
+				if (error) throw new Error(error.message);
+				return (data ?? []).length;
+			};
+			const groupe = async (eleve: string, classe: string): Promise<number> => {
+				await teacher.rpc('add_warnings_bulk', {
+					p_student_id: eleve,
+					p_class_id: classe,
+					p_academic_period_id: periodeId,
+					p_warning_types: ['C', 'M']
+				});
+				return ecrits(eleve, classe);
+			};
+			groupeChezLui = await groupe(absent, classeA);
+			groupeAilleurs = await groupe(absent, classeB);
+			groupeArchive = await groupe(archive, classeB);
+			await teacher.from('student_warnings').insert({
+				student_id: absent,
+				class_id: classeB,
+				academic_period_id: periodeId,
+				warning_type: 'T',
+				created_by: teacherId
+			});
+			directAilleurs = await ecrits(absent, classeB);
 		});
+
+		let groupeChezLui: number;
+		let groupeAilleurs: number;
+		let groupeArchive: number;
+		let directAilleurs: number;
 
 		it('témoin : dans sa classe, l’avertissement est écrit', () => {
 			expect(chezLui).toBe(1);
 		});
 
-		it.fails('écart L82 : dans une autre classe, aucun avertissement n’est écrit', () => {
+		it('dans une autre classe, aucun avertissement n’est écrit (L82)', () => {
 			expect(ailleurs).toBe(0);
+		});
+
+		it('témoin : la fonction groupée écrit dans sa classe', () => {
+			expect(groupeChezLui).toBe(2);
+		});
+
+		it('la fonction groupée n’écrit rien dans une autre classe (L82)', () => {
+			expect(groupeAilleurs).toBe(0);
+		});
+
+		it('la fonction groupée n’écrit rien pour un élève archivé de la classe (L82)', () => {
+			expect(groupeArchive).toBe(0);
+		});
+
+		it('l’insertion directe n’écrit rien dans une autre classe (L82)', () => {
+			expect(directAilleurs).toBe(0);
 		});
 	});
 
@@ -223,14 +278,36 @@ describe('preuves des écarts — messagerie, avertissements, carnet (base local
 			};
 			actif = await viser(await nouvelEleve(classeA));
 			parti = await viser(await nouvelEleve(classeA, 'archived'));
+
+			// L83 par l'insertion directe : la policy du prof, sans `createNotification`.
+			const { data, error } = await teacher
+				.from('notifications')
+				.insert({
+					title: 'Preuve directe',
+					message: '<p>Un mot.</p>',
+					type: 'info',
+					priority: 'normal',
+					target_type: 'users',
+					target_user_ids: [await nouvelEleve(classeA, 'archived')],
+					created_by: teacherId
+				})
+				.select('id');
+			for (const ligne of data ?? []) notifications.push(ligne.id);
+			directPartiEcrite = !error && (data ?? []).length > 0;
 		});
+
+		let directPartiEcrite: boolean;
 
 		it('témoin : un élève actif de la classe est visé', () => {
 			expect(actif).toMatchObject({ success: true });
 		});
 
-		it.fails('écart L83 : un élève dont la seule adhésion est archivée est refusé', () => {
+		it('un élève dont la seule adhésion est archivée est refusé (L83)', () => {
 			expect(parti.success).toBe(false);
+		});
+
+		it('l’insertion directe vers un élève archivé est refusée (L83)', () => {
+			expect(directPartiEcrite).toBe(false);
 		});
 	});
 
@@ -268,7 +345,7 @@ describe('preuves des écarts — messagerie, avertissements, carnet (base local
 			expect(recuOrdinaire).toBe(1);
 		});
 
-		it.fails('écart L84 : un élève de test ne reçoit rien', () => {
+		it('un élève de test ne reçoit rien (L84)', () => {
 			expect(recuDeTest).toBe(0);
 		});
 	});
@@ -331,7 +408,7 @@ describe('preuves des écarts — messagerie, avertissements, carnet (base local
 			expect(parLeLien).toBe(1);
 		});
 
-		it.fails('écart L79 : ouvrir par le jeton d’un courriel ne compte pas pour le lien', () => {
+		it('ouvrir par le jeton d’un courriel ne compte pas pour le lien (L79)', () => {
 			expect(parLeCourriel).toBe(0);
 		});
 	});

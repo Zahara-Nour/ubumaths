@@ -194,10 +194,19 @@ async function sendMissingLinks(
 	return total;
 }
 
-/** 3. Exceptions (E1-E3, E7, Q19, Q33). */
+/**
+ * 3. Exceptions (E1-E3, E7, Q19, Q33).
+ *
+ * Un épisode non marqué après son courriel serait reproposé par le plan une
+ * semaine plus tard : le parent recevrait deux fois le même avertissement
+ * (écart L80). L'erreur va dans `errors` plutôt que d'être levée : les
+ * courriels suivants partent, et le compte des courriels partis reste juste
+ * (il borne le budget du message trimestriel).
+ */
 async function sendExceptions(
 	service: SB,
-	budget: number
+	budget: number,
+	errors: unknown[]
 ): Promise<{ sent: number; failed: number }> {
 	const { error: syncError } = await service.rpc('carnet_sync_exception_episodes');
 	if (syncError) {
@@ -253,6 +262,7 @@ async function sendExceptions(
 				'[parent_exception_episodes] épisodes non marqués',
 				markError ?? `${marked?.length ?? 0}/${row.episode_ids.length}`
 			);
+			errors.push(new Error("Épisodes d'exception non marqués après leur courriel"));
 		}
 	}
 	return total;
@@ -338,7 +348,7 @@ export async function runCarnetDaily(
 		errors.push(err);
 	}
 	try {
-		report.exceptions = await sendExceptions(service, remaining());
+		report.exceptions = await sendExceptions(service, remaining(), errors);
 	} catch (err) {
 		errors.push(err);
 	}

@@ -8,6 +8,7 @@
  * rows kept). Teacher/admin only.
  */
 
+import { serverErrorResponse } from '#lib/server/utils/error-handler.ts';
 import type { RequestHandler } from './$types';
 import { requireRoles } from '#lib/server/middleware/auth.ts';
 import { curriculumDbError } from '#lib/server/curriculum.ts';
@@ -47,8 +48,11 @@ export const DELETE: RequestHandler = async ({ params, locals }) => {
 	if (dbErr) {
 		const mapped = curriculumDbError(dbErr);
 		if (mapped) return mapped;
-		logger.error('[curriculum] activity DELETE failed:', dbErr);
-		return Response.json({ error: dbErr.message }, { status: 500 });
+		return serverErrorResponse(
+			'api/teacher/curriculum/activities/DELETE',
+			dbErr,
+			'Impossible de supprimer l’activité'
+		);
 	}
 
 	if (TAGGED_KINDS.has(kind)) {

@@ -52,7 +52,9 @@ import {
 	flattenSumShallow,
 	flattenProductShallow,
 	unflattenSum,
-	unflattenProduct
+	unflattenProduct,
+	type Sign,
+	type SignedTerm
 } from './flatten';
 import { parseLatexSafe, type CapitalPairs, type GenericFunctionConfig } from './parser';
 import { separateSpacedCapitals } from './parser/latex/point-names';
@@ -1119,6 +1121,60 @@ function unifyNegativeExponentialNotationAST(ast: MathNode): MathNode {
 	});
 }
 
+/**
+ * Terme d'une somme qui porte son signe moins dans un coefficient (`(−3)·x`,
+ * `−3`) : le moins passe au signe du terme, pour que `−3x + 2` et `2 − 3x`
+ * se lisent pareil.
+ */
+function liftTermSign(signed: SignedTerm): SignedTerm {
+	const { term, sign } = signed;
+	const flipped: Sign = sign === '+' ? '-' : '+';
+	if (term.type === 'multiplication' && isOpposite(term.left)) {
+		return { sign: flipped, term: { ...term, left: term.left.operand } };
+	}
+	if (isOpposite(term)) return { sign: flipped, term: term.operand };
+	return signed;
+}
+
+/**
+ * Somme écrite premier terme positif (après le tri des termes) : `3 − x` →
+ * `x − 3`. Ce qui n'est pas une somme reste tel quel.
+ */
+function sumWithPositiveLead(node: MathNode): MathNode {
+	if (node.type !== 'addition' && node.type !== 'subtraction') return node;
+	const terms = flattenSumShallow(node).map(liftTermSign);
+	if (terms.length < 2 || terms[0].sign === '+') return node;
+	const flipped = terms.map((t): SignedTerm => ({
+		sign: t.sign === '+' ? '-' : '+',
+		term: t.term
+	}));
+	const rebuilt = unflattenSum(flipped);
+	return rebuilt === null ? node : sortTermsAndFactorsAST(rebuilt);
+}
+
+/**
+ * |u| et |−u| sont la même écriture (outil n° 79) : `|3 − x|` pour `|x − 3|`
+ * n'est pas une faute de forme. Une somme entre les barres est écrite avec son
+ * premier terme positif : `|3 − x|` → `|x − 3|`. Une fraction entre les barres
+ * l'est au numérateur et au dénominateur, chacun pour soi (|a/b| = |−a/b| =
+ * |a/−b|) : `|(3 − x)/(1 − x)|` → `|(x − 3)/(x − 1)|`.
+ */
+function unifyAbsoluteOppositeAST(ast: MathNode): MathNode {
+	return mapNode(ast, (node) => {
+		if (node.type !== 'function' || node.name !== 'abs' || node.args.length !== 1) return node;
+		const [arg] = node.args;
+		const oriented =
+			arg.type === 'division'
+				? {
+						...arg,
+						numerator: sumWithPositiveLead(arg.numerator),
+						denominator: sumWithPositiveLead(arg.denominator)
+					}
+				: sumWithPositiveLead(arg);
+		return oriented === arg ? node : { ...node, args: [oriented] };
+	});
+}
+
 function buildASTPipeline(options: CheckFormOptions = {}): TransformerStep[] {
 	return [
 		{ transform: unifySegmentNotationAST, constraintId: null }, // notation, pas forme
@@ -1135,7 +1191,8 @@ function buildASTPipeline(options: CheckFormOptions = {}): TransformerStep[] {
 		})),
 		{ transform: unifyLogPowerNotationAST, constraintId: null }, // notation, pas forme
 		{ transform: unifyNegativeExponentialNotationAST, constraintId: null }, // notation, pas forme
-		{ transform: sortTermsAndFactorsAST, constraintId: null } // normalisation only
+		{ transform: sortTermsAndFactorsAST, constraintId: null }, // normalisation only
+		{ transform: unifyAbsoluteOppositeAST, constraintId: null } // |3 − x| = |x − 3|, pas une forme
 	];
 }
 

@@ -6,6 +6,7 @@
  * Supports create, update, delete, and publish toggle actions.
  */
 
+import { logServerError } from '#lib/server/utils/error-handler.ts';
 import type { PageServerLoad, Actions } from './$types';
 import { error, fail, redirect } from '@sveltejs/kit';
 import { requireRole } from '#lib/server/middleware/auth.ts';
@@ -354,8 +355,8 @@ export const actions: Actions = {
 		);
 
 		if (createError) {
-			logger.error('[Create Journal Entry] Error:', createError);
-			return fail(500, { error: createError.message, action: 'create' });
+			logServerError('cahier-texte/create', createError);
+			return fail(500, { error: 'Impossible d’enregistrer la séance', action: 'create' });
 		}
 
 		// Couverture cochée AVANT enregistrement : sur une séance neuve, il n'y
@@ -524,8 +525,8 @@ export const actions: Actions = {
 		);
 
 		if (updateError) {
-			logger.error('[Update Journal Entry] Error:', updateError);
-			return fail(500, { error: updateError.message, action: 'update' });
+			logServerError('cahier-texte/update', updateError);
+			return fail(500, { error: 'Impossible de modifier la séance', action: 'update' });
 		}
 
 		if (homeworkItems) {
@@ -577,8 +578,8 @@ export const actions: Actions = {
 		const { error: deleteError } = await deleteJournalEntry(locals.supabase, entryId, user.id);
 
 		if (deleteError) {
-			logger.error('[Delete Journal Entry] Error:', deleteError);
-			return fail(500, { error: deleteError.message, action: 'delete' });
+			logServerError('cahier-texte/delete', deleteError);
+			return fail(500, { error: 'Impossible de supprimer la séance', action: 'delete' });
 		}
 
 		// Redirect back to main view
@@ -607,8 +608,11 @@ export const actions: Actions = {
 		});
 
 		if (updateError) {
-			logger.error('[Publish Journal Entry] Error:', updateError);
-			return fail(500, { error: updateError.message, action: 'publish' });
+			logServerError('cahier-texte/publish', updateError);
+			return fail(500, {
+				error: 'Impossible de modifier la publication de la séance',
+				action: 'publish'
+			});
 		}
 
 		return { success: true, action: 'publish', isPublished };

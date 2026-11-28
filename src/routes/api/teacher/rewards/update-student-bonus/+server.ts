@@ -6,6 +6,7 @@
  * Purpose: Add or remove bonus for a specific student
  */
 
+import { throwServerError } from '#lib/server/utils/error-handler.ts';
 import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireRoles } from '#lib/server/middleware/auth.ts';
@@ -37,8 +38,11 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	});
 
 	if (rpcError) {
-		logger.error('[API] RPC Error updating bonus:', rpcError);
-		throw error(500, rpcError.message || 'Failed to update bonus');
+		throwServerError(
+			'api/teacher/rewards/update-student-bonus',
+			rpcError,
+			'Impossible de modifier le bonus'
+		);
 	}
 
 	logger.info('[API] Bonus updated successfully:', { studentId, delta, newValue });

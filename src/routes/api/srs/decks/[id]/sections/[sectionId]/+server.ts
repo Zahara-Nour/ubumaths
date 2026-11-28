@@ -8,6 +8,7 @@
  * Spec : docs/archive/wip/srs-fsrs-spec-tdd.md §6
  */
 
+import { serverErrorResponse } from '#lib/server/utils/error-handler.ts';
 import type { RequestHandler } from './$types';
 import { requireAuth } from '#lib/server/middleware/auth.ts';
 import { updateSectionSchema } from '#lib/server/validation/srs.ts';
@@ -78,8 +79,11 @@ export const PATCH: RequestHandler = async ({ params, request, locals }) => {
 		if (updateErr.code === '42501') {
 			return Response.json({ error: 'Modification refusée par les permissions.' }, { status: 403 });
 		}
-		logger.error('[sections/PATCH] failed:', updateErr);
-		return Response.json({ error: updateErr.message }, { status: 500 });
+		return serverErrorResponse(
+			'api/srs/sections/PATCH',
+			updateErr,
+			'Impossible de modifier la section'
+		);
 	}
 
 	if (!data) {
@@ -127,8 +131,11 @@ export const DELETE: RequestHandler = async ({ params, locals }) => {
 		if (deleteErr.code === '42501') {
 			return Response.json({ error: 'Suppression refusée par les permissions.' }, { status: 403 });
 		}
-		logger.error('[sections/DELETE] failed:', deleteErr);
-		return Response.json({ error: deleteErr.message }, { status: 500 });
+		return serverErrorResponse(
+			'api/srs/sections/DELETE',
+			deleteErr,
+			'Impossible de supprimer la section'
+		);
 	}
 
 	// 0 ligne : soit la section n'existe pas (suppression idempotente, 200 comme avant),

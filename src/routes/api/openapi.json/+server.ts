@@ -3,12 +3,10 @@
  * Serves the generated OpenAPI 3.1 specification
  */
 
+import { serverErrorResponse } from '#lib/server/utils/error-handler.ts';
 import type { RequestHandler } from './$types';
 import { generateOpenAPISpec } from '#lib/server/openapi/generator.ts';
 import { requireAdmin } from '#lib/server/middleware/auth.ts';
-import { createServerLogger } from '#lib/utils/logger.ts';
-
-const logger = createServerLogger('api/openapi.json/+server');
 
 /**
  * GET /api/openapi.json
@@ -29,18 +27,10 @@ export const GET: RequestHandler = async ({ locals }) => {
 			}
 		});
 	} catch (error) {
-		logger.error('Failed to generate OpenAPI spec:', error);
-
-		return Response.json(
-			{
-				error: {
-					message: 'Failed to generate OpenAPI specification',
-					details: error instanceof Error ? error.message : 'Unknown error'
-				}
-			},
-			{
-				status: 500
-			}
+		return serverErrorResponse(
+			'api/openapi.json',
+			error,
+			'Impossible de générer la spécification OpenAPI'
 		);
 	}
 };

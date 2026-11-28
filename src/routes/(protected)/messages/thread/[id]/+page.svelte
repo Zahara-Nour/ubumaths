@@ -34,7 +34,9 @@
 	const thread = $derived(privateMessages.currentThread);
 
 	// À qui part la réponse : au dernier qui m'a écrit dans ce fil, jamais à moi-même
-	const replyTo = $derived(page.data.user ? replyRecipientId(thread, page.data.user.id) : null);
+	const replyTo = $derived(
+		page.data.user ? replyRecipientId(thread, page.data.user.id, page.data.profile?.role) : null
+	);
 
 	// Format date
 	function formatDate(dateStr: string): string {

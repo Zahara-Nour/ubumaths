@@ -18,10 +18,7 @@
 import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { achievementContextSchema } from '#lib/server/validation/achievements.ts';
-import {
-	getAchievementsByContext,
-	AchievementServiceError
-} from '#lib/server/achievements/service.ts';
+import { getAchievementsByContext } from '#lib/server/achievements/service.ts';
 import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/achievements/+server');
@@ -53,10 +50,6 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 	} catch (err) {
 		logger.error('[API] Error fetching achievements:', err);
 
-		if (err instanceof AchievementServiceError) {
-			throw error(500, err.message);
-		}
-
-		throw error(500, 'An error occurred while fetching achievements');
+		throw error(500, 'Impossible de charger les succès');
 	}
 };

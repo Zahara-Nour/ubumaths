@@ -8,6 +8,7 @@
  * Spec : docs/archive/wip/skills-referentiel-design.md §3 (périmètre dynamique)
  */
 
+import { logServerError, throwServerError } from '#lib/server/utils/error-handler.ts';
 import type { PageServerLoad, Actions } from './$types';
 import { error, fail, redirect } from '@sveltejs/kit';
 import { requireRole } from '#lib/server/middleware/auth.ts';
@@ -63,7 +64,8 @@ export const load: PageServerLoad = async ({ locals, params }): Promise<TaskEdit
 		.eq('id', params.id)
 		.maybeSingle();
 
-	if (taskErr) throw error(500, `Erreur de chargement : ${taskErr.message}`);
+	if (taskErr)
+		throwServerError('evaluation-tasks/tache', taskErr, 'Impossible de charger l’observation');
 	if (!task) throw error(404, 'Observation introuvable');
 
 	// 2. Classes du prof pour le selecteur
@@ -105,7 +107,12 @@ export const load: PageServerLoad = async ({ locals, params }): Promise<TaskEdit
 		)
 		.order('display_order');
 
-	if (compErr) throw error(500, `Erreur compétences : ${compErr.message}`);
+	if (compErr)
+		throwServerError(
+			'evaluation-tasks/competences',
+			compErr,
+			'Impossible de charger les compétences'
+		);
 
 	// 4. Périmètre actuel de la tâche
 	const { data: perimeter, error: perimeterError } = await locals.supabase
@@ -194,7 +201,10 @@ export const actions: Actions = {
 				task_date: parsed.data.task_date || null
 			})
 			.eq('id', params.id);
-		if (updErr) return fail(500, { message: updErr.message });
+		if (updErr) {
+			logServerError('evaluation-tasks/mise-a-jour', updErr);
+			return fail(500, { message: 'Impossible de modifier l’observation' });
+		}
 		return { success: true, message: 'Observation mise à jour' };
 	},
 
@@ -224,13 +234,19 @@ export const actions: Actions = {
 			.from('evaluation_task_perimeter')
 			.delete()
 			.eq('task_id', params.id);
-		if (delErr) return fail(500, { message: `DELETE failed: ${delErr.message}` });
+		if (delErr) {
+			logServerError('evaluation-tasks/perimetre/suppression', delErr);
+			return fail(500, { message: 'Impossible d’enregistrer le périmètre' });
+		}
 
 		if (skillIds.length > 0) {
 			const { error: insErr } = await locals.supabase
 				.from('evaluation_task_perimeter')
 				.insert(skillIds.map((sid) => ({ task_id: params.id, observable_id: sid })));
-			if (insErr) return fail(500, { message: `INSERT failed: ${insErr.message}` });
+			if (insErr) {
+				logServerError('evaluation-tasks/perimetre/ajout', insErr);
+				return fail(500, { message: 'Impossible d’enregistrer le périmètre' });
+			}
 		}
 
 		return { success: true, message: `Périmètre enregistré (${skillIds.length} observables)` };
@@ -242,7 +258,10 @@ export const actions: Actions = {
 			.from('evaluation_tasks')
 			.delete()
 			.eq('id', params.id);
-		if (delErr) return fail(500, { message: delErr.message });
+		if (delErr) {
+			logServerError('evaluation-tasks/suppression', delErr);
+			return fail(500, { message: 'Impossible de supprimer l’observation' });
+		}
 		throw redirect(303, '/dashboard/teacher/evaluation-tasks');
 	}
 };

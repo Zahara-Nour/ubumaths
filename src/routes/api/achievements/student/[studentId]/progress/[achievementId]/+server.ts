@@ -29,7 +29,7 @@ import type { RequestHandler } from './$types';
 import { requireRole } from '#lib/server/middleware/auth.ts';
 import { verifyTeacherStudentWithRole } from '#lib/server/middleware/student-access.ts';
 import { studentIdSchema, achievementIdSchema } from '#lib/server/validation/achievements.ts';
-import { getStudentProgress, AchievementServiceError } from '#lib/server/achievements/service.ts';
+import { getStudentProgress } from '#lib/server/achievements/service.ts';
 import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger(
@@ -93,15 +93,11 @@ export const GET: RequestHandler = async ({ params, locals }) => {
 	} catch (err) {
 		logger.error('[API] Error fetching achievement progress:', err);
 
-		if (err instanceof AchievementServiceError) {
-			throw error(500, err.message);
-		}
-
 		// Re-throw SvelteKit errors (HttpError) to preserve status codes
 		if (err && typeof err === 'object' && 'status' in err) {
 			throw err;
 		}
 
-		throw error(500, 'An error occurred while fetching achievement progress');
+		throw error(500, 'Impossible de charger la progression du succès');
 	}
 };

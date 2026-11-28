@@ -1,3 +1,4 @@
+import { throwServerError } from '#lib/server/utils/error-handler.ts';
 import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { getTeacherTestMode } from '#lib/server/test-mode.ts';
@@ -57,8 +58,11 @@ export const GET: RequestHandler = async ({ params, locals }) => {
 			.maybeSingle();
 
 		if (classError) {
-			logger.error('[GET /api/classes/students] Error verifying class:', classError);
-			throw error(500, `Failed to verify class: ${classError.message}`);
+			throwServerError(
+				'api/classes/students/classe',
+				classError,
+				'Impossible de vérifier la classe'
+			);
 		}
 
 		if (!classCheck) {
@@ -87,8 +91,11 @@ export const GET: RequestHandler = async ({ params, locals }) => {
 			.eq('profiles.is_test', isTestMode);
 
 		if (membersError) {
-			logger.error('[GET /api/classes/students] Error fetching students:', membersError);
-			throw error(500, `Failed to fetch students: ${membersError.message}`);
+			throwServerError(
+				'api/classes/students/membres',
+				membersError,
+				'Impossible de charger les élèves'
+			);
 		}
 
 		// Transform to students array

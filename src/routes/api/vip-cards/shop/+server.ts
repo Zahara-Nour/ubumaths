@@ -16,12 +16,9 @@
  * - Returns only public card information (no sensitive data)
  */
 
-import { error } from '@sveltejs/kit';
+import { throwServerError } from '#lib/server/utils/error-handler.ts';
 import type { RequestHandler } from './$types';
 import { requireAuth } from '#lib/server/middleware/auth.ts';
-import { createServerLogger } from '#lib/utils/logger.ts';
-
-const logger = createServerLogger('api/vip-cards/shop/+server');
 
 // ============================================================================
 // TYPE DEFINITIONS
@@ -86,10 +83,10 @@ export const GET: RequestHandler = async ({ locals }) => {
 	]);
 
 	if (cardsResult.error) {
-		logger.error('[shop] Error fetching cards:', cardsResult.error);
-		throw error(
-			500,
-			`Impossible de charger les cartes VIP de la boutique : ${cardsResult.error.message}`
+		throwServerError(
+			'api/vip-cards/shop',
+			cardsResult.error,
+			'Impossible de charger les cartes VIP de la boutique'
 		);
 	}
 

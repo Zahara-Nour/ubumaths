@@ -21,6 +21,7 @@
  * - Profile update + audit trail in a single transaction
  */
 
+import { throwServerError } from '#lib/server/utils/error-handler.ts';
 import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { z } from 'zod';
@@ -74,8 +75,11 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	);
 
 	if (rpcError) {
-		logger.error('[request-activation] RPC error:', rpcError);
-		throw error(500, `Impossible de demander l’activation : ${rpcError.message}`);
+		throwServerError(
+			'api/vip-cards/request-activation',
+			rpcError,
+			'Impossible de demander l’activation'
+		);
 	}
 
 	const result = rpcResult as {

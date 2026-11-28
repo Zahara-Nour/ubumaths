@@ -10,6 +10,7 @@
  * Spec : docs/archive/wip/srs-fsrs-spec-tdd.md §6
  */
 
+import { serverErrorResponse } from '#lib/server/utils/error-handler.ts';
 import type { RequestHandler } from './$types';
 import { requireAuth } from '#lib/server/middleware/auth.ts';
 import { createSectionSchema } from '#lib/server/validation/srs.ts';
@@ -109,8 +110,11 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 				{ status: 403 }
 			);
 		}
-		logger.error('[sections] POST failed:', insertErr);
-		return Response.json({ error: insertErr.message }, { status: 500 });
+		return serverErrorResponse(
+			'api/srs/sections/POST',
+			insertErr,
+			'Impossible de créer la section'
+		);
 	}
 
 	return Response.json({ section: data }, { status: 201 });
