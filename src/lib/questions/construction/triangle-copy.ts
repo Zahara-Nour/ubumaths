@@ -19,11 +19,13 @@ import type { DrawnLine, DrawnObject } from './answer';
 import { isInFrame } from './instruments';
 import type { ConstructionVerdict, Position } from './judge';
 import {
-	EXTRA_SEGMENT_FEEDBACK,
 	NOT_CLOSED_FEEDBACK,
 	coveringPiece,
 	leftoverFeedback,
+	carrierOf,
 	mergeSegments,
+	sameLine,
+	sub,
 	tolerance,
 	type Carrier,
 	type Segment
@@ -59,7 +61,6 @@ export function isCopyCheck(check: TriangleCheck): check is CopyCheck {
 	return check.model !== undefined;
 }
 
-const sub = (p: Position, q: Position): Position => ({ x: p.x - q.x, y: p.y - q.y });
 const add = (p: Position, q: Position): Position => ({ x: p.x + q.x + 0, y: p.y + q.y + 0 });
 const near = (p: Position, q: Position, eps: number) => Math.hypot(p.x - q.x, p.y - q.y) <= eps;
 const isOnGrid = (value: number, step: number, eps: number) =>
@@ -108,24 +109,42 @@ function settingOf(
 			`${label} : le modèle ${check.model.join('')} est aplati (ses trois sommets sont alignés)`
 		);
 	}
+	const traced = (p: Position, q: Position) =>
+		shapes.segments.some(
+			(s) =>
+				(near(s.a, p, tolerance(p)) && near(s.b, q, tolerance(q))) ||
+				(near(s.a, q, tolerance(q)) && near(s.b, p, tolerance(p)))
+		);
+	// Le modèle se lit sur ses côtés : les trois doivent être tracés (revue de la PR)
+	const [nameD, nameE, nameF] = check.model;
+	for (const [p, q, side] of [
+		[d, e, `${nameD}${nameE}`],
+		[e, f, `${nameE}${nameF}`],
+		[d, f, `${nameD}${nameF}`]
+	] as const) {
+		if (!traced(p, q)) {
+			throw new TriangleAuthorError(
+				`${label} : le côté [${side}] du modèle n’est pas tracé (l’élève compte les carreaux sur le modèle)`
+			);
+		}
+	}
 	const a = placed(nameA, 'commencer le triangle');
+	if (near(a, d, tolerance(a, d))) {
+		throw new TriangleAuthorError(
+			`${label} : ${nameA} est sur ${nameD} : le triangle à tracer serait le modèle lui-même ; déplacer ${nameA}`
+		);
+	}
 	const expectedB = add(a, sub(e, d));
 	const c = add(a, sub(f, d));
 	const sideGiven = points.has(nameB);
 	if (sideGiven) {
 		const b = placed(nameB, 'tracer un côté');
-		const [nameD, nameE] = check.model;
 		if (!near(b, expectedB, tolerance(b, expectedB))) {
 			throw new TriangleAuthorError(
 				`${label} : [${nameA}${nameB}] n’est pas [${nameD}${nameE}] déplacé : placer ${nameB} en ${formatAt(expectedB)}`
 			);
 		}
-		const drawn = shapes.segments.some(
-			(s) =>
-				(near(s.a, a, tolerance(a)) && near(s.b, b, tolerance(b))) ||
-				(near(s.a, b, tolerance(b)) && near(s.b, a, tolerance(a)))
-		);
-		if (!drawn) {
+		if (!traced(a, b)) {
 			throw new TriangleAuthorError(
 				`${label} : [${nameA}${nameB}] n’est pas tracé : le tracer (« ${nameA.toLowerCase()}${nameB.toLowerCase()} = segment(${nameA}, ${nameB}) ») ou retirer ${nameB} (l’élève trace alors les trois côtés)`
 			);
@@ -232,18 +251,19 @@ export function judgeCopy(
 		return incorrect(fromA ? NOT_CLOSED_FEEDBACK : copyStartFeedback(nameA));
 	}
 	// Forme 1 sans triangle fermé : les messages du triangle à construire
+	const baseLine = carrierOf({ a, b });
 	const farEnds = (from: Position, other: Position) =>
 		pieces.flatMap((piece) => {
+			if (sameLine(piece, baseLine, eps)) return [];
 			const [p, q] = endsOf(piece);
 			const far = near(p, from, eps) ? q : near(q, from, eps) ? p : null;
 			return far && !near(far, other, eps) ? [far] : [];
 		});
 	const fromA = farEnds(a, b);
 	const fromB = farEnds(b, a);
+	// Aucun côté parti de A ni de B (trait ailleurs, [AB] prolongé) : les deux côtés manquent
 	if (fromA.length === 0 && fromB.length === 0) {
-		return drawn.length === 0
-			? incorrect(missingSidesFeedback(nameA, nameB, nameC))
-			: incorrect(EXTRA_SEGMENT_FEEDBACK);
+		return incorrect(missingSidesFeedback(nameA, nameB, nameC));
 	}
 	if (fromA.length === 0) return incorrect(missingSideFeedback(nameA, nameC));
 	if (fromB.length === 0) return incorrect(missingSideFeedback(nameB, nameC));

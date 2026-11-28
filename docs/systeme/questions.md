@@ -1157,9 +1157,9 @@ cercle(O, passant=A)` (palette : le compas ; papier uni ou quadrillage, O et A s
    n'est pas au bon endroit : compte les carreaux depuis A sur le modèle. » (forme 2 : le sommet faux,
    B ou C, ou « Tes sommets B et C… ») ; forme 2 sans triangle fermé : « Ton triangle doit partir du
    point A. » (aucun trait en A) ou « Ta figure n'est pas fermée. » ; forme 1 : les messages du
-   triangle (côté manquant, côtés qui ne se rejoignent pas) ou le trait de trop. Hors palette (point) :
+   triangle (côtés manquants, aussi pour un trait seul dans le prolongement de [AB], côté manquant, côtés qui ne se rejoignent pas). Hors palette (point) :
    faux sans message. Erreurs de l'auteur : un sommet du modèle ou A absent, caché, hors de la fenêtre
-   ou hors d'un nœud ; modèle aplati ; [AB] qui n'est pas [DE] déplacé (le message donne où placer B)
+   ou hors d'un nœud ; un côté du modèle non tracé ; modèle aplati ; A posé sur D ; [AB] qui n'est pas [DE] déplacé (le message donne où placer B)
    ou non tracé ; C déjà dans la figure ; B ou C attendus hors de la fenêtre. Correction : [AC] et
    [BC], ou les trois côtés (`copySolution`), sans arc ni codage (`copyCorrection`). Le générateur
    demande les noms du modèle et de A.

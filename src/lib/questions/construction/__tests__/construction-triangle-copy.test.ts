@@ -12,7 +12,7 @@ import { describe, it, expect } from 'vitest';
 import '../positions-setup';
 import { constructionExpected, constructionPositions, constructionShapes } from '../positions';
 import { assertConstructionChecks, judgeConstruction } from '../judge';
-import { missingSideFeedback, notJoinedFeedback } from '../triangle';
+import { missingSideFeedback, missingSidesFeedback, notJoinedFeedback } from '../triangle';
 import {
 	FLIPPED_COPY_FEEDBACK,
 	copyStartFeedback,
@@ -165,6 +165,15 @@ describe('triangle à reproduire : erreurs d’auteur', () => {
 		expect(() => assertChecks(figure(body))).toThrow(/\[AB\]/);
 	});
 
+	it('un côté du modèle non tracé', () => {
+		const body = SIDE.filter((l) => !l.startsWith('ef ='));
+		expect(() => assertChecks(figure(body))).toThrow(/\[EF\] du modèle n’est pas tracé/);
+	});
+
+	it('A posé sur D', () => {
+		expect(() => assertChecks(figure([...MODEL, 'A = point(1, 1)']))).toThrow(/A est sur D/);
+	});
+
 	it('C déjà dans la figure', () => {
 		expect(() => assertChecks(figure([...SIDE, 'C = point(9, 7)']))).toThrow(/C existe déjà/);
 	});
@@ -220,7 +229,7 @@ describe('triangle à reproduire, forme 1 : [AB] tracé', () => {
 		expect(judge(COPY, [])).toEqual({ status: 'empty' });
 		expect(judge(COPY, [segment({ x: 1, y: 7 }, { x: 3, y: 7 })])).toEqual({
 			status: 'incorrect',
-			feedback: EXTRA_SEGMENT_FEEDBACK
+			feedback: missingSidesFeedback('A', 'B', 'C')
 		});
 		expect(judge(COPY, [segment(A, C)])).toEqual({
 			status: 'incorrect',
@@ -229,6 +238,13 @@ describe('triangle à reproduire, forme 1 : [AB] tracé', () => {
 		expect(judge(COPY, [segment(A, C), segment(B, { x: 10, y: 7 })])).toEqual({
 			status: 'incorrect',
 			feedback: notJoinedFeedback('A', 'B', 'C')
+		});
+	});
+
+	it('[AB] prolongé seul : les deux côtés manquent', () => {
+		expect(judge(COPY, [segment(B, { x: 13, y: 4 })])).toEqual({
+			status: 'incorrect',
+			feedback: missingSidesFeedback('A', 'B', 'C')
 		});
 	});
 
