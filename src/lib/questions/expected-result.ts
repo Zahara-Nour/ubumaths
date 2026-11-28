@@ -27,6 +27,7 @@ import {
 } from './types';
 import { rulesDecide } from './rules-suffice';
 import { escapeStudentText, neutralizeStudentLatex } from './student-answer-safety';
+import { PARAMETRIC_COORDINATES, parseParametricAnswer } from './parametric/parametric-lines';
 import { correctChoiceIndexesOf, isChoiceBlank, parseChoiceAnswer } from './choice-case';
 import { replaceChoiceBlocks } from '#lib/ubumark/parser/choix-parser.ts';
 import { isWorkFigureBlank } from './graded-part';
@@ -550,6 +551,21 @@ interface BlankView {
 	build?: { kind: BuildKind; source: string; answer: string; first: number; cases: number };
 }
 
+/**
+ * Réponse d'une case « droite paramétrique » rendue en système : chaque ligne
+ * neutralisée À PART (réponse de l'élève), l'accolade ajoutée ensuite. Ses trois lignes
+ * collées (`x=1+2t\\y=2\\…`) ne se rendent pas dans `\textcolor` ; `null` si rien
+ * n'est écrit.
+ */
+function parametricStudentLatex(typed: string): string | null {
+	const lines = parseParametricAnswer(typed);
+	if (lines.every((line) => !line.trim())) return null;
+	const body = PARAMETRIC_COORDINATES.map(
+		(name, k) => `${name}=${neutralizeStudentLatex(lines[k] ?? '')}`
+	).join('\\\\');
+	return `\\begin{cases}${body}\\end{cases}`;
+}
+
 function blankViews(
 	instance: QuestionInstance,
 	answer: StudentAnswer | undefined,
@@ -575,9 +591,11 @@ function blankViews(
 		const student =
 			typed.trim() === ''
 				? null
-				: context === 'math' && blank.type !== 'graphical'
-					? neutralizeStudentLatex(typed)
-					: escapeStudentText(typed);
+				: blank.answerKind === 'droite-parametrique'
+					? parametricStudentLatex(typed)
+					: context === 'math' && blank.type !== 'graphical'
+						? neutralizeStudentLatex(typed)
+						: escapeStudentText(typed);
 		return [
 			{
 				index,
