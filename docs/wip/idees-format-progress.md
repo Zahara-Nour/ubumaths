@@ -6,19 +6,18 @@ Mettre en œuvre les idées retenues dans [idees-format-exercices.md](idees-form
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-28, après #3319._
+_Mis à jour le 2026-11-28, relecture de la revue de Seconde validée par David._
 
-- **État** : #3319 mergée (passes 1 et 2, 66 fiches). Ses 5 migrations de contenu
-  (`20261128151748` à `…151803`) sont les SEULES en attente en prod ; `db:migrate` refusé à la
-  session (écriture en prod = David).
-- **Prochaine action** : après le `db:migrate` de David → `migration-contenu.ts --dir` sur les 5
-  dossiers = 52 « inchangé » ; puis deux séries de relecture (≤ 50) dans `/dev/modeles`
-  (`scripts/series/creer-serie.ts`), David les publie ; lire les verdicts « À revoir ».
-- **En attente de David** : `! pnpm db:migrate` depuis le dépôt principal. Ensuite : 7 fiches à
-  outil (n° 75, 76, 77, 79) ; **n° 78 déjà livré** (4075445c98) → lot `arrondi-court` à retirer.
-- **Pièges** : diff trop gros pour `pr:merger` (> 20 000 lignes) → merge à la main ; rejeu
-  `checkTemplate` ne sait pas rejouer une erreur prévue « impossible ».
-- **Worktree / branche** : aucun (retirés après #3319).
+- **État** : revue du lot « nombres et calculs » de Seconde **finie** : #3319 en prod (52 modèles,
+  « inchangé » vérifié), deux séries de relecture publiées et validées par David (« je valide la
+  relecture », 2026-11-28).
+- **Prochaine action** : rien sur ce lot. Les 7 fiches à outil (a-05-2 n° 79 ; b-04-1, b-10-1,
+  c1-03-1, c1-07-0 n° 75 ; b-12-1 n° 76 ; c2-07-0 n° 77) se feront par les lots d'outils
+  (`outils-lots.md`), chacun ajoutant sa variation. Reste du chantier : clôture / versement.
+- **En attente de David** : dire si le chantier `idees-format` se clôt (versement du journal).
+- **Pièges** : rejeu `checkTemplate` ne sait pas rejouer une erreur prévue « impossible ».
+- **Worktree / branche** : `ubumaths-wt-idees-format-series` (`feat/idees-format-series-2de`),
+  à retirer après sa PR.
 
 ## Idée 1 — phase 0 validée (David, 2026-11-21)
 
@@ -562,3 +561,11 @@ zooms « lire » et « encadrer » justes, labyrinthe des multiples, case « pas
   outil (a-05-2 n° 79 ; b-04-1, b-10-1, c1-03-1, c1-07-0 n° 75 ; b-12-1 n° 76 ; c2-07-0 n° 77).
 - Vérification à l'écran laissée à la série : décimaux des corrigés de 3b0a04c0 v3, a692569a v3, v5
   (valeurs `;d` : virgule posée au rendu ?).
+
+### Relecture (2026-11-28)
+
+`migration-contenu.ts` après le `db:migrate` de David : 52 « inchangé ». Séries de relecture
+`scripts/series/2-relecture-revue-forme-nombres.json` (36) et `…-publies.json` (16), publiées par
+David ; relecture validée en bloc (« je valide la relecture »). Outil n° 78 trouvé déjà livré
+(« zéros utiles », 4075445c98) : lot `arrondi-court` retiré d'`outils-lots.md`.
+\n
