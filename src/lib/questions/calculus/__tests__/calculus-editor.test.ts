@@ -66,6 +66,14 @@ describe('calculus-editor', () => {
 		}
 	});
 
+	it('aller-retour droite paramétrique (outil 64) : la nature est gardée au save', () => {
+		const defaults = { answerKind: 'droite-parametrique' as const };
+		const state = calculusEditorState(defaults);
+		expect(state.parametric).toBe(true);
+		expect(calculusBlankDefaults(state)).toEqual(defaults);
+		expect(blankDefaultsSchema.safeParse(calculusBlankDefaults(state)).success).toBe(true);
+	});
+
 	it('aucune case de calcul : null', () => {
 		expect(calculusBlankDefaults(calculusEditorState({ answerKind: 'vecteur' }))).toBeNull();
 	});

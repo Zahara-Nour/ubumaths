@@ -1,19 +1,19 @@
 ---
 title: Écarts — lot cours-evaluations
 date: 2026-11-28
-status: en cours — PR 1 (#3291) et PR 2 (#3300) mergées, clôture à faire
+status: en cours — PR 1 à 3 mergées (#3291, #3300, #3306), clôture à faire
 ---
 
 # Écarts — lot `cours-evaluations`
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-28, après #3300._
+_Mis à jour le 2026-11-28, après #3306 (plafond des liens accordé)._
 
-- **État** : les 7 écarts du lot sont corrigés. PR 1 #3291 (V72, L37, L38, L40, L112, L113) et PR 2 #3300 (L39) mergées ; migrations `20261128072151` et `20261128135334` en prod, vérifiées par le MCP en lecture (policy, trigger, fonction, clés en NO ACTION).
-- **Prochaine action** : clôture du chantier (recompter le découpage, versement du durable dans `docs/systeme/`, archivage du journal, ligne de `ecarts-lots.md`), après la réponse de David ci-dessous.
-- **En attente de David** : les liens des familles doivent-ils suivre les dates de l'école (aujourd'hui toujours le 31 août, `endOfSchoolYear`) ?
-- **Pièges** : le cache des cases effacées de `skill_attempts` passe par `trg_skill_attempts_after_delete`, qui saute un élève supprimé (sinon la suppression d'un compte échoue). La saisie n'efface que les élèves de sa grille.
+- **État** : les 7 écarts du lot sont corrigés (#3291, #3300 ; migrations en prod). Les liens des familles (cahier, cours, carnet) expirent à la fin de l'année scolaire de l'école (#3306, accord de David du 2026-11-28 ; politique de confidentialité v1.6). Rien à déployer en base.
+- **Prochaine action** : (1) PR 4, accord de David du 2026-11-28 (« oui ») : plafonner l'expiration des liens des familles à 18 mois après le jour d'émission ; une fin d'année d'école au-delà → retour au 31 août qui vient (`schoolYearExpiry`, `src/lib/server/school-year.ts`), test unitaire du cas « 2099 », doc (`cours-et-chapitres.md`, `carnet-de-liaison.md`) ; nouveau worktree `ubumaths-wt-ecarts-cours-evaluations`, branche `fix/liens-familles-plafond`. (2) Clôture du chantier (recompter le découpage, versement dans `docs/systeme/`, archivage du journal, ligne de `ecarts-lots.md`).
+- **En attente de David** : rien.
+- **Pièges** : les liens déjà émis gardent leur 31 août. Le cache des cases effacées de `skill_attempts` passe par `trg_skill_attempts_after_delete` (saute un élève supprimé).
 - **Worktree / branche** : aucun (retirés par `pr:merger`).
 
 ## Décisions (2026-11-28)

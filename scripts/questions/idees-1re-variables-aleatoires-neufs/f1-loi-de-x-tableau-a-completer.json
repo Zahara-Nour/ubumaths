@@ -1,8 +1,7 @@
 {
 	"id": "505ee05a-b19a-4cd3-a409-509d51cf9fbd",
 	"rangement": {
-		"noeud": "Probabilités > Variables aléatoires > loi d'une variable aléatoire",
-		"point": "1SPE-355"
+		"pointsAjoutes": ["1TECHNO-095"]
 	},
 	"title": "Déterminer la loi de X : tableau à compléter",
 	"description": "À partir d'un énoncé (pari aux cartes, loterie, deux tirs indépendants), compléter le tableau de la loi de X : valeurs et probabilités.",

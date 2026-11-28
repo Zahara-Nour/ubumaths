@@ -1,0 +1,15 @@
+{
+	"migration": "supabase/migrations/20261128142705_questions_idees_1re_variables_aleatoires_second_tag_rangement_tags.sql",
+	"ranges": [],
+	"niveaux": [],
+	"tags": [
+		{
+			"id": "505ee05a-b19a-4cd3-a409-509d51cf9fbd",
+			"title": "Déterminer la loi de X : tableau à compléter",
+			"fichier": "f1-loi-de-x-tableau-a-completer.json",
+			"noeud": "Probabilités > Variables aléatoires > loi d'une variable aléatoire",
+			"avant": ["1SPE-355"],
+			"ajoutes": ["1TECHNO-095"]
+		}
+	]
+}

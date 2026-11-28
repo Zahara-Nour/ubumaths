@@ -151,6 +151,8 @@ import { cleanCoefficientsCustom } from '../clean-coefficients';
 import { expectedIntervalsLatex } from '../intervals/interval-answer';
 import { expectedVectorLatex } from '../vectors/vector-answer';
 import { expectedMatrixLatex } from '../matrices/matrix-answer';
+import { expectedParametricLatex } from '../parametric/parametric-line-answer';
+import { formatParametricAnswer, parseParametricAnswer } from '../parametric/parametric-lines';
 import { evaluateConditions } from './condition-evaluator';
 import { createRandomSource, randomIndex, type RandomSource } from '#lib/utils/random.ts';
 import { expectedInRequiredUnit } from '#lib/questions/units/required-unit.ts';
@@ -1549,16 +1551,26 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 					!(blank.unit ?? resolvedVariation.blankDefaults?.unit) &&
 					answerKind !== 'intervalles' &&
 					answerKind !== 'vecteur' &&
-					answerKind !== 'matrice';
+					answerKind !== 'matrice' &&
+					answerKind !== 'droite-parametrique';
+				// Droite paramétrique : chaque ligne nettoyée à part (`1+-2t` → `1-2t`)
+				const isParametricCleanable =
+					cleanCoefficients && isMathBlank && answerKind === 'droite-parametrique';
 				// Unité imposée : l'attendu s'écrit dans cette unité (`1.5[km]` → `1500[m]`)
 				const required = (blank.unit ?? resolvedVariation.blankDefaults?.unit)?.required;
 				const expectedAnswer = impossibleDraw
 					? IMPOSSIBLE_EXPECTED
 					: isCleanable
 						? cleanCoefficientsCustom(resolvedExpected, genericFunctions, capitalPairs)
-						: required
-							? expectedInRequiredUnit(resolvedExpected, required)
-							: resolvedExpected;
+						: isParametricCleanable
+							? formatParametricAnswer(
+									parseParametricAnswer(resolvedExpected).map((line) =>
+										cleanCoefficientsCustom(line, genericFunctions, capitalPairs)
+									)
+								)
+							: required
+								? expectedInRequiredUnit(resolvedExpected, required)
+								: resolvedExpected;
 
 				// `i` matches the blank counter assigned by `assignBlankIndices`
 				// (left-to-right, consecutive, 0-based). If that contract changes,
@@ -1642,12 +1654,14 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 									? expectedVectorLatex(resolved.expectedAnswer)
 									: resolved.answerKind === 'matrice'
 										? expectedMatrixLatex(resolved.expectedAnswer)
-										: convertToLatex(
-												resolved.expectedAnswer,
-												genericFunctions,
-												isCleanable,
-												capitalPairs
-											);
+										: resolved.answerKind === 'droite-parametrique'
+											? expectedParametricLatex(resolved.expectedAnswer)
+											: convertToLatex(
+													resolved.expectedAnswer,
+													genericFunctions,
+													isCleanable,
+													capitalPairs
+												);
 				}
 				if (operationAnswer !== undefined) {
 					resolved.operation = true;
@@ -1687,10 +1701,11 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 						resolved.answerKind === 'primitive' ||
 						resolved.answerKind === 'solution-ed' ||
 						resolved.answerKind === 'resolution' ||
+						resolved.answerKind === 'droite-parametrique' ||
 						template.options?.orderIndependent === true
 					) {
 						throw new Error(
-							`Case ${i + 1} : une erreur prévue ne va que dans une case à écriture mathématique ordinaire (ni texte, ni geste, ni primitive, ni solution d'équation différentielle, ni résolution ligne par ligne, ni case jugée par ses règles seules, ni cases appariées librement)`
+							`Case ${i + 1} : une erreur prévue ne va que dans une case à écriture mathématique ordinaire (ni texte, ni geste, ni primitive, ni solution d'équation différentielle, ni résolution ligne par ligne, ni droite paramétrique, ni case jugée par ses règles seules, ni cases appariées librement)`
 						);
 					}
 					resolved.expectedErrors = expectedErrors.map((error, k) => {

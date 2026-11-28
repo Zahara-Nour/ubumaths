@@ -26,6 +26,13 @@ import {
 	rotateCourseShareToken,
 	type PublicCourse
 } from '../course-share-tokens';
+import { classSchoolYearExpiry } from '#lib/server/school-year.ts';
+
+// La règle de l'année scolaire a ses propres tests (school-year.test.ts) : ici,
+// seulement que la rotation la demande pour la classe et l'écrit telle quelle.
+vi.mock('#lib/server/school-year.ts', () => ({
+	classSchoolYearExpiry: vi.fn(async () => new Date('2027-07-15T23:59:59Z'))
+}));
 
 const JETON = 'AbCdEfGhJkMnPqRs';
 const CHAPITRE = '11111111-1111-4111-8111-111111111111';
@@ -363,7 +370,7 @@ describe('revokeCourseShareToken', () => {
 });
 
 describe('rotateCourseShareToken', () => {
-	it('révoque puis insère un jeton de 16 caractères expirant le 31 août', async () => {
+	it("révoque puis insère un jeton de 16 caractères expirant à la fin de l'année de l'école", async () => {
 		const inserted: Record<string, unknown>[] = [];
 		const ligne = { id: 'n', token: 'x' };
 		const chain = {
@@ -390,7 +397,19 @@ describe('rotateCourseShareToken', () => {
 		expect(chain.update).toHaveBeenCalledWith({ is_active: false });
 		expect(inserted[0]).toMatchObject({ class_id: 'classe', created_by: 'prof' });
 		expect(String(inserted[0].token)).toMatch(/^[A-Za-z0-9]{16}$/);
-		expect(String(inserted[0].expires_at)).toMatch(/-08-31T23:59:59/);
+		expect(inserted[0].expires_at).toBe('2027-07-15T23:59:59.000Z');
+		expect(classSchoolYearExpiry).toHaveBeenCalledWith(sb, 'classe');
+	});
+
+	it("fin d'année illisible : erreur, et l'ancien lien n'est pas révoqué", async () => {
+		vi.mocked(classSchoolYearExpiry).mockRejectedValueOnce(new Error('panne'));
+		const from = vi.fn();
+		const sb = { from } as unknown as SupabaseClient<Database>;
+		expect(await rotateCourseShareToken(sb, 'classe', 'prof')).toEqual({
+			token: null,
+			error: 'Impossible de créer le lien du cours'
+		});
+		expect(from).not.toHaveBeenCalled();
 	});
 });
 
