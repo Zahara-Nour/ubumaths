@@ -10,7 +10,24 @@
 		{
 			"blanks": [
 				{
-					"expectedAnswer": "{{L}}^{ {{eval:(a)*(b)+(c)}} }"
+					"expectedAnswer": "{{L}}^{ {{eval:(a)*(b)+(c)}} }",
+					"expectedErrors": [
+						{
+							"answer": "{{L}}^{ {{eval:(a)+(b)+(c)}} }",
+							"message": "Pour une puissance de puissance, on multiplie les exposants, on ne les additionne pas.",
+							"label": "Exposants de la parenthèse additionnés"
+						},
+						{
+							"answer": "{{L}}^{ {{eval:(a)*(b)*(c)}} }",
+							"message": "Pour un produit de deux puissances de même base, on additionne les exposants, on ne les multiplie pas.",
+							"label": "Exposants du produit multipliés"
+						},
+						{
+							"answer": "{{L}}^{ {{eval:(a)*(b)-(c)}} }",
+							"message": "Attention au signe de l'exposant négatif : ajouter ou soustraire un nombre négatif change le calcul.",
+							"label": "Signe de l'exposant négatif perdu"
+						}
+					]
 				}
 			],
 			"statement": "Écris sous la forme d'une seule puissance de ${{L}}$ (${{L}}\\neq0$).\n\n$$\\left({{L}}^{ {{a}} }\\right)^{ {{b}} }\\times {{L}}^{ {{c}} }=?$$",
@@ -38,12 +55,30 @@
 					"Règles : $a^m\\times a^n=a^{m+n}$ ; $\\dfrac{a^m}{a^n}=a^{m-n}$ ; $(a^m)^n=a^{m\\times n}$.",
 					"$$\\left({{L}}^{ {{a}} }\\right)^{ {{b}} }\\times {{L}}^{ {{c}} }=\\textcolor{{{color:primary.0}}}{{{L}}^{ {{eval:(a)*(b)}} }}\\times {{L}}^{ {{c}} }={{L}}^{ {{eval:(a)*(b)}}+{{if:c<0|({{c}})|{{c}}}} }=\\textcolor{{{color:primary.1}}}{{{L}}^{ {{eval:(a)*(b)+(c)}} }}$$"
 				]
-			}
+			},
+			"hintFromFirstStep": true
 		},
 		{
 			"blanks": [
 				{
-					"expectedAnswer": "{{L}}^{ {{eval:(a)+(b)-(c)}} }"
+					"expectedAnswer": "{{L}}^{ {{eval:(a)+(b)-(c)}} }",
+					"expectedErrors": [
+						{
+							"answer": "{{L}}^{ {{eval:(a)+(b)+(c)}} }",
+							"message": "Attention au signe de l'exposant négatif : ajouter ou soustraire un nombre négatif change le calcul.",
+							"label": "Signe de l'exposant du dénominateur perdu"
+						},
+						{
+							"answer": "{{L}}^{ {{eval:(a)*(b)-(c)}} }",
+							"message": "Pour un produit de deux puissances de même base, on additionne les exposants, on ne les multiplie pas.",
+							"label": "Exposants du produit multipliés"
+						},
+						{
+							"answer": "{{L}}^{ {{eval:(c)-(a)-(b)}} }",
+							"message": "Tu as soustrait dans le mauvais sens : c'est l'exposant du haut moins celui du bas.",
+							"label": "Soustraction dans le mauvais sens"
+						}
+					]
 				}
 			],
 			"statement": "Écris sous la forme d'une seule puissance de ${{L}}$ (${{L}}\\neq0$).\n\n$$\\dfrac{ {{L}}^{ {{a}} }\\times {{L}}^{ {{b}} } }{ {{L}}^{ {{c}} } }=?$$",
@@ -72,12 +107,30 @@
 					"$$\\dfrac{ {{L}}^{ {{a}} }\\times {{L}}^{ {{b}} } }{ {{L}}^{ {{c}} } }=\\dfrac{\\textcolor{{{color:primary.0}}}{{{L}}^{ {{eval:(a)+(b)}} }}}{ {{L}}^{ {{c}} } }={{L}}^{ {{eval:(a)+(b)}}-{{if:c<0|({{c}})|{{c}}}} }=\\textcolor{{{color:primary.1}}}{{{L}}^{ {{eval:(a)+(b)-(c)}} }}$$",
 					"Diviser par un exposant **négatif** : soustraire ${{if:c<0|({{c}})|{{c}}}}$, c'est ajouter ${{eval:-(c)}}$."
 				]
-			}
+			},
+			"hintFromFirstStep": true
 		},
 		{
 			"blanks": [
 				{
-					"expectedAnswer": "{{L}}^{ {{eval:(c)-(a)*(b)}} }"
+					"expectedAnswer": "{{L}}^{ {{eval:(c)-(a)*(b)}} }",
+					"expectedErrors": [
+						{
+							"answer": "{{L}}^{ {{eval:-(a)*(b)-(c)}} }",
+							"message": "Attention au signe de l'exposant négatif : ajouter ou soustraire un nombre négatif change le calcul.",
+							"label": "Moins un nombre négatif non changé en plus"
+						},
+						{
+							"answer": "{{L}}^{ {{eval:(b)-(a)+(c)}} }",
+							"message": "Pour une puissance de puissance, on multiplie les exposants, on ne les additionne pas.",
+							"label": "Exposants de la parenthèse additionnés"
+						},
+						{
+							"answer": "{{L}}^{ {{eval:(a)*(b)-(c)}} }",
+							"message": "Tu as soustrait dans le mauvais sens : c'est l'exposant du haut moins celui du bas.",
+							"label": "Soustraction dans le mauvais sens"
+						}
+					]
 				}
 			],
 			"statement": "Écris sous la forme d'une seule puissance de ${{L}}$ (${{L}}\\neq0$).\n\n$$\\dfrac{\\left({{L}}^{-{{a}} }\\right)^{ {{b}} } }{ {{L}}^{-{{c}} } }=?$$",
@@ -105,12 +158,30 @@
 					"Règles : $a^m\\times a^n=a^{m+n}$ ; $\\dfrac{a^m}{a^n}=a^{m-n}$ ; $(a^m)^n=a^{m\\times n}$.",
 					"$$\\dfrac{\\left({{L}}^{-{{a}} }\\right)^{ {{b}} } }{ {{L}}^{-{{c}} } }=\\dfrac{\\textcolor{{{color:primary.0}}}{{{L}}^{ {{eval:-(a)*(b)}} }}}{ {{L}}^{-{{c}} } }={{L}}^{ {{eval:-(a)*(b)}}-(-{{c}}) }=\\textcolor{{{color:primary.1}}}{{{L}}^{ {{eval:(c)-(a)*(b)}} }}$$"
 				]
-			}
+			},
+			"hintFromFirstStep": true
 		},
 		{
 			"blanks": [
 				{
-					"expectedAnswer": "(-{{b}})^{ {{eval:(a)+(c)}} }"
+					"expectedAnswer": "(-{{b}})^{ {{eval:(a)+(c)}} }",
+					"expectedErrors": [
+						{
+							"answer": "(-{{b}})^{ {{eval:(a)*(c)}} }",
+							"message": "Pour un produit de deux puissances de même base, on additionne les exposants, on ne les multiplie pas.",
+							"label": "Exposants multipliés"
+						},
+						{
+							"answer": "(-{{b}})^{ {{eval:(a)-(c)}} }",
+							"message": "Attention au signe de l'exposant négatif : ajouter ou soustraire un nombre négatif change le calcul.",
+							"label": "Signe de l'exposant négatif perdu"
+						},
+						{
+							"answer": "{{eval:(b)^2}}^{ {{eval:(a)+(c)}} }",
+							"message": "Les bases ne se multiplient pas : avec la même base, seul l'exposant change.",
+							"label": "Bases multipliées"
+						}
+					]
 				}
 			],
 			"statement": "Écris sous la forme d'une seule puissance de $-{{b}}$.\n\n$$(-{{b}})^{ {{a}} }\\times(-{{b}})^{ {{c}} }=?$$",
@@ -138,12 +209,30 @@
 					"Règles : $a^m\\times a^n=a^{m+n}$ ; $\\dfrac{a^m}{a^n}=a^{m-n}$ ; $(a^m)^n=a^{m\\times n}$.",
 					"$$(-{{b}})^{ {{a}} }\\times(-{{b}})^{ {{c}} }=(-{{b}})^{ {{a}}+({{c}}) }=\\textcolor{{{color:primary.0}}}{(-{{b}})^{ {{eval:(a)+(c)}} }}$$"
 				]
-			}
+			},
+			"hintFromFirstStep": true
 		},
 		{
 			"blanks": [
 				{
-					"expectedAnswer": "{{if:s==1|(-{{b}})|{{b}}}}^{ {{eval:(a)*(n)-(c)}} }"
+					"expectedAnswer": "{{if:s==1|(-{{b}})|{{b}}}}^{ {{eval:(a)*(n)-(c)}} }",
+					"expectedErrors": [
+						{
+							"answer": "{{if:s==1|(-{{b}})|{{b}}}}^{ {{eval:(a)*(n)+(c)}} }",
+							"message": "Attention au signe de l'exposant négatif : ajouter ou soustraire un nombre négatif change le calcul.",
+							"label": "Moins un nombre négatif non changé en plus"
+						},
+						{
+							"answer": "{{if:s==1|(-{{b}})|{{b}}}}^{ {{eval:(a)+(n)-(c)}} }",
+							"message": "Pour une puissance de puissance, on multiplie les exposants, on ne les additionne pas.",
+							"label": "Exposants de la parenthèse additionnés"
+						},
+						{
+							"answer": "{{if:s==1|(-{{b}})|{{b}}}}^{ {{eval:(c)-(a)*(n)}} }",
+							"message": "Tu as soustrait dans le mauvais sens : c'est l'exposant du haut moins celui du bas.",
+							"label": "Soustraction dans le mauvais sens"
+						}
+					]
 				}
 			],
 			"statement": "Écris sous la forme d'une seule puissance de ${{if:s==1|-{{b}}|{{b}}}}$.\n\n$$\\dfrac{\\left({{if:s==1|(-{{b}})|{{b}}}}^{ {{a}} }\\right)^{ {{n}} } }{ {{if:s==1|(-{{b}})|{{b}}}}^{ {{c}} } }=?$$",
@@ -179,7 +268,8 @@
 					"$$\\dfrac{\\left({{if:s==1|(-{{b}})|{{b}}}}^{ {{a}} }\\right)^{ {{n}} } }{ {{if:s==1|(-{{b}})|{{b}}}}^{ {{c}} } }=\\dfrac{\\textcolor{{{color:primary.0}}}{{{if:s==1|(-{{b}})|{{b}}}}^{ {{eval:(a)*(n)}} }}}{ {{if:s==1|(-{{b}})|{{b}}}}^{ {{c}} } }={{if:s==1|(-{{b}})|{{b}}}}^{ {{eval:(a)*(n)}}-({{c}}) }=\\textcolor{{{color:primary.1}}}{{{if:s==1|(-{{b}})|{{b}}}}^{ {{eval:(a)*(n)-(c)}} }}$$",
 					"Diviser par un exposant **négatif** : soustraire $({{c}})$, c'est ajouter ${{c0}}$."
 				]
-			}
+			},
+			"hintFromFirstStep": true
 		}
 	],
 	"testSpecs": [
@@ -200,7 +290,8 @@
 		{
 			"answers": ["x"],
 			"expected": {
-				"status": "incorrect"
+				"status": "incorrect",
+				"expectedErrorMessage": "Pour une puissance de puissance, on multiplie les exposants, on ne les additionne pas."
 			},
 			"variables": {
 				"L": "x|x",
@@ -214,7 +305,8 @@
 		{
 			"answers": ["x^{-24}"],
 			"expected": {
-				"status": "incorrect"
+				"status": "incorrect",
+				"expectedErrorMessage": "Pour un produit de deux puissances de même base, on additionne les exposants, on ne les multiplie pas."
 			},
 			"variables": {
 				"L": "x|x",
@@ -242,7 +334,8 @@
 		{
 			"answers": ["y^6"],
 			"expected": {
-				"status": "incorrect"
+				"status": "incorrect",
+				"expectedErrorMessage": "Attention au signe de l'exposant négatif : ajouter ou soustraire un nombre négatif change le calcul."
 			},
 			"variables": {
 				"L": "y|y",
@@ -285,7 +378,8 @@
 		{
 			"answers": ["z^{-10}"],
 			"expected": {
-				"status": "incorrect"
+				"status": "incorrect",
+				"expectedErrorMessage": "Attention au signe de l'exposant négatif : ajouter ou soustraire un nombre négatif change le calcul."
 			},
 			"variables": {
 				"L": "z|z",
@@ -313,7 +407,8 @@
 		{
 			"answers": ["(-3)^{-8}"],
 			"expected": {
-				"status": "incorrect"
+				"status": "incorrect",
+				"expectedErrorMessage": "Pour un produit de deux puissances de même base, on additionne les exposants, on ne les multiplie pas."
 			},
 			"variables": {
 				"b": "3",
@@ -342,7 +437,8 @@
 		{
 			"answers": ["(-3)^6"],
 			"expected": {
-				"status": "incorrect"
+				"status": "incorrect",
+				"expectedErrorMessage": "Attention au signe de l'exposant négatif : ajouter ou soustraire un nombre négatif change le calcul."
 			},
 			"variables": {
 				"b": "3",
@@ -427,6 +523,143 @@
 				"c": "-1"
 			},
 			"description": "((−5)²)³ / (−5)⁻¹ = (−5)⁷",
+			"variationIndex": 4
+		},
+		{
+			"answers": ["x^{10}"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Attention au signe de l'exposant négatif : ajouter ou soustraire un nombre négatif change le calcul."
+			},
+			"variables": {
+				"L": "x|x",
+				"a": "2",
+				"b": "3",
+				"c": "-4"
+			},
+			"description": "Erreur prévue : x¹⁰",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["y^{17}"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Pour un produit de deux puissances de même base, on additionne les exposants, on ne les multiplie pas."
+			},
+			"variables": {
+				"L": "y|y",
+				"a": "5",
+				"b": "3",
+				"c": "-2"
+			},
+			"description": "Erreur prévue : y¹⁷",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["y^{-10}"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as soustrait dans le mauvais sens : c'est l'exposant du haut moins celui du bas."
+			},
+			"variables": {
+				"L": "y|y",
+				"a": "5",
+				"b": "3",
+				"c": "-2"
+			},
+			"description": "Erreur prévue : y⁻¹⁰",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["z^5"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Pour une puissance de puissance, on multiplie les exposants, on ne les additionne pas."
+			},
+			"variables": {
+				"L": "z|z",
+				"a": "2",
+				"b": "3",
+				"c": "4"
+			},
+			"description": "Erreur prévue : z⁵",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["z^2"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as soustrait dans le mauvais sens : c'est l'exposant du haut moins celui du bas."
+			},
+			"variables": {
+				"L": "z|z",
+				"a": "2",
+				"b": "3",
+				"c": "4"
+			},
+			"description": "Erreur prévue : z²",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["9^2"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Les bases ne se multiplient pas : avec la même base, seul l'exposant change."
+			},
+			"variables": {
+				"b": "3",
+				"a": "4",
+				"c0": "2"
+			},
+			"description": "Erreur prévue : 9²",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["2^2"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Attention au signe de l'exposant négatif : ajouter ou soustraire un nombre négatif change le calcul."
+			},
+			"variables": {
+				"b": "2",
+				"s": "0",
+				"a": "3",
+				"n": "2",
+				"c0": "4"
+			},
+			"description": "Erreur prévue : 2²",
+			"variationIndex": 4
+		},
+		{
+			"answers": ["2^9"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Pour une puissance de puissance, on multiplie les exposants, on ne les additionne pas."
+			},
+			"variables": {
+				"b": "2",
+				"s": "0",
+				"a": "3",
+				"n": "2",
+				"c0": "4"
+			},
+			"description": "Erreur prévue : 2⁹",
+			"variationIndex": 4
+		},
+		{
+			"answers": ["2^{-10}"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as soustrait dans le mauvais sens : c'est l'exposant du haut moins celui du bas."
+			},
+			"variables": {
+				"b": "2",
+				"s": "0",
+				"a": "3",
+				"n": "2",
+				"c0": "4"
+			},
+			"description": "Erreur prévue : 2⁻¹⁰",
 			"variationIndex": 4
 		}
 	]

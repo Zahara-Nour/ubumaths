@@ -26,7 +26,12 @@ import {
 	type ValidationStatus
 } from './types';
 import { rulesDecide } from './rules-suffice';
-import { escapeStudentText, neutralizeStudentLatex } from './student-answer-safety';
+import {
+	escapeStudentText,
+	exceedsMathNestingLimits,
+	neutralizeStudentLatex
+} from './student-answer-safety';
+import { PARAMETRIC_COORDINATES, parseParametricAnswer } from './parametric/parametric-lines';
 import { correctChoiceIndexesOf, isChoiceBlank, parseChoiceAnswer } from './choice-case';
 import { replaceChoiceBlocks } from '#lib/ubumark/parser/choix-parser.ts';
 import { isWorkFigureBlank } from './graded-part';
@@ -41,6 +46,8 @@ import { findTortuesToProgram } from '#lib/ubumark/parser/tortue-parser.ts';
 import { findCalculsToProgram } from '#lib/ubumark/parser/calcul-parser.ts';
 import { findRobotsToProduce } from '#lib/ubumark/parser/robot-parser.ts';
 import { findLabyrinthesAParcourir } from '#lib/ubumark/parser/labyrinthe-parser.ts';
+import { findYohakusARemplir } from '#lib/ubumark/parser/yohaku-parser.ts';
+import { findPythonsAEcrire } from '#lib/ubumark/parser/python-a-ecrire-parser.ts';
 import { findRangersToPlace } from '#lib/ubumark/parser/ranger-parser.ts';
 import { findAssociersToPlace } from '#lib/ubumark/parser/associer-parser.ts';
 import { findTrousToPlace } from '#lib/ubumark/parser/trous-parser.ts';
@@ -234,18 +241,21 @@ export const EMPTY_BUILD_TEXT = "Tu n'as rien posé.";
 export const EMPTY_SIGN_TABLE_TEXT = "Tu n'as rien rempli dans le tableau.";
 /** Droite à placer laissée vide (aucun point) */
 export const EMPTY_PLACE_TEXT = "Tu n'as rien placé.";
-/** Programme tortue ou de calcul laissé vide (aucun bloc) */
+/** Programme tortue, de calcul ou Python laissé vide (aucun bloc, aucun code) */
 export const EMPTY_PROGRAM_TEXT = "Tu n'as écrit aucun programme.";
 /** Robot à produire laissé vide (aucune instruction) */
 export const EMPTY_CODE_TEXT = "Tu n'as écrit aucun code.";
 /** Labyrinthe à parcourir laissé vide (aucune case touchée) */
 export const EMPTY_PATH_TEXT = "Tu n'as tracé aucun chemin.";
+/** Grille yohaku laissée vide (aucune case remplie) */
+export const EMPTY_GRID_TEXT = "Tu n'as rien écrit dans la grille.";
 /** Texte d'une case de ce genre laissée vide : rien posé, placé, colorié ou rempli */
 function emptyBuildText(kind: BuildKind, source: string): string {
 	if (kind === 'partage') return NOTHING_COLORED;
-	if (kind === 'tortue' || kind === 'calcul') return EMPTY_PROGRAM_TEXT;
+	if (kind === 'tortue' || kind === 'calcul' || kind === 'python') return EMPTY_PROGRAM_TEXT;
 	if (kind === 'robot') return EMPTY_CODE_TEXT;
 	if (kind === 'labyrinthe') return EMPTY_PATH_TEXT;
+	if (kind === 'yohaku') return EMPTY_GRID_TEXT;
 	if (kind === 'cubes') {
 		return parseEspaceContent(source).spec?.task?.kind === 'retrouver'
 			? MISSING_HEIGHTS
@@ -385,7 +395,9 @@ function buildCaseBlocks(statement: string): Map<number, BuildCaseBlock> {
 		...findTortuesToProgram(statement).map((b) => ({ ...b, kind: 'tortue' as const })),
 		...findCalculsToProgram(statement).map((b) => ({ ...b, kind: 'calcul' as const })),
 		...findRobotsToProduce(statement).map((b) => ({ ...b, kind: 'robot' as const })),
-		...findLabyrinthesAParcourir(statement).map((b) => ({ ...b, kind: 'labyrinthe' as const }))
+		...findLabyrinthesAParcourir(statement).map((b) => ({ ...b, kind: 'labyrinthe' as const })),
+		...findYohakusARemplir(statement).map((b) => ({ ...b, kind: 'yohaku' as const })),
+		...findPythonsAEcrire(statement).map((b) => ({ ...b, kind: 'python' as const }))
 	];
 	const blocks = new Map<number, BuildCaseBlock>();
 	for (const block of found) {
@@ -550,6 +562,35 @@ interface BlankView {
 	build?: { kind: BuildKind; source: string; answer: string; first: number; cases: number };
 }
 
+/**
+ * Réponse d'une case « droite paramétrique » rendue en système : chaque ligne
+ * neutralisée À PART (réponse de l'élève), l'accolade ajoutée ensuite. Ses trois lignes
+ * collées (`x=1+2t\\y=2\\…`) ne se rendent pas dans `\textcolor` ; `null` si rien
+ * n'est écrit.
+ *
+ * Bornes de rendu (audit de sécurité de l'outil 64) : mesurées sur la réponse ENTIÈRE,
+ * pas ligne par ligne (trois lignes au plafond triplaient la page du professeur) ;
+ * au-delà, ou avec un autre nombre de lignes que trois (une 4e ligne serait cachée), la
+ * réponse est montrée en texte inerte (son début). `&` rendus inertes : dans `cases`, ils
+ * ouvriraient des colonnes.
+ */
+/** Début montré d'une réponse « droite paramétrique » hors bornes, en texte inerte */
+const PARAMETRIC_INERT_PREVIEW = 200;
+
+export function parametricStudentLatex(typed: string): string | null {
+	const lines = parseParametricAnswer(typed);
+	if (lines.every((line) => !line.trim())) return null;
+	if (lines.length !== PARAMETRIC_COORDINATES.length || exceedsMathNestingLimits(typed)) {
+		const ellipsis = typed.length > PARAMETRIC_INERT_PREVIEW ? '…' : '';
+		return String.raw`\text{${escapeStudentText(typed.slice(0, PARAMETRIC_INERT_PREVIEW))}${ellipsis}}`;
+	}
+	const body = PARAMETRIC_COORDINATES.map((name, k) => {
+		const safe = neutralizeStudentLatex(lines[k] ?? '').replace(/(?<!\\)&/g, '\\&');
+		return `${name}=${safe}`;
+	}).join('\\\\');
+	return `\\begin{cases}${body}\\end{cases}`;
+}
+
 function blankViews(
 	instance: QuestionInstance,
 	answer: StudentAnswer | undefined,
@@ -575,9 +616,11 @@ function blankViews(
 		const student =
 			typed.trim() === ''
 				? null
-				: context === 'math' && blank.type !== 'graphical'
-					? neutralizeStudentLatex(typed)
-					: escapeStudentText(typed);
+				: blank.answerKind === 'droite-parametrique'
+					? parametricStudentLatex(typed)
+					: context === 'math' && blank.type !== 'graphical'
+						? neutralizeStudentLatex(typed)
+						: escapeStudentText(typed);
 		return [
 			{
 				index,
@@ -784,7 +827,9 @@ function buildLines(
 		...((build.kind === 'tortue' ||
 			build.kind === 'calcul' ||
 			build.kind === 'robot' ||
-			build.kind === 'labyrinthe') && {
+			build.kind === 'labyrinthe' ||
+			build.kind === 'yohaku' ||
+			build.kind === 'python') && {
 			expected: [view.expected]
 		})
 	};

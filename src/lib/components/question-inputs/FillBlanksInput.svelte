@@ -89,7 +89,9 @@
 	import TortueProgramme from '#lib/components/markdown/nodes/TortueProgramme.svelte';
 	import RobotCode from '#lib/components/markdown/nodes/RobotCode.svelte';
 	import Labyrinthe from '#lib/components/markdown/nodes/Labyrinthe.svelte';
+	import Yohaku from '#lib/components/markdown/nodes/Yohaku.svelte';
 	import CalculProgramme from '#lib/components/markdown/nodes/CalculProgramme.svelte';
+	import PythonCaseInput from './PythonCaseInput.svelte';
 	import PartageColorier from '#lib/components/markdown/nodes/PartageColorier.svelte';
 	import CubesGeste from '#lib/components/markdown/nodes/CubesGeste.svelte';
 	import PatronGeste from '#lib/components/markdown/nodes/PatronGeste.svelte';
@@ -100,6 +102,8 @@
 	import ChoiceBlock from '#lib/components/markdown/nodes/ChoiceBlock.svelte';
 	import VariationTable from '#lib/components/markdown/nodes/VariationTable.svelte';
 	import SignCellPicker from './SignCellPicker.svelte';
+	import ResolutionInput from './ResolutionInput.svelte';
+	import ParametricLineInput from './ParametricLineInput.svelte';
 	import type { HiddenCell, VariationTableNode } from '#lib/ubumark/types/variation-table.ts';
 	import MultipleChoiceInput from './MultipleChoiceInput.svelte';
 	import type { ChoiceNode } from '#lib/ubumark/types/choix.ts';
@@ -252,6 +256,8 @@
 		if (node.type === 'calcul') return node.caseIndex !== undefined;
 		if (node.type === 'robot') return node.caseIndex !== undefined;
 		if (node.type === 'labyrinthe') return node.caseIndex !== undefined;
+		if (node.type === 'yohaku') return node.caseIndex !== undefined;
+		if (node.type === 'python-a-ecrire') return node.caseIndex !== undefined;
 		if (node.type === 'variation-table') return isTableToFill(node);
 		return false;
 	}
@@ -631,7 +637,7 @@
 			// Plan vide : le premier bouton de la réserve ; droite à placer : la droite
 			slot.build
 				.querySelector<HTMLElement>(
-					'.construire-ajouter:not(:disabled), [data-signe-case]:not(:disabled), [role="slider"], [data-ranger-focus]:not(:disabled), [data-associer-focus]:not(:disabled), [data-trous-focus]:not(:disabled), [data-tortue-focus]:not(:disabled), [data-robot-focus]:not(:disabled), [data-labyrinthe-focus]:not(:disabled), [data-calcul-focus]:not(:disabled), .partage-colorier [role="button"]:not([aria-disabled="true"]), .cubes-geste [role="button"]:not([aria-disabled="true"]), .cubes-saisie input:not(:disabled), .patron-geste [role="button"]:not([aria-disabled="true"]), .solide-geste [role="button"]:not([aria-disabled="true"])'
+					'.construire-ajouter:not(:disabled), [data-signe-case]:not(:disabled), [role="slider"], [data-ranger-focus]:not(:disabled), [data-associer-focus]:not(:disabled), [data-trous-focus]:not(:disabled), [data-tortue-focus]:not(:disabled), [data-robot-focus]:not(:disabled), [data-labyrinthe-focus]:not(:disabled), math-field[data-yohaku-focus]:not([read-only]), [data-calcul-focus]:not(:disabled), [data-graduer-focus]:not(:disabled), math-field[data-resolution-focus], math-field[data-parametrique-focus], [data-python-case] .cm-content, .partage-colorier [role="button"]:not([aria-disabled="true"]), .cubes-geste [role="button"]:not([aria-disabled="true"]), .cubes-saisie input:not(:disabled), .patron-geste [role="button"]:not([aria-disabled="true"]), .solide-geste [role="button"]:not([aria-disabled="true"])'
 				)
 				?.focus();
 			return;
@@ -810,6 +816,28 @@
 		}
 	}
 
+	/**
+	 * Case « résolution » posée seule dans un bloc `$$\placeholder[N]{}$$` : son index,
+	 * undefined pour tout autre bloc (formule ordinaire, autre case)
+	 */
+	function resolutionCaseOf(expression: string): number | undefined {
+		const match = /^\s*\\placeholder\[(\d+)\]\{\}\s*$/.exec(expression);
+		if (!match) return undefined;
+		const index = Number(match[1]);
+		return blanks[index]?.answerKind === 'resolution' ? index : undefined;
+	}
+
+	/**
+	 * Case « droite paramétrique » posée seule dans un bloc `$$\placeholder[N]{}$$` : son
+	 * index, undefined pour tout autre bloc
+	 */
+	function parametricCaseOf(expression: string): number | undefined {
+		const match = /^\s*\\placeholder\[(\d+)\]\{\}\s*$/.exec(expression);
+		if (!match) return undefined;
+		const index = Number(match[1]);
+		return blanks[index]?.answerKind === 'droite-parametrique' ? index : undefined;
+	}
+
 	// ============================================================================
 	// CASE « CHOIX »
 	// ============================================================================
@@ -981,6 +1009,32 @@
 						{#key filledLatex}
 							<MathBlock expression={filledLatex} syntax="latex" />
 						{/key}
+					{:else if parametricCaseOf(node.expression) !== undefined}
+						<!-- Case « droite paramétrique » : trois lignes x =, y =, z = -->
+						{@const caseIndex = parametricCaseOf(node.expression) ?? 0}
+						<ParametricLineInput
+							value={inputStates[caseIndex]?.value ?? ''}
+							isCorrect={inputStates[caseIndex]?.isCorrect ?? null}
+							disabled={effectiveDisabled}
+							caseNumber={caseIndex + 1}
+							onChange={(value) => handleInputChange(caseIndex, value)}
+						/>
+					{:else if resolutionCaseOf(node.expression) !== undefined}
+						<!-- Case « résolution » : une colonne de lignes à la place du champ -->
+						{@const caseIndex = resolutionCaseOf(node.expression) ?? 0}
+						{@const blank = blanks[caseIndex]}
+						<ResolutionInput
+							value={inputStates[caseIndex]?.value ?? ''}
+							isCorrect={inputStates[caseIndex]?.isCorrect ?? null}
+							disabled={effectiveDisabled}
+							caseNumber={caseIndex + 1}
+							fields={{
+								equation: blank?.equation,
+								variable: blank?.variable,
+								minLines: blank?.minLines
+							}}
+							onChange={(value) => handleInputChange(caseIndex, value)}
+						/>
 					{:else}
 						{#key node.expression}
 							<MathPrompt
@@ -1035,6 +1089,26 @@
 								}
 							: undefined}
 					/>
+				{/if}
+			{:else if node.type === 'number-line' && node.caseIndex !== undefined && node.graduer !== undefined}
+				<!-- Droite à graduer : la case N est le nombre de parts, le point k a la case N + 1 + k -->
+				{@const firstCase = node.caseIndex}
+				{@const caseCount = 1 + (node.placer?.length ?? 0)}
+				{#if showCorrectAnswers}
+					<!-- Bonne réponse : la droite partagée, les points justes -->
+					<BuildAnswer kind="line" source={node.source ?? ''} answer={null} status="solution" />
+				{:else}
+					<div data-construire-case={firstCase} data-construire-cases={caseCount}>
+						<NumberLine
+							{node}
+							answers={Array.from({ length: caseCount }, (_, k) => ({
+								value: inputStates[firstCase + k]?.value ?? '',
+								isCorrect: flashMode ? null : (inputStates[firstCase + k]?.isCorrect ?? null),
+								disabled: flashMode || effectiveDisabled,
+								onChange: (value: string) => handleInputChange(firstCase + k, value)
+							}))}
+						/>
+					</div>
 				{/if}
 			{:else if node.type === 'number-line' && node.caseIndex !== undefined && node.placer !== undefined}
 				<!-- Droite à placer : l'élève pose ses points, une case par point (N, N + 1…),
@@ -1096,6 +1170,27 @@
 									onChange: (value: string) => handleInputChange(lineCase, value)
 								}
 							]}
+						/>
+					</div>
+				{/if}
+			{:else if node.type === 'courbe' && node.caseIndex !== undefined && node.spec?.construire !== undefined}
+				<!-- Escalier à construire : l'élève pose u₁…u_N sur l'axe, une case par terme
+				     (N, N + 1…), la chaîne de ses termes jusqu'à k est la réponse de la case k -->
+				{@const firstCase = node.caseIndex}
+				{@const caseCount = node.spec.construire.terms.length}
+				{#if showCorrectAnswers}
+					<!-- Bonne réponse : le repère avec le vrai escalier -->
+					<BuildAnswer kind="courbe" source={node.source} answer={null} status="solution" />
+				{:else}
+					<div data-construire-case={firstCase} data-construire-cases={caseCount}>
+						<Courbe
+							{node}
+							answers={node.spec.construire.terms.map((_, k) => ({
+								value: inputStates[firstCase + k]?.value ?? '',
+								isCorrect: flashMode ? null : (inputStates[firstCase + k]?.isCorrect ?? null),
+								disabled: flashMode || effectiveDisabled,
+								onChange: (value: string) => handleInputChange(firstCase + k, value)
+							}))}
 						/>
 					</div>
 				{/if}
@@ -1368,6 +1463,65 @@
 									disabled: flashMode || effectiveDisabled,
 									onChange: (value) => handleInputChange(caseIndex, value)
 								}}
+							/>
+						{/key}
+					</div>
+				{/if}
+			{:else if node.type === 'yohaku' && node.caseIndex !== undefined && node.spec !== null}
+				<!-- Grille yohaku : l'élève remplit des champs, ses valeurs en tableau sont la réponse -->
+				{@const caseIndex = node.caseIndex}
+				{@const state = inputStates[caseIndex]}
+				{@const expected = blanks[caseIndex]?.expectedAnswer}
+				{#if showCorrectAnswers}
+					<!-- Bonne réponse : une grille juste et la mention des autres -->
+					<BuildAnswer
+						kind="yohaku"
+						source={node.source}
+						answer={null}
+						status="solution"
+						expected={expected === undefined ? undefined : [expected]}
+					/>
+				{:else}
+					<div data-construire-case={caseIndex}>
+						{#key node.source}
+							<Yohaku
+								{node}
+								expected={flashMode ? undefined : expected}
+								answer={{
+									value: state?.value ?? '',
+									isCorrect: flashMode ? null : (state?.isCorrect ?? null),
+									disabled: flashMode || effectiveDisabled,
+									onChange: (value) => handleInputChange(caseIndex, value)
+								}}
+							/>
+						{/key}
+					</div>
+				{/if}
+			{:else if node.type === 'python-a-ecrire' && node.caseIndex !== undefined && node.spec !== null}
+				<!-- Programme Python : l'élève écrit sa fonction ; « Valider » la fait tourner avant de juger -->
+				{@const caseIndex = node.caseIndex}
+				{@const state = inputStates[caseIndex]}
+				{@const expected = blanks[caseIndex]?.expectedAnswer}
+				{#if showCorrectAnswers}
+					<!-- Bonne réponse : la solution de l'auteur en bloc de code -->
+					<BuildAnswer
+						kind="python"
+						source={node.source}
+						answer={null}
+						status="solution"
+						expected={expected === undefined ? undefined : [expected]}
+					/>
+				{:else}
+					<div data-construire-case={caseIndex}>
+						<!-- Autre question, autre bloc : l'éditeur est recréé avec son départ -->
+						{#key node.source}
+							<PythonCaseInput
+								spec={node.spec}
+								expected={flashMode ? undefined : expected}
+								value={state?.value ?? ''}
+								isCorrect={flashMode ? null : (state?.isCorrect ?? null)}
+								disabled={flashMode || effectiveDisabled}
+								onChange={(value) => handleInputChange(caseIndex, value)}
 							/>
 						{/key}
 					</div>

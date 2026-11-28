@@ -21,6 +21,7 @@
 <script lang="ts">
 	import type { ResolvedMarkdown } from '#lib/ubumark/index.ts';
 	import { MarkdownRenderer } from '#lib/components/markdown/index.ts';
+	import { provideFigureInChoice } from '#lib/components/markdown/figure-in-choice.ts';
 	import type { GenericFunctionConfig } from '#lib/mathAST/index.ts';
 	import { Check, X, Circle, CircleDot, Square, SquareCheck } from '@lucide/svelte';
 	import { cn } from '#lib/utils.ts';
@@ -62,6 +63,9 @@
 		label = 'Choix',
 		genericFunctions
 	}: Props = $props();
+
+	// Une figure dans un choix n'y pose pas de bouton à elle (« Agrandir » du bloc solide)
+	provideFigureInChoice();
 
 	// Pièces et billets : tous les choix à la même échelle, d'après le plus large
 	let monnaieSize = $derived(monnaieChoiceSize(choices.map((c) => c.content)));

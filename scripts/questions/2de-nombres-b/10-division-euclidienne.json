@@ -46,10 +46,44 @@
 			"conditions": ["r<b", "n<=999"],
 			"blanks": [
 				{
-					"expectedAnswer": "{{q}}"
+					"expectedAnswer": "{{q}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:q-1}}",
+							"message": "Ton quotient est trop petit : avec lui, le reste serait plus grand que le diviseur.",
+							"label": "Quotient trop petit de 1"
+						},
+						{
+							"answer": "{{eval:q+1}}",
+							"message": "Ton quotient est trop grand : ce produit dépasse le nombre de départ.",
+							"label": "Quotient trop grand de 1"
+						},
+						{
+							"answer": "{{r}}",
+							"message": "Tu as inversé le quotient et le reste de la division.",
+							"label": "Quotient et reste inversés"
+						}
+					]
 				},
 				{
-					"expectedAnswer": "{{r}}"
+					"expectedAnswer": "{{r}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:r+b}}",
+							"message": "Ton reste est plus grand que le diviseur : il doit être plus petit que lui.",
+							"label": "Reste plus grand que le diviseur"
+						},
+						{
+							"answer": "{{eval:b-r}}",
+							"message": "Tu as donné ce qui manque pour atteindre le multiple suivant, pas le reste.",
+							"label": "Ce qui manque au lieu du reste"
+						},
+						{
+							"answer": "{{q}}",
+							"message": "Tu as inversé le quotient et le reste de la division.",
+							"label": "Quotient et reste inversés"
+						}
+					]
 				}
 			],
 			"correction": {
@@ -59,7 +93,8 @@
 					"$$\\textcolor{{{color:primary.0}}}{{{n}}={{b}}\\times{{q}}+{{r}}}$$",
 					"Le quotient est ${{q}}$ et le reste ${{r}}$."
 				]
-			}
+			},
+			"hint": "Cherche le plus grand multiple de ${{b}}$ qui ne dépasse pas ${{n}}$. Le reste doit être plus petit que ${{b}}$."
 		},
 		{
 			"statement": "{{if:w==0|Nina|{{if:w==1|Ilyes|Margaux}}}} a ${{n}}$ bonbons. {{if:w==1|Il|Elle}} les range dans des sachets de ${{b}}$ bonbons.\n\nCombien de sachets pleins peut-{{if:w==1|il|elle}} remplir ? Combien de bonbons reste-t-il ?\n\nSachets pleins : $?$\n\nBonbons restants : $?$",
@@ -100,10 +135,44 @@
 			"conditions": ["r<b", "n<=999"],
 			"blanks": [
 				{
-					"expectedAnswer": "{{q}}"
+					"expectedAnswer": "{{q}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:q-1}}",
+							"message": "Il reste encore assez de bonbons pour remplir un sachet de plus.",
+							"label": "Quotient trop petit de 1"
+						},
+						{
+							"answer": "{{eval:q+1}}",
+							"message": "Le dernier sachet ne serait pas plein : il n'y a pas assez de bonbons.",
+							"label": "Sachet incomplet compté"
+						},
+						{
+							"answer": "{{r}}",
+							"message": "Tu as échangé les deux réponses : relis chaque question.",
+							"label": "Réponses échangées"
+						}
+					]
 				},
 				{
-					"expectedAnswer": "{{r}}"
+					"expectedAnswer": "{{r}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:r+b}}",
+							"message": "Avec autant de bonbons restants, on peut encore remplir un sachet.",
+							"label": "Reste plus grand que le diviseur"
+						},
+						{
+							"answer": "{{eval:b-r}}",
+							"message": "Tu as donné ce qui manque pour remplir un sachet de plus, pas ce qui reste.",
+							"label": "Ce qui manque au lieu du reste"
+						},
+						{
+							"answer": "{{q}}",
+							"message": "Tu as échangé les deux réponses : relis chaque question.",
+							"label": "Réponses échangées"
+						}
+					]
 				}
 			],
 			"correction": {
@@ -113,7 +182,8 @@
 					"$$\\textcolor{{{color:primary.0}}}{{{n}}={{b}}\\times{{q}}+{{r}}}$$",
 					"On remplit $\\textcolor{{{color:primary.0}}}{{{q}}}$ sachets et il reste $\\textcolor{{{color:primary.0}}}{{{r}}}$ bonbons."
 				]
-			}
+			},
+			"hint": "Cherche combien de fois ${{b}}$ va dans ${{n}}$ : c'est une division euclidienne, et le reste doit être plus petit que ${{b}}$."
 		},
 		{
 			"statement": "Pour un tournoi, ${{n}}$ élèves forment des équipes de ${{b}}$.\n\nCombien d'équipes complètes peut-on former ? Combien d'élèves restent sans équipe ?\n\nÉquipes complètes : $?$\n\nÉlèves sans équipe : $?$",
@@ -154,10 +224,44 @@
 			"conditions": ["r<b", "n<=999"],
 			"blanks": [
 				{
-					"expectedAnswer": "{{q}}"
+					"expectedAnswer": "{{q}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:q-1}}",
+							"message": "Il reste encore assez d'élèves pour former une équipe de plus.",
+							"label": "Quotient trop petit de 1"
+						},
+						{
+							"answer": "{{eval:q+1}}",
+							"message": "La dernière équipe ne serait pas complète : il n'y a pas assez d'élèves.",
+							"label": "Équipe incomplète comptée"
+						},
+						{
+							"answer": "{{r}}",
+							"message": "Tu as échangé les deux réponses : relis chaque question.",
+							"label": "Réponses échangées"
+						}
+					]
 				},
 				{
-					"expectedAnswer": "{{r}}"
+					"expectedAnswer": "{{r}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:r+b}}",
+							"message": "Avec autant d'élèves restants, on peut encore former une équipe.",
+							"label": "Reste plus grand que le diviseur"
+						},
+						{
+							"answer": "{{eval:b-r}}",
+							"message": "Tu as donné ce qui manque pour une équipe de plus, pas le nombre d'élèves sans équipe.",
+							"label": "Ce qui manque au lieu du reste"
+						},
+						{
+							"answer": "{{q}}",
+							"message": "Tu as échangé les deux réponses : relis chaque question.",
+							"label": "Réponses échangées"
+						}
+					]
 				}
 			],
 			"correction": {
@@ -167,7 +271,192 @@
 					"$$\\textcolor{{{color:primary.0}}}{{{n}}={{b}}\\times{{q}}+{{r}}}$$",
 					"On forme $\\textcolor{{{color:primary.0}}}{{{q}}}$ équipes complètes et $\\textcolor{{{color:primary.0}}}{{{r}}}$ élèves restent sans équipe."
 				]
-			}
+			},
+			"hint": "Cherche combien de fois ${{b}}$ va dans ${{n}}$ : c'est une division euclidienne, et le reste doit être plus petit que ${{b}}$."
+		},
+		{
+			"statement": "Écris la division euclidienne de ${{n}}$ par ${{b}}$ sous la forme ${{n}}={{b}}\\times q+r$, avec un reste $r$ plus petit que ${{b}}$.\n\n${{n}}=?$",
+			"variables": [
+				{
+					"name": "w",
+					"expression": "0..2"
+				},
+				{
+					"name": "b",
+					"expression": "6..25"
+				},
+				{
+					"name": "q",
+					"expression": "5..40"
+				},
+				{
+					"name": "r",
+					"expression": "1..24"
+				},
+				{
+					"name": "n",
+					"expression": "eval:b*q+r"
+				},
+				{
+					"name": "bq",
+					"expression": "eval:b*q"
+				},
+				{
+					"name": "q1",
+					"expression": "eval:q+1"
+				},
+				{
+					"name": "bq1",
+					"expression": "eval:b*(q+1)"
+				}
+			],
+			"conditions": ["r<b", "n<=999", "r!=q", "2*r!=b"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{b}}\\times{{q}}+{{r}}",
+					"requiredForm": {
+						"pattern": "{{b}}*k:integer + r:integer & gte(0) & lt({{b}})"
+					},
+					"expectedErrors": [
+						{
+							"answer": "{{b}}\\times{{q}}",
+							"message": "Tu as oublié le reste : ton calcul ne vaut pas ${{n}}$.",
+							"label": "Reste oublié"
+						},
+						{
+							"answer": "{{b}}\\times{{q}}+{{eval:b-r}}",
+							"message": "Tu as ajouté ce qui manque pour atteindre le multiple suivant, pas le reste.",
+							"label": "Ce qui manque au lieu du reste"
+						},
+						{
+							"answer": "{{b}}\\times{{r}}+{{q}}",
+							"message": "Tu as inversé le quotient et le reste de la division.",
+							"label": "Quotient et reste inversés"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"On cherche le plus grand multiple de ${{b}}$ qui ne dépasse pas ${{n}}$ : ${{b}}\\times{{q}}={{bq}}\\leqslant{{n}}<{{b}}\\times{{q1}}={{bq1}}$.",
+					"Le reste est ${{n}}-{{bq}}={{r}}$, bien **plus petit que** ${{b}}$.",
+					"$$\\textcolor{{{color:primary.0}}}{{{n}}={{b}}\\times{{q}}+{{r}}}$$",
+					"Le quotient est ${{q}}$ et le reste ${{r}}$."
+				]
+			},
+			"hint": "Cherche le plus grand multiple de ${{b}}$ qui ne dépasse pas ${{n}}$. Le reste doit être plus petit que ${{b}}$."
+		},
+		{
+			"statement": "${{n}}$ élèves partent en sortie scolaire. Un car peut transporter ${{b}}$ élèves.\n\nCombien de cars faut-il réserver, au minimum, pour emmener tous les élèves ?\n\n$?$ cars",
+			"variables": [
+				{
+					"name": "b",
+					"expression": "20|25|30|40|50|60"
+				},
+				{
+					"name": "q",
+					"expression": "2..9"
+				},
+				{
+					"name": "r",
+					"expression": "1..59"
+				},
+				{
+					"name": "n",
+					"expression": "eval:b*q+r"
+				},
+				{
+					"name": "bq",
+					"expression": "eval:b*q"
+				},
+				{
+					"name": "q1",
+					"expression": "eval:q+1"
+				}
+			],
+			"conditions": ["r<b", "r!=q", "r!=q+1", "b-r!=q", "b-r!=q+1", "b-r!=r"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{q1}}",
+					"expectedErrors": [
+						{
+							"answer": "{{q}}",
+							"message": "Avec ce nombre de cars, des élèves restent sans place : le dernier car n'a pas besoin d'être plein.",
+							"label": "Dernier car oublié"
+						},
+						{
+							"answer": "{{r}}",
+							"message": "Tu as donné le nombre d'élèves du dernier car, pas le nombre de cars.",
+							"label": "Reste au lieu du nombre de cars"
+						},
+						{
+							"answer": "{{eval:b-r}}",
+							"message": "Tu as donné le nombre de places vides dans le dernier car, pas le nombre de cars.",
+							"label": "Places vides"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"On fait la division euclidienne de ${{n}}$ par ${{b}}$ : ${{n}}={{b}}\\times{{q}}+{{r}}$.",
+					"${{q}}$ cars pleins emmènent ${{bq}}$ élèves ; il reste ${{r}}$ élèves, qui ont besoin d'un car de plus.",
+					"Il faut $\\textcolor{{{color:primary.0}}}{{{q1}}}$ cars."
+				]
+			},
+			"hint": "Fais la division euclidienne de ${{n}}$ par ${{b}}$, puis demande-toi ce que deviennent les élèves du reste."
+		},
+		{
+			"statement": "On sait que ${{n}}={{b}}\\times{{q}}+{{r}}$.\n\nOn range ${{n}}$ chaises en rangées de ${{b}}$ chaises. Combien de rangées complètes obtient-on ?\n\n$?$ rangées",
+			"variables": [
+				{
+					"name": "b",
+					"expression": "5..12"
+				},
+				{
+					"name": "q",
+					"expression": "12..40"
+				},
+				{
+					"name": "r",
+					"expression": "1..11"
+				},
+				{
+					"name": "n",
+					"expression": "eval:b*q+r"
+				}
+			],
+			"conditions": ["r<b"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{q}}",
+					"expectedErrors": [
+						{
+							"answer": "{{b}}",
+							"message": "Tu as donné le nombre de chaises d'une rangée, pas le nombre de rangées.",
+							"label": "Taille d’une rangée"
+						},
+						{
+							"answer": "{{r}}",
+							"message": "Tu as donné le nombre de chaises qui restent, pas le nombre de rangées.",
+							"label": "Reste"
+						},
+						{
+							"answer": "{{eval:q+1}}",
+							"message": "La dernière rangée ne serait pas complète : il ne reste que ${{r}}$ chaises.",
+							"label": "Rangée incomplète comptée"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"Dans l'égalité ${{n}}={{b}}\\times{{q}}+{{r}}$, le reste ${{r}}$ est plus petit que ${{b}}$ : c'est la division euclidienne de ${{n}}$ par ${{b}}$.",
+					"On fait ${{q}}$ paquets de ${{b}}$ chaises, et il reste ${{r}}$ chaises, pas assez pour une rangée de plus.",
+					"On obtient $\\textcolor{{{color:primary.0}}}{{{q}}}$ rangées complètes."
+				]
+			},
+			"hint": "Chaque rangée contient ${{b}}$ chaises : que compte chaque nombre de l'égalité ?"
 		}
 	],
 	"testSpecs": [
@@ -253,6 +542,413 @@
 			"answers": ["32", "6"],
 			"expected": {
 				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur prévue : quotient 12 pour 157 ÷ 12",
+			"variationIndex": 0,
+			"variables": {
+				"w": "0",
+				"b": "12",
+				"q": "13",
+				"r": "1"
+			},
+			"answers": ["12", "1"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Ton quotient est trop petit : avec lui, le reste serait plus grand que le diviseur."
+			}
+		},
+		{
+			"description": "Erreur prévue : quotient 14",
+			"variationIndex": 0,
+			"variables": {
+				"w": "0",
+				"b": "12",
+				"q": "13",
+				"r": "1"
+			},
+			"answers": ["14", "1"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Ton quotient est trop grand : ce produit dépasse le nombre de départ."
+			}
+		},
+		{
+			"description": "Erreur prévue : 1 et 13 inversés",
+			"variationIndex": 0,
+			"variables": {
+				"w": "0",
+				"b": "12",
+				"q": "13",
+				"r": "1"
+			},
+			"answers": ["1", "13"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as inversé le quotient et le reste de la division."
+			}
+		},
+		{
+			"description": "Erreur prévue : reste 13",
+			"variationIndex": 0,
+			"variables": {
+				"w": "0",
+				"b": "12",
+				"q": "13",
+				"r": "1"
+			},
+			"answers": ["13", "13"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Ton reste est plus grand que le diviseur : il doit être plus petit que lui."
+			}
+		},
+		{
+			"description": "Erreur prévue : reste 11 (12 − 1)",
+			"variationIndex": 0,
+			"variables": {
+				"w": "0",
+				"b": "12",
+				"q": "13",
+				"r": "1"
+			},
+			"answers": ["13", "11"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as donné ce qui manque pour atteindre le multiple suivant, pas le reste."
+			}
+		},
+		{
+			"description": "Erreur prévue : 12 sachets",
+			"variationIndex": 1,
+			"variables": {
+				"w": "0",
+				"b": "12",
+				"q": "13",
+				"r": "1"
+			},
+			"answers": ["12", "1"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Il reste encore assez de bonbons pour remplir un sachet de plus."
+			}
+		},
+		{
+			"description": "Erreur prévue : 14 sachets",
+			"variationIndex": 1,
+			"variables": {
+				"w": "0",
+				"b": "12",
+				"q": "13",
+				"r": "1"
+			},
+			"answers": ["14", "1"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Le dernier sachet ne serait pas plein : il n'y a pas assez de bonbons."
+			}
+		},
+		{
+			"description": "Erreur prévue : 11 bonbons",
+			"variationIndex": 1,
+			"variables": {
+				"w": "0",
+				"b": "12",
+				"q": "13",
+				"r": "1"
+			},
+			"answers": ["13", "11"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as donné ce qui manque pour remplir un sachet de plus, pas ce qui reste."
+			}
+		},
+		{
+			"description": "Erreur prévue : 6 et 32 échangés",
+			"variationIndex": 2,
+			"variables": {
+				"w": "0",
+				"b": "7",
+				"q": "32",
+				"r": "6"
+			},
+			"answers": ["6", "32"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as échangé les deux réponses : relis chaque question."
+			}
+		},
+		{
+			"description": "Erreur prévue : 13 élèves sans équipe",
+			"variationIndex": 2,
+			"variables": {
+				"w": "0",
+				"b": "7",
+				"q": "32",
+				"r": "6"
+			},
+			"answers": ["32", "13"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Avec autant d'élèves restants, on peut encore former une équipe."
+			}
+		},
+		{
+			"description": "Erreur prévue : 31 équipes",
+			"variationIndex": 2,
+			"variables": {
+				"w": "0",
+				"b": "7",
+				"q": "32",
+				"r": "6"
+			},
+			"answers": ["31", "6"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Il reste encore assez d'élèves pour former une équipe de plus."
+			}
+		},
+		{
+			"description": "Une case : 157 = 12 × 13 + 1",
+			"variationIndex": 3,
+			"variables": {
+				"w": "0",
+				"b": "12",
+				"q": "13",
+				"r": "1"
+			},
+			"answers": ["12\\times13+1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Une case : 13 × 12 + 1",
+			"variationIndex": 3,
+			"variables": {
+				"w": "0",
+				"b": "12",
+				"q": "13",
+				"r": "1"
+			},
+			"answers": ["13\\times12+1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Une case : 1 + 12 × 13",
+			"variationIndex": 3,
+			"variables": {
+				"w": "0",
+				"b": "12",
+				"q": "13",
+				"r": "1"
+			},
+			"answers": ["1+12\\times13"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Une case : 12 × 12 + 13 refusé (reste trop grand)",
+			"variationIndex": 3,
+			"variables": {
+				"w": "0",
+				"b": "12",
+				"q": "13",
+				"r": "1"
+			},
+			"answers": ["12\\times12+13"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		},
+		{
+			"description": "Une case : 157 recopié refusé",
+			"variationIndex": 3,
+			"variables": {
+				"w": "0",
+				"b": "12",
+				"q": "13",
+				"r": "1"
+			},
+			"answers": ["157"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		},
+		{
+			"description": "Une case : 12 × 14 − 11 refusé",
+			"variationIndex": 3,
+			"variables": {
+				"w": "0",
+				"b": "12",
+				"q": "13",
+				"r": "1"
+			},
+			"answers": ["12\\times14-11"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		},
+		{
+			"description": "Erreur prévue : 12 × 13 (reste oublié)",
+			"variationIndex": 3,
+			"variables": {
+				"w": "0",
+				"b": "12",
+				"q": "13",
+				"r": "1"
+			},
+			"answers": ["12\\times13"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as oublié le reste : ton calcul ne vaut pas $157$."
+			}
+		},
+		{
+			"description": "Erreur prévue : 12 × 13 + 11",
+			"variationIndex": 3,
+			"variables": {
+				"w": "0",
+				"b": "12",
+				"q": "13",
+				"r": "1"
+			},
+			"answers": ["12\\times13+11"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as ajouté ce qui manque pour atteindre le multiple suivant, pas le reste."
+			}
+		},
+		{
+			"description": "Erreur prévue : 12 × 1 + 13",
+			"variationIndex": 3,
+			"variables": {
+				"w": "0",
+				"b": "12",
+				"q": "13",
+				"r": "1"
+			},
+			"answers": ["12\\times1+13"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as inversé le quotient et le reste de la division."
+			}
+		},
+		{
+			"description": "157 élèves, cars de 50 : 4 cars",
+			"variationIndex": 4,
+			"variables": {
+				"b": "50",
+				"q": "3",
+				"r": "7"
+			},
+			"answers": ["4"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur prévue : 3 cars",
+			"variationIndex": 4,
+			"variables": {
+				"b": "50",
+				"q": "3",
+				"r": "7"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Avec ce nombre de cars, des élèves restent sans place : le dernier car n'a pas besoin d'être plein."
+			}
+		},
+		{
+			"description": "Erreur prévue : 7 (le reste)",
+			"variationIndex": 4,
+			"variables": {
+				"b": "50",
+				"q": "3",
+				"r": "7"
+			},
+			"answers": ["7"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as donné le nombre d'élèves du dernier car, pas le nombre de cars."
+			}
+		},
+		{
+			"description": "Erreur prévue : 43 places vides",
+			"variationIndex": 4,
+			"variables": {
+				"b": "50",
+				"q": "3",
+				"r": "7"
+			},
+			"answers": ["43"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as donné le nombre de places vides dans le dernier car, pas le nombre de cars."
+			}
+		},
+		{
+			"description": "235 = 8 × 29 + 3 : 29 rangées",
+			"variationIndex": 5,
+			"variables": {
+				"b": "8",
+				"q": "29",
+				"r": "3"
+			},
+			"answers": ["29"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur prévue : 8",
+			"variationIndex": 5,
+			"variables": {
+				"b": "8",
+				"q": "29",
+				"r": "3"
+			},
+			"answers": ["8"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as donné le nombre de chaises d'une rangée, pas le nombre de rangées."
+			}
+		},
+		{
+			"description": "Erreur prévue : 3",
+			"variationIndex": 5,
+			"variables": {
+				"b": "8",
+				"q": "29",
+				"r": "3"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as donné le nombre de chaises qui restent, pas le nombre de rangées."
+			}
+		},
+		{
+			"description": "Erreur prévue : 30",
+			"variationIndex": 5,
+			"variables": {
+				"b": "8",
+				"q": "29",
+				"r": "3"
+			},
+			"answers": ["30"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "La dernière rangée ne serait pas complète : il ne reste que $3$ chaises."
 			}
 		}
 	]

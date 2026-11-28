@@ -72,6 +72,10 @@ const vecteur = modele(
 	'vecteur',
 	`Trace le vecteur depuis A.\n\n${repere('points: A(-1 ; 2)', 'tracer: vecteur (3 ; -2) depuis A')}`
 );
+const escalier = modele(
+	'escalier',
+	`Construis u₁ et u₂.\n\n${repere('u(0) = 0 ; u(n+1) = sqrt(2*u(n)+3) pour n de 0 à 2 construire 2')}`
+);
 const deuxReperes = modele(
 	'deux-reperes',
 	`Trace $d$.\n\n${repere('tracer: y = {{m}}x + {{p}}')}\n\nTrace $d'$.\n\n${repere('tracer: y = -x + 4')}`
@@ -87,6 +91,7 @@ const modeles = new Map(
 		avecCase,
 		verticale,
 		vecteur,
+		escalier,
 		deuxReperes
 	].map((t) => [t.id, t])
 );
@@ -206,5 +211,15 @@ describe('buildSerie — droite à tracer', () => {
 		expect(solvedOverlay(corrige.spec!).traces).toEqual([
 			{ from: { x: -1, y: 2 }, to: { x: 2, y: 0 }, arrow: true, dashed: false }
 		]);
+	});
+
+	it('escalier à construire : énoncé sans case, corrigé = le vrai escalier en vert', () => {
+		const serie = buildSerie(modeles, [{ templateId: 'escalier', seed: 1 }]);
+		expect(serie.statement).not.toMatch(/case:|solution:/);
+		expect(bloc(serie.statement).spec?.construire?.terms).toHaveLength(2);
+
+		const corrige = bloc(serie.solution);
+		expect(corrige.errors).toEqual([]);
+		expect(solvedOverlay(corrige.spec!).traces).toHaveLength(6);
 	});
 });

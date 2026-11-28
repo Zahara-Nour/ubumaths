@@ -355,6 +355,7 @@
 						id="error-search"
 						type="text"
 						placeholder="Message d'erreur..."
+						maxlength={200}
 						bind:value={searchInput}
 						onkeydown={(e) => e.key === 'Enter' && applyFilters()}
 					/>

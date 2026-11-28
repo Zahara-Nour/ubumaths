@@ -80,7 +80,7 @@ export const GET: RequestHandler = async ({ params, url, locals }) => {
 			}
 		} else {
 			// Unknown role
-			throw error(403, 'Not authorized');
+			throw error(403, 'Accès refusé');
 		}
 
 		// Fetch student achievements

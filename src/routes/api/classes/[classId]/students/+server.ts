@@ -1,7 +1,7 @@
 import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { getTeacherTestMode } from '#lib/server/test-mode.ts';
-import { getClassGidouillesSchema } from '#lib/server/validation/classes.ts';
+import { getClassStudentsSchema } from '#lib/server/validation/classes.ts';
 import { requireRole } from '#lib/server/middleware/auth.ts';
 import { createServerLogger } from '#lib/utils/logger.ts';
 
@@ -35,7 +35,7 @@ export const GET: RequestHandler = async ({ params, locals }) => {
 	const { user } = await requireRole(locals, 'teacher');
 
 	// ✅ SECURITY: Validate class ID with Zod
-	const validation = getClassGidouillesSchema.safeParse({
+	const validation = getClassStudentsSchema.safeParse({
 		classId: params.classId
 	});
 

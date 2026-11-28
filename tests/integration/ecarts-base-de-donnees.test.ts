@@ -2,22 +2,16 @@
  * Preuves du registre des écarts — suppressions en cascade (base locale)
  * =====================================================================
  *
- * Deux écarts ouverts de `docs/ecarts/registre.md` (L112, L113) ne se prouvent
- * que sur une vraie base. Chacun a ici :
+ * Deux écarts de `docs/ecarts/registre.md` (L112, L113), corrigés le
+ * 2026-11-28 par la migration `suppressions_refusees_points_exercices` : une
+ * suppression qui effaçait en silence du travail d'élève ou une trace du
+ * cahier de texte est désormais REFUSÉE. Chacun a ici :
  *
- *  - un **témoin**, test ordinaire : le même geste, sur un cas permis, marche ;
- *  - sa **preuve**, en `it.fails` : elle affirme le comportement ATTENDU, donc
- *    elle échoue tant que l'écart est vrai, et `it.fails` la compte verte.
+ *  - un **témoin** : le même geste, sur un cas permis, marche ;
+ *  - ses **preuves** : la suppression refusée, les données toujours là.
  *
- * Le jour où l'écart est corrigé, la preuve passe, `it.fails` devient rouge et
- * la CI s'arrête : retirer alors `.fails` ET le marqueur du nom du test (le mot
- * « écart » suivi de l'identifiant). Le registre lit ce marqueur par une
- * commande (`! grep`) : sans lui, la ligne se ferme à la tâche de nuit.
- *
- * ⚠️ Un `it.fails` est vert dès que son corps lève, quelle qu'en soit la raison.
- * Donc chaque sonde tourne dans un `beforeAll` (une panne de décor y est rouge)
- * et le corps d'une preuve ne contient qu'UNE affirmation, sur un résultat déjà
- * lu.
+ * Chaque sonde tourne dans un `beforeAll` et le corps d'un test ne contient
+ * qu'UNE affirmation, sur un résultat déjà lu.
  *
  * @vitest-environment node
  */
@@ -135,7 +129,7 @@ describe('preuves des écarts — suppressions en cascade (base locale)', () => 
 			expect(pointsLibresRestants).toBe(0);
 		});
 
-		it.fails('écart L112 : l’acquisition de l’élève sur le point est toujours là', () => {
+		it('L112 : la suppression est refusée, l’acquisition de l’élève est toujours là', () => {
 			expect(etatsRestants).toBe(1);
 		});
 	});
@@ -143,6 +137,7 @@ describe('preuves des écarts — suppressions en cascade (base locale)', () => 
 	describe('suppression d’un exercice cité par une séance du cahier de texte', () => {
 		let libresRestants: number;
 		let citesRestants: number;
+		let codeDuRefus: string | undefined;
 
 		beforeAll(async () => {
 			const prof = await TestData.profile().withRole('teacher').create();
@@ -166,7 +161,8 @@ describe('preuves des écarts — suppressions en cascade (base locale)', () => 
 				kind: 'exercise',
 				exercise_id: cite.id
 			});
-			await service.from('exercises').delete().eq('id', cite.id);
+			const { error: refus } = await service.from('exercises').delete().eq('id', cite.id);
+			codeDuRefus = refus?.code;
 			citesRestants = await compter('exercises', 'id', cite.id);
 		});
 
@@ -174,8 +170,14 @@ describe('preuves des écarts — suppressions en cascade (base locale)', () => 
 			expect(libresRestants).toBe(0);
 		});
 
-		it.fails('écart L113 : l’exercice cité par une séance se supprime aussi', () => {
-			expect(citesRestants).toBe(0);
+		it('L113 : l’exercice cité par une séance reste, la séance garde sa trace', () => {
+			expect(citesRestants).toBe(1);
+		});
+
+		// Refus VOULU (ON DELETE NO ACTION, 23503), plus l'accident du CHECK de
+		// forme (23514) : c'est ce code que l'appli traduit pour le prof
+		it('L113 : le refus est celui de la clé étrangère', () => {
+			expect(codeDuRefus).toBe('23503');
 		});
 	});
 });

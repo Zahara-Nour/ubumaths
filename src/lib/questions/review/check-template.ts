@@ -36,6 +36,7 @@ import { requiredFormVerdict } from '#lib/questions/required-form-validator.ts';
 import { readingOf } from '#lib/questions/formula-reading.ts';
 import type { QuestionInstance } from '#lib/questions/types.ts';
 import { isBlankValueCorrect, validateAnswerDetailed } from '#lib/utils/answer-validator.ts';
+import { hasPythonCase } from '#lib/questions/python/python-case.ts';
 import { expectedErrorOf } from '#lib/questions/expected-errors.ts';
 import {
 	findUnparenthesizedNegatives,
@@ -315,7 +316,8 @@ function constructionErrors(instance: QuestionInstance): string[] | null {
 				checks,
 				constructionPositions(source),
 				constructionShapes(source),
-				constructionExpected(source)
+				constructionExpected(source),
+				source
 			);
 			return [];
 		} catch (error) {
@@ -357,6 +359,18 @@ function correctionFormErrors(
 		.map(({ form }) => `correction : ${answer} (forme exigée ${JSON.stringify(form)})`);
 }
 
+/**
+ * Une variation a-t-elle une case qui n'est pas un programme Python ? (premier tirage de chaque
+ * variation ; un tirage en échec compte comme « oui » : la spec reste exigée)
+ */
+function hasOrdinaryCase(template: QuestionTemplate): boolean {
+	return template.variations.some((variation) => {
+		const result = generateInstance({ ...template, variations: [variation] }, 1);
+		if (!result.success) return true;
+		return (result.instance.blanks ?? []).some((blank) => blank.construire !== 'python');
+	});
+}
+
 export function checkTemplate(
 	candidate: Omit<QuestionTemplate, 'id'> & { id?: string },
 	options: { instances?: number } = {}
@@ -390,7 +404,12 @@ export function checkTemplate(
 	// Une carte de cours n'a pas de réponse : pas de spec exigée (ni tolérée)
 	const courseCard = isCourseCard(template);
 	if (courseCard && specs.length > 0) reasons.push('une carte de cours ne porte pas de spec');
-	if (!courseCard && specs.length === 0) reasons.push('aucune spec de test');
+	// Case Python : le programme ne tourne que dans le navigateur, une spec ne pourrait pas le
+	// juger ici (outil 49). Spec exigée seulement si le modèle a aussi une case ordinaire (elle,
+	// une spec la vérifie ; la case Python y est comptée juste d'office). Décision de David,
+	// 2026-11-28
+	const onlyPythonCases = hasPythonCase(template) && !hasOrdinaryCase(template);
+	if (!courseCard && !onlyPythonCases && specs.length === 0) reasons.push('aucune spec de test');
 	// Chaque variation doit prouver qu'une bonne réponse est acceptée
 	const uncovered = template.variations
 		.map((_, index) => index)

@@ -4,7 +4,8 @@
  *
  * Lit le texte du bloc (variables résolues, sans clôtures) : la valeur de
  * `construire:` (```collection, ```monnaie) ou la graduation d'un point de
- * `placer:` (```line, écrite par `placerAnswer`, comme la réponse de l'élève),
+ * `placer:` (```line, écrite par `placerAnswer`, comme la réponse de l'élève ; droite
+ * à graduer, `graduer: 3` : le nombre de parts `3`, puis la valeur de chaque point),
  * ou l'heure de `placer:` (```horloge, sur le cadran de 12 : `9 h 25`), ou
  * l'effectif d'une barre de `placer:` (```barres, `12` ; avec `axe: à choisir`,
  * la première case est l'échelle, `5`), ou une des cinq valeurs d'une boîte de
@@ -19,7 +20,9 @@
  * `retrouver: face` : `face : 2 1 / 1 2`), ou les coordonnées d'un point à placer
  * dans un repère (```courbe, `placer: A=(2 ; 3)` : `2;3`, écrites par `pointAnswer`,
  * comme la réponse de l'élève), ou l'équation d'une droite à tracer (```courbe,
- * `tracer: y = 2x - 1` : `y = 2x - 1`, normalisée par le parseur), ou la mesure principale d'un point à placer sur le
+ * `tracer: y = 2x - 1` : `y = 2x - 1`, normalisée par le parseur), ou un terme d'un
+ * escalier à construire (```courbe, `construire N` : `escalier k=1 ; u0=0 ; marge=0.12 ;
+ * f=sqrt(2*(x)+3)`, une case par terme), ou la mesure principale d'un point à placer sur le
  * cercle trigonométrique (```trig, `placer: M = -pi/4` : `-\frac{\pi}{4}`).
  *
  * @module questions/generator/build-answer
@@ -51,11 +54,17 @@ import { expectedPatronAnswer } from '#lib/ubumark/utils/patron-gestes.ts';
 import { expectedSolideAnswer } from '#lib/ubumark/utils/solide-gestes.ts';
 import { timeText } from '#lib/ubumark/utils/horloge-placer.ts';
 import { indexOfValue, placerAnswer } from '#lib/ubumark/utils/number-line-placer.ts';
+import {
+	graduerCaseCount,
+	graduerPointAnswer,
+	partsAnswer
+} from '#lib/ubumark/utils/number-line-graduer.ts';
 import { expectedInterval, representerAnswer } from '#lib/ubumark/utils/number-line-representer.ts';
 import { numVal } from '#lib/ubumark/utils/number-line-render.ts';
 import { parseCourbeContent } from '#lib/ubumark/parser/courbe-parser.ts';
 import { pointAnswer } from '#lib/ubumark/utils/courbe-placer.ts';
 import { vectorExpected } from '#lib/ubumark/utils/courbe-vecteur.ts';
+import { staircaseExpected } from '#lib/ubumark/utils/courbe-construire.ts';
 import { parseTrigCircleContent } from '#lib/ubumark/parser/trig-circle-parser.ts';
 import { expectedStepAnswer, stepOfRadians } from '#lib/ubumark/utils/trig-placer.ts';
 import { hasMaskedValue } from '#lib/ubumark/utils/masked-value.ts';
@@ -67,6 +76,10 @@ import { parseRobotContent } from '#lib/ubumark/parser/robot-parser.ts';
 import { expectedRobotAnswer } from '#lib/ubumark/utils/robot-answer.ts';
 import { parseLabyrintheContent } from '#lib/ubumark/parser/labyrinthe-parser.ts';
 import { expectedLabyrintheAnswer } from '#lib/ubumark/utils/labyrinthe-answer.ts';
+import { parseYohakuContent } from '#lib/ubumark/parser/yohaku-parser.ts';
+import { expectedYohakuAnswer } from '#lib/ubumark/utils/yohaku-answer.ts';
+import { parsePythonAEcrireContent } from '#lib/ubumark/parser/python-a-ecrire-parser.ts';
+import { expectedPythonAnswer } from '#lib/questions/python/python-answer.ts';
 
 // Constantes
 
@@ -98,11 +111,20 @@ const CASE_IS_AUTOMATIC = 'case: est posée automatiquement, retirer cette ligne
  * une ; un bloc illisible compte une case (refusé au générateur avec ses messages)
  */
 export function buildCaseCount(kind: BuildKind, source: string): number {
-	if (kind === 'line') return Math.max(1, parseNumberLineContent(source).node?.placer?.length ?? 1);
+	if (kind === 'line') {
+		const node = parseNumberLineContent(source).node;
+		// Droite à graduer : la case des parts, puis une par point
+		if (node?.graduer) return graduerCaseCount(node);
+		return Math.max(1, node?.placer?.length ?? 1);
+	}
 	if (kind === 'ranger') return Math.max(1, parseRangerContent(source).labels.length);
 	if (kind === 'associer') return Math.max(1, parseAssocierContent(source).items.length);
 	if (kind === 'trous') return Math.max(1, parseTrousContent(source).answers.length);
-	if (kind === 'courbe') return Math.max(1, parseCourbeContent(source).spec?.placer?.length ?? 1);
+	if (kind === 'courbe') {
+		const spec = parseCourbeContent(source).spec;
+		// Escalier à construire : une case par terme
+		return Math.max(1, spec?.construire?.terms.length ?? spec?.placer?.length ?? 1);
+	}
 	if (kind === 'trig') return Math.max(1, parseTrigCircleContent(source).node?.placer?.length ?? 1);
 	if (kind === 'barres') {
 		const spec = parseStatChartContent('barres', source).spec;
@@ -168,10 +190,42 @@ export function buildAnswerOf(
 		}
 		return { answer: expectedLabyrintheAnswer(node.spec) };
 	}
+	if (kind === 'yohaku') {
+		// Grille yohaku à remplir : l'opération, la solution de l'auteur et les totaux (le juge
+		// suit les contraintes, pas la solution)
+		const node = parseYohakuContent(source);
+		if (node.caseIndex !== undefined) return { errors: [CASE_IS_AUTOMATIC] };
+		if (node.errors.length > 0 || node.spec === null) {
+			return { errors: node.errors.map((e) => e.message) };
+		}
+		return { answer: expectedYohakuAnswer(node.spec) };
+	}
+	if (kind === 'python') {
+		// Programme Python : la fonction, la solution de l'auteur, les essais et les exigences
+		// (le navigateur rejoue les deux programmes sur chaque essai)
+		const node = parsePythonAEcrireContent(source);
+		if (node.caseIndex !== undefined) return { errors: [CASE_IS_AUTOMATIC] };
+		if (node.errors.length > 0 || node.spec === null) {
+			return { errors: node.errors.map((e) => e.message) };
+		}
+		const { fonction, solution, essais, exiger } = node.spec;
+		return { answer: expectedPythonAnswer({ fonction, solution, essais, exiger }) };
+	}
 	if (kind === 'line') {
 		const { node, errors } = parseNumberLineContent(source);
 		if (node === null) return { errors: errors.map((e) => e.message) };
 		if (node.caseIndex !== undefined) return { errors: [CASE_IS_AUTOMATIC] };
+		// Droite à graduer : case 0 = le nombre de parts, case 1 + k = le point k (sa valeur
+		// sur la droite partagée, écrite comme la réponse de l'élève)
+		if (node.graduer) {
+			const parts = node.graduer.parts;
+			if (parts === null) return { errors: [MASKED_IN_TEMPLATE] };
+			if (point === 0) return { answer: partsAnswer(parts) };
+			const target = node.placer?.[point - 1];
+			const answer = target ? graduerPointAnswer(node.config, parts, numVal(target.value)) : null;
+			if (answer === null) return { errors: ['placer: absent ou hors graduation'] };
+			return { answer };
+		}
 		// Droite à représenter : l'intervalle, écrit comme la réponse de l'élève
 		if (node.representer?.interval) {
 			const state = expectedInterval(node.config, node.representer.interval);
@@ -191,6 +245,19 @@ export function buildAnswerOf(
 		// Vecteur à tracer : ses coordonnées, et l'origine imposée (le juge accepte toute flèche du vecteur)
 		const vecteur = node.spec.vecteur;
 		if (vecteur?.coords) return { answer: vectorExpected(vecteur.coords, vecteur.origin) };
+		// Escalier à construire : le terme de rang point + 1, jugé depuis le précédent de l'élève
+		const build = node.spec.construire;
+		if (build !== undefined) {
+			if (point >= build.terms.length) return { errors: ['construire : terme absent'] };
+			return {
+				answer: staircaseExpected({
+					k: point + 1,
+					start: build.start,
+					margin: build.margin,
+					relation: build.relation
+				})
+			};
+		}
 		const target = node.spec.placer?.[point];
 		if (target === undefined) return { errors: ['placer: absent'] };
 		return { answer: pointAnswer(target.x, target.y) };

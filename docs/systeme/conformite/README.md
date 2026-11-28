@@ -197,7 +197,7 @@ anonymise les emails avant insertion.
 | ------------------------------------ | ------------------------- | ----------------------------------------------------------------------------- | ------------------------ |
 | Supabase                             | UE                        | **UE — France eu-west-3**                                                     | ✓ (migration)            |
 | Google (OAuth/Classroom/Drive/Gmail) | 7 scopes                  | **+`classroom.topics.readonly`, `courseworkmaterials`**                       | scopes élargis           |
-| Brevo                                | emails parents            | + carnet de liaison (2026-11, politique v1.4)                                 | ✓ documenté (2026-11-17) |
+| Brevo                                | emails parents            | + carnet de liaison (2026-11, politique v1.4 ; expiration du lien v1.6)       | ✓ documenté (2026-11-17) |
 | Gmail API                            | emails élèves (scolaires) | identique (stratégie hybride)                                                 | ✓                        |
 | **Groq** (LLM tuteur/chat)           | « à vérifier »            | **🟠 actif en prod** (`/api/chat`, llama-3.3-70b ; msg élève dits anonymisés) | à documenter             |
 | **HuggingFace** (embeddings RAG)     | **absent**                | **non activé** (`HF_API_KEY` absente)                                         | ✓ documenté (2026-11-03) |

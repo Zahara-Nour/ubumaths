@@ -213,6 +213,8 @@
 			await questionTemplatesCache.fetchTemplates();
 			seriesItems = generateSeriesItems(start.evaluation.items, {
 				excludeCourseCards: true,
+				// Comme le tirage du serveur : pas de case Python dans une évaluation (outil 49)
+				excludePythonCases: true,
 				choiceCases: true
 			});
 			testSession = {
@@ -318,7 +320,11 @@
 	 */
 	function generateSeriesItems(
 		series: SeriesItem[],
-		options: { excludeCourseCards?: boolean; choiceCases?: boolean } = {}
+		options: {
+			excludeCourseCards?: boolean;
+			excludePythonCases?: boolean;
+			choiceCases?: boolean;
+		} = {}
 	): ClassroomItem[] {
 		const templates = questionTemplatesCache.templates;
 
@@ -347,6 +353,7 @@
 		try {
 			seriesItems = generateSeriesItems(testSession.items, {
 				excludeCourseCards: !!assignmentId || seriesFormExcludesCourseCards(testSession.mode),
+				excludePythonCases: !!assignmentId,
 				choiceCases: testSession.mode !== 'flash'
 			});
 			testSession.instances = seriesItems.map((item) => item.instance);

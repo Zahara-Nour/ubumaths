@@ -135,17 +135,11 @@
 			<div>
 				<h2 class="mb-2 text-xl font-semibold">Messages marqués automatiquement</h2>
 				<p class="text-sm text-muted-foreground">
-					{#if data.flaggedMessagesExtended}
-						Messages du chat où le filtre a repéré un mot grossier, une insulte ou une menace, même
-						supprimés depuis. Dans une conversation à deux entre élèves, seul le message marqué est
-						montré, pas le reste de la conversation. Pour agir dans une conversation de groupe,
-						ouvrez-la dans le
-						<a href="/dashboard/chat" class="underline">chat</a>.
-					{:else}
-						Messages du chat où le filtre a repéré un mot grossier, une insulte ou une menace, dans
-						les conversations que vous pouvez ouvrir. Pour agir, ouvrez la conversation dans le
-						<a href="/dashboard/chat" class="underline">chat</a>.
-					{/if}
+					Messages du chat où le filtre a repéré un mot grossier, une insulte ou une menace, même
+					supprimés depuis. Dans une conversation à deux entre élèves, seul le message marqué est
+					montré, pas le reste de la conversation. Pour agir dans une conversation de groupe,
+					ouvrez-la dans le
+					<a href="/dashboard/chat" class="underline">chat</a>.
 				</p>
 			</div>
 			{#if data.flaggedMessagesLoadFailed}

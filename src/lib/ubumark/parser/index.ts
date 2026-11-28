@@ -161,6 +161,14 @@ export {
 	isCalculBlockStart
 } from './calcul-parser';
 
+// Bloc ```python-a-ecrire
+export {
+	parsePythonAEcrire,
+	parsePythonAEcrireContent,
+	findPythonAEcrireBlocks,
+	isPythonAEcrireBlockStart
+} from './python-a-ecrire-parser';
+
 // Bloc ```robot
 export { parseRobot, parseRobotContent, findRobotBlocks, isRobotBlockStart } from './robot-parser';
 
@@ -171,6 +179,22 @@ export {
 	findLabyrintheBlocks,
 	isLabyrintheBlockStart
 } from './labyrinthe-parser';
+
+// Bloc ```engrenages
+export {
+	parseEngrenages,
+	parseEngrenagesContent,
+	findEngrenagesBlocks,
+	isEngrenagesBlockStart
+} from './engrenages-parser';
+
+// Bloc ```yohaku
+export {
+	parseYohaku,
+	parseYohakuContent,
+	findYohakuBlocks,
+	isYohakuBlockStart
+} from './yohaku-parser';
 
 // Bloc ```partage
 export {

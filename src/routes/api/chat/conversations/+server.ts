@@ -81,7 +81,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	try {
 		body = await request.json();
 	} catch {
-		throw error(400, 'Invalid JSON');
+		throw error(400, 'Corps de requête JSON invalide');
 	}
 
 	const validation = createConversationSchema.safeParse(body);

@@ -17,10 +17,14 @@
 			href: '/dashboard/teacher/moderation/gestion',
 			label: 'Gestion',
 			icon: ShieldAlert as unknown as Component,
+			// Compteur illisible : « ? », jamais rien (rien = zéro signalement, écart L123)
 			badge:
-				data.pendingReportsCount !== null && data.pendingReportsCount > 0
-					? data.pendingReportsCount
-					: undefined
+				data.pendingReportsCount === null
+					? ('?' as const)
+					: data.pendingReportsCount > 0
+						? data.pendingReportsCount
+						: undefined,
+			badgeLabel: data.pendingReportsCount === null ? 'Nombre de signalements inconnu' : undefined
 		}
 	]);
 </script>

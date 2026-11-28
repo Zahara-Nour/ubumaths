@@ -4,6 +4,8 @@ couvre:
   - 'src/routes/(protected)/+layout.svelte'
   - 'src/routes/(protected)/dashboard/{admin,student,teacher}/*'
   - 'src/lib/components/{Header,EasyReadingToggle,Sidebar,InfoPanel,FlipCard,Wheel}.svelte'
+  - src/lib/components/wheel-landing.ts
+  - src/lib/navigation/public-nav-items.ts
   - 'src/lib/components/{skeleton,modals}/**'
   - 'src/lib/stores/{studentDashboardCache,teacherDashboardCache,selectedClass,selectedPeriod,activity,mobile,easyReading,modalStack}.svelte.ts'
   - 'src/lib/types/{student-cache,teacher-cache,cache-context}.ts'
@@ -115,6 +117,12 @@ tableau de bord, il rend `Header` et `Sidebar`, son `<main>` défile et porte l'
 `contenu-principal`. Sous `/dashboard`, il ne rend ni l'un ni l'autre, cède l'ancre au `<main>` du
 layout du tableau de bord et ne masque plus la page pendant une navigation : c'est ce layout-là qui
 pose son propre squelette.
+
+Les liens publics vivent dans une seule liste, `#lib/navigation/public-nav-items.ts` : `Sidebar`
+(barre, grand écran) et le tiroir mobile de `Header` la lisent toutes les deux. Un lien s'ajoute
+là, jamais dans un des deux composants. Le lien surligné suit la même règle des deux côtés,
+`isNavItemActive` du même fichier : l'adresse du lien, ou une adresse qui commence par elle + `/`
+(un article du Shtam surligne « Le Shtam ») ; « Accueil » seulement sur `/`.
 
 Le lien « Aller au contenu » (`+layout.svelte:109-113`, WCAG 2.4.1) est le premier élément
 focusable. Il est caché par une translation (`-translate-y-[200%]`, `focus:translate-y-0`), pas
@@ -236,11 +244,21 @@ sauf si `canDismiss === false`. `pop()` appelle l'`onReturn` de la modale retir�
 garde une copie du sommet (`modalSnapshot`) pour que le fondu de sortie ait encore un composant à
 rendre.
 
+Clavier et lecteur d'écran (écart V73) : à l'ouverture, le renderer retient l'élément qui avait le
+clavier, met le clavier sur le premier élément focusable de la fenêtre, fait tourner Tab et Maj+Tab
+dedans, et met `inert` sur les autres enfants de son parent (le reste du layout racine), sauf les
+zones `aria-live` (les toasts, que les fenêtres émettent). À la fermeture, il retire `inert` et rend
+le clavier à l'élément retenu. Le fond est un frère de la fenêtre, pas son parent. Le conteneur ne
+prend `role="dialog"` que si la fenêtre n'en porte pas déjà un (la plupart, titrés par
+`aria-labelledby`). Limite connue (V140) : après une fenêtre empilée, la fenêtre d'en dessous est
+recréée, et le clavier va sur son premier bouton, pas sur l'élément qui avait ouvert la seconde.
+
 Les ouvertures passent surtout par `src/lib/utils/vip-card-modals.ts` et `bonus-modals.ts` ;
 aussi par le Démineur (`minesweeper.svelte.ts`), `RewardsBlock` et la page
 `teacher/gamification/rewards`. Les autres fenêtres de l'app
 (dont `InfoPanel`) utilisent le `Dialog` de bits-ui, pas cette pile. Test :
-`src/lib/stores/__tests__/modalStack.test.ts`.
+`src/lib/stores/__tests__/modalStack.test.ts`,
+`src/lib/components/modals/__tests__/ModalStackRenderer.svelte.test.ts` (navigateur).
 
 ### Écran et périphériques d'entrée
 
@@ -272,7 +290,10 @@ notifications, le temps réel relance ensuite la lecture ([realtime.md](realtime
 `Wheel.svelte` sert aussi à l'accueil prof, à `VipCardUseDialog` et à `/dev/roue`. Les
 prénoms en double sont départagés par le plus court préfixe du nom (« Léa M. », « Léa P. »). Avec
 `addJokerIfOdd`, une case « Joker » complète un nombre impair : si elle sort, aucun gagnant n'est
-annoncé. Le gagnant se calcule à la fin de la transition CSS (`transitionend`).
+annoncé. Le gagnant se calcule à la fin de la transition CSS (`transitionend`). L'angle d'arrêt
+vient de `wheel-landing.ts` : il tombe à au moins 2° d'une frontière de case, calculé sur l'angle
+final (départ + tirage) et pas sur le seul tirage, pour que la case affichée soit bien celle
+annoncée.
 
 ### Petits composants
 
@@ -313,8 +334,6 @@ du 2026-11-11 : `reading 'id'` sur `/dev/modeles`, onglet d'avant 0.81.0).
   avant. Mais le load d'une page tourne **en parallèle** de celui du layout : il ne lit rien de
   sensible sans `await parent()` ou sa propre garde de rôle (`documents/+page.server.ts` ne rend
   rien et ne relit plus le rôle, M32).
-- **Deux listes de liens publics** : `Header.svelte` (tiroir mobile) et `Sidebar.svelte` (barre)
-  ont chacun leur copie. Une entrée ajoutée à l'une manque à l'autre.
 
 ## Écarts connus
 

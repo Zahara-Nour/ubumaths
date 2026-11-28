@@ -53,9 +53,13 @@ export const PATCH: RequestHandler = async ({ request, locals }) => {
 		try {
 			const updateData: TablesUpdate<'bug_reports'> = { status };
 
+			// Rouvert (statut non résolu) : la résolution passée s'efface (écart L125).
 			if (needsResolvedBy) {
 				updateData.resolved_by = user.id;
 				updateData.resolved_at = new Date().toISOString();
+			} else {
+				updateData.resolved_by = null;
+				updateData.resolved_at = null;
 			}
 
 			// Zéro ligne touchée (rapport inconnu ou refus de la RLS) est un échec

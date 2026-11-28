@@ -1,5 +1,6 @@
 /**
- * Série d'automatismes : question à programme (tortue, calcul ; chantier `blockly`, PR 5)
+ * Série d'automatismes : question à programme (tortue, calcul ; chantier `blockly`, PR 5 ;
+ * Python, outil 49)
  * et robot à produire (chantier `suite-fleches`, PR 1b)
  * ======================================================================================
  *
@@ -26,13 +27,20 @@ function modele(id: string, statement: string): QuestionTemplate {
 
 const MODELES = new Map([
 	['tortue', modele('tortue', 'Trace.\n\n```tortue\nattendu: avancer 3\n```')],
-	['calcul', modele('calcul', 'Programme.\n\n```calcul\nattendu: afficher nombre + 2\n```')]
+	['calcul', modele('calcul', 'Programme.\n\n```calcul\nattendu: afficher nombre + 2\n```')],
+	[
+		'python',
+		modele(
+			'python',
+			'Écris.\n\n```python-a-ecrire\nfonction: f\nsolution: |\n  def f(x):\n      return x\nessais: f(1)\n```'
+		)
+	]
 ]);
 
 describe('buildSerie — question à programme', () => {
-	it.each(['tortue', 'calcul'])('%s : refusée avec un message clair', (id) => {
+	it.each(['tortue', 'calcul', 'python'])('%s : refusée avec un message clair', (id) => {
 		expect(() => buildSerie(MODELES, [{ templateId: id, seed: 1 }])).toThrow(
-			`${id} : une question à programme (tortue, calcul) ne peut pas entrer dans une série d’automatismes`
+			`${id} : une question à programme (tortue, calcul, Python) ne peut pas entrer dans une série d’automatismes`
 		);
 	});
 });
@@ -196,6 +204,48 @@ describe('buildSerie — labyrinthe avec `solution: non` écrite par l’auteur'
 			]
 		]);
 		const serie = buildSerie(modeles, [{ templateId: 'lab', seed: 1 }]);
+		expect(serie.solution.match(/solution\s*:/g)).toEqual(['solution:']);
+		expect(serie.solution).toContain('solution: oui');
+	});
+});
+
+describe('buildSerie — grille yohaku à remplir (chantier `outil-yohaku`)', () => {
+	const yohaku = new Map([
+		[
+			'yohaku',
+			modele(
+				'yohaku',
+				[
+					'Remplis la grille.',
+					'',
+					'```yohaku',
+					'opération: produit',
+					'ligne: [x+2] | [x+3]',
+					'ligne: [2x+1] | x+1',
+					'```'
+				].join('\n')
+			)
+		]
+	]);
+
+	it('énoncé : le bloc sans case: ni solution: ; corrigé : solution: oui, une seule fois', () => {
+		const serie = buildSerie(yohaku, [{ templateId: 'yohaku', seed: 1 }]);
+		expect(serie.statement).toContain('```yohaku');
+		expect(serie.statement).not.toMatch(/case\s*:/);
+		expect(serie.statement).not.toContain('solution');
+		expect(serie.solution).toContain('solution: oui');
+		expect(serie.solution.match(/solution\s*:/g)).toEqual(['solution:']);
+		expect(serie.solution).not.toMatch(/case\s*:/);
+	});
+
+	it('`solution: non` écrite par l’auteur : le corrigé n’a qu’une ligne solution:', () => {
+		const modeles = new Map([
+			[
+				'y',
+				modele('y', '```yohaku\nopération: somme\nligne: [x] | 2\nligne: 3 | 4\nsolution: non\n```')
+			]
+		]);
+		const serie = buildSerie(modeles, [{ templateId: 'y', seed: 1 }]);
 		expect(serie.solution.match(/solution\s*:/g)).toEqual(['solution:']);
 		expect(serie.solution).toContain('solution: oui');
 	});

@@ -39,6 +39,7 @@ import {
 	type CourbePlacedPoint
 } from './courbe-placer';
 import { isTracedVectorCorrect } from './courbe-vecteur';
+import { isStaircaseTermCorrect } from './courbe-construire';
 
 // Types
 
@@ -227,10 +228,12 @@ export function isTracedLineCorrect(answer: string, equation: string): boolean {
 
 /**
  * Juge d'une case de repère : un point à placer (attendu `2;3`), un vecteur à
- * tracer (attendu `vecteur 3;-2`, lot 3) ou une droite à tracer (attendu : une
+ * tracer (attendu `vecteur 3;-2`, lot 3), un terme d'un escalier à construire
+ * (attendu `escalier k=1 ; …`, outil 48) ou une droite à tracer (attendu : une
  * équation, reconnue à son « = »)
  */
 export function isCourbeAnswerCorrect(answer: string, expected: string): boolean {
+	if (expected.startsWith('escalier ')) return isStaircaseTermCorrect(answer, expected);
 	if (expected.startsWith('vecteur')) return isTracedVectorCorrect(answer, expected);
 	return expected.includes('=')
 		? isTracedLineCorrect(answer, expected)

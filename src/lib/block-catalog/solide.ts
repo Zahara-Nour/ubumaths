@@ -16,7 +16,7 @@ export const solideEntry: BlockCatalogEntry = {
 	summary:
 		'Un cube, un pavé, un prisme, une pyramide, un cylindre, un cône ou une boule dessiné en perspective cavalière, arêtes cachées en tirets : pour reconnaître et nommer un solide, repérer ses faces, ses arêtes et ses sommets, lire ses dimensions.',
 	intro:
-		'Le bloc dessine le solide en perspective cavalière, comme les assemblages de cubes : la face de devant est en vraie grandeur, les fuyantes partent à 45° vers le haut à droite, réduites de moitié. Les arêtes cachées sont en tirets ; le cylindre, le cône et la boule ont des ellipses à plat, dont la moitié arrière est en tirets. Les dimensions de forme: sont des proportions : le dessin est toujours ramené à 4 cm sur son plus grand côté, à l’écran comme sur la fiche PDF ; avec cotes:, les dimensions sont écrites sur le dessin. Les sommets se nomment dans un ordre fixe, puis se marquent avec marquer:. Le nom du solide n’est jamais lu par le lecteur d’écran : il peut être la réponse. Avec tourner: oui, l’élève peut faire tourner le solide à l’écran pour voir comment ses points, ses arêtes et ses vecteurs sont disposés ; sans cette ligne, la figure est fixe.',
+		'Le bloc dessine le solide en perspective cavalière, comme les assemblages de cubes : la face de devant est en vraie grandeur, les fuyantes partent à 45° vers le haut à droite, réduites de moitié. Les arêtes cachées sont en tirets ; le cylindre, le cône et la boule ont des ellipses à plat, dont la moitié arrière est en tirets. Les dimensions de forme: sont des proportions : le dessin est toujours ramené à 4 cm sur son plus grand côté, à l’écran comme sur la fiche PDF ; avec cotes:, les dimensions sont écrites sur le dessin. Les sommets se nomment dans un ordre fixe, puis se marquent avec marquer:. Le nom du solide n’est jamais lu par le lecteur d’écran : il peut être la réponse. Avec tourner: oui, l’élève peut faire tourner le solide à l’écran pour voir comment ses points, ses arêtes et ses vecteurs sont disposés ; sans cette ligne, la figure est fixe. À l’écran, un bouton « Agrandir » sous la figure l’ouvre en grand (sauf dans un choix à cocher et sur une figure à geste).',
 	settingGroups: [
 		{
 			settings: [
@@ -67,10 +67,10 @@ export const solideEntry: BlockCatalogEntry = {
 				{
 					key: 'points',
 					values:
-						'I milieu AE | O centre ABCD | O centre ABCDEFGH | M (1 ; 0,5 ; 1) | K intersection (IG) (BDE) (séparés par des virgules)',
+						'I milieu AE | O centre ABCD | O centre ABCDEFGH | M tel que AM = 1/3 AB | M (1 ; 0,5 ; 1) | K intersection (IG) (BDE) (séparés par des virgules)',
 					defaultValue: null,
 					description:
-						'Cube, pavé, prisme, pyramide : des points de plus, marqués d’un point et nommés (une majuscule, puis éventuellement ’ ou un nombre). milieu : le milieu de deux points, sommets ou points déjà déclarés (J milieu IG). centre : le centre d’une face, ou pour un cube ou un pavé ses huit sommets, le centre du solide. M (1 ; 0,5 ; 1) : le point par ses coordonnées dans le repère de repere: (nombres séparés par des points-virgules, virgule ou point pour les décimales, au plus 3 chiffres après la virgule, négatifs permis) ; il doit rester dans le solide, ou tout près. K intersection (IG) (BDE) : le point où la droite (IG) perce le plan (BDE) ; K intersection (AG) (BH) : le point où deux droites se croisent. La droite et le plan n’ont pas besoin d’être dessinés ; refusé quand ils ne se coupent pas en un seul point (parallèles, droite dans le plan, droites qui ne se rencontrent pas), quand le point tombe loin du solide, et avec section: ou tracer:. Les sommets doivent être nommés ; au plus 8 points.'
+						'Cube, pavé, prisme, pyramide : des points de plus, marqués d’un point et nommés (une majuscule, puis éventuellement ’ ou un nombre). milieu : le milieu de deux points, sommets ou points déjà déclarés (J milieu IG). centre : le centre d’une face, ou pour un cube ou un pavé ses huit sommets, le centre du solide. M tel que AM = 1/3 AB : le point de [AB] au tiers en partant de A ; toute fraction entre 0 et 1, dénominateur au plus 10 (2/3, 3/4, 2/5), sur deux points distincts quelconques, sommets ou points déjà déclarés (J tel que IJ = 1/3 IG) ; le lecteur d’écran lit « M tel que AM = un tiers de AB ». M (1 ; 0,5 ; 1) : le point par ses coordonnées dans le repère de repere: (nombres séparés par des points-virgules, virgule ou point pour les décimales, au plus 3 chiffres après la virgule, négatifs permis) ; il doit rester dans le solide, ou tout près. K intersection (IG) (BDE) : le point où la droite (IG) perce le plan (BDE) ; K intersection (AG) (BH) : le point où deux droites se croisent. La droite et le plan n’ont pas besoin d’être dessinés ; refusé quand ils ne se coupent pas en un seul point (parallèles, droite dans le plan, droites qui ne se rencontrent pas), quand le point tombe loin du solide, et avec section: ou tracer:. Les sommets doivent être nommés ; au plus 8 points.'
 				},
 				{
 					key: 'vecteurs',
@@ -99,6 +99,13 @@ export const solideEntry: BlockCatalogEntry = {
 					defaultValue: null,
 					description:
 						'Cube, pavé, prisme, pyramide : code un angle droit par un petit carré bleu, au sommet de l’angle, la lettre du milieu (AEG : l’angle droit en E, entre [EA] et [EG]). Le carré est dans le plan des trois points : en perspective, il devient un petit losange penché. Il est en tirets là où une face du solide passe devant lui. L’angle doit être droit dans le solide, sinon le bloc le refuse. Au plus 3 angles droits. Le lecteur d’écran lit « angle droit en E ». Pas encore avec section: ni tracer:.'
+				},
+				{
+					key: 'graduer',
+					values: 'AB 3 | AB 3, [EH] 4 (séparés par des virgules)',
+					defaultValue: null,
+					description:
+						'Cube, pavé, prisme, pyramide : partage un segment en parts égales par de petits traits en travers (AB 3 : deux traits, aux tiers de [AB]). Le segment est une arête, ou un segment de segments: ; de 2 à 10 parts, au plus 4 segments gradués. Les crochets sont facultatifs. Avec points: M tel que AM = 1/3 AB, le point tombe sur un trait. Le lecteur d’écran lit « [AB] partagé en 3 parts égales ».'
 				},
 				{
 					key: 'plans',
@@ -218,6 +225,18 @@ export const solideEntry: BlockCatalogEntry = {
 			),
 			explanation:
 				'Trois vecteurs donnés, nommés u, v et w ; I est le milieu de [EF]. Pour représenter u + v ou AB + ½ AE.'
+		},
+		{
+			title: 'Un point au tiers d’une arête',
+			source: fence(
+				'solide',
+				'forme: cube 3',
+				'sommets: A B C D E F G H',
+				'points: M tel que AM = 1/3 AB',
+				'graduer: AB 3'
+			),
+			explanation:
+				'M est sur [AB], au tiers en partant de A ; l’arête est partagée en trois par deux petits traits.'
 		},
 		{
 			title: 'Le centre d’une face d’un tétraèdre',

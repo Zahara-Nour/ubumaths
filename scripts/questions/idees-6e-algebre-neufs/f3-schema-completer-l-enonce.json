@@ -1,0 +1,679 @@
+{
+	"id": "660db94b-8871-41c8-9b38-9ff2a8dd7d3f",
+	"rangement": {
+		"noeud": "Algèbre > Premiers pas algébriques > nombre inconnu",
+		"point": "6-142"
+	},
+	"title": "Schéma en barres : compléter l'énoncé",
+	"description": "Un schéma en barres donné (nombres et noms des barres) : compléter l'énoncé qui lui correspond ; trois achats et leur total, triathlon (15 fois et 5 fois plus), randonnée dont une étape manque, partage avec reste ; pièges : deux nombres inversés, total à la place d'une partie, reste oublié",
+	"grades": ["6"],
+	"level": 2,
+	"delay": 120,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"spacesFromFourDigits": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Ce schéma en barres représente les achats de Zoé.\n\n```schema-barres\nLivre : {{L}} € (5)\nCahier : {{C}} € (2.5)\nStylo : {{S}} € (1.5)\ntotal : {{eval:L+C+S}} €\n```\n\nComplète l'énoncé pour qu'il corresponde au schéma.\n\nZoé achète un cahier à $?$ euros, un stylo à $?$ euros et un livre à $?$ euros. Elle paie en tout $?$ euros.",
+			"variables": [
+				{
+					"name": "L",
+					"expression": "8..25"
+				},
+				{
+					"name": "C",
+					"expression": "2..7"
+				},
+				{
+					"name": "S",
+					"expression": "1..6"
+				}
+			],
+			"conditions": ["L>C", "C>S"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{C}}",
+					"expectedErrors": [
+						{
+							"answer": "{{S}}",
+							"message": "C'est le prix du stylo : cette case parle du cahier.",
+							"label": "Deux nombres inversés"
+						},
+						{
+							"answer": "{{L}}",
+							"message": "C'est le prix du livre : cette case parle du cahier.",
+							"label": "Deux nombres inversés"
+						},
+						{
+							"answer": "{{eval:L+C+S}}",
+							"message": "C'est le prix total : cette case parle du cahier seul.",
+							"label": "Total à la place d'une partie"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{S}}",
+					"expectedErrors": [
+						{
+							"answer": "{{C}}",
+							"message": "C'est le prix du cahier : cette case parle du stylo.",
+							"label": "Deux nombres inversés"
+						},
+						{
+							"answer": "{{L}}",
+							"message": "C'est le prix du livre : cette case parle du stylo.",
+							"label": "Deux nombres inversés"
+						},
+						{
+							"answer": "{{eval:L+C+S}}",
+							"message": "C'est le prix total : cette case parle du stylo seul.",
+							"label": "Total à la place d'une partie"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{L}}",
+					"expectedErrors": [
+						{
+							"answer": "{{C}}",
+							"message": "C'est le prix du cahier : cette case parle du livre.",
+							"label": "Deux nombres inversés"
+						},
+						{
+							"answer": "{{S}}",
+							"message": "C'est le prix du stylo : cette case parle du livre.",
+							"label": "Deux nombres inversés"
+						},
+						{
+							"answer": "{{eval:L+C+S}}",
+							"message": "C'est le prix total : cette case parle du livre seul.",
+							"label": "Total à la place d'une partie"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{eval:L+C+S}}",
+					"expectedErrors": [
+						{
+							"answer": "{{L}}",
+							"message": "C'est le prix du livre seul : le total regroupe les trois barres, il est au bout de l'accolade.",
+							"label": "Une partie à la place du total"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Lire le schéma.** Chaque barre porte le nom d'un achat et son prix : le livre coûte ${{L}}~\\unit{€}$, le cahier ${{C}}~\\unit{€}$, le stylo ${{S}}~\\unit{€}$. L'accolade regroupe les trois barres : c'est le prix total, ${{eval:L+C+S}}~\\unit{€}$.",
+					"**Compléter.** L'énoncé ne cite pas les achats dans l'ordre du schéma : Zoé achète un cahier à $\\textcolor{{{color:primary.0}}}{{{C}}}$ euros, un stylo à $\\textcolor{{{color:primary.0}}}{{{S}}}$ euros et un livre à $\\textcolor{{{color:primary.0}}}{{{L}}}$ euros ; elle paie en tout $\\textcolor{{{color:primary.0}}}{{{eval:L+C+S}}}$ euros."
+				]
+			},
+			"hint": "Chaque barre porte un nom : trouve-le dans l'énoncé."
+		},
+		{
+			"statement": "Ce schéma en barres représente les trois épreuves d'un triathlon.\n\n```schema-barres\nNatation : {{if:n>=1000|{{eval:floor((n)/1000)}} {{eval:floor(mod(n,1000)/100)}}{{eval:floor(mod(n,100)/10)}}{{eval:mod(n,10)}}|{{eval:n}}}} m (2)\nVélo : {{if:15*n>=1000|{{eval:floor((15*n)/1000)}} {{eval:floor(mod(15*n,1000)/100)}}{{eval:floor(mod(15*n,100)/10)}}{{eval:mod(15*n,10)}}|{{eval:15*n}}}} m (9)\nCourse : {{if:5*n>=1000|{{eval:floor((5*n)/1000)}} {{eval:floor(mod(5*n,1000)/100)}}{{eval:floor(mod(5*n,100)/10)}}{{eval:mod(5*n,10)}}|{{eval:5*n}}}} m (4.5)\ntotal : {{if:21*n>=1000|{{eval:floor((21*n)/1000)}} {{eval:floor(mod(21*n,1000)/100)}}{{eval:floor(mod(21*n,100)/10)}}{{eval:mod(21*n,10)}}|{{eval:21*n}}}} m\n```\n\nComplète l'énoncé pour qu'il corresponde au schéma.\n\nLe triathlon commence par $?$ mètres de natation. Le parcours à vélo, $?$ mètres, est $15$ fois plus long que la natation, et la course à pied $5$ fois plus longue que la natation. Le triathlon fait en tout $?$ mètres.",
+			"variables": [
+				{
+					"name": "q",
+					"expression": "4..30"
+				},
+				{
+					"name": "n",
+					"expression": "eval:50*q"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{n}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:15*n}}",
+							"message": "C'est la longueur du parcours à vélo : cette case parle de la natation.",
+							"label": "Deux nombres inversés"
+						},
+						{
+							"answer": "{{eval:5*n}}",
+							"message": "C'est la longueur de la course à pied : cette case parle de la natation.",
+							"label": "Deux nombres inversés"
+						},
+						{
+							"answer": "{{eval:21*n}}",
+							"message": "C'est la longueur de tout le triathlon : cette case parle de la natation seule.",
+							"label": "Total à la place d'une partie"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{eval:15*n}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:5*n}}",
+							"message": "C'est la longueur de la course à pied : cette case parle du parcours à vélo.",
+							"label": "Deux nombres inversés"
+						},
+						{
+							"answer": "{{n}}",
+							"message": "C'est la longueur de la natation : cette case parle du parcours à vélo.",
+							"label": "Deux nombres inversés"
+						},
+						{
+							"answer": "{{eval:21*n}}",
+							"message": "C'est la longueur de tout le triathlon : cette case parle du vélo seul.",
+							"label": "Total à la place d'une partie"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{eval:21*n}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:15*n}}",
+							"message": "C'est la longueur du parcours à vélo : le total regroupe les trois barres, il est au bout de l'accolade.",
+							"label": "Une partie à la place du total"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Lire le schéma.** Natation ${{n}}~\\unit{m}$, vélo ${{eval:15*n}}~\\unit{m}$, course ${{eval:5*n}}~\\unit{m}$ ; l'accolade regroupe les trois : ${{eval:21*n}}~\\unit{m}$.",
+					"**Vérifier les « fois plus ».** ${{n}} \\times 15 = {{eval:15*n}}$ et ${{n}} \\times 5 = {{eval:5*n}}$ : le schéma va bien avec l'énoncé.",
+					"**Compléter.** $\\textcolor{{{color:primary.0}}}{{{n}}}$ mètres de natation, $\\textcolor{{{color:primary.0}}}{{{eval:15*n}}}$ mètres à vélo, $\\textcolor{{{color:primary.0}}}{{{eval:21*n}}}$ mètres en tout."
+				]
+			},
+			"hint": "Chaque barre porte un nom : trouve-le dans l'énoncé."
+		},
+		{
+			"statement": "Ce schéma en barres représente une randonnée en trois étapes.\n\n```schema-barres\nÉtape 1 : {{a}} km ({{a}})\nÉtape 2 : ? ({{b}})\nÉtape 3 : {{c}} km ({{c}})\ntotal : {{eval:a+b+c}} km\n```\n\nComplète l'énoncé pour qu'il corresponde au schéma, puis réponds à la question.\n\nUne randonnée de $?$ kilomètres se fait en trois étapes. La première étape fait $?$ kilomètres et la troisième ${{c}}$ kilomètres. Combien de kilomètres fait la deuxième étape ?\n\nLa deuxième étape fait $?$ kilomètres.",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "8..20"
+				},
+				{
+					"name": "b",
+					"expression": "8..20"
+				},
+				{
+					"name": "c",
+					"expression": "8..20"
+				}
+			],
+			"conditions": ["a!=c", "a!=b", "b!=c", "b+c!=a+c"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a+b+c}}",
+					"expectedErrors": [
+						{
+							"answer": "{{a}}",
+							"message": "C'est la longueur de la première étape : le total est au bout de l'accolade, il regroupe les trois barres.",
+							"label": "Une partie à la place du total"
+						},
+						{
+							"answer": "{{c}}",
+							"message": "C'est la longueur de la troisième étape : le total est au bout de l'accolade, il regroupe les trois barres.",
+							"label": "Une partie à la place du total"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{a}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:a+b+c}}",
+							"message": "C'est la longueur de toute la randonnée : cette case parle de la première étape.",
+							"label": "Total à la place d'une partie"
+						},
+						{
+							"answer": "{{c}}",
+							"message": "C'est la longueur de la troisième étape : cette case parle de la première.",
+							"label": "Deux nombres inversés"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{b}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:b+c}}",
+							"message": "Tu n'as retiré que la première étape : retire aussi la troisième.",
+							"label": "Une seule étape retirée"
+						},
+						{
+							"answer": "{{eval:a+c}}",
+							"message": "C'est la longueur des deux étapes connues : retire-la du total.",
+							"label": "Somme des parties connues"
+						},
+						{
+							"answer": "{{eval:a+b+c}}",
+							"message": "C'est la longueur de toute la randonnée : la deuxième étape n'en est qu'une partie.",
+							"label": "Total à la place d'une partie"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Lire le schéma.** L'accolade regroupe les trois étapes : la randonnée fait $\\textcolor{{{color:primary.0}}}{{{eval:a+b+c}}}$ kilomètres. La barre « Étape 1 » porte $\\textcolor{{{color:primary.0}}}{{{a}}}$ kilomètres.",
+					"**La partie cherchée.** Les deux étapes connues font ${{a}} + {{c}} = {{eval:a+c}}$ kilomètres ; la deuxième fait ${{eval:a+b+c}} - {{eval:a+c}} = \\textcolor{{{color:primary.0}}}{{{b}}}$ kilomètres."
+				]
+			},
+			"hint": "Chaque barre porte un nom : trouve-le dans l'énoncé."
+		},
+		{
+			"statement": "Léo partage ${{eval:k*q+r}}$ gâteaux entre ${{k}}$ amis : chacun en reçoit autant, le plus possible. Ce schéma en barres représente le partage.{{if:k==4|\n\n```schema-barres\nAmis : {{q}} ; {{q}} ; {{q}} ; {{q}}\nReste : {{r}} (0.6)\ntotal : {{eval:k*q+r}} gâteaux\n```\n\n|{{if:k==5|\n\n```schema-barres\nAmis : {{q}} ; {{q}} ; {{q}} ; {{q}} ; {{q}}\nReste : {{r}} (0.6)\ntotal : {{eval:k*q+r}} gâteaux\n```\n\n|{{if:k==6|\n\n```schema-barres\nAmis : {{q}} ; {{q}} ; {{q}} ; {{q}} ; {{q}} ; {{q}}\nReste : {{r}} (0.6)\ntotal : {{eval:k*q+r}} gâteaux\n```\n\n|{{if:k==7|\n\n```schema-barres\nAmis : {{q}} ; {{q}} ; {{q}} ; {{q}} ; {{q}} ; {{q}} ; {{q}}\nReste : {{r}} (0.6)\ntotal : {{eval:k*q+r}} gâteaux\n```\n\n|{{if:k==8|\n\n```schema-barres\nAmis : {{q}} ; {{q}} ; {{q}} ; {{q}} ; {{q}} ; {{q}} ; {{q}} ; {{q}}\nReste : {{r}} (0.6)\ntotal : {{eval:k*q+r}} gâteaux\n```\n\n|\n\n```schema-barres\nAmis : {{q}} ; {{q}} ; {{q}} ; {{q}} ; {{q}} ; {{q}} ; {{q}} ; {{q}} ; {{q}}\nReste : {{r}} (0.6)\ntotal : {{eval:k*q+r}} gâteaux\n```\n\n}}}}}}}}}}Complète l'énoncé pour qu'il corresponde au schéma.\n\nChaque ami reçoit $?$ gâteaux, et il reste $?$ gâteaux.",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "4..9"
+				},
+				{
+					"name": "q",
+					"expression": "2..9"
+				},
+				{
+					"name": "r0",
+					"expression": "1..8"
+				},
+				{
+					"name": "r",
+					"expression": "eval:r0"
+				}
+			],
+			"conditions": ["r0<k", "q!=r"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{q}}",
+					"expectedErrors": [
+						{
+							"answer": "{{r}}",
+							"message": "C'est le nombre de gâteaux qui restent : cette case parle de la part d'un ami.",
+							"label": "Deux nombres inversés"
+						},
+						{
+							"answer": "{{eval:k*q+r}}",
+							"message": "C'est le nombre de gâteaux en tout : cette case parle de la part d'un seul ami.",
+							"label": "Total à la place d'une partie"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{r}}",
+					"expectedErrors": [
+						{
+							"answer": "0",
+							"message": "Il reste des gâteaux : regarde la barre « Reste ».",
+							"label": "Reste oublié"
+						},
+						{
+							"answer": "{{q}}",
+							"message": "C'est la part d'un ami : cette case parle des gâteaux qui restent.",
+							"label": "Deux nombres inversés"
+						},
+						{
+							"answer": "{{eval:k*q}}",
+							"message": "C'est le nombre de gâteaux distribués : le reste, ce sont ceux qui ne sont pas partagés.",
+							"label": "Gâteaux distribués à la place du reste"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Lire le schéma.** La barre « Amis » a ${{k}}$ parts égales de ${{q}}$ : chaque ami reçoit $\\textcolor{{{color:primary.0}}}{{{q}}}$ gâteaux. La barre « Reste » porte $\\textcolor{{{color:primary.0}}}{{{r}}}$ : il reste $\\textcolor{{{color:primary.0}}}{{{r}}}$ gâteau{{if:r>1|x|}}.",
+					"**Vérifier.** ${{k}} \\times {{q}} + {{r}} = {{eval:k*q}} + {{r}} = {{eval:k*q+r}}$, et le reste ${{r}}$ est plus petit que ${{k}}$ : on ne peut plus donner un gâteau à chacun."
+				]
+			},
+			"hint": "Chaque barre porte un nom : trouve-le dans l'énoncé."
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Achats : cahier 4, stylo 2, livre 12, total 18",
+			"variationIndex": 0,
+			"variables": {
+				"L": "12",
+				"C": "4",
+				"S": "2"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["4", "2", "12", "18"]
+		},
+		{
+			"description": "Achats : cahier et stylo inversés",
+			"variationIndex": 0,
+			"variables": {
+				"L": "12",
+				"C": "4",
+				"S": "2"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "C'est le prix du stylo : cette case parle du cahier."
+			},
+			"answers": ["2", "2", "12", "18"]
+		},
+		{
+			"description": "Achats : livre dans la case du stylo",
+			"variationIndex": 0,
+			"variables": {
+				"L": "12",
+				"C": "4",
+				"S": "2"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "C'est le prix du livre : cette case parle du stylo."
+			},
+			"answers": ["4", "12", "12", "18"]
+		},
+		{
+			"description": "Achats : total dans la case du livre",
+			"variationIndex": 0,
+			"variables": {
+				"L": "12",
+				"C": "4",
+				"S": "2"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "C'est le prix total : cette case parle du livre seul."
+			},
+			"answers": ["4", "2", "18", "18"]
+		},
+		{
+			"description": "Achats : livre à la place du total",
+			"variationIndex": 0,
+			"variables": {
+				"L": "12",
+				"C": "4",
+				"S": "2"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "C'est le prix du livre seul : le total regroupe les trois barres, il est au bout de l'accolade."
+			},
+			"answers": ["4", "2", "12", "12"]
+		},
+		{
+			"description": "Triathlon : 400 m, 6 000 m, 8 400 m",
+			"variationIndex": 1,
+			"variables": {
+				"q": "8",
+				"n": "400"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["400", "6\\,000", "8\\,400"]
+		},
+		{
+			"description": "Triathlon : 6000 sans espace, juste mais mal espacé",
+			"variationIndex": 1,
+			"variables": {
+				"q": "8",
+				"n": "400"
+			},
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["spaces"]
+			},
+			"answers": ["400", "6000", "8\\,400"]
+		},
+		{
+			"description": "Triathlon : natation 1 500 m, total 31 500 m",
+			"variationIndex": 1,
+			"variables": {
+				"q": "30",
+				"n": "1500"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["1\\,500", "22\\,500", "31\\,500"]
+		},
+		{
+			"description": "Triathlon : course dans la case du vélo",
+			"variationIndex": 1,
+			"variables": {
+				"q": "8",
+				"n": "400"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "C'est la longueur de la course à pied : cette case parle du parcours à vélo."
+			},
+			"answers": ["400", "2\\,000", "8\\,400"]
+		},
+		{
+			"description": "Triathlon : vélo dans la case de la natation",
+			"variationIndex": 1,
+			"variables": {
+				"q": "8",
+				"n": "400"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "C'est la longueur du parcours à vélo : cette case parle de la natation."
+			},
+			"answers": ["6\\,000", "6\\,000", "8\\,400"]
+		},
+		{
+			"description": "Triathlon : total dans la case de la natation",
+			"variationIndex": 1,
+			"variables": {
+				"q": "8",
+				"n": "400"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "C'est la longueur de tout le triathlon : cette case parle de la natation seule."
+			},
+			"answers": ["8\\,400", "6\\,000", "8\\,400"]
+		},
+		{
+			"description": "Triathlon : vélo à la place du total",
+			"variationIndex": 1,
+			"variables": {
+				"q": "8",
+				"n": "400"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "C'est la longueur du parcours à vélo : le total regroupe les trois barres, il est au bout de l'accolade."
+			},
+			"answers": ["400", "6\\,000", "6\\,000"]
+		},
+		{
+			"description": "Randonnée : 36, 12, 9",
+			"variationIndex": 2,
+			"variables": {
+				"a": "12",
+				"b": "9",
+				"c": "15"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["36", "12", "9"]
+		},
+		{
+			"description": "Randonnée : première étape à la place du total",
+			"variationIndex": 2,
+			"variables": {
+				"a": "12",
+				"b": "9",
+				"c": "15"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "C'est la longueur de la première étape : le total est au bout de l'accolade, il regroupe les trois barres."
+			},
+			"answers": ["12", "12", "9"]
+		},
+		{
+			"description": "Randonnée : total dans la case de la première étape",
+			"variationIndex": 2,
+			"variables": {
+				"a": "12",
+				"b": "9",
+				"c": "15"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "C'est la longueur de toute la randonnée : cette case parle de la première étape."
+			},
+			"answers": ["36", "36", "9"]
+		},
+		{
+			"description": "Randonnée : troisième étape à la place de la première",
+			"variationIndex": 2,
+			"variables": {
+				"a": "12",
+				"b": "9",
+				"c": "15"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "C'est la longueur de la troisième étape : cette case parle de la première."
+			},
+			"answers": ["36", "15", "9"]
+		},
+		{
+			"description": "Randonnée : 36 − 12 = 24",
+			"variationIndex": 2,
+			"variables": {
+				"a": "12",
+				"b": "9",
+				"c": "15"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu n'as retiré que la première étape : retire aussi la troisième."
+			},
+			"answers": ["36", "12", "24"]
+		},
+		{
+			"description": "Randonnée : 12 + 15 = 27",
+			"variationIndex": 2,
+			"variables": {
+				"a": "12",
+				"b": "9",
+				"c": "15"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "C'est la longueur des deux étapes connues : retire-la du total."
+			},
+			"answers": ["36", "12", "27"]
+		},
+		{
+			"description": "Randonnée : total à la place de la deuxième étape",
+			"variationIndex": 2,
+			"variables": {
+				"a": "12",
+				"b": "9",
+				"c": "15"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "C'est la longueur de toute la randonnée : la deuxième étape n'en est qu'une partie."
+			},
+			"answers": ["36", "12", "36"]
+		},
+		{
+			"description": "Reste : 33 gâteaux entre 5 → 6, reste 3",
+			"variationIndex": 3,
+			"variables": {
+				"k": "5",
+				"q": "6",
+				"r0": "3",
+				"r": "3"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["6", "3"]
+		},
+		{
+			"description": "Reste : nombres inversés",
+			"variationIndex": 3,
+			"variables": {
+				"k": "5",
+				"q": "6",
+				"r0": "3",
+				"r": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "C'est le nombre de gâteaux qui restent : cette case parle de la part d'un ami."
+			},
+			"answers": ["3", "6"]
+		},
+		{
+			"description": "Reste : total à la place de la part",
+			"variationIndex": 3,
+			"variables": {
+				"k": "5",
+				"q": "6",
+				"r0": "3",
+				"r": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "C'est le nombre de gâteaux en tout : cette case parle de la part d'un seul ami."
+			},
+			"answers": ["33", "3"]
+		},
+		{
+			"description": "Reste : reste oublié (0)",
+			"variationIndex": 3,
+			"variables": {
+				"k": "5",
+				"q": "6",
+				"r0": "3",
+				"r": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Il reste des gâteaux : regarde la barre « Reste »."
+			},
+			"answers": ["6", "0"]
+		},
+		{
+			"description": "Reste : gâteaux distribués (30)",
+			"variationIndex": 3,
+			"variables": {
+				"k": "5",
+				"q": "6",
+				"r0": "3",
+				"r": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "C'est le nombre de gâteaux distribués : le reste, ce sont ceux qui ne sont pas partagés."
+			},
+			"answers": ["6", "30"]
+		},
+		{
+			"description": "Reste : 9 amis, 59 gâteaux → 6, reste 5",
+			"variationIndex": 3,
+			"variables": {
+				"k": "9",
+				"q": "6",
+				"r0": "5",
+				"r": "5"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["6", "5"]
+		}
+	]
+}

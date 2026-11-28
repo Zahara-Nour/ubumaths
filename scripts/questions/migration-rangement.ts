@@ -6,7 +6,10 @@
  * la migration qui les range et les tague, à partir du champ `rangement` de chaque fichier :
  *
  *   "rangement": { "noeud": "Nombres et calculs > Décimaux : calculs > multiplication", "point": "6-115" }
+ *   "rangement": { "noeud": "…", "point": ["1SPE-355", "1TECHNO-095"] }   (un point par programme)
  *   "rangement": { "niveauxAjoutes": ["6"] }      (modèle déjà rangé qui gagne un niveau)
+ *   "rangement": { "pointsAjoutes": ["1TECHNO-095"] }   (modèle déjà rangé qui gagne un tag ;
+ *                                                  peut aller avec « niveauxAjoutes »)
  *
  *  - relève en PROD (lecture seule) chaque modèle des dossiers, apparié par l'id de son fichier
  *    (titre et niveau doivent concorder), l'arbre des notions et les points visés ;
@@ -14,8 +17,8 @@
  *    fichier sans `rangement` d'un modèle déjà rangé → ignoré ;
  *  - refus de tout le lot (rien n'est écrit) : fichier sans id, id absent, titre ou niveau
  *    différents, `rangement` illisible, chemin ou point introuvable, point ni sur le nœud ni sur
- *    sa notion, modèle déjà rangé ou tagué autrement, modèle sans nœud dont le fichier n'a pas
- *    de `rangement` ;
+ *    sa notion, deux points d'un même programme, point d'un niveau que le modèle n'a pas, modèle
+ *    déjà rangé ou tagué autrement, modèle sans nœud dont le fichier n'a pas de `rangement` ;
  *  - écrit `supabase/migrations/<horodatage>_questions_<lot>_rangement_tags.sql` et sa fixture
  *    `tests/integration/fixtures/rangement-tags/<même nom>.json`, rejouée par
  *    `tests/integration/migrations-rangement-tags.test.ts`.
@@ -155,11 +158,7 @@ async function main(): Promise<number> {
 		noeuds.push(...page.data);
 		if (page.data.length < PAGE) break;
 	}
-	const codes = [
-		...new Set(
-			[...rangements.values()].flatMap((r) => (r?.sorte === 'neuf' && r.point ? [r.point] : []))
-		)
-	];
+	const codes = [...new Set([...rangements.values()].flatMap((r) => r?.points ?? []))];
 	const pointsDesTags = [...new Set((tags.data ?? []).map((t) => t.point_id))];
 	const points: PointProgramme[] = [];
 	for (const [colonne, valeurs] of [
@@ -176,7 +175,7 @@ async function main(): Promise<number> {
 	}
 	const arbre: Arbre = { noeuds, points };
 
-	const resultat: Lot = { ranges: [], niveaux: [] };
+	const resultat: Lot = { ranges: [], niveaux: [], tags: [] };
 	for (const { fichier, ligne } of appariement.paires) {
 		const prod: ModeleProd = {
 			id: ligne.id,
@@ -191,18 +190,25 @@ async function main(): Promise<number> {
 			erreurs.push(examen.erreur);
 		} else if (examen.sorte === 'ignore') {
 			console.log(`  ${id8} ignoré   ${fichier} — ${examen.raison}`);
-		} else if (examen.sorte === 'niveaux') {
-			const m = examen.modele;
-			console.log(
-				`  ${id8} niveaux  ${fichier} — {${m.avant.join(', ')}} → {${m.apres.join(', ')}}`
-			);
-			resultat.niveaux.push(m);
+		} else if (examen.sorte === 'ajouts') {
+			const { niveaux, tags } = examen;
+			if (niveaux) {
+				console.log(
+					`  ${id8} niveaux  ${fichier} — {${niveaux.avant.join(', ')}} → {${niveaux.apres.join(', ')}}`
+				);
+				resultat.niveaux.push(niveaux);
+			}
+			if (tags) {
+				console.log(
+					`  ${id8} tags     ${fichier} — {${tags.avant.join(', ')}} + ${tags.ajoutes.join(' + ')}`
+				);
+				resultat.tags.push(tags);
+			}
 		} else {
 			const m = examen.modele;
 			console.log(
-				`  ${id8} rangé    ${fichier} — ${m.point ?? 'sans tag'}, ${[m.branche, m.notion, ...(m.sousNotion === null ? [] : [m.sousNotion])].join(' > ')}`
+				`  ${id8} rangé    ${fichier} — ${m.points.join(' + ') || 'sans tag'}, ${[m.branche, m.notion, ...(m.sousNotion === null ? [] : [m.sousNotion])].join(' > ')}`
 			);
-			if (examen.alerte) console.log(`  ⚠️ ${examen.alerte}`);
 			resultat.ranges.push(m);
 		}
 	}
@@ -211,8 +217,8 @@ async function main(): Promise<number> {
 		console.error(`\n⛔ lot refusé, rien n'est écrit`);
 		return 1;
 	}
-	if (resultat.ranges.length === 0 && resultat.niveaux.length === 0) {
-		console.log(`\nAucun modèle à ranger ni niveau à ajouter : pas de migration.`);
+	if (resultat.ranges.length === 0 && resultat.niveaux.length === 0 && resultat.tags.length === 0) {
+		console.log(`\nAucun modèle à ranger, ni niveau ni tag à ajouter : pas de migration.`);
 		return 0;
 	}
 

@@ -51,7 +51,11 @@ import {
 import { shuffleChoices } from './choice-shuffler';
 import { assignBlankIndices } from './assign-blank-indices';
 import { parseOperationContent } from '#lib/ubumark/parser/operation-parser.ts';
-import { isDiagonalRectangleCheck, isRuledPolygonCheck } from '#lib/ubumark/types/construction.ts';
+import {
+	compositeBuiltNames,
+	isDiagonalRectangleCheck,
+	isRuledPolygonCheck
+} from '#lib/ubumark/types/construction.ts';
 import { hasCollectionToBuild } from '#lib/ubumark/parser/collection-parser.ts';
 import { hasMonnaieToBuild } from '#lib/ubumark/parser/monnaie-parser.ts';
 import { hasLineToPlace } from '#lib/ubumark/parser/number-line-parser.ts';
@@ -74,6 +78,13 @@ import {
 	ecrireChemin,
 	readExpectedLabyrintheAnswer
 } from '#lib/ubumark/utils/labyrinthe-answer.ts';
+import { hasYohakuARemplir } from '#lib/ubumark/parser/yohaku-parser.ts';
+import { hasPythonAEcrire } from '#lib/ubumark/parser/python-a-ecrire-parser.ts';
+import { readExpectedPythonAnswer } from '#lib/questions/python/python-answer.ts';
+import {
+	yohakuSolutionAnswer,
+	readExpectedYohakuAnswer
+} from '#lib/ubumark/utils/yohaku-answer.ts';
 import { hasVariationToFill } from '#lib/ubumark/parser/variation-table-parser.ts';
 import {
 	readSignTableCases,
@@ -146,6 +157,8 @@ import { cleanCoefficientsCustom } from '../clean-coefficients';
 import { expectedIntervalsLatex } from '../intervals/interval-answer';
 import { expectedVectorLatex } from '../vectors/vector-answer';
 import { expectedMatrixLatex } from '../matrices/matrix-answer';
+import { expectedParametricLatex } from '../parametric/parametric-line-answer';
+import { formatParametricAnswer, parseParametricAnswer } from '../parametric/parametric-lines';
 import { evaluateConditions } from './condition-evaluator';
 import { createRandomSource, randomIndex, type RandomSource } from '#lib/utils/random.ts';
 import { expectedInRequiredUnit } from '#lib/questions/units/required-unit.ts';
@@ -353,7 +366,7 @@ function trousLabelsCollide(
 /** Ce qui donne la réponse d'un bloc qui porte sa case, pour les messages au prof */
 function blockAnswerName(kind: BuildKind): string {
 	if (kind === 'line')
-		return 'la graduation ou l’intervalle de la droite graduée (placer:, representer:)';
+		return 'la graduation, l’intervalle ou le partage de la droite graduée (placer:, representer:, graduer:)';
 	if (kind === 'horloge') return 'l’heure de l’horloge (placer:)';
 	if (kind === 'barres') return 'l’effectif de la barre (placer:)';
 	if (kind === 'boite-a-moustaches') return 'les valeurs de la boîte (placer:)';
@@ -365,12 +378,14 @@ function blockAnswerName(kind: BuildKind): string {
 	if (kind === 'patron') return 'les faces du bloc patron (designer:, completer:)';
 	if (kind === 'solide') return 'les points du bloc solide (tracer:)';
 	if (kind === 'courbe')
-		return 'les coordonnées du point, la droite ou le vecteur du repère (placer:, tracer:)';
+		return 'les coordonnées du point, la droite, le vecteur ou l’escalier du repère (placer:, tracer:, construire)';
 	if (kind === 'trig') return 'la mesure du point du cercle trigonométrique (placer:)';
 	if (kind === 'tortue') return 'le programme du bloc tortue (attendu:)';
 	if (kind === 'calcul') return 'le programme du bloc calcul (attendu:)';
 	if (kind === 'robot') return 'le code du robot (calculé d’après la scène)';
 	if (kind === 'labyrinthe') return 'le chemin du labyrinthe (tiré avec la grille)';
+	if (kind === 'yohaku') return 'les cases de la grille (la solution écrite dans le bloc)';
+	if (kind === 'python') return 'le programme Python (solution: du bloc)';
 	return `la valeur du bloc ${kind} (construire:)`;
 }
 
@@ -494,13 +509,15 @@ function normalizeAnswerExpression(
 /** Champs propres à chaque case de calcul (cf. `CalculusBlankFields`) */
 const CALCULUS_FIELDS: Partial<Record<AnswerKind, readonly (keyof CalculusBlankFields)[]>> = {
 	primitive: ['integrand', 'variable', 'interval'],
-	'solution-ed': ['equation', 'solutionMode', 'variable', 'function', 'initial']
+	'solution-ed': ['equation', 'solutionMode', 'variable', 'function', 'initial'],
+	resolution: ['equation', 'variable', 'minLines']
 };
 
 /** Champ sans lequel la case ne peut pas être jugée */
 const CALCULUS_REQUIRED_FIELD: Partial<Record<AnswerKind, keyof CalculusBlankFields>> = {
 	primitive: 'integrand',
-	'solution-ed': 'equation'
+	'solution-ed': 'equation',
+	resolution: 'equation'
 };
 
 /** Champs dont les variables tirées sont résolues (`{{a}}x^2` → `3x^2`) */
@@ -512,7 +529,7 @@ const CALCULUS_TEMPLATED_FIELDS = new Set<keyof CalculusBlankFields>([
 ]);
 
 /**
- * Champs d'une case « primitive » ou « solution-ed » : case > blankDefaults,
+ * Champs d'une case « primitive », « solution-ed » ou « resolution » : case > blankDefaults,
  * variables tirées résolues. Seuls ceux de son `answerKind` sont recopiés.
  * Lève une erreur si le champ indispensable manque (`integrand`, `equation`).
  */
@@ -525,11 +542,11 @@ function resolveCalculusFields(
 ): CalculusBlankFields {
 	const fields = answerKind ? CALCULUS_FIELDS[answerKind] : undefined;
 	if (!answerKind || !fields) return {};
-	const resolved: Record<string, string> = {};
+	const resolved: Record<string, string | number> = {};
 	for (const field of fields) {
 		const raw = blank[field] ?? defaults?.[field];
 		if (raw === undefined) continue;
-		if (!CALCULUS_TEMPLATED_FIELDS.has(field)) {
+		if (typeof raw !== 'string' || !CALCULUS_TEMPLATED_FIELDS.has(field)) {
 			resolved[field] = raw;
 			continue;
 		}
@@ -539,7 +556,8 @@ function resolveCalculusFields(
 			: text;
 	}
 	const required = CALCULUS_REQUIRED_FIELD[answerKind];
-	if (required && !resolved[required]?.trim()) {
+	const requiredValue = required ? resolved[required] : undefined;
+	if (required && (typeof requiredValue !== 'string' || !requiredValue.trim())) {
 		throw new Error(`Case « ${answerKind} » sans champ « ${required} »`);
 	}
 	return resolved as CalculusBlankFields;
@@ -881,6 +899,8 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 				hasCalculToProgram(String(resolvedStatement)) ||
 				hasRobotToProduce(String(resolvedStatement)) ||
 				hasLabyrintheAParcourir(String(resolvedStatement)) ||
+				hasYohakuARemplir(String(resolvedStatement)) ||
+				hasPythonAEcrire(String(resolvedStatement)) ||
 				hasRangerToPlace(String(resolvedStatement)) ||
 				hasAssocierToPlace(String(resolvedStatement)) ||
 				hasTrousToPlace(String(resolvedStatement)) ||
@@ -974,6 +994,8 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 				// Faute de frappe dans `verifier:` : vue ici (lecture légère des noms affectés,
 				// `Z = …`), sinon l'élève aurait un « faux » pour une erreur de l'auteur
 				const named = namesAssignedIn(header.figureSource);
+				// Figure composée (outil n° 45) : un point construit à une étape d'avant n'est pas nommé
+				const builtBefore = new Set<string>();
 				for (const check of header.spec.checks) {
 					// Symétrique : l'axe ou le centre est nommé aussi (`d = droite(P, Q)`, `O = point(…)`) ;
 					// point à placer : son expression est calculée à la publication (`check-template`) ;
@@ -984,23 +1006,29 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 					const names =
 						check.kind === 'point' || check.kind === 'droite' || check.kind === 'cercle'
 							? []
-							: isRuledPolygonCheck(check)
-								? check.points.slice(0, 2)
-								: // Rectangle sans équerre : A et C (la diagonale), B et D sont à construire
-									isDiagonalRectangleCheck(check)
-									? [check.points[0], check.points[2]]
-									: check.kind === 'segment'
-										? [check.point]
-										: check.kind === 'symetrique'
-											? [...(check.points ?? []), check.by]
-											: check.kind === 'triangle'
-												? [
-														check.points[0],
-														check.points[1],
-														// En carreaux (n° 20), rien à nommer
-														...check.lengths.flatMap((l) => ('source' in l ? l.source : []))
-													]
-												: check.points;
+							: check.kind === 'segment_par'
+								? check.points.filter((name) => !builtBefore.has(name))
+								: isRuledPolygonCheck(check)
+									? check.points.slice(0, 2)
+									: // Rectangle sans équerre : A et C (la diagonale), B et D sont à construire
+										isDiagonalRectangleCheck(check)
+										? [check.points[0], check.points[2]]
+										: check.kind === 'segment'
+											? [check.point]
+											: check.kind === 'symetrique'
+												? [...(check.points ?? []), check.by]
+												: check.kind === 'triangle'
+													? check.model
+														? // Reproduire (n° 47) : le modèle et A ; B seulement s'il est tracé
+															[...check.model, check.points[0]]
+														: [
+																check.points[0],
+																check.points[1],
+																// En carreaux (n° 20), rien à nommer
+																...check.lengths.flatMap((l) => ('source' in l ? l.source : []))
+															]
+													: check.points;
+					for (const name of compositeBuiltNames(check)) builtBefore.add(name);
 					for (const name of names) {
 						if (!named.has(name)) {
 							errors.push({
@@ -1104,7 +1132,7 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 				// Le juge apparierait une construction avec une autre case (34 tapé ailleurs)
 				if (template.options?.orderIndependent) {
 					errors.push(
-						`${kind === 'cubes' || kind === 'patron' || kind === 'solide' || kind === 'courbe' || kind === 'trig' || kind === 'tortue' || kind === 'calcul' || kind === 'robot' || kind === 'labyrinthe' ? 'un' : 'une'} ${kind === 'partage' || kind === 'cubes' || kind === 'patron' || kind === 'solide' || kind === 'tortue' || kind === 'calcul' || kind === 'robot' || kind === 'labyrinthe' ? buildKindName(kind) : isPlaceKind(kind) ? `${buildKindName(kind)} à placer` : 'case à construire'} ne se combine pas avec « ordre indifférent »`
+						`${kind === 'cubes' || kind === 'patron' || kind === 'solide' || kind === 'courbe' || kind === 'trig' || kind === 'tortue' || kind === 'calcul' || kind === 'robot' || kind === 'labyrinthe' || kind === 'python' ? 'un' : 'une'} ${kind === 'partage' || kind === 'cubes' || kind === 'patron' || kind === 'solide' || kind === 'tortue' || kind === 'calcul' || kind === 'robot' || kind === 'labyrinthe' || kind === 'yohaku' || kind === 'python' ? buildKindName(kind) : isPlaceKind(kind) ? `${buildKindName(kind)} à placer` : 'case à construire'} ne se combine pas avec « ordre indifférent »`
 					);
 				}
 				if (errors.length > 0 || !('answer' in read)) {
@@ -1204,6 +1232,10 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 						if (child.type === 'number-line') {
 							const first = child.caseIndex;
 							if (child.representer !== undefined && first !== undefined) return [first];
+							// Droite à graduer : la case des parts, puis une par point
+							if (child.graduer !== undefined && first !== undefined) {
+								return [first, ...(child.placer ?? []).map((_, k) => first + 1 + k)];
+							}
 							if (child.placer === undefined || first === undefined) return [];
 							return child.placer.map((_, k) => first + k);
 						}
@@ -1211,6 +1243,8 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 							const first = child.caseIndex;
 							if ((child.spec?.tracer || child.spec?.vecteur) && first !== undefined)
 								return [first];
+							const build = child.spec?.construire;
+							if (build && first !== undefined) return build.terms.map((_, k) => first + k);
 							if (!child.spec?.placer || first === undefined) return [];
 							return child.spec.placer.map((_, k) => first + k);
 						}
@@ -1224,6 +1258,9 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 							return child.spec?.parcourir && child.caseIndex !== undefined
 								? [child.caseIndex]
 								: [];
+						}
+						if (child.type === 'yohaku' || child.type === 'python-a-ecrire') {
+							return child.spec !== null && child.caseIndex !== undefined ? [child.caseIndex] : [];
 						}
 						if (child.type === 'trig-circle') {
 							const first = child.caseIndex;
@@ -1529,16 +1566,26 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 					!(blank.unit ?? resolvedVariation.blankDefaults?.unit) &&
 					answerKind !== 'intervalles' &&
 					answerKind !== 'vecteur' &&
-					answerKind !== 'matrice';
+					answerKind !== 'matrice' &&
+					answerKind !== 'droite-parametrique';
+				// Droite paramétrique : chaque ligne nettoyée à part (`1+-2t` → `1-2t`)
+				const isParametricCleanable =
+					cleanCoefficients && isMathBlank && answerKind === 'droite-parametrique';
 				// Unité imposée : l'attendu s'écrit dans cette unité (`1.5[km]` → `1500[m]`)
 				const required = (blank.unit ?? resolvedVariation.blankDefaults?.unit)?.required;
 				const expectedAnswer = impossibleDraw
 					? IMPOSSIBLE_EXPECTED
 					: isCleanable
 						? cleanCoefficientsCustom(resolvedExpected, genericFunctions, capitalPairs)
-						: required
-							? expectedInRequiredUnit(resolvedExpected, required)
-							: resolvedExpected;
+						: isParametricCleanable
+							? formatParametricAnswer(
+									parseParametricAnswer(resolvedExpected).map((line) =>
+										cleanCoefficientsCustom(line, genericFunctions, capitalPairs)
+									)
+								)
+							: required
+								? expectedInRequiredUnit(resolvedExpected, required)
+								: resolvedExpected;
 
 				// `i` matches the blank counter assigned by `assignBlankIndices`
 				// (left-to-right, consecutive, 0-based). If that contract changes,
@@ -1622,12 +1669,14 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 									? expectedVectorLatex(resolved.expectedAnswer)
 									: resolved.answerKind === 'matrice'
 										? expectedMatrixLatex(resolved.expectedAnswer)
-										: convertToLatex(
-												resolved.expectedAnswer,
-												genericFunctions,
-												isCleanable,
-												capitalPairs
-											);
+										: resolved.answerKind === 'droite-parametrique'
+											? expectedParametricLatex(resolved.expectedAnswer)
+											: convertToLatex(
+													resolved.expectedAnswer,
+													genericFunctions,
+													isCleanable,
+													capitalPairs
+												);
 				}
 				if (operationAnswer !== undefined) {
 					resolved.operation = true;
@@ -1638,15 +1687,24 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 					// Programme tortue ou de calcul : le corrigé montre le programme, sans la
 					// comparaison ni les essais ; robot : le code, sans la scène
 					resolved.expectedAnswerLatex =
-						buildAnswer.kind === 'labyrinthe'
-							? ecrireChemin(readExpectedLabyrintheAnswer(buildAnswer.answer)?.chemin ?? [])
-							: buildAnswer.kind === 'tortue'
-								? (readExpectedTortueAnswer(buildAnswer.answer)?.attendu ?? buildAnswer.answer)
-								: buildAnswer.kind === 'calcul'
-									? (readExpectedCalculAnswer(buildAnswer.answer)?.attendu ?? buildAnswer.answer)
-									: buildAnswer.kind === 'robot'
-										? (readExpectedRobotAnswer(buildAnswer.answer)?.solution ?? buildAnswer.answer)
-										: buildAnswer.answer;
+						buildAnswer.kind === 'python'
+							? (readExpectedPythonAnswer(buildAnswer.answer)?.solution ?? buildAnswer.answer)
+							: buildAnswer.kind === 'labyrinthe'
+								? ecrireChemin(readExpectedLabyrintheAnswer(buildAnswer.answer)?.chemin ?? [])
+								: buildAnswer.kind === 'yohaku'
+									? (() => {
+											const attendu = readExpectedYohakuAnswer(buildAnswer.answer);
+											return attendu ? yohakuSolutionAnswer(attendu) : buildAnswer.answer;
+										})()
+									: buildAnswer.kind === 'tortue'
+										? (readExpectedTortueAnswer(buildAnswer.answer)?.attendu ?? buildAnswer.answer)
+										: buildAnswer.kind === 'calcul'
+											? (readExpectedCalculAnswer(buildAnswer.answer)?.attendu ??
+												buildAnswer.answer)
+											: buildAnswer.kind === 'robot'
+												? (readExpectedRobotAnswer(buildAnswer.answer)?.solution ??
+													buildAnswer.answer)
+												: buildAnswer.answer;
 				}
 				// Erreurs prévues : réponses résolues comme l'attendu ; messages plus bas,
 				// une fois toutes les cases connues (`{{solution}}` permis)
@@ -1660,10 +1718,12 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 						// `equation`, jamais sur l'attendu — une erreur prévue n'y serait jamais vue
 						resolved.answerKind === 'primitive' ||
 						resolved.answerKind === 'solution-ed' ||
+						resolved.answerKind === 'resolution' ||
+						resolved.answerKind === 'droite-parametrique' ||
 						template.options?.orderIndependent === true
 					) {
 						throw new Error(
-							`Case ${i + 1} : une erreur prévue ne va que dans une case à écriture mathématique ordinaire (ni texte, ni geste, ni primitive, ni solution d'équation différentielle, ni case jugée par ses règles seules, ni cases appariées librement)`
+							`Case ${i + 1} : une erreur prévue ne va que dans une case à écriture mathématique ordinaire (ni texte, ni geste, ni primitive, ni solution d'équation différentielle, ni résolution ligne par ligne, ni droite paramétrique, ni case jugée par ses règles seules, ni cases appariées librement)`
 						);
 					}
 					resolved.expectedErrors = expectedErrors.map((error, k) => {

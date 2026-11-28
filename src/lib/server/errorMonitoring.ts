@@ -374,7 +374,7 @@ async function notifyCriticalError(
 			action_url: `/dashboard/admin/errors/${errorId}`,
 			target_type: 'role',
 			target_roles: ['admin'],
-			system_event_type: 'assessment_graded' // Note: 'error_critical' not in SystemEventType enum, using fallback
+			system_event_type: 'error_critical'
 		});
 	} catch (error) {
 		logger.error('Failed to send critical error notification:', error);

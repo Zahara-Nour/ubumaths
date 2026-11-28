@@ -70,12 +70,15 @@ import { associerItemHasBlock } from '../parser/associer-parser';
 import type { TrousNode } from '../types/trous';
 import { displayedTrousLabels, TROUS_RESERVE_COLUMNS } from '../utils/trous';
 import { generateQrTypst } from './qr-typst';
+import { generateEngrenagesTypst } from './engrenages-typst';
 import { generateScratchTypst } from './scratch-typst';
 import { generateHorlogeTypst } from './horloge-typst';
 import { generateTortueTypst } from './tortue-typst';
 import { generateRobotTypst } from './robot-typst';
 import { generateLabyrintheTypst } from './labyrinthe-typst';
+import { generateYohakuTypst } from './yohaku-typst';
 import { generateCalculTypst } from './calcul-typst';
+import { generatePythonAEcrireTypst } from './python-a-ecrire-typst';
 import { generatePartageTypst } from './partage-typst';
 import { generateEspaceTypst } from './espace-typst';
 import { generateOperationTypst } from './operation-typst';
@@ -537,6 +540,9 @@ function generateBlock(node: BlockNode, options: ResolvedTypstTranspilerOptions)
 
 		case 'qr':
 			return generateQrTypst(node);
+		case 'engrenages':
+			// Engrenages : la figure à l'arrêt (l'animation est réservée au corrigé à l'écran)
+			return generateEngrenagesTypst(node);
 		case 'scratch':
 			return generateScratchTypst(node);
 		case 'horloge':
@@ -576,12 +582,18 @@ function generateBlock(node: BlockNode, options: ResolvedTypstTranspilerOptions)
 		case 'calcul':
 			// Programme de calcul : « À faire sur Chiphre » (la consigne est dans l'énoncé)
 			return generateCalculTypst(node);
+		case 'python-a-ecrire':
+			// Programme Python : le départ en bloc de code (sans éditeur), jamais la solution
+			return generatePythonAEcrireTypst(node);
 		case 'robot':
 			// Robot : le quadrillage ; à produire, « Écris le code : » et 15 cases vides
 			return generateRobotTypst(node);
 		case 'labyrinthe':
 			// Labyrinthe : la grille, l'entrée et les sorties ; en solution, le bon chemin teinté
 			return generateLabyrintheTypst(node);
+		case 'yohaku':
+			// Grille yohaku : cases à remplir vides, totaux au bord ; en solution, la solution écrite
+			return generateYohakuTypst(node);
 
 		default:
 			return '';

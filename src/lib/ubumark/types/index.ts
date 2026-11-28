@@ -226,6 +226,20 @@ export type { RobotNode, RobotIssue, RobotSpec, RobotScene, Instruction } from '
 // LABYRINTHE (bloc ```labyrinthe)
 export type { LabyrintheNode, LabyrintheIssue, LabyrintheSpec, Regle } from './labyrinthe';
 
+// ENGRENAGES (bloc ```engrenages)
+export type { EngrenagesNode, EngrenagesIssue, EngrenagesWheel } from './engrenages';
+
+// YOHAKU (bloc ```yohaku)
+export type { YohakuNode, YohakuIssue, YohakuSpec, YohakuCase, YohakuOperation } from './yohaku';
+
+// PYTHON À ÉCRIRE (bloc ```python-a-ecrire)
+export type {
+	PythonAEcrireNode,
+	PythonAEcrireIssue,
+	PythonAEcrireSpec,
+	PythonExigence
+} from './python-a-ecrire';
+
 // ============================================================================
 // PARTAGE (bloc ```partage)
 // ============================================================================

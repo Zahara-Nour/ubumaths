@@ -44,93 +44,52 @@ function fullName(firstname: string | null, lastname: string | null): string | n
 /**
  * Messages marqués automatiquement, les plus récents d'abord (écart T21).
  *
- * - Prof : fonction `get_flagged_messages_for_teacher` (décision de David,
- *   2026-11-25). Elle rend aussi les messages marqués des conversations à deux
- *   entre élèves (ce message et son auteur, rien d'autre de la conversation) et
- *   les messages marqués supprimés, que la RLS de `messages` ne lui rend pas.
- * - Admin : ses accès ne changent pas. Lecture avec son client, bornée par la RLS
- *   de `messages` (conversations qu'il peut ouvrir, messages non supprimés).
- *   Jointures non `!inner` : un auteur ou une conversation masqués laissent la
- *   ligne, sans nom.
+ * Fonction `get_flagged_messages_for_teacher` (décision de David, 2026-11-25).
+ * Elle rend aussi les messages marqués des conversations à deux entre élèves (ce
+ * message et son auteur, rien d'autre de la conversation) et les messages marqués
+ * supprimés, que la RLS de `messages` ne rend pas au prof. La page est réservée
+ * au prof : l'admin reçoit un 403 du layout, gardé par David (2026-11-25).
  *
  * Même règle que les signalements (T20) : un échec de lecture se dit (`failed`),
  * il ne ressemble pas à « aucun message marqué ».
  */
 async function loadFlaggedMessages(
-	supabase: SupabaseClient<Database>,
-	role: string
+	supabase: SupabaseClient<Database>
 ): Promise<{ messages: FlaggedMessageRow[]; failed: boolean }> {
-	if (role === 'teacher') {
-		const { data, error: rpcError } = await supabase.rpc('get_flagged_messages_for_teacher', {
-			p_limit: FLAGGED_MESSAGES_LIMIT
-		});
-		if (rpcError) {
-			logger.error('Failed to fetch flagged messages:', rpcError);
-			return { messages: [], failed: true };
-		}
-		// Les types générés annoncent des colonnes non nulles ; la fonction en rend
-		// de nulles (auteur supprimé, conversation sans nom, message non supprimé).
-		const rows: {
-			id: string;
-			conversation_id: string | null;
-			plain_text: string | null;
-			flag_reason: string | null;
-			created_at: string | null;
-			deleted_at: string | null;
-			deleted_by_moderation: boolean | null;
-			sender_firstname: string | null;
-			sender_lastname: string | null;
-			conversation_name: string | null;
-			is_group: boolean | null;
-		}[] = data ?? [];
-		return {
-			failed: false,
-			messages: rows.map((m) => ({
-				id: m.id,
-				conversationId: m.conversation_id,
-				text: m.plain_text ?? '',
-				reason: m.flag_reason,
-				createdAt: m.created_at,
-				senderName: fullName(m.sender_firstname, m.sender_lastname),
-				conversationName: m.conversation_name,
-				isGroup: m.is_group,
-				deletedBy: m.deleted_at ? (m.deleted_by_moderation ? 'moderation' : 'untraced') : null
-			}))
-		};
-	}
-
-	const { data, error: readError } = await supabase
-		.from('messages')
-		.select(
-			`
-			id,
-			conversation_id,
-			plain_text,
-			flag_reason,
-			created_at,
-			sender:profiles!messages_sender_id_fkey(firstname, lastname),
-			conversation:conversations!messages_conversation_id_fkey(name, is_group)
-		`
-		)
-		.eq('is_flagged', true)
-		.order('created_at', { ascending: false })
-		.limit(FLAGGED_MESSAGES_LIMIT);
-	if (readError) {
-		logger.error('Failed to fetch flagged messages:', readError);
+	const { data, error: rpcError } = await supabase.rpc('get_flagged_messages_for_teacher', {
+		p_limit: FLAGGED_MESSAGES_LIMIT
+	});
+	if (rpcError) {
+		logger.error('Failed to fetch flagged messages:', rpcError);
 		return { messages: [], failed: true };
 	}
+	// Les types générés annoncent des colonnes non nulles ; la fonction en rend
+	// de nulles (auteur supprimé, conversation sans nom, message non supprimé).
+	const rows: {
+		id: string;
+		conversation_id: string | null;
+		plain_text: string | null;
+		flag_reason: string | null;
+		created_at: string | null;
+		deleted_at: string | null;
+		deleted_by_moderation: boolean | null;
+		sender_firstname: string | null;
+		sender_lastname: string | null;
+		conversation_name: string | null;
+		is_group: boolean | null;
+	}[] = data ?? [];
 	return {
 		failed: false,
-		messages: (data ?? []).map((m) => ({
+		messages: rows.map((m) => ({
 			id: m.id,
 			conversationId: m.conversation_id,
 			text: m.plain_text ?? '',
 			reason: m.flag_reason,
 			createdAt: m.created_at,
-			senderName: m.sender ? fullName(m.sender.firstname, m.sender.lastname) : null,
-			conversationName: m.conversation?.name ?? null,
-			isGroup: m.conversation?.is_group ?? null,
-			deletedBy: null
+			senderName: fullName(m.sender_firstname, m.sender_lastname),
+			conversationName: m.conversation_name,
+			isGroup: m.is_group,
+			deletedBy: m.deleted_at ? (m.deleted_by_moderation ? 'moderation' : 'untraced') : null
 		}))
 	};
 }
@@ -142,11 +101,11 @@ async function loadFlaggedMessages(
  * - Active restrictions created by this teacher
  * - Moderation logs for this teacher's actions
  * - Message reports for moderation
- * - Messages flagged automatically (teacher: RPC `get_flagged_messages_for_teacher`,
- *   deleted ones and student 1-on-1 chats included; admin: RLS read, unchanged)
+ * - Messages flagged automatically (RPC `get_flagged_messages_for_teacher`,
+ *   deleted ones and student 1-on-1 chats included)
  * - Students from teacher's classes (for new restriction dialog)
  *
- * Only accessible by teachers and admins
+ * Only accessible by teachers (the layout answers 403 to an admin)
  */
 export const load: PageServerLoad = async ({ locals }) => {
 	const { user, profile, supabase } = locals;
@@ -156,8 +115,8 @@ export const load: PageServerLoad = async ({ locals }) => {
 		throw error(401, 'Connexion requise');
 	}
 
-	// Check teacher role
-	if (!['teacher', 'admin'].includes(profile.role)) {
+	// Prof seulement : le layout répond déjà 403 à l'admin (M59)
+	if (profile.role !== 'teacher') {
 		throw error(403, 'Accès refusé');
 	}
 
@@ -210,7 +169,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 		supabase.rpc('get_pending_reports_count'),
 
 		// ⚠️ Écart T21 : messages marqués automatiquement (`is_flagged`).
-		loadFlaggedMessages(supabase, profile.role),
+		loadFlaggedMessages(supabase),
 
 		// Students from teacher's classes (for new restriction dialog)
 		getTeacherClassesWithStudents(user.id, supabase)
@@ -307,8 +266,6 @@ export const load: PageServerLoad = async ({ locals }) => {
 		flaggedMessages: flaggedResult.messages,
 		flaggedMessagesLoadFailed: flaggedResult.failed,
 		flaggedMessagesLimit: FLAGGED_MESSAGES_LIMIT,
-		// Vrai pour le prof : conversations à deux entre élèves et messages supprimés compris.
-		flaggedMessagesExtended: profile.role === 'teacher',
 		students
 	};
 };

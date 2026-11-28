@@ -40,6 +40,7 @@
  */
 
 import { browser } from '$app/env';
+import { bugReportsConfigStore } from '#lib/stores/bugReportsConfig.svelte.ts';
 
 // =============================================================================
 // Configuration
@@ -289,8 +290,12 @@ function initLongTaskObserver(): void {
 
 					addFreezeEvent(event);
 
-					// Log to error monitoring if very long
-					if (duration > LONG_TASK_ERROR_THRESHOLD_MS) {
+					// Log to error monitoring if very long — sauf si l'admin a coupé
+					// « Détection des freezes » dans la configuration (écart L110)
+					if (
+						duration > LONG_TASK_ERROR_THRESHOLD_MS &&
+						bugReportsConfigStore.freezeDetectionEnabled
+					) {
 						// Import dynamically to avoid circular dependencies
 						import('./errorMonitoring')
 							.then(({ capturePerformance }) => {
@@ -479,18 +484,21 @@ function initHeartbeat(): void {
 				}
 			}
 
-			// Log to error monitoring
-			import('./errorMonitoring')
-				.then(({ captureError }) => {
-					captureError(new Error(`UI unresponsive for ${drift}ms`), {
-						severity: drift > FREEZE_AUTO_REPORT_THRESHOLD_MS ? 'critical' : 'error',
-						context: { drift, url: window.location.href },
-						tags: ['freeze', 'unresponsive']
+			// Log to error monitoring — sauf si l'admin a coupé « Détection des
+			// freezes » dans la configuration (écart L110)
+			if (bugReportsConfigStore.freezeDetectionEnabled) {
+				import('./errorMonitoring')
+					.then(({ captureError }) => {
+						captureError(new Error(`UI unresponsive for ${drift}ms`), {
+							severity: drift > FREEZE_AUTO_REPORT_THRESHOLD_MS ? 'critical' : 'error',
+							context: { drift, url: window.location.href },
+							tags: ['freeze', 'unresponsive']
+						});
+					})
+					.catch(() => {
+						// Ignore import errors
 					});
-				})
-				.catch(() => {
-					// Ignore import errors
-				});
+			}
 		} else {
 			state.isUnresponsive = false;
 		}

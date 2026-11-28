@@ -108,7 +108,8 @@ function atelierMark(atelier: Atelier): string {
 			o.provenance,
 			'interval' in o ? o.interval : null,
 			'reciprocalOn' in o ? o.reciprocalOn : null,
-			'inheritedInterval' in o ? o.inheritedInterval : null
+			'inheritedInterval' in o ? o.inheritedInterval : null,
+			'parameterInterval' in o ? o.parameterInterval : null
 		])
 	]);
 }

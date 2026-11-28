@@ -76,6 +76,7 @@ import {
 	findLabyrinthesAParcourir,
 	parseLabyrintheContent
 } from '#lib/ubumark/parser/labyrinthe-parser.ts';
+import { findYohakusARemplir, parseYohakuContent } from '#lib/ubumark/parser/yohaku-parser.ts';
 import { cheminDit } from '#lib/ubumark/utils/labyrinthe-answer.ts';
 import {
 	findVariationsToFill,
@@ -313,7 +314,8 @@ function dessineParLeBloc(corps: readonly string[], corrige: boolean): string[] 
  * Droite à tracer (`tracer: y = 2x - 1`) : à l'énoncé, le repère vide (lignes `tracer:`
  * et `case:` retirées) ; au corrigé (`corrige`), la ligne `tracer:` devient la droite
  * dessinée, en vert. Une case par droite. Vecteur à tracer, droite verticale : cf.
- * `dessineParLeBloc`. Droite ou vecteur masqués → refus.
+ * `dessineParLeBloc`, comme l'escalier à construire (une case par terme). Droite ou
+ * vecteur masqués → refus.
  *
  * Points à placer : cf. `pointsDuRepere`. Repère en retrait ou cité → refus, message à
  * l'appui.
@@ -340,6 +342,16 @@ function droitesATracer(
 			const corps = pointsDuRepere(repere.body, placer, pris, corrige);
 			lignes.splice(repere.startIndex + 1, repere.body.length, ...corps);
 			cases += placer.length;
+			continue;
+		}
+		// Escalier à construire : le repère avec la courbe, y = x et u₀ ; corrigé, le vrai escalier
+		if (node.spec.construire) {
+			lignes.splice(
+				repere.startIndex + 1,
+				repere.body.length,
+				...dessineParLeBloc(repere.body, corrige)
+			);
+			cases += node.spec.construire.terms.length;
 			continue;
 		}
 		if (node.spec.vecteur) {
@@ -395,7 +407,8 @@ const COULEUR_SOLUTION = 'vert';
  * (`corrige`), `placer:` devient la ligne `points:` des points attendus, en vert (le
  * parseur refuse `points:` avec `placer:` : il n'y en a pas d'autre). Un point sans nom
  * prend la première lettre libre. Une case par point. Droite à représenter
- * (`representer:`), droite en retrait ou citée, illisible → refus, message à l'appui.
+ * (`representer:`), à graduer (`graduer:`), droite en retrait ou citée, illisible → refus,
+ * message à l'appui.
  */
 function droitesAPlacer(
 	modele: string,
@@ -414,6 +427,7 @@ function droitesAPlacer(
 			throw refus(`droite à placer illisible (${errors.map((e) => e.message).join(' ; ')})`);
 		}
 		if (node.representer) throw refus('droite à représenter non prise en charge');
+		if (node.graduer) throw refus('droite à graduer non prise en charge');
 		const placer = node.placer ?? [];
 		if (placer.length === 0) throw refus('droite à placer sans point à placer');
 		cases += placer.length;
@@ -686,6 +700,23 @@ function reponsesDessinees(
 	return { texte: lignes.join('\n'), cases };
 }
 
+/** Grilles yohaku à remplir : cases vides à l'énoncé, `solution: oui` au corrigé (une case chacune) */
+function yohakusARemplir(modele: string, texte: string, corrige: boolean) {
+	return reponsesDessinees(
+		modele,
+		texte,
+		corrige,
+		findYohakusARemplir(texte),
+		'grille à remplir',
+		(corps) => {
+			const node = parseYohakuContent(corps);
+			return node.errors.length > 0 || node.spec === null
+				? node.errors.map((e) => e.message).join(' ; ')
+				: 1;
+		}
+	);
+}
+
 /** Horloges à régler (```horloge, `placer:`) : cadran vide à l'énoncé, aiguilles en vert au corrigé ; une case chacune */
 function horlogesARegler(modele: string, texte: string, corrige: boolean) {
 	return reponsesDessinees(
@@ -774,11 +805,15 @@ function figer(template: QuestionTemplate, instance: QuestionInstance): Question
 	if (etapes.length === 0 && instance.correction?.generatedSteps) {
 		throw new Error(`${template.id} : correction générée (mode B) non prise en charge`);
 	}
-	// Question à programme (tortue, calcul) : elle se fait à l'écran, pas sur une fiche
+	// Question à programme (tortue, calcul, Python) : elle se fait à l'écran, pas sur une fiche
 	// (David, 2026-11-14) ; refusée avec un message qui le dit au prof
-	if (instance.blanks?.some((b) => b.construire === 'tortue' || b.construire === 'calcul')) {
+	if (
+		instance.blanks?.some(
+			(b) => b.construire === 'tortue' || b.construire === 'calcul' || b.construire === 'python'
+		)
+	) {
 		throw new Error(
-			`${template.id} : une question à programme (tortue, calcul) ne peut pas entrer dans une série d’automatismes`
+			`${template.id} : une question à programme (tortue, calcul, Python) ne peut pas entrer dans une série d’automatismes`
 		);
 	}
 	// Consigne du modèle : lue avec SES fonctions, posée au-dessus du groupe par `buildSerie`
@@ -844,9 +879,13 @@ function figer(template: QuestionTemplate, instance: QuestionInstance): Question
 	const labyrinthesEnonce = labyrinthesAFiger(template.id, robotsEnonce.texte, false);
 	const labyrinthesCorrige = labyrinthesAFiger(template.id, robotsCorrige.texte, true);
 
+	// Grille yohaku à remplir : cases vides à l'énoncé, la solution de l'auteur au corrigé
+	const yohakusEnonce = yohakusARemplir(template.id, labyrinthesEnonce.texte, false);
+	const yohakusCorrige = yohakusARemplir(template.id, labyrinthesCorrige.texte, true);
+
 	// Horloge à régler, barres à construire : vides à l'énoncé, réponse en vert au corrigé
-	const horlogesEnonce = horlogesARegler(template.id, labyrinthesEnonce.texte, false);
-	const horlogesCorrige = horlogesARegler(template.id, labyrinthesCorrige.texte, true);
+	const horlogesEnonce = horlogesARegler(template.id, yohakusEnonce.texte, false);
+	const horlogesCorrige = horlogesARegler(template.id, yohakusCorrige.texte, true);
 	const barresEnonce = barresAConstruire(template.id, horlogesEnonce.texte, false);
 	const barresCorrige = barresAConstruire(template.id, horlogesCorrige.texte, true);
 
@@ -863,6 +902,7 @@ function figer(template: QuestionTemplate, instance: QuestionInstance): Question
 		trousEnonce.cases +
 		robotsEnonce.cases +
 		labyrinthesEnonce.cases +
+		yohakusEnonce.cases +
 		horlogesEnonce.cases +
 		barresEnonce.cases;
 	if (cases !== (instance.blanks?.length ?? 0)) {

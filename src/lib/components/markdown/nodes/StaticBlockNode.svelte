@@ -29,6 +29,7 @@
 	import StatChart from './StatChart.svelte';
 	import FigureBlock from './FigureBlock.svelte';
 	import QrBlock from './QrBlock.svelte';
+	import Engrenages from './Engrenages.svelte';
 	import ScratchBlock from './ScratchBlock.svelte';
 	import Horloge from './Horloge.svelte';
 	import Partage from './Partage.svelte';
@@ -44,6 +45,8 @@
 	import TortueProgramme from './TortueProgramme.svelte';
 	import RobotCode from './RobotCode.svelte';
 	import Labyrinthe from './Labyrinthe.svelte';
+	import Yohaku from './Yohaku.svelte';
+	import PythonAEcrire from './PythonAEcrire.svelte';
 	import CalculProgramme from './CalculProgramme.svelte';
 
 	interface Props {
@@ -99,6 +102,8 @@
 	<StatChart {node} />
 {:else if node.type === 'qr'}
 	<QrBlock {node} />
+{:else if node.type === 'engrenages'}
+	<Engrenages {node} />
 {:else if node.type === 'scratch'}
 	<ScratchBlock {node} />
 {:else if node.type === 'horloge'}
@@ -131,4 +136,8 @@
 	<RobotCode {node} />
 {:else if node.type === 'labyrinthe'}
 	<Labyrinthe {node} />
+{:else if node.type === 'yohaku'}
+	<Yohaku {node} />
+{:else if node.type === 'python-a-ecrire'}
+	<PythonAEcrire {node} />
 {/if}

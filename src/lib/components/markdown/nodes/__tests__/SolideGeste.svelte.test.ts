@@ -109,6 +109,17 @@ describe('SolideGeste — points cliquables', () => {
 		expect(labels[0]).toBe('Point B');
 		expect(labels[7]).toBe('Point I');
 	});
+
+	it('dessine les graduations (graduer:) dans la figure à geste (outil n° 65)', async () => {
+		const screen = await render(SolideGeste, {
+			target: mainElement(),
+			props: {
+				node: node(...CUBE, 'points: M tel que AM = 1/3 AB', 'graduer: AB 3', 'tracer: vecteur AM'),
+				answer: answerProbe().answer()
+			}
+		});
+		expect(screen.container.querySelectorAll('.solide-graduation')).toHaveLength(2);
+	});
 });
 
 describe('SolideGeste — origine libre', () => {

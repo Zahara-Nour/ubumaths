@@ -1,6 +1,6 @@
 ---
 couvre:
-  - 'src/lib/server/{chapter*,chapters*,content-owner,template-content,template-guard,class-sessions,course-share-tokens,curriculum*,journal*,programme-tree,programme-tags}.ts'
+  - 'src/lib/server/{chapter*,chapters*,content-owner,template-content,template-guard,class-sessions,course-share-tokens,curriculum*,journal*,programme-tree,programme-tags,school-year}.ts'
   - 'src/lib/server/validation/{chapter*,chapters,curriculum,journal,academic}.ts'
   - 'src/lib/server/progression/**'
   - 'src/lib/server/programmes/**'
@@ -174,13 +174,14 @@ modèle relié, `null` si propre) et `hidden` (masqué dans ce chapitre).
 
 ### Cahier de texte
 
-| Fichier (`src/lib/server/`) | Rôle                                                                                                                                                      |
-| --------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `journal.ts`                | Séances : `createJournalEntry`, `updateJournalEntry`, `deleteJournalEntry`, `getJournalEntriesForWeek` (vue semaine prof), `getUpcomingHomework` (élève). |
-| `journal-homework.ts`       | Travaux à faire : `resolveHomeworkItems` (règle des échéances), `prepareHomeworkForEntry`, `setHomeworkForEntry` (RPC `set_journal_entry_homework`).      |
-| `journal-activities.ts`     | `parsePendingActivities` : activités choisies sur une séance pas encore enregistrée, relues à l'action `create`.                                          |
-| `journal-share-tokens.ts`   | Lien de partage : `rotateShareToken`, `revokeShareToken`, `getActiveShareToken`, `resolveShareToken`, `resolveWorksheetByShareToken`.                     |
-| `class-sessions.ts`         | `getClassSessionCalendar`, `getUpcomingSessionDates` : les jours où la classe a cours (emploi du temps moins vacances).                                   |
+| Fichier (`src/lib/server/`) | Rôle                                                                                                                                                                                                                                                                                                                                                                               |
+| --------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `journal.ts`                | Séances : `createJournalEntry`, `updateJournalEntry`, `deleteJournalEntry`, `getJournalEntriesForWeek` (vue semaine prof), `getUpcomingHomework` (élève).                                                                                                                                                                                                                          |
+| `journal-homework.ts`       | Travaux à faire : `resolveHomeworkItems` (règle des échéances), `prepareHomeworkForEntry`, `setHomeworkForEntry` (RPC `set_journal_entry_homework`).                                                                                                                                                                                                                               |
+| `journal-activities.ts`     | `parsePendingActivities` : activités choisies sur une séance pas encore enregistrée, relues à l'action `create`.                                                                                                                                                                                                                                                                   |
+| `journal-share-tokens.ts`   | Lien de partage : `rotateShareToken`, `revokeShareToken`, `getActiveShareToken`, `resolveShareToken`, `resolveWorksheetByShareToken`.                                                                                                                                                                                                                                              |
+| `school-year.ts`            | Année scolaire, **une règle** (L38) : `currentSchoolYear` (dates de l'école par la fonction SQL `current_school_year`, sinon 1er sept. → 31 août ; page Avancement), `schoolYearExpiry` / `classSchoolYearExpiry` (expiration des liens : dernier jour de cette même année, 23:59:59 UTC ; une fin d'année à plus de 18 mois du jour d'émission retombe sur le 31 août qui vient). |
+| `class-sessions.ts`         | `getClassSessionCalendar`, `getUpcomingSessionDates` : les jours où la classe a cours (emploi du temps moins vacances).                                                                                                                                                                                                                                                            |
 
 Calcul pur : `src/lib/utils/class-sessions.ts` (`computeSessionDates`, `isSessionDate`,
 `DEFAULT_SESSION_LIMIT`). Validation : `src/lib/server/validation/journal.ts`. Types :
@@ -460,7 +461,7 @@ Le bloc « Programme travaillé » de l'éditeur de séance coche les points du 
 classe, rangés branche > notion (la sous-notion nommée à côté du point) ; un compteur par branche, un
 « cochés / total » par notion.
 
-La page Avancement compte, par point, les séances de l'année (1ᵉʳ septembre → 1ᵉʳ septembre) qui
+La page Avancement compte, par point, les séances de l'année scolaire (`currentSchoolYear` : dates de l'école, sinon 1ᵉʳ septembre → 31 août) qui
 le couvrent, sur le même arbre. Ses « vus / total » et pourcentages ne comptent que les points
 actifs (`coverageStats`) : un archivé travaillé est affiché mais n'y entre pas, et une notion qui
 n'a que des archivés n'affiche pas de ratio.
@@ -473,7 +474,7 @@ un archivé (400 « Point archivé ») ; décocher et retirer un tag restent per
 ### Lien de partage du cahier
 
 `class_journal_share_tokens` : un jeton **actif** par classe (`rotateShareToken` révoque l'ancien),
-expirant à la fin de l'année scolaire (`endOfSchoolYear`, 31 août). La page publique passe par
+expirant à la fin de l'année scolaire de l'école de la classe (`classSchoolYearExpiry` de `school-year.ts` : ses dates saisies, sinon le 31 août ; jamais plus de 18 mois après l'émission ; lue avant la révocation, une lecture en panne laisse l'ancien lien ; un lien émis avant cette règle, le 2026-11-28, garde son 31 août). La page publique passe par
 les RPC `get_class_journal_by_share_token` et `get_worksheet_by_share_token` ; elle ne donne
 que les séances publiées, et seulement les fiches **citées** dans une séance visible (imprimées
 dans le style de la fiche, lot 4b). Jeton
@@ -484,7 +485,7 @@ invalide, expiré ou révoqué → **même 404**.
 [ADR 0025](../adr/0025-cours-lisible-par-lien-sans-compte.md). `class_course_share_tokens`, **calque
 distinct** de la table du cahier : le jeton du cahier n'ouvre pas le cours, et inversement. Mêmes
 règles de vie : un jeton actif par classe (`rotateCourseShareToken` révoque l'ancien), expiration
-au 31 août, révoquer = désactiver. Le professeur le gère sur la page Cours d'une classe
+à la fin de l'année scolaire de l'école, révoquer = désactiver. Le professeur le gère sur la page Cours d'une classe
 (`CourseShareLinkCard` : copier, renouveler, révoquer ; consultations et expiration affichées).
 Révoquer relit ses lignes : zéro ligne désactivée → 404 « Aucun lien actif », pas un faux succès.
 

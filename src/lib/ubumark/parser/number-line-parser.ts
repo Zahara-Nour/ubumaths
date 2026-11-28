@@ -29,6 +29,11 @@
  * l'intervalle que l'élève dessine (bornes sur des graduations) ; masqué dans
  * l'énoncé envoyé : `representer: ?` (demi-droite), `representer: ? ; ?` (borné).
  *
+ * Droite à graduer (outil n° 61, `docs/wip/outil-graduer-segment-progress.md`) :
+ * `graduer: 3` — l'élève partage chaque intervalle de `step` en 3 parts égales, puis
+ * pose les points de `placer:` (facultatif) sur ses graduations ; masqué : `graduer: ?`.
+ * PDF : `unite: 6 cm`, longueur réelle d'un intervalle de `step` (aussi sans `graduer:`).
+ *
  * Zoom (outil n° 54, `docs/wip/droite-zoom-progress.md`) : `zoom: 12.4 ; 12.5 ; step 0.01`
  * (+ `major 10`, `labels 12.4, 12.5`) — une droite agrandie sous la précédente, ses deux
  * bouts sur des graduations de la droite du dessus ; 4 zooms au plus, sans étiquette si
@@ -45,6 +50,7 @@ import type {
 	NumberLinePoint,
 	NumberLineTarget,
 	NumberLineRepresenter,
+	NumberLineGraduer,
 	NumberLineSegment,
 	NumberLineScale,
 	NumberLineParseError,
@@ -56,6 +62,7 @@ import { parseCustom } from '#lib/mathAST/parser/custom/index.ts';
 import { evaluateNodeToApproximatedNumber } from '#lib/mathAST/eval/evaluate.ts';
 import { specialBlockEnd } from './unclosed-block';
 import { isMaskedValue } from '../utils/masked-value';
+import { MAX_PARTS, MIN_AUTHOR_PARTS } from '../utils/number-line-graduer';
 
 /** Les clés du bloc : une ligne qui commence par l'une d'elles n'est jamais du texte (Q66) */
 const BLOCK_KEYS = [
@@ -529,6 +536,87 @@ function parseRepresenter(
 }
 
 // ============================================================================
+// DROITE À GRADUER
+// ============================================================================
+
+/**
+ * `graduer: 3` : le nombre de parts par intervalle de `step` ; null si refusé
+ * (messages ajoutés à `errors`). Ni avec `points:`, `representer:`, `segments:`
+ * (un seul geste, rien de dessiné d'avance), ni sur une échelle log.
+ */
+function parseGraduer(
+	written: string,
+	line: { startNum: number; endNum: number; stepNum: number; scale: NumberLineScale },
+	others: { points: boolean; representer: boolean; segments: boolean },
+	errors: NumberLineParseError[]
+): NumberLineGraduer | null {
+	const shown = `graduer : ${written}`;
+	const refused = [
+		others.points && 'points:',
+		others.representer && 'representer:',
+		others.segments && 'segments:'
+	].filter(Boolean);
+	if (refused.length > 0) {
+		errors.push({
+			message: `${shown} — pas avec ${refused.join(', ')} (un seul geste par droite)`
+		});
+		return null;
+	}
+	if (line.scale === 'log') {
+		errors.push({ message: `${shown} — impossible sur une échelle log` });
+		return null;
+	}
+	if (isMaskedValue(written)) return { parts: null };
+	const parts = /^\d+$/.test(written) ? Number(written) : Number.NaN;
+	if (!(parts >= MIN_AUTHOR_PARTS && parts <= MAX_PARTS)) {
+		errors.push({
+			message: `${shown} — le nombre de parts, un entier de ${MIN_AUTHOR_PARTS} à ${MAX_PARTS}`
+		});
+		return null;
+	}
+	// L’élève peut monter jusqu’à MAX_PARTS : la borne vaut pour ce cas-là
+	const ticks = Math.round(((line.endNum - line.startNum) / line.stepNum) * MAX_PARTS) + 1;
+	if (ticks > MAX_GRADUATIONS) {
+		errors.push({
+			message: `${shown} — ${ticks} graduations si l’élève partage en ${MAX_PARTS}, ${MAX_GRADUATIONS} au plus (augmenter step)`
+		});
+		return null;
+	}
+	return { parts };
+}
+
+/** Longueur au plus (cm) d'une droite à sa vraie longueur : la largeur utile d'une page A4 */
+const MAX_UNIT_LINE_CM = 17;
+
+/** `unite: 6 cm` : longueur réelle (cm) d'un intervalle de `step` au PDF ; null si refusée */
+function parseUnit(
+	written: string,
+	line: { startNum: number; endNum: number; stepNum: number; scale: NumberLineScale },
+	errors: NumberLineParseError[]
+): number | null {
+	const shown = `unite : ${written}`;
+	const match = /^(\d+(?:[.,]\d+)?)\s*cm$/i.exec(written);
+	const unit = match ? Number(match[1].replace(',', '.')) : Number.NaN;
+	if (!(unit > 0)) {
+		errors.push({ message: `${shown} — une longueur en cm (unite: 6 cm)` });
+		return null;
+	}
+	if (line.scale === 'log') {
+		errors.push({ message: `${shown} — impossible sur une échelle log` });
+		return null;
+	}
+	const intervals = (line.endNum - line.startNum) / line.stepNum;
+	const total = unit * intervals;
+	if (total > MAX_UNIT_LINE_CM + 1e-9) {
+		errors.push({
+			message: `${shown} — ${frenchNumber(unit)} cm × ${frenchNumber(intervals)} intervalles = ${frenchNumber(total)} cm, ${MAX_UNIT_LINE_CM} cm au plus sur une page`
+		});
+		return null;
+	}
+	return unit;
+}
+
+// ============================================================================
 // ZOOMS
 // ============================================================================
 
@@ -675,7 +763,7 @@ function parseZoom(
 function parseZooms(
 	zoomLines: ZoomLine[],
 	main: NumberLineConfig,
-	others: { placer: boolean; representer: boolean; segments: boolean },
+	others: { placer: boolean; representer: boolean; graduer: boolean; segments: boolean },
 	errors: NumberLineParseError[]
 ): NumberLineConfig[] | null {
 	if (zoomLines.length > MAX_ZOOMS) {
@@ -685,6 +773,7 @@ function parseZooms(
 	const refused = [
 		others.placer && 'placer:',
 		others.representer && 'representer:',
+		others.graduer && 'graduer:',
 		others.segments && 'segments:',
 		main.scale === 'log' && 'scale: log'
 	].filter(Boolean);
@@ -727,6 +816,8 @@ export function parseNumberLineContent(content: string | string[]): NumberLinePa
 	let scale: NumberLineScale = 'linear';
 	let placerExpr: string | undefined;
 	let representerExpr: string | undefined;
+	let graduerExpr: string | undefined;
+	let unitExpr: string | undefined;
 	let caseIndex: number | undefined;
 	const zoomLines: ZoomLine[] = [];
 
@@ -788,6 +879,13 @@ export function parseNumberLineContent(content: string | string[]): NumberLinePa
 				break;
 			case 'representer':
 				representerExpr = value;
+				break;
+			case 'graduer':
+				graduerExpr = value;
+				break;
+			case 'unite':
+			case 'unité':
+				unitExpr = value;
 				break;
 			case 'case':
 				if (!/^\d+$/.test(value)) {
@@ -929,13 +1027,46 @@ export function parseNumberLineContent(content: string | string[]): NumberLinePa
 		}
 	}
 
+	// Droite à graduer : le nombre de parts, avant les points (ils se posent sur la grille fine)
+	const graduer =
+		graduerExpr !== undefined
+			? parseGraduer(
+					graduerExpr,
+					{ startNum, endNum, stepNum, scale },
+					{
+						points: points.length > 0,
+						representer: representerExpr !== undefined,
+						segments: segments.length > 0
+					},
+					errors
+				)
+			: null;
+	// Les points d'une droite à graduer se vérifient sur la grille de step / parts
+	const placerStep = graduer?.parts ? stepNum / graduer.parts : stepNum;
 	// Droite à placer : chaque point sur une graduation de la droite, seuls points dessinés
 	const placer = placerExpr !== undefined ? parseTargets(placerExpr, errors, startVal) : null;
-	for (const target of placer ?? []) {
+	for (const target of graduerExpr !== undefined && !graduer ? [] : (placer ?? [])) {
 		// Valeur masquée : rien à vérifier, le modèle d'origine l'a été au générateur
 		if (target.value === startVal) continue;
-		const targetErrors = placerErrors(target, startNum, endNum, stepNum, scale, points.length > 0);
-		errors.push(...targetErrors);
+		// Nombre de parts masqué : la grille n'est pas connue
+		if (graduer && graduer.parts === null) continue;
+		const targetErrors = placerErrors(
+			target,
+			startNum,
+			endNum,
+			placerStep,
+			scale,
+			points.length > 0
+		);
+		// Grille fine : la dire en parts (`de 0,333… en 0,333…` ne se lit pas)
+		const parts = graduer?.parts;
+		errors.push(
+			...targetErrors.map((e) =>
+				parts
+					? { message: e.message.replace(/\(de .* depuis .*\)$/, `(unité partagée en ${parts})`) }
+					: e
+			)
+		);
 		if (targetErrors.length > 0) break;
 	}
 	// Droite à représenter : un intervalle, bornes finies sur une graduation
@@ -949,9 +1080,18 @@ export function parseNumberLineContent(content: string | string[]): NumberLinePa
 					errors
 				)
 			: null;
-	if (caseIndex !== undefined && placerExpr === undefined && representerExpr === undefined) {
-		errors.push({ message: 'case: sans objet sans placer: ni representer:' });
+	if (
+		caseIndex !== undefined &&
+		placerExpr === undefined &&
+		representerExpr === undefined &&
+		graduerExpr === undefined
+	) {
+		errors.push({ message: 'case: sans objet sans placer:, representer: ni graduer:' });
 	}
+	const unitCm =
+		unitExpr !== undefined
+			? parseUnit(unitExpr, { startNum, endNum, stepNum, scale }, errors)
+			: null;
 
 	// Validate points are within bounds
 	for (const point of points) {
@@ -986,6 +1126,7 @@ export function parseNumberLineContent(content: string | string[]): NumberLinePa
 					{
 						placer: placerExpr !== undefined,
 						representer: representerExpr !== undefined,
+						graduer: graduerExpr !== undefined,
 						segments: segments.length > 0
 					},
 					errors
@@ -1003,6 +1144,8 @@ export function parseNumberLineContent(content: string | string[]): NumberLinePa
 		...(zooms && { zooms }),
 		...(placer && { placer }),
 		...(representer && { representer }),
+		...(graduer && { graduer }),
+		...(unitCm !== null && { unitCm }),
 		...(caseIndex !== undefined && { caseIndex })
 	};
 
@@ -1014,7 +1157,8 @@ export function parseNumberLineContent(content: string | string[]): NumberLinePa
 // ============================================================================
 
 /**
- * Les droites à placer (`placer:`) ou à représenter (`representer:`) d'un énoncé,
+ * Les droites à placer (`placer:`), à représenter (`representer:`) ou à graduer
+ * (`graduer:`) d'un énoncé,
  * délimitées comme le parseur :
  * corps sans clôtures, fermeture, et `nested` pour un bloc en retrait ou cité
  * (l'élève ne pourrait pas y répondre : sa case n'est pas créée)
@@ -1038,7 +1182,7 @@ export function findLinesToPlace(markdown: string): {
 				BLOCK_KEYS
 			);
 			const body = plain.slice(i + 1, closed ? endIndex : endIndex + 1);
-			if (body.some((line) => /^(?:placer|representer)\s*:/i.test(line))) {
+			if (body.some((line) => /^(?:placer|representer|graduer)\s*:/i.test(line))) {
 				found.push({ startIndex: i, body, closed, nested: lines[i] !== plain[i] });
 			}
 			i = endIndex;

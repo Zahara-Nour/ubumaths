@@ -235,6 +235,12 @@ function solideTypst(spec: SolideSpec): string {
 			`  #place(top + left, curve(stroke: (paint: ${DROITE_STROKE}, thickness: ${cm(solideLineStroke(piece))}, cap: "round"${dash}), curve.move(${at(from)}), curve.line(${at(to)})))`
 		);
 	}
+	// Graduations (`graduer:`) : un petit trait noir en travers du segment, à bouts droits
+	for (const [from, to] of scene.ticks ?? []) {
+		content.push(
+			`  #place(top + left, curve(stroke: (paint: black, thickness: ${cm(ESPACE_STROKE)}, cap: "butt"), curve.move(${at(from)}), curve.line(${at(to)})))`
+		);
+	}
 	// Flèches (vecteurs donnés, petites flèches des noms) : le trait, puis la pointe noire
 	for (const arrow of scene.arrows) {
 		const thickness = cm(arrow.small ? ESPACE_STROKE * 0.8 : ESPACE_STROKE);

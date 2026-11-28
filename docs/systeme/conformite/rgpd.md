@@ -520,7 +520,8 @@ CRON_SECRET                   # Secret taches planifiees
 > en retard, inactivité ; une phrase par motif) et fin de trimestre (sans aucun nombre) ; chaque
 > courriel porte un jeton propre, haché. Les adresses d'un élève sans classe active depuis
 > 90 jours sont effacées par le cron quotidien, et les lignes de `parent_notifications` au bout
-> d'un an (Q42, 2026-11-17 ; politique v1.4, registre T9). Voir
+> d'un an (Q42, 2026-11-17 ; politique v1.4, registre T9). Le lien du carnet expire à la fin de
+> l'année scolaire de l'école (31 août sans dates saisies ; 2026-11-28, politique v1.6). Voir
 > [carnet-de-liaison.md](../carnet-de-liaison.md).
 >
 > **Base locale (2026-11-17)** : `.env` porte la clé Brevo de prod ; avant ce jour, une adresse
@@ -669,7 +670,8 @@ effacées à la déconnexion). `localStorage` garde le travail de l'élève : co
 Père Ubu, code Python et Blockly, atelier, console de calcul, calculatrice, grapheur, tableur,
 tableau blanc, parties de jeux (démineur, 2048, Mathémo, Evoland, Cabinet Noir), profil de
 joueur et heure du dernier passage du Palotin (`chiphre:palotin:dernier-passage`, un horodatage
-sans identifiant, effacé pour que le plafond d'un élève ne fasse pas taire le Palotin du suivant). La liste des clés vit dans `src/lib/utils/work-data.ts` ; **une nouvelle clé de travail
+sans identifiant, effacé pour que le plafond d'un élève ne fasse pas taire le Palotin du suivant),
+minuteur Pomodoro et son compteur du jour. La liste des clés vit dans `src/lib/utils/work-data.ts` ; **une nouvelle clé de travail
 s'y ajoute**, sinon elle survit au changement de compte. Le navigateur retient à qui ces données
 appartiennent ; le layout racine (`src/routes/+layout.ts`) le vérifie à chaque page et à chaque
 changement de session :

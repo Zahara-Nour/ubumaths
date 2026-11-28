@@ -6,10 +6,9 @@ couvre:
   - 'src/routes/(public)/presques-evaluations/**'
   - 'src/lib/components/{test,assessments,series}/**'
   - src/lib/components/teacher/TestModeToggle.svelte
-  - src/lib/stores/test-mode.svelte.ts
   - src/lib/stores/classroomSettings.svelte.ts
   - src/lib/utils/chime.ts
-  - 'src/lib/server/{evaluations,evaluation-attempts,evaluation-breakdown,evaluation-question-errors,evaluation-trace,series,series-lines,chapter-series,test-mode}.ts'
+  - 'src/lib/server/{evaluations,evaluation-attempts,evaluation-breakdown,evaluation-question-errors,evaluation-trace,series,series-lines,series-python-cases,chapter-series,test-mode}.ts'
   - 'src/lib/server/validation/{evaluations,tests,parody-evaluations,chapter-series}.ts'
   - 'src/lib/types/{evaluation,evaluation-attempt,evaluation-breakdown,duration-signals,test,skills}.ts'
   - 'src/lib/utils/{test-launch,test-score,duration-signals}.ts'
@@ -48,26 +47,26 @@ par les séances dans [srs.md](srs.md).
 
 ## Carte du code
 
-| Fichier                                                             | Rôle                                                                                                                                                                                                                                                                                                                        |
-| ------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `src/lib/types/test.ts`                                             | `TestMode` (`display` en classe, `flash`, `typing` saisie, `interactive` contrôle blanc, `course`), `ClassroomItem`, `TestResult`.                                                                                                                                                                                          |
-| `src/lib/utils/test-launch.ts`                                      | `resolveTestLaunch` : que faire d'une URL `/automaths/test?…` (assignation, panier, démarrage, erreur).                                                                                                                                                                                                                     |
-| `src/lib/utils/test-score.ts`                                       | `computeTestScore` : score sur 10 d'une séance libre, cartes de cours hors score.                                                                                                                                                                                                                                           |
-| `src/lib/components/test/`                                          | Une forme = un composant : `ClassroomSeries`, `FlashSeries`, `TypingSeries`, `TestInteractive`, `TestCourse` ; `TestResults`, `EvaluationResults`, `TestTimer`, `TestModeDialog`.                                                                                                                                           |
-| `src/lib/components/series/`                                        | `SaveSeriesDialog` (panier → série), `SeriesLinkShare` (lien de série, avec ou sans forme ; son QR par lien court, [qr-codes.md](qr-codes.md)), `MySeriesPreview` / `MySeriesDock` (aperçu du panier dans le catalogue, [questions.md](questions.md)). À l'écran, le panier s'appelle « Ma série » (« Retour à ma série »). |
-| `src/lib/types/evaluation.ts`                                       | `EvaluationForm`, bornes de la course (`COURSE_TIME_LIMIT_*`), statuts, `getStudentStatus`, `formatGrade`.                                                                                                                                                                                                                  |
-| `src/lib/types/evaluation-attempt.ts`                               | Ce qu'échangent navigateur et serveur : `EvaluationStartResponse`, `EvaluationSubmitResponse`, `CorrectedQuestion`.                                                                                                                                                                                                         |
-| `src/lib/server/series.ts`                                          | CRUD des séries ; traduit le verrou de la base (`SERIES_LOCKED_SQLSTATE` = `UBS01`).                                                                                                                                                                                                                                        |
-| `src/lib/server/evaluations.ts`                                     | Contrôles : création, réglages, statut, assignation, destinataires, résultats, statistiques.                                                                                                                                                                                                                                |
-| `src/lib/server/evaluation-breakdown.ts`                            | Bilan d'un contrôle par question et par notion (`getEvaluationBreakdown`, calcul pur `computeEvaluationBreakdown`) ; types dans `src/lib/types/evaluation-breakdown.ts`.                                                                                                                                                    |
-| `src/lib/server/evaluation-attempts.ts`                             | `startEvaluationAttempt`, `readEvaluationOverview` (page d'attente), `submitEvaluationAttempt`, `readSubmittedCopy` (ADR 0015).                                                                                                                                                                                             |
-| `src/lib/server/grading-budget.ts`                                  | Budget de temps de la correction d'un envoi → [questions.md](questions.md).                                                                                                                                                                                                                                                 |
-| `src/lib/server/chapter-series.ts`                                  | Série rattachée à un chapitre de « Mon cours » (forme flash ou entraînement, sans note).                                                                                                                                                                                                                                    |
-| `src/lib/server/validation/evaluations.ts`                          | Zod : `createSeriesSchema`, `evaluationSettingsSchema`, `submitAttemptSchema`, `classIdsFieldSchema`…                                                                                                                                                                                                                       |
-| `src/lib/server/validation/tests.ts`                                | `validateSaveTest` : corps de `POST /api/tests/save` (fin de série, gain du Palotin).                                                                                                                                                                                                                                       |
-| `src/lib/types/skills.ts`                                           | Types famille B : `MathCompetenceCode`, `SubdimensionLetter`, `SkillAttemptCode` (`plus`/`minus`), `isCompetenceObserved` ; aussi `notionLevel` (niveau d'une notion, progression élève).                                                                                                                                   |
-| `src/lib/server/test-mode.ts`, `src/lib/stores/test-mode.svelte.ts` | Mode test du prof : `getTeacherTestMode` / `setTeacherTestMode` (serveur), store `testMode` (navigateur).                                                                                                                                                                                                                   |
-| `src/lib/server/validation/parody-evaluations.ts`                   | Zod du dépôt de presques évaluations (PDF ≤ 10 Mo, `MAX_FILE_SIZE_BYTES`).                                                                                                                                                                                                                                                  |
+| Fichier                                           | Rôle                                                                                                                                                                                                                                                                                                                        |
+| ------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `src/lib/types/test.ts`                           | `TestMode` (`display` en classe, `flash`, `typing` saisie, `interactive` contrôle blanc, `course`), `ClassroomItem`, `TestResult`.                                                                                                                                                                                          |
+| `src/lib/utils/test-launch.ts`                    | `resolveTestLaunch` : que faire d'une URL `/automaths/test?…` (assignation, panier, démarrage, erreur).                                                                                                                                                                                                                     |
+| `src/lib/utils/test-score.ts`                     | `computeTestScore` : score sur 10 d'une séance libre, cartes de cours hors score.                                                                                                                                                                                                                                           |
+| `src/lib/components/test/`                        | Une forme = un composant : `ClassroomSeries`, `FlashSeries`, `TypingSeries`, `TestInteractive`, `TestCourse` ; `TestResults`, `EvaluationResults`, `TestTimer`, `TestModeDialog`.                                                                                                                                           |
+| `src/lib/components/series/`                      | `SaveSeriesDialog` (panier → série), `SeriesLinkShare` (lien de série, avec ou sans forme ; son QR par lien court, [qr-codes.md](qr-codes.md)), `MySeriesPreview` / `MySeriesDock` (aperçu du panier dans le catalogue, [questions.md](questions.md)). À l'écran, le panier s'appelle « Ma série » (« Retour à ma série »). |
+| `src/lib/types/evaluation.ts`                     | `EvaluationForm`, bornes de la course (`COURSE_TIME_LIMIT_*`), statuts, `getStudentStatus`, `formatGrade`.                                                                                                                                                                                                                  |
+| `src/lib/types/evaluation-attempt.ts`             | Ce qu'échangent navigateur et serveur : `EvaluationStartResponse`, `EvaluationSubmitResponse`, `CorrectedQuestion`.                                                                                                                                                                                                         |
+| `src/lib/server/series.ts`                        | CRUD des séries ; traduit le verrou de la base (`SERIES_LOCKED_SQLSTATE` = `UBS01`).                                                                                                                                                                                                                                        |
+| `src/lib/server/evaluations.ts`                   | Contrôles : création, réglages, statut, assignation, destinataires, résultats, statistiques.                                                                                                                                                                                                                                |
+| `src/lib/server/evaluation-breakdown.ts`          | Bilan d'un contrôle par question et par notion (`getEvaluationBreakdown`, calcul pur `computeEvaluationBreakdown`) ; types dans `src/lib/types/evaluation-breakdown.ts`.                                                                                                                                                    |
+| `src/lib/server/evaluation-attempts.ts`           | `startEvaluationAttempt`, `readEvaluationOverview` (page d'attente), `submitEvaluationAttempt`, `readSubmittedCopy` (ADR 0015).                                                                                                                                                                                             |
+| `src/lib/server/grading-budget.ts`                | Budget de temps de la correction d'un envoi → [questions.md](questions.md).                                                                                                                                                                                                                                                 |
+| `src/lib/server/chapter-series.ts`                | Série rattachée à un chapitre de « Mon cours » (forme flash ou entraînement, sans note).                                                                                                                                                                                                                                    |
+| `src/lib/server/validation/evaluations.ts`        | Zod : `createSeriesSchema`, `evaluationSettingsSchema`, `submitAttemptSchema`, `classIdsFieldSchema`…                                                                                                                                                                                                                       |
+| `src/lib/server/validation/tests.ts`              | `validateSaveTest` : corps de `POST /api/tests/save` (fin de série, gain du Palotin).                                                                                                                                                                                                                                       |
+| `src/lib/types/skills.ts`                         | Types famille B : `MathCompetenceCode`, `SubdimensionLetter`, `SkillAttemptCode` (`plus`/`minus`), `isCompetenceObserved` ; aussi `notionLevel` (niveau d'une notion, progression élève).                                                                                                                                   |
+| `src/lib/server/test-mode.ts`                     | Mode test du prof : `getTeacherTestMode` / `setTeacherTestMode`. Enregistré sur le compte (`user_preferences`) ; l'interrupteur de l'en-tête (`TestModeToggle`) reçoit cette valeur du layout du tableau de bord, jamais du navigateur.                                                                                     |
+| `src/lib/server/validation/parody-evaluations.ts` | Zod du dépôt de presques évaluations (PDF ≤ 10 Mo, `MAX_FILE_SIZE_BYTES`).                                                                                                                                                                                                                                                  |
 
 Hors sujet mais rangés ici par la couverture : `src/lib/types/grades.ts`, `src/lib/utils/grades.ts` et
 `src/lib/server/validation/grades.ts` décrivent les **niveaux scolaires** (`GradeCode` : `6`, `1_SPE`…),
@@ -246,7 +245,9 @@ Réglages (`evaluationSettingsSchema`) : course = temps limite obligatoire, 1 à
 (`COURSE_TIME_LIMIT_DEFAULT_MINUTES`), saisi en minutes, stocké en secondes ; entraînement = pas de
 temps limite global. `max_attempts` 1 à 10 ou illimité ; `deadline` facultative.
 
-Cycle de vie (prof) : créer depuis une série (`/dashboard/teacher/assessments/new?series=<id>`) →
+Cycle de vie (prof) : créer depuis une série (`/dashboard/teacher/assessments/new?series=<id>` ; la
+page nomme les modèles à case Python de la série, qui n'entreront pas dans le contrôle :
+`pythonTemplateTitles`, `server/series-python-cases.ts`) →
 brouillon modifiable (`[id]/edit` refuse hors `draft`) → publier → assigner à des classes (`assignEvaluation`
 refuse si non publiée). Le statut `archived` existe (lu par la liste et par
 `isEvaluationUnfinished`) mais aucun écran ne le pose. Une **série** est verrouillée par la base dès qu'une séance est
@@ -271,7 +272,9 @@ d'attente).
    sans compter de tentative, **même après la date limite** ; les réponses tapées sont perdues (Q34).
 4. Date limite passée → 403 ; tentatives épuisées → 403. Toute séance compte dès sa création,
    abandonnée comprise (Q33).
-5. Tirage par `drawSeriesQuestions` avec `excludeCourseCards`, hasard `crypto`. Chaque instance
+5. Tirage par `drawSeriesQuestions` avec `excludeCourseCards` et `excludePythonCases` (une case
+   « programme Python » se juge dans le navigateur seulement, outil 49 ; l'aperçu prof de
+   `/automaths/test` les retire aussi), hasard `crypto`. Chaque instance
    **complète** est figée dans `evaluation_attempt_questions` (Q42) : un modèle modifié ensuite ne
    change ni la reprise ni la correction. Une question impossible à générer, ou dont l'énoncé masqué
    dirait encore la réponse d'un bloc à geste (`gestureAnswerLeaks`, chantier `fuite-enonce`), est
@@ -453,9 +456,14 @@ est abandonnée : [ADR 0008](../adr/0008-referentiel-famille-a-abandonne.md).
 2. **Périmètre** (`evaluation-tasks/[id]`) : cocher les observables à observer →
    `evaluation_task_perimeter`.
 3. **Saisie en séance** (`evaluation-tasks/[id]/saisie`, action `save`) : grille élèves × observables
-   du périmètre. Coché → `plus`, non coché → `minus`, hors périmètre → rien. L'enregistrement
-   **efface** les `skill_attempts` de la tâche puis réinsère toute la grille (`source: 'teacher'`).
-4. Le trigger `trg_skill_attempts_after_insert` recalcule les caches : `student_observable_state`
+   du périmètre (élèves **actifs** de la classe). Coché → `plus`, non coché → `minus`, hors
+   périmètre → rien. L'enregistrement passe par `save_evaluation_task_grid` (L39) : en une
+   transaction, il efface les `skill_attempts` de la tâche des élèves de la grille, puis réinsère
+   la grille (`source: 'teacher'`). Un élève archivé depuis garde ses observations. Une ligne non
+   effacée fait échouer l'enregistrement (« La saisie n'a pas été enregistrée »), jamais de grille
+   doublée.
+4. Le trigger `trg_skill_attempts_after_insert` recalcule les caches (et
+   `trg_skill_attempts_after_delete` ceux des cases effacées) : `student_observable_state`
    (acquis ssi au moins 2 `plus` et plus de `plus` que de `minus`), puis `student_competence_level`
    via `compute_competence_level` — niveau `insuffisante` sous 2 tâches
    (`MIN_TASKS_FOR_COMPETENCE_LEVEL`), « très bonne » plafonnée à « satisfaisante » sous 3.
@@ -504,7 +512,8 @@ assignés (`src/lib/server/students.ts` et cinq pages prof).
   `EvaluationForm`, `evaluationFormSchema` et la contrainte de `evaluations.form`.
 - **Nouveau réglage de contrôle** : colonne (migration additive), `evaluationSettingsSchema`,
   `EvaluationConfigForm`, `createEvaluation`/`updateEvaluation`, et **le lire** dans
-  `startEvaluationAttempt` (voir l'écart `shuffle_questions`).
+  `startEvaluationAttempt` (comme `shuffle_questions`, lu par `attemptOrder` : ordre tiré une fois au
+  démarrage, rangé dans les positions, donc gardé à la reprise ; V72).
 - **Toucher à la correction** : c'est [questions.md](questions.md) (`grading.ts`). La note d'une copie
   est stockée, mais le statut **par case** d'une copie relue est recalculé (`readSubmittedCopy`) : un
   validateur modifié change ce détail, pas la note.

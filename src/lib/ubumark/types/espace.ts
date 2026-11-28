@@ -79,6 +79,7 @@ export const SOLIDE_KEYS = [
 	'droites',
 	'segments',
 	'angles-droits',
+	'graduer',
 	'plans',
 	'repere',
 	'tracer',
@@ -96,6 +97,10 @@ export const SOLIDE_MAX_DROITES = 4;
 /** Segments donnés (`segments:`) et angles droits codés (`angles-droits:`) d'un ```solide : au plus */
 export const SOLIDE_MAX_SEGMENTS = 6;
 export const SOLIDE_MAX_RIGHT_ANGLES = 3;
+
+/** Segments gradués (`graduer:`) d'un ```solide : au plus ; nombre de parts de chacun */
+export const SOLIDE_MAX_GRADUATIONS = 4;
+export const SOLIDE_MAX_PARTS = 10;
 
 /** Plans donnés (`plans:`) d'un ```solide : au plus (au-delà, on ne lit plus rien) */
 export const SOLIDE_MAX_PLANS = 2;
@@ -258,6 +263,11 @@ export interface SolideSpec {
 	 */
 	rightAngles?: SolideRightAngle[];
 	/**
+	 * Segments gradués (`graduer: AB 3`, outil n° 65) : un petit trait à chaque
+	 * graduation intérieure ; absent : aucun (la figure reste celle d'avant)
+	 */
+	graduations?: SolideGraduation[];
+	/**
 	 * Plans donnés (`plans:`, chantier `solides-3d`, lot 7b) : la partie du plan
 	 * dans le solide, teintée ; absent : aucun (la figure reste celle d'avant)
 	 */
@@ -403,6 +413,10 @@ export type SolideSection =
  * `meet` porte la droite `line` (deux points) et ce qu'elle coupe, `other` : un plan
  * (trois points) ou une autre droite (deux points) — indices des points : sommets,
  * puis points déclarés avant lui ; `label` : « intersection de la droite (IG) et du plan (BDE) »
+ *
+ * Point placé sur un segment par une fraction (`M tel que AM = 1/3 AB`, outil n° 65) :
+ * `of` est vide et `along` porte les deux bouts (indices, comme `meet`) et la fraction
+ * réduite `[p, q]`, 0 < p/q < 1, comptée depuis `from` ; `label` : « tel que AM = un tiers de AB »
  */
 export interface SolidePoint {
 	name: string;
@@ -410,6 +424,7 @@ export interface SolidePoint {
 	label: string;
 	coords?: SolideRepere & { values: [number, number, number] };
 	meet?: { line: [number, number]; other: number[] };
+	along?: { from: number; to: number; ratio: [number, number] };
 }
 
 /**
@@ -442,6 +457,16 @@ export interface SolideDroite {
 export interface SolideSegment {
 	from: number;
 	to: number;
+}
+
+/**
+ * Un segment gradué (`graduer: AB 3`) : indices de ses deux bouts (sommets, puis
+ * points déclarés) et le nombre de parts égales, de 2 à `SOLIDE_MAX_PARTS`
+ */
+export interface SolideGraduation {
+	from: number;
+	to: number;
+	parts: number;
 }
 
 /**

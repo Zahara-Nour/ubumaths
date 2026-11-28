@@ -26,7 +26,29 @@
 			"conditions": ["b < c"],
 			"blanks": [
 				{
-					"expectedAnswer": "{{eval:a+c-b}}"
+					"expectedAnswer": "{{eval:a+c-b}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:a+b-c}}",
+							"message": "Tu as laissé $\\lvert {{b}}-{{c}}\\rvert$ négatif : une valeur absolue n'est jamais négative.",
+							"label": "|b − c| laissé négatif"
+						},
+						{
+							"answer": "{{eval:-a+b-c}}",
+							"message": "Tu as enlevé les barres sans rien changer : une valeur absolue n'est jamais négative.",
+							"label": "Barres enlevées sans rien changer"
+						},
+						{
+							"answer": "{{eval:-a+c-b}}",
+							"message": "Tu as écrit $\\lvert -{{a}}\\rvert=-{{a}}$ : une valeur absolue n'est jamais négative.",
+							"label": "|−a| lu −a"
+						},
+						{
+							"answer": "{{eval:a+b+c}}",
+							"message": "Tu as changé la soustraction en addition : on calcule d'abord ${{b}}-{{c}}$, puis on prend sa valeur absolue.",
+							"label": "|b − c| lu b + c"
+						}
+					]
 				}
 			],
 			"correction": {
@@ -34,7 +56,8 @@
 					"$\\lvert -{{a}}\\rvert={{a}}$ et $\\lvert {{b}}-{{c}}\\rvert=\\lvert {{eval:b-c}}\\rvert={{eval:c-b}}$ : une valeur absolue n'est jamais négative.",
 					"$A={{a}}+{{eval:c-b}}=\\textcolor{{{color:primary.0}}}{{{eval:a+c-b}}}$."
 				]
-			}
+			},
+			"hint": "Calcule chaque valeur absolue séparément (d'abord ce qui est entre les barres), puis fais l'addition. Une valeur absolue n'est jamais négative."
 		},
 		{
 			"statement": "Calcule $A=\\lvert {{b}}-{{c}}\\rvert-\\lvert -{{a}}\\rvert$.\n\n$A=?$",
@@ -55,7 +78,24 @@
 			"conditions": ["b < c"],
 			"blanks": [
 				{
-					"expectedAnswer": "{{eval:c-b-a}}"
+					"expectedAnswer": "{{eval:c-b-a}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:c-b+a}}",
+							"message": "Tu as écrit $-\\lvert -{{a}}\\rvert=+{{a}}$ : on calcule d'abord $\\lvert -{{a}}\\rvert$, puis on le soustrait.",
+							"label": "−|−a| calculé comme + a"
+						},
+						{
+							"answer": "{{eval:abs(c-b-a)}}",
+							"message": "Tu as rendu le résultat positif : les valeurs absolues sont positives, mais leur différence peut être négative.",
+							"label": "Résultat rendu positif"
+						},
+						{
+							"answer": "{{eval:b-c-a}}",
+							"message": "Tu as laissé $\\lvert {{b}}-{{c}}\\rvert$ négatif : une valeur absolue n'est jamais négative.",
+							"label": "|b − c| laissé négatif"
+						}
+					]
 				}
 			],
 			"correction": {
@@ -63,7 +103,8 @@
 					"$\\lvert {{b}}-{{c}}\\rvert=\\lvert {{eval:b-c}}\\rvert={{eval:c-b}}$ et $\\lvert -{{a}}\\rvert={{a}}$.",
 					"$A={{eval:c-b}}-{{a}}=\\textcolor{{{color:primary.0}}}{{{eval:c-b-a}}}$."
 				]
-			}
+			},
+			"hint": "Calcule chaque valeur absolue séparément (d'abord ce qui est entre les barres), puis fais la soustraction. Le résultat final, lui, peut être négatif."
 		},
 		{
 			"statement": "Calcule $A=\\lvert -{{a}}\\rvert\\times\\lvert {{b}}-{{c}}\\rvert$.\n\n$A=?$",
@@ -84,7 +125,24 @@
 			"conditions": ["b < c"],
 			"blanks": [
 				{
-					"expectedAnswer": "{{eval:a*(c-b)}}"
+					"expectedAnswer": "{{eval:a*(c-b)}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:-a*(c-b)}}",
+							"message": "Ton résultat est négatif : une valeur absolue n'est jamais négative, le produit de deux valeurs absolues non plus.",
+							"label": "Une valeur absolue laissée négative"
+						},
+						{
+							"answer": "{{eval:a*(b+c)}}",
+							"message": "Tu as changé la soustraction en addition : on calcule d'abord ${{b}}-{{c}}$, puis on prend sa valeur absolue.",
+							"label": "|b − c| lu b + c"
+						},
+						{
+							"answer": "{{eval:a*b-c}}",
+							"message": "Tu as enlevé les barres comme si elles n'existaient pas : on calcule d'abord ce qu'il y a entre les barres.",
+							"label": "Barres oubliées : a × b − c"
+						}
+					]
 				}
 			],
 			"correction": {
@@ -92,7 +150,8 @@
 					"$\\lvert -{{a}}\\rvert={{a}}$ et $\\lvert {{b}}-{{c}}\\rvert=\\lvert {{eval:b-c}}\\rvert={{eval:c-b}}$.",
 					"$A={{a}}\\times{{eval:c-b}}=\\textcolor{{{color:primary.0}}}{{{eval:a*(c-b)}}}$."
 				]
-			}
+			},
+			"hint": "Calcule chaque valeur absolue séparément (d'abord ce qui est entre les barres), puis fais le produit."
 		},
 		{
 			"statement": "Calcule $A=\\left\\lvert \\lvert -{{a}}\\rvert-{{b}}\\right\\rvert$.\n\n$A=?$",
@@ -112,7 +171,24 @@
 			],
 			"blanks": [
 				{
-					"expectedAnswer": "{{eval:b-a}}"
+					"expectedAnswer": "{{eval:b-a}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:a-b}}",
+							"message": "Ton résultat est négatif : une valeur absolue n'est jamais négative.",
+							"label": "Résultat négatif"
+						},
+						{
+							"answer": "{{eval:a+b}}",
+							"message": "Tu as calculé $\\lvert -{{a}}-{{b}}\\rvert$ : il faut d'abord remplacer $\\lvert -{{a}}\\rvert$ par sa valeur.",
+							"label": "Valeur absolue intérieure oubliée"
+						},
+						{
+							"answer": "{{eval:-a-b}}",
+							"message": "Tu as enlevé les barres sans rien changer : une valeur absolue n'est jamais négative.",
+							"label": "Barres enlevées sans rien changer"
+						}
+					]
 				}
 			],
 			"correction": {
@@ -120,7 +196,8 @@
 					"On calcule d'abord la valeur absolue **intérieure** : $\\lvert -{{a}}\\rvert={{a}}$.",
 					"$A=\\lvert {{a}}-{{b}}\\rvert=\\lvert {{eval:a-b}}\\rvert=\\textcolor{{{color:primary.0}}}{{{eval:b-a}}}$."
 				]
-			}
+			},
+			"hintFromFirstStep": true
 		}
 	],
 	"testSpecs": [
@@ -147,7 +224,8 @@
 			},
 			"answers": ["0"],
 			"expected": {
-				"status": "incorrect"
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as laissé $\\lvert 5-8\\rvert$ négatif : une valeur absolue n'est jamais négative."
 			}
 		},
 		{
@@ -160,7 +238,8 @@
 			},
 			"answers": ["-6"],
 			"expected": {
-				"status": "incorrect"
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as enlevé les barres sans rien changer : une valeur absolue n'est jamais négative."
 			}
 		},
 		{
@@ -186,7 +265,8 @@
 			},
 			"answers": ["11"],
 			"expected": {
-				"status": "incorrect"
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as écrit $-\\lvert -4\\rvert=+4$ : on calcule d'abord $\\lvert -4\\rvert$, puis on le soustrait."
 			}
 		},
 		{
@@ -212,7 +292,8 @@
 			},
 			"answers": ["4"],
 			"expected": {
-				"status": "incorrect"
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as rendu le résultat positif : les valeurs absolues sont positives, mais leur différence peut être négative."
 			}
 		},
 		{
@@ -238,7 +319,8 @@
 			},
 			"answers": ["-15"],
 			"expected": {
-				"status": "incorrect"
+				"status": "incorrect",
+				"expectedErrorMessage": "Ton résultat est négatif : une valeur absolue n'est jamais négative, le produit de deux valeurs absolues non plus."
 			}
 		},
 		{
@@ -264,7 +346,8 @@
 			},
 			"answers": ["-3"],
 			"expected": {
-				"status": "incorrect"
+				"status": "incorrect",
+				"expectedErrorMessage": "Ton résultat est négatif : une valeur absolue n'est jamais négative."
 			}
 		},
 		{
@@ -277,7 +360,92 @@
 			},
 			"answers": ["7"],
 			"expected": {
-				"status": "incorrect"
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as calculé $\\lvert -2-5\\rvert$ : il faut d'abord remplacer $\\lvert -2\\rvert$ par sa valeur."
+			}
+		},
+		{
+			"description": "Erreur : |−3| + |2 − 9| avec |−3| lu −3 (4)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "2",
+				"c": "9"
+			},
+			"answers": ["4"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as écrit $\\lvert -3\\rvert=-3$ : une valeur absolue n'est jamais négative."
+			}
+		},
+		{
+			"description": "Erreur : |5 − 8| lu 5 + 8 (16)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "5",
+				"c": "8"
+			},
+			"answers": ["16"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as changé la soustraction en addition : on calcule d'abord $5 - 8$, puis on prend sa valeur absolue."
+			}
+		},
+		{
+			"description": "Erreur : |2 − 9| laissé négatif (−11)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "4",
+				"b": "2",
+				"c": "9"
+			},
+			"answers": ["-11"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as laissé $\\lvert 2-9\\rvert$ négatif : une valeur absolue n'est jamais négative."
+			}
+		},
+		{
+			"description": "Erreur : |2 − 7| lu 2 + 7 (27)",
+			"variationIndex": 2,
+			"variables": {
+				"a": "3",
+				"b": "2",
+				"c": "7"
+			},
+			"answers": ["27"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as changé la soustraction en addition : on calcule d'abord $2 - 7$, puis on prend sa valeur absolue."
+			}
+		},
+		{
+			"description": "Erreur : 3 × 2 − 7 = −1",
+			"variationIndex": 2,
+			"variables": {
+				"a": "3",
+				"b": "2",
+				"c": "7"
+			},
+			"answers": ["-1"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as enlevé les barres comme si elles n'existaient pas : on calcule d'abord ce qu'il y a entre les barres."
+			}
+		},
+		{
+			"description": "Erreur : −2 − 5 = −7",
+			"variationIndex": 3,
+			"variables": {
+				"a": "2",
+				"w": "3",
+				"b": "5"
+			},
+			"answers": ["-7"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as enlevé les barres sans rien changer : une valeur absolue n'est jamais négative."
 			}
 		}
 	]

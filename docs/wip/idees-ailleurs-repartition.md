@@ -5,7 +5,7 @@ qui travaillent en parallèle. On y voit une rubrique par ligne et chaque modèl
 
 - **Pause levée (David, 2026-11-22)** : on prend de nouvelles rubriques sans attendre la fin de la
   vérification du lot « nombres et calculs » de Seconde. Chaque lot neuf applique les critères
-  d'[idées de format](idees-format-exercices.md) (coup de pouce, erreurs prévues).
+  d'[idées de format](../archive/wip/idees-format/idees-format-exercices.md) (coup de pouce, erreurs prévues).
 - **Réserver** : `git pull --rebase`, modifier la ligne, commit direct sur `main`, push aussitôt. Si
   le push est refusé : pull, relire, et changer de ligne si elle a été prise entre-temps.
 - **États** : libre → prise (sujet, date) → phase 0 → écrite → en prod → publiée.
@@ -16,7 +16,7 @@ qui travaillent en parallèle. On y voit une rubrique par ligne et chaque modèl
 
 | Rubrique                                      | Codes          | Exercices | État                                                       | Sujet / session |
 | --------------------------------------------- | -------------- | --------- | ---------------------------------------------------------- | --------------- |
-| Nombres et calculs                            | 2N10 à 2N51    | ~70       | publiée (2026-11-20), relecture de David en cours          | `ensembles-2de` |
+| Nombres et calculs                            | 2N10 à 2N51    | ~70       | publiée (2026-11-20), revue faite (#3319, 2026-11-28)      | `ensembles-2de` |
 | Calcul littéral, équations, inéquations       | 2L, 2N52, 2N61 | ~60       | libre                                                      |                 |
 | Géométrie, vecteurs, repérage                 | 2G             | 57        | libre                                                      |                 |
 | Fonctions                                     | 2F             | 38        | libre                                                      |                 |
@@ -106,7 +106,7 @@ anciennes versions. Les deux fichiers d'automatismes `6AutoN4` ne sont pas repri
 | Nombres entiers et décimaux        | 6N1   | 38        | publiée (2026-11-23) | `idees-6e-entiers-decimaux` |
 | Nombres décimaux                   | 6N2   | 55        | publiée (2026-11-23) | `idees-6e-decimaux`         |
 | Fractions                          | 6N3   | 53        | publiée (2026-11-25) | `idees-6e-fractions`        |
-| Algèbre                            | 6N4   | 9         | prise (2026-11-28)   | `idees-6e-algebre`          |
+| Algèbre                            | 6N4   | 9         | publiée (2026-11-28) | `idees-6e-algebre`          |
 | Résolution de problèmes            | 6N5   | 24        | publiée (2026-11-27) | `idees-6e-problemes`        |
 | Longueurs                          | 6M1   | 16        | publiée (2026-11-28) | `idees-6e-longueurs`        |
 | Aires                              | 6M2   | 17        | publiée (2026-11-27) | `idees-6e-aires`            |
@@ -114,9 +114,9 @@ anciennes versions. Les deux fichiers d'automatismes `6AutoN4` ne sont pas repri
 | Durées                             | 6M4   | 11        | publiée (2026-11-27) | `idees-6e-durees`           |
 | Géométrie de base                  | 6G0   | 10        | libre                |                             |
 | Distances                          | 6G1   | 6         | libre                |                             |
-| Cercles et disques                 | 6G2   | 9         | libre                |                             |
+| Cercles et disques                 | 6G2   | 9         | prise (2026-11-28)   | `idees-6e-cercles`          |
 | Médiatrices                        | 6G3   | 5         | libre                |                             |
-| Angles                             | 6G4   | 12        | libre                |                             |
+| Angles                             | 6G4   | 12        | publiée (2026-11-28) | `idees-6e-angles`           |
 | Bissectrices                       | 6G5   | 3         | libre                |                             |
 | Triangles                          | 6G6   | 16        | libre                |                             |
 | Symétrie axiale                    | 6G7   | 13        | libre                |                             |
@@ -145,8 +145,8 @@ pas. Le fichier `beta3I12` n'est pas repris.
 | Homothétie et rotation                   | 3G1       | 8         | publiée (2026-11-27)                                       | `idees-3e-transformations`   |
 | Théorème de Thalès                       | 3G2       | 10        | publiée (2026-11-27)                                       | `idees-3e-thales`            |
 | Trigonométrie                            | 3G3       | 13        | publiée (2026-11-25)                                       | `idees-3e-trigonometrie`     |
-| Espace                                   | 3G4       | 6         | en cours : 5 variations publiées, F1 attend l’outil n° 72  | `idees-3e-espace`            |
-| Algorithmique et programmation           | 3I1       | 11        | libre                                                      |                              |
+| Espace                                   | 3G4       | 6         | publiée (2026-11-28)                                       | `idees-3e-espace`            |
+| Algorithmique et programmation           | 3I1       | 11        | publiée (2026-11-28)                                       | `idees-3e-algorithmique`     |
 | Automatismes (mélange des rubriques)     | 3Auto, 3a | 34        | libre ; **à faire en dernier**, après les autres rubriques |                              |
 | Sujets de brevet (mélange des rubriques) | 3Z1       | 15        | libre ; **à faire en dernier**, après les autres rubriques |                              |
 
@@ -160,35 +160,20 @@ La première session qui prend un niveau liste son dossier dans la copie locale
 Une session qui ajoute des variations à un modèle publié le réserve ici, jusqu'à sa migration
 de contenu appliquée en prod.
 
-| Modèle (id court, titre)                                     | Session                                                     | Depuis     | Idées laissées par d'autres sessions |
-| ------------------------------------------------------------ | ----------------------------------------------------------- | ---------- | ------------------------------------ |
-| 04b1cc7f Puissance d'un produit                              | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| 2069ac7e Représenter un intervalle sur la droite graduée     | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| 39b4823d Calculer le tout connaissant une partie             | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| 3b0a04c0 Placer un réel sur une droite graduée               | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| 5b20321f À quels ensembles de nombres appartient ce nombre ? | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| 634b55b8 Écrire sous la forme d'une seule puissance          | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| 73514cdb Puissance d'un quotient                             | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| 7d411132 Encadrement d'amplitude donnée                      | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| 9660771f Comparer deux nombres par leur différence           | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| a692569a Lire l'abscisse d'un point                          | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| b720edd7 Inégalités et intervalles                           | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| bfcbf381 Le plus petit ensemble de nombres                   | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| c99ae1e8 Encadrement décimal à 10⁻ⁿ près                     | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| d03e49c0 Calculer la valeur d'une valeur absolue             | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| d264f7aa Pair ou impair : écrire 2k ou 2k + 1                | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| fa65910d Multiple : a = k × b                                | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| 39bafe0e Motif évolutif : trouver la régularité              | `idees-6e-algebre`                                          | 2026-11-28 |                                      |
-| 4048d9c5 Deux nombres inconnus : billets et devinettes       | `idees-6e-algebre`                                          | 2026-11-28 |                                      |
-| a06458ad Balances : la masse de deux objets                  | `idees-6e-algebre`                                          | 2026-11-28 |                                      |
-| a9c37578 Schéma en barres : choisir le schéma d'un énoncé    | `idees-6e-algebre`                                          | 2026-11-28 |                                      |
+| Modèle (id court, titre)                            | Session            | Depuis     | Idées laissées par d'autres sessions |
+| --------------------------------------------------- | ------------------ | ---------- | ------------------------------------ |
+| b8939937 Cercle, disque, rayon, diamètre, corde     | `idees-6e-cercles` | 2026-11-28 |                                      |
+| 48524505 Cercle et disque : des ensembles de points | `idees-6e-cercles` | 2026-11-28 |                                      |
+| 2f3da9ce Problèmes de distances à un point          | `idees-6e-cercles` | 2026-11-28 |                                      |
 
 ## Idées en attente
 
 Ce sont des idées notées pour un modèle déjà réservé, ou reportées par David (« plus tard »).
 
-- `ensembles-2de` : fiches 16, 17, 34, 52 du relevé « nombres et calculs » (rares mais au
-  programme, voir le journal).
+- `idees-6e-angles` (2026-11-28, pour la session de la rubrique « Espace » 6G8) : 6G41, « compléter une
+  représentation en perspective cavalière » (cube ou pavé), rangé sous le préfixe 6G4 mais exercice de solides.
+- `ensembles-2de` (plus tard, David, 2026-11-28) : fiche 17, écrire en Python le test « x ∈ [2 ; 5[ »,
+  attend la case « programme Python » (outil n° 49, lot `python`). Les fiches 34 et 52 sont faites (#3319), la 16 refusée.
 - `idees-6e-entiers` (plus tard, David, 2026-11-22) : la rose des sommes (6N0A-2), en attente d'un outil
   « grille ou figure jugée par ses contraintes » (`outils-manquants.md`).
 - `idees-3e-arithmetique` (2026-11-23, pour la session d'une rubrique de 6e sur la division) : « quel est le
@@ -202,3 +187,7 @@ Ce sont des idées notées pour un modèle déjà réservé, ou reportées par D
   1/5 000 000) pour calculer une distance réelle ou sur le plan (6P3E, clone d'un exercice de 5e) ; la 5e
   n'a que « trouver l'échelle » (c1a54695, 24a8e2b1).
 - `idees-6e-aires` (2026-11-27, pour la session de 5e) : conversions d'aire au-delà de m², dm², cm² (mm², dam², hm², km², ha, a ; deux sauts, QCM ×10/×100) et assemblages carré + rectangle + triangle où l'on déduit un côté d'une aire puis l'aire d'un triangle (6M2A-1, 6M2B-2) : hors bornes de 6e.
+- `idees-3e-algorithmique` (2026-11-28, pour la session de la rubrique « Pensée informatique » de 6e, 6I1) : 3I12-5
+  n'est que le niveau « 3 » de 6I1B-6 (cocher, parmi cinq programmes, tous ceux qui tracent un segment, un
+  carré ou un compte à rebours donné ; erreurs d'une unité dans « répéter n fois »), contenu de 5e (5-106).
+  Notre ``choix accepte plusieurs bonnes réponses.

@@ -16681,6 +16681,7 @@ export type Database = {
 			run_weekly_best_bonuses: { Args: Record<PropertyKey, never>; Returns: undefined };
 			run_weekly_rewards: { Args: Record<PropertyKey, never>; Returns: undefined };
 			same_school: { Args: { p_other: string }; Returns: boolean };
+			save_evaluation_task_grid: { Args: { p_rows: Json; p_task_id: string }; Returns: number };
 			save_exercise_with_version: {
 				Args: { p_content: Json; p_exercise_id: string; p_identity: Json; p_version_id?: string };
 				Returns: {

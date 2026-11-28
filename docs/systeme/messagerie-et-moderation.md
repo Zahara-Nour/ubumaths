@@ -171,7 +171,8 @@ La modération porte sur la table `messages` **du chat**, pas sur `private_messa
   (aussi lu par `+layout.server.ts` pour le badge). Lien de menu : `src/lib/config/dashboard-nav.ts`.
   Une lecture des signalements en échec ne ressemble pas à « aucun signalement » : `load` rend
   `reportsLoadFailed` et la page affiche une alerte à la place de la liste ; un compteur
-  illisible vaut `null` (pas de badge, une alerte), jamais 0. Restrictions et journal en échec
+  illisible vaut `null` (pastille « ? », nommée « Nombre de signalements inconnu », et une
+  alerte), jamais 0. Restrictions et journal en échec
   lèvent un 500.
 - Composants : `src/lib/components/moderation/` — `MessageReportsTable` → `ReviewReportDialog`
   (→ `RestrictUserDialog`) ; `ActiveRestrictionsTable`, `ModerationLogsTable` ;
@@ -374,6 +375,13 @@ La modération porte sur la table `messages` **du chat**, pas sur `private_messa
   l'API un message daté d'il y a quatre ans (hors de l'onglet du prof, effacé par la purge de
   conservation) ou de 2099 (en tête de l'onglet pour toujours). L'application n'envoie aucune
   de ces dates. Le serveur garde la main. Même fichier de tests, § « à l'envoi ».
+- **Un message trop lourd ne part pas.** Le chat écrit directement dans `messages`, sans borne
+  côté site ; le trigger `guard_message_taille_trg` refuse à l'envoi, pour un compte connecté,
+  un contenu de plus de 200 000 caractères (JSON écrit par la base), erreur `22001` « message
+  trop long », que le store du chat dit à l'élève (toast « Message trop long »). Borne à
+  l'envoi seulement, pas une contrainte CHECK : trois messages de janvier 2026, plus lourds
+  (images rangées dans le message avant les pièces jointes), restent et se suppriment toujours.
+  Test : `tests/integration/messages-taille-a-l-envoi.test.ts` (écart L124).
 - **Un message ne change pas de conversation.** Aucun compte connecté (élève, prof, admin) ne
   modifie `conversation_id` d'un message : le trigger `guard_message_conversation_trg` refuse
   (`42501`). Sans lui, un élève sortait son message marqué de l'onglet du prof en le déplaçant
@@ -394,9 +402,11 @@ La modération porte sur la table `messages` **du chat**, pas sur `private_messa
 - Signalements : tous, via `get_reports_for_moderation` (`is_teacher_or_admin()`), triés
   `pending` d'abord.
 - Messages marqués automatiquement : onglet « Messages marqués » de `gestion/`
-  (`FlaggedMessagesList.svelte`), 100 plus récents, lecture seule. Deux lectures selon le rôle
-  (`loadFlaggedMessages` dans `+page.server.ts`) :
-  - **prof** : fonction `get_flagged_messages_for_teacher` (`SECURITY DEFINER`, réservée au rôle
+  (`FlaggedMessagesList.svelte`), 100 plus récents, lecture seule, **prof seulement** : l'admin
+  reçoit un 403 du layout de `dashboard/teacher/moderation/` (gardé par David le 2026-11-25 ; la
+  branche de lecture admin, morte, est retirée, M59). Lecture (`loadFlaggedMessages` dans
+  `+page.server.ts`) :
+  - fonction `get_flagged_messages_for_teacher` (`SECURITY DEFINER`, réservée au rôle
     `teacher` : élève, admin et visiteur refusés en `42501`). Décision de David du 2026-11-25.
     Elle rend les messages `is_flagged`, **et eux seuls**, de ses conversations, des chats de
     groupe et des **conversations à deux entre deux élèves** (en classe ou hors-classe) : texte,
@@ -414,8 +424,6 @@ La modération porte sur la table `messages` **du chat**, pas sur `private_messa
     policy SELECT nomme les conversations à deux, mais lit `conversation_participants` sous la
     RLS du prof, qui n'y voit que les siennes). Test :
     `tests/integration/messages-marques-prof.test.ts`.
-  - **admin** : accès inchangés. Lecture de `messages` (`is_flagged = true`) avec son client,
-    bornée par la RLS : conversations qu'il peut ouvrir, messages non supprimés.
 
   Une lecture en échec rend `flaggedMessagesLoadFailed` et une alerte, jamais « aucun message ».
   Pas de lien direct vers la conversation, pas d'état « traité ».

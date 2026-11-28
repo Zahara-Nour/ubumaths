@@ -2,71 +2,16 @@
 	import { page } from '$app/state';
 	import { resolvePath } from '#lib/navigation/resolve-path.ts';
 	import {
-		Home,
-		Gamepad2,
-		PenTool,
-		Terminal,
-		Turtle,
-		Blocks,
-		Calculator,
-		Laugh,
-		FlaskConical,
-		Zap,
-		Newspaper,
-		KeyRound
-	} from '@lucide/svelte';
-	import type { LucideIcon } from '@lucide/svelte';
+		PUBLIC_NAV_ITEMS,
+		isNavItemActive,
+		type NavItem
+	} from '#lib/navigation/public-nav-items.ts';
 	import type { Tables } from '#lib/types/database.ts';
-
-	type NavSection = 'serious' | 'fun';
-	type NavItem = {
-		label: string;
-		href: string;
-		icon: LucideIcon;
-		roles?: string[];
-		section?: NavSection;
-	};
 
 	// Props
 	let {
 		profile = null,
-		items = [
-			{ label: 'Accueil', href: '/', icon: Home },
-			// D14 (décision de David, 2026-10-12) : les deux pages publiques les plus vivantes
-			{ label: 'Automaths', href: '/automaths', icon: Zap },
-			{ label: 'Jeux', href: '/games', icon: Gamepad2 },
-			{
-				label: 'Python',
-				href: '/python',
-				icon: Terminal,
-				roles: ['student', 'teacher']
-			},
-			// La Tortue (chantier blockly, PR 3) : publique, aucune donnée serveur
-			{ label: 'La Tortue', href: '/tortue', icon: Turtle },
-			// Programmes de calcul (chantier blockly) : publique, aucune donnée serveur
-			{ label: 'Programmes de calcul', href: '/programmes-de-calcul', icon: Blocks },
-			{ label: 'Upsilon', href: '/upsilon', icon: Calculator },
-			// Sans `roles` : l'atelier, Automaths et le Shtam ne lisent aucune donnée serveur
-			// réservée, ils sont donc ouverts, y compris hors connexion.
-			// L'atelier est l'entrée unique du grapheur (`/grapheur` y mène encore,
-			// ouvert sur le Graphe) : décision G1 de David, 2026-10-04.
-			{ label: 'Atelier', href: '/atelier', icon: FlaskConical },
-			// Le Cabinet Noir de Turingrad : public, aucune donnée serveur
-			{ label: 'Chiffrement', href: '/chiffrement', icon: KeyRound },
-			{ label: 'Le Shtam', href: '/shtam', icon: Newspaper },
-			{
-				label: 'Whiteboard',
-				href: '/whiteboard',
-				icon: PenTool,
-				roles: ['teacher']
-			},
-			{
-				label: 'Zygomatics',
-				href: '/presques-evaluations',
-				icon: Laugh,
-				section: 'fun'
-			}
-		]
+		items = PUBLIC_NAV_ITEMS
 	}: {
 		profile?: Tables<'profiles'> | null;
 		items?: NavItem[];
@@ -88,9 +33,9 @@
 	);
 	let funItems = $derived(visibleItems.filter((item) => item.section === 'fun'));
 
-	// Check if a link is active
-	function isActive(href: string) {
-		return page.url.pathname === href;
+	// Lien surligné : même règle que le tiroir (écart V75)
+	function isActive(href: string): boolean {
+		return isNavItemActive(href, page.url.pathname);
 	}
 </script>
 

@@ -67,6 +67,7 @@ bornes sont des fractions de la durée (`movePhaseEnd`, `drawPhaseStart`, `drawP
 | Pause automatique               | + `AUTO_PAUSE_BETWEEN_STEPS` 500 ms après tout tracé ou fondu ; sous-étape chorégraphiée : **pause de lecture** `readingPauseMs` = consigne × `READING_MS_PER_CHAR` 60 ms, bornée à [500, `MAX_READING_PAUSE` 4000], non divisée par la vitesse `@vitesse` |
 | Fondu (points, droites)         | `DEFAULT_STEP_DURATION` 500 ÷ vitesse, borné à [100, 5000], + la pause ci-dessus ; en sous-étape, le fondu finit à `drawPhaseEnd` et l'élément reste immobile pendant la pause (`fadeInProgress`, `render-helpers.ts`)                                     |
 | Directive                       | 0 ms, sauf `@pause(ms)` (défaut `DEFAULT_PAUSE_DURATION` 300)                                                                                                                                                                                              |
+| `masque(…)` / `montre(…)`       | 0 ms (instruction seule, sans élément créé) : des effacements à la suite tombent au même instant (V76, 2026-11-28). Arrivée au bout de la frise → dernier pas, même de durée 0 (`findStepAt`, `timeline.svelte.ts`) : un `masque` final s'applique         |
 | Position de départ d'instrument | coin (−8, 6) en unités math (`executor.ts:757-760`, `:1030-1033`)                                                                                                                                                                                          |
 
 ## 2. Directives `@…` (une ligne à elles seules)

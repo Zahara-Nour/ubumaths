@@ -52,6 +52,7 @@
 	import StatChart from './nodes/StatChart.svelte';
 	import FigureBlock from './nodes/FigureBlock.svelte';
 	import QrBlock from './nodes/QrBlock.svelte';
+	import Engrenages from './nodes/Engrenages.svelte';
 	import ScratchBlock from './nodes/ScratchBlock.svelte';
 	import Horloge from './nodes/Horloge.svelte';
 	import Partage from './nodes/Partage.svelte';
@@ -67,6 +68,8 @@
 	import TortueProgramme from './nodes/TortueProgramme.svelte';
 	import RobotCode from './nodes/RobotCode.svelte';
 	import Labyrinthe from './nodes/Labyrinthe.svelte';
+	import Yohaku from './nodes/Yohaku.svelte';
+	import PythonAEcrire from './nodes/PythonAEcrire.svelte';
 	import CalculProgramme from './nodes/CalculProgramme.svelte';
 
 	// Raw markdown viewer with syntax highlighting
@@ -404,6 +407,8 @@
 					<StatChart {node} />
 				{:else if node.type === 'qr'}
 					<QrBlock {node} />
+				{:else if node.type === 'engrenages'}
+					<Engrenages {node} />
 				{:else if node.type === 'scratch'}
 					<ScratchBlock {node} />
 				{:else if node.type === 'horloge'}
@@ -436,6 +441,10 @@
 					<RobotCode {node} />
 				{:else if node.type === 'labyrinthe'}
 					<Labyrinthe {node} />
+				{:else if node.type === 'yohaku'}
+					<Yohaku {node} />
+				{:else if node.type === 'python-a-ecrire'}
+					<PythonAEcrire {node} />
 				{/if}
 			{/each}
 		{:else}

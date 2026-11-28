@@ -147,8 +147,8 @@ Trois boucles distinctes :
   - `logError` nettoie (`sanitizeErrorData`), tronque (message 1 000, pile 5 000, URL
     500 caractères), puis insère avec le **client service** (la RLS n'autorise
     l'insertion qu'à l'admin). Une erreur `critical` déclenche `notifyCriticalError` :
-    notification urgente à tous les admins (`createSystemNotification`), message et URL
-    échappés (`escapeHtml`) : ils s'affichent comme du texte ;
+    notification urgente à tous les admins (`createSystemNotification`, événement
+    `error_critical`), message et URL échappés (`escapeHtml`) : ils s'affichent comme du texte ;
   - `getUserContext` ajoute `user_id` et `user_role` ;
   - lecture : `getErrorStats` (RPC `get_error_stats`),
     `getErrorOccurrences`, `getErrorLog` ;
@@ -175,8 +175,10 @@ Les deux routes admin se gardent par `requireAdmin` (vrai compte admin, ou prof 
 administration : [auth.md](auth.md) § Élévation admin) ; `bulk-resolve` écrit avec le client rendu.
 
 Pages admin : `/dashboard/admin/errors` (statistiques 24 h et occurrences, filtres
-`type`, `severity`, `resolved`, `search` dans l'adresse), `/dashboard/admin/errors/[id]`
-(détail, action `resolve`), `/dev/erreurs/surveillance` (ex-`/dashboard/admin/errors/test`,
+`type`, `severity`, `resolved`, `search` dans l'adresse, validés par `adminErrorsFiltersSchema` :
+vide = pas de filtre, valeur inconnue ou recherche de plus de 200 caractères = 400),
+`/dashboard/admin/errors/[id]` (détail, action `resolve`, note de 2 000 caractères au plus,
+`resolveErrorFormSchema`), `/dev/erreurs/surveillance` (ex-`/dashboard/admin/errors/test`,
 admin seul, textes en français : boutons qui provoquent des erreurs de test).
 
 ### Détection de gel
@@ -185,6 +187,9 @@ admin seul, textes en français : boutons qui provoquent des erreurs de test).
 
 - **Long Task Observer** : tâche de plus de 100 ms notée, de plus de 500 ms envoyée par
   `capturePerformance` ;
+- rien n'est envoyé à la surveillance (ni tâche longue, ni gel) quand « Détection des freezes »
+  est coupée dans la configuration (`bugReportsConfigStore.freezeDetectionEnabled`) ; avant
+  le chargement de la configuration, la valeur par défaut (activée) s'applique ;
 - **battement** toutes les 2 s : un retard est un gel seulement s'il est corroboré par des
   longues tâches, onglet visible et utilisateur pas inactif (le commentaire d'en-tête liste
   les faux positifs écartés : onglet en arrière-plan, veille, mode économie…) ;
@@ -223,7 +228,10 @@ Les rappels sont branchés dans `src/routes/(protected)/dashboard/+layout.svelte
   `/dashboard/admin/bug-reports` (une seule lecture pour la liste) et par l'export. Rien n'est
   enregistré : un signalement de plus de 30 jours n'a plus d'erreurs (purge du journal).
 - **`/api/bug-reports/[reportId]`** : `GET` ; `PATCH` (l'auteur modifie titre et
-  description tant que le statut vaut `pending` ; l'admin change statut et notes) ;
+  description tant que le statut vaut `pending` ; l'admin change statut et notes) ; un statut
+  résolu (`resolved`, `wont_fix`, `duplicate`) note l'admin et la date (`resolved_by`,
+  `resolved_at`), tout autre statut les remet à vide : un rapport rouvert ne garde pas le nom de
+  son ancien résolveur (même règle dans le lot) ;
   `DELETE` (admin).
 - **`/api/bug-reports/batch`** : `PATCH` et `DELETE` en lot, admin, 100 rapports au plus.
   Chaque écriture vérifie ses lignes : un rapport intact (inconnu, refus de la RLS) va dans
@@ -233,7 +241,8 @@ Les rappels sont branchés dans `src/routes/(protected)/dashboard/+layout.svelte
   Chemin `<id utilisateur>/<id du rapport>/<horodatage>.<ext>` dans le bucket
   `bug-report-screenshots` ; l'extension vient du type vérifié (`jpg`, `png`, `gif`, `webp`),
   jamais du nom du fichier. L'ancienne capture n'est retirée qu'une fois la nouvelle rattachée
-  au rapport. Si la mise à jour du rapport ne touche aucune ligne (rapport plus `pending`, refus
+  au rapport ; un effacement en erreur ou qui ne rend aucun fichier (refus silencieux du
+  stockage) laisse un avertissement au journal du serveur. Si la mise à jour du rapport ne touche aucune ligne (rapport plus `pending`, refus
   de la RLS), le fichier envoyé est retiré, l'ancienne capture reste, et la route rend 403.
 - **Suppression d'un rapport** (`DELETE` seul ou en lot, admin) : `deleteBugReportWithScreenshot`
   retire d'abord la capture du bucket, puis la ligne. Capture impossible à effacer → la ligne
@@ -247,7 +256,9 @@ Les rappels sont branchés dans `src/routes/(protected)/dashboard/+layout.svelte
   (`src/lib/server/bug-report-export.ts`) : Markdown avec auteur, contexte, erreurs,
   fichiers déduits des piles et de l'URL, capture. Bouton : `ExportClaudeCodeButton`.
 - **Pages** : `/dashboard/bug-reports` (« Mes Signalements », dans le menu élève) et
-  `/dashboard/admin/bug-reports` (`BugReportList`, `BugReportCard`, `BugReportStatusBadge`).
+  `/dashboard/admin/bug-reports` (`BugReportList`, `BugReportCard`, `BugReportStatusBadge`) ;
+  ses filtres `status`, `category`, `severity` dans l'adresse sont validés par
+  `adminBugReportsFiltersSchema` (vide = pas de filtre, valeur inconnue = 400).
 - **Types et libellés** : `src/lib/types/bug-reports.ts` ; schémas Zod :
   `src/lib/server/validation/bug-reports.ts`.
 

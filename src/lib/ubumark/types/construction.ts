@@ -82,6 +82,45 @@ export function bissectriceOf(expression: string): [string, string, string] | nu
 	return match ? [match[1], match[2], match[3]] : null;
 }
 
+/** `mediatrice(A, B)` / `milieu(A, B)` : deux points nommés */
+const RULER_MIDPOINT_REGEX = {
+	droite: /^m[eé]diatrice\(\s*([A-Za-z][A-Za-z0-9_]*)\s*,\s*([A-Za-z][A-Za-z0-9_]*)\s*\)$/,
+	point: /^milieu\(\s*([A-Za-z][A-Za-z0-9_]*)\s*,\s*([A-Za-z][A-Za-z0-9_]*)\s*\)$/
+} as const;
+
+/**
+ * Outil n° 38 (chantier `outil-equerre-uni`) : une vérification dont le milieu peut se
+ * marquer à la règle graduée, `droite m = mediatrice(A, B)` ou `point M = milieu(A, B)` :
+ * ses deux points ; null sinon
+ */
+export function rulerMidpointOf(check: ConstructionCheck): [string, string] | null {
+	if (check.kind !== 'droite' && check.kind !== 'point') return null;
+	const match = RULER_MIDPOINT_REGEX[check.kind].exec(check.expression.trim());
+	return match ? [match[1], match[2]] : null;
+}
+
+/**
+ * Perpendiculaire ou parallèle à un trait droit par un point (outil n° 40, chantier
+ * `outil-equerre-uni`) : `perpendiculaire(A, d)`, `parallele(A, d)` ; à l'équerre
+ * sur papier uni
+ */
+export interface ThroughLine {
+	kind: 'perpendiculaire' | 'parallele';
+	point: string;
+	line: string;
+}
+
+const THROUGH_LINE_REGEX =
+	/^(perpendiculaire|parall[eè]le)\(\s*([A-Za-z][A-Za-z0-9_]*)\s*,\s*([A-Za-z][A-Za-z0-9_']*)\s*\)$/;
+
+/** Le point et le trait d'une perpendiculaire ou d'une parallèle ; null pour une autre expression */
+export function throughLineOf(expression: string): ThroughLine | null {
+	const match = THROUGH_LINE_REGEX.exec(expression.trim());
+	if (!match) return null;
+	const kind = match[1] === 'perpendiculaire' ? 'perpendiculaire' : 'parallele';
+	return { kind, point: match[2], line: match[3] };
+}
+
 /**
  * Cercle de centre donné (chantier `cercle-triangle-rectangle`, n° 19, 2026-11-08) :
  * `cercle(O, passant=A)` (centre O passant par A) ou `cercle(O, rayon=distance(D, E))`
@@ -141,9 +180,11 @@ export const LINE_GRID_TOOLS: ConstructionTool[] = ['droite', 'equerre', 'compas
  * Compas avec l'angle
  */
 export function triangleTools(
-	check: Pick<TriangleCheck, 'angles' | 'lengths'>,
+	check: Pick<TriangleCheck, 'angles' | 'lengths' | 'model'>,
 	grid = false
 ): ConstructionTool[] {
+	// Triangle à reproduire (n° 47) : sur quadrillage, au segment seul
+	if (check.model) return ['segment'];
 	// Triangle rectangle (n° 20) : l'équerre et le Report sur papier uni, le segment seul sur quadrillage
 	if (rightAngleOf(check)) {
 		if (grid) return ['segment'];
@@ -176,7 +217,8 @@ export const CONSTRUCTION_CHECK_KINDS = [
 	'angle',
 	'mesure',
 	'segment',
-	'mesure_segment'
+	'mesure_segment',
+	'segment_par'
 ] as const;
 export type ConstructionCheckKind = (typeof CONSTRUCTION_CHECK_KINDS)[number];
 
@@ -377,12 +419,16 @@ export interface TriangleAngle {
  * Triangle rectangle (n° 20) : un angle de 90° (construit à l'équerre), seul ou
  * avec la longueur du côté qui le porte (`CAB = 90 ; AC = u`, `AC = 3 carreaux`,
  * ou `AC = 4 cm` à la règle graduée, PR 4 de `regle-graduee`).
+ * À reproduire sur quadrillage (outil n° 47) : `reproduit DEF`, le modèle, seule
+ * donnée (`lengths` et `angles` vides) ; l'élève trace ABC, DEF déplacé.
  */
 export interface TriangleCheck {
 	kind: 'triangle';
 	points: [string, string, string];
 	lengths: TriangleLength[];
 	angles: TriangleAngle[];
+	/** Outil n° 47 : le triangle modèle à reproduire (A ↔ D, B ↔ E, C ↔ F) */
+	model?: [string, string, string];
 	line: number;
 }
 
@@ -481,8 +527,21 @@ export interface SegmentLengthCheck {
 	line: number;
 }
 
+/**
+ * `segment [AC]` (outil n° 45, chantier `outil-equerre-uni`) : l'élève trace le
+ * segment qui joint deux points (les diagonales d'un carré). Dans une figure
+ * composée seulement ; A et C sont des points de la figure ou construits à une
+ * étape d'avant.
+ */
+export interface SegmentThroughCheck {
+	kind: 'segment_par';
+	points: [string, string];
+	line: number;
+}
+
 export type ConstructionCheck =
 	| DroiteParCheck
+	| SegmentThroughCheck
 	| SegmentFigureCheck
 	| RuledPolygonCheck
 	| DiagonalRectangleCheck
@@ -510,8 +569,76 @@ export const CHECK_TOOL: Record<ConstructionCheckKind, ConstructionTool> = {
 	mesure: 'rapporteur',
 	// Le segment est exigé aussi (cohérence du parseur) ; la règle graduée est l'outil de départ
 	segment: 'regle',
-	mesure_segment: 'regle'
+	mesure_segment: 'regle',
+	segment_par: 'segment'
 };
+
+/**
+ * Figure composée (outil n° 45, chantier `outil-equerre-uni`, phase 0 validée par
+ * David le 2026-11-28) : la famille de chaque vérification ; deux familles dans
+ * une figure en font un programme de construction, une étape par `verifier:`.
+ * `null` : une vérification qui ne se mêle pas à une figure composée.
+ */
+export type CompositeFamily = 'segment' | 'polygone' | 'segment_par' | 'cercle' | 'point';
+
+export function compositeFamilyOf(check: ConstructionCheck): CompositeFamily | null {
+	if (check.kind === 'segment' || check.kind === 'segment_par') return check.kind;
+	if (check.kind === 'cercle' || check.kind === 'point') return check.kind;
+	if (isRuledPolygonCheck(check)) return 'polygone';
+	return null;
+}
+
+/** Ce qui fait une famille au sens de la figure composée (le genre de vérification) */
+function familyKey(check: ConstructionCheck): string {
+	return compositeFamilyOf(check) ?? `autre:${check.kind}`;
+}
+
+/**
+ * Figure composée : une vérification `segment [AC]`, ou au moins deux familles, toutes
+ * d'une figure composée. Les autres mélanges (une droite, un triangle…) gardent leurs
+ * messages d'avant (« … ne se mêle pas à d'autres vérifications »).
+ */
+export function isCompositeFigure(checks: readonly ConstructionCheck[]): boolean {
+	if (checks.some((c) => c.kind === 'segment_par')) return true;
+	if (new Set(checks.map(familyKey)).size < 2) return false;
+	return checks.every((c) => compositeFamilyOf(c) !== null);
+}
+
+/** Les outils dont une étape d'une figure composée peut se servir */
+export function compositeStepPalette(check: ConstructionCheck): ConstructionTool[] {
+	if (check.kind === 'segment') return ['regle', 'segment'];
+	if (check.kind === 'segment_par') return ['segment'];
+	if (isRuledPolygonCheck(check)) return [...RULED_POLYGON_TOOLS];
+	if (check.kind === 'cercle') {
+		const centered = centeredCircleOf(check.expression);
+		return centered ? centeredCircleTools(centered) : [...(PLAIN_PAPER_TOOLS.cercle ?? [])];
+	}
+	if (check.kind === 'point') {
+		const tools = [...(PLAIN_PAPER_TOOLS.point ?? [])];
+		return rulerMidpointOf(check) ? [...tools, 'regle'] : tools;
+	}
+	return [];
+}
+
+/**
+ * Les points qu'une étape d'une figure composée construit (B de `segment AB = 6 cm`, C et
+ * D d'un carré coté, le point placé) : ils n'ont pas à être nommés dans la figure
+ */
+export function compositeBuiltNames(check: ConstructionCheck): string[] {
+	if (check.kind === 'segment') return [check.end];
+	if (isRuledPolygonCheck(check)) return check.points.slice(2);
+	if (check.kind === 'point') return [check.name];
+	return [];
+}
+
+/** Les outils de `outils:` qui servent à cette étape (dans l'ordre de `outils:`) */
+export function compositeStepTools(
+	check: ConstructionCheck,
+	tools: readonly ConstructionTool[]
+): ConstructionTool[] {
+	const palette = compositeStepPalette(check);
+	return tools.filter((t) => palette.includes(t));
+}
 
 export interface ConstructionSpec {
 	tools: ConstructionTool[];
