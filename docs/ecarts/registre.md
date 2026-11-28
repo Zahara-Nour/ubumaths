@@ -9,7 +9,7 @@ Une ligne : identifiant · type · domaine · ce que voit l'élève ou le prof �
 Un nouvel écart entre par `pnpm ecarts ajouter`, qui donne son numéro. Une ligne close est barrée,
 jamais effacée.
 
-Derniers numéros : V138 · L140 · M60 · C44 · D45 · T38 · E92
+Derniers numéros : V139 · L141 · M60 · C44 · D45 · T38 · E92
 
 ## Écarts
 
@@ -364,3 +364,5 @@ Derniers numéros : V138 · L140 · M60 · C44 · D45 · T38 · E92
 - T38 · RGPD · fiches · un titre d'exercice qui contient du code Typst dans une formule ($#panic(1)$) l'évalue à la compilation du PDF (convertLatexToTypstMath n'échappe pas # en mode maths) : PDF de l'élève ou d'un lien de partage qui ne compile plus ; texte du prof ou de l'admin, aucun accès aux données (relevé par security-auditor, revue de la PR du lot fiches) · preuve : à la main · à faire
 - L140 · bug latent · fiches · un ] hors formule dans le titre d'un exercice (processTableCellContent) ou dans la consigne d'une affectation (render-exercise.ts, escapeTypst seul) ferme le bloc qui l'entoure : le PDF ne compile plus (relevé par security-auditor, revue de la PR du lot fiches) · preuve : à la main · à faire
 - V138 · bug visible · mathAST domaine · le domaine de tan(x) + 1/(x − 3) oublie x = 3 : intersect perd les points isolés exclus à côté d'une exclusion périodique (isUniversalInterval ignore les points) ; réponse fausse sans avertissement, attendu un refus honnête (« je ne sais pas encore », contrainte unresolved) plutôt qu'un vrai correctif ; vu en revue de #3271 (L60), rangé avec le lot mathast-limites, décision de David le 2026-11-28 · preuve : à la main · à faire
+- L141 · bug latent · cache · le Palotin de l'élève et les chiffres du tableau de bord prof (élèves, récompenses, avertissements, classes) ne suivent pas leur échéance : l'écran garde une valeur périmée, puis la perd au prochain recalcul, sans relecture (même défaut que L43) · preuve : commande `f=src/lib/stores/teacherDashboardCache.svelte.ts; g=src/lib/stores/studentDashboardCache.svelte.ts; test -f "$f" && test -f "$g" && ! grep -qE "fetchedAt >= this\.[A-Z_]+_TTL\) (return|continue)" "$f" && ! grep -q "this.BUDDY_TTL) {" "$g"` · à faire (vu en clôturant le lot cache, inscrit à la demande de David le 2026-11-28)
+- V139 · bug visible · constructions · dans « Axes de symétrie et construction d'un carré », une trentaine de points auxiliaires affichent leur nom (_p0, _p14…) : un nom qui commence par _ devrait rester sans étiquette · preuve : à la main · à faire
