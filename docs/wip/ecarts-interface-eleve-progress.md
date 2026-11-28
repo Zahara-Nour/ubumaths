@@ -13,7 +13,7 @@ _Mis à jour le 2026-11-28, avant la première PR._
 - **État** : latents corrigés et commités sur la branche (pas poussés, typecheck rouge) : L46, L50, L52, L53, L55, L108, L114, et L42 pour les messages 4xx.
 - **Prochaine action** : corriger le typecheck de `src/lib/utils/vip-card-modals.ts` (l. 107, 157, 215, 277 : `Component<Props>` refusé par `ModalEntry.component`, typer comme `push` le fait), puis `pnpm check:incremental`, revue `code-reviewer`, PR ; ensuite les visibles après la réponse de David.
 - **En attente de David** : phase 0 de V73 (fenêtres), V75 (surlignage du Shtam), V117 (images des 4 cartes Mathémo), et les erreurs 500 de L42.
-- **Pièges en cours** : `ecarts-coquille.svelte.test.ts` est partagé avec L41 (`interface-prof`) et L43 (`cache`) : seul le test L52 y change.
+- **Pièges en cours** : branche commitée, **jamais poussée** : le pre-push refuse `wheel-landing.ts` et `public-nav-items.ts`, sans doc qui les couvre (ajouter au `couvre:` de la doc de la roue et de la navigation publique, cf. `docs/README.md`) · `ecarts-coquille.svelte.test.ts` est partagé avec L41 (`interface-prof`) et L43 (`cache`) : seul le test L52 y change.
 - **Worktree / branche** : `../ubumaths-wt-ecarts-interface-eleve`, `fix/ecarts-interface-eleve`.
 
 ## Historique
