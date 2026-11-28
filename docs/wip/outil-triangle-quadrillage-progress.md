@@ -10,10 +10,11 @@ status: phase 0 validée le 2026-11-28, code en cours
 
 _Mis à jour le 2026-11-28, avant la première PR._
 
-- **État** : phase 0 validée (§ 1) ; tests puis code en cours.
-- **Prochaine action** : `triangle-copy.ts` (juge, correction), branché sur `triangle.ts` et
-  `construction-parser.ts` ; tests `construction-triangle-copy.test.ts`.
-- **En attente de David** : rien.
+- **État** : outil 47 codé et commité sur la branche (pas poussé, pas de PR) ; revue Opus faite,
+  points 2 à 4 corrigés (`bc1095c818`). Rendu vu dans le navigateur de test (forme 1 fausse, forme 2 juste).
+- **Prochaine action** : appliquer la réponse de David au point 1 (§ 2), `check:incremental`,
+  `types:cliquet`, `git merge origin/main`, push, PR, `pnpm pr:merger`.
+- **En attente de David** : le message du triangle déplacé mais commencé au mauvais sommet (§ 2).
 - **Pièges en cours** : même module que le lot `equerre-uni` → `git merge origin/main` avant la PR.
 - **Worktree / branche** : `../ubumaths-wt-outil-triangle-quadrillage`, `feat/outil-triangle-quadrillage`.
 
@@ -47,3 +48,14 @@ Décisions (David, « oui » à mes recommandations, 2026-11-28) :
 
 On juge le résultat : côtés dans n'importe quel ordre, dans un sens ou l'autre, en plusieurs morceaux
 (fusion des traits de `polygon.ts`) ; un trait de trop est refusé.
+
+## 2. Revue de code (2026-11-28)
+
+Revue `code-reviewer` (Opus) : aucune réponse jugée à l'envers sur 24 cas. Corrigés : modèle non
+tracé et A posé sur D refusés à l'auteur ; un trait seul dans le prolongement de [AB] → « Trace les
+côtés [AC] et [BC] du triangle. ».
+
+Question ouverte (point 1) : l'élève trace le modèle déplacé tel quel, mais A est au coin qui
+correspond à E (ou à F) ; le juge répond « retourné », ce qui est faux. Proposé à David : un message
+à part, « Ton triangle est bien pareil au modèle, mais il ne part pas du bon coin : A doit être à la
+place de D. »
