@@ -1,7 +1,7 @@
 ---
 title: Lot d'outils `python` — case « programme Python exécuté » (outil 49)
 date: 2026-11-28
-status: phase 0 posée, en attente de David
+status: phase 0 validée le 2026-11-28, code écrit (branche), revue et PR à faire
 ---
 
 # Lot `python` : outil 49
@@ -10,9 +10,10 @@ status: phase 0 posée, en attente de David
 
 _Mis à jour le 2026-11-28, avant toute PR._
 
-- **État** : phase 0 de l'outil 49 écrite ci-dessous, rien de codé.
-- **Prochaine action** : lire les réponses de David aux questions Q1 à Q4, puis tests rouges.
-- **En attente de David** : Q1 à Q4 (§ Phase 0).
+- **État** : code, tests et doc commités sur la branche (§ Code), pas encore poussés ni de PR.
+- **Prochaine action** : revue (`code-reviewer` en opus : correction des réponses), vérification à
+  l'écran (`pnpm voir` d'une question Python, page « Nouveau contrôle »), puis PR.
+- **En attente de David** : rien ; à lui signaler : un modèle Python n'exige pas de spec (§ Code).
 - **Pièges en cours** : Python ne tourne que dans le navigateur (Pyodide) ; `validateAnswer` est
   synchrone et une évaluation notée est corrigée par le serveur (ADR 0015).
 - **Worktree / branche** : `../ubumaths-wt-outil-python` · `feat/outil-python`.
@@ -109,3 +110,47 @@ exiger: boucle
 - **Q4 — Début donné.** Le `depart:` est-il librement modifiable par l'élève, ou bien seules les
   zones `...` sont modifiables (les « zones verrouillées » des exercices Python) ? Je propose
   libre, plus simple ; les zones verrouillées en option plus tard.
+
+### Réponses de David (2026-11-28)
+
+David a demandé mes recommandations, puis : « je te suis ». Donc :
+
+- **Q1** : refus d'une case Python dans une évaluation notée, et dans les jeux et combats corrigés
+  par le serveur ; refus visible là où le prof compose l'évaluation.
+- **Q2** : solution lisible dans le navigateur, acceptée (entraînement).
+- **Q3** : on montre le premier essai raté. Pas d'essais cachés pour l'instant.
+- **Q4** : début donné librement modifiable ; pas de zones verrouillées.
+
+## Code (2026-11-28)
+
+Choix faits :
+
+- **Essais** : UN appel `validateExercise` par essai (`reference_solution`, `generator` réduit au
+  tuple des arguments : `seuil(2)` → `(2,)`, `count: 1`, `seed: 0`). Aucun changement du worker ;
+  chaque appel dit quel essai a raté, le message cite l'essai tel qu'écrit. Exigences
+  (`defines_function` + `exiger:`) et syntaxe au premier appel seulement.
+- **Valeur de la case** : `python1:` + JSON `{ code, verdict }` (Zod) ; attendu `python-attendu1:` +
+  JSON `{ fonction, solution, essais, exiger }`. Le juge synchrone lit le verdict.
+- **Avant la validation** : registre de préparations par contexte (`answer-preparations.ts`), posé
+  par `QuestionCard` et `FlashCard` (seuls hôtes de `FillBlanksInput`). Sans préparation, « Valider »
+  reste synchrone (sinon 29 tests de cartes cassaient : verdict attendu tout de suite après le clic).
+- **Runtime** : un `PlaygroundExecutor` partagé par la page, chargé à la demande par la case ; boucle
+  sans fin = worker bloqué, détruit et remplacé.
+- **Jamais corrigé par le serveur (Q1)** : `excludePythonCases` dans `drawSeriesQuestions` (tirages de
+  `evaluation-attempts.ts`, aperçu prof d'un contrôle dans `/automaths/test`) ; avertissement sur la
+  page « Nouveau contrôle » (`pythonTemplateTitles`) ; `gradeQuestion` compte faux ;
+  `findUnmaskedAnswers` compte le bloc comme fuite ; Descente déjà écartée par `isCombatInstance` ;
+  combats Navadra et défis : ne tirent pas de modèles de questions (vérifié par grep).
+- **`checkTemplate`** : erreurs d'auteur au tirage (parseur) ; **pas de spec exigée** pour un modèle
+  à case Python (une spec ne pourrait pas juger le programme côté serveur) — choix à signaler à David.
+- Pas d'autocomplétion dans l'éditeur de la case (sinon repli sur le store du terrain de jeu).
+
+Fichiers : parseur `ubumark/parser/python-a-ecrire-parser.ts`, types `ubumark/types/python-a-ecrire.ts`,
+Typst `ubumark/generators/python-a-ecrire-typst.ts`, `questions/python/` (valeur, juge, exclusion),
+`server/series-python-cases.ts`, composants `PythonCaseInput.svelte`, `PythonAEcrire.svelte`,
+`PythonCorrige.svelte`, catalogue `block-catalog/python-a-ecrire.ts` ; branchements : générateur
+(`assign-blank-indices`, `build-answer`, `instance-generator`), `expected-result`, `masked-statement`,
+`answer-validator`, `grading`, `series-items`, `check-template`, `template-validator`,
+`serie-automatismes`, `markdown-parser`, éditeur riche. Tests : parseur + Typst, valeur, juge simulé,
+juge avec le vrai Pyodide (`*-real`, hors CI ordinaire), génération, éditeur riche, avertissement
+serveur, montage dans `FillBlanksInput`, `QuestionCard` / `FlashCard`.
