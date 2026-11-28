@@ -2,12 +2,12 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-28, phase 0 validée._
+_Mis à jour le 2026-11-28, PR 1 (moteur) en revue._
 
-- **État** : phase 0 validée, trajet d'une fonction cartographié, code pas commencé.
-- **Prochaine action** : PR 1 (moteur) dès le go de David sur le découpage.
-- **En attente de David** : découpage en 3 PR (section « Découpage proposé »).
-- **Pièges en cours** : —
+- **État** : découpage validé (« c'est bon »). PR 1 (moteur) codée, 31 tests verts, en revue.
+- **Prochaine action** : PR 1 ouverte et mergée, puis PR 2 (Atelier).
+- **En attente de David** : rien.
+- **Pièges en cours** : l'aller-retour texte de `expressionOf` / `syncEngine` perd un nœud par morceaux (syntaxe maison `{ v si c }` illisible, ambiguë : `si` = s·i) → PR 2 passe l'arbre ou relit en LaTeX.
 - **Worktree / branche** : `../ubumaths-wt-fonctions-par-morceaux` · `feat/fonctions-par-morceaux`.
 
 ## Demande
@@ -55,7 +55,7 @@ Suite de `fonctions-domaines` (#3304, #3310) et `fonctions-morceaux` (#3298, `[k
 - Refus centraux des commandes : `calcul.ts` ~2430 (`cited`) et `computeAction` ; héritage
   `citedIntervals`.
 
-## Découpage proposé (en attente de David)
+## Découpage (validé par David le 2026-11-28, « c'est bon »)
 
 1. **Moteur** (mathAST) : calcul exact d'un nœud par morceaux quand la condition se décide
    (`f(3)` → 9), relecture de `\begin{cases}` et de `{ v si c }` (aller-retour).
@@ -65,4 +65,17 @@ Suite de `fonctions-domaines` (#3304, #3310) et `fonctions-morceaux` (#3298, `[k
 
 ## Ce qui est fait
 
-—
+### PR 1 — moteur
+
+- `eval/evaluate.ts` : étape 1a `reducePiecewise` / `chosenPiece` — le premier morceau vrai
+  (`evaluateToBoolean`), seul calculé ; condition non tranchée avant la première vraie → nœud
+  gardé ; aucun morceau vrai sans `sinon` → `unevaluable`, `NO_PIECE_APPLIES` (« Aucun morceau
+  ne s’applique pour cette valeur »), convention de `1/0`.
+- `parser/latex/parser-pratt.ts` : `\begin{cases}` (`si`, `pour`, `if` devant la condition ;
+  `\text{sinon}`/`\text{otherwise}` en dernier ; ligne sans condition refusée), aller-retour
+  avec `toLatex`.
+- Tests : `evaluate-piecewise` (15), `web-repl-piecewise` (5, chemin `createFunctionBinding`),
+  `cases-environment` (11) ; 25 rouges avant.
+- Constats : `simplify` ne réduit pas un nœud par morceaux (seul `evaluate`) ; la console ne
+  remplace pas une valeur liée dans le corps d'une fonction (vrai pour toute fonction ; l'Atelier
+  substitue avant, `expressionOf`).
