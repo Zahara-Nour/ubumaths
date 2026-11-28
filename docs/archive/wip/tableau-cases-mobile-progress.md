@@ -2,9 +2,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-28, avant l'ouverture de la PR._
+_Mis à jour le 2026-11-28, après #3274 (mergée). Chantier clos, journal archivé._
 
-- **État** : correctif écrit, tests verts (vérifs iPhone, Android, Chrome et Safari d'ordinateur ; `FillBlanksInput-tableau` 10/10 ; `check:incremental` 0 erreur) · **Prochaine action** : PR, CI, merge ; puis passer le n° 57 dans « Livré » de `outils-manquants.md` (commit direct sur `main`) et signaler que 3-013 « Développer avec un tableau » (62528060) peut être publié · **En attente de David** : rien · **Pièges en cours** : aucun · **Worktree / branche** : `../ubumaths-wt-tableau-cases-mobile`, `fix/tableau-cases-mobile`.
+- **État** : livré (#3274) ; n° 57 passé dans « Livré » de `docs/wip/outils-manquants.md` ; le durable est dans `docs/systeme/questions.md` (case de tableau au téléphone) · **Prochaine action** : aucune · **En attente de David** : publier 3-013 « Développer avec un tableau » (62528060), gardé en brouillon pour ce défaut, après la prochaine mise en prod · **Pièges en cours** : aucun · **Worktree / branche** : retirés.
 
 ## Phase 0 (validée par David le 2026-11-28)
 
