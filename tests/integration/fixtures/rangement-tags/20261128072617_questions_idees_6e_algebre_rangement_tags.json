@@ -1,0 +1,42 @@
+{
+	"migration": "supabase/migrations/20261128072617_questions_idees_6e_algebre_rangement_tags.sql",
+	"ranges": [
+		{
+			"id": "9e0a8c36-f362-497e-9fb0-7e294d791b9d",
+			"title": "Choisir le calcul qui résout le problème",
+			"fichier": "f2-choisir-le-calcul.json",
+			"branche": "Algèbre",
+			"notion": "Premiers pas algébriques",
+			"sousNotion": "nombre inconnu",
+			"point": "6-142"
+		},
+		{
+			"id": "660db94b-8871-41c8-9b38-9ff2a8dd7d3f",
+			"title": "Schéma en barres : compléter l'énoncé",
+			"fichier": "f3-schema-completer-l-enonce.json",
+			"branche": "Algèbre",
+			"notion": "Premiers pas algébriques",
+			"sousNotion": "nombre inconnu",
+			"point": "6-142"
+		},
+		{
+			"id": "b407006d-6e2b-4503-9f45-4d60b73f107c",
+			"title": "Motif répétitif : la forme d'un rang lointain",
+			"fichier": "f6-motif-repetitif.json",
+			"branche": "Algèbre",
+			"notion": "Premiers pas algébriques",
+			"sousNotion": "suites de motifs",
+			"point": "6-143"
+		},
+		{
+			"id": "048246da-8b6a-422c-b449-20ebe6e85286",
+			"title": "Ce nombre est-il dans la suite ?",
+			"fichier": "f8-nombre-dans-la-suite.json",
+			"branche": "Algèbre",
+			"notion": "Premiers pas algébriques",
+			"sousNotion": "suites de motifs",
+			"point": "6-143"
+		}
+	],
+	"niveaux": []
+}

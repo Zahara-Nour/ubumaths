@@ -1,0 +1,399 @@
+{
+	"id": "048246da-8b6a-422c-b449-20ebe6e85286",
+	"rangement": {
+		"noeud": "Algèbre > Premiers pas algébriques > suites de motifs",
+		"point": "6-143"
+	},
+	"title": "Ce nombre est-il dans la suite ?",
+	"description": "Suite à pas constant (pas 2 à 8, départ 2 à 9) : reconnaître, parmi quatre grands nombres, le seul qui est dans la suite (écart au premier terme multiple du pas), suite montrée depuis le début ou à partir d'un terme lointain ; plus grand terme inférieur ou égal à un nombre ; pièges : le nombre lui-même, le terme d'après, un multiple du pas sans le départ",
+	"grades": ["6"],
+	"level": 4,
+	"delay": 120,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"spacesFromFourDigits": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Voici le début d'une suite de nombres : ${{u}}$, ${{eval:u+a}}$, ${{eval:u+2*a}}$, ${{eval:u+3*a}}$, ${{eval:u+4*a}}$… On passe d'un nombre au suivant en ajoutant toujours le même nombre.\n\nUn seul de ces nombres est dans la suite. Lequel ?\n\n```choix\n- ${{y0}}$\n- ${{y1}}$\n- ${{y2}}$\n- ${{y3}}$\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "3..8"
+				},
+				{
+					"name": "u",
+					"expression": "2..9"
+				},
+				{
+					"name": "x0",
+					"expression": "110..990"
+				},
+				{
+					"name": "x1",
+					"expression": "110..990"
+				},
+				{
+					"name": "x2",
+					"expression": "110..990"
+				},
+				{
+					"name": "x3",
+					"expression": "110..990"
+				},
+				{
+					"name": "y0",
+					"expression": "eval:u+a*floor((x0-u)/a)"
+				},
+				{
+					"name": "y1",
+					"expression": "eval:u+a*floor((x1-u)/a)+1"
+				},
+				{
+					"name": "y2",
+					"expression": "eval:u+a*floor((x2-u)/a)+a-1"
+				},
+				{
+					"name": "y3",
+					"expression": "eval:u+a*floor((x3-u)/a)+floor(a/2)"
+				}
+			],
+			"conditions": ["y0!=y1", "y0!=y2", "y0!=y3", "y1!=y2", "y1!=y3", "y2!=y3"],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**La règle.** On part de ${{u}}$ et on ajoute ${{a}}$ à chaque fois : un nombre est dans la suite quand, en lui retirant ${{u}}$, on trouve un multiple de ${{a}}$.",
+					"**Chaque nombre.**\n\n- ${{y0}} - {{u}} = {{eval:y0-u}} = {{a}} \\times {{eval:floor((y0-u)/a)}}$ : c'est un nombre entier de pas, $\\textcolor{{{color:primary.0}}}{{{y0}}}$ est dans la suite.\n- ${{y1}} - {{u}} = {{eval:y1-u}} = {{a}} \\times {{eval:floor((y1-u)/a)}} + {{eval:mod(y1-u,a)}}$ : il reste ${{eval:mod(y1-u,a)}}$, ${{y1}}$ n'est pas dans la suite.\n- ${{y2}} - {{u}} = {{eval:y2-u}} = {{a}} \\times {{eval:floor((y2-u)/a)}} + {{eval:mod(y2-u,a)}}$ : il reste ${{eval:mod(y2-u,a)}}$, ${{y2}}$ n'est pas dans la suite.\n- ${{y3}} - {{u}} = {{eval:y3-u}} = {{a}} \\times {{eval:floor((y3-u)/a)}} + {{eval:mod(y3-u,a)}}$ : il reste ${{eval:mod(y3-u,a)}}$, ${{y3}}$ n'est pas dans la suite."
+				]
+			},
+			"hint": "Combien faut-il ajouter au premier terme pour arriver à ce nombre ?"
+		},
+		{
+			"statement": "Voici quelques nombres qui se suivent dans une suite (ce ne sont pas les premiers) : …, ${{s}}$, ${{eval:s+a}}$, ${{eval:s+2*a}}$, ${{eval:s+3*a}}$, ${{eval:s+4*a}}$… On passe d'un nombre au suivant en ajoutant toujours le même nombre.\n\nUn seul de ces nombres est dans la suite. Lequel ?\n\n```choix\n- ${{y0}}$\n- ${{y1}}$\n- ${{y2}}$\n- ${{y3}}$\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "3..8"
+				},
+				{
+					"name": "u",
+					"expression": "2..9"
+				},
+				{
+					"name": "m",
+					"expression": "1000..2000"
+				},
+				{
+					"name": "s",
+					"expression": "eval:u+a*floor((m-u)/a)"
+				},
+				{
+					"name": "x0",
+					"expression": "2100..9990"
+				},
+				{
+					"name": "x1",
+					"expression": "2100..9990"
+				},
+				{
+					"name": "x2",
+					"expression": "2100..9990"
+				},
+				{
+					"name": "x3",
+					"expression": "2100..9990"
+				},
+				{
+					"name": "y0",
+					"expression": "eval:s+a*floor((x0-s)/a)"
+				},
+				{
+					"name": "y1",
+					"expression": "eval:s+a*floor((x1-s)/a)+1"
+				},
+				{
+					"name": "y2",
+					"expression": "eval:s+a*floor((x2-s)/a)+a-1"
+				},
+				{
+					"name": "y3",
+					"expression": "eval:s+a*floor((x3-s)/a)+floor(a/2)"
+				}
+			],
+			"conditions": ["y0!=y1", "y0!=y2", "y0!=y3", "y1!=y2", "y1!=y3", "y2!=y3", "s>=1000"],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**La règle.** À partir de ${{s}}$, on ajoute ${{a}}$ à chaque fois : un nombre plus grand est dans la suite quand, en lui retirant ${{s}}$, on trouve un multiple de ${{a}}$.",
+					"**Chaque nombre.**\n\n- ${{y0}} - {{s}} = {{eval:y0-s}} = {{a}} \\times {{eval:floor((y0-s)/a)}}$ : c'est un nombre entier de pas, $\\textcolor{{{color:primary.0}}}{{{y0}}}$ est dans la suite.\n- ${{y1}} - {{s}} = {{eval:y1-s}} = {{a}} \\times {{eval:floor((y1-s)/a)}} + {{eval:mod(y1-s,a)}}$ : il reste ${{eval:mod(y1-s,a)}}$, ${{y1}}$ n'est pas dans la suite.\n- ${{y2}} - {{s}} = {{eval:y2-s}} = {{a}} \\times {{eval:floor((y2-s)/a)}} + {{eval:mod(y2-s,a)}}$ : il reste ${{eval:mod(y2-s,a)}}$, ${{y2}}$ n'est pas dans la suite.\n- ${{y3}} - {{s}} = {{eval:y3-s}} = {{a}} \\times {{eval:floor((y3-s)/a)}} + {{eval:mod(y3-s,a)}}$ : il reste ${{eval:mod(y3-s,a)}}$, ${{y3}}$ n'est pas dans la suite."
+				]
+			},
+			"hint": "Combien faut-il ajouter au premier terme écrit pour arriver à ce nombre ?"
+		},
+		{
+			"statement": "Voici le début d'une suite de nombres : ${{u}}$, ${{eval:u+a}}$, ${{eval:u+2*a}}$, ${{eval:u+3*a}}$, ${{eval:u+4*a}}$… On passe d'un nombre au suivant en ajoutant toujours le même nombre.\n\nQuel est le plus grand nombre de cette suite qui est inférieur ou égal à ${{N}}$ ?\n\n$?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..8"
+				},
+				{
+					"name": "u",
+					"expression": "2..9"
+				},
+				{
+					"name": "N",
+					"expression": "100..1000"
+				}
+			],
+			"conditions": ["mod(N-u,a)!=0", "mod(u,a)!=0", "mod(N,a)!=0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:u+a*floor((N-u)/a)}}",
+					"expectedErrors": [
+						{
+							"answer": "{{N}}",
+							"message": "${{N}}$ n'est pas dans la suite : retire-lui ${{u}}$, tu ne trouves pas un multiple de ${{a}}$.",
+							"label": "Le nombre lui-même"
+						},
+						{
+							"answer": "{{eval:u+a*floor((N-u)/a)+a}}",
+							"message": "Ce nombre est dans la suite, mais il est plus grand que ${{N}}$ : prends celui d'avant.",
+							"label": "Le terme d'après"
+						},
+						{
+							"answer": "{{eval:a*floor(N/a)}}",
+							"message": "C'est un multiple de ${{a}}$, mais la suite part de ${{u}}$ : ses nombres sont ${{u}}$ plus des multiples de ${{a}}$.",
+							"label": "Multiple du pas sans le départ"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Retirer le départ.** ${{N}} - {{u}} = {{eval:N-u}}$.",
+					"**Les pas entiers.** ${{eval:N-u}} = {{a}} \\times {{eval:floor((N-u)/a)}} + {{eval:mod(N-u,a)}}$ : on peut faire ${{eval:floor((N-u)/a)}}$ pas de ${{a}}$ sans dépasser ${{N}}$.",
+					"**Le terme.** ${{u}} + {{a}} \\times {{eval:floor((N-u)/a)}} = \\textcolor{{{color:primary.0}}}{{{eval:u+a*floor((N-u)/a)}}}$ ; le suivant, ${{eval:u+a*floor((N-u)/a)+a}}$, dépasse ${{N}}$."
+				]
+			},
+			"hint": "Combien faut-il ajouter au premier terme pour arriver à ce nombre ?"
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Début : le terme de la suite",
+			"variationIndex": 0,
+			"variables": {
+				"a": "7",
+				"u": "3",
+				"x0": "500",
+				"y0": "500",
+				"x1": "300",
+				"y1": "298",
+				"x2": "700",
+				"y2": "702",
+				"x3": "900",
+				"y3": "902"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0"]
+		},
+		{
+			"description": "Début : décalé de 1",
+			"variationIndex": 0,
+			"variables": {
+				"a": "7",
+				"u": "3",
+				"x0": "500",
+				"y0": "500",
+				"x1": "300",
+				"y1": "298",
+				"x2": "700",
+				"y2": "702",
+				"x3": "900",
+				"y3": "902"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["1"]
+		},
+		{
+			"description": "Début : décalé de pas − 1",
+			"variationIndex": 0,
+			"variables": {
+				"a": "7",
+				"u": "3",
+				"x0": "500",
+				"y0": "500",
+				"x1": "300",
+				"y1": "298",
+				"x2": "700",
+				"y2": "702",
+				"x3": "900",
+				"y3": "902"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["2"]
+		},
+		{
+			"description": "Début : décalé de la moitié du pas",
+			"variationIndex": 0,
+			"variables": {
+				"a": "7",
+				"u": "3",
+				"x0": "500",
+				"y0": "500",
+				"x1": "300",
+				"y1": "298",
+				"x2": "700",
+				"y2": "702",
+				"x3": "900",
+				"y3": "902"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["3"]
+		},
+		{
+			"description": "Loin : le terme de la suite",
+			"variationIndex": 1,
+			"variables": {
+				"a": "5",
+				"u": "4",
+				"x0": "3000",
+				"y0": "2999",
+				"x1": "4000",
+				"y1": "4000",
+				"x2": "5000",
+				"y2": "5003",
+				"x3": "7000",
+				"y3": "7001",
+				"m": "1505",
+				"s": "1504"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0"]
+		},
+		{
+			"description": "Loin : décalé de 1",
+			"variationIndex": 1,
+			"variables": {
+				"a": "5",
+				"u": "4",
+				"x0": "3000",
+				"y0": "2999",
+				"x1": "4000",
+				"y1": "4000",
+				"x2": "5000",
+				"y2": "5003",
+				"x3": "7000",
+				"y3": "7001",
+				"m": "1505",
+				"s": "1504"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["1"]
+		},
+		{
+			"description": "Plus grand : pas 7 depuis 3, N = 510 → 507",
+			"variationIndex": 2,
+			"variables": {
+				"a": "7",
+				"u": "3",
+				"N": "510"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["507"]
+		},
+		{
+			"description": "Plus grand : N lui-même",
+			"variationIndex": 2,
+			"variables": {
+				"a": "7",
+				"u": "3",
+				"N": "510"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "$510$ n'est pas dans la suite : retire-lui $3$, tu ne trouves pas un multiple de $7$."
+			},
+			"answers": ["510"]
+		},
+		{
+			"description": "Plus grand : le terme d'après (514)",
+			"variationIndex": 2,
+			"variables": {
+				"a": "7",
+				"u": "3",
+				"N": "510"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Ce nombre est dans la suite, mais il est plus grand que $510$ : prends celui d'avant."
+			},
+			"answers": ["514"]
+		},
+		{
+			"description": "Plus grand : multiple de 7 sans le départ (504)",
+			"variationIndex": 2,
+			"variables": {
+				"a": "7",
+				"u": "3",
+				"N": "510"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "C'est un multiple de $7$, mais la suite part de $3$ : ses nombres sont $3$ plus des multiples de $7$."
+			},
+			"answers": ["504"]
+		},
+		{
+			"description": "Plus grand : N = 600 → 598",
+			"variationIndex": 2,
+			"variables": {
+				"a": "7",
+				"u": "3",
+				"N": "600"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["598"]
+		},
+		{
+			"description": "Plus grand : pas 4 depuis 9, N = 999 → 997",
+			"variationIndex": 2,
+			"variables": {
+				"a": "4",
+				"u": "9",
+				"N": "999"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["997"]
+		}
+	]
+}
