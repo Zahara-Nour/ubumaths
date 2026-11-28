@@ -68,7 +68,8 @@ import type { HiddenCellKind } from '#lib/ubumark/types/variation-table.ts';
 import { isSignTableCell, signCellToken } from './sign-table-case';
 import { blankErrorGuess, errorGuessSentence } from './error-kinds';
 import { expectedErrorOf } from './expected-errors';
-import { getRequiredFormFeedback } from './required-form-validator';
+import { judgeRequiredForm } from './required-form-validator';
+import { readingOf } from './formula-reading';
 import { impossibleAnswerLatex, isImpossibleAnswer } from './impossible-answer';
 import {
 	validateAnswerDetailed,
@@ -670,7 +671,7 @@ function blankRemarks(instance: QuestionInstance, detail: BlankVerdict): string[
 		const requiredForm = instance.blanks?.[detail.index]?.requiredForm;
 		const formFeedback =
 			detail.status === 'bad_form' && requiredForm
-				? getRequiredFormFeedback(requiredForm, false)
+				? judgeRequiredForm(detail.answer, requiredForm, readingOf(instance)).feedback
 				: undefined;
 		return [
 			expected.message,

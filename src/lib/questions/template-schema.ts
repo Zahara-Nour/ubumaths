@@ -21,6 +21,7 @@ import {
 	ANGLE_MODULOS,
 	ANSWER_KINDS,
 	COMPLEX_FORMS,
+	PRIME_FACTOR_FORMS,
 	EQUATION_FORMS,
 	SOLUTION_MODES,
 	VECTOR_MODES,
@@ -58,7 +59,8 @@ export const requiredFormSchema = z.union([
 		'fraction',
 		'power',
 		...EQUATION_FORMS,
-		...COMPLEX_FORMS
+		...COMPLEX_FORMS,
+		...PRIME_FACTOR_FORMS
 	]),
 	z.object({
 		pattern: z.string(),
@@ -457,7 +459,8 @@ const requiredFormStrictZ = z.union([
 		'fraction',
 		'power',
 		...EQUATION_FORMS,
-		...COMPLEX_FORMS
+		...COMPLEX_FORMS,
+		...PRIME_FACTOR_FORMS
 	]),
 	z
 		.object({

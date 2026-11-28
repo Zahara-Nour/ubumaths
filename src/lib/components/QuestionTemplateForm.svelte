@@ -41,7 +41,12 @@
 		ConstraintMode,
 		TestSpec
 	} from '#lib/questions/types.ts';
-	import { COMPLEX_FORMS, EQUATION_FORMS, getQuestionType } from '#lib/questions/types.ts';
+	import {
+		COMPLEX_FORMS,
+		EQUATION_FORMS,
+		PRIME_FACTOR_FORMS,
+		getQuestionType
+	} from '#lib/questions/types.ts';
 	import type { DisplayOptions } from '#lib/ubumark/parameterization/display-options.ts';
 	import { questionTemplateSchema } from '#lib/questions/template-schema.ts';
 	import {
@@ -412,7 +417,8 @@
 		'fraction',
 		'power',
 		...EQUATION_FORMS,
-		...COMPLEX_FORMS
+		...COMPLEX_FORMS,
+		...PRIME_FACTOR_FORMS
 	] as const;
 
 	// Help dialog states

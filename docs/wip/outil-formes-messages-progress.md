@@ -1,23 +1,21 @@
 ---
 title: Lot d'outils formes-messages (n° 75 puis 76)
 date: 2026-11-28
-status: n° 75 livré (#3329) ; n° 76 à faire
+status: n° 75 livré (#3329) ; n° 76 en cours
 ---
 
 # Lot `formes-messages` : n° 75 puis n° 76
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-28, après #3329._
+_Mis à jour le 2026-11-28, n° 76 en cours (avant PR)._
 
-- **État** : n° 75 livré (#3329, mergée) ; n° 76 pas commencé.
-- **Prochaine action** : n° 76 (forme « produit de facteurs premiers ») : vérifier qu'il manque
-  encore, puis phase 0 à David (`pnpm prevenir question`), rien de codé avant sa réponse.
-- **En attente de David** : rien.
-- **Pièges en cours** : le n° 76 nomme le facteur fautif par le message du n° 75
-  (`requiredForm.message`, `getRequiredFormFeedback`).
-- **Worktree / branche** : à recréer (`../ubumaths-wt-outil-formes-messages`,
-  `feat/outil-formes-messages-76` depuis `origin/main`).
+- **État** : n° 76 codé et testé sur `feat/outil-formes-messages-76` ; PR pas encore ouverte.
+- **Prochaine action** : rendu vu à l'écran, revue `code-reviewer` (opus), PR, merge.
+- **En attente de David** : rien (phase 0 tranchée : « ok pour tout »).
+- **Pièges en cours** : message de forme calculé sur la réponse (`judgeRequiredForm`), pas
+  `getRequiredFormFeedback` (phrase de repli seulement).
+- **Worktree / branche** : `../ubumaths-wt-outil-formes-messages`, `feat/outil-formes-messages-76`.
 
 ## Origine
 
@@ -81,3 +79,27 @@ valeur comparée sur l'écriture ; `{ pattern, acceptable?, message? }`).
   forme de la variation copiée sur l'instance sans son message non résolu ; test d'une forme nommée
   (`fraction`), qui a révélé la virgule nue (`1,4` illisible) → relue comme dans le validateur.
   Laissé : rejeu qui échouerait sur une erreur prévue de plus de 300 caractères (cas théorique).
+
+## Phase 0 du n° 76 (posée et tranchée le 2026-11-28)
+
+Forme exigée « produit de facteurs premiers », puissances permises (`primeFactors`) ou exigées
+(`primeFactorsPowers`). Exemple 84 : 2² × 3 × 7 dans tout ordre juste ; 2 × 2 × 3 × 7 juste si
+permises ; remarque « produits » coupée pour la case ; `37` seul juste ; `2¹` juste ; 4 × 21 →
+« 4 et 21 ne sont pas des nombres premiers. » ; 84 seul → « Écris 84 comme un produit de facteurs
+premiers. » ; 2 × 3 × 7 = faux (juge de valeur).
+
+**Tranché** (David, « ok pour tout ») : Q1 puissances exigées et facteurs non regroupés →
+demi-point, « Regroupe les facteurs égaux en puissance : 2² × 3 × 7. » ; Q2 facteur 1 refusé
+(« 1 n'est pas un nombre premier. ») ; Q3 tous les facteurs non premiers nommés ; Q4 la forme écrit
+toujours son message (pas de message d'auteur) ; Q5 négatifs hors champ (refusés).
+
+## N° 76 : code (2026-11-28)
+
+- `questions/prime-factors-form.ts` : lecture du produit (`analyzePrimeFactors`), messages,
+  verdict ; `types.ts` `PrimeFactorForm`, `PRIME_FACTOR_FORMS` (schémas, éditeur, `form-options`).
+- `required-form-validator.ts` : `judgeRequiredForm` (verdict + message de la réponse) ;
+  `requiredFormVerdict` et `checkRequiredForm` le suivent.
+- `answer-validator.ts` : étape 3 (case seule) et cases appariées lisent `judgeRequiredForm` ;
+  `requiredFormCosmetics` coupe `products` pour cette forme ; `expected-result.ts` retire le bon
+  message de forme quand une erreur prévue passe devant.
+- Tests : `required-form-prime-factors.test.ts` (36 ; 35 rouges avant le code).

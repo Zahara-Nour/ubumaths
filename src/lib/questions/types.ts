@@ -1288,6 +1288,10 @@ export interface ConstraintOptions extends Partial<Record<SuperfluRuleId, Constr
  * - 'cartesienne': ax + by + c = 0 (membre droit 0, membre gauche réduit)
  * - 'centre-rayon': (x − a)² + (y − b)² = r²
  *
+ * Produit de facteurs premiers (`PrimeFactorForm`, outils-manquants n° 76) :
+ * - 'primeFactors': 2² × 3 × 7, 2 × 2 × 3 × 7, dans tout ordre ; nomme le facteur non premier
+ * - 'primeFactorsPowers': idem, facteurs égaux regroupés en puissance (sinon perfectible)
+ *
  * Custom pattern: Use a pattern string with placeholders
  * - { pattern: 'a:integer * b:integer' }
  *
@@ -1305,6 +1309,7 @@ export type RequiredForm =
 	| 'power'
 	| EquationForm
 	| ComplexForm
+	| PrimeFactorForm
 	| {
 			pattern: string;
 			/** Forme juste mais pas celle demandée : perfectible (`(z-7)(z-7)` pour un carré) */
@@ -1321,6 +1326,18 @@ export type AngleModulo = '2pi';
 
 /** Valeurs de `AngleModulo` (schémas Zod) */
 export const ANGLE_MODULOS = ['2pi'] as const satisfies readonly AngleModulo[];
+
+/**
+ * Produit de facteurs premiers (cf. `RequiredForm`, `questions/prime-factors-form.ts`) :
+ * puissances permises, ou exigées (facteurs égaux non regroupés = perfectible)
+ */
+export type PrimeFactorForm = 'primeFactors' | 'primeFactorsPowers';
+
+/** Valeurs de `PrimeFactorForm` (schémas Zod, éditeur) */
+export const PRIME_FACTOR_FORMS = [
+	'primeFactors',
+	'primeFactorsPowers'
+] as const satisfies readonly PrimeFactorForm[];
 
 /** Forme exigeable d'une équation (cf. `RequiredForm`) */
 export type EquationForm = 'reduite' | 'cartesienne' | 'centre-rayon';
