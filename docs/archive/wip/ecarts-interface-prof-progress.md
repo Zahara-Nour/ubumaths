@@ -1,16 +1,16 @@
 ---
 title: Écarts — lot interface-prof
 date: 2026-11-28
-status: en cours
+status: clos (#3276, 2026-11-28)
 ---
 
 # Écarts — lot `interface-prof`
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-28, à l'ouverture de la PR._
+_Mis à jour le 2026-11-28, après #3276._
 
-- **État** : les 11 écarts corrigés sur la branche, tests verts, revue `code-reviewer` faite (3 points corrigés), rendu vu par `pnpm voir` (Contenu, recherche, doc admin, réglages) · **Prochaine action** : PR mergée → barrer les 11 lignes au registre, `fait (#PR)` dans `ecarts-lots.md`, archiver ce journal · **En attente de David** : rien · **Pièges en cours** : collage V118 non testable à l'écran sans presse-papiers (couvert par les tests de `shouldConvertMarkdownPaste`) · **Worktree / branche** : `../ubumaths-wt-ecarts-interface-prof`, `fix/ecarts-interface-prof`
+- **État** : lot clos, PR #3276 mergée, 11 lignes barrées au registre, journal archivé · **Prochaine action** : aucune · **En attente de David** : rien · **Pièges en cours** : aucun · **Worktree / branche** : retirés par `pnpm pr:merger`
 
 ## Écarts du lot
 
@@ -50,3 +50,7 @@ V74, V106, V116, V118, V120, V121, V122, V123, L41, L116, M48 (lignes au [regist
 - V106 : retrait de la liste « @ » (store `mentions` supprimé), le nœud `mention` reste pour les contenus existants. V120 : store `listNumbering` supprimé, `MarkdownRenderer` lit `DEFAULT_CONFIG`.
 - Preuves réécrites au registre : V106 (« Alice Dupont » reste un nom fictif d'un autre test), M48 (fonction branchée, pas retirée).
 - Revue : rubriques de la doc admin rouvertes à chaque recherche ; `toPlainText` traite fractions imbriquées, `\frac12`, parenthèses ; HTML d'éditeur de code (police à chasse fixe) toujours lu comme markdown.
+
+### 2026-11-28 — clôture
+
+- #3276 mergée après une mise en prod restée six heures sur le pager de `git log` (corrigé par #3279, `GIT_PAGER=cat`) et un conflit avec le lot `cache` dans `ecarts-coquille.svelte.test.ts`.
