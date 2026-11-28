@@ -122,8 +122,8 @@ function gearPath(wheel: Omit<GearShape, 'path' | 'mark' | 'labelAt'>): string {
 		`${round(wheel.cx + radius * Math.cos(angle))} ${round(wheel.cy + radius * Math.sin(angle))}`;
 	const vertices = toothCenterAngles(wheel).flatMap((angle) => [
 		point(wheel.rootRadius, angle - 1.25 * halfTooth),
-		point(wheel.outerRadius, angle - 0.6 * halfTooth),
-		point(wheel.outerRadius, angle + 0.6 * halfTooth),
+		point(wheel.outerRadius, angle - 0.45 * halfTooth),
+		point(wheel.outerRadius, angle + 0.45 * halfTooth),
 		point(wheel.rootRadius, angle + 1.25 * halfTooth)
 	]);
 	return `M${vertices.join(' L')} Z`;

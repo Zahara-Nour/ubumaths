@@ -16,6 +16,7 @@
 	@module components/markdown/nodes/Engrenages
 -->
 <script lang="ts">
+	import { untrack } from 'svelte';
 	import { prefersReducedMotion } from 'svelte/motion';
 	import type { EngrenagesNode } from '#lib/ubumark/types/engrenages.ts';
 	import { ENGRENAGES_UNAVAILABLE } from '#lib/ubumark/types/engrenages.ts';
@@ -104,6 +105,15 @@
 	}
 
 	$effect(() => stop);
+
+	// Bloc modifié (aperçu en direct de l'éditeur) : animation remise au départ
+	$effect(() => {
+		void node.wheels;
+		untrack(() => {
+			stop();
+			progress = 0;
+		});
+	});
 
 	const toDegrees = (radians: number) => (radians * 180) / Math.PI;
 </script>

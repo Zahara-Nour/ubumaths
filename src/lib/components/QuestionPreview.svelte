@@ -31,6 +31,7 @@
 	import { MarkdownRenderer } from '#lib/components/markdown/index.ts';
 	import { templateGenericFunctions } from '#lib/questions/generic-functions.ts';
 	import { detailedCorrection } from '#lib/questions/correction-detail.ts';
+	import InCorrection from '#lib/components/markdown/InCorrection.svelte';
 	import AnswerAssumptionsNotice from '#lib/components/questions/AnswerAssumptionsNotice.svelte';
 
 	interface Props {
@@ -364,11 +365,13 @@
 					<div class="space-y-2">
 						<Badge variant="outline">Correction</Badge>
 						<div class="rounded-lg border bg-muted/50 p-4 text-sm">
-							<MarkdownRenderer
-								content={correctionMarkdown}
-								showAuthoringErrors
-								{genericFunctions}
-							/>
+							<InCorrection>
+								<MarkdownRenderer
+									content={correctionMarkdown}
+									showAuthoringErrors
+									{genericFunctions}
+								/>
+							</InCorrection>
 						</div>
 					</div>
 				{/if}

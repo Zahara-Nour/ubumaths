@@ -28,6 +28,16 @@ describe('engrenages → Typst', () => {
 		expect(source).not.toContain(ENGRENAGES_UNAVAILABLE);
 	});
 
+	it('petite figure : les légendes restent dans la largeur de la figure', () => {
+		const source = generateTypst(parseMarkdown(bloc('roues: 6 ; 6', 'taille: 4cm')));
+		const places = [...source.matchAll(/dx: (-?[\d.]+)cm, dy: [\d.]+cm, box\(width: ([\d.]+)cm/g)];
+		expect(places).toHaveLength(2);
+		for (const [, dx, width] of places) {
+			expect(Number(dx)).toBeGreaterThanOrEqual(0);
+			expect(Number(dx) + Number(width)).toBeLessThanOrEqual(4 + 1e-9);
+		}
+	});
+
 	it('bloc mal écrit : le cadre neutre, jamais une erreur de compilation', () => {
 		const source = generateTypst(parseMarkdown(bloc('roues: 12')));
 		expect(source).toContain(ENGRENAGES_UNAVAILABLE);

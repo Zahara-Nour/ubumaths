@@ -44,9 +44,14 @@ export function generateEngrenagesTypst(node: EngrenagesNode): string {
 	// Légende centrée sous sa roue : une boîte de la largeur de la roue, posée à sa place
 	const labels = scene.wheels.map((w) => {
 		const boxWidth = Math.max(2 * w.outerRadius * scale, LABEL_MIN_WIDTH_CM);
-		const dx = w.labelAt.x * scale - boxWidth / 2;
+		const boxWidthIn = Math.min(boxWidth, node.sizeCm);
+		// Boîte gardée dans la largeur de la figure : `#place` ne rogne pas
+		const dx = Math.min(
+			Math.max(w.labelAt.x * scale - boxWidthIn / 2, 0),
+			node.sizeCm - boxWidthIn
+		);
 		const dy = w.labelAt.y * scale - LABEL_HALF_HEIGHT_CM;
-		return `  #place(top + left, dx: ${cm(dx)}, dy: ${cm(dy)}, box(width: ${cm(boxWidth)}, align(center, text(size: 10pt, ${typstString(w.label)}))))`;
+		return `  #place(top + left, dx: ${cm(dx)}, dy: ${cm(dy)}, box(width: ${cm(boxWidthIn)}, align(center, text(size: 10pt, ${typstString(w.label)}))))`;
 	});
 	return [
 		`#align(center)[#block(breakable: false, width: ${cm(node.sizeCm)}, height: ${cm(scene.height * scale)})[`,
