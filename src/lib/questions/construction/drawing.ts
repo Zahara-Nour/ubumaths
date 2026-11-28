@@ -54,6 +54,8 @@ import {
 	bissectriceCorrections,
 	isLineCheck,
 	lineCodages,
+	throughLineCorrections,
+	type ThroughLineCorrection,
 	lineSolution,
 	type BissectriceCorrection,
 	type LineCodage
@@ -68,6 +70,7 @@ import {
 	triangleSolution,
 	type TriangleCorrection
 } from './triangle';
+import { copyCorrection, copySolution, isCopyCheck } from './triangle-copy';
 import { angleCorrection, angleSolution, type AngleCorrection } from './angle';
 import { measureCorrection } from './measure';
 import { segmentMeasureCorrection, segmentMeasureRuler } from './segment-measure';
@@ -538,7 +541,11 @@ export function solutionLines(
 		}
 		if (check.kind === 'droite') return lineSolution([check], expected);
 		if (check.kind === 'symetrique') return symmetrySolution(check, points, shapes);
-		if (check.kind === 'triangle') return triangleSolution(check, points, shapes, drawn);
+		if (check.kind === 'triangle') {
+			return isCopyCheck(check)
+				? copySolution(check, points, shapes)
+				: triangleSolution(check, points, shapes, drawn);
+		}
 		if (check.kind === 'angle') return angleSolution(check, points, shapes, drawn);
 		if (check.kind === 'segment') return segmentLengthSolution(check, points, shapes, drawn);
 		if (isRuledPolygonCheck(check)) return ruledPolygonSolution(check, points, shapes, drawn);
@@ -570,6 +577,18 @@ export function solutionBissectrices(
 	return bissectriceCorrections(checks.filter(isLineCheck), points);
 }
 
+/**
+ * Perpendiculaire ou parallèle par un point (outil n° 40) : angles droits codés,
+ * perpendiculaire intermédiaire de la parallèle en trait fin
+ */
+export function solutionThroughLines(
+	checks: readonly ConstructionCheck[],
+	points: ReadonlyMap<string, Position>,
+	shapes?: FigureShapes
+): ThroughLineCorrection[] {
+	return throughLineCorrections(checks.filter(isLineCheck), points, shapes);
+}
+
 /** Les cercles à construire (lot 3b) : le cercle, son centre, deux médiatrices */
 export function solutionCircles(
 	checks: readonly ConstructionCheck[],
@@ -594,6 +613,7 @@ export function solutionTriangle(
 	const diagonal = checks.find(isDiagonalRectangleCheck);
 	if (diagonal) return diagonalRectangleCorrection(diagonal, points, shapes, drawn);
 	const check = checks.find((c) => c.kind === 'triangle');
+	if (check && isCopyCheck(check)) return copyCorrection();
 	return check ? triangleCorrection(check, points, shapes, drawn) : null;
 }
 

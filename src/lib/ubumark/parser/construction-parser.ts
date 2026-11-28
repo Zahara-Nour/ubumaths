@@ -38,6 +38,7 @@ import {
 	INSTRUMENT_TOOLS,
 	LINE_GRID_TOOLS,
 	bissectriceOf,
+	throughLineOf,
 	centeredCircleOf,
 	centeredCircleTools,
 	PLAIN_PAPER_TOOLS,
@@ -178,6 +179,10 @@ const TRIANGLE_LENGTH_REGEX = /^([A-Z])([A-Z])\s*=\s*(\S+)$/;
 const TRIANGLE_ANGLE_REGEX = /^([A-Z])([A-Z])([A-Z])\s*=\s*(\d{1,3})\s*°?$/;
 const POINT_PAIR_REGEX = /^([A-Z])([A-Z])$/;
 const TRIANGLE_RIGHT_EXAMPLE = 'triangle ABC : CAB = 90 ; AC = u';
+const TRIANGLE_COPY_EXAMPLE = 'triangle ABC : reproduit DEF';
+/** Outil n° 47 : `reproduit DEF`, le modèle à reproduire sur quadrillage */
+const TRIANGLE_COPY_REGEX = /^reproduit\b\s*(.*)$/;
+const TRIANGLE_MODEL_REGEX = /^([A-Z])([A-Z])([A-Z])$/;
 const RULER_TRIANGLE_EXAMPLE = 'triangle ABC : CAB = 90 ; AC = 4 cm';
 /** `AC = 3 carreaux` (n° 20) : une longueur sur quadrillage, l'unité obligatoire */
 const TRIANGLE_SQUARES_REGEX = /^([A-Z])([A-Z])\s*=\s*(\d{1,3})\s*carreaux?$/;
@@ -201,13 +206,33 @@ function readTriangle(rest: string, line: number): ConstructionCheck {
 	const usage = `« ${TRIANGLE_EXAMPLE} », « ${TRIANGLE_ANGLES_EXAMPLE} », « triangle ABC : AC = u ; CAB = 40 » ou « ${TRIANGLE_RIGHT_EXAMPLE} »`;
 	// Triangle rectangle (n° 20) : l'angle droit peut être la seule donnée
 	const aloneRight = parts.length === 1 && Number(TRIANGLE_ANGLE_REGEX.exec(parts[0])?.[4]) === 90;
-	if (!match || (parts.length !== 2 && !aloneRight)) {
+	const copy = parts.some((part) => TRIANGLE_COPY_REGEX.test(part));
+	if (!match || (parts.length !== 2 && !aloneRight && !copy)) {
 		throw new LineError(`triangle attend ses sommets et deux données : ${usage}`);
 	}
 	const [a, b, c] = [match[1], match[2], match[3]];
 	if (new Set([a, b, c]).size !== 3)
 		throw new LineError('triangle attend trois sommets différents');
 	const name = `${a}${b}${c}`;
+	// Outil n° 47 : `reproduit DEF`, seule donnée
+	if (parts.some((part) => TRIANGLE_COPY_REGEX.test(part))) {
+		const model = TRIANGLE_MODEL_REGEX.exec(TRIANGLE_COPY_REGEX.exec(parts[0])?.[1].trim() ?? '');
+		if (parts.length !== 1 || !model) {
+			throw new LineError(
+				`triangle ${name} : le triangle à reproduire n’a qu’une donnée, son modèle : « ${TRIANGLE_COPY_EXAMPLE} »`
+			);
+		}
+		const [d, e, f] = [model[1], model[2], model[3]];
+		if (new Set([d, e, f]).size !== 3) {
+			throw new LineError(`triangle ${name} : le modèle attend trois sommets différents`);
+		}
+		if ([d, e, f].some((p) => [a, b, c].includes(p))) {
+			throw new LineError(
+				`triangle ${name} : le modèle ${d}${e}${f} est un autre triangle, sans sommet commun avec ${name}`
+			);
+		}
+		return { kind: 'triangle', points: [a, b, c], lengths: [], angles: [], model: [d, e, f], line };
+	}
 	/** Le sommet donné (A ou B) d'un côté qui va vers C ; null sinon */
 	const sideEnd = (p: string, q: string): string | null => {
 		const ends = [p, q];
@@ -892,6 +917,17 @@ function coherenceError(
 		if (spec.checks.length > 1) {
 			return `triangle ${name} : un triangle à construire ne se mêle pas à d’autres vérifications`;
 		}
+		// Outil n° 47 : sur quadrillage, au segment seul
+		if (check.model) {
+			if (!grid) {
+				return `triangle ${name} : un triangle se reproduit sur quadrillage (ajouter « grille: 1 »)`;
+			}
+			const other = spec.tools.find((t) => t !== 'segment');
+			if (other) {
+				return `triangle ${name} : outil ${other} hors de la palette (segment) : sur quadrillage, on compte les carreaux`;
+			}
+			return null;
+		}
 		const right = rightAngleOf(check);
 		// PR 4 de `regle-graduee` (triangle rectangle) et chantier `triangle-cote-cm` (quelconque) :
 		// les cm, sur papier uni seulement ; toutes les longueurs en cm, ou aucune (décision de
@@ -960,7 +996,7 @@ function coherenceError(
 			}
 		}
 		if (grid) {
-			return `triangle ${name} : le triangle se construit sur papier uni ; retirer « grille: » (ou écrire « grille: non »)`;
+			return `triangle ${name} : le triangle se construit sur papier uni ; retirer « grille: » (ou écrire « grille: non »), ou le faire reproduire d’après un modèle tracé (« ${TRIANGLE_COPY_EXAMPLE} »)`;
 		}
 	} else if (check.kind === 'cercle' && rulerCircle) {
 		const message = rulerCircleError(check, spec, grid);
@@ -985,6 +1021,13 @@ function coherenceError(
 		const other = spec.tools.find((t) => !allowed.includes(t));
 		if (other)
 			return `${check.kind} ${check.name} : outil ${other} hors de la palette (${allowed.join(', ')})`;
+		// Outil n° 40 : sur papier uni, la perpendiculaire et la parallèle par un point se
+		// tracent à l'équerre (décision 2 de David, 2026-11-28) ; sur quadrillage, compter suffit
+		const through = check.kind === 'droite' ? throughLineOf(check.expression) : null;
+		if (through && !grid && !spec.tools.includes('equerre')) {
+			const what = through.kind === 'perpendiculaire' ? 'perpendiculaire' : 'parallèle';
+			return `droite ${check.name} : la ${what} se trace à l’équerre sur papier uni (outils: droite, equerre)`;
+		}
 		// Lot 9 (§ 25) : sur quadrillage, la médiatrice passe par les nœuds ; le Report garde un écartement libre
 		if (check.kind === 'droite' && grid && spec.tools.includes('report')) {
 			return `droite ${check.name} : le report se prend sur papier uni ; le retirer de outils: (ou retirer « grille: »)`;

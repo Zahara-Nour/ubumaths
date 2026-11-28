@@ -928,7 +928,8 @@ ou à une longueur nommée autre que [BC], `readDiagonalRectangle`),
 accentué admis ; `d` = droite, segment ou point nommé, le centre d'une symétrie centrale) — un seul carré,
 rectangle ou symétrique, jamais mêlé à `droite_par` ; `point A' = <expression>`, outil point, une ligne par
 point à placer, expression du langage des figures au plus 200 caractères, nom unique ; `droite m = <expression>`,
-même forme, une droite à construire, jamais mêlée à une autre vérification (`bissectrice(A, O, B)`, lot 9 : `bissectriceOf`, la seule droite qui admet le rapporteur dans `outils:`) ; `cercle c = <expression>`, de même,
+même forme, une droite à construire, jamais mêlée à une autre vérification (`bissectrice(A, O, B)`, lot 9 : `bissectriceOf`, la seule droite qui admet le rapporteur dans `outils:` ;
+`perpendiculaire(A, d)` / `parallele(A, d)`, outil n° 40 : `throughLineOf`, sur papier uni `equerre` exigé dans `outils:`) ; `cercle c = <expression>`, de même,
 un cercle à construire sur papier uni (cercle circonscrit), ou de centre donné (`cercle(O, passant=A)`, aussi
 sur quadrillage ; `cercle(O, rayon=distance(D, E))`, papier uni, `report` exigé dans `outils:` ;
 `cercle(O, rayon=4 cm)`, papier uni, palette `regle, compas` exactement, mêlé seulement à d'autres
@@ -947,7 +948,10 @@ Règle graduée ; les cm aussi hors du triangle rectangle, sur papier uni (chant
 `triangle ABC : AC = 4 cm ; BC = 5 cm`, palette Segment · Compas · Règle graduée, et
 `triangle ABC : CAB = 50 ; AC = 4 cm`, palette Segment · Rapporteur · Règle graduée · Compas ; refusés :
 l'hypoténuse, 90° avec un autre angle, `AC = u` sur quadrillage, les carreaux sans quadrillage ou hors du
-triangle rectangle, les cm sur quadrillage ou mêlés à un segment à reporter ;
+triangle rectangle, les cm sur quadrillage ou mêlés à un segment à reporter ; ou le triangle à
+reproduire sur quadrillage (outil n° 47) : `triangle ABC : reproduit DEF`, seule donnée, le modèle DEF
+(trois lettres différentes, aucune commune avec ABC ; `TriangleCheck.model`), `grille:` exigée, palette
+Segment seule (`triangleTools`) ; B présent dans la figure = [AB] tracé, sinon l'élève trace les trois côtés ;
 `angle AOy = 50`, un point du côté donné, le sommet, le nom du côté à tracer, une mesure entière de 1 à 179
 (`°` admis), un angle à construire sur papier uni, seul, palette Rapporteur · Segment ; `mesure AOB`, trois
 points dont le sommet au milieu, un angle à mesurer sur papier uni, seul, le rapporteur seul (suivi de

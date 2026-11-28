@@ -494,13 +494,15 @@ function normalizeAnswerExpression(
 /** Champs propres à chaque case de calcul (cf. `CalculusBlankFields`) */
 const CALCULUS_FIELDS: Partial<Record<AnswerKind, readonly (keyof CalculusBlankFields)[]>> = {
 	primitive: ['integrand', 'variable', 'interval'],
-	'solution-ed': ['equation', 'solutionMode', 'variable', 'function', 'initial']
+	'solution-ed': ['equation', 'solutionMode', 'variable', 'function', 'initial'],
+	resolution: ['equation', 'variable', 'minLines']
 };
 
 /** Champ sans lequel la case ne peut pas être jugée */
 const CALCULUS_REQUIRED_FIELD: Partial<Record<AnswerKind, keyof CalculusBlankFields>> = {
 	primitive: 'integrand',
-	'solution-ed': 'equation'
+	'solution-ed': 'equation',
+	resolution: 'equation'
 };
 
 /** Champs dont les variables tirées sont résolues (`{{a}}x^2` → `3x^2`) */
@@ -512,7 +514,7 @@ const CALCULUS_TEMPLATED_FIELDS = new Set<keyof CalculusBlankFields>([
 ]);
 
 /**
- * Champs d'une case « primitive » ou « solution-ed » : case > blankDefaults,
+ * Champs d'une case « primitive », « solution-ed » ou « resolution » : case > blankDefaults,
  * variables tirées résolues. Seuls ceux de son `answerKind` sont recopiés.
  * Lève une erreur si le champ indispensable manque (`integrand`, `equation`).
  */
@@ -525,11 +527,11 @@ function resolveCalculusFields(
 ): CalculusBlankFields {
 	const fields = answerKind ? CALCULUS_FIELDS[answerKind] : undefined;
 	if (!answerKind || !fields) return {};
-	const resolved: Record<string, string> = {};
+	const resolved: Record<string, string | number> = {};
 	for (const field of fields) {
 		const raw = blank[field] ?? defaults?.[field];
 		if (raw === undefined) continue;
-		if (!CALCULUS_TEMPLATED_FIELDS.has(field)) {
+		if (typeof raw !== 'string' || !CALCULUS_TEMPLATED_FIELDS.has(field)) {
 			resolved[field] = raw;
 			continue;
 		}
@@ -539,7 +541,8 @@ function resolveCalculusFields(
 			: text;
 	}
 	const required = CALCULUS_REQUIRED_FIELD[answerKind];
-	if (required && !resolved[required]?.trim()) {
+	const requiredValue = required ? resolved[required] : undefined;
+	if (required && (typeof requiredValue !== 'string' || !requiredValue.trim())) {
 		throw new Error(`Case « ${answerKind} » sans champ « ${required} »`);
 	}
 	return resolved as CalculusBlankFields;
@@ -994,12 +997,15 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 										: check.kind === 'symetrique'
 											? [...(check.points ?? []), check.by]
 											: check.kind === 'triangle'
-												? [
-														check.points[0],
-														check.points[1],
-														// En carreaux (n° 20), rien à nommer
-														...check.lengths.flatMap((l) => ('source' in l ? l.source : []))
-													]
+												? check.model
+													? // Reproduire (n° 47) : le modèle et A ; B seulement s'il est tracé
+														[...check.model, check.points[0]]
+													: [
+															check.points[0],
+															check.points[1],
+															// En carreaux (n° 20), rien à nommer
+															...check.lengths.flatMap((l) => ('source' in l ? l.source : []))
+														]
 												: check.points;
 					for (const name of names) {
 						if (!named.has(name)) {
@@ -1664,10 +1670,11 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 						// `equation`, jamais sur l'attendu — une erreur prévue n'y serait jamais vue
 						resolved.answerKind === 'primitive' ||
 						resolved.answerKind === 'solution-ed' ||
+						resolved.answerKind === 'resolution' ||
 						template.options?.orderIndependent === true
 					) {
 						throw new Error(
-							`Case ${i + 1} : une erreur prévue ne va que dans une case à écriture mathématique ordinaire (ni texte, ni geste, ni primitive, ni solution d'équation différentielle, ni case jugée par ses règles seules, ni cases appariées librement)`
+							`Case ${i + 1} : une erreur prévue ne va que dans une case à écriture mathématique ordinaire (ni texte, ni geste, ni primitive, ni solution d'équation différentielle, ni résolution ligne par ligne, ni case jugée par ses règles seules, ni cases appariées librement)`
 						);
 					}
 					resolved.expectedErrors = expectedErrors.map((error, k) => {

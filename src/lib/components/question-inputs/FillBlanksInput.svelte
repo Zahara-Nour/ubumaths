@@ -100,6 +100,7 @@
 	import ChoiceBlock from '#lib/components/markdown/nodes/ChoiceBlock.svelte';
 	import VariationTable from '#lib/components/markdown/nodes/VariationTable.svelte';
 	import SignCellPicker from './SignCellPicker.svelte';
+	import ResolutionInput from './ResolutionInput.svelte';
 	import type { HiddenCell, VariationTableNode } from '#lib/ubumark/types/variation-table.ts';
 	import MultipleChoiceInput from './MultipleChoiceInput.svelte';
 	import type { ChoiceNode } from '#lib/ubumark/types/choix.ts';
@@ -631,7 +632,7 @@
 			// Plan vide : le premier bouton de la réserve ; droite à placer : la droite
 			slot.build
 				.querySelector<HTMLElement>(
-					'.construire-ajouter:not(:disabled), [data-signe-case]:not(:disabled), [role="slider"], [data-ranger-focus]:not(:disabled), [data-associer-focus]:not(:disabled), [data-trous-focus]:not(:disabled), [data-tortue-focus]:not(:disabled), [data-robot-focus]:not(:disabled), [data-labyrinthe-focus]:not(:disabled), [data-calcul-focus]:not(:disabled), [data-graduer-focus]:not(:disabled), .partage-colorier [role="button"]:not([aria-disabled="true"]), .cubes-geste [role="button"]:not([aria-disabled="true"]), .cubes-saisie input:not(:disabled), .patron-geste [role="button"]:not([aria-disabled="true"]), .solide-geste [role="button"]:not([aria-disabled="true"])'
+					'.construire-ajouter:not(:disabled), [data-signe-case]:not(:disabled), [role="slider"], [data-ranger-focus]:not(:disabled), [data-associer-focus]:not(:disabled), [data-trous-focus]:not(:disabled), [data-tortue-focus]:not(:disabled), [data-robot-focus]:not(:disabled), [data-labyrinthe-focus]:not(:disabled), [data-calcul-focus]:not(:disabled), [data-graduer-focus]:not(:disabled), math-field[data-resolution-focus], .partage-colorier [role="button"]:not([aria-disabled="true"]), .cubes-geste [role="button"]:not([aria-disabled="true"]), .cubes-saisie input:not(:disabled), .patron-geste [role="button"]:not([aria-disabled="true"]), .solide-geste [role="button"]:not([aria-disabled="true"])'
 				)
 				?.focus();
 			return;
@@ -810,6 +811,17 @@
 		}
 	}
 
+	/**
+	 * Case « résolution » posée seule dans un bloc `$$\placeholder[N]{}$$` : son index,
+	 * undefined pour tout autre bloc (formule ordinaire, autre case)
+	 */
+	function resolutionCaseOf(expression: string): number | undefined {
+		const match = /^\s*\\placeholder\[(\d+)\]\{\}\s*$/.exec(expression);
+		if (!match) return undefined;
+		const index = Number(match[1]);
+		return blanks[index]?.answerKind === 'resolution' ? index : undefined;
+	}
+
 	// ============================================================================
 	// CASE « CHOIX »
 	// ============================================================================
@@ -981,6 +993,22 @@
 						{#key filledLatex}
 							<MathBlock expression={filledLatex} syntax="latex" />
 						{/key}
+					{:else if resolutionCaseOf(node.expression) !== undefined}
+						<!-- Case « résolution » : une colonne de lignes à la place du champ -->
+						{@const caseIndex = resolutionCaseOf(node.expression) ?? 0}
+						{@const blank = blanks[caseIndex]}
+						<ResolutionInput
+							value={inputStates[caseIndex]?.value ?? ''}
+							isCorrect={inputStates[caseIndex]?.isCorrect ?? null}
+							disabled={effectiveDisabled}
+							caseNumber={caseIndex + 1}
+							fields={{
+								equation: blank?.equation,
+								variable: blank?.variable,
+								minLines: blank?.minLines
+							}}
+							onChange={(value) => handleInputChange(caseIndex, value)}
+						/>
 					{:else}
 						{#key node.expression}
 							<MathPrompt
