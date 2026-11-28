@@ -399,7 +399,10 @@
 						</tr>
 						<tr>
 							<td>Lien du carnet de liaison</td>
-							<td>Expire le 31 août de chaque année ; effacé avec l'adresse</td>
+							<td>
+								Expire à la fin de l'année scolaire de l'école (le 31 août si elle n'a pas saisi ses
+								dates) ; effacé avec l'adresse
+							</td>
 						</tr>
 						<tr>
 							<td>Liste des courriels envoyés aux parents</td>
