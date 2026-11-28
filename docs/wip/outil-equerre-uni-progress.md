@@ -230,3 +230,22 @@ entière, étape par étape.
 - **Palette** : chaque étape exige ses outils ; un outil de plus est admis s'il sert à une autre étape.
 - **Écran** : correction de chaque étape, dessinée avec ses points.
 - Exemples A et B en tests ; pas de C (droite dans une figure composée).
+
+### 3 quater. Outil 45 : travail (2026-11-28)
+
+- Types : `segment_par` (`segment [AC]`), `isCompositeFigure` (au moins deux familles, toutes parmi segment
+  coté, carré / rectangle cotés, `segment [AC]`, cercle, point), `compositeStepTools`. Écart au plan : un
+  mélange avec une droite ou un triangle n'est PAS une figure composée (il garde « ne se mêle pas ») ; deux
+  tests existants l'exigeaient.
+- Parseur : `compositeCoherenceError` (papier uni, `outils:` exigé, chaque étape vérifiée seule avec ses
+  outils), `compositeToolErrors` (outil qui ne sert à aucune étape).
+- `construction/composite.ts` : `judgeComposite`, `assertComposite`, `compositeSteps`, `stepSource`.
+  Réglage `composite` de `judgeRuledPolygon`, `judgePoints`, `judgeCircles` ; `segmentLengthEnd`,
+  `ruledPolygonCorners` ; `point O = intersection(segment(A, C), segment(B, D))` accepté sur papier uni.
+- Syntaxe du cercle par un point : `cercle(I, passant=A)` (pas `cercle(I, A)`).
+- Écran : `correctionSteps` (la correction de chaque étape, avec ses points) ; message de la règle posée.
+- Tests : `construction-figure-composee.test.ts` (22, rouges avant le code),
+  `figure-a-completer-figure-composee.svelte.test.ts` (3, navigateur). Capture vue : message de l'étape 1,
+  les deux cercles, la règle, le point I.
+- Limites (V1, à dire à David) : un point d'une autre étape placé à l'œil peut être compté à l'étape du
+  premier point ; un cercle dont le centre n'est pas nommé (croisement non marqué) n'est pas construit.
