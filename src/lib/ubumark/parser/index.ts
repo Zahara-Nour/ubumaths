@@ -172,6 +172,14 @@ export {
 	isLabyrintheBlockStart
 } from './labyrinthe-parser';
 
+// Bloc ```engrenages
+export {
+	parseEngrenages,
+	parseEngrenagesContent,
+	findEngrenagesBlocks,
+	isEngrenagesBlockStart
+} from './engrenages-parser';
+
 // Bloc ```yohaku
 export {
 	parseYohaku,

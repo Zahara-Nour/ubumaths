@@ -40,6 +40,7 @@
 	import StatChart from './StatChart.svelte';
 	import RangerPlacer from './RangerPlacer.svelte';
 	import QrBlock from './QrBlock.svelte';
+	import Engrenages from './Engrenages.svelte';
 	import ScratchBlock from './ScratchBlock.svelte';
 	import Horloge from './Horloge.svelte';
 	import Partage from './Partage.svelte';
@@ -58,6 +59,7 @@
 	import type { FigureNode } from '#lib/ubumark/types/figure.ts';
 	import type { StatChartNode } from '#lib/ubumark/types/stat-chart.ts';
 	import type { QrNode } from '#lib/ubumark/types/qr.ts';
+	import type { EngrenagesNode } from '#lib/ubumark/types/engrenages.ts';
 	import type { ScratchNode } from '#lib/ubumark/types/scratch.ts';
 	import type { HorlogeNode } from '#lib/ubumark/types/horloge.ts';
 	import type { PartageNode } from '#lib/ubumark/types/partage.ts';
@@ -274,6 +276,11 @@
 		return node.type === 'qr';
 	}
 
+	/** Bloc ```engrenages en retrait dans un item de liste */
+	function isEngrenagesNode(node: ASTNode): node is EngrenagesNode {
+		return node.type === 'engrenages';
+	}
+
 	/**
 	 * Bloc ```scratch en retrait dans un item de liste
 	 */
@@ -350,6 +357,7 @@
 			'figure',
 			'stat-chart',
 			'qr',
+			'engrenages',
 			'scratch',
 			'horloge',
 			'partage',
@@ -501,6 +509,8 @@
 						<StatChart node={child} />
 					{:else if isQrNode(child)}
 						<QrBlock node={child} />
+					{:else if isEngrenagesNode(child)}
+						<Engrenages node={child} />
 					{:else if isScratchNode(child)}
 						<ScratchBlock node={child} />
 					{:else if isHorlogeNode(child)}
@@ -620,6 +630,8 @@
 						<StatChart node={child} />
 					{:else if isQrNode(child)}
 						<QrBlock node={child} />
+					{:else if isEngrenagesNode(child)}
+						<Engrenages node={child} />
 					{:else if isScratchNode(child)}
 						<ScratchBlock node={child} />
 					{:else if isHorlogeNode(child)}

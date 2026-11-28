@@ -9,7 +9,7 @@ qui a été lu lui aussi.
 ## Points et modèles
 
 Tous les points de « pensée informatique » du cycle 4 ont au moins un modèle publié. Le BO de 3e
-([cycle4.md](../systeme/programmes/bornes/cycle4.md) § La pensée informatique) demande plusieurs
+([cycle4.md](../../../systeme/programmes/bornes/cycle4.md) § La pensée informatique) demande plusieurs
 variables (3-047), un opérateur logique entre deux conditions simples (3-048), la boucle conditionnelle
 (3-049), la structuration en blocs (3-050) et l'écriture d'un programme pour un objectif donné (3-051).
 

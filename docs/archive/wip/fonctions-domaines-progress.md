@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-28, après #3304._
+_Mis à jour le 2026-11-28, après #3310. Chantier clos, journal archivé._
 
-- **État** : `f(x) = x pour x > 2` livré (#3304 mergée, pas encore en prod) ; worktree retiré.
-- **Prochaine action** : selon la réponse de David ci-dessous ; sinon archiver ce journal (doc durable dans `docs/systeme/atelier.md`).
-- **En attente de David** : `pour x > k` (paramètre, comme `sur [k;5]`) est refusé — à accepter ? (demande de toucher `parseStudentDomain`, branche des conditions).
+- **État** : `f(x) = x pour x > 2` (#3304) et `pour x > k` (#3310) mergés, pas encore en prod.
+- **Prochaine action** : aucune ; doc durable dans `docs/systeme/atelier.md`.
+- **En attente de David** : rien.
 - **Pièges en cours** : dans la carte, MathLive colle « pour » comme « sur » (`xpour2<x<4` en italique tant que le champ n'est pas relu) — comportement d'avant, non traité.
-- **Worktree / branche** : aucun (à recréer depuis `origin/main` si suite).
+- **Worktree / branche** : aucun.
 
 ## Demande
 
@@ -46,3 +46,14 @@ f(x)=x pour 2<x<4 » (David, 2026-11-28).
 2. « Modèle : » proposait des crochets après « pour » → `CONDITION_MODEL` (`draft-hint.ts`).
 3. `smartFence` coupé dans la carte dès « pour » + condition : laissé (le corps est avant « pour »).
 4. `x = 3` dans une condition : refusé, conforme.
+
+## Suite : `pour x > k` (2026-11-28)
+
+- Accord de David : la condition accepte un paramètre, comme `sur [k;5]` (mêmes règles : valeur
+  relue à chaque recalcul, carte en erreur si le curseur rend l'ensemble impossible).
+- `parse-student-domain.ts` : l'option `bound` passe jusqu'aux bornes des conditions
+  (`parseConditionNotation` → `parseSingleCondition` → `parseEndpointValue`). Sans `bound` (réponse
+  d'élève), une lettre reste refusée.
+- `UNREADABLE_CONDITION` : « à des nombres ou à des valeurs, par exemple pour x > 2 ou pour x > k ».
+- Tests : `intervalle-pour-parametre.test.ts` (13, 10 rouges avant) — PR #3310, mergée ; vérif à l'écran
+  `atelier-intervalle-pour.spec.ts` (+1, `pour x > k`, verte sur ordi-chrome).

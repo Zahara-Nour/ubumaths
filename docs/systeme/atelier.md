@@ -680,7 +680,7 @@ Entrée calcule la ligne telle quelle.
 2026-11-28) : `f(x) = x pour x > 2`, `pour 2 < x < 4`, `pour x ≠ 0`, `pour x < 0 ou x ≥ 1` valent
 « sur » suivi de l'ensemble. « pour » ne coupe que devant une comparaison (`<`, `≤`, `≠`, `\lt`,
 `\le`, `\ne`… ; `a = 3 pour 4`, `pourcentage` restent entiers) ; la condition porte sur la lettre
-de la fonction, comparée à des nombres (`f(x) = x pour t > 2`, et `pour x > k` — un paramètre, que `sur [k;5]` accepte — : « Je n'ai pas su lire la condition… »), elle est rangée
+de la fonction, comparée à des nombres ou à des valeurs de l'atelier (`pour x > k`, `pour -a ≤ x ≤ a` : comme `sur [k;5]`, ci-dessous) ; une autre lettre est refusée (`f(x) = x pour t > 2` : « Je n'ai pas su lire la condition… »). Elle est rangée
 TELLE QU'ÉCRITE dans `interval` et lue par le même `parseStudentDomain` ; mêmes refus que « sur »
 (vide, un point, hors du domaine). C'est l'écriture qui dit le mot (`isConditionWritten` : pas un
 début d'ensemble, une comparaison) : la carte réaffiche `x\text{ pour }x>2`, ce qui a été tapé
@@ -741,7 +741,9 @@ restreinte aussi.
 
 **L'intervalle à paramètre** (chantier fonctions-morceaux, phase 0 validée le 2026-11-28) : une
 borne peut citer des valeurs de l'atelier (`f(x) = x sur [k;5]`, `[-a;a]`, `[k+1;5[`,
-`\frac{k}{2}`). `intervalNamesOf` (`interval.ts`) lit les noms des bornes : ce sont des
+`\frac{k}{2}`), et une condition aussi (`f(x) = x pour x > k`, `pour k < x < 5`, `pour x ≠ k` :
+`parseStudentDomain` passe l'option `bound` jusqu'aux bornes des conditions). Une réponse d'élève,
+lue sans `bound`, refuse toujours une lettre dans une borne. `intervalNamesOf` (`interval.ts`) lit les noms des bornes : ce sont des
 références de f (`#readRefsOf`) — k absent, f l'attend avec l'offre de curseur ; k en erreur, f
 aussi. Le champ garde l'écriture (`interval`, sauvegardée telle quelle) ; à chaque recalcul,
 `#parameterIntervalsNow` relit l'ensemble avec les valeurs (`parseStudentDomain`, option `bound`)

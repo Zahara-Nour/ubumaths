@@ -21,6 +21,7 @@ import { patronEntry } from './patron';
 import { operationEntry } from './operation';
 import { probtreeEntry } from './probtree';
 import { qrEntry } from './qr';
+import { engrenagesEntry } from './engrenages';
 import { scratchEntry } from './scratch';
 import { rangerEntry } from './ranger';
 import { associerEntry } from './associer';
@@ -66,7 +67,8 @@ export const BLOCK_CATALOG: BlockCatalogEntry[] = [
 	calculEntry,
 	robotEntry,
 	labyrintheEntry,
-	yohakuEntry
+	yohakuEntry,
+	engrenagesEntry
 ];
 
 /** Fiche d'un bloc par son segment d'adresse */
