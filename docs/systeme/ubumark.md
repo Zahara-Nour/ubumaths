@@ -1501,7 +1501,7 @@ ordre du peintre (fond → devant, gauche → droite, bas → haut). Écran : SV
 erreur : messages pour le prof, cadre « Solide indisponible » pour l'élève. Éditeur riche : bloc de code `cubes`.
 Chat élève (rendu restreint) : jamais rendu. Fiche du catalogue : `src/lib/block-catalog/cubes.ts`.
 
-_Assemblage que l'on peut tourner_ (chantier [solides-3d](../wip/solides-3d-progress.md), lot 6,
+_Assemblage que l'on peut tourner_ (chantier [solides-3d](../archive/wip/solides-3d-progress.md), lot 6,
 [ADR 0045](../adr/0045-figures-de-l-espace-qui-tournent.md), `cubes-tourner.test.ts`,
 `CubesTourner.svelte.test.ts`, comportements 53 à 68 du journal) — `tourner: oui | non` (éteint par défaut) →
 `CubesSpec.rotate` (`true`, ou absent). Seulement pour la perspective sans geste : valeur autre que `oui` /
@@ -1620,7 +1620,7 @@ Noms des points et des vecteurs posés par `firstFree` : sans toucher une étiqu
 Nom accessible : « point I milieu de [AE] », « vecteur AB », « vecteur u égal à AI ». PDF : trait `curve`,
 pointe `polygon(fill: black)`.
 
-**Droites données** (chantier [solides-3d](../wip/solides-3d-progress.md), lot 7a, `solide-droites.test.ts`) —
+**Droites données** (chantier [solides-3d](../archive/wip/solides-3d-progress.md), lot 7a, `solide-droites.test.ts`) —
 polyèdres seulement, sommets nommés exigés. `droites: (AG), d = (IG)` (`SolideSpec.droites`, type `SolideDroite` :
 `from`, `to` = indices de deux points, sommets puis points déclarés ; `name` : une minuscule puis `'` ou un
 chiffre, ou `null`) ; parenthèses facultatives ; clé absente → pas de champ `droites` (la figure reste celle
@@ -1647,7 +1647,7 @@ dans `labelOffsets`, après les vecteurs) ; les noms des sommets et des points �
 flèches. PDF : `DROITE_STROKE` = `rgb(37, 99, 235)`, un `curve` par morceau. Nom accessible : « droite (AG) »,
 « droite d égale à (IG) », jamais une position relative (la réponse).
 
-**Plans donnés** (chantier [solides-3d](../wip/solides-3d-progress.md), lot 7b, `solide-plans.test.ts`) —
+**Plans donnés** (chantier [solides-3d](../archive/wip/solides-3d-progress.md), lot 7b, `solide-plans.test.ts`) —
 polyèdres seulement, sommets nommés exigés. `plans: (BDE), P = (ACG)` (`SolideSpec.plans`, type `SolidePlan` :
 `through` = indices de trois points, sommets puis points déclarés ; `name` : une majuscule puis `'` ou un
 chiffre, ou `null`) ; parenthèses facultatives ; clé absente → pas de champ `plans`. Lecture (`readPlans`) : au
@@ -1697,7 +1697,7 @@ accessible : « segment [AG] », « angle droit en E », jamais une longueur. **
 cube (et un pavé de longueur égale à la hauteur), le dessin de la diagonale [AG] passe par F puis se couche
 sur l'arête [FG], qui se voit : ce bout est dessiné en plein. Prendre [DF] (ou [CE], [HB]), ou `tourner: oui`.
 
-**Repère du solide et points par coordonnées** (chantier [solides-3d](../wip/solides-3d-progress.md), lot 7c,
+**Repère du solide et points par coordonnées** (chantier [solides-3d](../archive/wip/solides-3d-progress.md), lot 7c,
 `solide-repere.test.ts`) — polyèdres seulement, sommets nommés exigés. `repere: A ; AB, AD, AE`
 (`SolideSpec.repere`, type `SolideRepere` : `origin` et `axes`, le bout de chacun des trois vecteurs ; clé
 absente → pas de champ) ; parenthèses autour facultatives. Lecture (`readRepere`) : une origine, trois
@@ -1718,7 +1718,7 @@ des noms — la scène de `repere: A ; AB, AD, AE` est celle de `vecteurs: AB, A
 ni au PDF, et tout suit la rotation. Nom accessible : « repère d'origine A », « point M de coordonnées
 (1 ; 0,5 ; 1) ».
 
-**Point d'intersection** (chantier [solides-3d](../wip/solides-3d-progress.md), lot 7e,
+**Point d'intersection** (chantier [solides-3d](../archive/wip/solides-3d-progress.md), lot 7e,
 `solide-intersection.test.ts`) — `points: K intersection (IG) (BDE)` (une droite et un plan, dans un ordre
 ou dans l'autre) ou `K intersection (AG) (BH)` (deux droites) → `SolidePoint.meet` (`line` : les deux points
 de la droite ; `other` : les trois points du plan ou les deux de l'autre droite), `of` vide, `label`
@@ -1733,7 +1733,7 @@ intersection est une droite), trois points alignés, deux points confondus, poin
 marge des points à coordonnées (`beyondFace`), `section:` ou `tracer:` dans le même bloc. Un point qui tombe
 sur un sommet est accepté. Rien de neuf dans la scène, à l'écran ni au PDF : un point déclaré de plus.
 
-**Figure que l'on peut tourner** (chantier [solides-3d](../wip/solides-3d-progress.md), lot 2,
+**Figure que l'on peut tourner** (chantier [solides-3d](../archive/wip/solides-3d-progress.md), lot 2,
 [ADR 0045](../adr/0045-figures-de-l-espace-qui-tournent.md), `solide-tourner.test.ts`,
 `SolideTourner.svelte.test.ts`) — `tourner: oui | non` (éteint par défaut) → `SolideSpec.rotate` (`true`, ou
 absent). Pour l'instant : polyèdres (cube, pavé, prisme, pyramide) avec sommets, `points:`, `vecteurs:`,
