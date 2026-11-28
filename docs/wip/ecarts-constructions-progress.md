@@ -10,7 +10,7 @@ status: en cours
 
 _Mis à jour le 2026-11-28, avant la PR._
 
-- **État** : les 6 écarts corrigés sur la branche (4 commits + merge de main) ; revues `code-reviewer` et `security-auditor` (Opus) faites, findings corrigés (point déplacé à la souris en mode interactif, garde description/publication du lot v76, page de conversion) ; PR à ouvrir.
+- **État** : les 6 écarts corrigés sur la branche (4 commits + merge de main) ; revues `code-reviewer` et `security-auditor` (Opus) faites, findings corrigés (point déplacé à la souris en mode interactif, garde description/publication du lot v76, page de conversion) ; branche poussée, PR ouverte, merge par `pnpm pr:merger` à la CI verte.
 - **Prochaine action** : corriger les findings, pousser, ouvrir la PR, `pnpm pr:merger`. Après merge : `pnpm constructions:reecrire --lot v76 --cible prod` (simulation, par moi), puis **David** lance `--publier` ; commiter la sauvegarde `avant-v76.json`.
 - **En attente de David** : l'écriture en prod de V76 (`--publier`) ; effacer les arcs d'un coup (`masque` instantané dans le moteur) ou les garder un par un ; inscrire au registre les étiquettes `_p…` du carré ?
 - **Pièges en cours** : `masque` coûte un pas de 500 ms (44 arcs : effacement arc par arc) ; les points `_p…` du carré gardent leur étiquette (défaut à part, déjà en prod, non traité).
