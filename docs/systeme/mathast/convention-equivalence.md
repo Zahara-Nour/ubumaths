@@ -191,16 +191,20 @@ Deux endroits, il faut les deux :
 
 - **équivalence** (`normalize.ts`, cas `abs`, `absOfMixedSignArgument`) : un argument aux termes
   des deux signes est orienté, des deux opposés, vers celui qui s'écrit sans moins en tête
-  (`x − 3`). Avant, seul un argument aux termes tous négatifs était retourné (`|−x − 1| = |x + 1|`)
-  ;
+  (`x − 3`). Avant, seul un argument aux termes tous négatifs était retourné
+  (`|−x − 1| = |x + 1|`) ;
 - **écriture** (`checkForm`, `unifyAbsoluteOppositeAST`, après le tri des termes) : une somme entre
-  les barres se compare premier terme positif. Sans elle, `|3 − x|` restait refusé « pas écrite
-  sous la forme demandée ».
+  les barres se compare premier terme positif ; une fraction, au numérateur et au dénominateur
+  chacun pour soi (`|(3 − x)/(1 − x)|` = `|(x − 3)/(x − 1)|`). Sans elle, `|3 − x|` restait refusé
+  « pas écrite sous la forme demandée ».
 
-Effet d'écriture : une primitive en `ln|…|` s'affiche orientée, `∫ 1/(1 − x) = −ln|x − 1|` (au
-lieu de `−ln|−x + 1|`), `∫ −3/(4 − 2x) = 3/2 ln|x − 2|` (comme `∫ 1/(2x − 4)` déjà). Hors de la
-règle : un facteur sorti des barres (`2|x − 3|` pour `|2x − 6|`, refusé, aucun modèle ne le
-demande) ; `cos(3 − x)` (non retourné, même parité, pas de cas d'élève).
+Effet d'écriture : une valeur absolue simplifiée s'affiche orientée, sans étape ajoutée
+(`{{simplify:|3-x|}}` → `|x − 3|`, `|1 − x²|` → `|x² − 1|`) ; une primitive en `ln|…|` aussi,
+`∫ 1/(1 − x) = −ln|x − 1|` (au lieu de `−ln|−x + 1|`), `∫ −3/(4 − 2x) = 3/2 ln|x − 2|` (comme
+`∫ 1/(2x − 4)` déjà). Hors de la règle d'écriture (équivalence juste, forme refusée, aucun cas
+d'élève) : un coefficient négatif sans moins écrit (`|(√2 − 1)x + 1|` pour `|(1 − √2)x − 1|`),
+`|−(x − 3)|`, un facteur sorti des barres (`2|x − 3|` pour `|2x − 6|`, refusé même en
+équivalence) ; `cos(3 − x)` n'est pas retourné.
 
 ## Décimal attendu, fraction légitime : attendue EXACTE + `acceptDecimal`
 

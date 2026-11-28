@@ -1137,23 +1137,41 @@ function liftTermSign(signed: SignedTerm): SignedTerm {
 }
 
 /**
+ * Somme écrite premier terme positif (après le tri des termes) : `3 − x` →
+ * `x − 3`. Ce qui n'est pas une somme reste tel quel.
+ */
+function sumWithPositiveLead(node: MathNode): MathNode {
+	if (node.type !== 'addition' && node.type !== 'subtraction') return node;
+	const terms = flattenSumShallow(node).map(liftTermSign);
+	if (terms.length < 2 || terms[0].sign === '+') return node;
+	const flipped = terms.map((t): SignedTerm => ({
+		sign: t.sign === '+' ? '-' : '+',
+		term: t.term
+	}));
+	const rebuilt = unflattenSum(flipped);
+	return rebuilt === null ? node : sortTermsAndFactorsAST(rebuilt);
+}
+
+/**
  * |u| et |−u| sont la même écriture (outil n° 79) : `|3 − x|` pour `|x − 3|`
  * n'est pas une faute de forme. Une somme entre les barres est écrite avec son
- * premier terme positif (après le tri des termes) : `|3 − x|` → `|x − 3|`.
+ * premier terme positif : `|3 − x|` → `|x − 3|`. Une fraction entre les barres
+ * l'est au numérateur et au dénominateur, chacun pour soi (|a/b| = |−a/b| =
+ * |a/−b|) : `|(3 − x)/(1 − x)|` → `|(x − 3)/(x − 1)|`.
  */
 function unifyAbsoluteOppositeAST(ast: MathNode): MathNode {
 	return mapNode(ast, (node) => {
 		if (node.type !== 'function' || node.name !== 'abs' || node.args.length !== 1) return node;
 		const [arg] = node.args;
-		if (arg.type !== 'addition' && arg.type !== 'subtraction') return node;
-		const terms = flattenSumShallow(arg).map(liftTermSign);
-		if (terms.length < 2 || terms[0].sign === '+') return node;
-		const flipped = terms.map((t): SignedTerm => ({
-			sign: t.sign === '+' ? '-' : '+',
-			term: t.term
-		}));
-		const rebuilt = unflattenSum(flipped);
-		return rebuilt === null ? node : { ...node, args: [sortTermsAndFactorsAST(rebuilt)] };
+		const oriented =
+			arg.type === 'division'
+				? {
+						...arg,
+						numerator: sumWithPositiveLead(arg.numerator),
+						denominator: sumWithPositiveLead(arg.denominator)
+					}
+				: sumWithPositiveLead(arg);
+		return oriented === arg ? node : { ...node, args: [oriented] };
 	});
 }
 

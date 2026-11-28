@@ -34,7 +34,10 @@ describe('case math : |u| pour |−u|', () => {
 		['|-3x+2|', '|3x-2|'],
 		['|2-3x|', '|3x-2|'],
 		['|\\pi-x|', '|x-\\pi|'],
-		['|x-3|', '|x-3|']
+		['|x-3|', '|x-3|'],
+		['\\left|\\frac{3-x}{x+1}\\right|', '\\left|\\frac{x-3}{x+1}\\right|'],
+		['\\left|\\frac{1-x}{2}\\right|', '\\left|\\frac{x-1}{2}\\right|'],
+		['\\left|\\frac{3-x}{1-x}\\right|', '\\left|\\frac{x-3}{x-1}\\right|']
 	])('%s pour %s → juste', (answer, expected) => {
 		const result = check(answer, expected);
 		expect(result.isCorrect).toBe(true);
@@ -45,7 +48,8 @@ describe('case math : |u| pour |−u|', () => {
 		['|x+3|', '|x-3|'],
 		['x-3', '|x-3|'],
 		['3-x', '|x-3|'],
-		['-|x-3|', '|x-3|']
+		['-|x-3|', '|x-3|'],
+		['\\left|\\frac{x+3}{x+1}\\right|', '\\left|\\frac{x-3}{x+1}\\right|']
 	])('%s pour %s → faux', (answer, expected) => {
 		expect(check(answer, expected).isCorrect).toBe(false);
 	});

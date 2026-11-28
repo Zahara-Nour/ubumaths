@@ -11,7 +11,7 @@ status: n° 79 codé, PR à ouvrir
 _Mis à jour le 2026-11-28, avant la première PR._
 
 - **État** : n° 79 codé (équivalence `normalize.ts` + écriture `checkForm`), tests verts ; PR à ouvrir.
-- **Prochaine action** : rapport de la revue `code-reviewer` (opus ; à relancer s'il est perdu), `pnpm types:cliquet`, puis PR et `pnpm pr:merger`. `check:incremental` = 0 erreur, branche poussée.
+- **Prochaine action** : ouvrir la PR puis `pnpm pr:merger` (revue faite, fraction entre barres corrigée, suites vertes).
 - **En attente de David** : rien (phase 0 tranchée : « je te suis »).
 - **Pièges en cours** : lot mathAST (un seul à la fois) ; rendu des primitives en `ln|…|` changé (orienté).
 - **Worktree / branche** : `../ubumaths-wt-outil-valeur-absolue-distance` · `feat/outil-valeur-absolue-distance`.
@@ -73,3 +73,6 @@ Questions :
 - Tests : `mathAST/__tests__/equivalence-valeur-absolue-opposee.test.ts`,
   `utils/__tests__/answer-validator-valeur-absolue-opposee.test.ts` (10 rouges sans le code).
 - Doc : `convention-equivalence.md` § Valeur absolue de deux opposés.
+- Revue `code-reviewer` (opus) : aucun faux accepté ; juste refusé corrigé (fraction entre les
+  barres : numérateur et dénominateur orientés chacun pour soi) ; hors règle d'écriture documentés
+  (coefficient `1 − √2`, `|−(x − 3)|`) ; effet sur `{{simplify:…}}` documenté.
