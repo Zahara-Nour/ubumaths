@@ -5,7 +5,12 @@
 import { describe, it, expect, vi } from 'vitest';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '#lib/types/database.ts';
-import { currentSchoolYear, defaultSchoolYear, endOfSchoolYear } from '../school-year';
+import {
+	classSchoolYearExpiry,
+	currentSchoolYear,
+	defaultSchoolYear,
+	schoolYearExpiry
+} from '../school-year';
 
 // Client factice : rend `row` à l'appel de la fonction `current_school_year`
 function fakeClient(row: { start_date: string; end_date: string } | null, fail = false) {
@@ -36,11 +41,63 @@ describe('defaultSchoolYear', () => {
 	});
 });
 
-describe('endOfSchoolYear', () => {
-	it('fin du 31 août de l’année en cours (UTC)', () => {
-		expect(endOfSchoolYear(new Date('2026-11-28T10:00:00Z')).toISOString()).toBe(
+describe('schoolYearExpiry', () => {
+	const now = new Date('2026-11-28T10:00:00Z');
+
+	it("fin du dernier jour de l'année saisie par l'école (UTC)", async () => {
+		const { client } = fakeClient({ start_date: '2026-09-01', end_date: '2027-07-15' });
+		expect((await schoolYearExpiry(client, 'school-1', now)).toISOString()).toBe(
+			'2027-07-15T23:59:59.000Z'
+		);
+	});
+
+	it('école sans dates, ou sans école : fin du 31 août', async () => {
+		const { client } = fakeClient(null);
+		expect((await schoolYearExpiry(client, 'school-1', now)).toISOString()).toBe(
 			'2027-08-31T23:59:59.000Z'
 		);
+		expect((await schoolYearExpiry(client, null, now)).toISOString()).toBe(
+			'2027-08-31T23:59:59.000Z'
+		);
+	});
+
+	it("en été, année de l'école finie : le 31 août qui vient", async () => {
+		const { client } = fakeClient({ start_date: '2026-09-01', end_date: '2027-07-15' });
+		const july = new Date('2027-07-20T10:00:00Z');
+		expect((await schoolYearExpiry(client, 'school-1', july)).toISOString()).toBe(
+			'2027-08-31T23:59:59.000Z'
+		);
+	});
+});
+
+describe('classSchoolYearExpiry', () => {
+	const now = new Date('2026-11-28T10:00:00Z');
+
+	function classClient(row: { school_id: string | null } | null, fail = false) {
+		const { client, rpc } = fakeClient({ start_date: '2026-09-01', end_date: '2027-07-15' });
+		const eq = vi.fn(() => ({
+			maybeSingle: async () =>
+				fail ? { data: null, error: { message: 'panne' } } : { data: row, error: null }
+		}));
+		const from = vi.fn(() => ({ select: () => ({ eq }) }));
+		Object.assign(client, { from });
+		return { client, rpc, from, eq };
+	}
+
+	it("lit l'école de la classe, puis sa fin d'année", async () => {
+		const { client, rpc, from, eq } = classClient({ school_id: 'school-1' });
+		expect((await classSchoolYearExpiry(client, 'classe-1', now)).toISOString()).toBe(
+			'2027-07-15T23:59:59.000Z'
+		);
+		expect(from).toHaveBeenCalledWith('classes');
+		expect(eq).toHaveBeenCalledWith('id', 'classe-1');
+		expect(rpc).toHaveBeenCalledWith('current_school_year', { p_school_id: 'school-1' });
+	});
+
+	it('classe illisible ou introuvable : lève', async () => {
+		vi.spyOn(console, 'error').mockImplementation(() => {});
+		await expect(classSchoolYearExpiry(classClient(null, true).client, 'c', now)).rejects.toThrow();
+		await expect(classSchoolYearExpiry(classClient(null).client, 'c', now)).rejects.toThrow();
 	});
 });
 

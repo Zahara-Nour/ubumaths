@@ -1,20 +1,20 @@
 ---
 title: Écarts — lot cours-evaluations
 date: 2026-11-28
-status: en cours — PR 1 (#3291) et PR 2 (#3300) mergées, clôture à faire
+status: en cours — PR 1 (#3291) et PR 2 (#3300) mergées, PR 3 (liens des familles) en cours
 ---
 
 # Écarts — lot `cours-evaluations`
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-28, après #3300._
+_Mis à jour le 2026-11-28, PR 3 (liens des familles) en cours._
 
-- **État** : les 7 écarts du lot sont corrigés. PR 1 #3291 (V72, L37, L38, L40, L112, L113) et PR 2 #3300 (L39) mergées ; migrations `20261128072151` et `20261128135334` en prod, vérifiées par le MCP en lecture (policy, trigger, fonction, clés en NO ACTION).
-- **Prochaine action** : clôture du chantier (recompter le découpage, versement du durable dans `docs/systeme/`, archivage du journal, ligne de `ecarts-lots.md`), après la réponse de David ci-dessous.
-- **En attente de David** : les liens des familles doivent-ils suivre les dates de l'école (aujourd'hui toujours le 31 août, `endOfSchoolYear`) ?
-- **Pièges** : le cache des cases effacées de `skill_attempts` passe par `trg_skill_attempts_after_delete`, qui saute un élève supprimé (sinon la suppression d'un compte échoue). La saisie n'efface que les élèves de sa grille.
-- **Worktree / branche** : aucun (retirés par `pr:merger`).
+- **État** : les 7 écarts du lot sont corrigés (#3291, #3300), migrations en prod. David a répondu « oui » (2026-11-28) : les liens des familles (cahier, cours, carnet) expirent à la fin de l'année scolaire de l'école (31 août sans dates). PR 3 sur `fix/liens-familles-annee-ecole` : `schoolYearExpiry` / `classSchoolYearExpiry`, courriel du carnet qui annonce la date, page de confidentialité et registre des traitements reformulés.
+- **Prochaine action** : merge de la PR 3, puis clôture du chantier (recompter le découpage, versement, archivage du journal, ligne de `ecarts-lots.md`).
+- **En attente de David** : borner une fin d'année saisie par erreur (ex. 2099 → lien valable des années) ? Point mineur de la revue, non tranché.
+- **Pièges** : les liens déjà émis gardent leur 31 août. Le carnet lit l'école par `profiles.school_id` (client service).
+- **Worktree / branche** : `ubumaths-wt-ecarts-cours-evaluations` · `fix/liens-familles-annee-ecole`.
 
 ## Décisions (2026-11-28)
 
