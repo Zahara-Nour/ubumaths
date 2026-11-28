@@ -8,7 +8,8 @@
  * Features:
  * - Detects Markdown patterns in pasted plain text
  * - Converts Markdown to TipTap JSON using markdownToTipTap()
- * - Preserves native HTML paste behavior (from rich text copies)
+ * - Preserves native HTML paste behavior (from rich text copies) : un HTML
+ *   riche joint au texte part au collage natif (isTrivialHtmlWrapper)
  * - Supports all Chiphre Markdown features (math, templates, etc.)
  *
  * @module rich-text/markdown-paste-extension
@@ -20,84 +21,55 @@ import { containsMarkdownSyntax } from './markdown-detection';
 import { markdownToTipTap } from './markdown-import';
 
 /**
- * Check if HTML content is a trivial wrapper that should be ignored
- * in favor of Markdown processing.
+ * Le HTML collé est-il une simple enveloppe, sans mise en forme à garder ?
  *
- * Many applications (VSCode, browsers, etc.) add trivial HTML wrappers
- * when copying plain text. We want to detect these and prefer the
- * plain text Markdown processing instead.
+ * Beaucoup d'applications (éditeurs de code, navigateurs) joignent au texte
+ * copié un HTML qui ne fait qu'envelopper le texte : `<pre>`, `<div>` coloré
+ * d'un éditeur de code, `<meta charset>`. Ce HTML-là n'apporte rien ; le texte
+ * brut, lu comme du markdown, donne un meilleur résultat.
  *
- * Examples of trivial HTML:
- * - <pre>text</pre>
- * - <span>text</span>
- * - <div>text</div>
- * - <meta charset="...">text (from browsers)
+ * Est « riche » (donc PAS une enveloppe) un HTML qui porte une mise en forme
+ * que l'éditeur sait garder : gras, italique, souligné, listes, titres, liens,
+ * tableaux, images… en balise, ou en style pour le gras et l'italique (Google
+ * Docs). Les couleurs, polices et classes seules ne comptent pas : ce sont
+ * celles d'un éditeur de code, ou d'un paragraphe Word sans mise en forme.
  *
- * Examples of rich HTML (should NOT be ignored):
- * - <p><strong>bold</strong> text</p>
- * - Content from Google Docs, Word, etc.
+ * Exemples d'enveloppes : `<pre>texte</pre>`, `<div style="color:#d4d4d4">- a</div>`.
+ * Exemples de HTML riche : `<p><strong>gras</strong></p>`, `<ul><li>a</li></ul>`.
  */
 export function isTrivialHtmlWrapper(html: string): boolean {
-	// Normalize whitespace for comparison
 	const trimmed = html.trim();
-
-	// Empty HTML is trivial
 	if (!trimmed) return true;
 
-	// Very short HTML without meaningful tags is trivial
-	if (trimmed.length < 20 && !/<[a-z]/i.test(trimmed)) return true;
-
-	// FIRST: Check if the HTML contains rich formatting tags ANYWHERE in the content
-	// If it does, it's NOT trivial - this takes priority
 	const richFormattingPatterns = [
-		// Inline formatting tags (can appear anywhere in the string)
+		// Mise en forme en ligne
 		/<(strong|b|em|i|u|s|strike|del|mark|sub|sup)\b/i,
-		// Links (careful: <a> needs to be followed by space/attribute to avoid false positives)
+		// Liens (`<a` suivi d'un attribut)
 		/<a\s/i,
-		// Block-level formatting tags
+		// Blocs mis en forme
 		/<(h[1-6]|ul|ol|li|blockquote|table|thead|tbody|tr|td|th)\b/i,
-		// Media elements
+		// Médias
 		/<(img|video|audio|iframe|figure|figcaption)\b/i,
-		// Styled elements (anywhere in string)
-		/<[^>]+\sstyle\s*=/i, // Elements with style attribute
-		/<[^>]+\sclass\s*=/i // Elements with class attribute
+		// Gras, italique ou souligné donnés par un style
+		/font-weight\s*:\s*(bold|[6-9]00)/i,
+		/font-style\s*:\s*italic/i,
+		/text-decoration[a-z-]*\s*:\s*[^;"']*underline/i
 	];
 
-	for (const pattern of richFormattingPatterns) {
-		if (pattern.test(trimmed)) {
-			// Has rich formatting, NOT trivial
-			return false;
-		}
-	}
+	return !richFormattingPatterns.some((pattern) => pattern.test(trimmed));
+}
 
-	// SECOND: Check for common trivial wrapper patterns
-	// These are often added by code editors when copying
-	const trivialPatterns = [
-		// Simple single-element wrappers with plain text content
-		/^<(pre|code|span|div|p)>\s*[\s\S]*?\s*<\/\1>$/i,
-		// HTML that's just meta tags and plain text
-		/^(<meta[^>]*>|\s)*[^<]+$/i,
-		// HTML starting with meta charset and containing simple text
-		/^<meta\s+charset=['"][^'"]+['"][^>]*>\s*[^<]*$/i
-	];
-
-	for (const pattern of trivialPatterns) {
-		if (pattern.test(trimmed)) {
-			return true;
-		}
-	}
-
-	// If we get here, the HTML doesn't have rich formatting
-	// Check if it's mostly just text wrapped in simple tags
-	const textContent = trimmed.replace(/<[^>]+>/g, '').trim();
-	const tagCount = (trimmed.match(/<[^>]+>/g) || []).length;
-
-	// If there are very few tags compared to content length, likely trivial
-	if (tagCount <= 4 && textContent.length > 20) {
-		return true;
-	}
-
-	return false;
+/**
+ * Le collage doit-il passer par le markdown (V118) ?
+ *
+ * Oui seulement si le texte brut contient du markdown ET que le HTML joint,
+ * s'il y en a un, n'est qu'une enveloppe. Un HTML riche (liste en gras copiée
+ * de Word, d'une page web) part au collage natif, qui garde sa mise en forme.
+ */
+export function shouldConvertMarkdownPaste(plainText: string, html: string): boolean {
+	if (!plainText || plainText.trim().length === 0) return false;
+	if (!containsMarkdownSyntax(plainText)) return false;
+	return isTrivialHtmlWrapper(html);
 }
 
 /**
@@ -198,14 +170,10 @@ export const MarkdownPaste = Extension.create<MarkdownPasteOptions>({
 
 						// Get plain text content
 						const plainText = clipboardData.getData('text/plain');
+						const html = clipboardData.getData('text/html');
 
-						// If no plain text, nothing to do
-						if (!plainText || plainText.trim().length === 0) {
-							return false;
-						}
-
-						// Check if the plain text contains Markdown syntax
-						if (!containsMarkdownSyntax(plainText)) {
+						// HTML riche ou texte sans markdown : collage natif
+						if (!shouldConvertMarkdownPaste(plainText, html)) {
 							return false;
 						}
 

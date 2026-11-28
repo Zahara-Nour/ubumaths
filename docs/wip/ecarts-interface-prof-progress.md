@@ -33,3 +33,13 @@ V74, V106, V116, V118, V120, V121, V122, V123, L41, L116, M48 (lignes au [regist
 | V123  | oui    | `class-knowledge.ts` : `skill_attempts` lus d'un bloc, sans pagination (plafond PostgREST de 1000 lignes)                |
 
 ## Journal
+
+### 2026-11-28 — phase 0 validée par David (« je valide »)
+
+1. **V74** : « Aucun résultat pour le tag #fractions. » ; texte + tag : « Aucun résultat pour « pythagore » avec le tag #géométrie. »
+2. **V106** : retirer la mention « @ » de l'éditeur riche.
+3. **V116** : rubriques = vrais dossiers, ordre systeme, pratiques, adr, wip, archive ; la recherche filtre sur titre et chemin.
+4. **V118** (+ M48) : HTML riche collé = mise en forme gardée ; markdown seulement pour du texte brut ou une enveloppe triviale (`isTrivialHtmlWrapper`).
+5. **V120** : retirer le réglage admin de numérotation des listes (choix b).
+6. **V121** : « Contenu pédagogique » · « Gérez vos modèles de chapitres, exercices, énigmes et fiches » · onglets Modèles de chapitres, Exercices, Énigmes, Fiches, Carnets Python.
+7. **V122** : infobulle en texte simple, sans signes LaTeX.

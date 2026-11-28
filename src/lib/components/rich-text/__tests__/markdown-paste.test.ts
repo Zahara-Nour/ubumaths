@@ -9,7 +9,7 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { isTrivialHtmlWrapper } from '../markdown-paste-extension';
+import { isTrivialHtmlWrapper, shouldConvertMarkdownPaste } from '../markdown-paste-extension';
 
 // ============================================================================
 // TRIVIAL HTML WRAPPER DETECTION TESTS
@@ -134,13 +134,13 @@ Math: $x^2$</pre>`;
 			expect(isTrivialHtmlWrapper(html)).toBe(false);
 		});
 
-		it('detects styled spans', () => {
-			const html = '<span style="color: red">Red text</span>';
+		it('detects bold given by a style (Google Docs)', () => {
+			const html = '<span style="font-weight:700">Gras</span>';
 			expect(isTrivialHtmlWrapper(html)).toBe(false);
 		});
 
-		it('detects elements with classes', () => {
-			const html = '<p class="formatted">Formatted text</p>';
+		it('detects italic given by a style', () => {
+			const html = '<span style="font-style: italic">Penché</span>';
 			expect(isTrivialHtmlWrapper(html)).toBe(false);
 		});
 
@@ -169,14 +169,23 @@ Math: $x^2$</pre>`;
 		});
 
 		it('handles VSCode HTML output for plain text', () => {
-			// VSCode typically wraps in simple div or pre
+			// Couleurs et police d'un éditeur de code : aucune mise en forme que
+			// l'éditeur riche garderait, le texte reste à lire comme du markdown.
 			const html =
 				'<div style="color: #d4d4d4;background-color: #1e1e1e;font-family: Consolas, monospace">plain text</div>';
-			// Has style attribute but no rich formatting tags
-			// This is borderline - but since it has styling, it's not purely trivial
-			// However, the content itself is plain, so our heuristic should handle it
-			// For now, we consider styled divs as potentially rich
-			expect(isTrivialHtmlWrapper(html)).toBe(false);
+			expect(isTrivialHtmlWrapper(html)).toBe(true);
+		});
+
+		it('handles multi-line VSCode HTML (one div and span per line)', () => {
+			const html =
+				'<div style="font-family: Menlo"><div><span style="color: #569cd6;">- item 1</span></div>' +
+				'<div><span style="color: #569cd6;">- item 2</span></div><br><div><span>- item 3</span></div></div>';
+			expect(isTrivialHtmlWrapper(html)).toBe(true);
+		});
+
+		it('handles classes alone (Word paragraphs without formatting)', () => {
+			const html = '<p class="MsoListParagraph">1. Calculer</p>';
+			expect(isTrivialHtmlWrapper(html)).toBe(true);
 		});
 
 		it('handles nested simple tags', () => {
@@ -186,5 +195,35 @@ Math: $x^2$</pre>`;
 			// Our current logic checks for tag count vs content length
 			expect(isTrivialHtmlWrapper(html)).toBe(true);
 		});
+	});
+});
+
+// ============================================================================
+// DÉCISION DU COLLAGE (V118)
+// ============================================================================
+
+describe('shouldConvertMarkdownPaste', () => {
+	it('texte brut avec du markdown : converti', () => {
+		expect(shouldConvertMarkdownPaste('- item 1\n- **item 2**', '')).toBe(true);
+	});
+
+	it('texte brut sans markdown : collage natif', () => {
+		expect(shouldConvertMarkdownPaste('Bonjour', '')).toBe(false);
+	});
+
+	it('liste avec du gras copiée de Word : collage natif, la mise en forme reste', () => {
+		const html =
+			'<html><body><ul><li><b>Calculer</b> la somme</li><li>Simplifier</li></ul></body></html>';
+		expect(shouldConvertMarkdownPaste('- Calculer la somme\n- Simplifier', html)).toBe(false);
+	});
+
+	it('texte en gras copié d’une page web : collage natif', () => {
+		const html = '<meta charset="utf-8"><p><strong>1. Énoncé</strong></p>';
+		expect(shouldConvertMarkdownPaste('1. Énoncé', html)).toBe(false);
+	});
+
+	it('markdown copié d’un éditeur de code (enveloppe triviale) : converti', () => {
+		const html = '<div style="font-family: Menlo"><div><span>## Titre</span></div></div>';
+		expect(shouldConvertMarkdownPaste('## Titre', html)).toBe(true);
 	});
 });

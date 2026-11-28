@@ -6,9 +6,10 @@
  * Mentions are used to reference users (e.g., @alice, @professeur).
  *
  * Features:
- * - Automatic @username syntax detection via input rule
- * - Autocomplete popup with user search
  * - Visual amber/yellow chip styling
+ * - Pas de liste proposée en tapant « @ » : il n'y avait derrière que des
+ *   personnes inventées (écart V106, retirée le 2026-11-28). Le nœud reste
+ *   pour afficher et réenregistrer les mentions déjà écrites en markdown.
  * - Inline atomic node (non-editable)
  * - Keyboard navigation support
  *
@@ -16,14 +17,8 @@
  */
 
 import { Node, mergeAttributes } from '@tiptap/core';
-import Suggestion from '@tiptap/suggestion';
 import { Plugin, PluginKey } from '@tiptap/pm/state';
 import { NodeSelection } from '@tiptap/pm/state';
-import { searchUsers, type MentionUser } from '#lib/stores/mentions.svelte.ts';
-import {
-	createSuggestionRenderer,
-	type SuggestionItem
-} from '#lib/extensions/suggestion-renderer.ts';
 
 // ============================================================================
 // KEYBOARD NAVIGATION PLUGIN
@@ -82,29 +77,12 @@ const mentionKeyboardNavPlugin = new Plugin({
 });
 
 // ============================================================================
-// SUGGESTION CONFIGURATION
-// ============================================================================
-
-/**
- * Convert MentionUser objects to SuggestionItem format
- */
-function usersToItems(users: MentionUser[]): SuggestionItem[] {
-	return users.map((user) => ({
-		id: user.username,
-		label: user.username,
-		description: user.displayName
-	}));
-}
-
-// ============================================================================
 // MENTION EXTENSION
 // ============================================================================
 
 export interface MentionOptions {
 	/** HTML attributes to add to the mention element */
 	HTMLAttributes: Record<string, unknown>;
-	/** Maximum number of suggestions to show */
-	maxSuggestions: number;
 }
 
 /**
@@ -112,7 +90,6 @@ export interface MentionOptions {
  * =================
  *
  * Creates inline mention chips for user references.
- * Typing @ followed by text shows an autocomplete popup.
  *
  * Node Configuration:
  * - group: 'inline' - Can appear within paragraphs
@@ -130,8 +107,7 @@ export const Mention = Node.create<MentionOptions>({
 
 	addOptions() {
 		return {
-			HTMLAttributes: {},
-			maxSuggestions: 8
+			HTMLAttributes: {}
 		};
 	},
 
@@ -204,45 +180,6 @@ export const Mention = Node.create<MentionOptions>({
 	},
 
 	addProseMirrorPlugins() {
-		return [
-			mentionKeyboardNavPlugin,
-			Suggestion({
-				editor: this.editor,
-				char: '@',
-				pluginKey: new PluginKey('mentionSuggestion'),
-				allowSpaces: false,
-				// Note: hyphen '-' must be first to avoid invalid regex range in character class
-				allowedPrefixes: ['-', ' ', '\n', '\t', '(', '[', '{', '"', "'", '—', '–'],
-				startOfLine: true,
-
-				// Filter items based on query (async)
-				items: async ({ query }) => {
-					const users = await searchUsers(query);
-					return usersToItems(users.slice(0, this.options.maxSuggestions));
-				},
-
-				// Command to insert mention when selected
-				command: ({ editor, range, props }) => {
-					const item = props as SuggestionItem;
-					editor
-						.chain()
-						.focus()
-						.deleteRange(range)
-						.insertContent({
-							type: this.name,
-							attrs: { username: item.id }
-						})
-						.run();
-				},
-
-				// Render suggestion popup
-				render: () =>
-					createSuggestionRenderer({
-						type: 'mention',
-						prefix: '@',
-						noResultsText: 'Aucun utilisateur trouvé'
-					})
-			})
-		];
+		return [mentionKeyboardNavPlugin];
 	}
 });

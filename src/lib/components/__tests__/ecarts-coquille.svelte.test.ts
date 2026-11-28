@@ -1,9 +1,9 @@
 /**
  * Écarts de la coquille qui demandent un navigateur (docs/ecarts/registre.md) :
- * L41, L43, L45, L52.
+ * L43, L45, L52 (L41 corrigé : tests dans recherche-prof.svelte.test.ts).
  *
  * Le projet vitest `ecarts` n'a pas de navigateur : chaque écart est ici en
- * `it.fails`, et son nom porte le marqueur « écart L41 » que la preuve du
+ * `it.fails`, et son nom porte le marqueur « écart L43 » que la preuve du
  * registre cherche. Tant que l'écart est vrai, `it.fails` est vert ; à la
  * correction il devient rouge, et la PR qui corrige retire `.fails` ET le
  * marqueur (docs/pratiques/registre-des-ecarts.md § Les trois preuves).
@@ -15,8 +15,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import { createRawSnippet, flushSync } from 'svelte';
-import Recherche from '../../../routes/(protected)/dashboard/teacher/recherche/+page.svelte';
-import type { PageData as RecherchePageData } from '../../../routes/(protected)/dashboard/teacher/recherche/$types';
 import TeacherLayout from '../../../routes/(protected)/dashboard/teacher/+layout.svelte';
 import type { LayoutData as TeacherLayoutData } from '../../../routes/(protected)/dashboard/teacher/$types';
 import Wheel from '../Wheel.svelte';
@@ -24,7 +22,6 @@ import { StudentDashboardCache } from '#lib/stores/studentDashboardCache.svelte.
 import { clearSelectedClass } from '#lib/stores/selectedClass.svelte.ts';
 import { teacherCache } from '#lib/stores/teacherDashboardCache.svelte.ts';
 import type { ClassWithData } from '#lib/server/students.ts';
-import type { ResourceKind } from '#lib/resources/kinds.ts';
 import type { StudentProfile } from '#lib/types/student-cache.ts';
 
 // Constantes
@@ -49,26 +46,6 @@ const STUDENTS = [
 
 // Functions
 /** Les données de la page de recherche pour une adresse `?q=…&kinds=…`. */
-function rechercheData(query: string, kinds: ResourceKind[]): RecherchePageData {
-	const data = {
-		query,
-		kinds,
-		tags: [] as string[],
-		results: [] as RecherchePageData['results'],
-		searched: false,
-		error: null
-	} satisfies Pick<
-		RecherchePageData,
-		'query' | 'kinds' | 'tags' | 'results' | 'searched' | 'error'
-	>;
-	return data as RecherchePageData;
-}
-
-/** Les types cochés tels que le formulaire les enverrait. */
-function kindsEnvoyes(container: HTMLElement): string {
-	return container.querySelector<HTMLInputElement>('input[name="kinds"]')?.value ?? 'absent';
-}
-
 function classe(id: string, name: string): ClassWithData {
 	return {
 		id,
@@ -118,24 +95,6 @@ async function dureeDeRotation(props: { spinDuration?: number }): Promise<string
 	const svg = container.querySelector('svg');
 	return svg ? getComputedStyle(svg).transitionDuration : 'absent';
 }
-
-describe('recherche du prof : filtres au retour arrière', () => {
-	it('témoin : les types de l’adresse d’arrivée sont cochés', async () => {
-		const { container } = await render(Recherche, {
-			props: { data: rechercheData('fractions', ['exercise']) }
-		});
-		expect(kindsEnvoyes(container)).toBe('exercise');
-	});
-
-	// Aujourd'hui : « exercise » reste coché après la navigation.
-	it.fails('écart L41 : une autre recherche (retour arrière) coche ses propres types', async () => {
-		const { container, rerender } = await render(Recherche, {
-			props: { data: rechercheData('fractions', ['exercise']) }
-		});
-		await rerender({ data: rechercheData('pythagore', ['worksheet']) });
-		expect(kindsEnvoyes(container)).toBe('worksheet');
-	});
-});
 
 describe('cache élève : donnée périmée', () => {
 	let cache: StudentDashboardCache;

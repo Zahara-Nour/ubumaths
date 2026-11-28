@@ -12,7 +12,12 @@
 	const initialData = data;
 
 	let searchQuery = $state(initialData.searchQuery || '');
-	let expandedCategories = $state<Set<string>>(new Set(['features', 'guides']));
+	// Une recherche ouvre toutes les rubriques qui ont un résultat
+	let expandedCategories = $state<Set<string>>(
+		new Set(
+			initialData.searchQuery ? initialData.categories.map((c) => c.path) : ['systeme', 'pratiques']
+		)
+	);
 
 	function toggleCategory(categoryPath: string) {
 		if (expandedCategories.has(categoryPath)) {
@@ -60,7 +65,8 @@
 	<div class="mb-6 flex gap-2">
 		<Input
 			type="search"
-			placeholder="Rechercher dans la documentation..."
+			placeholder="Rechercher un titre ou un chemin…"
+			maxlength={100}
 			bind:value={searchQuery}
 			onkeydown={(e) => e.key === 'Enter' && handleSearch()}
 			class="flex-1"
@@ -129,6 +135,11 @@
 					<div class="mb-4">
 						<p class="text-sm text-muted-foreground">
 							Recherche : <strong>{data.searchQuery}</strong>
+							{#if data.categories.length === 0}
+								— aucune doc dont le titre ou le chemin contient ce texte.
+							{:else}
+								— {data.categories.reduce((n, c) => n + c.docs.length, 0)} doc(s) dans la navigation.
+							{/if}
 						</p>
 						<Button
 							variant="outline"

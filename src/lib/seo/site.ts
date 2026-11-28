@@ -64,6 +64,8 @@ export function toJsonLdScript(data: Record<string, unknown>): string {
 
 function mathToPlain(math: string): string {
 	return math
+		.replace(/\\[dt]?frac\{([^{}]*)\}\{([^{}]*)\}/g, '$1/$2')
+		.replace(/\\(left|right)\b/g, '')
 		.replace(/\\([a-zA-Z]+)/g, (_, name: string) => LATEX_SYMBOLS[name] ?? name)
 		.replace(/[{}]/g, '')
 		.trim();

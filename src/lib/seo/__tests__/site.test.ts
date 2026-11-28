@@ -77,6 +77,10 @@ describe('toPlainText', () => {
 	it('retire le gras et les autres marques', () => {
 		expect(toPlainText('Un **grand** ~a^2~ et $\\sqrt{2}$')).toBe('Un grand a^2 et √2');
 	});
+
+	it('écrit une fraction a/b (infobulle d’un point du programme, V122)', () => {
+		expect(toPlainText('Calculer $\\frac{a}{b}$ et $\\dfrac{1}{3}$')).toBe('Calculer a/b et 1/3');
+	});
 });
 
 describe('SITE_LOGO', () => {
