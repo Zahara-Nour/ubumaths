@@ -96,8 +96,12 @@ export type CheckedInterval =
 export const UNREADABLE_INTERVAL =
 	"Je n'ai pas su lire l'intervalle : écris par exemple sur [0;+∞[.";
 
+/**
+ * Une condition illisible : une autre lettre que celle de la fonction, ou une
+ * borne qui cite un objet (`pour x > k` ; `sur [k;5]` le permet, pas encore « pour »).
+ */
 export const UNREADABLE_CONDITION =
-	"Je n'ai pas su lire la condition : écris par exemple pour x > 2, avec la lettre de la fonction.";
+	"Je n'ai pas su lire la condition : elle compare la lettre de la fonction à des nombres, par exemple pour x > 2.";
 
 export const ONE_FORMULA =
 	'Une seule formule par fonction : les fonctions par morceaux ne s’écrivent pas encore.';

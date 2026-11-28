@@ -158,6 +158,16 @@ describe('Calcul : refus', () => {
 		expect(d.atelier.get('f')).toBeUndefined();
 	});
 
+	// Revue : `sur [k;5]` prend un paramètre, pas encore « pour » — refus au message juste
+	it('une borne qui cite un objet : refusée, sans parler de la lettre', () => {
+		const d = desk();
+		d.submit('k = 3');
+		d.submit('f(x) = x pour x > k');
+
+		expect(last(d)).toEqual({ text: UNREADABLE_CONDITION, failed: true });
+		expect(UNREADABLE_CONDITION).toContain('à des nombres');
+	});
+
 	it('une seconde formule : une seule formule (par morceaux, plus tard)', () => {
 		const d = desk();
 		d.submit('f(x) = x pour x > 2, x^2 pour x ≤ 2');

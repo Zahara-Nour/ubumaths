@@ -4,9 +4,9 @@
 
 _Mis à jour le 2026-11-28, avant l'ouverture de la PR._
 
-- **État** : code, tests (unitaires + `e2e/verifs/atelier-intervalle-pour.spec.ts`, 5 navigateurs) et doc (`docs/systeme/atelier.md`) faits ; revue `code-reviewer` en cours.
+- **État** : code, tests (unitaires + `e2e/verifs/atelier-intervalle-pour.spec.ts`, 5 navigateurs) et doc (`docs/systeme/atelier.md`) faits ; revue `code-reviewer` (Sonnet) faite, findings 1 (message) et 2 (modèle) corrigés.
 - **Prochaine action** : PR, CI, merge ; puis archiver ce journal (la doc durable est dans `docs/systeme/atelier.md`).
-- **En attente de David** : rien.
+- **En attente de David** : `pour x > k` (paramètre, comme `sur [k;5]`) est refusé — à accepter ? (demande de toucher `parseStudentDomain`, branche des conditions).
 - **Pièges en cours** : dans la carte, MathLive colle « pour » comme « sur » (`xpour2<x<4` affiché en italique tant que le champ n'est pas relu) — comportement d'avant, non traité.
 - **Worktree / branche** : `../ubumaths-wt-fonctions-domaines` · `feat/fonctions-domaines`.
 
@@ -38,3 +38,11 @@ f(x)=x pour 2<x<4 » (David, 2026-11-28).
   fonction, « ou »/« et » seulement après lui (`f(t) = et` reste e·t).
 - Tests : `intervalle-pour.test.ts` (32), `natural-input.test.ts` (+3) ; vérif à l'écran
   `atelier-intervalle-pour.spec.ts`, verte sur les 5 navigateurs de `test:verifs:tout`.
+
+## Revue (`code-reviewer`, Sonnet)
+
+1. `pour x > k` refusé avec un message qui parlait de la lettre → message juste (« compare la
+   lettre de la fonction à des nombres ») ; accepter le paramètre = question à David.
+2. « Modèle : » proposait des crochets après « pour » → `CONDITION_MODEL` (`draft-hint.ts`).
+3. `smartFence` coupé dans la carte dès « pour » + condition : laissé (le corps est avant « pour »).
+4. `x = 3` dans une condition : refusé, conforme.

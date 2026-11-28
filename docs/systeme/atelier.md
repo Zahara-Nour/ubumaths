@@ -676,7 +676,7 @@ Entrée calcule la ligne telle quelle.
 2026-11-28) : `f(x) = x pour x > 2`, `pour 2 < x < 4`, `pour x ≠ 0`, `pour x < 0 ou x ≥ 1` valent
 « sur » suivi de l'ensemble. « pour » ne coupe que devant une comparaison (`<`, `≤`, `≠`, `\lt`,
 `\le`, `\ne`… ; `a = 3 pour 4`, `pourcentage` restent entiers) ; la condition porte sur la lettre
-de la fonction (`f(x) = x pour t > 2` : « Je n'ai pas su lire la condition… »), elle est rangée
+de la fonction, comparée à des nombres (`f(x) = x pour t > 2`, et `pour x > k` — un paramètre, que `sur [k;5]` accepte — : « Je n'ai pas su lire la condition… »), elle est rangée
 TELLE QU'ÉCRITE dans `interval` et lue par le même `parseStudentDomain` ; mêmes refus que « sur »
 (vide, un point, hors du domaine). C'est l'écriture qui dit le mot (`isConditionWritten` : pas un
 début d'ensemble, une comparaison) : la carte réaffiche `x\text{ pour }x>2`, ce qui a été tapé
@@ -684,7 +684,7 @@ début d'ensemble, une comparaison) : la carte réaffiche `x\text{ pour }x>2`, c
 propriétés et la liste disent l'ensemble (« ]2 ; +∞[ »). Une seconde formule
 (`x pour x > 2, x^2 pour x ≤ 2`) est refusée (« Une seule formule par fonction… ») : la place reste
 libre pour les fonctions par morceaux. Dans le champ « Écriture mathématique » de la console,
-« pour » devient un mot comme « sur », et « ou », « et » seulement après lui (`f(t) = et` reste
+« pour » devient un mot comme « sur » (le « Modèle : » sous le champ devient alors `x > 2, 2 < x < 4, x ≠ 0`, dans la lettre de la définition), et « ou », « et » seulement après lui (`f(t) = et` reste
 e·t) ; dans la carte, MathLive les colle (`x<0oux>1`), relus seulement derrière un chiffre, une
 accolade ou une espace (`\theta` n'est pas coupé).
 
