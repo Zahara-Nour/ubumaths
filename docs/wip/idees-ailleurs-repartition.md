@@ -184,6 +184,9 @@ de contenu appliquée en prod.
 | 6e99d291 Écrire un programme pour résoudre un problème (3e)  | `idees-3e-algorithmique`                                    | 2026-11-28 |                                      |
 | 962da675 Plusieurs variables                                 | `idees-3e-algorithmique`                                    | 2026-11-28 |                                      |
 | 9f9bddbd Conditions composées                                | `idees-3e-algorithmique`                                    | 2026-11-28 |                                      |
+| c8741112 Le vocabulaire des angles                           | `idees-6e-angles`                                           | 2026-11-28 |                                      |
+| 3be08965 Mesurer un angle au rapporteur                      | `idees-6e-angles`                                           | 2026-11-28 |                                      |
+| 2291c83c Construire un angle de mesure donnée                | `idees-6e-angles`                                           | 2026-11-28 |                                      |
 
 ## Idées en attente
 
