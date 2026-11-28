@@ -66,6 +66,26 @@ export function piecewiseCommandRefusal(
 	return cited === null ? null : piecewiseCommandMessage(cited, `.${command}`);
 }
 
+/**
+ * Une fonction par morceaux EN ATTENTE citée (`k` pas encore là), ou `null` :
+ * son image ne se calcule pas, et la substitution passerait par le texte maison,
+ * qui ne relit pas un nœud par morceaux (revue de la PR 2).
+ */
+export function pendingPiecewiseRefusal(atelier: Atelier, text: string): string | null {
+	for (const object of atelier.objects) {
+		if (object.kind !== 'function' || object.status !== 'pending') continue;
+		if (piecesOf(object.definition, readingMode(object.provenance ?? 'url')) === null) continue;
+		const cited = new RegExp(`(?<![A-Za-z_\\\\])${escaped(object.name)}(?![A-Za-z0-9_])`);
+		if (!cited.test(text)) continue;
+		const missing = (object.missing ?? []).map((reference) => reference.name);
+		const shown = displayName(object.name);
+		return missing.length === 0
+			? `${shown} est en attente : elle se calculera quand ce qu'elle cite existera.`
+			: `${shown} attend ${missing.join(', ')} : définis ${missing.length === 1 ? 'cette valeur' : 'ces valeurs'} d'abord (par exemple ${missing[0]} = 2).`;
+	}
+	return null;
+}
+
 /** L'arbre contient-il un nœud par morceaux ? */
 function hasPiecewise(node: unknown): boolean {
 	if (node === null || typeof node !== 'object') return false;

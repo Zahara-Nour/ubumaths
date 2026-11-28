@@ -69,7 +69,8 @@ import {
 import {
 	piecewiseCitedIn,
 	piecewiseCommandMessage,
-	piecewiseCommandRefusal
+	piecewiseCommandRefusal,
+	pendingPiecewiseRefusal
 } from './piecewise-refusals';
 import {
 	chosenDomainAnswer,
@@ -4413,6 +4414,9 @@ function computeInput(session: CalcSession, text: string, provenance: Provenance
 	// `g(x) = f⁻¹(x)` en erreur (f plus bijective) : la carte g porte la raison
 	const broken = brokenObjectRefusal(session.atelier, input);
 	if (broken !== null) return { kind: 'refus', message: broken };
+	// Une fonction par morceaux en attente (`k` pas encore là) : dit ce qu'elle attend
+	const waiting = pendingPiecewiseRefusal(session.atelier, input);
+	if (waiting !== null) return { kind: 'refus', message: waiting };
 	// ⚠️ Une dérivée d'objet indisponible se refuse ICI, en français : laissée au
 	// moteur, elle rendait « Unexpected token: ' » — un message de parseur.
 	const blocked = derivativeOfUnusable(session, input);

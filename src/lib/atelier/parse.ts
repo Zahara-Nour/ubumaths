@@ -38,6 +38,8 @@ import {
 	piecesOf,
 	piecewiseNodeOf,
 	PIECEWISE_ONLY_FUNCTIONS,
+	SEQUENCE_PIECES,
+	WRITE_WITH_POUR,
 	type WrittenPieces
 } from './piecewise';
 import { strayDegreeRefusal, withDegreeUnits } from '#lib/mathAST/cli/core/degrees.ts';
@@ -594,6 +596,10 @@ export function parseDefinition(
 		};
 	}
 
+	// `\begin{cases}` (lu depuis le chantier fonctions-par-morceaux) : les morceaux
+	// s'écrivent avec « pour », seule écriture que l'atelier vérifie (`checkPieces`)
+	if (containsPiecewise(result.ast)) return { error: WRITE_WITH_POUR };
+
 	// G5 : `y` est la variable des équations de courbe. Ailleurs, aucun objet ne
 	// peut s'appeler ainsi : sans ce refus, `f(x) = x + y` attendait un `y` à jamais
 	if (variablesOf(result.ast, functionNames).has('y')) return { error: reservedYMessage(kind) };
@@ -607,6 +613,14 @@ export function parseDefinition(
 	return {};
 }
 
+/** L'arbre contient-il un nœud par morceaux ? */
+function containsPiecewise(node: unknown): boolean {
+	if (node === null || typeof node !== 'object') return false;
+	if (Array.isArray(node)) return node.some(containsPiecewise);
+	if ((node as MathNode).type === 'piecewise') return true;
+	return Object.values(node).some(containsPiecewise);
+}
+
 /**
  * Une définition par morceaux : seule une fonction en a ; chaque formule a les
  * refus d'une formule (`ln x` sans parenthèse, `y`), chaque condition se lit.
@@ -618,6 +632,7 @@ function parsePiecewise(
 	provenance: Provenance,
 	functionNames: readonly string[] | undefined
 ): ParsedDefinition {
+	if (kind === 'sequence') return { error: SEQUENCE_PIECES };
 	if (kind !== 'function') return { error: PIECEWISE_ONLY_FUNCTIONS };
 	if (!pieces.ok) return { error: pieces.message };
 	const bodies = [

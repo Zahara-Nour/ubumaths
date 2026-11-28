@@ -2,12 +2,12 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-28, PR 2 (Atelier) en cours._
+_Mis à jour le 2026-11-28, PR 2 (Atelier) ouverte._
 
-- **État** : PR 2 codée sur `feat/fonctions-par-morceaux-2` — écriture par morceaux dans Calcul et la carte, refus, `sinon`, ensemble, curseur, Q3, Géométrie ; 49 tests verts, suite atelier verte. Reste : typecheck, rendu à l'écran (Graphe compris), revue, PR.
-- **Prochaine action** : `check:incremental`, `pnpm voir` (Graphe : la courbe part en `\begin{cases}`), revue `code-reviewer`, PR.
-- **En attente de David** : rien.
-- **Pièges en cours** : `expressionOf` (texte maison) perd un nœud par morceaux — `syncEngine` passe l'arbre ; les commandes refusent toute fonction par morceaux (sauf `.domaine`), `.évaluer` compris. Graphe = PR 3.
+- **État** : PR 2 ouverte (`feat/fonctions-par-morceaux-2`) — écriture par morceaux dans Calcul et la carte, refus, `sinon`, ensemble, curseur, Q3, Géométrie ; revue faite et corrigée ; 56 tests, suites atelier + parseurs vertes, vérif à l'écran verte.
+- **Prochaine action** : merge de la PR 2 à la CI verte ; puis PR 3 (Graphe : ronds plein/vide aux coupures — les morceaux s'y tracent déjà).
+- **En attente de David** : une condition `x = 0` (`sin(x)/x pour x ≠ 0, 1 pour x = 0`) — accepter un morceau en un point, ou garder le refus ? Aujourd'hui refusée (« Chaque morceau a sa condition… »).
+- **Pièges en cours** : `expressionOf` (texte maison) perd un nœud par morceaux : `syncEngine` passe l'arbre, les commandes sont refusées (Q3), une fonction en attente aussi. Texte : `1,2x` reste une virgule décimale (mettre une espace).
 - **Worktree / branche** : `../ubumaths-wt-fonctions-par-morceaux-2`, `feat/fonctions-par-morceaux-2`.
 
 ## Demande
@@ -84,7 +84,7 @@ Suite de `fonctions-domaines` (#3304, #3310) et `fonctions-morceaux` (#3298, `[k
   remplace pas une valeur liée dans le corps d'une fonction (vrai pour toute fonction ; l'Atelier
   substitue avant, `expressionOf`).
 
-### PR 2 — Atelier (en cours)
+### PR 2 — Atelier
 
 - **Rangement** : la définition garde TOUTE l'écriture (`x pour x < k, x^2 pour x ≥ k`, en x), sans
   `interval` ; `astOf` la lit en nœud `piecewise` (`parse.ts` → `piecewise.ts`). Aucun champ neuf,
@@ -107,3 +107,11 @@ Suite de `fonctions-domaines` (#3304, #3310) et `fonctions-morceaux` (#3298, `[k
   jamais `\begin{cases}`.
 - **Constat** : `a = 3 pour x < 0, 4 pour x ≥ 0` crée une fonction `a` (règle actuelle : `a = x^2`
   aussi).
+- **Revue** (`code-reviewer`, Opus) : (1) carte en lettre t, mots collés (`tpourt<3,…`) : le renommage
+  mot à mot échouait, le repli rangeait un `\begin{cases}` qui échappait à `checkPieces` → renommage
+  morceau par morceau (`renameVariable`), et `\begin{cases}` refusé dans une définition
+  (`WRITE_WITH_POUR`) ; (2) `f(1)` sur une fonction par morceaux en attente repassait par le texte
+  maison → refus « f attend k » (`pendingPiecewiseRefusal`) ; (4) suite par morceaux : message à elle
+  (`SEQUENCE_PIECES`). Restent : `x = 0` (question à David), `1,2x` ambigu en texte. 7 tests.
+- **Vu à l'écran** (`e2e/verifs/atelier-fonctions-par-morceaux.spec.ts`, Chrome) : carte, images,
+  refus Q3, chevauchement sur la carte, Graphe (deux morceaux, saut en 2, sans ronds).

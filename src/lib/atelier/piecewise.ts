@@ -61,6 +61,12 @@ export const OTHERWISE_LAST =
 
 export const PIECEWISE_ONLY_FUNCTIONS = 'Seule une fonction se définit par morceaux.';
 
+export const SEQUENCE_PIECES = 'Une suite ne s’écrit pas encore par morceaux : seule une fonction.';
+
+/** `\begin{cases}` tapé ou collé : les morceaux s'écrivent avec « pour », que la carte relit. */
+export const WRITE_WITH_POUR =
+	'Écris chaque morceau avec « pour », par exemple x pour x < 2, x^2 pour x ≥ 2.';
+
 export const MISSING_FORMULA = 'Il manque la formule d’un morceau, devant « pour » ou « sinon ».';
 
 /** « sinon » écrit en mot par MathLive ou par la carte (`\text{ sinon}`). */
@@ -148,8 +154,9 @@ function unreadablePiece(body: string): string {
 
 /**
  * Une condition en arbre : chaque comparaison lue seule (`x < 0`, `2 ≤ x < 4`),
- * « et » plus fort que « ou » (`x < 0 ou x > 1 et x ≠ 3`). `null` si une
- * comparaison ne se lit pas.
+ * reliées par « ou », « et ». Un mélange des deux (`x < 0 ou x > 1 et x ≠ 3`)
+ * est refusé avant, par la lecture de l'ensemble (`readInterval`). `null` si
+ * une comparaison ne se lit pas.
  */
 function conditionNodeOf(
 	condition: string,

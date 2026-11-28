@@ -15,7 +15,14 @@ import { Atelier } from '../atelier.svelte';
 import { fieldLatexOf } from '../mathfield';
 import { intervalLabelOf, splitInterval, UNREADABLE_CONDITION } from '../interval';
 import { astOf } from '../parse';
-import { OTHERWISE_LAST, PIECE_WITHOUT_CONDITION, PIECEWISE_ONLY_FUNCTIONS } from '../piecewise';
+import {
+	OTHERWISE_LAST,
+	PIECE_WITHOUT_CONDITION,
+	PIECEWISE_ONLY_FUNCTIONS,
+	SEQUENCE_PIECES,
+	WRITE_WITH_POUR
+} from '../piecewise';
+import { internalDefinition } from '../letter';
 import { AtelierFigure, syncFigure } from '../figure-sync';
 import type { Entry } from '../desk.svelte';
 import { createTransformer } from '#lib/geometry-core/viewport/viewport.ts';
@@ -438,5 +445,84 @@ describe('sauvegarde', () => {
 		expect(fresh.get('f')?.status).toBe('ok');
 		expect(answer(again, 'f(3)')).toEqual({ text: '9', failed: false });
 		expect(answer(again, 'f(1)')).toEqual({ text: '1', failed: false });
+	});
+});
+
+// =============================================================================
+// Revue de la PR 2
+// =============================================================================
+
+describe('revue : la carte dans une autre lettre, mots collés par MathLive', () => {
+	it('tpourt<3,t^2pourt>2 se range en x, morceau par morceau', () => {
+		const internal = internalDefinition('tpourt<3,t^2pourt>2', 't', 'f', 'keyboard', []);
+		expect(internal.ok).toBe(true);
+		if (!internal.ok) return;
+		expect(internal.definition).not.toContain('cases');
+		expect(internal.definition).toContain('\\text{ pour }');
+	});
+
+	it('le chevauchement est refusé aussi dans la lettre t', () => {
+		const atelier = new Atelier();
+		const internal = internalDefinition('tpourt<3,t^2pourt>2', 't', 'f', 'keyboard', []);
+		if (!internal.ok) throw new Error(internal.message);
+		const created = atelier.create(
+			{ kind: 'function', name: 'f', letter: 't', definition: internal.definition },
+			'keyboard'
+		);
+		expect(created.ok).toBe(false);
+	});
+
+	it('la carte d’une fonction tapée en x, montrée en t, garde « pour »', () => {
+		const atelier = new Atelier();
+		atelier.create(
+			{ kind: 'function', name: 'f', letter: 't', definition: 'xpourx<2,x^2pourx\\ge2' },
+			'keyboard'
+		);
+		const latex = fieldLatexOf(atelier.get('f')!, atelier.functionNames, 't');
+		expect(latex).not.toContain('cases');
+		expect(latex).toContain('pour');
+	});
+});
+
+describe('revue : \\begin{cases} dans une définition', () => {
+	it('refusé : les morceaux s’écrivent avec « pour »', () => {
+		const atelier = new Atelier();
+		const created = atelier.create(
+			{
+				kind: 'function',
+				name: 'f',
+				definition: '\\begin{cases} x & x<3 \\\\ x^2 & x>2 \\end{cases}'
+			},
+			'keyboard'
+		);
+		const message = created.ok ? atelier.get('f')?.message : created.message;
+		expect(message).toBe(WRITE_WITH_POUR);
+	});
+});
+
+describe('revue : une fonction par morceaux en attente', () => {
+	it('k absent : f(1) dit que f attend k', () => {
+		const d = desk('f(x) = x pour x < k, x^2 pour x ≥ k');
+		const refused = answer(d, 'f(1)');
+		expect(refused.failed).toBe(true);
+		expect(refused.text).toContain('k');
+		expect(refused.text).toContain('f');
+		expect(refused.text).not.toMatch(/Il manque|facteur/);
+	});
+
+	it('a absent : f(−1) avec f(x) = a x pour x < 0, x sinon', () => {
+		const d = desk('f(x) = a x pour x < 0, x sinon');
+		const refused = answer(d, 'f(-1)');
+		expect(refused.failed).toBe(true);
+		expect(refused.text).not.toMatch(/Il manque « \} »/);
+	});
+});
+
+describe('revue : une suite par morceaux', () => {
+	it('u(n) = n pour n < 0, n^2 sinon : un message de suite', () => {
+		const d = desk();
+		const refused = answer(d, 'u(n) = n pour n < 0, n^2 sinon');
+		expect(refused.failed).toBe(true);
+		expect(refused.text).toBe(SEQUENCE_PIECES);
 	});
 });

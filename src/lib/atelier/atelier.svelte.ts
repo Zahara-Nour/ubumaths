@@ -117,7 +117,7 @@ import {
 	type CheckedInterval,
 	type IntervalValues
 } from './interval';
-import { piecesOf, PIECEWISE_ONLY_FUNCTIONS } from './piecewise';
+import { piecesOf, PIECEWISE_ONLY_FUNCTIONS, SEQUENCE_PIECES } from './piecewise';
 import type { Domain } from '#lib/mathAST/domain/types.ts';
 import { getVariables } from '#lib/mathAST/eval/substitute.ts';
 import { listCitedMessage } from './list-cited';
@@ -1312,6 +1312,7 @@ export class Atelier {
 		kept = false
 	): { readonly ok: true } | { readonly ok: false; readonly message: string } {
 		if (piecesOf(definition, readingMode(provenance)) === null) return { ok: true };
+		if (kind === 'sequence') return { ok: false, message: SEQUENCE_PIECES };
 		if (kind !== 'function') return { ok: false, message: PIECEWISE_ONLY_FUNCTIONS };
 		const values = this.#valuesOf(piecesNamesOf(definition, provenance));
 		if (values === 'waiting') return { ok: true };

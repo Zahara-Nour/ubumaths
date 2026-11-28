@@ -21,6 +21,7 @@ import type { AtelierObject } from './types';
 import type { MathNode } from '#lib/mathAST/types.ts';
 import { astOf, readingMode, renameInDefinition, type Provenance } from './parse';
 import { RESERVED_NAMES, derivativeOf, reciprocalOf } from './names';
+import { piecesOf } from './piecewise';
 import { transformAST, visitAST } from '#lib/mathAST/visitor.ts';
 import { nodesEqual } from '#lib/mathAST/normal/hash.ts';
 import { toCustom } from '#lib/mathAST/custom-generator.ts';
@@ -108,6 +109,22 @@ export function renameVariable(
 	functionNames: readonly string[]
 ): string {
 	if (from === to) return definition;
+	// Par morceaux : chaque formule et chaque condition renommées seules, les mots
+	// remis (`tpourt<3` collé par MathLive est UN mot pour le renommage mot à mot,
+	// et le repli `toLatex` rangeait un `\begin{cases}` — revue de la PR 2)
+	const pieces = piecesOf(definition, readingMode(provenance));
+	if (pieces !== null && pieces.ok) {
+		const latex = readingMode(provenance) === 'latex';
+		const renamed = (text: string) => renameVariable(text, from, to, provenance, functionNames);
+		const written = pieces.pieces.map(
+			(piece) =>
+				`${renamed(piece.body)}${latex ? '\\text{ pour }' : ' pour '}${renamed(piece.condition)}`
+		);
+		if (pieces.otherwise !== null) {
+			written.push(`${renamed(pieces.otherwise)}${latex ? '\\text{ sinon}' : ' sinon'}`);
+		}
+		return written.join(latex ? ',' : ', ');
+	}
 	const ast = astOf(definition, provenance, functionNames);
 	if (ast === null) return definition;
 	const target = renameVariableIn(ast, from, to);
