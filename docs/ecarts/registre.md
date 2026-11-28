@@ -9,7 +9,7 @@ Une ligne : identifiant · type · domaine · ce que voit l'élève ou le prof �
 Un nouvel écart entre par `pnpm ecarts ajouter`, qui donne son numéro. Une ligne close est barrée,
 jamais effacée.
 
-Derniers numéros : V140 · L142 · M60 · C44 · D45 · T38 · E92
+Derniers numéros : V140 · L143 · M60 · C44 · D45 · T38 · E92
 
 ## Écarts
 
@@ -368,3 +368,4 @@ Derniers numéros : V140 · L142 · M60 · C44 · D45 · T38 · E92
 - V139 · bug visible · constructions · dans « Axes de symétrie et construction d'un carré », une trentaine de points auxiliaires affichent leur nom (_p0, _p14…) : un nom qui commence par _ devrait rester sans étiquette · preuve : à la main · à faire
 - L142 · bug latent · comptes · le mail de bienvenue insère le prénom tel quel dans son HTML (welcome.ts, getWelcomeEmailHtml) : un prénom contenant du HTML le garde ; impact faible, le mail part vers le titulaire du compte · preuve : à la main · à faire
 - V140 · bug visible · modales · après une fenêtre empilée (détail d'une carte VIP) puis fermée, le clavier revient sur le premier bouton de la fenêtre d'en dessous, pas sur la carte qui avait ouvert la seconde : la fenêtre d'en dessous est recréée · preuve : à la main · à faire
+- L143 · bug latent · modération · la fenêtre d'un signalement du chat (ReviewReportDialog) ne montre pas les pièces jointes du message signalé, que le destinataire voyait : le prof juge le texte rendu sans l'image ou le fichier joints · preuve : à la main · à faire (relevé par security-auditor sur la PR de T36, 2026-11-28 ; même principe que T36 : le modérateur lit ce que le destinataire voyait)

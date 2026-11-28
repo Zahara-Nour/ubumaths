@@ -44,6 +44,14 @@ const logger = createServerLogger('server/deleted-account-files');
 /** Suppressions reprises par passage : la table compte au plus quelques lignes par an. */
 const SWEEP_LIMIT = 100;
 
+/**
+ * Noms retirés par appel à `remove()` : l'API du stockage plafonne le nombre de noms
+ * d'un appel, et le dossier des captures d'un élève peut compter des milliers de
+ * fichiers (il y dépose ce qu'il veut, écart T34). Sans tranches, tout échouait et le
+ * cron réessayait sans fin.
+ */
+const REMOVE_BATCH_SIZE = 1000;
+
 /** Chemins de fichiers rendus par `delete_user_account`, par bucket. */
 const storagePathsSchema = z.object({
 	storage_paths: z.record(z.string(), z.array(z.string()))
@@ -54,8 +62,9 @@ const storagePathsSchema = z.object({
 // ============================================================================
 
 /**
- * Retire du storage les fichiers d'un compte supprimé, par leurs chemins exacts.
- * Un bucket en erreur n'empêche pas les autres ; le résultat dit si TOUT a été retiré.
+ * Retire du storage les fichiers d'un compte supprimé, par leurs chemins exacts, par
+ * tranches de `REMOVE_BATCH_SIZE`. Un bucket ou une tranche en erreur n'empêche pas les
+ * autres ; le résultat dit si TOUT a été retiré.
  */
 export async function removeAccountFiles(
 	serviceClient: SupabaseClient<Database>,
@@ -70,18 +79,20 @@ export async function removeAccountFiles(
 	let ok = true;
 	let removed = 0;
 	for (const [bucket, paths] of Object.entries(parsed.data.storage_paths)) {
-		if (paths.length === 0) continue;
-		try {
-			const { error: removeError } = await serviceClient.storage.from(bucket).remove(paths);
-			if (removeError) {
+		for (let start = 0; start < paths.length; start += REMOVE_BATCH_SIZE) {
+			const batch = paths.slice(start, start + REMOVE_BATCH_SIZE);
+			try {
+				const { error: removeError } = await serviceClient.storage.from(bucket).remove(batch);
+				if (removeError) {
+					ok = false;
+					logger.error('Fichiers du compte non retirés', { bucket, error: removeError });
+				} else {
+					removed += batch.length;
+				}
+			} catch (err) {
 				ok = false;
-				logger.error('Fichiers du compte non retirés', { bucket, error: removeError });
-			} else {
-				removed += paths.length;
+				logger.error('Fichiers du compte non retirés', { bucket, error: err });
 			}
-		} catch (err) {
-			ok = false;
-			logger.error('Fichiers du compte non retirés', { bucket, error: err });
 		}
 	}
 	return { ok, removed };

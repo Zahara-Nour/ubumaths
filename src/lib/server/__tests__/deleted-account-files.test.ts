@@ -33,6 +33,8 @@ let calls: Call[] = [];
 let pending: Result = { data: [], error: null };
 let updateResult: Result = { data: [{ id: 'a1' }], error: null };
 let removeResults: Record<string, Result> = {};
+/** Numéro (à partir de 1) de l'appel à `remove` qui échoue, ou `null`. */
+let failingRemoveCall: number | null = null;
 
 // ============================================================================
 // HELPERS
@@ -63,6 +65,9 @@ function serviceClient() {
 			from: vi.fn((bucket: string) => ({
 				remove: vi.fn(async (paths: string[]) => {
 					calls.push({ op: 'remove', args: [bucket, paths] });
+					if (opsNamed('remove').length === failingRemoveCall) {
+						return { data: null, error: { message: 'panne' } };
+					}
 					return removeResults[bucket] ?? { data: paths, error: null };
 				})
 			}))
@@ -91,6 +96,7 @@ beforeEach(() => {
 	pending = { data: [], error: null };
 	updateResult = { data: [{ id: 'a1' }], error: null };
 	removeResults = {};
+	failingRemoveCall = null;
 });
 
 describe('removeAccountFiles', () => {
@@ -110,6 +116,32 @@ describe('removeAccountFiles', () => {
 		const result = await removeAccountFiles(serviceClient(), FILES);
 
 		expect(result).toEqual({ ok: false, removed: 1 });
+		expect(opsNamed('remove')).toHaveLength(2);
+	});
+
+	// Audit de la PR de T34 : le dossier des captures d'un élève peut compter des milliers
+	// de fichiers, et l'API du stockage plafonne le nombre de noms par appel. En un seul
+	// appel, tout échouait, et le cron réessayait sans fin.
+	it('retire un gros dossier par tranches de 1000 noms au plus', async () => {
+		const chemins = Array.from({ length: 2500 }, (_, i) => `zz-eleve/${i}.png`);
+		const result = await removeAccountFiles(serviceClient(), {
+			storage_paths: { 'bug-report-screenshots': chemins }
+		});
+
+		expect(result).toEqual({ ok: true, removed: 2500 });
+		const tranches = opsNamed('remove').map((c) => c.args[1] as string[]);
+		expect(tranches.map((t) => t.length)).toEqual([1000, 1000, 500]);
+		expect(tranches.flat()).toEqual(chemins);
+	});
+
+	it('une tranche en erreur rend ok: false, les autres sont quand même retirées', async () => {
+		failingRemoveCall = 1;
+		const chemins = Array.from({ length: 1500 }, (_, i) => `zz-eleve/${i}.png`);
+		const result = await removeAccountFiles(serviceClient(), {
+			storage_paths: { 'bug-report-screenshots': chemins }
+		});
+
+		expect(result).toEqual({ ok: false, removed: 500 });
 		expect(opsNamed('remove')).toHaveLength(2);
 	});
 

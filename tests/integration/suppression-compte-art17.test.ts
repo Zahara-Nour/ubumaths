@@ -317,6 +317,10 @@ describe('suppression de compte (art. 17) de bout en bout', () => {
 		// Déposés par l'API du stockage, nommés par aucun rapport.
 		const orpheline = await deposerCapture(`${eleve.id}/${crypto.randomUUID()}/2.png`);
 		const aLaRacine = await deposerCapture(`${eleve.id}/3.png`);
+		// Nom à segment « .. » : le stockage le range normalisé (mesuré le 2026-11-28),
+		// aucun objet ne porte « .. » dans son nom.
+		await deposerCapture(`${eleve.id}/a/../5.png`);
+		const aPoints = `${eleve.id}/5.png`;
 		const duCamarade = await deposerCapture(`${camarade.id}/${crypto.randomUUID()}/4.png`);
 
 		try {
@@ -324,10 +328,10 @@ describe('suppression de compte (art. 17) de bout en bout', () => {
 			expect(error).toBeNull();
 			const rendus = (data as { storage_paths: Record<string, string[]> }).storage_paths[CAPTURES];
 			// Liste EXACTE (ordre libre) : le dossier entier, rien d'autre.
-			expect([...rendus].sort()).toEqual([nommee, orpheline, aLaRacine].sort());
+			expect([...rendus].sort()).toEqual([nommee, orpheline, aLaRacine, aPoints].sort());
 			await service.auth.admin.deleteUser(eleve.id);
 		} finally {
-			await retirerCaptures([nommee, orpheline, aLaRacine, duCamarade]);
+			await retirerCaptures([nommee, orpheline, aLaRacine, aPoints, duCamarade]);
 		}
 	});
 

@@ -87,13 +87,15 @@ BEGIN
 		-- T34). L'élève y dépose aussi, par l'API du stockage, des fichiers qu'aucun
 		-- rapport ne nomme ; lire bug_reports.screenshot_path les oubliait. Même règle
 		-- de dossier que les policies du bucket (20261126060050) : seul l'élève (ou
-		-- l'admin) écrit dans ce dossier.
+		-- l'admin) écrit dans ce dossier. Pas de filtre « .. » ici (il reste pour les
+		-- chemins écrits par l'élève ci-dessus) : le nom vient de storage.objects, que
+		-- l'API du stockage range normalisé (<élève>/a/../b.png devient <élève>/b.png,
+		-- mesuré le 2026-11-28), et le retrait se fait au nom exact.
 		'bug-report-screenshots', coalesce((
 			SELECT jsonb_agg(o.name ORDER BY o.name)
 			FROM storage.objects o
 			WHERE o.bucket_id = 'bug-report-screenshots'
 			  AND (storage.foldername(o.name))[1] = p_user_id::text
-			  AND ('/' || o.name || '/') NOT LIKE '%/../%'
 		), '[]'::jsonb)
 	);
 
