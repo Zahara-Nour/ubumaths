@@ -1470,7 +1470,7 @@ remplissages sont justes. ». PDF (`yohaku-typst.ts`, `generateYohakuTypst`) : l
 les totaux, cases à remplir vides ; `solution: oui` y écrit la solution. Bloc en erreur : « Grille
 indisponible ». Fiche du catalogue : `block-catalog/yohaku.ts`.
 
-**Engrenages** (outil n° 52, chantier [outil-engrenages](../wip/outil-engrenages-progress.md))
+**Engrenages** (outil n° 52, chantier [outil-engrenages](../archive/wip/outil-engrenages-progress.md))
 — `src/lib/ubumark/__tests__/engrenages/` (`engrenages-parser`, `engrenages-moteur`,
 `engrenages-typst`), `components/markdown/nodes/__tests__/Engrenages.svelte.test.ts` :
 

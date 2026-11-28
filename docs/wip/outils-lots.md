@@ -1,7 +1,7 @@
 ---
 title: Outils manquants — lots pour des sessions en parallèle
 date: 2026-11-28
-status: lots écrits le 2026-11-28 ; en cours : equerre-uni, espace, escalier-suite, python, engrenages
+status: lots écrits le 2026-11-28 ; en cours : equerre-uni, espace, escalier-suite, python
 ---
 
 # Outils manquants : lots pour des sessions en parallèle
@@ -52,4 +52,4 @@ par lot (worktree + Claude avec Remote Control, dans tmux) ; chaque session suit
 | `formes-messages`         | 75, puis 76                         | `required-form-validator.ts`, messages de la case, `template-schema.ts` |                                   | revue de Seconde (David, 2026-11-28) ; 76 nomme le facteur fautif par le message du 75 |
 | `arrondi-court`           | 78                                  | `rounding.ts` (`judgeRounding`)                                         |                                   | petit ; revue de Seconde                                                               |
 | `valeur-absolue-distance` | 79                                  | mathAST (équivalence)                                                   |                                   | lot mathAST (règle 1) ; revue de Seconde                                               |
-| `engrenages`              | 52                                  | bloc neuf                                                               | outil-engrenages (2026-11-28)     | aucun point du programme : en dernier                                                  |
+| `engrenages`              | 52                                  | bloc neuf                                                               | fait (#3311, 2026-11-28)          | aucun point du programme : en dernier                                                  |

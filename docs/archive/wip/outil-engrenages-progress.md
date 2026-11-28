@@ -1,22 +1,19 @@
 # Chantier `outil-engrenages` : figure d'engrenages (outil n° 52)
 
-Lot `engrenages` d'[outils-lots.md](outils-lots.md). Ligne n° 52 d'[outils-manquants.md](outils-manquants.md).
-Né du relevé `idees-3e-arithmetique` ([journal archivé](../archive/wip/idees-3e-arithmetique/idees-3e-arithmetique-progress.md)) :
+Lot `engrenages` d'[outils-lots.md](../../wip/outils-lots.md). Ligne n° 52 d'[outils-manquants.md](../../wip/outils-manquants.md).
+Né du relevé `idees-3e-arithmetique` ([journal archivé](idees-3e-arithmetique/idees-3e-arithmetique-progress.md)) :
 le modèle F6 « Engrenages et évènements qui reviennent ensemble »
 (`scripts/questions/idees-3e-arithmetique-neufs/f06-engrenages-evenements.json`) pose ses roues
 dentées en texte seul.
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-28, PR 1 codée, pas encore ouverte._
+_Mis à jour le 2026-11-28 : chantier clos et archivé._
 
-- **État** : PR 1 prête (bloc, écran, animation au corrigé, PDF, catalogue, docs) ; revue
-  Sonnet faite, constats 1 à 4 corrigés (animation aussi dans l'aperçu du modèle et la
-  « Solution » d'un exercice par `InCorrection.svelte`, têtes de dents affinées, légendes du PDF
-  gardées dans la figure, animation remise au départ quand le bloc change) · **Prochaine
-  action** : PR ouverte → `pnpm pr:merger <n>`, puis outil 52 au § 4 « Livré » et lot clos · **En
-  attente de David** : rien · **Pièges en cours** : aucun · **Worktree / branche** :
-  `../ubumaths-wt-outil-engrenages`, `feat/outil-engrenages`.
+- **État** : clos. Outil n° 52 livré (#3311) ; le durable est dans `docs/systeme/ubumark.md`
+  (§ Engrenages) et la fiche `block-catalog/engrenages.ts` · **Prochaine action** : aucune ; le
+  modèle F6 de 3e (engrenages et évènements) reste aux sessions « idées » · **En attente de
+  David** : rien · **Worktree / branche** : aucun.
 
 ## Phase 0 (envoyée le 2026-11-28)
 
