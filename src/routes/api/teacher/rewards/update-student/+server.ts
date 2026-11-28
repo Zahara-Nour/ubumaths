@@ -6,13 +6,11 @@
  * Purpose: Add or remove gidouilles for a specific student
  */
 
-import { error } from '@sveltejs/kit';
+import { throwServerError } from '#lib/server/utils/error-handler.ts';
+import { error, isHttpError } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireRoles } from '#lib/server/middleware/auth.ts';
 import { z } from 'zod';
-import { createServerLogger } from '#lib/utils/logger.ts';
-
-const logger = createServerLogger('api/teacher/rewards/update-student/+server');
 
 const schema = z.object({
 	studentId: z.string().uuid(),
@@ -45,8 +43,11 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		});
 
 		if (rpcError) {
-			logger.error('[API] RPC Error:', rpcError);
-			throw error(500, rpcError.message || 'Failed to update gidouilles');
+			throwServerError(
+				'api/teacher/rewards/update-student',
+				rpcError,
+				'Impossible de modifier les gidouilles'
+			);
 		}
 
 		return Response.json({
@@ -55,7 +56,12 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			newValue
 		});
 	} catch (err) {
-		logger.error('[API] Error updating student gidouilles:', err);
-		throw error(500, 'An error occurred while updating gidouilles');
+		// L'erreur 500 levée plus haut porte déjà son message français : la relancer telle quelle.
+		if (isHttpError(err)) throw err;
+		throwServerError(
+			'api/teacher/rewards/update-student',
+			err,
+			'Impossible de modifier les gidouilles'
+		);
 	}
 };

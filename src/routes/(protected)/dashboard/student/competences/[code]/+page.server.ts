@@ -9,6 +9,7 @@
  * Spec : docs/archive/wip/skills-referentiel-design.md §6.1ter + §8
  */
 
+import { throwServerError } from '#lib/server/utils/error-handler.ts';
 import type { PageServerLoad } from './$types';
 import { error } from '@sveltejs/kit';
 import { requireRole } from '#lib/server/middleware/auth.ts';
@@ -80,7 +81,7 @@ export const load: PageServerLoad = async ({ locals, params }): Promise<Competen
 		.eq('code', code)
 		.maybeSingle();
 
-	if (cErr) throw error(500, `Erreur compétence : ${cErr.message}`);
+	if (cErr) throwServerError('student/competences', cErr, 'Impossible de charger la compétence');
 	if (!comp) throw error(404, 'Compétence introuvable');
 
 	// 2. État observables (consolidé) de l'élève

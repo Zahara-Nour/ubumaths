@@ -22,15 +22,13 @@
  * - studentId is taken from session.user.id (not from body)
  */
 
+import { throwServerError } from '#lib/server/utils/error-handler.ts';
 import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireRole } from '#lib/server/middleware/auth.ts';
 import { requireConsent } from '#lib/server/middleware/consent.ts';
 import { sellVipCardBodySchema } from '#lib/server/validation/vip-cards.ts';
 import { sellResultSchema } from '#lib/server/validation/vip-card-rpc.ts';
-import { createServerLogger } from '#lib/utils/logger.ts';
-
-const logger = createServerLogger('api/vip-cards/sell/+server');
 
 // ============================================================================
 // TYPE DEFINITIONS
@@ -68,8 +66,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	});
 
 	if (rpcError) {
-		logger.error('[sell] RPC error:', rpcError);
-		throw error(500, `Impossible de vendre la carte VIP : ${rpcError.message}`);
+		throwServerError('api/vip-cards/sell', rpcError, 'Impossible de vendre la carte VIP');
 	}
 
 	// `RETURNS jsonb` : forme validée, pas affirmée. Cette fonction crédite le

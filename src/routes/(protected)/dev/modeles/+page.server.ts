@@ -16,6 +16,7 @@
  * SECURITY : admin seul (`requireAdmin`, en plus de la garde de `/dev`) ; entrées validées par Zod.
  */
 
+import { logServerError } from '#lib/server/utils/error-handler.ts';
 import { error, fail } from '@sveltejs/kit';
 import { z } from 'zod';
 import type { Actions, PageServerLoad } from './$types';
@@ -248,7 +249,8 @@ export const actions: Actions = {
 			const review = await saveReview(supabase, parsed.data);
 			return { saved: parsed.data.templateId, review };
 		} catch (err) {
-			return fail(500, { message: err instanceof Error ? err.message : 'Verdict non enregistré' });
+			logServerError('dev/modeles/saveReview', err);
+			return fail(500, { message: 'Verdict non enregistré' });
 		}
 	},
 
@@ -262,7 +264,8 @@ export const actions: Actions = {
 			if (!removed) return fail(404, { message: 'Aucun verdict à retirer' });
 			return { deleted: parsed.data.templateId };
 		} catch (err) {
-			return fail(500, { message: err instanceof Error ? err.message : 'Verdict non retiré' });
+			logServerError('dev/modeles/deleteReview', err);
+			return fail(500, { message: 'Verdict non retiré' });
 		}
 	}
 };

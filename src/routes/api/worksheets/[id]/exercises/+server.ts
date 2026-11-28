@@ -5,6 +5,7 @@
  * PUT - Reorder exercises in the worksheet
  */
 
+import { throwServerError } from '#lib/server/utils/error-handler.ts';
 import {
 	latestVersionId,
 	WORKSHEET_LINE_VERSION,
@@ -319,8 +320,11 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 	);
 
 	if (rpcError) {
-		logger.error('Failed to reorder exercises:', rpcError);
-		throw error(500, rpcError.message || 'Impossible de réordonner les exercices');
+		throwServerError(
+			'api/worksheets/exercises/reorder',
+			rpcError,
+			'Impossible de réordonner les exercices'
+		);
 	}
 
 	// Validate response

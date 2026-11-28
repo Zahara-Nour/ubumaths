@@ -24,6 +24,7 @@
  * - Score calculation: 20 - total_warnings (max 20, min 0)
  */
 
+import { throwServerError } from '#lib/server/utils/error-handler.ts';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '#lib/types/database.ts';
 import { error } from '@sveltejs/kit';
@@ -116,8 +117,11 @@ export async function getCurrentAcademicPeriod(options: {
 		.maybeSingle();
 
 	if (anneeError) {
-		logger.error('[getCurrentAcademicPeriod] Error fetching school year:', anneeError);
-		throw error(500, `Failed to fetch current academic period: ${anneeError.message}`);
+		throwServerError(
+			'warnings/getCurrentAcademicPeriod/annee',
+			anneeError,
+			'Impossible de charger la période scolaire en cours'
+		);
 	}
 
 	if (!annee) return null;
@@ -139,8 +143,11 @@ export async function getCurrentAcademicPeriod(options: {
 		.maybeSingle();
 
 	if (queryError) {
-		logger.error('[getCurrentAcademicPeriod] Error fetching period:', queryError);
-		throw error(500, `Failed to fetch current academic period: ${queryError.message}`);
+		throwServerError(
+			'warnings/getCurrentAcademicPeriod/periode',
+			queryError,
+			'Impossible de charger la période scolaire en cours'
+		);
 	}
 
 	// Type assertion: RPC returns proper structure
@@ -188,8 +195,11 @@ export async function getClassWarnings(options: {
 		.maybeSingle();
 
 	if (classError) {
-		logger.error('[getClassWarnings] Error checking class existence:', classError);
-		throw error(500, `Failed to check class existence: ${classError.message}`);
+		throwServerError(
+			'warnings/getClassWarnings/classe',
+			classError,
+			'Impossible de vérifier la classe'
+		);
 	}
 
 	if (!classCheck) {
@@ -212,7 +222,11 @@ export async function getClassWarnings(options: {
 	};
 
 	if (warningsError) {
-		throw error(500, `Failed to fetch warnings: ${warningsError.message}`);
+		throwServerError(
+			'warnings/getClassWarnings/avertissements',
+			warningsError,
+			'Impossible de charger les avertissements'
+		);
 	}
 
 	// Aggregate warnings by student
@@ -267,8 +281,11 @@ export async function addWarningsBulk(options: {
 	});
 
 	if (rpcError) {
-		logger.error('[addWarningsBulk] RPC error:', rpcError);
-		throw error(500, `Failed to add warnings: ${rpcError.message}`);
+		throwServerError(
+			'warnings/addWarningsBulk',
+			rpcError,
+			'Impossible d’ajouter les avertissements'
+		);
 	}
 
 	// RPC returns JSON; Supabase types it as `unknown` so we cast to our known shape
@@ -320,8 +337,11 @@ export async function removeWarningsBulk(options: {
 	});
 
 	if (rpcError) {
-		logger.error('[removeWarningsBulk] RPC error:', rpcError);
-		throw error(500, `Failed to remove warnings: ${rpcError.message}`);
+		throwServerError(
+			'warnings/removeWarningsBulk',
+			rpcError,
+			'Impossible de retirer les avertissements'
+		);
 	}
 
 	const result = data as unknown as {
@@ -424,8 +444,11 @@ export async function getSchoolYearPeriods(options: {
 		.order('period_order', { ascending: true });
 
 	if (queryError) {
-		logger.error('[getSchoolYearPeriods] Error fetching periods:', queryError);
-		throw error(500, `Failed to fetch academic periods: ${queryError.message}`);
+		throwServerError(
+			'warnings/getSchoolYearPeriods',
+			queryError,
+			'Impossible de charger les périodes scolaires'
+		);
 	}
 
 	return data || [];
@@ -462,8 +485,11 @@ export async function getActiveSchoolYear(options: {
 		.maybeSingle();
 
 	if (queryError) {
-		logger.error('[getActiveSchoolYear] Error fetching school year:', queryError);
-		throw error(500, `Failed to fetch active school year: ${queryError.message}`);
+		throwServerError(
+			'warnings/getActiveSchoolYear',
+			queryError,
+			'Impossible de charger l’année scolaire active'
+		);
 	}
 
 	return data as SchoolYear | null;

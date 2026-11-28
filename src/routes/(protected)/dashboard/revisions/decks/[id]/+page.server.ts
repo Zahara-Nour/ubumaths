@@ -8,6 +8,7 @@
  * Cf. docs/archive/wip/srs-fsrs-spec-tdd.md §6 + §8
  */
 
+import { throwServerError } from '#lib/server/utils/error-handler.ts';
 import type { PageServerLoad } from './$types';
 import { error, redirect } from '@sveltejs/kit';
 import { UNASSIGNED_KEY } from './constants';
@@ -53,7 +54,7 @@ export const load: PageServerLoad = async ({ params, locals }): Promise<DeckDeta
 		.eq('id', params.id)
 		.maybeSingle();
 
-	if (deckErr) throw error(500, deckErr.message);
+	if (deckErr) throwServerError('revisions/decks/deck', deckErr, 'Impossible de charger le deck');
 	if (!deck) throw error(404, 'Deck introuvable');
 	if (deck.owner_id !== user.id) throw error(403, 'Accès refusé');
 
@@ -70,7 +71,8 @@ export const load: PageServerLoad = async ({ params, locals }): Promise<DeckDeta
 		.order('display_order', { ascending: true })
 		.order('name', { ascending: true });
 
-	if (sectionsErr) throw error(500, sectionsErr.message);
+	if (sectionsErr)
+		throwServerError('revisions/decks/sections', sectionsErr, 'Impossible de charger les sections');
 
 	const sections: DeckSection[] = sectionsData ?? [];
 
@@ -81,7 +83,8 @@ export const load: PageServerLoad = async ({ params, locals }): Promise<DeckDeta
 		.eq('deck_id', deck.id)
 		.order('created_at', { ascending: true });
 
-	if (cardsErr) throw error(500, cardsErr.message);
+	if (cardsErr)
+		throwServerError('revisions/decks/cartes', cardsErr, 'Impossible de charger les cartes');
 
 	type CardRow = {
 		id: string;

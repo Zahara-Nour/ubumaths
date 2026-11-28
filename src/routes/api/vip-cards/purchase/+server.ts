@@ -23,15 +23,13 @@
  * - All validation happens in purchase_vip_card RPC for atomicity
  */
 
+import { throwServerError } from '#lib/server/utils/error-handler.ts';
 import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireRole } from '#lib/server/middleware/auth.ts';
 import { requireConsent } from '#lib/server/middleware/consent.ts';
 import { purchaseVipCardBodySchema } from '#lib/server/validation/vip-cards.ts';
 import { purchaseResultSchema } from '#lib/server/validation/vip-card-rpc.ts';
-import { createServerLogger } from '#lib/utils/logger.ts';
-
-const logger = createServerLogger('api/vip-cards/purchase/+server');
 
 // ============================================================================
 // TYPE DEFINITIONS
@@ -75,8 +73,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	});
 
 	if (rpcError) {
-		logger.error('[purchase] RPC error:', rpcError);
-		throw error(500, `Impossible d’acheter la carte VIP : ${rpcError.message}`);
+		throwServerError('api/vip-cards/purchase', rpcError, 'Impossible d’acheter la carte VIP');
 	}
 
 	// The RPC returns a JSON object with the result

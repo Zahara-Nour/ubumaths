@@ -13,6 +13,7 @@
  * - nodes: arbre des notions (nœuds non archivés), pour le champ « Rangé dans »
  */
 
+import { throwServerError } from '#lib/server/utils/error-handler.ts';
 import { error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import { validateUuidParam } from '#lib/server/validation/params.ts';
@@ -71,7 +72,7 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 		programmeTags = tags;
 		factSheet = buildTemplateFactSheet(row, nodes, tags);
 	} catch (err) {
-		throw error(500, err instanceof Error ? err.message : 'Tags du modèle illisibles');
+		throwServerError('admin/questions/edit/tags', err, 'Tags du modèle illisibles');
 	}
 
 	return {

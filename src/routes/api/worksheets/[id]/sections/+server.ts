@@ -5,6 +5,7 @@
  * PUT - Reorder sections in the worksheet
  */
 
+import { throwServerError } from '#lib/server/utils/error-handler.ts';
 import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireRoles } from '#lib/server/middleware/auth.ts';
@@ -251,8 +252,11 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 	);
 
 	if (rpcError) {
-		logger.error('Failed to reorder sections:', rpcError);
-		throw error(500, rpcError.message || 'Impossible de réordonner les sections');
+		throwServerError(
+			'api/worksheets/sections/reorder',
+			rpcError,
+			'Impossible de réordonner les sections'
+		);
 	}
 
 	// Validate response
