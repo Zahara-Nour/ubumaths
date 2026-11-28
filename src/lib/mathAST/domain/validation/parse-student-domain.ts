@@ -100,7 +100,7 @@ export function parseStudentDomainPieces(
 	const parsers: Array<() => ParseStudentDomainPiecesResult> = [
 		() => asSinglePiece(normalizedInput, parseSetNotation(normalizedInput)),
 		() => parseIntervalNotation(normalizedInput, options),
-		() => asSinglePiece(normalizedInput, parseConditionNotation(normalizedInput, variable))
+		() => asSinglePiece(normalizedInput, parseConditionNotation(normalizedInput, variable, options))
 	];
 
 	for (const parser of parsers) {
@@ -127,7 +127,8 @@ export interface StudentDomainOptions {
 	readonly intersections?: boolean;
 	/**
 	 * Les bornes à paramètre de l'atelier (`f(x) = x sur [k;5]`, chantier
-	 * fonctions-morceaux) : chaque borne lue passe par cette fonction AVANT d'être
+	 * fonctions-morceaux ; `pour x > k`, chantier fonctions-domaines) : chaque
+	 * borne lue, d'un ensemble ou d'une condition, passe par cette fonction AVANT d'être
 	 * jugée « nombre réel » — l'atelier y remplace `k` par sa valeur. `null` :
 	 * la borne n'est pas lisible. Sans elle, une lettre dans une borne est refusée.
 	 */
@@ -540,7 +541,11 @@ function parseSingleInterval(
 /**
  * Parse condition notation: x > 0, x >= 0 et x != 1, 0 < x <= 5
  */
-function parseConditionNotation(input: string, variable: string): ParseStudentDomainResult {
+function parseConditionNotation(
+	input: string,
+	variable: string,
+	options: StudentDomainOptions = {}
+): ParseStudentDomainResult {
 	const trimmed = input.trim();
 
 	// Check for compound conditions (et/ou)
@@ -552,7 +557,7 @@ function parseConditionNotation(input: string, variable: string): ParseStudentDo
 		let result: Domain = universalDomain();
 
 		for (const part of parts) {
-			const partResult = parseSingleCondition(part, variable);
+			const partResult = parseSingleCondition(part, variable, options);
 			if (!partResult.success) {
 				return partResult;
 			}
@@ -571,7 +576,7 @@ function parseConditionNotation(input: string, variable: string): ParseStudentDo
 		let result: Domain = emptyDomain();
 
 		for (const part of parts) {
-			const partResult = parseSingleCondition(part, variable);
+			const partResult = parseSingleCondition(part, variable, options);
 			if (!partResult.success) {
 				return partResult;
 			}
@@ -582,13 +587,17 @@ function parseConditionNotation(input: string, variable: string): ParseStudentDo
 		return { success: true, domain: result, format: 'condition' };
 	}
 
-	return parseSingleCondition(trimmed, variable);
+	return parseSingleCondition(trimmed, variable, options);
 }
 
 /**
  * Parse a single condition.
  */
-function parseSingleCondition(input: string, variable: string): ParseStudentDomainResult {
+function parseSingleCondition(
+	input: string,
+	variable: string,
+	options: StudentDomainOptions = {}
+): ParseStudentDomainResult {
 	const trimmed = input.trim();
 
 	// Pattern: a < x <= b (double inequality)
@@ -599,8 +608,8 @@ function parseSingleCondition(input: string, variable: string): ParseStudentDoma
 			return { success: false, error: `Variable attendue: ${variable}, trouvée: ${varName}` };
 		}
 
-		const leftValue = parseEndpointValue(leftStr.trim());
-		const rightValue = parseEndpointValue(rightStr.trim());
+		const leftValue = parseEndpointValue(leftStr.trim(), options);
+		const rightValue = parseEndpointValue(rightStr.trim(), options);
 
 		if (leftValue === null || rightValue === null) {
 			return { success: false, error: 'Bornes non reconnues' };
@@ -631,7 +640,7 @@ function parseSingleCondition(input: string, variable: string): ParseStudentDoma
 	const neqMatch = trimmed.match(new RegExp(`^${variable}\\s*!=\\s*(.+)$`));
 	if (neqMatch) {
 		const valueStr = neqMatch[1].trim();
-		const value = parseEndpointValue(valueStr);
+		const value = parseEndpointValue(valueStr, options);
 		if (value === null) {
 			return { success: false, error: `Valeur non reconnue: ${valueStr}` };
 		}
@@ -647,7 +656,7 @@ function parseSingleCondition(input: string, variable: string): ParseStudentDoma
 	const simpleMatch = trimmed.match(new RegExp(`^${variable}\\s*(>=|<=|>|<)\\s*(.+)$`));
 	if (simpleMatch) {
 		const [, op, valueStr] = simpleMatch;
-		const value = parseEndpointValue(valueStr.trim());
+		const value = parseEndpointValue(valueStr.trim(), options);
 		if (value === null) {
 			return { success: false, error: `Valeur non reconnue: ${valueStr}` };
 		}
@@ -686,7 +695,7 @@ function parseSingleCondition(input: string, variable: string): ParseStudentDoma
 			return { success: false, error: `Variable attendue: ${variable}, trouvée: ${varName}` };
 		}
 
-		const value = parseEndpointValue(valueStr.trim());
+		const value = parseEndpointValue(valueStr.trim(), options);
 		if (value === null) {
 			return { success: false, error: `Valeur non reconnue: ${valueStr}` };
 		}

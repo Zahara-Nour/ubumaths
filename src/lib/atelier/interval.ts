@@ -98,10 +98,10 @@ export const UNREADABLE_INTERVAL =
 
 /**
  * Une condition illisible : une autre lettre que celle de la fonction, ou une
- * borne qui cite un objet (`pour x > k` ; `sur [k;5]` le permet, pas encore « pour »).
+ * borne illisible (`pour x > 2 > 1`). Une borne qui cite une valeur (`pour x > k`) est lue.
  */
 export const UNREADABLE_CONDITION =
-	"Je n'ai pas su lire la condition : elle compare la lettre de la fonction à des nombres, par exemple pour x > 2.";
+	"Je n'ai pas su lire la condition : elle compare la lettre de la fonction à des nombres ou à des valeurs, par exemple pour x > 2 ou pour x > k.";
 
 export const ONE_FORMULA =
 	'Une seule formule par fonction : les fonctions par morceaux ne s’écrivent pas encore.';
