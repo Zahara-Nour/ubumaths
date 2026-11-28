@@ -87,6 +87,20 @@ export const solideEntry: BlockCatalogEntry = {
 						'Cube, pavé, prisme, pyramide : des droites qui passent par deux points nommés (sommets ou points de points:), dessinées en bleu. Chaque droite traverse le solide et le dépasse un peu des deux côtés. Elle est en tirets là où une face du solide passe devant elle, en trait plein ailleurs ; avec cachees: non, en trait plein partout. d = (IG) écrit (d) près d’un bout de la droite (une minuscule, puis éventuellement un chiffre ou ’). Les parenthèses sont facultatives. Les sommets doivent être nommés ; au plus 4 droites. Le lecteur d’écran lit « droite (IG) », jamais si deux droites se coupent ou sont parallèles : ce peut être la réponse. Pas encore avec section: ni tracer:.'
 				},
 				{
+					key: 'segments',
+					values: '[AG] | [EG], [AG] (séparés par des virgules)',
+					defaultValue: null,
+					description:
+						'Cube, pavé, prisme, pyramide : des segments entre deux points nommés (sommets ou points de points:), dessinés en bleu d’un point à l’autre, comme la diagonale [AG] d’un cube. Un segment est en tirets là où une face du solide passe devant lui, en trait plein ailleurs ; avec cachees: non, en trait plein partout. Une arête ne se donne pas en segment : marquer: arete AE la trace épaisse. Les crochets sont facultatifs. Les sommets doivent être nommés ; au plus 6 segments. Le lecteur d’écran lit « segment [AG] », jamais sa longueur : ce peut être la réponse. Pas encore avec section: ni tracer:.'
+				},
+				{
+					key: 'angles-droits',
+					values: 'AEG | AEG, SOA (séparés par des virgules)',
+					defaultValue: null,
+					description:
+						'Cube, pavé, prisme, pyramide : code un angle droit par un petit carré bleu, au sommet de l’angle, la lettre du milieu (AEG : l’angle droit en E, entre [EA] et [EG]). Le carré est dans le plan des trois points : en perspective, il devient un petit losange penché. Il est en tirets là où une face du solide passe devant lui. L’angle doit être droit dans le solide, sinon le bloc le refuse. Au plus 3 angles droits. Le lecteur d’écran lit « angle droit en E ». Pas encore avec section: ni tracer:.'
+				},
+				{
 					key: 'plans',
 					values: '(BDE) | P = (ACG) (séparés par des virgules)',
 					defaultValue: null,
@@ -344,6 +358,32 @@ export const solideEntry: BlockCatalogEntry = {
 				'Dans le repère (A ; AB, AD, AE), M a pour coordonnées (1 ; 0,5 ; 1) : c’est le milieu de [FG]. Les trois flèches partent de A ; le point sert à la droite (AM) comme un sommet.'
 		},
 		{
+			title: 'Une diagonale du cube et son triangle rectangle',
+			source: fence(
+				'solide',
+				'forme: cube 5',
+				'sommets: A B C D E F G H',
+				'segments: [HF], [DF]',
+				'angles-droits: DHF',
+				'cotes: cm'
+			),
+			explanation:
+				'Pour calculer DF avec Pythagore : [HF] est la diagonale de la face du dessus, [DF] traverse le cube, en tirets. Le triangle DHF est rectangle en H. La diagonale [AG] se dessinerait sur l’arête [FG] : dans un cube en perspective cavalière, elle passe par F.'
+		},
+		{
+			title: 'La demi-diagonale d’une pyramide',
+			source: fence(
+				'solide',
+				'forme: pyramide carree 4 3',
+				'sommets: S A B C D',
+				'points: O centre ABCD',
+				'segments: [SO], [OA]',
+				'angles-droits: SOA'
+			),
+			explanation:
+				'O, le centre de la base, est le pied de la hauteur [SO] ; le triangle SOA est rectangle en O : de quoi calculer l’arête [SA].'
+		},
+		{
 			title: 'Sans arêtes cachées',
 			source: fence('solide', 'forme: pave 4 2 3', 'cachees: non'),
 			explanation: 'Toutes les arêtes en trait plein : une perspective à corriger.'
@@ -420,6 +460,19 @@ export const solideEntry: BlockCatalogEntry = {
 			),
 			message: 'même droite',
 			explanation: 'O, le centre du cube, est sur (AG) : (AO) et (AG) sont une seule droite.'
+		},
+		{
+			title: 'Une arête donnée en segment',
+			source: fence('solide', 'forme: cube 2', 'sommets: A B C D E F G H', 'segments: [AE]'),
+			message: 'est une arête',
+			explanation: 'Pour faire ressortir une arête : marquer: arete AE.'
+		},
+		{
+			title: 'Un angle qui n’est pas droit',
+			source: fence('solide', 'forme: cube 2', 'sommets: A B C D E F G H', 'angles-droits: AGE'),
+			message: 'n’est pas droit',
+			explanation:
+				'Dans le triangle AEG, l’angle droit est en E : la lettre du milieu est le sommet de l’angle (AEG).'
 		},
 		{
 			title: 'Trois points alignés pour un plan',

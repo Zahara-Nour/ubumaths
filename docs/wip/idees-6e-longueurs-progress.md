@@ -2,19 +2,20 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-28, migrations générées, PR à merger._
+_Mis à jour le 2026-11-28, série publiée, #3269 (id de la série) en cours de merge._
 
-- **État** : 6 brouillons en prod ; migrations `20261127233649_…_neufs_rangement_tags.sql` (6 modèles rangés, 4
-  tags) et `20261127233659_…_publies_contenu.sql` (+11 variations sur 6 publiés) ; tests verts, rouges sans elles ;
-  `security-auditor` sans finding bloquant. Niveaux relevés en prod le 2026-11-28 : inchangés.
-- **Prochaine action** : PR mergée → `migration list --linked` (seulement les 2 nôtres en attente) → `db:migrate`
-  depuis le dépôt principal → vérifier par MCP → série de relecture des 6 publiés (`scripts/series/creer-serie.ts`)
-  et relecture des 6 brouillons dans `/dev/modeles?point=…`.
-- **En attente de David** : oui / non à la correction de fdd849f5 (variation 7, `conditions: []` → `['a>b']`),
-  **hors de ce lot** faute de réponse ; à réserver d'abord, migration de contenu à part.
-- **Pièges en cours** : `conditions: []` écrase les conditions partagées ; ccb4f5e5 gagne `constraints.products:
-off` ; la commande est `pnpm tsx scripts/create-questions.ts`.
-- **Worktree / branche** : `../ubumaths-wt-idees-6e-longueurs`, `feat/idees-6e-longueurs-rangement`.
+- **État** : tout le lot est en prod (#3262, #3265, `db:migrate` vérifiés par MCP). David a publié la série de
+  relecture `aa16caa1` (6 publiés complétés) ; id commité par #3269 (`pr:merger` lancé : vérifier `MERGED`, sinon
+  la merger). Puis David : « je valide » (2026-11-28).
+- **Prochaine action** : lire les verdicts en base (`question_template_reviews`, `reviewed_at` du 2026-11-28) pour
+  les 6 brouillons et les 6 publiés ; si « je valide » couvre tout (à confirmer avec David si des verdicts manquent),
+  `publier-lot.ts --dir scripts/questions/idees-6e-longueurs-neufs` en simulation, David `--publier` ; puis lever
+  les réservations des 6 publiés, rubrique « publiée » dans `idees-ailleurs-repartition.md`, versement du journal.
+- **En attente de David** : la commande `--publier` de `publier-lot.ts`, après la simulation.
+- **Pièges en cours** : `conditions: []` écrase les conditions partagées ; le pre-commit laisse l'index d'une
+  fixture JSON dans sa forme d'avant prettier (`MM`) : vérifier `git diff HEAD`, puis `git restore --staged`.
+- **Worktree / branche** : `../ubumaths-wt-idees-6e-longueurs-serie` (`chore/idees-6e-longueurs-serie`, #3269),
+  retiré par `pr:merger` au merge.
 
 ## Phase 0 (2026-11-27)
 
@@ -111,6 +112,15 @@ Page à cocher : https://claude.ai/artifact/6bCd5vw2yxYQ7pQvQUJ7uV (Oui / Non / 
   CM1-068, plages réduites à deux chiffres après la virgule.
 
 ## Historique
+
+- 2026-11-28 : David publie la série `aa16caa1` (id → #3269), puis « je valide ».
+
+- 2026-11-28 : #3265 mergée, `db:migrate`, fdd849f5 vérifié par MCP (variation n° 8 `["a>b"]`, 9 variations) ;
+  réservation de fdd849f5 levée.
+
+- 2026-11-28 : #3262 mergée, `db:migrate` (2 migrations), vérifié par MCP. David : « je te suis » sur fdd849f5 →
+  migration de contenu `20261127235012_…_correction_contenu.sql` (variation n° 8 seule), 335 verts, rouge sans
+  elle ; série de relecture des 6 publiés simulée en prod.
 
 - 2026-11-28 : niveaux relevés en prod (inchangés), migrations de rangement et de contenu générées ;
   `migrations-rangement-tags` et `migrations-contenu-publie` : 511 verts, rouges sans les migrations ;

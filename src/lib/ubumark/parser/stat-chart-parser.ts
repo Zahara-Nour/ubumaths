@@ -3026,6 +3026,23 @@ function boxNumber(raw: string): number {
 	return value;
 }
 
+/**
+ * Une des cinq valeurs d'une boîte : un nombre, ou une fraction d'entiers (`1/2`),
+ * comme dans `données:` (écart L90 : les deux écritures répondent pareil)
+ */
+function boxValue(raw: string): number {
+	const fraction = RAW_FRACTION.exec(raw.replaceAll('−', '-'));
+	if (!fraction) return boxNumber(raw);
+	const value = rawNumber(raw);
+	if (value === null || !Number.isFinite(value)) {
+		throw new LineError(`« ${raw.trim()} » n’est pas un nombre (écrire par exemple 12 ou 12,5)`);
+	}
+	if (Math.abs(value) > STAT_CHART_LIMITS.maxValue) {
+		throw new LineError('nombre trop grand (au plus 10^9 en valeur absolue)');
+	}
+	return value;
+}
+
 /** `axe: 25 à 60, de 5 en 5` : départ quelconque, décimaux permis, au plus 40 graduations */
 function parseBoxAxis(raw: string): NonNullable<BoxPlotData['axis']> {
 	const match = AXIS_REGEX.exec(raw.trim());
@@ -3066,7 +3083,7 @@ function parseBoxValues(raw: string): BoxPlotBox['values'] | null {
 	const masked = texts.filter(isMaskedValue).length;
 	if (masked === 5) return null;
 	if (masked > 0) throw new LineError('« ? » : les cinq valeurs, ou aucune');
-	const values = texts.map(boxNumber) as BoxPlotBox['values'];
+	const values = texts.map(boxValue) as BoxPlotBox['values'];
 	for (let i = 0; i < 4; i++) {
 		if (values[i] > values[i + 1]) {
 			const [a, b] = [BOX_PLOT_VALUE_NAMES[i], BOX_PLOT_VALUE_NAMES[i + 1]];

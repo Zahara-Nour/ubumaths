@@ -764,3 +764,11 @@ positions relatives ; le repère sert ensuite aux calculs (représentations para
   `retrouver:` côté élève.
 - « (Q) » sur la zone teintée de (P) : David n'en a rien dit, laissé.
 - Revue : aucune (correctif d'affichage, sans logique).
+
+## 23. Hors des lots : segments et angles droits du bloc solide (2026-11-28)
+
+Outil n° 72 d'`outils-manquants.md`, fait par la session `outils` dans son propre chantier, journal
+[solide-segments](../archive/wip/solide-segments-progress.md), #3264 : `segments: [HF], [DF]` et
+`angles-droits: DHF` (polyèdres, ni `section:` ni `tracer:`, rotation et PDF compris). Reprend
+`hiddenStretches` comme les droites. Piège : en cavalière, la diagonale [AG] d'un cube se dessine sur
+l'arête [FG].

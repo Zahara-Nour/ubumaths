@@ -39,10 +39,11 @@ async function renderCard(
 		distinctMax?: number | null;
 		onUpdateQuantity?: (templateId: string, quantity: number) => void;
 		onUpdateVariations?: (templateId: string, variations: number[] | undefined) => void;
+		item?: SeriesItem;
 	} = {}
 ) {
 	return await render(CartQuestionCard, {
-		item: ITEM,
+		item: overrides.item ?? ITEM,
 		template: overrides.template === false ? undefined : TEMPLATE_WITH_ID,
 		instance,
 		onIncrementQuantity: vi.fn(),
@@ -577,5 +578,20 @@ describe('CartQuestionCard — variations choisies sur la carte (PR A2)', () => 
 			.toBeInTheDocument();
 		expect(page.getByRole('button', { name: /^\d\/\d, / }).query()).toBeNull();
 		expect(page.getByRole('checkbox', { name: /en QCM/ }).query()).toBeNull();
+	});
+});
+
+describe('CartQuestionCard — durée jusqu’à 10 min (écart L92)', () => {
+	it('à 300 s, « + » passe à 305 s ; à 600 s, il est désactivé', async () => {
+		const onUpdateDelay = vi.fn();
+		const at300 = await renderCard({ onUpdateDelay, item: { ...ITEM, delay: 300 } });
+		const plus = at300.getByRole('button', { name: 'Augmenter la durée' });
+		await expect.element(plus).toBeEnabled();
+		await plus.click({ force: true });
+		expect(onUpdateDelay).toHaveBeenCalledWith(ITEM.templateId, 305);
+		await at300.unmount();
+
+		const at600 = await renderCard({ item: { ...ITEM, delay: 600 } });
+		await expect.element(at600.getByRole('button', { name: 'Augmenter la durée' })).toBeDisabled();
 	});
 });

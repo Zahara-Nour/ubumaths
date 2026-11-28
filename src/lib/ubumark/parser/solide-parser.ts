@@ -67,6 +67,8 @@ import {
 	SOLIDE_MAX_PLANS,
 	SOLIDE_MAX_POINTS,
 	SOLIDE_MAX_RATIO,
+	SOLIDE_MAX_RIGHT_ANGLES,
+	SOLIDE_MAX_SEGMENTS,
 	SOLIDE_MAX_TERMS,
 	SOLIDE_MAX_VECTORS,
 	SOLIDE_UNITS,
@@ -76,7 +78,9 @@ import {
 	type SolidePlan,
 	type SolidePoint,
 	type SolideRepere,
+	type SolideRightAngle,
 	type SolideSection,
+	type SolideSegment,
 	type SolideSpec,
 	type SolideTask,
 	type SolideVector,
@@ -100,8 +104,8 @@ import { isNullCombination, solideVectorPairs } from '../utils/solide-gestes';
 // CONSTANTES
 // ============================================================================
 
-/** `clé: valeur` */
-const KEY_LINE_REGEX = /^([A-Za-zÀ-ÿ]+)\s*:\s*(.*)$/;
+/** `clé: valeur` ; une clé : des lettres, un tiret entre deux mots permis (`angles-droits:`) */
+const KEY_LINE_REGEX = /^([A-Za-zÀ-ÿ]+(?:-[A-Za-zÀ-ÿ]+)*)\s*:\s*(.*)$/;
 
 const KEY_LIST = SOLIDE_KEYS.join(', ');
 
@@ -139,6 +143,9 @@ const SAME_POINT = 1e-9;
 const COORDINATE_REGEX = /^-?\d+(?:[.,]\d+)?$/;
 
 const REPERE_USAGE = 'ex. repere: A ; AB, AD, AE';
+
+/** Un angle est droit quand son cosinus est, en valeur absolue, sous ce seuil (arrondis des calculs) */
+const RIGHT_ANGLE_COS = 1e-9;
 
 /** Un point est sur une droite quand il en est à moins de cette part de la plus grande dimension */
 const SAME_LINE = 1e-9;
@@ -824,6 +831,93 @@ function readDroites(
 	return droites;
 }
 
+/** Les segments de `segments:` ; une phrase d'erreur sinon */
+function readSegments(
+	value: string,
+	shape: { form: SolideForm; dims: number[] },
+	topology: SolideTopology,
+	names: (string | null)[],
+	points: SolidePoint[]
+): SolideSegment[] | string {
+	const items = value.split(',').filter((i) => i.trim() !== '');
+	if (items.length > SOLIDE_MAX_SEGMENTS) return `au plus ${SOLIDE_MAX_SEGMENTS} segments`;
+	const known = [...names.map((n) => n ?? ''), ...points.map((p) => p.name)];
+	const at = solidePoints3(shape.form, shape.dims, points);
+	const segments: SolideSegment[] = [];
+	for (const item of items) {
+		const refs = namedPoints(item, known);
+		if (typeof refs === 'string') return refs;
+		const written = `[${refs.map((i) => known[i]).join('')}]`;
+		if (refs.length !== 2)
+			return `« ${item.trim()} » : un segment se désigne par deux points (ex. [AG])`;
+		const [a, b] = refs;
+		if (samePosition(at[a], at[b])) return `${written} : un segment va d’un point à un autre`;
+		if (topology.edges.some(([i, j]) => (i === a && j === b) || (i === b && j === a))) {
+			return `${written} est une arête : marquer: arete ${known[a]}${known[b]}`;
+		}
+		const same = segments.find(
+			(s) =>
+				(samePosition(at[s.from], at[a]) && samePosition(at[s.to], at[b])) ||
+				(samePosition(at[s.from], at[b]) && samePosition(at[s.to], at[a]))
+		);
+		if (same !== undefined) return `${written} deux fois : chaque segment une fois`;
+		segments.push({ from: a, to: b });
+	}
+	return segments;
+}
+
+/** Les angles droits de `angles-droits:` ; une phrase d'erreur sinon */
+function readRightAngles(
+	value: string,
+	shape: { form: SolideForm; dims: number[] },
+	names: (string | null)[],
+	points: SolidePoint[]
+): SolideRightAngle[] | string {
+	const items = value.split(',').filter((i) => i.trim() !== '');
+	if (items.length > SOLIDE_MAX_RIGHT_ANGLES) {
+		return `au plus ${SOLIDE_MAX_RIGHT_ANGLES} angles droits`;
+	}
+	const known = [...names.map((n) => n ?? ''), ...points.map((p) => p.name)];
+	const at = solidePoints3(shape.form, shape.dims, points);
+	const angles: SolideRightAngle[] = [];
+	for (const item of items) {
+		const refs = namedPoints(item, known);
+		if (typeof refs === 'string') return refs;
+		const written = refs.map((i) => known[i]).join('');
+		if (refs.length !== 3) {
+			return `« ${item.trim()} » : un angle se désigne par trois points, le sommet au milieu (ex. AEG)`;
+		}
+		const [from, vertex, to] = refs;
+		if (samePosition(at[from], at[vertex]) || samePosition(at[to], at[vertex])) {
+			return `${written} : trois points distincts, le sommet au milieu`;
+		}
+		const u = {
+			x: at[from].x - at[vertex].x,
+			y: at[from].y - at[vertex].y,
+			z: at[from].z - at[vertex].z
+		};
+		const w = {
+			x: at[to].x - at[vertex].x,
+			y: at[to].y - at[vertex].y,
+			z: at[to].z - at[vertex].z
+		};
+		// Cosinus de l'angle : nul à l'arrondi près des calculs
+		const cos =
+			(u.x * w.x + u.y * w.y + u.z * w.z) / (Math.hypot(u.x, u.y, u.z) * Math.hypot(w.x, w.y, w.z));
+		if (Math.abs(cos) > RIGHT_ANGLE_COS) return `l’angle ${written} n’est pas droit`;
+		if (
+			angles.some(
+				(a) =>
+					a.at === vertex && ((a.from === from && a.to === to) || (a.from === to && a.to === from))
+			)
+		) {
+			return `${written} deux fois : chaque angle une fois`;
+		}
+		angles.push({ from, at: vertex, to });
+	}
+	return angles;
+}
+
 /** Les plans de `plans:` ; une phrase d'erreur sinon */
 function readPlans(
 	value: string,
@@ -1073,7 +1167,15 @@ export function parseSolideContent(source: string): {
 	let vectors: SolideVector[] = [];
 	const needs = (
 		entry: { line: number },
-		what: 'points' | 'vecteurs' | 'droites' | 'plans' | 'repere' | 'tracer'
+		what:
+			| 'points'
+			| 'vecteurs'
+			| 'droites'
+			| 'segments'
+			| 'angles-droits'
+			| 'plans'
+			| 'repere'
+			| 'tracer'
 	): boolean => {
 		if (topology.curved) {
 			fail(entry.line, `${what} : polyèdres seulement (pas ${topology.indefinite})`);
@@ -1084,6 +1186,8 @@ export function parseSolideContent(source: string): {
 				points: 'déclarer des points',
 				vecteurs: 'dessiner des vecteurs',
 				droites: 'dessiner des droites',
+				segments: 'dessiner des segments',
+				'angles-droits': 'coder des angles droits',
 				plans: 'dessiner des plans',
 				repere: 'poser un repère',
 				tracer: 'faire tracer un vecteur'
@@ -1161,6 +1265,29 @@ export function parseSolideContent(source: string): {
 			else droites = read;
 		}
 	}
+	// Segments et angles droits (`segments:`, `angles-droits:`, outil n° 72) : par des
+	// points nommés, comme les droites ; pas encore avec le plan de coupe ni le geste
+	/** La ligne `key` se lit-elle ? (refus du plan de coupe et du geste, puis des points nommés) */
+	const readable = (key: 'segments' | 'angles-droits', entry: { line: number }): boolean => {
+		for (const other of ['section', 'tracer'] as const) {
+			if (seen.has(other)) fail(entry.line, `${key}: ne va pas encore avec ${other}:`);
+		}
+		return needs(entry, key) && names !== null && pointsRead;
+	};
+	const segmentsEntry = seen.get('segments');
+	let segments: SolideSegment[] = [];
+	if (segmentsEntry !== undefined && readable('segments', segmentsEntry) && names !== null) {
+		const read = readSegments(segmentsEntry.value, shape, topology, names, points);
+		if (typeof read === 'string') fail(segmentsEntry.line, read);
+		else segments = read;
+	}
+	const anglesEntry = seen.get('angles-droits');
+	let rightAngles: SolideRightAngle[] = [];
+	if (anglesEntry !== undefined && readable('angles-droits', anglesEntry) && names !== null) {
+		const read = readRightAngles(anglesEntry.value, shape, names, points);
+		if (typeof read === 'string') fail(anglesEntry.line, read);
+		else rightAngles = read;
+	}
 	// Plans (`plans:`, chantier `solides-3d`, lot 7b) : par trois points nommés
 	const plansEntry = seen.get('plans');
 	let plans: SolidePlan[] = [];
@@ -1230,6 +1357,8 @@ export function parseSolideContent(source: string): {
 			points,
 			vectors,
 			...(droites.length > 0 && { droites }),
+			...(segments.length > 0 && { segments }),
+			...(rightAngles.length > 0 && { rightAngles }),
 			...(plans.length > 0 && { plans }),
 			...(repere !== undefined && { repere }),
 			...(task !== undefined && { task }),

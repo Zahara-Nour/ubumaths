@@ -100,31 +100,31 @@ figurent pas. Les deux fichiers `TA` ne sont pas repris.
 Leurs rubriques telles quelles, une ligne chacune. Comptes relevés le 2026-11-22, sans les
 anciennes versions. Les deux fichiers d'automatismes `6AutoN4` ne sont pas repris pour l'instant.
 
-| Rubrique                           | Codes | Exercices | État                 | Sujet / session             |
-| ---------------------------------- | ----- | --------- | -------------------- | --------------------------- |
-| Nombres entiers                    | 6N0   | 18        | publiée (2026-11-22) | `idees-6e-entiers`          |
-| Nombres entiers et décimaux        | 6N1   | 38        | publiée (2026-11-23) | `idees-6e-entiers-decimaux` |
-| Nombres décimaux                   | 6N2   | 55        | publiée (2026-11-23) | `idees-6e-decimaux`         |
-| Fractions                          | 6N3   | 53        | publiée (2026-11-25) | `idees-6e-fractions`        |
-| Algèbre                            | 6N4   | 9         | libre                |                             |
-| Résolution de problèmes            | 6N5   | 24        | publiée (2026-11-27) | `idees-6e-problemes`        |
-| Longueurs                          | 6M1   | 16        | prise (2026-11-27)   | `idees-6e-longueurs`        |
-| Aires                              | 6M2   | 17        | publiée (2026-11-27) | `idees-6e-aires`            |
-| Volumes                            | 6M3   | 3         | libre                |                             |
-| Durées                             | 6M4   | 11        | publiée (2026-11-27) | `idees-6e-durees`           |
-| Géométrie de base                  | 6G0   | 10        | libre                |                             |
-| Distances                          | 6G1   | 6         | libre                |                             |
-| Cercles et disques                 | 6G2   | 9         | libre                |                             |
-| Médiatrices                        | 6G3   | 5         | libre                |                             |
-| Angles                             | 6G4   | 12        | libre                |                             |
-| Bissectrices                       | 6G5   | 3         | libre                |                             |
-| Triangles                          | 6G6   | 16        | libre                |                             |
-| Symétrie axiale                    | 6G7   | 13        | libre                |                             |
-| Espace                             | 6G8   | 4         | libre                |                             |
-| Organisation et gestion de données | 6P1   | 6         | libre                |                             |
-| Probabilités                       | 6P2   | 3         | libre                |                             |
-| Proportionnalité                   | 6P3   | 16        | publiée (2026-11-26) | `idees-6e-proportionnalite` |
-| Pensée informatique                | 6I1   | 10        | libre                |                             |
+| Rubrique                           | Codes | Exercices | État                 | Sujet / session                                                  |
+| ---------------------------------- | ----- | --------- | -------------------- | ---------------------------------------------------------------- |
+| Nombres entiers                    | 6N0   | 18        | publiée (2026-11-22) | `idees-6e-entiers`                                               |
+| Nombres entiers et décimaux        | 6N1   | 38        | publiée (2026-11-23) | `idees-6e-entiers-decimaux`                                      |
+| Nombres décimaux                   | 6N2   | 55        | publiée (2026-11-23) | `idees-6e-decimaux`                                              |
+| Fractions                          | 6N3   | 53        | publiée (2026-11-25) | `idees-6e-fractions`                                             |
+| Algèbre                            | 6N4   | 9         | libre                |                                                                  |
+| Résolution de problèmes            | 6N5   | 24        | publiée (2026-11-27) | `idees-6e-problemes`                                             |
+| Longueurs                          | 6M1   | 16        | prise (2026-11-27)   | `idees-6e-longueurs` (relecture de David, corrections possibles) |
+| Aires                              | 6M2   | 17        | publiée (2026-11-27) | `idees-6e-aires`                                                 |
+| Volumes                            | 6M3   | 3         | libre                |                                                                  |
+| Durées                             | 6M4   | 11        | publiée (2026-11-27) | `idees-6e-durees`                                                |
+| Géométrie de base                  | 6G0   | 10        | libre                |                                                                  |
+| Distances                          | 6G1   | 6         | libre                |                                                                  |
+| Cercles et disques                 | 6G2   | 9         | libre                |                                                                  |
+| Médiatrices                        | 6G3   | 5         | libre                |                                                                  |
+| Angles                             | 6G4   | 12        | libre                |                                                                  |
+| Bissectrices                       | 6G5   | 3         | libre                |                                                                  |
+| Triangles                          | 6G6   | 16        | libre                |                                                                  |
+| Symétrie axiale                    | 6G7   | 13        | libre                |                                                                  |
+| Espace                             | 6G8   | 4         | libre                |                                                                  |
+| Organisation et gestion de données | 6P1   | 6         | libre                |                                                                  |
+| Probabilités                       | 6P2   | 3         | libre                |                                                                  |
+| Proportionnalité                   | 6P3   | 16        | publiée (2026-11-26) | `idees-6e-proportionnalite`                                      |
+| Pensée informatique                | 6I1   | 10        | libre                |                                                                  |
 
 ## Troisième
 
@@ -160,31 +160,30 @@ La première session qui prend un niveau liste son dossier dans la copie locale
 Une session qui ajoute des variations à un modèle publié le réserve ici, jusqu'à sa migration
 de contenu appliquée en prod.
 
-| Modèle (id court, titre)                                     | Session                                                     | Depuis     | Idées laissées par d'autres sessions |
-| ------------------------------------------------------------ | ----------------------------------------------------------- | ---------- | ------------------------------------ |
-| 04b1cc7f Puissance d'un produit                              | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| 2069ac7e Représenter un intervalle sur la droite graduée     | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| 39b4823d Calculer le tout connaissant une partie             | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| 3b0a04c0 Placer un réel sur une droite graduée               | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| 5b20321f À quels ensembles de nombres appartient ce nombre ? | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| 634b55b8 Écrire sous la forme d'une seule puissance          | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| 73514cdb Puissance d'un quotient                             | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| 7d411132 Encadrement d'amplitude donnée                      | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| 9660771f Comparer deux nombres par leur différence           | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| a692569a Lire l'abscisse d'un point                          | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| b720edd7 Inégalités et intervalles                           | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| bfcbf381 Le plus petit ensemble de nombres                   | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| c99ae1e8 Encadrement décimal à 10⁻ⁿ près                     | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| d03e49c0 Calculer la valeur d'une valeur absolue             | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| d264f7aa Pair ou impair : écrire 2k ou 2k + 1                | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| fa65910d Multiple : a = k × b                                | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| 060086c8 Périmètre d'un carré                                | `idees-6e-longueurs`                                        | 2026-11-27 |                                      |
-| 4343af4c Périmètre et diamètre (π)                           | `idees-6e-longueurs`                                        | 2026-11-27 |                                      |
-| 60f165a8 Périmètre de figures composées                      | `idees-6e-longueurs`                                        | 2026-11-27 |                                      |
-| 66f9abbf Périmètre d'un rectangle                            | `idees-6e-longueurs`                                        | 2026-11-27 |                                      |
-| ccb4f5e5 Formule du périmètre d'un disque                    | `idees-6e-longueurs`                                        | 2026-11-27 |                                      |
-| cfb4c692 Périmètre d'un disque                               | `idees-6e-longueurs`                                        | 2026-11-27 |                                      |
-| fdd849f5 Aire d'un rectangle (correction de la variation 7)  | `idees-6e-longueurs`                                        | 2026-11-28 |                                      |
+| Modèle (id court, titre)                                     | Session                                                          | Depuis     | Idées laissées par d'autres sessions |
+| ------------------------------------------------------------ | ---------------------------------------------------------------- | ---------- | ------------------------------------ |
+| 04b1cc7f Puissance d'un produit                              | `ensembles-2de` (relecture de David, corrections possibles)      | 2026-11-20 |                                      |
+| 2069ac7e Représenter un intervalle sur la droite graduée     | `ensembles-2de` (relecture de David, corrections possibles)      | 2026-11-20 |                                      |
+| 39b4823d Calculer le tout connaissant une partie             | `ensembles-2de` (relecture de David, corrections possibles)      | 2026-11-20 |                                      |
+| 3b0a04c0 Placer un réel sur une droite graduée               | `ensembles-2de` (relecture de David, corrections possibles)      | 2026-11-20 |                                      |
+| 5b20321f À quels ensembles de nombres appartient ce nombre ? | `ensembles-2de` (relecture de David, corrections possibles)      | 2026-11-20 |                                      |
+| 634b55b8 Écrire sous la forme d'une seule puissance          | `ensembles-2de` (relecture de David, corrections possibles)      | 2026-11-20 |                                      |
+| 73514cdb Puissance d'un quotient                             | `ensembles-2de` (relecture de David, corrections possibles)      | 2026-11-20 |                                      |
+| 7d411132 Encadrement d'amplitude donnée                      | `ensembles-2de` (relecture de David, corrections possibles)      | 2026-11-20 |                                      |
+| 9660771f Comparer deux nombres par leur différence           | `ensembles-2de` (relecture de David, corrections possibles)      | 2026-11-20 |                                      |
+| a692569a Lire l'abscisse d'un point                          | `ensembles-2de` (relecture de David, corrections possibles)      | 2026-11-20 |                                      |
+| b720edd7 Inégalités et intervalles                           | `ensembles-2de` (relecture de David, corrections possibles)      | 2026-11-20 |                                      |
+| bfcbf381 Le plus petit ensemble de nombres                   | `ensembles-2de` (relecture de David, corrections possibles)      | 2026-11-20 |                                      |
+| c99ae1e8 Encadrement décimal à 10⁻ⁿ près                     | `ensembles-2de` (relecture de David, corrections possibles)      | 2026-11-20 |                                      |
+| d03e49c0 Calculer la valeur d'une valeur absolue             | `ensembles-2de` (relecture de David, corrections possibles)      | 2026-11-20 |                                      |
+| d264f7aa Pair ou impair : écrire 2k ou 2k + 1                | `ensembles-2de` (relecture de David, corrections possibles)      | 2026-11-20 |                                      |
+| fa65910d Multiple : a = k × b                                | `ensembles-2de` (relecture de David, corrections possibles)      | 2026-11-20 |                                      |
+| 060086c8 Périmètre d'un carré                                | `idees-6e-longueurs` (relecture de David, corrections possibles) | 2026-11-27 |                                      |
+| 4343af4c Périmètre et diamètre (π)                           | `idees-6e-longueurs` (relecture de David, corrections possibles) | 2026-11-27 |                                      |
+| 60f165a8 Périmètre de figures composées                      | `idees-6e-longueurs` (relecture de David, corrections possibles) | 2026-11-27 |                                      |
+| 66f9abbf Périmètre d'un rectangle                            | `idees-6e-longueurs` (relecture de David, corrections possibles) | 2026-11-27 |                                      |
+| ccb4f5e5 Formule du périmètre d'un disque                    | `idees-6e-longueurs` (relecture de David, corrections possibles) | 2026-11-27 |                                      |
+| cfb4c692 Périmètre d'un disque                               | `idees-6e-longueurs` (relecture de David, corrections possibles) | 2026-11-27 |                                      |
 
 ## Idées en attente
 
