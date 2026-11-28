@@ -8,16 +8,20 @@ status: en cours
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-28, à l'ouverture de la PR._
+_Mis à jour le 2026-11-28, après #3287._
 
-- **État** : une seule PR (bouton, fenêtre, tests, doc), ouverte ; rien d'autre de prévu.
-- **Prochaine action** : PR mergée → clore le chantier (journal archivé, lien de `docs/systeme/ubumark.md`
-  vers l'archive).
-- **En attente de David** : l'essai sur son téléphone (doigt réel) ; dire si le gain d'une figure à tourner
-  (environ un tiers sur téléphone, à cause du cadre fixe de la rotation) lui suffit.
+- **État** : le bouton « Agrandir » du bloc solide est mergé (#3287, une seule PR) ; pas en prod sans
+  `deploy:prod` demandé par David.
+- **Prochaine action** : après l'essai de David, clore le chantier (journal archivé, lien de
+  `docs/systeme/ubumark.md` vers l'archive).
+- **En attente de David** : l'essai sur son téléphone (doigt réel, fenêtre ouverte en Safari) ; dire si le
+  gain d'une figure à tourner (environ un tiers sur téléphone, à cause du cadre fixe de la rotation) lui
+  suffit ; dire si l'absence de bouton dans un choix à cocher lui convient.
 - **Pièges en cours** : la grande et la petite figure partagent la même rotation (`figures` dans
-  `createEspaceRotation`) ; pas de bouton dans un élément que l'on touche (`CLICKABLE_PARENT`).
-- **Worktree / branche** : `../ubumaths-wt-solide-agrandir`, `feat/solide-agrandir`.
+  `createEspaceRotation`) ; pas de bouton dans un choix (`figure-in-choice.ts`) ni dans un élément que l'on
+  touche (`CLICKABLE_PARENT`).
+- **Worktree / branche** : `../ubumaths-wt-solide-agrandir`, `chore/solide-agrandir-essai` (sur `main`, sert
+  seulement au serveur d'essai, port 5176) ; à retirer à la clôture.
 
 ## 1. D'où l'on part
 
