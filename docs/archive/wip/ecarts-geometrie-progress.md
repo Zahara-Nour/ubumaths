@@ -1,26 +1,19 @@
 ---
 title: Écarts du lot geometrie
 date: 2026-11-28
-status: en cours
+status: clos (#3271)
 ---
 
 # Écarts du lot `geometrie`
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-28, avant la PR._
+_Mis à jour le 2026-11-28, après #3271._
 
-- **État** : les 8 écarts corrigés et commités sur la branche (preuves → tests ordinaires,
-  `tests/ecarts/geometrie.test.ts` supprimé, registre barré, 3 docs système à jour). L60 corrigé
-  dans mathAST (`analysis/continuity.ts`, `isolatedPointsBesidePeriodic`), pas dans le grapheur
-  (correctif grapheur refusé en revue : coût sans borne). 2ᵉ revue : régression à corriger
-  (`isContinuousOnDomain` faux sur un trou effaçable à côté de tan), en cours.
-- **Prochaine action** : commit du correctif de revue, suites touchées, push, PR, `pnpm pr:merger`.
-- **En attente de David** : rien.
-- **Pièges en cours** : `intersect` de mathAST perd les points isolés à côté d'une exclusion
-  périodique (le domaine de tan(x) + 1/(x − 3) reste incomplet) — pas inscrit au registre
-  (cas voisin, à proposer à David).
-- **Worktree / branche** : `../ubumaths-wt-ecarts-geometrie` · `fix/ecarts-geometrie`.
+- **État** : lot clos, les 8 écarts corrigés et barrés au registre (#3271). Journal archivé.
+- **Prochaine action** : aucune. **En attente de David** : rien.
+- **Pièges** : `intersect` de mathAST perd les points isolés à côté d'une exclusion périodique ;
+  `evaluateNumeric` ne lit pas π (1/(x − π) en π « non supportée ») — non inscrits (cas voisins).
 
 ## Journal
 
