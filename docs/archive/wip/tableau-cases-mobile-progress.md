@@ -4,7 +4,7 @@
 
 _Mis à jour le 2026-11-28, après #3274 (mergée). Chantier clos, journal archivé._
 
-- **État** : livré (#3274) ; n° 57 passé dans « Livré » de `docs/wip/outils-manquants.md` ; le durable est dans `docs/systeme/questions.md` (case de tableau au téléphone) · **Prochaine action** : aucune · **En attente de David** : publier 3-013 « Développer avec un tableau » (62528060), gardé en brouillon pour ce défaut, après la prochaine mise en prod · **Pièges en cours** : aucun · **Worktree / branche** : retirés.
+- **État** : livré (#3274) ; n° 57 passé dans « Livré » de `docs/wip/outils-manquants.md` ; le durable est dans `docs/systeme/questions.md` (case de tableau au téléphone) · **Prochaine action** : aucune · **En attente de David** : la mise en prod du correctif (`pnpm deploy:prod`) ; 3-013 « Développer avec un tableau » (62528060) publié par David le 2026-11-28 (vérifié en prod) · **Pièges en cours** : aucun · **Worktree / branche** : retirés.
 
 ## Phase 0 (validée par David le 2026-11-28)
 
