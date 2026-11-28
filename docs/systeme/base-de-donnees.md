@@ -818,9 +818,11 @@ Preuve : `tests/integration/mesures-web-vitals.test.ts`.
 `account_deletion_audit` (RLS sans policy : client service seul) trace chaque suppression de
 compte, par l'élève ou par la purge de conservation ; `cleanup_result.storage_paths` liste ses
 fichiers, et `storage_removed_at` (`20261016101000`) dit s'ils ont été retirés du storage
-(nul = à retirer). `delete_user_account` ne rend, pour les pièces jointes de messages privés et les
-captures de signalement, que les chemins rangés chez l'élève (`20261016101200`) : il en écrit
-lui-même le chemin.
+(nul = à retirer). `delete_user_account` ne rend, pour les pièces jointes de messages privés, que
+les chemins rangés chez l'élève (`20261016101200`) : il en écrit lui-même le chemin. Pour les
+captures de rapport de bug, il rend **tout le dossier `<élève>/`** du bucket
+`bug-report-screenshots`, lu dans `storage.objects` (`20261128162608`, écart T34) : l'élève y
+dépose aussi, par l'API du stockage, des fichiers qu'aucun rapport ne nomme.
 
 **Liens courts des QR codes** (`short_links`, `20261019170000`) : un code de 8 caractères vers un
 chemin **interne** du site, en ASCII imprimable (jamais un autre domaine : la contrainte refuse `//`,

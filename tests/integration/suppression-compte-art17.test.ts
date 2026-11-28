@@ -25,7 +25,10 @@
  *      élève a mis ce compte en `reviewed_by` ne bloquent plus la suppression ;
  *   8. (atomicité) une référence sans ON DELETE inconnue de la fonction la fait échouer
  *      AVANT tout effacement : l'élève ne perd rien ;
- *   9. la fonction rend les chemins exacts des fichiers à retirer du storage.
+ *   9. la fonction rend les chemins exacts des fichiers à retirer du storage ;
+ *  10. (écart T34) tout le dossier de l'élève dans le bucket des captures est rendu,
+ *      même un fichier déposé par l'API du stockage qu'aucun rapport ne nomme, et
+ *      rien du dossier d'un camarade.
  *
  * @vitest-environment node
  */
@@ -42,6 +45,12 @@ import { TestData } from '../helpers/database/test-data-factory';
 // ============================================================================
 
 const service = createServiceRoleClient();
+
+/** Bucket des captures des rapports de bug. */
+const CAPTURES = 'bug-report-screenshots';
+
+/** En-tête PNG : le bucket n'accepte que des images. */
+const IMAGE = new Uint8Array([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]);
 
 /** Texte reconnaissable écrit par l'élève dans une conversation. */
 const TEXTE_ELEVE = 'zz-texte-de-l-eleve-a-effacer';
@@ -79,6 +88,20 @@ async function tracesRestantes(userId: string): Promise<Record<string, number>> 
 		if (rows[0].n > 0) restes[`${tbl}.${col}`] = rows[0].n;
 	}
 	return restes;
+}
+
+/** Dépose un fichier au bucket des captures (client service) ; rend son chemin. */
+async function deposerCapture(chemin: string): Promise<string> {
+	const { error } = await service.storage
+		.from(CAPTURES)
+		.upload(chemin, IMAGE, { contentType: 'image/png', upsert: true });
+	if (error) throw new Error(`dépôt de ${chemin} impossible : ${error.message}`);
+	return chemin;
+}
+
+/** Retire des fichiers du bucket des captures (nettoyage, absent = sans effet). */
+async function retirerCaptures(chemins: string[]): Promise<void> {
+	if (chemins.length > 0) await service.storage.from(CAPTURES).remove(chemins);
 }
 
 /** Les traces d'activité d'un élève qui a utilisé l'application. */
@@ -250,22 +273,62 @@ describe('suppression de compte (art. 17) de bout en bout', () => {
 			[eleve.id]
 		);
 		// Rangement de la route api/bug-reports/[reportId]/screenshot.
-		const chemin = `${eleve.id}/${rows[0].id}/1700000000000.png`;
+		const chemin = await deposerCapture(`${eleve.id}/${rows[0].id}/1700000000000.png`);
 		await pg.query('update bug_reports set screenshot_path = $1 where id = $2', [
 			chemin,
 			rows[0].id
 		]);
 
-		const { data, error } = await service.rpc('delete_user_account', { p_user_id: eleve.id });
-		expect(error).toBeNull();
-		expect(data).toMatchObject({
-			storage_paths: {
-				'bug-report-screenshots': [chemin],
-				'chat-attachments': [],
-				'message-attachments': []
-			}
-		});
-		await service.auth.admin.deleteUser(eleve.id);
+		try {
+			const { data, error } = await service.rpc('delete_user_account', { p_user_id: eleve.id });
+			expect(error).toBeNull();
+			expect(data).toMatchObject({
+				storage_paths: {
+					'bug-report-screenshots': [chemin],
+					'chat-attachments': [],
+					'message-attachments': []
+				}
+			});
+			await service.auth.admin.deleteUser(eleve.id);
+		} finally {
+			await retirerCaptures([chemin]);
+		}
+	});
+
+	// Écart T34 (security-auditor sur #3158) : un compte connecté dépose par l'API du
+	// stockage des fichiers dans son dossier du bucket des captures sans qu'aucun rapport
+	// les nomme. Lire les chemins dans `bug_reports` les oubliait à la suppression du
+	// compte : la fonction lit le dossier lui-même dans `storage.objects` (décision de
+	// David du 2026-11-28).
+	it('rend tout le dossier de l’élève au bucket des captures, rien de celui d’un camarade', async () => {
+		const eleve = await TestData.profile().withRole('student').create();
+		const camarade = await TestData.profile().withRole('student').create();
+		const pg = await getPostgresClient();
+		const { rows } = await pg.query<{ id: string }>(
+			`insert into bug_reports (user_id, category, title, description)
+			 values ($1, 'bug', 'zz-titre', 'zz-description assez longue') returning id`,
+			[eleve.id]
+		);
+		const nommee = await deposerCapture(`${eleve.id}/${rows[0].id}/1.png`);
+		await pg.query('update bug_reports set screenshot_path = $1 where id = $2', [
+			nommee,
+			rows[0].id
+		]);
+		// Déposés par l'API du stockage, nommés par aucun rapport.
+		const orpheline = await deposerCapture(`${eleve.id}/${crypto.randomUUID()}/2.png`);
+		const aLaRacine = await deposerCapture(`${eleve.id}/3.png`);
+		const duCamarade = await deposerCapture(`${camarade.id}/${crypto.randomUUID()}/4.png`);
+
+		try {
+			const { data, error } = await service.rpc('delete_user_account', { p_user_id: eleve.id });
+			expect(error).toBeNull();
+			const rendus = (data as { storage_paths: Record<string, string[]> }).storage_paths[CAPTURES];
+			// Liste EXACTE (ordre libre) : le dossier entier, rien d'autre.
+			expect([...rendus].sort()).toEqual([nommee, orpheline, aLaRacine].sort());
+			await service.auth.admin.deleteUser(eleve.id);
+		} finally {
+			await retirerCaptures([nommee, orpheline, aLaRacine, duCamarade]);
+		}
 	});
 
 	// Audit de #1243 (2026-10-13) : un élève écrit lui-même `storage_path` d'une pièce
@@ -320,14 +383,16 @@ describe('suppression de compte (art. 17) de bout en bout', () => {
 			).rows[0].id;
 		const sonRapport = await rapport(eleve.id);
 		const rapportDuCamarade = await rapport(camarade.id);
-		const capture = `${eleve.id}/${sonRapport}/1.png`;
+		const capture = await deposerCapture(`${eleve.id}/${sonRapport}/1.png`);
 		await pg.query('update bug_reports set screenshot_path = $1 where id = $2', [
 			capture,
 			sonRapport
 		]);
 		const forge = await rapport(eleve.id);
+		// Le fichier du camarade existe : seul le chemin de l'élève l'en sépare.
+		const captureDuCamarade = await deposerCapture(`${camarade.id}/${rapportDuCamarade}/2.png`);
 		await pg.query('update bug_reports set screenshot_path = $1 where id = $2', [
-			`${camarade.id}/${rapportDuCamarade}/2.png`,
+			captureDuCamarade,
 			forge
 		]);
 
@@ -344,6 +409,7 @@ describe('suppression de compte (art. 17) de bout en bout', () => {
 		];
 		expect([...rendus].sort()).toEqual([legitime, legitimePoints].sort());
 		await service.auth.admin.deleteUser(eleve.id);
+		await retirerCaptures([capture, captureDuCamarade]);
 		await pg.query('delete from bug_reports where user_id = $1', [camarade.id]);
 		await pg.query('delete from private_messages where sender_id = $1', [camarade.id]);
 	});

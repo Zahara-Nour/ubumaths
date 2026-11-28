@@ -175,7 +175,13 @@ La modération porte sur la table `messages` **du chat**, pas sur `private_messa
   alerte), jamais 0. Restrictions et journal en échec
   lèvent un 500.
 - Composants : `src/lib/components/moderation/` — `MessageReportsTable` → `ReviewReportDialog`
-  (→ `RestrictUserDialog`) ; `ActiveRestrictionsTable`, `ModerationLogsTable` ;
+  (→ `RestrictUserDialog`) ; `ReviewReportDialog` montre le message signalé et son contexte
+  par `ReportedMessageContent`, **comme le destinataire l'a vu** : même chemin que le chat
+  (`tipTapToMarkdown` → `MarkdownRenderer` en rendu restreint), formules et images comprises
+  (écart T36, décision de David du 2026-11-28) ; `plain_text` n'en retient ni formule, ni
+  légende, ni bloc, il ne sert plus que de repli à un contenu qui n'est pas un document. Le
+  marquage et la recherche lisent toujours `plain_text`. La liste (`MessageReportsTable`) en
+  garde un aperçu de 60 caractères ; `ActiveRestrictionsTable`, `ModerationLogsTable` ;
   `DeleteMessageDialog` et `RestrictedUserBanner` servent dans le chat (`ChatMessageList`,
   `ChatWindow`).
 - API : `src/routes/api/moderation/` —

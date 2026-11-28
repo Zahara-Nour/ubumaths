@@ -366,9 +366,10 @@ défaut `DEFAULT_BUG_REPORTS_CONFIG` (tout à `true`). Réglage : `BugReportsCon
   camarade) : d'où le bucket privé et les URL signées.
 - L'export pour Claude Code contient le nom (ou le mail) de l'auteur et une URL de capture
   valable **7 jours**.
-- Suppression de compte : les captures de l'utilisateur sont retirées du storage, en ne
-  gardant que les chemins de la forme `<son id>/<id d'un de ses rapports>/…`
-  (migration `supabase/migrations/20261016101200_suppression_chemins_conformes.sql`).
+- Suppression de compte : tout le dossier `<son id>/` du bucket des captures est retiré du
+  storage, fichiers qu'aucun rapport ne nomme compris (lu dans `storage.objects`, écart T34 :
+  `supabase/migrations/20261128162608_suppression_compte_dossier_captures.sql`) ; rien du
+  dossier d'un camarade.
 
 ### Limites de débit
 
