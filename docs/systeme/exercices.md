@@ -13,7 +13,6 @@ couvre:
   - 'src/routes/(protected)/dashboard/teacher/contenu/exercices/**'
   - 'src/routes/(protected)/dashboard/teacher/contenu/{+layout.svelte,+page.server.ts}'
   - 'src/lib/components/{TagBadgeSelector,GradeBadgeSelector}.svelte'
-  - src/lib/stores/exerciseFont.svelte.ts
   - 'src/routes/(protected)/dashboard/student/exercises/**'
   - 'src/routes/(public)/exercice/**'
 ---

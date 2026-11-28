@@ -235,7 +235,10 @@ au-dessus du titre. Les autres collages (titre d'exercice, cadre de réponse, `k
 restent collés partout. Tests de mise en page réelle (page et colonne lues par `query` après
 compilation) : `generators/__tests__/coupures-colonnes.test.ts`. Le texte d'auteur échappe ses crochets (`escapeTypstBrackets`) : posé dans un
 contenu `[…]`, un intervalle écrit en texte (`]2 ; 3[`) le fermait trop tôt et le PDF ne compilait
-plus (déjà vrai avant, selon la place du crochet).
+plus (déjà vrai avant, selon la place du crochet). `escapeTypst` échappe aussi la barre qui ouvre un `//` ou un `/*` :
+Typst y lisait un commentaire et la fin de la ligne disparaissait du PDF (L85). Titre de section,
+sa consigne et consigne d'exercice d'une fiche passent par `escapeTypstBrackets` (T23) : test
+`src/lib/worksheets/document/__tests__/texte-du-prof-typst.test.ts`, qui compile pour de vrai.
 
 **Titre d'exercice jamais seul en bas de page** (chantier coupures-pdf, PR 2, 2026-11-09). Le titre
 (`sticky`) ne suit le début de l'énoncé parti sur la page suivante que si le **premier morceau** du
@@ -721,13 +724,23 @@ as échangé l'abscisse et l'ordonnée. ») ; cadre rouge dès qu'un point est f
 justes ; le repère juste à côté, points nommés en vert. Hors question : le même geste, rien de jugé.
 PDF : le repère sans les points (l'enfant fait ses croix). Corrigé imprimé d'une série d'automatismes :
 les points attendus y sont dessinés, mais par réécriture du bloc (`placer:` → `points:`,
-`pointsDuRepere` de `worksheets/serie-automatismes.ts`), pas par l'option `solved` de
-`courbe-typst.ts`, qu'aucun appel de production ne passe.
+`pointsDuRepere` de `worksheets/serie-automatismes.ts`).
+
+**Repère au corrigé dessiné** (`solution: oui`, V108, décision de David du 2026-11-28) —
+`courbe-solution.test.ts`. Avec `placer:` ou `tracer:` (refusé sans geste, ou avec `case:`) : la
+réponse attendue est dessinée en vert, à l'écran comme au PDF, et le repère n'est plus un geste
+(`findCourbesToPlace` le saute, aucune case). Points attendus nommés ; droite (verticale comprise)
+d'un bord à l'autre et deux de ses nœuds ; flèche juste, et les pointillés d'une somme de deux
+vecteurs. Une source pour les deux rendus : `solvedOverlay` (`utils/courbe-solution.ts`), lue par
+`Courbe.svelte` (repère sans ses gestes, réponse par-dessus) et `courbe-typst.ts`. Seul écrivain :
+le corrigé d'une série d'automatismes, pour le vecteur à tracer et la droite verticale.
 
 **Droite à tracer** (même chantier, lot 2, 2-316, 2-445) — `courbe-tracer.test.ts`,
 `CourbeTracer.svelte.test.ts` : `tracer: y = 2x - 1` dans un ` ```courbe ` (nœud : `spec.tracer`,
 `CourbeLineToTrace` `equation`, `line`). Équation réduite, verticale (`x = 3`) ou cartésienne
-(`2x + 3y - 6 = 0`), en syntaxe mathAST (`1/2x`, `0.5x`, `2*(x - 1)`, virgule décimale permise),
+(`2x + 3y - 6 = 0`), en syntaxe mathAST (`1/2x`, `0.5x`, `2*(x - 1)`, virgule décimale permise) ou avec
+une fraction LaTeX (`\frac{1}{2}x`, `\dfrac` : un côté qui porte une commande autre que `\pi` est lu
+par `parseLatex`, écart L88),
 80 caractères au plus ; le parseur la normalise (`normalizeCourbeExpression` puis une espace autour de
 `=`, `+`, `-` binaires : `y = -2x + -3` → `y = -2x - 3`) et la lit en `ax + by + c = 0`
 (`lineCoefficients`, `utils/courbe-tracer.ts` : évaluée en trois points, vérifiée affine en quatre
@@ -746,7 +759,7 @@ n'est pas celle d'équation » suivie de l'équation en formule (`MathInline`), 
 `equationLatex` (`tidy` de mathAST côté par côté : `y = 1x + 0` des variables s'écrit `y = x`) ;
 correction : la droite juste et ses deux nœuds les plus proches de l'origine (`correctionPoints`,
 `solutionLine`), en vert ; rien quand l'équation est masquée (`tracer: ?`). PDF : le repère seul ;
-`solved` dessine la droite et ses deux nœuds. La phrase écrit une espace insécable avant la formule
+`solution: oui` dessine la droite et ses deux nœuds. La phrase écrit une espace insécable avant la formule
 (`&nbsp;` dans le gabarit : Svelte retire celle du texte).
 
 **Vecteur à tracer** (même chantier, lot 3, 2-298, décisions § 10) — `courbe-vecteur.test.ts`,
@@ -773,7 +786,7 @@ l'ordonnée. », sinon « Ta flèche représente le vecteur (2 ; 1), pas (3 ; -2
 et les coordonnées en formule). Correction : la flèche juste en vert (`solutionVector`) depuis A,
 sinon depuis l'origine de l'élève si elle tient dans la fenêtre, sinon depuis le nœud le plus proche
 de l'origine du repère où elle tient ; rien quand les coordonnées sont masquées. PDF : le repère (avec
-A) ; `solved` dessine la flèche juste (`mark: (end: ">")`).
+A) ; `solution: oui` dessine la flèche juste (`mark: (end: ">")`).
 
 **Vecteurs donnés et somme à tracer** (chantier `somme-vecteurs`, 2-297, phase 0 du 2026-11-08) —
 `courbe-somme.test.ts`, `CourbeSomme.svelte.test.ts`. `vecteurs: u = AB, v = AC` (ou `AB` sans nom ; au plus
@@ -797,7 +810,7 @@ vecteur (2 ; 2), pas $\vec{u}+\vec{v}$. » (un couple s'écrit `\overrightarrow{
 (`constructionTraces`, deux termes) : en pointillés verts sous la flèche juste, les deux côtés du
 parallélogramme qui manquent quand les deux représentants partent de l'origine de la flèche juste (plus le côté d'un
 terme que l'énoncé ne dessine pas : coefficient ≠ 1, ou couple de points absent de `vecteurs:`), sinon le premier terme depuis cette origine puis le second à son bout (Chasles) ; un
-trait dont un bout sort de la fenêtre est laissé. PDF `solved` : les mêmes pointillés (`dash: "dashed"`).
+trait dont un bout sort de la fenêtre est laissé. PDF `solution: oui` : les mêmes pointillés (`dash: "dashed"`).
 Défaut connu : le nom d'un point (en haut à droite) peut chevaucher une flèche qui en part.
 
 **Cercle trigonométrique à placer** (chantier [cercle-trotteuse](../archive/wip/cercle-trotteuse-progress.md)
@@ -1010,7 +1023,8 @@ Danse = 7            ```                                     ```
 - ` ```boite-a-moustaches ` (chantier [boite-a-moustaches](../archive/wip/boite-a-moustaches-progress.md),
   palier 1 : affichage, pour 3-062 et la 2de) — `src/lib/ubumark/__tests__/stat-chart/boite-a-moustaches.test.ts`,
   `StatChart-boite-a-moustaches.svelte.test.ts` : une ligne par boîte `Nautic = 28 ; 30 ; 37 ; 45 ; 58`
-  (minimum ; Q1 ; médiane ; Q3 ; maximum, virgule décimale, nom avec espaces permis, `= …` seul : boîte
+  (minimum ; Q1 ; médiane ; Q3 ; maximum, virgule décimale, fraction d'entiers `1/2` comme dans `données:`
+  (écart L90, `boxValue`), nom avec espaces permis, `= …` seul : boîte
   sans nom), ou `données: 3 ; 5 ; 7 ; …` — UNE boîte sans nom calculée par `describeList`
   (`statistics/describe.ts`, quartiles du programme ; aucun second calcul). Options : `axe: 25 à 60, de 5
 en 5` (départ quelconque, décimaux permis ; sans `de p en p` : de 1 en 1 ; sinon axe calculé « rond »
@@ -2441,20 +2455,18 @@ problème. À lancer **avant** d'écrire des énoncés ou corrigés en base.
   ambiguë) ; tolérance de `isGridNode` (1e-9 × pas) : un pas irrationnel avec de grandes valeurs
   (`grille: pi/2`, `y: 1000 ; 1010`) peut refuser au prof une cible écrite en décimal, le juge n'est pas
   touché ; les juges de la droite et du vecteur ne vérifient pas que les points sont des nœuds (l'écran
-  n'en pose pas d'autres) ; l'option `solved` de `courbe-typst.ts` n'est passée par aucun appel de
-  production : le corrigé imprimé d'une série d'automatismes dessine points et droite par réécriture du
-  bloc (`serie-automatismes.ts`, comme la droite graduée à placer et la boîte à moustaches), et refuse le
-  vecteur à tracer et la droite verticale ; l'horloge et les barres à placer n'ont pas de corrigé
-  imprimé (`generateHorlogeTypst`, `generateStatChartTypst` sans option `solved`) ; `\frac` refusé dans
-  `tracer:` (écrire `1/2x`). Suivi : ligne 24 de [outils-manquants.md](../wip/outils-manquants.md).
-- ` ```ranger ` dans une liste sort en bloc de code (absent de `SPECIAL_BLOCK_KINDS`) : ne touche que
-  le cours ; dans une question, il est refusé de toute façon.
+  n'en pose pas d'autres) ; le corrigé imprimé d'une série d'automatismes dessine points et droite
+  non verticale par réécriture du bloc (`serie-automatismes.ts`, comme la droite graduée à placer et
+  la boîte à moustaches), vecteur à tracer et droite verticale par `solution: oui` ; l'horloge et les
+  barres à placer n'ont pas de corrigé imprimé (`generateHorlogeTypst`, `generateStatChartTypst` sans
+  option `solved`). Suivi : ligne 24 de [outils-manquants.md](../wip/outils-manquants.md).
+- ` ```ranger ` dans une liste : lu (`SPECIAL_BLOCK_KINDS`, `parseContentWithCodeBlocks`) et affiché
+  (`ListNode`) depuis l'écart L89 ; ne sert qu'au cours, une question le refuse (« doivent être au
+  premier niveau »).
 - Blocs d'espace, laissés tels quels : la cote d'un cylindre coupé parallèlement à l'axe est posée sous
   la base, loin de son court trait quand la distance est petite. Restes hors chantier : voir l'en-tête
   du [journal archivé](../archive/wip/solides-progress.md).
-- **Boîte à moustaches**, laissés après revue (#2151, #2162) : fractions refusées sur une ligne de
-  boîte mais acceptées dans `données:` ; à 40 graduations (le plafond), les étiquettes de l'axe se
-  chevauchent (n'en écrire qu'une sur deux au-delà d'un seuil, si un modèle en a besoin) ; `données:`
+- **Boîte à moustaches**, laissés après revue (#2151, #2162) : `données:`
   tirées au hasard de taille paire → médiane au demi, refusée sur un axe de 1 en 1 pour ce tirage (le
   générateur ne retente pas une autre graine ; dit dans la fiche). Décidés en écrivant le geste, à
   confirmer par David : un trait posé pour la première fois passe au suivant pas posé ; une seule boîte

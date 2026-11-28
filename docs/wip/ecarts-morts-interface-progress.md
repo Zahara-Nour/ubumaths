@@ -1,16 +1,16 @@
 ---
 title: Chantier ecarts-morts-interface
 date: 2026-11-28
-status: en cours (M48, M58 restants)
+status: en cours (M48 restant)
 ---
 
 # Chantier `ecarts-morts-interface`
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-28, après #3260._
+_Mis à jour le 2026-11-28, après #3268._
 
-- **État** : M32, M33, M34, M47, M49, M52 mergés (#3260) ; la tâche de nuit barrera leurs lignes (preuves vertes) · **Prochaine action** : M58 dès que la branche `ecarts-morts-utilitaires` est mergée (elle supprime `FontSelector.svelte` ; reste `stores/exerciseFont.svelte.ts` et la règle CSS), dans un worktree neuf `fix`/`chore/ecarts-morts-interface-2` · **En attente** : M48 attend V118 (lot `interface-prof`) : brancher ou retirer `isTrivialHtmlWrapper` · **Pièges en cours** : un module de `src/lib` importé nu doit être dans `scripts/side-effect-modules.ts`, sinon le build l'élague (rouge de CI de #3260) · **Worktree / branche** : aucun (retirés par `pr:merger`)
+- **État** : M32, M33, M34, M47, M49, M52 (#3260) et M58 (#3268) mergés ; la tâche de nuit barrera leurs lignes · **Prochaine action** : M48 seulement quand V118 est tranché ; sinon rien · **En attente** : M48 attend V118 (lot `interface-prof`) : brancher ou retirer `isTrivialHtmlWrapper` · **Pièges en cours** : la règle CSS `.exercise-content` de `app.css` n'est PAS morte (texte des exercices en Inter) ; un module de `src/lib` importé nu doit être dans `scripts/side-effect-modules.ts` · **Worktree / branche** : aucun (retirés par `pr:merger`)
 
 ## Lot
 
@@ -43,3 +43,9 @@ M32, M33, M34, M47, M48, M49, M52, M58 (code mort, lot sans décision, `docs/wip
   aurait pu être élagué en prod (invisible en dev). Les trois y sont ajoutés.
 - Vérifs : `check:incremental` 0 erreur, `types:cliquet` tenu, tests ciblés verts, `pnpm voir`
   `/dashboard` (élève) et `/dashboard/teacher/documents` (prof) : 0 erreur de console.
+- **M58** : `stores/exerciseFont.svelte.ts` retiré (plus aucun importeur depuis la suppression de
+  `FontSelector`, #3259). La règle CSS gardée : le registre la disait inerte, mais `--exercise-font-family`
+  vaut Inter dans `app.css` et `.exercise-content p, li, td, th, h1…h6` l'emporte sur le Lora que
+  `ExerciseDisplay.svelte` met sur le bloc ; la retirer passerait le texte des exercices en Lora.
+  Commentaires corrigés, libellé de M58 rectifié dans le registre, `couvre:` de `exercices.md` mis à jour.
+  Preuve verte, `check:incremental` 0 erreur.

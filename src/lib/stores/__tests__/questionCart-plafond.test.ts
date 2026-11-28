@@ -79,3 +79,21 @@ describe('questionCart — variations choisies (idée 2)', () => {
 		expect(questionCart.getItem(TEMPLATE)?.variations).toEqual([0]);
 	});
 });
+
+describe('questionCart — durée par question (écart L92)', () => {
+	beforeEach(() => {
+		questionCart.clearCart();
+	});
+
+	it('une série à 10 min rechargée : « − » retire 5 s, pas 5 min', () => {
+		questionCart.replaceWith([{ templateId: TEMPLATE, quantity: 3, delay: 600 }]);
+		questionCart.updateDelay(TEMPLATE, 595);
+		expect(questionCart.allItems[0].delay).toBe(595);
+	});
+
+	it('bornée à 600 s, comme la série enregistrée', () => {
+		questionCart.addToCart(TEMPLATE, 1, 20);
+		questionCart.updateDelay(TEMPLATE, 900);
+		expect(questionCart.allItems[0].delay).toBe(600);
+	});
+});

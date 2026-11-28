@@ -147,7 +147,8 @@ continue après 1000) rend `beyond: true` au lieu d'annoncer un faux « plus gra
 ### Lecture et mise en forme (`read-value.ts`, `fraction.ts`, `format.ts`)
 
 - `readNumber` : virgule décimale ; `readListValue` : en plus fractions d'entiers, `−`, et la
-  virgule MathLive `{,}`. `Fraction.parse` : `1/6`, `0,25`, `25 %` ; `Fraction.fromNumber` :
+  virgule MathLive `{,}` (elle lit aussi les fractions des cinq valeurs d'une boîte à moustaches,
+  comme celles de `données:`, écart L90). `Fraction.parse` : `1/6`, `0,25`, `25 %` ; `Fraction.fromNumber` :
   fractions continues, dénominateur ⩽ 10 000, à 10⁻⁹ près (null pour π).
 - `formatSummary` (13 lignes, ordre du programme), `formatApproxValue`, `formatLawApproxValue`
   (deux chiffres significatifs sous 0,01), `formatStatNumber`, `formatFraction`,
