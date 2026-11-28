@@ -1,7 +1,11 @@
 <script lang="ts">
 	import { page } from '$app/state';
 	import { resolvePath } from '#lib/navigation/resolve-path.ts';
-	import { PUBLIC_NAV_ITEMS, type NavItem } from '#lib/navigation/public-nav-items.ts';
+	import {
+		PUBLIC_NAV_ITEMS,
+		isNavItemActive,
+		type NavItem
+	} from '#lib/navigation/public-nav-items.ts';
 	import type { Tables } from '#lib/types/database.ts';
 
 	// Props
@@ -29,9 +33,9 @@
 	);
 	let funItems = $derived(visibleItems.filter((item) => item.section === 'fun'));
 
-	// Check if a link is active
-	function isActive(href: string) {
-		return page.url.pathname === href;
+	// Lien surligné : même règle que le tiroir (écart V75)
+	function isActive(href: string): boolean {
+		return isNavItemActive(href, page.url.pathname);
 	}
 </script>
 

@@ -9,7 +9,7 @@ Une ligne : identifiant · type · domaine · ce que voit l'élève ou le prof �
 Un nouvel écart entre par `pnpm ecarts ajouter`, qui donne son numéro. Une ligne close est barrée,
 jamais effacée.
 
-Derniers numéros : V139 · L142 · M60 · C44 · D45 · T38 · E92
+Derniers numéros : V140 · L142 · M60 · C44 · D45 · T38 · E92
 
 ## Écarts
 
@@ -84,7 +84,7 @@ Derniers numéros : V139 · L142 · M60 · C44 · D45 · T38 · E92
 - V73 · bug visible · modales · quand une fenêtre s'ouvre, le clavier et le lecteur d'écran restent sur la page derrière et la fenêtre est rendue dans un bouton (HTML invalide) · preuve : commande `test -f src/lib/components/modals/ModalStackRenderer.svelte && ! grep -q 'class="modal-backdrop"' src/lib/components/modals/ModalStackRenderer.svelte` · à faire
 - ~~V74 · bug visible · recherche du prof · une recherche par tag seul sans résultat affiche « Aucun résultat pour « ». » · preuve : commande `test -f 'src/routes/(protected)/dashboard/teacher/recherche/+page.svelte' && ! grep -q 'Aucun résultat pour « {data.query} »' 'src/routes/(protected)/dashboard/teacher/recherche/+page.svelte'` · à faire~~ · clos le 2026-11-28 (corrigé, #3276)
 - ~~L41 · bug latent · recherche du prof · en revenant en arrière sur une autre recherche, les cases cochées gardent les anciens filtres · preuve : commande `f=src/lib/components/__tests__/ecarts-coquille.svelte.test.ts; test -f "$f" && ! grep -q "écart L41" "$f"` · à faire (preuve écrite par #3226)~~ · clos le 2026-11-28 (corrigé, #3276)
-- V75 · bug visible · navigation publique · sur un article du Shtam, le tiroir mobile surligne « Le Shtam », la barre latérale non · preuve : commande `test -f src/lib/components/Sidebar.svelte && grep -q 'startsWith' src/lib/components/Sidebar.svelte` · à faire
+- V75 · bug visible · navigation publique · sur un article du Shtam, le tiroir mobile surligne « Le Shtam », la barre latérale non · preuve : commande `grep -q 'isNavItemActive(href, page.url.pathname)' src/lib/components/Sidebar.svelte && grep -q 'isNavItemActive(href, page.url.pathname)' src/lib/components/Header.svelte` · à faire
 - L42 · bug latent · messages d'erreur · certaines réponses d'API (4xx) et erreurs 500 de la base restent en anglais · preuve : commande `test -d src/routes/api && ! grep -rqE "error\(4[0-9]{2}, '(Not authorized|Invalid)" src/routes/api --include=+server.ts` · à faire
 - ~~L43 · bug latent · cache élève · une donnée périmée n'est pas relue toute seule : l'écran la perd au prochain recalcul sans rechargement · preuve : commande `f=src/lib/components/__tests__/ecarts-coquille.svelte.test.ts; test -f "$f" && ! grep -q "écart L43" "$f"` · à faire (preuve écrite par #3226)~~ · clos le 2026-11-28 (corrigé, #3280)
 - ~~L44 · bug latent · cache · une récompense corrigée à l'instant par une mise à jour optimiste disparaît du cache à l'échéance de l'ancienne lecture · preuve : test tests/ecarts/coquille.test.ts › L44 · à faire (preuve écrite par #3226)~~ · clos le 2026-11-28 (corrigé, #3277)
@@ -367,3 +367,4 @@ Derniers numéros : V139 · L142 · M60 · C44 · D45 · T38 · E92
 - L141 · bug latent · cache · le Palotin de l'élève et les chiffres du tableau de bord prof (élèves, récompenses, avertissements, classes) ne suivent pas leur échéance : l'écran garde une valeur périmée, puis la perd au prochain recalcul, sans relecture (même défaut que L43) · preuve : commande `f=src/lib/stores/teacherDashboardCache.svelte.ts; g=src/lib/stores/studentDashboardCache.svelte.ts; test -f "$f" && test -f "$g" && ! grep -qE "fetchedAt >= this\.[A-Z_]+_TTL\) (return|continue)" "$f" && ! grep -q "this.BUDDY_TTL) {" "$g"` · à faire (vu en clôturant le lot cache, inscrit à la demande de David le 2026-11-28)
 - V139 · bug visible · constructions · dans « Axes de symétrie et construction d'un carré », une trentaine de points auxiliaires affichent leur nom (_p0, _p14…) : un nom qui commence par _ devrait rester sans étiquette · preuve : à la main · à faire
 - L142 · bug latent · comptes · le mail de bienvenue insère le prénom tel quel dans son HTML (welcome.ts, getWelcomeEmailHtml) : un prénom contenant du HTML le garde ; impact faible, le mail part vers le titulaire du compte · preuve : à la main · à faire
+- V140 · bug visible · modales · après une fenêtre empilée (détail d'une carte VIP) puis fermée, le clavier revient sur le premier bouton de la fenêtre d'en dessous, pas sur la carte qui avait ouvert la seconde : la fenêtre d'en dessous est recréée · preuve : à la main · à faire

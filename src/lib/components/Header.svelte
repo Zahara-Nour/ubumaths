@@ -40,7 +40,11 @@
 	import EasyReadingToggle from '#lib/components/EasyReadingToggle.svelte';
 	import type { User } from '@supabase/supabase-js';
 	import type { Profile } from '#lib/types/database-helpers.ts';
-	import { PUBLIC_NAV_ITEMS, type NavItem } from '#lib/navigation/public-nav-items.ts';
+	import {
+		PUBLIC_NAV_ITEMS,
+		isNavItemActive,
+		type NavItem
+	} from '#lib/navigation/public-nav-items.ts';
 	import {
 		Menu,
 		LogIn,
@@ -112,12 +116,9 @@
 		})
 	);
 
-	// Check if a link is active
+	// Lien surligné : même règle que la barre latérale (écart V75)
 	function isActive(href: string): boolean {
-		const pathname = page.url.pathname;
-		if (pathname === href) return true;
-		if (href !== '/' && pathname.startsWith(href + '/')) return true;
-		return false;
+		return isNavItemActive(href, page.url.pathname);
 	}
 
 	// Mobile menu state

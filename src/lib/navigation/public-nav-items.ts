@@ -69,3 +69,14 @@ export const PUBLIC_NAV_ITEMS: NavItem[] = [
 		section: 'fun'
 	}
 ];
+
+// Functions
+/**
+ * Un lien est surligné si l'adresse est la sienne ou commence par elle + `/` : un article
+ * du Shtam surligne « Le Shtam ». « Accueil » (`/`) ne l'est que sur `/`. Même règle pour
+ * la barre latérale et le tiroir (écart V75).
+ */
+export function isNavItemActive(href: string, pathname: string): boolean {
+	if (pathname === href) return true;
+	return href !== '/' && pathname.startsWith(href + '/');
+}
