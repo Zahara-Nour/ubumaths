@@ -20,6 +20,7 @@ import { hideIndexedNames, indexedNameOf } from '#lib/mathAST/common/indexed-nam
 import { format as formatUnit } from '#lib/mathAST/units/index.ts';
 import { parse as parseUnit } from '#lib/mathAST/units/parser.ts';
 import type { MathNode } from '#lib/mathAST/types.ts';
+import type { ParseResult } from '#lib/mathAST/parser/types.ts';
 import {
 	MAX_CATEGORIES,
 	MAX_CATEGORY_LENGTH,
@@ -33,6 +34,12 @@ import { argumentSemicolonsLatex, coupleOrSetRefusal, decimalCommaInput } from '
 import { objectKindOf, partsOf, specOf } from './construction-spec';
 import { hasMeasureCall, measureShapeRefusal, withoutMeasureCalls } from './measures-read';
 import { perfSwitches } from './perf-switches';
+import {
+	piecesOf,
+	piecewiseNodeOf,
+	PIECEWISE_ONLY_FUNCTIONS,
+	type WrittenPieces
+} from './piecewise';
 import { strayDegreeRefusal, withDegreeUnits } from '#lib/mathAST/cli/core/degrees.ts';
 import { withPiCommand } from '#lib/mathAST/cli/core/typed-line.ts';
 import {
@@ -227,6 +234,20 @@ function readByProvenance(
 	provenance: Provenance,
 	functionNames?: readonly string[]
 ) {
+	// `x pour x < 2, x^2 pour x ≥ 2` : un nœud par morceaux, chaque formule et
+	// chaque comparaison lues seules (`piecewise.ts`)
+	const pieces = piecesOf(rawDefinition, readingMode(provenance));
+	if (pieces !== null) {
+		const node = pieces.ok
+			? piecewiseNodeOf(
+					pieces,
+					readingMode(provenance),
+					(text) => readByProvenance(text, provenance, functionNames).ast ?? null
+				)
+			: null;
+		const result: ParseResult = { ast: node?.ok === true ? node.ast : null, errors: [] };
+		return result;
+	}
 	// `60°`, `60^{\circ}`, `60\degree` (MathLive) : l'unité degré (`degrees.ts`)
 	const typed = withPiCommand(
 		withDegreeUnits(
@@ -531,6 +552,10 @@ export function parseDefinition(
 	if (kind === 'point') return parsePoint(definition, provenance, functionNames);
 	if (kind === 'curve') return parseCurve(definition, provenance, functionNames);
 
+	// `f(x) = x pour x < 2, x^2 pour x ≥ 2` : chaque morceau lu comme une formule
+	const pieces = piecesOf(definition, readingMode(provenance));
+	if (pieces !== null) return parsePiecewise(kind, pieces, definition, provenance, functionNames);
+
 	// Une mesure (`aire(A, B, C)`, lot 2, L4) se lit comme un nombre : sa forme
 	// ici, sa valeur avec l'atelier (`measures.ts`)
 	if (
@@ -580,6 +605,39 @@ export function parseDefinition(
 		if (symbol) return { unit: symbol };
 	}
 	return {};
+}
+
+/**
+ * Une définition par morceaux : seule une fonction en a ; chaque formule a les
+ * refus d'une formule (`ln x` sans parenthèse, `y`), chaque condition se lit.
+ */
+function parsePiecewise(
+	kind: ObjectKind,
+	pieces: WrittenPieces,
+	definition: string,
+	provenance: Provenance,
+	functionNames: readonly string[] | undefined
+): ParsedDefinition {
+	if (kind !== 'function') return { error: PIECEWISE_ONLY_FUNCTIONS };
+	if (!pieces.ok) return { error: pieces.message };
+	const bodies = [
+		...pieces.pieces.map((p) => p.body),
+		...(pieces.otherwise === null ? [] : [pieces.otherwise])
+	];
+	for (const body of bodies) {
+		const read = parseDefinition('function', body, provenance, functionNames);
+		if (read.error !== undefined) return read;
+	}
+	const node = piecewiseNodeOf(
+		pieces,
+		readingMode(provenance),
+		(text) => parseByProvenance(text, provenance, functionNames).ast ?? null
+	);
+	if (!node.ok) return { error: node.message };
+	if (variablesOf(node.ast, functionNames).has('y')) return { error: reservedYMessage(kind) };
+	return astOf(definition, provenance, functionNames) === null
+		? { error: invalidExpressionMessage(definition, undefined) }
+		: {};
 }
 
 /**

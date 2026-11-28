@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-28, après #3335 (PR 1, moteur)._
+_Mis à jour le 2026-11-28, PR 2 (Atelier) en cours._
 
-- **État** : PR 1 mergée — `f(3)` exact sur un nœud par morceaux, lecture de `\begin{cases}`. Rien de visible dans l'Atelier.
-- **Prochaine action** : PR 2 (Atelier) — nouveau worktree `../ubumaths-wt-fonctions-par-morceaux-2`, branche `feat/fonctions-par-morceaux-2` ; phase 0 et Q1-Q4 déjà tranchées (ci-dessous), tests d'abord.
+- **État** : PR 2 codée sur `feat/fonctions-par-morceaux-2` — écriture par morceaux dans Calcul et la carte, refus, `sinon`, ensemble, curseur, Q3, Géométrie ; 49 tests verts, suite atelier verte. Reste : typecheck, rendu à l'écran (Graphe compris), revue, PR.
+- **Prochaine action** : `check:incremental`, `pnpm voir` (Graphe : la courbe part en `\begin{cases}`), revue `code-reviewer`, PR.
 - **En attente de David** : rien.
-- **Pièges en cours** : `expressionOf` / `syncEngine` (`engine.ts`) font arbre → texte maison → arbre : un nœud par morceaux s'y perd (`{ v si c }` illisible, `si` = s·i) → passer l'arbre, ou relire en LaTeX. `simplify` ne réduit pas un nœud par morceaux, seul `evaluate`. Refus `ONE_FORMULA` à retirer (`interval.ts` ~282). Graphe = PR 3 (une formule par courbe aujourd'hui).
-- **Worktree / branche** : aucun (celui de PR 1 retiré par `pr:merger`).
+- **Pièges en cours** : `expressionOf` (texte maison) perd un nœud par morceaux — `syncEngine` passe l'arbre ; les commandes refusent toute fonction par morceaux (sauf `.domaine`), `.évaluer` compris. Graphe = PR 3.
+- **Worktree / branche** : `../ubumaths-wt-fonctions-par-morceaux-2`, `feat/fonctions-par-morceaux-2`.
 
 ## Demande
 
@@ -83,3 +83,27 @@ Suite de `fonctions-domaines` (#3304, #3310) et `fonctions-morceaux` (#3298, `[k
 - Constats : `simplify` ne réduit pas un nœud par morceaux (seul `evaluate`) ; la console ne
   remplace pas une valeur liée dans le corps d'une fonction (vrai pour toute fonction ; l'Atelier
   substitue avant, `expressionOf`).
+
+### PR 2 — Atelier (en cours)
+
+- **Rangement** : la définition garde TOUTE l'écriture (`x pour x < k, x^2 pour x ≥ k`, en x), sans
+  `interval` ; `astOf` la lit en nœud `piecewise` (`parse.ts` → `piecewise.ts`). Aucun champ neuf,
+  sauvegarde inchangée. `splitInterval` ne coupe plus une écriture à plusieurs morceaux.
+- **Découpage** (`piecewise.ts`, `piecesOf`) : virgules de premier niveau (ni dans `()`/`{}`, ni
+  `0,5` en texte, ni `{,}` en LaTeX) ; par morceaux dès qu'une partie a « pour » + condition ou finit
+  par « sinon ». Refus : morceau sans condition, `sinon` pas en dernier, formule vide.
+- **Conditions en arbre** : chaque comparaison lue seule, « et » plus fort que « ou » (les parseurs
+  lisaient mal `x<0 ou x>1` et `2\lt x\lt 4`). L'ensemble, lui, vient de `readInterval`.
+- **Atelier** (`checkPieces`, `interval.ts`) : conditions lisibles, pas de chevauchement (Q1, « Les
+  conditions se chevauchent sur … »), chaque formule définie sur sa condition (`formulaOutside`,
+  factorisé de `checkInterval`) ; ensemble = réunion, ℝ avec `sinon`. Recalculé à chaque passage
+  dans `parameterInterval` (comme `[k;5]`) : curseur qui fait chevaucher → carte en erreur « (k = 3) ».
+- **`interval-words.ts`** : les mots « sur »/« pour » sortis d'`interval.ts`, pour que `parse.ts`
+  les lise sans cycle.
+- **Q3** (`piecewise-refusals.ts`) : toute commande (sauf `.domaine`), `f′`, et les boutons sauf
+  « Image » refusent une fonction par morceaux ou qui en cite une. `.évaluer` aussi (son chemin
+  passe par le texte maison). `.domaine f` : « (réunion des conditions de ses morceaux) ».
+- **Carte** : texte de Calcul réaffiché morceau par morceau (`\text{ pour }`, `\text{ sinon}`),
+  jamais `\begin{cases}`.
+- **Constat** : `a = 3 pour x < 0, 4 pour x ≥ 0` crée une fonction `a` (règle actuelle : `a = x^2`
+  aussi).

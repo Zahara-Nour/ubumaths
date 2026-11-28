@@ -67,6 +67,11 @@ import {
 	termsOf
 } from './engine';
 import {
+	piecewiseCitedIn,
+	piecewiseCommandMessage,
+	piecewiseCommandRefusal
+} from './piecewise-refusals';
+import {
 	chosenDomainAnswer,
 	citedIntervalDomain,
 	composedMessage,
@@ -2089,6 +2094,16 @@ function runCommand(session: CalcSession, input: string): CalcResult {
 	const resolved = calculation ? withDegreeUnits(typedLine, 'detect') : typedLine;
 	const stray = calculation && space !== -1 ? strayDegreeRefusal(resolved.slice(space + 1)) : null;
 	if (stray !== null) return { kind: 'refus', message: stray };
+	// Q3 (fonctions-par-morceaux) : une fonction par morceaux ne s'étudie pas encore,
+	// seul son ensemble se dit (`.domaine f`)
+	if (name !== 'domain' && space !== -1) {
+		const piecewise = piecewiseCommandRefusal(
+			session.atelier,
+			known.french,
+			resolved.slice(space + 1)
+		);
+		if (piecewise !== null) return { kind: 'refus', message: piecewise };
+	}
 
 	// `.latex` et `.texte` SANS expression n'ont rien à écrire : refus qui montre
 	// l'écriture attendue. (Ils basculaient autrefois le mode de saisie du moteur,
@@ -3648,6 +3663,9 @@ function derivativeOfUnusable(session: CalcSession, input: string): string | nul
 		if (object.status === 'error') {
 			return object.message ?? `« ${match[1]} » ne se lit pas : sa dérivée non plus.`;
 		}
+		// Q3 (fonctions-par-morceaux) : la dérivée d'une fonction par morceaux, pas encore
+		const piecewise = piecewiseCitedIn(session.atelier, match[1]);
+		if (piecewise !== null) return piecewiseCommandMessage(piecewise, 'la dérivée');
 	}
 	return null;
 }
@@ -4674,6 +4692,13 @@ function computeAction(
 	const substituted = expressionOf(atelier, name, { forDerivation: parameters !== null });
 	// Le message vient de l'objet : le panneau et l'action disent la même chose.
 	if (!substituted.ok) return { ok: false, message: substituted.message };
+	// Q3 (fonctions-par-morceaux) : seule l'image d'une fonction par morceaux se calcule
+	if (actionId !== 'image') {
+		const piecewise = piecewiseCitedIn(atelier, name);
+		if (piecewise !== null) {
+			return { ok: false, message: piecewiseCommandMessage(piecewise, 'ce bouton') };
+		}
+	}
 	if (parameters !== null && (actionId === 'solve' || actionId === 'variations')) {
 		return { ok: false, message: dependsOnMessage(parameters) };
 	}
