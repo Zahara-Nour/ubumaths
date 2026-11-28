@@ -100,7 +100,7 @@ import {
 	strokeDisplaySchema,
 	type StoredDisplay
 } from './display';
-import { astOf as astOfDefinition } from './parse';
+import { astOf as astOfDefinition, readingMode } from './parse';
 import { renameInObject } from './rename';
 import { INTERNAL_LETTER, letterRejection, typedLetterOf } from './letter';
 import { perfSwitches } from './perf-switches';
@@ -109,6 +109,7 @@ import {
 	citedIntervals,
 	intervalNamesOf,
 	ONLY_FUNCTIONS,
+	outsideIntervalRefusal,
 	readInterval,
 	renamedInInterval,
 	type CheckedInterval,
@@ -583,6 +584,15 @@ export interface ListChartState {
 	readonly partner: string | null;
 	/** Absent = bâtons (v1) */
 	readonly kind?: ListChartKind;
+}
+
+/**
+ * La définition lue par `outsideIntervalRefusal` (des appels `f(3)` en texte) :
+ * venue d'un champ MathLive, ses `\left(` `\right)` redeviennent des parenthèses.
+ */
+function callsAsText(object: AtelierObject): string {
+	if (readingMode(object.provenance ?? 'url') !== 'latex') return object.definition;
+	return object.definition.replace(/\\left\(/g, '(').replace(/\\right\)/g, ')');
 }
 
 export class Atelier {
@@ -3529,6 +3539,15 @@ export class Atelier {
 		const intervals = citedIntervals(this.items, this.functionNames, (text, others) =>
 			citedReciprocalInterval(this, text, INTERNAL_LETTER, others)
 		);
+		// L'objet cité avec l'ensemble hérité de CE passage : `#inheritIntervals` ne
+		// le range qu'à la fin, et `j = g(3)` (g(x) = f(x) + 1) le lirait en retard
+		const withCurrentInheritance = (name: string): AtelierObject | undefined => {
+			const cited = this.get(name);
+			if (cited === undefined || !isFunction(cited)) return cited;
+			const domain = intervals.inherited.get(name);
+			const { inheritedInterval: _stale, ...rest } = cited;
+			return domain === undefined ? rest : { ...rest, inheritedInterval: domain };
+		};
 		const missing = new Map<string, MissingReference[]>();
 		// V58 : les objets dont la LIGNE est fautive (illisible, circulaire, une
 		// fonction citée comme un nombre) — pas ceux qui suivent un autre objet
@@ -3624,6 +3643,12 @@ export class Atelier {
 				'message' in parameterInterval
 			) {
 				ownError.set(o.name, parameterInterval.message);
+			}
+			// `j = f(3)` puis l'ensemble de f qui ne contient plus 3 (curseur de k,
+			// f réécrite) : le refus de Calcul (I4), en erreur jusqu'au retour de 3
+			if (!ownError.get(o.name) && construction === null) {
+				const outside = outsideIntervalRefusal(withCurrentInheritance, callsAsText(o));
+				if (outside !== null) ownError.set(o.name, outside);
 			}
 			deps.set(
 				o.name,

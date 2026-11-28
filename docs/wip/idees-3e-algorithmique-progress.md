@@ -2,17 +2,19 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-28, après #3294 et la migration en prod._
+_Mis à jour le 2026-11-28, relecture validée par David._
 
-- **État** : #3294 mergé ; migration `20261128132651` en prod (`db push --include-all` par David, avec
-  `20261128072151` d'`ecarts-cours-evaluations`) : les 13 variations et leurs specs sont relues en
-  prod (0a470416 4, 4ce8eb3c 7, 5c092e43 5, 6e99d291 5, 962da675 7, 9f9bddbd 6 variations). Modèle E
-  pas encore créé. · **Prochaine action** : après le `create-questions --publier` de David, commiter
-  l'id de E, migration de rangement (nœud « instructions conditionnelles », point 5-011) ; série de
-  relecture des 6 publiés ; relecture dans `/dev/modeles` ; publication de E. · **En attente de David**
-  : `pnpm tsx scripts/create-questions.ts --dir scripts/questions/idees-3e-algorithmique-neufs
---publier`. · **Pièges en cours** : E est un modèle de **5e** (`grades` `['5']`). · **Worktree /
-  branche** : aucun.
+- **État** : 13 variations en prod ; E (`d01396e6`) rangé en prod (« instructions conditionnelles »,
+  5-011, grades 5), encore brouillon ; série de relecture enregistrée par David (id `1ec193bd` écrit
+  dans `scripts/series/3-relecture-algorithmique-publies.json`, **modifié et non commité dans le
+  dépôt principal**). Relecture **validée par David** (« je valide la relecture »).
+  `publier-lot.ts` en simulation vert pour E ; `garde-niveaux-tags` vert. · **Prochaine action** :
+  (1) PR de l'id de la série (nouveau worktree, copier le fichier, puis `git checkout --` dans le
+  dépôt principal avant le `pull`) ; (2) David : `pnpm tsx scripts/questions/publier-lot.ts --dir
+scripts/questions/idees-3e-algorithmique-neufs --publier`, puis relire `published` en prod ; (3)
+  tableau de répartition : 3I1 « publiée », six réservations levées ; (4) journal versé
+  (`couvrir-un-niveau.md`), chantier clos. · **En attente de David** : `publier-lot --publier`. ·
+  **Pièges en cours** : aucun. · **Worktree / branche** : aucun.
 
 ## Rubrique
 
@@ -85,3 +87,13 @@ variations ajoutées à la fin) et `docs/wip/questions/idees-3e-algorithmique-ne
   donnée réelle ni lien).
 - #3294 mergé le 2026-11-28 (CI verte, `pr:merger`).
 - Migration `20261128132651` en prod le 2026-11-28 (David, `db push --include-all`, avec `20261128072151`) ; variations relues en prod par le MCP.
+
+## Rangement de E (2026-11-28)
+
+- `create-questions --publier` par David : E = `d01396e6-9123-481c-9143-d8452c7ff1fe`, brouillon.
+- Migration `20261128140707_questions_idees_3e_algorithmique_neufs_rangement_tags.sql` générée par
+  `migration-rangement.ts` (relevé de la prod), fixture comprise.
+- Série de relecture des 6 modèles publiés : `scripts/series/3-relecture-algorithmique-publies.json`
+  (6 questions, 6 min ; simulation verte).
+- #3301 mergé le 2026-11-28 (CI verte, `pr:merger`) ; test `migrations-rangement-tags` vert, `security-auditor` sans finding bloquant (non bloquant : la rubrique du point 5-011, « Nombres et calculs > Opérations », ne colle pas à sa branche « Algorithmique », donnée antérieure au chantier).
+- 2026-11-28 : `db:migrate` (rangement de E) et série `1ec193bd` par David ; nœud et tag 5-011 relus en prod ; relecture validée par David dans la conversation (« je valide la relecture »), aucun verdict à lire en base.

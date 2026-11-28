@@ -184,11 +184,16 @@ de contenu appliquée en prod.
 | 6e99d291 Écrire un programme pour résoudre un problème (3e)  | `idees-3e-algorithmique`                                    | 2026-11-28 |                                      |
 | 962da675 Plusieurs variables                                 | `idees-3e-algorithmique`                                    | 2026-11-28 |                                      |
 | 9f9bddbd Conditions composées                                | `idees-3e-algorithmique`                                    | 2026-11-28 |                                      |
+| c8741112 Le vocabulaire des angles                           | `idees-6e-angles`                                           | 2026-11-28 |                                      |
+| 3be08965 Mesurer un angle au rapporteur                      | `idees-6e-angles`                                           | 2026-11-28 |                                      |
+| 2291c83c Construire un angle de mesure donnée                | `idees-6e-angles`                                           | 2026-11-28 |                                      |
 
 ## Idées en attente
 
 Ce sont des idées notées pour un modèle déjà réservé, ou reportées par David (« plus tard »).
 
+- `idees-6e-angles` (2026-11-28, pour la session de la rubrique « Espace » 6G8) : 6G41, « compléter une
+  représentation en perspective cavalière » (cube ou pavé), rangé sous le préfixe 6G4 mais exercice de solides.
 - `ensembles-2de` : fiches 16, 17, 34, 52 du relevé « nombres et calculs » (rares mais au
   programme, voir le journal).
 - `idees-6e-entiers` (plus tard, David, 2026-11-22) : la rose des sommes (6N0A-2), en attente d'un outil

@@ -26,6 +26,8 @@ export interface CarnetConfirmationEmailData {
 export interface CarnetLinkEmailData {
 	studentFirstname: string;
 	token: string;
+	/** Expiration du lien : fin de l'année scolaire de l'école */
+	expiresAt: Date;
 }
 
 // Constantes
@@ -129,6 +131,16 @@ export function getCarnetConfirmationEmailHtml(data: CarnetConfirmationEmailData
 
 // --- Lien du carnet (A1, Q26, A6, D2) ---------------------------------------
 
+/** « 15 juillet 2027 » : le jour d'expiration, tel que la base le compte (UTC) */
+function formatExpiry(date: Date): string {
+	return date.toLocaleDateString('fr-FR', {
+		day: 'numeric',
+		month: 'long',
+		year: 'numeric',
+		timeZone: 'UTC'
+	});
+}
+
 export function getCarnetLinkSubject(data: CarnetLinkEmailData): string {
 	return `Le carnet de liaison de ${data.studentFirstname}`;
 }
@@ -141,7 +153,7 @@ ${getCarnetLink(data.token)}
 
 Cette page est toujours à jour : régularité des dernières semaines, révisions, évaluations à rendre. Vous pouvez l'ajouter à l'écran d'accueil de votre téléphone.
 
-Ce lien est personnel : ne le transférez pas. Il remplace tout lien reçu auparavant et reste valable jusqu'au 31 août.
+Ce lien est personnel : ne le transférez pas. Il remplace tout lien reçu auparavant et reste valable jusqu'au ${formatExpiry(data.expiresAt)}.
 
 Gardez ce courriel. Si vous ne le retrouvez plus un jour, demandez un nouveau lien (l'ancien cessera de fonctionner) :
 ${getCarnetLostLink()}
@@ -169,7 +181,7 @@ export function getCarnetLinkEmailHtml(data: CarnetLinkEmailData): string {
   </div>
 
   <p style="color: #64748b; font-size: 0.9em; text-align: center;">
-    Ce lien est <strong>personnel</strong> : ne le transférez pas. Il remplace tout lien reçu auparavant et reste valable jusqu'au 31 août.
+    Ce lien est <strong>personnel</strong> : ne le transférez pas. Il remplace tout lien reçu auparavant et reste valable jusqu'au ${escapeHtml(formatExpiry(data.expiresAt))}.
   </p>
 
   <p style="color: #64748b; font-size: 0.9em; text-align: center;">

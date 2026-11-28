@@ -67,6 +67,7 @@
 	import TortueProgramme from './nodes/TortueProgramme.svelte';
 	import RobotCode from './nodes/RobotCode.svelte';
 	import Labyrinthe from './nodes/Labyrinthe.svelte';
+	import Yohaku from './nodes/Yohaku.svelte';
 	import CalculProgramme from './nodes/CalculProgramme.svelte';
 
 	// Raw markdown viewer with syntax highlighting
@@ -436,6 +437,8 @@
 					<RobotCode {node} />
 				{:else if node.type === 'labyrinthe'}
 					<Labyrinthe {node} />
+				{:else if node.type === 'yohaku'}
+					<Yohaku {node} />
 				{/if}
 			{/each}
 		{:else}

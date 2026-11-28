@@ -452,9 +452,14 @@ est abandonnée : [ADR 0008](../adr/0008-referentiel-famille-a-abandonne.md).
 2. **Périmètre** (`evaluation-tasks/[id]`) : cocher les observables à observer →
    `evaluation_task_perimeter`.
 3. **Saisie en séance** (`evaluation-tasks/[id]/saisie`, action `save`) : grille élèves × observables
-   du périmètre. Coché → `plus`, non coché → `minus`, hors périmètre → rien. L'enregistrement
-   **efface** les `skill_attempts` de la tâche puis réinsère toute la grille (`source: 'teacher'`).
-4. Le trigger `trg_skill_attempts_after_insert` recalcule les caches : `student_observable_state`
+   du périmètre (élèves **actifs** de la classe). Coché → `plus`, non coché → `minus`, hors
+   périmètre → rien. L'enregistrement passe par `save_evaluation_task_grid` (L39) : en une
+   transaction, il efface les `skill_attempts` de la tâche des élèves de la grille, puis réinsère
+   la grille (`source: 'teacher'`). Un élève archivé depuis garde ses observations. Une ligne non
+   effacée fait échouer l'enregistrement (« La saisie n'a pas été enregistrée »), jamais de grille
+   doublée.
+4. Le trigger `trg_skill_attempts_after_insert` recalcule les caches (et
+   `trg_skill_attempts_after_delete` ceux des cases effacées) : `student_observable_state`
    (acquis ssi au moins 2 `plus` et plus de `plus` que de `minus`), puis `student_competence_level`
    via `compute_competence_level` — niveau `insuffisante` sous 2 tâches
    (`MIN_TASKS_FOR_COMPETENCE_LEVEL`), « très bonne » plafonnée à « satisfaisante » sous 3.

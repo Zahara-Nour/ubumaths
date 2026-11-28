@@ -227,7 +227,7 @@ function resolveGeometry(source: string): ConstructionGeometry {
 	}
 	return {
 		points: allNamedPointPositions(scene),
-		shapes: figureShapes(scene, node.header),
+		shapes: { ...figureShapes(scene, node.header), tools: spec.tools },
 		expected: expectedPoints(figureSource, spec.checks)
 	};
 }

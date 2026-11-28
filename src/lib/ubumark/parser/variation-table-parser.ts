@@ -965,11 +965,23 @@ function readHiddenLimits(
 }
 
 /** Hauteur d'une valeur pour lire une flèche : 1 en haut, -1 en bas, null sinon */
-function heightOf(value: VariationValue | undefined): 1 | -1 | null {
-	if (!value || value.marker) return null;
-	if (value.position === 'top' || value.position === 'limit-top') return 1;
-	if (value.position === 'bottom' || value.position === 'limit-bottom') return -1;
+function heightOf(value: VariationValue | undefined, side: LimitSide): 1 | -1 | null {
+	if (!value) return null;
+	const position = value.marker ? limitPositionOn(value, side) : value.position;
+	if (position === 'top' || position === 'limit-top') return 1;
+	if (position === 'bottom' || position === 'limit-bottom') return -1;
 	return null;
+}
+
+/**
+ * Hauteur de la limite d'une double barre du côté `side` (gauche : la flèche y arrive ;
+ * droite : elle en repart), comme la lit le tableau dessiné. Rien du côté vide d'une
+ * limite seule, rien pour une zone interdite ni une discontinuité (pas de flèche).
+ */
+function limitPositionOn(value: VariationValue, side: LimitSide): VariationPosition | null {
+	if (value.marker !== 'asymptote') return null;
+	if (value.limits) return value.limits[side === 'left' ? 0 : 1].position;
+	return value.limitSide === side ? value.position : null;
 }
 
 /**
@@ -981,8 +993,9 @@ function heightOf(value: VariationValue | undefined): 1 | -1 | null {
 function arrowAnswer(row: VariationRow, domain: DomainPoint[], key: string): '↗' | '↘' | null {
 	const filled = withImplicitEndpoints(row, domain);
 	const [from, to] = key.split(',');
-	const start = heightOf(filled.values.get(from));
-	const end = heightOf(filled.values.get(to));
+	// La flèche repart du côté droit de son départ, arrive du côté gauche de son arrivée
+	const start = heightOf(filled.values.get(from), 'right');
+	const end = heightOf(filled.values.get(to), 'left');
 	if (start === null || end === null || start === end) return null;
 	return end > start ? '↗' : '↘';
 }
@@ -1070,7 +1083,7 @@ function buildHiddenCells(
 						refuse(
 							cell.line,
 							cell.content,
-							`pas de flèche à cacher sur « ${key} » : les deux valeurs doivent être l’une en haut, l’autre en bas (ni centrée, ni asymptote)`
+							`pas de flèche à cacher sur « ${key} » : les deux valeurs doivent être l’une en haut, l’autre en bas (ni centrée, ni sur le côté vide d’une double barre)`
 						);
 						continue;
 					}
@@ -1612,12 +1625,32 @@ export function variationRowForDisplay(node: VariationTableNode, rowIndex: numbe
 	if (arrows.length === 0) return filled;
 
 	const values = new Map(filled.values);
-	for (const point of arrows.flatMap((cell) => cell.key.split(','))) {
-		const value = row.values.get(point);
-		if (value === undefined) values.delete(point);
-		else if (!value.marker) values.set(point, { ...value, position: 'center' });
+	// Chaque bout d'une flèche cachée, avec le côté qu'elle touche (une double barre a deux côtés)
+	const ends = arrows.flatMap((cell): [string, LimitSide][] => {
+		const [from, to] = cell.key.split(',');
+		return [
+			[from, 'right'],
+			[to, 'left']
+		];
+	});
+	for (const [point, side] of ends) {
+		const value = values.get(point);
+		if (row.values.get(point) === undefined) values.delete(point);
+		else if (value && !value.marker) values.set(point, { ...value, position: 'center' });
+		else if (value) values.set(point, centerLimit(value, side));
 	}
 	return { ...filled, values };
+}
+
+/** La double barre avec sa limite du côté `side` au milieu (copie : l'arbre reste juste) */
+function centerLimit(value: VariationValue, side: LimitSide): VariationValue {
+	if (value.limits) {
+		const k = side === 'left' ? 0 : 1;
+		const limits: [LimitValue, LimitValue] = [{ ...value.limits[0] }, { ...value.limits[1] }];
+		limits[k] = { ...limits[k], position: 'center' };
+		return { ...value, limits };
+	}
+	return value.limitSide === side ? { ...value, position: 'center' } : value;
 }
 
 /** Position opposée (haut ↔ bas), ou null pour une valeur centrée */

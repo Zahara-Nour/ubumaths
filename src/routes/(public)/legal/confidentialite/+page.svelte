@@ -12,7 +12,7 @@
 	<article class="prose max-w-none prose-slate dark:prose-invert">
 		<h1>Politique de confidentialité</h1>
 
-		<p class="lead text-muted-foreground">Dernière mise à jour : 25 novembre 2026 | Version 1.5</p>
+		<p class="lead text-muted-foreground">Dernière mise à jour : 28 novembre 2026 | Version 1.6</p>
 
 		<hr />
 
@@ -399,7 +399,10 @@
 						</tr>
 						<tr>
 							<td>Lien du carnet de liaison</td>
-							<td>Expire le 31 août de chaque année ; effacé avec l'adresse</td>
+							<td>
+								Expire à la fin de l'année scolaire de l'école (le 31 août si elle n'a pas saisi ses
+								dates) ; effacé avec l'adresse
+							</td>
 						</tr>
 						<tr>
 							<td>Liste des courriels envoyés aux parents</td>

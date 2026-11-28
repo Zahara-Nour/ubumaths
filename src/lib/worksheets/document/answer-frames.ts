@@ -143,6 +143,7 @@ function nodeLines(node: ASTNode): number {
 		case 'calcul':
 		case 'robot':
 		case 'labyrinthe':
+		case 'yohaku':
 		case 'partage':
 		case 'espace':
 		case 'operation':
