@@ -70,7 +70,9 @@ const POLICIES = [
 	[
 		'notifications',
 		'Teachers can create notifications for their classes',
-		'e4ff05319199094167b49bec6a20e1d9'
+		// Changée exprès par 20261128163026 (L83 : adhésion active exigée en
+		// ciblage nominatif) ; avant : e4ff05319199094167b49bec6a20e1d9.
+		'49989b797469f2d1175f4b61ce2b1c3e'
 	],
 	[
 		'notifications',
