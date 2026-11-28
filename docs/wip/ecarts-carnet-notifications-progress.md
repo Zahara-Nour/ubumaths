@@ -10,11 +10,11 @@ status: en cours
 
 _Mis à jour le 2026-11-28, après #3333._
 
-- **État** : #3333 mergée (V107, L79, L80, L81, L82, L83). Migration `20261128163026_avertissement_adhesion_active_compteur_lien_parent.sql` sur `main`, **pas encore jouée en prod**. Reste L78. Worktree et branche retirés.
-- **Prochaine action** : (1) avec le « oui » de David : `pnpm exec supabase migration list --linked` (une seule en attente, la nôtre, sinon stop) puis `pnpm db:migrate` depuis le dépôt principal ; (2) L78 en PR 2 : nouveau worktree `../ubumaths-wt-ecarts-carnet-notifications` depuis `origin/main`, phase 0 du webhook Brevo (adresse invalide → statut `invalid`, ce que voit le prof ; l'écran sait déjà l'afficher), gestes de David : déclarer l'adresse dans Brevo, secret dans Vercel.
-- **En attente de David** : « oui » explicite à la question d'accès (personne ne lit rien de plus ; le prof perd l'avertissement hors adhésion active et la notification nominative à un élève parti ; élève archivé refusé).
-- **Pièges en cours** : la migration est mergée : le `db:migrate` d'une autre session la jouerait aussi. `add_warning` sans appelant : sa suppression est une décision à part. L'empreinte de la policy des notifications est figée dans `tests/integration/anon-preparation.test.ts`.
-- **Worktree / branche** : aucun (retirés par `pr:merger`).
+- **État** : #3333 mergée ; sa migration est déjà jouée en prod (par le `db:migrate` d'une autre session, vu par `migration list --linked`). Reste L78 : phase 0 écrite ci-dessous (§ L78 — phase 0), rien de codé.
+- **Prochaine action** : réponses de David aux questions Q1–Q4 de la phase 0 de L78, puis tests rouges → route webhook → PR.
+- **En attente de David** : Q1–Q4 de la phase 0 de L78.
+- **Pièges en cours** : `add_warning` sans appelant : sa suppression est une décision à part. Les courriels Brevo de tout le site passent par le même webhook : n'agir que sur les adresses de parents.
+- **Worktree / branche** : `../ubumaths-wt-ecarts-carnet-notifications` · `fix/ecarts-carnet-notifications-brevo`.
 
 ## Écarts du lot
 
@@ -35,3 +35,24 @@ _Mis à jour le 2026-11-28, après #3333._
 - 2026-11-28 : audit de sécurité : preuves de `add_warnings_bulk`, de l'insertion directe et de l'élève archivé ajoutées ; policy des notifications (L83) dans la migration.
 - 2026-11-28 : migration L82 + L79 écrite, preuves vertes ; revue de code sans bloquant.
 - 2026-11-28 : V107 (phase 0 validée), L83, L80, L81 corrigés ; L82, L79 attendent la question d'accès ; L78 = webhook Brevo.
+
+## L78 — phase 0 (2026-11-28)
+
+Aujourd'hui : Brevo accepte le courriel, puis la boîte du parent n'existe plus (« rejet définitif »). Personne ne le sait : l'adresse reste « confirmée », les courriels suivants partent dans le vide, le prof croit le parent prévenu.
+
+Comportements proposés :
+
+- **Nominal** : Brevo appelle `POST /api/webhooks/brevo` avec un événement de rejet définitif pour `parent@exemple.test`. Toutes les adresses de parents qui ont cette empreinte (un parent de deux élèves = deux lignes), en attente ou confirmées, passent `invalid`. Le prof lit sur la page du carnet « Adresse rejetée par la messagerie » (déjà affiché) ; la place est libérée (2 adresses actives au plus) ; il peut la ressaisir (remise en attente, déjà codé) ou en saisir une autre.
+- **Limite** : adresse inconnue (courriel d'inscription, d'un prof…) → réponse 200, rien ne change. Adresse déjà retirée, refusée ou invalide → rien ne change. Même événement reçu deux fois → même résultat.
+- **Erreur** : secret absent ou faux → 401, rien ne change. Corps illisible → 400. Panne de base → 500 (Brevo réessaie).
+- **Données** : l'adresse reçue n'est ni stockée ni journalisée ; seule son empreinte sert à chercher.
+- **Accès** : aucune migration (le statut `invalid` existe déjà, écriture par le service role). Personne ne lit rien de plus ; un inconnu sans le secret ne peut rien marquer.
+
+Questions :
+
+- **Q1** — quels événements rendent l'adresse invalide ? Reco : `hard_bounce` (boîte inexistante) et `invalid_email` seulement ; pas `soft_bounce` (boîte pleine, passager).
+- **Q2** — un parent qui clique « c'est du spam » (`spam`) : on arrête ses courriels comme « Ne plus recevoir » (`emails_stopped_at`) ? Reco : oui.
+- **Q3** — secret : Brevo l'envoie dans un en-tête que l'on choisit à la déclaration du webhook (`Authorization: Bearer …`), variable `BREVO_WEBHOOK_SECRET` dans Vercel. Reco : oui.
+- **Q4** — le lien actif du parent dont l'adresse est rejetée : on le laisse (il marche toujours s'il l'a gardé) ? Reco : on le laisse.
+
+Gestes de David après le merge : déclarer le webhook dans Brevo (adresse + en-tête), mettre `BREVO_WEBHOOK_SECRET` dans Vercel.
