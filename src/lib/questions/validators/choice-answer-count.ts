@@ -13,7 +13,7 @@
  */
 
 import type { QuestionTemplate, QuestionVariation } from '../types';
-import { assignBlankIndices } from '../generator/assign-blank-indices';
+import { assignBlankIndices, variationCasesUnresolved } from '../generator/assign-blank-indices';
 import { parseChoiceBody } from '#lib/ubumark/parser/choix-parser.ts';
 import { readExpectedChoices } from '../choice-case';
 
@@ -45,6 +45,9 @@ function choiceCaseErrors(
 			error.startsWith('Case ') ? `${prefix}, c${error.slice(1)}` : `${prefix} : ${error}`
 		);
 	}
+	// Tableau à compléter à variables : rang des cases inconnu avant le tirage, la
+	// bonne réponse du choix y est contrôlée (générateur, énoncé résolu)
+	if (variationCasesUnresolved(result)) return [];
 	// Cases de blocs ```operation / ```figure-a-completer / ```figure-de-travail, d'un
 	// tableau de signes à compléter : `blanks[]` peut les omettre
 	const blockCases = new Set([

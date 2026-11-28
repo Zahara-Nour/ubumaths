@@ -17,6 +17,8 @@ import { templateMarkdown, parseMarkdown } from '#lib/ubumark/index.ts';
 import { validateAnswer } from '#lib/utils/answer-validator.ts';
 import { toPublicQuestion, gestureAnswerLeaks } from '../../public-question';
 import { findUnmaskedAnswers } from '../../masked-statement';
+import { validateTemplate } from '#lib/questions/validators/template-validator.ts';
+import { withBlockCases } from '../../choice-case-editor';
 import type { VariationTableNode } from '#lib/ubumark/types/variation-table.ts';
 
 function template(
@@ -422,5 +424,76 @@ describe('tableau de signes : évaluation notée, énoncé masqué', () => {
 		const t = template({ statement: `$x = ?$\n\n${plain}`, blanks: [{ expectedAnswer: '2' }] });
 		const sent = toPublicQuestion(generate(t), { position: 0, delaySeconds: 30 });
 		expect(sent.statement).toContain(plain);
+	});
+});
+
+/**
+ * Outil 63 (`docs/wip/outil-tableau-variation-progress.md`) : un choix à côté d'un
+ * tableau à compléter dont les variables portent le domaine. Sur l'énoncé brut, le
+ * tableau ne se lit pas : ses cases ne se comptent qu'au tirage.
+ */
+describe('choix et tableau à compléter à variables, blanks[] complet', () => {
+	// Forme du modèle N1 de 1re spé (homographique) : numérateur, tableau, choix
+	const HOMOGRAPHIQUE = [
+		"$f'(x)=\\dfrac{?}{(x-{{al}})^2}$",
+		'',
+		variation(
+			'variable: x',
+			'domain: -inf, {{al}}, +inf',
+			'',
+			"sign: f'(x)",
+			'  -inf,{{al}}: ?{{if:D>0|+|-}}',
+			'  {{al}}: ||',
+			'  {{al}},+inf: ?{{if:D>0|+|-}}'
+		),
+		'',
+		'```choix',
+		'melanger: non',
+		'- $f$ est croissante',
+		'- $f$ est décroissante',
+		'```'
+	].join('\n');
+	const VARIABLES = [
+		{ name: 'al', expression: '2' },
+		{ name: 'D', expression: '-7' }
+	];
+	const homographique = (choice: string) =>
+		template({
+			statement: HOMOGRAPHIQUE,
+			variables: VARIABLES,
+			blanks: [
+				{ expectedAnswer: '{{D}}' },
+				{ expectedAnswer: '' },
+				{ expectedAnswer: '' },
+				{ expectedAnswer: choice }
+			]
+		});
+
+	it('le modèle passe le contrôle et se tire : le choix garde sa bonne réponse', () => {
+		for (const choice of ['{{if:D>0|0|1}}', '1']) {
+			const t = homographique(choice);
+			expect(validateTemplate(t)).toEqual([]);
+			const instance = generate(t);
+			expect(instance.blanks?.map((b) => [b.type, b.expectedAnswer])).toEqual([
+				['math', '-7'],
+				['text', '-'],
+				['text', '-'],
+				['choice', '1']
+			]);
+		}
+	});
+
+	it('l’élève qui choisit « décroissante » a juste, « croissante » faux', () => {
+		const instance = generate(homographique('{{if:D>0|0|1}}'));
+		expect(verdict(instance, ['-7', '-', '-', '1']).isCorrect).toBe(true);
+		expect(judgeCase(instance, 3, '0')).toBe(false);
+	});
+
+	it('une bonne réponse hors des choix reste refusée, au tirage, au bon numéro de case', () => {
+		expect(failure(homographique('5'))).toMatch(/Case 4 \(bloc choix\).*hors des choix/);
+	});
+
+	it('éditeur : pas de réalignement des cases (le compte du tableau dépend des variables)', () => {
+		expect(withBlockCases(['{{D}}', '1'], HOMOGRAPHIQUE, () => '')).toBeNull();
 	});
 });
