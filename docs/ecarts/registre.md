@@ -9,7 +9,7 @@ Une ligne : identifiant · type · domaine · ce que voit l'élève ou le prof �
 Un nouvel écart entre par `pnpm ecarts ajouter`, qui donne son numéro. Une ligne close est barrée,
 jamais effacée.
 
-Derniers numéros : V137 · L140 · M60 · C44 · D45 · T38 · E92
+Derniers numéros : V138 · L140 · M60 · C44 · D45 · T38 · E92
 
 ## Écarts
 
@@ -363,3 +363,4 @@ Derniers numéros : V137 · L140 · M60 · C44 · D45 · T38 · E92
 - L139 · bug latent · mathAST · un indice après une fonction écrite sans parenthèses est posé sur la fonction : \ln u_n est lu (ln u)_n au lieu de ln(u_n), donc \ln u_n^2 est lu ((ln u)_n)² et \ln x^2_1 est lu (ln(x²))_1 ; incohérent avec \ln q^n = ln(q^n) depuis #3243 (suites : aucune réponse réelle d'élève mesurée) · preuve : à la main · à trier (revue de #3243, mesuré par sonde ; test de preuve à écrire)
 - T38 · RGPD · fiches · un titre d'exercice qui contient du code Typst dans une formule ($#panic(1)$) l'évalue à la compilation du PDF (convertLatexToTypstMath n'échappe pas # en mode maths) : PDF de l'élève ou d'un lien de partage qui ne compile plus ; texte du prof ou de l'admin, aucun accès aux données (relevé par security-auditor, revue de la PR du lot fiches) · preuve : à la main · à faire
 - L140 · bug latent · fiches · un ] hors formule dans le titre d'un exercice (processTableCellContent) ou dans la consigne d'une affectation (render-exercise.ts, escapeTypst seul) ferme le bloc qui l'entoure : le PDF ne compile plus (relevé par security-auditor, revue de la PR du lot fiches) · preuve : à la main · à faire
+- V138 · bug visible · mathAST domaine · le domaine de tan(x) + 1/(x − 3) oublie x = 3 : intersect perd les points isolés exclus à côté d'une exclusion périodique (isUniversalInterval ignore les points) ; réponse fausse sans avertissement, attendu un refus honnête (« je ne sais pas encore », contrainte unresolved) plutôt qu'un vrai correctif ; vu en revue de #3271 (L60), rangé avec le lot mathast-limites, décision de David le 2026-11-28 · preuve : à la main · à faire
