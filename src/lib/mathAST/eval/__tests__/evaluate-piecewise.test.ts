@@ -145,6 +145,53 @@ describe('evaluate — paramètre dans les conditions', () => {
 		if (result.status === 'unevaluable') expect(result.reason).toContain('k');
 	});
 
+	it('x = k, k sans valeur : nœud gardé, pas le « sinon » (revue)', () => {
+		const equal = piecewise(
+			[piecewisePiece(parseLatex('x=k'), parseLatex('3x'))],
+			parseLatex('x^2')
+		);
+		const result = evaluate(substitute(equal, { x: number('3') }), { mode: 'exact' });
+		expect(result.status).toBe('unevaluable');
+		if (result.status === 'unevaluable') expect(result.reason).toContain('k');
+	});
+
+	it('x ≠ k, k sans valeur : nœud gardé, pas le premier morceau (revue)', () => {
+		const different = piecewise(
+			[piecewisePiece(parseLatex('x\\neq k'), parseLatex('3x'))],
+			parseLatex('x^2')
+		);
+		const result = evaluate(substitute(different, { x: number('3') }), { mode: 'exact' });
+		expect(result.status).toBe('unevaluable');
+		if (result.status === 'unevaluable') expect(result.reason).toContain('k');
+	});
+
+	it('x = k avec k = 3 : tranché (premier morceau)', () => {
+		const equal = piecewise(
+			[piecewisePiece(parseLatex('x=k'), parseLatex('3x'))],
+			parseLatex('x^2')
+		);
+		expect(exactAt(equal, '3', { k: number('3') })).toBe(expected('9'));
+		expect(exactAt(equal, '2', { k: number('3') })).toBe(expected('4'));
+	});
+
+	it('nœud gardé : un morceau imbriqué non choisi ne lève pas « aucun morceau » (revue)', () => {
+		// { {1 si x > 5} si x < k ; 2 sinon } en x = 1, k inconnu : refus pour k
+		const inner = piecewise([piecewisePiece(parseLatex('x>5'), parseLatex('1'))]);
+		const outer = piecewise([piecewisePiece(parseLatex('x<k'), inner)], parseLatex('2'));
+		const result = evaluate(substitute(outer, { x: number('1') }), { mode: 'exact' });
+		expect(result.status).toBe('unevaluable');
+		if (result.status === 'unevaluable') expect(result.reason).toContain('k');
+	});
+
+	it('condition avec π : tranchée (π n’est pas une lettre sans valeur)', () => {
+		const withPi = piecewise(
+			[piecewisePiece(parseLatex('x<\\pi'), parseLatex('1'))],
+			parseLatex('2')
+		);
+		expect(exactAt(withPi, '3')).toBe(expected('1'));
+		expect(exactAt(withPi, '4')).toBe(expected('2'));
+	});
+
 	it('premier morceau indécidable : on ne saute pas au suivant', () => {
 		// 3x si x < k, x² sinon — en x = 3, k inconnu : ni l'un ni l'autre
 		const withOtherwise = piecewise(

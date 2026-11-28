@@ -2130,7 +2130,7 @@ class PrattParser {
 		if (text === 'sinon' || text === 'otherwise') return text;
 		if (text === 'si' || text === 'pour' || text === 'if') return null;
 		this.error(
-			`Unknown \\text content in cases: "${text}". Expected "si", "pour" or "sinon"`,
+			`Unknown \\text content in cases: "${text}". Expected "si", "pour", "if", "sinon" or "otherwise"`,
 			cmdToken.position,
 			cmdToken.length,
 			'UNEXPECTED_TOKEN'

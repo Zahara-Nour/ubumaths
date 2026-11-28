@@ -1439,12 +1439,21 @@ class NoPieceApplies extends Error {
  */
 function chosenPiece(node: PiecewiseNode): MathNode {
 	for (const piece of node.pieces) {
-		const holds = evaluateToBoolean(reducePiecewise(piece.condition));
+		const condition = reducePiecewise(piece.condition);
+		// Une lettre sans valeur : rien à trancher. `evaluateToBoolean` dirait
+		// `x = k` faux et `x ≠ k` vrai (comparaison d'écritures), un faux morceau.
+		if (hasFreeLetter(condition)) return node;
+		const holds = evaluateToBoolean(condition);
 		if (holds === undefined) return node;
 		if (holds) return piece.value;
 	}
 	if (node.otherwise !== undefined) return node.otherwise;
 	throw new NoPieceApplies();
+}
+
+/** Une lettre sans valeur dans une condition (π n'en est pas une). */
+function hasFreeLetter(condition: MathNode): boolean {
+	return [...getVariables(condition)].some((name) => name !== 'pi' && name !== 'π');
 }
 
 /**
@@ -1458,12 +1467,19 @@ function chosenPiece(node: PiecewiseNode): MathNode {
  */
 function reducePiecewise(node: MathNode): MathNode {
 	if (findNodes(node, isPiecewise).length === 0) return node;
+	// Un nœud gardé (condition non tranchée) n'est pas ouvert : un morceau
+	// imbriqué non choisi ne doit pas lever « aucun morceau » pour tout le calcul
+	const untouched = new WeakSet<MathNode>();
 	return mapNodeTopDown(node, (current) => {
+		if (untouched.has(current)) return current;
 		let reduced = current;
 		// Le morceau choisi peut être lui-même par morceaux
 		while (isPiecewise(reduced)) {
 			const next = chosenPiece(reduced);
-			if (next === reduced) break;
+			if (next === reduced) {
+				for (const inner of findNodes(reduced, isPiecewise)) untouched.add(inner);
+				break;
+			}
 			reduced = next;
 		}
 		return reduced;

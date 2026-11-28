@@ -2,9 +2,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-28, PR 1 (moteur) en revue._
+_Mis à jour le 2026-11-28, PR 1 (moteur) revue faite, PR ouverte._
 
-- **État** : découpage validé (« c'est bon »). PR 1 (moteur) codée, 31 tests verts, en revue.
+- **État** : découpage validé (« c'est bon »). PR 1 (moteur) codée, revue (`code-reviewer` Opus) corrigée, 36 tests verts.
 - **Prochaine action** : PR 1 ouverte et mergée, puis PR 2 (Atelier).
 - **En attente de David** : rien.
 - **Pièges en cours** : l'aller-retour texte de `expressionOf` / `syncEngine` perd un nœud par morceaux (syntaxe maison `{ v si c }` illisible, ambiguë : `si` = s·i) → PR 2 passe l'arbre ou relit en LaTeX.
@@ -76,6 +76,10 @@ Suite de `fonctions-domaines` (#3304, #3310) et `fonctions-morceaux` (#3298, `[k
   avec `toLatex`.
 - Tests : `evaluate-piecewise` (15), `web-repl-piecewise` (5, chemin `createFunctionBinding`),
   `cases-environment` (11) ; 25 rouges avant.
+- Revue (`code-reviewer`, Opus) : (1) `x = k` / `x ≠ k`, k sans valeur, tranchés à tort
+  (comparaison d'écritures) → condition à lettre libre = nœud gardé (`hasFreeLetter`, π exclu) ;
+  (2) nœud gardé ouvert quand même, un morceau imbriqué levait « aucun morceau » → pas ouvert ;
+  (3) message de `\text{…}` inconnu complété (`if`, `otherwise`). 5 tests, 3 rouges avant.
 - Constats : `simplify` ne réduit pas un nœud par morceaux (seul `evaluate`) ; la console ne
   remplace pas une valeur liée dans le corps d'une fonction (vrai pour toute fonction ; l'Atelier
   substitue avant, `expressionOf`).
