@@ -8,13 +8,13 @@ status: en cours
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-28, PR « masque instantané » en cours._
+_Mis à jour le 2026-11-28, après #3317._
 
-- **État** : #3284 mergée (L56, M35–M38 ; V76 prêt en lot `v76`). Branche `fix/ecarts-constructions-masque` : `masque(…)`/`montre(…)` seuls sur leur ligne = 0 ms ; fin de frise = dernier pas, même de 0 ms (le carré finit par 7 `masque`). Les 44 arcs partent en **6** temps (12, 4, 7, 7, 7, 7 : les 6 suites de `@cacher` de l'auteur ; « 3 temps » était un mauvais compte). Vu en local dans Chrome : pas 344/344, aucun arc.
-- **Prochaine action** : PR, CI, merge (sauvegarde `avant-v76.json` commitée : simulation lancée par David le 2026-11-28, script de prod = source du lot).
-- **En attente de David** : après merge, `pnpm constructions:reecrire --lot v76 --cible prod --publier` (depuis `main` à jour) puis `pnpm deploy:prod`.
-- **Pièges en cours** : `--publier` exige `avant-v76.json` là où il est lancé ; clore le lot (registre, archive) seulement après l'écriture en prod. V139 (étiquettes `_p…`) hors lots.
-- **Worktree / branche** : `../ubumaths-wt-ecarts-constructions-masque` · `fix/ecarts-constructions-masque` (serveur de dev 5177).
+- **État** : #3284 et #3317 mergées. L56, M35–M38 corrigés ; V76 : `masque`/`montre` instantanés (les 44 arcs du carré partent en 6 temps : 12, 4, 7, 7, 7, 7), fin de frise et « précédent » corrects sur des pas de 0 ms ; sauvegarde `scripts/constructions-prod/avant-v76.json` sur `main` (script de prod = source du lot).
+- **Prochaine action** : après la publication par David, clore le lot : registre (V76, L56, M35–M38 `fait (#PR)`), `ecarts-lots.md`, archive du journal.
+- **En attente de David** : depuis `main` à jour, `pnpm constructions:reecrire --lot v76 --cible prod --publier`, puis `pnpm deploy:prod`.
+- **Pièges en cours** : ne clore le lot qu'après l'écriture en prod. V139 (étiquettes `_p…` du carré) au registre, hors lots.
+- **Worktree / branche** : aucun (celui de #3317 retiré).
 
 ## Écarts du lot
 
