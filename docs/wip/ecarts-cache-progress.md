@@ -8,15 +8,14 @@ status: en cours
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-28, avant la PR 1._
+_Mis à jour le 2026-11-28, #3277 mergée, PR 2 (L43) ouverte._
 
-- **État** : PR 1 (branche `fix/ecarts-cache`) corrige M28, M29, M30, L44, L45, L47, L48, L54.
-- **Prochaine action** : merge de la PR 1 (revues faites : `code-reviewer` 1 point corrigé,
-  `security-auditor` rien) ; puis L43 (PR 2) selon la réponse de David.
-- **En attente de David** : la question de phase 0 de L43 (ci-dessous).
-- **Pièges en cours** : `schedule-write-verdict.test.ts` échoue parfois quand il tourne avec tout
-  `dashboard/teacher` (passe seul, 4/4) : sans lien avec le lot.
-- **Worktree / branche** : `../ubumaths-wt-ecarts-cache` · `fix/ecarts-cache`.
+- **État** : #3277 mergée (8 écarts). PR 2 (L43), branche `fix/ecarts-cache-l43`, revue faite.
+- **Prochaine action** : merger la PR 2 ; puis, depuis le dépôt principal, barrer les 9 lignes au
+  registre, « fait » dans `ecarts-lots.md`, archiver ce journal (clôture du lot).
+- **En attente de David** : rien (L43 : option 1 suivie le 2026-11-28).
+- **Pièges en cours** : `schedule-write-verdict.test.ts` instable en lot (passe seul).
+- **Worktree / branche** : `../ubumaths-wt-ecarts-cache-l43` (`fix/ecarts-cache-l43`).
 
 ## Lot
 
@@ -49,7 +48,7 @@ L43, L44, L45, L47, L48, L54, M28, M29, M30 (pris le 2026-11-28, `docs/wip/ecart
   cache (`rewards: null`, `buddy: undefined`) ; sinon chaque relecture du layout aurait affiché
   0 gidouille. Garde par référence testée (« même liste ») ; périodes du layout prof gardées de même.
 
-## L43 : question de phase 0 (en attente de David)
+## L43 : question de phase 0 (option 1 suivie par David le 2026-11-28)
 
 L'heure n'est pas réactive : un écran qui affiche les gidouilles garde la valeur après ses
 10 minutes de vie, puis la perd d'un coup au prochain recalcul. Les pages boutique, marché,
@@ -59,3 +58,21 @@ ces pages afficheraient 0 gidouille au bout de 10 minutes : pire qu'avant.
 Ma proposition : à l'échéance, le cache se relit tout seul (récompenses, avertissements lus) et
 l'écran garde l'ancienne valeur jusqu'à l'arrivée de la nouvelle. Coût : un onglet élève ouvert
 fait une lecture toutes les 10 minutes.
+
+Trois options proposées le 2026-11-28 : (1) relecture à l'échéance, onglets visibles seulement ;
+(2) plus d'expiration de l'affichage, sans relecture ; (3) expiration seule, écartée (0 gidouille
+affiché). Recommandation de Claude : (1). Réponse de David : « je te suis ».
+
+## PR 2 : L43
+
+- `studentDashboardCache` : une minuterie par entrée lue (récompenses, avertissements d'une
+  période), réarmée à chaque écriture ; à l'échéance, relecture si l'onglet est visible, sinon au
+  retour sur l'onglet (`visibilitychange`). `getRewardsSync` / `getWarningsSync` rendent la dernière
+  valeur connue. Échec de relecture : cache inchangé. Invalidation : minuterie annulée.
+  `destroy()` pour les tests.
+- Palotin non relu (pas de lecture d'API dans ce cache) : hors du constat de L43.
+- Tests : `studentDashboardCache-relecture.svelte.test.ts` (7 cas, 3 rouges sans le correctif).
+  L'ancienne preuve `it.fails` « écart L43 » est retirée de `ecarts-coquille.svelte.test.ts`.
+- Revue (`code-reviewer`) : une relecture en route n'écrase plus une valeur plus récente
+  (comparaison de l'entrée avant / après la lecture) ; nouvel essai une minute après un échec ;
+  tests ajoutés (invalidation, course, minuterie unique) : 10 cas.
