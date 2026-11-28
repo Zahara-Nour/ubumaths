@@ -1,0 +1,554 @@
+{
+	"rangement": {
+		"noeud": "Grandeurs et mesures > Angles",
+		"point": "6-168"
+	},
+	"title": "Calculer un angle sur une figure simple",
+	"description": "Calculer un angle sur une figure : partie d'un angle droit ou plat (angles supplémentaires), partie d'un angle donné, angle droit ou plat partagé en angles égaux, somme d'angles consécutifs ; pièges : ajouter au lieu de retirer, angle droit et angle plat confondus, une seule part",
+	"grades": ["6"],
+	"level": 4,
+	"delay": 90,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "L'angle $\\widehat{BAC}$ est droit et $\\widehat{BAD} = {{x}}^\\circ$.\n\n```figure\nfenetre: -2.5 ; 5.5 ; -1.5 ; 5.5\ngrille: non\ndescription: Un angle droit BAC codé ; la demi-droite [AD) le partage ; l'angle BAD porte sa mesure, l'angle DAC un point d'interrogation.\n---\nA = point(0, 0, etiquette=\"bas\")\nB = point(A, longueur=4.5, angle={{t}}, etiquette=\"bas\")\nC = point(A, longueur=4.5, angle={{eval:t+90;d}}, etiquette=\"gauche\")\nD = point(A, longueur=4.5, angle={{eval:t+x;d}}, etiquette=\"droite\")\ndemidroite(A, B)\ndemidroite(A, C)\ndemidroite(A, D)\nangle(B, A, C, marque=\"carre\")\nangle(B, A, D, couleur=\"bleu\", arcRadiusPx=45)\nangle(D, A, C, couleur=\"rouge\", arcRadiusPx=45)\nT1 = point(A, longueur=1.3, angle={{eval:t+x/2;d}}, visible=faux)\ntexte(T1, \"{{x}}°\")\nT2 = point(A, longueur=1.3, angle={{eval:t+(90+x)/2;d}}, visible=faux)\ntexte(T2, \"?\")\n```\n\nCombien mesure l'angle $\\widehat{DAC}$ ?\n\n$\\widehat{DAC} = ?^\\circ$",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "25..65"
+				},
+				{
+					"name": "t",
+					"expression": "0..25"
+				}
+			],
+			"conditions": ["x!=45"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:90-x}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:90+x}}",
+							"message": "Les deux angles se partagent l'angle droit : on **retire** $x$ de $90^\\circ$, on ne l'ajoute pas.",
+							"label": "Somme au lieu de la différence"
+						},
+						{
+							"answer": "{{eval:180-x}}",
+							"message": "L'angle $\\widehat{BAC}$ est **droit** (le petit carré) : il mesure $90^\\circ$, pas $180^\\circ$.",
+							"label": "Angle plat au lieu de droit"
+						},
+						{
+							"answer": "{{x}}",
+							"message": "Ça, c'est la mesure de $\\widehat{BAD}$ ; on demande l'autre partie de l'angle droit.",
+							"label": "Angle recopié"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"L'angle droit $\\widehat{BAC}$ mesure $90^\\circ$ ; il est partagé en $\\widehat{BAD}$ et $\\widehat{DAC}$.",
+					"$\\widehat{DAC} = 90^\\circ - {{x}}^\\circ = \\textcolor{{{color:primary.0}}}{{{eval:90-x}}^\\circ}$."
+				]
+			},
+			"hint": "Que mesure un angle droit ? Les deux angles colorés le remplissent ensemble."
+		},
+		{
+			"statement": "Les points $B$, $A$ et $C$ sont alignés, et $\\widehat{BAD} = {{x}}^\\circ$.\n\n```figure\nfenetre: -5 ; 5 ; -1.2 ; 4.5\ngrille: non\ndescription: Trois points B, A, C alignés ; la demi-droite [AD) ; l'angle BAD porte sa mesure, l'angle DAC un point d'interrogation.\n---\nA = point(0, 0, etiquette=\"bas\")\nB = point(-4.5, 0, etiquette=\"bas\")\nC = point(4.5, 0, etiquette=\"bas\")\nD = point(A, longueur=4, angle={{eval:180-x;d}}, etiquette=\"droite\")\ndemidroite(A, B)\ndemidroite(A, C)\ndemidroite(A, D)\nangle(D, A, B, couleur=\"bleu\", arcRadiusPx=45)\nangle(C, A, D, couleur=\"rouge\", arcRadiusPx=45)\nT1 = point(A, longueur=1.3, angle={{eval:180-x/2;d}}, visible=faux)\ntexte(T1, \"{{x}}°\")\nT2 = point(A, longueur=1.3, angle={{eval:(180-x)/2;d}}, visible=faux)\ntexte(T2, \"?\")\n```\n\nCombien mesure l'angle $\\widehat{DAC}$ ?\n\n$\\widehat{DAC} = ?^\\circ$",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "25..155"
+				}
+			],
+			"conditions": ["x!=90"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:180-x}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:abs(90-x)}}",
+							"message": "Les points $B$, $A$, $C$ sont alignés : l'angle $\\widehat{BAC}$ est **plat**, il mesure $180^\\circ$, pas $90^\\circ$.",
+							"label": "Angle droit au lieu de plat"
+						},
+						{
+							"answer": "{{eval:180+x}}",
+							"message": "Les deux angles se partagent l'angle plat : on **retire** ${{x}}^\\circ$ de $180^\\circ$.",
+							"label": "Somme au lieu de la différence"
+						},
+						{
+							"answer": "{{x}}",
+							"message": "Ça, c'est la mesure de $\\widehat{BAD}$ ; on demande l'autre angle.",
+							"label": "Angle recopié"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"$B$, $A$, $C$ alignés : l'angle $\\widehat{BAC}$ est **plat**, il mesure $180^\\circ$. Les angles $\\widehat{BAD}$ et $\\widehat{DAC}$ sont **supplémentaires** : leur somme fait $180^\\circ$.",
+					"$\\widehat{DAC} = 180^\\circ - {{x}}^\\circ = \\textcolor{{{color:primary.0}}}{{{eval:180-x}}^\\circ}$."
+				]
+			},
+			"hint": "Trois points alignés forment un angle plat : combien mesure-t-il ?"
+		},
+		{
+			"statement": "$\\widehat{BAC} = {{y}}^\\circ$ et $\\widehat{BAD} = {{x}}^\\circ$.\n\n```figure\nfenetre: -5 ; 5 ; -1.2 ; 5\ngrille: non\ndescription: Un angle BAC et une demi-droite [AD) à l'intérieur ; l'angle BAD porte sa mesure, l'angle DAC un point d'interrogation.\n---\nA = point(0, 0, etiquette=\"bas\")\nB = point(4.5, 0, etiquette=\"bas\")\nC = point(A, longueur=4.5, angle={{y}}, etiquette=\"gauche\")\nD = point(A, longueur=4.5, angle={{x}}, etiquette=\"droite\")\ndemidroite(A, B)\ndemidroite(A, C)\ndemidroite(A, D)\nangle(B, A, D, couleur=\"bleu\", arcRadiusPx=45)\nangle(D, A, C, couleur=\"rouge\", arcRadiusPx=45)\nT1 = point(A, longueur=1.3, angle={{eval:x/2;d}}, visible=faux)\ntexte(T1, \"{{x}}°\")\nT2 = point(A, longueur=1.3, angle={{eval:(x+y)/2;d}}, visible=faux)\ntexte(T2, \"?\")\n```\n\nCombien mesure l'angle $\\widehat{DAC}$ ?\n\n$\\widehat{DAC} = ?^\\circ$",
+			"variables": [
+				{
+					"name": "y",
+					"expression": "51..179"
+				},
+				{
+					"name": "x",
+					"expression": "25..154"
+				}
+			],
+			"conditions": ["x<=y-25", "y!=90", "y-x!=90"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:y-x}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:y+x}}",
+							"message": "L'angle $\\widehat{BAC}$ est partagé en deux : on **retire** $\\widehat{BAD}$ de $\\widehat{BAC}$.",
+							"label": "Somme au lieu de la différence"
+						},
+						{
+							"answer": "{{eval:180-x}}",
+							"message": "L'angle $\\widehat{BAC}$ n'est pas plat : il mesure ${{y}}^\\circ$, c'est de lui qu'on retire ${{x}}^\\circ$.",
+							"label": "Pris pour un angle plat"
+						},
+						{
+							"answer": "{{eval:90-x}}",
+							"message": "L'angle $\\widehat{BAC}$ n'est pas droit : il mesure ${{y}}^\\circ$, c'est de lui qu'on retire ${{x}}^\\circ$.",
+							"label": "Pris pour un angle droit"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"$[AD)$ partage l'angle $\\widehat{BAC}$ en $\\widehat{BAD}$ et $\\widehat{DAC}$ : $\\widehat{BAD} + \\widehat{DAC} = \\widehat{BAC}$.",
+					"$\\widehat{DAC} = {{y}}^\\circ - {{x}}^\\circ = \\textcolor{{{color:primary.0}}}{{{eval:y-x}}^\\circ}$."
+				]
+			},
+			"hint": "Les deux angles colorés remplissent ensemble l'angle $\\widehat{BAC}$."
+		},
+		{
+			"statement": "L'angle droit $\\widehat{BAC}$ est partagé en ${{n}}$ angles égaux.\n\n```figure\nfenetre: -2.5 ; 5.5 ; -1.5 ; 5.5\ngrille: non\ndescription: Un angle droit BAC codé, partagé en angles égaux codés de la même façon ; une part en rouge.\n---\nA = point(0, 0, etiquette=\"bas\")\nB = point(A, longueur=4.5, angle={{t}}, etiquette=\"bas\")\nC = point(A, longueur=4.5, angle={{eval:t+90;d}}, etiquette=\"gauche\")\ndemidroite(A, B)\ndemidroite(A, C)\nangle(B, A, C, marque=\"carre\")\n{{if:n>1|P1 = point(A, longueur=4, angle={{eval:t+90*1/n;d}}, visible=faux)\ndemidroite(A, P1)|}}\n{{if:n>2|P2 = point(A, longueur=4, angle={{eval:t+90*2/n;d}}, visible=faux)\ndemidroite(A, P2)|}}\n{{if:n>3|P3 = point(A, longueur=4, angle={{eval:t+90*3/n;d}}, visible=faux)\ndemidroite(A, P3)|}}\n{{if:n>4|P4 = point(A, longueur=4, angle={{eval:t+90*4/n;d}}, visible=faux)\ndemidroite(A, P4)|}}\n{{if:n>5|P5 = point(A, longueur=4, angle={{eval:t+90*5/n;d}}, visible=faux)\ndemidroite(A, P5)|}}\n{{if:n>2|angle(P1, A, P2, marque=\"arcs2\", arcRadiusPx=55)|}}\n{{if:n>3|angle(P2, A, P3, marque=\"arcs2\", arcRadiusPx=55)|}}\n{{if:n>4|angle(P3, A, P4, marque=\"arcs2\", arcRadiusPx=55)|}}\n{{if:n>5|angle(P4, A, P5, marque=\"arcs2\", arcRadiusPx=55)|}}\n{{if:n==2|angle(P1, A, C, marque=\"arcs2\", arcRadiusPx=55)|}}\n{{if:n==3|angle(P2, A, C, marque=\"arcs2\", arcRadiusPx=55)|}}\n{{if:n==4|angle(P3, A, C, marque=\"arcs2\", arcRadiusPx=55)|}}\n{{if:n==5|angle(P4, A, C, marque=\"arcs2\", arcRadiusPx=55)|}}\n{{if:n==6|angle(P5, A, C, marque=\"arcs2\", arcRadiusPx=55)|}}\nangle(B, A, P1, couleur=\"rouge\", marque=\"arcs2\", arcRadiusPx=55)\n```\n\nCombien mesure chacun de ces angles ?\n\nChaque angle mesure $?^\\circ$.",
+			"variables": [
+				{
+					"name": "j",
+					"expression": "0..3"
+				},
+				{
+					"name": "n",
+					"expression": "eval:(2)*(1-min(abs(j-0),1))+(3)*(1-min(abs(j-1),1))+(5)*(1-min(abs(j-2),1))+(6)*(1-min(abs(j-3),1))"
+				},
+				{
+					"name": "t",
+					"expression": "0..20"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:90/n}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:180/n}}",
+							"message": "L'angle partagé est **droit** (le petit carré) : il mesure $90^\\circ$, pas $180^\\circ$.",
+							"label": "Angle plat au lieu de droit"
+						},
+						{
+							"answer": "{{eval:90*n}}",
+							"message": "On **partage** l'angle droit : chaque part est plus petite que $90^\\circ$. On divise par ${{n}}$.",
+							"label": "Multiplication au lieu de la division"
+						},
+						{
+							"answer": "{{eval:90-n}}",
+							"message": "Partager en ${{n}}$ angles égaux, c'est **diviser** $90^\\circ$ par ${{n}}$, pas retirer ${{n}}$.",
+							"label": "Soustraction"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"L'angle droit mesure $90^\\circ$ ; les ${{n}}$ angles égaux se le partagent.",
+					"$90^\\circ \\div {{n}} = \\textcolor{{{color:primary.0}}}{{{eval:90/n}}^\\circ}$."
+				]
+			},
+			"hint": "Que mesure l'angle droit ? Partage cette mesure en parts égales."
+		},
+		{
+			"statement": "Les points $B$, $A$ et $C$ sont alignés. L'angle plat $\\widehat{BAC}$ est partagé en ${{n}}$ angles égaux.\n\n```figure\nfenetre: -5 ; 5 ; -1.2 ; 5\ngrille: non\ndescription: Trois points B, A, C alignés ; l'angle plat est partagé en angles égaux codés de la même façon ; l'angle BAD, fait de plusieurs parts, en rouge.\n---\nA = point(0, 0, etiquette=\"bas\")\nB = point(4.5, 0, etiquette=\"bas\")\nC = point(-4.5, 0, etiquette=\"bas\")\ndemidroite(A, B)\ndemidroite(A, C)\n{{if:n>1|P1 = point(A, longueur=4, angle={{eval:180*1/n;d}}, visible=faux)\ndemidroite(A, P1)|}}\n{{if:n>2|P2 = point(A, longueur=4, angle={{eval:180*2/n;d}}, visible=faux)\ndemidroite(A, P2)|}}\n{{if:n>3|P3 = point(A, longueur=4, angle={{eval:180*3/n;d}}, visible=faux)\ndemidroite(A, P3)|}}\n{{if:n>4|P4 = point(A, longueur=4, angle={{eval:180*4/n;d}}, visible=faux)\ndemidroite(A, P4)|}}\n{{if:n>5|P5 = point(A, longueur=4, angle={{eval:180*5/n;d}}, visible=faux)\ndemidroite(A, P5)|}}\n{{if:n>6|P6 = point(A, longueur=4, angle={{eval:180*6/n;d}}, visible=faux)\ndemidroite(A, P6)|}}\n{{if:n>7|P7 = point(A, longueur=4, angle={{eval:180*7/n;d}}, visible=faux)\ndemidroite(A, P7)|}}\n{{if:n>8|P8 = point(A, longueur=4, angle={{eval:180*8/n;d}}, visible=faux)\ndemidroite(A, P8)|}}\nangle(B, A, P1, marque=\"arcs2\")\n{{if:n>2|angle(P1, A, P2, marque=\"arcs2\")|}}\n{{if:n>3|angle(P2, A, P3, marque=\"arcs2\")|}}\n{{if:n>4|angle(P3, A, P4, marque=\"arcs2\")|}}\n{{if:n>5|angle(P4, A, P5, marque=\"arcs2\")|}}\n{{if:n>6|angle(P5, A, P6, marque=\"arcs2\")|}}\n{{if:n>7|angle(P6, A, P7, marque=\"arcs2\")|}}\n{{if:n>8|angle(P7, A, P8, marque=\"arcs2\")|}}\n{{if:n==2|angle(P1, A, C, marque=\"arcs2\")|}}\n{{if:n==3|angle(P2, A, C, marque=\"arcs2\")|}}\n{{if:n==4|angle(P3, A, C, marque=\"arcs2\")|}}\n{{if:n==5|angle(P4, A, C, marque=\"arcs2\")|}}\n{{if:n==6|angle(P5, A, C, marque=\"arcs2\")|}}\n{{if:n==7|angle(P6, A, C, marque=\"arcs2\")|}}\n{{if:n==8|angle(P7, A, C, marque=\"arcs2\")|}}\n{{if:n==9|angle(P8, A, C, marque=\"arcs2\")|}}\nD = point(A, longueur=4.6, angle={{eval:180*k/n;d}}, etiquette=\"droite\")\nangle(B, A, D, couleur=\"rouge\", arcRadiusPx=80)\n```\n\nCombien mesure l'angle $\\widehat{BAD}$, en rouge ?\n\n$\\widehat{BAD} = ?^\\circ$",
+			"variables": [
+				{
+					"name": "j",
+					"expression": "0..4"
+				},
+				{
+					"name": "n",
+					"expression": "eval:(3)*(1-min(abs(j-0),1))+(4)*(1-min(abs(j-1),1))+(5)*(1-min(abs(j-2),1))+(6)*(1-min(abs(j-3),1))+(9)*(1-min(abs(j-4),1))"
+				},
+				{
+					"name": "k",
+					"expression": "2..8"
+				}
+			],
+			"conditions": ["k<n", "180*k!=90*n"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:180*k/n}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:180/n}}",
+							"message": "Ça, c'est **une** part. L'angle rouge en contient ${{k}}$.",
+							"label": "Une seule part"
+						},
+						{
+							"answer": "{{eval:180-180*k/n}}",
+							"message": "Ça, c'est l'autre angle, du côté de $C$. L'angle rouge part de $[AB)$.",
+							"label": "L'autre côté"
+						},
+						{
+							"answer": "{{eval:180*(k+1)/n}}",
+							"message": "Compte les **angles** entre $[AB)$ et $[AD)$, pas les demi-droites : il y en a ${{k}}$.",
+							"label": "Demi-droites comptées"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"L'angle plat mesure $180^\\circ$ ; chaque part mesure $180^\\circ \\div {{n}} = {{eval:180/n}}^\\circ$.",
+					"L'angle $\\widehat{BAD}$ contient ${{k}}$ parts : ${{k}} \\times {{eval:180/n}}^\\circ = \\textcolor{{{color:primary.0}}}{{{eval:180*k/n}}^\\circ}$."
+				]
+			},
+			"hint": "Combien mesure une part ? Puis compte les parts dans l'angle rouge."
+		},
+		{
+			"statement": "```figure\nfenetre: -5 ; 5 ; -1.2 ; 5\ngrille: non\ndescription: Quatre demi-droites [AB), [AD), [AE), [AF) ; les trois angles entre elles portent leur mesure.\n---\nA = point(0, 0, etiquette=\"bas\")\nB = point(4.5, 0, etiquette=\"bas\")\nD = point(A, longueur=4.5, angle={{p}}, etiquette=\"droite\")\nE = point(A, longueur=4.5, angle={{eval:p+q;d}}, etiquette=\"haut\")\nF = point(A, longueur=4.5, angle={{eval:p+q+r;d}}, etiquette=\"gauche\")\ndemidroite(A, B)\ndemidroite(A, D)\ndemidroite(A, E)\ndemidroite(A, F)\nangle(B, A, D)\nangle(D, A, E)\nangle(E, A, F)\nT1 = point(A, longueur=2, angle={{eval:p/2;d}}, visible=faux)\ntexte(T1, \"{{p}}°\")\nT2 = point(A, longueur=2, angle={{eval:p+q/2;d}}, visible=faux)\ntexte(T2, \"{{q}}°\")\nT3 = point(A, longueur=2, angle={{eval:p+q+r/2;d}}, visible=faux)\ntexte(T3, \"{{r}}°\")\n```\n\nCombien mesure l'angle ${{if:s==0|\\widehat{BAE}|{{if:s==1|\\widehat{DAF}|\\widehat{BAF}}}}}$ ?\n\n${{if:s==0|\\widehat{BAE}|{{if:s==1|\\widehat{DAF}|\\widehat{BAF}}}}} = ?^\\circ$",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "25..55"
+				},
+				{
+					"name": "q",
+					"expression": "25..55"
+				},
+				{
+					"name": "r",
+					"expression": "25..55"
+				},
+				{
+					"name": "s",
+					"expression": "0..2"
+				},
+				{
+					"name": "v",
+					"expression": "eval:(p+q)*(1-min(abs(s-0),1))+(q+r)*(1-min(abs(s-1),1))+(p+q+r)*(1-min(abs(s-2),1))"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{v}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:(p)*(1-min(abs(s-0),1))+(q)*(1-min(abs(s-1),1))+(p)*(1-min(abs(s-2),1))}}",
+							"message": "Ça, c'est un seul des angles. L'angle ${{if:s==0|\\widehat{BAE}|{{if:s==1|\\widehat{DAF}|\\widehat{BAF}}}}}$ en contient plusieurs : ajoute-les.",
+							"label": "Un seul angle"
+						},
+						{
+							"answer": "{{eval:(p+q+r)*(1-min(abs(s-0),1))+(p+q+r)*(1-min(abs(s-1),1))+(p+q)*(1-min(abs(s-2),1))}}",
+							"message": "Regarde bien entre quelles demi-droites est l'angle ${{if:s==0|\\widehat{BAE}|{{if:s==1|\\widehat{DAF}|\\widehat{BAF}}}}}$ : compte les angles qui sont **dedans**, et seulement eux.",
+							"label": "Mauvais nombre d'angles"
+						},
+						{
+							"answer": "{{eval:180-v}}",
+							"message": "On ne retire rien de $180^\\circ$ : l'angle ${{if:s==0|\\widehat{BAE}|{{if:s==1|\\widehat{DAF}|\\widehat{BAF}}}}}$ est fait des angles affichés **dedans**, on les ajoute.",
+							"label": "Complément à 180°"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"L'angle ${{if:s==0|\\widehat{BAE}|{{if:s==1|\\widehat{DAF}|\\widehat{BAF}}}}}$ est fait des angles qui sont entre ses deux côtés.",
+					"${{if:s==0|\\widehat{BAE}|{{if:s==1|\\widehat{DAF}|\\widehat{BAF}}}}} = {{if:s==0|{{p}}^\\circ + {{q}}^\\circ|{{if:s==1|{{q}}^\\circ + {{r}}^\\circ|{{p}}^\\circ + {{q}}^\\circ + {{r}}^\\circ}}}} = \\textcolor{{{color:primary.0}}}{{{v}}^\\circ}$."
+				]
+			},
+			"hint": "Repère les deux côtés de l'angle demandé : quels angles affichés sont entre eux ?"
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "90 − 35 = 55",
+			"variationIndex": 0,
+			"variables": {
+				"x": "35",
+				"t": "10"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["55"]
+		},
+		{
+			"description": "Somme 125",
+			"variationIndex": 0,
+			"variables": {
+				"x": "35",
+				"t": "10"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Les deux angles se partagent l'angle droit : on **retire** $x$ de $90^\\circ$, on ne l'ajoute pas."
+			},
+			"answers": ["125"]
+		},
+		{
+			"description": "Angle plat 145",
+			"variationIndex": 0,
+			"variables": {
+				"x": "35",
+				"t": "10"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "L'angle $\\widehat{BAC}$ est **droit** (le petit carré) : il mesure $90^\\circ$, pas $180^\\circ$."
+			},
+			"answers": ["145"]
+		},
+		{
+			"description": "180 − 50 = 130",
+			"variationIndex": 1,
+			"variables": {
+				"x": "50"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["130"]
+		},
+		{
+			"description": "Angle droit 40",
+			"variationIndex": 1,
+			"variables": {
+				"x": "50"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Les points $B$, $A$, $C$ sont alignés : l'angle $\\widehat{BAC}$ est **plat**, il mesure $180^\\circ$, pas $90^\\circ$."
+			},
+			"answers": ["40"]
+		},
+		{
+			"description": "180 − 140 = 40",
+			"variationIndex": 1,
+			"variables": {
+				"x": "140"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["40"]
+		},
+		{
+			"description": "Angle recopié 140",
+			"variationIndex": 1,
+			"variables": {
+				"x": "140"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Ça, c'est la mesure de $\\widehat{BAD}$ ; on demande l'autre angle."
+			},
+			"answers": ["140"]
+		},
+		{
+			"description": "130 − 48 = 82",
+			"variationIndex": 2,
+			"variables": {
+				"y": "130",
+				"x": "48"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["82"]
+		},
+		{
+			"description": "Somme 178",
+			"variationIndex": 2,
+			"variables": {
+				"y": "130",
+				"x": "48"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "L'angle $\\widehat{BAC}$ est partagé en deux : on **retire** $\\widehat{BAD}$ de $\\widehat{BAC}$."
+			},
+			"answers": ["178"]
+		},
+		{
+			"description": "90 ÷ 3 = 30",
+			"variationIndex": 3,
+			"variables": {
+				"j": "1",
+				"n": "3",
+				"t": "5"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["30"]
+		},
+		{
+			"description": "180 ÷ 3 = 60",
+			"variationIndex": 3,
+			"variables": {
+				"j": "1",
+				"n": "3",
+				"t": "5"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "L'angle partagé est **droit** (le petit carré) : il mesure $90^\\circ$, pas $180^\\circ$."
+			},
+			"answers": ["60"]
+		},
+		{
+			"description": "90 ÷ 6 = 15",
+			"variationIndex": 3,
+			"variables": {
+				"j": "3",
+				"n": "6",
+				"t": "0"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["15"]
+		},
+		{
+			"description": "3 parts de 180 ÷ 5 = 108",
+			"variationIndex": 4,
+			"variables": {
+				"j": "2",
+				"n": "5",
+				"k": "3"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["108"]
+		},
+		{
+			"description": "Une part 36",
+			"variationIndex": 4,
+			"variables": {
+				"j": "2",
+				"n": "5",
+				"k": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Ça, c'est **une** part. L'angle rouge en contient $3$."
+			},
+			"answers": ["36"]
+		},
+		{
+			"description": "Demi-droites comptées 144",
+			"variationIndex": 4,
+			"variables": {
+				"j": "2",
+				"n": "5",
+				"k": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Compte les **angles** entre $[AB)$ et $[AD)$, pas les demi-droites : il y en a $3$."
+			},
+			"answers": ["144"]
+		},
+		{
+			"description": "2 parts de 60 = 120",
+			"variationIndex": 4,
+			"variables": {
+				"j": "0",
+				"n": "3",
+				"k": "2"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["120"]
+		},
+		{
+			"description": "BAE = 30 + 40 = 70",
+			"variationIndex": 5,
+			"variables": {
+				"p": "30",
+				"q": "40",
+				"r": "50",
+				"s": "0",
+				"v": "70"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["70"]
+		},
+		{
+			"description": "BAE : les trois, 120",
+			"variationIndex": 5,
+			"variables": {
+				"p": "30",
+				"q": "40",
+				"r": "50",
+				"s": "0",
+				"v": "70"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Regarde bien entre quelles demi-droites est l'angle $\\widehat{BAE}$ : compte les angles qui sont **dedans**, et seulement eux."
+			},
+			"answers": ["120"]
+		},
+		{
+			"description": "BAF = 30 + 40 + 50 = 120",
+			"variationIndex": 5,
+			"variables": {
+				"p": "30",
+				"q": "40",
+				"r": "50",
+				"s": "2",
+				"v": "120"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["120"]
+		},
+		{
+			"description": "DAF = 40 + 50 = 90",
+			"variationIndex": 5,
+			"variables": {
+				"p": "30",
+				"q": "40",
+				"r": "50",
+				"s": "1",
+				"v": "90"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["90"]
+		}
+	]
+}

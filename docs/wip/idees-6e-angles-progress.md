@@ -2,14 +2,15 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-28, phase 0 écrite._
+_Mis à jour le 2026-11-28, lot écrit._
 
-- **État** : rubrique 6G4 prise (09e666cfcf), relevé écrit ([idees-6e-angles-releve.md](idees-6e-angles-releve.md)),
-  fiches N1 à N6 et questions Q1, Q2 ci-dessous. Aucun modèle écrit.
-- **Prochaine action** : réponse de David aux fiches et aux questions, puis le lot (`docs/wip/questions/idees-6e-angles-neufs.py`
-  et `…-publies.py`).
-- **En attente de David** : fiches N1 à N6, Q1, Q2.
-- **Pièges en cours** : réserver c8741112, 3be08965, 2291c83c dans le tableau avant d'y ajouter des variations.
+- **État** : phase 0 validée (« je te suis »). Lot écrit : 3 modèles neufs (`scripts/questions/idees-6e-angles-neufs/`),
+  6 variations ajoutées à 3 publiés (`…-publies/`), specs vertes, sonde des figures à 0, essayé en base locale et vu à
+  l'écran. PR des fichiers ouverte.
+- **Prochaine action** : merger la PR (CI verte), puis David lance
+  `pnpm tsx scripts/create-questions.ts --dir scripts/questions/idees-6e-angles-neufs --publier`.
+- **En attente de David** : la création des 3 brouillons en prod.
+- **Pièges en cours** : c8741112, 3be08965, 2291c83c réservés ; les variations s'ajoutent à la fin.
 - **Worktree / branche** : `../ubumaths-wt-idees-6e-angles`, `feat/idees-6e-angles`.
 
 ## Phase 0 (2026-11-28)
@@ -24,15 +25,15 @@ migration : **personne ne gagne d'accès**, on range des modèles du prof. Aucun
   **plusieurs bonnes réponses** (leur forme gardée : un nom d'angle ne se tape pas avec `\widehat` au clavier).
   (a) M sur [BA] : cocher les noms de l'angle marqué de sommet B ($\widehat{ABC}$, $\widehat{CBA}$, $\widehat{MBC}$,
   $\widehat{CBM}$ ; faux : $\widehat{BAC}$, $\widehat{BMC}$) ; (b) M sur [BA] et N sur [BC] (huit noms justes, six
-  proposés) ; (c) angle de sommet I, point d'intersection de (AN) et (CM) ($\widehat{AIC}$, $\widehat{CIA}$, et
-  $\widehat{NIM}$ si l'angle marqué est celui-là). Lettres tirées dans une réserve de quatre jeux. Erreurs prévues :
+  proposés) ; (c) angle de sommet I, point d'intersection de (AN) et (CM) ($\widehat{AIC}$, $\widehat{CIA}$ ;
+  $\widehat{NIM}$, opposé par le sommet, est un autre angle : faux). Lettres tirées dans une réserve de trois jeux. Erreurs prévues :
   le sommet pas au milieu ($\widehat{BAC}$), un point qui n'est pas sur un côté de l'angle, l'angle voisin.
 - **N2 — Calculer un angle sur une figure simple** (modèle neuf, point : **Q1**, 6 variations). Chez eux (6G4A-4,
   14 types ; 6G4A-3 pour les supplémentaires) : figure, saisie d'un nombre. Chez nous : rien en 6e. Case nombre, ° écrit
   après. (a) angle droit codé partagé par [AD) : $\widehat{BAD}$ 25..65 affiché, $\widehat{DAC}$ ? ; (b) B, A, C
   alignés (angle plat) : $\widehat{BAD}$ 25..155 sans 90, $\widehat{DAC}$ ? (« les deux angles sont supplémentaires ») ;
   (c) $\widehat{BAC}$ donné (51..179) et $\widehat{BAD}$ (25..$\widehat{BAC}$ − 25), $\widehat{DAC}$ ? ; (d) angle
-  droit partagé en n parts égales codées (`marque="arcs2"`, n ∈ 2, 3, 5, 6, 9) : une part ? ; (e) angle plat partagé
+  droit partagé en n parts égales codées (`marque="arcs2"`, n ∈ 2, 3, 5, 6) : une part ? ; (e) angle plat partagé
   en n parts égales (n ∈ 3, 4, 5, 6, 9), k parts (2..n − 1, sans 90) : l'angle de k parts ? ; (f) deux ou trois
   angles consécutifs affichés (25..60) : leur somme ? Erreurs prévues : (a) 90 + x ; (b) 90 − x au lieu de 180 − x ;
   (c) la somme au lieu de la différence ; (d) 90 × n ; (e) une seule part ; (f) un seul des angles.
@@ -70,6 +71,15 @@ migration : **personne ne gagne d'accès**, on range des modèles du prof. Aucun
   Recommandation : **tolérance de 10°**, la saisie oblige à estimer.
 
 ## Historique
+
+- 2026-11-28 : lot écrit (`docs/wip/questions/idees-6e-angles-neufs.py`, `…-publies.py`). Écarts à la phase 0,
+  vus à l'écran : (d) sans n = 9 (éventail de 9 parts illisible sur téléphone) ; une case choix ou figure ne porte
+  pas d'erreurs prévues (N1, N3 g, N4, N6 : specs seules) ; un choix partiel de N1 est jugé « à améliorer »,
+  pas faux. Specs : N1 10, N2 20, N5 10, c8741112 +15, 3be08965 +7, 2291c83c +5, toutes vertes ; sonde des
+  figures : 0 problème. Essai en base locale (copies « — essai » des publiés), figures vues dans `/dev/modeles` :
+  nom du point d'intersection déplacé, arcs agrandis, angle rouge de (e) qui n'était pas dessiné.
+- 2026-11-28 : David répond « je te suis » aux fiches N1 à N6 et aux questions (Q1 : 6-168 ; Q2 : saisie à 10°
+  près). c8741112, 3be08965, 2291c83c réservés dans le tableau (b7629a9d76) et exportés de prod.
 
 - 2026-11-28 : rubrique prise (09e666cfcf), relevé par deux agents Sonnet, plages recoupées dans le code, nos modèles
   relevés en prod ; phase 0 écrite.
