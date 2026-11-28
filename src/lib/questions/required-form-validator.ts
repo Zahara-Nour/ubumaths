@@ -687,6 +687,7 @@ export function judgeRequiredForm(
 		} catch {
 			analysis = { kind: 'other' } as const;
 		}
+		if (analysis.kind === 'ok') return { verdict: 'ok' };
 		const verdict = primeFactorsVerdict(analysis, requiredForm);
 		return verdict === 'ok'
 			? { verdict: 'ok' }
