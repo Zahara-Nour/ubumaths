@@ -640,5 +640,6 @@ export function getRequiredFormFeedback(requiredForm: RequiredForm, _isMultiple:
 		return REQUIRED_FORM_FEEDBACK[requiredForm];
 	}
 	// Message écrit par l'auteur (outils-manquants n° 75), sinon la phrase générale
-	return requiredForm.message ?? REQUIRED_FORM_FEEDBACK.pattern;
+	// `||` : un message résolu vide (variable vide) retombe sur la phrase générale
+	return requiredForm.message || REQUIRED_FORM_FEEDBACK.pattern;
 }

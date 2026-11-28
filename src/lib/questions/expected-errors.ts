@@ -33,6 +33,7 @@ import { isChoiceBlank } from './choice-case';
 import { readingOf } from './formula-reading';
 import { parseLatex } from '#lib/mathAST/parser/index.ts';
 import { nodesEqual } from '#lib/mathAST/normal/index.ts';
+import { bareDecimalCommaToPoint, expectsSeparatorComma } from '#lib/mathAST/decimal-comma.ts';
 import { expectedErrorOfChoice } from './choice-from-errors';
 
 // Constantes
@@ -78,7 +79,10 @@ function matches(
 function sameWriting(answer: string, error: InstanceExpectedError, instance: QuestionInstance) {
 	try {
 		const reading = readingOf(instance);
-		return nodesEqual(parseLatex(answer, reading), parseLatex(error.answerLatex, reading));
+		// Virgule décimale nue (`1,4`) relue comme `1.4`, sauf écriture à virgule séparatrice
+		const read = (latex: string) =>
+			parseLatex(expectsSeparatorComma(latex) ? latex : bareDecimalCommaToPoint(latex), reading);
+		return nodesEqual(read(answer), read(error.answerLatex));
 	} catch {
 		return false;
 	}

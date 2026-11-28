@@ -1609,7 +1609,9 @@ qui tombe sur la bonne réponse d'un tirage est donc ignorée) ; deux erreurs de
 première écrite. **Mauvaise forme d'une case à forme exigée** (n° 75, 2026-11-28) : l'erreur prévue
 de même valeur que la bonne réponse se lit quand l'élève l'a écrite telle quelle (même arbre,
 `nodesEqual` : `7/5` et `\frac{7}{5}`, pas `14/10`, sinon toute mauvaise forme la déclencherait) ;
-son message remplace celui de la forme. Sans forme exigée, une mauvaise forme n'est jamais une
+son message remplace celui de la forme (virgule décimale nue relue : `1,4` = `1{,}4`), et elle compte
+dans les « Types d'erreur » du prof (`answerErrorKinds`). Formes nommées comprises (`fraction` :
+l'erreur prévue `1,4`). Sans forme exigée, une mauvaise forme n'est jamais une
 erreur prévue. Le générateur résout réponses et messages (variables,
 `{{solution}}`) sur une **source de hasard à part** (graine mélangée) : aucun tirage de l'instance
 ne bouge. Une erreur prévue qui ne se calcule pas sur un tirage (`1/(a-5)` pour `a = 5`) fait

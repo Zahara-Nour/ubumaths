@@ -74,5 +74,8 @@ valeur comparée sur l'écriture ; `{ pattern, acceptable?, message? }`).
 - Éditeur : champ « Message si la forme n'est pas respectée » (variation, partagé, défauts des cases).
 - Tests : `required-form-message.test.ts` (15, rouges avant), `QuestionTemplateForm-message-de-forme`
   (2), verif `message-de-forme.spec.ts` (3, captures vues : clair, sombre, éditeur).
-- Hors lot : la ligne « Types d'erreur » du prof ne compte que les cases fausses (une erreur prévue
-  lue sur une mauvaise forme n'y figure pas) ; non demandé.
+- Revue (`code-reviewer` opus) : 5 findings, aucun bloquant. Corrigés : erreur prévue lue sur une
+  mauvaise forme comptée dans les « Types d'erreur » du prof ; message vide → phrase générale (`||`) ;
+  forme de la variation copiée sur l'instance sans son message non résolu ; test d'une forme nommée
+  (`fraction`), qui a révélé la virgule nue (`1,4` illisible) → relue comme dans le validateur.
+  Laissé : rejeu qui échouerait sur une erreur prévue de plus de 300 caractères (cas théorique).

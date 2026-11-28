@@ -21,7 +21,8 @@ import { checkTemplate } from '../review/check-template';
 import { questionTemplateSchema, requiredFormSchema } from '../template-schema';
 import { REQUIRED_FORM_FEEDBACK, getRequiredFormFeedback } from '../required-form-validator';
 import { customRequiredForm, messageOf } from '../form-options';
-import { validateAnswer } from '#lib/utils/answer-validator.ts';
+import { validateAnswer, validateAnswerDetailed } from '#lib/utils/answer-validator.ts';
+import { answerErrorKinds } from '../error-kinds';
 import type { QuestionInstance, QuestionTemplate, TemplateBlank } from '../types';
 
 // Fixtures
@@ -196,6 +197,27 @@ describe('erreur prévue de même valeur, sur une mauvaise forme (Q3)', () => {
 			}
 		});
 		expect(result.passed).toBe(true);
+	});
+
+	it('forme nommée (fraction) : l’erreur prévue écrite telle quelle est lue aussi', () => {
+		const t = template([
+			{
+				expectedAnswer: '7/5',
+				requiredForm: 'fraction',
+				expectedErrors: [{ answer: '1,4', message: 'On attend une fraction, pas un décimal.' }]
+			}
+		]);
+		const r = buildExpectedResult(generate(t), answer(['1{,}4']));
+		expect(r.status).toBe('bad_form');
+		expect(remarks(r)).toEqual(['On attend une fraction, pas un décimal.']);
+	});
+
+	it('types d’erreur du prof : l’erreur prévue lue sur une mauvaise forme compte sous son nom', () => {
+		const instance = generate(AVEC_ERREUR);
+		const detail = validateAnswerDetailed(instance, answer(['\\frac{7}{5}']));
+		const kinds = answerErrorKinds(instance, detail, ['\\frac{7}{5}'], 'bad_form');
+		expect(kinds.kinds).toHaveLength(1);
+		expect(kinds.kinds[0].expected).toBeDefined();
 	});
 
 	it('rejeu de publication : le modèle passe', () => {

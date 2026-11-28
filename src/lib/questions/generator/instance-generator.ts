@@ -494,6 +494,14 @@ function resolveRequiredForm(
 	};
 }
 
+/** La forme sans son message (n° 75) */
+function withoutFormMessage(requiredForm: RequiredForm | undefined): RequiredForm | undefined {
+	if (typeof requiredForm !== 'object' || requiredForm.message === undefined) return requiredForm;
+	const { message: _message, ...rest } = requiredForm;
+	void _message;
+	return rest;
+}
+
 /** Message de forme écrit par l'auteur (n° 75) : présent seulement sur un motif */
 function hasFormMessage(requiredForm: RequiredForm | undefined): boolean {
 	return typeof requiredForm === 'object' && requiredForm.message !== undefined;
@@ -2021,7 +2029,11 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 			...(hint !== undefined && { hint }),
 			blanks: resolvedBlanks,
 			expressions: expressionsArray,
-			requiredForm: resolveRequiredForm(resolvedVariation.requiredForm, resolvedVariables, random),
+			// Forme de la variation (lue par le moteur de correction pour sa structure seule) :
+			// sans le message, qui n'est résolu que sur les cases (étape 7 bis)
+			requiredForm: withoutFormMessage(
+				resolveRequiredForm(resolvedVariation.requiredForm, resolvedVariables, random)
+			),
 			generatedAt: new Date().toISOString(),
 			seed,
 			selectedVariationIndex: variationIndex
