@@ -14,7 +14,9 @@
  *   - une case retirée de la grille → le cache de l'élève est recalculé ;
  *   - une ligne refusée → rien n'est changé ;
  *   - le prof ne supprime que des observations `teacher` (jamais une trace d'élève) ;
- *   - un élève ne peut rien effacer.
+ *   - un élève ne peut rien effacer ;
+ *   - un élève archivé, absent de la nouvelle grille, garde ses observations ;
+ *   - un élève qui a des observations reste supprimable (RGPD, art. 17).
  *
  * @module tests/integration/saisie-observations-reecriture
  */
@@ -52,6 +54,7 @@ interface Decor {
 	studentClient: SupabaseClient<Database>;
 	studentId: string;
 	teacherId: string;
+	classId: string;
 	taskId: string;
 	obsA: string;
 	obsB: string;
@@ -73,6 +76,7 @@ async function decor(): Promise<Decor> {
 		studentClient: await createAuthenticatedClient(student.email),
 		studentId: student.id,
 		teacherId: teacher.id,
+		classId: cls.id,
 		taskId,
 		obsA,
 		obsB
@@ -171,7 +175,7 @@ describe('save_evaluation_task_grid (L39)', () => {
 
 		const viaRpc = await d.studentClient.rpc('save_evaluation_task_grid', {
 			p_task_id: d.taskId,
-			p_rows: []
+			p_rows: [{ student_id: d.studentId, observable_id: d.obsA, code: 'minus' }]
 		});
 		expect(viaRpc.error).not.toBeNull();
 
@@ -222,5 +226,69 @@ describe('save_evaluation_task_grid (L39)', () => {
 			.select('id');
 		expect(error).toBeNull();
 		expect(deleted ?? []).toHaveLength(1);
+	});
+
+	it('un élève archivé, absent de la nouvelle grille, garde ses observations', async () => {
+		const d = await decor();
+		const other = await TestData.profile().create();
+		const { error: memErr } = await service
+			.from('class_members')
+			.insert({ class_id: d.classId, student_id: other.id, status: 'active' });
+		expect(memErr).toBeNull();
+		await d.teacherClient.rpc('save_evaluation_task_grid', {
+			p_task_id: d.taskId,
+			p_rows: [
+				{ student_id: d.studentId, observable_id: d.obsA, code: 'plus' },
+				{ student_id: other.id, observable_id: d.obsA, code: 'plus' }
+			]
+		});
+		const { error: archErr } = await service
+			.from('class_members')
+			.update({ status: 'archived' })
+			.eq('class_id', d.classId)
+			.eq('student_id', other.id)
+			.select('student_id');
+		expect(archErr).toBeNull();
+
+		const { error } = await d.teacherClient.rpc('save_evaluation_task_grid', {
+			p_task_id: d.taskId,
+			p_rows: [{ student_id: d.studentId, observable_id: d.obsA, code: 'minus' }]
+		});
+		expect(error).toBeNull();
+
+		const rows = await taskRows(d.taskId);
+		expect(rows).toHaveLength(2);
+		expect(rows.find((r) => r.student_id === other.id)).toMatchObject({ code: 'plus' });
+	});
+
+	it('un élève qui a des observations de prof reste supprimable', async () => {
+		const d = await decor();
+		const { error: saveErr } = await d.teacherClient.rpc('save_evaluation_task_grid', {
+			p_task_id: d.taskId,
+			p_rows: [{ student_id: d.studentId, observable_id: d.obsA, code: 'plus' }]
+		});
+		expect(saveErr).toBeNull();
+
+		const { error } = await service.auth.admin.deleteUser(d.studentId);
+		expect(error).toBeNull();
+		expect(await taskRows(d.taskId)).toHaveLength(0);
+	});
+
+	it('une tâche saisie reste supprimable, et le cache de ses cases suit', async () => {
+		const d = await decor();
+		await d.teacherClient.rpc('save_evaluation_task_grid', {
+			p_task_id: d.taskId,
+			p_rows: [{ student_id: d.studentId, observable_id: d.obsA, code: 'plus' }]
+		});
+		expect(await getObservableState(service, d.studentId, d.obsA)).not.toBeNull();
+
+		const { data: deleted, error } = await d.teacherClient
+			.from('evaluation_tasks')
+			.delete()
+			.eq('id', d.taskId)
+			.select('id');
+		expect(error).toBeNull();
+		expect(deleted ?? []).toHaveLength(1);
+		expect(await getObservableState(service, d.studentId, d.obsA)).toBeNull();
 	});
 });

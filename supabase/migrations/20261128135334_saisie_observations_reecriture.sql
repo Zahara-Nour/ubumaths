@@ -11,7 +11,9 @@
 --   1. policy DELETE pour le prof et l'admin, limitée aux observations
 --      `source = 'teacher'` rattachées à une tâche, d'un élève de ses classes ;
 --   2. fonction `security invoker` qui supprime puis réécrit la grille d'une
---      tâche en une transaction, et lève si des lignes restent.
+--      tâche en une transaction, et lève si des lignes restent. Elle n'efface
+--      que les élèves de la nouvelle grille : la saisie n'écrit que les élèves
+--      actifs, et un élève archivé depuis garde ses observations.
 --
 -- Question d'accès : personne ne lit rien de neuf. Le prof (et l'admin, qui
 -- avait déjà tout) peut SUPPRIMER les observations de tâche qu'il a lui-même
@@ -63,6 +65,9 @@ begin
 		select distinct o.student_id, o.observable_id
 		from old_rows o
 		where o.observable_id is not null and o.code is not null
+			-- Suppression d'un compte (cascade depuis `profiles`) : l'élève n'existe plus,
+			-- ses caches partent avec lui ; les recalculer violerait leurs clés étrangères.
+			and exists (select 1 from public.profiles p where p.id = o.student_id)
 	loop
 		perform public.update_student_observable_state(v_pair.student_id, v_pair.observable_id);
 	end loop;
@@ -110,12 +115,21 @@ begin
 		raise exception 'ligne de grille invalide' using errcode = '22023';
 	end if;
 
-	-- 1. Effacer la grille actuelle (la RLS borne ce que l'appelant peut effacer ;
-	--    le trigger AFTER DELETE recalcule le cache des cases effacées).
-	delete from public.skill_attempts where task_id = p_task_id;
+	-- 1. Effacer la grille actuelle des élèves de la nouvelle grille, eux seuls :
+	--    un élève archivé depuis n'est plus dans la grille, sa saisie reste.
+	--    La RLS borne ce que l'appelant peut effacer ; le trigger AFTER DELETE
+	--    recalcule le cache des cases effacées.
+	delete from public.skill_attempts a
+	where a.task_id = p_task_id
+		and a.student_id in (select (r ->> 'student_id')::uuid from jsonb_array_elements(p_rows) r);
 
 	-- Une ligne restée (refus RLS, silencieux) doublerait la grille.
-	if exists (select 1 from public.skill_attempts where task_id = p_task_id) then
+	if exists (
+		select 1
+		from public.skill_attempts a
+		where a.task_id = p_task_id
+			and a.student_id in (select (r ->> 'student_id')::uuid from jsonb_array_elements(p_rows) r)
+	) then
 		raise exception 'grille non effacee' using errcode = '42501';
 	end if;
 

@@ -203,9 +203,11 @@ Deux référentiels, deux usages (la famille A, ex-`skills`, n'existe plus :
   `trg_skill_attempts_after_delete` (par requête) recalcule ceux des observations effacées. Les
   caches ne s'écrivent que par ces triggers.
 - **Saisie d'une tâche** (`20261128135334`) : `save_evaluation_task_grid(p_task_id, p_rows)`,
-  `security invoker`, efface la grille de la tâche puis la réécrit en une transaction (5 000
-  lignes au plus, codes `plus` / `minus`) ; elle lève si une ligne n'a pas pu être effacée (refus
-  RLS), au lieu de doubler la grille. Seul chemin d'écriture de la page de saisie.
+  `security invoker`, efface puis réécrit en une transaction la grille de la tâche des seuls élèves
+  de `p_rows` (un élève archivé depuis garde ses observations), 5 000 lignes au plus, codes `plus` /
+  `minus` ; elle lève si une de ces lignes n'a pas pu être effacée (refus RLS), au lieu de doubler
+  la grille. Seul chemin d'écriture de la page de saisie. Le trigger de suppression ne recalcule
+  pas le cache d'un élève supprimé (cascade d'un compte : ses caches partent avec lui).
 - **Contenu d'une trace** ([ADR 0038](../adr/0038-contenu-d-une-trace.md), `20261111092522`) :
   colonnes facultatives `place` (lieu : `flash_cards`, `typing`, `mock_test`, `number_race`, `review`,
   `evaluation`), `response_ms`, `allotted_ms`, `end_reason` (`validated` / `timeout`), `seed`,
