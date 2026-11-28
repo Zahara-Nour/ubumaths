@@ -44,7 +44,7 @@
 					"$(\\sqrt{ {{a}} })^2=\\textcolor{{{color:primary.0}}}{{{a}}}$."
 				]
 			},
-			"hint": "Rappelle-toi la définition : $\\sqrt{ {{a}} }$ est le nombre positif dont le carré vaut… ?"
+			"hint": "Que veut dire $\\sqrt{ {{a}} }$ ? Reviens à sa définition."
 		},
 		{
 			"statement": "Calcule.\n\n$$\\sqrt{ {{a}} }\\times\\sqrt{ {{a}} }=?$$",

@@ -1,7 +1,7 @@
 {
 	"id": "c7840c10-3e06-4aa7-ab97-257f80cd16d2",
 	"title": "Ranger des carrés et des cubes",
-	"description": "Ranger x³, x², x (et √x) dans l'ordre croissant pour x = 0,5 ou x = 1,5 (piège : croire x² > x même quand 0 < x < 1)",
+	"description": "Ranger x³, x², x (et √x) dans l'ordre croissant pour x = 0,5, x = 1,5, x = 2/3 ou une lettre x avec 0 < x < 1 ou x > 1 (piège : croire x² > x même quand 0 < x < 1)",
 	"grades": ["2"],
 	"level": 10,
 	"delay": 60,
@@ -67,6 +67,57 @@
 				]
 			},
 			"hint": "Multiplier un nombre plus grand que $1$ par lui-même, est-ce que ça l'agrandit ou le rapetisse ? Pour la racine, essaie un exemple : $\\sqrt{4}=2$."
+		},
+		{
+			"statement": "$x$ est un nombre tel que $0<x<1$. Sans calculer, range dans l'ordre croissant.\n\n```ranger\nsigne: <\n- $x^3$\n- $x^2$\n- $x$\n- $\\sqrt{x}$\n```",
+			"variables": [],
+			"conditions": [],
+			"blanks": [],
+			"correction": {
+				"steps": [
+					"$0<x<1$ : multiplier par $x$ rend **plus petit**. Donc $x^2=x\\times x<x$, puis $x^3=x^2\\times x<x^2$.",
+					"$\\sqrt{x}$ est aussi entre $0$ et $1$, et son carré vaut $x$ : d'après la même règle, $x=(\\sqrt{x})^2<\\sqrt{x}$.",
+					"$\\textcolor{{{color:primary.0}}}{x^3<x^2<x<\\sqrt{x}}$."
+				]
+			},
+			"hint": "Multiplier un nombre par $x$, quand $0<x<1$, est-ce que ça l'agrandit ou le rapetisse ? Essaie avec $x=0{,}5$."
+		},
+		{
+			"statement": "$x$ est un nombre tel que $x>1$. Sans calculer, range dans l'ordre croissant.\n\n```ranger\nsigne: <\n- $\\sqrt{x}$\n- $x$\n- $x^2$\n- $x^3$\n```",
+			"variables": [],
+			"conditions": [],
+			"blanks": [],
+			"correction": {
+				"steps": [
+					"$x>1$ : multiplier par $x$ rend **plus grand**. Donc $x^2=x\\times x>x$, puis $x^3=x^2\\times x>x^2$.",
+					"$\\sqrt{x}$ est aussi plus grand que $1$, et son carré vaut $x$ : d'après la même règle, $x=(\\sqrt{x})^2>\\sqrt{x}$.",
+					"$\\textcolor{{{color:primary.0}}}{\\sqrt{x}<x<x^2<x^3}$."
+				]
+			},
+			"hint": "Multiplier un nombre par $x$, quand $x>1$, est-ce que ça l'agrandit ou le rapetisse ? Essaie avec $x=2$."
+		},
+		{
+			"statement": "Range dans l'ordre croissant.\n\n```ranger\nsigne: <\n- $\\left(\\dfrac{ {{p}} }{ {{q}} }\\right)^3$\n- $\\left(\\dfrac{ {{p}} }{ {{q}} }\\right)^2$\n- $\\dfrac{ {{p}} }{ {{q}} }$\n- $\\sqrt{\\dfrac{ {{p}} }{ {{q}} }}$\n```",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "1..5"
+				},
+				{
+					"name": "q",
+					"expression": "2..9"
+				}
+			],
+			"conditions": ["p < q", "gcd(p,q) == 1"],
+			"blanks": [],
+			"correction": {
+				"steps": [
+					"$\\dfrac{ {{p}} }{ {{q}} }$ est entre $0$ et $1$ : multiplier par $\\dfrac{ {{p}} }{ {{q}} }$ rend **plus petit**, donc $\\left(\\dfrac{ {{p}} }{ {{q}} }\\right)^3<\\left(\\dfrac{ {{p}} }{ {{q}} }\\right)^2<\\dfrac{ {{p}} }{ {{q}} }$. On peut vérifier : $\\left(\\dfrac{ {{p}} }{ {{q}} }\\right)^2=\\dfrac{ {{eval:p^2}} }{ {{eval:q^2}} }$ et $\\left(\\dfrac{ {{p}} }{ {{q}} }\\right)^3=\\dfrac{ {{eval:p^3}} }{ {{eval:q^3}} }$.",
+					"$\\sqrt{\\dfrac{ {{p}} }{ {{q}} }}$ est aussi entre $0$ et $1$, et son carré vaut $\\dfrac{ {{p}} }{ {{q}} }$ : d'après la même règle, $\\dfrac{ {{p}} }{ {{q}} }=\\left(\\sqrt{\\dfrac{ {{p}} }{ {{q}} }}\\right)^2<\\sqrt{\\dfrac{ {{p}} }{ {{q}} }}$.",
+					"$\\textcolor{{{color:primary.0}}}{\\left(\\dfrac{ {{p}} }{ {{q}} }\\right)^3<\\left(\\dfrac{ {{p}} }{ {{q}} }\\right)^2<\\dfrac{ {{p}} }{ {{q}} }<\\sqrt{\\dfrac{ {{p}} }{ {{q}} }}}$."
+				]
+			},
+			"hint": "$\\dfrac{ {{p}} }{ {{q}} }$ est entre $0$ et $1$. Multiplier un nombre par $\\dfrac{ {{p}} }{ {{q}} }$, est-ce que ça l'agrandit ou le rapetisse ?"
 		}
 	],
 	"testSpecs": [
@@ -137,6 +188,108 @@
 				"status": "incorrect"
 			},
 			"answers": ["2", "1", "0", "3"]
+		},
+		{
+			"description": "x³ < x² < x < √x (0 < x < 1)",
+			"variationIndex": 3,
+			"variables": {},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["3", "0", "1", "2"]
+		},
+		{
+			"description": "Erreur : √x < x < x² < x³ (comme pour x > 1)",
+			"variationIndex": 3,
+			"variables": {},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["2", "1", "0", "3"]
+		},
+		{
+			"description": "Erreur : x³ < x² < √x < x (racine plus petite que x)",
+			"variationIndex": 3,
+			"variables": {},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["3", "0", "2", "1"]
+		},
+		{
+			"description": "√x < x < x² < x³ (x > 1)",
+			"variationIndex": 4,
+			"variables": {},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["3", "0", "1", "2"]
+		},
+		{
+			"description": "Erreur : x³ < x² < x < √x (comme pour 0 < x < 1)",
+			"variationIndex": 4,
+			"variables": {},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["2", "1", "0", "3"]
+		},
+		{
+			"description": "Erreur : x < √x < x² < x³ (racine plus grande que x)",
+			"variationIndex": 4,
+			"variables": {},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["0", "3", "1", "2"]
+		},
+		{
+			"description": "(2/3)³ < (2/3)² < 2/3 < √(2/3)",
+			"variationIndex": 5,
+			"variables": {
+				"p": "2",
+				"q": "3"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["3", "0", "1", "2"]
+		},
+		{
+			"description": "Erreur : √(2/3) < 2/3 < (2/3)² < (2/3)³ (comme pour un nombre > 1)",
+			"variationIndex": 5,
+			"variables": {
+				"p": "2",
+				"q": "3"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["2", "1", "0", "3"]
+		},
+		{
+			"description": "Erreur : (2/3)³ < (2/3)² < √(2/3) < 2/3",
+			"variationIndex": 5,
+			"variables": {
+				"p": "2",
+				"q": "3"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["3", "0", "2", "1"]
+		},
+		{
+			"description": "(1/4)³ < (1/4)² < 1/4 < √(1/4)",
+			"variationIndex": 5,
+			"variables": {
+				"p": "1",
+				"q": "4"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["3", "0", "1", "2"]
 		}
 	]
 }

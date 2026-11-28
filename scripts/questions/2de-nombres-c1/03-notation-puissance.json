@@ -50,7 +50,7 @@
 			"hint": "Repère le facteur répété (la base) et compte combien de fois il apparaît (l'exposant)."
 		},
 		{
-			"statement": "Écris sous la forme d'une puissance.\n\n$${{if:n==2|(-{{a}})\\times (-{{a}})|{{if:n==3|(-{{a}})\\times (-{{a}})\\times (-{{a}})|{{if:n==4|(-{{a}})\\times (-{{a}})\\times (-{{a}})\\times (-{{a}})|(-{{a}})\\times (-{{a}})\\times (-{{a}})\\times (-{{a}})\\times (-{{a}})}}}}}}=?$$",
+			"statement": "Écris sous la forme d'une puissance de $(-{{a}})$.\n\n$${{if:n==2|(-{{a}})\\times (-{{a}})|{{if:n==3|(-{{a}})\\times (-{{a}})\\times (-{{a}})|{{if:n==4|(-{{a}})\\times (-{{a}})\\times (-{{a}})\\times (-{{a}})|(-{{a}})\\times (-{{a}})\\times (-{{a}})\\times (-{{a}})\\times (-{{a}})}}}}}}=?$$",
 			"variables": [
 				{
 					"name": "a",
@@ -98,7 +98,7 @@
 			"hint": "Repère le facteur répété et compte combien de fois il apparaît ; attention, ce facteur est négatif."
 		},
 		{
-			"statement": "Écris sous la forme d'une puissance.\n\n$$\\dfrac{1}{{{if:n==2|{{a}}\\times {{a}}|{{if:n==3|{{a}}\\times {{a}}\\times {{a}}|{{if:n==4|{{a}}\\times {{a}}\\times {{a}}\\times {{a}}|{{a}}\\times {{a}}\\times {{a}}\\times {{a}}\\times {{a}}}}}}}}}=?$$",
+			"statement": "Écris sous la forme d'une puissance de ${{a}}$.\n\n$$\\dfrac{1}{{{if:n==2|{{a}}\\times {{a}}|{{if:n==3|{{a}}\\times {{a}}\\times {{a}}|{{if:n==4|{{a}}\\times {{a}}\\times {{a}}\\times {{a}}|{{a}}\\times {{a}}\\times {{a}}\\times {{a}}\\times {{a}}}}}}}}}=?$$",
 			"variables": [
 				{
 					"name": "a",

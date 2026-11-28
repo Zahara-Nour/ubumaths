@@ -57,7 +57,7 @@
 			"hintFromFirstStep": true
 		},
 		{
-			"statement": "Calcule.\n\n$$\\sqrt{ {{eval:k^2/10^(2*p);d}} }=?$$",
+			"statement": "Calcule. Donne le résultat en écriture décimale.\n\n$$\\sqrt{ {{eval:k^2/10^(2*p);d}} }=?$$",
 			"variables": [
 				{
 					"name": "k",
@@ -334,6 +334,19 @@
 				"expectedErrorMessage": "Tu as calculé le carré de ce nombre, pas le nombre dont il est le carré."
 			},
 			"answers": ["20736"]
+		},
+		{
+			"description": "√0,09 = 3/10 : juste en valeur, refusé pour la forme (la consigne demande l'écriture décimale)",
+			"variationIndex": 1,
+			"variables": {
+				"k": "3",
+				"p": "1"
+			},
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			},
+			"answers": ["\\frac{3}{10}"]
 		}
 	]
 }

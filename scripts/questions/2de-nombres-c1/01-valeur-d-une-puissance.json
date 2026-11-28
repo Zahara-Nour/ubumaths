@@ -57,7 +57,7 @@
 			"hint": "Écris $(-{{a}})^{ {{n}} }$ comme un produit de ${{n}}$ facteurs égaux à $-{{a}}$, puis compte les facteurs négatifs pour trouver le signe."
 		},
 		{
-			"statement": "Calcule. Donne le résultat sous la forme d'une fraction.\n\n$${{a}}^{-{{n}} }=?$$",
+			"statement": "Calcule. Donne le résultat sous la forme d'une fraction, ou d'un nombre décimal quand c'est possible.\n\n$${{a}}^{-{{n}} }=?$$",
 			"variables": [
 				{
 					"name": "a",
@@ -110,7 +110,7 @@
 			"hint": "Un exposant négatif donne un inverse : écris ${{a}}^{-{{n}} }$ comme une fraction de numérateur $1$."
 		},
 		{
-			"statement": "Calcule.\n\n$$0{,}{{d}}^{ {{n}} }=?$$",
+			"statement": "Calcule. Donne le résultat en écriture décimale.\n\n$$0{,}{{d}}^{ {{n}} }=?$$",
 			"variables": [
 				{
 					"name": "d",
@@ -473,6 +473,19 @@
 			"expected": {
 				"status": "incorrect",
 				"expectedErrorMessage": "Tu as oublié la virgule : le résultat est plus petit que 1."
+			}
+		},
+		{
+			"description": "Forme : 0,3² = 9/100 (écriture décimale demandée)",
+			"variationIndex": 2,
+			"variables": {
+				"d": "3",
+				"n": "2"
+			},
+			"answers": ["\\frac{9}{100}"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
 			}
 		}
 	]

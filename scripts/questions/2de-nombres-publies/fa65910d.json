@@ -1,7 +1,7 @@
 {
 	"id": "fa65910d-147f-447f-b846-8e7348e58ed0",
 	"title": "Multiple : a = k × b",
-	"description": "Trouver k dans 351 = k × 13 ; dire si 391 est un multiple de 17 (nombres ⩽ 800), si 91 est un multiple de 7 ou si 7 est un diviseur de 91 ; écrire 6n + 15 = 3 × (2n + 5)",
+	"description": "Trouver k dans 351 = k × 13 ; dire si 391 est un multiple de 17 (nombres ⩽ 800), si 91 est un multiple de 7 ou si 7 est un diviseur de 91 ; écrire 6n + 15 = 3 × (2n + 5) ; cocher les multiples de 17 parmi cinq nombres ; traverser un labyrinthe de multiples",
 	"grades": ["2"],
 	"level": 9,
 	"delay": 60,
@@ -175,6 +175,82 @@
 				]
 			},
 			"hint": "Être un diviseur ou être un multiple, c'est la même relation : fais la division euclidienne par ${{b}}$ et regarde le reste."
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "0;1;2"
+				}
+			],
+			"statement": "Coche tous les multiples de ${{b}}$.\n\n```choix\nplusieurs: oui\n- ${{eval:(k1)*(b)}}$\n- ${{eval:(k2)*(b)}}$\n- ${{eval:(k3)*(b)}}$\n- ${{eval:(k4)*(b)+(r1)}}$\n- ${{eval:(k5)*(b)-(r2)}}$\n```",
+			"variables": [
+				{
+					"name": "b",
+					"expression": "11..19"
+				},
+				{
+					"name": "k1",
+					"expression": "12..18"
+				},
+				{
+					"name": "u",
+					"expression": "2..9"
+				},
+				{
+					"name": "w",
+					"expression": "2..9"
+				},
+				{
+					"name": "k2",
+					"expression": "eval:(k1)+(u)"
+				},
+				{
+					"name": "k3",
+					"expression": "eval:(k2)+(w)"
+				},
+				{
+					"name": "k4",
+					"expression": "12..38"
+				},
+				{
+					"name": "k5",
+					"expression": "13..39"
+				},
+				{
+					"name": "r1",
+					"expression": "1..9"
+				},
+				{
+					"name": "r2",
+					"expression": "1..9"
+				}
+			],
+			"conditions": ["k4*b + r1 != k5*b - r2"],
+			"correction": {
+				"steps": [
+					"**Définition** : $a$ est un **multiple** de $b$ s'il existe un **entier** $k$ tel que $a=k\\times b$ : la division de $a$ par $b$ tombe juste.",
+					"$\\textcolor{{{color:primary.0}}}{ {{eval:(k1)*(b)}}={{k1}}\\times{{b}} }$ ; $\\textcolor{{{color:primary.0}}}{ {{eval:(k2)*(b)}}={{k2}}\\times{{b}} }$ ; $\\textcolor{{{color:primary.0}}}{ {{eval:(k3)*(b)}}={{k3}}\\times{{b}} }$ : des multiples de ${{b}}$.",
+					"${{eval:(k4)*(b)+(r1)}}={{k4}}\\times{{b}}+{{r1}}$ et ${{eval:(k5)*(b)-(r2)}}={{eval:(k5)-1}}\\times{{b}}+{{eval:(b)-(r2)}}$ : le reste n'est pas nul, ce ne sont pas des multiples de ${{b}}$."
+				]
+			},
+			"hint": "Pour chaque nombre, fais la division euclidienne par ${{b}}$ et regarde le reste."
+		},
+		{
+			"statement": "Traverse le labyrinthe en ne passant que par des multiples de ${{n}}$. Touche les cases une à une, de l'entrée jusqu'à une sortie.\n\n```labyrinthe\ngrille: 5 x 4\nrègle: multiple de {{n}}\nparcourir: oui\n```",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "11..49"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Définition** : $a$ est un **multiple** de ${{n}}$ s'il existe un **entier** $k$ tel que $a=k\\times{{n}}$ : la division de $a$ par ${{n}}$ tombe juste.",
+					"**Les pièges.** Les intrus sont juste à côté d'un multiple de ${{n}}$ : $1$ ou $2$ de plus ou de moins. Il faut tester chaque nombre.",
+					"**Le chemin.** De l'entrée, on avance de case en case (haut, bas, gauche, droite) : un seul chemin mène à une sortie, celui teinté sur la grille."
+				]
+			},
+			"hint": "Pour chaque case voisine, cherche si sa division par ${{n}}$ tombe juste : les intrus sont tout près d'un multiple."
 		}
 	],
 	"testSpecs": [
@@ -400,6 +476,130 @@
 			},
 			"description": "Erreur prévue : 6n + 15",
 			"variationIndex": 2
+		},
+		{
+			"answers": ["0;1;2"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"b": "17",
+				"k1": "20",
+				"u": "1",
+				"w": "3",
+				"k2": "21",
+				"k3": "23",
+				"k4": "23",
+				"k5": "22",
+				"r1": "10",
+				"r2": "4"
+			},
+			"description": "Multiples de 17 : 340, 357, 391",
+			"variationIndex": 4
+		},
+		{
+			"answers": ["0;1;2;3"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"b": "17",
+				"k1": "20",
+				"u": "1",
+				"w": "3",
+				"k2": "21",
+				"k3": "23",
+				"k4": "23",
+				"k5": "22",
+				"r1": "10",
+				"r2": "4"
+			},
+			"description": "Un intrus coché en plus (401)",
+			"variationIndex": 4
+		},
+		{
+			"answers": ["0;1"],
+			"expected": {
+				"status": "unoptimal_form"
+			},
+			"variables": {
+				"b": "17",
+				"k1": "20",
+				"u": "1",
+				"w": "3",
+				"k2": "21",
+				"k3": "23",
+				"k4": "23",
+				"k5": "22",
+				"r1": "10",
+				"r2": "4"
+			},
+			"description": "Un multiple oublié : moitié des points",
+			"variationIndex": 4
+		},
+		{
+			"answers": ["3;4"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"b": "17",
+				"k1": "20",
+				"u": "1",
+				"w": "3",
+				"k2": "21",
+				"k3": "23",
+				"k4": "23",
+				"k5": "22",
+				"r1": "10",
+				"r2": "4"
+			},
+			"description": "Seulement les intrus",
+			"variationIndex": 4
+		},
+		{
+			"answers": ["2,1 2,2 3,2 4,2 4,3 4,4 3,4 2,4 1,4 1,5"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"n": "17"
+			},
+			"description": "Multiples de 17 : le bon chemin",
+			"variationIndex": 5
+		},
+		{
+			"answers": ["2,1 2,2 3,2 4,2 4,3 4,4 3,4 2,4 1,4"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"n": "17"
+			},
+			"description": "Multiples de 17 : arrêté avant la sortie",
+			"variationIndex": 5
+		},
+		{
+			"answers": ["2,2 3,2 4,2 4,3 4,4 3,4 2,4 1,4 1,5"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"n": "17"
+			},
+			"description": "Multiples de 17 : ne part pas de l'entrée",
+			"variationIndex": 5
+		},
+		{
+			"answers": ["2,1 2,2 3,2 4,2 4,3 4,4 3,4 2,4 1,4 1,5"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"n": "43"
+			},
+			"description": "Multiples de 43 : le bon chemin",
+			"variationIndex": 5
 		}
 	]
 }

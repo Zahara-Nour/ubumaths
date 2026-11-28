@@ -173,7 +173,8 @@
 							"message": "Revois le signe : compte combien de fois tu multiplies un nombre négatif.",
 							"label": "Signe perdu"
 						}
-					]
+					],
+					"requiredForm": "power"
 				}
 			],
 			"statement": "Écris sous la forme d'une seule puissance.\n\n$$\\dfrac{ {{if:s==1|(-{{eval:(k)*(q)}})|{{eval:(k)*(q)}}}}^{ {{n}} } }{ {{q}}^{ {{n}} } }=?$$",
@@ -471,6 +472,49 @@
 				"s": "0"
 			},
 			"description": "Erreur prévue : 2¹",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["2^4"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"q": "3",
+				"k": "2",
+				"n": "4",
+				"s": "1"
+			},
+			"description": "(−6)⁴ / 3⁴ = 2⁴ : base non imposée, juste",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["(-2)^4"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"q": "3",
+				"k": "2",
+				"n": "4",
+				"s": "1"
+			},
+			"description": "(−6)⁴ / 3⁴ = (−2)⁴, juste",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["16"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			},
+			"variables": {
+				"q": "3",
+				"k": "2",
+				"n": "4",
+				"s": "1"
+			},
+			"description": "Forme : 16 au lieu d'une puissance",
 			"variationIndex": 3
 		}
 	]

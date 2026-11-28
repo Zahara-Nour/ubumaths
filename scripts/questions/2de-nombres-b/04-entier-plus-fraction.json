@@ -230,6 +230,258 @@
 				]
 			},
 			"hintFromFirstStep": true
+		},
+		{
+			"statement": "Écris $\\dfrac{ {{n}} }{ {{d}} }$ comme la somme d'un **nombre entier** et d'une **fraction plus petite que $1$**.\n\n$\\dfrac{ {{n}} }{ {{d}} }=?$",
+			"variables": [
+				{
+					"name": "q",
+					"expression": "1..4"
+				},
+				{
+					"name": "d",
+					"expression": "2..5"
+				},
+				{
+					"name": "r",
+					"expression": "1..19"
+				},
+				{
+					"name": "n",
+					"expression": "eval:q*d+r"
+				}
+			],
+			"conditions": ["r<d", "gcd(r,d)==1"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{q}}+\\frac{ {{r}} }{ {{d}} }",
+					"requiredForm": {
+						"pattern": "e:integer + p:integer & gte(0) & lt(w) / w:integer"
+					},
+					"expectedErrors": [
+						{
+							"answer": "{{q}}+\\frac{ {{d}} }{ {{r}} }",
+							"message": "Tu as inversé le numérateur et le dénominateur de la fraction.",
+							"label": "Fraction renversée"
+						},
+						{
+							"answer": "{{r}}+\\frac{ {{q}} }{ {{d}} }",
+							"message": "Tu as inversé le quotient et le reste de la division.",
+							"label": "Quotient et reste inversés"
+						},
+						{
+							"answer": "{{q}}+\\frac{ {{eval:d-r}} }{ {{d}} }",
+							"message": "Ta fraction est ce qui manque pour atteindre l'entier suivant, pas ce qui dépasse l'entier.",
+							"label": "Complément au lieu du reste"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"On cherche combien de fois ${{d}}$ va dans ${{n}}$ : c'est la division euclidienne de ${{n}}$ par ${{d}}$.",
+					"$${{n}}={{d}}\\times{{q}}+{{r}}\\quad\\text{avec }{{r}}<{{d}}$$",
+					"$$\\dfrac{ {{n}} }{ {{d}} }=\\dfrac{ {{d}}\\times{{q}} }{ {{d}} }+\\dfrac{ {{r}} }{ {{d}} }=\\textcolor{{{color:primary.0}}}{{{q}}+\\dfrac{ {{r}} }{ {{d}} }}$$",
+					"La fraction $\\dfrac{ {{r}} }{ {{d}} }$ est bien plus petite que $1$, car ${{r}}<{{d}}$."
+				]
+			},
+			"hintFromFirstStep": true
+		},
+		{
+			"statement": "Écris $\\dfrac{ {{n}} }{ {{d}} }$ comme la somme d'un **nombre entier** et d'une **fraction plus petite que $1$**.\n\n$\\dfrac{ {{n}} }{ {{d}} }=?$",
+			"variables": [
+				{
+					"name": "q",
+					"expression": "2..9"
+				},
+				{
+					"name": "d",
+					"expression": "6..12"
+				},
+				{
+					"name": "r",
+					"expression": "1..19"
+				},
+				{
+					"name": "n",
+					"expression": "eval:q*d+r"
+				}
+			],
+			"conditions": ["r<d", "gcd(r,d)==1"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{q}}+\\frac{ {{r}} }{ {{d}} }",
+					"requiredForm": {
+						"pattern": "e:integer + p:integer & gte(0) & lt(w) / w:integer"
+					},
+					"expectedErrors": [
+						{
+							"answer": "{{q}}+\\frac{ {{d}} }{ {{r}} }",
+							"message": "Tu as inversé le numérateur et le dénominateur de la fraction.",
+							"label": "Fraction renversée"
+						},
+						{
+							"answer": "{{r}}+\\frac{ {{q}} }{ {{d}} }",
+							"message": "Tu as inversé le quotient et le reste de la division.",
+							"label": "Quotient et reste inversés"
+						},
+						{
+							"answer": "{{q}}+\\frac{ {{eval:d-r}} }{ {{d}} }",
+							"message": "Ta fraction est ce qui manque pour atteindre l'entier suivant, pas ce qui dépasse l'entier.",
+							"label": "Complément au lieu du reste"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"On cherche combien de fois ${{d}}$ va dans ${{n}}$ : c'est la division euclidienne de ${{n}}$ par ${{d}}$.",
+					"$${{n}}={{d}}\\times{{q}}+{{r}}\\quad\\text{avec }{{r}}<{{d}}$$",
+					"$$\\dfrac{ {{n}} }{ {{d}} }=\\dfrac{ {{d}}\\times{{q}} }{ {{d}} }+\\dfrac{ {{r}} }{ {{d}} }=\\textcolor{{{color:primary.0}}}{{{q}}+\\dfrac{ {{r}} }{ {{d}} }}$$",
+					"La fraction $\\dfrac{ {{r}} }{ {{d}} }$ est bien plus petite que $1$, car ${{r}}<{{d}}$."
+				]
+			},
+			"hintFromFirstStep": true
+		},
+		{
+			"statement": "Écris $\\dfrac{ {{n}} }{ {{d}} }$ comme la somme d'un **nombre entier** et d'une **fraction plus petite que $1$**.\n\n$\\dfrac{ {{n}} }{ {{d}} }=?$",
+			"variables": [
+				{
+					"name": "q",
+					"expression": "10..20"
+				},
+				{
+					"name": "d",
+					"expression": "3..9"
+				},
+				{
+					"name": "r",
+					"expression": "1..19"
+				},
+				{
+					"name": "n",
+					"expression": "eval:q*d+r"
+				}
+			],
+			"conditions": ["r<d", "gcd(r,d)==1"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{q}}+\\frac{ {{r}} }{ {{d}} }",
+					"requiredForm": {
+						"pattern": "e:integer + p:integer & gte(0) & lt(w) / w:integer"
+					},
+					"expectedErrors": [
+						{
+							"answer": "{{q}}+\\frac{ {{d}} }{ {{r}} }",
+							"message": "Tu as inversé le numérateur et le dénominateur de la fraction.",
+							"label": "Fraction renversée"
+						},
+						{
+							"answer": "{{r}}+\\frac{ {{q}} }{ {{d}} }",
+							"message": "Tu as inversé le quotient et le reste de la division.",
+							"label": "Quotient et reste inversés"
+						},
+						{
+							"answer": "{{q}}+\\frac{ {{eval:d-r}} }{ {{d}} }",
+							"message": "Ta fraction est ce qui manque pour atteindre l'entier suivant, pas ce qui dépasse l'entier.",
+							"label": "Complément au lieu du reste"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"On cherche combien de fois ${{d}}$ va dans ${{n}}$ : c'est la division euclidienne de ${{n}}$ par ${{d}}$.",
+					"$${{n}}={{d}}\\times{{q}}+{{r}}\\quad\\text{avec }{{r}}<{{d}}$$",
+					"$$\\dfrac{ {{n}} }{ {{d}} }=\\dfrac{ {{d}}\\times{{q}} }{ {{d}} }+\\dfrac{ {{r}} }{ {{d}} }=\\textcolor{{{color:primary.0}}}{{{q}}+\\dfrac{ {{r}} }{ {{d}} }}$$",
+					"La fraction $\\dfrac{ {{r}} }{ {{d}} }$ est bien plus petite que $1$, car ${{r}}<{{d}}$."
+				]
+			},
+			"hintFromFirstStep": true
+		},
+		{
+			"statement": "Encadre $\\dfrac{ {{n}} }{ {{d}} }$ entre deux **entiers consécutifs**.\n\n$?<\\dfrac{ {{n}} }{ {{d}} }<?$",
+			"variables": [
+				{
+					"name": "q",
+					"expression": "1..9"
+				},
+				{
+					"name": "d",
+					"expression": "3..12"
+				},
+				{
+					"name": "r",
+					"expression": "1..11"
+				},
+				{
+					"name": "n",
+					"expression": "eval:q*d+r"
+				},
+				{
+					"name": "q1",
+					"expression": "eval:q+1"
+				},
+				{
+					"name": "dq",
+					"expression": "eval:d*q"
+				},
+				{
+					"name": "dq1",
+					"expression": "eval:d*(q+1)"
+				}
+			],
+			"conditions": ["r<d", "gcd(r,d)==1", "d>q+1", "r!=q+1"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{q}}",
+					"expectedErrors": [
+						{
+							"answer": "{{d}}",
+							"message": "Tu as pris le dénominateur : l'entier de gauche est le nombre de fois que ${{d}}$ va dans ${{n}}$.",
+							"label": "Dénominateur"
+						},
+						{
+							"answer": "{{r}}",
+							"message": "Tu as pris le reste de la division : l'entier de gauche est le quotient.",
+							"label": "Reste au lieu du quotient"
+						},
+						{
+							"answer": "{{eval:q+1}}",
+							"message": "Ce nombre est plus grand que la fraction : il ne peut pas être à gauche.",
+							"label": "Entier trop grand"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{q1}}",
+					"expectedErrors": [
+						{
+							"answer": "{{n}}",
+							"message": "Tu as pris le numérateur : les deux entiers doivent se suivre.",
+							"label": "Numérateur"
+						},
+						{
+							"answer": "{{q}}",
+							"message": "La fraction n'est pas un entier : elle est entre deux entiers différents.",
+							"label": "Même entier des deux côtés"
+						},
+						{
+							"answer": "{{d}}",
+							"message": "Ton encadrement est vrai, mais les deux entiers doivent être consécutifs : ils se suivent.",
+							"label": "Entiers non consécutifs"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"On fait la division euclidienne de ${{n}}$ par ${{d}}$ : ${{n}}={{d}}\\times{{q}}+{{r}}$, avec $0<{{r}}<{{d}}$.",
+					"Donc ${{dq}}<{{n}}<{{dq1}}$, c'est-à-dire ${{d}}\\times{{q}}<{{n}}<{{d}}\\times{{q1}}$.",
+					"En divisant par ${{d}}$ : $\\textcolor{{{color:primary.0}}}{{{q}}<\\dfrac{ {{n}} }{ {{d}} }<{{q1}}}$."
+				]
+			},
+			"hint": "Cherche combien de fois ${{d}}$ va dans ${{n}}$ : c'est la division euclidienne de ${{n}}$ par ${{d}}$."
 		}
 	],
 	"testSpecs": [
@@ -406,6 +658,308 @@
 			"expected": {
 				"status": "incorrect",
 				"expectedErrorMessage": "Tu as inversé le quotient et le reste de la division."
+			}
+		},
+		{
+			"description": "Une case : 17/5 = 3 + 2/5",
+			"variationIndex": 3,
+			"variables": {
+				"q": "3",
+				"d": "5",
+				"r": "2"
+			},
+			"answers": ["3+\\frac{2}{5}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Une case : 2/5 + 3 (ordre libre)",
+			"variationIndex": 3,
+			"variables": {
+				"q": "3",
+				"d": "5",
+				"r": "2"
+			},
+			"answers": ["\\frac{2}{5}+3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Une case : 3 + 4/10 (fraction égale)",
+			"variationIndex": 3,
+			"variables": {
+				"q": "3",
+				"d": "5",
+				"r": "2"
+			},
+			"answers": ["3+\\frac{4}{10}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Une case : 2 + 7/5 refusé (fraction ≥ 1)",
+			"variationIndex": 3,
+			"variables": {
+				"q": "3",
+				"d": "5",
+				"r": "2"
+			},
+			"answers": ["2+\\frac{7}{5}"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		},
+		{
+			"description": "Une case : 17/5 recopié refusé",
+			"variationIndex": 3,
+			"variables": {
+				"q": "3",
+				"d": "5",
+				"r": "2"
+			},
+			"answers": ["\\frac{17}{5}"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		},
+		{
+			"description": "Une case : 3,4 refusé",
+			"variationIndex": 3,
+			"variables": {
+				"q": "3",
+				"d": "5",
+				"r": "2"
+			},
+			"answers": ["3{,}4"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		},
+		{
+			"description": "Une case : 1 + 2 + 2/5 refusé",
+			"variationIndex": 3,
+			"variables": {
+				"q": "3",
+				"d": "5",
+				"r": "2"
+			},
+			"answers": ["1+2+\\frac{2}{5}"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		},
+		{
+			"description": "Erreur prévue : 3 + 5/2",
+			"variationIndex": 3,
+			"variables": {
+				"q": "3",
+				"d": "5",
+				"r": "2"
+			},
+			"answers": ["3+\\frac{5}{2}"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as inversé le numérateur et le dénominateur de la fraction."
+			}
+		},
+		{
+			"description": "Erreur prévue : 2 + 3/5",
+			"variationIndex": 3,
+			"variables": {
+				"q": "3",
+				"d": "5",
+				"r": "2"
+			},
+			"answers": ["2+\\frac{3}{5}"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as inversé le quotient et le reste de la division."
+			}
+		},
+		{
+			"description": "Erreur prévue : 3 + 3/5",
+			"variationIndex": 3,
+			"variables": {
+				"q": "3",
+				"d": "5",
+				"r": "2"
+			},
+			"answers": ["3+\\frac{3}{5}"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Ta fraction est ce qui manque pour atteindre l'entier suivant, pas ce qui dépasse l'entier."
+			}
+		},
+		{
+			"description": "Une case : 47/8 = 5 + 7/8",
+			"variationIndex": 4,
+			"variables": {
+				"q": "5",
+				"d": "8",
+				"r": "7"
+			},
+			"answers": ["5+\\frac{7}{8}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur prévue : 7 + 5/8",
+			"variationIndex": 4,
+			"variables": {
+				"q": "5",
+				"d": "8",
+				"r": "7"
+			},
+			"answers": ["7+\\frac{5}{8}"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as inversé le quotient et le reste de la division."
+			}
+		},
+		{
+			"description": "Erreur prévue : 5 + 1/8",
+			"variationIndex": 4,
+			"variables": {
+				"q": "5",
+				"d": "8",
+				"r": "7"
+			},
+			"answers": ["5+\\frac{1}{8}"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Ta fraction est ce qui manque pour atteindre l'entier suivant, pas ce qui dépasse l'entier."
+			}
+		},
+		{
+			"description": "Une case : 100/7 = 14 + 2/7",
+			"variationIndex": 5,
+			"variables": {
+				"q": "14",
+				"d": "7",
+				"r": "2"
+			},
+			"answers": ["14+\\frac{2}{7}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur prévue : 14 + 7/2",
+			"variationIndex": 5,
+			"variables": {
+				"q": "14",
+				"d": "7",
+				"r": "2"
+			},
+			"answers": ["14+\\frac{7}{2}"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as inversé le numérateur et le dénominateur de la fraction."
+			}
+		},
+		{
+			"description": "Encadrer : 3 < 17/5 < 4",
+			"variationIndex": 6,
+			"variables": {
+				"q": "3",
+				"d": "5",
+				"r": "2"
+			},
+			"answers": ["3", "4"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur prévue : 5 à gauche (dénominateur)",
+			"variationIndex": 6,
+			"variables": {
+				"q": "3",
+				"d": "5",
+				"r": "2"
+			},
+			"answers": ["5", "4"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as pris le dénominateur : l'entier de gauche est le nombre de fois que $5$ va dans $17$."
+			}
+		},
+		{
+			"description": "Erreur prévue : 2 à gauche (reste)",
+			"variationIndex": 6,
+			"variables": {
+				"q": "3",
+				"d": "5",
+				"r": "2"
+			},
+			"answers": ["2", "4"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as pris le reste de la division : l'entier de gauche est le quotient."
+			}
+		},
+		{
+			"description": "Erreur prévue : 4 à gauche",
+			"variationIndex": 6,
+			"variables": {
+				"q": "3",
+				"d": "5",
+				"r": "2"
+			},
+			"answers": ["4", "4"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Ce nombre est plus grand que la fraction : il ne peut pas être à gauche."
+			}
+		},
+		{
+			"description": "Erreur prévue : 17 à droite (numérateur)",
+			"variationIndex": 6,
+			"variables": {
+				"q": "3",
+				"d": "5",
+				"r": "2"
+			},
+			"answers": ["3", "17"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as pris le numérateur : les deux entiers doivent se suivre."
+			}
+		},
+		{
+			"description": "Erreur prévue : 3 des deux côtés",
+			"variationIndex": 6,
+			"variables": {
+				"q": "3",
+				"d": "5",
+				"r": "2"
+			},
+			"answers": ["3", "3"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "La fraction n'est pas un entier : elle est entre deux entiers différents."
+			}
+		},
+		{
+			"description": "Erreur prévue : 3 < 17/5 < 5",
+			"variationIndex": 6,
+			"variables": {
+				"q": "3",
+				"d": "5",
+				"r": "2"
+			},
+			"answers": ["3", "5"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Ton encadrement est vrai, mais les deux entiers doivent être consécutifs : ils se suivent."
 			}
 		}
 	]

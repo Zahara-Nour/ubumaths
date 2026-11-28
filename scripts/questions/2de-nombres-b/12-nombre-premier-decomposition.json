@@ -227,6 +227,184 @@
 				]
 			},
 			"hint": "Divise ${{n}}$ par le plus petit nombre premier possible, puis recommence avec le quotient, jusqu'à tomber sur un nombre premier."
+		},
+		{
+			"statement": "Décompose ${{n}}$ en produit de facteurs premiers. Écris un facteur qui se répète **avec une puissance**.\n\n${{n}}=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2|3|5"
+				},
+				{
+					"name": "b",
+					"expression": "3|5|7"
+				},
+				{
+					"name": "c",
+					"expression": "5|7|11|13"
+				},
+				{
+					"name": "w",
+					"expression": "0..2"
+				},
+				{
+					"name": "f2",
+					"expression": "eval:a+(b-a)*min(w,1)"
+				},
+				{
+					"name": "f3",
+					"expression": "eval:b+(c-b)*max(w-1,0)"
+				},
+				{
+					"name": "n",
+					"expression": "eval:a*f2*f3*c"
+				},
+				{
+					"name": "n1",
+					"expression": "eval:n/a"
+				},
+				{
+					"name": "n2",
+					"expression": "eval:n/(a*f2)"
+				},
+				{
+					"name": "s",
+					"expression": "eval:a+(b-a)*min(w,1)+(c-b)*max(w-1,0)"
+				}
+			],
+			"conditions": ["a<b", "b<c", "n<=300"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:w==0|{{a}}^2\\times{{b}}\\times{{c}}|{{if:w==1|{{a}}\\times{{b}}^2\\times{{c}}|{{a}}\\times{{b}}\\times{{c}}^2}}}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:n/s}}",
+							"message": "Ton produit vaut ${{eval:n/s}}$, pas ${{n}}$ : il manque un facteur.",
+							"label": "Facteur oublié"
+						},
+						{
+							"answer": "{{eval:n/(c+(a-c)*max(w-1,0))}}",
+							"message": "Ton produit vaut ${{eval:n/(c+(a-c)*max(w-1,0))}}$, pas ${{n}}$ : il manque un facteur.",
+							"label": "Facteur oublié"
+						},
+						{
+							"answer": "{{eval:n*s}}",
+							"message": "Ton produit vaut ${{eval:n*s}}$, pas ${{n}}$ : un facteur est écrit une fois de trop.",
+							"label": "Facteur en trop"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"On divise par le plus petit nombre premier possible, encore et encore :",
+					"$${{n}}={{a}}\\times{{n1}}={{a}}\\times{{f2}}\\times{{n2}}={{a}}\\times{{f2}}\\times{{f3}}\\times{{c}}$$",
+					"Les facteurs ${{a}}$, ${{f2}}$, ${{f3}}$ et ${{c}}$ sont premiers. Avec une puissance : ${{n}}=\\textcolor{{{color:primary.0}}}{{{if:w==0|{{a}}^2\\times{{b}}\\times{{c}}|{{if:w==1|{{a}}\\times{{b}}^2\\times{{c}}|{{a}}\\times{{b}}\\times{{c}}^2}}}}}$."
+				]
+			},
+			"hint": "Divise ${{n}}$ par le plus petit nombre premier possible, puis recommence avec le quotient, jusqu'à tomber sur un nombre premier."
+		},
+		{
+			"statement": "Décompose ${{n}}$ en produit de facteurs premiers. Écris un facteur qui se répète **avec une puissance**.\n\n${{n}}=?$",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "2|3"
+				},
+				{
+					"name": "q",
+					"expression": "5|7|11"
+				},
+				{
+					"name": "n",
+					"expression": "eval:p^3*q"
+				},
+				{
+					"name": "n1",
+					"expression": "eval:p^2*q"
+				},
+				{
+					"name": "n2",
+					"expression": "eval:p*q"
+				}
+			],
+			"conditions": ["n<=300"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{p}}^3\\times{{q}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:n/p}}",
+							"message": "Ton produit vaut ${{eval:n/p}}$, pas ${{n}}$ : il manque un facteur.",
+							"label": "Facteur oublié"
+						},
+						{
+							"answer": "{{eval:n/q}}",
+							"message": "Ton produit vaut ${{eval:n/q}}$, pas ${{n}}$ : il manque un facteur.",
+							"label": "Facteur oublié"
+						},
+						{
+							"answer": "{{eval:n*p}}",
+							"message": "Ton produit vaut ${{eval:n*p}}$, pas ${{n}}$ : un facteur est écrit une fois de trop.",
+							"label": "Facteur en trop"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"On divise par le plus petit nombre premier possible, encore et encore :",
+					"$${{n}}={{p}}\\times{{n1}}={{p}}\\times{{p}}\\times{{n2}}={{p}}\\times{{p}}\\times{{p}}\\times{{q}}$$",
+					"Avec une puissance : ${{n}}=\\textcolor{{{color:primary.0}}}{{{p}}^3\\times{{q}}}$."
+				]
+			},
+			"hint": "Divise ${{n}}$ par le plus petit nombre premier possible, puis recommence avec le quotient, jusqu'à tomber sur un nombre premier."
+		},
+		{
+			"statement": "${{n}}$ n'est pas un nombre premier : écris-le comme le produit de deux entiers plus grands que $1$.\n\n${{n}}=?$",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "7|11|13"
+				},
+				{
+					"name": "q",
+					"expression": "7|11|13|17|19|23"
+				},
+				{
+					"name": "n",
+					"expression": "eval:p*q"
+				}
+			],
+			"conditions": ["p<=q", "p*q<=199"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{p}}\\times{{q}}",
+					"requiredForm": {
+						"pattern": "a:integer & gt(1) * b:integer & gt(1)"
+					},
+					"expectedErrors": [
+						{
+							"answer": "{{eval:p*(q+1)}}",
+							"message": "Ton produit vaut ${{eval:p*(q+1)}}$, pas ${{n}}$ : vérifie ta multiplication.",
+							"label": "Facteur voisin (+1)"
+						},
+						{
+							"answer": "{{eval:p*(q-1)}}",
+							"message": "Ton produit vaut ${{eval:p*(q-1)}}$, pas ${{n}}$ : vérifie ta multiplication.",
+							"label": "Facteur voisin (−1)"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"On cherche un diviseur de ${{n}}$ parmi les nombres premiers $2$, $3$, $5$, $7$, $11$, $13$… ${{n}}$ n'est divisible ni par $2$, ni par $3$, ni par $5$.",
+					"On essaie $7$, $11$, $13$ : ${{n}}\\div{{p}}={{q}}$.",
+					"$${{n}}=\\textcolor{{{color:primary.0}}}{{{p}}\\times{{q}}}$$"
+				]
+			},
+			"hint": "Cherche un diviseur de ${{n}}$ parmi les nombres premiers $2$, $3$, $5$, $7$, $11$, $13$…"
 		}
 	],
 	"testSpecs": [
@@ -475,6 +653,337 @@
 				"status": "incorrect",
 				"expectedErrorMessage": "Ce facteur n'est pas premier : il se décompose encore."
 			}
+		},
+		{
+			"description": "Une case : 84 = 2² × 3 × 7",
+			"variationIndex": 3,
+			"variables": {
+				"a": "2",
+				"b": "3",
+				"c": "7",
+				"w": "0"
+			},
+			"answers": ["2^2\\times3\\times7"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Une case : 3 × 7 × 2²",
+			"variationIndex": 3,
+			"variables": {
+				"a": "2",
+				"b": "3",
+				"c": "7",
+				"w": "0"
+			},
+			"answers": ["3\\times7\\times2^2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Une case : 7 × 2² × 3",
+			"variationIndex": 3,
+			"variables": {
+				"a": "2",
+				"b": "3",
+				"c": "7",
+				"w": "0"
+			},
+			"answers": ["7\\times2^2\\times3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Une case : 4 × 21 refusé",
+			"variationIndex": 3,
+			"variables": {
+				"a": "2",
+				"b": "3",
+				"c": "7",
+				"w": "0"
+			},
+			"answers": ["4\\times21"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		},
+		{
+			"description": "Une case : 2² × 21 refusé",
+			"variationIndex": 3,
+			"variables": {
+				"a": "2",
+				"b": "3",
+				"c": "7",
+				"w": "0"
+			},
+			"answers": ["2^2\\times21"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		},
+		{
+			"description": "Une case : 84 recopié refusé",
+			"variationIndex": 3,
+			"variables": {
+				"a": "2",
+				"b": "3",
+				"c": "7",
+				"w": "0"
+			},
+			"answers": ["84"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		},
+		{
+			"description": "Une case : 2 × 2 × 3 × 7 refusé (puissance demandée)",
+			"variationIndex": 3,
+			"variables": {
+				"a": "2",
+				"b": "3",
+				"c": "7",
+				"w": "0"
+			},
+			"answers": ["2\\times2\\times3\\times7"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		},
+		{
+			"description": "Erreur prévue : 2 × 3 × 7 = 42",
+			"variationIndex": 3,
+			"variables": {
+				"a": "2",
+				"b": "3",
+				"c": "7",
+				"w": "0"
+			},
+			"answers": ["2\\times3\\times7"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Ton produit vaut $42$, pas $84$ : il manque un facteur."
+			}
+		},
+		{
+			"description": "Erreur prévue : 2² × 3 = 12",
+			"variationIndex": 3,
+			"variables": {
+				"a": "2",
+				"b": "3",
+				"c": "7",
+				"w": "0"
+			},
+			"answers": ["2^2\\times3"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Ton produit vaut $12$, pas $84$ : il manque un facteur."
+			}
+		},
+		{
+			"description": "Erreur prévue : 2³ × 3 × 7 = 168",
+			"variationIndex": 3,
+			"variables": {
+				"a": "2",
+				"b": "3",
+				"c": "7",
+				"w": "0"
+			},
+			"answers": ["2^3\\times3\\times7"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Ton produit vaut $168$, pas $84$ : un facteur est écrit une fois de trop."
+			}
+		},
+		{
+			"description": "Une case : 150 = 2 × 3 × 5²",
+			"variationIndex": 3,
+			"variables": {
+				"a": "2",
+				"b": "3",
+				"c": "5",
+				"w": "2"
+			},
+			"answers": ["2\\times3\\times5^2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Une case : 56 = 2³ × 7",
+			"variationIndex": 4,
+			"variables": {
+				"p": "2",
+				"q": "7"
+			},
+			"answers": ["2^3\\times7"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Une case : 7 × 2³",
+			"variationIndex": 4,
+			"variables": {
+				"p": "2",
+				"q": "7"
+			},
+			"answers": ["7\\times2^3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Une case : 8 × 7 refusé",
+			"variationIndex": 4,
+			"variables": {
+				"p": "2",
+				"q": "7"
+			},
+			"answers": ["8\\times7"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		},
+		{
+			"description": "Une case : 2 × 2 × 2 × 7 refusé",
+			"variationIndex": 4,
+			"variables": {
+				"p": "2",
+				"q": "7"
+			},
+			"answers": ["2\\times2\\times2\\times7"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		},
+		{
+			"description": "Erreur prévue : 2² × 7 = 28",
+			"variationIndex": 4,
+			"variables": {
+				"p": "2",
+				"q": "7"
+			},
+			"answers": ["2^2\\times7"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Ton produit vaut $28$, pas $56$ : il manque un facteur."
+			}
+		},
+		{
+			"description": "Erreur prévue : 2³ = 8",
+			"variationIndex": 4,
+			"variables": {
+				"p": "2",
+				"q": "7"
+			},
+			"answers": ["2^3"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Ton produit vaut $8$, pas $56$ : il manque un facteur."
+			}
+		},
+		{
+			"description": "Erreur prévue : 2⁴ × 7 = 112",
+			"variationIndex": 4,
+			"variables": {
+				"p": "2",
+				"q": "7"
+			},
+			"answers": ["2^4\\times7"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Ton produit vaut $112$, pas $56$ : un facteur est écrit une fois de trop."
+			}
+		},
+		{
+			"description": "Produit : 91 = 7 × 13",
+			"variationIndex": 5,
+			"variables": {
+				"p": "7",
+				"q": "13"
+			},
+			"answers": ["7\\times13"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Produit : 13 × 7",
+			"variationIndex": 5,
+			"variables": {
+				"p": "7",
+				"q": "13"
+			},
+			"answers": ["13\\times7"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Produit : 1 × 91 refusé",
+			"variationIndex": 5,
+			"variables": {
+				"p": "7",
+				"q": "13"
+			},
+			"answers": ["1\\times91"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		},
+		{
+			"description": "Produit : 91 recopié refusé",
+			"variationIndex": 5,
+			"variables": {
+				"p": "7",
+				"q": "13"
+			},
+			"answers": ["91"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		},
+		{
+			"description": "Erreur prévue : 7 × 14 = 98",
+			"variationIndex": 5,
+			"variables": {
+				"p": "7",
+				"q": "13"
+			},
+			"answers": ["7\\times14"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Ton produit vaut $98$, pas $91$ : vérifie ta multiplication."
+			}
+		},
+		{
+			"description": "Erreur prévue : 7 × 12 = 84",
+			"variationIndex": 5,
+			"variables": {
+				"p": "7",
+				"q": "13"
+			},
+			"answers": ["7\\times12"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Ton produit vaut $84$, pas $91$ : vérifie ta multiplication."
+			}
 		}
-	]
+	],
+	"options": {
+		"constraints": {
+			"products": "off"
+		}
+	}
 }

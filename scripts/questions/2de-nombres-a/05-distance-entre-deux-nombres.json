@@ -203,6 +203,89 @@
 				]
 			},
 			"hintFromFirstStep": true
+		},
+		{
+			"statement": "Sur la droite graduée, le point $A$ a pour abscisse ${{eval:-p}}$ et le point $B$ a pour abscisse ${{q}}$.\n\n```line\nstart: -10\nend: 10\nstep: 1\nmajor: 5\npoints: A={{eval:-p}}, B={{q}}\n```\n\nQuelle est la distance $AB$ ?\n\n$AB=?$",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "1..9"
+				},
+				{
+					"name": "q",
+					"expression": "1..9"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:p+q}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:abs(p-q)}}",
+							"message": "Tu as soustrait les distances à zéro : les deux points sont de part et d'autre de $0$.",
+							"label": "Distances à 0 soustraites"
+						},
+						{
+							"answer": "{{eval:-p-q}}",
+							"message": "Une distance n'est jamais négative : tu as gardé le signe de la différence.",
+							"label": "Distance négative"
+						},
+						{
+							"answer": "{{eval:p+q+1}}",
+							"message": "Tu as compté les graduations de $A$ à $B$ : la distance est le nombre d'unités entre les deux points.",
+							"label": "Graduations comptées au lieu des unités"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"De $A$ à $0$, il y a ${{p}}$ {{if:p==1|unité|unités}} ; de $0$ à $B$, il y a ${{q}}$ {{if:q==1|unité|unités}}.\n\n```line\nstart: -10\nend: 10\nstep: 1\nmajor: 5\npoints: A={{eval:-p}}, B={{q}}\nsegments: [{{eval:-p}}, {{q}}] vert\n```",
+					"$AB=\\lvert {{q}}-({{eval:-p}})\\rvert={{p}}+{{q}}=\\textcolor{{{color:primary.0}}}{ {{eval:p+q}} }$."
+				]
+			},
+			"hint": "Compte les unités de $A$ jusqu'à $0$, puis de $0$ jusqu'à $B$."
+		},
+		{
+			"statement": "Complète : $\\lvert x{{if:s==0|+|-}}{{c}}\\rvert$ est la distance entre $x$ et le nombre $?$.",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "1..9"
+				},
+				{
+					"name": "s",
+					"expression": "0|1"
+				},
+				{
+					"name": "r",
+					"expression": "eval:(2*s-1)*c"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{r}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:-r}}",
+							"message": "Attention au signe : $\\lvert x-a\\rvert$ est la distance entre $x$ et $a$. Écris l'expression sous la forme $x - a$.",
+							"label": "Signe du nombre inversé"
+						},
+						{
+							"answer": "0",
+							"message": "La distance entre $x$ et $0$, c'est $\\lvert x\\rvert$ : ici, on ajoute ou on retire un nombre à $x$ avant de prendre la valeur absolue.",
+							"label": "Distance à 0 au lieu de la distance au nombre"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"La distance entre $x$ et un nombre $a$ est $\\lvert x-a\\rvert$.",
+					"{{if:s==0|$x+{{c}}=x-(-{{c}})$, donc $\\lvert x+{{c}}\\rvert$ est la distance entre $x$ et $\\textcolor{{{color:primary.0}}}{-{{c}}}$.|$\\lvert x-{{c}}\\rvert$ est directement de la forme $\\lvert x-a\\rvert$ : c'est la distance entre $x$ et $\\textcolor{{{color:primary.0}}}{ {{c}} }$.}}"
+				]
+			},
+			"hint": "La distance entre $x$ et $a$ s'écrit $\\lvert x-a\\rvert$. Écris l'expression sous cette forme."
 		}
 	],
 	"testSpecs": [
@@ -432,6 +515,125 @@
 			"expected": {
 				"status": "incorrect",
 				"expectedErrorMessage": "Tu as oublié la retenue en additionnant les dixièmes."
+			}
+		},
+		{
+			"description": "A(−3), B(4) : AB = 7",
+			"variationIndex": 4,
+			"variables": {
+				"p": "3",
+				"q": "4"
+			},
+			"answers": ["7"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 4 − 3 = 1",
+			"variationIndex": 4,
+			"variables": {
+				"p": "3",
+				"q": "4"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as soustrait les distances à zéro : les deux points sont de part et d'autre de $0$."
+			}
+		},
+		{
+			"description": "Erreur : −7",
+			"variationIndex": 4,
+			"variables": {
+				"p": "3",
+				"q": "4"
+			},
+			"answers": ["-7"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Une distance n'est jamais négative : tu as gardé le signe de la différence."
+			}
+		},
+		{
+			"description": "Erreur : 8 graduations",
+			"variationIndex": 4,
+			"variables": {
+				"p": "3",
+				"q": "4"
+			},
+			"answers": ["8"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as compté les graduations de $A$ à $B$ : la distance est le nombre d'unités entre les deux points."
+			}
+		},
+		{
+			"description": "|x + 2| : distance à −2",
+			"variationIndex": 5,
+			"variables": {
+				"c": "2",
+				"s": "0",
+				"r": "-2"
+			},
+			"answers": ["-2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : |x + 2| → 2",
+			"variationIndex": 5,
+			"variables": {
+				"c": "2",
+				"s": "0",
+				"r": "-2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Attention au signe : $\\lvert x-a\\rvert$ est la distance entre $x$ et $a$. Écris l'expression sous la forme $x - a$."
+			}
+		},
+		{
+			"description": "Erreur : |x + 2| → 0",
+			"variationIndex": 5,
+			"variables": {
+				"c": "2",
+				"s": "0",
+				"r": "-2"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "La distance entre $x$ et $0$, c'est $\\lvert x\\rvert$ : ici, on ajoute ou on retire un nombre à $x$ avant de prendre la valeur absolue."
+			}
+		},
+		{
+			"description": "|x − 5| : distance à 5",
+			"variationIndex": 5,
+			"variables": {
+				"c": "5",
+				"s": "1",
+				"r": "5"
+			},
+			"answers": ["5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : |x − 5| → −5",
+			"variationIndex": 5,
+			"variables": {
+				"c": "5",
+				"s": "1",
+				"r": "5"
+			},
+			"answers": ["-5"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Attention au signe : $\\lvert x-a\\rvert$ est la distance entre $x$ et $a$. Écris l'expression sous la forme $x - a$."
 			}
 		}
 	]

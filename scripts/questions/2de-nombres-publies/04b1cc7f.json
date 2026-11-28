@@ -1,7 +1,7 @@
 {
 	"id": "04b1cc7f-8630-4ff2-981c-95c2f57d1161",
 	"title": "Puissance d'un produit",
-	"description": "Écrire sans parenthèses (kx)ⁿ, (−kx)ⁿ et (kxᵐ)ⁿ ; à l'envers, avec des nombres relatifs : 2⁵ × 5⁵ = 10⁵, (−2)³ × 5³ = (−10)³",
+	"description": "Écrire sans parenthèses (kx)ⁿ, (−kx)ⁿ et (kxᵐ)ⁿ ; à l'envers, avec des nombres relatifs : 2⁵ × 5⁵ = 10⁵, (−2)³ × 5³ = (−10)³ ; dire quand on ne peut pas regrouper (2³ × 5²)",
 	"grades": ["2"],
 	"level": 1,
 	"delay": 45,
@@ -177,7 +177,8 @@
 							"message": "Revois le signe : compte combien de fois tu multiplies un nombre négatif.",
 							"label": "Signe perdu"
 						}
-					]
+					],
+					"requiredForm": "power"
 				}
 			],
 			"statement": "Écris sous la forme d'une seule puissance.\n\n$${{if:s==1|(-{{p}})|{{p}}}}^{ {{n}} }\\times{{q}}^{ {{n}} }=?$$",
@@ -207,6 +208,67 @@
 				]
 			},
 			"hintFromFirstStep": true
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:s==1|impossible|{{eval:(p)*(q)}}^{ {{n}} }}}",
+					"requiredForm": "power",
+					"impossibleLabel": "impossible",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:(p)*(q)}}^{ {{eval:(g)+(n)}} }",
+							"message": "{{if:s==1|Les exposants sont différents : on ne peut pas multiplier les bases.|Même exposant : on multiplie les bases, et l'exposant reste le même.}}",
+							"label": "Bases multipliées, exposants additionnés"
+						},
+						{
+							"answer": "{{eval:(p)*(q)}}^{ {{eval:(g)*(n)}} }",
+							"message": "{{if:s==1|Les exposants sont différents : on ne peut pas multiplier les bases.|Même exposant : on multiplie les bases, l'exposant reste le même, on ne multiplie pas les exposants.}}",
+							"label": "Bases multipliées, exposants multipliés"
+						},
+						{
+							"answer": "{{eval:(p)+(q)}}^{ {{eval:(g)+(n)}} }",
+							"message": "Les bases ne s'additionnent pas{{if:s==1|, et ici les exposants sont différents : on ne peut pas regrouper.|.}}",
+							"label": "Bases additionnées"
+						}
+					]
+				}
+			],
+			"statement": "Écris, si c'est possible, sous la forme d'une seule puissance.\n\n$${{p}}^{ {{g}} }\\times{{q}}^{ {{n}} }=?$$",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "2|3|5"
+				},
+				{
+					"name": "q",
+					"expression": "3|5|7"
+				},
+				{
+					"name": "n",
+					"expression": "2..4"
+				},
+				{
+					"name": "m",
+					"expression": "2..4"
+				},
+				{
+					"name": "s",
+					"expression": "0|1"
+				},
+				{
+					"name": "g",
+					"expression": "eval:(s)*(m)+(1-(s))*(n)"
+				}
+			],
+			"conditions": ["p < q", "s == 0 || gcd(m,n) == 1", "s == 1 || n >= 3"],
+			"correction": {
+				"steps": [
+					"**Puissance d'un produit**, lue de droite à gauche : $a^n\\times b^n=(ab)^n$. Elle ne marche que si les deux exposants sont **égaux**.",
+					"{{if:s==1|Les exposants ${{g}}$ et ${{n}}$ sont différents, et les bases ${{p}}$ et ${{q}}$ aussi : ce produit $\\textcolor{{{color:primary.0}}}{\\text{ne s'écrit pas}}$ sous la forme d'une seule puissance.|Même exposant ${{n}}$ : on multiplie les bases.\n\n$${{p}}^{ {{n}} }\\times{{q}}^{ {{n}} }=\\left({{p}}\\times{{q}}\\right)^{ {{n}} }=\\textcolor{{{color:primary.0}}}{{{eval:(p)*(q)}}^{ {{n}} }}$$}}"
+				]
+			},
+			"hint": "Compare les exposants des deux facteurs : quand peut-on regrouper $a^n\\times b^n$ en une seule puissance ?"
 		}
 	],
 	"testSpecs": [
@@ -495,6 +557,263 @@
 			},
 			"description": "Erreur prévue : 10⁹ (exposants multipliés)",
 			"variationIndex": 3
+		},
+		{
+			"answers": ["10^4"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"p": "2",
+				"q": "5",
+				"n": "4",
+				"s": "1"
+			},
+			"description": "(−2)⁴ × 5⁴ = 10⁴ : base non imposée, juste",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["(-10)^4"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"p": "2",
+				"q": "5",
+				"n": "4",
+				"s": "1"
+			},
+			"description": "(−2)⁴ × 5⁴ = (−10)⁴, juste",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["10\\,000"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			},
+			"variables": {
+				"p": "2",
+				"q": "5",
+				"n": "4",
+				"s": "1"
+			},
+			"description": "Forme : 10 000 au lieu d'une puissance",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["-10^3"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			},
+			"variables": {
+				"p": "2",
+				"q": "5",
+				"n": "3",
+				"s": "1"
+			},
+			"description": "(−2)³ × 5³ : −10³ n'est pas une puissance",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["\u001fimpossible"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"p": "2",
+				"q": "5",
+				"m": "3",
+				"n": "2",
+				"s": "1",
+				"g": "3"
+			},
+			"description": "2³ × 5² : bouton « impossible »",
+			"variationIndex": 4
+		},
+		{
+			"answers": ["10^5"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Les exposants sont différents : on ne peut pas multiplier les bases."
+			},
+			"variables": {
+				"p": "2",
+				"q": "5",
+				"m": "3",
+				"n": "2",
+				"s": "1",
+				"g": "3"
+			},
+			"description": "Erreur prévue : 10⁵ (bases multipliées, exposants additionnés)",
+			"variationIndex": 4
+		},
+		{
+			"answers": ["10^6"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Les exposants sont différents : on ne peut pas multiplier les bases."
+			},
+			"variables": {
+				"p": "2",
+				"q": "5",
+				"m": "3",
+				"n": "2",
+				"s": "1",
+				"g": "3"
+			},
+			"description": "Erreur prévue : 10⁶ (exposants multipliés)",
+			"variationIndex": 4
+		},
+		{
+			"answers": ["7^5"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Les bases ne s'additionnent pas, et ici les exposants sont différents : on ne peut pas regrouper."
+			},
+			"variables": {
+				"p": "2",
+				"q": "5",
+				"m": "3",
+				"n": "2",
+				"s": "1",
+				"g": "3"
+			},
+			"description": "Erreur prévue : 7⁵ (bases additionnées)",
+			"variationIndex": 4
+		},
+		{
+			"answers": ["72"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"p": "2",
+				"q": "5",
+				"m": "3",
+				"n": "2",
+				"s": "1",
+				"g": "3"
+			},
+			"description": "2³ × 5² : 72 tapé au lieu du bouton",
+			"variationIndex": 4
+		},
+		{
+			"answers": ["impossible"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"p": "2",
+				"q": "5",
+				"m": "3",
+				"n": "2",
+				"s": "1",
+				"g": "3"
+			},
+			"description": "2³ × 5² : texte du bouton tapé",
+			"variationIndex": 4
+		},
+		{
+			"answers": ["10^3"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"p": "2",
+				"q": "5",
+				"m": "2",
+				"n": "3",
+				"s": "0",
+				"g": "3"
+			},
+			"description": "2³ × 5³ = 10³",
+			"variationIndex": 4
+		},
+		{
+			"answers": ["\u001fimpossible"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"p": "2",
+				"q": "5",
+				"m": "2",
+				"n": "3",
+				"s": "0",
+				"g": "3"
+			},
+			"description": "2³ × 5³ : bouton cliqué à tort",
+			"variationIndex": 4
+		},
+		{
+			"answers": ["1\\,000"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			},
+			"variables": {
+				"p": "2",
+				"q": "5",
+				"m": "2",
+				"n": "3",
+				"s": "0",
+				"g": "3"
+			},
+			"description": "Forme : 1 000 au lieu d'une puissance",
+			"variationIndex": 4
+		},
+		{
+			"answers": ["10^6"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Même exposant : on multiplie les bases, et l'exposant reste le même."
+			},
+			"variables": {
+				"p": "2",
+				"q": "5",
+				"m": "2",
+				"n": "3",
+				"s": "0",
+				"g": "3"
+			},
+			"description": "Erreur prévue : 10⁶ (exposants additionnés)",
+			"variationIndex": 4
+		},
+		{
+			"answers": ["10^9"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Même exposant : on multiplie les bases, l'exposant reste le même, on ne multiplie pas les exposants."
+			},
+			"variables": {
+				"p": "2",
+				"q": "5",
+				"m": "2",
+				"n": "3",
+				"s": "0",
+				"g": "3"
+			},
+			"description": "Erreur prévue : 10⁹ (exposants multipliés)",
+			"variationIndex": 4
+		},
+		{
+			"answers": ["7^6"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Les bases ne s'additionnent pas."
+			},
+			"variables": {
+				"p": "2",
+				"q": "5",
+				"m": "2",
+				"n": "3",
+				"s": "0",
+				"g": "3"
+			},
+			"description": "Erreur prévue : 7⁶ (bases additionnées)",
+			"variationIndex": 4
 		}
 	]
 }
