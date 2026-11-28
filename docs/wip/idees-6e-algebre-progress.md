@@ -37,6 +37,3 @@ Si tout est oui : 4 modèles neufs (F2, F3, F6, F8) et 10 variations ajoutées �
 - **F8** modèle neuf « Ce nombre est-il dans la suite ? » (6-143 ?), 3 variations.
 - **Q1** outil « construire l'étape suivante d'un motif » dans `outils-manquants.md` ?
 - **Q2** point de F6 et F8 : 6-143, ou sans point ?
-</content>
-
-</invoke>

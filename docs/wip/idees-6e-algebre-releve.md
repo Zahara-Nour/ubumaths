@@ -36,6 +36,3 @@ d'allumettes et de jetons de 39bafe0e).
   des cubes. Chez nous, ` ```cubes ` `dessiner:` dessine une vue, pas un empilement. Question Q1 de la
   phase 0.
 - **Construire et compléter un schéma en barres** (6N4A-2, 6N4A-5) : outil n° 32, déjà noté, reporté.
-</content>
-
-</invoke>
