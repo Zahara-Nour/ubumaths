@@ -49,6 +49,10 @@
 # Tests : scripts/__tests__/deploy-prod.test.ts.
 set -euo pipefail
 
+# Aucune commande git ne s'arrête sur une page de défilement (`less`) : la liste
+# des commits à livrer s'affiche d'un trait au lieu d'attendre une touche.
+export GIT_PAGER=cat
+
 CHECK="CI Summary"
 PROFONDEUR=50
 # Sans `-s` : pnpm 12 ne connaît plus cette option (« unexpected argument »).
