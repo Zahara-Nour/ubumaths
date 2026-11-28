@@ -7,11 +7,13 @@ question 3 de sa phase 0) ; même famille que la rose des sommes de 6e (6N0A-2, 
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-28, phase 0 envoyée._
+_Mis à jour le 2026-11-28, phase 0 validée._
 
-- **État** : phase 0 écrite ci-dessous, envoyée à David · **Prochaine action** : attendre ses
-  réponses à Q1-Q4, puis tests rouges → bloc · **En attente de David** : Q1-Q4 · **Pièges en
-  cours** : aucun · **Worktree / branche** : `../ubumaths-wt-outil-yohaku`, `feat/outil-yohaku`.
+- **État** : cœur écrit et testé (parseur, totaux, juge : 24 tests) ; branchement (générateur,
+  juge, écran, PDF, éditeur riche, catalogue) en cours · **Prochaine action** : vérifier à
+  l'écran (`pnpm voir`), doc `docs/systeme/ubumark.md`, revue `code-reviewer` (Opus), PR ·
+  **En attente de David** : rien · **Pièges en cours** : aucun · **Worktree / branche** :
+  `../ubumaths-wt-outil-yohaku`, `feat/outil-yohaku`.
 
 ## Phase 0 (envoyée le 2026-11-28)
 
@@ -63,6 +65,22 @@ Questions :
 - **Q4 découpage** : **une PR : le bloc, le juge, l'écran et le PDF** ; les modèles (3L11-8,
   rose des sommes) restent aux sessions « idées » (règle 5 d'`outils-lots.md`). Reco : oui.
 
+Décisions (David, 2026-11-28 : « go » après « tes recos ? ») : **Q1** 2 × 2 seulement ; **Q2**
+tout ce qui donne les bons totaux est juste, fractions comprises, sans réglage ; **Q3** totaux
+calculés par le bloc ; **Q4** une PR (bloc, juge, écran, PDF), modèles aux sessions « idées ».
+
+## PR 1 : l'outil
+
+- **Écart de syntaxe à la phase 0** (forme seulement) : une clé `ligne:` par ligne de la grille
+  au lieu de `grille:` suivi de deux lignes nues ; une ligne nue sans chiffre (`[x] | [y]`) aurait
+  été prise pour du texte par la règle de fermeture des blocs (Q66).
+- Cœur : `types/yohaku.ts`, `utils/yohaku-moteur.ts` (case lue en syntaxe maison et nettoyée :
+  `1x+-3` → `x − 3` ; totaux par `expandedForm`, le moteur de `.développer`),
+  `parser/yohaku-parser.ts`, `utils/yohaku-answer.ts` (juge : chaque total par `areEquivalent`,
+  500 ms, comme une case d'expression). Tests écrits juste après le code du cœur (pas rouges
+  d'abord), 24 verts.
+
 ## Historique
 
 - 2026-11-28 : lot réservé par `pnpm outils lancer` ; phase 0 écrite et envoyée.
+- 2026-11-28 : phase 0 validée ; cœur commité.
