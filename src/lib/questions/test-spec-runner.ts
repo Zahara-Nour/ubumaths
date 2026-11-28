@@ -45,9 +45,6 @@ export interface TestSpecResult {
 	error?: string;
 }
 
-/**
- * Run a single test spec against a template.
- */
 /** Réponse d'une case Python vide dans une spec : un verdict « juste » (aucun code) */
 const PYTHON_CASE_JUDGED = writePythonAnswer({ code: '', verdict: { juste: true } });
 
@@ -63,6 +60,9 @@ function withPythonCasesJudged(
 	);
 }
 
+/**
+ * Run a single test spec against a template.
+ */
 export function runTestSpec(template: QuestionTemplate, spec: TestSpec): TestSpecResult {
 	const makeError = (msg: string): TestSpecResult => ({
 		spec,
