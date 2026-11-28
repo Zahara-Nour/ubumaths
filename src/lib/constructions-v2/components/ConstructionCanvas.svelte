@@ -24,6 +24,7 @@
 		compassOpening
 	} from '../core/render-helpers';
 	import { easeInOut, easeWithFixedRamp } from '../core/animator';
+	import { PIXELS_PER_UNIT } from '../constants';
 	import {
 		pointToSVG,
 		resolveScreenStyle,
@@ -62,7 +63,7 @@
 	// Default matches GeometryCanvas's defaults (center=0,0, pixelsPerUnit=40) so
 	// instruments/overlay are positioned correctly on first paint, before the
 	// callback fires.
-	const INITIAL_PPU = 40;
+	const INITIAL_PPU = PIXELS_PER_UNIT;
 	// svelte-ignore state_referenced_locally
 	let viewport = $state<Viewport>({
 		xMin: -width / (2 * INITIAL_PPU),

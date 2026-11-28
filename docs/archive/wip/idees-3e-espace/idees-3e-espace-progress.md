@@ -2,19 +2,18 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-28, après #3272 (F1 mergé)._
+_Mis à jour le 2026-11-28, chantier clos._
 
-- **État** : lot 1 en prod et relu. F1 (modèle 4-034, 7 variations) mergé sur `main` par #3272,
-  **pas encore en brouillon en prod** (§ Lot 2) · **Prochaine action** : `deploy:prod` (demande de
-  David : #3264, l'outil n° 72, n'est pas en prod), puis brouillon de F1 en prod par David, relecture
-  dans `/dev/modeles`, puis migration de rangement générée · **En attente de David** : le
-  `deploy:prod` · **Pièges en cours** : `--publier` en local écrit l'id local dans le fichier (à
-  retirer avant tout commit) · **Worktree / branche** : aucun (retiré par `pr:merger`)
+- **État** : lot 1 (F2, F3, F5 : variations de cinq modèles publiés) en prod et relu ; F1 (58f04074,
+  4-034, 7 variations) rangé par #3282 (`db:migrate` joué), validé par David et publié par lui
+  (`publier-lot.ts --publier`), statut `published` relu en prod. F4 et R : rien (décision de David).
+  **Chantier clos et archivé** (rubrique « publiée »). · **Prochaine action** : aucune · **En
+  attente de David** : rien · **Pièges en cours** : aucun · **Worktree / branche** : aucun.
 
 ## Rubrique
 
 « Espace » de 3e (codes 3G4, 6 exercices), réservée le 2026-11-27 dans
-[idees-ailleurs-repartition.md](idees-ailleurs-repartition.md).
+[idees-ailleurs-repartition.md](../../../wip/idees-ailleurs-repartition.md).
 
 ## Phase 0 (2026-11-27)
 
@@ -147,3 +146,15 @@ grades 4, niveau 2 à côté de 22d947f4).
 - `question:specs` 29/29, 350 tirages ; `sonde-cubes` 300 blocs, 0 problème ; `create-questions` en
   simulation vert. Réponse juste ou fausse non jouée à la main dans l'aperçu : les specs passent
   par le même juge.
+
+## En prod (2026-11-28)
+
+- Mise en prod 0.117.0 : #3264 (outil n° 72) et #3272 (F1) livrés.
+- `create-questions --publier` par David : F1 = `58f04074-dcf6-448f-b862-dc1486988794`, `draft`,
+  7 variations (relu en prod). Migration `20261128065817_questions_idees_3e_espace_neufs_rangement_tags`
+  générée par `migration-rangement.ts` (nœud « Géométrie > Théorème de Pythagore > calcul de
+  longueurs », point 4-034), fixture comprise.
+- `security-auditor` (2026-11-28) : aucun finding bloquant ; gardes vérifiées sur l'état de la prod
+  (modèle sans nœud ni tag, nœud et point uniques). Test `migrations-rangement-tags` vert.
+- #3282 mergé, `db:migrate` joué le 2026-11-28 (accord de David) ; nœud et tag 4-034 vérifiés en prod.
+- F1 validé par David dans `/dev/modeles` et publié le 2026-11-28 (`published` relu en prod).

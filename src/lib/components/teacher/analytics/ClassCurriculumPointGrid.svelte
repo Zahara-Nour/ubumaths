@@ -12,6 +12,7 @@
 	import { Button } from '#lib/components/ui/button/index.ts';
 	import { Skeleton } from '#lib/components/ui/skeleton/index.ts';
 	import InlineMarkdown from '#lib/components/markdown/InlineMarkdown.svelte';
+	import { toPlainText } from '#lib/seo/site.ts';
 	import { Badge } from '#lib/components/ui/badge/index.ts';
 	import MyCheckbox from '#lib/components/MyCheckbox.svelte';
 	import * as Card from '#lib/components/ui/card/index.ts';
@@ -144,7 +145,7 @@
 							{#each orderedPoints as point (point.id)}
 								<th
 									class="min-w-[3rem] px-1 py-2 text-center align-bottom text-xs font-normal"
-									title={point.name}
+									title={toPlainText(point.name)}
 								>
 									<div class="flex flex-col items-center gap-0.5">
 										<span class="line-clamp-2 max-w-[5rem]"
@@ -179,7 +180,7 @@
 									{@const meta = badgeMeta(badge)}
 									<td
 										class="px-1 py-2 text-center {meta.color}"
-										title={`${student.display_name} — ${point.name} : ${meta.label}`}
+										title={`${student.display_name} — ${toPlainText(point.name)} : ${meta.label}`}
 									>
 										<meta.icon class="mx-auto h-4 w-4" aria-label={meta.label} />
 									</td>

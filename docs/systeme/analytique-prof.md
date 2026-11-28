@@ -50,11 +50,13 @@ s'élève quand il a besoin de l'admin ; l'élévation laisse le rôle de sessio
 Onglet 📘 Connaissances :
 
 - **A — Grille élève × point** (`ClassCurriculumPointGrid.svelte`) : une colonne par point **non
-  archivé** tagué sur un modèle que la classe a tenté (via `question_template_points`, sans `!inner` ;
+  archivé** tagué sur un modèle que la classe a tenté (essais `skill_attempts` lus par pages de 1000,
+  `readAllRows` : plafond `max_rows`, V123 ; via `question_template_points`, sans `!inner` ;
   points sans niveau et archivés écartés en mémoire par `isLivePoint`). Carte tagguée dans plusieurs
   programmes : seuls ses points du **niveau de la classe** comptent, s'il en a (`keepLinksOfGrade`,
   niveau lu sur le point). Colonnes dans l'**ordre de l'arbre** (branche, notion, puis ordre du BO,
-  `placeInTree`) ; sous chaque nom (rendu par `InlineMarkdown`, LaTeX compris), la **notion** du
+  `placeInTree`) ; sous chaque nom (rendu par `InlineMarkdown`, LaTeX compris ; l'infobulle de la
+  colonne et des cases le donne en texte simple, `toPlainText`, V122), la **notion** du
   point ; un point qu'on ne sait pas placer garde sa colonne, en dernier, sans notion. Cellule = badge
   FSRS agrégé 🆘 / 🔁 / ⏳ / ✅ / ◯ (`templateToBadge` + `BADGE_PRIORITY`,
   `src/lib/server/srs/curriculum-point-badge.ts`). Bascule « Tout le niveau » : ajoute les points non

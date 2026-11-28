@@ -49,8 +49,8 @@ describe('bissectrice @mesure — déroulé', () => {
 		const { exec, steps } = subSteps(script);
 		expect(exec.totalSteps).toBe(3 + 4);
 		expect(steps.map((s) => s.kind)).toEqual([
-			'compass-measure',
-			'compass-measure',
+			'instrument-move',
+			'instrument-move',
 			'point-fade-in',
 			'ruler-trace'
 		]);

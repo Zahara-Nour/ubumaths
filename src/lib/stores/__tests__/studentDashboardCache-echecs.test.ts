@@ -62,7 +62,8 @@ describe('StudentDashboardCache : échec réseau jamais stocké', () => {
 		setNow(now + 11 * 60 * 1000); // TTL de 10 min dépassé
 		global.fetch = failingFetch();
 		expect((await cache.getRewards()).gidouilles).toBe(5);
-		expect(cache.getRewardsSync()).toBeNull(); // toujours expirée
+		// L'écran garde la dernière valeur connue (écart L43), l'entrée reste expirée
+		expect(cache.getRewardsSync()?.gidouilles).toBe(5);
 
 		await cache.getRewards();
 		expect(global.fetch).toHaveBeenCalledTimes(2); // relit à chaque accès

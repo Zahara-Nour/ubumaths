@@ -1,7 +1,7 @@
 # 0045 — Figures de l'espace qui tournent : moteur maison en SVG, cavalière au repos
 
 - **Statut** : acceptée — phase 0 du chantier `solides-3d` (journal
-  [`docs/wip/solides-3d-progress.md`](../wip/solides-3d-progress.md))
+  [`docs/wip/solides-3d-progress.md`](../archive/wip/solides-3d-progress.md))
 - **Date** : 2026-11-26 · **Décidée par** : David (« je valide » aux cinq recommandations, après la
   maquette)
 - **Amende** : le point 3 de l'[ADR 0034](0034-solides-trois-blocs-un-noeud-une-scene-cavaliere.md)

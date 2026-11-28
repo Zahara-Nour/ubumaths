@@ -14,20 +14,67 @@ export interface DocCategory {
 
 const DOCS_ROOT = join(process.cwd(), 'docs');
 
-const CATEGORY_CONFIG: Record<string, { icon: string; order: number }> = {
-	features: { icon: '🎯', order: 1 },
-	architecture: { icon: '🏗️', order: 2 },
-	guides: { icon: '📖', order: 3 },
-	development: { icon: '🛠️', order: 4 },
-	contributing: { icon: '🤝', order: 5 },
-	archive: { icon: '📦', order: 6 }
+/**
+ * Rubriques connues : les dossiers de `docs/` (README de `docs/`), dans
+ * l'ordre de la barre de navigation. Un autre dossier vient après, sous son nom.
+ */
+const CATEGORY_CONFIG: Record<string, { name: string; icon: string; order: number }> = {
+	systeme: { name: 'Système', icon: '🏗️', order: 1 },
+	pratiques: { name: 'Pratiques', icon: '🛠️', order: 2 },
+	adr: { name: 'Décisions (ADR)', icon: '📜', order: 3 },
+	wip: { name: 'Chantiers en cours', icon: '🚧', order: 4 },
+	archive: { name: 'Archives', icon: '📦', order: 5 }
 };
+
+const DEFAULT_CATEGORY_ORDER = 99;
+
+/** Nom affiché d'une rubrique, d'après son dossier. */
+export function docCategoryName(dirName: string): string {
+	return CATEGORY_CONFIG[dirName]?.name ?? dirName.charAt(0).toUpperCase() + dirName.slice(1);
+}
+
+/** Rubriques connues d'abord, dans leur ordre ; les autres ensuite, par nom. */
+export function orderDocCategories(categories: DocCategory[]): DocCategory[] {
+	const order = (c: DocCategory) => CATEGORY_CONFIG[c.path]?.order ?? DEFAULT_CATEGORY_ORDER;
+	return [...categories].sort((a, b) => order(a) - order(b) || a.path.localeCompare(b.path));
+}
+
+/** Minuscules, sans accents : « Données » et « donnees » se trouvent l'un l'autre. */
+function normalizeForSearch(text: string): string {
+	return text
+		.normalize('NFD')
+		.replace(/\p{Diacritic}/gu, '')
+		.toLowerCase();
+}
+
+/**
+ * Filtre de la recherche (V116) : garde les docs dont le titre ou le chemin
+ * (`<rubrique>/<fichier>`) contient le texte cherché ; une rubrique sans doc
+ * retenue disparaît. Sans texte, tout est gardé.
+ */
+export function filterDocCategories(
+	categories: DocCategory[],
+	query: string | null
+): DocCategory[] {
+	const needle = normalizeForSearch(query?.trim() ?? '');
+	if (!needle) return categories;
+	return categories
+		.map((category) => ({
+			...category,
+			docs: category.docs.filter((doc) =>
+				[doc.title, `${category.path}/${doc.path}`].some((text) =>
+					normalizeForSearch(text).includes(needle)
+				)
+			)
+		}))
+		.filter((category) => category.docs.length > 0);
+}
 
 /**
  * Scan docs directory and return categorized document list
  */
 export async function scanDocumentation(): Promise<DocCategory[]> {
-	const categories: Map<string, DocCategory> = new Map();
+	const categories: DocCategory[] = [];
 
 	// Scan each top-level category
 	const entries = await readdir(DOCS_ROOT, { withFileTypes: true });
@@ -37,26 +84,19 @@ export async function scanDocumentation(): Promise<DocCategory[]> {
 
 		const categoryName = entry.name;
 		const categoryPath = join(DOCS_ROOT, categoryName);
-		const config = CATEGORY_CONFIG[categoryName] || { icon: '📄', order: 99 };
-
 		const docs = await scanCategory(categoryPath, categoryName);
 
 		if (docs.length > 0) {
-			categories.set(categoryName, {
-				name: categoryName.charAt(0).toUpperCase() + categoryName.slice(1),
-				icon: config.icon,
+			categories.push({
+				name: docCategoryName(categoryName),
+				icon: CATEGORY_CONFIG[categoryName]?.icon ?? '📄',
 				path: categoryName,
 				docs
 			});
 		}
 	}
 
-	// Sort by order
-	return Array.from(categories.values()).sort((a, b) => {
-		const orderA = CATEGORY_CONFIG[a.path.toLowerCase()]?.order || 99;
-		const orderB = CATEGORY_CONFIG[b.path.toLowerCase()]?.order || 99;
-		return orderA - orderB;
-	});
+	return orderDocCategories(categories);
 }
 
 /**

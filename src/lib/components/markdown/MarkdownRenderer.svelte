@@ -30,9 +30,8 @@
 	import type { ExerciseHint } from '#lib/exercises/types.ts';
 
 	// List numbering
-	import { listNumberingStore } from '#lib/stores/listNumbering.svelte.ts';
 	import { getMaxEnumerateDepth } from '#lib/ubumark/utils/list-depth.ts';
-	import type { SchemeId } from '#lib/types/list-numbering.ts';
+	import { DEFAULT_CONFIG, type SchemeId } from '#lib/types/list-numbering.ts';
 
 	// Import node components
 	import ParagraphNode from './nodes/ParagraphNode.svelte';
@@ -286,7 +285,8 @@
 	 * Uses auto-detection when scheme is 'auto', otherwise uses the specified scheme.
 	 */
 	const effectiveListScheme = $derived.by<SchemeId | null>(() => {
-		const config = listNumberingStore.config;
+		// Réglage unique pour tous : DEFAULT_CONFIG (plus de réglage admin, V120)
+		const config = DEFAULT_CONFIG;
 
 		// If scheme is explicitly set (not auto), use it
 		if (config.scheme !== 'auto') {

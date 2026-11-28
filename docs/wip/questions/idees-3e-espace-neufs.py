@@ -2,7 +2,7 @@
 scripts/questions/idees-3e-espace-neufs/.
 
 Phase 0 validée par David le 2026-11-27 (« je valide » ; journal
-docs/wip/idees-3e-espace-progress.md, fiche F1) : un modèle neuf de 4e, « Calculer une longueur
+docs/archive/wip/idees-3e-espace/idees-3e-espace-progress.md, fiche F1) : un modèle neuf de 4e, « Calculer une longueur
 dans un solide avec Pythagore », après l'outil n° 72 (`segments:` et `angles-droits:` du bloc
 solide, #3264).
 

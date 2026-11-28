@@ -158,6 +158,33 @@ export class StudentDashboardCache {
 	private readonly logger = createLogger('studentDashboardCache.svelte.ts', 'trace');
 
 	/**
+	 * Relecture à l'échéance (écart L43, comportement suivi par David le 2026-11-28) :
+	 * à la fin de sa durée de vie, une entrée déjà lue (récompenses, avertissements
+	 * d'une période) est relue toute seule. L'écran garde l'ancienne valeur jusqu'à
+	 * l'arrivée de la nouvelle. Un onglet caché ne relit pas : il relit quand
+	 * l'élève revient dessus. Navigateur seulement (le singleton existe aussi au
+	 * serveur, vide).
+	 * Clé : 'rewards' ou 'warnings:<periodId>'.
+	 * @private
+	 */
+	private refreshTimers = new Map<string, ReturnType<typeof setTimeout>>();
+
+	/** Nouvel essai après une relecture en échec : 1 minute. @private */
+	private readonly RETRY_DELAY = 60 * 1000;
+
+	/** Relectures en cours (même clé) : une seule à la fois. @private */
+	private refreshing = new Set<string>();
+
+	/** Écouteur du retour sur l'onglet, retiré par `destroy()`. @private */
+	private readonly onVisibilityChange = () => {
+		if (document.visibilityState === 'visible') this.refreshExpired();
+	};
+
+	constructor() {
+		if (browser) document.addEventListener('visibilitychange', this.onVisibilityChange);
+	}
+
+	/**
 	 * Conditional logging helper
 	 * Only logs if monitoring is enabled
 	 * @private
@@ -235,6 +262,7 @@ export class StudentDashboardCache {
 			return cached?.rewards ?? emptyRewards();
 		}
 		this.rewardsCache = { rewards, fetchedAt: now };
+		this.armRefresh('rewards', now + this.REWARDS_TTL);
 
 		const elapsed = (performance.now() - startTime).toFixed(2);
 		this.log('info', `Fetched student rewards: ${rewards.gidouilles} gidouilles (${elapsed}ms)`);
@@ -296,6 +324,7 @@ export class StudentDashboardCache {
 			return cached?.warnings ?? emptyWarnings();
 		}
 		this.warningsCache.set(periodId, { warnings, fetchedAt: now });
+		this.armRefresh(`warnings:${periodId}`, now + this.WARNINGS_TTL);
 
 		const elapsed = (performance.now() - startTime).toFixed(2);
 		this.log(
@@ -311,39 +340,26 @@ export class StudentDashboardCache {
 
 	/**
 	 * Get student rewards synchronously
-	 * Returns null if cache is empty or expired
+	 * Rend la dernière valeur connue, même arrivée à échéance (elle est alors en
+	 * cours de relecture, écart L43) ; null seulement si rien n'a été lu.
 	 * Use in $derived for reactive UI
 	 *
 	 * @returns Student rewards or null
 	 */
 	getRewardsSync(): StudentRewards | null {
-		const cached = this.rewardsCache;
-		const now = Date.now();
-
-		if (cached && now - cached.fetchedAt < this.REWARDS_TTL) {
-			return cached.rewards;
-		}
-
-		return null;
+		return this.rewardsCache?.rewards ?? null;
 	}
 
 	/**
 	 * Get student warnings synchronously
-	 * Returns null if cache is empty or expired
+	 * Dernière valeur connue, même arrivée à échéance (voir getRewardsSync)
 	 * Use in $derived for reactive UI
 	 *
 	 * @param periodId - The academic period ID
 	 * @returns Student warnings or null
 	 */
 	getWarningsSync(periodId: string): StudentWarnings | null {
-		const cached = this.warningsCache.get(periodId);
-		const now = Date.now();
-
-		if (cached && now - cached.fetchedAt < this.WARNINGS_TTL) {
-			return cached.warnings;
-		}
-
-		return null;
+		return this.warningsCache.get(periodId)?.warnings ?? null;
 	}
 
 	/**
@@ -390,6 +406,7 @@ export class StudentDashboardCache {
 			},
 			fetchedAt: Date.now()
 		};
+		this.armRefresh('rewards', Date.now() + this.REWARDS_TTL);
 
 		this.log(
 			'trace',
@@ -420,6 +437,7 @@ export class StudentDashboardCache {
 			},
 			fetchedAt: Date.now()
 		};
+		this.armRefresh('rewards', Date.now() + this.REWARDS_TTL);
 
 		this.log(
 			'trace',
@@ -447,6 +465,7 @@ export class StudentDashboardCache {
 			},
 			fetchedAt: Date.now()
 		};
+		this.armRefresh('rewards', Date.now() + this.REWARDS_TTL);
 
 		this.log('trace', `[Cache] Optimistic VIP cards update`);
 	}
@@ -533,6 +552,7 @@ export class StudentDashboardCache {
 			rewards,
 			fetchedAt: Date.now()
 		};
+		this.armRefresh('rewards', Date.now() + this.REWARDS_TTL);
 		this.log('trace', '[Cache] Hydrated rewards cache');
 	}
 
@@ -548,6 +568,7 @@ export class StudentDashboardCache {
 			warnings,
 			fetchedAt: Date.now()
 		});
+		this.armRefresh(`warnings:${periodId}`, Date.now() + this.WARNINGS_TTL);
 		this.log('trace', `[Cache] Hydrated warnings cache for period ${periodId}`);
 	}
 
@@ -577,6 +598,7 @@ export class StudentDashboardCache {
 	 */
 	invalidateRewards(): void {
 		this.rewardsCache = null;
+		this.disarmRefresh('rewards');
 		this.log('trace', 'Cache invalidated: rewards');
 	}
 
@@ -587,6 +609,7 @@ export class StudentDashboardCache {
 	 */
 	invalidateWarnings(periodId: string): void {
 		this.warningsCache.delete(periodId);
+		this.disarmRefresh(`warnings:${periodId}`);
 		this.log('trace', 'Cache invalidated: warnings for period:', periodId);
 	}
 
@@ -595,6 +618,9 @@ export class StudentDashboardCache {
 	 */
 	invalidateAllWarnings(): void {
 		this.warningsCache.clear();
+		for (const key of [...this.refreshTimers.keys()]) {
+			if (key.startsWith('warnings:')) this.disarmRefresh(key);
+		}
 		this.log('trace', 'Cache invalidated: all warnings');
 	}
 
@@ -613,7 +639,104 @@ export class StudentDashboardCache {
 		this.rewardsCache = null;
 		this.buddyCache = null;
 		this.warningsCache.clear();
+		for (const key of [...this.refreshTimers.keys()]) this.disarmRefresh(key);
 		this.log('trace', 'Cache: All caches cleared');
+	}
+
+	/**
+	 * Arrête les relectures programmées et l'écoute de l'onglet (tests, instance jetée)
+	 */
+	destroy(): void {
+		for (const key of [...this.refreshTimers.keys()]) this.disarmRefresh(key);
+		if (browser) document.removeEventListener('visibilitychange', this.onVisibilityChange);
+	}
+
+	// ========================================================================
+	// RELECTURE À L'ÉCHÉANCE (écart L43)
+	// ========================================================================
+
+	/**
+	 * Programme la relecture d'une entrée à son échéance (remplace la précédente)
+	 * @private
+	 */
+	private armRefresh(key: string, expiresAt: number): void {
+		if (!browser) return;
+		this.disarmRefresh(key);
+		const delay = Math.max(0, expiresAt - Date.now());
+		this.refreshTimers.set(
+			key,
+			setTimeout(() => {
+				this.refreshTimers.delete(key);
+				// Onglet caché : la relecture attend le retour sur l'onglet
+				if (document.visibilityState === 'hidden') return;
+				void this.refresh(key);
+			}, delay)
+		);
+	}
+
+	/** @private */
+	private disarmRefresh(key: string): void {
+		const timer = this.refreshTimers.get(key);
+		if (timer !== undefined) clearTimeout(timer);
+		this.refreshTimers.delete(key);
+	}
+
+	/**
+	 * Retour sur l'onglet : relit les entrées arrivées à échéance pendant l'absence
+	 * @private
+	 */
+	private refreshExpired(): void {
+		const now = Date.now();
+		if (this.rewardsCache && now - this.rewardsCache.fetchedAt >= this.REWARDS_TTL) {
+			void this.refresh('rewards');
+		}
+		for (const [periodId, cached] of this.warningsCache) {
+			if (now - cached.fetchedAt >= this.WARNINGS_TTL) void this.refresh(`warnings:${periodId}`);
+		}
+	}
+
+	/**
+	 * Relit une entrée. Un échec ne touche pas au cache : l'écran garde l'ancienne
+	 * valeur, et un nouvel essai part dans une minute (onglet visible).
+	 * Le résultat n'est gardé que si l'entrée n'a pas changé pendant la lecture
+	 * (mise à jour optimiste, hydratation, lecture refaite, invalidation) : il ne doit
+	 * jamais écraser une valeur plus récente.
+	 * @private
+	 */
+	private async refresh(key: string): Promise<void> {
+		if (this.refreshing.has(key)) return;
+		this.refreshing.add(key);
+		try {
+			if (key === 'rewards') {
+				const before = this.rewardsCache;
+				if (!before) return; // invalidé entre-temps
+				const rewards = await this.fetchRewards();
+				if (this.rewardsCache !== before) return; // changé pendant la lecture
+				if (rewards === null) {
+					this.armRefresh(key, Date.now() + this.RETRY_DELAY);
+					return;
+				}
+				const now = Date.now();
+				this.rewardsCache = { rewards, fetchedAt: now };
+				this.armRefresh('rewards', now + this.REWARDS_TTL);
+			} else {
+				const periodId = key.slice('warnings:'.length);
+				const before = this.warningsCache.get(periodId);
+				if (!before) return;
+				const warnings = await this.fetchWarnings(periodId);
+				if (this.warningsCache.get(periodId) !== before) return;
+				if (warnings === null) {
+					this.armRefresh(key, Date.now() + this.RETRY_DELAY);
+					return;
+				}
+				const now = Date.now();
+				this.warningsCache.set(periodId, { warnings, fetchedAt: now });
+				this.armRefresh(key, now + this.WARNINGS_TTL);
+			}
+			this.log('trace', `[Cache] Relu à l'échéance : ${key}`);
+		} finally {
+			this.refreshing.delete(key);
+		}
 	}
 
 	// ========================================================================

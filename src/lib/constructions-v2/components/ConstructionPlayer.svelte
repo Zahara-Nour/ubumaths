@@ -181,10 +181,7 @@
 
 	function handleStepChange(stepIndex: number) {
 		try {
-			executor.reset();
-			for (let i = 0; i <= stepIndex; i++) {
-				executor.step();
-			}
+			executor.seekTo(stepIndex);
 			animatingIds = executor.lastStepNewElementIds;
 			animatingPointIds = executor.lastStepNewPointIds;
 			animatingLineIds = executor.lastStepNewLineIds;

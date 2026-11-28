@@ -145,8 +145,8 @@ pas. Le fichier `beta3I12` n'est pas repris.
 | Homothétie et rotation                   | 3G1       | 8         | publiée (2026-11-27)                                       | `idees-3e-transformations`   |
 | Théorème de Thalès                       | 3G2       | 10        | publiée (2026-11-27)                                       | `idees-3e-thales`            |
 | Trigonométrie                            | 3G3       | 13        | publiée (2026-11-25)                                       | `idees-3e-trigonometrie`     |
-| Espace                                   | 3G4       | 6         | en cours : 5 variations publiées, F1 attend l’outil n° 72  | `idees-3e-espace`            |
-| Algorithmique et programmation           | 3I1       | 11        | libre                                                      |                              |
+| Espace                                   | 3G4       | 6         | publiée (2026-11-28)                                       | `idees-3e-espace`            |
+| Algorithmique et programmation           | 3I1       | 11        | prise (2026-11-28)                                         | `idees-3e-algorithmique`     |
 | Automatismes (mélange des rubriques)     | 3Auto, 3a | 34        | libre ; **à faire en dernier**, après les autres rubriques |                              |
 | Sujets de brevet (mélange des rubriques) | 3Z1       | 15        | libre ; **à faire en dernier**, après les autres rubriques |                              |
 
@@ -178,6 +178,10 @@ de contenu appliquée en prod.
 | d03e49c0 Calculer la valeur d'une valeur absolue             | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
 | d264f7aa Pair ou impair : écrire 2k ou 2k + 1                | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
 | fa65910d Multiple : a = k × b                                | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
+| 39bafe0e Motif évolutif : trouver la régularité              | `idees-6e-algebre`                                          | 2026-11-28 |                                      |
+| 4048d9c5 Deux nombres inconnus : billets et devinettes       | `idees-6e-algebre`                                          | 2026-11-28 |                                      |
+| a06458ad Balances : la masse de deux objets                  | `idees-6e-algebre`                                          | 2026-11-28 |                                      |
+| a9c37578 Schéma en barres : choisir le schéma d'un énoncé    | `idees-6e-algebre`                                          | 2026-11-28 |                                      |
 
 ## Idées en attente
 

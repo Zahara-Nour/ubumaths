@@ -8,6 +8,12 @@ export const DEFAULT_STEP_DURATION = 500;
 /** Default pause duration for @pause without argument (ms). */
 export const DEFAULT_PAUSE_DURATION = 300;
 
+/**
+ * Échelle de départ du canevas des constructions : pixels par unité math.
+ * Sert aussi au calcul des durées (distance en pixels × `MS_PER_PIXEL`).
+ */
+export const PIXELS_PER_UNIT = 40;
+
 /** Animation speed: milliseconds per pixel traveled. */
 export const MS_PER_PIXEL = 8;
 
@@ -52,4 +58,4 @@ export const COMPASS_CLOSED_OPENING = 0.5;
  * Rayon extérieur du rapporteur, en unités math (156 px à 40 px/u) : dessin
  * de `Protractor.svelte` et repère de `bissectrice @mesure`.
  */
-export const PROTRACTOR_RADIUS = 156 / 40;
+export const PROTRACTOR_RADIUS = 156 / PIXELS_PER_UNIT;
