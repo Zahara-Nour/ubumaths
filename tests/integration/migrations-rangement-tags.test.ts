@@ -11,7 +11,8 @@
  *
  * Il rejoue aussi une migration fabriquée par le générateur sur un lot synthétique, pris dans
  * l'arbre et les points de la base locale, pour éprouver le générateur lui-même (résolution
- * stricte, gardes, tout ou rien).
+ * stricte, gardes, tout ou rien, deux points de deux programmes, tag ajouté à un modèle rangé).
+ * Les fixtures d'avant l'outil 66 (`point` au lieu de `points`) sont relues par `lireFixture`.
  *
  * @vitest-environment node
  */
@@ -23,13 +24,14 @@ import type { Client } from 'pg';
 import { getPostgresClient } from '../helpers/database/postgres-client';
 import { cleanupAllTestData } from '../helpers/database/trigger-test-helpers';
 import { extractRollback } from '../helpers/database/migration-rollback';
-import { readNodePaths } from '../helpers/database/classification-paths';
+import { nodeIdByPath, readNodePaths } from '../helpers/database/classification-paths';
 import { insertProdCopies } from '../helpers/database/prod-copies';
 import {
 	genererMigration,
-	type FixtureRangement,
+	lireFixture,
 	type ModeleNiveaux,
-	type ModeleRange
+	type ModeleRange,
+	type ModeleTags
 } from '../../scripts/lib/migration-rangement';
 
 // ============================================================================
@@ -40,6 +42,7 @@ interface Cas {
 	migration: string;
 	ranges: ModeleRange[];
 	niveaux: ModeleNiveaux[];
+	tags: ModeleTags[];
 }
 
 interface Etat {
@@ -62,6 +65,13 @@ interface Emplacement {
 	sous_notion: string | null;
 }
 
+/** Deux points de deux programmes, posables sur un même nœud (l'un sur lui, l'autre sur lui ou sa notion) */
+interface Paire {
+	chemin: string;
+	premier: string;
+	second: string;
+}
+
 // ============================================================================
 // CONSTANTES
 // ============================================================================
@@ -74,7 +84,9 @@ const SYNTHETIQUES = [
 	'c0a7e100-0000-4000-8000-00000000000a',
 	'c0a7e100-0000-4000-8000-00000000000b',
 	'c0a7e100-0000-4000-8000-00000000000c',
-	'c0a7e100-0000-4000-8000-00000000000d'
+	'c0a7e100-0000-4000-8000-00000000000d',
+	'c0a7e100-0000-4000-8000-00000000000e',
+	'c0a7e100-0000-4000-8000-00000000000f'
 ] as const;
 
 // ============================================================================
@@ -86,11 +98,11 @@ function casDesFixtures(): Cas[] {
 	return readdirSync(FIXTURES)
 		.filter((f) => f.endsWith('.json'))
 		.sort()
-		.map((f) => JSON.parse(readFileSync(join(FIXTURES, f), 'utf-8')) as FixtureRangement);
+		.map((f) => lireFixture(JSON.parse(readFileSync(join(FIXTURES, f), 'utf-8'))));
 }
 
 function idsDe(cas: Cas): string[] {
-	return [...cas.ranges, ...cas.niveaux].map((m) => m.id);
+	return [...new Set([...cas.ranges, ...cas.niveaux, ...cas.tags].map((m) => m.id))];
 }
 
 function cheminDe(m: ModeleRange): string {
@@ -105,7 +117,8 @@ async function sansHorodatage(pg: Client, corps: () => Promise<void>): Promise<v
 
 /**
  * Pose l'état de la prod : copies sans nœud ni tag pour les modèles à ranger ; niveaux relevés et
- * un nœud (comme en prod : un modèle qui gagne un niveau est déjà rangé) pour ceux qui en gagnent
+ * un nœud (comme en prod : un modèle qui gagne un niveau est déjà rangé) pour ceux qui en gagnent ;
+ * nœud et tags relevés pour ceux qui gagnent un tag
  */
 async function poserEtatProd(pg: Client, cas: Cas): Promise<void> {
 	await insertProdCopies(pg, {
@@ -126,7 +139,20 @@ async function poserEtatProd(pg: Client, cas: Cas): Promise<void> {
 				[m.id, m.avant]
 			);
 		}
+		for (const m of cas.tags) {
+			await pg.query(
+				'update public.question_templates set classification_node_id = $2 where id = $1',
+				[m.id, await nodeIdByPath(pg, m.noeud)]
+			);
+		}
 	});
+	for (const m of cas.tags) {
+		await pg.query(
+			`insert into public.question_template_points (template_id, point_id)
+			 select $1, p.id from public.curriculum_points p where p.code = any($2::text[])`,
+			[m.id, m.avant]
+		);
+	}
 }
 
 async function lireEtat(pg: Client, cas: Cas): Promise<Etat> {
@@ -157,7 +183,15 @@ async function lireEtat(pg: Client, cas: Cas): Promise<Etat> {
 }
 
 function tagsAttendus(cas: Cas): string[] {
-	return cas.ranges.flatMap((m) => (m.point === null ? [] : [`${m.id}§${m.point}`])).sort();
+	return [
+		...cas.ranges.flatMap((m) => m.points.map((code) => `${m.id}§${code}`)),
+		...cas.tags.flatMap((m) => [...m.avant, ...m.ajoutes].map((code) => `${m.id}§${code}`))
+	].sort();
+}
+
+/** Les tags relevés en prod, que le rollback doit laisser */
+function tagsAvant(cas: Cas): string[] {
+	return cas.tags.flatMap((m) => m.avant.map((code) => `${m.id}§${code}`)).sort();
 }
 
 async function enTransaction(pg: Client, corps: () => Promise<void>): Promise<void> {
@@ -175,12 +209,13 @@ async function enTransaction(pg: Client, corps: () => Promise<void>): Promise<vo
  * `lot` (cas synthétique, bâti au `beforeAll`), tous les cas tournent.
  */
 function eprouver(obtenir: () => { pg: Client; cas: Cas }, lot?: Cas): void {
-	it('migration : chaque modèle EXACTEMENT sur son nœud, avec son seul point ; niveaux posés ; `updated_at` préservé ; rollback : l’état d’avant', async () => {
+	it('migration : chaque modèle EXACTEMENT sur son nœud, avec ses points ; niveaux et tags ajoutés posés ; `updated_at` préservé ; rollback : l’état d’avant', async () => {
 		const { pg, cas } = obtenir();
 		await enTransaction(pg, async () => {
 			await poserEtatProd(pg, cas);
 			const avant = await lireEtat(pg, cas);
 			expect(cas.niveaux.every((m) => avant.noeuds.get(m.id) !== '∅')).toBe(true);
+			expect(avant.tags).toEqual(tagsAvant(cas));
 			await pg.query(readFileSync(cas.migration, 'utf-8'));
 			const apres = await lireEtat(pg, cas);
 			expect(cas.ranges.map((m) => apres.noeuds.get(m.id))).toEqual(cas.ranges.map(cheminDe));
@@ -196,7 +231,8 @@ function eprouver(obtenir: () => { pg: Client; cas: Cas }, lot?: Cas): void {
 			await pg.query(extractRollback(cas.migration));
 			const annule = await lireEtat(pg, cas);
 			expect(cas.ranges.map((m) => annule.noeuds.get(m.id))).toEqual(cas.ranges.map(() => '∅'));
-			expect(annule.tags).toEqual([]);
+			expect(annule.tags).toEqual(tagsAvant(cas));
+			expect(cas.tags.map((m) => annule.noeuds.get(m.id))).toEqual(cas.tags.map((m) => m.noeud));
 			expect(cas.niveaux.map((m) => annule.grades.get(m.id))).toEqual(
 				cas.niveaux.map((m) => m.avant)
 			);
@@ -283,16 +319,46 @@ function eprouver(obtenir: () => { pg: Client; cas: Cas }, lot?: Cas): void {
 				await pg.query('rollback to savepoint s');
 				const etat = await lireEtat(pg, cas);
 				expect(cas.ranges.every((m) => etat.noeuds.get(m.id) === '∅')).toBe(true);
-				expect(etat.tags).toEqual([]);
+				expect(etat.tags).toEqual(tagsAvant(cas));
 			});
 		}
 	);
 
-	it.skipIf(lot !== undefined && !lot.ranges.some((m) => m.point === null))(
+	it.skipIf(lot !== undefined && lot.tags.length === 0)(
+		'tags retouchés depuis le relevé : la migration échoue, et rien n’est rangé',
+		async () => {
+			const { pg, cas } = obtenir();
+			const dernier = cas.tags.at(-1);
+			if (!dernier) throw new Error('lot sans tag ajouté');
+			await enTransaction(pg, async () => {
+				await poserEtatProd(pg, cas);
+				await pg.query('delete from public.question_template_points where template_id = $1', [
+					dernier.id
+				]);
+				await pg.query(
+					`insert into public.question_template_points (template_id, point_id)
+					 select $1, p.id from public.curriculum_points p where p.code = $2`,
+					[dernier.id, dernier.ajoutes[0]]
+				);
+				await pg.query('savepoint s');
+				await expect(pg.query(readFileSync(cas.migration, 'utf-8'))).rejects.toThrow(
+					new RegExp(`tags de ${dernier.id.slice(0, 8)} changés depuis le relevé`)
+				);
+				await pg.query('rollback to savepoint s');
+				const etat = await lireEtat(pg, cas);
+				expect(cas.ranges.every((m) => etat.noeuds.get(m.id) === '∅')).toBe(true);
+				expect(cas.niveaux.map((m) => etat.grades.get(m.id))).toEqual(
+					cas.niveaux.map((m) => m.avant)
+				);
+			});
+		}
+	);
+
+	it.skipIf(lot !== undefined && !lot.ranges.some((m) => m.points.length === 0))(
 		'rollback : un modèle déplacé à la main depuis la migration garde son nouveau nœud',
 		async () => {
 			const { pg, cas } = obtenir();
-			const deplace = cas.ranges.find((m) => m.point === null);
+			const deplace = cas.ranges.find((m) => m.points.length === 0);
 			if (!deplace) throw new Error('lot sans modèle rangé sans point');
 			await enTransaction(pg, async () => {
 				await poserEtatProd(pg, cas);
@@ -376,7 +442,27 @@ async function emplacements(
 	return { surSousNotion: surSousNotion.rows[0], surNotion: surNotion.rows[0] };
 }
 
-function casSynthetique(a: Emplacement, b: Emplacement): Cas {
+/** Deux points de deux programmes posables sur un même nœud, pris dans la base locale */
+async function paire(pg: Client): Promise<Paire> {
+	const r = await pg.query<{ node: string; premier: string; second: string }>(
+		`select x.id as node, p1.code as premier, p2.code as second
+		   from public.curriculum_points p1
+		   join public.classification_nodes x on x.id = p1.node_id and x.archived_at is null
+		   join public.curriculum_points p2
+		     on p2.node_id in (x.id, case when x.kind = 'subnotion' then x.parent_id else x.id end)
+		    and p2.grade is distinct from p1.grade and p2.archived_at is null and p2.code is not null
+		  where p1.archived_at is null and p1.code is not null
+		    and p1.grade is not null and p2.grade is not null
+		  order by p1.code, p2.code
+		  limit 1`
+	);
+	const ligne = r.rows[0];
+	const chemin = ligne && (await readNodePaths(pg)).get(ligne.node)?.path;
+	if (!ligne || !chemin) throw new Error('base locale sans deux programmes sur un même nœud');
+	return { chemin, premier: ligne.premier, second: ligne.second };
+}
+
+function casSynthetique(a: Emplacement, b: Emplacement, deux?: Paire): Cas {
 	const ranges: ModeleRange[] = [
 		{
 			id: SYNTHETIQUES[0],
@@ -385,7 +471,7 @@ function casSynthetique(a: Emplacement, b: Emplacement): Cas {
 			branche: a.branche,
 			notion: a.notion,
 			sousNotion: a.sous_notion,
-			point: a.code
+			points: [a.code]
 		},
 		{
 			id: SYNTHETIQUES[1],
@@ -394,7 +480,7 @@ function casSynthetique(a: Emplacement, b: Emplacement): Cas {
 			branche: b.branche,
 			notion: b.notion,
 			sousNotion: b.sous_notion,
-			point: b.code
+			points: [b.code]
 		},
 		{
 			id: SYNTHETIQUES[2],
@@ -403,9 +489,30 @@ function casSynthetique(a: Emplacement, b: Emplacement): Cas {
 			branche: a.branche,
 			notion: a.notion,
 			sousNotion: null,
-			point: null
+			points: []
 		}
 	];
+	const tags: ModeleTags[] = [];
+	if (deux) {
+		const [branche = '', notion = '', sousNotion = null] = deux.chemin.split(' > ');
+		ranges.push({
+			id: SYNTHETIQUES[4],
+			title: 'Deux programmes',
+			fichier: '05.json',
+			branche,
+			notion,
+			sousNotion,
+			points: [deux.premier, deux.second]
+		});
+		tags.push({
+			id: SYNTHETIQUES[5],
+			title: 'Second tag',
+			fichier: '06.json',
+			noeud: deux.chemin,
+			avant: [deux.premier],
+			ajoutes: [deux.second]
+		});
+	}
 	const niveaux: ModeleNiveaux[] = [
 		{
 			id: SYNTHETIQUES[3],
@@ -420,10 +527,10 @@ function casSynthetique(a: Emplacement, b: Emplacement): Cas {
 		migration,
 		genererMigration(
 			{ lot: 'synthetique', source: 'scripts/questions/synthetique', date: '2026-11-22' },
-			{ ranges, niveaux }
+			{ ranges, niveaux, tags }
 		)
 	);
-	return { migration, ranges, niveaux };
+	return { migration, ranges, niveaux, tags };
 }
 
 // ============================================================================
@@ -439,7 +546,7 @@ describe('cas synthétique (générateur)', () => {
 		await cleanupAllTestData();
 		pg = await getPostgresClient();
 		lieux = await emplacements(pg);
-		cas = casSynthetique(lieux.surSousNotion, lieux.surNotion);
+		cas = casSynthetique(lieux.surSousNotion, lieux.surNotion, await paire(pg));
 	}, 60_000);
 
 	afterAll(async () => {
@@ -459,7 +566,7 @@ describe('cas synthétique (générateur)', () => {
 				[lieux.surSousNotion.branche, lieux.surSousNotion.notion]
 			);
 			await expect(pg.query(readFileSync(cas.migration, 'utf-8'))).rejects.toThrow(
-				/chemins ou points introuvables : [1-3] nœud\(s\), [0-2] point\(s\)/
+				/chemins ou points introuvables : [1-4] nœud\(s\), \d+ point\(s\)/
 			);
 		});
 	});
@@ -504,7 +611,7 @@ describe('cas synthétique (générateur)', () => {
 				lieux.surSousNotion.code
 			]);
 			await expect(pg.query(readFileSync(cas.migration, 'utf-8'))).rejects.toThrow(
-				/chemins ou points introuvables : 0 nœud\(s\), [12] point\(s\)/
+				/chemins ou points introuvables : 0 nœud\(s\), [1-4] point\(s\)/
 			);
 		});
 	});
@@ -522,7 +629,7 @@ describe('cas synthétique (générateur)', () => {
 				[lieux.surSousNotion.code]
 			);
 			await expect(pg.query(readFileSync(cas.migration, 'utf-8'))).rejects.toThrow(
-				/chemins ou points introuvables : 0 nœud\(s\), [12] point\(s\)/
+				/chemins ou points introuvables : 0 nœud\(s\), [1-4] point\(s\)/
 			);
 		});
 	});
