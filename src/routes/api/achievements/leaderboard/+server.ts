@@ -20,10 +20,7 @@
 import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { leaderboardQuerySchema } from '#lib/server/validation/achievements.ts';
-import {
-	getAchievementLeaderboard,
-	AchievementServiceError
-} from '#lib/server/achievements/service.ts';
+import { getAchievementLeaderboard } from '#lib/server/achievements/service.ts';
 import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/achievements/leaderboard/+server');
@@ -75,15 +72,11 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 	} catch (err) {
 		logger.error('[API] Error fetching leaderboard:', err);
 
-		if (err instanceof AchievementServiceError) {
-			throw error(500, err.message);
-		}
-
 		// Re-throw SvelteKit errors (HttpError) to preserve status codes
 		if (err && typeof err === 'object' && 'status' in err) {
 			throw err;
 		}
 
-		throw error(500, 'An error occurred while fetching leaderboard');
+		throw error(500, 'Impossible de charger le classement');
 	}
 };

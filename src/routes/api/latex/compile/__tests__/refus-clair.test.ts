@@ -62,7 +62,7 @@ describe('POST /api/latex/compile', () => {
 		form.append('latex', 'x^2');
 		expect(await thrownBy(form)).toEqual({
 			status: 500,
-			message: 'Compilation failed: réseau coupé'
+			message: 'La compilation du document a échoué'
 		});
 	});
 });

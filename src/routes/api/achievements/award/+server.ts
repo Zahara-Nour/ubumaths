@@ -33,7 +33,7 @@ import type { RequestHandler } from './$types';
 import { requireRoles } from '#lib/server/middleware/auth.ts';
 import { verifyTeacherStudentWithRole } from '#lib/server/middleware/student-access.ts';
 import { awardAchievementSchema } from '#lib/server/validation/achievements.ts';
-import { awardAchievement, AchievementServiceError } from '#lib/server/achievements/service.ts';
+import { awardAchievement } from '#lib/server/achievements/service.ts';
 import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/achievements/award/+server');
@@ -76,15 +76,11 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	} catch (err) {
 		logger.error('[API] Error awarding achievement:', err);
 
-		if (err instanceof AchievementServiceError) {
-			throw error(500, err.message);
-		}
-
 		// Re-throw SvelteKit errors (HttpError) to preserve status codes
 		if (err && typeof err === 'object' && 'status' in err) {
 			throw err;
 		}
 
-		throw error(500, 'An error occurred while awarding achievement');
+		throw error(500, 'Impossible d’attribuer le succès');
 	}
 };

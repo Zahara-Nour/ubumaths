@@ -29,6 +29,7 @@
  * Consider implementing as background job for production
  */
 
+import { throwServerError } from '#lib/server/utils/error-handler.ts';
 import { error } from '@sveltejs/kit';
 import { assertGoogleClassroomEnabled } from '#lib/server/google/feature-guard.ts';
 import type { RequestHandler } from './$types';
@@ -89,8 +90,6 @@ export const POST: RequestHandler = async ({ locals }) => {
 		}
 
 		// Handle other errors
-		logger.error('[Google Sync] Sync error:', err);
-		const message = err instanceof Error ? err.message : 'erreur inconnue';
-		throw error(500, `Impossible de synchroniser Google Classroom : ${message}`);
+		throwServerError('api/google/sync', err, 'Impossible de synchroniser Google Classroom');
 	}
 };

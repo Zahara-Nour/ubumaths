@@ -8,6 +8,7 @@
  * Security: Admin only
  */
 
+import { throwServerError } from '#lib/server/utils/error-handler.ts';
 import { error } from '@sveltejs/kit';
 import sharp from 'sharp';
 import type { RequestHandler } from './$types';
@@ -119,8 +120,7 @@ export const POST: RequestHandler = async ({ request, locals, params }) => {
 			});
 
 		if (uploadError) {
-			logger.error('Error uploading image:', uploadError);
-			throw error(500, `Impossible d’envoyer l’image : ${uploadError.message}`);
+			throwServerError('api/admin/vip-cards/image', uploadError, 'Impossible d’envoyer l’image');
 		}
 
 		// 10. Get public URL
