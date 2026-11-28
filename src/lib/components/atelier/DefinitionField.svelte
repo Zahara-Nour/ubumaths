@@ -221,6 +221,8 @@
 	function finishWordOnSpace(event: KeyboardEvent) {
 		if (!element || event.key !== ' ' || event.isComposing) return;
 		if (event.ctrlKey || event.metaKey || event.altKey) return;
+		// Une sélection (revue) : l'espace la remplace, le mot à gauche n'est pas touché
+		if (!element.selectionIsCollapsed) return;
 		if ((element.getElementInfo(element.position)?.depth ?? 0) > 0) return;
 		const found = cardWordAtCaret(element.getValue(0, element.position, 'latex'));
 		if (found === null) return;
