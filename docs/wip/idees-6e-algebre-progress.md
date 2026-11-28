@@ -12,8 +12,10 @@ _Mis à jour le 2026-11-28, PR #3285 ouverte (copie de `main` ; celle de la bran
   depuis le worktree ; mergée → `db:migrate` (4 conditions réunies ; `migration list --linked`
   d'abord), puis relecture : `/dev/modeles?point=6-142` et `?point=6-143`, série de relecture des
   publiés complétés (`scripts/series/creer-serie.ts`).
-- **En attente de David** : recos reposées deux fois, sans réponse : F4 gardé (pesées jusqu'à
-  15 kg) ; noms rognés des schémas en barres (`schema-barres-scene.ts` l. 58) dans une PR à part.
+- **Tranché par David (« je te suis », 2026-11-28)** : F4 gardé tel quel (pesées jusqu'à 15 kg) ;
+  noms rognés des schémas en barres (`schema-barres-scene.ts` l. 58, 9 px par caractère) corrigés dans
+  une PR à part, après #3285, rendu vérifié sur plusieurs modèles dont ceux en prod. **En attente de
+  David** : rien.
 - **Pièges en cours** : ne rien commiter sur la branche avant le merge (relance la CI).
 - **Worktree / branche** : `../ubumaths-wt-idees-6e-algebre`, `feat/idees-6e-algebre`.
 
