@@ -1,22 +1,22 @@
 ---
 title: Lot d'outils formes-messages (n° 75 puis 76)
 date: 2026-11-28
-status: n° 75 livré (#3329) ; n° 76 en cours
+status: n° 75 livré (#3329) ; n° 76 livré (#3337)
 ---
 
 # Lot `formes-messages` : n° 75 puis n° 76
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-28, n° 76 en cours (avant PR)._
+_Mis à jour le 2026-11-28, après #3337._
 
-- **État** : n° 76 codé, testé, vu à l'écran, relu ; PR ouverte.
-- **Prochaine action** : PR ouverte, CI, merge (`pnpm pr:merger`) ; puis n° 76 « livré » dans
-  `outils-manquants.md` et `outils-lots.md` (commit doc sur `main`).
-- **En attente de David** : rien (phase 0 tranchée : « ok pour tout »).
-- **Pièges en cours** : message de forme calculé sur la réponse (`judgeRequiredForm`), pas
-  `getRequiredFormFeedback` (phrase de repli seulement).
-- **Worktree / branche** : `../ubumaths-wt-outil-formes-messages`, `feat/outil-formes-messages-76`.
+- **État** : lot `formes-messages` fini : n° 75 (#3329) et n° 76 (#3337) mergés.
+- **Prochaine action** : aucune dans ce lot ; à David de dire s'il le clôt (versement du journal
+  dans `docs/archive/wip/`). Fiches à reprendre hors lot : b-04-1, b-10-1, c1-03-1, c1-07-0
+  (n° 75), b-12-1 (n° 76), par une session de modèles.
+- **En attente de David** : clôture du chantier.
+- **Pièges en cours** : message de forme qui dépend de la réponse → `judgeRequiredForm`.
+- **Worktree / branche** : aucun (retirés par `pr:merger`).
 
 ## Origine
 
@@ -108,3 +108,6 @@ toujours son message (pas de message d'auteur) ; Q5 négatifs hors champ (refus�
   formules du message rendues, ½ point affiché).
 - Revue (`code-reviewer` opus) : aucun bloquant ; 3 mineurs corrigés (JSDoc de
   `checkRequiredForm` déplacé, condition redondante, cas « attendu écrit décomposé » ajouté).
+- PR #3337 mergée le 2026-11-28. CI : cliquet rouge (rétrécissement de type perdu en corrigeant
+  un mineur de la revue, typecheck non relancé), corrigé ; puis E28 de `lecture-graphique`
+  (grapheur, hors PR) rouge une fois, vert à la relance du job.
