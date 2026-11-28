@@ -166,7 +166,9 @@ export const REVIEWED_SAFE_MATH_COMMANDS = [
  * `\enclose{phasorangle}`, `\mkern-1.2mu`, `\rule` et `\raise` de dimensions fixes) ;
  * `#1` n'est que le contenu de la formule, jamais un style ni un attribut. Le filtre
  * lit le texte écrit, pas le développement : une macro nouvelle à valeur libre
- * passerait sous son nom. Garde : `restricted-rendering-macros.test.ts` échoue si
+ * passerait sous son nom. Un seul niveau de développement est regardé : chaque macro
+ * listée doit être sûre quel que soit son argument (une macro qui en appelle une autre
+ * de la liste l'est aussi). Garde : `restricted-rendering-macros.test.ts` échoue si
  * MathLive ajoute une telle macro absente de cette liste (ancien écart T26).
  */
 export const REVIEWED_SAFE_MATHLIVE_MACROS = [
