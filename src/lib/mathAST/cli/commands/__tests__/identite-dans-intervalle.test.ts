@@ -91,12 +91,19 @@ describe('domaine non déterminé : refus honnête, jamais « tout l’intervall
 		'\\sqrt{x^5-x+1}-\\sqrt{x^5-x+1}=0 dans [-2;2]',
 		'\\frac{x^5-x+1}{x^5-x+1}=1',
 		'\\frac{2x-\\cos x}{2x-\\cos x}=1',
-		'\\sqrt{x^5-x+1}-\\sqrt{x^5-x+1}=0',
-		'\\frac{2\\tan x}{2\\tan x}=1'
+		'\\sqrt{x^5-x+1}-\\sqrt{x^5-x+1}=0'
 	])('%s', (command) => {
 		const result = new WebReplEngine().execute(`.solve ${command}`);
 		expect(result.success).toBe(false);
 		expect(result.error?.message).toBe(unsolved);
+	});
+
+	// Refusé tant que le domaine de tan x / tan x n'était pas déterminé ; depuis L121, les deux
+	// familles (π/2 + kπ et kπ) se réunissent en kπ/2 : identité sur ce domaine.
+	it('\\frac{2\\tan x}{2\\tan x}=1 : identité sur ℝ privé des kπ/2', () => {
+		const result = new WebReplEngine().execute('.solve \\frac{2\\tan x}{2\\tan x}=1');
+		expect(result.success).toBe(true);
+		expect(result.output).toContain('S = ℝ \\ {k·π/2 : k ∈ ℤ}');
 	});
 
 	it('solve expose les contraintes non résolues du domaine', () => {
