@@ -11,10 +11,17 @@ status: en cours
 _Mis à jour le 2026-11-28, avant la première PR._
 
 - **État** : latents corrigés et commités sur la branche (pas poussés, typecheck rouge) : L46, L50, L52, L53, L55, L108, L114, et L42 pour les messages 4xx.
-- **Prochaine action** : corriger le typecheck de `src/lib/utils/vip-card-modals.ts` (l. 107, 157, 215, 277 : `Component<Props>` refusé par `ModalEntry.component`, typer comme `push` le fait), puis `pnpm check:incremental`, revue `code-reviewer`, PR ; ensuite les visibles après la réponse de David.
-- **En attente de David** : phase 0 de V73 (fenêtres), V75 (surlignage du Shtam), V117 (images des 4 cartes Mathémo), et les erreurs 500 de L42.
+- **Prochaine action** : corriger le typecheck de `src/lib/utils/vip-card-modals.ts` (l. 107, 157, 215, 277 : `Component<Props>` refusé par `ModalEntry.component`, typer comme `push` le fait), puis `pnpm check:incremental`, revue `code-reviewer`, PR ; ensuite PR 2 : V73 + V75 ; PR 3 : L42 (500) ; V117 : consignes d'images dans `~/Downloads`, puis rangement quand David les a.
+- **En attente de David** : rien ; phase 0 tranchée le 2026-11-28 (§ Décisions). Il génère les 4 images de V117 à partir des consignes que la session dépose dans `~/Downloads`.
 - **Pièges en cours** : branche commitée, **jamais poussée** : le pre-push refuse `wheel-landing.ts` et `public-nav-items.ts`, sans doc qui les couvre (ajouter au `couvre:` de la doc de la roue et de la navigation publique, cf. `docs/README.md`) · `ecarts-coquille.svelte.test.ts` est partagé avec L41 (`interface-prof`) et L43 (`cache`) : seul le test L52 y change.
 - **Worktree / branche** : `../ubumaths-wt-ecarts-interface-eleve`, `fix/ecarts-interface-eleve`.
+
+## Décisions de David (2026-11-28, phase 0 validée)
+
+- **V73** : à l'ouverture d'une fenêtre, le clavier y entre, Tab tourne dedans, le reste de la page est inerte pour le lecteur d'écran ; Échap et clic sur le fond ferment comme avant ; à la fermeture, le clavier revient sur le bouton d'ouverture. Plus de fenêtre rendue dans un `<button>`.
+- **V75** : un lien est surligné si l'adresse est la sienne ou commence par elle + `/` (« Accueil » : seulement `/`), même règle pour la barre et le tiroir.
+- **V117** : la session écrit 4 consignes d'images (style des 45 autres cartes) dans `~/Downloads` ; David génère ; rangement dans le stockage Supabase et mise à jour des chemins = écriture en prod, faite par David.
+- **L42, erreurs 500** : message français pour l'utilisateur, détail de la base seulement au journal du serveur ; PR à part (~30 fichiers). Ne pas barrer L42 avant.
 
 ## Historique
 
