@@ -1,23 +1,23 @@
 ---
 title: Lot d'outils `python` — case « programme Python exécuté » (outil 49)
 date: 2026-11-28
-status: outil 49 en PR (2026-11-28)
+status: lot clos, outil 49 livré (#3318, 2026-11-28)
 ---
 
 # Lot `python` : outil 49
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-28, avant l'ouverture de la PR._
+_Mis à jour le 2026-11-28, après #3318._
 
-- **État** : outil 49 codé, revu (code + sécurité), vu à l'écran (`e2e/verifs/case-python.spec.ts`,
-  3 cas verts) ; PR ouverte, merge par `pnpm pr:merger`.
-- **Prochaine action** : après le merge, ligne 49 au § 4 « Livré » d'`outils-manquants.md`, puis
-  clore le lot (`fait (#PR, date)` dans `outils-lots.md`, journal archivé).
-- **En attente de David** : rien de bloquant ; signalé : un modèle Python n'exige pas de spec (§ Code).
-- **Pièges en cours** : la note du serveur (`gradeWithinBudget`) compte faux une case Python, PAS
+- **État** : lot `python` clos ; outil 49 livré (#3318), journal archivé.
+- **Prochaine action** : aucune dans ce lot. Les modèles qui se servent de la case (TSA1-35,
+  TSPE-392, 393) restent aux sessions « questions ».
+- **En attente de David** : dire si un modèle à case Python doit quand même avoir une spec pour ses
+  cases ordinaires (§ Code) ; ligne `python` d'`outils-lots.md` à passer à `fait (#3318, 2026-11-28)`
+  (fichier laissé indexé par une autre session au moment de la clôture).
+- **Pièges** : la note du serveur (`gradeWithinBudget`) compte faux une case Python, PAS
   `gradeQuestion` (partagé avec le badge d'entraînement).
-- **Worktree / branche** : `../ubumaths-wt-outil-python` · `feat/outil-python`.
 
 ## L'outil
 

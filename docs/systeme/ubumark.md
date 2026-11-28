@@ -1488,7 +1488,7 @@ remplissages sont justes. ». PDF (`yohaku-typst.ts`, `generateYohakuTypst`) : l
 les totaux, cases à remplir vides ; `solution: oui` y écrit la solution. Bloc en erreur : « Grille
 indisponible ». Fiche du catalogue : `block-catalog/yohaku.ts`.
 
-**Programme Python exécuté** (outil 49, chantier [outil-python](../wip/outil-python-progress.md))
+**Programme Python exécuté** (outil 49, chantier [outil-python](../archive/wip/outil-python-progress.md))
 — `src/lib/ubumark/__tests__/python-a-ecrire/`, `questions/generator/__tests__/generation-python.test.ts`,
 `questions/python/__tests__/` (juge simulé, et `judge-python-case-real.svelte.test.ts` avec le vrai
 Pyodide), `components/question-inputs/__tests__/FillBlanksInput-python.svelte.test.ts`,
