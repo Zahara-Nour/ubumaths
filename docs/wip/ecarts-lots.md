@@ -95,4 +95,5 @@ Sondes par le chemin de l'Atelier (`runInput`), jamais `pnpm math`. Agent `matha
 - Écarts ajoutés après le 2026-11-28 : à lister ici.
 - **V138** (domaine de tan(x) + 1/(x − 3) qui oublie x = 3) : refus honnête attendu, à prendre avec `mathast-limites` (décision de David, 2026-11-28).
 - **T38, L140** (fiches, PDF) : relevés par `security-auditor` sur la PR du lot `fiches` (2026-11-28), antérieurs à la branche ; zone du lot `fiches`.
+- **V139** (points `_p…` du carré avec étiquette) : relevé par la session `ecarts-constructions` (2026-11-28) en voyant le carré à l'écran ; moteur de géométrie (convention « nom en `_` = sans étiquette »), phase 0 à faire.
 - **L141** (cache : Palotin de l'élève et tableau de bord prof qui ne suivent pas leur échéance, même défaut que L43) : inscrit à la demande de David le 2026-11-28, à la fin du lot `cache`.
