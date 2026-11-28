@@ -2,16 +2,14 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-28, F1 écrit sur sa branche (pas encore de PR)._
+_Mis à jour le 2026-11-28, après #3272 (F1 mergé)._
 
-- **État** : lot 1 en prod et relu. F1 écrit (7 variations, 29 specs vertes, sonde 0 problème,
-  rendu vu à l'écran en local), commité et poussé sur la branche, **PR pas encore ouverte** (§ Lot 2)
-  · **Prochaine action** : ouvrir la PR des fichiers seuls (« revue : aucune, contenu »), CI, merge ;
-  puis brouillon en prod par David **après un `deploy:prod`** (#3264, l'outil n° 72, n'est pas en
-  prod), puis migration de rangement générée · **En attente de David** : rien pour la PR ; le
-  `deploy:prod` avant le brouillon · **Pièges en cours** : `--publier` en local écrit l'id local dans
-  le fichier (retiré avant le commit) · **Worktree / branche** : `ubumaths-wt-idees-3e-espace-f1`,
-  `feat/idees-3e-espace-f1`
+- **État** : lot 1 en prod et relu. F1 (modèle 4-034, 7 variations) mergé sur `main` par #3272,
+  **pas encore en brouillon en prod** (§ Lot 2) · **Prochaine action** : `deploy:prod` (demande de
+  David : #3264, l'outil n° 72, n'est pas en prod), puis brouillon de F1 en prod par David, relecture
+  dans `/dev/modeles`, puis migration de rangement générée · **En attente de David** : le
+  `deploy:prod` · **Pièges en cours** : `--publier` en local écrit l'id local dans le fichier (à
+  retirer avant tout commit) · **Worktree / branche** : aucun (retiré par `pr:merger`)
 
 ## Rubrique
 
