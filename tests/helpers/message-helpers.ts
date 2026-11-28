@@ -312,39 +312,6 @@ export function createMockDraft(overrides: Partial<typeof mockDraft> = {}) {
 }
 
 // ============================================================================
-// VALIDATION HELPERS
-// ============================================================================
-
-/**
- * Validate message send request data
- */
-export function validateSendMessageData(data: Record<string, unknown>): {
-	valid: boolean;
-	error?: string;
-} {
-	if (!data.subject || typeof data.subject !== 'string' || data.subject.trim().length === 0) {
-		return { valid: false, error: 'Subject is required' };
-	}
-
-	if (!data.content) {
-		return { valid: false, error: 'Content is required' };
-	}
-
-	if (
-		!data.isGroupMessage &&
-		(!data.recipientIds || !Array.isArray(data.recipientIds) || data.recipientIds.length === 0)
-	) {
-		return { valid: false, error: 'Recipients are required for non-group messages' };
-	}
-
-	if (data.isGroupMessage && !data.classId) {
-		return { valid: false, error: 'Class ID is required for group messages' };
-	}
-
-	return { valid: true };
-}
-
-// ============================================================================
 // XSS SANITIZATION HELPERS
 // ============================================================================
 

@@ -392,29 +392,6 @@ class PrivateMessagesStore {
 	}
 
 	/**
-	 * Move message to folder
-	 */
-	async moveToFolder(messageId: string, folderId: string) {
-		try {
-			const response = await fetch(`/api/messages/${messageId}`, {
-				method: 'PATCH',
-				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({ action: 'moveToFolder', folderId })
-			});
-
-			if (!response.ok) {
-				throw new Error('Erreur lors du déplacement vers le dossier');
-			}
-
-			toaster.success('Message déplacé vers le dossier');
-			await this.loadInbox();
-		} catch (error) {
-			console.error('Error moving to folder:', error);
-			toaster.error('Impossible de déplacer le message');
-		}
-	}
-
-	/**
 	 * Delete message
 	 */
 	async deleteMessage(messageId: string) {
@@ -451,46 +428,6 @@ class PrivateMessagesStore {
 			this.unreadCount = data.unreadCount;
 		} catch (error) {
 			console.error('Error loading unread count:', error);
-		}
-	}
-
-	/**
-	 * Search messages
-	 */
-	async searchMessages(params: {
-		query: string;
-		searchIn?: 'inbox' | 'sent' | 'all';
-		hasAttachments?: boolean;
-		senderName?: string;
-		dateFrom?: string;
-		dateTo?: string;
-	}) {
-		this.isLoading = true;
-		try {
-			const searchParams = new URLSearchParams({
-				q: params.query,
-				...(params.searchIn && { searchIn: params.searchIn }),
-				...(params.hasAttachments !== undefined && {
-					hasAttachments: String(params.hasAttachments)
-				}),
-				...(params.senderName && { senderName: params.senderName }),
-				...(params.dateFrom && { dateFrom: params.dateFrom }),
-				...(params.dateTo && { dateTo: params.dateTo })
-			});
-
-			const response = await fetch(`/api/messages/search?${searchParams}`);
-			if (!response.ok) {
-				throw new Error('Erreur lors de la recherche');
-			}
-
-			const data = await response.json();
-			return data.messages;
-		} catch (error) {
-			console.error('Error searching messages:', error);
-			toaster.error('Erreur lors de la recherche');
-			return [];
-		} finally {
-			this.isLoading = false;
 		}
 	}
 

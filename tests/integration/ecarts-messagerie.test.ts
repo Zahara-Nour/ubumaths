@@ -345,7 +345,7 @@ describe('preuves des écarts — messagerie, avertissements, carnet (base local
 			expect(recuOrdinaire).toBe(1);
 		});
 
-		it.fails('écart L84 : un élève de test ne reçoit rien', () => {
+		it('un élève de test ne reçoit rien (L84)', () => {
 			expect(recuDeTest).toBe(0);
 		});
 	});
