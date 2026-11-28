@@ -182,7 +182,8 @@ Exception, le cache élève : `getRewardsSync()` et `getWarningsSync(periodId)` 
 **Relecture à l'échéance (cache élève)** : à la fin de leurs 10 minutes, les récompenses et les
 avertissements déjà lus sont relus tout seuls (`armRefresh`, une minuterie par entrée, réarmée à
 chaque écriture). L'écran garde l'ancienne valeur jusqu'à l'arrivée de la nouvelle ; une relecture
-en échec ne touche pas au cache. Un onglet caché ne relit pas : il relit, au retour sur l'onglet
+en échec ne touche pas au cache et réessaie une minute plus tard. Une relecture dont l'entrée a
+changé pendant qu'elle était en route (gain optimiste, hydratation, lecture refaite) est jetée. Un onglet caché ne relit pas : il relit, au retour sur l'onglet
 (`visibilitychange`), les entrées arrivées à échéance pendant l'absence. Une invalidation annule la
 relecture programmée. Navigateur seulement. Comportement suivi par David le 2026-11-28 (écart L43) ;
 le Palotin, sans lecture d'API dans ce cache, n'est pas relu. Test :

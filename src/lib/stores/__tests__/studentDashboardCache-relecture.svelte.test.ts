@@ -84,12 +84,41 @@ describe('cache élève : relecture à l’échéance', () => {
 		expect(vu?.gidouilles).toBe(10);
 	});
 
-	it('relecture en échec : l’écran garde l’ancienne valeur', async () => {
+	it('relecture en échec : l’écran garde l’ancienne valeur, nouvel essai une minute après', async () => {
 		vi.spyOn(console, 'error').mockImplementation(() => {});
 		globalThis.fetch = vi.fn(() => Promise.reject(new Error('Network error')));
 		await vi.advanceTimersByTimeAsync(10 * MINUTE);
 		await laisserLire();
 		expect(vu?.gidouilles).toBe(10);
+
+		globalThis.fetch = vi.fn(() => Promise.resolve(reponse({ rewards: APRES })));
+		await vi.advanceTimersByTimeAsync(1 * MINUTE);
+		await laisserLire();
+		expect(vu?.gidouilles).toBe(15);
+	});
+
+	it('une invalidation annule la relecture programmée', async () => {
+		cache.invalidateRewards();
+		await vi.advanceTimersByTimeAsync(15 * MINUTE);
+		expect(globalThis.fetch).not.toHaveBeenCalled();
+	});
+
+	it('une relecture en route ne remplace pas un gain arrivé pendant ce temps', async () => {
+		let repondre: (r: Response) => void = () => {};
+		globalThis.fetch = vi.fn(() => new Promise<Response>((ok) => (repondre = ok)));
+		await vi.advanceTimersByTimeAsync(10 * MINUTE);
+		cache.updateGidouillesOptimistic(5); // gain pendant la lecture : 15
+		repondre(reponse({ rewards: AVANT })); // la lecture partie avant rend 10
+		await laisserLire();
+		expect(vu?.gidouilles).toBe(15);
+	});
+
+	it('une seule relecture par échéance, même après plusieurs écritures', async () => {
+		cache.hydrateRewards(AVANT);
+		cache.updateGidouillesOptimistic(0);
+		await vi.advanceTimersByTimeAsync(10 * MINUTE);
+		await laisserLire();
+		expect(globalThis.fetch).toHaveBeenCalledTimes(1);
 	});
 
 	it('onglet caché : pas de relecture, puis relecture au retour sur l’onglet', async () => {

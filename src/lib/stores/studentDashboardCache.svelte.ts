@@ -169,6 +169,9 @@ export class StudentDashboardCache {
 	 */
 	private refreshTimers = new Map<string, ReturnType<typeof setTimeout>>();
 
+	/** Nouvel essai après une relecture en échec : 1 minute. @private */
+	private readonly RETRY_DELAY = 60 * 1000;
+
 	/** Relectures en cours (même clé) : une seule à la fois. @private */
 	private refreshing = new Set<string>();
 
@@ -694,7 +697,10 @@ export class StudentDashboardCache {
 
 	/**
 	 * Relit une entrée. Un échec ne touche pas au cache : l'écran garde l'ancienne
-	 * valeur, et la lecture suivante (retour sur l'onglet, lecture asynchrone) réessaie.
+	 * valeur, et un nouvel essai part dans une minute (onglet visible).
+	 * Le résultat n'est gardé que si l'entrée n'a pas changé pendant la lecture
+	 * (mise à jour optimiste, hydratation, lecture refaite, invalidation) : il ne doit
+	 * jamais écraser une valeur plus récente.
 	 * @private
 	 */
 	private async refresh(key: string): Promise<void> {
@@ -702,17 +708,27 @@ export class StudentDashboardCache {
 		this.refreshing.add(key);
 		try {
 			if (key === 'rewards') {
-				if (!this.rewardsCache) return; // invalidé entre-temps
+				const before = this.rewardsCache;
+				if (!before) return; // invalidé entre-temps
 				const rewards = await this.fetchRewards();
-				if (rewards === null || !this.rewardsCache) return;
+				if (this.rewardsCache !== before) return; // changé pendant la lecture
+				if (rewards === null) {
+					this.armRefresh(key, Date.now() + this.RETRY_DELAY);
+					return;
+				}
 				const now = Date.now();
 				this.rewardsCache = { rewards, fetchedAt: now };
 				this.armRefresh('rewards', now + this.REWARDS_TTL);
 			} else {
 				const periodId = key.slice('warnings:'.length);
-				if (!this.warningsCache.has(periodId)) return;
+				const before = this.warningsCache.get(periodId);
+				if (!before) return;
 				const warnings = await this.fetchWarnings(periodId);
-				if (warnings === null || !this.warningsCache.has(periodId)) return;
+				if (this.warningsCache.get(periodId) !== before) return;
+				if (warnings === null) {
+					this.armRefresh(key, Date.now() + this.RETRY_DELAY);
+					return;
+				}
 				const now = Date.now();
 				this.warningsCache.set(periodId, { warnings, fetchedAt: now });
 				this.armRefresh(key, now + this.WARNINGS_TTL);

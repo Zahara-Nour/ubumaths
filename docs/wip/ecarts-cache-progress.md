@@ -8,16 +8,14 @@ status: en cours
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-28, PR 2 (L43) prête._
+_Mis à jour le 2026-11-28, #3277 mergée, PR 2 (L43) ouverte._
 
-- **État** : PR 1 #3277 (8 écarts) : CI verte, merge en attente de la fin d'un `deploy:prod` (tâche
-  de fond `pr:merger`). PR 2 (L43), branche `fix/ecarts-cache-l43` partie de `fix/ecarts-cache`.
-- **Prochaine action** : merger #3277, puis mettre `fix/ecarts-cache-l43` à jour sur `main`
-  (`git merge origin/main`), revue, PR 2 ; puis barrer les 9 lignes au registre et clore le lot.
+- **État** : #3277 mergée (8 écarts). PR 2 (L43), branche `fix/ecarts-cache-l43`, revue faite.
+- **Prochaine action** : merger la PR 2 ; puis, depuis le dépôt principal, barrer les 9 lignes au
+  registre, « fait » dans `ecarts-lots.md`, archiver ce journal (clôture du lot).
 - **En attente de David** : rien (L43 : option 1 suivie le 2026-11-28).
 - **Pièges en cours** : `schedule-write-verdict.test.ts` instable en lot (passe seul).
-- **Worktrees / branches** : `../ubumaths-wt-ecarts-cache` (`fix/ecarts-cache`),
-  `../ubumaths-wt-ecarts-cache-l43` (`fix/ecarts-cache-l43`).
+- **Worktree / branche** : `../ubumaths-wt-ecarts-cache-l43` (`fix/ecarts-cache-l43`).
 
 ## Lot
 
@@ -75,3 +73,6 @@ affiché). Recommandation de Claude : (1). Réponse de David : « je te suis ».
 - Palotin non relu (pas de lecture d'API dans ce cache) : hors du constat de L43.
 - Tests : `studentDashboardCache-relecture.svelte.test.ts` (7 cas, 3 rouges sans le correctif).
   L'ancienne preuve `it.fails` « écart L43 » est retirée de `ecarts-coquille.svelte.test.ts`.
+- Revue (`code-reviewer`) : une relecture en route n'écrase plus une valeur plus récente
+  (comparaison de l'entrée avant / après la lecture) ; nouvel essai une minute après un échec ;
+  tests ajoutés (invalidation, course, minuterie unique) : 10 cas.
