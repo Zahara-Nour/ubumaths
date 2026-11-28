@@ -2,10 +2,10 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-28, avant la PR._
+_Mis à jour le 2026-11-28, à l'ouverture de la PR._
 
-- **État** : code + tests (`image-hors-ensemble.test.ts`, 6, rouges avant) verts ; suites atelier vertes (8 237 + 300) ; `check:incremental` 0, cliquet tenu ; doc `atelier.md` (I4) à jour.
-- **Prochaine action** : revue `code-reviewer`, PR, `pnpm pr:merger`, puis archiver ce journal.
+- **État** : code + tests (`image-hors-ensemble.test.ts`, 10) verts ; revue `code-reviewer` faite, son bug (ensemble hérité lu en retard d'un passage) corrigé ; suites atelier vertes (8 241) ; `check:incremental` 0, cliquet tenu ; doc `atelier.md` (I4) à jour.
+- **Prochaine action** : après le merge, archiver ce journal.
 - **En attente de David** : rien.
 - **Pièges en cours** : `f(x)` dans une autre fonction est un héritage, pas une image : jamais jugé (test).
 - **Worktree / branche** : `../ubumaths-wt-fonctions-morceaux-images` · `fix/image-hors-ensemble`.
@@ -29,3 +29,7 @@ n'est pas faite.
 
 - `#recomputeOnce` : `outsideIntervalRefusal` sur chaque définition (hors constructions), en
   erreur propre ; `callsAsText` retire `\left(` `\right)` d'une définition LaTeX.
+- Revue (Sonnet) : `j = g(3)` avec `g(x) = f(x) + 1` lisait l'ensemble hérité du passage
+  d'avant (`#inheritIntervals` range en fin de passage) → le contrôle lit `intervals.inherited`
+  du passage en cours (`withCurrentInheritance`). Laissés : message « a n'est pas dans… » sans la
+  valeur de a (celui de Calcul), `\operatorname{f}` non lu.

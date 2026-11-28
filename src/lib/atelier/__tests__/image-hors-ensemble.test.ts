@@ -64,6 +64,44 @@ describe('j = f(3) suit l’ensemble de f', () => {
 		expect(d.atelier.get('g')?.status).toBe('error');
 	});
 
+	it('une fonction qui hérite de l’ensemble : j = g(3), g(x) = f(x) + 1, dans les deux sens', () => {
+		const d = desk('k = 2', 'f(x) = x sur [k;5]', 'g(x) = f(x) + 1', 'j = g(3)');
+		slide(d, 'k', 4);
+		expect(d.atelier.get('j')?.status).toBe('error');
+		expect(d.atelier.get('j')?.message).toContain('[4 ; 5]');
+		slide(d, 'k', 1);
+		expect(d.atelier.get('j')?.status).toBe('ok');
+	});
+
+	it('f réécrite puis remise : j = g(3) suit aussitôt', () => {
+		const d = desk('f(x) = x sur [0;5]', 'g(x) = f(x) + 1', 'j = g(3)');
+		d.atelier.update('f', 'x', 'text', undefined, '[4;5]');
+		expect(d.atelier.get('j')?.status).toBe('error');
+		d.atelier.update('f', 'x', 'text', undefined, '[0;5]');
+		expect(d.atelier.get('j')?.status).toBe('ok');
+	});
+
+	it('rechargement d’un atelier : l’image hors ensemble est en erreur', () => {
+		const d = desk('f(x) = x sur [0;5]', 'j = f(3)');
+		d.atelier.update('f', 'x', 'text', undefined, '[4;5]');
+		const fresh = new Atelier();
+		fresh.restore(d.atelier.serialize());
+		expect(fresh.get('j')?.status).toBe('error');
+	});
+
+	it('LaTeX dans une fraction : \\frac{f\\left(7\\right)}{2}', () => {
+		const d = desk('k = 2', 'f(x) = x sur [k;8]');
+		expect(
+			d.atelier.create(
+				{ kind: 'value', name: 'j', definition: '\\frac{f\\left(7\\right)}{2}' },
+				'mathfield'
+			).ok
+		).toBe(true);
+		expect(d.atelier.get('j')?.status).toBe('ok');
+		slide(d, 'k', 7.5);
+		expect(d.atelier.get('j')?.status).toBe('error');
+	});
+
 	it('f(x) dans une autre fonction n’est pas une image : g(x) = f(x) + 1 reste juste', () => {
 		const d = desk('k = 2', 'f(x) = x sur [k;5]', 'g(x) = f(x) + 1');
 		slide(d, 'k', 4);

@@ -3539,6 +3539,15 @@ export class Atelier {
 		const intervals = citedIntervals(this.items, this.functionNames, (text, others) =>
 			citedReciprocalInterval(this, text, INTERNAL_LETTER, others)
 		);
+		// L'objet cité avec l'ensemble hérité de CE passage : `#inheritIntervals` ne
+		// le range qu'à la fin, et `j = g(3)` (g(x) = f(x) + 1) le lirait en retard
+		const withCurrentInheritance = (name: string): AtelierObject | undefined => {
+			const cited = this.get(name);
+			if (cited === undefined || !isFunction(cited)) return cited;
+			const domain = intervals.inherited.get(name);
+			const { inheritedInterval: _stale, ...rest } = cited;
+			return domain === undefined ? rest : { ...rest, inheritedInterval: domain };
+		};
 		const missing = new Map<string, MissingReference[]>();
 		// V58 : les objets dont la LIGNE est fautive (illisible, circulaire, une
 		// fonction citée comme un nombre) — pas ceux qui suivent un autre objet
@@ -3638,7 +3647,7 @@ export class Atelier {
 			// `j = f(3)` puis l'ensemble de f qui ne contient plus 3 (curseur de k,
 			// f réécrite) : le refus de Calcul (I4), en erreur jusqu'au retour de 3
 			if (!ownError.get(o.name) && construction === null) {
-				const outside = outsideIntervalRefusal((n) => this.get(n), callsAsText(o));
+				const outside = outsideIntervalRefusal(withCurrentInheritance, callsAsText(o));
 				if (outside !== null) ownError.set(o.name, outside);
 			}
 			deps.set(
