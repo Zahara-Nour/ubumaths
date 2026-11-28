@@ -80,26 +80,8 @@ export const load: PageServerLoad = async ({ locals }) => {
 	/** Semaine de l'école : jours travaillés et jours chômés. */
 	let weekConfig: WeekConfig | null = null;
 
-	// For students, fetch additional stats for rewards block and recent exercises
+	// For students, fetch additional stats for rewards block
 	let riddlesSolved = 0;
-	let recentExercises: Array<{
-		id: string;
-		title: string | null;
-		tags: string[] | null;
-		difficulty: string | null;
-		distribution_mode: string | null;
-		exercise_assignments?: Array<{
-			id: string;
-			optional_deadline: string | null;
-			notes: string | null;
-			assigned_at: string;
-		}> | null;
-		exercise_completions?: Array<{
-			completed_at: string | null;
-			last_viewed_at: string;
-			view_count: number;
-		}> | null;
-	}> = [];
 
 	// Resolve school_id: use profile.school_id, or for students fallback to their class's school
 	let schoolId = profile.school_id;
@@ -187,58 +169,31 @@ export const load: PageServerLoad = async ({ locals }) => {
 
 	if (profile.role === 'student') {
 		// Execute queries in parallel for better performance
-		const [riddleCount, exercisesData, inbox, notionsProgression, competencesProgression] =
-			await Promise.all([
-				// Get count of successfully solved riddles
-				supabase
-					.from('riddle_attempts')
-					.select('*', { count: 'exact', head: true })
-					.eq('student_id', profile.id)
-					.eq('is_correct', true),
-				// Get recent assigned exercises (up to 5, sorted by deadline)
-				supabase
-					.from('exercises')
-					.select(
-						`
-				id,
-				title,
-				distribution_mode,
-				exercise_assignments!inner(
-					id,
-					optional_deadline,
-					notes,
-					assigned_at
-				),
-				exercise_completions(
-					completed_at,
-					last_viewed_at
-				)
-			`
-					)
-					.or(
-						`exercise_assignments.student_id.eq.${profile.id},exercise_assignments.assigned_to_type.eq.public`
-					)
-					.eq('exercise_assignments.is_active', true)
-					.limit(5)
-					.order('exercise_assignments.optional_deadline', { ascending: true, nullsFirst: false }),
-				// Fetch unified work inbox (aggregates all 4 assignment sources)
-				getStudentWorkInbox(supabase, profile.id),
-				// Tuile « Ma progression » — même source que la page dédiée.
-				//
-				// ⚠️ Repli explicite : ces deux fonctions LÈVENT en cas d'erreur, ce qui
-				// est le bon comportement sur la page dédiée (l'élève y vient pour ça).
-				// Ici, non : le tableau de bord porte aussi l'inbox, les exercices et les
-				// récompenses. Une VIEW renommée ou un timeout ne doit pas priver les 81
-				// élèves de leur page d'accueil pour une tuile de résumé.
-				getNotionsProgression(supabase, profile.id, profile.grade).catch((err) => {
-					logger.error('[dashboard] progression notions indisponible :', err);
-					return null;
-				}),
-				getCompetencesProgression(supabase, profile.id).catch((err) => {
-					logger.error('[dashboard] progression compétences indisponible :', err);
-					return null;
-				})
-			]);
+		const [riddleCount, inbox, notionsProgression, competencesProgression] = await Promise.all([
+			// Get count of successfully solved riddles
+			supabase
+				.from('riddle_attempts')
+				.select('*', { count: 'exact', head: true })
+				.eq('student_id', profile.id)
+				.eq('is_correct', true),
+			// Fetch unified work inbox (aggregates all 4 assignment sources)
+			getStudentWorkInbox(supabase, profile.id),
+			// Tuile « Ma progression » — même source que la page dédiée.
+			//
+			// ⚠️ Repli explicite : ces deux fonctions LÈVENT en cas d'erreur, ce qui
+			// est le bon comportement sur la page dédiée (l'élève y vient pour ça).
+			// Ici, non : le tableau de bord porte aussi l'inbox, les exercices et les
+			// récompenses. Une VIEW renommée ou un timeout ne doit pas priver les 81
+			// élèves de leur page d'accueil pour une tuile de résumé.
+			getNotionsProgression(supabase, profile.id, profile.grade).catch((err) => {
+				logger.error('[dashboard] progression notions indisponible :', err);
+				return null;
+			}),
+			getCompetencesProgression(supabase, profile.id).catch((err) => {
+				logger.error('[dashboard] progression compétences indisponible :', err);
+				return null;
+			})
+		]);
 
 		// Sans les DEUX axes, pas de tuile — plutôt qu'une tuile à moitié vraie.
 		progression =
@@ -251,14 +206,12 @@ export const load: PageServerLoad = async ({ locals }) => {
 		if (riddleCount.error)
 			logger.error('Lecture des énigmes résolues impossible :', riddleCount.error);
 		riddlesSolved = riddleCount.count || 0;
-		recentExercises = (exercisesData.data || []) as typeof recentExercises;
 
 		// Return profile to the client component
 		// +page.svelte will use profile.role to render the correct dashboard
 		return {
 			profile,
 			riddlesSolved,
-			recentExercises,
 			academicPeriods,
 			weekConfig,
 			inbox,
@@ -271,7 +224,6 @@ export const load: PageServerLoad = async ({ locals }) => {
 	return {
 		profile,
 		riddlesSolved,
-		recentExercises,
 		academicPeriods,
 		weekConfig,
 		inbox: null as StudentWorkInbox | null,

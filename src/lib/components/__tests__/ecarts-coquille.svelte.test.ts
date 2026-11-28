@@ -1,6 +1,6 @@
 /**
  * Écarts de la coquille qui demandent un navigateur (docs/ecarts/registre.md) :
- * L41, L43, L45, L52.
+ * L41, L43, L52 (L45 corrigé : test ordinaire).
  *
  * Le projet vitest `ecarts` n'a pas de navigateur : chaque écart est ici en
  * `it.fails`, et son nom porte le marqueur « écart L41 » que la preuve du
@@ -25,22 +25,11 @@ import { clearSelectedClass } from '#lib/stores/selectedClass.svelte.ts';
 import { teacherCache } from '#lib/stores/teacherDashboardCache.svelte.ts';
 import type { ClassWithData } from '#lib/server/students.ts';
 import type { ResourceKind } from '#lib/resources/kinds.ts';
-import type { StudentProfile } from '#lib/types/student-cache.ts';
+import type { StudentRewards } from '#lib/types/student-cache.ts';
 
 // Constantes
-const HOUR = 60 * 60 * 1000;
-const PROFILE: StudentProfile = {
-	id: 'eleve-1',
-	email: 'eleve01@local.test',
-	firstname: 'Ada',
-	lastname: null,
-	full_name: null,
-	avatar_url: null,
-	grade: null,
-	is_test: false,
-	school_id: null,
-	classes: []
-};
+const MINUTE = 60 * 1000;
+const REWARDS: StudentRewards = { gidouilles: 10, bonus: 0, vip_cards: {} };
 const STUDENTS = [
 	{ id: 'eleve-1', firstname: 'Ada' },
 	{ id: 'eleve-2', firstname: 'Blaise' },
@@ -139,18 +128,18 @@ describe('recherche du prof : filtres au retour arrière', () => {
 
 describe('cache élève : donnée périmée', () => {
 	let cache: StudentDashboardCache;
-	let seen: StudentProfile | null | undefined;
+	let seen: StudentRewards | null | undefined;
 	let stop: () => void;
 
-	// Un écran qui lit le profil par `getProfileSync`, comme un `$derived`.
+	// Un écran qui lit les récompenses par `getRewardsSync`, comme un `$derived`.
 	beforeEach(() => {
 		vi.useFakeTimers();
 		cache = new StudentDashboardCache();
-		cache.hydrateProfile(PROFILE);
+		cache.hydrateRewards(REWARDS);
 		seen = undefined;
 		stop = $effect.root(() => {
 			$effect(() => {
-				seen = cache.getProfileSync();
+				seen = cache.getRewardsSync();
 			});
 		});
 		flushSync();
@@ -160,19 +149,19 @@ describe('cache élève : donnée périmée', () => {
 		vi.useRealTimers();
 	});
 
-	it('témoin : l’écran lit le profil, et une lecture directe le voit périmé après 3 heures', () => {
-		expect(seen?.firstname).toBe('Ada');
-		vi.advanceTimersByTime(3 * HOUR);
+	it('témoin : l’écran lit les récompenses, et une lecture directe les voit périmées après 10 minutes', () => {
+		expect(seen?.gidouilles).toBe(10);
+		vi.advanceTimersByTime(10 * MINUTE);
 		flushSync();
-		expect(cache.getProfileSync()).toBeNull();
+		expect(cache.getRewardsSync()).toBeNull();
 	});
 
-	// Aujourd'hui : l'écran garde le profil périmé (l'heure n'est pas réactive).
-	it.fails('écart L43 : après 3 heures, l’écran ne montre plus le profil périmé', () => {
+	// Aujourd'hui : l'écran garde les récompenses périmées (l'heure n'est pas réactive).
+	it.fails('écart L43 : après 10 minutes, l’écran ne montre plus les récompenses périmées', () => {
 		const avant = seen;
-		vi.advanceTimersByTime(3 * HOUR);
+		vi.advanceTimersByTime(10 * MINUTE);
 		flushSync();
-		// Rien (null) ou un profil relu : tout sauf le profil périmé.
+		// Rien (null) ou des récompenses relues : tout sauf la lecture périmée.
 		expect(seen).not.toBe(avant);
 	});
 });
@@ -193,8 +182,8 @@ describe('layout du prof : données neuves après une action de formulaire', () 
 		expect(classesEnCache()).toEqual(['6e A']);
 	});
 
-	// Aujourd'hui : le cache garde « 6e A » seule (lu une fois, au montage).
-	it.fails('écart L45 : une classe ajoutée (données relues) arrive dans le cache', async () => {
+	// Écart L45, corrigé : le layout versait ses données au cache une fois, au montage.
+	it('une classe ajoutée (données relues) arrive dans le cache', async () => {
 		const { rerender } = await render(TeacherLayout, {
 			props: { data: layoutData([classe('c1', '6e A')]), children }
 		});

@@ -8,22 +8,7 @@
 
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { StudentDashboardCache } from '../studentDashboardCache.svelte';
-import type { StudentProfile } from '#lib/types/student-cache.ts';
-
 const originalFetch = global.fetch;
-
-const profile: StudentProfile = {
-	id: 'eleve-1',
-	email: 'eleve@local.test',
-	firstname: 'Ada',
-	lastname: null,
-	full_name: null,
-	avatar_url: null,
-	grade: null,
-	is_test: false,
-	school_id: null,
-	classes: []
-};
 
 function okFetch(body: object) {
 	return vi.fn(() => Promise.resolve({ ok: true, json: () => Promise.resolve(body) } as Response));
@@ -58,15 +43,6 @@ describe('StudentDashboardCache : échec réseau jamais stocké', () => {
 		global.fetch = okFetch({ rewards: { gidouilles: 12, bonus: 0, vip_cards: {} } });
 		expect((await cache.getRewards()).gidouilles).toBe(12);
 		expect(global.fetch).toHaveBeenCalledTimes(1);
-	});
-
-	it("profil : un échec n'est pas stocké, l'accès suivant relit", async () => {
-		global.fetch = failingFetch();
-		expect((await cache.getProfile()).id).toBe('');
-		expect(cache.getProfileSync()).toBeNull();
-
-		global.fetch = okFetch({ profile });
-		expect(await cache.getProfile()).toEqual(profile);
 	});
 
 	it("avertissements : un échec n'est pas stocké, l'accès suivant relit", async () => {

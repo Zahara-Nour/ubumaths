@@ -131,10 +131,10 @@ recouvre, choisi par `getSkeletonType` (`src/lib/utils/skeleton-detector.ts`) : 
 
 Deux singletons en mémoire, un par rôle :
 
-| Cache                                    | Entrées et durée de vie                                                                                               | Clé                                       |
-| ---------------------------------------- | --------------------------------------------------------------------------------------------------------------------- | ----------------------------------------- |
-| `studentCache` (`studentDashboardCache`) | profil + classes (2 h), récompenses (10 min), avertissements (10 min), Palotin (10 min)                               | unique, sauf avertissements : `periodId`  |
-| `teacherCache` (`teacherDashboardCache`) | élèves d'une classe (2 h), récompenses (10 min), avertissements (10 min), classe (24 h), école (24 h), périodes (1 h) | `classId`, `classId:periodId`, `schoolId` |
+| Cache                                    | Entrées et durée de vie                                                                                 | Clé                                       |
+| ---------------------------------------- | ------------------------------------------------------------------------------------------------------- | ----------------------------------------- |
+| `studentCache` (`studentDashboardCache`) | récompenses (10 min), avertissements (10 min), Palotin (10 min)                                         | unique, sauf avertissements : `periodId`  |
+| `teacherCache` (`teacherDashboardCache`) | élèves d'une classe (2 h), récompenses (10 min), avertissements (10 min), classe (24 h), périodes (1 h) | `classId`, `classId:periodId`, `schoolId` |
 
 Les types sont dans `src/lib/types/student-cache.ts` et `teacher-cache.ts`. Ils vivent en mémoire de
 l'onglet, rien dans `localStorage`. Les entrées sont des `$state` ou des `SvelteMap` : une page qui
@@ -142,11 +142,16 @@ les lit dans un `$derived` se met à jour quand le cache change.
 
 **Remplissage**, trois voies :
 
-1. **Hydratation par le layout**, dans `onMount` : `hydrateProfile`, `hydrateRewards`,
-   `hydrateBuddy` (élève, `student/+layout.svelte`) ; `hydrateAllClasses`, `setPeriods`
-   (prof, `teacher/+layout.svelte:21-43`). D'autres pages hydratent aussi : `TeacherDashboard`
-   (classes lues dans `/api/teacher/classes` si le cache est vide), `teacher/classes` (classes et
-   école), `PalotinPresence`, `PalotinQuiz` et `ChangePalotinModal` (Palotin).
+1. **Hydratation par le layout**, dans un `$effect` qui se rejoue quand les données du layout
+   sont relues (`refreshAll()` après une action de formulaire) : `hydrateRewards`, `hydrateBuddy`
+   (élève, `student/+layout.svelte`) ; `hydrateAllClasses`, `setPeriods` (prof,
+   `teacher/+layout.svelte`). Seule une donnée **neuve** (autre référence que la dernière versée)
+   est réécrite : `data` change aussi quand un layout parent est relu, et réécrire l'ancienne
+   lecture effacerait les mises à jour optimistes faites depuis. Test :
+   `src/lib/components/__tests__/ecarts-coquille.svelte.test.ts` (« une classe ajoutée »). D'autres
+   pages hydratent aussi : `TeacherDashboard` (classes lues dans `/api/teacher/classes` si le cache
+   est vide), `teacher/classes` (classes), `PalotinPresence`, `PalotinQuiz` et
+   `ChangePalotinModal` (Palotin).
 2. **Lecture paresseuse** : `getRewards()`, `getWarnings(periodId)`, `getStudentBasic(classId)`,
    `getStudentRewards(classId)`, `getStudentWarnings(classId, periodId)` rendent l'entrée si elle a
    moins que son TTL, sinon appellent l'API (`/api/student/*`, `/api/classes/[id]/{students,gidouilles,warnings}`)
@@ -155,7 +160,7 @@ les lit dans un `$derived` se met à jour quand le cache change.
 
    **Un échec de lecture n'est jamais stocké** (réseau coupé, réponse HTTP en erreur). Les
    `fetch*` privés rendent alors `null` ; le getter rend la dernière valeur en cache si elle existe,
-   **même expirée**, sinon la valeur vide (`[]`, `SvelteMap` vide, 0 gidouille, profil vide), sans
+   **même expirée**, sinon la valeur vide (`[]`, `SvelteMap` vide, 0 gidouille), sans
    écrire le cache ni rafraîchir l'horodatage : l'accès suivant relit l'API. Une réponse réussie
    mais vide (0 gidouille, classe sans élève) est stockée normalement. Tests :
    `src/lib/stores/__tests__/teacherDashboardCache.test.ts` (« Échec réseau : jamais stocké ») et
@@ -163,7 +168,11 @@ les lit dans un `$derived` se met à jour quand le cache change.
 
 3. **Mise à jour optimiste** : `update{Gidouilles,Bonus,VipCards,Warnings}Optimistic`,
    `updateBuddyXpOptimistic`, `updateBuddyConstanceOptimistic` (semaine et jours travaillés de la
-   Constance Royale). Elles modifient l'entrée sans toucher à son horodatage.
+   Constance Royale). Celles des récompenses (`update{Gidouilles,Bonus,VipCards}Optimistic`,
+   `addVipCardOptimistic`) font repartir l'échéance de l'entrée (`fetchedAt` à maintenant) : sinon
+   le gain disparaîtrait avec l'ancienne lecture. Chez le prof, c'est l'entrée de toute la classe
+   qui repart. Les autres gardent leur horodatage. Test :
+   `src/lib/stores/__tests__/cache-optimiste-echeance.test.ts`.
 
 **Lecture synchrone** pour l'affichage : `get*Sync()` rend l'entrée si elle est encore fraîche,
 sinon `null` (ou `[]`). `getRewardsMapReactive(classId)` rend la `SvelteMap` sans contrôle de TTL.
@@ -176,7 +185,7 @@ lecture réussie de `/api/teacher/classes`.
 **Invalidation** : `invalidate*()` vide une entrée ; la lecture suivante relit l'API. Appels réels :
 `invalidateRewards` après une action sur les cartes VIP ou au marché (`marketplace.svelte.ts`,
 `StudentVipCardsModal`, `VipCardUseDialog`, `marketplace/trade/[id]`). Personne n'appelle
-`invalidateAll`, `invalidateClass`, `invalidateSchool` ni `invalidatePeriods`.
+`invalidateAll`, `invalidateClass` ni `invalidatePeriods`.
 
 **Ce qui vide vraiment un cache, c'est le rechargement de la page.** La déconnexion soumet un vrai
 formulaire `POST /auth/logout` (`submitLogoutForm`, `src/lib/utils/auth.ts`) et la bascule du mode
@@ -198,13 +207,13 @@ l'élève ou pour le prof sur un élève. Il reçoit un `CacheContext`
 `selectedClass.svelte.ts` et `selectedPeriod.svelte.ts` : un identifiant en `$state`, recopié dans
 `localStorage` (`teacher_selected_class_id`, `teacher_selected_period_id`) et relu au premier
 appel. Le layout prof choisit la **période en cours** si aucune n'est retenue. Pour la classe, il
-appelle `reconcileSelectedClass(ids)` dans `onMount` quand `classesLoaded` : un identifiant retenu
+appelle `reconcileSelectedClass(ids)` à chaque liste neuve quand `classesLoaded` : un identifiant retenu
 qui figure dans la liste est gardé ; sinon (aucun, ou classe supprimée) il est remplacé par la
-**première classe**, ou vidé (`localStorage` compris) si le prof n'en a aucune. `onMount` est
+**première classe**, ou vidé (`localStorage` compris) si le prof n'en a aucune. Cet effet est
 déclaré avant les `$effect` de préchargement : la correction a lieu avant qu'ils lisent la classe.
 Test : `src/lib/stores/__tests__/selectedClass-verification.test.ts`. `TeacherDashboard` (page
-`/dashboard`, hors layout prof) garde sa propre logique : première classe si aucune n'est retenue,
-sans vérifier un identifiant déjà retenu.
+`/dashboard`, hors layout prof) fait de même après une lecture réussie de `/api/teacher/classes`,
+et recopie la classe corrigée dans sa copie locale (celle du sélecteur).
 
 ### La pile de modales
 
@@ -284,13 +293,8 @@ du 2026-11-11 : `reading 'id'` sur `/dev/modeles`, onglet d'avant 0.81.0).
   `Date.now()` n'est pas réactif : un `$derived` ne se recalcule pas à l'expiration. Il rend
   `null` au prochain recalcul déclenché par autre chose, et rien ne relit l'API tant qu'un getter
   asynchrone n'est pas appelé.
-- **Une mise à jour optimiste ne prolonge pas l'entrée** : sans `fetchedAt` neuf, une entrée
-  presque expirée qui vient d'être corrigée disparaîtra quand même à son TTL.
-- **`teacherCache.getClassInfo` et `getSchoolInfo` lèvent toujours** quand l'entrée manque :
-  `fetchClassInfo` et `fetchSchoolInfo` ne sont pas écrits (`teacherDashboardCache.svelte.ts:753-767`).
-  Les classes ne viennent que de l'hydratation. Aucun appelant aujourd'hui.
-- **L'hydratation des layouts est dans `onMount`** : elle ne se rejoue pas quand les `load`
-  repassent (`refreshAll()`). Les données neuves du layout n'atteignent pas le cache.
+- **Les classes du cache prof ne viennent que de l'hydratation** : aucune lecture d'API ne
+  remplit une classe seule (`getAllClassesSync` lit ce que les pages ont versé).
 - **Le layout prof refuse l'admin.** Une garde `teacher || admin` dans une page sous
   `/dashboard/teacher` ne rendrait pas la page accessible à l'admin : le 403 du layout passe
   avant. Mais le load d'une page tourne **en parallèle** de celui du layout : il ne lit rien de
