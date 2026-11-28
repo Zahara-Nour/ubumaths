@@ -17,7 +17,7 @@ import { ConstructionAuthorError, assertConstructionChecks, judgeConstruction } 
 import { midpointEyeballedFeedback } from '../line';
 import { wrongLengthFeedback } from '../segment-length';
 import { centeredMissingFeedback, goodCenterThroughFeedback } from '../circle';
-import { POINT_MISSING_FEEDBACK } from '../point';
+import { POINT_EXTRA_FEEDBACK, POINT_MISSING_FEEDBACK } from '../point';
 import { sideEyeballedFeedback } from '../triangle';
 import { perpendicularThrough, type StraightTrait } from '../instruments';
 import {
@@ -28,6 +28,9 @@ import {
 } from '../answer';
 import type { Position } from '../judge';
 import { readConstructionHeader } from '#lib/ubumark/parser/construction-parser.ts';
+import { generateInstance } from '#lib/questions/generator/instance-generator.ts';
+import type { QuestionTemplate } from '#lib/questions/types.ts';
+import { templateMarkdown } from '#lib/ubumark/index.ts';
 
 function checksOf(source: string) {
 	const { spec, errors } = readConstructionHeader(source);
@@ -300,5 +303,72 @@ describe('figure composée : exemple B (carré, diagonales, cercle)', () => {
 			status: 'incorrect',
 			feedback: `Étape 4 : ${POINT_MISSING_FEEDBACK}`
 		});
+	});
+});
+
+describe('figure composée : revue (scénarios rejoués)', () => {
+	it('exemple B dans un modèle : le générateur accepte C et D construits au carré', () => {
+		const template = {
+			id: 'test-figure-composee-b',
+			title: 'Carré et cercle',
+			status: 'draft',
+			type: 'fill_in_blanks',
+			variations: [
+				{
+					statement: templateMarkdown(
+						`Suis le programme.\n\n\`\`\`figure-a-completer\n${FIGURE_B}\n\`\`\``
+					)
+				}
+			],
+			grades: ['CM1'],
+			level: 1
+		} as unknown as QuestionTemplate;
+		const result = generateInstance(template, 42);
+		expect(result.success ? [] : result.errors).toEqual([]);
+	});
+
+	it('des points semés sur chaque cm : un point de trop', () => {
+		const extra = [1, 2, 4, 5].map((t) => point(along(PA, RIGHT, t)));
+		expect(judge(FIGURE_A, [...drawA(RIGHT), ...extra])).toEqual({
+			status: 'incorrect',
+			feedback: POINT_EXTRA_FEEDBACK
+		});
+	});
+
+	it('un point marqué sur un sommet du carré : pas de trop', () => {
+		expect(judge(FIGURE_B, [...drawB(1), point({ x: 7, y: 7 })])).toEqual({ status: 'correct' });
+	});
+
+	it('segment AB = 6 cm puis segment [AC] (C donné) : juste', () => {
+		const source = [
+			'fenetre: 0 ; 12 ; 0 ; 10',
+			'outils: segment, regle',
+			'verifier: segment AB = 6 cm',
+			'verifier: segment [AC]',
+			'---',
+			'A = point(4, 4)',
+			'C = point(4, 9)'
+		].join('\n');
+		const b = along(PA, RIGHT, 6);
+		expect(judge(source, [regle(PA, b), segment(PA, b), segment(PA, { x: 4, y: 9 })])).toEqual({
+			status: 'correct'
+		});
+	});
+
+	it('deux cercles de même centre, à deux étapes : juste', () => {
+		const steps = [
+			'verifier: segment AB = 6 cm',
+			'verifier: cercle c = cercle(A, rayon=2 cm)',
+			'verifier: cercle k = cercle(A, rayon=3 cm)'
+		];
+		const source = figureA(steps, ['outils: segment, regle, compas']);
+		const b = along(PA, RIGHT, 6);
+		const objects = [
+			regle(PA, b),
+			segment(PA, b),
+			cercle(PA, along(PA, RIGHT, 2)),
+			cercle(PA, along(PA, RIGHT, 3))
+		];
+		expect(judge(source, objects)).toEqual({ status: 'correct' });
 	});
 });

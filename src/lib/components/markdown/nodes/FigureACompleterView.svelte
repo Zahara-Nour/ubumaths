@@ -336,9 +336,11 @@
 		if (!corrected || !isCompositeFigure(checks)) return null;
 		try {
 			return compositeSteps(checks, node.source, tools, objects);
-		} catch {
-			// Figure qui ne se construit pas : l'erreur est celle de la figure
-			return [];
+		} catch (error) {
+			// Figure qui ne se construit pas (la garde de l'auteur l'aurait refusée) : la
+			// correction d'ensemble, et l'erreur dans la console (revue)
+			console.error('Figure composée : correction impossible', error);
+			return null;
 		}
 	});
 	/** Ce que dessine la correction : la figure entière, ou chaque étape d'une figure composée */

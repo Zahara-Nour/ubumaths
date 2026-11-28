@@ -469,7 +469,8 @@ export function judgeCircles(
 					{ free: tries, all: circleIndexes },
 					circleAt,
 					others,
-					(i) => compassGraduationOf(circleAt(i), rulersBefore(i), rulerLength)
+					(i) => compassGraduationOf(circleAt(i), rulersBefore(i), rulerLength),
+					composite
 				);
 				if (typeof verdict !== 'number') return verdict;
 				taken.add(verdict);
@@ -617,7 +618,8 @@ function judgeRuled(
 	indexes: { free: readonly number[]; all: readonly number[] },
 	circleAt: (i: number) => DrawnCircle,
 	others: readonly ExpectedCircle[],
-	graduation: (i: number) => number | null
+	graduation: (i: number) => number | null,
+	composite = false
 ): number | ConstructionVerdict {
 	const shapeOf = (i: number): ExpectedCircle => ({
 		center: centerOf(circleAt(i)),
@@ -646,7 +648,8 @@ function judgeRuled(
 		others.filter(
 			(other) => distance(other.center, target.center) <= tolerance(other.center, target.center)
 		).length;
-	if (distinct.length > expectedHere) {
+	// Figure composée (outil n° 45) : un autre cercle de ce centre est celui d'une autre étape
+	if (!composite && distinct.length > expectedHere) {
 		return {
 			status: 'incorrect',
 			feedback: severalCirclesFeedback(centered.center, expectedHere)

@@ -40,7 +40,7 @@ import {
 	type ConstructionVerdict,
 	type Position
 } from './judge';
-import { judgePoints, type ExpectedPoints } from './point';
+import { POINT_EXTRA_FEEDBACK, judgePoints, type ExpectedPoints } from './point';
 import { coveringPiece, mergeSegments, tolerance } from './polygon';
 import { constructionExpected, constructionPositions, constructionShapes } from './positions';
 import { judgeRuledPolygon, ruledPolygonCorners, ruledPolygonSolution } from './ruled-polygon';
@@ -126,10 +126,27 @@ function stepAt(
 	};
 }
 
+/** p est-il un des points connus (de la figure, ou construit à une étape d'avant) ? */
+function isKnown(p: Position, known: ReadonlyMap<string, Position>): boolean {
+	return [...known.values()].some((q) => Math.hypot(p.x - q.x, p.y - q.y) <= tolerance(p, q));
+}
+
 /** Les objets qu'un juge sait lire (les autres sont ceux d'autres étapes) */
-function objectsFor(check: ConstructionCheck, objects: readonly DrawnObject[]): DrawnObject[] {
+function objectsFor(
+	check: ConstructionCheck,
+	objects: readonly DrawnObject[],
+	known: ReadonlyMap<string, Position>
+): DrawnObject[] {
 	const keep = (...kinds: DrawnObject['kind'][]) => objects.filter((o) => kinds.includes(o.kind));
-	if (check.kind === 'segment') return keep('segment', 'regle');
+	if (check.kind === 'segment') {
+		// Un segment qui joint deux points connus est celui d'une étape `segment [AC]` (revue) :
+		// ce n'est pas un essai de [AB], dont B n'est pas encore construit
+		return keep('segment', 'regle').filter(
+			(o) =>
+				o.kind !== 'segment' ||
+				!(isKnown({ x: o.x1, y: o.y1 }, known) && isKnown({ x: o.x2, y: o.y2 }, known))
+		);
+	}
 	if (check.kind === 'segment_par') return keep('segment');
 	if (isRuledPolygonCheck(check)) return keep('segment', 'droite', 'regle');
 	if (check.kind === 'cercle') {
@@ -168,7 +185,7 @@ function judgeSegmentThrough(
 /** Verdict d'une étape, sur les objets que son juge sait lire */
 function judgeStep(step: CompositeStep, objects: readonly DrawnObject[]): ConstructionVerdict {
 	const { check, points, shapes, expected } = step;
-	const own = objectsFor(check, objects);
+	const own = objectsFor(check, objects, points);
 	try {
 		if (check.kind === 'segment') return judgeSegmentLength(check, points, shapes, own);
 		if (check.kind === 'segment_par') return judgeSegmentThrough(check, points, own);
@@ -192,7 +209,7 @@ function judgeStep(step: CompositeStep, objects: readonly DrawnObject[]): Constr
 /** Les points qu'une étape juste construit, d'après la figure de l'ÉLÈVE */
 function drawnPoints(step: CompositeStep, objects: readonly DrawnObject[]): [string, Position][] {
 	const { check, points, shapes, expected } = step;
-	const own = objectsFor(check, objects);
+	const own = objectsFor(check, objects, points);
 	if (check.kind === 'segment') {
 		const end = segmentLengthEnd(check, points, shapes, own);
 		return end ? [[check.end, end]] : [];
@@ -312,5 +329,9 @@ export function judgeComposite(
 		}
 		built.push(...drawnPoints(step, objects));
 	}
-	return { status: 'correct' };
+	// Points en trop (revue) : un point marqué qui n'est ni un point de la figure, ni un point
+	// construit (B, C, D, le point d'une étape) ; les autres juges ne les voient pas
+	const known = new Map([...constructionPositions(source), ...built]);
+	const stray = objects.some((o) => o.kind === 'point' && !isKnown({ x: o.x, y: o.y }, known));
+	return stray ? { status: 'incorrect', feedback: POINT_EXTRA_FEEDBACK } : { status: 'correct' };
 }

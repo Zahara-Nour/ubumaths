@@ -620,6 +620,17 @@ export function compositeStepPalette(check: ConstructionCheck): ConstructionTool
 	return [];
 }
 
+/**
+ * Les points qu'une étape d'une figure composée construit (B de `segment AB = 6 cm`, C et
+ * D d'un carré coté, le point placé) : ils n'ont pas à être nommés dans la figure
+ */
+export function compositeBuiltNames(check: ConstructionCheck): string[] {
+	if (check.kind === 'segment') return [check.end];
+	if (isRuledPolygonCheck(check)) return check.points.slice(2);
+	if (check.kind === 'point') return [check.name];
+	return [];
+}
+
 /** Les outils de `outils:` qui servent à cette étape (dans l'ordre de `outils:`) */
 export function compositeStepTools(
 	check: ConstructionCheck,

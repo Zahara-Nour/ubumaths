@@ -1,22 +1,22 @@
 ---
 title: Lot d'outils equerre-uni — journal
 date: 2026-11-28
-status: outils 40 (#3290) et 38 (#3299) livrés ; 45 à faire
+status: outils 40 (#3290) et 38 (#3299) livrés ; 45 en PR
 ---
 
 # Lot `equerre-uni` (outils 40, puis 38, puis 45)
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-28, après #3299._
+_Mis à jour le 2026-11-28, avant la PR de l'outil 45._
 
-- **État** : outils 40 (#3290) et 38 (#3299) livrés ; reste 45 (figure composée : plusieurs constructions
-  vérifiées dans une même figure, CM1-105, CM2-095) · **Prochaine action** : nouveau worktree
-  `../ubumaths-wt-outil-equerre-uni` (branche `feat/outil-equerre-uni-45`), outil 45 vérifié dans le code, puis
-  sa phase 0 · **En attente de David** : rien · **Pièges en cours** : à dire à David : la correction de l'outil 40
-  s'affiche aussi sur quadrillage, (d) segment → pied possible hors du segment (aucun cas réel) ; outil 38 :
-  `droite` reste exigée dans `outils:` (`droite, regle, point, equerre`) · **Worktree / branche** : aucun
-  (retirés par `pr:merger`).
+- **État** : outils 40 (#3290) et 38 (#3299) livrés ; outil 45 (figure composée) en PR, branche
+  `feat/outil-equerre-uni-45` (§ 3 à 3 quater) · **Prochaine action** : CI verte → `pnpm pr:merger`, puis
+  clore le lot (`outils-lots.md`, `outils-manquants.md` ligne 45 « Fait ») · **En attente de David** : rien ·
+  **Pièges en cours** : à dire à David : correction de l'outil 40 aussi sur quadrillage ; (d) segment → pied
+  hors du segment possible ; outil 38 : `droite` exigée dans `outils:` ; outil 45 : `cercle(I, passant=A)`,
+  pas de droite dans une figure composée (exemple C), limites du § 3 quater · **Worktree / branche** :
+  `../ubumaths-wt-outil-equerre-uni`, `feat/outil-equerre-uni-45`.
 
 ## 1. Outil 40 — phase 0 (2026-11-28)
 
@@ -249,3 +249,11 @@ entière, étape par étape.
   les deux cercles, la règle, le point I.
 - Limites (V1, à dire à David) : un point d'une autre étape placé à l'œil peut être compté à l'étape du
   premier point ; un cercle dont le centre n'est pas nommé (croisement non marqué) n'est pas construit.
+- Revue (`code-reviewer`, Opus) — corrigé, avec un test rouge chacun : (1) le générateur exigeait C et D
+  nommés dans la figure pour `segment [AC]` (`compositeBuiltNames`) ; (2) des points semés passaient
+  (contrôle final : un point qui n'est ni de la figure ni construit = « point de trop ») ; (3) l'étape
+  `segment AB = 6 cm` voyait le segment d'une étape `segment [AC]` (segments entre deux points connus
+  retirés) ; (4) deux cercles de même centre à deux étapes (« un seul cercle » sauté en mode composé) ;
+  (6) correction impossible → correction d'ensemble et erreur en console. Laissés : (5) un trait sans
+  rapport avec aucune étape n'est pas signalé (décision 3 de la phase 0 : trait de construction) ;
+  (7) une étape = un calcul de scène (cache à une entrée), acceptable pour 4 ou 5 étapes.
