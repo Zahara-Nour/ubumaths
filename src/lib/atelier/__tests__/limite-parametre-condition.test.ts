@@ -149,3 +149,11 @@ describe('V103 — revue : k = 0 change la limite', () => {
 		);
 	});
 });
+
+describe('V125 — une valeur dont les lettres se simplifient est un nombre', () => {
+	it('(x + k)/(x² + k) en 0 : 1, pour k ≠ 0 (pour k = 0, 1/x n’a pas de limite)', () => {
+		expect(latexOf(run('.limite \\frac{x+k}{x^2+k} en 0'))).toBe(
+			`\\lim\\limits_{x\\to 0} \\dfrac{x + k}{x^2 + k} = 1${FOR}k \\neq 0`
+		);
+	});
+});
