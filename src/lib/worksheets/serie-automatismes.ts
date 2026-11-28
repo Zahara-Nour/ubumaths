@@ -76,6 +76,7 @@ import {
 	findLabyrinthesAParcourir,
 	parseLabyrintheContent
 } from '#lib/ubumark/parser/labyrinthe-parser.ts';
+import { findYohakusARemplir, parseYohakuContent } from '#lib/ubumark/parser/yohaku-parser.ts';
 import { cheminDit } from '#lib/ubumark/utils/labyrinthe-answer.ts';
 import {
 	findVariationsToFill,
@@ -686,6 +687,23 @@ function reponsesDessinees(
 	return { texte: lignes.join('\n'), cases };
 }
 
+/** Grilles yohaku à remplir : cases vides à l'énoncé, `solution: oui` au corrigé (une case chacune) */
+function yohakusARemplir(modele: string, texte: string, corrige: boolean) {
+	return reponsesDessinees(
+		modele,
+		texte,
+		corrige,
+		findYohakusARemplir(texte),
+		'grille à remplir',
+		(corps) => {
+			const node = parseYohakuContent(corps);
+			return node.errors.length > 0 || node.spec === null
+				? node.errors.map((e) => e.message).join(' ; ')
+				: 1;
+		}
+	);
+}
+
 /** Horloges à régler (```horloge, `placer:`) : cadran vide à l'énoncé, aiguilles en vert au corrigé ; une case chacune */
 function horlogesARegler(modele: string, texte: string, corrige: boolean) {
 	return reponsesDessinees(
@@ -844,9 +862,13 @@ function figer(template: QuestionTemplate, instance: QuestionInstance): Question
 	const labyrinthesEnonce = labyrinthesAFiger(template.id, robotsEnonce.texte, false);
 	const labyrinthesCorrige = labyrinthesAFiger(template.id, robotsCorrige.texte, true);
 
+	// Grille yohaku à remplir : cases vides à l'énoncé, la solution de l'auteur au corrigé
+	const yohakusEnonce = yohakusARemplir(template.id, labyrinthesEnonce.texte, false);
+	const yohakusCorrige = yohakusARemplir(template.id, labyrinthesCorrige.texte, true);
+
 	// Horloge à régler, barres à construire : vides à l'énoncé, réponse en vert au corrigé
-	const horlogesEnonce = horlogesARegler(template.id, labyrinthesEnonce.texte, false);
-	const horlogesCorrige = horlogesARegler(template.id, labyrinthesCorrige.texte, true);
+	const horlogesEnonce = horlogesARegler(template.id, yohakusEnonce.texte, false);
+	const horlogesCorrige = horlogesARegler(template.id, yohakusCorrige.texte, true);
 	const barresEnonce = barresAConstruire(template.id, horlogesEnonce.texte, false);
 	const barresCorrige = barresAConstruire(template.id, horlogesCorrige.texte, true);
 
@@ -863,6 +885,7 @@ function figer(template: QuestionTemplate, instance: QuestionInstance): Question
 		trousEnonce.cases +
 		robotsEnonce.cases +
 		labyrinthesEnonce.cases +
+		yohakusEnonce.cases +
 		horlogesEnonce.cases +
 		barresEnonce.cases;
 	if (cases !== (instance.blanks?.length ?? 0)) {

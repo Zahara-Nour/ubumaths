@@ -35,6 +35,7 @@ export type CatalogNodeType =
 	| 'calcul'
 	| 'robot'
 	| 'labyrinthe'
+	| 'yohaku'
 	| 'collection'
 	| 'monnaie'
 	| 'schema-barres';
