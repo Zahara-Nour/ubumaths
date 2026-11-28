@@ -1,20 +1,21 @@
 ---
 title: Lot d'outils equation-lignes — résoudre une équation ligne par ligne (outil 55)
 date: 2026-11-28
-status: phase 0 posée, en attente de David
+status: outil 55 codé, PR à ouvrir
 ---
 
 # Lot `equation-lignes` (outil 55)
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-28, avant toute PR._
+_Mis à jour le 2026-11-28, avant la PR de l'outil 55._
 
-- **État** : outil 55 vérifié absent du code (aucune `AnswerKind` à plusieurs lignes) ; phase 0
-  posée ci-dessous · **Prochaine action** : réponses de David aux questions 1 à 4, puis tests
-  rouges · **En attente de David** : questions 1 à 4 · **Pièges en cours** : lot « mathAST » (un
-  seul à la fois, règle 1 d'`outils-lots.md`) · **Worktree / branche** :
-  `../ubumaths-wt-outil-equation-lignes`, `feat/outil-equation-lignes`.
+- **État** : outil 55 codé sur la branche (case `answerKind: 'resolution'`), tests verts, rendu
+  vu (`pnpm voir /dev/carte-question?question=resolution`) · **Prochaine action** : revue
+  `code-reviewer` (opus), PR, `pnpm pr:merger` · **En attente de David** : rien · **Pièges en
+  cours** : lot « mathAST » (un seul à la fois) ; `read-only="false"` laisse MathLive en lecture
+  seule ; `onbeforeinput` de Svelte est délégué (écouteur natif nécessaire) · **Worktree /
+  branche** : `../ubumaths-wt-outil-equation-lignes`, `feat/outil-equation-lignes`.
 
 ## Outil 55 — phase 0 (2026-11-28)
 
@@ -57,7 +58,14 @@ Une nouvelle nature de case, comme `intervalles` ou `equation` :
 {'answerKind': 'resolution', 'equation': '{{a}}x+{{b}}={{c}}'}   # réponse attendue : x={{s}}
 ```
 
-### Questions à David
+### Réponses de David (2026-11-28)
+
+David a répondu « je te suis » aux quatre questions ci-dessous, chacune avec ma recommandation :
+
+1. ligne fausse au milieu → réponse fausse ; 2. `x = 4` seul → juste, réglage `minLines` pour
+   exiger des étapes ; 3. marques ✓ / ✗ seulement à la validation ; 4. nom `resolution`.
+
+### Questions posées
 
 1. **Ligne fausse au milieu, dernière ligne juste** (deux erreurs qui se compensent) : réponse
    fausse (je recommande : c'est la méthode qu'on juge) ou ½ ?
@@ -73,3 +81,17 @@ Une nouvelle nature de case, comme `intervalles` ou `equation` :
 
 Lot réservé par `pnpm outils lancer` (c825324f80). Outil vérifié absent : `AnswerKind` =
 intervalles, equation, vecteur, matrice, primitive, solution-ed ; rien à plusieurs lignes.
+
+### 2026-11-28 — outil 55 codé
+
+- Juge pur `questions/resolution/resolution-answer.ts` (ensembles de solutions du solveur de
+  mathAST, ligne par ligne) ; lignes ↔ valeur de la case dans `resolution-lines.ts` (séparateur
+  `\\`).
+- Branché : `AnswerKind`, schéma (`minLines` 1 à 20), générateur (champs `equation`, `variable`,
+  `minLines`, comme `solution-ed`), validateur (AVANT la garde de complexité, le juge mesure
+  chaque ligne), barème serveur, lanceur de specs (`readExpectedResolution`), éditeur de modèle
+  (case « équation résolue ligne par ligne », sinon l'éditeur effaçait la nature à
+  l'enregistrement).
+- Écran : `ResolutionInput.svelte`, monté par `FillBlanksInput` pour une case seule dans
+  `$$?$$`. Exemple dans `/dev/carte-question?question=resolution`.
+- Corrigé : l'attendue `x = 4` ; les étapes, par le mode B existant (`linear-equation`).

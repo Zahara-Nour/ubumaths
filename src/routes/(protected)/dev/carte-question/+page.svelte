@@ -25,6 +25,7 @@
 	import { resolvedMarkdown } from '#lib/ubumark/index.ts';
 	import { RefreshCw, Copy, Check } from '@lucide/svelte';
 	import { browser } from '$app/env';
+	import { page } from '$app/state';
 
 	// ============================================================================
 	// STATE MANAGEMENT
@@ -47,8 +48,11 @@
 	// Copy feedback
 	let copiedSection = $state<string | null>(null);
 
-	// Selected question type for testing
-	let selectedQuestionType = $state<string>('numerical_exact');
+	// Selected question type for testing (`?question=resolution` : ouverte d'emblée, pour
+	// `pnpm voir` qui ne clique pas)
+	let selectedQuestionType = $state<string>(
+		page.url.searchParams.get('question') ?? 'numerical_exact'
+	);
 
 	// ============================================================================
 	// SAMPLE QUESTIONS
@@ -265,6 +269,16 @@
 					)
 				]
 			}
+		},
+		// Case « résolution » (outil 55) : l'élève écrit les équations successives
+		resolution: {
+			templateId: 'demo-resolution',
+			statement: resolvedMarkdown('Résous l’équation $3x-5=7$.\n\n$$\\placeholder[0]{}$$'),
+			blanks: [
+				{ expectedAnswer: 'x=4', type: 'math', answerKind: 'resolution', equation: '3x-5=7' }
+			],
+			grades: ['4', '3'],
+			level: 1
 		}
 	};
 
@@ -278,7 +292,8 @@
 		{ value: 'pythagore_blanks', label: 'Pythagore, deux trous' },
 		{ value: 'figure_a_completer', label: 'Figure à compléter (CP-059)' },
 		{ value: 'figure_carre', label: 'Terminer un carré (CP-060)' },
-		{ value: 'figure_alignes', label: 'Points alignés ? (CP-058)' }
+		{ value: 'figure_alignes', label: 'Points alignés ? (CP-058)' },
+		{ value: 'resolution', label: 'Équation ligne par ligne (outil 55)' }
 	];
 	const SIZE_ITEMS = [
 		{ value: 'sm', label: 'Petite' },
