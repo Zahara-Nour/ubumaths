@@ -12,7 +12,7 @@ _Mis à jour le 2026-11-28, après #3266._
 
 - **État** : #3266 mergée (L88, L89, L90, L92, L93). V110 corrigé et poussé sur
   `fix/ecarts-blocs-v110` (commit bf2578be5a, test rouge→vert, preuve du registre verte), **PR pas
-  encore ouverte**. L91 déjà corrigé par E46, à clore au registre sans code.
+  encore ouverte** (journal noté dans la branche). L91 déjà corrigé par E46, à clore au registre sans code.
 - **Prochaine action** : dans le worktree V110, `git merge origin/main` (récupère ce journal), noter
   V110 dans le journal, push, ouvrir la PR (pas de revue : position d'une cote, < 30 lignes),
   `pnpm pr:merger`. Puis clore le lot : barrer L88-L93 et V110 au registre (L91 « déjà corrigé par E46,
@@ -35,9 +35,17 @@ Pris le 2026-11-28 ([ecarts-lots.md](ecarts-lots.md)) : V110, L88, L89, L90, L91
 | L91   | **déjà corrigé** par E46 (9448e19f97, 2026-11-24) | rien : `tickLabelStride` écrit une graduation sur deux (ou plus) quand l'axe est serré, testé (`fit.test.ts`) |
 | L92   | vrai                                              | durée du panier bornée à 600 s (`MAX_QUESTION_DELAY_SECONDS`), store et tuile                                 |
 | L93   | vrai                                              | `MySelect` / `MyCheckbox` dans `PrecisionEditor` et `QuestionPreview`, noms accessibles avec la valeur        |
-| V110  | vrai                                              | phase 0 posée à David le 2026-11-28                                                                           |
+| V110  | vrai (preuve rouge)                               | cote écrite contre le trait, en haut à gauche de son bout au centre de la base (`espace-solides.ts`)          |
 
 ## Journal
+
+### 2026-11-28 — PR 2 (V110)
+
+- V110 : la distance à l'axe d'un cylindre coupé parallèlement à l'axe n'est plus écrite sous la
+  base mais contre son trait en tirets, en haut à gauche de son bout au centre de la base. À
+  mi-hauteur du trait (option 1 acceptée par David), elle tombait sur le bord de la coupe : vu à
+  l'écran pour 0,5 / 1 / 3 cm ; écart à l'option signalé à David. Test rouge → vert, preuve du
+  registre verte. Pas de revue (position d'une cote, < 30 lignes).
 
 ### 2026-11-28 — PR 1 (L88, L89, L90, L92, L93)
 
