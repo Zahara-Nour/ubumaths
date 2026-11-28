@@ -5,7 +5,7 @@ description: Reprendre les idées d'exercices d'une rubrique d'une autre platefo
 
 # Idées d'une rubrique, une session par rubrique
 
-Ce skill découle du chantier `ensembles-2de` ([journal](../../../docs/wip/ensembles-2de-progress.md)),
+Ce skill découle du chantier `ensembles-2de` ([journal](../../../docs/archive/wip/ensembles-2de/ensembles-2de-progress.md)),
 qui a couvert les rubriques « nombres et calculs » de Seconde. Chaque session prend **une rubrique d'un
 niveau** et la mène jusqu'à la publication. Pour la démarche des lots, il s'appuie sur
 [couvrir-un-niveau.md](../../../docs/pratiques/couvrir-un-niveau.md) (étapes, gabarits, pièges du § 9).
@@ -60,7 +60,7 @@ ignoré par git ; depuis un worktree, on y accède par ce chemin absolu.
 - Comparer avec nos modèles **de tous les niveaux**, relevés en prod (MCP en lecture seule) : titres,
   variations, pools. Le BO du niveau se trouve sous `src/lib/server/programmes/transcriptions/`.
 - Écrire le relevé dans `docs/wip/<sujet>-releve.md`, sur le gabarit de
-  [ensembles-2de-releve-nombres.md](../../../docs/wip/ensembles-2de-releve-nombres.md). Une ligne par
+  [ensembles-2de-releve-nombres.md](../../../docs/archive/wip/ensembles-2de/ensembles-2de-releve-nombres.md). Une ligne par
   exercice : ce qu'on demande, forme de réponse, nos modèles, verdict ✅ / 🟡 / ❌.
 - Une grosse rubrique peut se répartir entre des agents (`model: sonnet`, 10 à 15 exercices chacun,
   brief borné). Je relis leurs verdicts **dans le code**, pas dans leur résumé.

@@ -1,6 +1,6 @@
 """Écrit les 3 modèles du lot 1 du chantier `ensembles-2de` dans scripts/questions/2de-ensembles-calculs/.
 
-Phase 0 validée par David le 2026-11-20 (« je suis tes recos », journal `docs/wip/ensembles-2de-progress.md`).
+Phase 0 validée par David le 2026-11-20 (« je suis tes recos », journal `docs/archive/wip/ensembles-2de/ensembles-2de-progress.md`).
 Points : 2-243 (ℕ, ℤ, 𝔻, ℚ, ℝ), 2-203 (symboles), 2-206 (complémentaire, notation E \\ A). Un point par
 modèle ; nœud et tag posés par la migration de rangement, après le `--publier` de David.
 
