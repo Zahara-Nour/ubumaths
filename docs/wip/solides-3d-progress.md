@@ -828,3 +828,12 @@ Exemple suivi : cube ABCDEFGH, I milieu de [AE], `points: I milieu AE, K interse
   côte) ; pyramide avec O = (AC) ∩ (BD), K = (AI) ∩ (SBD), tournée ; K dans la marge, juste à gauche de E (son
   nom touche celui de E, comme tout point posé contre un sommet). **Pas vu** : la fiche PDF imprimée (le
   Typst est testé, pas compilé), le thème sombre, le doigt sur un vrai téléphone.
+- **Revue** (`code-reviewer`, opus) : témoin indépendant sur 25 000 entrées (10 solides, dimensions de 0,1 à
+  1000, droites et plans au hasard parmi sommets, milieux et centres) — chaque point accepté est sur la droite
+  et sur le plan ou l'autre droite, aucun accepté sans point unique, aucun sécant refusé à tort, ni NaN ni
+  exception ; 80 entrées tordues, une seule erreur à chaque fois ; aucun consommateur ne suppose `of` non
+  vide ; bloc sans intersection inchangé. **Deux points corrigés** : `K intersection(IG)(BDE)` sans espace
+  disait « non compris » avec l'exemple des milieux (accepté maintenant) ; le test de `section:` / `tracer:`
+  asserte une seule erreur. **Laissés** : `intersection` + `repere:` + `section:` dit le conflit deux fois
+  (une ligne chacun) ; la marge se rapporte à la plus grande dimension, comme au lot 7c (`pave 0,1 1 0,5` :
+  un point à 0,1 hors d'un pavé épais de 0,1 est accepté).

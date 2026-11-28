@@ -734,7 +734,8 @@ function readPoints(
 	};
 	for (const item of items) {
 		const byCoords = coordsItem(item);
-		const match = byCoords === null ? /^(\S+)\s+(\S+)\s*(.*)$/.exec(item.trim()) : null;
+		// Le mot s'arrête à une parenthèse : « K intersection(IG)(BDE) » se lit comme avec une espace
+		const match = byCoords === null ? /^(\S+)\s+([^\s(]+)\s*(.*)$/.exec(item.trim()) : null;
 		const name = byCoords?.[1] ?? match?.[1] ?? item.trim();
 		const kind = plain(match?.[2] ?? '');
 		if (

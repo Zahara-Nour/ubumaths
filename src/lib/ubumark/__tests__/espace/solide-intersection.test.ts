@@ -84,6 +84,11 @@ describe('```solide — points: K intersection (lecture)', () => {
 		expect(close3(at[9], inCube3(at, [0.2, 0.2, 0.6]))).toBe(true);
 	});
 
+	it('sans espace avant les parenthèses, ni entre elles', () => {
+		const s = spec(...CUBE, 'points: I milieu AE, K intersection(IG)(BDE)');
+		expect(s.points[1].meet).toEqual({ line: [8, 6], other: [1, 3, 4] });
+	});
+
 	it('le plan d’abord, la droite ensuite : le même point', () => {
 		const s = spec(...CUBE, 'points: I milieu AE, K intersection (BDE) (IG)');
 		expect(s.points[1].meet).toEqual({ line: [8, 6], other: [1, 3, 4] });
@@ -252,11 +257,11 @@ describe('```solide — points: K intersection (lecture)', () => {
 			errors('forme: cylindre 2 4', "sommets: O O'", "points: K intersection (OO') (OO')")[0]
 		).toContain('polyèdres seulement');
 		expect(
-			errors(...CUBE, 'points: K intersection (AG) (BH)', 'section: parallele ABCD 1')[0]
-		).toContain('intersection ne va pas encore avec section:');
-		expect(
-			errors(...CUBE, 'points: K intersection (AG) (BH)', 'tracer: vecteur AB + AD')[0]
-		).toContain('intersection ne va pas encore avec tracer:');
+			errors(...CUBE, 'points: K intersection (AG) (BH)', 'section: parallele ABCD 1')
+		).toEqual([expect.stringContaining('intersection ne va pas encore avec section:')]);
+		expect(errors(...CUBE, 'points: K intersection (AG) (BH)', 'tracer: vecteur AB + AD')).toEqual([
+			expect.stringContaining('intersection ne va pas encore avec tracer:')
+		]);
 		// Sans intersection, points: va toujours avec tracer:
 		expect(errors(...CUBE, 'points: I milieu AE', 'tracer: vecteur AB + AD')).toEqual([]);
 	});
