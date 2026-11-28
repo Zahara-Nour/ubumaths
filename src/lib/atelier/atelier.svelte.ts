@@ -100,7 +100,7 @@ import {
 	strokeDisplaySchema,
 	type StoredDisplay
 } from './display';
-import { astOf as astOfDefinition } from './parse';
+import { astOf as astOfDefinition, readingMode } from './parse';
 import { renameInObject } from './rename';
 import { INTERNAL_LETTER, letterRejection, typedLetterOf } from './letter';
 import { perfSwitches } from './perf-switches';
@@ -109,6 +109,7 @@ import {
 	citedIntervals,
 	intervalNamesOf,
 	ONLY_FUNCTIONS,
+	outsideIntervalRefusal,
 	readInterval,
 	renamedInInterval,
 	type CheckedInterval,
@@ -583,6 +584,15 @@ export interface ListChartState {
 	readonly partner: string | null;
 	/** Absent = bâtons (v1) */
 	readonly kind?: ListChartKind;
+}
+
+/**
+ * La définition lue par `outsideIntervalRefusal` (des appels `f(3)` en texte) :
+ * venue d'un champ MathLive, ses `\left(` `\right)` redeviennent des parenthèses.
+ */
+function callsAsText(object: AtelierObject): string {
+	if (readingMode(object.provenance ?? 'url') !== 'latex') return object.definition;
+	return object.definition.replace(/\\left\(/g, '(').replace(/\\right\)/g, ')');
 }
 
 export class Atelier {
@@ -3624,6 +3634,12 @@ export class Atelier {
 				'message' in parameterInterval
 			) {
 				ownError.set(o.name, parameterInterval.message);
+			}
+			// `j = f(3)` puis l'ensemble de f qui ne contient plus 3 (curseur de k,
+			// f réécrite) : le refus de Calcul (I4), en erreur jusqu'au retour de 3
+			if (!ownError.get(o.name) && construction === null) {
+				const outside = outsideIntervalRefusal((n) => this.get(n), callsAsText(o));
+				if (outside !== null) ownError.set(o.name, outside);
 			}
 			deps.set(
 				o.name,

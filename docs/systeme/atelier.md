@@ -663,7 +663,11 @@ fonction (I3, `computeDomain` puis `difference` : « ln(x) n'est pas défini sur
 en −1). » ; pas jugé quand la définition cite d'autres objets) → refusé, rien ne change. Une
 définition retapée sans « sur » (Calcul ou carte) retire l'intervalle (I6). `f(5)` hors de
 l'ensemble est refusé dans Calcul (`outsideIntervalRefusal`, argument sans variable ou fait de valeurs de l'atelier — `f(b)` avec b = 5 —, et aussi dans une définition, `a = f(5)`) et par l'image
-de la carte (I4). Dans la carte, `smartFence` est coupé dès que le champ contient le « sur » d'un
+de la carte (I4). Quand l'ensemble change APRÈS (`j = f(3)`, puis le curseur de k pousse f sur
+[4 ; 5], ou f réécrite), `#recomputeOnce` refait le même contrôle sur chaque définition (texte,
+ou LaTeX débarrassé de `\left(` `\right)`) : j passe en erreur avec le message de Calcul, ce qui
+le cite aussi, et j redevient juste quand 3 revient dans l'ensemble. `f(x)` dans une autre
+fonction n'est pas une image (héritage, d) : jamais jugé ainsi. Dans la carte, `smartFence` est coupé dès que le champ contient le « sur » d'un
 intervalle — même règle `intervalWord`, « sur » en fin de saisie compris (jugé au `keydown`,
 `beforeinput` et `input` en capture : l'`input` arrive trop tard) — sinon `[0;1[` s'écrit
 `\left\lbrack0;1\left\lbrack\right\rbrack\right\rbrack`, illisible. Dans la console, une
