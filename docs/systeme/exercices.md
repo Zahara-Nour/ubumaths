@@ -100,11 +100,11 @@ view own exercises`, `created_by = auth.uid()`, depuis 20260618093000 : un prof 
 ## Côté professeur
 
 **Le hub « Contenu »** (`dashboard/teacher/contenu/`, vérifié le 2026-10-13) : `+layout.svelte`
-pose cinq onglets (`GroupedRouteLayout`) — Templates (modèles de chapitre,
-[cours-et-chapitres.md](cours-et-chapitres.md#modèles-de-chapitre)), Exercices (ci-dessous),
-Énigmes ([jeux-et-economie.md](jeux-et-economie.md)), Worksheets ([fiches-et-pdf.md](fiches-et-pdf.md)),
-Notebooks ([python/README.md](python/README.md)). `+page.server.ts` redirige (308) vers l'onglet
-Templates. Le hub n'a pas de garde à lui : celle de `dashboard/teacher/+layout.server.ts`
+pose cinq onglets (`GroupedRouteLayout`) — Modèles de chapitres
+([cours-et-chapitres.md](cours-et-chapitres.md#modèles-de-chapitre)), Exercices (ci-dessous),
+Énigmes ([jeux-et-economie.md](jeux-et-economie.md)), Fiches ([fiches-et-pdf.md](fiches-et-pdf.md)),
+Carnets Python ([python/README.md](python/README.md)) ; libellés français depuis V121. `+page.server.ts`
+redirige (308) vers l'onglet Modèles de chapitres. Le hub n'a pas de garde à lui : celle de `dashboard/teacher/+layout.server.ts`
 (prof seul, 403 sinon) s'applique, et certains onglets en ajoutent une.
 
 | Page (`dashboard/teacher/contenu/exercices/`) | Rôle                                                                                                                                                                                                                                                                                                                                                                    |

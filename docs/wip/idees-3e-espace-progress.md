@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-28, après #3272 (F1 mergé)._
+_Mis à jour le 2026-11-28, après #3282 (rangement de F1, `db:migrate` joué)._
 
-- **État** : lot 1 en prod et relu. F1 (modèle 4-034, 7 variations) mergé sur `main` par #3272,
-  **pas encore en brouillon en prod** (§ Lot 2) · **Prochaine action** : `deploy:prod` (demande de
-  David : #3264, l'outil n° 72, n'est pas en prod), puis brouillon de F1 en prod par David, relecture
-  dans `/dev/modeles`, puis migration de rangement générée · **En attente de David** : le
-  `deploy:prod` · **Pièges en cours** : `--publier` en local écrit l'id local dans le fichier (à
+- **État** : lot 1 en prod et relu. F1 (58f04074, 4-034, 7 variations) en brouillon en prod, rangé
+  sous « Géométrie > Théorème de Pythagore > calcul de longueurs » et tagué 4-034 (vérifié en prod)
+  · **Prochaine action** : relecture de F1 par David dans `/dev/modeles?point=4-034`, puis lecture
+  des verdicts en base, corrections éventuelles, publication · **En attente de David** : la
+  relecture · **Pièges en cours** : `--publier` en local écrit l'id local dans le fichier (à
   retirer avant tout commit) · **Worktree / branche** : aucun (retiré par `pr:merger`)
 
 ## Rubrique
@@ -147,3 +147,14 @@ grades 4, niveau 2 à côté de 22d947f4).
 - `question:specs` 29/29, 350 tirages ; `sonde-cubes` 300 blocs, 0 problème ; `create-questions` en
   simulation vert. Réponse juste ou fausse non jouée à la main dans l'aperçu : les specs passent
   par le même juge.
+
+## En prod (2026-11-28)
+
+- Mise en prod 0.117.0 : #3264 (outil n° 72) et #3272 (F1) livrés.
+- `create-questions --publier` par David : F1 = `58f04074-dcf6-448f-b862-dc1486988794`, `draft`,
+  7 variations (relu en prod). Migration `20261128065817_questions_idees_3e_espace_neufs_rangement_tags`
+  générée par `migration-rangement.ts` (nœud « Géométrie > Théorème de Pythagore > calcul de
+  longueurs », point 4-034), fixture comprise.
+- `security-auditor` (2026-11-28) : aucun finding bloquant ; gardes vérifiées sur l'état de la prod
+  (modèle sans nœud ni tag, nœud et point uniques). Test `migrations-rangement-tags` vert.
+- #3282 mergé, `db:migrate` joué le 2026-11-28 (accord de David) ; nœud et tag 4-034 vérifiés en prod.

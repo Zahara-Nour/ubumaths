@@ -1,10 +1,35 @@
+---
+title: Chantier solides-3d — figures de l'espace qui tournent
+date: 2026-11-28
+status: clos
+---
+
 # Chantier `solides-3d` — figures de l'espace qui tournent
 
 ## Reprendre ici
 
+_Mis à jour le 2026-11-28 : chantier clos._
+
+- **État** : clos. [ADR 0045](../../adr/0045-figures-de-l-espace-qui-tournent.md) ; lots 1 à 6, 7a, 7b,
+  bord en butée, 7c, petite PR d'après le 7c et 7e mergés (#3195, #3200, #3211, #3216, #3222, #3227, #3229,
+  #3235, #3244, #3251, #3252, #3257, #3263, #3273), découpage des § 4 et § 17 recompté contre les PR et le
+  code le 2026-11-28. Lots 1 à 7c en prod (0.117.0) ; le 7e (#3273), essayé par David le 2026-11-28
+  (« c'est bon »), attend un `deploy:prod` demandé par David.
+- **Durable** : [docs/systeme/ubumark.md](../../systeme/ubumark.md) (blocs solide et cubes, moteur de vue,
+  pièges de la rotation) et l'ADR 0045.
+- **Non fait, noté dans [outils-manquants.md](../../wip/outils-manquants.md)** : n° 73, repère sans solide
+  (lot 7d, laissé tant qu'aucun modèle n'en a besoin) ; n° 74, vecteur à tracer sur une figure qui porte des
+  droites, des plans, un repère ou un point d'intersection (écart entre les comportements 86 et 98, laissé
+  par David le 2026-11-28).
+- **Tranché par David le 2026-11-28, à la clôture (« go » sur les recommandations)** : cases de `retrouver:`
+  teintées et description en gris sous le réglage gardées telles quelles ; K n'est pas un point à toucher.
+- **Worktree / branche** : aucun ; liens du tailnet retirés.
+
+## Dernier « Reprendre ici » avant la clôture
+
 _Mis à jour le 2026-11-28, après #3273 (lot 7e mergé)._
 
-- **État** : [ADR 0045](../adr/0045-figures-de-l-espace-qui-tournent.md) ; lots 1 à 6, 7a, 7b, bord en
+- **État** : [ADR 0045](../../adr/0045-figures-de-l-espace-qui-tournent.md) ; lots 1 à 6, 7a, 7b, bord en
   butée, 7c, petite PR d'après le 7c et **lot 7e** (point d'intersection, `points: K intersection (IG) (BDE)`,
   § 23 et 24) mergés (#3195 à #3273). Le 7e n'a pas encore été essayé par David. Les lots 3 à 7e ne sont pas
   en prod sans `deploy:prod` demandé par David (le vérifier avant de l'affirmer).
@@ -771,7 +796,7 @@ positions relatives ; le repère sert ensuite aux calculs (représentations para
 ## 23. Hors des lots : segments et angles droits du bloc solide (2026-11-28)
 
 Outil n° 72 d'`outils-manquants.md`, fait par la session `outils` dans son propre chantier, journal
-[solide-segments](../archive/wip/solide-segments-progress.md), #3264 : `segments: [HF], [DF]` et
+[solide-segments](solide-segments-progress.md), #3264 : `segments: [HF], [DF]` et
 `angles-droits: DHF` (polyèdres, ni `section:` ni `tracer:`, rotation et PDF compris). Reprend
 `hiddenStretches` comme les droites. Piège : en cavalière, la diagonale [AG] d'un cube se dessine sur
 l'arête [FG].

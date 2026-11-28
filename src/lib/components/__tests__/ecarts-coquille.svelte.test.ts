@@ -1,9 +1,9 @@
 /**
  * Écarts de la coquille qui demandent un navigateur (docs/ecarts/registre.md) :
- * L41, L43, L52 (L45 corrigé : test ordinaire).
+ * L52 (L41 corrigé : tests dans recherche-prof.svelte.test.ts ; L43 et L45 corrigés : tests ordinaires).
  *
  * Le projet vitest `ecarts` n'a pas de navigateur : chaque écart est ici en
- * `it.fails`, et son nom porte le marqueur « écart L41 » que la preuve du
+ * `it.fails`, et son nom porte le marqueur « écart L52 » que la preuve du
  * registre cherche. Tant que l'écart est vrai, `it.fails` est vert ; à la
  * correction il devient rouge, et la PR qui corrige retire `.fails` ET le
  * marqueur (docs/pratiques/registre-des-ecarts.md § Les trois preuves).
@@ -12,24 +12,17 @@
  * test ordinaire qui fait le même geste sur un cas qui marche déjà, et le corps
  * du `it.fails` ne porte qu'une affirmation.
  */
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import { createRawSnippet, flushSync } from 'svelte';
-import Recherche from '../../../routes/(protected)/dashboard/teacher/recherche/+page.svelte';
-import type { PageData as RecherchePageData } from '../../../routes/(protected)/dashboard/teacher/recherche/$types';
 import TeacherLayout from '../../../routes/(protected)/dashboard/teacher/+layout.svelte';
 import type { LayoutData as TeacherLayoutData } from '../../../routes/(protected)/dashboard/teacher/$types';
 import Wheel from '../Wheel.svelte';
-import { StudentDashboardCache } from '#lib/stores/studentDashboardCache.svelte.ts';
 import { clearSelectedClass } from '#lib/stores/selectedClass.svelte.ts';
 import { teacherCache } from '#lib/stores/teacherDashboardCache.svelte.ts';
 import type { ClassWithData } from '#lib/server/students.ts';
-import type { ResourceKind } from '#lib/resources/kinds.ts';
-import type { StudentRewards } from '#lib/types/student-cache.ts';
 
 // Constantes
-const MINUTE = 60 * 1000;
-const REWARDS: StudentRewards = { gidouilles: 10, bonus: 0, vip_cards: {} };
 const STUDENTS = [
 	{ id: 'eleve-1', firstname: 'Ada' },
 	{ id: 'eleve-2', firstname: 'Blaise' },
@@ -38,26 +31,6 @@ const STUDENTS = [
 
 // Functions
 /** Les données de la page de recherche pour une adresse `?q=…&kinds=…`. */
-function rechercheData(query: string, kinds: ResourceKind[]): RecherchePageData {
-	const data = {
-		query,
-		kinds,
-		tags: [] as string[],
-		results: [] as RecherchePageData['results'],
-		searched: false,
-		error: null
-	} satisfies Pick<
-		RecherchePageData,
-		'query' | 'kinds' | 'tags' | 'results' | 'searched' | 'error'
-	>;
-	return data as RecherchePageData;
-}
-
-/** Les types cochés tels que le formulaire les enverrait. */
-function kindsEnvoyes(container: HTMLElement): string {
-	return container.querySelector<HTMLInputElement>('input[name="kinds"]')?.value ?? 'absent';
-}
-
 function classe(id: string, name: string): ClassWithData {
 	return {
 		id,
@@ -107,64 +80,6 @@ async function dureeDeRotation(props: { spinDuration?: number }): Promise<string
 	const svg = container.querySelector('svg');
 	return svg ? getComputedStyle(svg).transitionDuration : 'absent';
 }
-
-describe('recherche du prof : filtres au retour arrière', () => {
-	it('témoin : les types de l’adresse d’arrivée sont cochés', async () => {
-		const { container } = await render(Recherche, {
-			props: { data: rechercheData('fractions', ['exercise']) }
-		});
-		expect(kindsEnvoyes(container)).toBe('exercise');
-	});
-
-	// Aujourd'hui : « exercise » reste coché après la navigation.
-	it.fails('écart L41 : une autre recherche (retour arrière) coche ses propres types', async () => {
-		const { container, rerender } = await render(Recherche, {
-			props: { data: rechercheData('fractions', ['exercise']) }
-		});
-		await rerender({ data: rechercheData('pythagore', ['worksheet']) });
-		expect(kindsEnvoyes(container)).toBe('worksheet');
-	});
-});
-
-describe('cache élève : donnée périmée', () => {
-	let cache: StudentDashboardCache;
-	let seen: StudentRewards | null | undefined;
-	let stop: () => void;
-
-	// Un écran qui lit les récompenses par `getRewardsSync`, comme un `$derived`.
-	beforeEach(() => {
-		vi.useFakeTimers();
-		cache = new StudentDashboardCache();
-		cache.hydrateRewards(REWARDS);
-		seen = undefined;
-		stop = $effect.root(() => {
-			$effect(() => {
-				seen = cache.getRewardsSync();
-			});
-		});
-		flushSync();
-	});
-	afterEach(() => {
-		stop();
-		vi.useRealTimers();
-	});
-
-	it('témoin : l’écran lit les récompenses, et une lecture directe les voit périmées après 10 minutes', () => {
-		expect(seen?.gidouilles).toBe(10);
-		vi.advanceTimersByTime(10 * MINUTE);
-		flushSync();
-		expect(cache.getRewardsSync()).toBeNull();
-	});
-
-	// Aujourd'hui : l'écran garde les récompenses périmées (l'heure n'est pas réactive).
-	it.fails('écart L43 : après 10 minutes, l’écran ne montre plus les récompenses périmées', () => {
-		const avant = seen;
-		vi.advanceTimersByTime(10 * MINUTE);
-		flushSync();
-		// Rien (null) ou des récompenses relues : tout sauf la lecture périmée.
-		expect(seen).not.toBe(avant);
-	});
-});
 
 describe('layout du prof : données neuves après une action de formulaire', () => {
 	beforeEach(() => {

@@ -72,7 +72,7 @@ describe('moduleSideEffects', () => {
 
 	it('garde les effets des modules de la liste', () => {
 		expect(moduleSideEffects('/repo/src/lib/zod-locale.ts')).toBe(true);
-		expect(moduleSideEffects('/repo/src/lib/constructions/instruments/ruler.ts')).toBe(true);
+		expect(moduleSideEffects('/repo/src/lib/geometry-core/dsl/builtins.ts')).toBe(true);
 	});
 
 	it('ne touche ni aux composants, ni aux dépendances, ni aux modules virtuels', () => {

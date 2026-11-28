@@ -176,6 +176,18 @@ les lit dans un `$derived` se met à jour quand le cache change.
 
 **Lecture synchrone** pour l'affichage : `get*Sync()` rend l'entrée si elle est encore fraîche,
 sinon `null` (ou `[]`). `getRewardsMapReactive(classId)` rend la `SvelteMap` sans contrôle de TTL.
+Exception, le cache élève : `getRewardsSync()` et `getWarningsSync(periodId)` rendent la
+**dernière valeur connue**, même arrivée à échéance (`null` seulement si rien n'a été lu).
+
+**Relecture à l'échéance (cache élève)** : à la fin de leurs 10 minutes, les récompenses et les
+avertissements déjà lus sont relus tout seuls (`armRefresh`, une minuterie par entrée, réarmée à
+chaque écriture). L'écran garde l'ancienne valeur jusqu'à l'arrivée de la nouvelle ; une relecture
+en échec ne touche pas au cache et réessaie une minute plus tard. Une relecture dont l'entrée a
+changé pendant qu'elle était en route (gain optimiste, hydratation, lecture refaite) est jetée. Un onglet caché ne relit pas : il relit, au retour sur l'onglet
+(`visibilitychange`), les entrées arrivées à échéance pendant l'absence. Une invalidation annule la
+relecture programmée. Navigateur seulement. Comportement suivi par David le 2026-11-28 (écart L43) ;
+le Palotin, sans lecture d'API dans ce cache, n'est pas relu. Test :
+`src/lib/stores/__tests__/studentDashboardCache-relecture.svelte.test.ts`.
 
 **Purge des classes** : `hydrateAllClasses(classes)` reçoit la liste **complète** des classes du
 prof et retire du cache celles qui n'y sont plus (supprimées, désactivées) ; une liste vide vide le
@@ -252,6 +264,9 @@ notifications, le temps réel relance ensuite la lecture ([realtime.md](realtime
   `?tags=`), formulaire `GET`, aucune lecture côté client. Moins de 2 caractères et aucun tag :
   pas de recherche. 50 résultats au plus, 10 tags au plus, 100 caractères au plus. Les liens
   viennent du registre `#lib/resources/index.ts`. Moteur : `searchResources` ([serveur.md](serveur.md)).
+  Les filtres (types, tags) suivent l'adresse à chaque navigation, retour arrière compris (L41) ;
+  sans résultat, le message cite le texte et les tags cherchés (« Aucun résultat pour le tag
+  #fractions. », V74). Tests : `src/lib/components/__tests__/recherche-prof.svelte.test.ts`.
 - **`/dashboard/teacher/documents`** : documents du tuteur IA (`DocumentManager`, RAG).
 
 `Wheel.svelte` sert aussi à l'accueil prof, à `VipCardUseDialog` et à `/dev/roue`. Les
@@ -289,10 +304,8 @@ du 2026-11-11 : `reading 'id'` sur `/dev/modeles`, onglet d'avant 0.81.0).
 
 ## Pièges
 
-- **Les getters `*Sync` ne réagissent pas au temps.** Ils comparent `Date.now()` au TTL, mais
-  `Date.now()` n'est pas réactif : un `$derived` ne se recalcule pas à l'expiration. Il rend
-  `null` au prochain recalcul déclenché par autre chose, et rien ne relit l'API tant qu'un getter
-  asynchrone n'est pas appelé.
+- **Les getters `*Sync` du cache prof et `getBuddySync` ne suivent pas leur échéance** : écart
+  L141 au [registre](../ecarts/registre.md).
 - **Les classes du cache prof ne viennent que de l'hydratation** : aucune lecture d'API ne
   remplit une classe seule (`getAllClassesSync` lit ce que les pages ont versé).
 - **Le layout prof refuse l'admin.** Une garde `teacher || admin` dans une page sous

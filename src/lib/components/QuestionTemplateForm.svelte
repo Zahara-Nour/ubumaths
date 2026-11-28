@@ -206,7 +206,7 @@
 
 	async function loadJsonEditor() {
 		if (!loadedComponents.jsonEditor) {
-			const module = await import('#lib/constructions/components/JsonEditor.svelte');
+			const module = await import('#lib/components/JsonEditor.svelte');
 			JsonEditorComponent = module.default;
 			loadedComponents.jsonEditor = true;
 		}
