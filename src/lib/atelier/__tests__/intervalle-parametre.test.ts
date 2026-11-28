@@ -11,11 +11,12 @@
 import { describe, it, expect } from 'vitest';
 import { CalcDesk } from '../desk.svelte';
 import { Atelier } from '../atelier.svelte';
-import { intervalFieldLatex, plotRestrictionOf } from '../interval';
+import { intervalFieldLatex, plotRestrictionOf, readInterval } from '../interval';
 import { syncPlots } from '../plot-sync';
 import { GrapheurStore } from '#lib/stores/grapheur.svelte.ts';
 import { isExplicitFunction, type ExplicitFunction } from '#lib/grapheur/types.ts';
 import type { Entry } from '../desk.svelte';
+import { number } from '#lib/mathAST/factory.ts';
 
 // =============================================================================
 // Aides
@@ -219,10 +220,54 @@ describe('un ensemble impossible met la carte en erreur', () => {
 		expect(d.atelier.get('f')).toBeUndefined();
 	});
 
+	it('k à 6, puis rechargement : l’ensemble [k;5] reste écrit, f en erreur ; k à 2 : il revient', () => {
+		const d = desk('k = 2', 'f(x) = x sur [k;5]');
+		slide(d, 'k', 6);
+		const fresh = new Atelier();
+		const report = fresh.restore(d.atelier.serialize());
+		expect(report.skipped).toEqual([]);
+		const f = fresh.get('f');
+		expect(f?.kind === 'function' && f.interval).toBe('[k;5]');
+		expect(f?.status).toBe('error');
+		expect(fresh.slideTo('k', 2).ok).toBe(true);
+		expect(plotRestrictionOf(fresh.get('f'))).toEqual([piece(2, 5)]);
+	});
+
+	it('k à 6, un autre geste, puis Annuler : l’ensemble [k;5] n’est pas effacé', () => {
+		const d = desk('k = 2', 'f(x) = x sur [k;5]');
+		slide(d, 'k', 6);
+		d.submit('g(x) = 1');
+		d.undo();
+		expect(d.atelier.get('g')).toBeUndefined();
+		const f = d.atelier.get('f');
+		expect(f?.kind === 'function' && f.interval).toBe('[k;5]');
+		expect(f?.status).toBe('error');
+	});
+
+	it('k à 6 : la formule de f se modifie quand même, l’ensemble gardé', () => {
+		const d = desk('k = 2', 'f(x) = x sur [k;5]');
+		slide(d, 'k', 6);
+		expect(d.atelier.update('f', 'x^3').ok).toBe(true);
+		const f = d.atelier.get('f');
+		expect(f?.kind === 'function' && f.interval).toBe('[k;5]');
+		expect(f?.status).toBe('error');
+		slide(d, 'k', 2);
+		expect(d.atelier.get('f')?.status).toBe('ok');
+	});
+
 	it('une lettre qui n’est pas une valeur ([t;5] dans f(t)) reste illisible', () => {
 		const d = desk();
 		d.submit('f(t) = t sur [t;5]');
 		expect(last(d).failed).toBe(true);
 		expect(d.atelier.get('f')).toBeUndefined();
+	});
+});
+
+describe('le champ de la carte se relit', () => {
+	it(']0;k] \\ {1} écrit dans Calcul : le champ se relit, sans figer k', () => {
+		const d = desk('k = 2', 'f(x) = 1/(x-1) sur ]0;k] \\ {1}');
+		const latex = intervalFieldLatex(d.atelier.get('f')!);
+		expect(latex).toContain('k');
+		expect(readInterval(latex!, 'x', new Map([['k', number('2')]])).ok).toBe(true);
 	});
 });

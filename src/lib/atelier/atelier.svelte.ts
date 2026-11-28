@@ -689,6 +689,12 @@ export class Atelier {
 	#baseline: string | null = null;
 	/** Annuler ou rétablir remet une photo : rien de ce qu'il écrit n'est une étape. */
 	#restoring = false;
+	/**
+	 * Une relecture d'atelier (Annuler, chargement, lien) est en cours : un
+	 * ensemble à paramètre (`[k;5]`) y est repris tel qu'écrit, jamais jugé sur
+	 * les valeurs du moment (k = 6 l'effacerait, revue).
+	 */
+	#restoringObjects = false;
 	/** L'étape gardée par la dernière `step` (voir `lastStepId`). */
 	#lastStepId: number | null = null;
 	/** Le point glissé à la souris, jusqu'au relâcher (`endGesture`). */
@@ -1257,12 +1263,20 @@ export class Atelier {
 		written: string,
 		definition: string,
 		provenance: Provenance,
-		letter: string | undefined
+		letter: string | undefined,
+		kept = false
 	): CheckedInterval {
 		if (kind !== 'function') return { ok: false, message: ONLY_FUNCTIONS };
 		const values = this.#intervalValues(written, letter ?? INTERNAL_LETTER);
 		// Une valeur citée pas encore là (`[k;5]` avant `k = 2`) : la fonction l'attendra
 		if (values === 'waiting') return { ok: true, interval: written.trim() };
+		// Un ensemble à paramètre déjà accepté (relu par Annuler ou un chargement,
+		// gardé par une formule modifiée) : son écriture fait foi. Les valeurs du
+		// moment (k = 6 → vide) mettent la fonction en erreur au recalcul, comme un
+		// curseur glissé — jamais l'ensemble effacé ni la formule refusée (revue)
+		if (values !== undefined && (kept || this.#restoringObjects)) {
+			return { ok: true, interval: written.trim() };
+		}
 		return checkInterval(written, definition, provenance, this.functionNames, letter, values);
 	}
 
@@ -1619,7 +1633,8 @@ export class Atelier {
 				wanted,
 				definition,
 				provenance,
-				keptLetter
+				keptLetter,
+				interval === undefined
 			);
 			if (!checked.ok) return { ok: false, message: checked.message };
 			keptInterval = checked.interval;
@@ -2820,11 +2835,14 @@ export class Atelier {
 	): RestoreReport {
 		// Une relecture n'est jamais une étape : les réglages qu'elle repose non plus
 		const restoring = this.#restoring;
+		const restoringObjects = this.#restoringObjects;
 		this.#restoring = true;
+		this.#restoringObjects = true;
 		try {
 			return this.#restoreObjects(stored, provenances);
 		} finally {
 			this.#restoring = restoring;
+			this.#restoringObjects = restoringObjects;
 		}
 	}
 

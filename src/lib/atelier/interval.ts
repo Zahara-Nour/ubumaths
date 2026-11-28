@@ -541,11 +541,16 @@ export function intervalFieldLatex(object: AtelierObject): string | null {
 	if (readingMode(object.provenance ?? 'url') === 'latex') return object.interval;
 	// À paramètre (`[k;5]`) : l'écriture, jamais les valeurs du moment (le champ relu les figerait)
 	if (intervalNamesOf(object.interval, object.letter ?? INTERNAL_LETTER).length > 0) {
+		// Mêmes réécritures que l'ensemble numérique ci-dessous : `]0;k] \ {1}` se relit
 		return object.interval
 			.replace(/∞/g, '\\infty ')
 			.replace(/−/g, '-')
 			.replace(/ℝ/g, '\\R ')
 			.replace(/∪/g, '\\cup ')
+			.replace(/π/g, '\\pi ')
+			.replace(/\s*\\(?=\s|\{)/g, '\\setminus ')
+			.replace(/\{/g, '\\{')
+			.replace(/\}/g, '\\}')
 			.replace(/\s+/g, '');
 	}
 	// L'ensemble PROPRE, jamais l'héritage (décision d) : le champ relu le rangerait
