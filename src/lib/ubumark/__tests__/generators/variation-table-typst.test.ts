@@ -1135,4 +1135,35 @@ describe('ligne variation: à compléter (variations-a-completer)', () => {
 		expect(typst).toContain('(center, $-3$)');
 		expect(typst).toContain('(top, $$)');
 	});
+
+	// Outil 59 : flèches cachées autour d'une double barre
+	const homo = (barre: string) =>
+		nodeOf(
+			[
+				'variable: x',
+				'domain: -inf, 2, +inf',
+				'',
+				'variation: f(x)',
+				'  -inf: , top',
+				`  2: ${barre}`,
+				'  +inf: , bottom',
+				'  -inf,2: ?flèche',
+				'  2,+inf: ?flèche'
+			].join('\n')
+		);
+
+	it('double barre sans limites : ses deux côtés au milieu, aucune flèche', () => {
+		const typst = generateVariationTableTypst(homo('||, , bottom, , top'));
+		expect(typst).toContain('(center, center, "||", $$, $$)');
+		expect(typst).toContain('arrow-style: (stroke: none)');
+	});
+
+	it('limites cachées : cases vides au milieu ; corrigé à leur hauteur', () => {
+		const node = homo('||, ?-inf, bottom, ?+inf, top');
+		const blank = generateVariationTableTypst(node);
+		expect(blank).toMatch(/\(center, center, "\|\|", box\(/);
+		expect(blank).not.toMatch(/"\|\|", \$/);
+		const filled = generateVariationTableTypst(node, { hiddenCells: 'filled' });
+		expect(filled).toContain('(bottom, top, "||", $-infinity$, $+infinity$)');
+	});
 });
