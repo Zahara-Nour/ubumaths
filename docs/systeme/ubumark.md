@@ -1419,7 +1419,7 @@ sorties ; cases à la largeur du plus long nombre, réduites (texte compris) pou
 `solution: oui` : les cases du chemin teintées, leurs nombres en gras. Bloc en erreur : cadre
 « Labyrinthe indisponible ». Fiche du catalogue : `block-catalog/labyrinthe.ts`.
 
-**Grille jugée par ses contraintes, Yohaku** (outil n° 56, chantier [outil-yohaku](../wip/outil-yohaku-progress.md))
+**Grille jugée par ses contraintes, Yohaku** (outil n° 56, chantier [outil-yohaku](../archive/wip/outil-yohaku-progress.md))
 — `src/lib/ubumark/__tests__/yohaku/` (`yohaku-parser`, `yohaku-typst`),
 `questions/generator/__tests__/generation-yohaku.test.ts`,
 `components/markdown/nodes/__tests__/Yohaku.svelte.test.ts`, parcours `e2e/verifs/bloc-yohaku.spec.ts` :

@@ -1,7 +1,7 @@
 ---
 title: Outils manquants — lots pour des sessions en parallèle
 date: 2026-11-28
-status: lots écrits le 2026-11-28 ; en cours : equerre-uni, yohaku, espace, escalier-suite
+status: lots écrits le 2026-11-28 ; en cours : equerre-uni, espace, escalier-suite
 ---
 
 # Outils manquants : lots pour des sessions en parallèle
@@ -44,7 +44,7 @@ par lot (worktree + Claude avec Remote Control, dans tmux) ; chaque session suit
 | `graduer-segment`      | 61                                  | ` ```line `                                  | fait (#3293, 2026-11-28)          |                                                                 |
 | `equation-lignes`      | 55                                  | mathAST (équivalence), case neuve            | fait (#3292, 2026-11-28)          |                                                                 |
 | `second-tag`           | 66                                  | `migration-rangement.ts`                     | fait (#3297, 2026-11-28)          | petit                                                           |
-| `yohaku`               | 56                                  | bloc neuf                                    | outil-yohaku (2026-11-28)         |                                                                 |
+| `yohaku`               | 56                                  | bloc neuf                                    | fait (#3302, 2026-11-28)          |                                                                 |
 | `espace`               | 64, puis 65                         | case neuve, ` ```solide `                    | outil-espace (2026-11-28)         |                                                                 |
 | `escalier-suite`       | 48                                  | ` ```courbe `                                | outil-escalier-suite (2026-11-28) |                                                                 |
 | `ecritures-exactes`    | 62                                  | mathAST (`checkForm`, `cosmetic-transforms`) |                                   | attend la fin de `fusion-moteurs` (même code)                   |

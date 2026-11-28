@@ -1,19 +1,18 @@
 # Chantier `outil-yohaku` : grille jugée par ses contraintes (outil n° 56)
 
-Lot `yohaku` d'[outils-lots.md](outils-lots.md). Ligne n° 56 d'[outils-manquants.md](outils-manquants.md).
-Né du relevé `idees-3e-calcul-litteral` (3L11-8, Yohaku multiplicatif ; [journal archivé](../archive/wip/idees-3e-calcul-litteral/idees-3e-calcul-litteral-progress.md),
+Lot `yohaku` d'[outils-lots.md](../../wip/outils-lots.md). Ligne n° 56 d'[outils-manquants.md](../../wip/outils-manquants.md).
+Né du relevé `idees-3e-calcul-litteral` (3L11-8, Yohaku multiplicatif ; [journal archivé](idees-3e-calcul-litteral/idees-3e-calcul-litteral-progress.md),
 question 3 de sa phase 0) ; même famille que la rose des sommes de 6e (6N0A-2, en attente dans
-[idees-ailleurs-repartition.md](idees-ailleurs-repartition.md)).
+[idees-ailleurs-repartition.md](../../wip/idees-ailleurs-repartition.md)).
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-28, PR de l'outil ouverte._
+_Mis à jour le 2026-11-28 : chantier clos et archivé._
 
-- **État** : outil fait, revu, vérifié à l'écran ; PR ouverte, CI en cours · **Prochaine
-  action** : merge à la CI verte, puis ligne n° 56 au § 4 « Livré » d'`outils-manquants.md`, et
-  clore le lot (`fait (#PR, date)` dans `outils-lots.md`, journal archivé) · **En attente de
-  David** : rien · **Pièges en cours** : aucun · **Worktree / branche** :
-  `../ubumaths-wt-outil-yohaku`, `feat/outil-yohaku`.
+- **État** : clos. Outil n° 56 livré (#3302) ; le durable est dans `docs/systeme/ubumark.md`
+  (§ Grille jugée par ses contraintes) et la fiche `block-catalog/yohaku.ts` · **Prochaine
+  action** : aucune ; les modèles (3L11-8, rose des sommes 6N0A-2) restent aux sessions « idées »
+  · **En attente de David** : rien · **Worktree / branche** : aucun.
 
 ## Phase 0 (envoyée le 2026-11-28)
 
@@ -101,3 +100,4 @@ calculés par le bloc ; **Q4** une PR (bloc, juge, écran, PDF), modèles aux se
 - 2026-11-28 : lot réservé par `pnpm outils lancer` ; phase 0 écrite et envoyée.
 - 2026-11-28 : phase 0 validée ; cœur commité.
 - 2026-11-28 : outil branché, vu à l’écran, revu, corrigé ; PR ouverte.
+- 2026-11-28 : #3302 mergée ; lot `yohaku` clos, journal archivé.
