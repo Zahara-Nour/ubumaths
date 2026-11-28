@@ -2,18 +2,18 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-28, lot écrit, PR des fichiers à ouvrir._
+_Mis à jour le 2026-11-28, après #3323._
 
-- **État** : phase 0 validée par David (« je valide », toutes les fiches). Lot écrit et vérifié (specs vertes,
-  sonde des figures 0 problème, essai en base locale vu à l'écran). Outils 82 à 84 ajoutés à
-  `outils-manquants.md`. b8939937, 48524505, 2f3da9ce réservés dans le tableau.
-- **Prochaine action** : merger la PR des fichiers ; puis David lance `create-questions --publier` sur
-  `scripts/questions/idees-6e-cercles-neufs` (brouillons en prod), je commite les ids ; migrations de rangement
-  (N1, N2 : nœud cercle, 6-162) et de contenu (3 publiés), `security-auditor`, `db:migrate`.
-- **En attente de David** : `create-questions --publier` après le merge.
+- **État** : fichiers du lot mergés (#3323) : 2 modèles neufs (`scripts/questions/idees-6e-cercles-neufs`), 9
+  variations ajoutées à b8939937, 48524505, 2f3da9ce (`…-publies`). Rien en base de prod.
+- **Prochaine action** : après les brouillons, commiter les ids écrits en tête des fichiers ; nouveau worktree
+  sur `origin/main` ; migrations de rangement (N1, N2 : `Géométrie > Figures planes > cercle`, 6-162 ; niveaux 3
+  et 2 à revérifier en prod) et de contenu (3 publiés), générées ; `security-auditor` ; `db:migrate`.
+- **En attente de David** : `pnpm tsx scripts/create-questions.ts --dir scripts/questions/idees-6e-cercles-neufs --publier`
+  depuis le dépôt principal.
 - **Pièges en cours** : deux `verifier:` de la même famille (deux cercles) ne font pas une figure composée, et
   la garde de la règle graduée refuse alors le cercle « passant par » : N1 c commence par le segment [CD].
-- **Worktree / branche** : `../ubumaths-wt-idees-6e-cercles`, `feat/idees-6e-cercles` ; serveur de dev 5177.
+- **Worktree / branche** : aucun (retiré par `pr:merger`).
 
 ## Phase 0 (2026-11-28)
 
@@ -75,6 +75,7 @@ Page à cocher : https://claude.ai/artifact/WtKPymyPCYikJrmezzon8f (Oui / Non / 
 
 ## Journal
 
+- 2026-11-28 : #3323 mergée (fichiers du lot seuls, CI verte).
 - 2026-11-28 : lot écrit (`docs/wip/questions/idees-6e-cercles-neufs.py`, `…-publies.py`). Écarts à la phase 0 :
   N1 c reprend le programme de leur exercice (segment [CD] de n cm d'abord, puis les deux cercles : figure
   composée, cf. pièges) ; F2 f : disque grisé et M placé dedans, sur le cercle ou dehors (pas d'« extérieur
