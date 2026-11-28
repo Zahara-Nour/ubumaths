@@ -10,11 +10,9 @@ status: phase 0 validée le 2026-11-28, code en cours
 
 _Mis à jour le 2026-11-28, avant la première PR._
 
-- **État** : outil 47 codé et commité sur la branche (pas poussé, pas de PR) ; revue Opus faite,
-  points 2 à 4 corrigés (`bc1095c818`). Rendu vu dans le navigateur de test (forme 1 fausse, forme 2 juste).
-- **Prochaine action** : appliquer la réponse de David au point 1 (§ 2), `check:incremental`,
-  `types:cliquet`, `git merge origin/main`, push, PR, `pnpm pr:merger`.
-- **En attente de David** : le message du triangle déplacé mais commencé au mauvais sommet (§ 2).
+- **État** : outil 47 codé, revue faite, ses 4 points traités (point 1 : message validé par David).
+- **Prochaine action** : gardes, `git merge origin/main`, push, PR, `pnpm pr:merger`.
+- **En attente de David** : rien.
 - **Pièges en cours** : même module que le lot `equerre-uni` → `git merge origin/main` avant la PR.
 - **Worktree / branche** : `../ubumaths-wt-outil-triangle-quadrillage`, `feat/outil-triangle-quadrillage`.
 
@@ -59,3 +57,6 @@ Question ouverte (point 1) : l'élève trace le modèle déplacé tel quel, mais
 correspond à E (ou à F) ; le juge répond « retourné », ce qui est faux. Proposé à David : un message
 à part, « Ton triangle est bien pareil au modèle, mais il ne part pas du bon coin : A doit être à la
 place de D. »
+
+Réponse de David (2026-11-28) : message « Ton triangle est bien pareil au modèle, mais il ne part pas
+du bon coin : A doit être à la place de D. » **validé** (`wrongCornerFeedback`, avant « retourné »).

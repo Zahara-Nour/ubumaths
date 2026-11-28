@@ -16,6 +16,7 @@ import { missingSideFeedback, missingSidesFeedback, notJoinedFeedback } from '..
 import {
 	FLIPPED_COPY_FEEDBACK,
 	copyStartFeedback,
+	wrongCornerFeedback,
 	wrongCopyVertexFeedback,
 	wrongCopyVerticesFeedback
 } from '../triangle-copy';
@@ -308,6 +309,31 @@ describe('triangle à reproduire, forme 2 : seul A placé', () => {
 		expect(judge(FREE, [segment(A2, b), segment(b, c), segment(c, A2)])).toEqual({
 			status: 'incorrect',
 			feedback: FLIPPED_COPY_FEEDBACK
+		});
+	});
+
+	it('le modèle déplacé, commencé à un autre coin que D', () => {
+		// A au coin de E : (8 ; 1) → (4 ; 1) → (5 ; 4)
+		const b = { x: 4, y: 1 };
+		const c = { x: 5, y: 4 };
+		expect(judge(FREE, [segment(A2, b), segment(b, c), segment(c, A2)])).toEqual({
+			status: 'incorrect',
+			feedback: wrongCornerFeedback('A', 'D')
+		});
+		// A au coin de F : (8 ; 1), (7 ; -2) hors fenêtre → sur une figure plus haute
+		const high = [
+			'fenetre: 0 ; 14 ; -4 ; 8',
+			'grille: 1',
+			'verifier: triangle ABC : reproduit DEF',
+			'---',
+			...MODEL,
+			'A = point(8, 1)'
+		].join('\n');
+		const p = { x: 7, y: -2 };
+		const q = { x: 11, y: -2 };
+		expect(judge(high, [segment(A2, p), segment(p, q), segment(q, A2)])).toEqual({
+			status: 'incorrect',
+			feedback: wrongCornerFeedback('A', 'D')
 		});
 	});
 

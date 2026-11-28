@@ -43,6 +43,9 @@ import {
 export type CopyCheck = TriangleCheck & { model: [string, string, string] };
 
 export const FLIPPED_COPY_FEEDBACK = 'Ton triangle est retourné par rapport au modèle.';
+/** Le modèle bien déplacé, mais commencé à un autre coin que D (revue de la PR, validé par David) */
+export const wrongCornerFeedback = (a: string, d: string) =>
+	`Ton triangle est bien pareil au modèle, mais il ne part pas du bon coin : ${a} doit être à la place de ${d}.`;
 export const wrongCopyVertexFeedback = (c: string, a: string) =>
 	`Ton sommet ${c} n’est pas au bon endroit : compte les carreaux depuis ${a} sur le modèle.`;
 export const wrongCopyVerticesFeedback = (b: string, c: string, a: string) =>
@@ -191,6 +194,14 @@ function isPresent(vertices: readonly Position[], pieces: readonly Carrier[], ep
 }
 
 /** Même triangle au déplacement, au retournement ou à la rotation près : mêmes longueurs */
+/** Le même triangle simplement déplacé, quel que soit le coin qui correspond à A */
+function isTranslated(p: readonly Position[], q: readonly Position[], eps: number): boolean {
+	return q.some((start) => {
+		const shift = sub(p[0], start);
+		return p.every((x) => q.some((y) => near(x, add(y, shift), eps)));
+	});
+}
+
 function isCongruent(p: readonly Position[], q: readonly Position[], eps: number): boolean {
 	const lengths = (v: readonly Position[]) =>
 		v
@@ -238,6 +249,9 @@ export function judgeCopy(
 	const closed = triangles.filter(
 		(t) => Math.abs(cross(sub(t[1], t[0]), sub(t[2], t[0]))) > eps && isPresent(t, pieces, eps)
 	);
+	if (closed.some((t) => isTranslated(t, vertices, eps))) {
+		return incorrect(wrongCornerFeedback(nameA, check.model[0]));
+	}
 	if (closed.some((t) => isCongruent(t, vertices, eps))) return incorrect(FLIPPED_COPY_FEEDBACK);
 	if (closed.length > 0) {
 		if (sideGiven) return incorrect(wrongCopyVertexFeedback(nameC, nameA));

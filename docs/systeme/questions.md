@@ -1151,8 +1151,7 @@ cercle(O, passant=A)` (palette : le compas ; papier uni ou quadrillage, O et A s
    et [BC]. Forme 2 : seul A placé ; l'élève trace les trois côtés (B attendu en A + (E − D)). On juge
    le résultat : traits fusionnés par droite (`mergeSegments` de `polygon.ts`), dans n'importe quel
    ordre et sens, [AB] repassé sans effet ; les trois côtés couverts → juste, sauf trait de trop ou qui
-   dépasse (`leftoverFeedback`). Sinon, dans l'ordre : un triangle fermé de l'élève (A, et B en forme 1,
-   plus des bouts de ses traits) aux mêmes longueurs que le modèle → « Ton triangle est retourné par
+   dépasse (`leftoverFeedback`). Sinon, dans l'ordre : un triangle fermé de l'élève (A, et B en forme 1, plus des bouts de ses traits) qui est le modèle simplement déplacé, mais commencé à un autre coin que D → « Ton triangle est bien pareil au modèle, mais il ne part pas du bon coin : A doit être à la place de D. » (revue de la PR, validé par David) ; un triangle fermé aux mêmes longueurs que le modèle → « Ton triangle est retourné par
    rapport au modèle. » (retourné ou tourné, décision 1) ; un autre triangle fermé → « Ton sommet C
    n'est pas au bon endroit : compte les carreaux depuis A sur le modèle. » (forme 2 : le sommet faux,
    B ou C, ou « Tes sommets B et C… ») ; forme 2 sans triangle fermé : « Ton triangle doit partir du
