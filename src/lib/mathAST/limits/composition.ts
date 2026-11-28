@@ -1848,7 +1848,7 @@ function evaluationResultToNode(result: unknown): MathNode | null {
 		}
 		// Clean up floating point artifacts
 		const cleaned = Math.abs(result - Math.round(result)) < 1e-10 ? Math.round(result) : result;
-		return { type: 'number', value: String(cleaned) };
+		return numericNode(cleaned);
 	}
 	if (isMathNodeBinding(result)) {
 		return result;

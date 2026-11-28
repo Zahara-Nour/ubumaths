@@ -287,9 +287,10 @@ export function rationalToNode(r: Rational): MathNode {
  *
  * Évaluateur flottant de `limits/sign-tracking` et `limits/indeterminate`, et
  * d'`evaluateAtPoint` des limites pédagogiques (réglage `'undefined'`).
- * ⚠️ π et e ne sont PAS évalués (`null`) : le moteur des limites prend alors le
- * chemin exact, et les évaluer ferait de `lim (x+1)/(πx)` un décimal
- * (simplify-carte § 96, écart connu, `docs/systeme/mathast/README.md`).
+ * ⚠️ π et e ne sont PAS évalués (`null`). La valeur exacte de `lim (x+1)/(πx)`
+ * ne tient plus à cette lacune (L76 : quotient exact écrit dans L'Hôpital,
+ * `limits/__tests__/l76-exact-sans-evaluateur.test.ts`), mais lire e fausse
+ * encore d'autres limites (oracle : ln(eˣ + 1) − x en +∞ rendu −∞).
  *
  * @param expr - The expression to evaluate
  * @param varName - The variable name to substitute

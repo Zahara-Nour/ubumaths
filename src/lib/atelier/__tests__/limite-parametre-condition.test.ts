@@ -149,3 +149,27 @@ describe('V103 — revue : k = 0 change la limite', () => {
 		);
 	});
 });
+
+describe('V125 — une valeur dont les lettres se simplifient est un nombre', () => {
+	it('(x + k)/(x² + k) en 0 : 1, pour k ≠ 0 (pour k = 0, 1/x n’a pas de limite)', () => {
+		expect(latexOf(run('.limite \\frac{x+k}{x^2+k} en 0'))).toBe(
+			`\\lim\\limits_{x\\to 0} \\dfrac{x + k}{x^2 + k} = 1${FOR}k \\neq 0`
+		);
+	});
+});
+
+describe('L121 — d’un seul côté, la limite des deux côtés quand elle existe', () => {
+	it('x/(kx + x²) en 0⁺ : 1/k, pour k ≠ 0 (l’expression vaut 1/(k + x))', () => {
+		expect(latexOf(run('.limite \\frac{x}{kx+x^2} en 0+'))).toBe(
+			`\\lim\\limits_{x\\to 0^+} \\dfrac{x}{k x + x^2} = \\dfrac{1}{k}${FOR}k \\neq 0`
+		);
+	});
+});
+
+describe('L118 — une limite trouvée hors du moteur garde son côté de définition', () => {
+	it('x ln x + kx en 0 (sans côté tapé) s’écrit x → 0⁺', () => {
+		expect(latexOf(run('.limite x\\ln x+kx en 0'))).toBe(
+			'\\lim\\limits_{x\\to 0^+} \\left(x \\ln\\left( x \\right) + k x\\right) = 0'
+		);
+	});
+});

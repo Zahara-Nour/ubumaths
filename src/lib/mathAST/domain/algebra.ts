@@ -18,6 +18,7 @@ import { ZERO_TOLERANCE } from '../common';
 import { subtract, divide } from '#lib/mathAST/factory.ts';
 import { numericNode } from '../common/numeric';
 import { tidyPeriodicMember } from '../common/periodic-member';
+import { commonPeriodicPoints, mergePeriodicFamilies } from './periodic-families';
 import type { Endpoint, IntervalDomain } from '#lib/math/intervals/types.ts';
 import {
 	isEmptyInterval as intervalsIsEmpty,
@@ -494,49 +495,60 @@ export function containsNode(d: Domain, value: MathNode): boolean {
 
 /**
  * Compute the intersection of two domains.
+ *
+ * Quand le résultat ne s'écrit pas (deux familles périodiques qui ne se
+ * rangent pas en une seule, une famille et un point qui n'en fait pas partie,
+ * une famille sur un ensemble non borné), rend une APPROXIMATION : l'un des
+ * deux domaines. `intersectExact` dit `null` dans ces cas-là.
  */
 export function intersect(a: Domain, b: Domain): Domain {
-	// Handle ConditionDomain cases - try to convert to intervals first
+	// Condition non convertible : repli sûr
 	if (a.kind === 'condition_domain') {
 		const converted = tryConvertConditionToInterval(a);
-		if (converted) {
-			return intersect(converted, b);
-		}
-		// Cannot convert - return safe fallback
-		return EMPTY_SET;
+		return converted ? intersect(converted, b) : EMPTY_SET;
 	}
 	if (b.kind === 'condition_domain') {
 		const converted = tryConvertConditionToInterval(b);
-		if (converted) {
-			return intersect(a, converted);
-		}
-		return EMPTY_SET;
+		return converted ? intersect(a, converted) : EMPTY_SET;
+	}
+	const exact = intersectExact(a, b);
+	if (exact !== null) return exact;
+
+	// Approximations connues (L119, V138) : la première famille, ou l'ensemble
+	// d'intervalles tel quel à côté d'une famille
+	if (a.kind === 'periodic_exclusion') {
+		if (b.kind === 'periodic_exclusion') return a;
+		return intervalsIsUniversal(b) ? a : b;
+	}
+	if (b.kind === 'periodic_exclusion') return intervalsIsUniversal(a) ? b : a;
+	return EMPTY_SET;
+}
+
+/**
+ * L'intersection de deux domaines quand elle s'écrit EXACTEMENT, `null` sinon.
+ *
+ * - deux familles périodiques : réunies en une seule quand c'est possible
+ *   (ℝ ∖ {kπ} ∩ ℝ ∖ {π/2 + kπ} = ℝ ∖ {kπ/2}), sinon `null` ;
+ * - une famille et ℝ privé de points : la famille, si chaque point en fait
+ *   déjà partie (ℝ ∖ {kπ} ∩ ℝ ∖ {π}), sinon `null` (tan x + 1/(x − 3)) ;
+ * - une famille et un ensemble borné : ses membres deviennent des points exclus ;
+ *   sur un ensemble non borné autre que ℝ privé de points : `null`.
+ */
+export function intersectExact(a: Domain, b: Domain): Domain | null {
+	if (a.kind === 'condition_domain') {
+		const converted = tryConvertConditionToInterval(a);
+		return converted ? intersectExact(converted, b) : null;
+	}
+	if (b.kind === 'condition_domain') {
+		const converted = tryConvertConditionToInterval(b);
+		return converted ? intersectExact(a, converted) : null;
 	}
 
-	// Handle PeriodicExclusion cases
-	if (a.kind === 'periodic_exclusion' && b.kind === 'periodic_exclusion') {
-		// Two periodic exclusions - return the first as approximation
-		// (proper handling would need LCM of periods and combined base points)
-		return a;
-	}
 	if (a.kind === 'periodic_exclusion') {
-		// PeriodicExclusion ∩ IntervalSet (b is non-periodic: the both-periodic
-		// case returned above).
-		// If b is universal (ℝ), the result is the PeriodicExclusion
-		if (b.kind !== 'periodic_exclusion' && intervalsIsUniversal(b)) {
-			return a;
-		}
-		return restrictPeriodicExclusion(a, b);
+		if (b.kind === 'periodic_exclusion') return mergePeriodicFamilies(a, b);
+		return intersectPeriodicExact(a, b);
 	}
-	if (b.kind === 'periodic_exclusion') {
-		// Same logic: if a is universal, return the PeriodicExclusion
-		// (a is non-periodic: the both-periodic case returned above).
-		// `a` is already narrowed to non-periodic here (the a-periodic cases returned above).
-		if (intervalsIsUniversal(a)) {
-			return b;
-		}
-		return restrictPeriodicExclusion(b, a);
-	}
+	if (b.kind === 'periodic_exclusion') return intersectPeriodicExact(b, a);
 
 	// Extract excludedPoints before delegating to intervals
 	const aExcluded = getExcludedPoints(a);
@@ -545,6 +557,53 @@ export function intersect(a: Domain, b: Domain): Domain {
 
 	const result = intervalsIntersect(a, b);
 	return wrapWithExcludedPoints(result, allExcluded);
+}
+
+/** Une famille périodique ∩ un domaine sans famille, `null` quand le résultat ne s'écrit pas. */
+function intersectPeriodicExact(
+	pe: PeriodicExclusion,
+	other: Exclude<Domain, PeriodicExclusion | ConditionDomain>
+): Domain | null {
+	if (other.kind === 'empty') return EMPTY_SET;
+	if (other.kind === 'universal') return pe;
+	const holes = realLineHoles(other);
+	if (holes !== null) {
+		// ℝ privé de points : chacun doit déjà être un membre de la famille
+		return holes.every((x) => isExcludedByPeriodic(pe, x)) ? pe : null;
+	}
+	return restrictPeriodicExclusion(pe, other);
+}
+
+/**
+ * Les points qui manquent à ℝ quand `d` est ℝ privé d'un nombre fini de points
+ * (`ℝ ∖ {3}`, `]−∞ ; π[ ∪ ]π ; +∞[`), `null` pour tout autre ensemble.
+ */
+function realLineHoles(d: IntervalSet): number[] | null {
+	const pieces = d.intervals
+		.map((int) => ({
+			lo: endpointToNumber(int.lower.value),
+			hi: endpointToNumber(int.upper.value),
+			loClosed: int.lower.type === 'closed',
+			hiClosed: int.upper.type === 'closed'
+		}))
+		.sort((x, y) => x.lo - y.lo);
+	if (pieces.length === 0 || pieces.some((p) => Number.isNaN(p.lo) || Number.isNaN(p.hi))) {
+		return null;
+	}
+	if (pieces[0].lo !== -Infinity || pieces[pieces.length - 1].hi !== Infinity) return null;
+	const holes: number[] = [];
+	for (let i = 0; i + 1 < pieces.length; i++) {
+		const left = pieces[i];
+		const right = pieces[i + 1];
+		if (Math.abs(left.hi - right.lo) >= ZERO_TOLERANCE) return null;
+		if (!left.hiClosed && !right.loClosed) holes.push(left.hi);
+	}
+	for (const point of d.excludedPoints ?? []) {
+		const value = endpointToNumber(point.value);
+		if (!Number.isFinite(value)) return null;
+		holes.push(value);
+	}
+	return holes;
 }
 
 /** Au-delà, les valeurs interdites d'un ensemble borné ne sont pas énumérées. */
@@ -561,11 +620,10 @@ const MAX_PERIODIC_EXCLUSIONS = 1000;
  * (approximation connue ; l'étude des variations coupe elle-même aux valeurs
  * interdites, voir `variations/compute.ts`).
  */
-function restrictPeriodicExclusion(pe: PeriodicExclusion, other: Domain): Domain {
-	if (other.kind !== 'interval_set') return other;
+function restrictPeriodicExclusion(pe: PeriodicExclusion, other: IntervalSet): Domain | null {
 	const base = evaluateNodeToApproximatedNumber(pe.basePoint);
 	const period = evaluateNodeToApproximatedNumber(pe.period);
-	if (!isFinite(base) || !isFinite(period) || period <= 0) return other;
+	if (!isFinite(base) || !isFinite(period) || period <= 0) return null;
 
 	// Un membre sur une borne l'OUVRE (tan ∩ ]−π/2 ; π/2[ reste ]−π/2 ; π/2[,
 	// pas « \\ {−π/2 ; π/2} ») ; seuls les membres intérieurs sont exclus.
@@ -578,10 +636,10 @@ function restrictPeriodicExclusion(pe: PeriodicExclusion, other: Domain): Domain
 	for (const int of other.intervals) {
 		const lo = endpointToNumber(int.lower.value);
 		const hi = endpointToNumber(int.upper.value);
-		if (!isFinite(lo) || !isFinite(hi)) return other;
+		if (!isFinite(lo) || !isFinite(hi)) return null;
 		const kMin = Math.floor((lo - base) / period + ZERO_TOLERANCE) + 1;
 		const kMax = Math.ceil((hi - base) / period - ZERO_TOLERANCE) - 1;
-		if (kMax - kMin > MAX_PERIODIC_EXCLUSIONS) return other;
+		if (kMax - kMin > MAX_PERIODIC_EXCLUSIONS) return null;
 		for (let k = kMin; k <= kMax; k++) members.push(tidyPeriodicMember(pe.basePoint, k, pe.period));
 		const lower: Endpoint = onMember(lo) ? { ...int.lower, type: 'open' } : int.lower;
 		const upper: Endpoint = onMember(hi) ? { ...int.upper, type: 'open' } : int.upper;
@@ -616,6 +674,13 @@ export function union(a: Domain, b: Domain): Domain {
 			return union(a, converted);
 		}
 		return b;
+	}
+
+	// (ℝ ∖ A) ∪ (ℝ ∖ B) = ℝ ∖ (A ∩ B) : les points communs aux deux familles (L119)
+	if (a.kind === 'periodic_exclusion' && b.kind === 'periodic_exclusion') {
+		const common = commonPeriodicPoints(a, b);
+		if (common === 'none') return UNIVERSAL_SET;
+		if (common !== null) return common;
 	}
 
 	// Handle PeriodicExclusion cases - conservative fallback

@@ -30,11 +30,12 @@ import {
 	isDelimiter,
 	isAddition,
 	isSubtraction,
-	isInfinity
+	isInfinity,
+	isEulerConstant
 } from '../guards';
 import { number, divide, opposite, positiveInfinity, negativeInfinity } from '../factory';
 import { findNodes } from '../transforms';
-import { flattenSumShallow } from '../flatten';
+import { flattenProductShallow, flattenSumShallow } from '../flatten';
 import {
 	rational,
 	addRational,
@@ -300,4 +301,45 @@ export function limitByGeneralizedDegree(
 	if (degreeOrder < 0) return number('0');
 	if (degreeOrder === 0) return rationalToNode(leading.coefficient);
 	return isNegative(leading.coefficient) ? negativeInfinity() : positiveInfinity();
+}
+
+/** L'exposant u d'un facteur e^u ou exp(u), sinon null. */
+function exponentialArgument(factor: MathNode): MathNode | null {
+	const node = isDelimiter(factor) ? factor.content : factor;
+	if (isSuperscript(node) && isEulerConstant(node.base)) return node.superscript;
+	if (isFunction(node) && node.name === 'exp' && node.args.length === 1 && !node.power) {
+		return node.args[0];
+	}
+	return null;
+}
+
+/**
+ * Croissance comparée en ±∞ (L77) : R·e^u, où R et u se comportent comme
+ * des puissances de x (terme dominant c·x^d, voir `leadingTerm`) et u → −∞
+ * (degré > 0, coefficient < 0). La limite est 0 quel que soit le degré de
+ * R : e^u ⩽ e^{c x^d / 2} au voisinage, et x^a e^{−c′ x^d} → 0 (c′ > 0,
+ * d > 0). `x³e^{−x²+x}`, `x²e^{−√x}` en +∞. Null hors de ce cadre (un seul
+ * facteur exponentiel ; u → +∞ n'est pas traité ici).
+ */
+export function limitByExponentialDecay(
+	expr: MathNode,
+	varName: string,
+	approach: MathNode
+): MathNode | null {
+	if (!isInfinity(approach)) return null;
+	const variableSign = approach.sign === 'positive' ? ONE : MINUS_ONE;
+	const body = isDelimiter(expr) ? expr.content : expr;
+	const exponents: MathNode[] = [];
+	const others: MathNode[] = [];
+	for (const { factor } of flattenProductShallow(body)) {
+		const exponent = exponentialArgument(factor);
+		if (exponent === null) others.push(factor);
+		else exponents.push(exponent);
+	}
+	if (exponents.length !== 1) return null;
+	const decay = leadingTerm(exponents[0], varName, variableSign);
+	if (decay === null || compareRational(decay.degree, ZERO) <= 0) return null;
+	if (!isNegative(decay.coefficient)) return null;
+	const powerLike = others.every((factor) => leadingTerm(factor, varName, variableSign) !== null);
+	return powerLike ? number('0') : null;
 }

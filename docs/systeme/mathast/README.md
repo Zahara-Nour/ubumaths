@@ -1870,8 +1870,9 @@ Doublons qui restent, chacun pour un autre besoin :
   - conditions : `cot`, `sec`, `csc`, `arccosh` n'ont pas de condition écrivable (la
     simplification n'a pas lieu) ; `avoidsPeriodicPoints` limité à `cos u` / `sin u` seuls
     (`computeDomain(1/(sin x cos x))` rendait kπ au lieu de kπ/2 : corrigé, V85, 2026-11-24 —
-    `nonZeroSet` d'un produit réunit deux familles périodiques en une quand c'est possible,
-    `1/(sin x cos x)` → kπ/2, et refuse sinon : `1/(sin x cos(2x))` (kπ et π/4 + kπ/2, deux
+    deux familles périodiques se réunissent en une quand c'est possible (`intersectExact`,
+    `domain/periodic-families.ts`, appelé par `nonZeroSet` et par `intersect` / `union`,
+    L119, 2026-11-28), `1/(sin x cos x)` et `1/sin x + 1/cos x` → kπ/2, et refusent sinon : `1/(sin x cos(2x))` (kπ et π/4 + kπ/2, deux
     familles sans écriture) et `1/((x − 1) cos x)` (un point hors de la famille) ne sont plus
     ℝ privé de la seule première famille) ;
     libellés bruts (« pour x^2y > 0 », « 2xy > 0 ») et conditions redondantes (« xy > 0 et
@@ -1961,10 +1962,13 @@ ln(2x) − ln(2x)` garde `ln x − ln x` sur la ligne ;
   avec c ≠ 0 (contrainte `unresolved`).
 - Limites, évaluation flottante (relevé le 2026-10-25, simplify-carte lot 6a) : `evaluateNumeric`
   (`common/numeric.ts`), seul évaluateur flottant de `limits/` et de `evaluateAtPoint` des limites
-  pédagogiques (réglage `'undefined'`), **n'évalue ni π ni e** (`null`). Le moteur compte sur ce
-  `null` pour prendre le chemin exact : les évaluer (ou passer par `compile`) ferait de
-  `lim_{x→+∞} (x+1)/(πx)` le décimal `0,3183…` au lieu de `1/π`. À reprendre en rendant le choix
-  « exact ou numérique » explicite dans le moteur, pas en dépendant d'une lacune de l'évaluateur.
+  pédagogiques (réglage `'undefined'`), **n'évalue ni π ni e** (`null`). Depuis L76
+  (2026-11-28), `lim_{x→+∞} (x+1)/(πx) = 1/π` ne tient plus à ce `null` : L'Hôpital
+  (`tryDirectEvaluationExact` de `limits/lhopital.ts`) rend le quotient exact de deux limites
+  finies sans valeur rationnelle ; preuve avec un évaluateur qui lit π et e :
+  `limits/__tests__/l76-exact-sans-evaluateur.test.ts`. Ajouter π et e à l'évaluateur reste à
+  NE PAS faire seul : l'oracle des limites voit alors quatre valeurs fausses (`ln(eˣ + 1) − x`
+  en +∞ rendu −∞, au lieu de 0).
 - Limites, laissés par le chantier limites-ecarts (2026-10-27, journal archivé
   `docs/archive/wip/limites-ecarts-progress.md`) :
   - **valeur fausse, antérieure** : `\frac{1}{e^{-1/x}\sin\frac{1}{x}}` en 0⁺ rend +∞ — sur la

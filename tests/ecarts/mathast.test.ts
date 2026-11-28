@@ -19,8 +19,9 @@ import { parseLatex } from '#lib/mathAST/parser/index.ts';
 import { parseCustom } from '#lib/mathAST/parser/custom/index.ts';
 import { tidy } from '#lib/mathAST/tidy/index.ts';
 import { normalize } from '#lib/mathAST/normal/normalize.ts';
-import { containsValue, intersect, union } from '#lib/mathAST/domain/algebra.ts';
+import { containsValue, excludePoints, intersect, union } from '#lib/mathAST/domain/algebra.ts';
 import { cotDomain, tanDomain, UNIVERSAL_SET } from '#lib/mathAST/domain/factory.ts';
+import { number, piConstant } from '#lib/mathAST/factory.ts';
 import { solve } from '#lib/mathAST/solve/solve.ts';
 import { solveInequality } from '#lib/mathAST/solve/inequality/index.ts';
 import { isRelation } from '#lib/mathAST/guards.ts';
@@ -632,4 +633,46 @@ describe('V125 — limite à paramètre : k/k simplifié en 1', () => {
 		// La condition reste : pour k = 0 l'expression est 1/x, sans limite en 0.
 		expect(latex).toContain('\\text{pour }k \\neq 0');
 	});
+});
+
+describe('V138 — intersect perd le point exclu à côté d’une famille périodique', () => {
+	// ℝ privé des π/2 + kπ (tan x), et ℝ privé de 3 (1/(x − 3)).
+	const withoutHalfPi = tanDomain();
+	const withoutThree = excludePoints(UNIVERSAL_SET, [number('3')]);
+
+	it('témoin : .domaine tan x + 1/(x − 3) refuse au lieu d’oublier 3', () => {
+		expect(run('.domaine \\tan(x)+\\frac{1}{x-3}').kind).toBe('refus');
+	});
+
+	it('témoin : ℝ ∖ {kπ} coupé avec ℝ ∖ {π} reste ℝ ∖ {kπ}', () => {
+		const domain = intersect(cotDomain(), excludePoints(UNIVERSAL_SET, [piConstant()]));
+
+		expect(containsValue(domain, Math.PI)).toBe(false);
+		expect(containsValue(domain, 1)).toBe(true);
+	});
+
+	// Aujourd'hui : la famille seule, 3 est encore dans l'intersection.
+	it('l’intersection est privée de 3 et des π/2 + kπ', () => {
+		const domain = intersect(withoutHalfPi, withoutThree);
+
+		expect(containsValue(domain, Math.PI / 2)).toBe(false);
+		expect(containsValue(domain, 3)).toBe(false);
+		expect(containsValue(domain, 1)).toBe(true);
+	});
+});
+
+describe('L76 — limite exacte par choix écrit, pas par lacune de l’évaluateur flottant', () => {
+	// Écart latent : la valeur exacte tenait à ce que `evaluateNumeric` ne lit
+	// pas π. Verte avant comme après le bon correctif (quotient exact écrit dans
+	// L'Hôpital) ; rouge si l'évaluateur apprend π sans lui (« Je ne sais pas » :
+	// 0.3183098862 approché). Preuve du mécanisme, évaluateur qui lit π et e :
+	// src/lib/mathAST/limits/__tests__/l76-exact-sans-evaluateur.test.ts.
+	for (const [input, expected] of [
+		['.limite \\frac{x+1}{\\pi x} en +inf', '= \\dfrac{1}{\\pi}'],
+		['.limite \\frac{x+1}{e x} en +inf', '= \\dfrac{1}{\\exponentialE}']
+	] as const) {
+		it(`${input} rend « ${expected} »`, () => {
+			expect(latexOf(run(input)).endsWith(expected)).toBe(true);
+		});
+	}
 });
