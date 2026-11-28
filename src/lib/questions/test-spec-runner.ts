@@ -8,7 +8,13 @@
  * @module questions/test-spec-runner
  */
 
-import type { QuestionTemplate, TestSpec, ValidationStatus, ConstraintId } from './types';
+import type {
+	QuestionInstance,
+	QuestionTemplate,
+	TestSpec,
+	ValidationStatus,
+	ConstraintId
+} from './types';
 import type { ValidationResult } from '#lib/types/question-display.ts';
 import { generateInstanceWithFixedVariables } from './generator/test-instance-builder';
 import { validateAnswer, validateAnswerDetailed } from '#lib/utils/answer-validator.ts';
@@ -25,6 +31,7 @@ import { readExpectedPrimitive } from './calculus/primitive-answer';
 import { readExpectedResolution } from './resolution/resolution-answer';
 import { readExpectedParametricLine } from './parametric/parametric-line-answer';
 import { readExpectedSolution } from './calculus/differential-equation-answer';
+import { writePythonAnswer } from './python/python-answer';
 
 export interface TestSpecResult {
 	spec: TestSpec;
@@ -36,6 +43,21 @@ export interface TestSpecResult {
 		expectedErrorMessages: string[];
 	};
 	error?: string;
+}
+
+/** Réponse d'une case Python vide dans une spec : un verdict « juste » (aucun code) */
+const PYTHON_CASE_JUDGED = writePythonAnswer({ code: '', verdict: { juste: true } });
+
+/** Les réponses d'une spec, cases Python laissées vides remplies d'un verdict « juste » */
+function withPythonCasesJudged(
+	answers: string[] | undefined,
+	instance: QuestionInstance
+): string[] | undefined {
+	if (!answers) return answers;
+	const blanks = instance.blanks ?? [];
+	return answers.map((answer, index) =>
+		blanks[index]?.construire === 'python' && answer.trim() === '' ? PYTHON_CASE_JUDGED : answer
+	);
 }
 
 /**
@@ -122,14 +144,17 @@ export function runTestSpec(template: QuestionTemplate, spec: TestSpec): TestSpe
 	}
 
 	// 2. Validate answer
+	// Case Python laissée vide : comptée juste d'office (le programme ne tourne que dans le
+	// navigateur) ; la spec vérifie les autres cases. Une réponse écrite est gardée telle quelle
+	const answers = withPythonCasesJudged(spec.answers, instance);
 	let validationResult: ValidationResult;
 	try {
 		if (questionType === 'fill_in_blanks') {
-			if (!spec.answers) {
+			if (!answers) {
 				return makeError('Test spec for fill-in-blanks must provide answers[]');
 			}
 			// answers are LaTeX (same value for text and LaTeX, like the real MathField flow)
-			validationResult = validateAnswer(spec.answers, instance, spec.answers);
+			validationResult = validateAnswer(answers, instance, answers);
 		} else {
 			return makeError(`Type de question sans réponse à tester : ${questionType}`);
 		}
@@ -146,8 +171,8 @@ export function runTestSpec(template: QuestionTemplate, spec: TestSpec): TestSpe
 
 	// Erreurs prévues déclenchées : même chemin que le résultat attendu de l'élève
 	const expectedErrorMessages = validateAnswerDetailed(instance, {
-		values: spec.answers,
-		latex: spec.answers
+		values: answers,
+		latex: answers
 	}).blanks.flatMap((verdict) => expectedErrorOf(instance, verdict)?.message ?? []);
 
 	// 4. Compare with expected
