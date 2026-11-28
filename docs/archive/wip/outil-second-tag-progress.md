@@ -1,23 +1,19 @@
 ---
 title: Lot d'outils second-tag — journal
 date: 2026-11-28
-status: outil 66 codé, PR à ouvrir
+status: lot clos (#3297, 2026-11-28), archivé
 ---
 
 # Lot `second-tag` (outil 66)
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-28, avant la PR._
+_Mis à jour le 2026-11-28, après #3297._
 
-- **État** : outil 66 (second tag d'un modèle dans `migration-rangement.ts`) codé, tests verts
-  (unitaires + intégration). · **Prochaine action** : PR, revue, merge ; puis ligne 66 au § 4
-  « Livré » d'`outils-manquants.md` et lot clos. · **En attente de David** : rien. · **Pièges en
-  cours** : le tag 1TECHNO-095 du modèle d683e906 (« loi d'une variable aléatoire », chantier
-  `idees-1re-variables-aleatoires`) n'est toujours pas posé en prod : c'est un modèle, hors du lot
-  (règle 5 d'`outils-lots.md`), à poser par une session « questions » avec
-  `{ "pointsAjoutes": ["1TECHNO-095"] }`. · **Worktree / branche** : `../ubumaths-wt-outil-second-tag`,
-  `feat/outil-second-tag`.
+- **État** : lot clos, outil 66 livré (#3297), journal archivé. · **Prochaine action** : aucune.
+  · **En attente de David** : rien. · **Piège laissé** : le tag 1TECHNO-095 du modèle d683e906
+  (« loi d'une variable aléatoire ») n'est pas posé en prod : à une session « questions », avec
+  `{ "pointsAjoutes": ["1TECHNO-095"] }`.
 
 ## Phase 0 (validée par David le 2026-11-28 : « je te suis »)
 
