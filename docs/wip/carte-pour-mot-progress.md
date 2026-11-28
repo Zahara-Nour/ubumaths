@@ -4,8 +4,8 @@
 
 _Mis à jour le 2026-11-28, avant la PR (tout commité sur la branche, rien poussé)._
 
-- **État** : fait et commité sur `feat/carte-pour-mot` ; revue `code-reviewer` (Sonnet) faite, point 1 corrigé (sélection non vide), mineurs notés ci-dessous.
-- **Prochaine action** : push, PR, `pnpm pr:merger <n>` ; puis archiver ce journal.
+- **État** : PR #3321 ouverte ; ajout « les espaces se voient » (demande de David) commité dessus.
+- **Prochaine action** : CI verte → merge à la main (`gh pr merge 3321 --merge`, PAS `pr:merger` tant que le serveur d'essai 8446 tourne sur ce worktree) ; puis archiver ce journal.
 - **En attente de David** : son essai sur https://serveur.tail99357e.ts.net:8446/atelier (serveur 5179 de ce worktree). Lien 8445 (port 5178, worktree `ubumaths-wt-fonctions-domaines-essai`, sur main) à arrêter (`pnpm lien --stop` + kill du port) et worktree à retirer quand David a fini.
 - **Pièges en cours** : `pnpm test:client` sur ~90 fichiers d'un coup en perd au chargement (`wrapDynamicImport`) → lots de 10.
 - **Worktree / branche** : `ubumaths-wt-carte-pour-mot` / `feat/carte-pour-mot`.
@@ -42,3 +42,13 @@ en italique) jusqu'à la validation ; la console en faisait déjà un mot. « ou
    `x>aet` après « pour » donne a·« et ».
 3. Mineur : `handleInput`/`updateSmartFence` rejoués par l'`input` de l'insertion — inoffensif.
 4. Non testés : mode `typing`, Échap après un mot remplacé — lus sûrs.
+
+## Suite : les espaces se voient dans la carte (2026-11-28)
+
+- David, à l'essai : « je n'arrive pas à mettre les espaces » ; la console les montre (`mathModeSpace`
+  = `\,`), pas la carte. « je veux le même réglage ».
+- `DefinitionField` : `mathModeSpace` aussi pour une fonction ; `withoutTypedSpaces` retire les `\,`
+  avant de ranger ; `leaveSimpleDenominator` (comme la console) à l'espace seulement.
+- `cardWordAtCaret` prend avec le mot l'espace tapée juste avant (`x\,pour` → un seul blanc).
+- Mesuré avant : une espace après `\text{ pour }x` repassait en mode texte (`x\text{  > 3}`) ; réglé.
+- Tests : `carte-mot-pour.svelte.test.ts` 8 (+3), `natural-input.test.ts` +1.

@@ -689,7 +689,10 @@ propriétés et la liste disent l'ensemble (« ]2 ; +∞[ »). Une seconde formu
 (`x pour x > 2, x^2 pour x ≤ 2`) est refusée (« Une seule formule par fonction… ») : la place reste
 libre pour les fonctions par morceaux. Dans le champ « Écriture mathématique » de la console,
 « pour » devient un mot comme « sur » (le « Modèle : » sous le champ devient alors `x > 2, 2 < x < 4, x ≠ 0`, dans la lettre de la définition), et « ou », « et » seulement après lui (`f(t) = et` reste
-e·t). Dans la carte d'une fonction, MathLive ignore l'espace et colle les lettres (`xpour`) :
+e·t). Dans la carte d'une fonction, l'espace tapée se voit comme dans la console
+(`mathModeSpace` = `\,`, comme la carte d'une valeur ; David, 2026-11-28) : `DefinitionField` la
+retire avant de ranger (`x\,+\,1` → `x + 1`), et au bout d'un dénominateur simple elle sort
+d'abord de la fraction (`1/x pour …`). Sans espace, MathLive colle les lettres (`xpour`) :
 l'espace tapée juste après fait du mot un mot (`cardWordAtCaret`, `natural-input.ts`, appelé par
 `DefinitionField`) — la FIN de la suite de lettres, « pour » et « sur », « ou » et « et » seulement
 après « pour » (`\text{ pour }`, l'écriture que la carte réaffiche ; chantier carte-pour-mot,

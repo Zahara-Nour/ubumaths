@@ -105,3 +105,41 @@ describe('ce qui reste des lettres', () => {
 		expect(field.value).not.toContain('\\text');
 	});
 });
+
+// =============================================================================
+// Les espaces se voient, comme dans la console (David, 2026-11-28)
+// =============================================================================
+
+describe('l’espace tapée se voit, la définition rangée n’en garde rien', () => {
+	it('« x + 1 » : espaces fines dans le champ, x+1 rangé', async () => {
+		const { atelier, field } = await cardOfF();
+		await retype(field, 'x + 1');
+
+		expect(field.value).toBe('x\\,+\\,1');
+		await userEvent.keyboard('{Enter}');
+		await vi.waitFor(() => expect(atelier.get('f')?.definition.replace(/\s/g, '')).toBe('x+1'));
+		expect(atelier.get('f')?.definition).not.toContain('\\,');
+		expect(atelier.get('f')?.status).toBe('ok');
+	});
+
+	it('« 2 x » et « cos x » se lisent', async () => {
+		const { atelier, field } = await cardOfF();
+		await retype(field, '2 x{Enter}');
+		await vi.waitFor(() => expect(atelier.get('f')?.definition.replace(/\s/g, '')).toBe('2x'));
+
+		await retype(field, 'cos x{Enter}');
+		await vi.waitFor(() => expect(atelier.get('f')?.definition).toContain('\\cos'));
+		expect(atelier.get('f')?.status).toBe('ok');
+		expect(atelier.get('f')?.definition).not.toContain('\\,');
+	});
+
+	it('« x pour x > 3 » tapé avec ses espaces : un seul blanc avant « pour », ]3 ; +∞[', async () => {
+		const { atelier, field } = await cardOfF();
+		await retype(field, 'x pour x > 3');
+
+		expect(field.value).toBe('x\\text{ pour }x\\,>\\,3');
+		await userEvent.keyboard('{Enter}');
+		await vi.waitFor(() => expect(intervalLabelOf(atelier.get('f')!)).toBe(']3 ; +∞['));
+		expect(atelier.get('f')?.definition).toBe('x');
+	});
+});

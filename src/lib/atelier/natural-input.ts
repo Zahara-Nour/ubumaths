@@ -275,7 +275,9 @@ export function cardWordAtCaret(before: string): { latex: string; atoms: number 
 	if (run === undefined) return null;
 	const word = CARD_WORDS.find((candidate) => run.endsWith(candidate));
 	if (word === undefined || !definitionWord(word, before)) return null;
-	return { latex: String.raw`\text{ ${word} }`, atoms: word.length };
+	// L'espace tapée juste avant (`x\,pour`, `mathModeSpace`) : le mot a déjà ses blancs
+	const spaced = run === word && before.slice(0, -word.length).endsWith('\\,');
+	return { latex: String.raw`\text{ ${word} }`, atoms: word.length + (spaced ? 1 : 0) };
 }
 
 /**

@@ -22,7 +22,7 @@
 		splitInterval
 	} from '#lib/atelier/interval.ts';
 	import { parseDefinition } from '#lib/atelier/parse.ts';
-	import { cardWordAtCaret } from '#lib/atelier/natural-input.ts';
+	import { cardWordAtCaret, denominatorOf } from '#lib/atelier/natural-input.ts';
 	import { displayName } from '#lib/atelier/names.ts';
 	import type { AtelierObject } from '#lib/atelier/types.ts';
 	import { isConstruction } from '#lib/atelier/construction.ts';
@@ -145,6 +145,11 @@
 		}
 	}
 
+	/** `x\,+\,1` → `x + 1` : une espace LaTeX ordinaire, que la lecture ignore (`\cos\,x` → `\cos x`). */
+	function withoutTypedSpaces(typed: string): string {
+		return typed.replace(/\\,/g, ' ');
+	}
+
 	/** Écrire maintenant ce qui a été tapé. */
 	function flush() {
 		if (timer !== null) clearTimeout(timer);
@@ -152,7 +157,9 @@
 		if (!dirty) return;
 		dirty = false;
 		// `f(x) = x^2 sur [0;+∞[` : l'ensemble est lu à part (`interval.ts`)
-		const { body, written } = splitInterval(latex, 'latex');
+		// L'espace tapée d'une fonction (`x\,+\,1`) se voit dans le champ, sans être rangée
+		const shown = object.kind === 'function' ? withoutTypedSpaces(latex) : latex;
+		const { body, written } = splitInterval(shown, 'latex');
 		if (written !== null && object.kind !== 'function') {
 			refusal = ONLY_FUNCTIONS;
 			return;
@@ -223,6 +230,7 @@
 		if (event.ctrlKey || event.metaKey || event.altKey) return;
 		// Une sélection (revue) : l'espace la remplace, le mot à gauche n'est pas touché
 		if (!element.selectionIsCollapsed) return;
+		leaveSimpleDenominator();
 		if ((element.getElementInfo(element.position)?.depth ?? 0) > 0) return;
 		const found = cardWordAtCaret(element.getValue(0, element.position, 'latex'));
 		if (found === null) return;
@@ -240,6 +248,20 @@
 		latex = element.value;
 		handleInput();
 		updateSmartFence();
+	}
+
+	/**
+	 * `1/x pour x > 0` : l'espace tapée au bout d'un dénominateur simple (des
+	 * chiffres, une lettre) sort d'abord de la fraction, comme dans la console
+	 * (`NaturalField`) — sinon elle s'y écrit (mesuré : `\frac{1}{x\,pour…}`).
+	 */
+	function leaveSimpleDenominator() {
+		if (!element) return;
+		const here = element.getElementInfo(element.position);
+		const next = element.getElementInfo(element.position + 1);
+		if (here?.depth !== 1 || next?.depth !== 0 || !/^\\d?frac/.test(next.latex ?? '')) return;
+		const denominator = denominatorOf(next.latex ?? '');
+		if (/^(?:\d+|[A-Za-z])$/.test(denominator ?? '')) element.position = element.position + 1;
 	}
 
 	/** Revenir à la définition rangée : la frappe en cours est oubliée. */
@@ -311,7 +333,9 @@
 	onMount(() => {
 		// L'espace tapée dans une VALEUR fait la grandeur (lot C des grandeurs :
 		// « 5 m » est 5 mètres, « 5m » le produit) : MathLive l'ignore sinon
-		if (object.kind === 'value' && element) {
+		// Une FONCTION aussi : l'espace se voit, comme dans la console (David, 2026-11-28) ;
+		// la définition rangée n'en garde rien (`flush`)
+		if ((object.kind === 'value' || object.kind === 'function') && element) {
 			Object.assign(element, { mathModeSpace: '\\,' });
 		}
 		// Pas de menu ☰ (ni au clic droit) : mode texte ou LaTeX, couleur, style,

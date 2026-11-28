@@ -302,6 +302,14 @@ describe('la carte : le mot qui finit la suite de lettres', () => {
 		});
 	});
 
+	it('l’espace tapée juste avant (`\\,`) est prise avec le mot', () => {
+		expect(cardWordAtCaret('x\\,pour')).toEqual({ latex: '\\text{ pour }', atoms: 5 });
+		expect(cardWordAtCaret('x\\text{ pour }x<0\\,ou')).toEqual({
+			latex: '\\text{ ou }',
+			atoms: 3
+		});
+	});
+
 	it.each([
 		['et', 'sans « pour », e·t'],
 		['x<0ou', 'sans « pour », o·u'],
