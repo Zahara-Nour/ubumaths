@@ -7,12 +7,12 @@ question 3 de sa phase 0) ; même famille que la rose des sommes de 6e (6N0A-2, 
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-28, phase 0 validée._
+_Mis à jour le 2026-11-28, PR de l'outil ouverte._
 
-- **État** : cœur écrit et testé (parseur, totaux, juge : 24 tests) ; branchement (générateur,
-  juge, écran, PDF, éditeur riche, catalogue) en cours · **Prochaine action** : vérifier à
-  l'écran (`pnpm voir`), doc `docs/systeme/ubumark.md`, revue `code-reviewer` (Opus), PR ·
-  **En attente de David** : rien · **Pièges en cours** : aucun · **Worktree / branche** :
+- **État** : outil fait, revu, vérifié à l'écran ; PR ouverte, CI en cours · **Prochaine
+  action** : merge à la CI verte, puis ligne n° 56 au § 4 « Livré » d'`outils-manquants.md`, et
+  clore le lot (`fait (#PR, date)` dans `outils-lots.md`, journal archivé) · **En attente de
+  David** : rien · **Pièges en cours** : aucun · **Worktree / branche** :
   `../ubumaths-wt-outil-yohaku`, `feat/outil-yohaku`.
 
 ## Phase 0 (envoyée le 2026-11-28)
@@ -80,7 +80,24 @@ calculés par le bloc ; **Q4** une PR (bloc, juge, écran, PDF), modèles aux se
   500 ms, comme une case d'expression). Tests écrits juste après le code du cœur (pas rouges
   d'abord), 24 verts.
 
+- Branchement de bout en bout (agent `fullstack-developer`), sur le chemin du labyrinthe :
+  générateur, juge, copie corrigée, série d'automatismes, PDF (`yohaku-typst.ts`), écran
+  (`Yohaku.svelte`, `YohakuGrille.svelte`, `YohakuCorrige.svelte`), éditeur riche, catalogue.
+- Vu à l'écran (`pnpm voir /aide-ecriture/blocs/yohaku --petit`, iPhone SE) : totaux des colonnes
+  collés, puis débordants → `math-span` en `inline-block`, total coupé après un `+`
+  (`splitLatexAtBreaks`) ; tout tient. Parcours `e2e/verifs/bloc-yohaku.spec.ts` (aperçu admin,
+  ordi Chrome, Safari, iPhone) : solution juste, signes tous changés juste, 2e ligne fausse
+  (message, totaux en rouge). Sur iPhone, le bouton clavier de MathLive cachait la formule tapée
+  → boutons menu et clavier cachés dans la case, comme un tableau à compléter.
+- Revue `code-reviewer` (Opus) : **bloquant**, la solution de l'auteur partait au navigateur dans
+  l'énoncé d'une évaluation notée (le test l'assertait) → masquage `[?]` + `totaux:`
+  (`maskYohaku`, garde `findUnmaskedAnswers`) ; faux positif par une `\right)` collée dans une
+  case → chaque case lue seule, calcul construit en arbre ; égalité acceptée comme case →
+  refusée (auteur et élève) ; décimaux : `2,5` accepté, total écrit `5{,}5` ; message de `|x|` ;
+  grille effacée = réponse vide ; focus jamais sur un champ verrouillé. Tests ajoutés pour chacun.
+
 ## Historique
 
 - 2026-11-28 : lot réservé par `pnpm outils lancer` ; phase 0 écrite et envoyée.
 - 2026-11-28 : phase 0 validée ; cœur commité.
+- 2026-11-28 : outil branché, vu à l’écran, revu, corrigé ; PR ouverte.
