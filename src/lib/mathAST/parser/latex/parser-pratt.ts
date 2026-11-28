@@ -20,13 +20,14 @@ import type {
 	MathSymbol,
 	RelationType,
 	LogicalOperator,
-	NodeMetadata
+	NodeMetadata,
+	PiecewisePiece
 } from '../../types';
 import type { MatrixType } from '../../matrix/types';
 import type { Token, ParserOptions, ParseResult, ParseError, ParseErrorCode } from '../types';
 import { Tokenizer, isLatexSpacing } from './tokenizer';
 import { ColorStack, isValidColor, normalizeColor } from './color-stack';
-import { MathAST, compose, matrix, complex, euler } from '../../factory';
+import { MathAST, compose, matrix, complex, euler, piecewise } from '../../factory';
 import { parse as parseUnit, unitErrorMessage } from '../../units/parser';
 import { UNIT_EXPONENT_MESSAGE_LATEX, UNIT_SPACE_MESSAGE } from '../custom/unit-writing';
 import {
@@ -1951,7 +1952,7 @@ class PrattParser {
 
 	/**
 	 * Parse a LaTeX environment: \begin{envname}...\end{envname}
-	 * Currently only matrix environments are supported.
+	 * Matrix environments, and `cases` (piecewise function).
 	 */
 	private parseEnvironment(): MathNode {
 		const beginToken = this.currentToken;
@@ -1976,6 +1977,13 @@ class PrattParser {
 		}
 		this.expect('RBRACE', "Expected '}' after environment name");
 
+		// Une fonction par morceaux : `valeur & condition` par ligne
+		if (envName === 'cases') {
+			const node = this.parseCasesContent();
+			this.parseEnvironmentEnd(envName);
+			return this.applyColor(node);
+		}
+
 		// Check if it's a matrix environment
 		if (!(envName in MATRIX_ENVIRONMENTS)) {
 			this.error(
@@ -1988,7 +1996,13 @@ class PrattParser {
 
 		const matrixType = MATRIX_ENVIRONMENTS[envName];
 		const rows = this.parseMatrixContent();
+		this.parseEnvironmentEnd(envName);
 
+		return this.applyColor(matrix(rows, { matrixType }));
+	}
+
+	/** `\end{envName}`, qui doit fermer l'environnement ouvert. */
+	private parseEnvironmentEnd(envName: string): void {
 		// Parse \end{envname}
 		if (!this.checkCommand('end')) {
 			this.error(
@@ -2027,8 +2041,100 @@ class PrattParser {
 				'MISMATCHED_ENVIRONMENT' as ParseErrorCode
 			);
 		}
+	}
 
-		return this.applyColor(matrix(rows, { matrixType }));
+	/**
+	 * Le contenu de `\begin{cases}` : une ligne `valeur & condition` par
+	 * morceau, `\\` entre les lignes (un `\\` final est toléré). Devant la
+	 * condition, `\text{si}` / `\text{pour}` / `\text{if}` sont sautés ; une
+	 * DERNIÈRE ligne `valeur & \text{sinon}` (ou `\text{otherwise}`) est le
+	 * `otherwise`. Une ligne sans condition est une erreur, où qu'elle soit.
+	 */
+	private parseCasesContent(): MathNode {
+		const pieces: PiecewisePiece[] = [];
+		let otherwise: MathNode | undefined;
+
+		while (!this.check('EOF') && !this.checkCommand('end')) {
+			if (otherwise !== undefined) {
+				this.error(
+					'« sinon » must be the last row of cases',
+					this.currentToken.position,
+					this.currentToken.length,
+					'SYNTAX_ERROR'
+				);
+			}
+			const value = this.parseCasesCell('value');
+			if (!this.check('AMPERSAND')) {
+				this.error(
+					"Expected '&' then a condition in each row of cases",
+					this.currentToken.position,
+					this.currentToken.length,
+					'SYNTAX_ERROR'
+				);
+			}
+			this.advance(); // consume &
+
+			const word = this.checkCommand('text') ? this.parseCasesTextWord() : null;
+			if (word === 'sinon' || word === 'otherwise') {
+				otherwise = value;
+			} else {
+				pieces.push({ condition: this.parseCasesCell('condition'), value });
+			}
+
+			if (this.isRowSeparator()) {
+				this.advance();
+			} else if (!this.checkCommand('end')) {
+				this.error(
+					"Expected '\\\\' or \\end{cases} after a row of cases",
+					this.currentToken.position,
+					this.currentToken.length,
+					'SYNTAX_ERROR'
+				);
+			}
+		}
+
+		if (pieces.length === 0) {
+			this.error(
+				'cases needs at least one row with a condition',
+				this.currentToken.position,
+				this.currentToken.length,
+				'SYNTAX_ERROR'
+			);
+		}
+		return piecewise(pieces, otherwise);
+	}
+
+	/** Une cellule de `cases`, jamais vide (une matrice y mettrait 0). */
+	private parseCasesCell(kind: 'value' | 'condition'): MathNode {
+		if (this.isMatrixDelimiter() || this.check('EOF')) {
+			this.error(
+				`Expected a ${kind} in this row of cases`,
+				this.currentToken.position,
+				this.currentToken.length,
+				'SYNTAX_ERROR'
+			);
+		}
+		return this.parseExpressionUntilMatrixDelimiter();
+	}
+
+	/**
+	 * `\text{…}` au début d'une condition de `cases` : `si` / `pour` / `if`
+	 * (consommés, la condition suit) ou `sinon` / `otherwise` (rendus).
+	 */
+	private parseCasesTextWord(): 'sinon' | 'otherwise' | null {
+		const cmdToken = this.advance(); // consume \text
+		this.expect('LBRACE', "Expected '{' after \\text");
+		let text = '';
+		while (this.check('LETTER')) text += this.advance().value;
+		this.expect('RBRACE', "Expected '}' after \\text content");
+		if (text === 'sinon' || text === 'otherwise') return text;
+		if (text === 'si' || text === 'pour' || text === 'if') return null;
+		this.error(
+			`Unknown \\text content in cases: "${text}". Expected "si", "pour" or "sinon"`,
+			cmdToken.position,
+			cmdToken.length,
+			'UNEXPECTED_TOKEN'
+		);
 	}
 
 	/**

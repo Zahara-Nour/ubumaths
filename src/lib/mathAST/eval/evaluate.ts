@@ -5,7 +5,7 @@
  * Supports both exact (Rational) and decimal (number) evaluation modes.
  */
 
-import type { MathNode, FunctionNode } from '../types';
+import type { MathNode, FunctionNode, PiecewiseNode } from '../types';
 import type { EvalOptions, EvalResult } from './types';
 import type { Rational } from '../normal/types';
 import type { PrecisionType } from '#lib/questions/types.ts';
@@ -39,7 +39,8 @@ import {
 	isComplex,
 	isBoolean,
 	isLogical,
-	isLogicalNot
+	isLogicalNot,
+	isPiecewise
 } from '../guards';
 import { substituteFunction } from './function-bindings';
 import { formatPointNames } from '../common/point-names';
@@ -66,7 +67,7 @@ import { normalize } from '../normal/normalize';
 import { denormalize } from '../normal/denormalize';
 import { normalizeExtended } from '../normal/normalize-extended';
 import { denormalizeExtended } from '../normal/denormalize';
-import { findNodes, getChildren, mapNode } from '../transforms';
+import { findNodes, getChildren, mapNode, mapNodeTopDown } from '../transforms';
 import { areEquivalentCore } from '../equivalence-core';
 import { getActiveAbortChecker } from '../common/abort';
 import { rewriteFunctionPower } from '../common/function-power';
@@ -1417,6 +1418,59 @@ function evaluateToBoolean(node: MathNode): boolean | undefined {
 }
 
 // =============================================================================
+// Fonctions par morceaux
+// =============================================================================
+
+/** Raison rendue quand aucun morceau ne s'applique et qu'il n'y a pas de « sinon ». */
+export const NO_PIECE_APPLIES = 'Aucun morceau ne s’applique pour cette valeur';
+
+/** Levée par `reducePiecewise` : aucune condition vraie, pas de « sinon ». */
+class NoPieceApplies extends Error {
+	constructor() {
+		super(NO_PIECE_APPLIES);
+	}
+}
+
+/**
+ * Le morceau qui s'applique : la valeur de la PREMIÈRE condition vraie, sinon
+ * `otherwise`. Une condition qu'on ne tranche pas (`3 < k`, k sans valeur)
+ * AVANT la première vraie laisse le nœud tel quel : sauter au morceau suivant
+ * serait faux si elle était vraie.
+ */
+function chosenPiece(node: PiecewiseNode): MathNode {
+	for (const piece of node.pieces) {
+		const holds = evaluateToBoolean(reducePiecewise(piece.condition));
+		if (holds === undefined) return node;
+		if (holds) return piece.value;
+	}
+	if (node.otherwise !== undefined) return node.otherwise;
+	throw new NoPieceApplies();
+}
+
+/**
+ * Remplace chaque nœud `piecewise` dont les conditions se tranchent par la
+ * valeur du morceau choisi. De haut en bas : seul le morceau choisi est
+ * parcouru ensuite, les autres ne sont jamais calculés (`3/(x-1) si x ≠ 1`
+ * en x = 1 ne divise pas par zéro). Les conditions se tranchent comme une
+ * comparaison tapée seule (`evaluateToBoolean` : égalité exacte, puis signe).
+ *
+ * @throws NoPieceApplies quand aucune condition n'est vraie et qu'il n'y a pas de « sinon »
+ */
+function reducePiecewise(node: MathNode): MathNode {
+	if (findNodes(node, isPiecewise).length === 0) return node;
+	return mapNodeTopDown(node, (current) => {
+		let reduced = current;
+		// Le morceau choisi peut être lui-même par morceaux
+		while (isPiecewise(reduced)) {
+			const next = chosenPiece(reduced);
+			if (next === reduced) break;
+			reduced = next;
+		}
+		return reduced;
+	});
+}
+
+// =============================================================================
 // Main Export
 // =============================================================================
 
@@ -1489,6 +1543,15 @@ export function evaluate(node: MathNode, options?: EvalOptions): EvalResult {
 	let processedNode = node;
 	if (opts.functions && Object.keys(opts.functions).length > 0) {
 		processedNode = substituteFunction(node, opts.functions);
+	}
+
+	// 1a. Fonction par morceaux : le morceau dont la condition est vraie, une fois
+	// la variable remplacée (`f(3)` → la valeur de `x^2` en 3)
+	try {
+		processedNode = reducePiecewise(processedNode);
+	} catch (e) {
+		if (e instanceof NoPieceApplies) return { status: 'unevaluable', reason: e.message };
+		throw e;
 	}
 
 	// 1b. Boolean evaluation: detect boolean root expressions
