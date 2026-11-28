@@ -262,7 +262,6 @@
 		return names;
 	});
 
-	/** Angle in degrees per slice (e.g., 45° for 8 students) */
 	/**
 	 * Angle in radians per slice (used for stroke-dasharray calculation)
 	 * The SVG stroke-dasharray technique creates alternating colored slices
