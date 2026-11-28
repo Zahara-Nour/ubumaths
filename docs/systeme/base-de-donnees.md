@@ -195,10 +195,17 @@ Deux référentiels, deux usages (la famille A, ex-`skills`, n'existe plus :
   de cours ne comptent pas (`20260928160000`).
 - **`curriculum_point_automatismes`** : un point « automatisme » l'est **pour un niveau** (liste
   publiée par un programme), pas dans l'absolu.
-- **`skill_attempts` est la source unique des faits**, immuable (aucune policy UPDATE/DELETE hors
-  admin). Un CHECK impose le XOR entre les deux régimes. Le trigger `trg_skill_attempts_after_insert`
-  recalcule les caches (`update_student_point_state`, `update_student_observable_state` →
-  `update_student_competence_level`) ; les caches ne s'écrivent que par lui.
+- **`skill_attempts` est la source unique des faits**, immuable (aucune policy UPDATE hors admin ;
+  DELETE : l'admin, et le prof pour les seules observations `teacher` d'une tâche,
+  `skill_attempts_delete_teacher_task`, L39). Un CHECK impose le XOR entre les deux régimes. Le
+  trigger `trg_skill_attempts_after_insert` recalcule les caches (`update_student_point_state`,
+  `update_student_observable_state` → `update_student_competence_level`) ;
+  `trg_skill_attempts_after_delete` (par requête) recalcule ceux des observations effacées. Les
+  caches ne s'écrivent que par ces triggers.
+- **Saisie d'une tâche** (`20261128135334`) : `save_evaluation_task_grid(p_task_id, p_rows)`,
+  `security invoker`, efface la grille de la tâche puis la réécrit en une transaction (5 000
+  lignes au plus, codes `plus` / `minus`) ; elle lève si une ligne n'a pas pu être effacée (refus
+  RLS), au lieu de doubler la grille. Seul chemin d'écriture de la page de saisie.
 - **Contenu d'une trace** ([ADR 0038](../adr/0038-contenu-d-une-trace.md), `20261111092522`) :
   colonnes facultatives `place` (lieu : `flash_cards`, `typing`, `mock_test`, `number_race`, `review`,
   `evaluation`), `response_ms`, `allotted_ms`, `end_reason` (`validated` / `timeout`), `seed`,
