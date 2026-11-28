@@ -101,6 +101,13 @@ describe('Timeline — scrubbing', () => {
 		expect(getState().currentStepIndex).toBe(0);
 	});
 
+	it('au bout : les pas de durée 0 de la fin sont joués (masque final, V76)', () => {
+		const { tl, getState } = createTimeline();
+		tl.load([500, 500, 0, 0]);
+		tl.scrubByProgress(1);
+		expect(getState().currentStepIndex).toBe(3);
+	});
+
 	it('scrubByProgress clamps to 0-1', () => {
 		const { tl, getState } = createTimeline();
 		tl.load([500]);

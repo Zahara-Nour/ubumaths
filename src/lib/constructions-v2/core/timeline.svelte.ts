@@ -253,6 +253,8 @@ export class Timeline {
 
 	private findStepAt(time: number): number {
 		if (time <= 0 || this.stepTimings.length === 0) return -1;
+		// Au bout : le dernier pas, même de durée 0 (un `masque` final doit s'appliquer)
+		if (time >= this._totalDuration) return this.stepTimings.length - 1;
 		for (let i = 0; i < this.stepTimings.length; i++) {
 			if (time <= this.stepTimings[i].end) return i;
 		}

@@ -8,13 +8,13 @@ status: en cours
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-28, après #3284._
+_Mis à jour le 2026-11-28, PR « masque instantané » en cours._
 
-- **État** : #3284 mergée (L56, M35, M36, M37, M38 corrigés ; V76 prêt en lot `v76` de `pnpm constructions:reecrire`). V139 (étiquettes `_p…` du carré) inscrit au registre, hors lots.
-- **Prochaine action** : PR « `masque`/`montre` instantanés » (validée par David le 2026-11-28 : « je te suis ») — worktree `../ubumaths-wt-ecarts-constructions-masque`, branche `fix/ecarts-constructions-masque` ; dans `computeLegacyStatementTiming` (`executor.ts`), durée 0 pour un `masque(…)`/`montre(…)` qui ne crée rien ; tester que les 44 arcs du carré tombent en 3 temps. Dans la même PR : lancer `pnpm constructions:reecrire --lot v76 --cible prod` (simulation, lecture seule) et commiter la sauvegarde `scripts/constructions-prod/avant-v76.json`.
-- **En attente de David** : après merge de cette PR, `pnpm constructions:reecrire --lot v76 --cible prod --publier` (lire la simulation avant) ; `pnpm deploy:prod` pour que l'effacement d'un coup soit visible en prod.
-- **Pièges en cours** : la sauvegarde `avant-v76.json` doit exister là où David lance `--publier` (elle est exigée) ; clore le lot (registre, `fait (#PR)`, archive) seulement après l'écriture en prod.
-- **Worktree / branche** : aucun pour l'instant (celui de #3284 retiré).
+- **État** : #3284 mergée (L56, M35–M38 ; V76 prêt en lot `v76`). Branche `fix/ecarts-constructions-masque` : `masque(…)`/`montre(…)` seuls sur leur ligne = 0 ms ; fin de frise = dernier pas, même de 0 ms (le carré finit par 7 `masque`). Les 44 arcs partent en **6** temps (12, 4, 7, 7, 7, 7 : les 6 suites de `@cacher` de l'auteur ; « 3 temps » était un mauvais compte). Vu en local dans Chrome : pas 344/344, aucun arc.
+- **Prochaine action** : sauvegarde `scripts/constructions-prod/avant-v76.json` à commiter dans la PR, puis PR, CI, merge.
+- **En attente de David** : la simulation `--cible prod` (lecture de la prod refusée à la session par le classifieur) ; après merge, `--publier` puis `pnpm deploy:prod`.
+- **Pièges en cours** : `--publier` exige `avant-v76.json` là où il est lancé ; clore le lot (registre, archive) seulement après l'écriture en prod. V139 (étiquettes `_p…`) hors lots.
+- **Worktree / branche** : `../ubumaths-wt-ecarts-constructions-masque` · `fix/ecarts-constructions-masque` (serveur de dev 5177).
 
 ## Écarts du lot
 
@@ -48,3 +48,4 @@ La page `/constructions/conversion` (bouton sur `/constructions`) convertissait 
 
 - **M38** : ancien module `src/lib/constructions/` retiré, ainsi que `api/constructions/convert` (sans appelant) et `scripts/convert-instrumenpoche.ts` ; `JsonEditor` → `src/lib/components/`, instruments du tableau blanc → `src/lib/whiteboard/components/instruments/`. `POST /api/constructions` : `format: 'dsl'` seul, `dsl_script` requis ; `PUT` n'accepte plus `script`. Page de conversion : DSL seul, aperçu par le lecteur v2. Tests d'API ajoutés (`ecriture-reservee.test.ts`).
 - **V76** : lot `v76` de `pnpm constructions:reecrire --lot` (`scripts/constructions-prod/arcs-carre.ts`). Les 44 arcs reçoivent le nom de l'arc du JSON d'origine (correspondance vérifiée arc par arc : rayon, angles), `@cacher("arc_n")` → `masque(_arcn)`. Découvert à l'écran : la migration vers le DSL avait changé le signe des angles sans échanger début et fin, 13 arcs de 20° tracés sur 340° (presque des cercles) ; ordre rétabli. Garde ajoutée : `dslAvant` (script de prod identique à la sauvegarde dont le nouveau est tiré). Vu en local dans Chrome : petits arcs pendant la construction, aucun à la fin.
+- **`masque`/`montre` instantanés** (branche `fix/ecarts-constructions-masque`) : `computeLegacyStatementTiming` → 0 ms pour `masque(…)`/`montre(…)` sans élément créé ; `Timeline.findStepAt` → dernier pas au bout de la frise (sans cela, les `masque` de fin du carré ne s'appliquaient jamais en lecture continue). Tests : `visibility.test.ts`, `timeline.test.ts` (rouge sans le correctif), `constructions-prod.test.ts` (groupes 12, 4, 7, 7, 7, 7).
